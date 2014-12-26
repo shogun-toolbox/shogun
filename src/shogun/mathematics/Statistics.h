@@ -16,6 +16,8 @@
 #include <boost/math/distributions/gamma.hpp>
 #include <boost/math/special_functions/erf.hpp>
 #include <boost/math/special_functions/beta.hpp>
+#include <boost/math/distributions/students_t.hpp>
+#include <boost/math/distributions/inverse_gaussian.hpp>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
@@ -202,15 +204,6 @@ public:
 	static float64_t confidence_intervals_mean(SGVector<float64_t> values,
 			float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up);
 
-	/** Functional inverse of Student's t distribution
-	 *
-	 * Given probability \f$p\f$, finds the argument \f$t\f$ such that
-	 * \f$\text{student\_t}(k,t)=p\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_student_t(int32_t k, float64_t p);
-
 	/** Inverse of Normal distribution function
 	 *
 	 * Returns the argument, \f$x\f$, for which the area under the
@@ -225,7 +218,6 @@ public:
 	 * and the other for \f$y\f$ up to \f$\exp(-2)\f$.  For larger arguments,
 	 * \f$w = y - 0.5\f$, and  \f$\frac{x}{\sqrt{2\pi}} = w + w^3 R(\frac{w^2)}{S(w^2)})\f$.
 	 *
-	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t inverse_normal_cdf(float64_t y0);
 
@@ -496,46 +488,6 @@ public:
 	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE2;
 
-protected:
-	/** Power series for incomplete beta integral.
-	 * Use when \f$bx\f$ is small and \f$x\f$ not too close to \f$1\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetaps(float64_t a, float64_t b,
-			float64_t x, float64_t maxgam);
-
-	/** Continued fraction expansion #1 for incomplete beta integral
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetafe(float64_t a, float64_t b,
-			float64_t x, float64_t big, float64_t biginv);
-
-	/** Continued fraction expansion #2 for incomplete beta integral
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetafe2(float64_t a, float64_t b,
-			float64_t x, float64_t big, float64_t biginv);
-
-	/** method to make ALGLIB integration easier */
-	static inline bool equal(float64_t a, float64_t b) { return a==b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool not_equal(float64_t a, float64_t b) { return a!=b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool less(float64_t a, float64_t b) { return a<b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool less_equal(float64_t a, float64_t b) { return a<=b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool greater(float64_t a, float64_t b) { return a>b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
 template <>

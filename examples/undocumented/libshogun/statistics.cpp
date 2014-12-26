@@ -126,25 +126,25 @@ void test_confidence_intervals()
 void test_inverse_student_t()
 {
 	/* some tests for high precision MATLAB comparison */
-	float64_t difference=CStatistics::inverse_student_t(1, 0.99);
+	float64_t difference=boost::math::detail::inverse_students_t(1.0, 0.99, 1-0.99,boost::math::policies::policy<>());
 	SG_SPRINT("inverse_student_t(0.99, 1)=%f\n", difference);
 	difference-=31.820515953773953;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-14);
 
-	difference=CStatistics::inverse_student_t(2, 0.99);
+	difference=boost::math::detail::inverse_students_t(2.0, 0.99, 1-0.99,boost::math::policies::policy<>());
 	SG_SPRINT("inverse_student_t(0.99, 2)=%f\n", difference);
 	difference-= 6.964556734283233;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-14);
 
-	difference=CStatistics::inverse_student_t(3, 0.99);
+	difference=boost::math::detail::inverse_students_t(3.0, 0.99, 1-0.99,boost::math::policies::policy<>());
 	SG_SPRINT("inverse_student_t(0.99, 3)=%f\n", difference);
 	difference-=4.540702858568132;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-20);
 
-	difference=CStatistics::inverse_student_t(4, 0.99);
+	difference=boost::math::detail::inverse_students_t(4.0, 0.99, 1-0.99,boost::math::policies::policy<>());
 	SG_SPRINT("inverse_student_t(0.99, 4)=%f\n", difference);
 	difference-=3.746947387979196;
 	difference=CMath::abs(difference);
