@@ -154,19 +154,19 @@ void test_inverse_student_t()
 void test_incomplete_gamma()
 {
 	/* some tests for high precision MATLAB comparison */
-	float64_t difference=CStatistics::incomplete_gamma(2, 1);
+	float64_t difference=boost::math::gamma_p(2, 1);
 	SG_SPRINT("incomplete_gamma(1, 2)=%f\n", difference);
 	difference-= 0.264241117657115;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::incomplete_gamma(3, 2);
+	difference=boost::math::gamma_p(3, 2);
 	SG_SPRINT("incomplete_gamma(3, 2)=%f\n", difference);
 	difference-= 0.323323583816937;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::incomplete_gamma(1, 0.1);
+	difference=boost::math::gamma_p(1, 0.1);
 	SG_SPRINT("incomplete_gamma(1, 0.1)=%f\n", difference);
 	difference-=0.095162581964040;
 	difference=CMath::abs(difference);
@@ -248,19 +248,19 @@ void test_inverse_normal_cdf()
 void test_error_function()
 {
 	/* some tests for high precision MATLAB comparison */
-	float64_t difference=CStatistics::error_function(1);
+	float64_t difference=boost::math::erf(1);
 	SG_SPRINT("error_function(1)=%f\n", difference);
 	difference-=0.842700792949715;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::error_function(2);
+	difference=boost::math::erf(2);
 	SG_SPRINT("error_function(2)=%f\n", difference);
 	difference-=0.995322265018953;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::error_function(0.1);
+	difference=boost::math::erf(0.1);
 	SG_SPRINT("error_function(0.1)=%f\n", difference);
 	difference-=0.112462916018285;
 	difference=CMath::abs(difference);
@@ -270,19 +270,19 @@ void test_error_function()
 void test_error_function_complement()
 {
 	/* some tests for high precision MATLAB comparison */
-	float64_t difference=CStatistics::error_function_complement(1);
+	float64_t difference=boost::math::erfc(1);
 	SG_SPRINT("error_function_complement(1)=%f\n", difference);
 	difference-=0.157299207050285;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::error_function_complement(2);
+	difference=boost::math::erfc(2);
 	SG_SPRINT("error_function_complement(2)=%f\n", difference);
 	difference-=0.004677734981047;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 
-	difference=CStatistics::error_function_complement(0.1);
+	difference=boost::math::erfc(0.1);
 	SG_SPRINT("error_function_complement(0.1)=%f\n", difference);
 	difference-=0.887537083981715;
 	difference=CMath::abs(difference);

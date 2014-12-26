@@ -7,16 +7,15 @@
  * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
- * ALGLIB Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier under GPL2+
- * http://www.alglib.net/
- * See method comments which functions are taken from ALGLIB (with adjustments
- * for shogun)
  */
 
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
 #include <math.h>
+#include <boost/math/distributions/gamma.hpp>
+#include <boost/math/special_functions/erf.hpp>
+#include <boost/math/special_functions/beta.hpp>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
@@ -212,44 +211,6 @@ public:
 	 */
 	static float64_t inverse_student_t(int32_t k, float64_t p);
 
-	/** Inverse of incomplete beta integral
-	 *
-	 * Given \f$y\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f$\text{inverse\_incomplete\_beta}( a, b, x ) = y .\f$
-	 *
-	 * The routine performs interval halving or Newton iterations to find the
-	 * root of \f$\text{inverse\_incomplete\_beta}( a, b, x )-y=0.\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_incomplete_beta(float64_t a, float64_t b,
-			float64_t y);
-
-	/** Incomplete beta integral
-	 *
-	 * Returns incomplete beta integral of the arguments, evaluated
-	 * from zero to \f$x\f$.  The function is defined as
-	 * \f[
-	 * \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\int_0^x t^{a-1} (1-t)^{b-1} dt.
-	 * \f]
-	 *
-	 * The domain of definition is \f$0 \leq x \leq 1\f$.  In this
-	 * implementation \f$a\f$ and \f$b\f$ are restricted to positive values.
-	 * The integral from \f$x\f$ to \f$1\f$ may be obtained by the symmetry
-	 * relation
-	 *
-	 * \f[
-	 * 1-\text{incomplete\_beta}(a,b,x)=\text{incomplete\_beta}(b,a,1-x).
-	 * \f]
-	 *
-	 * The integral is evaluated by a continued fraction expansion
-	 * or, when \f$b\cdot x\f$ is small, by a power series.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
-
 	/** Inverse of Normal distribution function
 	 *
 	 * Returns the argument, \f$x\f$, for which the area under the
@@ -295,44 +256,8 @@ public:
 		return ::tgamma((double) x);
 	}
 
-	/** Incomplete gamma integral
-	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f[
-	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
-	 * \f]
-	 *
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_gamma(float64_t a, float64_t x);
-
-	/** Complemented incomplete gamma integral
-	 *
-	 * The function is defined by
-	 *
-	 * \f[
-	 * \text{incomplete\_gamma\_completed}(a,x)=1-\text{incomplete\_gamma}(a,x) =
-	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
-	 * \f]
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_gamma_completed(float64_t a, float64_t x);
-
 	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
-	 * at \f$x\f$. Based on Wikipedia definition and ALGLIB routines.
+	 * at \f$x\f$. Based on Wikipedia definition.
 	 *
 	 * @param x position to evaluate
 	 * @param a shape parameter
@@ -352,23 +277,6 @@ public:
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
-	/** Inverse of complemented incomplete gamma integral
-	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f$\text{inverse\_incomplete\_gamma\_completed}( a, x ) = p.\f$
-	 *
-	 * Starting with the approximate value \f$ x=a t^3\f$, where
-	 * \f$ t = 1 - d - \text{ndtri}(p) \sqrt{d} \f$ and \f$ d = \frac{1}{9}a \f$
-	 *
-	 * The routine performs up to 10 Newton iterations to find the
-	 * root of \f$ \text{inverse\_incomplete\_gamma\_completed}( a, x )-p=0\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_incomplete_gamma_completed(float64_t a,
-			float64_t y0);
-
 	/** Normal distribution function
 	 *
 	 * Returns the area under the Gaussian probability density
@@ -383,8 +291,6 @@ public:
 	 * deviation. Computation is via the functions \f$\text{error\_function}\f$
 	 * and \f$\text{error\_function\_completement}\f$.
 	 *
-	 * Taken from ALGLIB under gpl2+
-	 * Custom variance added by Heiko Strathmann
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
 
@@ -430,39 +336,6 @@ public:
 	 * @return weighted sum
 	 */
 	static float64_t erfc8_weighted_sum(float64_t x);
-
-	/** Error function
-	 *
-	 * The integral is
-	 *
-	 * \f[
-	 * \text{error\_function}(x)=
-	 * \frac{2}{\sqrt{pi}}\int_0^x \exp (-t^2) dt
-	 * \f]
-	 *
-	 * For \f$0 \leq |x| < 1, \text{error\_function}(x) = x \frac{P4(x^2)}{Q5(x^2)}\f$
-	 * otherwise
-	 * \f$\text{error\_function}(x) = 1 - \text{error\_function\_complement}(x)\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t error_function(float64_t x);
-
-	/** Complementary error function
-	 *
-	 * \f[
-	 * 1 - \text{error\_function}(x) =
-	 * \text{error\_function\_complement}(x)=
-	 * \frac{2}{\sqrt{\pi}}\int_x^\infty \exp\left(-t^2 \right)dt
-	 * \f]
-	 *
-	 * For small \f$x\f$, \f$\text{error\_function\_complement}(x) =
-	 *  1 - \text{error\_function}(x)\f$; otherwise rational
-	 * approximations are computed.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t error_function_complement(float64_t x);
 
 	/** @return mutual information of \f$p\f$ which is given in logspace
 	 * where \f$p,q\f$ are given in logspace */
