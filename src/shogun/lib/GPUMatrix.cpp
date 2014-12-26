@@ -44,6 +44,7 @@
 #endif
 
 #include <shogun/lib/SGMatrix.h>
+#include <memory>
 
 namespace shogun
 {

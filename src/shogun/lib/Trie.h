@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <string.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/DynArray.h>

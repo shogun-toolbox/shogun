@@ -11,6 +11,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Trie.h>
+#include <string.h>
 
 namespace shogun
 {

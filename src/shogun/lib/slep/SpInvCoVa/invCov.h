@@ -19,11 +19,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-
 /*
  * A:    n x n
  * x:    n x 1
