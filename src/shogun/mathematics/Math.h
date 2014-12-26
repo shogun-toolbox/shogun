@@ -35,7 +35,6 @@
 #endif
 
 #include <math.h>
-#include <stdio.h>
 #include <float.h>
 #include <sys/types.h>
 #ifndef _WIN32

@@ -18,9 +18,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <float.h>
 
 #ifndef NAN
