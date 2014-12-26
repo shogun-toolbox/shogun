@@ -98,7 +98,7 @@ before_install:
     fi
 install:
   - if [ -z $OSX ] ; then
-      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
+      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache libboost-math-dev $EXTRA_PACKAGES ;
     else
       brew install ccache eigen json-c;
     fi
