@@ -44,6 +44,10 @@
 #include <viennacl/linalg/inner_prod.hpp>
 #endif // HAVE_VIENNACL
 
+#ifdef HAVE_LAPACK
+#include <shogun/mathematics/lapack.h>
+#endif // HAVE_LAPACK
+
 namespace shogun
 {
 
@@ -128,6 +132,35 @@ struct dot<Backend::VIENNACL, Vector>
 	}
 };
 #endif // HAVE_VIENNACL
+
+#ifdef HAVE_LAPACK
+/**
+  * @breif Specialization of generic dot for the Lapack backend
+  */
+template <> template <class Vector>
+struct dot<Backend::LAPACK, Vector>
+{
+	typedef typename Vector::Scalar T;
+	
+	/**
+	 * Method that computes the dot product using ViennaCL
+	 *
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
+	 * as \f$\sum_i a_i b_i\f$
+	 */
+         static T compute_ddot(int n, shogun::SGVector<T> a, int incx, shogun::SGVector<T> b, int incy)
+         {
+    		return cblas_ddot(n, a, incx, b, incy);
+    	 }
+
+	 static T compute_sdot(int n, shogun::SGVector<T> a, int incx, shogun::SGVector<T> b, int incy)
+         {
+    		return cblas_sdot(n, a, incx, b, incy);
+    	 }
+};
+#endif // HAVE_LAPACK
 
 }
 
