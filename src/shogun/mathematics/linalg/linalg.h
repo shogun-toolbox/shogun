@@ -78,6 +78,9 @@ enum class Backend
 #ifdef HAVE_VIENNACL
 	VIENNACL,
 #endif
+#ifdef HAVE_LAPACK
+	LAPACK,
+#endif
 	DEFAULT = 0
 };
 
@@ -126,6 +129,8 @@ struct MODULE \
 	SET_GLOBAL_BACKEND(EIGEN3)
 #elif USE_VIENNACL
 	SET_GLOBAL_BACKEND(VIENNACL)
+#elif USE_LAPACK
+	SET_GLOBAL_BACKEND(LAPACK)
 #else
 
 /** set module specific backends */
@@ -133,8 +138,10 @@ struct MODULE \
 /** Core module */
 #ifdef USE_EIGEN3_CORE
 	SET_MODULE_BACKEND(Core, EIGEN3)
-#elif USE_VIENNACL_REDUX
+#elif USE_VIENNACL_CORE
 	SET_MODULE_BACKEND(Core, VIENNACL)
+#elif USE_LAPACK_CORE
+	SET_MODULE_BACKEND(Core, LAPACK)
 #else // the default case
 	SET_MODULE_BACKEND(Core, DEFAULT)
 #endif
@@ -144,6 +151,8 @@ struct MODULE \
 	SET_MODULE_BACKEND(Redux, EIGEN3)
 #elif USE_VIENNACL_REDUX
 	SET_MODULE_BACKEND(Redux, VIENNACL)
+#elif USE_LAPACK_REDUX
+	SET_MODULE_BACKEND(Redux, LAPACK)
 #else // the default case
 	SET_MODULE_BACKEND(Redux, DEFAULT)
 #endif
@@ -153,6 +162,8 @@ struct MODULE \
 	SET_MODULE_BACKEND(Linsolver, EIGEN3)
 #elif USE_VIENNACL_LINSLV
 	SET_MODULE_BACKEND(Linsolver, VIENNACL)
+#elif USE_LAPACK_LINSLV
+	SET_MODULE_BACKEND(Linsolver, LAPACK)
 #else // the default case
 	SET_MODULE_BACKEND(Linsolver, DEFAULT)
 #endif
@@ -162,6 +173,8 @@ struct MODULE \
 	SET_MODULE_BACKEND(Eigsolver, EIGEN3)
 #elif USE_VIENNACL_EIGSLV
 	SET_MODULE_BACKEND(Eigsolver, VIENNACL)
+#elif USE_LAPACK_EIGSLV
+	SET_MODULE_BACKEND(Eigsolver, LAPACK)
 #else // the default case
 	SET_MODULE_BACKEND(Eigsolver, DEFAULT)
 #endif
