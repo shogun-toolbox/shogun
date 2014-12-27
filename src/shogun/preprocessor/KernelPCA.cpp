@@ -22,6 +22,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 
 using namespace shogun;
 
@@ -87,7 +88,8 @@ bool CKernelPCA::init(CFeatures* features)
 
 		SGMatrix<float64_t>::center_matrix(kernel_matrix.matrix, n, m);
 
-		float64_t* eigenvalues=SGMatrix<float64_t>::compute_eigenvectors(kernel_matrix.matrix, n, n);
+		const CEigenSolver* ces;
+		float64_t* eigenvalues=ces->compute_eigenvectors(kernel_matrix.matrix, n, n);
 
 		for (int32_t i=0; i<n; i++)
 		{

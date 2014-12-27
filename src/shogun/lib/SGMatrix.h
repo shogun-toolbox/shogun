@@ -194,40 +194,6 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
 
-#ifdef HAVE_LAPACK
-		/** Compute eigenvalues and eigenvectors of symmetric matrix using
-		 * LAPACK
-		 *
-		 * @param matrix symmetric matrix to compute eigenproblem. Is
-		 * overwritten and contains orthonormal eigenvectors afterwards
-		 * @return eigenvalues vector with eigenvalues equal to number of rows
-		 * in matrix
-		 * */
-		static SGVector<float64_t> compute_eigenvectors(
-				SGMatrix<float64_t> matrix);
-
-		/** Compute eigenvalues and eigenvectors of symmetric matrix
-		 *
-		 * @param matrix  overwritten and contains n orthonormal eigenvectors
-		 * @param n
-		 * @param m
-		 * @return eigenvalues (array of length n, to be deleted[])
-		 * */
-		static double* compute_eigenvectors(double* matrix, int n, int m);
-
-		/** Compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
-		 * (Relatively Robust Representations).
-		 * Has at least O(n^3/3) complexity
-		 * @param matrix_ symmetric matrix
-		 * @param eigenvalues contains iu-il+1 eigenvalues in ascending order (to be free'd)
-		 * @param eigenvectors contains iu-il+1 orthonormal eigenvectors of given matrix column-wise (to be free'd)
-		 * @param n dimension of matrix
-		 * @param il low index of requested eigenpairs (1<=il<=n)
-		 * @param iu high index of requested eigenpairs (1<=il<=iu<=n)
-		 */
-		void compute_few_eigenvectors(double* matrix_, double*& eigenvalues, double*& eigenvectors,
-                                      int n, int il, int iu);
-#endif
 		/** Computes scale* A*B, where A and B may be transposed.
 		 *  Asserts for matching inner dimensions.
 		 * @param A matrix A

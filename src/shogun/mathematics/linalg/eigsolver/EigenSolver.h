@@ -13,6 +13,9 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -88,6 +91,61 @@ public:
 	{
 		return "EigenSolver";
 	}
+
+#ifdef HAVE_LAPACK
+	/** Compute eigenvalues and eigenvectors of symmetric matrix using
+        * LAPACK
+        *
+        * @param matrix symmetric matrix to compute eigenproblem. Is
+        * overwritten and contains orthonormal eigenvectors afterwards
+        * @return eigenvalues vector with eigenvalues equal to number of rows
+        * in matrix
+        * */      
+	SGVector<float64_t> compute_eigenvectors(SGMatrix<float64_t> matrix) const
+	{
+		if (matrix.num_rows!=matrix.num_cols)
+		{
+			SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
+			" rows and columns are not equal!\n");
+		}
+		/* use reference counting for SGVector */
+		SGVector<float64_t> result(NULL, 0, true);
+		result.vlen=matrix.num_rows;
+		result.vector=compute_eigenvectors(matrix.matrix, matrix.num_rows,
+		matrix.num_rows);
+		return result;
+	}
+
+
+	/** compute eigenvalues and eigenvectors of symmetric matrix
+	*
+	* @param matrix overwritten and contains n orthonormal eigenvectors
+	* @param n
+	* @param m
+	* @return eigenvalues (array of length n, to be deleted[])
+	* */
+	float64_t* compute_eigenvectors(double* matrix, int n, int m) const
+	{
+		ASSERT(n == m)
+
+		char V='V';
+		char U='U';
+		int info;
+		int ord=n;
+		int lda=n;
+		double* eigenvalues=SG_CALLOC(float64_t, n+1);
+
+		// lapack sym matrix eigenvalues+vectors
+		wrap_dsyev(V, U,  ord, matrix, lda,
+				eigenvalues, &info);
+
+		if (info!=0)
+			SG_SERROR("DSYEV failed with code %d\n", info)
+
+		return eigenvalues;
+	}
+#endif
+
 protected:
 	/** min eigenvalue */
 	float64_t m_min_eigenvalue;

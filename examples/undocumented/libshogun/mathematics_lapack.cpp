@@ -15,6 +15,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 
 using namespace shogun;
 
@@ -38,7 +39,8 @@ void test_ev()
 	A(2,1)=1;
 	A(2,2)=0;
 
-	SGVector<float64_t> ev=SGMatrix<float64_t>::compute_eigenvectors(A);
+	const CEigenSolver* ces;
+	SGVector<float64_t> ev=ces->compute_eigenvectors(A);
 	SGMatrix<float64_t>::display_matrix(A.matrix, A.num_rows, A.num_cols, "A");
 	SGVector<float64_t>::display_vector(ev.vector, ev.vlen, "eigenvalues");
 
