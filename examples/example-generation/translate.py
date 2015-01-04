@@ -18,9 +18,12 @@ class Translator:
         targetProgram = ""
         for statement in program:
             targetProgram += self.translateStatement(statement["Statement"])
-        return self.dependencyImportString() + targetProgram
 
-    def dependencyImportString(self):
+        programTemplate = Template(self.targetDict["Program"])
+        dependencies = self.dependenciesString()
+        return programTemplate.substitute(program=targetProgram, dependencies=dependencies)
+
+    def dependenciesString(self):
         """ Returns dependency import string 
             e.g. for python: "from modshogun import RealFeatures\n\n" 
         """
@@ -28,13 +31,15 @@ class Translator:
             return ""
 
         dependencyList = list(self.dependencies)
-        importTemplate = Template(self.targetDict["ImportDependencies"])
-        csdependencies = "" # comma separated dependencies
+
+        # comma separated dependencies
+        csdependencies = "" 
         for i, x in enumerate(dependencyList):
             csdependencies += x
             if i < len(dependencyList)-1:
                 csdependencies += ", "
-        return importTemplate.substitute(dependencies=csdependencies)
+
+        return csdependencies
 
     def translateStatement(self, statement):
         """ Translate statement AST

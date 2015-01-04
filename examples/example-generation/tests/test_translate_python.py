@@ -47,7 +47,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         self.assertEqual(translation, u"from modshogun import CSVFile, RealFeatures\n\ntrainf = CSVFile(\"train.dat\")\n\nfeats_train = RealFeatures(trainf)\n\ntestf = CSVFile(\"test.dat\")\n")
 
-    def test_dependencyImportString(self):
+    def test_dependenciesString(self):
         programAST = [
             {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "trainf"},{"ArgumentList": {"Expr": {"StringLiteral": "train.dat"}}}]}},
             {"Statement": {"Init": [{"ObjectType": "RealFeatures"}, {"Identifier": "feats_train"}, {"ArgumentList": {"Expr": {"Identifier": "trainf"}}}]}},
@@ -55,8 +55,8 @@ class TestPythonTranslator(unittest.TestCase):
         ]
 
         translation = self.translator.translateProgram(programAST)
-        importString = self.translator.dependencyImportString()
-        self.assertEqual(importString, u"from modshogun import CSVFile, RealFeatures\n\n")
+        dependenciesString = self.translator.dependenciesString()
+        self.assertEqual(dependenciesString, u"CSVFile, RealFeatures")
 
     def test_translateInitCopy(self):
         initAST = [

@@ -1,6 +1,6 @@
 {
-    "Program": "from modshogun import $dependencies\n\n$program",
-    "Statement": "$statement\n",
+    "Program": "modshogun\n\n$program",
+    "Statement": "$statement;\n",
     "Init": {
         "Construct": "$name = $type($arguments)",
         "Copy": "$name = $expr"
@@ -11,14 +11,14 @@
         "ObjectType": "$type"
     },
     "Expr": {
-        "StringLiteral": "\"$literal\"",
+        "StringLiteral": "'$literal'",
         "BoolLiteral": {
-            "True": "True",
-            "False": "False"
+            "True": "true",
+            "False": "false"
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "Identifier": "$identifier"
     },
-    "Print": "print $expr"
+    "Print": "disp($expr)"
 }
