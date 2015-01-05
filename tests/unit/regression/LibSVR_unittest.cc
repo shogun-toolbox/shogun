@@ -27,7 +27,6 @@ TEST(LibSVR,epsilon_svr_apply)
 	SGMatrix<float64_t> feat_train(1, n);
 	SGMatrix<float64_t> feat_test(1, n);
 	SGVector<float64_t> lab_train(n);
-	SGVector<float64_t> lab_test(n);
 
 	/* a one dimensional quadratic function */
 	feat_train[0]=-2;
@@ -48,15 +47,8 @@ TEST(LibSVR,epsilon_svr_apply)
 	feat_test[3]=1.3;
 	feat_test[4]=1.9;
 
-	lab_test[0]=4.84;
-	lab_test[1]=1.21;
-	lab_test[2]=0.04;
-	lab_test[3]=1.69;
-	lab_test[4]=3.61;
-
 	/* shogun representation */
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
-	CRegressionLabels* labels_test=new CRegressionLabels(lab_test);
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
 			feat_train);
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
@@ -84,7 +76,6 @@ TEST(LibSVR,epsilon_svr_apply)
 	EXPECT_EQ(svm->get_num_support_vectors(), 5);
 
 	 /* clean up */
-	SG_UNREF(labels_test)
 	SG_UNREF(predicted_labels);
 	SG_UNREF(svm);
 }
@@ -102,7 +93,6 @@ TEST(LibSVR,nu_svr_apply)
 	SGMatrix<float64_t> feat_train(1, n);
 	SGMatrix<float64_t> feat_test(1, n);
 	SGVector<float64_t> lab_train(n);
-	SGVector<float64_t> lab_test(n);
 
 	/* a one dimensional quadratic function */
 	feat_train[0]=-2;
@@ -123,15 +113,8 @@ TEST(LibSVR,nu_svr_apply)
 	feat_test[3]=1.3;
 	feat_test[4]=1.9;
 
-	lab_test[0]=4.84;
-	lab_test[1]=1.21;
-	lab_test[2]=0.04;
-	lab_test[3]=1.69;
-	lab_test[4]=3.61;
-
 	/* shogun representation */
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
-	CRegressionLabels* labels_test=new CRegressionLabels(lab_test);
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
 			feat_train);
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
@@ -159,7 +142,6 @@ TEST(LibSVR,nu_svr_apply)
 	EXPECT_EQ(svm->get_num_support_vectors(), 3);
 
 	 /* clean up */
-	SG_UNREF(labels_test)
 	SG_UNREF(predicted_labels);
 	SG_UNREF(svm);
 }
