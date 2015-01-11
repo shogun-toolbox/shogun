@@ -16,8 +16,11 @@ class Translator:
         """
         self.dependencies = Set() # reset dependencies
         targetProgram = ""
-        for statement in program:
-            targetProgram += self.translateStatement(statement["Statement"])
+        for line in program:
+            if "Statement" in line:
+                targetProgram += self.translateStatement(line["Statement"])
+            elif "Comment" in line:
+                targetProgram += self.translateComment(line["Comment"])
 
         programTemplate = Template(self.targetDict["Program"])
         dependencies = self.dependenciesString()
@@ -28,12 +31,12 @@ class Translator:
             e.g. for python: "from modshogun import RealFeatures\n\n" 
         """
         if len(self.dependencies) == 0:
-            return ""
+            return "*"
 
         dependencyList = list(self.dependencies)
 
         # comma separated dependencies
-        csdependencies = "" 
+        csdependencies = ""
         for i, x in enumerate(dependencyList):
             csdependencies += x
             if i < len(dependencyList)-1:
@@ -63,9 +66,11 @@ class Translator:
             translation = self.translateExpr(statement["Expr"])
         elif type == "Print":
             translation = self.translatePrint(statement["Print"])
+        elif type == "Comment":
+            translation = self.translateComment(statement["Comment"])
 
         if translation == None:
-            raise Exception("Unknown statment type: " + type)
+            raise Exception("Unknown statement type: " + type)
 
         template = Template(self.targetDict["Statement"])
         return template.substitute(statement=translation)
@@ -137,6 +142,10 @@ class Translator:
         template = Template(self.targetDict["Print"])
         return template.substitute(expr=self.translateExpr(printStmt["Expr"]))
 
+    def translateComment(self, commentString):
+        template = Template(self.targetDict["Comment"])
+        return template.substitute(comment=commentString)
+
     def translateType(self, type):
         """ Translate type AST
         Args:
@@ -159,7 +168,7 @@ class Translator:
             argumentList: object like None, {"Expr": exprAST},
                           [{"Expr": exprAST}, {"Expr": exprAST}], etc.
         """
-        if argumentList == None:
+        if argumentList == None or argumentList == []:
             return ""
         if isinstance(argumentList, list):
             head = argumentList[0]
@@ -177,11 +186,17 @@ class Translator:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
 if __name__ == "__main__":
-    translator = Translator("targets/python.json")
+    # Extract target language from arguments (default target is python)
+    targets = [target for target in map(lambda arg:arg[len("--target="):] if "--target=" in arg else "", sys.argv) if target != ""]
+    target = targets[0] if len(targets) > 0 else "python"
+    translator = Translator("targets/" + target + ".json")
 
+    # Extract input file from arguments
     programString = None
-    if len(sys.argv) > 1:
-        with open(sys.argv[1], "r") as inputFile:
+    nonOptionArgs = map(lambda arg: arg if arg[0:1] != "-" else "", sys.argv)
+    paths = [path for path in nonOptionArgs if path != ""]
+    if len(paths) > 1:
+        with open(paths[1], "r") as inputFile:
             programString = inputFile.read()
     else:
         programString = sys.stdin.read()

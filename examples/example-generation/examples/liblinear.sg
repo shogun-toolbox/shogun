@@ -1,6 +1,6 @@
-CSVFile train_data("../data/fm_train_real.dat")
-CSVFile test_data("../data/fm_test_real.dat")
-CSVFile label_data("../data/label_train_twoclass.dat")
+CSVFile train_data("../documented/data/fm_train_real.dat")
+CSVFile test_data("../documented/data/fm_test_real.dat")
+CSVFile label_data("../documented/data/label_train_twoclass.dat")
 
 RealFeatures feats_train(train_data)
 RealFeatures feats_test(test_data)

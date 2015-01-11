@@ -1,6 +1,7 @@
 {
     "Program": "modshogun\n\n$program",
     "Statement": "$statement;\n",
+    "Comment": "%$comment\n",
     "Init": {
         "Construct": "$name = $type($arguments)",
         "Copy": "$name = $expr"

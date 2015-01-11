@@ -1,6 +1,7 @@
 {
     "Program": "from modshogun import $dependencies\n\n$program",
     "Statement": "$statement\n",
+    "Comment": "#$comment\n",
     "Init": {
         "Construct": "$name = $type($arguments)",
         "Copy": "$name = $expr"

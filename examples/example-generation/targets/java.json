@@ -1,0 +1,25 @@
+{
+    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
+    "Statement": "        $statement;\n",
+    "Comment": "        //$comment\n",
+    "Init": {
+        "Construct": "$type $name = new $type($arguments)",
+        "Copy": "$type $name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "BasicType": "$type",
+        "ObjectType": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier"
+    },
+    "Print": "System.out.println($expr)"
+}

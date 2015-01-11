@@ -1,17 +1,10 @@
 from translate import Translator
 import unittest
 
-"""
-Example assertions
-self.assertEqual("asd", "asd")
-self.assertRaises(TypeError, random.shuffle, (1,2,3))
-self.assertTrue("key" in {"key": 2})
-"""
-
 class TestPythonTranslator(unittest.TestCase):
 
     def setUp(self):
-        self.translator = Translator("targets/python.json")
+        self.translator = Translator("targets/java.json")
 
     def test_translateProgram(self):
         """
@@ -20,9 +13,22 @@ class TestPythonTranslator(unittest.TestCase):
         CSVFile testf("test.dat")
 
         Translates to:
-        trainf = CSVFile("train.dat")
-        feats_train = RealFeatures(trainf)
-        testf = CSVFile("test.dat")
+        import org.shogun.*;
+        import org.jblas.*;
+
+        public class classifier_knn_modular {
+            static {
+                System.loadLibrary("modshogun");
+            }
+
+            public static void main(String argv[]) {
+                modshogun.init_shogun_with_defaults();
+
+                CSVFile trainf = new CSVFile("train.dat");
+                RealFeatures feats_train = new RealFeatures(trainf);
+                CSVFile testf = new CSVFile("test.dat");
+            }
+        }
         """
         programAST = [
             {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "trainf"},{"ArgumentList": {"Expr": {"StringLiteral": "train.dat"}}}]}},
@@ -32,7 +38,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"from modshogun import CSVFile, RealFeatures\n\ntrainf = CSVFile(\"train.dat\")\nfeats_train = RealFeatures(trainf)\ntestf = CSVFile(\"test.dat\")\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateProgramWithNewlines(self):
         programAST = [
@@ -45,18 +51,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"from modshogun import CSVFile, RealFeatures\n\ntrainf = CSVFile(\"train.dat\")\n\nfeats_train = RealFeatures(trainf)\n\ntestf = CSVFile(\"test.dat\")\n")
-
-    def test_dependenciesString(self):
-        programAST = [
-            {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "trainf"},{"ArgumentList": {"Expr": {"StringLiteral": "train.dat"}}}]}},
-            {"Statement": {"Init": [{"ObjectType": "RealFeatures"}, {"Identifier": "feats_train"}, {"ArgumentList": {"Expr": {"Identifier": "trainf"}}}]}},
-            {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "testf"}, {"ArgumentList": {"Expr": {"StringLiteral": "test.dat"}}}]}}
-        ]
-
-        translation = self.translator.translateProgram(programAST)
-        dependenciesString = self.translator.dependenciesString()
-        self.assertEqual(dependenciesString, u"CSVFile, RealFeatures")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateInitCopy(self):
         initAST = [
@@ -68,7 +63,7 @@ class TestPythonTranslator(unittest.TestCase):
             ]}}
         ]
         translation = self.translator.translateInit(initAST)
-        self.assertEqual(translation, u"multiple_k = knn.classify_for_multiple_k()")
+        self.assertEqual(translation, u"IntMatrix multiple_k = knn.classify_for_multiple_k()")
 
     def test_translateInitConstruct(self):
         initAST = [
@@ -79,7 +74,7 @@ class TestPythonTranslator(unittest.TestCase):
             }}
         ]
         translation = self.translator.translateInit(initAST)
-        self.assertEqual(translation, u"labels = MulticlassLabels(train_labels)")
+        self.assertEqual(translation, u"MulticlassLabels labels = new MulticlassLabels(train_labels)")
 
     def test_translateInitConstructMultiple(self):
         initAST = [
@@ -91,7 +86,7 @@ class TestPythonTranslator(unittest.TestCase):
             ]}
         ]
         translation = self.translator.translateInit(initAST)
-        self.assertEqual(translation, u"distance = EuclideanDistance(feats_train, feats_test)")
+        self.assertEqual(translation, u"EuclideanDistance distance = new EuclideanDistance(feats_train, feats_test)")
 
     def test_translateStatementAssign(self):
         stmtAST = {
@@ -103,7 +98,7 @@ class TestPythonTranslator(unittest.TestCase):
             ]
         }
         translation = self.translator.translateStatement(stmtAST)
-        self.assertEqual(translation, u"knn_train = False\n")
+        self.assertEqual(translation, u"        knn_train = false;\n")
 
     def test_translateStatementExpr(self):
         stmtAST = {
@@ -116,7 +111,7 @@ class TestPythonTranslator(unittest.TestCase):
         }
 
         translation = self.translator.translateStatement(stmtAST)
-        self.assertEqual(translation, u"knn.train()\n")
+        self.assertEqual(translation, u"        knn.train();\n")
 
     def test_translateStatementNewLine(self):
         stmtAST = "\n"
@@ -130,7 +125,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateStatement(stmtAST)
 
-        self.assertEqual(translation, u"print multiple_k\n")
+        self.assertEqual(translation, u"        System.out.println(multiple_k);\n")
 
     def test_translateType(self):
         typeAST = {
@@ -149,44 +144,14 @@ class TestPythonTranslator(unittest.TestCase):
         self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
         self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
 
-    def test_translateArgumentListEmpty(self):
-        argumentListAST = []
-        translation = self.translator.translateArgumentList(argumentListAST)
-
-        self.assertEqual(translation, u"")
-
-    def test_translateArgumentListSingleExpr(self):
-        argumentListAST = {
-            "Expr": {
-              "MethodCall": [
-                {"Identifier": "knn"},
-                {"Identifier": "train"}
-              ]
-            }
-        }
-        translation = self.translator.translateArgumentList(argumentListAST)
-
-        self.assertEqual(translation, u"knn.train()")
-
-    def test_translateArgumentListMultipleExpr(self):
-        argumentListAST =  [
-            {"Expr": {"Identifier": "kernel"}}, 
-            {"Expr": {"Identifier": "feats_train"}}, 
-            {"Expr": {"Identifier": "zmean"}}, 
-            {"Expr": {"Identifier": "labels"}}, 
-            {"Expr": {"Identifier": "lik"}}
-        ]
-        translation = self.translator.translateArgumentList(argumentListAST)
-
-        self.assertEqual(translation, u"kernel, feats_train, zmean, labels, lik")
-
     def test_translateProgramComment(self):
         programAST = [
             {"Comment": " This is a comment"}
         ]
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"from modshogun import *\n\n# This is a comment\n")
+        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
+        self.assertEqual(translation, trueTranslation)
 
 
 if __name__ == '__main__':

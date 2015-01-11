@@ -131,6 +131,14 @@ class TestOctaveTranslator(unittest.TestCase):
         self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
         self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
 
+    def test_translateProgramComment(self):
+        programAST = [
+            {"Comment": " This is a comment"}
+        ]
+        translation = self.translator.translateProgram(programAST)
+
+        self.assertEqual(translation, u"modshogun\n\n% This is a comment\n")
+
 
 if __name__ == '__main__':
     unittest.main()

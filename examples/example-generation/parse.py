@@ -21,21 +21,24 @@ def grammar():
     type = objectType ^ basicType
 
     expr = pp.Forward()
-    argumentList = pp.Forward()
-    argumentList << (expr ^ (expr + ',' + argumentList))
-    methodCall = identifier + '.' + identifier + '(' + (argumentList ^ pp.empty) + ')'
+    nonEmptyArgumentList = pp.Forward()
+    nonEmptyArgumentList << (expr ^ (expr + ',' + nonEmptyArgumentList))
+    argumentList = nonEmptyArgumentList ^ pp.empty
+    methodCall = identifier + '.' + identifier + '(' + argumentList + ')'
     enum = 'enum' + identifier
     expr << (enum ^ stringLiteral ^ boolLiteral ^ numeral ^ methodCall ^ identifier)
     
     assignment = identifier + '=' + expr
     # Initialisation is done by passing arguments to the class constructor
     # or by copying an expression to the variable
-    initialisation = type + identifier + (('(' + (argumentList ^ pp.empty) + ')') ^ ('=' + expr))
+    initialisation = type + identifier + (('(' + argumentList + ')') ^ ('=' + expr))
     output = 'print' + expr
 
-    statement = pp.Optional(initialisation ^ assignment ^ expr ^ output) + pp.lineEnd
+    comment = '#' + pp.restOfLine + pp.lineEnd
 
-    grammar = pp.ZeroOrMore(statement)
+    statement = (pp.Optional(initialisation ^ assignment ^ expr ^ output) + pp.lineEnd)
+
+    grammar = pp.ZeroOrMore(statement ^ comment)
 
     # Connect grammar to ast data structure
     grammar.setParseAction(ast.Program)
@@ -44,6 +47,7 @@ def grammar():
     assignment.setParseAction(ast.Assign)
     output.setParseAction(ast.Print)
     expr.setParseAction(ast.Expr)
+    comment.setParseAction(ast.Comment)
     enum.setParseAction(ast.Enum)
     methodCall.setParseAction(ast.MethodCall)
     numeral.setParseAction(ast.NumberLiteral)
@@ -68,8 +72,16 @@ def shogunType():
 
 if __name__ == "__main__":
     inputFile = sys.stdin
-    if len(sys.argv) > 1:
-        inputFile = sys.argv[1]
+
+    # Extract input file from arguments
+    nonOptionArgs = map(lambda arg: arg if arg[0:1] != "-" else "", sys.argv)
+    paths = [path for path in nonOptionArgs if path != ""]
+    if len(paths) > 1:
+        inputFile = paths[1]
+
+    # Extract option flags from argv
+    prettyPrint = "--pretty" in sys.argv
+    indentWidth = 2 if prettyPrint > 0 else None
 
     program = grammar().parseFile(inputFile, parseAll=True)[0]
-    print json.dumps(program, cls=ast.JSONEncoder, indent=2)
+    print json.dumps(program, cls=ast.JSONEncoder, indent=indentWidth)
