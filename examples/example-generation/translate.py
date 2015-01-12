@@ -6,8 +6,15 @@ from sets import Set
 class Translator:
     def __init__(self, targetDictPath):
         self.dependencies = Set()
-        with open(targetDictPath, "r") as targetDict:
-            self.targetDict = json.loads(targetDict.read())
+        try:
+            with open(targetDictPath, "r") as targetDict:
+                self.targetDict = json.loads(targetDict.read())
+        except IOError, err:
+            if err.errno == 2:
+                print "Target \"" + targetDictPath + "\" does not exist"
+            else:
+                print err
+            raise Exception("Could not load target dictionary")
 
     def translateProgram(self, program):
         """ Translate program AST
@@ -66,8 +73,6 @@ class Translator:
             translation = self.translateExpr(statement["Expr"])
         elif type == "Print":
             translation = self.translatePrint(statement["Print"])
-        elif type == "Comment":
-            translation = self.translateComment(statement["Comment"])
 
         if translation == None:
             raise Exception("Unknown statement type: " + type)
@@ -185,11 +190,14 @@ class Translator:
             elif "ArgumentList" in argumentList:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
+def translate(ast, target):
+    translator = Translator("targets/" + target + ".json")
+    return translator.translateProgram(ast["Program"])
+
 if __name__ == "__main__":
     # Extract target language from arguments (default target is python)
     targets = [target for target in map(lambda arg:arg[len("--target="):] if "--target=" in arg else "", sys.argv) if target != ""]
     target = targets[0] if len(targets) > 0 else "python"
-    translator = Translator("targets/" + target + ".json")
 
     # Extract input file from arguments
     programString = None
@@ -202,4 +210,4 @@ if __name__ == "__main__":
         programString = sys.stdin.read()
 
     programObject = json.loads(programString)
-    print translator.translateProgram(programObject["Program"])
+    print translate(programObject, target)

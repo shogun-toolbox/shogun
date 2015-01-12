@@ -70,6 +70,10 @@ def shogunType():
 
     return type
 
+def parse(filePath):
+    program = grammar().parseFile(filePath, parseAll=True)[0]
+    return ast.JSONEncoder().default(program)
+
 if __name__ == "__main__":
     inputFile = sys.stdin
 
@@ -83,5 +87,4 @@ if __name__ == "__main__":
     prettyPrint = "--pretty" in sys.argv
     indentWidth = 2 if prettyPrint > 0 else None
 
-    program = grammar().parseFile(inputFile, parseAll=True)[0]
-    print json.dumps(program, cls=ast.JSONEncoder, indent=indentWidth)
+    print json.dumps(parse(inputFile), cls=ast.JSONEncoder, indent=indentWidth) 

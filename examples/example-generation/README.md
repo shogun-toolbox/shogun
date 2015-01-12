@@ -1,16 +1,34 @@
 # Shogun example meta-language parser
 Running the parser requires python and pyparsing (included with many python distributions).
 
-### Parsing a program:
-i.e. retrieve its AST as JSON
+### Translating all examples in “examples/“ folder
+Running the following command will translate all programs in the “examples/” folder and generate translation for each target language. The translations are put in a new “outputs/“ folder.
+
 ```
-$ python parse.py examples/knn.sg
+./generate.py
+```
+
+### Parsing a program:
+i.e. retrieve its AST as JSON (pretty printed)
+```
+$ python parse.py --pretty examples/knn.sg
 ```
 
 ### Parsing and translating a program
-The AST can be translated to a target language by running
+Firstly, parse the example
 ```
-$ python parse.py examples/knn.sg | python translate.py
+$ python parse.py examples/knn.sg > knn.ast
+```
+Then translate the AST into the target languages
+```
+python translate.py knn.ast --target=python > knn.py
+python translate.py knn.ast --target=java > knn.java
+python translate.py knn.ast --target=octave > knn.m
+```
+
+Note: it is also possible to pipe the parsing and translation to translate an example in one step. E.g.
+```
+python parse.py examples/gp.sg | python translate.py --target=python
 ```
 
 ### Updating the list of Shogun types
