@@ -784,13 +784,6 @@ float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
 }
 #endif
 
-/// return sum(abs(vec))
-template <class T>
-bool SGVector<T>::fequal(T x, T y, float64_t precision)
-{
-	return CMath::abs(x-y)<precision;
-}
-
 template <class T>
 int32_t SGVector<T>::unique(T* output, int32_t size)
 {
