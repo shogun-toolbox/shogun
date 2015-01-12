@@ -88,7 +88,7 @@ float64_t givens_stack(float64_t *A, int M, int K, int p, int q)
 	ton  = G11 - G22;
 	toff = 2.0 * G12;
 
-	return -0.5 * atan2 ( toff , ton+sqrt(ton*ton+toff*toff) );
+	return -0.5 * CMath::atan2 (toff, ton+sqrt(ton*ton+toff*toff));
 }
 
 /*

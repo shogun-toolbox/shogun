@@ -38,7 +38,7 @@ public:
 	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
 	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param values vector of values
+	 * @param vec vector of values
 	 * @return mean of given values
 	 */
 	template<class T>
@@ -665,6 +665,7 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
+/// mean not implemented for complex128_t, returns 0.0 instead
 template <>
 	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
 	{
