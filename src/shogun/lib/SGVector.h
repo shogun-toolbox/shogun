@@ -372,9 +372,6 @@ template<class T> class SGVector : public SGReferencedData
 		/** @return sum(abs(vec)) */
 		static T sum_abs(T* vec, int32_t len);
 
-		/** @return sum(abs(vec)) */
-		static bool fequal(T x, T y, float64_t precision=1e-6);
-
 		/** Performs a inplace unique of a vector of type T using quicksort
 		 * returns the new number of elements
 		 */
