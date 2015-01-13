@@ -91,8 +91,6 @@ template <class T> struct radix_stack_t
 	uint16_t si;
 };
 
-///** pair */
-
 /** thread qsort */
 template <class T1, class T2> struct thread_qsort
 {
@@ -791,12 +789,13 @@ class CMath : public CSGObject
 		COMPLEX128_ERROR_ONEARG(atan)
 
 		/** Computes arc tangent with 2 parameters
-		 * @param x input
-		 * @return arctan(x/y)
+		 * @param y input(numerator)
+		 * @param x input(denominator)
+		 * @return arctan(y/x)
 		 */
-		static inline float64_t atan2(float64_t x, float64_t y)
+		static inline float64_t atan2(float64_t y, float64_t x)
 		{
-			return ::atan2((double) x, (double) y);
+			return ::atan2((double) y, (double) x);
 		}
 
 		/// atan2(x), x being a complex128_t not implemented
@@ -964,8 +963,25 @@ class CMath : public CSGObject
 			return area;
 		}
 
+		/** Converts string to float
+		 * @param str input string
+		 * @param float_result float pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtof(const char* str, float32_t* float_result);
+
+		/** Converts string to double
+		 * @param str input string
+		 * @param double_result double pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtod(const char* str, float64_t* double_result);
+
+		/** Converts string to long double
+		 * @param str input string
+		 * @param long_double_result long double pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtold(const char* str, floatmax_t* long_double_result);
 
 		/** Computes factorial of input
@@ -1274,11 +1290,18 @@ class CMath : public CSGObject
 		/** Performs a bubblesort on a given matrix a.
 		 * it is sorted in ascending order from top to bottom
 		 * and left to right
-		 * @param a
-		 * @param cols
-		 * @param sort_col
+		 * @param a matrix to be sorted
+		 * @param cols number of columns
+		 * @param sort_col 
 		 */
 		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0);
+
+		/** Performs a bubblesort on a given array a.
+		 * it is sorted in ascending order from left to right
+		 * @param a array to be sorted
+		 * @param idx index array
+		 * @param N length of array
+		 */
 		static void sort(float64_t *a, int32_t*idx, int32_t N);
 
 		/** Performs a quicksort on an array output of length size
@@ -1349,7 +1372,7 @@ class CMath : public CSGObject
 
 		/** Performs a in-place radix sort in ascending order
 		 * @param array array to be sorted
-		 * @size size size of array
+		 * @param size size of array
 		 */
 		template <class T>
 			inline static void radix_sort(T* array, int32_t size)
@@ -1357,11 +1380,10 @@ class CMath : public CSGObject
 				radix_sort_helper(array,size,0);
 			}
 
-		/*
-		 * Inline function to extract the byte at position p (from left)
+		/** Extract the byte at position p (from left)
 		 * of a 64 bit integer. The function is somewhat identical to
 		 * accessing an array of characters via [].
-		 * @param word
+		 * @param word input from which byte is extracted
 		 * @param p position
 		 * @return byte
 		 */
@@ -1378,7 +1400,11 @@ class CMath : public CSGObject
 			return uint8_t(0);
 		}
 
-		/// Helper function for radix sort.
+		/** Helper function for radix sort.
+		 * @param array array to be sorted
+		 * @param size size of array
+		 * @param i index
+		 */
 		template <class T>
 			static void radix_sort_helper(T* array, int32_t size, uint16_t i)
 			{
@@ -1603,8 +1629,8 @@ class CMath : public CSGObject
 			}
 
 		/** Display bits (useful for debugging)
-		 * @param word
-		 * @param width
+		 * @param word input to be displayed as bits
+		 * @param width number of bits displayed
 		 */
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
@@ -1631,13 +1657,13 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::display_bits():: Not supported for complex128_t\n");
 		}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
-		 * @param output
-		 * @param index
-		 * @parma size
+		 * @param output array to be sorted
+		 * @param index index array
+		 * @param size size of arrays
 		 */
 		template <class T1,class T2>
 			static void qsort_index(T1* output, T2* index, uint32_t size);
@@ -1649,12 +1675,12 @@ class CMath : public CSGObject
 				SG_SERROR("CMath::qsort_index():: Not supported for complex128_t\n");
 			}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in descending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
 		 * @param output array to be sorted
-		 * @param index
+		 * @param index index array
 		 * @param size size of array
 		 */
 		template <class T1,class T2>
@@ -1670,16 +1696,16 @@ class CMath : public CSGObject
 					Not supported for complex128_t\n");
 			}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
 		 * parallel version
 		 * @param output input array
-		 * @param index 
+		 * @param index index array
 		 * @param size size of the array
 		 * @param n_threads number of threads
-		 * @parma limit sort limit
+		 * @param limit sort limit
 		 */
 		template <class T1,class T2>
 			inline static void parallel_qsort_index(T1* output, T2* index, uint32_t size, int32_t n_threads, int32_t limit=262144)
@@ -1703,13 +1729,17 @@ class CMath : public CSGObject
 				SG_SERROR("CMath::parallel_qsort_index():: Not supported for complex128_t\n");
 			}
 
-
+		/// helper function for parallel_qsort_index.
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
 
 
-		/* finds the smallest element in output and puts that element as the
-		   first element  */
+		/** Finds the smallest element in output and puts that element as the
+		 * first element
+		 * @param output element array
+		 * @param index index array
+		 * @param size size of arrays
+		 */
 		template <class T>
 			static void min(float64_t* output, T* index, int32_t size);
 
@@ -1719,7 +1749,7 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::min():: Not supported for complex128_t\n");
 		}
 
-		/** finds the n smallest elements in output and puts these elements as the
+		/** Finds the n smallest elements in output and puts these elements as the
 		 * first n elements
 		 */
 		template <class T>
@@ -1735,7 +1765,7 @@ class CMath : public CSGObject
 
 
 
-		/** finds an element in a sorted array via binary search
+		/** Finds an element in a sorted array via binary search
 		 * returns -1 if not found
 		 */
 		template <class T>
@@ -1792,7 +1822,7 @@ class CMath : public CSGObject
 		}
 
 
-		/* Finds an element in a sorted array of pointers via binary search
+		/** Finds an element in a sorted array of pointers via binary search
 		 * Every element is dereferenced once before being compared
 		 * @param array array of pointers to search in (assumed being sorted)
 		 * @param length length of array
@@ -1865,7 +1895,7 @@ class CMath : public CSGObject
 			return int32_t(-1);
 		}
 
-		/** align two sequences seq1 & seq2 of length l1 and l2 using gapCost
+		/** Align two sequences seq1 & seq2 of length l1 and l2 using gapCost
 		 * @param seq1 first sequence
 		 * @param seq2 second sequence
 		 * @param l1 length of first sequence
@@ -1928,8 +1958,7 @@ class CMath : public CSGObject
 
 		/**@name summing functions */
 		//@{
-		/**
-		 * sum logarithmic probabilities.
+		/** Sum logarithmic probabilities.
 		 * Probability measures are summed up but are now given in logspace
 		 * where direct summation of exp(operand) is not possible due to
 		 * numerical problems, i.e. eg. exp(-1000)=0. Therefore we do
@@ -1980,7 +2009,7 @@ class CMath : public CSGObject
 		}
 #endif
 #ifdef USE_LOGSUMARRAY
-				/** sum up a whole array of values in logspace.
+				/** Sum up a whole array of values in logspace.
 				 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding
 				 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 				 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
@@ -2022,13 +2051,13 @@ class CMath : public CSGObject
 				/// almost neg (log) infinity
 				static const float64_t ALMOST_NEG_INFTY;
 
-				/** the number pi */
+				/** The number pi */
 				static const float64_t PI;
 
-				/** machine epsilon for float64_t */
+				/** Machine epsilon for float64_t */
 				static const float64_t MACHINE_EPSILON;
 
-				/* largest and smallest possible float64_t */
+				/* Largest and smallest possible float64_t */
 				static const float64_t MAX_REAL_NUMBER;
 				static const float64_t MIN_REAL_NUMBER;
 				
@@ -2288,6 +2317,7 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	swap(index[0], index[min_index]);
 }
 
+/// linspace not implemented for complex128_t, returns null instead
 template <>
 inline float64_t* CMath::linspace<complex128_t>(complex128_t start, complex128_t end, int32_t n)
 {

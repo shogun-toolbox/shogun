@@ -155,21 +155,21 @@ void CMath::init_log_table()
 void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
 {
   int32_t changed=1;
-  if (a[0]==-1) return ;
+  if (a[0]==-1) return;
   while (changed)
   {
-      changed=0; int32_t i=0 ;
+      changed=0; int32_t i=0;
       while ((a[(i+1)*cols]!=-1) && (a[(i+1)*cols+1]!=-1)) // to be sure
 	  {
 		  if (a[i*cols+sort_col]>a[(i+1)*cols+sort_col])
 		  {
 			  for (int32_t j=0; j<cols; j++)
-				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]) ;
-			  changed=1 ;
-		  } ;
-		  i++ ;
-	  } ;
-  } ;
+				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]);
+			  changed=1;
+		  };
+		  i++;
+	  };
+  };
 }
 
 void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
