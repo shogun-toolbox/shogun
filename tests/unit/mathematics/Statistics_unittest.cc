@@ -372,7 +372,7 @@ TEST(Statistics, lnormal_cdf)
 	EXPECT_NEAR(res[8],  -2281.20710267821459638071,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-9345.74193347713662660681, rel_tolerance);
 	EXPECT_NEAR(res[9],  -9345.74193347713662660681,  abs_tolerance);
-	
+
 }
 
 #endif // HAVE_EIGEN3
@@ -401,6 +401,7 @@ TEST(Statistics, fdistribution_cdf)
 	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
 }
 
+#ifdef HAVE_EIGEN3
 // TEST 1
 TEST(Statistics, log_det_general_test_1)
 {
@@ -523,6 +524,7 @@ TEST(Statistics,log_det_general_test_4)
 	result = CStatistics::log_det_general(A);
 	EXPECT_EQ(result, CMath::INFTY);
 }
+#endif // HAVE_EIGEN3
 
 TEST(Statistics, vector_mean_test)
 {
