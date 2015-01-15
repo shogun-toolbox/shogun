@@ -32,6 +32,8 @@
 #ifndef CORE_H_
 #define CORE_H_
 
+#ifdef HAVE_LINALG_LIB
+
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
 #include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
@@ -45,18 +47,18 @@ namespace shogun
 namespace linalg
 {
 
-/** Performs matrix multiplication 
- * 
+/** Performs matrix multiplication
+ *
  * @param A First matrix
  * @param B Second matrix
  * @param C Result of the operation
  * @param transpose_A Whether to the transpose of A should be used instead of A
  * @param transpose_B Whether to the transpose of B should be used instead of B
- * @param overwrite If true, the values in C are overwritten with the result, 
+ * @param overwrite If true, the values in C are overwritten with the result,
  * otherwise, the result is added to the existing values
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void matrix_product(Matrix A, Matrix B, Matrix C, 
+void matrix_product(Matrix A, Matrix B, Matrix C,
 	bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
 {
 	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
@@ -64,7 +66,7 @@ void matrix_product(Matrix A, Matrix B, Matrix C,
 
 /** Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void add(Matrix A, Matrix B, Matrix C, 
+void add(Matrix A, Matrix B, Matrix C,
 	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
 {
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
@@ -72,7 +74,7 @@ void add(Matrix A, Matrix B, Matrix C,
 
 /** Performs the operation C = alpha*A - beta*B. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void subtract(Matrix A, Matrix B, Matrix C, 
+void subtract(Matrix A, Matrix B, Matrix C,
 	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
 {
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
@@ -95,7 +97,7 @@ void elementwise_product(Matrix A, Matrix B, Matrix C)
 /**
  * Wrapper method for internal implementation of square of co-efficients that works
  * with generic dense matrices.
- * 
+ *
  * @param m the matrix whose squared co-efficients matrix has to be computed
  * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
  * for all \f$i,j\f$
@@ -109,7 +111,7 @@ typename implementation::elementwise_square<backend,Matrix>::ReturnType elementw
 /**
  * Wrapper method for internal implementation of square of co-efficients that works
  * with generic dense matrices.
- * 
+ *
  * @param m the matrix whose squared co-efficients matrix has to be computed
  * @param result Pre-allocated matrix for the result of the computation
  */
@@ -145,4 +147,5 @@ void convolve(Matrix X, Matrix W, Matrix Y, bool flip = false,
 }
 
 }
+#endif // HAVE_LINALG_LIB
 #endif // CORE_H_

@@ -58,10 +58,12 @@ typename Vector::Scalar dot(Vector a, Vector b)
 	return implementation::dot<backend,Vector>::compute(a, b);
 }
 
+#ifdef HAVE_LINALG_LIB
+
 /**
  * Wrapper method for internal implementation of matrix sum of values that works
  * with generic dense matrices
- * 
+ *
  * @param m the matrix whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
@@ -74,8 +76,8 @@ typename Matrix::Scalar sum(Matrix m, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of symmetric matrix sum of values that works
- * with generic dense matrices 
- * 
+ * with generic dense matrices
+ *
  * @param m the matrix whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
@@ -88,7 +90,7 @@ typename Matrix::Scalar sum_symmetric(Matrix m, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matrix blocks 
+ * with generic dense matrix blocks
  *
  * @param b the matrix-block whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
@@ -178,6 +180,8 @@ typename Matrix::Scalar max(Matrix m)
 {
 	return implementation::max<backend,Matrix>::compute(m);
 }
+
+#endif // HAVE_LINALG_LIB
 
 }
 

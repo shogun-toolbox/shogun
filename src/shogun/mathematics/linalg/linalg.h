@@ -35,40 +35,42 @@
 #include <shogun/lib/config.h>
 
 /**
- * Just include this file to use in your applications.
+ * Just include this file to use in your applications (in the cpp). Only available
+ * if a C++11 compatible compiler found.
  */
 
-/**
- * This namespace contains all linear algebra specific modules and operations.
- * The rest of the library is available only when the one of the supported
- * backend exists in the local system
- */
-
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 namespace shogun
 {
 
+/**
+ * This namespace contains all linear algebra specific modules and operations
+ * for which we (may) rely on multiple implementation, either native or
+ * making use of some supported third party external linear algebra libraries.
+ */
 namespace linalg
 {
 
 /**
  * Developer's Note :
- * - Changing the default backend would just require to change it in the following
- *   enum
+ * - Changing the default backend would just require to change it in the
+ *   Backend enum
  * - Please use the same names as HAVE_<BACKEND> macros (e.g. HAVE_EIGEN3)
+ * - Please refer to the developer's wiki (link) for the design and structure
+ *   of internal linalg module
  */
 
 /**
  * @brief
  * All currently supported linear algebra backend libraries, with a default
  * backend, which will be used for all the tasks if any particular backend is
- * not set explicitly via cmake options.
+ * not set explicitly via cmake options. A Native backend is also defined to
+ * accommodate Shogun's native implementation of some operations.
  *
  * The enum defines these backends in order of priority as default backend, as
- * in, first defined one will be used as default
+ * in, first defined one will be used as default.
  *
- * Note - Currently EIGEN3 is the default (if its available)
- *
+ * Note - Currently EIGEN3 is the default (if it is available).
  */
 enum class Backend
 {
@@ -78,6 +80,7 @@ enum class Backend
 #ifdef HAVE_VIENNACL
 	VIENNACL,
 #endif
+	NATIVE,
 	DEFAULT = 0
 };
 
@@ -133,7 +136,7 @@ struct MODULE \
 /** Core module */
 #ifdef USE_EIGEN3_CORE
 	SET_MODULE_BACKEND(Core, EIGEN3)
-#elif USE_VIENNACL_REDUX
+#elif USE_VIENNACL_CORE
 	SET_MODULE_BACKEND(Core, VIENNACL)
 #else // the default case
 	SET_MODULE_BACKEND(Core, DEFAULT)
@@ -178,11 +181,12 @@ struct MODULE \
 
 /** include all the modules here */
 
+/** Core and Util are both part of the same module 'Core' */
 #include <shogun/mathematics/linalg/internal/modules/Core.h>
-#include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/Util.h>
+
+#include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
-#endif // HAVE_LINALG_LIB
-
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #endif // LINALG_H_

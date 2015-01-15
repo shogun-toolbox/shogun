@@ -29,20 +29,22 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-/** Contains some utility functions. Uses the same backend as the Core module 
- */
 #ifndef UTIL_H_
 #define UTIL_H_
+
+#ifdef HAVE_LINALG_LIB
 
 #include <shogun/mathematics/linalg/internal/implementation/SetRowsConst.h>
 
 namespace shogun
 {
 
+/** Contains some utility functions. Uses the same backend as the Core module
+ */
 namespace linalg
 {
 
-/** Sets each row of a matrix to some constant value. That is, perfoms the 
+/** Sets each row of a matrix to some constant value. That is, perfoms the
  * operation A[i,j] = v[i], for all i and j
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix, class Vector>
@@ -54,4 +56,5 @@ void set_rows_const(Matrix A, Vector v)
 }
 
 }
+#endif // HAVE_LINALG_LIB
 #endif // UTIL_H_
