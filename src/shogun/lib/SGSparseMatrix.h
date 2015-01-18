@@ -13,20 +13,21 @@
 #ifndef __SGSPARSEMATRIX_H__
 #define __SGSPARSEMATRIX_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <shogun/io/LibSVMFile.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
 
 template <class T> class SGSparseVector;
+template <class ST> struct SGSparseVectorEntry;
 template<class T> class SGMatrix;
 class CFile;
 class CLibSVMFile;
-class CRegressionLabels;
 
 /** @brief template class SGSparseMatrix */
 template <class T> class SGSparseMatrix : public SGReferencedData

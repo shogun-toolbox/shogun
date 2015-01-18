@@ -37,8 +37,16 @@ CInferenceMethod::CInferenceMethod()
 	init();
 }
 
+SGMatrix<float64_t> CInferenceMethod::get_multiclass_E()
+{
+	if (parameter_hash_changed())
+		update();
+
+	return SGMatrix<float64_t>(m_E);
+}
+
 CInferenceMethod::CInferenceMethod(CKernel* kernel, CFeatures* features,
-		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
+	CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
 {
 	init();
 
@@ -63,7 +71,7 @@ void CInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
 	SG_ADD(&m_scale, "scale", "Kernel scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
-			MS_AVAILABLE);
+		MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
@@ -74,6 +82,10 @@ void CInferenceMethod::init()
 	m_features=NULL;
 	m_mean=NULL;
 	m_scale=1.0;
+
+	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
+	SG_ADD(&m_E, "E", "the matrix used for multi classification", MS_NOT_AVAILABLE);
 }
 
 float64_t CInferenceMethod::get_marginal_likelihood_estimate(
@@ -140,7 +152,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
 
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	// get number of derivatives

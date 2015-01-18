@@ -11,12 +11,15 @@
 #define STORE_VECTOR_AGGREGATOR_H_
 
 #include <shogun/lib/config.h>
+
 #include <shogun/lib/computation/aggregator/JobResultAggregator.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
 class CJobResult;
-template<class T> class SGVector;
+template <class T> class CVectorResult;
 
 /** @brief Abstract template class that aggregates vector job results in each
  * submit_result call, finalize is abstract

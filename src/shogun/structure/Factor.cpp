@@ -109,6 +109,11 @@ const SGVector<int32_t> CFactor::get_variables() const
 	return m_var_index;
 }
 
+const int32_t CFactor::get_num_vars() const
+{
+	return m_var_index.size();
+}
+
 void CFactor::set_variables(SGVector<int32_t> vars)
 {
 	m_var_index = vars.clone();

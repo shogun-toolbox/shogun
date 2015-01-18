@@ -10,11 +10,14 @@
 #ifndef INDEXBLOCK_H_
 #define INDEXBLOCK_H_
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/List.h>
+#include <shogun/lib/config.h>
+
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
+
+class CList;
 
 /** @brief class IndexBlock used to represent
  * contiguous indices of one group (e.g. block of related features)

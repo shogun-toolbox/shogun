@@ -11,6 +11,8 @@
 #ifndef _AVGDIAGKERNELNORMALIZER_H___
 #define _AVGDIAGKERNELNORMALIZER_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/kernel/normalizer/KernelNormalizer.h>
 namespace shogun
 {

@@ -11,16 +11,19 @@
 #ifndef _ONLINELINEARCLASSIFIER_H__
 #define _ONLINELINEARCLASSIFIER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>
 
-#include <stdio.h>
 
 namespace shogun
 {
+class CBinaryLabels;
+class CFeatures;
+class CRegressionLabels;
+
 /** @brief Class OnlineLinearMachine is a generic interface for linear
  * machines like classifiers which work through online algorithms.
  *

@@ -11,6 +11,8 @@
 #ifndef _CSPARSEPREPROC__H__
 #define _CSPARSEPREPROC__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/lib/common.h>
 #include <shogun/preprocessor/Preprocessor.h>
@@ -36,6 +38,18 @@ public:
 	/** constructor
 	 */
 	CSparsePreprocessor() : CPreprocessor() {}
+
+	/** generic interface for applying the preprocessor. used as a wrapper
+	 * for apply_to_sparse_feature_matrix() method
+	 *
+	 * @param features the sparse input features
+	 * @return the result feature object after applying the preprocessor
+	 */
+	virtual CFeatures* apply(CFeatures* features)
+	{
+		SG_ERROR("Is not yet implemented!\n");
+		return NULL;
+	}
 
 	/// apply preproc on feature matrix
 	/// result in feature matrix

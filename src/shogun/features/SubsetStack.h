@@ -10,6 +10,8 @@
 #ifndef __SUBSETSTACK_H_
 #define __SUBSETSTACK_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicObjectArray.h>
@@ -29,7 +31,7 @@ namespace shogun
  *
  * Internally, a stack of active subsets is saved. Each time an index set is
  * added, a new element will be put on stack, using the old element to get
- * mappig. On  removal, the last element on stack will be removed. This is done
+ * mapping. On  removal, the last element on stack will be removed. This is done
  * for computational convenience.
  */
 class CSubsetStack: public CSGObject
@@ -49,10 +51,24 @@ public:
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "SubsetStack"; }
 
-	/** adds an index set to the current subset
-	 * @param subset index subset to add
+	/** Adds a subset of indices on top of the current subsets (possibly
+	 * subset of subset). Every call causes a new active index vector
+	 * to be stored. Added subsets can be removed one-by-one. If this is not
+	 * needed, add_subset_in_place() should be used (does not store
+	 * intermediate index vectors)
+	 *
+	 * @param subset subset of indices to add
 	 * */
 	virtual void add_subset(SGVector<index_t> subset);
+
+	/** Sets/changes latest added subset. This allows to add multiple subsets
+	 * with in-place memory requirements. They cannot be removed one-by-one
+	 * afterwards, only the latest active can. If this is needed, use
+	 * add_subset(). If no subset is active, this just adds.
+	 *
+	 * @param subset subset of indices to replace the latest one with.
+	 * */
+	virtual void add_subset_in_place(SGVector<index_t> subset);
 
 	/** removes the last added index set */
 	virtual void remove_subset();

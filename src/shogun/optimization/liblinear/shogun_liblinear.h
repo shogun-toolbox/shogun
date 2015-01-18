@@ -39,7 +39,6 @@
 
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
-#include <vector>
 
 namespace shogun
 {

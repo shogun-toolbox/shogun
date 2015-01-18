@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/lib/SGVector.h>
 
 #include <stdlib.h>
 

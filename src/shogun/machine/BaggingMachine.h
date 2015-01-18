@@ -11,16 +11,19 @@
 #ifndef BAGGINGMACHINE_H
 #define BAGGINGMACHINE_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/Machine.h>
-#include <shogun/ensemble/CombinationRule.h>
-#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {
+	class CCombinationRule;
+	class CEvaluation;
+
 	/**
 	 * @brief: Bagging algorithm
 	 * i.e. bootstrap aggregating
-     */
+	 */
 	class CBaggingMachine : public CMachine
 	{
 		public:
@@ -61,7 +64,7 @@ namespace shogun
 			 *
 			 * @param bag_size number of vectors to use for a bag
 			 */
-			void set_bag_size(int32_t bag_size);
+			virtual void set_bag_size(int32_t bag_size);
 
 			/**
 			 * Get number of feature vectors that are use
@@ -69,7 +72,7 @@ namespace shogun
 			 *
 			 * @return number of vectors used for training for each bag.
 			 */
-			int32_t get_bag_size() const;
+			virtual int32_t get_bag_size() const;
 
 			/**
 			 * Get machine for bagging
@@ -83,7 +86,7 @@ namespace shogun
 			 *
 			 * @param machine the machine to use for bagging
 			 */
-			void set_machine(CMachine* machine);
+			virtual void set_machine(CMachine* machine);
 
 			/**
 			 * Set the combination rule to use for aggregating the classification
@@ -120,6 +123,14 @@ namespace shogun
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
+			/**
+			 * sets parameters of CMachine - useful in Random Forest
+			 *
+			 * @param m machine
+			 * @param idx indices of training vectors chosen in current bag
+			 */
+			virtual void set_machine_parameters(CMachine* m, SGVector<index_t> idx);
+
 			/** helper function for the apply_{regression,..} functions that
 			 * computes the output
 			 *
@@ -128,8 +139,10 @@ namespace shogun
 			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
-		private:
+			/** Register paramaters */
 			void register_parameters();
+
+			/** Initialize the members with default values */
 			void init();
 
 			/**
@@ -137,13 +150,11 @@ namespace shogun
 			 *
 			 * @param in_bag vector of indices that are in bag.
 			 * NOTE: in_bag is a randomly generated with replacement
-			 * @return
+			 * @return the vector of indices
 			 */
 			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
 
-			void clear_oob_indicies();
-
-		private:
+		protected:
 			/** bags array */
 			CDynamicObjectArray* m_bags;
 

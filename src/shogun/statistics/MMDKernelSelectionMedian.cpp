@@ -26,7 +26,7 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian() :
 }
 
 CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
-		CKernelTwoSampleTestStatistic* mmd, index_t num_data_distance) :
+		CKernelTwoSampleTest* mmd, index_t num_data_distance) :
 		CMMDKernelSelection(mmd)
 {
 	/* assert that a combined kernel is used */
@@ -51,9 +51,9 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 
 	/* assert 64 bit dense features since EuclideanDistance can only handle
 	 * those */
-	if (m_mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD)
+	if (m_estimator->get_statistic_type()==S_QUADRATIC_TIME_MMD)
 	{
-		CFeatures* features=((CQuadraticTimeMMD*)m_mmd)->get_p_and_q();
+		CFeatures* features=((CQuadraticTimeMMD*)m_estimator)->get_p_and_q();
 		REQUIRE(features->get_feature_class()==C_DENSE &&
 				features->get_feature_type()==F_DREAL, "%s::select_kernel(): "
 				"Only 64 bit float dense features allowed, these are \"%s\""
@@ -61,10 +61,10 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 				get_name(), features->get_name(), features->get_feature_type());
 		SG_UNREF(features);
 	}
-	else if (m_mmd->get_statistic_type()==S_LINEAR_TIME_MMD)
+	else if (m_estimator->get_statistic_type()==S_LINEAR_TIME_MMD)
 	{
-		CStreamingFeatures* p=((CLinearTimeMMD*)m_mmd)->get_streaming_p();
-		CStreamingFeatures* q=((CLinearTimeMMD*)m_mmd)->get_streaming_q();
+		CStreamingFeatures* p=((CLinearTimeMMD*)m_estimator)->get_streaming_p();
+		CStreamingFeatures* q=((CLinearTimeMMD*)m_estimator)->get_streaming_q();
 		REQUIRE(p->get_feature_class()==C_STREAMING_DENSE &&
 				p->get_feature_type()==F_DREAL, "%s::select_kernel(): "
 				"Only 64 bit float streaming dense features allowed, these (p) "
@@ -112,19 +112,19 @@ SGVector<float64_t> CMMDKernelSelectionMedian::compute_measures()
 CKernel* CMMDKernelSelectionMedian::select_kernel()
 {
 	/* number of data for distace */
-	index_t num_data=CMath::min(m_num_data_distance, m_mmd->get_m());
+	index_t num_data=CMath::min(m_num_data_distance, m_estimator->get_m());
 
 	SGMatrix<float64_t> dists;
 
 	/* compute all pairwise distances, depends which mmd statistic is used */
-	if (m_mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD)
+	if (m_estimator->get_statistic_type()==S_QUADRATIC_TIME_MMD)
 	{
 		/* fixed data, create merged copy of a random subset */
 
 		/* create vector with that correspond to the num_data first points of
 		 * each distribution, remember data is stored jointly */
 		SGVector<index_t> subset(num_data*2);
-		index_t m=m_mmd->get_m();
+		index_t m=m_estimator->get_m();
 		for (index_t i=0; i<num_data; ++i)
 		{
 			/* num_data samples from each half of joint sample */
@@ -133,7 +133,7 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 		}
 
 		/* add subset and compute pairwise distances */
-		CQuadraticTimeMMD* quad_mmd=(CQuadraticTimeMMD*)m_mmd;
+		CQuadraticTimeMMD* quad_mmd=(CQuadraticTimeMMD*)m_estimator;
 		CFeatures* features=quad_mmd->get_p_and_q();
 		features->add_subset(subset);
 
@@ -148,10 +148,10 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 		SG_UNREF(distance);
 		SG_UNREF(features);
 	}
-	else if (m_mmd->get_statistic_type()==S_LINEAR_TIME_MMD)
+	else if (m_estimator->get_statistic_type()==S_LINEAR_TIME_MMD)
 	{
 		/* just stream the desired number of points */
-		CLinearTimeMMD* linear_mmd=(CLinearTimeMMD*)m_mmd;
+		CLinearTimeMMD* linear_mmd=(CLinearTimeMMD*)m_estimator;
 
 		CStreamingFeatures* p=linear_mmd->get_streaming_p();
 		CStreamingFeatures* q=linear_mmd->get_streaming_q();
@@ -203,7 +203,7 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 
 	/* now of all kernels, find the one which has its width closest
 	 * Cast is safe due to constructor of MMDKernelSelection class */
-	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+	CCombinedKernel* combined=(CCombinedKernel*)m_estimator->get_kernel();
 	float64_t min_distance=CMath::MAX_REAL_NUMBER;
 	CKernel* min_kernel=NULL;
 	float64_t distance;

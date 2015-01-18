@@ -8,10 +8,10 @@ new_classifier LIBSVM
 c 1
 
 train_classifier
-save_classifier libsvm.model
+save_classifier out-classifier_libsvm.model
 
-load_classifier libsvm.model LIBSVM
+load_classifier out-classifier_libsvm.model LIBSVM
 set_features TEST ../data/fm_test_real.dat
-out.txt = classify
-! rm out.txt
-! rm libsvm.model
+out-classifier_libsvm.txt = classify
+! rm out-classifier_libsvm.txt
+! rm out-classifier_libsvm.model

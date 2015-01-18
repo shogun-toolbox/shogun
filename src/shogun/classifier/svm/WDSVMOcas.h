@@ -12,6 +12,8 @@
 #ifndef _WDSVMOCAS_H___
 #define _WDSVMOCAS_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/classifier/svm/SVMOcas.h>

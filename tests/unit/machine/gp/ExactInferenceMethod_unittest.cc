@@ -1,12 +1,35 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
  *
  * Written (W) 2013 Roman Votyakov
+ * Written (w) 2014 Wu Lin
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -18,6 +41,8 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/machine/gp/ConstMean.h>
 
 using namespace shogun;
 
@@ -283,6 +308,11 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	inf->set_scale(0.8);
 
 	// comparison of posterior mean with result from GPML package
+	// 0.3613824450357372430886471
+	// 0.0032614946619217077480868
+	// -1.0762845465175703285609643
+	// 1.2348344945975837649854157
+	// -0.0750001215533616788500026 
 	SGVector<float64_t> mu=inf->get_posterior_mean();
 
 	EXPECT_NEAR(mu[0], 0.36138244503573730, 1E-15);
@@ -332,40 +362,136 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
+	float64_t rel_tolerance = 1e-2;
+	float64_t abs_tolerance;
+
 	// comparison of posterior approximation covariance with result from GPML
 	// package
+	//0.0569394684731059849691626 0.0000000000000000000053289 0.0000000000000131879791500 0.0000136088380251857096650 -0.0000000002307207284608970 
+	//0.0000000000000000000053289 0.0569395017793594276911406 -0.0000000000000000000000000 -0.0000000000000000000000130 0.0000000000000000000000000 
+	//0.0000000000000131879791500 -0.0000000000000000000000000 0.0569395017611918560773709 -0.0000000000053885704468227 0.0000003178376535342790039 
+	//0.0000136088380251857249116 -0.0000000000000000000000130 -0.0000000000053885704468227 0.0569394684715077217807000 0.0000000942718277538447049 
+	//-0.0000000002307207284608972 0.0000000000000000000000000 0.0000003178376535342790568 0.0000000942718277538447182 0.0569395017595935928889084 
 	SGMatrix<float64_t> Sigma=inf->get_posterior_covariance();
 
-	EXPECT_NEAR(Sigma(0,0), 6.03558716779569e-01, 1E-15);
-	EXPECT_NEAR(Sigma(0,1), 6.31493961602982e-19, 1E-15);
-	EXPECT_NEAR(Sigma(0,2), 8.24248696877457e-16, 1E-15);
-	EXPECT_NEAR(Sigma(0,3), 1.61269208627034e-03, 1E-15);
-	EXPECT_NEAR(Sigma(0,4), -1.44168641713900e-11, 1E-15);
+	abs_tolerance = CMath::get_abs_tolerance(0.0569394684731059849691626, rel_tolerance);
+	EXPECT_NEAR(Sigma(0,0),  0.0569394684731059849691626,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
+	EXPECT_NEAR(Sigma(0,1),  0.0000000000000000000053289,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
+	EXPECT_NEAR(Sigma(0,2),  0.0000000000000131879791500,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000136088380251857096650, rel_tolerance);
+	EXPECT_NEAR(Sigma(0,3),  0.0000136088380251857096650,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000002307207284608970, rel_tolerance);
+	EXPECT_NEAR(Sigma(0,4),  -0.0000000002307207284608970,  abs_tolerance);
 
-	EXPECT_NEAR(Sigma(1,0), 6.31493961602982e-19, 1E-15);
-	EXPECT_NEAR(Sigma(1,1), 6.03558718861210e-01, 1E-15);
-	EXPECT_NEAR(Sigma(1,2), -7.89915715089744e-34, 1E-15);
-	EXPECT_NEAR(Sigma(1,3), -8.15123749995260e-25, 1E-15);
-	EXPECT_NEAR(Sigma(1,4), 1.38193977359810e-29, 1E-15);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
+	EXPECT_NEAR(Sigma(1,0),  0.0000000000000000000053289,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0569395017793594276911406, rel_tolerance);
+	EXPECT_NEAR(Sigma(1,1),  0.0569395017793594276911406,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(Sigma(1,2),  -0.0000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
+	EXPECT_NEAR(Sigma(1,3),  -0.0000000000000000000000130,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(Sigma(1,4),  0.0000000000000000000000000,  abs_tolerance);
 
-	EXPECT_NEAR(Sigma(2,0), 8.24248696877457e-16, 1E-15);
-	EXPECT_NEAR(Sigma(2,1), -7.89915715089744e-34, 1E-15);
-	EXPECT_NEAR(Sigma(2,2), 6.03558718860075e-01, 1E-15);
-	EXPECT_NEAR(Sigma(2,3), -3.36784805037017e-13, 1E-15);
-	EXPECT_NEAR(Sigma(2,4), 3.76650331606094e-05, 1E-15);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
+	EXPECT_NEAR(Sigma(2,0),  0.0000000000000131879791500,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(Sigma(2,1),  -0.0000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0569395017611918560773709, rel_tolerance);
+	EXPECT_NEAR(Sigma(2,2),  0.0569395017611918560773709,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
+	EXPECT_NEAR(Sigma(2,3),  -0.0000000000053885704468227,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000003178376535342790039, rel_tolerance);
+	EXPECT_NEAR(Sigma(2,4),  0.0000003178376535342790039,  abs_tolerance);
 
-	EXPECT_NEAR(Sigma(3,0), 1.61269208627034e-03, 1E-15);
-	EXPECT_NEAR(Sigma(3,1), -8.15123749995260e-25, 1E-15);
-	EXPECT_NEAR(Sigma(3,2), -3.36784805037017e-13, 1E-15);
-	EXPECT_NEAR(Sigma(3,3), 6.03558716779469e-01, 1E-15);
-	EXPECT_NEAR(Sigma(3,4), 1.11715217566074e-05, 1E-15);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000136088380251857249116, rel_tolerance);
+	EXPECT_NEAR(Sigma(3,0),  0.0000136088380251857249116,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
+	EXPECT_NEAR(Sigma(3,1),  -0.0000000000000000000000130,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
+	EXPECT_NEAR(Sigma(3,2),  -0.0000000000053885704468227,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0569394684715077217807000, rel_tolerance);
+	EXPECT_NEAR(Sigma(3,3),  0.0569394684715077217807000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000942718277538447049, rel_tolerance);
+	EXPECT_NEAR(Sigma(3,4),  0.0000000942718277538447049,  abs_tolerance);
 
-	EXPECT_NEAR(Sigma(4,0), -1.44168641713900e-11, 1E-15);
-	EXPECT_NEAR(Sigma(4,1), 1.38193977359810e-29, 1E-15);
-	EXPECT_NEAR(Sigma(4,2), 3.76650331606094e-05, 1E-15);
-	EXPECT_NEAR(Sigma(4,3), 1.11715217566074e-05, 1E-15);
-	EXPECT_NEAR(Sigma(4,4), 6.03558718859975e-01, 1E-15);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000002307207284608972, rel_tolerance);
+	EXPECT_NEAR(Sigma(4,0),  -0.0000000002307207284608972,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(Sigma(4,1),  0.0000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000003178376535342790568, rel_tolerance);
+	EXPECT_NEAR(Sigma(4,2),  0.0000003178376535342790568,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000942718277538447182, rel_tolerance);
+	EXPECT_NEAR(Sigma(4,3),  0.0000000942718277538447182,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0569395017595935928889084, rel_tolerance);
+	EXPECT_NEAR(Sigma(4,4),  0.0569395017595935928889084,  abs_tolerance);
 
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(ExactInferenceMethod,get_posterior_mean2)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
+	// function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	CConstMean* mean=new CConstMean(1.0);
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, lik);
+	inf->set_scale(0.8);
+
+	float64_t rel_tolerance = 1e-3;
+	float64_t abs_tolerance;
+
+	// comparison of posterior mean with result from GPML package
+	// -0.5498667882510408499996402
+	// -0.9077705338078291275039078
+	// -1.9873216600130905185039865
+	// 0.3235837493820302168678893
+	// -0.9860387397670280495987072
+	SGVector<float64_t> mu=inf->get_posterior_mean();
+
+	abs_tolerance = CMath::get_abs_tolerance(-0.5498667882510408499996402, rel_tolerance);
+	EXPECT_NEAR(mu[0],  -0.5498667882510408499996402,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9077705338078291275039078, rel_tolerance);
+	EXPECT_NEAR(mu[1],  -0.9077705338078291275039078,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-1.9873216600130905185039865, rel_tolerance);
+	EXPECT_NEAR(mu[2],  -1.9873216600130905185039865,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.3235837493820302168678893, rel_tolerance);
+	EXPECT_NEAR(mu[3],  0.3235837493820302168678893,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9860387397670280495987072, rel_tolerance);
+	EXPECT_NEAR(mu[4],  -0.9860387397670280495987072,  abs_tolerance);
+	
 	// clean up
 	SG_UNREF(inf);
 }

@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Written (W) 2013 Heiko Strathmann
+ * Written (W) 2013-2014 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
  */
@@ -35,16 +35,18 @@ enum EInferenceType
 	INF_EXACT=10,
 	INF_FITC=20,
 	INF_LAPLACIAN=30,
-	INF_EP=40
+	INF_EP=40,
+	INF_KL=50
 };
 
 /** @brief The Inference Method base class.
  *
- * The Inference Method computes (approximately) the posterior distribution for
- * a given Gaussian Process.
+ * The Inference Method computes (a Gaussian approximation to) the posterior
+ * distribution for a given Gaussian Process.
  *
  * It is possible to sample the (true) log-marginal likelihood on the base of
- * any implemented approximation. See log_ml_estimate.
+ * any implemented approximation. See
+ * CInferenceMethod::get_marginal_likelihood_estimate.
  */
 class CInferenceMethod : public CDifferentiableFunction
 {
@@ -84,15 +86,15 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood()=0;
 
-	/** Computes an unbiased estimate of the log-marginal-likelihood,
+	/** Computes an unbiased estimate of the marginal-likelihood (in log-domain),
 	 *
 	 * \f[
-	 * log(p(y|X,\theta)),
+	 * p(y|X,\theta),
 	 * \f]
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
 	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
 	 *
-	 * This is done via an approximation to the posterior
+	 * This is done via a Gaussian approximation to the posterior
 	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
 	 * underlying CInferenceMethod instance (if implemented, otherwise error),
 	 * and then using an importance sample estimator
@@ -107,17 +109,18 @@ public:
 	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
 	 * \f$ q(f|y, \theta) \f$. The resulting estimator has a low variance if
 	 * \f$ q(f|y, \theta) \f$ is a good approximation. It has large variance
-	 * otherwise (while still being consistent).
+	 * otherwise (while still being consistent). Storing all number of log-domain
+	 * ensures numerical stability.
 	 *
 	 * @param num_importance_samples the number of importance samples \f$n\f$
 	 * from \f$ q(f|y, \theta) \f$.
 	 * @param ridge_size scalar that is added to the diagonal of the involved
 	 * Gaussian distribution's covariance of GP prior and posterior
-	 * approximation to stabilise things. Increase if Cholesky factorization
-	 * fails.
+	 * approximation to stabilise things. Increase if covariance matrix is not
+	 * numerically positive semi-definite.
 	 *
-	 * @return unbiased estimate of the log of the marginal likelihood function
-	 * \f$ log(p(y|\theta)) \f$
+	 * @return unbiased estimate of the marginal likelihood function
+	 * \f$ p(y|\theta),\f$ in log-domain.
 	 */
 	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
@@ -135,44 +138,36 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_negative_log_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>* parameters);
+	virtual CMap<TParameter*, SGVector<float64_t> >*
+	get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*,
+			CSGObject*>* parameters);
 
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:
 	 *
 	 * \f[
-	 * \mu = K\alpha
+	 * \mu = K\alpha+meanf
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean,
+	 * \f$K\f$ is the prior covariance matrix,
+	 * and \f$meanf$\f is the mean prior fomr MeanFunction
+	 *
 	 */
 	virtual SGVector<float64_t> get_alpha()=0;
 
 	/** get Cholesky decomposition matrix
 	 *
-	 * @return Cholesky decomposition of matrix:
+	 * @return Cholesky decomposition of matrix
 	 *
-	 * \f[
-	 * L = cholesky(sW*K*sW+I)
-	 * \f]
-	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
-	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky()=0;
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix:
+	 * @return diagonal of matrix used to calculate posterior covariance matrix
 	 *
-	 * \f[
-	 * Cov = (K^{-1}+sW^{2})^{-1}
-	 * \f]
-	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
-	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
@@ -355,6 +350,13 @@ public:
 	/** update all matrices */
 	virtual void update();
 
+	/** get the E matrix used for multi classification
+	 *
+	 * @return the matrix for multi classification
+	 *
+	 */
+	virtual SGMatrix<float64_t> get_multiclass_E();
+
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -448,6 +450,9 @@ protected:
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
+
+	/** the matrix used for multi classification*/
+	SGMatrix<float64_t> m_E;
 };
 }
 #endif /* HAVE_EIGEN3 */

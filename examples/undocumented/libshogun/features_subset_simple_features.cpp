@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -69,8 +70,9 @@ void test()
 			"feature matrix");
 
 	/* create subset indices */
-	SGVector<index_t> subset_idx(SGVector<index_t>::randperm(num_subset_idx),
-			num_subset_idx);
+	SGVector<index_t> subset_idx(num_subset_idx);
+	subset_idx.range_fill();
+	CMath::permute(subset_idx);
 
 	/* print subset indices */
 	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");

@@ -16,6 +16,8 @@
 #ifndef _VW_REGRESSOR_H__
 #define _VW_REGRESSOR_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/classifier/vw/VwEnvironment.h>

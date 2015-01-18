@@ -10,8 +10,8 @@
 #ifndef _MBKMEANS_H__
 #define _MBKMEANS_H__
 
+#include <shogun/lib/config.h>
 
-#include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>
@@ -19,6 +19,7 @@
 
 namespace shogun
 {
+/** Implementation class for the mini batch KMeans */
 class CKMeansMiniBatchImpl
 {
 	public:

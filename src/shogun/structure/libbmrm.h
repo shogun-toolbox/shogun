@@ -14,10 +14,11 @@
 #ifndef libbmrm_h
 #define libbmrm_h
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/structure/BmrmStatistics.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/io/SGIO.h>
 
 #define LIBBMRM_PLUS_INF (-log(0.0))
 #define LIBBMRM_CALLOC(x, y) SG_CALLOC(y, x)
@@ -30,6 +31,9 @@
 
 namespace shogun
 {
+/** Buffer size */
+extern uint32_t BufSize;
+
 /** Linked list for cutting planes buffer management */
 IGNORE_IN_CLASSLIST struct bmrm_ll {
 	/** Pointer to previous CP entry */
@@ -63,12 +67,12 @@ IGNORE_IN_CLASSLIST struct ICP_stats
 
 /** Add cutting plane
  *
- * @param tail		Pointer to the last CP entry
- * @param map		Pointer to map storing info about CP physical memory
- * @param A			CP physical memory
- * @param free_idx	Index to physical memory where the CP data will be stored
- * @param cp_data	CP data
- * @param dim		Dimension of CP data
+ * @param tail Pointer to the last CP entry
+ * @param map Pointer to map storing info about CP physical memory
+ * @param A CP physical memory
+ * @param free_idx Index to physical memory where the CP data will be stored
+ * @param cp_data CP data
+ * @param dim Dimension of CP data
  */
 void add_cutting_plane(
 		bmrm_ll**	tail,
@@ -80,10 +84,10 @@ void add_cutting_plane(
 
 /** Remove cutting plane at given index
  *
- * @param head	Pointer to the first CP entry
- * @param tail	Pointer to the last CP entry
- * @param map	Pointer to map storing info about CP physical memory
- * @param icp	Pointer to inactive CP that should be removed
+ * @param head Pointer to the first CP entry
+ * @param tail Pointer to the last CP entry
+ * @param map Pointer to map storing info about CP physical memory
+ * @param icp Pointer to inactive CP that should be removed
  */
 void remove_cutting_plane(
 		bmrm_ll**	head,
@@ -110,15 +114,15 @@ void clean_icp(ICP_stats* icp_stats,
 
 /** Get cutting plane
  *
- * @param ptr	Pointer to some CP entry
+ * @param ptr Pointer to some CP entry
  * @return Pointer to cutting plane at given entry
  */
 inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
 
 /** Get index of free slot for new cutting plane
  *
- * @param map	Pointer to map storing info about CP physical memory
- * @param size	Size of the CP buffer
+ * @param map Pointer to map storing info about CP physical memory
+ * @param size Size of the CP buffer
  * @return Index of unoccupied memory field in CP physical memory
  */
 inline uint32_t find_free_idx(bool *map, uint32_t size)
@@ -130,20 +134,17 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
 
 /** Standard BMRM Solver for Structured Output Learning
  *
- * @param machine		Pointer to the BMRM machine
- * @param W				Weight vector
- * @param TolRel		Relative tolerance
- * @param TolAbs		Absolute tolerance
- * @param _lambda		Regularization constant
- * @param _BufSize		Size of the CP buffer (i.e. maximal number of
- *						iterations)
- * @param cleanICP		Flag that enables/disables inactive cutting plane
- *						removal feature
- * @param cleanAfter	Number of iterations that should be cutting plane
- *						inactive for to be removed
- * @param K				Parameter K
- * @param Tmax			Parameter Tmax
- * @param verbose		Flag that enables/disables screen output
+ * @param machine Pointer to the BMRM machine
+ * @param W Weight vector
+ * @param TolRel Relative tolerance
+ * @param TolAbs Absolute tolerance
+ * @param _lambda Regularization constant
+ * @param _BufSize Size of the CP buffer (i.e. maximal number of iterations)
+ * @param cleanICP Flag that enables/disables inactive cutting plane removal feature
+ * @param cleanAfter Number of iterations that should be cutting plane inactive for to be removed
+ * @param K Parameter K
+ * @param Tmax Parameter Tmax
+ * @param store_train_info Flag that enable/disable store training infomation, e.g., primal, dual, training error
  * @return Structure with BMRM algorithm result
  */
 BmrmStatistics svm_bmrm_solver(
@@ -157,7 +158,7 @@ BmrmStatistics svm_bmrm_solver(
 		uint32_t           cleanAfter,
 		float64_t          K,
 		uint32_t           Tmax,
-		bool               verbose
+		bool               store_train_info
 		);
 
 }

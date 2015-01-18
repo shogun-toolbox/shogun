@@ -11,6 +11,8 @@
 #ifndef ROCEVALUATION_H_
 #define ROCEVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 
 namespace shogun

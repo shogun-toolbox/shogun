@@ -39,6 +39,8 @@
 extern "C" {
 #endif
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 #include <assert.h>
 

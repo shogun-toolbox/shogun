@@ -49,12 +49,11 @@ public:
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelectionCombMaxL2(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionCombMaxL2(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionCombMaxL2();
 
-#ifdef HAVE_LAPACK
 	/** Computes kernel weights which maximise the MMD of the underlying
 	 * combined kernel using L2-regularization.
 	 *
@@ -68,10 +67,12 @@ public:
 	 * used for testing/evaluation!
 	 */
 	virtual SGVector<float64_t> compute_measures();
-#endif
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionCombMaxL2"; }
+	virtual const char* get_name() const
+	{
+		return "MMDKernelSelectionCombMaxL2";
+	}
 };
 
 }

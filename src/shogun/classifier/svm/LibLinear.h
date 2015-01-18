@@ -41,7 +41,23 @@ namespace shogun
 		L2R_LR_DUAL
 	};
 
-/** @brief class to implement LibLinear */
+/** @brief This class provides an interface to the LibLinear library for large-
+ * scale linear learning focusing on SVM [1]. This is the classification interface. For
+ * regression, see CLibLinearRegression. There is also an online version, see
+ * COnlineLibLinear.
+ *
+ * LIBLINEAR is a linear SVM solver for data with millions of instances and
+ * features. It supports (for classification)
+ *
+ * - L2-regularized classifiers
+ * - L2-loss linear SVM, L1-loss linear SVM, and logistic regression (LR)
+ * - L1-regularized classifiers
+ * - L2-loss linear SVM and logistic regression (LR)
+ *
+ * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers.
+ *
+ * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
+ * */
 class CLibLinear : public CLinearMachine
 {
 	public:

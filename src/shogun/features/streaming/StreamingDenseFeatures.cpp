@@ -221,10 +221,12 @@ void CStreamingDenseFeatures<T>::end_parser()
 template<class T>
 bool CStreamingDenseFeatures<T>::get_next_example()
 {
+	SG_DEBUG("entering\n");
 	bool ret_value;
 	ret_value=(bool)parser.get_next_example(current_vector.vector,
 			current_vector.vlen, current_label);
 
+	SG_DEBUG("leaving\n");
 	return ret_value;
 }
 
@@ -264,7 +266,7 @@ float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
 
 	SGVector<T> other_vector=sf->get_vector();
 
-	return SGVector<T>::dot(current_vector.vector, other_vector.vector, current_vector.vlen);
+	return CMath::dot(current_vector.vector, other_vector.vector, current_vector.vlen);
 }
 
 template<class T>
@@ -277,7 +279,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 		SG_ERROR(
 				"Lengths %d and %d not equal while computing dot product!\n", len1, current_vector.vlen);
 
-	return SGVector<T>::dot(current_vector.vector, sgvec1.vector, len1);
+	return CMath::dot(current_vector.vector, sgvec1.vector, len1);
 }
 
 template<class T>
@@ -296,10 +298,13 @@ template<class T>
 CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		index_t num_elements)
 {
-	SG_DEBUG("entering %s(%p)::get_streamed_features(%d)\n", get_name(), this,
-			num_elements);
+	SG_DEBUG("entering\n");
+	SG_DEBUG("Streaming %d elements\n", num_elements)
 
-	/* init matrix empty since num_rows is not yet known */
+	REQUIRE(num_elements>0, "Requested number of feature vectors (%d) must be "
+			"positive\n", num_elements);
+
+	/* init matrix empty, as we dont know the dimension yet */
 	SGMatrix<T> matrix;
 
 	for (index_t i=0; i<num_elements; ++i)
@@ -307,10 +312,10 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		/* check if we run out of data */
 		if (!get_next_example())
 		{
-			SG_WARNING("%s::get_streamed_features(): ran out of streaming "
-					"data, reallocating matrix and returning!\n", get_name());
+			SG_WARNING("Ran out of streaming data, reallocating matrix and "
+					"returning!\n");
 
-			/* allocating space for data so far */
+			/* allocating space for data so far, not this mighe be 0 bytes */
 			SGMatrix<T> so_far(matrix.num_rows, i);
 
 			/* copy */
@@ -322,11 +327,11 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		}
 		else
 		{
-			/* allocate matrix memory during first run */
+			/* allocate matrix memory in first iteration */
 			if (!matrix.matrix)
 			{
-				SG_DEBUG("%s::get_streamed_features(): allocating %dx%d matrix\n",
-						get_name(), current_vector.vlen, num_elements);
+				SG_DEBUG("Allocating %dx%d matrix\n",
+						current_vector.vlen, num_elements);
 				matrix=SGMatrix<T>(current_vector.vlen, num_elements);
 			}
 
@@ -334,23 +339,14 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			SGVector<T> vec=get_vector();
 
 			/* check for inconsistent dimensions */
-			if (vec.vlen!=matrix.num_rows)
-			{
-				SG_ERROR("%s::get_streamed_features(): streamed vectors have "
-						"different dimensions. This is not allowed!\n",
-						get_name());
-			}
+			REQUIRE(vec.vlen==matrix.num_rows,
+					"Dimension of streamed vector (%d) does not match "
+					"dimensions of previous vectors (%d)\n",
+					vec.vlen, matrix.num_rows);
 
 			/* copy vector into matrix */
 			memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
 					vec.vlen*sizeof(T));
-
-			/* evtl output vector */
-			if (sg_io->get_loglevel()==MSG_DEBUG)
-			{
-				SG_DEBUG("%d. ", i)
-				vec.display_vector("streamed vector");
-			}
 
 			/* clean up */
 			release_example();
@@ -361,8 +357,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	/* create new feature object from collected data */
 	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
 
-	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d) and returning %dx%d "
-			"matrix\n", get_name(), this, num_elements, matrix.num_rows,
+	SG_DEBUG("leaving returning %dx%d matrix\n", matrix.num_rows,
 			matrix.num_cols);
 
 	return result;

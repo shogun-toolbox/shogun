@@ -11,6 +11,8 @@
 #ifndef __TWO_STATE_MODEL_H__
 #define __TWO_STATE_MODEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/structure/StateModel.h>
 #include <shogun/structure/HMSVMModel.h>
 

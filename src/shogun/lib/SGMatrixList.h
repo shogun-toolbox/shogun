@@ -11,12 +11,13 @@
 #ifndef __SGMATRIX_LIST_H__
 #define __SGMATRIX_LIST_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
-	template<class T> class SGMatrix;
 
 /** @brief shogun matrix list */
 template<class T> class SGMatrixList : public SGReferencedData

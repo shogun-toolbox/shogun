@@ -10,6 +10,8 @@
 #ifndef __MMDKERNELSELECTIONCOMBOPT_H_
 #define __MMDKERNELSELECTIONCOMBOPT_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/MMDKernelSelectionComb.h>
 
 namespace shogun
@@ -50,13 +52,12 @@ public:
 	 * @param lambda ridge that is added to standard deviation, a sensible value
 	 * is 10E-5 which is the default
 	 */
-	CMMDKernelSelectionCombOpt(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionCombOpt(CKernelTwoSampleTest* mmd,
 			float64_t lambda=10E-5);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionCombOpt();
 
-#ifdef HAVE_LAPACK
 	/** Computes optimal kernel weights using the ratio of the squared MMD by its
 	 * standard deviation as a criterion, where both expressions are estimated
 	 * in linear time.
@@ -71,10 +72,12 @@ public:
 	 * used for testing/evaluation!
 	 */
 	virtual SGVector<float64_t> compute_measures();
-#endif
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionCombOpt"; }
+	virtual const char* get_name() const
+	{
+		return "MMDKernelSelectionCombOpt";
+	}
 
 private:
 	/** Initializer */

@@ -12,7 +12,6 @@
  *
 -------------------------------------------------------------------- */
 
-#include <math.h>
 #include <limits.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>

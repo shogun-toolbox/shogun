@@ -10,15 +10,18 @@
 #ifndef __CSVFILE_H__
 #define __CSVFILE_H__
 
-#include <shogun/io/File.h>
+#include <shogun/lib/config.h>
 
-#include <shogun/io/LineReader.h>
-#include <shogun/io/Parser.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/v_array.h>
+#include <shogun/lib/common.h>
+#include <shogun/io/File.h>
 
 namespace shogun
 {
+class CDelimiterTokenizer;
+class CLineReader;
+class CParser;
+template <class ST> class SGString;
+template <class T> class SGSparseVector;
 
 /** @brief Class CSVFile used to read data from comma-separated values (CSV)
  * files. See http://en.wikipedia.org/wiki/Comma-separated_values.
@@ -80,6 +83,7 @@ public:
 	 */
 	int32_t get_stats(int32_t& num_tokens);
 
+#ifndef SWIG
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -366,16 +370,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
-
-	/**
-	 * Split a given substring into an array of substrings
-	 * based on a specified delimiter
-	 *
-	 * @param delim delimiter to use
-	 * @param s substring to tokenize
-	 * @param ret array of substrings, returned
-	 */
-	static void tokenize(char delim, substring s, v_array<substring> &ret);
+#endif // #ifndef SWIG
 
 	virtual const char* get_name() const { return "CSVFile"; }
 

@@ -11,6 +11,8 @@
 #ifndef _LIBSVM_MULTICLASS_H___
 #define _LIBSVM_MULTICLASS_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>

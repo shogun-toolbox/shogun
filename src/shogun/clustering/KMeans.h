@@ -12,7 +12,8 @@
 #ifndef _KMEANS_H__
 #define _KMEANS_H__
 
-#include <stdio.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
@@ -23,10 +24,13 @@ namespace shogun
 {
 class CDistanceMachine;
 
-/** training method */
+/** Training method. */
 enum EKMeansMethod
 {
+	/** Mini batch based training */
     KMM_MINI_BATCH,
+
+    /* Standard KMeans with Lloyds algorithm */
     KMM_LLOYD
 };
 
@@ -42,7 +46,12 @@ enum EKMeansMethod
  *
  * Beware that this algorithm obtains only a <em>local</em> optimum.
  *
+ * The option of using mini-batch based training was
+ * added to this class. See ::EKMeansMethod
+ *
  * cf. http://en.wikipedia.org/wiki/K-means_algorithm
+ * cf. http://en.wikipedia.org/wiki/Lloyd's_algorithm
+ *
  *
  */
 class CKMeans : public CDistanceMachine

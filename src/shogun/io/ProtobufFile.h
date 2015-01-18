@@ -12,9 +12,24 @@
 #ifndef __PROTOBUFFILE_H__
 #define __PROTOBUFFILE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/io/File.h>
 
-#include <google/protobuf/message.h>
+// a hack to avoid clashes with apple's ConditionalMacros.h
+#ifdef __APPLE__
+    #ifdef TYPE_BOOL
+        #define ___APPLE_TYPE_BOOL TYPE_BOOL
+        #undef TYPE_BOOL
+    #endif
+#endif
+
+#ifdef __APPLE__
+    #ifdef ___APPLE_TYPE_BOOL
+        #define TYPE_BOOL ___APPLE_TYPE_BOOL
+        #undef ___APPLE_TYPE_BOOL
+    #endif
+#endif
 
 #include <shogun/io/protobuf/ShogunVersion.pb.h>
 #include <shogun/io/protobuf/Headers.pb.h>
@@ -59,6 +74,7 @@ public:
 	/** destructor */
 	virtual ~CProtobufFile();
 
+#ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -345,6 +361,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
+#endif // #ifndef SWIG // SWIG should skip this
 
 	virtual const char* get_name() const { return "ProtobufFile"; }
 

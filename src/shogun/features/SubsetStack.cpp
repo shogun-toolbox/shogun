@@ -1,10 +1,31 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012-2014 Heiko Strathmann
+ * All rights reserved.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <shogun/features/SubsetStack.h>
@@ -72,7 +93,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		}
 
 		/* check for range of indices */
-		index_t max_index=SGVector<index_t>::max(subset.vector, subset.vlen);
+		index_t max_index=CMath::max(subset.vector, subset.vlen);
 		if (max_index>=latest->m_subset_idx.vlen)
 		{
 			subset.display_vector("subset");
@@ -91,7 +112,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 	/* two cases: stack is empty/stack is not empty */
 	if (m_active_subsets_stack->get_num_elements())
 	{
-		/* if there are alreay subsets, we need to map given one through
+		/* if there are already subsets, we need to map given one through
 		 * existing ones */
 
 		/* get latest current subset */
@@ -124,6 +145,11 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 	m_active_subsets_stack->append_element(m_active_subset);
 }
 
+void CSubsetStack::add_subset_in_place(SGVector<index_t> subset)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 void CSubsetStack::remove_subset()
 {
 	index_t num_subsets=m_active_subsets_stack->get_num_elements();
@@ -151,9 +177,6 @@ void CSubsetStack::remove_subset()
 
 		/* otherwise, active subset is just empty */
 	}
-	else
-	{
-		SG_DEBUG("%s::remove_subset() was called but there is no subset set."
-				"\n", get_name());
-	}
+	
+	/* do nothing if nothing on stack */
 }

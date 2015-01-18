@@ -14,6 +14,7 @@
  */
 
 #include <shogun/classifier/vw/cache/VwCacheWriter.h>
+#include <fcntl.h>
 
 using namespace shogun;
 

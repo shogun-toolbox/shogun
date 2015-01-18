@@ -16,8 +16,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
+#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
@@ -26,7 +25,6 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/linsolver/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
-#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>

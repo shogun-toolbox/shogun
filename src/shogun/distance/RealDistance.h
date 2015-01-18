@@ -11,6 +11,8 @@
 #ifndef _REALDISTANCE_H__
 #define _REALDISTANCE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/distance/DenseDistance.h>
 #include <shogun/lib/common.h>
 

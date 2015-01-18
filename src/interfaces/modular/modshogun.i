@@ -12,9 +12,9 @@
 %enddef
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%module(directors="1", package="modshogun", docstring=DOCSTR) modshogun
+%module(directors="1", docstring=DOCSTR) modshogun
 #else
-%module(docstring=DOCSTR, package="modshogun") modshogun
+%module(docstring=DOCSTR) modshogun
 #endif
 #undef DOCSTR
 
@@ -67,6 +67,9 @@
 %include "Metric_includes.i"
 %include "GaussianProcess_includes.i"
 %include "Ensemble_includes.i"
+%include "NeuralNets_includes.i"
+%include "bagging_includes.i"
+%include "Boost_includes.i"
 
 %include "SGBase.i"
 %include "Machine.i"
@@ -93,6 +96,9 @@
 %include "Metric.i"
 %include "GaussianProcess.i"
 %include "Ensemble.i"
+%include "NeuralNets.i"
+%include "bagging.i"
+%include "Boost.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"

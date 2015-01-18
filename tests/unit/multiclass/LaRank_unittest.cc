@@ -2,7 +2,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/LaRank.h>
-#include <shogun/base/init.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

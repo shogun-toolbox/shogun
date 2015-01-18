@@ -8,7 +8,7 @@
  */
 
 #include <shogun/statistics/MMDKernelSelectionComb.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
@@ -20,7 +20,7 @@ CMMDKernelSelectionComb::CMMDKernelSelectionComb() :
 }
 
 CMMDKernelSelectionComb::CMMDKernelSelectionComb(
-		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelection(mmd)
+		CKernelTwoSampleTest* mmd) : CMMDKernelSelection(mmd)
 {
 	init();
 }
@@ -31,7 +31,6 @@ CMMDKernelSelectionComb::~CMMDKernelSelectionComb()
 
 void CMMDKernelSelectionComb::init()
 {
-#ifdef HAVE_LAPACK
 	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
 			"iterations for qp solver", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
@@ -43,10 +42,21 @@ void CMMDKernelSelectionComb::init()
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
-#endif
 }
 
-#ifdef HAVE_LAPACK
+CKernel* CMMDKernelSelectionComb::select_kernel()
+{
+	/* cast is safe due to assertion in constructor */
+	CCombinedKernel* combined=(CCombinedKernel*)m_estimator->get_kernel();
+
+	/* optimise for kernel weights and set them */
+	SGVector<float64_t> weights=compute_measures();
+	combined->set_subkernel_weights(weights);
+
+	/* note that kernel is SG_REF'ed from getter above */
+	return combined;
+}
+
 /* no reference counting, use the static context constructor of SGMatrix */
 SGMatrix<float64_t> CMMDKernelSelectionComb::m_Q=SGMatrix<float64_t>(false);
 
@@ -58,21 +68,7 @@ const float64_t* CMMDKernelSelectionComb::get_Q_col(uint32_t i)
 /** helper function that prints current state */
 void CMMDKernelSelectionComb::print_state(libqp_state_T state)
 {
-	SG_SDEBUG("CMMDKernelSelectionComb::print_state: libqp state:"
-			" primal=%f\n", state.QP);
-}
-
-CKernel* CMMDKernelSelectionComb::select_kernel()
-{
-	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
-
-	/* optimise for kernel weights and set them */
-	SGVector<float64_t> weights=compute_measures();
-	combined->set_subkernel_weights(weights);
-
-	/* note that kernel is SG_REF'ed from getter above */
-	return combined;
+	SG_SDEBUG("libqp state: primal=%f\n", state.QP);
 }
 
 SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
@@ -111,9 +107,8 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	if (!one_pos)
 	{
-		SG_WARNING("CMMDKernelSelectionComb::solve_optimization(): all mmd "
-				"estimates are negative. This is techically possible, although "
-				"extremely rare. Consider using different kernels. "
+		SG_WARNING("All mmd estimates are negative. This is techically possible,"
+				"although extremely rare. Consider using different kernels. "
 				"This combination will lead to a bad two-sample test. Since any"
 				"combination is bad, will now just return equally distributed "
 				"kernel weights\n");
@@ -170,29 +165,3 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	return weights;
 }
-#else
-CKernel* CMMDKernelSelectionComb::select_kernel()
-{
-	SG_ERROR("CMMDKernelSelectionComb::select_kernel(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return NULL;
-}
-
-SGVector<float64_t> CMMDKernelSelectionComb::compute_measures()
-{
-	SG_ERROR("CMMDKernelSelectionComb::select_kernel(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return SGVector<float64_t>();
-}
-
-SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
-		SGVector<float64_t> mmds)
-{
-	SG_ERROR("CMMDKernelSelectionComb::solve_optimization(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return SGVector<float64_t>();
-}
-#endif

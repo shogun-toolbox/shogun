@@ -10,6 +10,8 @@
 #ifndef CGRADIENTCRITERION_H_
 #define CGRADIENTCRITERION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/Evaluation.h>
 
 namespace shogun

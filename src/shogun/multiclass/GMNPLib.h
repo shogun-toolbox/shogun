@@ -15,11 +15,9 @@
 #ifndef GMNPLIB_H__
 #define GMNPLIB_H__
 
-#include <math.h>
-#include <limits.h>
+#include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 

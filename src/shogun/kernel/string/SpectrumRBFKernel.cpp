@@ -21,7 +21,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/SGStringList.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 #include <vector>
 #include <string>

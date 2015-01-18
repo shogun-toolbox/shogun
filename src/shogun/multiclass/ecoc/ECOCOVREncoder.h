@@ -11,6 +11,8 @@
 #ifndef ECOCOVRENCODER_H__
 #define ECOCOVRENCODER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun

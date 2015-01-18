@@ -9,15 +9,25 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/lib/memory.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Map.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/SGObject.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef TRACE_MEMORY_ALLOCS
+#include <shogun/lib/Map.h>
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
+#endif
+
+#ifdef HAVE_PROTOBUF
+#include <google/protobuf/stubs/common.h>
 #endif
 
 namespace shogun
@@ -72,6 +82,8 @@ namespace shogun
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
 		sg_cancel_computations=cancel_computations;
+		
+		init_from_env();
 	}
 
 	void sg_global_print_default(FILE* target, const char* str)
@@ -104,6 +116,9 @@ namespace shogun
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
 
+#ifdef HAVE_PROTOBUF
+		::google::protobuf::ShutdownProtobufLibrary();
+#endif
 	}
 
 	void set_global_io(SGIO* io)
@@ -169,5 +184,22 @@ namespace shogun
 	{
 		SG_REF(sg_rand);
 		return sg_rand;
+	}
+	
+	void init_from_env()
+	{
+		char* env_log_val = NULL;
+		SGIO* io = get_global_io();
+		env_log_val = getenv("SHOGUN_LOG_LEVEL");
+		if (env_log_val)
+		{
+			if(strncmp(env_log_val, "DEBUG", 5) == 0)
+				io->set_loglevel(MSG_DEBUG);
+			else if(strncmp(env_log_val, "WARN", 4) == 0)
+				io->set_loglevel(MSG_WARN);
+			else if(strncmp(env_log_val, "ERROR", 5) == 0)
+				io->set_loglevel(MSG_ERROR);
+		}
+		SG_UNREF(io);
 	}
 }

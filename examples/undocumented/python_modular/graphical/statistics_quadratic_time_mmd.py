@@ -14,7 +14,7 @@ from modshogun import RealFeatures
 from modshogun import MeanShiftDataGenerator
 from modshogun import GaussianKernel, CombinedKernel
 from modshogun import QuadraticTimeMMD, MMDKernelSelectionMax
-from modshogun import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
+from modshogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 from modshogun import EuclideanDistance
 from modshogun import Statistics, Math
 
@@ -81,10 +81,10 @@ def quadratic_time_mmd_graphical():
 
 	# sample from null distribution
 	# bootstrapping, biased statistic
-	mmd.set_null_approximation_method(BOOTSTRAP)
+	mmd.set_null_approximation_method(PERMUTATION)
 	mmd.set_statistic_type(BIASED)
-	mmd.set_bootstrap_iterations(num_null_samples)
-	null_samples_boot=mmd.bootstrap_null()
+	mmd.set_num_null_samples(num_null_samples)
+	null_samples_boot=mmd.sample_null()
 
 	# sample from null distribution
 	# spectrum, biased statistic
@@ -166,7 +166,7 @@ def quadratic_time_mmd_graphical():
 	gca().yaxis.set_major_locator( MaxNLocator(nbins = 3 )) # reduce number of x-ticks
 	hist(null_samples_boot, 20, range=hist_range, normed=True);
 	axvline(thresh_boot, 0, 1, linewidth=2, color='red')
-	title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
+	title('Sampled Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
 	grid(True)
 
 	# plot null distribution spectrum

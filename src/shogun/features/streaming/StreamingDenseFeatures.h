@@ -11,6 +11,8 @@
 #ifndef _STREAMINGDENSEFEATURES__H__
 #define _STREAMINGDENSEFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -266,11 +268,12 @@ public:
 	 */
 	virtual int32_t get_num_vectors() const;
 
-	/** Returns a CDebseFeatures instance which contains num_elements elements
-	 * from the underlying stream
+	/** Returns a new CDebseFeatures instance which contains num_elements elements
+	 * from the underlying stream. The object is not SG_REF'ed.
 	 *
 	 * @param num_elements num elements to save from stream
-	 * @return CFeatures object of underlying type, NULL if not enough data
+	 * @return CFeatures object of underlying type, might contain less data if
+	 * the stream did end (warning is written)
 	 */
 	virtual CFeatures* get_streamed_features(index_t num_elements);
 

@@ -317,8 +317,8 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            const slep_options& options)
 {
 	double fun_s = 0.0;
-	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs))
-	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks))
+	//SG_SDEBUG("As=%f\n", CMath::dot(As,As,n_vecs))
+	//SG_SDEBUG("sc=%f\n", CMath::dot(sc,sc,n_tasks))
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
@@ -394,7 +394,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 			}
 		break;
 	}
-	SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks))
+	SG_SDEBUG("G=%f\n", CMath::dot(g,g,n_feats*n_tasks))
 
 	return fun_s;
 }
@@ -540,7 +540,7 @@ slep_result_t slep_solver(
 		//SG_SDEBUG("fun_s = %f\n", fun_s)
 
 		if (options.mode==PLAIN || options.mode==FUSED)
-			fun_s += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
+			fun_s += rsL2/2 * CMath::dot(w.matrix,w.matrix,n_feats);
 
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
@@ -606,14 +606,14 @@ slep_result_t slep_solver(
 			if (options.loss==LOGISTIC)
 				fun_x /= n_vecs;
 			if (options.mode==PLAIN || options.mode==FUSED)
-				fun_x += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
+				fun_x += rsL2/2 * CMath::dot(w.matrix,w.matrix,n_feats);
 
 			double l_sum = 0.0, r_sum = 0.0;
 			switch (options.loss)
 			{
 				case LOGISTIC:
-					r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
-					l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks);
+					r_sum = CMath::dot(v,v,n_feats*n_tasks);
+					l_sum = fun_x - fun_s - CMath::dot(v,g,n_feats*n_tasks);
 					for (t=0; t<n_tasks; t++)
 					{
 						r_sum += CMath::sq(c[t] - sc[t]);
@@ -622,7 +622,7 @@ slep_result_t slep_solver(
 					r_sum /= 2.0;
 				break;
 				case LEAST_SQUARES:
-					r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
+					r_sum = CMath::dot(v,v,n_feats*n_tasks);
 					for (i=0; i<n_vecs; i++)
 						l_sum += CMath::sq(Aw[i]-As[i]);
 				break;
@@ -702,13 +702,13 @@ slep_result_t slep_solver(
 				}
 			break;
 			case 3:
-				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats*n_tasks));
+				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats*n_tasks));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 			break;
 			case 4:
-				norm_wp = CMath::sqrt(SGVector<float64_t>::dot(wp,wp,n_feats*n_tasks));
-				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats*n_tasks));
+				norm_wp = CMath::sqrt(CMath::dot(wp,wp,n_feats*n_tasks));
+				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats*n_tasks));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 			break;

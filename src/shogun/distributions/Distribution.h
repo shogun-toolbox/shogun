@@ -5,11 +5,14 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _DISTRIBUTION_H___
 #define _DISTRIBUTION_H___
+
+#include <shogun/lib/config.h>
 
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
@@ -156,9 +159,9 @@ class CDistribution : public CSGObject
 		 */
 		virtual void set_features(CFeatures* f)
 		{
-			SG_REF(f);
 			SG_UNREF(features);
 			features=f;
+			SG_REF(features);
 		}
 
 		/** get feature vectors
@@ -182,6 +185,24 @@ class CDistribution : public CSGObject
 		 * @return pseudo count
 		 */
 		virtual float64_t get_pseudo_count() { return pseudo_count; }
+
+		/** update parameters in the em maximization step for mixture model of which
+		 * this distribution is a part
+		 *
+		 * abstract base method
+		 *
+		 * @param alpha_k "belongingness" values of various data points
+		 * @param len length of alpha_k array
+		 * @return sum of alpha_k values
+		 */
+		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
+
+		/** obtain from generic
+		 *
+		 * @param object generic object
+		 * @return Distribution object
+		 */
+		static CDistribution* obtain_from_generic(CSGObject* object);				
 
 	protected:
 		/** feature vectors */

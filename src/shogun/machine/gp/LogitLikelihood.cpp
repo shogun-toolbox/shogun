@@ -222,6 +222,9 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_means(
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive mean: ymu=2*p-1
+	// Note that the distribution is Bernoulli distribution with p(x=1)=p and
+	// p(x=-1)=(1-p)
+	// the mean of the Bernoulli distribution is 2*p-1
 	eigen_r=2.0*eigen_lp.array().exp()-1.0;
 
 	return r;
@@ -237,6 +240,9 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_variances(
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive variance: ys2=1-(2*p-1).^2
+	// Note that the distribution is Bernoulli distribution with p(x=1)=p and
+	// p(x=-1)=(1-p)
+	// the variance of the Bernoulli distribution is 1-(2*p-1).^2
 	eigen_r=1-(2.0*eigen_lp.array().exp()-1.0).square();
 
 	return r;
@@ -303,7 +309,7 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
 	else if (i == 3)
 	{
 		// compute the third derivative: d2lp=-s(f).*(1-s(f)).*(1-2*s(f))
-		eigen_r=-eigen_s.array()*(1.0-eigen_s.array())*(1.0-2*eigen_s.array());
+		eigen_r=-eigen_s.array()*(1.0-eigen_s.array())*(1.0-2.0*eigen_s.array());
 	}
 	else
 	{
@@ -368,7 +374,8 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 
 	SG_UNREF(h);
 
-	r.log();
+	for (index_t i=0; i<r.vlen; i++)
+		r[i]=CMath::log(r[i]);
 
 	return r;
 }

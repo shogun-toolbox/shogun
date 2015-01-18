@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Alesis Novik
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -20,6 +21,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
+
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -98,6 +102,15 @@ class CGaussian : public CDistribution
 		 * @return log likelihood for example
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
+
+		/** update parameters in the em maximization step for mixture model of which
+		 * this distribution is a part
+		 *
+		 * @param alpha_k "belongingness" values of various data points
+		 * @param len length of alpha_k array
+		 * @return sum of values in alpha_k
+		 */
+		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
 
 		/** compute PDF
 		 *

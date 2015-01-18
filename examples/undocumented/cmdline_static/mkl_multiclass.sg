@@ -28,5 +28,5 @@ c 1.2
 train_classifier
 
 
-out.txt = classify
-! rm out.txt
+out-mkl_multiclass.txt = classify
+! rm out-mkl_multiclass.txt

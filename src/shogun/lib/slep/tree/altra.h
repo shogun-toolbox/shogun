@@ -17,10 +17,8 @@
 #ifndef  ALTRA_SLEP
 #define  ALTRA_SLEP
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
+#include <shogun/lib/config.h>
+
 
 
 /*

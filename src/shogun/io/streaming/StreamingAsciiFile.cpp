@@ -9,7 +9,9 @@
  */
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/base/DynArray.h>
 
 #include <ctype.h>
 
@@ -135,7 +137,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 																			\
 				substring example_string = {line, line + num_chars};		\
 																			\
-				CCSVFile::tokenize(m_delimiter, example_string, words);		\
+				tokenize(m_delimiter, example_string, words);				\
 																			\
 				len = words.index();										\
 				substring* feature_start = &words[0];						\
@@ -260,7 +262,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 																		\
 				substring example_string = {line, line + num_chars};	\
 																		\
-				CCSVFile::tokenize(m_delimiter, example_string, words);	\
+				tokenize(m_delimiter, example_string, words);			\
 																		\
 				label = SGIO::float_of_substring(words[0]);				\
 																		\
@@ -624,4 +626,26 @@ void CStreamingAsciiFile::append_item(
 void CStreamingAsciiFile::set_delimiter(char delimiter)
 {
 	m_delimiter = delimiter;
+}
+void CStreamingAsciiFile::tokenize(char delim, substring s, v_array<substring>& ret)
+{
+	ret.erase();
+	char *last = s.start;
+	for (; s.start != s.end; s.start++)
+	{
+		if (*s.start == delim)
+		{
+			if (s.start != last)
+			{
+				substring temp = {last,s.start};
+				ret.push(temp);
+			}
+			last = s.start+1;
+		}
+	}
+	if (s.start != last)
+	{
+		substring final = {last, s.start};
+		ret.push(final);
+	}
 }

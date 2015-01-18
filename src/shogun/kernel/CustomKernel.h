@@ -12,6 +12,8 @@
 #ifndef _CUSTOMKERNEL_H___
 #define _CUSTOMKERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
@@ -26,7 +28,8 @@ namespace shogun
  * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
- * The custom kernel supports subsets each on the rows and the columns.
+ * The custom kernel supports subsets each on the rows and the columns. See
+ * documentation in CFeatures, CLabels how this works. The interface is similar.
  *
  *
  */
@@ -184,6 +187,7 @@ class CCustomKernel: public CKernel
 			for (int64_t i=0; i<len; i++)
 				kmatrix.matrix[i]=tri_kernel_matrix.vector[i];
 
+			m_is_symmetric=true;
 			dummy_init(cols,cols);
 			return true;
 		}
@@ -239,6 +243,7 @@ class CCustomKernel: public CKernel
 				}
 			}
 
+			m_is_symmetric=true;
 			dummy_init(rows, cols);
 			return true;
 		}
@@ -249,10 +254,14 @@ class CCustomKernel: public CKernel
 		 *
 		 * works NOT with subset
 		 *
+		 * @param full_kernel_matrix the original kernel matrix to be set from
+		 * @param check_symmetry whether checking for symmetry of the kernel
+		 * matrix is required
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
-			SGMatrix<float32_t> full_kernel_matrix)
+			SGMatrix<float32_t> full_kernel_matrix, bool check_symmetry=false)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
@@ -262,6 +271,10 @@ class CCustomKernel: public CKernel
 
 			cleanup_custom();
 			kmatrix=full_kernel_matrix;
+
+			if (check_symmetry)
+				m_is_symmetric=kmatrix.is_symmetric();
+
 			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
 		}
@@ -272,10 +285,14 @@ class CCustomKernel: public CKernel
 		 *
 		 * works NOT with subset
 		 *
+		 * @param full_kernel_matrix the original kernel matrix to be set from
+		 * @param check_symmetry whether checking for symmetry of the kernel
+		 * matrix is required
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
-			SGMatrix<float64_t> full_kernel_matrix)
+			SGMatrix<float64_t> full_kernel_matrix, bool check_symmetry=false)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
@@ -294,16 +311,160 @@ class CCustomKernel: public CKernel
 			for (int64_t i=0; i<int64_t(rows) * cols; i++)
 				kmatrix.matrix[i]=full_kernel_matrix.matrix[i];
 
+			if (check_symmetry)
+				m_is_symmetric=kmatrix.is_symmetric();
+
 			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
 		}
 
-		/** adds a row subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
+#ifdef HAVE_LINALG_LIB
+#ifdef HAVE_EIGEN3
+
+		/**
+		 * Overrides the sum_symmetric_block method of CKernel to compute the
+		 * sum directly from the precomputed kernel matrix.
+		 * (Falls back to CKernel method if subsets are specified).
+		 *
+		 * @param block_begin the row and col index at which the block starts
+		 * @param block_size the number of rows and cols in the block
+		 * @param no_diag if true (default), the diagonal elements are excluded
+		 * from the sum
+		 *
+		 * @return sum of kernel values within the block computed as
+		 * \f[
+		 *	\sum_{i}\sum_{j}k(i+\text{block-begin}, j+\text{block-begin})
+		 * \f]
+		 * where \f$i,j\in[0,\text{block-size}-1]\f$
+		 */
+		virtual float64_t sum_symmetric_block(index_t block_begin,
+				index_t block_size, bool no_diag=true);
+
+		/**
+		 * Overrides the sum_block method of CKernel to compute the
+		 * sum directly from the precomputed kernel matrix.
+		 * (Falls back to CKernel method if subsets are specified).
+		 *
+		 * @param block_begin_row the row index at which the block starts
+		 * @param block_begin_col the col index at which the block starts
+		 * @param block_size_row the number of rows in the block
+		 * @param block_size_col the number of cols in the block
+		 * @param no_diag if true (default is false), the diagonal elements
+		 * are excluded from the sum, provided that block_size_row
+		 * and block_size_col are same (i.e. the block is square). Otherwise,
+		 * these are always added
+		 *
+		 * @return sum of kernel values within the block computed as
+		 * \f[
+		 *	\sum_{i}\sum_{j}k(i+\text{block-begin-row}, j+\text{block-begin-col})
+		 * \f]
+		 * where \f$i\in[0,\text{block-size-row}-1]\f$ and
+		 * \f$j\in[0,\text{block-size-col}-1]\f$
+		 */
+		virtual float64_t sum_block(index_t block_begin_row,
+				index_t block_begin_col, index_t block_size_row,
+				index_t block_size_col, bool no_diag=false);
+
+		/**
+		 * Overrides the row_wise_sum_symmetric_block method of CKernel to compute the
+		 * sum directly from the precomputed kernel matrix.
+		 * (Falls back to CKernel method if subsets are specified).
+		 *
+		 * @param block_begin the row and col index at which the block starts
+		 * @param block_size the number of rows and cols in the block
+		 * @param no_diag if true (default), the diagonal elements are excluded
+		 * from the row/col-wise sum
+		 *
+		 * @return vector containing row-wise sum computed as
+		 * \f[
+		 *	v[i]=\sum_{j}k(i+\text{block-begin}, j+\text{block-begin})
+		 * \f]
+		 * where \f$i,j\in[0,\text{block-size}-1]\f$
+		 */
+		virtual SGVector<float64_t> row_wise_sum_symmetric_block(index_t
+				block_begin, index_t block_size, bool no_diag=true);
+
+		/**
+		 * Overrides the row_wise_sum_squared_sum_symmetric_block method of
+		 * CKernel to compute the sum directly from the precomputed kernel matrix.
+		 * (Falls back to CKernel method if subsets are specified).
+		 *
+		 * @param block_begin the row and col index at which the block starts
+		 * @param block_size the number of rows and cols in the block
+		 * @param no_diag if true (default), the diagonal elements are excluded
+		 * from the row/col-wise sum
+		 *
+		 * @return a matrix whose first column contains the row-wise sum of
+		 * kernel values computed as
+		 * \f[
+		 *	v_0[i]=\sum_{j}k(i+\text{block-begin}, j+\text{block-begin})
+		 * \f]
+		 * and second column contains the row-wise sum of squared kernel values
+		 * \f[
+		 *	v_1[i]=\sum_{j}^k^2(i+\text{block-begin}, j+\text{block-begin})
+		 * \f]
+		 * where \f$i,j\in[0,\text{block-size}-1]\f$
+		 */
+		virtual SGMatrix<float64_t> row_wise_sum_squared_sum_symmetric_block(
+				index_t block_begin, index_t block_size, bool no_diag=true);
+
+		/**
+		 * Overrides the row_wise_sum_block method of CKernel to compute the sum
+		 * directly from the precomputed kernel matrix.
+		 * (Falls back to CKernel method if subsets are specified).
+		 *
+		 * @param block_begin_row the row index at which the block starts
+		 * @param block_begin_col the col index at which the block starts
+		 * @param block_size_row the number of rows in the block
+		 * @param block_size_col the number of cols in the block
+		 * @param no_diag if true (default is false), the diagonal elements
+		 * are excluded from the row/col-wise sum, provided that block_size_row
+		 * and block_size_col are same (i.e. the block is square). Otherwise,
+		 * these are always added
+		 *
+		 * @return a vector whose first block_size_row entries contain
+		 * row-wise sum of kernel values computed as
+		 * \f[
+		 *	v[i]=\sum_{j}k(i+\text{block-begin-row}, j+\text{block-begin-col})
+		 * \f]
+		 * and rest block_size_col entries col-wise sum of kernel values
+		 * computed as
+		 * \f[
+		 *	v[\text{block-size-row}+j]=\sum_{i}k(i+\text{block-begin-row},
+		 *	j+\text{block-begin-col})
+		 * \f]
+		 * where \f$i\in[0,\text{block-size-row}-1]\f$ and
+		 * \f$j\in[0,\text{block-size-col}-1]\f$
+		 */
+		virtual SGVector<float64_t> row_col_wise_sum_block(
+				index_t block_begin_row, index_t block_begin_col,
+				index_t block_size_row, index_t block_size_col,
+				bool no_diag=false);
+#endif // HAVE_EIGEN3
+#endif // HAVE_LINALG_LIB
+
+		/** Adds a row subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_row_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * Calls row_subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_row_subset(SGVector<index_t> subset);
+
+		/** Sets/changes latest added row subset. This allows to add multiple subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_row_subset(). If no subset is active, this just adds.
+		 *
+		 * Calls row_subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_row_subset_in_place(SGVector<index_t> subset);
 
 		/** removes that last added row subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
@@ -316,12 +477,28 @@ class CCustomKernel: public CKernel
 		/** method may be overwritten to update things that depend on subset */
 		virtual void row_subset_changed_post();
 
-		/** adds a col subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
+		/** Adds a column subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_col_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * Calls col_subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_col_subset(SGVector<index_t> subset);
+
+		/** Sets/changes latest added column subset. This allows to add multiple subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_col_subset(). If no subset is active, this just adds.
+		 *
+		 * Calls col_subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_col_subset_in_place(SGVector<index_t> subset);
 
 		/** removes that last added col subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
@@ -433,8 +610,12 @@ class CCustomKernel: public CKernel
 		/** upper diagonal */
 		bool upper_diagonal;
 
+		/** whether the kernel matrix is symmetric */
+		bool m_is_symmetric;
+
 		/** row subset stack */
 		CSubsetStack* m_row_subset_stack;
+
 		/** column subset stack */
 		CSubsetStack* m_col_subset_stack;
 

@@ -1,15 +1,11 @@
-#include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/Factor.h>
-#include <shogun/labels/FactorGraphLabels.h>
 #include <gtest/gtest.h>
 
-#include <iostream>
 using namespace std;
 
 using namespace shogun;

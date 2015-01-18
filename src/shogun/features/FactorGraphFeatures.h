@@ -11,6 +11,8 @@
 #ifndef __FACTORGRAPH_FEATURES_H__
 #define __FACTORGRAPH_FEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/Features.h>
 #include <shogun/structure/FactorGraph.h>
 

@@ -12,11 +12,20 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/lib/computation/aggregator/JobResultAggregator.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 
 namespace shogun
 {
@@ -26,6 +35,43 @@ CLogDetEstimator::CLogDetEstimator()
 {
 	init();
 }
+
+#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
+CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
+	: CSGObject()
+{
+	init();
+
+	m_computation_engine=new CSerialComputationEngine();
+	SG_REF(m_computation_engine);
+
+	CSparseMatrixOperator<float64_t>* op=
+		new CSparseMatrixOperator<float64_t>(sparse_mat);
+
+	float64_t accuracy=1E-5;
+
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
+
+	m_operator_log=new CLogRationalApproximationCGM(op,m_computation_engine,
+		eig_solver,linear_solver,accuracy);
+	SG_REF(m_operator_log);
+
+	#ifdef HAVE_COLPACK
+	m_trace_sampler=new CProbingSampler(op,1,NATURAL,DISTANCE_TWO);
+	#else
+	m_trace_sampler=new CNormalSampler(op->get_dimension());
+	#endif
+
+	SG_REF(m_trace_sampler);
+
+	SG_INFO("LogDetEstimator:Using %s, %s with 1E-5 accuracy, %s as default\n",
+		m_computation_engine->get_name(), m_operator_log->get_name(),
+		m_trace_sampler->get_name());
+}
+#endif //HAVE_EIGEN3
+#endif //HAVE_LAPACK
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
 	COperatorFunction<float64_t>* operator_log,
@@ -65,6 +111,24 @@ CLogDetEstimator::~CLogDetEstimator()
 	SG_UNREF(m_trace_sampler);
 	SG_UNREF(m_operator_log);
 	SG_UNREF(m_computation_engine);
+}
+
+CTraceSampler* CLogDetEstimator::get_trace_sampler(void) const
+{
+	SG_REF(m_trace_sampler);
+	return m_trace_sampler;
+}
+
+CIndependentComputationEngine* CLogDetEstimator::get_computation_engine(void) const
+{
+	SG_REF(m_computation_engine);
+	return m_computation_engine;
+}
+
+COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) const
+{
+	SG_REF(m_operator_log);
+	return m_operator_log;
 }
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)

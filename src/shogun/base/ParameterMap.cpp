@@ -8,10 +8,17 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <stdio.h>
+#include <string.h>
+
+#include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
+
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/base/DynArray.h>
 #include <shogun/lib/DataType.h>
 
 using namespace shogun;

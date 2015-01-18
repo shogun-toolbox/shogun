@@ -9,6 +9,16 @@ cmake_minimum_required(VERSION 2.8.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
 
+############# minimum library versions ###################
+SET(EIGEN_VERSION_MINIMUM 3.1.2)
+SET(VIENNACL_VERSION_MINIMUM 1.5.0)
+
+# Store system's or distribution's C[XX]FLAGS.
+SET(SYSTEM_C_FLAGS "${CMAKE_C_FLAGS}")
+SET(SYSTEM_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS "")
+SET(CMAKE_CXX_FLAGS "")
+
 # CCACHE
 OPTION(ENABLE_CCACHE "Enable ccache for compilation" ON)
 FIND_PACKAGE(CCache)
@@ -21,8 +31,6 @@ if(CCACHE_FOUND AND ENABLE_CCACHE)
 	SET(CMAKE_C_FLAGS "${CCACHE_FLAGS} ${CMAKE_C_FLAGS}")
 	SET(CMAKE_CXX_FLAGS "${CCACHE_FLAGS} ${CMAKE_CXX_FLAGS}")
 endif()
-
-SET(CPACK_PACKAGE_CONTACT shogun@shogun-toolbox.org)
 
 ################# VARIABLES #####################
 SET(DEFINES "SWIG_TYPE_TABLE=shogun;SHOGUN")
@@ -55,7 +63,19 @@ IF (
 	OctaveModular OR JavaModular OR PerlModular OR
 	RubyModular OR CSharpModular
    )
-	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	IF(RModular)
+		FIND_PACKAGE(SWIG 2.0.5 REQUIRED)
+	ELSE()
+		FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	ENDIF()
+
+	# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
+	# typemapping created for earlier versions of SWIG.
+	# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
+	IF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
+	ENDIF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)
@@ -113,12 +133,14 @@ ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	SET(RELEASE_COMPILER_FLAGS "-finline-functions -funroll-loops")
 ENDIF()
 SET(SWIG_CXX_COMPILER_FLAGS "-O0 -g")
-SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_C_FLAGS}")
-SET(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} ${CMAKE_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
 SET(CMAKE_C_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
-SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2")
-SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
+SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2 ${SYSTEM_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2 ${SYSTEM_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS_DEBUG "-g")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 OPTION(ENABLE_COVERAGE "Enable code coverage" OFF)
 IF(ENABLE_COVERAGE)
@@ -191,7 +213,7 @@ ENDIF()
 
 # this has been only fixed in swig 2.0.12 or later.
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE
-	AND SWIG_VERSION VERSION_LESS "2.0.12")))
+	AND SWIG_VERSION VERSION_LESS "2.0.12") OR MatlabStatic))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)
@@ -219,21 +241,17 @@ ELSEIF(DARWIN AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT (CMAKE_C
 	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
 ENDIF()
 
+# Fix build on Mac OSX 10.10 Yosemite when using mp-gcc-4X.
+# See: https://github.com/shogun-toolbox/shogun/issues/2635
+IF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+	SET(CMAKE_CXX_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${CMAKE_CXX_FLAGS}")
+	SET(SWIG_CXX_COMPILER_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${SWIG_CXX_COMPILER_FLAGS}")
+ENDIF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("unordered_map" HAVE_STD_UNORDERED_MAP)
 IF (HAVE_STD_UNORDERED_MAP)
 	LIST(APPEND DEFINES HAVE_STD_UNORDERED_MAP)
-ENDIF()
-
-IF(CMAKE_BUILD_TYPE MATCHES "Release")
-	# there's a bug on FreeBSD -march=native.
-	# for some CPU types it does not detect the right flags
-	# see: http://www.freebsd.org/cgi/query-pr.cgi?pr=178792&cat=
-	IF (NOT (FREEBSD AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")))
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-		SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -march=native")
-	ENDIF()
 ENDIF()
 
 ###### MALLOC LIBRARY ###########
@@ -307,8 +325,11 @@ ENDIF()
 
 # detect word size
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
-	SET(CMAKE_SWIG_FLAGS -DSWIGWORDSIZE64)
+	LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
 ENDIF()
+
+#integration
+OPTION(OpenCV "OpenCV Integration" OFF)
 
 #interfaces
 OPTION(PythonModular "Python Modular" OFF)
@@ -482,14 +503,14 @@ CHECK_CXX_SOURCE_COMPILES(
 AppendToDefines(HAVE_STD_ISNAN)
 
 # check SSE and SSE2 intrinsics header
-IF(NOT CYGWIN)
+IF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 include(CheckIncludeFile)
 CHECK_INCLUDE_FILE(xmmintrin.h HAVE_BUILTIN_VECTOR)
 CHECK_INCLUDE_FILE(emmintrin.h HAVE_SSE2)
 IF(HAVE_SSE2)
 	LIST(APPEND DEFINES HAVE_SSE2)
 ENDIF(HAVE_SSE2)
-ENDIF(NOT CYGWIN)
+ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 
 ###### checks for random
 CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
@@ -618,11 +639,35 @@ IF(BUNDLE_EIGEN)
 	LIST(APPEND DEFINES HAVE_EIGEN3)
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ELSE()
-	FIND_PACKAGE(Eigen3 3.1.2)
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
 	IF (EIGEN3_FOUND)
 		SET(HAVE_EIGEN3 1)
 		LIST(APPEND DEFINES HAVE_EIGEN3)
 		LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
+	ENDIF()
+ENDIF()
+
+# OpenCL/ViennaCL detection
+FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM})
+IF (VIENNACL_FOUND)
+	SET(HAVE_VIENNACL 1)
+	LIST(APPEND DEFINES HAVE_VIENNACL)
+	LIST(APPEND DEFINES VIENNACL_WITH_OPENCL)
+	LIST(APPEND INCLUDES ${VIENNACL_INCLUDE_DIRS})
+	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${VIENNACL_LIBRARIES})
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENCL_C_FLAGS}")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENCL_CXX_FLAGS}")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OPENCL_EXE_LINKER_FLAGS}")
+ENDIF()
+
+IF (OpenCV)
+	# find OpenCV library if intended by the user.
+	FIND_PACKAGE(OpenCV)
+	IF (OpenCV_FOUND)
+		SET(HAVE_OPENCV 1)
+		LIST(APPEND DEFINES HAVE_OPENCV)
+		LIST(APPEND INCLUDES ${OpenCV_INCLUDE_DIRS})
+		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${OpenCV_LIBRARIES})
 	ENDIF()
 ENDIF()
 
@@ -733,8 +778,9 @@ IF (LIBXML2_FOUND)
 	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LIBXML2_LIBRARIES})
 ENDIF()
 
+OPTION(USE_HDF5 "Use HDF5" ON)
 FIND_PACKAGE(HDF5)
-IF (HDF5_FOUND)
+IF (HDF5_FOUND AND USE_HDF5)
 	SET(HAVE_HDF5 1)
 	LIST(APPEND DEFINES HAVE_HDF5)
 	LIST(APPEND INCLUDES ${HDF5_INCLUDE_DIRS})
@@ -803,19 +849,160 @@ IF (PROTOBUF_FOUND)
 	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${PROTOBUF_LIBRARIES})
 ENDIF()
 
+# Check if supported linear algebra backend is found
+IF (HAVE_CXX0X OR HAVE_CXX11)
+	IF (EIGEN3_FOUND OR VIENNACL_FOUND)
+		SET(HAVE_LINALG_LIB 1)
+		LIST(APPEND DEFINES HAVE_LINALG_LIB)
+		MESSAGE("-- Supported backend(s) for linear algebra libraries found")
+	ELSE ()
+		MESSAGE("-- NO supported backend(s) for linear algebra libraries found")
+	ENDIF ()
+ELSE ()
+	MESSAGE ("-- Linear algebra uses c++11 features. Please use a supported compiler")
+ENDIF ()
+
+# Linear algebra default global backend setups
+OPTION (LinAlgBackend "Set global linear algebra backend library for all modules")
+IF (LinAlgBackend STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM} REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3 1)
+		LIST(APPEND DEFINES USE_EIGEN3)
+		MESSAGE("-- Eigen3 set as default global linear algebra backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default global linear algebra backend")
+	ENDIF ()
+ELSEIF (LinAlgBackend STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL 1)
+		LIST(APPEND DEFINES USE_VIENNACL)
+		MESSAGE("-- ViennaCL set as default global linear algebra backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default global linear algebra backend")
+	ENDIF ()
+ENDIF ()
+
+# Linear algebra default module specific backend setup
+
+# Core module
+OPTION (CoreLib "Set linear algebra backend library for core module")
+IF (CoreLib STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM} REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3_CORE 1)
+		LIST(APPEND DEFINES USE_EIGEN3_CORE)
+		MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default core module (linalg) backend")
+	ENDIF ()
+ELSEIF (CoreLib STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL_CORE 1)
+		LIST(APPEND DEFINES USE_VIENNACL_CORE)
+		MESSAGE("-- ViennaCL set as default core module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default core module (linalg) backend")
+	ENDIF ()
+ENDIF ()
+
+# Reduction module
+OPTION (ReduxLib "Set linear algebra backend library for reduction module")
+IF (ReduxLib STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM} REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3_REDUX 1)
+		LIST(APPEND DEFINES USE_EIGEN3_REDUX)
+		MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default reduction module (linalg) backend")
+	ENDIF ()
+ELSEIF (ReduxLib STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL_REDUX 1)
+		LIST(APPEND DEFINES USE_VIENNACL_REDUX)
+		MESSAGE("-- ViennaCL set as default reduction module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default reduction module (linalg) backend")
+	ENDIF ()
+ENDIF ()
+
+# Linear solver module
+OPTION (LinSolverLib "Set linear algebra backend library for linear solver module")
+IF (LinSolverLib STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM} REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3_LINSLV 1)
+		LIST(APPEND DEFINES USE_EIGEN3_LINSLV)
+		MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default linear solver module (linalg) backend")
+	ENDIF ()
+ELSEIF (LinSolverLib STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL_LINSLV 1)
+		LIST(APPEND DEFINES USE_VIENNACL_LINSLV)
+		MESSAGE("-- ViennaCL set as default linear solver module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default linear solver module (linalg) backend")
+	ENDIF ()
+ENDIF ()
+
+# Eigen solver module
+OPTION (EigenSolver "Set linear algebra backend library for eigen solver module")
+IF (EigenSolver STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM} REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3_EIGSLV 1)
+		LIST(APPEND DEFINES USE_EIGEN3_EIGSLV)
+		MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default eigen solver module (linalg) backend")
+	ENDIF ()
+ELSEIF (EigenSolver STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL_EIGSLV 1)
+		LIST(APPEND DEFINES USE_VIENNACL_EIGSLV)
+		MESSAGE("-- ViennaCL set as default eigen solver module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default eigen solver module (linalg) backend")
+	ENDIF ()
+ENDIF ()
+
 #SWIG Interfaces
-SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w473")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w454")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w312")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w325")
+LIST(APPEND CMAKE_SWIG_FLAGS "-fvirtual")
 
 OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
 IF(USE_SWIG_DIRECTORS)
 	LIST(APPEND DEFINES USE_SWIG_DIRECTORS)
 ENDIF()
 
+# Respect system's or distribution's C[XX]FLAGS.
+STRING(TOUPPER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_UC)
+OPTION(SWIG_WITH_SYSTEM_CFLAGS "Enable system's C[XX]FLAGS for compilation of swig-binaries" ON)
+
+IF(NOT ("${BUILD_TYPE_UC}" STREQUAL "DISTRIBUTION"))
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SYSTEM_C_FLAGS}")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYSTEM_CXX_FLAGS}")
+ENDIF(NOT ("${BUILD_TYPE_UC}" STREQUAL "DISTRIBUTION"))
+
+IF(SWIG_WITH_SYSTEM_CFLAGS)
+	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} ${SYSTEM_CXX_FLAGS}")
+ENDIF(SWIG_WITH_SYSTEM_CFLAGS)
+
 # python modular
 IF (PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
-	set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
 
@@ -950,7 +1137,7 @@ ENDIF()
 IF (MatlabStatic)
 	FIND_PACKAGE(Matlab REQUIRED)
 	IF(MATLAB_FOUND)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
 		ENDIF()
 	ELSE()
@@ -1015,24 +1202,13 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 ENDIF()
 
-# general cpack settings
-set(CPACK_PACKAGE_NAME "shogun")
-set(CPACK_PACKAGE_VENDOR "shogun")
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/README")
-#SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/src/COPYRIGHT")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Shogun Machine Learning Toolbox")
-set(CPACK_PACKAGE_VERSION ${VERSION})
-set(CPACK_PACKAGE_VERSION_MAJOR ${SHOGUN_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${SHOGUN_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${SHOGUN_VERSION_PATCH})
+IF(DOXYGEN_FOUND)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
+	ENDIF()
+ENDIF()
 
-# debian package settings
-set(CPACK_DEB_COMPONENT_INSTALL ON)
-
-# rpm package settings
-set(CPACK_RPM_COMPONENT_INSTALL ON)
-
-INCLUDE(CPack)
+include(ShogunPackaging)
 
 message(STATUS "===================================================================================================================")
 message(STATUS "Summary of Configuration Variables")
@@ -1040,6 +1216,12 @@ include(FeatureSummary)
 feature_summary(WHAT ALL)
 
 message(STATUS "===================================================================================================================")
+message(STATUS "Enabled Integration")
+
+PrintInterfaceStatus("OpenCV Integration" OpenCV)
+
+message(STATUS
+"===================================================================================================================")
 message(STATUS "Enabled Interfaces")
 
 message(STATUS "  libshogun is ON")

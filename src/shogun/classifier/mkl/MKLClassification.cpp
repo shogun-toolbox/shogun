@@ -34,5 +34,7 @@ float64_t CMKLClassification::compute_sum_alpha()
 
 void CMKLClassification::init_training()
 {
-	ASSERT(m_labels && m_labels->get_num_labels() && m_labels->get_label_type() == LT_BINARY)
+	REQUIRE(m_labels, "Labels not set.\n");
+	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
+	REQUIRE(m_labels->get_label_type() == LT_BINARY, "Labels must be binary.\n");
 }

@@ -15,6 +15,8 @@
 #ifndef _VW_LABEL_H__
 #define _VW_LABEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>

@@ -11,6 +11,8 @@
 #ifndef __FACTORGRAPH_LABELS_H__
 #define __FACTORGRAPH_LABELS_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>

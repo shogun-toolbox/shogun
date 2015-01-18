@@ -11,8 +11,9 @@
  * Implementation of the Proximal Point P-BMRM
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libp3bm.h>
+#include <shogun/structure/libppbm.h>
 #include <shogun/lib/external/libqp.h>
+ #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 
 namespace shogun
@@ -21,7 +22,6 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H, *H2;
-static uint32_t BufSize;
 
 /*----------------------------------------------------------------------
   Returns pointer at i-th column of Hessian matrix.
@@ -91,6 +91,14 @@ BmrmStatistics svm_ppbm_solver(
 	alpha=0.0;
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
+
+	ASSERT(nDim > 0);
+	ASSERT(BufSize > 0);
+	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
+		"overflow: %u * %u > %u -- biggest possible BufSize=%u or nDim=%u\n",
+		BufSize, nDim, std::numeric_limits<size_t>::max(),
+		(std::numeric_limits<size_t>::max() / nDim),
+		(std::numeric_limits<size_t>::max() / BufSize));
 
 	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, float64_t);
 
@@ -195,8 +203,8 @@ BmrmStatistics svm_ppbm_solver(
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
 	sq_norm_Wdiff=0.0;
 
-	b[0] = SGVector<float64_t>::dot(subgrad, W, nDim);
-	sq_norm_W = SGVector<float64_t>::dot(W, W, nDim);
+	b[0] = CMath::dot(subgrad, W, nDim);
+	sq_norm_W = CMath::dot(W, W, nDim);
 	for (uint32_t j=0; j<nDim; ++j)
 	{
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
@@ -245,7 +253,7 @@ BmrmStatistics svm_ppbm_solver(
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
-				rsum=SGVector<float64_t>::dot(A_1, A_2, nDim);
+				rsum=CMath::dot(A_1, A_2, nDim);
 
 				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]
@@ -254,15 +262,15 @@ BmrmStatistics svm_ppbm_solver(
 		}
 
 		A_2=get_cutting_plane(CPList_tail);
-		rsum = SGVector<float64_t>::dot(A_2, A_2, nDim);
+		rsum = CMath::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
 		diag_H[ppbmrm.nCP]=H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)];
 		I[ppbmrm.nCP]=1;
 
-		ppbmrm.nCP++;
 		beta[ppbmrm.nCP]=0.0; // [beta; 0]
+		ppbmrm.nCP++;
 
 		/* tune alpha cycle */
 		/* ---------------------------------------------------------------------- */
@@ -289,7 +297,7 @@ BmrmStatistics svm_ppbm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -354,7 +362,7 @@ BmrmStatistics svm_ppbm_solver(
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
-					rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+					rsum = CMath::dot(A_1, prevW, nDim);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -459,7 +467,7 @@ BmrmStatistics svm_ppbm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -514,9 +522,9 @@ BmrmStatistics svm_ppbm_solver(
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
-		sq_norm_prevW=SGVector<float64_t>::dot(prevW, prevW, nDim);
-		b[ppbmrm.nCP]=SGVector<float64_t>::dot(subgrad, W, nDim) - R;
+		sq_norm_W=CMath::dot(W, W, nDim);
+		sq_norm_prevW=CMath::dot(prevW, prevW, nDim);
+		b[ppbmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)
@@ -597,6 +605,10 @@ BmrmStatistics svm_ppbm_solver(
 		{
 			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
+
+		// next CP would exceed BufSize
+		if (ppbmrm.nCP+1 >= BufSize)
+			ppbmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
 		if (verbose)

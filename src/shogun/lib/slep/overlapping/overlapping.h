@@ -17,10 +17,8 @@
 #ifndef  OVERLAPPING_SLEP
 #define  OVERLAPPING_SLEP
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
+#include <shogun/lib/config.h>
+
 
 
 /*

@@ -17,10 +17,7 @@
 #ifndef  INVCOV_SLEP
 #define  INVCOV_SLEP
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
+#include <shogun/lib/config.h>
 
 /*
  * A:    n x n

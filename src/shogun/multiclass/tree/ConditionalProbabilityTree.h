@@ -13,6 +13,8 @@
 
 #include <map>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
@@ -97,20 +99,20 @@ protected:
 	 * @param ex the instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(SGVector<float32_t> ex, node_t *node);
+	void train_path(SGVector<float32_t> ex, bnode_t *node);
 
 	/** train a single node
 	 * @param ex the example being trained
 	 * @param label label
 	 * @param node the node
 	 */
-	void train_node(SGVector<float32_t> ex, float64_t label, node_t *node);
+	void train_node(SGVector<float32_t> ex, float64_t label, bnode_t *node);
 
 	/** predict a single node
 	 * @param ex the example being predicted
 	 * @param node the node
 	 */
-	float64_t predict_node(SGVector<float32_t> ex, node_t *node);
+	float64_t predict_node(SGVector<float32_t> ex, bnode_t *node);
 
 	/** create a new OnlineLinear machine for a node
 	 * @param ex the Example instance for training the new machine
@@ -122,7 +124,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(node_t *node, SGVector<float32_t> ex)=0;
+	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex)=0;
 
 	/** compute conditional probabilities for ex along the whole tree for predicting */
 	void compute_conditional_probabilities(SGVector<float32_t> ex);
@@ -130,10 +132,10 @@ protected:
 	/** accumulate along the path to the root the conditional probability for a
 	 * particular leaf node.
 	 */
-	float64_t accumulate_conditional_probability(node_t *leaf);
+	float64_t accumulate_conditional_probability(bnode_t *leaf);
 
 	int32_t m_num_passes; ///< number of passes for online training
-	std::map<int32_t, node_t*> m_leaves; ///< class => leaf mapping
+	std::map<int32_t, bnode_t*> m_leaves; ///< class => leaf mapping
 	CStreamingDenseFeatures<float32_t> *m_feats; ///< online features
 };
 

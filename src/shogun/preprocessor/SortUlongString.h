@@ -11,11 +11,12 @@
 #ifndef _CSORTULONGSTRING__H__
 #define _CSORTULONGSTRING__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/StringFeatures.h>
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/lib/common.h>
 
-#include <stdio.h>
 namespace shogun
 {
 /** @brief Preprocessor SortUlongString, sorts the indivual strings in ascending order.

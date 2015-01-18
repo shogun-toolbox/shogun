@@ -2086,6 +2086,7 @@ static void solve_nu_multiclass_svc(const svm_problem *prob,
 	SG_FREE(y);
 	SG_FREE(zeros);
 	SG_FREE(alpha);
+	SG_FREE(class_sv_count);
 }
 
 static void solve_one_class(

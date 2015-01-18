@@ -39,7 +39,7 @@ CCGMShiftedFamilySolver::~CCGMShiftedFamilySolver()
 }
 
 SGVector<float64_t> CCGMShiftedFamilySolver::solve(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> shifts(1);
 	shifts[0]=0.0;
@@ -50,7 +50,7 @@ SGVector<float64_t> CCGMShiftedFamilySolver::solve(
 }
 
 SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b,
 	SGVector<complex128_t> shifts, SGVector<complex128_t> weights)
 {
 	SG_DEBUG("Entering\n");
@@ -186,7 +186,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	if (!it.succeeded(r))
 		SG_WARNING("Did not converge!\n");
 
-	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+	SG_INFO("Iteration took %d times, residual norm=%.20lf, time elapsed=%f\n",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights

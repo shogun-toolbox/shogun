@@ -21,6 +21,9 @@
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
 %newobject copy_subset(SGVector<index_t> indices);
+%newobject copy_dimension_subset(SGVector<index_t> indices);
+%newobject get_streamed_features(index_t num_elements);
+
 
 /* methods in the labels factory do a conversion only - but need to be ref'd for modular interfaces */
 %newobject shogun::CLabelsFactory::to_binary(CLabels* base_labels);
@@ -28,7 +31,7 @@
 %newobject shogun::CLabelsFactory::to_multiclass(CLabels* base_labels);
 %newobject shogun::CLabelsFactory::to_regression(CLabels* base_labels);
 %newobject shogun::CLabelsFactory::to_structured(CLabels* base_labels);
-%newobject shogun::CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_multilabel_output(CLabels* base_labels);
 %newobject shogun::CLabelsFactory::to_multiclass_structured(CLabels* base_labels);
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
@@ -56,6 +59,7 @@
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(StreamingVwFeatures) CStreamingVwFeatures;
 %rename(DummyFeatures) CDummyFeatures;
+%rename(IndexFeatures) CIndexFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
@@ -80,7 +84,7 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 
 %rename(StructuredLabels) CStructuredLabels;
 %rename(LatentLabels) CLatentLabels;
-%rename(MulticlassMultipleOutputLabels) CMulticlassMultipleOutputLabels;
+%rename(MultilabelLabels) CMultilabelLabels;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
@@ -487,6 +491,7 @@ namespace shogun
 }
 
 %include <shogun/features/DummyFeatures.h>
+%include <shogun/features/IndexFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
@@ -503,7 +508,7 @@ namespace shogun
 %include <shogun/labels/MulticlassLabels.h>
 %include <shogun/labels/RegressionLabels.h>
 %include <shogun/labels/StructuredLabels.h>
-%include <shogun/labels/MulticlassMultipleOutputLabels.h>
+%include <shogun/labels/MultilabelLabels.h>
 
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>

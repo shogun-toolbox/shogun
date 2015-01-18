@@ -122,8 +122,6 @@ TEST(DenseMatrixOperator, shift_apply)
 	EXPECT_NEAR(map_r1.norm(), map_r2.norm(), 1E-15);
 }
 
-#endif // HAVE_EIGEN3
-
 TEST(DenseMatrixOperator, asymmetric_clone)
 {
 	const index_t length_x=2;
@@ -136,3 +134,4 @@ TEST(DenseMatrixOperator, asymmetric_clone)
 	SG_UNREF(op);
 	SG_UNREF(op_cloned);
 }
+#endif // HAVE_EIGEN3

@@ -48,6 +48,9 @@
 
 #include <vector>
 #include <algorithm>
+#include <ctime>
+#include <algorithm>
+#include <sys/time.h>
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
@@ -427,7 +430,7 @@ float64_t LaRankOutput::computeScore (int32_t x_id)
 	else
 	{
 		float32_t *row = larank_kcache_query_row (kernel, x_id, l);
-		return SGVector<float32_t>::dot (beta, row, l);
+		return CMath::dot (beta, row, l);
 	}
 }
 
@@ -521,7 +524,7 @@ float64_t LaRankOutput::getW2 ()
 	for (int32_t r = 0; r < l; r++)
 	{
 		float32_t *row_r = larank_kcache_query_row (kernel, r2i[r], l);
-		sum += beta[r] * SGVector<float32_t>::dot (beta, row_r, l);
+		sum += beta[r] * CMath::dot (beta, row_r, l);
 	}
 	return sum;
 }

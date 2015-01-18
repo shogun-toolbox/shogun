@@ -37,25 +37,10 @@ public:
 	 *
 	 * @param mmd MMD instance to use
 	 */
-	CMMDKernelSelectionComb(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionComb(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionComb();
-
-#ifdef HAVE_LAPACK
-	/** Abstract method that computes weights of the selected combined kernel.
-	 *
-	 * @return weights of the selected kernel
-	 */
-	virtual SGVector<float64_t> compute_measures()=0;
-#else
-	/** Abstract method that computes weights of the selected combined kernel.
-	 * LAPACK needs to be installed for this method to work. Please install!
-	 *
-	 * @return Throws an error
-	 */
-	virtual SGVector<float64_t> compute_measures();
-#endif
 
 	/** @return computes weights for the underlying kernel, sets them to it, and
 	 * returns it (SG_REF'ed)
@@ -65,7 +50,7 @@ public:
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const=0;
+	virtual const char* get_name() const=0;
 
 protected:
 	/** Solves the quadratic program
@@ -82,7 +67,6 @@ protected:
 	 */
 	virtual SGVector<float64_t> solve_optimization(SGVector<float64_t> mmds);
 
-#ifdef HAVE_LAPACK
 	/** return pointer to i-th column of m_Q. Helper for libqp */
 	static const float64_t* get_Q_col(uint32_t i);
 
@@ -100,7 +84,6 @@ protected:
 
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
-#endif
 
 private:
 	/** initializer */

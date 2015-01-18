@@ -17,9 +17,15 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/preprocessor/KernelPCA.h>
+#include <shogun/preprocessor/FisherLDA.h>
 
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/preprocessor/DecompressString.h>
 #include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/preprocessor/SortWordString.h>
+
+#include <shogun/preprocessor/FeatureSelection.h>
+#include <shogun/preprocessor/DependenceMaximization.h>
+#include <shogun/preprocessor/KernelDependenceMaximization.h>
+#include <shogun/preprocessor/BAHSIC.h>
 %}

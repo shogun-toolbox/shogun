@@ -10,7 +10,8 @@
 #ifndef _LKMEANS_H__
 #define _LKMEANS_H__
 
-#include <stdio.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>
@@ -18,6 +19,7 @@
 
 namespace shogun
 {
+/** Implementation class for the standard KMeans algorithm. */
 class CKMeansLloydImpl
 {
 	public:	

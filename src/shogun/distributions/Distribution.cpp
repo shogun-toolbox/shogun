@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -21,6 +22,7 @@ CDistribution::CDistribution()
 
 CDistribution::~CDistribution()
 {
+	SG_UNREF(features);
 }
 
 float64_t CDistribution::get_log_likelihood_sample()
@@ -71,4 +73,23 @@ SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
 		result[i]=get_likelihood_example(i);
 
 	return result;
+}
+
+float64_t CDistribution::update_params_em(float64_t* alpha_k, int32_t len)
+{
+	SG_WARNING("Not implemented in this class. This class cannot be used for Mixture models.\n")
+	SG_NOTIMPLEMENTED
+	return -1;
+}
+
+CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
+{
+	if (!object)
+		return NULL;
+
+	CDistribution* casted=dynamic_cast<CDistribution*>(object);
+	if (!casted)
+		return NULL;
+
+	return casted;
 }

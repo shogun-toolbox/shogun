@@ -16,9 +16,10 @@
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
-#include <math.h>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -36,10 +37,19 @@ public:
 	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
 	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param values vector of values
+	 * @param vec vector of values
 	 * @return mean of given values
 	 */
-	static float64_t mean(SGVector<float64_t> values);
+	template<class T>
+		static floatmax_t mean(SGVector<T> vec)
+		{
+			floatmax_t sum = 0;
+
+			for ( index_t i = 0 ; i < vec.vlen ; ++i )
+				sum += vec[i];
+
+			return sum/vec.vlen;
+		}
 
 	/** Calculates median of given values. The median is the value that one
 	 * gets when the input vector is sorted and then selects the middle value.
@@ -394,6 +404,32 @@ public:
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
+	/** Evaluates the CDF of the chi square distribution with 
+	 * parameter k at \f$x\f$. Based on Wikipedia definition.
+	 *
+	 * @param x position to evaluate
+	 * @param k parameter
+	 * @return chi square CDF at \f$x\f$
+	 */
+	static float64_t chi2_cdf(float64_t x, float64_t k);
+
+	/** Evaluates the CDF of the F-distribution with parameters
+	 * \f$d1,d2\f$ at \f$x\f$. Based on Wikipedia definition.
+	 *
+	 * @param x position to evaluate
+	 * @param d1 parameter 1
+	 * @param d2 parameter 2
+	 * @return F-distribution CDF at \f$x\f$
+	 */
+	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
+
+	/** Use to estimates erfc(x) valid for -100 < x < -8
+	 *
+	 * @param x real value
+	 * @return weighted sum
+	 */
+	static float64_t erfc8_weighted_sum(float64_t x);
+
 	/** Error function
 	 *
 	 * The integral is
@@ -496,6 +532,22 @@ public:
 #ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
 	 *
+	 * If determinant of the input matrix is positive, it returns the logarithm of the value.
+	 * If not, it returns CMath::INFTY 
+	 * Note that the input matrix is not required to be symmetric positive definite.
+	 * This method is slower than log_det() if input matrix is known to be symmetric positive definite
+	 *
+	 * It is adapted from Gaussian Process Machine Learning Toolbox
+	 * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+	 *
+	 * @param A input matrix
+	 * @return the log determinant value
+	 */
+
+	static float64_t log_det_general(const SGMatrix<float64_t> A);
+
+	/** The log determinant of a dense matrix
+	 *
 	 * The log determinant of a positive definite symmetric real valued
 	 * matrix is calculated as
 	 * \f[
@@ -564,6 +616,11 @@ public:
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 #endif //HAVE_EIGEN3
 
+	/** Magic number for computing lnormal_cdf */
+	static const float64_t ERFC_CASE1;
+
+	/** Magic number for computing lnormal_cdf */
+	static const float64_t ERFC_CASE2;
 
 protected:
 	/** Power series for incomplete beta integral.
@@ -606,6 +663,14 @@ protected:
 	/** method to make ALGLIB integration easier */
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
+
+/// mean not implemented for complex128_t, returns 0.0 instead
+template <>
+	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
+	{
+		SG_SNOTIMPLEMENTED
+		return floatmax_t(0.0);
+	}
 
 }
 

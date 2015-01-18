@@ -8,5 +8,5 @@ print Perceptron
 %train_classifier
 
 %set_features TEST fm_test_real
-%out.txt = classify
-
+%out-classifier_perceptron.txt = classify
+%! rm out-classifier_perceptron.txt

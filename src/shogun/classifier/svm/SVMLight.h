@@ -28,12 +28,6 @@
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/common.h>
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-
 namespace shogun
 {
 

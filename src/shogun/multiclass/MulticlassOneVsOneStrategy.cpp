@@ -12,6 +12,7 @@
 #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -89,7 +90,7 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
 {
 	// if OVO with prob outputs, find max posterior
 	if (outputs.vlen==m_num_classes)
-		return SGVector<float64_t>::arg_max(outputs.vector, 1, outputs.vlen);
+		return CMath::arg_max(outputs.vector, 1, outputs.vlen);
 
 	int32_t s=0;
 	SGVector<int32_t> votes(m_num_classes);

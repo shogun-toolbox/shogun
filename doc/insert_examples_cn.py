@@ -5,10 +5,12 @@ import sys
 
 example_dir='../examples/documented'
 target_dir='pages_cn/'
+base_example_dir='examples/documented'
 
 if len(sys.argv) > 1:
 	sys.argv[1]
 	target_dir=sys.argv[1]
+	example_dir=sys.argv[2]
 
 directories={
 		'python_modular' : ('Python模块化接口', 'ExamplesModularPython.mainpage',
@@ -153,7 +155,7 @@ for d in directories.keys():
 			header += '\\li \subpage ' + d + '_' + prefix + '_examples \n'
 			body+='\\section ' + d + '_' + prefix + '_examples ' + prefix.title() + '\n\n'
 
-		body += '\n\\li <b>' + os.path.join(example_dir, d, f) + '</b>\n'
+		body += '\n\\li <b>' + os.path.join(base_example_dir, d, f) + '</b>\n'
 		body += '\\verbinclude ' + f + '\n'
 
 	header+=directories[d][2]

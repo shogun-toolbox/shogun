@@ -7,6 +7,7 @@
  * Written (W) 2013 Fernando J. Iglesias García
  */
 
+#include <shogun/base/init.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>

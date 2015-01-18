@@ -7,7 +7,6 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/MMDKernelSelectionMax.h>
@@ -16,7 +15,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -76,6 +74,7 @@ TEST(MMDKernelSelectionMax,select_kernel_quadratic_time_mmd)
 	 * linear time mmd maxmmd selection. Do biased and unbiased m*MMD */
 
 	/* unbiased m*MMD */
+	mmd->set_statistic_type(UNBIASED_DEPRECATED);
 	SGVector<float64_t> measures=selection->compute_measures();
 	//measures.display_vector("unbiased mmd");
 //	unbiased_quad_mmds =
@@ -85,7 +84,7 @@ TEST(MMDKernelSelectionMax,select_kernel_quadratic_time_mmd)
 	EXPECT_LE(CMath::abs(measures[2]-0.000072802127661), 10E-15);
 
 	/* biased m*MMD */
-	mmd->set_statistic_type(BIASED);
+	mmd->set_statistic_type(BIASED_DEPRECATED);
 	measures=selection->compute_measures();
 	//measures.display_vector("biased mmd");
 //	biased_quad_mmds =

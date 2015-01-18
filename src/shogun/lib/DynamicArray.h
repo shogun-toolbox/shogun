@@ -11,6 +11,8 @@
 #ifndef _DYNAMIC_ARRAY_H_
 #define _DYNAMIC_ARRAY_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>

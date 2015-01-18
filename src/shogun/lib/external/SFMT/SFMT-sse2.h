@@ -17,6 +17,8 @@
 #ifndef SFMT_SSE2_H
 #define SFMT_SSE2_H
 
+#include <shogun/lib/config.h>
+
 inline static void mm_recursion(__m128i * r, __m128i a, __m128i b,
 				__m128i c, __m128i d);
 

@@ -11,6 +11,8 @@
 #ifndef __FACTOR_GRAPH_MODEL_H__
 #define __FACTOR_GRAPH_MODEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/StructuredModel.h>
@@ -150,7 +152,7 @@ public:
 			float64_t regularization,
 			SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 			SGMatrix< float64_t > B,  SGVector< float64_t > & b,
-			SGVector< float64_t > lb, SGVector< float64_t > ub,
+			SGVector< float64_t > & lb, SGVector< float64_t > & ub,
 			SGMatrix < float64_t >  & C);
 
 	/**

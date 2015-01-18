@@ -18,11 +18,10 @@
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientCriterion.h>
@@ -151,7 +150,7 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	inf->set_scale(1.5);
 
 	// specify GP classification with EP inference
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 
 	// specify gradient evaluation object
 	CGradientEvaluation* grad_eval=new CGradientEvaluation(gpc, features_train,

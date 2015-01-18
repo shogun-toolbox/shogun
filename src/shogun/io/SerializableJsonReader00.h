@@ -11,6 +11,7 @@
 #define __SERIALIZABLE_JSON_READER_00_H__
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_JSON
 
 #include <shogun/io/SerializableJsonFile.h>

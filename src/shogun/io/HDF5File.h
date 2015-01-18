@@ -16,7 +16,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
-#include <shogun/base/SGObject.h>
 #include <hdf5.h>
 
 
@@ -24,6 +23,7 @@ namespace shogun
 {
 template <class ST> class SGString;
 template <class ST> class SGSparseVector;
+struct TSGDataType;
 
 /** @brief A HDF5 File access class.
  *
@@ -49,6 +49,7 @@ public:
 	/** default destructor */
 	virtual ~CHDF5File();
 
+#ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -105,29 +106,6 @@ public:
 			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	//@}
 
-	/** @name N-Dimensional Array Access Functions
-	 *
-	 * Functions to access n-dimensional arrays of one of the several base
-	 * data types. These functions are used when loading n-dimensional arrays
-	 * from e.g. file and return the them and its dimensions dims and num_dims
-	 * by reference
-	 */
-	//@{
-	virtual void get_ndarray(
-			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			char*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			int32_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			float32_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			float64_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			int16_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
-	//@}
 
 	/** @name Sparse Matrix Access Functions
 	 *
@@ -369,7 +347,7 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-
+#endif // #ifndef SWIG // SWIG should skip this
 
 	/** @return object name */
 	virtual const char* get_name() const { return "HDF5File"; }

@@ -9,6 +9,7 @@
  */
 
 #include "MKLMulticlassOptimizationBase.h"
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

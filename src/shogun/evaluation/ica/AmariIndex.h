@@ -2,6 +2,8 @@
 
 #ifdef HAVE_EIGEN3
 
+#include <shogun/lib/config.h>
+
 /**
  * @brief function amari_index
  *

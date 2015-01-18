@@ -20,18 +20,21 @@
 #ifndef __MATHEMATICS_H_
 #define __MATHEMATICS_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/Random.h>
+#include <shogun/lib/SGVector.h>
+#include <algorithm>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
 
 #include <math.h>
-#include <stdio.h>
 #include <float.h>
 #include <sys/types.h>
 #ifndef _WIN32
@@ -87,8 +90,6 @@ template <class T> struct radix_stack_t
 	/** Byte in current focus */
 	uint16_t si;
 };
-
-///** pair */
 
 /** thread qsort */
 template <class T1, class T2> struct thread_qsort
@@ -146,35 +147,34 @@ class CMath : public CSGObject
 		/**@name min/max/abs functions.
 		*/
 		//@{
-
-		///return the minimum of two integers
-		//
+		
+		/** Returns the smallest element amongst two input values
+		 * @param a first value
+		 * @param b second value
+		 * @return minimum value amongst a and b
+		 */
 		template <class T>
 			static inline T min(T a, T b)
 			{
 				return (a<=b) ? a : b;
 			}
 
-		///return the maximum of two integers
+		/** Returns the greatest element amongst two input values
+		 * @param a first value
+		 * @param b second value
+		 * @return maximum value amongst a and b
+		 */
 		template <class T>
 			static inline T max(T a, T b)
 			{
 				return (a>=b) ? a : b;
 			}
 
-		///return the value clamped to interval [lb,ub]
-		template <class T>
-			static inline T clamp(T value, T lb, T ub)
-			{
-				if (value<=lb)
-					return lb;
-				else if (value>=ub)
-					return ub;
-				else
-					return value;
-			}
-
-		///return the absolute value of a number
+		/** Returns the absolute value of a number, that is
+		 * if a>0, output is a; if a<0 ,output is -a
+		 * @param a complex number
+		 * @return the corresponding absolute value
+		 */
 		template <class T>
 			static inline T abs(T a)
 			{
@@ -188,7 +188,10 @@ class CMath : public CSGObject
 					return -a;
 			}
 
-		///return the absolute value of a complex number
+		/** Returns the absolute value of a complex number
+		 * @param a complex number
+		 * @return the corresponding absolute value
+		 */
 		static inline float64_t abs(complex128_t a)
 		{
 			float64_t a_real=a.real();
@@ -197,25 +200,228 @@ class CMath : public CSGObject
 		}
 		//@}
 
+		/** Returns the smallest element in the vector
+		 * @param vec input vector
+		 * @param len length of vector
+		 * @return minimum value in the vector
+		 */
+		template <class T>
+			static T min(T* vec, int32_t len)
+			{
+				ASSERT(len>0)
+				T minv=vec[0];
+
+				for (int32_t i=1; i<len; i++)
+					minv=min(vec[i], minv);
+
+				return minv;
+			}
+
+		/** Returns the greatest element in the vector
+		 * @param vec input vector
+		 * @param len length of vector
+		 * @return maximum value in the vector
+		 */
+		template <class T>
+			static T max(T* vec, int32_t len)
+			{
+				ASSERT(len>0)
+				T maxv=vec[0];
+
+				for (int32_t i=1; i<len; i++)
+					maxv=max(vec[i], maxv);
+
+				return maxv;
+			}
+
+		/** Returns the value clamped to interval [lb,ub]
+		 * @param value input value
+		 * @param lb lower bound
+		 * @param ub upper bound
+		 * @return the corresponding clamped value
+		 */
+		template <class T>
+			static inline T clamp(T value, T lb, T ub)
+			{
+				if (value<=lb)
+					return lb;
+				else if (value>=ub)
+					return ub;
+				else
+					return value;
+			}
+
+		/** Returns the index of the maximum value
+		 * @param vec input vector
+		 * @param inc increment factor
+		 * @param len length of the input vector
+		 * @param maxv_ptr pointer to store the maximum value
+		 * @return index of the maximum value
+		 */
+		template <class T>
+			static int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
+			{
+				ASSERT(len > 0 || inc > 0)
+
+				T maxv = vec[0];
+				int32_t maxIdx = 0;
+
+				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+				{
+					if (vec[j] > maxv)
+					maxv = vec[j], maxIdx = i;
+				}
+
+				if (maxv_ptr != NULL)
+					*maxv_ptr = maxv;
+
+				return maxIdx;
+			}
+
+		/** Returns the index of the minimum value
+		 * @param vec input vector
+		 * @param inc increment factor
+		 * @param len length of the input vector
+		 * @param minv_ptr pointer to store the minimum value
+		 * @return index of the minimum value
+		 */
+		template <class T>
+			static int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
+		{
+			ASSERT(len > 0 || inc > 0)
+
+			T minv = vec[0];
+			int32_t minIdx = 0;
+
+			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+			{
+				if (vec[j] < minv)
+				minv = vec[j], minIdx = i;
+			}
+
+			if (minv_ptr != NULL)
+				*minv_ptr = minv;
+
+			return minIdx;
+		}
+
 		/**@name misc functions */
 		//@{
+		
+		/** Compares the value of two floats based on eps only
+		 * @param a first value to compare
+		 * @param b second value to compare
+		 * @param eps threshold for values to be equal/different
+		 * @return true if values are equal within eps accuracy, false if not.
+		 */
+		template <class T>
+			static inline bool fequals_abs(const T& a, const T& b, 
+				const float64_t eps)
+			{
+				const T diff = CMath::abs<T>((a-b));
+				return (diff < eps);
+			}
+		
+		/** Compares the value of two floats (handles special cases, such as NaN, Inf etc.)
+		 * Note: returns true if a == b == NAN
+		 * Implementation inspired by http://floating-point-gui.de/errors/comparison/
+		 * @param a first value to compare
+		 * @param b second value to compare
+		 * @param eps threshold for values to be equal/different
+		 * @param tolerant allows linient check on float equality (within accuracy) 
+		 * @return true if values are equal within eps accuracy, false if not.
+		 */
+		template <class T>
+			static inline bool fequals(const T& a, const T& b, 
+				const float64_t eps, bool tolerant=false)
+			{
+				const T absA = CMath::abs<T>(a);
+				const T absB = CMath::abs<T>(b);
+				const T diff = CMath::abs<T>((a-b));
+				T comp;
+				
+				// Handle this separately since NAN is unordered
+				if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
+					return true;
+				
+				// Required for JSON Serialization Tests
+				if (tolerant)
+					return CMath::fequals_abs<T>(a, b, eps);
+				
+				// handles float32_t and float64_t separately
+				if (sizeof(T) == 4)
+					comp = CMath::F_MIN_NORM_VAL32;
+				
+				else
+					comp = CMath::F_MIN_NORM_VAL64;
+				
+				if (a==b)
+					return true;
+				
+				// both a and b are 0 and relative error is less meaningful
+				else if ( (a==0) || (b==0) || (diff < comp) )
+					return (diff<(eps * comp));
+				
+				// use max(relative error, diff) to handle large eps
+				else
+				{
+					T check = ((diff/(absA + absB)) > diff)?
+						(diff/(absA + absB)):diff;
+					return (check < eps);
+				}
+			}
 
+		/* Get the corresponding absolute tolerance for unit test given a relative tolerance
+		 *
+		 * Note that a unit test will be passed only when 
+		 * \f[
+		 * |v_\text{true} - v_\text{predict}| \leq tol_\text{relative} * |v_\text{true}|
+		 * \f] which is equivalent to 
+		 * \f[
+		 * |v_\text{true} - v_\text{predict}| \leq tol_\text{absolute}
+		 * \f] where
+		 * \f[
+		 * tol_\text{absolute} = tol_\text{relative} * |v_\text{true}|
+		 * \f]
+		 *
+		 * @param true_value true value should be finite (neither NAN nor INF)
+		 * @param rel_tolerance relative tolerance should be positive and less than 1.0
+		 *
+		 * @return the corresponding absolute tolerance
+		 */
+		static float64_t get_abs_tolerance(float64_t true_value, float64_t rel_tolerance);
+		
+		/** Rounds off the input value to it's nearest integer (as a floating-point value)
+		 * @param d input decimal value
+		 * @return rounded off value 
+		 */
 		static inline float64_t round(float64_t d)
 		{
 			return ::floor(d+0.5);
 		}
 
+		/** The value of x rounded downward (as a floating-point value)
+		 * @param d input decimal value
+		 * @return rounded off value
+		 */
 		static inline float64_t floor(float64_t d)
 		{
 			return ::floor(d);
 		}
 
+		/** The value of x rounded upward (as a floating-point value)
+		 * @param d input decimal value
+		 * @return rounded off value
+		 */
 		static inline float64_t ceil(float64_t d)
 		{
 			return ::ceil(d);
 		}
 
-		/// signum of type T variable a
+		/** Signum of input value
+		 * @param a input value
+		 * @return 1 if a>0, -1 if a<0
+		 */
 		template <class T>
 			static inline T sign(T a)
 			{
@@ -224,36 +430,50 @@ class CMath : public CSGObject
 				else return (a<0) ? (-1) : (+1);
 			}
 
-		/// swap e.g. floats a and b
+		/** Swaps a and b
+		 * @param a first input value
+		 * @param b second input value
+		 */
 		template <class T>
 			static inline void swap(T &a,T &b)
 			{
-			/* register for fast swaps */
-				register T c=a;
+				T c=a;
 				a=b;
 				b=c;
 			}
 
-		/// x^2
+		/** Computes square of the input
+		 * @param x input value
+		 * @return x*x (x^2)
+		 */
 		template <class T>
 			static inline T sq(T x)
 			{
 				return x*x;
 			}
 
-		/// x^0.5
+		/** Computes square-root of the input
+		 * @param x input value
+		 * @return x^0.5
+		 */
 		static inline float32_t sqrt(float32_t x)
 		{
 			return ::sqrtf(x);
 		}
 
-		/// x^0.5
+		/** Computes square-root of the input
+		 * @param x input value
+		 * @return x^0.5
+		 */
 		static inline float64_t sqrt(float64_t x)
 		{
 			return ::sqrt(x);
 		}
 
-		/// x^0.5
+		/** Computes square-root of the input
+		 * @param x input value
+		 * @return x^0.5
+		 */
 		static inline floatmax_t sqrt(floatmax_t x)
 		{
 			//fall back to double precision sqrt if sqrtl is not
@@ -268,7 +488,10 @@ class CMath : public CSGObject
 		/// x^0.5, x being a complex128_t
 		COMPLEX128_STDMATH(sqrt)
 
-		/// x^-0.5
+		/** Computes inverse square-root of the input
+		 * @param x input value
+		 * @return x^-0.5
+		 */
 		static inline float32_t invsqrt(float32_t x)
 		{
 			union float_to_int
@@ -289,7 +512,15 @@ class CMath : public CSGObject
 			return x;
 		}
 
-		/// x^n
+		/**
+		 * @name Exponential methods (x^n)
+ 		 */
+		//@{
+		/** Computes x raised to the power n
+		 * @param x base
+		 * @param n exponent
+		 * @return x^n
+		 */
 		static inline floatmax_t powl(floatmax_t x, floatmax_t n)
 		{
 			//fall back to double precision pow if powl is not
@@ -306,6 +537,10 @@ class CMath : public CSGObject
 			return 0;
 		}
 
+		/**
+		 * @param x base (integer)
+		 * @param n exponent (integer)
+		 */
 		static inline int32_t pow(int32_t x, int32_t n)
 		{
 			ASSERT(n>=0)
@@ -316,6 +551,10 @@ class CMath : public CSGObject
 			return result;
 		}
 
+		/**
+		 * @param x base (decimal)
+		 * @param n exponent (integer)
+		 */
 		static inline float64_t pow(float64_t x, int32_t n)
 		{
 			if (n>=0)
@@ -330,41 +569,205 @@ class CMath : public CSGObject
 				return ::pow((double)x, (double)n);
 		}
 
+		/**
+		 * @param x base (decimal)
+		 * @param n exponent (decimal)
+		 */
 		static inline float64_t pow(float64_t x, float64_t n)
 		{
 			return ::pow((double) x, (double) n);
 		}
 
-		/// x^n, x or n being a complex128_t
+		/**
+		 * @param x base (complex)
+		 * @param n exponent (integer)
+		 */
 		static inline complex128_t pow(complex128_t x, int32_t n)
 		{
 			return std::pow(x, n);
 		}
 
+		/**
+		 * @param x base (complex)
+		 * @param n exponent (complex)
+		 */
 		static inline complex128_t pow(complex128_t x, complex128_t n)
 		{
 			return std::pow(x, n);
 		}
 
+		/**
+		 * @param x base (complex)
+		 * @param n exponent (decimal)
+		 */
 		static inline complex128_t pow(complex128_t x, float64_t n)
 		{
 			return std::pow(x, n);
 		}
 
+		/**
+		 * @param x base (decimal)
+		 * @param n exponent (complex)
+		 */
 		static inline complex128_t pow(float64_t x, complex128_t n)
 		{
 			return std::pow(x, n);
 		}
+		//@}
 
+		/** Computes e^x where e=2.71828 approx.
+		 * @param x exponent
+		 */
 		static inline float64_t exp(float64_t x)
 		{
 			return ::exp((double) x);
 		}
 
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((v1[i]) ? 1 : 0) * ((v2[i]) ? 1 : 0);
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static inline floatmax_t dot(const floatmax_t* v1, const floatmax_t* v2, int32_t n)
+		{
+			floatmax_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=v1[i]*v2[i];
+			return r;
+		}
+
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static float32_t dot(const float32_t* v1, const float32_t* v2, int32_t n);
+
+		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
+		static inline float64_t dot(
+			const uint64_t* v1, const uint64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+		/// Compute dot product between v1 and v2 (for 64bit ints)
+		static inline float64_t dot(
+			const int64_t* v1, const int64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 32bit ints)
+		static inline float64_t dot(
+			const int32_t* v1, const int32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 32bit unsigned ints)
+		static inline float64_t dot(
+			const uint32_t* v1, const uint32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const uint16_t* v1, const uint16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const int16_t* v1, const int16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const char* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const uint8_t* v1, const uint8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const int8_t* v1, const int8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2
+		static inline float64_t dot(
+			const float64_t* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
 		/// exp(x), x being a complex128_t
 		COMPLEX128_STDMATH(exp)
 
-		/** @return tangens of input */
+		/**
+		 * @name Trignometric and Hyperbolic Functions
+		 */
+		//@{
+		/** Computes tangent of input
+		 * @param x input
+		 * @return tan(x)
+		 */
 		static inline float64_t tan(float64_t x)
 		{
 			return ::tan((double) x);
@@ -373,7 +776,10 @@ class CMath : public CSGObject
 		/// tan(x), x being a complex128_t
 		COMPLEX128_STDMATH(tan)
 
-		/** @return arcus tangens of input */
+		/** Computes arc tangent of input
+		 * @param x input
+		 * @return arctan(x)
+		 */
 		static inline float64_t atan(float64_t x)
 		{
 			return ::atan((double) x);
@@ -382,16 +788,23 @@ class CMath : public CSGObject
 		/// atan(x), x being a complex128_t not implemented
 		COMPLEX128_ERROR_ONEARG(atan)
 
-		/** @return arcus tangens of input */
-		static inline float64_t atan2(float64_t x, float64_t y)
+		/** Computes arc tangent with 2 parameters
+		 * @param y input(numerator)
+		 * @param x input(denominator)
+		 * @return arctan(y/x)
+		 */
+		static inline float64_t atan2(float64_t y, float64_t x)
 		{
-			return ::atan2((double) x, (double) y);
+			return ::atan2((double) y, (double) x);
 		}
 
 		/// atan2(x), x being a complex128_t not implemented
 		COMPLEX128_ERROR_ONEARG(atan2)
 
-		/** @return tangens hyperbolicus of input */
+		/** Computes hyperbolic tangent of input
+		 * @param x input
+		 * @return tanh(x)
+		 */
 		static inline float64_t tanh(float64_t x)
 		{
 			return ::tanh((double) x);
@@ -400,6 +813,87 @@ class CMath : public CSGObject
 		/// tanh(x), x being a complex128_t
 		COMPLEX128_STDMATH(tanh)
 
+		/** Computes sine of input
+		 * @param x input
+		 * @return sin(x)
+		 */
+		static inline float64_t sin(float64_t x)
+		{
+			return ::sin(x);
+		}
+
+		/// sin(x), x being a complex128_t
+		COMPLEX128_STDMATH(sin)
+
+		/** Computes arc sine of input
+		 * @param x input
+		 * @return arcsin(x)
+		 */
+		static inline float64_t asin(float64_t x)
+		{
+			return ::asin(x);
+		}
+
+		/// asin(x), x being a complex128_t not implemented
+		COMPLEX128_ERROR_ONEARG(asin)
+
+		/** Computes hyperbolic sine of input
+		 * @param x input
+		 * @return sinh(x)
+		 */
+		static inline float64_t sinh(float64_t x)
+		{
+			return ::sinh(x);
+		}
+
+		/// sinh(x), x being a complex128_t
+		COMPLEX128_STDMATH(sinh)
+
+		/** Computes cosine of input
+		 * @param x input
+		 * @return cos(x)
+		 */
+		static inline float64_t cos(float64_t x)
+		{
+			return ::cos(x);
+		}
+
+		/// cos(x), x being a complex128_t
+		COMPLEX128_STDMATH(cos)
+
+		/** Computes arc cosine of input
+		 * @param x input
+		 * @return arccos(x)
+		 */
+		static inline float64_t acos(float64_t x)
+		{
+			return ::acos(x);
+		}
+
+		/// acos(x), x being a complex128_t not implemented
+		COMPLEX128_ERROR_ONEARG(acos)
+
+		/** Computes hyperbolic cosine of input
+		 * @param x input
+		 * @return cosh(x)
+		 */
+		static inline float64_t cosh(float64_t x)
+		{
+			return ::cosh(x);
+		}
+
+		/// cosh(x), x being a complex128_t
+		COMPLEX128_STDMATH(cosh)
+		//@}
+
+		/**
+		 * @name Logarithmic functions
+		 */
+		//@{
+		/** Computes logarithm base 10 of input
+		 * @param v input
+		 * @return log base 10 of v
+		 */
 		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
@@ -408,6 +902,10 @@ class CMath : public CSGObject
 		/// log10(x), x being a complex128_t
 		COMPLEX128_STDMATH(log10)
 
+		/** Computes logarithm base 2 of input
+		 * @param v input
+		 * @return log base 2 of v
+		 */
 		static inline float64_t log2(float64_t v)
 		{
 #ifdef HAVE_LOG2
@@ -417,6 +915,10 @@ class CMath : public CSGObject
 #endif //HAVE_LOG2
 		}
 
+		/** Computes natural logarithm input
+		 * @param v input
+		 * @return log base e of v or ln(v)
+		 */
 		static inline float64_t log(float64_t v)
 		{
 			return ::log(v);
@@ -433,55 +935,14 @@ class CMath : public CSGObject
 
 			return i;
 		}
-
-		static inline float64_t sin(float64_t x)
-		{
-			return ::sin(x);
-		}
-
-		/// sin(x), x being a complex128_t
-		COMPLEX128_STDMATH(sin)
-
-		static inline float64_t asin(float64_t x)
-		{
-			return ::asin(x);
-		}
-
-		/// asin(x), x being a complex128_t not implemented
-		COMPLEX128_ERROR_ONEARG(asin)
-
-		static inline float64_t sinh(float64_t x)
-		{
-			return ::sinh(x);
-		}
-
-		/// sinh(x), x being a complex128_t
-		COMPLEX128_STDMATH(sinh)
-
-		static inline float64_t cos(float64_t x)
-		{
-			return ::cos(x);
-		}
-
-		/// cos(x), x being a complex128_t
-		COMPLEX128_STDMATH(cos)
-
-		static inline float64_t acos(float64_t x)
-		{
-			return ::acos(x);
-		}
-
-		/// acos(x), x being a complex128_t not implemented
-		COMPLEX128_ERROR_ONEARG(acos)
-
-		static inline float64_t cosh(float64_t x)
-		{
-			return ::cosh(x);
-		}
-
-		/// cosh(x), x being a complex128_t
-		COMPLEX128_STDMATH(cosh)
-
+		//@}
+		
+		/** Computes area under the curve
+		 * @param xy
+		 * @param len length
+		 * @param reversed boolean
+		 * @return area
+		 */
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
 			ASSERT(len>0 && xy)
@@ -502,10 +963,31 @@ class CMath : public CSGObject
 			return area;
 		}
 
+		/** Converts string to float
+		 * @param str input string
+		 * @param float_result float pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtof(const char* str, float32_t* float_result);
+
+		/** Converts string to double
+		 * @param str input string
+		 * @param double_result double pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtod(const char* str, float64_t* double_result);
+
+		/** Converts string to long double
+		 * @param str input string
+		 * @param long_double_result long double pointer
+		 * @return returns true if successful, else returns false
+		 */
 		static bool strtold(const char* str, floatmax_t* long_double_result);
 
+		/** Computes factorial of input
+		 * @param n input
+		 * @return factorial of n (n!)
+		 */
 		static inline int64_t factorial(int32_t n)
 		{
 			int64_t res=1;
@@ -514,6 +996,13 @@ class CMath : public CSGObject
 			return res ;
 		}
 
+		/**
+		 * @name Random Functions
+		 */
+		//@{
+		/** Initiates seed for pseudo random generator
+		 * @param initseed value of seed
+		 */
 		static void init_random(uint32_t initseed=0)
 		{
 			if (initseed==0)
@@ -524,41 +1013,77 @@ class CMath : public CSGObject
 			sg_rand->set_seed(seed);
 		}
 
+		/** Returns random number
+		 * @return unsigned 64 bit integer
+		 */
 		static inline uint64_t random()
 		{
 			return sg_rand->random_64();
 		}
 
+		/** Returns random number
+		 * @return unsigned 64 bit integer
+		 */
 		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (64 bit integer)
+		 * @param max_value maximum value (64 bit integer)
+		 * @return signed 64 bit integer
+		 */
 		static inline int64_t random(int64_t min_value, int64_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (32 bit unsigned integer)
+		 * @param max_value maximum value (32 bit unsigned integer)
+		 * @return unsigned 32 bit integer
+		 */
 		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (32 bit signed integer)
+		 * @param max_value maximum value (32 bit signed integer)
+		 * @return signed 32 bit integer
+		 */
 		static inline int32_t random(int32_t min_value, int32_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (32 bit float)
+		 * @param max_value maximum value (32 bit float)
+		 * @return 32 bit float
+		 */
 		static inline float32_t random(float32_t min_value, float32_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (64 bit float)
+		 * @param max_value maximum value (64 bit float)
+		 * @return 64 bit float
+		 */
 		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
 		}
 
+		/** Returns random number between minimum and maximum value
+		 * @param min_value minimum value (128 bit float)
+		 * @param max_value maximum value (128 bit float)
+		 * @return 128 bit float
+		 */
 		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
 		{
 			return sg_rand->random(min_value, max_value);
@@ -608,7 +1133,33 @@ class CMath : public CSGObject
 		{
 			return sg_rand->std_normal_distrib();
 		}
+		//@}
 
+		/** Permute randomly the elements of the vector. If provided, use the
+		 * random object to generate the permutations.
+		 * @param v the vector to permute.
+		 * @param rand random object that might be used to generate the permutations.
+		 */
+		template <class T>
+			static void permute(SGVector<T> v, CRandom* rand=NULL)
+			{
+				if (rand)
+				{
+					for (index_t i=0; i<v.vlen; ++i)
+						swap(v[i], v[rand->random(i, v.vlen-1)]);
+				}
+				else
+				{
+					for (index_t i=0; i<v.vlen; ++i)
+						swap(v[i], v[random(i, v.vlen-1)]);
+				}
+			}
+
+		/** Computes sum of non-zero elements
+		 * @param vec vector
+		 * @param len length
+		 * @return non-zero sum
+		 */
 		template <class T>
 			static int32_t get_num_nonzero(T* vec, int32_t len)
 			{
@@ -619,6 +1170,11 @@ class CMath : public CSGObject
 				return nnz;
 			}
 
+		/** Computes sum of non-zero elements
+		 * @param vec vector of complex numbers
+		 * @param len length
+		 * @return non-zero sum
+		 */
 		static int32_t get_num_nonzero(complex128_t* vec, int32_t len)
 		{
 				int32_t nnz=0;
@@ -627,6 +1183,11 @@ class CMath : public CSGObject
 				return nnz;
 		}
 
+		/** Computes binomial coefficient or all possible combinations
+		 * of n items taken k at a time.
+		 * @param n total number of items
+		 * @param k number of items to be chosen
+		 */
 		static inline int64_t nchoosek(int32_t n, int32_t k)
 		{
 			int64_t res=1;
@@ -638,7 +1199,6 @@ class CMath : public CSGObject
 		}
 
 		/** Builds an array with n linearly spaced elements between start and end.
-		 *
 		 * @param output array with linearly spaced elements within the interval
 		 * @param start beginning of the interval to divide
 		 * @param end upper bound of the interval to divide
@@ -646,9 +1206,35 @@ class CMath : public CSGObject
 		 */
 		static void linspace(float64_t* output, float64_t start, float64_t end, int32_t n = 100);
 
+		/** Returns an array with n linearly spaced elements between start and end.
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return array with linearly spaced elements within the interval
+		 */
+		template <class T>
+			static float64_t* linspace(T start, T end, int32_t n)
+			{
+				float64_t* output = SG_MALLOC(float64_t, n);
+				linspace(output, start, end, n);
+
+				return output;
+			}
+
+		/** Returns a vector with n linearly spaced elements between start and end.
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return vector with linearly spaced elements within the interval
+		 */
+		template <class T>
+			static SGVector<float64_t> linspace_vec(T start, T end, int32_t n)
+			{
+				return SGVector<float64_t>(linspace(start, end, n), n);
+			}
+
 		/** Computes \f$\log(\sum_{i=1}^n \exp(x_i))\f$ for given \f$x_i\f$
 		 * using the log-sum-exp trick which avoids numerical problems.
-		 *
 		 * @param values the vector of \f$x_i\f$
 		 * @return \f$\log(\sum_{i=1}^n \exp(x_i))\f$ for given \f$x_i\f$
 		 */
@@ -656,6 +1242,7 @@ class CMath : public CSGObject
 		static T log_sum_exp(SGVector<T> values)
 		{
 			REQUIRE(values.vector, "Values are empty");
+			REQUIRE(values.vlen>0,"number of values supplied is 0\n");
 
 			/* find minimum element index */
 			index_t min_index=0;
@@ -700,14 +1287,28 @@ class CMath : public CSGObject
 			return log_sum_exp(values) - log(values.vlen);
 		}
 
-		/** performs a bubblesort on a given matrix a.
+		/** Performs a bubblesort on a given matrix a.
 		 * it is sorted in ascending order from top to bottom
-		 * and left to right */
+		 * and left to right
+		 * @param a matrix to be sorted
+		 * @param cols number of columns
+		 * @param sort_col 
+		 */
 		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0);
+
+		/** Performs a bubblesort on a given array a.
+		 * it is sorted in ascending order from left to right
+		 * @param a array to be sorted
+		 * @param idx index array
+		 * @param N length of array
+		 */
 		static void sort(float64_t *a, int32_t*idx, int32_t N);
 
-		/** performs a quicksort on an array output of length size
-		 * it is sorted from in ascending (for type T) */
+		/** Performs a quicksort on an array output of length size
+		 * it is sorted from in ascending (for type T)
+		 * @param output array to be sorted
+		 * @param size size of array
+		 */
 		template <class T>
 			static void qsort(T* output, int32_t size)
 			{
@@ -748,8 +1349,11 @@ class CMath : public CSGObject
 					qsort(&output[left],size-left);
 			}
 
-		/** performs insertion sort of an array output of length size
-		 * it is sorted from in ascending (for type T) */
+		/** Performs insertion sort of an array output of length size
+		 * it is sorted from in ascending (for type T)
+		 * @param output array to be sorted
+		 * @param size size of array
+		 */
 		template <class T>
 			static void insertion_sort(T* output, int32_t size)
 			{
@@ -766,17 +1370,22 @@ class CMath : public CSGObject
 				}
 			}
 
-		/** performs a in-place radix sort in ascending order */
+		/** Performs a in-place radix sort in ascending order
+		 * @param array array to be sorted
+		 * @param size size of array
+		 */
 		template <class T>
 			inline static void radix_sort(T* array, int32_t size)
 			{
 				radix_sort_helper(array,size,0);
 			}
 
-		/*
-		 * Inline function to extract the byte at position p (from left)
-		 * of an 64 bit integer. The function is somewhat identical to
+		/** Extract the byte at position p (from left)
+		 * of a 64 bit integer. The function is somewhat identical to
 		 * accessing an array of characters via [].
+		 * @param word input from which byte is extracted
+		 * @param p position
+		 * @return byte
 		 */
 		template <class T>
 			static inline uint8_t byte(T word, uint16_t p)
@@ -791,6 +1400,11 @@ class CMath : public CSGObject
 			return uint8_t(0);
 		}
 
+		/** Helper function for radix sort.
+		 * @param array array to be sorted
+		 * @param size size of array
+		 * @param i index
+		 */
 		template <class T>
 			static void radix_sort_helper(T* array, int32_t size, uint16_t i)
 			{
@@ -898,13 +1512,10 @@ class CMath : public CSGObject
 
 		/** Performs a quicksort on an array of pointers.
 		 * It is sorted from in ascending (for type T)
-		 *
 		 * Every element is dereferenced once before being compared
-		 *
 		 * @param vector array of pointers to sort
 		 * @param length length of array
-		 *
-		 * */
+		 */
 		template <class T>
 			static void qsort(T** vector, index_t length)
 			{
@@ -950,7 +1561,77 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::qsort():: Not supported for complex128_t\n");
 		}
 
-		/// display bits (useful for debugging)
+		/** Quicksort the vector in ascending order (for type T)
+		  * @param vector vector to be sorted
+		  */
+		template <class T>
+			static void qsort(SGVector<T> vector)
+			{
+				qsort<T>(vector, vector.size());
+			}
+
+		/** Helper functor for the function argsort */
+		template<class T>
+			struct IndexSorter
+			{
+				/** constructor */
+				IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
+
+				/** access operator */
+				bool operator() (index_t i, index_t j) const
+				{
+					return abs(data[i]-data[j])>std::numeric_limits<T>::epsilon()
+					&& data[i]<data[j];
+				}
+
+				/** data */
+				const T* data;
+			};
+
+		/** Get sorted index.
+		 *
+		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
+		 * 
+		 * @param vector vector to be sorted
+		 * @return sorted index for this vector
+		 */
+		template<class T>
+			static SGVector<index_t> argsort(SGVector<T> vector)
+			{
+				IndexSorter<T> cmp(&vector);
+				SGVector<index_t> idx(vector.size());
+				for (index_t i=0; i < vector.size(); ++i)
+					idx[i] = i;
+
+				std::sort(idx.vector, idx.vector+vector.size(), cmp);
+
+				return idx;
+			}
+
+		/** Check if vector is sorted
+		 *
+		 * @param vector input vector
+		 * @return true if vector is sorted, false otherwise
+		 */
+		template <class T>
+			static bool is_sorted(SGVector<T> vector)
+			{
+				if (vector.size() < 2)
+					return true;
+
+				for(int32_t i=1; i<vector.size(); i++)
+				{
+					if (vector[i-1] > vector[i])
+						return false;
+				}
+
+				return true;
+			}
+
+		/** Display bits (useful for debugging)
+		 * @param word input to be displayed as bits
+		 * @param width number of bits displayed
+		 */
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
 			ASSERT(width>=0)
@@ -976,10 +1657,13 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::display_bits():: Not supported for complex128_t\n");
 		}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
+		 * @param output array to be sorted
+		 * @param index index array
+		 * @param size size of arrays
 		 */
 		template <class T1,class T2>
 			static void qsort_index(T1* output, T2* index, uint32_t size);
@@ -991,10 +1675,13 @@ class CMath : public CSGObject
 				SG_SERROR("CMath::qsort_index():: Not supported for complex128_t\n");
 			}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in descending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
+		 * @param output array to be sorted
+		 * @param index index array
+		 * @param size size of array
 		 */
 		template <class T1,class T2>
 			static void qsort_backward_index(
@@ -1009,12 +1696,16 @@ class CMath : public CSGObject
 					Not supported for complex128_t\n");
 			}
 
-		/** performs a quicksort on an array output of length size
+		/** Performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
 		 * matlab alike [sorted,index]=sort(output)
-		 *
 		 * parallel version
+		 * @param output input array
+		 * @param index index array
+		 * @param size size of the array
+		 * @param n_threads number of threads
+		 * @param limit sort limit
 		 */
 		template <class T1,class T2>
 			inline static void parallel_qsort_index(T1* output, T2* index, uint32_t size, int32_t n_threads, int32_t limit=262144)
@@ -1038,13 +1729,17 @@ class CMath : public CSGObject
 				SG_SERROR("CMath::parallel_qsort_index():: Not supported for complex128_t\n");
 			}
 
-
+		/// helper function for parallel_qsort_index.
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
 
 
-		/* finds the smallest element in output and puts that element as the
-		   first element  */
+		/** Finds the smallest element in output and puts that element as the
+		 * first element
+		 * @param output element array
+		 * @param index index array
+		 * @param size size of arrays
+		 */
 		template <class T>
 			static void min(float64_t* output, T* index, int32_t size);
 
@@ -1054,8 +1749,9 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::min():: Not supported for complex128_t\n");
 		}
 
-		/* finds the n smallest elements in output and puts these elements as the
-		   first n elements  */
+		/** Finds the n smallest elements in output and puts these elements as the
+		 * first n elements
+		 */
 		template <class T>
 			static void nmin(
 				float64_t* output, T* index, int32_t size, int32_t n);
@@ -1069,8 +1765,9 @@ class CMath : public CSGObject
 
 
 
-		/* finds an element in a sorted array via binary search
-		 * returns -1 if not found */
+		/** Finds an element in a sorted array via binary search
+		 * returns -1 if not found
+		 */
 		template <class T>
 			static int32_t binary_search_helper(T* output, int32_t size, T elem)
 			{
@@ -1102,8 +1799,12 @@ class CMath : public CSGObject
 			return int32_t(0);
 		}
 
-		/* finds an element in a sorted array via binary search
-		 *     * returns -1 if not found */
+		/** Finds an element in a sorted array via binary search
+		 * @param output array to search
+		 * @param size size of array
+		 * @param elem element to search
+		 * @return -1 if not found 
+		 */
 		template <class T>
 			static inline int32_t binary_search(T* output, int32_t size, T elem)
 			{
@@ -1121,13 +1822,13 @@ class CMath : public CSGObject
 		}
 
 
-		/* Finds an element in a sorted array of pointers via binary search
+		/** Finds an element in a sorted array of pointers via binary search
 		 * Every element is dereferenced once before being compared
-		 *
 		 * @param array array of pointers to search in (assumed being sorted)
 		 * @param length length of array
 		 * @param elem pointer to element to search for
-		 * @return index of elem, -1 if not found */
+		 * @return index of elem, -1 if not found
+		 */
 		template<class T>
 			static inline int32_t binary_search(T** vector, index_t length,
 					T* elem)
@@ -1166,6 +1867,12 @@ class CMath : public CSGObject
 			return int32_t(-1);
 		}
 
+		/** Finds greatest element which is less than or equal to the
+		 * searched element (query).
+		 * @param output array to search
+		 * @param size size of the array
+		 * @param elem element that needs to be searched
+		 */
 		template <class T>
 			static int32_t binary_search_max_lower_equal(
 				T* output, int32_t size, T elem)
@@ -1188,21 +1895,33 @@ class CMath : public CSGObject
 			return int32_t(-1);
 		}
 
-		/// align two sequences seq1 & seq2 of length l1 and l2 using gapCost
-		/// return alignment cost
+		/** Align two sequences seq1 & seq2 of length l1 and l2 using gapCost
+		 * @param seq1 first sequence
+		 * @param seq2 second sequence
+		 * @param l1 length of first sequence
+		 * @param l2 length of second sequence
+		 * @param gapCost
+		 * @return alignment cost
+		 */
 		static float64_t Align(
 			char * seq1, char* seq2, int32_t l1, int32_t l2, float64_t gapCost);
 
 
 		//@}
 
-		/// returns real part of a complex128_t number
+		/** Returns real part of a complex128_t number
+		 * @param c complex number
+		 * @return real part of the complex number
+		 */
 		static float64_t real(complex128_t c)
 		{
 			return c.real();
 		}
 
-		/// returns imag part of a complex128_t number
+		/** Returns imaginary part of a complex128_t number
+		 * @param c complex number
+		 * @return imaginary part of the complex number
+		 */
 		static float64_t imag(complex128_t c)
 		{
 			return c.imag();
@@ -1239,8 +1958,7 @@ class CMath : public CSGObject
 
 		/**@name summing functions */
 		//@{
-		/**
-		 * sum logarithmic probabilities.
+		/** Sum logarithmic probabilities.
 		 * Probability measures are summed up but are now given in logspace
 		 * where direct summation of exp(operand) is not possible due to
 		 * numerical problems, i.e. eg. exp(-1000)=0. Therefore we do
@@ -1291,7 +2009,7 @@ class CMath : public CSGObject
 		}
 #endif
 #ifdef USE_LOGSUMARRAY
-				/** sum up a whole array of values in logspace.
+				/** Sum up a whole array of values in logspace.
 				 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding
 				 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 				 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
@@ -1309,9 +2027,9 @@ class CMath : public CSGObject
 					}
 					else
 					{
-						register float64_t *pp=p ;
+						float64_t *pp=p ;
 						if (len%2==1) pp++ ;
-						for (register int32_t j=0; j < len>>1; j++)
+						for (int32_t j=0; j < len>>1; j++)
 							pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
 					}
 					return logarithmic_sum_array(p,len%2 + (len>>1)) ;
@@ -1333,15 +2051,25 @@ class CMath : public CSGObject
 				/// almost neg (log) infinity
 				static const float64_t ALMOST_NEG_INFTY;
 
-				/** the number pi */
+				/** The number pi */
 				static const float64_t PI;
 
-				/** machine epsilon for float64_t */
+				/** Machine epsilon for float64_t */
 				static const float64_t MACHINE_EPSILON;
 
-				/* largest and smallest possible float64_t */
+				/* Largest and smallest possible float64_t */
 				static const float64_t MAX_REAL_NUMBER;
 				static const float64_t MIN_REAL_NUMBER;
+				
+				/* Floating point Limits, Normalized */
+				static const float32_t F_MAX_VAL32;
+				static const float32_t F_MIN_NORM_VAL32;
+				static const float64_t F_MAX_VAL64;
+				static const float64_t F_MIN_NORM_VAL64;
+				
+				/* Floating point limits, Denormalized */
+				static const float32_t F_MIN_VAL32;
+				static const float64_t F_MIN_VAL64;
 
 	protected:
 				/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
@@ -1564,9 +2292,9 @@ void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
 	if (6*n*size<13*size*CMath::log(size))
 		for (int32_t i=0; i<n; i++)
-			min(&output[i], &index[i], size-i) ;
+			min(&output[i], &index[i], size-i);
 	else
-		qsort_index(output, index, size) ;
+		qsort_index(output, index, size);
 }
 
 /* move the smallest entry in the array to the beginning */
@@ -1587,6 +2315,23 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	}
 	swap(output[0], output[min_index]);
 	swap(index[0], index[min_index]);
+}
+
+/// linspace not implemented for complex128_t, returns null instead
+template <>
+inline float64_t* CMath::linspace<complex128_t>(complex128_t start, complex128_t end, int32_t n)
+{
+	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
+	return NULL;
+}
+
+#define COMPLEX128_ERROR_ONEVECARG_RETURNS_T(function, return_type, return_statement) \
+template <> \
+inline return_type CMath::function<complex128_t>(SGVector<complex128_t> vector) \
+{ \
+	SG_SERROR("CMath::%s():: Not supported for complex128_t\n", \
+		#function); \
+	return_statement; \
 }
 
 #define COMPLEX128_ERROR_ONEARG_T(function)	\
@@ -1624,6 +2369,25 @@ inline void CMath::function<complex128_t>(complex128_t* output, int32_t b)	\
 		#function);\
 }
 
+#define COMPLEX128_ERROR_ARG_MAX_MIN(function)	\
+template <> \
+inline int32_t CMath::function<complex128_t>(complex128_t * a, int32_t b, int32_t c, complex128_t * d) \
+{ \
+	int32_t maxIdx=0; \
+	SG_SERROR("CMath::%s():: Not supported for complex128_t\n",\
+		#function);\
+	return maxIdx; \
+}
+
+/// qsort not implemented for complex128_t, returns void instead
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(qsort, void, return;)
+
+/// argsort not implemented for complex128_t, returns a vector
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(argsort, SGVector<index_t>, SGVector<index_t> idx(vector.size());return idx;)
+
+/// is_sorted not implemented for complex128_t, returns false
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(is_sorted, bool, return false;)
+
 /// min not implemented for complex128_t, returns (0.0)+i(0.0) instead
 COMPLEX128_ERROR_TWOARGS_T(min)
 
@@ -1636,14 +2400,20 @@ COMPLEX128_ERROR_THREEARGS_T(clamp)
 /// signum not implemented for complex128_t, returns (0.0)+i(0.0) instead
 // COMPLEX128_ERROR_ONEARG_T(sign)
 
-/// qsort not implemented for comple64_t
+/// qsort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(qsort)
 
-/// insertion_sort not implemented for comple64_t
+/// insertion_sort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(insertion_sort)
 
-/// radix_sort not implemented for comple64_t
+/// radix_sort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(radix_sort)
+
+/// arg_max not implemented for complex128_t
+COMPLEX128_ERROR_ARG_MAX_MIN(arg_max)
+
+/// arg_min not implemented for complex128_t
+COMPLEX128_ERROR_ARG_MAX_MIN(arg_min)
 
 }
 #undef COMPLEX128_ERROR_ONEARG

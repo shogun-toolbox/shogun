@@ -11,6 +11,8 @@
 #ifndef __SOSVM_HELPER_H__
 #define __SOSVM_HELPER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/StructuredModel.h>
@@ -44,34 +46,38 @@ public:
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "SOSVMHelper"; }
 
-	/** Computes the primal SVM objective value
-	 * \f$ \frac{\lambda}{2} \|w\|^2 + \frac{1}{N} \sum_i \max_y (L_i(y) - w^T\Psi_i(y)) \f$
+	/** Computes the primal objective of n-slack structured SVM
+	 * \f$ \frac{\lambda}{2} \|w\|^2 + \frac{1}{n} \sum_i \max_y (L_i(y) - w^T\Psi_i(y)) \f$
 	 *
-	 * @param w parameter vector, may be different from model.w
+	 * @param w is primal variables
 	 * @param model structured model
 	 * @param lbda regularization parameter lambda
 	 * @return primal objective value
 	 */
 	static float64_t primal_objective(SGVector<float64_t> w, CStructuredModel* model, float64_t lbda);
 
-	/** Computes the dual SVM objective value
-	 * \f$ \frac{\lambda}{2} \|A\alpha\|^2 - b^T*\alpha \f$
+	/** Computes the Lagrange dual objective of n-slack structured SVM
+	 * Let \f$ Y_i \f$ denote the output space of sample i, and \f$ m = \sum_i |Y_i| \f$.
+	 * The dual objective is \f$ -\frac{\lambda}{2} \|A\alpha\|^2 + b^T\alpha \f$,
+	 * where \f$ A = \frac{1}{\lambda \cdot n}[\cdots, \psi_i(y), \cdots]_{d \times m} \f$,
+	 * \f$ b = \frac{1}{n} [\cdots, L_i(y), \cdots]_{m} \f$,
+	 * and \f$ \alpha \f$ are dual variables.
 	 *
-	 * @param w is \f$ A\alpha \f$, \f$ A = \frac{1}{\lambda \cdot n}[\cdots,
-	 * \psi_i(y), \cdots]_{d \times \sum_i |Y_i|} \f$
-	 * @param b_alpha is \f$ b^T\alpha, b = \frac{1}{n}L_i(y) \f$, alpha are dual variables
+	 * @param w is primal variables, given by \f$ A\alpha \f$ 
+	 * @param aloss is the average loss, given by \f$ b^T\alpha \f$
 	 * @param lbda regularization parameter lambda
 	 * @return dual objective value
 	 */
-	static float64_t dual_objective(SGVector<float64_t> w, float64_t b_alpha, float64_t lbda);
+	static float64_t dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda);
 
 	/** Return the average loss for the predictions
 	 *
-	 * @param w parameter vector, may be different from model.w
+	 * @param w is primal variables
 	 * @param model structured model
+	 * @param is_ub whether to compute the upper bound of average loss
 	 * @return average loss
 	 */
-	static float64_t average_loss(SGVector<float64_t> w, CStructuredModel* model);
+	static float64_t average_loss(SGVector<float64_t> w, CStructuredModel* model, bool is_ub = false);
 
 	/** add debug information
 	 *

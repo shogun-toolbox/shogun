@@ -6,6 +6,8 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
+
+#include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SerializableAsciiFile.h>
 

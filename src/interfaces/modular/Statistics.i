@@ -8,14 +8,18 @@
  */
 
 /* Remove C Prefix */
-%rename(TestStatistic) CTestStatistic;
-%rename(TwoDistributionsTestStatistic) CTwoDistributionsTestStatistic;
-%rename(KernelTwoSampleTestStatistic) CKernelTwoSampleTestStatistic;
+%rename(HypothesisTest) CHypothesisTest;
+%rename(IndependenceTest) CIndependenceTest;
+%rename(TwoSampleTest) CTwoSampleTest;
+%rename(KernelTwoSampleTest) CKernelTwoSampleTest;
+%rename(StreamingMMD) CStreamingMMD;
 %rename(LinearTimeMMD) CLinearTimeMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
-%rename(KernelIndependenceTestStatistic) CKernelIndependenceTestStatistic;
+%rename(KernelIndependenceTest) CKernelIndependenceTest;
 %rename(HSIC) CHSIC;
+%rename(NOCCO) CNOCCO;
 %rename(KernelMeanMatching) CKernelMeanMatching;
+%rename(KernelSelection) CKernelSelection;
 %rename(MMDKernelSelection) CMMDKernelSelection;
 %rename(MMDKernelSelectionComb) CMMDKernelSelectionComb;
 %rename(MMDKernelSelectionMedian) CMMDKernelSelectionMedian;
@@ -26,14 +30,18 @@
 
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/statistics/TestStatistic.h>
-%include <shogun/statistics/TwoDistributionsTestStatistic.h>
-%include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+%include <shogun/statistics/HypothesisTest.h>
+%include <shogun/statistics/IndependenceTest.h>
+%include <shogun/statistics/TwoSampleTest.h>
+%include <shogun/statistics/KernelTwoSampleTest.h>
+%include <shogun/statistics/StreamingMMD.h>
 %include <shogun/statistics/LinearTimeMMD.h>
 %include <shogun/statistics/QuadraticTimeMMD.h>
-%include <shogun/statistics/KernelIndependenceTestStatistic.h>
+%include <shogun/statistics/KernelIndependenceTest.h>
 %include <shogun/statistics/HSIC.h>
+%include <shogun/statistics/NOCCO.h>
 %include <shogun/statistics/KernelMeanMatching.h>
+%include <shogun/statistics/KernelSelection.h>
 %include <shogun/statistics/MMDKernelSelection.h>
 %include <shogun/statistics/MMDKernelSelectionComb.h>
 %include <shogun/statistics/MMDKernelSelectionMedian.h>

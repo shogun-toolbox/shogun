@@ -9,6 +9,14 @@
  #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
  #include <shogun/multiclass/tree/TreeMachineNode.h>
  #include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+ #include <shogun/multiclass/tree/ID3TreeNodeData.h>
+ #include <shogun/multiclass/tree/ID3ClassifierTree.h>
+ #include <shogun/multiclass/tree/C45TreeNodeData.h>
+ #include <shogun/multiclass/tree/C45ClassifierTree.h>
+ #include <shogun/multiclass/tree/CARTreeNodeData.h>
+ #include <shogun/multiclass/tree/CARTree.h>
+ #include <shogun/multiclass/tree/CHAIDTreeNodeData.h>
+ #include <shogun/multiclass/tree/CHAIDTree.h>
 
  #include <shogun/multiclass/RejectionStrategy.h>
  #include <shogun/multiclass/MulticlassStrategy.h>

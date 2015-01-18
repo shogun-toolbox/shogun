@@ -12,6 +12,9 @@
  */
 
 #include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
+#include <shogun/io/SGIO.h>
+#include <vector>
+
 #ifdef USE_GLPK
 #include <glpk.h>
 #endif
@@ -98,9 +101,8 @@ void MKLMulticlassGLPK::setup(const int32_t numkernels2)
 							//start at 2 not at 1 !
 	}
 
-	float64_t *betacoeffs(NULL);
-	betacoeffs=new float64_t[1+numkernels];
-
+	float64_t *betacoeffs = SG_MALLOC(float64_t, 1+numkernels);
+	betacoeffs[0]=0;
 	for (int32_t i=0; i<numkernels;++i)
 	{
 		betacoeffs[1+i]=1;

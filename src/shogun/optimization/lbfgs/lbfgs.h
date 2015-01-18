@@ -27,6 +27,8 @@
 #ifndef __LBFGS_H__
 #define __LBFGS_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -117,6 +119,8 @@ enum {
     LBFGSERR_INVALIDPARAMETERS,
     /** The current search direction increases the objective function value. */
     LBFGSERR_INCREASEGRADIENT,
+    /** Invalid value of objective function*/
+    LBFGSERR_INVALID_VALUE
 };
 
 /**
@@ -389,6 +393,31 @@ typedef int (*lbfgs_progress_t)(
     int ls
     );
 
+/**
+ * Callback interface to adjust step size based on constraints.
+ *
+ *  If the function pointer is not NULL, the lbfgs() function calls
+ *  this function to adjust its step size. A client program can implement this function
+ *  to adjust the step size used in lbfgs update based on user-defined constraints.
+ *  Note that the update is x_new = x + step * d, where step is positive.
+ *
+ *  @param  instance    The user data sent for lbfgs() function by the client.
+ *  @param  x           The current values of variables.
+ *  @param  d           The direction vector of variables.
+ *  @param  n           The number of variables.
+ *  @param  step        The current step of the line search routine.
+ *
+ *  @retval float64_t The value of adjusted step size
+ */
+
+typedef float64_t (*lbfgs_adjust_step_t)(
+    void *instance,
+    const float64_t *x,
+    const float64_t *d,
+    const int n,
+    const float64_t step
+    );
+
 /*
 A user must implement a function compatible with ::lbfgs_evaluate_t (evaluation
 callback) and pass the pointer to the callback function to lbfgs() arguments.
@@ -443,6 +472,9 @@ In this formula, ||.|| denotes the Euclidean norm.
  *                      parameter to \c NULL to use the default parameters.
  *                      Call lbfgs_parameter_init() function to fill a
  *                      structure with the default values.
+ *  @param  proc_adjust_step   The callback function to adjust step size based on constraints.
+ *                          This argument can be set to \c NULL if there is not constraint.
+ *
  *  @retval int         The status code. This function returns zero if the
  *                      minimization process terminates without an error. A
  *                      non-zero value indicates an error.
@@ -454,7 +486,8 @@ int lbfgs(
     lbfgs_evaluate_t proc_evaluate,
     lbfgs_progress_t proc_progress,
     void *instance,
-    lbfgs_parameter_t *param
+    lbfgs_parameter_t *param,
+    lbfgs_adjust_step_t proc_adjust_step=NULL
     );
 
 /**

@@ -11,6 +11,8 @@
 #ifndef _SNPSTRINGKERNEL_H___
 #define _SNPSTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
 #include <shogun/kernel/string/StringKernel.h>

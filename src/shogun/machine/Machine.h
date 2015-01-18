@@ -12,9 +12,10 @@
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -27,7 +28,6 @@ namespace shogun
 
 class CFeatures;
 class CLabels;
-class CMath;
 
 /** classifier type */
 enum EMachineType
@@ -87,7 +87,11 @@ enum EMachineType
 	CT_GAUSSIANPROCESSBINARY = 530,
 	CT_GAUSSIANPROCESSMULTICLASS = 540,
 	CT_STOCHASTICSOSVM = 550,
-	CT_BAGGING
+	CT_NEURALNETWORK = 560,
+	CT_BAGGING = 570,
+	CT_FWSOSVM = 580,
+	CT_BCFWSOSVM = 590,
+	CT_GAUSSIANPROCESSCLASS
 };
 
 /** solver type */
@@ -109,7 +113,8 @@ enum EProblemType
 	PT_REGRESSION = 1,
 	PT_MULTICLASS = 2,
 	PT_STRUCTURED = 3,
-	PT_LATENT = 4
+	PT_LATENT = 4,
+	PT_CLASS = 5
 };
 
 #define MACHINE_PROBLEM_TYPE(PT) \

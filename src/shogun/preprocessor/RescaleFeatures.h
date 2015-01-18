@@ -11,6 +11,8 @@
 #ifndef __RESCALEFEATURES_H__
 #define __RESCALEFEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/preprocessor/DensePreprocessor.h>
 
 namespace shogun

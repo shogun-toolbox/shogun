@@ -40,12 +40,17 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update()
 {
+	SG_DEBUG("entering\n");
+
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
 	update_deriv();
 	update_mean();
 	update_cov();
+	update_parameter_hash();
+
+	SG_DEBUG("leaving\n");
 }
 
 void CExactInferenceMethod::check_members() const
@@ -60,7 +65,7 @@ void CExactInferenceMethod::check_members() const
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
@@ -77,7 +82,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 
 float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
@@ -106,7 +111,7 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 
 SGVector<float64_t> CExactInferenceMethod::get_alpha()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_alpha);
@@ -114,7 +119,7 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_L);
@@ -122,7 +127,7 @@ SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 
 SGVector<float64_t> CExactInferenceMethod::get_posterior_mean()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_mu);
@@ -130,7 +135,7 @@ SGVector<float64_t> CExactInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CExactInferenceMethod::get_posterior_covariance()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_Sigma);
@@ -194,8 +199,7 @@ void CExactInferenceMethod::update_mean()
 	m_mu=SGVector<float64_t>(m.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 
-	// compute mean: mu=K'*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_m;
+	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha;
 }
 
 void CExactInferenceMethod::update_cov()
@@ -212,6 +216,11 @@ void CExactInferenceMethod::update_cov()
 	// compute V = L^(-1) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
 			eigen_K*CMath::sq(m_scale));
+
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+	eigen_V = eigen_V/sigma;
 
 	// compute covariance matrix of the posterior: Sigma = K - V^T * V
 	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;

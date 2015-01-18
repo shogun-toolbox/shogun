@@ -15,6 +15,9 @@
  */
 
 #include <shogun/lib/slep/tree/general_altra.h>
+#include <shogun/mathematics/Math.h>
+#include <stdlib.h>
+#include <string.h>
 
 void general_altra(double *x, double *v, int n, double *G, double *ind, int nodes, double mult)
 {

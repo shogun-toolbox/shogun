@@ -5,6 +5,7 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 
 #include <libgen.h>
 
@@ -70,7 +71,7 @@ class CObjectDetector: public CLatentModel
 			{
 				for (int j = 0; j < hf->height; ++j)
 				{
-					float64_t score = w.dot(w.vector, hf->hog[i][j], w.vlen);
+					float64_t score = CMath::dot(w.vector, hf->hog[i][j], w.vlen);
 
 					if (score > max_score)
 					{

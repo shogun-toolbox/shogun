@@ -12,6 +12,8 @@
 #ifndef GAUSSIANARDKERNEL_H_
 #define GAUSSIANARDKERNEL_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>

@@ -1,4 +1,5 @@
-include_directories(${MATLAB_INCLUDE_DIR})
-
-add_library(matlab_static SHARED MatlabInterface.cpp)
-target_link_libraries(matlab_static shogun ${MATLAB_LIBRARIES})
+ADD_CUSTOM_TARGET(matlab_static ALL
+	COMMAND "${MATLAB_ROOT}/bin/mex" -o sg -I${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/MatlabInterface.cpp $<TARGET_SONAME_FILE:shogun>
+	DEPENDS shogun
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Compiling MATLAB static interface")

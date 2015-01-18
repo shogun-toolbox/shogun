@@ -7,7 +7,6 @@
  * Written (W) 2014 Thoralf Klein
  */
 
-#include <shogun/lib/config.h>
 #include <gtest/gtest.h>
 
 #include <shogun/lib/SGVector.h>
@@ -23,14 +22,21 @@
 
 using namespace shogun;
 
-TEST(DualLibQPBMSOSVM,train_bmrm_small_buffer)
+SGVector<float64_t> create_test_labels(int32_t N)
 {
-	// toy data
-	int32_t N        = 100;
-	int32_t feat_dim = 5;
-	int32_t num_feat = 4;
-
 	SGVector<float64_t> labs(N);
+
+	for (int32_t i=0; i<N; i++)
+	{
+		// labs[i] = float64_t(i/3);
+		labs[i] = float64_t(i%5);
+	}
+
+	return labs;
+}
+
+SGSparseMatrix<float64_t> create_test_features(int32_t N, int32_t feat_dim, int32_t num_feat)
+{
 	SGSparseMatrix<float64_t> feats(feat_dim, N);
 
 	for (int32_t i=0; i<N; i++)
@@ -57,37 +63,45 @@ TEST(DualLibQPBMSOSVM,train_bmrm_small_buffer)
 		feats.sparse_matrix[i].features[f].feat_index = 3;
 		feats.sparse_matrix[i].features[f].entry = i%3;
 		f++;
-
-		labs[i] = float64_t(i/3);
 	}
 
-	// initialization
-	float64_t lambda=1e3, eps=0.01;
-	bool icp=1;
-	uint32_t cp_models=1;
-	ESolver solver=BMRM;
+	return feats;
+}
+
+class DualLibQPBMSOSVMTestLoopSolvers : public ::testing::TestWithParam<ESolver> {
+  // You can implement all the usual fixture class members here.
+  // To access the test parameter, call GetParam() from class
+  // TestWithParam<T>.
+};
+
+TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
+{
+	// toy data
+	int32_t N        = 100;
+	int32_t feat_dim = 5;
+	int32_t num_feat = 4;
 
 	// Create train labels
+	SGVector<float64_t> labs = create_test_labels(N);
 	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
 
 	// Create train features
+	SGSparseMatrix<float64_t> feats = create_test_features(N, feat_dim, num_feat);
 	CSparseFeatures< float64_t >* features = new CSparseFeatures< float64_t >(feats);
 
-	// Create structured model
+	// Create SO model, SO-SVM
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
-
-	// Create SO-SVM, train
-	CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, labels, lambda);
+	CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, labels, 1e3);
 	SG_REF(sosvm);
 
 	sosvm->set_cleanAfter(10);
-	sosvm->set_cleanICP(icp);
-	sosvm->set_TolRel(eps);
-	sosvm->set_cp_models(cp_models);
-	sosvm->set_solver(solver);
+	sosvm->set_cleanICP(1);
+	sosvm->set_TolRel(0.01);
+	sosvm->set_cp_models(1);
+	sosvm->set_solver(GetParam());
 
 	// sosvm->set_verbose(true);
-	sosvm->set_BufSize(2);
+	sosvm->set_BufSize(8);
 
 	sosvm->train();
 
@@ -95,14 +109,12 @@ TEST(DualLibQPBMSOSVM,train_bmrm_small_buffer)
 	//SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
 	//		res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
-	ASSERT_LE(res.nCP, 2);
-	ASSERT_LE(res.nzA, 2);
+	ASSERT_LE(res.nCP, 8);
+	ASSERT_LE(res.nzA, 8);
 	ASSERT_LE(res.exitflag, 0);
 
 	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
 	SG_REF(out);
-
-	SG_SPRINT("\n");
 
 	// Compute error
 	//-------------------------------------------------------------------------
@@ -116,8 +128,13 @@ TEST(DualLibQPBMSOSVM,train_bmrm_small_buffer)
 	}
 
 	// SG_SPRINT("Error = %lf %% \n", error/num_feat*100);
+	ASSERT_LE(error/num_feat*100, 75.0);
 
 	// Free memory
 	SG_UNREF(sosvm);
 	SG_UNREF(out);
 }
+
+INSTANTIATE_TEST_CASE_P(IterateAllBMSOSolvers,
+                        DualLibQPBMSOSVMTestLoopSolvers,
+                        ::testing::Values(BMRM, PPBMRM, P3BMRM, NCBM));

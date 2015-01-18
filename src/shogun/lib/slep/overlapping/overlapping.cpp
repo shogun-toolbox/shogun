@@ -15,6 +15,9 @@
  */
 
 #include <shogun/lib/slep/overlapping/overlapping.h>
+#include <shogun/mathematics/Math.h>
+#include <stdlib.h>
+#include <string.h>
 
 void identifySomeZeroEntries(double * u, int * zeroGroupFlag, int *entrySignFlag,
 		int *pp, int *gg,

@@ -66,7 +66,7 @@ void CEPInferenceMethod::init()
 
 float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return m_nlZ;
@@ -74,7 +74,7 @@ float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 
 SGVector<float64_t> CEPInferenceMethod::get_alpha()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_alpha);
@@ -82,7 +82,7 @@ SGVector<float64_t> CEPInferenceMethod::get_alpha()
 
 SGMatrix<float64_t> CEPInferenceMethod::get_cholesky()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_L);
@@ -90,7 +90,7 @@ SGMatrix<float64_t> CEPInferenceMethod::get_cholesky()
 
 SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_sttau);
@@ -98,7 +98,7 @@ SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 
 SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_mu);
@@ -106,7 +106,7 @@ SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_Sigma);
@@ -114,6 +114,8 @@ SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 
 void CEPInferenceMethod::update()
 {
+	SG_DEBUG("entering\n");
+
 	// update kernel and feature matrix
 	CInferenceMethod::update();
 
@@ -167,7 +169,8 @@ void CEPInferenceMethod::update()
 	}
 
 	// create vector of the random permutation
-	SGVector<index_t> randperm=SGVector<index_t>::randperm_vec(n);
+	SGVector<index_t> v(n);
+	v.range_fill();
 
 	// cavity tau and nu vectors
 	SGVector<float64_t> tau_n(n);
@@ -187,11 +190,11 @@ void CEPInferenceMethod::update()
 		sweep++;
 
 		// shuffle random permutation
-		randperm.permute();
+		CMath::permute(v);
 
 		for (index_t j=0; j<n; j++)
 		{
-			index_t i=randperm[j];
+			index_t i=v[j];
 
 			// find cavity paramters
 			tau_n[i]=1.0/m_Sigma(i,i)-m_ttau[i];
@@ -255,6 +258,11 @@ void CEPInferenceMethod::update()
 
 	// update matrices to compute derivatives
 	update_deriv();
+
+	// update hash of the parameters
+	update_parameter_hash();
+
+	SG_DEBUG("leaving\n");
 }
 
 void CEPInferenceMethod::update_alpha()

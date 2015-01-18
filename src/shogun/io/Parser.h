@@ -10,11 +10,15 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
+class CTokenizer;
+
 /** @brief Class for reading from a string */
 class CParser : public CSGObject
 {

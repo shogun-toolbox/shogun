@@ -38,6 +38,8 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/kernel/Kernel.h>
 
 namespace shogun

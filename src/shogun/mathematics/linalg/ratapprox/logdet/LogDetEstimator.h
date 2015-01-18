@@ -32,11 +32,30 @@ template<class T> class SGMatrix;
 class CLogDetEstimator : public CSGObject
 {
 public:
-	/** default constructor */
+	/** Default constructor */
 	CLogDetEstimator();
 
+#if defined HAVE_EIGEN3 && HAVE_LAPACK
 	/**
-	 * constructor
+	 * Convenient constructor for SGSparseMatrix<float64_t>. Works only when
+	 * Eigen3 and LAPACK libraries are available.
+	 *
+	 * Uses the default configuration:
+	 * - CSerialComputationEngine
+	 * - CLanczosEigenSolver,
+	 * - CLogRationalApproximationCGM with 1E-5 accuracy
+	 * - CCGMShiftedFamilySolver,
+	 * when COLPACK package is available then CProbingsampler with power = 1,
+	 * EOrderingVariant NATURAL, EColoringVariant DISTANCE_TWO is used,
+	 * Otherwise CNormalsampler is used.
+	 *
+	 * @param sparse_mat the input sparse matrix
+	 */
+	CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
+#endif // HAVE_LAPACK && HAVE_EIGEN3
+
+	/**
+	 * Constructor
 	 *
 	 * @param trace_sampler the trace sampler
 	 * @param operator_log the operator function
@@ -46,11 +65,11 @@ public:
 		COperatorFunction<float64_t>* operator_log,
 		CIndependentComputationEngine* computation_engine);
 
-	/** destructor */
+	/** Destructor */
 	virtual ~CLogDetEstimator();
 
 	/**
-	 * method that gives num_estimates number of log-det estimates with running
+	 * Method that gives num_estimates number of log-det estimates with running
 	 * averaging of the estimates
 	 *
 	 * @param num_estimates the number of log-det estimates to be computed
@@ -59,7 +78,7 @@ public:
 	SGVector<float64_t> sample(index_t num_estimates);
 
 	/**
-	 * method that gives num_estimates number of log-det estimates without any
+	 * Method that gives num_estimates number of log-det estimates without any
 	 * averaging of the estimates
 	 *
 	 * @param num_estimates the number of log-det estimates to be computed
@@ -72,6 +91,15 @@ public:
 	{
 		return "LogDetEstimator";
 	}
+
+	/** @return trace sampler */
+	CTraceSampler* get_trace_sampler(void) const;
+
+	/** @return computation sampler */
+	CIndependentComputationEngine* get_computation_engine(void) const;
+
+	/** @return operator function */
+	COperatorFunction<float64_t>* get_operator_function(void) const;
 
 private:
 	/** the trace sampler */

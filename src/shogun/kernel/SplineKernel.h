@@ -12,6 +12,8 @@
 #ifndef _SPLINEKERNEL_H__
 #define _SPLINEKERNEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DotFeatures.h>

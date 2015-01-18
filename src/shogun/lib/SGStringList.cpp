@@ -1,6 +1,7 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

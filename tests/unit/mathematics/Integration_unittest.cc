@@ -1,10 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2014 Wu Lin
  * Written (W) 2013 Roman Votyakov
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <shogun/lib/config.h>
@@ -15,6 +37,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Function.h>
 #include <shogun/mathematics/Integration.h>
+#include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -565,4 +588,189 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	SG_UNREF(g);
 }
 
+TEST(Integration, generate_gauher)
+{
+	index_t n = 20;
+	float64_t abs_tolerance, rel_tolerance = 1e-2;
+	SGVector<float64_t> xgh(n);
+	SGVector<float64_t> wgh(n);
+
+	CIntegration::generate_gauher(xgh, wgh);
+
+	SGVector<index_t> index = CMath::argsort(xgh);
+
+	abs_tolerance = CMath::get_abs_tolerance(-7.619048541679757, rel_tolerance);
+	EXPECT_NEAR(xgh[index[0]],  -7.619048541679757,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-6.510590157013656, rel_tolerance);
+	EXPECT_NEAR(xgh[index[1]],  -6.510590157013656,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-5.578738805893203, rel_tolerance);
+	EXPECT_NEAR(xgh[index[2]],  -5.578738805893203,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-4.734581334046057, rel_tolerance);
+	EXPECT_NEAR(xgh[index[3]],  -4.734581334046057,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-3.943967350657318, rel_tolerance);
+	EXPECT_NEAR(xgh[index[4]],  -3.943967350657318,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-3.189014816553390, rel_tolerance);
+	EXPECT_NEAR(xgh[index[5]],  -3.189014816553390,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-2.458663611172367, rel_tolerance);
+	EXPECT_NEAR(xgh[index[6]],  -2.458663611172367,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-1.745247320814127, rel_tolerance);
+	EXPECT_NEAR(xgh[index[7]],  -1.745247320814127,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-1.042945348802751, rel_tolerance);
+	EXPECT_NEAR(xgh[index[8]],  -1.042945348802751,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.346964157081356, rel_tolerance);
+	EXPECT_NEAR(xgh[index[9]],  -0.346964157081356,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.346964157081356, rel_tolerance);
+	EXPECT_NEAR(xgh[index[10]],  0.346964157081356,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.042945348802751, rel_tolerance);
+	EXPECT_NEAR(xgh[index[11]],  1.042945348802751,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.745247320814127, rel_tolerance);
+	EXPECT_NEAR(xgh[index[12]],  1.745247320814127,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.458663611172367, rel_tolerance);
+	EXPECT_NEAR(xgh[index[13]],  2.458663611172367,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(3.189014816553390, rel_tolerance);
+	EXPECT_NEAR(xgh[index[14]],  3.189014816553390,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(3.943967350657316, rel_tolerance);
+	EXPECT_NEAR(xgh[index[15]],  3.943967350657316,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(4.734581334046057, rel_tolerance);
+	EXPECT_NEAR(xgh[index[16]],  4.734581334046057,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(5.578738805893201, rel_tolerance);
+	EXPECT_NEAR(xgh[index[17]],  5.578738805893201,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(6.510590157013653, rel_tolerance);
+	EXPECT_NEAR(xgh[index[18]],  6.510590157013653,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(7.619048541679757, rel_tolerance);
+	EXPECT_NEAR(xgh[index[19]],  7.619048541679757,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	EXPECT_NEAR(wgh[index[0]],  0.000000000000126,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	EXPECT_NEAR(wgh[index[1]],  0.000000000248206,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	EXPECT_NEAR(wgh[index[2]],  0.000000061274903,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	EXPECT_NEAR(wgh[index[3]],  0.000004402121090,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	EXPECT_NEAR(wgh[index[4]],  0.000128826279962,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	EXPECT_NEAR(wgh[index[5]],  0.001830103131080,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	EXPECT_NEAR(wgh[index[6]],  0.013997837447101,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	EXPECT_NEAR(wgh[index[7]],  0.061506372063977,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	EXPECT_NEAR(wgh[index[8]],  0.161739333984000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	EXPECT_NEAR(wgh[index[9]],  0.260793063449555,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	EXPECT_NEAR(wgh[index[10]],  0.260793063449555,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	EXPECT_NEAR(wgh[index[11]],  0.161739333984000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	EXPECT_NEAR(wgh[index[12]],  0.061506372063977,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	EXPECT_NEAR(wgh[index[13]],  0.013997837447101,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	EXPECT_NEAR(wgh[index[14]],  0.001830103131080,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	EXPECT_NEAR(wgh[index[15]],  0.000128826279962,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	EXPECT_NEAR(wgh[index[16]],  0.000004402121090,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	EXPECT_NEAR(wgh[index[17]],  0.000000061274903,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	EXPECT_NEAR(wgh[index[18]],  0.000000000248206,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	EXPECT_NEAR(wgh[index[19]],  0.000000000000126,  abs_tolerance);
+}
+
+TEST(Integration, generate_gauher20)
+{
+	index_t n = 20;
+	float64_t abs_tolerance, rel_tolerance = 1e-2;
+	SGVector<float64_t> xgh(n);
+	SGVector<float64_t> wgh(n);
+
+	CIntegration::generate_gauher20(xgh, wgh);
+
+	abs_tolerance = CMath::get_abs_tolerance(-7.619048541679757, rel_tolerance);
+	EXPECT_NEAR(xgh[0],  -7.619048541679757,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-6.510590157013656, rel_tolerance);
+	EXPECT_NEAR(xgh[1],  -6.510590157013656,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-5.578738805893203, rel_tolerance);
+	EXPECT_NEAR(xgh[2],  -5.578738805893203,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-4.734581334046057, rel_tolerance);
+	EXPECT_NEAR(xgh[3],  -4.734581334046057,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-3.943967350657318, rel_tolerance);
+	EXPECT_NEAR(xgh[4],  -3.943967350657318,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-3.189014816553390, rel_tolerance);
+	EXPECT_NEAR(xgh[5],  -3.189014816553390,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-2.458663611172367, rel_tolerance);
+	EXPECT_NEAR(xgh[6],  -2.458663611172367,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-1.745247320814127, rel_tolerance);
+	EXPECT_NEAR(xgh[7],  -1.745247320814127,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-1.042945348802751, rel_tolerance);
+	EXPECT_NEAR(xgh[8],  -1.042945348802751,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.346964157081356, rel_tolerance);
+	EXPECT_NEAR(xgh[9],  -0.346964157081356,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.346964157081356, rel_tolerance);
+	EXPECT_NEAR(xgh[10],  0.346964157081356,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.042945348802751, rel_tolerance);
+	EXPECT_NEAR(xgh[11],  1.042945348802751,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.745247320814127, rel_tolerance);
+	EXPECT_NEAR(xgh[12],  1.745247320814127,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.458663611172367, rel_tolerance);
+	EXPECT_NEAR(xgh[13],  2.458663611172367,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(3.189014816553390, rel_tolerance);
+	EXPECT_NEAR(xgh[14],  3.189014816553390,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(3.943967350657316, rel_tolerance);
+	EXPECT_NEAR(xgh[15],  3.943967350657316,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(4.734581334046057, rel_tolerance);
+	EXPECT_NEAR(xgh[16],  4.734581334046057,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(5.578738805893201, rel_tolerance);
+	EXPECT_NEAR(xgh[17],  5.578738805893201,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(6.510590157013653, rel_tolerance);
+	EXPECT_NEAR(xgh[18],  6.510590157013653,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(7.619048541679757, rel_tolerance);
+	EXPECT_NEAR(xgh[19],  7.619048541679757,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	EXPECT_NEAR(wgh[0],  0.000000000000126,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	EXPECT_NEAR(wgh[1],  0.000000000248206,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	EXPECT_NEAR(wgh[2],  0.000000061274903,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	EXPECT_NEAR(wgh[3],  0.000004402121090,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	EXPECT_NEAR(wgh[4],  0.000128826279962,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	EXPECT_NEAR(wgh[5],  0.001830103131080,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	EXPECT_NEAR(wgh[6],  0.013997837447101,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	EXPECT_NEAR(wgh[7],  0.061506372063977,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	EXPECT_NEAR(wgh[8],  0.161739333984000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	EXPECT_NEAR(wgh[9],  0.260793063449555,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.260793063449555, rel_tolerance);
+	EXPECT_NEAR(wgh[10],  0.260793063449555,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.161739333984000, rel_tolerance);
+	EXPECT_NEAR(wgh[11],  0.161739333984000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.061506372063977, rel_tolerance);
+	EXPECT_NEAR(wgh[12],  0.061506372063977,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.013997837447101, rel_tolerance);
+	EXPECT_NEAR(wgh[13],  0.013997837447101,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.001830103131080, rel_tolerance);
+	EXPECT_NEAR(wgh[14],  0.001830103131080,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000128826279962, rel_tolerance);
+	EXPECT_NEAR(wgh[15],  0.000128826279962,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000004402121090, rel_tolerance);
+	EXPECT_NEAR(wgh[16],  0.000004402121090,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000061274903, rel_tolerance);
+	EXPECT_NEAR(wgh[17],  0.000000061274903,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000248206, rel_tolerance);
+	EXPECT_NEAR(wgh[18],  0.000000000248206,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
+	EXPECT_NEAR(wgh[19],  0.000000000000126,  abs_tolerance);
+}
 #endif /* HAVE_EIGEN3 */

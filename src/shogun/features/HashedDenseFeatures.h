@@ -11,6 +11,8 @@
 #ifndef _HASHED_DENSEFEATURES_H__
 #define _HASHED_DENSEFEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DotFeatures.h>
 

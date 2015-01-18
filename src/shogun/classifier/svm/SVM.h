@@ -11,6 +11,8 @@
 #ifndef _SVM_H___
 #define _SVM_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>

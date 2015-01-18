@@ -11,11 +11,15 @@
 #ifndef __LATENTSVM_H__
 #define __LATENTSVM_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearLatentMachine.h>
 
 namespace shogun
 {
+	class LatentModel;
+
 	/** @brief LatentSVM class
 	 * Latent SVM implementation based on [1].
 	 * For optimization this implementation uses SVMOcas.

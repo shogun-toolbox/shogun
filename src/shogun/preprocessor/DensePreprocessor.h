@@ -11,6 +11,8 @@
 #ifndef _DENSEPREPROCESSOR__H__
 #define _DENSEPREPROCESSOR__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/common.h>
@@ -34,6 +36,14 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		/** constructor
 		 */
 		CDensePreprocessor();
+
+		/** generic interface for applying the preprocessor. used as a wrapper
+		 * for apply_to_feature_matrix() method
+		 *
+		 * @param features the dense input features
+		 * @return the result feature object after applying the preprocessor
+		 */
+		virtual CFeatures* apply(CFeatures* features);
 
 		/// apply preproc on feature matrix
 		/// result in feature matrix

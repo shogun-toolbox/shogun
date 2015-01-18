@@ -63,12 +63,14 @@ licence.
 
 #include <algorithm>
 #include <cstdio>
-#include <cstdlib>
 #include <cmath>
+#include <string.h>
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -82,6 +84,7 @@ struct tag_callback_data {
     void *instance;
     lbfgs_evaluate_t proc_evaluate;
     lbfgs_progress_t proc_progress;
+    lbfgs_adjust_step_t proc_adjust_step;
 };
 typedef struct tag_callback_data callback_data_t;
 
@@ -94,10 +97,10 @@ struct tag_iteration_data {
 typedef struct tag_iteration_data iteration_data_t;
 
 static const lbfgs_parameter_t _defparam = {
-    6, 1e-5, 0, 1e-5,
-    0, LBFGS_LINESEARCH_DEFAULT, 40,
+    6, 1e-5, 0, 0.0,
+    0, LBFGS_LINESEARCH_DEFAULT, 20,
     1e-20, 1e20, 1e-4, 0.9, 0.9, 1.0e-16,
-    0.0, 0, -1,
+    0.0, 0, 1,
 };
 
 /* Forward function declarations. */
@@ -209,7 +212,8 @@ int32_t lbfgs(
     lbfgs_evaluate_t proc_evaluate,
     lbfgs_progress_t proc_progress,
     void *instance,
-    lbfgs_parameter_t *_param
+    lbfgs_parameter_t *_param,
+    lbfgs_adjust_step_t proc_adjust_step
     )
 {
     int32_t ret;
@@ -236,6 +240,7 @@ int32_t lbfgs(
     cd.instance = instance;
     cd.proc_evaluate = proc_evaluate;
     cd.proc_progress = proc_progress;
+    cd.proc_adjust_step=proc_adjust_step;
 
     /* Check the input parameters for errors. */
     if (n <= 0) {
@@ -423,18 +428,23 @@ int32_t lbfgs(
         }
         if (ls < 0) {
             /* Revert to the previous point. */
-			std::copy(xp,xp+n,x);
-			std::copy(gp,gp+n,g);
+            std::copy(xp,xp+n,x);
+            std::copy(gp,gp+n,g);
             ret = ls;
+
+            /* Roll back */
+        if (ls==LBFGSERR_INVALID_VALUE)
+            fx = cd.proc_evaluate(cd.instance, x, g, cd.n, step);
+
             goto lbfgs_exit;
         }
 
         /* Compute x and g norms. */
-		xnorm = SGVector<float64_t>::twonorm(x, n);
+        xnorm = SGVector<float64_t>::twonorm(x, n);
         if (param.orthantwise_c == 0.) {
-			gnorm = SGVector<float64_t>::twonorm(g, n);
+            gnorm = SGVector<float64_t>::twonorm(g, n);
         } else {
-			gnorm = SGVector<float64_t>::twonorm(pg, n);
+            gnorm = SGVector<float64_t>::twonorm(pg, n);
         }
 
         /* Report the progress. */
@@ -499,8 +509,8 @@ int32_t lbfgs(
                 yy = y^t \cdot y.
             Notice that yy is used for scaling the hessian matrix H_0 (Cholesky factor).
          */
-		ys = SGVector<float64_t>::dot(it->y, it->s, n);
-		yy = SGVector<float64_t>::dot(it->y, it->y, n);
+		ys = CMath::dot(it->y, it->s, n);
+		yy = CMath::dot(it->y, it->y, n);
         it->ys = ys;
 
         /*
@@ -530,7 +540,7 @@ int32_t lbfgs(
             j = (j + m - 1) % m;    /* if (--j == -1) j = m-1; */
             it = &lm[j];
             /* \alpha_{j} = \rho_{j} s^{t}_{j} \cdot q_{k+1}. */
-			it->alpha = SGVector<float64_t>::dot(it->s, d, n);
+			it->alpha = CMath::dot(it->s, d, n);
             it->alpha /= it->ys;
             /* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
 			SGVector<float64_t>::add(d, 1, d, -it->alpha, it->y, n);
@@ -541,7 +551,7 @@ int32_t lbfgs(
         for (i = 0;i < bound;++i) {
             it = &lm[j];
             /* \beta_{j} = \rho_{j} y^t_{j} \cdot \gamma_{i}. */
-			beta = SGVector<float64_t>::dot(it->y, d, n);
+			beta = CMath::dot(it->y, d, n);
             beta /= it->ys;
             /* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
 			SGVector<float64_t>::add(d, 1, d, it->alpha-beta, it->s, n);
@@ -618,7 +628,7 @@ static int32_t line_search_backtracking(
     }
 
     /* Compute the initial gradient in the search direction. */
-	dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = CMath::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -628,15 +638,38 @@ static int32_t line_search_backtracking(
     /* The initial value of the objective function. */
     finit = *f;
     dgtest = param->ftol * dginit;
+    const index_t max_iter = 20;
 
     for (;;) {
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
 
-        /* Evaluate the function and gradient values. */
-        *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
+        for(index_t j=0; j<n; j++)
+        {
+            if (CMath::is_nan(s[j]) || CMath::is_infinity(s[j]))
+                return LBFGSERR_INVALID_VALUE;
+        }
 
-        ++count;
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        float64_t decay=0.5;
+        index_t iter=0;
+
+        while(true)
+        {
+            /* Evaluate the function and gradient values. */
+            *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
+            ++count;
+            if (CMath::is_nan(*f) || CMath::is_infinity(*f))
+                *stp*=decay;
+            else
+                break;
+            SGVector<float64_t>::add(x, 1, x, -1.0*(*stp), s, n);
+            iter++;
+            if (iter>max_iter)
+                return LBFGSERR_INVALID_VALUE;
+        }
+
 
         if (*f > finit + *stp * dgtest) {
             width = dec;
@@ -648,7 +681,7 @@ static int32_t line_search_backtracking(
 	        }
 
 	        /* Check the Wolfe condition. */
-			dg = SGVector<float64_t>::dot(g, s, n);
+			dg = CMath::dot(g, s, n);
 	        if (dg < param->wolfe * dginit) {
 		    width = inc;
 	        } else {
@@ -716,8 +749,10 @@ static int32_t line_search_backtracking_owlqn(
 
     for (;;) {
         /* Update the current point. */
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* The current point is projected onto the orthant. */
         owlqn_project(x, wp, param->orthantwise_start, param->orthantwise_end);
@@ -790,7 +825,7 @@ static int32_t line_search_morethuente(
     }
 
     /* Compute the initial gradient in the search direction. */
-	dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = CMath::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -847,12 +882,16 @@ static int32_t line_search_morethuente(
             Compute the current value of x:
                 x <- x + (*stp) * s.
          */
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
-		dg = SGVector<float64_t>::dot(g, s, n);
+
+        dg = CMath::dot(g, s, n);
 
         ftest1 = finit + *stp * dgtest;
         ++count;

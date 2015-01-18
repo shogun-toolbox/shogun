@@ -17,6 +17,8 @@
 #ifndef  EPSGLASSO_SLEP
 #define  EPSGLASSO_SLEP
 
+#include <shogun/lib/config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

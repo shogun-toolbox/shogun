@@ -10,6 +10,8 @@
 #ifndef __MMDKERNELSELECTIONOPTSINGLE_H_
 #define __MMDKERNELSELECTIONOPTSINGLE_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/MMDKernelSelection.h>
 
 namespace shogun
@@ -47,7 +49,7 @@ public:
 	 * @param lambda ridge that is added to standard deviation in order to
 	 * prevent division by zero. A sensivle value is for example 1E-5.
 	 */
-	CMMDKernelSelectionOpt(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionOpt(CKernelTwoSampleTest* mmd,
 			float64_t lambda=10E-5);
 
 	/** Destructor */
@@ -63,7 +65,7 @@ public:
 	virtual SGVector<float64_t> compute_measures();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionOpt"; }
+	virtual const char* get_name() const { return "MMDKernelSelectionOpt"; }
 
 private:
 	/** Initializer */
