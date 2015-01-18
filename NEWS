@@ -1,4 +1,4 @@
-2014-03-01 Soeren Sonnenburg <sonne@debian.org>
+2015-01-18 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
 	* This release features the work of our 8 GSoC 2014 students [student; mentors]:
@@ -6,7 +6,7 @@
 	    - Large-Scale Multi-Label Classification [Abinash Panda; Thoralf Klein]
 	    - Large-scale structured prediction with approximate inference [Jiaolong Xu; Shell Hu]
 	    - Essential Deep Learning Modules [Khaled Nasr; Sergey Lisitsyn, Theofanis Karaletsos]
-	    - Fundamental Machine Learning: decision trees, kernel density estimation [Parijat Mazumdar ; Fernando Iglesias] 
+	    - Fundamental Machine Learning: decision trees, kernel density estimation [Parijat Mazumdar ; Fernando Iglesias]
 	    - Shogun Missionary & Shogun in Education [Saurabh Mahindre; Heiko Strathmann]
 	    - Testing and Measuring Variable Interactions With Kernels [Soumyajit De; Dino Sejdinovic, Heiko Strathmann]
 	    - Variational Learning for Gaussian Processes [Wu Lin; Heiko Strathmann, Emtiyaz Khan]
@@ -29,7 +29,7 @@
 		- Add CART algorithm for classification and regression using decision trees [Parijat Mazumdar]
 		- Add CHAID algorithm for multiclass classification and regression using decision trees [Parijat Mazumdar]
 		- Add Convolutional Neural Networks [Khaled Nasr]
-		- Add Random Forests algorithm for ensemble learning using CART [Parijat Mazumdar] 
+		- Add Random Forests algorithm for ensemble learning using CART [Parijat Mazumdar]
 		- Add Restricted Botlzmann Machines [Khaled Nasr]
 		- Add Stochastic Gradient Boosting algorithm for ensemble learning [Parijat Mazumdar]
 		- Add Deep contractive and denoising autoencoders [Khaled Nasr]
