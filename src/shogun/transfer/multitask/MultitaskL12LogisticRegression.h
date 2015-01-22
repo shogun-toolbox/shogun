@@ -11,6 +11,8 @@
 #define  MULTITASKL12LOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef HAVE_CXX11
+
 #include <shogun/base/unique.h>
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
@@ -101,4 +103,5 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 
 };
 }
+#endif
 #endif

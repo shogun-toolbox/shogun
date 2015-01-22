@@ -3,11 +3,15 @@
 
 #include <shogun/base/unique.h>
 
+#ifdef HAVE_CXX11
+
 class SomeTestingClassWithUnique
 {
 private:
     class Self;
     shogun::Unique<Self> self;   
 };
+
+#endif
 
 #endif
