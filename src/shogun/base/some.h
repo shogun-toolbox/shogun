@@ -1,6 +1,7 @@
-#ifndef __SG_HELPERS_H__
-#define __SG_HELPERS_H__
+#ifndef __SG_SOME_H__
+#define __SG_SOME_H__
 
+#ifdef HAVE_CXX11
 #include <memory>
 
 #include <shogun/base/SGObject.h>
@@ -36,4 +37,5 @@ namespace shogun
 
 };
 
-#endif
+#endif /* HAVE_CXX11 */
+#endif /* __SG_SOME_H__ */

@@ -2,6 +2,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_CXX11
 using namespace shogun;
 
 TEST(Some,basic)
@@ -23,3 +24,4 @@ TEST(Some,basic)
     EXPECT_EQ(1, raw->ref_count());
     SG_UNREF(raw);
 }
+#endif
