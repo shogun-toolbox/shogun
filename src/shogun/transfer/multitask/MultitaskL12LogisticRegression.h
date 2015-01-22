@@ -4,13 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (C) 2012 Sergey Lisitsyn
+ * Copyright (C) 2014 Sergey Lisitsyn
  */
 
 #ifndef  MULTITASKL12LOGISTICREGRESSION_H_
 #define  MULTITASKL12LOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/base/unique.h>
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
@@ -95,11 +96,8 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 
 	protected:
 
-		/** rho1, regularization coefficient of L1/L2 term */
-		float64_t m_rho1;
-
-		/** rho2, regularization coefficient of L2 term */
-		float64_t m_rho2;
+		class Self;
+		Unique<Self> self;
 
 };
 }
