@@ -9,25 +9,25 @@ using namespace shogun;
 
 class SomeTestingClassWithUnique::Self
 {
+public:
+    int data;
 };
+
+void SomeTestingClassWithUnique::set(int value)
+{
+    self->data = value;
+}
+
+int SomeTestingClassWithUnique::get()
+{
+    return self->data;
+}
 
 TEST(Unique,basic)
 {
-    // raw pointer to the kernel
-    CKernel* raw = NULL;
-    // local scope to create kernel
-    {
-        auto kernel = some<CGaussianKernel>();
-        raw = kernel.get();
-        SG_REF(raw);
-        EXPECT_TRUE(kernel->equals(raw));
-
-        // reference is held
-        EXPECT_EQ(2, kernel->ref_count());
-    }
-    EXPECT_TRUE(raw);
-    // last references now
-    EXPECT_EQ(1, raw->ref_count());
-    SG_UNREF(raw);
+    SomeTestingClassWithUnique object;
+    int value = rand();
+    object.set(value);
+    EXPECT_EQ(value, object.get());
 }
 #endif

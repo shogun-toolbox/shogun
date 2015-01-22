@@ -7,6 +7,9 @@
 
 class SomeTestingClassWithUnique
 {
+public:
+    void set(int value);
+    int get();
 private:
     class Self;
     shogun::Unique<Self> self;   
