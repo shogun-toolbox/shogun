@@ -12,7 +12,7 @@ namespace shogun
     /** Shogun synonym for the std::shared_ptr 
      */
     template <typename T>
-    class Some : public std::shared_ptr<T>
+    class Some : protected std::shared_ptr<T>
     {
         public:
             Some(const std::shared_ptr<T>& shared)
@@ -20,6 +20,19 @@ namespace shogun
             {
 
             }
+            operator T*() const
+            {
+                T* ptr = this->get();
+                SG_REF(ptr);
+                return ptr;
+            }
+            T* operator->() const
+            {
+                T* ptr = this->get();
+                return ptr;
+            }
+        private:
+            using std::shared_ptr<T>::get;
     };
 
     /** Creates an instance of any class
