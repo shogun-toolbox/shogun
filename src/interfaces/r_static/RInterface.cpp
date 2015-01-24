@@ -18,6 +18,7 @@ extern "C" {
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/init.h>
+#include <shogun/lib/memory.h>
 
 #ifdef HAVE_PYTHON
 #include "../python_static/PythonInterface.h"
@@ -552,8 +553,8 @@ void CRInterface::run_r_init()
 #ifdef R_HOME_ENV
 	setenv("R_HOME", R_HOME_ENV, 0);
 #endif
-	char* name=strdup("R");
-	char* opts=strdup("-q");
+	char* name=get_strdup("R");
+	char* opts=get_strdup("-q");
 	char* argv[2]={name, opts};
 	Rf_initEmbeddedR(2, argv);
 	free(opts);
