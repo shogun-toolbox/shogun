@@ -264,6 +264,16 @@ public:
 	 */
 	virtual int32_t get_height() { return m_height; }
 	
+	/** Gets the number of neurons in the layer
+	 * 
+	 * @param num_neurons number of neurons in the layer
+	 */
+	virtual void set_num_neurons(int32_t num_neurons)
+	{
+		m_num_neurons = num_neurons;
+		set_batch_size(m_batch_size);
+	}
+	
 	/** Gets the number of parameters used in this layer
 	 * 
 	 * @return number of parameters used in this layer
@@ -295,6 +305,12 @@ public:
 	{
 		return m_local_gradients;
 	}
+	
+	/** Gets the indices of the layers that are connected to this layer as input
+	 * 
+	 * @return layer's input indices
+	 */
+	virtual SGVector<int32_t> get_input_indices() { return m_input_indices; }
 	
 	virtual const char* get_name() const { return "NeuralLayer"; }
 
