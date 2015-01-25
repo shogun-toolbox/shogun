@@ -185,12 +185,12 @@ CFile::~CFile()
 void CFile::set_variable_name(const char* name)
 {
 	SG_FREE(variable_name);
-	variable_name=strdup(name);
+	variable_name=get_strdup(name);
 }
 
 char* CFile::get_variable_name()
 {
-	return strdup(variable_name);
+	return get_strdup(variable_name);
 }
 
 #define SPARSE_VECTOR_GETTER(type)										\
