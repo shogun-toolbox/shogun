@@ -633,8 +633,8 @@ void COctaveInterface::clear_octave_globals()
 
 void COctaveInterface::run_octave_init()
 {
-	char* name=strdup("octave");
-	char* opts=strdup("-q");
+	char* name=get_strdup("octave");
+	char* opts=get_strdup("-q");
 	char* argv[2]={name, opts};
 	octave_main(2,argv,1);
 	free(opts);

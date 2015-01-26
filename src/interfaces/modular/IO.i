@@ -26,6 +26,7 @@
 %rename(SerializableHdf5File) CSerializableHdf5File;
 %rename(SerializableJsonFile) CSerializableJsonFile;
 %rename(SerializableXmlFile) CSerializableXmlFile;
+%rename(NeuralNetworkFileReader) CNeuralNetworkFileReader;
 %rename(SimpleFile) CSimpleFile;
 %rename(MemoryMappedFile) CMemoryMappedFile;
 %rename(VwParser) CVwParser;
@@ -131,6 +132,7 @@ namespace shogun
 %include <shogun/io/SerializableHdf5File.h>
 %include <shogun/io/SerializableJsonFile.h>
 %include <shogun/io/SerializableXmlFile.h>
+%include <shogun/io/NeuralNetworkFileReader.h>
 
 %include <shogun/io/SimpleFile.h>
 %include <shogun/io/MemoryMappedFile.h>

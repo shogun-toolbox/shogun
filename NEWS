@@ -1,6 +1,6 @@
-2015-01-18 Soeren Sonnenburg <sonne@debian.org>
+2015-01-26 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
+	* SHOGUN Release version 4.0.0 (libshogun 17.0, data 0.9, parameter 1)
 	* This release features the work of our 8 GSoC 2014 students [student; mentors]:
 	    - OpenCV Integration and Computer Vision Applications [Abhijeet Kislay; Kevin Hughes]
 	    - Large-Scale Multi-Label Classification [Abinash Panda; Thoralf Klein]
