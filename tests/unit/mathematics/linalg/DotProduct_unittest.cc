@@ -35,7 +35,8 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/lib/SGVector.h>
 #include <algorithm>
@@ -61,6 +62,19 @@ TEST(DotProduct, SGVector_default_backend)
 	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
+TEST(DotProduct, SGVector_explicit_native_backend)
+{
+	const index_t size=10;
+	SGVector<float64_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
+
+	float64_t result=linalg::dot<linalg::Backend::NATIVE>(a, b);
+
+	EXPECT_NEAR(result, 20.0, 1E-15);
+}
+
+#ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(DotProduct, SGVector_explicit_eigen3_backend)
 {
@@ -152,7 +166,9 @@ TEST(DotProduct, ViennaCL_explicit_eigen3_backend)
 
 	EXPECT_NEAR(result, 20.0, 1E-15);
 }
+#endif // HAVE_LINALG_LIB
+
 #endif // HAVE_EIGEN3
 #endif // HAVE_VIENNACL
 
-#endif // HAVE_LINALG_LIB
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
