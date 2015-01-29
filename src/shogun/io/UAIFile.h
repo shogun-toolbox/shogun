@@ -37,6 +37,7 @@ public:
      */
     CUAIFile(FILE* f, const char* name=NULL);
 
+#ifdef HAVE_FDOPEN
     /** constructor
      *
      * @param fd already opened file descriptor
@@ -44,6 +45,7 @@ public:
      * @param name variable name (e.g. "x" or "/path/to/x")
      */
     CUAIFile(int fd, const char* mode, const char* name=NULL);
+#endif
 
     /** constructor
      *
