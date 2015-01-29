@@ -107,10 +107,10 @@ public:
 	 */
 	CKernel* get_kernel() const;
 
-protected:
+private:
 
 	/** default init */
-	void init();
+	void initialize();
 
 protected:
 

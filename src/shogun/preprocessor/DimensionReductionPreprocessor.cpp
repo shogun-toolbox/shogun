@@ -15,7 +15,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 	m_kernel = new CLinearKernel();
 	m_converter = NULL;
 
-	init();
+	initialize();
 }
 
 CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConverter* converter)
@@ -27,7 +27,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConve
 	m_kernel = new CLinearKernel();
 	m_converter = converter;
 
-	init();
+	initialize();
 }
 
 CDimensionReductionPreprocessor::~CDimensionReductionPreprocessor()
@@ -104,7 +104,7 @@ CKernel* CDimensionReductionPreprocessor::get_kernel() const
 	return m_kernel;
 }
 
-void CDimensionReductionPreprocessor::init()
+void CDimensionReductionPreprocessor::initialize()
 {
 	SG_ADD((CSGObject**)&m_converter, "converter",
 					  "embedding converter used to apply to data", MS_AVAILABLE);

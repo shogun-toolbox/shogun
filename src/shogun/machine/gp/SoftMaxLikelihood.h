@@ -161,7 +161,7 @@ public:
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$ (based on 0 and 1 bernoulli-encoding)
 	 */
 	virtual SGVector<float64_t> get_predictive_log_probabilities(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab=NULL) const;
+		SGVector<float64_t> s2, const CLabels *lab=NULL);
 
 	/** returns the logarithm of the point-wise likelihood \f$log(p(y_i|f_i))\f$
 	 * for each label \f$y_i\f$, an integer between 1 and C (ie. number of classes).

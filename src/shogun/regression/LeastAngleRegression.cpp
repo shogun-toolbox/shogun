@@ -58,14 +58,14 @@ static void plane_rot(float64_t x0, float64_t x1,
 	}
 }
 
-static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore,
+static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore_mask,
 	int32_t &imax, float64_t& vmax)
 {
 	imax = -1;
 	vmax = -1;
 	for (uint32_t i=0; i < vec.size(); ++i)
 	{
-		if (ignore[i])
+		if (ignore_mask[i])
 			continue;
 
 		if (CMath::abs(vec[i]) > vmax)

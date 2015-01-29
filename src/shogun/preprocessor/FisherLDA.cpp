@@ -52,12 +52,12 @@ using namespace shogun;
 CFisherLDA::CFisherLDA (EFLDAMethod method, float64_t thresh):
 	CDimensionReductionPreprocessor()
 {
-	init();
+	initialize();
 	m_method=method;
 	m_threshold=thresh;
 }
 
-void CFisherLDA::init()
+void CFisherLDA::initialize()
 {
 	m_method=AUTO_FLDA;
 	m_threshold=0.01;
@@ -77,7 +77,7 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
-bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensions)
+bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimensions)
 {
 	REQUIRE(features, "Features are not provided!\n")
 
