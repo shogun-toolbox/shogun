@@ -37,7 +37,7 @@ class CDistance;
  * consists of the following steps:
  * - For each feature vector \f$x\in X\f$ find its \f$k\f$ nearest
  *   neighbours and construct the sparse neighbourhood graph.
- * - Compute squared distances matrix \f$D\f$ such as \f$D\{i,j\} = d^2(x_i,x_j)\f$.
+ * - Compute the squared distances matrix \f$D\f$ such as \f$D\{i,j\} = d^2(x_i,x_j)\f$.
  * - Relax distances with shortest(so-called geodesic) distances on the sparse neighbourhood graph (e.g. with sparse Dijkstra algorithm).
  * - Center the matrix \f$D\f$ with subtracting row mean, column mean and adding to the grand mean. Multiply \f$D\f$ element-wise with \f$-0.5\f$.
  * - Compute embedding with the \f$t\f$ eigenvectors that correspond to the largest eigenvalues of the matrix \f$D\f$; normalize these vectors
