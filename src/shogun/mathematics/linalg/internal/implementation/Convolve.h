@@ -55,31 +55,32 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform 
+/** Generic class which is specialized for different backends to perform
  * the convolve operation
  */
 template <enum Backend, class Matrix>
 struct convolve
 {
+	/** the scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Computes the 2D convolution of X with W
-	 * 
-	 * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed 
-	 * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html). 
-	 * 
+	 *
+	 * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed
+	 * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html).
+	 *
 	 * @param X Input image
 	 * @param W Filter coefficients. The dimensions of the matrix must be odd-numbered.
-	 * @param Y Output image of the same size as the input image, as the borders 
+	 * @param Y Output image of the same size as the input image, as the borders
 	 * of the input image are implicitly padded with zeros during the computation
-	 * @param flip If true the filter coefficients are flipped, performing cross-correlation 
+	 * @param flip If true the filter coefficients are flipped, performing cross-correlation
 	 * instead of convolution
-	 * @param overwrite If true, the values in Y are overwritten with result of the 
+	 * @param overwrite If true, the values in Y are overwritten with result of the
 	 * computation. Otherwise, the result is added to the existing values in Y.
 	 * @param stride_x Stride in the x (column) direction
 	 * @param stride_y Stride in the y (row) direction
 	 */
-	static void compute(Matrix X, Matrix W, Matrix Y, bool flip , 
+	static void compute(Matrix X, Matrix W, Matrix Y, bool flip ,
 		bool overwrite, int32_t stride_x, int32_t stride_y);
 };
 
@@ -92,40 +93,40 @@ struct convolve<Backend::EIGEN3, Matrix>
 	typedef typename Matrix::Scalar T;
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
-	
+
 	/** Computes the 2D convolution of X with W
-	 * 
+	 *
 	 * @param X Input image
 	 * @param W Filter coefficients. The dimensions of the matrix must be odd-numbered.
-	 * @param Y Output image of the same size as the input image, as the borders 
+	 * @param Y Output image of the same size as the input image, as the borders
 	 * of the input image are implicitly padded with zeros during the computation
-	 * @param flip If true the filter coefficients are flipped, performing cross-correlation 
+	 * @param flip If true the filter coefficients are flipped, performing cross-correlation
 	 * instead of convolution
-	 * @param overwrite If true, the values in Y are overwritten with result of the 
+	 * @param overwrite If true, the values in Y are overwritten with result of the
 	 * computation. Otherwise, the result is added to the existing values in Y.
 	 * @param stride_x Stride in the x (column) direction
 	 * @param stride_y Stride in the y (row) direction
 	 */
-	static void compute(SGMatrix<T> X, SGMatrix<T> W, SGMatrix<T> Y, bool flip , 
+	static void compute(SGMatrix<T> X, SGMatrix<T> W, SGMatrix<T> Y, bool flip ,
 		bool overwrite, int32_t stride_x, int32_t stride_y)
 	{
 		int32_t width = X.num_cols;
 		int32_t height = X.num_rows;
-		
+
 		int32_t kx = W.num_cols;
 		int32_t ky = W.num_rows;
-		
+
 		int32_t rx = (kx-1)/2;
 		int32_t ry = (ky-1)/2;
-		
+
 		for (int32_t x=0; x<width; x+=stride_x)
 		{
 			int32_t xout = x/stride_x;
-			
+
 			for (int32_t y=0; y<height; y+=stride_y)
 			{
 				int32_t yout = y/stride_y;
-				
+
 				T sum = overwrite ? 0 : Y(yout,xout);
 				for (int32_t x1=x-rx; x1<=x+rx; x1++)
 				{
@@ -155,39 +156,39 @@ template <> template <class Matrix>
 struct convolve<Backend::VIENNACL, Matrix>
 {
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Generates the computation kernel for convolution with a stride of 1*/
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel_unity_stride(
 		int32_t radius_x, int32_t radius_y, bool flip, bool overwrite)
 	{
-		std::string kernel_name = 
-			"convolve_unity_stride_" + ocl::get_type_string<T>() + "_" + 
+		std::string kernel_name =
+			"convolve_unity_stride_" + ocl::get_type_string<T>() + "_" +
 			std::to_string(radius_x) + "_" + std::to_string(radius_y);
-		
+
 		if (flip) kernel_name.append("_flip");
 		if (overwrite) kernel_name.append("_overwrite");
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
-		
+
 		if (flip) source.append("#define FLIP\n");
 		if (overwrite) source.append("#define OVERWRITE\n");
-		
+
 		source.append("#define RADIUS_X " + std::to_string(radius_x) + "\n");
 		source.append("#define RADIUS_Y " + std::to_string(radius_y) + "\n");
-		
+
 		source.append(
 			R"(
 				#define W_WIDTH (2*RADIUS_X+1)
 				#define W_HEIGHT (2*RADIUS_Y+1)
-				
+
 				#define X_LOCAL_WIDTH (WORK_GROUP_SIZE_2D+2*RADIUS_X)
 				#define X_LOCAL_HEIGHT (WORK_GROUP_SIZE_2D+2*RADIUS_Y)
-				
-				inline DATATYPE readX(read_only __global DATATYPE* X, int x, int y, 
+
+				inline DATATYPE readX(read_only __global DATATYPE* X, int x, int y,
 					int X_width, int X_height, int X_offset)
 				{
 					if (x>=0 && y>=0 && x<X_width && y<X_height)
@@ -195,20 +196,20 @@ struct convolve<Backend::VIENNACL, Matrix>
 					else
 						return 0;
 				}
-				
+
 				__kernel void KERNEL_NAME(
 					read_only __global DATATYPE* X, int X_width, int X_height, int X_offset,
 					__constant DATATYPE* W, int W_offset,
 					__global DATATYPE* Y, int Y_offset)
 				{
 					__local DATATYPE X_local[X_LOCAL_WIDTH][X_LOCAL_HEIGHT];
-					
+
 					int x = get_global_id(0);
 					int y = get_global_id(1);
-					
+
 					int xl = get_local_id(0);
 					int yl = get_local_id(1);
-					
+
 					if (xl==WORK_GROUP_SIZE_2D-1 && yl == WORK_GROUP_SIZE_2D-1)
 					{
 						for (int rx=0; rx<=2*RADIUS_X; rx++)
@@ -227,12 +228,12 @@ struct convolve<Backend::VIENNACL, Matrix>
 					}
 					else
 						X_local[xl][yl] = readX(X, x-RADIUS_X, y-RADIUS_Y, X_width, X_height, X_offset);
-					
+
 					barrier(CLK_LOCAL_MEM_FENCE);
-					
-					if (x>=X_width || y>=X_height) 
+
+					if (x>=X_width || y>=X_height)
 						return;
-					
+
 					DATATYPE sum = 0;
 					for (int x1=0; x1<W_WIDTH; x1++)
 					{
@@ -260,46 +261,46 @@ struct convolve<Backend::VIENNACL, Matrix>
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_2D);
 		kernel.local_work_size(1, OCL_WORK_GROUP_SIZE_2D);
-		
+
 		return kernel;
 	}
-	
+
 	/** Generates the computation kernel for convolution with a arbitrary stride */
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel_arbitrary_stride(
 		int32_t radius_x, int32_t radius_y, bool flip, bool overwrite)
 	{
-		std::string kernel_name = 
-			"convolve_arbitrary_stride_" + ocl::get_type_string<T>() + "_" + 
+		std::string kernel_name =
+			"convolve_arbitrary_stride_" + ocl::get_type_string<T>() + "_" +
 			std::to_string(radius_x) + "_" + std::to_string(radius_y);
-		
+
 		if (flip) kernel_name.append("_flip");
 		if (overwrite) kernel_name.append("_overwrite");
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
-		
+
 		if (flip) source.append("#define FLIP\n");
 		if (overwrite) source.append("#define OVERWRITE\n");
-		
+
 		source.append("#define RADIUS_X " + std::to_string(radius_x) + "\n");
 		source.append("#define RADIUS_Y " + std::to_string(radius_y) + "\n");
-		
+
 		source.append(
 			R"(
 				#define W_WIDTH (2*RADIUS_X+1)
 				#define W_HEIGHT (2*RADIUS_Y+1)
-				
+
 				#define X_LOCAL_WIDTH (WORK_GROUP_SIZE_2D+2*RADIUS_X)
 				#define X_LOCAL_HEIGHT (WORK_GROUP_SIZE_2D+2*RADIUS_Y)
-				
+
 				__kernel void KERNEL_NAME(
 					read_only __global DATATYPE* X, int X_width, int X_height, int X_offset,
 					__constant DATATYPE* W, int W_offset,
@@ -307,16 +308,16 @@ struct convolve<Backend::VIENNACL, Matrix>
 					int stride_x, int stride_y)
 				{
 					__local DATATYPE X_local[WORK_GROUP_SIZE_2D][WORK_GROUP_SIZE_2D];
-					
+
 					int x = get_global_id(0)*stride_x;
 					int y = get_global_id(1)*stride_y;
-					
+
 					int Y_width = X_width/stride_x;
 					int Y_height = X_height/stride_y;
-					
-					if (get_global_id(0)>=Y_width || get_global_id(1)>=Y_height) 
+
+					if (get_global_id(0)>=Y_width || get_global_id(1)>=Y_height)
 						return;
-					
+
 					DATATYPE sum = 0;
 					for (int x1=0; x1<W_WIDTH; x1++)
 					{
@@ -347,58 +348,58 @@ struct convolve<Backend::VIENNACL, Matrix>
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_2D);
 		kernel.local_work_size(1, OCL_WORK_GROUP_SIZE_2D);
-		
+
 		return kernel;
 	}
-	
+
 	/** Computes the 2D convolution of X with W
-	 * 
-	 * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed 
-	 * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html). 
-	 * 
+	 *
+	 * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed
+	 * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html).
+	 *
 	 * @param X Input image
 	 * @param W Filter coefficients. The dimensions of the matrix must be odd-numbered.
-	 * @param Y Output image of the same size as the input image, as the borders 
+	 * @param Y Output image of the same size as the input image, as the borders
 	 * of the input image are implicitly padded with zeros during the computation
-	 * @param flip If true the filter coefficients are flipped, performing cross-correlation 
+	 * @param flip If true the filter coefficients are flipped, performing cross-correlation
 	 * instead of convolution
-	 * @param overwrite If true, the values in Y are overwritten with result of the 
+	 * @param overwrite If true, the values in Y are overwritten with result of the
 	 * computation. Otherwise, the result is added to the existing values in Y.
 	 * @param stride_x Stride in the x (column) direction
 	 * @param stride_y Stride in the y (row) direction
 	 */
-	static void compute(CGPUMatrix<T> X, CGPUMatrix<T> W, CGPUMatrix<T> Y, bool flip , 
+	static void compute(CGPUMatrix<T> X, CGPUMatrix<T> W, CGPUMatrix<T> Y, bool flip ,
 		bool overwrite, int32_t stride_x, int32_t stride_y)
 	{
 		if (stride_x==1 && stride_y==1)
 		{
 			viennacl::ocl::kernel& kernel = generate_kernel_unity_stride<T>(
 				(W.num_cols-1)/2, (W.num_rows-1)/2, flip, overwrite);
-			
+
 			kernel.global_work_size(0, ocl::align_to_multiple_2d(Y.num_cols));
 			kernel.global_work_size(1, ocl::align_to_multiple_2d(Y.num_rows));
-			
+
 			viennacl::ocl::enqueue(kernel(
-				X.vcl_matrix(), cl_int(X.num_cols), cl_int(X.num_rows), cl_int(X.offset), 
-				W.vcl_matrix(), cl_int(W.offset), 
+				X.vcl_matrix(), cl_int(X.num_cols), cl_int(X.num_rows), cl_int(X.offset),
+				W.vcl_matrix(), cl_int(W.offset),
 				Y.vcl_matrix(), cl_int(Y.offset)));
 		}
 		else
 		{
 			viennacl::ocl::kernel& kernel = generate_kernel_arbitrary_stride<T>(
 				(W.num_cols-1)/2, (W.num_rows-1)/2, flip, overwrite);
-			
+
 			kernel.global_work_size(0, ocl::align_to_multiple_2d(Y.num_cols));
 			kernel.global_work_size(1, ocl::align_to_multiple_2d(Y.num_rows));
-			
+
 			viennacl::ocl::enqueue(kernel(
-				X.vcl_matrix(), cl_int(X.num_cols), cl_int(X.num_rows), cl_int(X.offset), 
-				W.vcl_matrix(), cl_int(W.offset), 
+				X.vcl_matrix(), cl_int(X.num_cols), cl_int(X.num_rows), cl_int(X.offset),
+				W.vcl_matrix(), cl_int(W.offset),
 				Y.vcl_matrix(), cl_int(Y.offset),
 				cl_int(stride_x), cl_int(stride_y)));
 		}
