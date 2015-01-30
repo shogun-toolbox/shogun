@@ -447,9 +447,7 @@ CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
 AppendToDefines(HAVE_DECL_SIGNGAM)
 
 CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
-IF(HAVE_FDOPEN)
-    LIST(APPEND DEFINES HAVE_FDOPEN)
-ENDIF()
+AppendToDefines(HAVE_FDOPEN)
 
 # check for math functions
 include(CheckFunctionExists)
