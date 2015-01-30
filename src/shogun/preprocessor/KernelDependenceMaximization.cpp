@@ -37,10 +37,10 @@ using namespace shogun;
 CKernelDependenceMaximization::CKernelDependenceMaximization()
 	: CDependenceMaximization()
 {
-	init();
+	initialize();
 }
 
-void CKernelDependenceMaximization::init()
+void CKernelDependenceMaximization::initialize()
 {
 	SG_ADD((CSGObject**)&m_kernel_features, "kernel_features",
 			"the kernel to be used for features", MS_NOT_AVAILABLE);

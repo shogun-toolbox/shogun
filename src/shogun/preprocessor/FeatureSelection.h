@@ -320,7 +320,7 @@ protected:
 
 private:
 	/** Register params and initialize with default values */
-	void init();
+	void initialize();
 
 };
 

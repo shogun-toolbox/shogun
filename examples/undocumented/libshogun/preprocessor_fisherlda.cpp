@@ -45,7 +45,7 @@ void test()
 	// Initiate the FisherLDA class
 	CFisherLDA* fisherlda=new CFisherLDA(AUTO_FLDA);
 	SG_REF(fisherlda)
-	fisherlda->init(features, labels, 1);
+	fisherlda->fit(features, labels, 1);
 	SGMatrix<float64_t> y=fisherlda->apply_to_feature_matrix(features);
 
 	// display output

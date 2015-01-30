@@ -104,13 +104,13 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		/** destructor */
 		virtual ~CFisherLDA();
 
-		/** initialize preprocessor from features and corresponding labels
+		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find 
 		 * the transformation matrix unlike PCA where it is not needed.
 		 * @param dimensions number of dimensions to retain
 		 */
-		virtual bool init(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
+		virtual bool fit(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
 
 		/** cleanup */
 		virtual void cleanup();
@@ -145,10 +145,13 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 
 		/** @return a type of preprocessor */
 		virtual EPreprocessorType get_type() const {return P_FISHERLDA;}
+		
+	private:
+
+		void initialize();
  
 	protected:
 
-		void init();
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;

@@ -301,7 +301,7 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_log_probabilities(
-	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab) const
+	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
 {
 	return predictive_helper(mu, s2, lab, MC_Probability);
 }
