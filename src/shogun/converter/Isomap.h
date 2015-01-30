@@ -33,8 +33,8 @@ class CDistance;
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.9.3407&rep=rep1&type=pdf
  *
  * The Isomap algorithm can be considered as a modification of the
- * classic Multidimensional Scaling algorithm. The algorithm itself is
- * consists following steps:
+ * classic Multidimensional Scaling algorithm. The algorithm itself
+ * consists of the following steps:
  * - For each feature vector \f$x\in X\f$ find its \f$k\f$ nearest
  * neighbours and construct the sparse neighbourhood graph.
  * - Compute squared distances matrix \f$D\f$ such as \f$D\{i,j\} = d^2(x_i,x_j)\f$.
