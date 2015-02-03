@@ -30,7 +30,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -47,6 +47,49 @@
 
 using namespace shogun;
 
+TEST(AddMatrix, native_backend)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+	
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+	SGMatrix<float64_t> C(3,3);
+	
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+	
+	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
+	
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
+}
+
+TEST(AddVector, native_backend)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+	
+	SGVector<float64_t> A(9);
+	SGVector<float64_t> B(9);
+	SGVector<float64_t> C(9);
+	
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+	
+	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
+	
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
+}
+
+#ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(AddMatrix, eigen3_backend)
 {
@@ -134,5 +177,6 @@ TEST(AddVector, viennacl_backend)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
 }
 #endif // HAVE_VIENNACL
-
 #endif // HAVE_LINALG_LIB
+
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)

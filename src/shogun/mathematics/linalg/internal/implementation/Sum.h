@@ -64,7 +64,7 @@ namespace implementation
 
 /**
  * @brief Generic class sum which provides a static compute method. This class
- * is specialized for different types of matrices and backend, providing a mean
+ * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
 template <enum Backend,class Matrix>
@@ -94,7 +94,7 @@ struct sum
 
 /**
  * @brief Generic class sum symmetric which provides a static compute method. This class
- * is specialized for different types of matrices and backend, providing a mean
+ * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
 template <enum Backend,class Matrix>
@@ -124,7 +124,7 @@ struct sum_symmetric
 
 /**
  * @brief Generic class colwise_sum which provides a static compute method. This class
- * is specialized for different types of matrices and backend, providing a mean
+ * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
 template <enum Backend,class Matrix>
@@ -173,7 +173,7 @@ struct colwise_sum
 
 /**
  * @brief Generic class rowwise_sum which provides a static compute method. This class
- * is specialized for different types of matrices and backend, providing a mean
+ * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
 template <enum Backend,class Matrix>

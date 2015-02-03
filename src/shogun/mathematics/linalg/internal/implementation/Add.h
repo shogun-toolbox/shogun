@@ -55,20 +55,89 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform addition */
+/**
+ * @brief Generic class which is specialized for different backends to perform addition
+ */
 template <enum Backend, class Matrix>
 struct add
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
-	/** Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors */
+	/**
+	 * Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param C matrix to store the result
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 */
 	static void compute(Matrix A, Matrix B, Matrix C, T alpha, T beta);
+};
+
+/**
+ * @brief Specialization of add for the Native backend
+ */
+template <> template <class Matrix>
+struct add<Backend::NATIVE, Matrix>
+{
+	typedef typename Matrix::Scalar T;
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param C matrix to store the result
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 */
+	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C,
+		T alpha, T beta)
+	{
+		REQUIRE(A.num_rows == B.num_rows && B.num_rows == C.num_rows,
+			"Matrices should have same number of rows!\n");
+		REQUIRE(A.num_cols == B.num_cols && B.num_cols == C.num_cols,
+			"Matrices should have same number of columns!\n");
+		compute(A.matrix, B.matrix, C.matrix, alpha, beta, A.num_rows*A.num_cols);
+	}
+	
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first vector
+	 * @param B second vector
+	 * @param C vector to store the result
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 */
+	static void compute(SGVector<T> A, SGVector<T> B, SGVector<T> C,
+		T alpha, T beta)
+	{
+		REQUIRE(A.vlen == B.vlen, "Vectors should have same length!\n");
+		compute(A.vector, B.vector, C.vector, alpha, beta, A.vlen);
+	}
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B. Vectors or Matrices passed as pointers
+	 * @param A first vector
+	 * @param B second vector
+	 * @param C vector to store the result
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 * @param len length of the vectors/matrices
+	 */
+	static void compute(T* A, T* B, T* C,
+		T alpha, T beta, index_t len)
+	{
+		for (int32_t i=0; i<len; i++)
+			C[i]=alpha*A[i]+beta*B[i];
+	}	
 };
 
 #ifdef HAVE_EIGEN3
 
-/** Specialization of add for the Eigen3 backend */
+/** 
+ * @brief Specialization of add for the Eigen3 backend
+ */
 template <> template <class Matrix>
 struct add<Backend::EIGEN3, Matrix>
 {
@@ -76,7 +145,14 @@ struct add<Backend::EIGEN3, Matrix>
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 	
-	/** Performs the operation C = alpha*A + beta*B */
+	/** 
+	 * Performs the operation C = alpha*A + beta*B using Eigen3
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param C matrix to store the result
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 */
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C, 
 		T alpha, T beta)
 	{
@@ -87,7 +163,14 @@ struct add<Backend::EIGEN3, Matrix>
 		C_eig = alpha*A_eig + beta*B_eig;
 	}
 	
-	/** Performs the operation C = alpha*A + beta*B */
+	/** 
+	 * Performs the operation C = alpha*A + beta*B using Eigen3
+	 * @param A first vector
+	 * @param B second vector
+	 * @param C vector to store the result
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 */
 	static void compute(SGVector<T> A, SGVector<T> B, SGVector<T> C, 
 		T alpha, T beta)
 	{
@@ -102,20 +185,36 @@ struct add<Backend::EIGEN3, Matrix>
 
 #ifdef HAVE_VIENNACL
 
-/** Specialization of add for the ViennaCL backend */
+/** 
+ * @brief Specialization of add for the ViennaCL backend
+ */
 template <> template <class Matrix>
 struct add<Backend::VIENNACL, Matrix>
 {
 	typedef typename Matrix::Scalar T;
 	
-	/** Performs the operation C = alpha*A + beta*B */
+	/** 
+	 * Performs the operation C = alpha*A + beta*B using Viennacl
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param C matrix to store the result
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 */
 	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, CGPUMatrix<T> C, 
 		T alpha, T beta)
 	{
 		C.vcl_matrix() = alpha*A.vcl_matrix() + beta*B.vcl_matrix();
 	}
 	
-	/** Performs the operation C = alpha*A + beta*B */
+	/** 
+	 * Performs the operation C = alpha*A + beta*B using Viennacl
+	 * @param A first vector
+	 * @param B second vector
+	 * @param C vector to store the result
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 */
 	static void compute(CGPUVector<T> A, CGPUVector<T> B, CGPUVector<T> C, 
 		T alpha, T beta)
 	{
