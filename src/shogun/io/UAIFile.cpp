@@ -26,12 +26,14 @@ CUAIFile::CUAIFile(FILE* f, const char* name) :
     init_with_defaults();
 }
 
+#ifdef HAVE_FDOPEN
 CUAIFile::CUAIFile(int fd, const char* mode, const char* name) :
     CFile(fd, mode, name)
 {
     init();
     init_with_defaults();
 }
+#endif
 
 CUAIFile::CUAIFile(const char* fname, char rw, const char* name) :
     CFile(fname, rw, name)
