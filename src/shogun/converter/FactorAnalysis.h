@@ -40,6 +40,12 @@ namespace shogun
  *
  * Uses implementation from the Tapkee library.
  *
+ * cf. http://tapkee.lisitsyn.me/ <br>
+ * cf. http://en.wikipedia.org/wiki/Factor_analysis <br>
+ * cf. Spearman, C. (1904). General Intelligence, Objectively Determined
+ *     and Measured.
+ *     (http://www.mendeley.com/catalog/general-intelligence-objectively-determined-measured/)
+ *
  */
 class CFactorAnalysis : public CEmbeddingConverter
 {
