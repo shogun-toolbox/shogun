@@ -34,6 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -56,7 +57,8 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform 
+/** 
+ * @brief Generic class which is specialized for different backends to perform 
  * the max operation
  */
 template <enum Backend,class Matrix>
@@ -65,12 +67,61 @@ struct max
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
-	/** Returns the largest element in a matrix or a vector */
+	/** 
+	 * Returns the largest element in a matrix or a vector.
+	 * @param m input matrix or vector
+	 * @return largest value in the input matrix or vector
+	 */
 	static T compute(Matrix m);
 };
 
+/**
+ * @brief Specialization of add for the Native backend
+ */
+template <> template <class Matrix>
+struct max<Backend::NATIVE, Matrix>
+{
+	typedef typename Matrix::Scalar T;
+
+	/**
+	 * Returns the largest element in a matrix.
+	 * @param mat input matrix
+	 * @return largest value in the input matrix
+	 */
+	static T compute(SGMatrix<T> mat)
+	{
+		REQUIRE(mat.num_cols*mat.num_rows > 0, "Matrix can not be empty!\n");
+		return compute(mat.matrix, mat.num_cols*mat.num_rows);
+	}
+	
+	/**
+	 * Returns the largest element in a vector.
+	 * @param vec input vector
+	 * @return largest value in the input vector
+	 */
+	static T compute(SGVector<T> vec)
+	{
+		REQUIRE(vec.vlen > 0, "Vector can not be empty!\n");
+		return compute(vec.vector, vec.vlen);
+	}
+
+	/**
+	 * Returns the largest element in a vector or matrix passed as a pointer.
+	 * @param m input vector or matrix
+	 * @param len length of the vector or matrix
+	 * @return largest value in the input vector or matrix
+	 */
+	static T compute(T* vec, index_t len)
+	{
+		return *std::max_element(vec, vec+len);
+	}
+};
+
 #ifdef HAVE_EIGEN3
-/** Specialization of max for the Eigen3 backend */
+
+/**
+ * @brief Specialization of max for the Eigen3 backend
+ */
 template <> template <class Matrix>
 struct max<Backend::EIGEN3,Matrix>
 {
@@ -78,7 +129,11 @@ struct max<Backend::EIGEN3,Matrix>
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 	
-	/** Returns the largest element in a matrix */
+	/**
+	 * Returns the largest element in a matrix
+	 * @param mat input matrix
+	 * @return largest value in the matrix
+	 */
 	static T compute(SGMatrix<T> mat)
 	{
 		Eigen::Map<MatrixXt> m = mat;
@@ -86,7 +141,11 @@ struct max<Backend::EIGEN3,Matrix>
 		return m.maxCoeff();
 	}
 	
-	/** Returns the largest element in a vector */
+	/**
+	 * Returns the largest element in a vector
+	 * @param vec input vector
+	 * @return largest value in the matrix
+	 */
 	static T compute(SGVector<T> vec)
 	{
 		Eigen::Map<VectorXt> v = vec;
@@ -97,7 +156,10 @@ struct max<Backend::EIGEN3,Matrix>
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
-/** Specialization of max for the ViennaCL backend */
+
+/**
+ * @brief Specialization of max for the ViennaCL backend
+ */
 template <> template <class Matrix>
 struct max<Backend::VIENNACL,Matrix>
 {
@@ -156,7 +218,11 @@ struct max<Backend::VIENNACL,Matrix>
 		return kernel;
 	}
 	
-	/** Returns the largest element in a matrix */
+	/** 
+	 * Returns the largest element in a matrix
+	 * @param mat input matrix
+	 * @return largest value in the matrix
+	 */
 	static T compute(CGPUMatrix<T> mat)
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>();
@@ -170,7 +236,11 @@ struct max<Backend::VIENNACL,Matrix>
 		return result[0];
 	}
 	
-	/** Returns the largest element in a vector */
+	/**
+	 * Returns the largest element in a vector
+	 * @param vec input vector
+	 * @return largest value in the vector
+	 */
 	static T compute(CGPUVector<T> vec)
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>();
