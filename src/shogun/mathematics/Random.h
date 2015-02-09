@@ -86,11 +86,10 @@ namespace shogun
 			 *
 			 * @return the random 64-bit signed integer
 			 */
-			int64_t random_s64() const
+			inline int64_t random_s64() const
 			{
 				return random_64() & ((uint64_t(-1)<<1)>>1);
 			}
-
 
 			/** generate an unsigned 64bit integer in the range
 			 * [min_value, max_value] (closed interval!)
@@ -303,7 +302,6 @@ namespace shogun
 			 */
 			float64_t GaussianPdfDenormInv(float64_t y) const;
 
-		private:
 			/** seed */
 			uint32_t m_seed;
 
