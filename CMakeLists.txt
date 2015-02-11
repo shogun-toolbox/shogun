@@ -347,6 +347,9 @@ OPTION(CmdLineStatic "CmdLine Static" OFF)
 OPTION(MatlabStatic "Matlab Static" OFF)
 OPTION(OctaveStatic "Octave Static" OFF)
 
+# Debugging Python-interface with CTest
+OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
+
 # SVMLight
 OPTION(USE_SVMLIGHT "SVMLight" ON)
 SET(SVMLightWarning "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
