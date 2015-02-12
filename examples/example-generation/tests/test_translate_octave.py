@@ -1,10 +1,12 @@
 from translate import Translator
+import json
 import unittest
 
 class TestOctaveTranslator(unittest.TestCase):
 
     def setUp(self):
-        self.translator = Translator("targets/octave.json")
+        with open("targets/octave.json", "r") as targetFile:
+            self.translator = Translator(json.load(targetFile))
 
     def test_translateProgram(self):
         """
@@ -124,12 +126,12 @@ class TestOctaveTranslator(unittest.TestCase):
 
     def test_translateExprEnum(self):
         enumAST = {
-            "Enum": {"Identifier": "L2R_L2LOSS_SVC_DUAL"}
+            "Enum": [{"Identifier":"LIBLINEAR_SOLVER_TYPE"}, {"Identifier": "L2R_L2LOSS_SVC_DUAL"}]
         }
         translation = self.translator.translateExpr(enumAST)
 
         self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
-        self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
+        self.assertTrue((u"LIBLINEAR_SOLVER_TYPE", u"L2R_L2LOSS_SVC_DUAL") in self.translator.dependencies["Enums"])
 
     def test_translateProgramComment(self):
         programAST = [

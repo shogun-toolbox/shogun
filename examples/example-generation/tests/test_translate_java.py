@@ -1,10 +1,12 @@
 from translate import Translator
+import json
 import unittest
 
-class TestPythonTranslator(unittest.TestCase):
+class TestJavaTranslator(unittest.TestCase):
 
     def setUp(self):
-        self.translator = Translator("targets/java.json")
+        with open("targets/java.json", "r") as targetFile:
+            self.translator = Translator(json.load(targetFile))
 
     def test_translateProgram(self):
         """
@@ -16,7 +18,7 @@ class TestPythonTranslator(unittest.TestCase):
         import org.shogun.*;
         import org.jblas.*;
 
-        public class classifier_knn_modular {
+        class Example {
             static {
                 System.loadLibrary("modshogun");
             }
@@ -38,7 +40,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateProgramWithNewlines(self):
         programAST = [
@@ -51,7 +53,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateInitCopy(self):
         initAST = [
@@ -63,7 +65,7 @@ class TestPythonTranslator(unittest.TestCase):
             ]}}
         ]
         translation = self.translator.translateInit(initAST)
-        self.assertEqual(translation, u"IntMatrix multiple_k = knn.classify_for_multiple_k()")
+        self.assertEqual(translation, u"DoubleMatrix multiple_k = knn.classify_for_multiple_k()")
 
     def test_translateInitConstruct(self):
         initAST = [
@@ -133,16 +135,16 @@ class TestPythonTranslator(unittest.TestCase):
           }
         translation = self.translator.translateType(typeAST)
 
-        self.assertEqual(translation, u"IntMatrix")
+        self.assertEqual(translation, u"DoubleMatrix")
 
     def test_translateExprEnum(self):
         enumAST = {
-            "Enum": {"Identifier": "L2R_L2LOSS_SVC_DUAL"}
+            "Enum": [{"Identifier":"LIBLINEAR_SOLVER_TYPE"}, {"Identifier": "L2R_L2LOSS_SVC_DUAL"}]
         }
         translation = self.translator.translateExpr(enumAST)
 
         self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
-        self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
+        self.assertTrue((u"LIBLINEAR_SOLVER_TYPE", u"L2R_L2LOSS_SVC_DUAL") in self.translator.dependencies["Enums"])
 
     def test_translateProgramComment(self):
         programAST = [
@@ -150,7 +152,7 @@ class TestPythonTranslator(unittest.TestCase):
         ]
         translation = self.translator.translateProgram(programAST)
 
-        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\npublic class classifier_knn_modular {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
+        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
         self.assertEqual(translation, trueTranslation)
 
 

@@ -7,12 +7,10 @@ RealFeatures feats_test(test_data)
 BinaryLabels labels(label_data)
 
 LibLinear svm(0.9, feats_train, labels)
-svm.set_liblinear_solver_type(enum L2R_L2LOSS_SVC_DUAL)
+svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL)
 svm.set_epsilon(0.001)
 svm.set_bias_enabled(True)
 svm.train()
-Labels predictions = svm.apply(feats_test)
+BinaryLabels predictions = svm.apply_binary(feats_test)
 
-print predictions
-print svm
 print predictions.get_labels()

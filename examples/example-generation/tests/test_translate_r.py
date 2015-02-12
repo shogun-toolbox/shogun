@@ -126,12 +126,12 @@ class TestRTranslator(unittest.TestCase):
 
     def test_translateExprEnum(self):
         enumAST = {
-            "Enum": {"Identifier": "L2R_L2LOSS_SVC_DUAL"}
+            "Enum": [{"Identifier":"LIBLINEAR_SOLVER_TYPE"}, {"Identifier": "L2R_L2LOSS_SVC_DUAL"}]
         }
         translation = self.translator.translateExpr(enumAST)
 
-        self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
-        self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
+        self.assertEqual(translation, u"\"L2R_L2LOSS_SVC_DUAL\"")
+        self.assertTrue((u"LIBLINEAR_SOLVER_TYPE", u"L2R_L2LOSS_SVC_DUAL") in self.translator.dependencies["Enums"])
 
     def test_translateProgramComment(self):
         programAST = [

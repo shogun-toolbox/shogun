@@ -8,8 +8,7 @@
     },
     "Assign": "$name <- $expr",
     "Type": {
-        "BasicType": "$type",
-        "ObjectType": "$type"
+        "Default": "$type"
     },
     "Expr": {
         "StringLiteral": "'$literal'",
@@ -19,7 +18,10 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object$$$method($arguments)",
-        "Identifier": "$identifier"
+        "Identifier": "$identifier",
+        "Enum":"\"$value\""
     },
-    "Print": "print($expr)"
+    "Print": "print($expr)",
+    "OutputDirectoryName": "r",
+    "FileExtension": ".R"
 }

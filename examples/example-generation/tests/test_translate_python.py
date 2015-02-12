@@ -1,4 +1,5 @@
 from translate import Translator
+import json
 import unittest
 
 """
@@ -11,7 +12,8 @@ self.assertTrue("key" in {"key": 2})
 class TestPythonTranslator(unittest.TestCase):
 
     def setUp(self):
-        self.translator = Translator("targets/python.json")
+        with open("targets/python.json", "r") as targetFile:
+            self.translator = Translator(json.load(targetFile))
 
     def test_translateProgram(self):
         """
@@ -56,7 +58,7 @@ class TestPythonTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
         dependenciesString = self.translator.dependenciesString()
-        self.assertEqual(dependenciesString, u"CSVFile, RealFeatures")
+        self.assertEqual(dependenciesString, u"from modshogun import CSVFile, RealFeatures\n\n")
 
     def test_translateInitCopy(self):
         initAST = [
@@ -142,12 +144,12 @@ class TestPythonTranslator(unittest.TestCase):
 
     def test_translateExprEnum(self):
         enumAST = {
-            "Enum": {"Identifier": "L2R_L2LOSS_SVC_DUAL"}
+            "Enum": [{"Identifier":"LIBLINEAR_SOLVER_TYPE"}, {"Identifier": "L2R_L2LOSS_SVC_DUAL"}]
         }
         translation = self.translator.translateExpr(enumAST)
 
         self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
-        self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
+        self.assertTrue((u"LIBLINEAR_SOLVER_TYPE", u"L2R_L2LOSS_SVC_DUAL") in self.translator.dependencies["Enums"])
 
     def test_translateArgumentListEmpty(self):
         argumentListAST = []
@@ -186,7 +188,7 @@ class TestPythonTranslator(unittest.TestCase):
         ]
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"from modshogun import *\n\n# This is a comment\n")
+        self.assertEqual(translation, u"# This is a comment\n")
 
 
 if __name__ == '__main__':

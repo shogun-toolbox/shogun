@@ -13,7 +13,6 @@ Labels test_labels = knn.apply(feats_test)
 RealVector output = test_labels.get_values()
 IntMatrix multiple_k = knn.classify_for_multiple_k()
 
-print knn
 print knn_train
 print output
 print multiple_k

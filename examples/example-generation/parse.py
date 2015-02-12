@@ -25,7 +25,7 @@ def grammar():
     nonEmptyArgumentList << (expr ^ (expr + ',' + nonEmptyArgumentList))
     argumentList = nonEmptyArgumentList ^ pp.empty
     methodCall = identifier + '.' + identifier + '(' + argumentList + ')'
-    enum = 'enum' + identifier
+    enum = 'enum' + identifier + '.' + identifier
     expr << (enum ^ stringLiteral ^ boolLiteral ^ numeral ^ methodCall ^ identifier)
     
     assignment = identifier + '=' + expr
