@@ -16,6 +16,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
@@ -45,10 +46,23 @@ public:
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param evaluation_criterion evaluation criterion to use
+	 * @param list_evaluation_criterion list of evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
+			CSplittingStrategy* splitting_strategy,
+			CDynamicObjectArray* list_evaluation_criterion,
+            bool autolock = true);
+
+ 	/** constructor
+	 * @param machine learning machine to use
+	 * @param features features to use for cross-validation
+	 * @param labels labels that correspond to the features
+	 * @param splitting_strategy splitting strategy to use
+	 * @param evaluation_criterion evaluation criterion to use
+	 * @param autolock whether machine should be auto-locked before evaluation
+	 */
+    CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterion, bool autolock = true);
 
@@ -56,18 +70,29 @@ public:
 	 * @param machine learning machine to use
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param evaluation_criterion evaluation criterion to use
+	 * @param list_evaluation_criterion list of evaluation criterion to use
 	 * @param autolock autolock
 	 */
 	CMachineEvaluation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion, bool autolock = true);
+			CDynamicObjectArray* list_evaluation_criterion,
+            bool autolock = true);
 
+ 	/** constructor, for use with custom kernels (no features)
+	 * @param machine learning machine to use
+	 * @param labels labels that correspond to the features
+	 * @param splitting_strategy splitting strategy to use
+	 * @param evaluation_criterion evaluation criterion to use
+	 * @param autolock autolock
+	 */
+    CMachineEvaluation(CMachine* machine, CLabels* labels,
+			CSplittingStrategy* splitting_strategy,
+			CEvaluation* evaluation_criterion, bool autolock = true);
 
 	virtual ~CMachineEvaluation();
 
 	/** @return in which direction is the best evaluation value? */
-	EEvaluationDirection get_evaluation_direction();
+	CDynamicArray<EEvaluationDirection> get_evaluation_directions();
 
 	/** method for evaluation. Performs cross-validation.
 	 * Is repeated m_num_runs. If this number is larger than one, a confidence
@@ -105,7 +130,7 @@ protected:
 	CSplittingStrategy* m_splitting_strategy;
 
 	/** Criterion for evaluation */
-	CEvaluation* m_evaluation_criterion;
+    CDynamicObjectArray* m_list_evaluation_criterion;
 
 	/** whether machine will automatically be locked before evaluation */
 	bool m_autolock;
