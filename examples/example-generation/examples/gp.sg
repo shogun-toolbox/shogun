@@ -1,8 +1,8 @@
 # Importing generated data
-CSVFile X("../documented/data/gaussian_process_X.csv")
-CSVFile X_test("../documented/data/gaussian_process_X_test.csv")
-CSVFile Y("../documented/data/gaussian_process_Y.csv")
-CSVFile Y_test("../documented/data/gaussian_process_Y_test.csv")
+CSVFile X("../data/gaussian_process_X.csv")
+CSVFile X_test("../data/gaussian_process_X_test.csv")
+CSVFile Y("../data/gaussian_process_Y.csv")
+CSVFile Y_test("../data/gaussian_process_Y_test.csv")
 
 RegressionLabels labels(Y)
 RegressionLabels labels_test(Y_test)

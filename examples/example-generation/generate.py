@@ -4,26 +4,23 @@ import os
 from parse import parse
 from translate import translate
 import json
+import argparse
 
-"""
-Directory to put all translations in.
-E.g. if outputDir = "outputs" then translations are put in 
-"outputs/<target_language>/<example_file>"
-for each target language and example file
-"""
-outputDir = "outputs"
-targetDictionariesDir = "targets"
-
-def translateExamples():
+def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
     # Load all target dictionaries
     targets = []
-    for target in os.listdir(targetDictionariesDir):
-        with open(os.path.join(targetDictionariesDir, target)) as tFile:
+    for target in os.listdir(targetsDir):
+        # Ignore targets not in includedTargets
+        if includedTargets:
+            if not os.path.basename(target).split(".")[0] in includedTargets:
+                continue
+
+        with open(os.path.join(targetsDir, target)) as tFile:
             targets.append(json.load(tFile))
 
-    for f in os.listdir("examples/"):
+    for f in os.listdir(inputDir):
         # Parse the example file
-        ast = parse(os.path.join("examples",f))
+        ast = parse(os.path.join(inputDir,f))
         basename = f[:-len(".sg")]
 
         # Translate ast to each target language
@@ -41,4 +38,24 @@ def translateExamples():
                 nf.write(translation)
 
 if __name__ == "__main__":
-    translateExamples()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--output", help="path to output directory")
+    parser.add_argument("-i", "--input", help="path to examples directory (input)")
+    parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
+    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: python java r octave). If not specified all targets are produced.")
+
+    args = parser.parse_args()
+
+    outputDir = "outputs"
+    if args.output:
+        outputDir = args.output
+
+    inputDir = "examples"
+    if args.input:
+        inputDir = args.input
+
+    targetsDir = "targets"
+    if args.targetsfolder:
+        targetsDir = args.targetsfolder
+
+    translateExamples(inputDir, outputDir, targetsDir, args.targets)

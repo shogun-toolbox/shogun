@@ -4,10 +4,10 @@ The example generation tool simplifies the maintenance of shogun API examples ac
 Running the parser requires python and pyparsing (included with many python distributions).
 
 ### Translating all examples in “examples/“ folder
-Running the following command will translate all programs in the “examples/” folder and generate translation for each target language. The translations are put in a new “outputs/“ folder.
+Running the following command will translate all programs in the “examples/” folder and generate translation for each target language. The translations are put in a new “outputs/“ folder. (You may also specify specific targets to translate to - type `./generate.py --help` for more info)
 
 ```
-./generate.py
+./generate.py --input examples --output outputs 
 ```
 The translated examples can then be run for each target language. E.g.:
 

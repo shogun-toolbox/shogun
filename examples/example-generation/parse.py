@@ -2,6 +2,7 @@ import sys
 import ast
 import pyparsing as pp
 import json
+import os.path
 # Memoization speed boost
 pp.ParserElement.enablePackrat()
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -61,8 +62,9 @@ def grammar():
     return grammar
 
 def shogunType():
+    basepath = os.path.dirname(__file__)
     type = pp.Forward()
-    with open("types/typelist", "r") as typelist:
+    with open(os.path.join(basepath,"types/typelist"), "r") as typelist:
         for line in typelist:
             # Make sure the line is not an empty string
             if line.replace('\n', '') != '':
