@@ -92,6 +92,7 @@ public:
 	virtual ~CMachineEvaluation();
 
 	/** @return in which direction is the best evaluation value? */
+    EEvaluationDirection get_evaluation_direction();
 	CDynamicArray<EEvaluationDirection> get_evaluation_directions();
 
 	/** method for evaluation. Performs cross-validation.

@@ -163,11 +163,19 @@ CMachine* CMachineEvaluation::get_machine() const
 	return m_machine;
 }
 
+EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
+{
+    REQUIRE(m_list_evaluation_criterion->get_array_size()==1,"Multiple Metrics provided. Please use get_evaluation_directions()");
+    CEvaluation* temp_eval = (CEvaluation*) m_list_evaluation_criterion->get_element_safe(0);
+    return temp_eval->get_evaluation_direction();
+}
+
 CDynamicArray<EEvaluationDirection> CMachineEvaluation::get_evaluation_directions()
 {
     CDynamicArray<EEvaluationDirection> list_evaluation_direction = *(new CDynamicArray<EEvaluationDirection>());
     int32_t num_eval = m_list_evaluation_criterion->get_num_elements();
-    for (int32_t i = 0; i < num_eval;i++){
+    for (int32_t i = 0; i < num_eval;i++)
+    {
         CEvaluation* temp_eval = (CEvaluation*) m_list_evaluation_criterion->get_element_safe(i);
         list_evaluation_direction.push_back(temp_eval->get_evaluation_direction());
     }
