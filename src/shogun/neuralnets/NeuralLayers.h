@@ -90,6 +90,14 @@ public:
 	 */
 	CNeuralLayers* rectified_linear(int32_t size);
 
+	/** Adds leaky rectified linear neural layer.
+	 *
+	 * @ref CNeuralLeakyRectifiedLinearLayer
+	 *
+	 * @param size the size of leaky rectified linear layer
+	 */
+	CNeuralLayers* leaky_rectified_linear(int32_t size);
+
 	/** Adds softmax neural layer.
 	 *
 	 * @ref CNeuralSoftmaxLayer
