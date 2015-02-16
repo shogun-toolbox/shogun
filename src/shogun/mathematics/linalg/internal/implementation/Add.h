@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Khaled Nasr
+ * Written (w) 2015 Sanuj Sharma
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -92,7 +93,7 @@ struct add<Backend::NATIVE, Matrix>
 	 * @param beta constant to be multiplied by the second matrix
 	 */
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C,
-		T alpha, T beta)
+		T alpha=1, T beta=1)
 	{
 		REQUIRE(A.num_rows == B.num_rows && B.num_rows == C.num_rows,
 			"Matrices should have same number of rows!\n");
@@ -110,7 +111,7 @@ struct add<Backend::NATIVE, Matrix>
 	 * @param beta constant to be multiplied by the second vector
 	 */
 	static void compute(SGVector<T> A, SGVector<T> B, SGVector<T> C,
-		T alpha, T beta)
+		T alpha=1, T beta=1)
 	{
 		REQUIRE(A.vlen == B.vlen, "Vectors should have same length!\n");
 		compute(A.vector, B.vector, C.vector, alpha, beta, A.vlen);

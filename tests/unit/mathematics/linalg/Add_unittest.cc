@@ -55,6 +55,7 @@ TEST(AddMatrix, native_backend)
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
+	SGMatrix<float64_t> D(3,3);
 	
 	for (int32_t i=0; i<9; i++)
 	{
@@ -63,9 +64,13 @@ TEST(AddMatrix, native_backend)
 	}
 	
 	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
+	linalg::add<linalg::Backend::NATIVE>(A, B, D);
 	
 	for (int32_t i=0; i<9; i++)
+	{
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
+		EXPECT_NEAR(A[i]+B[i], D[i], 1e-15);
+	}
 }
 
 TEST(AddVector, native_backend)
@@ -76,6 +81,7 @@ TEST(AddVector, native_backend)
 	SGVector<float64_t> A(9);
 	SGVector<float64_t> B(9);
 	SGVector<float64_t> C(9);
+	SGVector<float64_t> D(9);
 	
 	for (int32_t i=0; i<9; i++)
 	{
@@ -84,9 +90,13 @@ TEST(AddVector, native_backend)
 	}
 	
 	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
+	linalg::add<linalg::Backend::NATIVE>(A, B, D);
 	
 	for (int32_t i=0; i<9; i++)
+	{
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
+		EXPECT_NEAR(A[i]+B[i], D[i], 1e-15);
+	}
 }
 
 #ifdef HAVE_LINALG_LIB
