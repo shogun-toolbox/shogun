@@ -1,10 +1,9 @@
 #ifndef __SG_SOME_H__
 #define __SG_SOME_H__
 
-#ifdef HAVE_CXX11
 #include <memory>
-
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/RefCount.h>
 
 namespace shogun
 {
@@ -21,13 +20,12 @@ namespace shogun
 	 *
 	 */
 	template <typename T>
-	class Some : protected std::shared_ptr<T>
+	class Some
 	{
+		void* shared;
+
 		public:
-			Some() = delete;
-			Some(const std::shared_ptr<T>& shared);
 			Some(const Some<T>& other);
-			Some(Some<T>&& other);
 			Some& operator=(const Some<T>& other);
 			~Some();
 
@@ -41,62 +39,164 @@ namespace shogun
 			 * @return raw pointer (without SG_REF)
 			 */
 			T* operator->();
+
+			/** Returns empty instance. For internal use
+			 *
+			 */
+			static inline Some<T> empty()
+			{
+				return Some();
+			}
+			/** Returns raw pointer to shared instance. For internal use
+			 *
+			 */
+			static inline void* raw(Some<T> s)
+			{
+				return s.shared;
+			}
+
 		private:
-			using std::shared_ptr<T>::get;
+			Some();
+
+			int ref() const;
+			int unref() const;
+
+		private:
+			void assign(const Some<T>& other);
 	};
 
 	template <typename T>
-	Some<T>::Some(const std::shared_ptr<T>& shared)
-		: std::shared_ptr<T>(shared)
+	struct Shared
 	{
+		RefCount rc;
+		T object;
+
+		static inline Shared* from(void* ptr)
+		{
+			return static_cast<Shared*>(ptr);
+		}
+	};
+	
+	template <typename T>
+	void Some<T>::assign(const Some<T>& other)
+	{
+		this->unref();
+		other.ref();
+		this->shared = other.shared;
 	}
+
+	template <typename T>
+	Some<T>::Some()
+	{
+		shared = malloc(sizeof(Shared<T>));
+		new (&Shared<T>::from(shared)->rc) RefCount();
+	}
+
+	template <typename T>
+	int Some<T>::ref() const
+	{
+		int rc = Shared<T>::from(shared)->rc.ref();
+#ifndef TRANSITION_TO_SOME_DONE
+		int objrc = Shared<T>::from(shared)->object.ref();
+		if (rc != objrc)
+			throw std::exception();
+#endif
+		return rc;
+	}
+
+	template <typename T>
+	int Some<T>::unref() const
+	{
+		int rc = Shared<T>::from(shared)->rc.unref();
+#ifndef TRANSITION_TO_SOME_DONE
+		int objrc = Shared<T>::from(shared)->object.unref();
+		if (rc != objrc)
+			throw std::exception();
+#endif
+		if (!rc)
+			free(Shared<T>::from(shared));
+		return rc;
+	}
+
 	template <typename T>
 	Some<T>::Some(const Some<T>& other)
-		: std::shared_ptr<T>(other)
 	{
+		assign(other);
 	}
+
 	template <typename T>
-	Some<T>::Some(Some<T>&& other)
-		: std::shared_ptr<T>(other)
+	Some<T>& Some<T>::operator=(const Some<T>& other)
 	{
+		assign(other);
+		return *this;
 	}
+
 	template <typename T>
 	Some<T>::~Some()
 	{
+		this->unref();
 	}
 	template <typename T>
 	Some<T>::operator T*()
 	{
-		T* ptr = this->get();
-		SG_REF(ptr);
-		return ptr;
+		this->ref();
+		return &(Shared<T>::from(shared)->object);
 	}
 	template <typename T>
 	T* Some<T>::operator->()
 	{
-		T* ptr = this->get();
-		return ptr;
+		return &(Shared<T>::from(shared)->object);
 	}
 
-	/** Creates an instance of any class
-	 * that is wrapped with a shared pointer like
-	 * structure @ref Some
-	 * 
-	 * @param args arguments to construct instance of T with (T should
-	 * have compatible constructor)
-	 *
-	 * @return a shared pointer that holds created instance of @ref T
-	 *
-	 */
-	template <typename T, class... Args>
-	Some<T> some(Args&&... args)
+#define __PARAMETERS_0
+#define __PARAMETERS_1(UM) UM
+#define __PARAMETERS_2(UM, DOIS) UM, DOIS
+#define __PARAMETERS_3(UM, DOIS, TRES) UM, DOIS, TRES
+#define __PARAMETERS_4(UM, DOIS, TRES, QUATRO) UM, DOIS, TRES, QUATRO
+#define __PARAMETERS_5(UM, DOIS, TRES, QUATRO, CINCO) UM, DOIS, TRES, QUATRO, CINCO
+#define __CREATE_SOME(X) \
+	Some<T> s = Some<T>::empty(); \
+	T* ptr = &(Shared<T>::from(Some<T>::raw(s))->object); \
+	new (ptr) T(X); \
+	return s
+
+	template <typename T>
+	inline Some<T> some()
 	{
-		T* ptr = new T(args...);
-		SG_REF(ptr);
-		return std::shared_ptr<T>(ptr, [](T* p) { SG_UNREF(p); });
+		__CREATE_SOME(__PARAMETERS_0);
 	}
+	template <typename T, typename Um>
+	inline Some<T> some(const Um& um)
+	{
+		__CREATE_SOME(__PARAMETERS_1(um));
+	}
+	template <typename T, typename Um, typename Dois>
+	inline Some<T> some(const Um& um, const Dois& dois)
+	{
+		__CREATE_SOME(__PARAMETERS_2(um, dois));
+	}
+	template <typename T, typename Um, typename Dois, typename Tres>
+	inline Some<T> some(const Um& um, const Dois& dois, const Tres& tres)
+	{
+		__CREATE_SOME(__PARAMETERS_3(um, dois, tres));
+	}
+	template <typename T, typename Um, typename Dois, typename Tres, typename Quatro>
+	inline Some<T> some(const Um& um, const Dois& dois, const Tres& tres, const Quatro& quatro)
+	{
+		__CREATE_SOME(__PARAMETERS_4(um, dois, tres, quatro));
+	}
+	template <typename T, typename Um, typename Dois, typename Tres, typename Quatro, typename Cinco>
+	inline Some<T> some(const Um& um, const Dois& dois, const Tres& tres, const Quatro& quatro, const Cinco& cinco)
+	{
+		__CREATE_SOME(__PARAMETERS_5(um, dois, tres, quatro, cinco));
+	}
+#undef __PARAMETERS_0
+#undef __PARAMETERS_1
+#undef __PARAMETERS_2
+#undef __PARAMETERS_3
+#undef __PARAMETERS_4
+#undef __PARAMETERS_5
+#undef __CREATE_SOME
 
 };
-
-#endif /* HAVE_CXX11 */
 #endif /* __SG_SOME_H__ */
