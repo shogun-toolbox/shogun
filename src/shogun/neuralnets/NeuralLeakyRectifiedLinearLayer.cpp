@@ -28,82 +28,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  * 
- * Written (W) 2014 Khaled Nasr
+ * Written (W) 2015 Sanuj Sharma
  */
 
-#include <shogun/neuralnets/NeuralLayers.h>
-
-#include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
-CNeuralLayers::CNeuralLayers() : CSGObject(), m_layers(new CDynamicObjectArray)
+CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer() : CNeuralRectifiedLinearLayer()
 {
+	m_alpha=0.01;
 }
 
-CNeuralLayers::~CNeuralLayers()
+CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer(int32_t num_neurons):
+CNeuralRectifiedLinearLayer(num_neurons)
 {
-	SG_UNREF(m_layers)
+	m_alpha=0.01;
 }
 
-CNeuralLayers* CNeuralLayers::input(int32_t size)
+void CNeuralLeakyRectifiedLinearLayer::compute_activations(
+	SGVector<float64_t> parameters,
+	CDynamicObjectArray* layers)
 {
-	return with_layer(new CNeuralInputLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::logistic(int32_t size)
-{
-	return with_layer(new CNeuralLogisticLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::linear(int32_t size)
-{
-	return with_layer(new CNeuralLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::rectified_linear(int32_t size)
-{
-	return with_layer(new CNeuralRectifiedLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::leaky_rectified_linear(int32_t size)
-{
-	return with_layer(new CNeuralLeakyRectifiedLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::softmax(int32_t size)
-{
-	return with_layer(new CNeuralSoftmaxLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::with_layer(CNeuralLayer* layer)
-{
-	m_layers->push_back(layer);
-	return this;
-}
-
-CDynamicObjectArray* CNeuralLayers::done()
-{
-	SG_REF(m_layers);
-	return m_layers;
-}
-
-void CNeuralLayers::clear()
-{
-	m_layers->clear_array();
-}
-
-bool CNeuralLayers::empty()
-{
-	return (m_layers->get_array_size() == 0);
-}
-
-const char* CNeuralLayers::get_name() const
-{
-	return "NeuralLayers";
+	CNeuralLinearLayer::compute_activations(parameters, layers);
+	
+	int32_t len = m_num_neurons*m_batch_size;
+	for (int32_t i=0; i<len; i++)
+	{
+		m_activations[i] = CMath::max<float64_t>(m_alpha*m_activations[i], m_activations[i]);
+	}
 }
