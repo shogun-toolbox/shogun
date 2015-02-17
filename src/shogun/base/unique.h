@@ -1,10 +1,6 @@
 #ifndef __SG_UNIQUE_H__
 #define __SG_UNIQUE_H__
 
-#ifdef HAVE_CXX11
-
-#include <memory>
-
 namespace shogun
 {
 
@@ -16,29 +12,29 @@ namespace shogun
 	 *
 	 */
 	template <typename T>
-		class Unique : protected std::unique_ptr<T>
+	class Unique
 	{
 		public:
-			Unique() : std::unique_ptr<T>(new T)
-		{
-		}
-
-			Unique(const Unique& other) = delete;
-			Unique(Unique&& other) = delete;
-			Unique& operator=(const Unique& other) = delete;
-
+			Unique() : data()
+			{
+				data = new T();
+			}
 			~Unique()
 			{
+				delete reinterpret_cast<T*>(data);
 			}
+
+			Unique(const Unique& other);
+			Unique(Unique&& other);
+			Unique& operator=(const Unique& other);
 
 			inline T* operator->() const
 			{
-				return std::unique_ptr<T>::get();
+				return reinterpret_cast<T*>(data);
 			}
-
+		private:
+			void* data;
 	};
 
 }
-
-#endif /* HAVE_CXX11 */
 #endif /* __SG_UNIQUE_H__ */
