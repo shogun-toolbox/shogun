@@ -1,5 +1,5 @@
 {
-    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\n${dependencies}class Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
+    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\n${dependencies}class $programName {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
     "Dependencies": {
         "AllDependencies": "$enumDependencies\n\n",
         "EnumDependencies": "$enums",

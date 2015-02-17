@@ -74,7 +74,9 @@ def shogunType():
 
 def parse(filePath):
     program = grammar().parseFile(filePath, parseAll=True)[0]
-    return ast.JSONEncoder().default(program)
+    programAST = ast.JSONEncoder().default(program)
+    programAST["FilePath"] = filePath
+    return programAST
 
 if __name__ == "__main__":
     inputFile = sys.stdin

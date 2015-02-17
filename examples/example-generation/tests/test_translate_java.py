@@ -18,7 +18,7 @@ class TestJavaTranslator(unittest.TestCase):
         import org.shogun.*;
         import org.jblas.*;
 
-        class Example {
+        class MyExample {
             static {
                 System.loadLibrary("modshogun");
             }
@@ -38,9 +38,9 @@ class TestJavaTranslator(unittest.TestCase):
             {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "testf"}, {"ArgumentList": {"Expr": {"StringLiteral": "test.dat"}}}]}}
         ]
 
-        translation = self.translator.translateProgram(programAST)
+        translation = self.translator.translateProgram(programAST, "MyExample")
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateProgramWithNewlines(self):
         programAST = [
@@ -51,9 +51,9 @@ class TestJavaTranslator(unittest.TestCase):
             {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "testf"}, {"ArgumentList": {"Expr": {"StringLiteral": "test.dat"}}}]}}
         ]
 
-        translation = self.translator.translateProgram(programAST)
+        translation = self.translator.translateProgram(programAST, "MyExample")
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
 
     def test_translateInitCopy(self):
         initAST = [
@@ -150,9 +150,9 @@ class TestJavaTranslator(unittest.TestCase):
         programAST = [
             {"Comment": " This is a comment"}
         ]
-        translation = self.translator.translateProgram(programAST)
+        translation = self.translator.translateProgram(programAST, "MyExample")
 
-        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\nclass Example {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
+        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
         self.assertEqual(translation, trueTranslation)
 
 

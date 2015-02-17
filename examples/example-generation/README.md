@@ -4,22 +4,22 @@ The example generation tool simplifies the maintenance of shogun API examples ac
 Running the parser requires python and pyparsing (included with many python distributions).
 
 ### Translating all examples in “examples/“ folder
-Running the following command will translate all programs in the “examples/” folder and generate translation for each target language. The translations are put in a new “outputs/“ folder. (You may also specify specific targets to translate to - type `./generate.py --help` for more info)
+Running the following command will translate all programs in the “examples/” folder and generate translation for each target language. The translations are put in a new “outputs/“ folder. (You may also specify specific targets to translate to - run `$ ./generate.py --help` for more info)
 
 ```
-./generate.py --input examples --output outputs 
+$ ./generate.py --input examples --output outputs 
 ```
 The translated examples can then be run for each target language. E.g.:
 
 ```
-python outputs/python/knn.py
+$ python outputs/python/knn.py
 
-javac -d . -cp "/usr/local/share/java/*:/usr/share/java/*" outputs/java/knn.java
-java -cp "/usr/local/share/java/*:/usr/share/java/*:." Example
+$ javac -d . -cp "/usr/local/share/java/*:/usr/share/java/*" outputs/java/knn.java
+$ java -cp "/usr/local/share/java/*:/usr/share/java/*:." Example
 
-R -f outputs/r/gp.R
+$ R -f outputs/r/gp.R
 
-octave outputs/octave/liblinear.m
+$ octave outputs/octave/liblinear.m
 ```
 
 ### Parsing a program:
@@ -38,14 +38,14 @@ $ python parse.py examples/knn.sg > knn.ast
 Then translate the AST into the target languages
 
 ```
-python translate.py knn.ast --target=python > knn.py
-python translate.py knn.ast --target=java > knn.java
-python translate.py knn.ast --target=octave > knn.m
+$ python translate.py knn.ast --target=python > knn.py
+$ python translate.py knn.ast --target=java > knn.java
+$ python translate.py knn.ast --target=octave > knn.m
 ```
 
 Note: it is also possible to pipe the parsing and translation to translate an example in one step. E.g.
 ```
-python parse.py examples/gp.sg | python translate.py --target=python
+$ python parse.py examples/gp.sg | python translate.py --target=python
 ```
 
 ### Updating the list of Shogun types

@@ -11,13 +11,13 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
     targets = []
     for target in os.listdir(targetsDir):
         # Ignore targets not in includedTargets
-        if includedTargets:
-            if not os.path.basename(target).split(".")[0] in includedTargets:
-                continue
+        if includedTargets and not os.path.basename(target).split(".")[0] in includedTargets:
+            continue
 
         with open(os.path.join(targetsDir, target)) as tFile:
             targets.append(json.load(tFile))
 
+    # Translate each example
     for f in os.listdir(inputDir):
         # Parse the example file
         ast = parse(os.path.join(inputDir,f))

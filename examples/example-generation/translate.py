@@ -2,6 +2,7 @@ import json
 import sys
 from string import Template
 from sets import Set
+import os.path
 
 class Translator:
     def __init__(self, targetDict):
@@ -13,7 +14,7 @@ class Translator:
 
         self.targetDict = targetDict
 
-    def translateProgram(self, program):
+    def translateProgram(self, program, programName=None):
         """ Translate program AST
         Args:
             program: object like [statementAST, statementAST, statementAST, ...]
@@ -32,7 +33,7 @@ class Translator:
 
         programTemplate = Template(self.targetDict["Program"])
 
-        return programTemplate.substitute(program=targetProgram, dependencies=self.dependenciesString())
+        return programTemplate.substitute(program=targetProgram, dependencies=self.dependenciesString(), programName=programName)
 
     def dependenciesString(self):
         """ Returns dependency import string 
@@ -267,7 +268,8 @@ class Translator:
 
 def translate(ast, targetDict):
     translator = Translator(targetDict)
-    return translator.translateProgram(ast["Program"])
+    programName = os.path.basename(ast["FilePath"]).split(".")[0]
+    return translator.translateProgram(ast["Program"], programName)
 
 def loadTargetDict(targetJsonPath):
     try:
