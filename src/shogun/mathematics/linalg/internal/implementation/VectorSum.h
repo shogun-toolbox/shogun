@@ -93,6 +93,7 @@ struct vector_sum<Backend::NATIVE, Vector>
 	 */
 	static T compute(SGVector<T> vec)
 	{
+		REQUIRE(vec.vlen > 0, "Vector can not be empty!\n");
 		return compute(vec.vector,vec.vlen);
 	}
 
@@ -105,10 +106,7 @@ struct vector_sum<Backend::NATIVE, Vector>
 	 */
 	static T compute(T* vec, index_t len)
 	{
-		T result=static_cast<T>(0);
-		for(index_t i=0; i<len; ++i)
-			result+=vec[i];
-		return result;
+		return std::accumulate(vec,vec+len,0);
 	}
 };
 	
