@@ -511,3 +511,30 @@ TEST(CMath, dot)
 	float64_t sgdot_val = CMath::dot(a.vector,a.vector, a.vlen);
 	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
 }
+
+TEST(CMath, range_fill)
+{
+	SGVector<index_t> v(4);
+
+	CMath::range_fill(v,v.vlen);
+
+	EXPECT_EQ(v.vlen, 4);
+	EXPECT_EQ(v[0], 0);
+	EXPECT_EQ(v[1], 1);
+	EXPECT_EQ(v[2], 2);
+	EXPECT_EQ(v[3], 3);
+}
+
+TEST(CMath, range_fill2)
+{
+	int32_t size=4;
+	float64_t* v= SG_MALLOC(float64_t, size);
+
+	CMath::range_fill(v,size,0.0);
+
+	EXPECT_NEAR(v[0], 0.0, 1e-9);
+	EXPECT_NEAR(v[1], 1.0, 1e-9);
+	EXPECT_NEAR(v[2], 2.0, 1e-9);
+	EXPECT_NEAR(v[3], 3.0, 1e-9);
+}
+
