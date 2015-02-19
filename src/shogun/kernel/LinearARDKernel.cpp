@@ -4,16 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2015 Wu Lin
  * Written (W) 2012 Jacob Walker
  *
  * Adapted from WeightedDegreeRBFKernel.cpp
  */
 
-#include <shogun/lib/common.h>
 #include <shogun/kernel/LinearARDKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
-
 using namespace shogun;
 
 CLinearARDKernel::CLinearARDKernel() : CDotKernel()
@@ -21,125 +18,219 @@ CLinearARDKernel::CLinearARDKernel() : CDotKernel()
 	init();
 }
 
+CLinearARDKernel::~CLinearARDKernel()
+{
+	CKernel::cleanup();
+}
+
+void CLinearARDKernel::init()
+{
+	m_ARD_type=KT_SCALAR;
+	m_weights=SGMatrix<float64_t>(1,1);
+	m_weights.set_const(1.0);
+	SG_ADD(&m_weights, "weights", "Feature weights", MS_AVAILABLE,
+			GRADIENT_AVAILABLE);
+}
+
+#ifdef HAVE_CXX11
+#include <shogun/mathematics/linalg/linalg.h>
 
 CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
 {
 	init();
 }
 
-CLinearARDKernel::CLinearARDKernel(CDenseFeatures<float64_t>* l,
-		CDenseFeatures<float64_t>* r, int32_t size)	: CDotKernel(size)
+CLinearARDKernel::CLinearARDKernel(CDotFeatures* l,
+		CDotFeatures* r, int32_t size)	: CDotKernel(size)
 {
 	init();
 	init(l,r);
 }
 
-void CLinearARDKernel::init()
-{
-	SG_ADD(&m_weights, "weights", "Feature weights", MS_AVAILABLE,
-			GRADIENT_AVAILABLE);
-}
 
-CLinearARDKernel::~CLinearARDKernel()
-{
-	CKernel::cleanup();
-}
 
 bool CLinearARDKernel::init(CFeatures* l, CFeatures* r)
 {
+	cleanup();
 	CDotKernel::init(l, r);
-
-	init_ft_weights();
-
+	int32_t dim=((CDotFeatures*) l)->get_dim_feature_space();
+	if (m_ARD_type==KT_FULL)
+	{
+		REQUIRE(m_weights.num_cols==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+			dim, m_weights.num_cols);
+	}
+	else if (m_ARD_type==KT_DIAG)
+	{
+		REQUIRE(m_weights.num_rows==dim, "Dimension mismatch between features (%d) and weights (%d)\n",
+			dim, m_weights.num_rows);
+	}
 	return init_normalizer();
 }
 
-void CLinearARDKernel::init_ft_weights()
+
+SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>right_vec,
+	float64_t & scalar_weight)
 {
-	if (!lhs || !rhs)
-		return;
+	SGMatrix<float64_t> right;
 
-	int32_t alen, blen;
-
-	alen=((CDenseFeatures<float64_t>*) lhs)->get_num_features();
-	blen=((CDenseFeatures<float64_t>*) rhs)->get_num_features();
-
-	REQUIRE(alen==blen, "Number of right and left hand features must be the "
-			"same\n")
-
-	if (m_weights.vlen != alen)
+	if (m_ARD_type==KT_SCALAR)
 	{
-		m_weights=SGVector<float64_t>(alen);
-		m_weights.set_const(1.0);
+		right=SGMatrix<float64_t>(right_vec.vector,right_vec.vlen,1,false);
+		scalar_weight*=m_weights[0];
 	}
+	else 
+	{
+		right=SGMatrix<float64_t> (m_weights.num_rows,1);
 
-	SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this)
+		SGMatrix<float64_t> rtmp(right_vec.vector,right_vec.vlen,1,false);
+
+		if(m_ARD_type==KT_DIAG)
+		{
+			linalg::elementwise_product(m_weights, rtmp, right);
+		}
+		else if(m_ARD_type==KT_FULL)
+		{
+			linalg::matrix_product(m_weights, rtmp, right);
+		}
+		else
+		{
+			SG_ERROR("Unsupported ARD kernel\n");
+		}
+	}
+	return right;
 }
 
-void CLinearARDKernel::set_weight(float64_t w, index_t i)
+float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
 {
-	if (i >= m_weights.vlen)
+	SGMatrix<float64_t> left;
+
+	float64_t scalar_weight=1.0;
+	if (m_ARD_type==KT_SCALAR)
 	{
-		SG_ERROR("Index %i out of range for LinearARDKernel."\
-				 "Number of features is %i.\n", i, m_weights.vlen);
+		left=SGMatrix<float64_t>(avec.vector,1,avec.vlen,false);
+		scalar_weight=m_weights[0];
+	}
+	else 
+	{
+		left=SGMatrix<float64_t>(1,m_weights.num_rows);
+
+		SGMatrix<float64_t> ltmp(avec.vector,avec.vlen,1,false);
+
+		SGMatrix<float64_t> left_transpose(left.matrix,left.num_cols,1,false);
+		if(m_ARD_type==KT_DIAG)
+		{
+			linalg::elementwise_product(m_weights, ltmp, left_transpose);
+		}
+		else if(m_ARD_type==KT_FULL)
+		{
+			linalg::matrix_product(m_weights, ltmp, left_transpose);
+		}
+		else
+		{
+			SG_ERROR("Unsupported ARD kernel\n");
+		}
 	}
 
-	m_weights[i]=w;
-}
-
-float64_t CLinearARDKernel::get_weight(index_t i)
-{
-	if (i >= m_weights.vlen)
-	{
-		SG_ERROR("Index %i out of range for LinearARDKernel."\
-				 "Number of features is %i.\n", i, m_weights.vlen);
-	}
-
-	return m_weights[i];
+	SGMatrix<float64_t> res(1,1);
+	SGMatrix<float64_t> right=compute_right_product(bvec, scalar_weight);
+	linalg::matrix_product(left, right, res);
+	return res[0]*scalar_weight;
 }
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(lhs && rhs, "Features not set!\n")
 
-	SGVector<float64_t> avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
-	SGVector<float64_t> bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b);
+	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
+	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
 
-	REQUIRE(avec.vlen==bvec.vlen, "Number of right and left hand "
-			"features must be the same\n")
-
-	float64_t result=0;
-
-	for (index_t i = 0; i < avec.vlen; i++)
-		result += avec[i]*bvec[i]*m_weights[i]*m_weights[i];
-
-	return result;
+	return compute_helper(avec, bvec);
 }
 
-SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
+float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
+	SGVector<float64_t> bvec, float64_t scale, index_t index)
 {
-	REQUIRE(lhs && rhs, "Features not set!\n")
+	float64_t result;
 
+	if(m_ARD_type==KT_DIAG)
+	{
+		result=2.0*avec[index]*bvec[index]*m_weights[index];
+	}
+	else
+	{
+		SGMatrix<float64_t> left(avec.vector,1,avec.vlen,false);
+		SGMatrix<float64_t> right(bvec.vector,bvec.vlen,1,false);
+		SGMatrix<float64_t> res(1,1);
+
+		if (m_ARD_type==KT_SCALAR)
+		{
+			linalg::matrix_product(left, right, res);
+			result=2.0*res[0]*m_weights[0];
+		}
+		else if(m_ARD_type==KT_FULL)
+		{
+			int32_t row_index=index%m_weights.num_rows;
+			int32_t col_index=index/m_weights.num_rows;
+			//index is a linearized index of m_weights (column-major)
+			//m_weights is a d-by-p matrix, where p is #dimension of features
+			SGVector<float64_t> row_vec=m_weights.get_row_vector(row_index);
+			SGMatrix<float64_t> row_vec_r(row_vec.vector,row_vec.vlen,1,false);
+
+			linalg::matrix_product(left, row_vec_r, res);
+			result=res[0]*bvec[col_index];
+
+			SGMatrix<float64_t> row_vec_l(row_vec.vector,1,row_vec.vlen,false);
+			linalg::matrix_product(row_vec_l, right, res);
+			result+=res[0]*avec[col_index];
+
+		}
+		else
+		{
+			SG_ERROR("Unsupported ARD kernel\n");
+		}
+
+	}
+	return result*scale;
+}
+
+
+SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
+	const TParameter* param, index_t index)
+{
+	REQUIRE(lhs && rhs, "Features not set!\n");
+
+	int32_t row_index, col_index;
+	if (m_ARD_type!=KT_SCALAR)
+	{
+		REQUIRE(index>=0, "Index (%d) must be non-negative\n",index);
+		if (m_ARD_type==KT_DIAG)
+		{
+			REQUIRE(index<m_weights.num_rows, "Index (%d) must be within #dimension of weights (%d)\n",
+				index, m_weights.num_rows);
+		}
+		else if(m_ARD_type==KT_FULL)
+		{
+			row_index=index%m_weights.num_rows;
+			col_index=index/m_weights.num_rows;
+			REQUIRE(row_index<m_weights.num_rows,
+				"Row index (%d) must be within #row of weights (%d)\n",
+				row_index, m_weights.num_rows);
+			REQUIRE(col_index<m_weights.num_cols,
+				"Column index (%d) must be within #column of weights (%d)\n",
+				col_index, m_weights.num_cols);
+		}
+	}
 	if (!strcmp(param->m_name, "weights"))
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
 		for (index_t j=0; j<num_lhs; j++)
 		{
+			SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(j);
 			for (index_t k=0; k<num_rhs; k++)
 			{
-				SGVector<float64_t> avec=
-					((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
-				SGVector<float64_t> bvec=
-					((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
-
-				REQUIRE(avec.vlen==bvec.vlen, "Number of right and left hand "
-						"features must be the same\n");
-
-				derivative(j,k)=avec[index]*bvec[index]*m_weights[index];
+				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(k);
+				derivative(j,k)=compute_gradient_helper(avec, bvec, 1.0, index);
 			}
 		}
 		return derivative;
@@ -150,3 +241,51 @@ SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
 		return SGMatrix<float64_t>();
 	}
 }
+
+SGMatrix<float64_t> CLinearARDKernel::get_weights()
+{
+	return SGMatrix<float64_t>(m_weights);
+}
+
+void CLinearARDKernel::set_weights(SGMatrix<float64_t> weights)
+{
+	REQUIRE(weights.num_cols>0 && weights.num_rows>0,
+		"Weight Matrix (%d-by-%d) must not be empty\n",
+		weights.num_rows, weights.num_cols);
+	if (weights.num_cols>1)
+	{
+		m_ARD_type=KT_FULL;
+	}
+	else
+	{
+		if (weights.num_rows==1)
+		{
+			m_ARD_type=KT_SCALAR;
+		}
+		else
+		{
+			m_ARD_type=KT_DIAG;
+		}
+	}
+	m_weights=weights;
+}
+
+void CLinearARDKernel::set_scalar_weights(float64_t weight)
+{
+	SGMatrix<float64_t> weights(1,1);
+	weights(0,0)=weight;
+	set_weights(weights);
+}
+
+void CLinearARDKernel::set_vector_weights(SGVector<float64_t> weights)
+{
+	SGMatrix<float64_t> weights_mat(weights.vlen,1);
+	std::copy(weights.vector, weights.vector+weights.vlen, weights_mat.matrix);
+	set_weights(weights_mat);
+}
+
+void CLinearARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
+{
+	set_weights(weights);
+}
+#endif //HAVE_CXX11

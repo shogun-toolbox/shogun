@@ -761,6 +761,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_PRODUCT)
 		ENUM_CASE(K_LINEARARD)
 		ENUM_CASE(K_GAUSSIANARD)
+		ENUM_CASE(K_GAUSSIANARDFITC)
 		ENUM_CASE(K_STREAMING)
 	}
 
@@ -1421,8 +1422,10 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	return SGMatrix<T>(result,m,n,true);
 }
 
+
 template SGMatrix<float64_t> CKernel::get_kernel_matrix<float64_t>();
 template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
 
 template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
 template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
+

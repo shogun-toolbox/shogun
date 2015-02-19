@@ -15,7 +15,6 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -108,24 +107,23 @@ float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	if (!m_compact)
 	{
-		float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]
-				-2*CDotKernel::compute(idx_a, idx_b);
-		return CMath::exp(-result/width);
+		float64_t result=distance(idx_a,idx_b);
+		return CMath::exp(-result);
 	}
 
 	int32_t len_features, power;
-	len_features=((CDenseFeatures<float64_t>*) lhs)->get_num_features();
+	len_features=((CDotFeatures*) lhs)->get_dim_feature_space();
 	power=(len_features%2==0) ? (len_features+1):len_features;
 
-	float64_t result=sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b);
-	float64_t result_multiplier=1-(sqrt(result/width))/3;
+	float64_t result=distance(idx_a,idx_b);
+	float64_t result_multiplier=1-(sqrt(result))/3;
 
 	if (result_multiplier<=0)
 		result_multiplier=0;
 	else
 		result_multiplier=pow(result_multiplier, power);
 
-	return result_multiplier*exp(-result/width);
+	return result_multiplier*exp(-result);
 }
 
 void CGaussianKernel::load_serializable_post() throw (ShogunException)
@@ -159,8 +157,8 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(
 		for (int j=0; j<num_lhs; j++)
 			for (int k=0; k<num_rhs; k++)
 			{
-				float64_t element=sq_lhs[j]+sq_rhs[k]-2*CDotKernel::compute(j,k);
-				derivative(j,k)=exp(-element/width)*element/(width*width);
+				float64_t element=distance(j,k);
+				derivative(j,k)=exp(-element)*element/width;
 			}
 
 		return derivative;
@@ -180,4 +178,9 @@ void CGaussianKernel::init()
 	sq_rhs=NULL;
 	SG_ADD(&width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_compact, "compact", "Compact enabled option", MS_AVAILABLE);
+}
+
+float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b)
+{
+	return (sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b))/width;
 }
