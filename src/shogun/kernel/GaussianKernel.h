@@ -155,6 +155,22 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual void load_serializable_post() throw (ShogunException);
 
+
+		/** compute the distance between features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed the distance
+		 *
+		 * Note that in GaussianKernel,
+		 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
+		 * \f[
+		 * distance({\bf x},{\bf y})= \frac{||{\bf x}-{\bf y}||^2}{\tau}
+		 * \f]
+		 */
+		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 	private:
 		/** helper function to compute quadratic terms in
 		 * (a-b)^2 (== a^2+b^2-2ab)
