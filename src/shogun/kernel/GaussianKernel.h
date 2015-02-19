@@ -11,8 +11,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#ifndef _GAUSSIANKERNEL_H___
-#define _GAUSSIANKERNEL_H___
+#ifndef GAUSSIANKERNEL_H
+#define GAUSSIANKERNEL_H
 
 #include <shogun/lib/config.h>
 
