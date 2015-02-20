@@ -33,7 +33,7 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  *
- * There are three variants based on \f$||\cdot||\f$. 
+ * There are three variants based on \f$||\cdot||\f$.
  * The default case is
  * \f$\sum_{i=1}^{p}{{[\lambda \times ({\bf x_i}-{\bf y_i})] }^2}\f$
  * where \f$\lambda\f$ is a scalar and \f$p\f$ is # of features
@@ -50,7 +50,7 @@ namespace shogun
  * The last case is
  * \f$({\bf x}-{\bf y})^T \Lambda^T \Lambda ({\bf x}-{\bf y})\f$
  * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix,
- * \f$p\f$ is # of features and \f$d\f$ can be \f$ d \ge p\f$ or \f$ d \le p\f$ 
+ * \f$p\f$ is # of features and \f$d\f$ can be \f$ d \ge p\f$ or \f$ d \le p\f$
  * To use this case,  please call set_matrix_weights(\f$\Lambda\f$)
  * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix
  *
@@ -91,7 +91,7 @@ protected:
 	/** kernel width */
 	float64_t m_width;
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
@@ -160,7 +160,7 @@ protected:
 	 */
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 
-#endif /* HAVE_CXX11 */
+#endif /* HAVE_LINALG_LIB */
 };
 }
 #endif /* _GAUSSIANARDKERNEL_H_ */

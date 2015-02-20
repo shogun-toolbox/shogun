@@ -58,6 +58,29 @@ typename Vector::Scalar dot(Vector a, Vector b)
 	return implementation::dot<backend,Vector>::compute(a, b);
 }
 
+/** Returns the largest element in a matrix or vector
+ * @param m the matrix or the vector
+ * @return the value of the largest element
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar max(Matrix m)
+{
+	return implementation::max<backend,Matrix>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of vector sum of values that works
+ * with generic dense vectors
+
+ * @param a vector whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_sum(Vector a)
+{
+	return implementation::vector_sum<backend,Vector>::compute(a);
+}
+
 #ifdef HAVE_LINALG_LIB
 
 /**
@@ -159,26 +182,6 @@ template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vect
 void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
 {
 	implementation::rowwise_sum<backend,Matrix>::compute(m, result, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of vector sum of values that works
- * with generic dense vectors
-
- * @param a vector whose sum has to be computed
- * @return the vector sum \f$\sum_i a_i\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Vector>
-typename Vector::Scalar vector_sum(Vector a)
-{
-	return implementation::vector_sum<backend,Vector>::compute(a);
-}
-
-/** Returns the largest element in a matrix or vector */
-template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
-typename Matrix::Scalar max(Matrix m)
-{
-	return implementation::max<backend,Matrix>::compute(m);
 }
 
 #endif // HAVE_LINALG_LIB

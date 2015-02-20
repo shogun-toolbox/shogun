@@ -29,7 +29,7 @@ void CGaussianARDKernel::init()
 	SG_ADD(&m_width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
 CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
 		: CLinearARDKernel(size)
@@ -122,4 +122,4 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	float64_t result=compute_helper(avec, avec);
 	return result/m_width;
 }
-#endif /* HAVE_CXX11 */
+#endif /* HAVE_LINALG_LIB */

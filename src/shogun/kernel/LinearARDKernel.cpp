@@ -32,7 +32,7 @@ void CLinearARDKernel::init()
 			GRADIENT_AVAILABLE);
 }
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
 
 CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
@@ -78,7 +78,7 @@ SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>r
 		right=SGMatrix<float64_t>(right_vec.vector,right_vec.vlen,1,false);
 		scalar_weight*=m_weights[0];
 	}
-	else 
+	else
 	{
 		right=SGMatrix<float64_t> (m_weights.num_rows,1);
 
@@ -110,7 +110,7 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 		left=SGMatrix<float64_t>(avec.vector,1,avec.vlen,false);
 		scalar_weight=m_weights[0];
 	}
-	else 
+	else
 	{
 		left=SGMatrix<float64_t>(1,m_weights.num_rows);
 
@@ -288,4 +288,4 @@ void CLinearARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 {
 	set_weights(weights);
 }
-#endif //HAVE_CXX11
+#endif //HAVE_LINALG_LIB
