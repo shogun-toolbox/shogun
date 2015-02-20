@@ -79,15 +79,15 @@ struct vector_sum
 /**
  * @brief Specialization of generic vector_sum for the Native backend
  */
-template<> template <class Vector>
+template <class Vector>
 struct vector_sum<Backend::NATIVE, Vector>
 {
 	/** Scalar type */
 	typedef typename Vector::Scalar T;
-	
+
 	/**
 	 * Method that computes the sum of SGVectors
-	 * 
+	 *
 	 * @param vec a vector whose sum has to be computed
 	 * @return the vector sum \f$\sum_i a_i\f$
 	 */
@@ -99,7 +99,7 @@ struct vector_sum<Backend::NATIVE, Vector>
 
 	/**
 	 * Method that computes the sum of SGVectors
-	 * 
+	 *
 	 * @param vec a vector whose sum has to be computed
 	 * @param len the length of the vector
 	 * @return the vector sum \f$\sum_i a_i\f$
@@ -109,14 +109,15 @@ struct vector_sum<Backend::NATIVE, Vector>
 		return std::accumulate(vec,vec+len,0);
 	}
 };
-	
+
 #ifdef HAVE_EIGEN3
 /**
  * @brief Specialization of generic vector_sum for the Eigen3 backend
  */
-template <> template <class Vector>
+template <class Vector>
 struct vector_sum<Backend::EIGEN3, Vector>
 {
+	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
 	/**
@@ -139,9 +140,10 @@ struct vector_sum<Backend::EIGEN3, Vector>
 /**
  * @brief Specialization of generic vector_sum for the ViennaCL backend
  */
-template <> template <class Vector>
+template <class Vector>
 struct vector_sum<Backend::VIENNACL, Vector>
 {
+	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
 	/**

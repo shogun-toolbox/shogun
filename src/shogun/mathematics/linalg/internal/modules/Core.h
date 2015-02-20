@@ -32,8 +32,6 @@
 #ifndef CORE_H_
 #define CORE_H_
 
-#ifdef HAVE_LINALG_LIB
-
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
 #include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
@@ -47,6 +45,23 @@ namespace shogun
 namespace linalg
 {
 
+/** Performs the operation \f$C = \alpha A + \beta B\f$.
+ * Works for both matrices and vectors.
+ *
+ * @param A First matrix
+ * @param B Second matrix
+ * @param C Result of the operation
+ * @param alpha scaling parameter for first matrix
+ * @param beta scaling parameter for second matrix
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
+		typename Matrix::Scalar beta=1.0)
+{
+	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
+}
+
+#ifdef HAVE_LINALG_LIB
 /** Performs matrix multiplication
  *
  * @param A First matrix
@@ -62,14 +77,6 @@ void matrix_product(Matrix A, Matrix B, Matrix C,
 	bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
 {
 	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
-}
-
-/** Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void add(Matrix A, Matrix B, Matrix C,
-	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
-{
-	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
 }
 
 /** Performs the operation C = alpha*A - beta*B. Works for both matrices and vectors */
@@ -122,17 +129,17 @@ void elementwise_square(Matrix m, ResultMatrix result)
 }
 
 /** Computes the 2D convolution of X with W
- * 
- * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed 
- * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html). 
- * 
+ *
+ * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed
+ * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html).
+ *
  * @param X Input image
  * @param W Filter coefficients. The dimensions of the matrix must be odd-numbered.
- * @param Y Output image of the same size as the input image, as the borders 
+ * @param Y Output image of the same size as the input image, as the borders
  * of the input image are implicitly padded with zeros during the computation
- * @param flip If true the filter coefficients are flipped, performing cross-correlation 
+ * @param flip If true the filter coefficients are flipped, performing cross-correlation
  * instead of convolution
- * @param overwrite If true, the values in Y are overwritten with result of the 
+ * @param overwrite If true, the values in Y are overwritten with result of the
  * computation. Otherwise, the result is added to the existing values in Y.
  * @param stride_x Stride in the x (column) direction
  * @param stride_y Stride in the y (row) direction
@@ -143,9 +150,9 @@ void convolve(Matrix X, Matrix W, Matrix Y, bool flip = false,
 {
 	implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y);
 }
-
-}
-
-}
 #endif // HAVE_LINALG_LIB
+
+}
+
+}
 #endif // CORE_H_
