@@ -3,6 +3,8 @@
 
 #ifdef HAVE_CXX11
 
+#include <shogun/lib/ShogunException.h>
+
 namespace shogun
 {
 
