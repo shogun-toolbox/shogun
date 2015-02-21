@@ -25,7 +25,6 @@ namespace shogun
 			}
 
 			Unique(const Unique& other);
-			Unique(Unique&& other);
 			Unique& operator=(const Unique& other);
 
 			inline T* operator->() const
