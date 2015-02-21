@@ -298,6 +298,7 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
+OPTION(GENERATE_EXAMPLES "Generate Meta-Language Examples" OFF)
 
 ################# DATATYPES #################
 LIST(APPEND DEFINES USE_CHAR)
@@ -1205,6 +1206,12 @@ ENDIF()
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	IF(BUILD_EXAMPLES OR ENABLE_TESTING)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	ENDIF()
+
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/example-generation)
+		IF(GENERATE_EXAMPLES)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/examples/example-generation)
+		ENDIF()
 	ENDIF()
 ENDIF()
 

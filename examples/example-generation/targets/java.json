@@ -1,0 +1,60 @@
+{
+    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\n${dependencies}class $programName {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
+    "Dependencies": {
+        "AllDependencies": "$enumDependencies\n\n",
+        "EnumDependencies": "$enums",
+        "DependencyListElementClass": "$element",
+        "DependencyListElementEnum": "import static org.shogun.$type.$value;",
+        "DependencyListSeparator": "\n"
+    },
+    "Statement": "        $statement;\n",
+    "Comment": "        //$comment\n",
+    "Init": {
+        "Construct": "$type $name = new $type($arguments)",
+        "Copy": "$type $name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type",
+        "bool": "boolean",
+        "string": "String",
+        "BoolVector": "DoubleMatrix",
+        "CharVector": "DoubleMatrix",
+        "ByteVector": "DoubleMatrix",
+        "WordVector": "DoubleMatrix",
+        "ShortVector": "DoubleMatrix",
+        "IntVector": "DoubleMatrix",
+        "LongIntVector": "DoubleMatrix",
+        "ULongIntVector": "DoubleMatrix",
+        "ShortRealVector": "FloatMatrix",
+        "RealVector": "DoubleMatrix",
+        "LongRealVector": "DoubleMatrix",
+        "ComplexVector": "DoubleMatrix",
+        "BoolMatrix": "DoubleMatrix",
+        "CharMatrix": "DoubleMatrix",
+        "ByteMatrix": "DoubleMatrix",
+        "WordMatrix": "DoubleMatrix",
+        "ShortMatrix": "DoubleMatrix",
+        "IntMatrix": "DoubleMatrix",
+        "LongIntMatrix": "DoubleMatrix",
+        "ULongIntMatrix": "DoubleMatrix",
+        "ShortRealMatrix": "FloatMatrix",
+        "RealMatrix": "DoubleMatrix",
+        "LongRealMatrix": "DoubleMatrix",
+        "ComplexMatrix": "DoubleMatrix"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "System.out.println($expr)",
+    "OutputDirectoryName": "java",
+    "FileExtension": ".java"
+}

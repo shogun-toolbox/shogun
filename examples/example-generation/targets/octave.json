@@ -1,0 +1,27 @@
+{
+    "Program": "modshogun\n\n$program",
+    "Statement": "$statement;\n",
+    "Comment": "%$comment\n",
+    "Init": {
+        "Construct": "$name = $type($arguments)",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "'$literal'",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "disp($expr)",
+    "OutputDirectoryName": "octave",
+    "FileExtension": ".m"
+}
