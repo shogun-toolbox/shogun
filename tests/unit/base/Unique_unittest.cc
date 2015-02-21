@@ -1,5 +1,4 @@
 #include <shogun/base/some.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <gtest/gtest.h>
 
 #include "Unique_unittest.h"
