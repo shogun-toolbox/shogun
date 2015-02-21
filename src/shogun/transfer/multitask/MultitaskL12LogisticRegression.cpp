@@ -13,8 +13,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DotFeatures.h>
 
-#ifdef HAVE_CXX11
-
 namespace shogun
 {
 
@@ -142,4 +140,3 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 }
 
 }
-#endif

@@ -4,7 +4,6 @@
 
 #include "Unique_unittest.h"
 
-#ifdef HAVE_CXX11
 using namespace shogun;
 
 class SomeTestingClassWithUnique::Self
@@ -30,4 +29,3 @@ TEST(Unique,basic)
     object.set(value);
     EXPECT_EQ(value, object.get());
 }
-#endif
