@@ -54,7 +54,7 @@ public:
 			CDynamicObjectArray* list_evaluation_criterion,
             bool autolock = true);
 
- 	/** constructor
+	/** constructor
 	 * @param machine learning machine to use
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
@@ -62,7 +62,7 @@ public:
 	 * @param evaluation_criterion evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
-    CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
+        CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterion, bool autolock = true);
 
@@ -85,14 +85,14 @@ public:
 	 * @param evaluation_criterion evaluation criterion to use
 	 * @param autolock autolock
 	 */
-    CMachineEvaluation(CMachine* machine, CLabels* labels,
+        CMachineEvaluation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterion, bool autolock = true);
 
 	virtual ~CMachineEvaluation();
 
 	/** @return in which direction is the best evaluation value? */
-    EEvaluationDirection get_evaluation_direction();
+        EEvaluationDirection get_evaluation_direction();
 	CDynamicArray<EEvaluationDirection> get_evaluation_directions();
 
 	/** method for evaluation. Performs cross-validation.
@@ -131,7 +131,7 @@ protected:
 	CSplittingStrategy* m_splitting_strategy;
 
 	/** Criterion for evaluation */
-    CDynamicObjectArray* m_list_evaluation_criterion;
+        CDynamicObjectArray* m_list_evaluation_criterion;
 
 	/** whether machine will automatically be locked before evaluation */
 	bool m_autolock;
