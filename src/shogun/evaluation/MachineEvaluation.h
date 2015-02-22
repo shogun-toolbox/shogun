@@ -52,7 +52,7 @@ public:
 	CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
 			CDynamicObjectArray* evaluation_criteria,
-                        bool autolock = true);
+			bool autolock = true);
 
 	/** constructor with a single evaluation criterion.
          * Kept for convenience
@@ -77,7 +77,7 @@ public:
 	CMachineEvaluation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
 			CDynamicObjectArray* evaluation_criteria,
-                        bool autolock = true);
+			bool autolock = true);
 
 	/** constructor, for use with custom kernels (no features)
      * with a single evaluation criterion. Kept for convenience
