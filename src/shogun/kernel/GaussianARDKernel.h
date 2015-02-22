@@ -10,8 +10,8 @@
  * Adapted from WeightedDegreeRBFKernel.h
  */
 
-#ifndef _GAUSSIANARDKERNEL_H_
-#define _GAUSSIANARDKERNEL_H_
+#ifndef GAUSSIANARDKERNEL_H
+#define GAUSSIANARDKERNEL_H
 
 #include <shogun/lib/config.h>
 

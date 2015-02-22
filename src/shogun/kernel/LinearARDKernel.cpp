@@ -85,17 +85,11 @@ SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>r
 		SGMatrix<float64_t> rtmp(right_vec.vector,right_vec.vlen,1,false);
 
 		if(m_ARD_type==KT_DIAG)
-		{
 			linalg::elementwise_product(m_weights, rtmp, right);
-		}
 		else if(m_ARD_type==KT_FULL)
-		{
 			linalg::matrix_product(m_weights, rtmp, right);
-		}
 		else
-		{
 			SG_ERROR("Unsupported ARD kernel\n");
-		}
 	}
 	return right;
 }
@@ -118,17 +112,11 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 
 		SGMatrix<float64_t> left_transpose(left.matrix,left.num_cols,1,false);
 		if(m_ARD_type==KT_DIAG)
-		{
 			linalg::elementwise_product(m_weights, ltmp, left_transpose);
-		}
 		else if(m_ARD_type==KT_FULL)
-		{
 			linalg::matrix_product(m_weights, ltmp, left_transpose);
-		}
 		else
-		{
 			SG_ERROR("Unsupported ARD kernel\n");
-		}
 	}
 
 	SGMatrix<float64_t> res(1,1);

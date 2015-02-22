@@ -10,8 +10,8 @@
  * Adapted from WeightedDegreeRBFKernel.h
  */
 
-#ifndef _LINEARARDKERNEL_H_
-#define _LINEARARDKERNEL_H_
+#ifndef LINEARARDKERNEL_H
+#define LINEARARDKERNEL_H
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
