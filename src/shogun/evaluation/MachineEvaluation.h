@@ -46,20 +46,21 @@ public:
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param list_evaluation_criterion list of evaluation criterion to use
+	 * @param evaluation_criteria list of evaluation criteria to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CDynamicObjectArray* list_evaluation_criterion,
-            bool autolock = true);
+			CDynamicObjectArray* evaluation_criteria,
+                        bool autolock = true);
 
-	/** constructor
+	/** constructor with a single evaluation criterion.
+         * Kept for convenience
 	 * @param machine learning machine to use
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param evaluation_criterion evaluation criterion to use
+	 * @param evaluation_criterion takes a single evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
         CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
@@ -70,19 +71,20 @@ public:
 	 * @param machine learning machine to use
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param list_evaluation_criterion list of evaluation criterion to use
+	 * @param evaluation_criteria list of evaluation criteria to use
 	 * @param autolock autolock
 	 */
 	CMachineEvaluation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CDynamicObjectArray* list_evaluation_criterion,
-            bool autolock = true);
+			CDynamicObjectArray* evaluation_criteria,
+                        bool autolock = true);
 
- 	/** constructor, for use with custom kernels (no features)
+ 	/** constructor, for use with custom kernels (no features) 
+         * with a single evaluation criterion. Kept for convenience
 	 * @param machine learning machine to use
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param evaluation_criterion evaluation criterion to use
+	 * @param evaluation_criterion takes a single evaluation criterion to use
 	 * @param autolock autolock
 	 */
         CMachineEvaluation(CMachine* machine, CLabels* labels,
@@ -93,6 +95,10 @@ public:
 
 	/** @return in which direction is the best evaluation value? */
         EEvaluationDirection get_evaluation_direction();
+
+        /** @return in which direction is the best evaluation value
+         *  for the corresponding evaluation criterion
+         */
 	CDynamicArray<EEvaluationDirection> get_evaluation_directions();
 
 	/** method for evaluation. Performs cross-validation.
@@ -130,8 +136,8 @@ protected:
 	/** Splitting Strategy to be used */
 	CSplittingStrategy* m_splitting_strategy;
 
-	/** Criterion for evaluation */
-        CDynamicObjectArray* m_list_evaluation_criterion;
+	/** Criteria for evaluation */
+        CDynamicObjectArray* m_evaluation_criteria;
 
 	/** whether machine will automatically be locked before evaluation */
 	bool m_autolock;
