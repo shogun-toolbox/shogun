@@ -16,9 +16,22 @@
 namespace shogun
 {
 
-CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression() :
-	CMultitaskLogisticRegression(), m_rho1(0.0), m_rho2(0.0)
+class CMultitaskL12LogisticRegression::Self
 {
+public:
+
+	/** rho1, regularization coefficient of L1/L2 term */
+	float64_t m_rho1;
+
+	/** rho2, regularization coefficient of L2 term */
+	float64_t m_rho2;
+};
+
+CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression() :
+	CMultitaskLogisticRegression(), self()
+{
+	set_rho1(0.0);
+	set_rho2(0.0);
 	init();
 }
 
@@ -34,28 +47,28 @@ CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression(
 
 void CMultitaskL12LogisticRegression::init()
 {
-	SG_ADD(&m_rho1,"rho1","rho L1/L2 regularization parameter",MS_AVAILABLE);
-	SG_ADD(&m_rho2,"rho2","rho L2 regularization parameter",MS_AVAILABLE);
+	SG_ADD(&self->m_rho1,"rho1","rho L1/L2 regularization parameter",MS_AVAILABLE);
+	SG_ADD(&self->m_rho2,"rho2","rho L2 regularization parameter",MS_AVAILABLE);
 }
 
 void CMultitaskL12LogisticRegression::set_rho1(float64_t rho1)
 {
-	m_rho1 = rho1;
+	self->m_rho1 = rho1;
 }
 
 void CMultitaskL12LogisticRegression::set_rho2(float64_t rho2)
 {
-	m_rho2 = rho2;
+	self->m_rho2 = rho2;
 }
 
 float64_t CMultitaskL12LogisticRegression::get_rho1() const
 {
-	return m_rho1;
+	return self->m_rho1;
 }
 
 float64_t CMultitaskL12LogisticRegression::get_rho2() const
 {
-	return m_rho2;
+	return self->m_rho2;
 }
 
 CMultitaskL12LogisticRegression::~CMultitaskL12LogisticRegression()
@@ -76,7 +89,7 @@ bool CMultitaskL12LogisticRegression::train_locked_implementation(SGVector<index
 	options.tasks_indices = tasks;
 #ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_joint_feature_learning(
-		features, y.vector, m_rho1, m_rho2, options);
+		features, y.vector, self->m_rho1, self->m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
@@ -111,7 +124,7 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 
 #ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_joint_feature_learning(
-		features, y.vector, m_rho1, m_rho2, options);
+		features, y.vector, self->m_rho1, self->m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
