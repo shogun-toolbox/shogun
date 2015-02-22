@@ -79,8 +79,8 @@ public:
 			CDynamicObjectArray* evaluation_criteria,
                         bool autolock = true);
 
- 	/** constructor, for use with custom kernels (no features) 
-         * with a single evaluation criterion. Kept for convenience
+	/** constructor, for use with custom kernels (no features)
+     * with a single evaluation criterion. Kept for convenience
 	 * @param machine learning machine to use
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
@@ -94,11 +94,11 @@ public:
 	virtual ~CMachineEvaluation();
 
 	/** @return in which direction is the best evaluation value? */
-        EEvaluationDirection get_evaluation_direction();
+	EEvaluationDirection get_evaluation_direction();
 
-        /** @return in which direction is the best evaluation value
-         *  for the corresponding evaluation criterion
-         */
+	/** @return in which direction is the best evaluation value
+	 *  for the corresponding evaluation criterion
+	 */
 	CDynamicArray<EEvaluationDirection> get_evaluation_directions();
 
 	/** method for evaluation. Performs cross-validation.
@@ -137,7 +137,7 @@ protected:
 	CSplittingStrategy* m_splitting_strategy;
 
 	/** Criteria for evaluation */
-        CDynamicObjectArray* m_evaluation_criteria;
+	CDynamicObjectArray* m_evaluation_criteria;
 
 	/** whether machine will automatically be locked before evaluation */
 	bool m_autolock;
