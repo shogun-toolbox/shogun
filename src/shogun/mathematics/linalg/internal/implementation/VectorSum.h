@@ -44,6 +44,8 @@
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
 
+#include <numeric>
+
 namespace shogun
 {
 
