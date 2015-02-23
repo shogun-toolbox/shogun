@@ -96,6 +96,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "KLApproxDiagonalInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type FITC
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_DIAGONAL; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLApproxDiagonalInferenceMethod object
+	 */
+	static CKLApproxDiagonalInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:

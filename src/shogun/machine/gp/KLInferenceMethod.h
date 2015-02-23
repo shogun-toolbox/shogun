@@ -332,7 +332,7 @@ protected:
 	 *
 	 * @param the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK)=0;
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK)=0;
 
 	/** Using L-BFGS to estimate posterior parameters */
 	virtual float64_t lbfgs_optimization();

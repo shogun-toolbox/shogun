@@ -158,6 +158,19 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_likelihoo
 	return SGVector<float64_t> ();
 }
 
+CMultiLaplacianInferenceMethod* CMultiLaplacianInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_LAPLACIAN_MULTIPLE)
+		SG_SERROR("Provided inference is not of type CMultiLaplacianInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CMultiLaplacianInferenceMethod*)inference;
+}
+
+
 void CMultiLaplacianInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K
@@ -413,10 +426,12 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 
 	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
+		param->m_datatype.m_ctype==CT_SGVECTOR ||
+		param->m_datatype.m_ctype==CT_MATRIX ||
+		param->m_datatype.m_ctype==CT_SGMATRIX)
 	{
 		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
+			"Length of the parameter %s should not be NULL\n", param->m_name)
 		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
 	}
 	else

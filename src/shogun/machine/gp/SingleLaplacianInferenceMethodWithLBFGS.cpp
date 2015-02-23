@@ -184,8 +184,7 @@ float64_t CSingleLaplacianInferenceMethodWithLBFGS::evaluate(
 
 void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 {
-	float64_t psi_new;
-	float64_t psi_def;
+	float64_t psi_new=m_Psi;
 
 	/* get mean vector and create eigen representation of it*/
 	SGVector<float64_t> mean_f = m_mean->get_mean_vector(m_features);
@@ -196,40 +195,8 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 		m_ktrtr.num_rows,
 		m_ktrtr.num_cols);
 
-	/* create shogun and eigen representation of function vector*/
-	m_mu = SGVector<float64_t>(mean_f.vlen);
 	Eigen::Map<Eigen::VectorXd> eigen_mu(m_mu, m_mu.vlen);
 
-	if (m_alpha.vlen != m_labels->get_num_labels())
-	{
-		/* set alpha a zero vector*/
-		m_alpha = SGVector<float64_t>(m_labels->get_num_labels());
-		m_alpha.zero();
-
-		/* f = mean, if length of alpha and length of y doesn't match*/
-		eigen_mu = eigen_mean_f;
-		psi_new = -SGVector<float64_t>::sum(
-			m_model->get_log_probability_f(m_labels, m_mu));
-	}
-	else
-	{
-		/* compute f = K * alpha + m*/
-		Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-		eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
-		psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
-		psi_new -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
-
-		psi_def = -SGVector<float64_t>::sum(
-			m_model->get_log_probability_f(m_labels, mean_f));
-
-		/* if default is better, then use it*/
-		if (psi_def < psi_new)
-		{
-			m_alpha.zero();
-			eigen_mu = eigen_mean_f;
-			psi_new = psi_def;
-		}
-	}
 	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_param.m = m_m;
@@ -282,29 +249,8 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 		CSingleLaplacianInferenceMethod::update_alpha();
 		return;
 	}
-
 	/* compute f = K * alpha + m*/
 	eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
-
-	/* get log probability derivatives*/
-	m_dlp  = m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
-	m_d2lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-	m_d3lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
-
-	/* W = -d2lp*/
-	m_W = m_d2lp.clone();
-	m_W.scale(-1.0);
-
-	/* compute sW*/
-	Eigen::Map<Eigen::VectorXd> eigen_W(m_W.vector, m_W.vlen);
-	/* create shogun and eigen representation of sW*/
-	m_sW = SGVector<float64_t>(m_W.vlen);
-	Eigen::Map<Eigen::VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
-
-	if (eigen_W.minCoeff() > 0)
-		eigen_sW = eigen_W.cwiseSqrt();
-	else
-		eigen_sW.setZero();
 }
 
 void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(

@@ -87,6 +87,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "KLDualInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type KL_DUAL
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_DUAL; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLDualInferenceMethod object
+	 */
+	static CKLDualInferenceMethod * obtain_from_generic(CInferenceMethod* inference);
+
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:
@@ -181,7 +194,7 @@ protected:
 	 *
 	 * @return the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 
 	/** Using L-BFGS to estimate posterior parameters */
 	virtual float64_t lbfgs_optimization();

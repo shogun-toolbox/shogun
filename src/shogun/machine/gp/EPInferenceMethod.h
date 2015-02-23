@@ -62,6 +62,13 @@ public:
 	 */
 	virtual const char* get_name() const { return "EPInferenceMethod"; }
 
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CEPInferenceMethod object
+	 */
+	static CEPInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *
 	 * \f[

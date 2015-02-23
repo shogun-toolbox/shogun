@@ -114,6 +114,18 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
+CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
+		SG_SERROR("Provided inference is not of type CKLCovarianceInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLCovarianceInferenceMethod*)inference;
+}
+
 bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
@@ -232,8 +244,9 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	return result;
 }
 
-float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
+float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -330,7 +343,7 @@ SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
 
 void CKLCovarianceInferenceMethod::update_deriv()
 {
-	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
+	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }

@@ -98,7 +98,7 @@ SGVector<float64_t> CKLLowerTriangularInferenceMethod::get_diagonal_vector()
 
 void CKLLowerTriangularInferenceMethod::update_deriv()
 {
-	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
+	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
@@ -150,8 +150,9 @@ MatrixXd CKLLowerTriangularInferenceMethod::solve_inverse(MatrixXd eigen_A)
 	return P.transpose()*tmp3;
 }
 
-float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(MatrixXd eigen_dK)
+float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);

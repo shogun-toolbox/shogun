@@ -414,12 +414,14 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_inference_method(cons
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	SGMatrix<float64_t> dK(m_mu.vlen, m_mu.vlen);
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
 	// compute derivative K wrt scale
-	MatrixXd eigen_dK=eigen_K*m_scale*2.0;
+	eigen_dK=eigen_K*m_scale*2.0;
 
 	SGVector<float64_t> result(1);
 
-	result[0]=get_derivative_related_cov(eigen_dK);
+	result[0]=get_derivative_related_cov(dK);
 
 	return result;
 }
@@ -429,7 +431,9 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParamet
 	SGVector<float64_t> result;
 
 	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
+			param->m_datatype.m_ctype==CT_SGVECTOR ||
+			param->m_datatype.m_ctype==CT_MATRIX ||
+			param->m_datatype.m_ctype==CT_SGMATRIX)
 	{
 		REQUIRE(param->m_datatype.m_length_y,
 				"Length of the parameter %s should not be NULL\n", param->m_name)
@@ -451,8 +455,9 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParamet
 			dK=m_kernel->get_parameter_gradient(param, i);
 
 		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
+		eigen_dK*=CMath::sq(m_scale);
 
-		result[i]=get_derivative_related_cov(eigen_dK*CMath::sq(m_scale));
+		result[i]=get_derivative_related_cov(dK);
 	}
 
 	return result;

@@ -71,6 +71,18 @@ void CKLApproxDiagonalInferenceMethod::init()
 		MS_NOT_AVAILABLE);
 }
 
+CKLApproxDiagonalInferenceMethod* CKLApproxDiagonalInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
+		SG_SERROR("Provided inference is not of type CKLApproxDiagonalInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLApproxDiagonalInferenceMethod*)inference;
+}
+
 SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference

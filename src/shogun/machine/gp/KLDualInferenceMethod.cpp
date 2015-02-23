@@ -64,6 +64,18 @@ CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 	init();
 }
 
+CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_KL_DUAL)
+		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLDualInferenceMethod*)inference;
+}
+
 SGVector<float64_t> CKLDualInferenceMethod::get_alpha()
 {
 	if (parameter_hash_changed())
@@ -242,8 +254,9 @@ float64_t CKLDualInferenceMethod::get_negative_log_marginal_likelihood_helper()
 	return CMath::NOT_A_NUMBER;
 }
 
-float64_t CKLDualInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
+float64_t CKLDualInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
