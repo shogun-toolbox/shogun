@@ -1,3 +1,0 @@
-#!/bin/bash
-DIR=../../src/interfaces/modular/
-grep -Eor "(%rename\([^ ]*\))|(%template\([^ ]*\))" $DIR | grep -Eo "\([^ ]*\)" | grep -Eo "[^()]+" | grep -v "RealVector"

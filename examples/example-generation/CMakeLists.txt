@@ -3,6 +3,15 @@
 # Check which interfaces are turned on
 # Add CMakeLists file for each turned on interface
 
+# Generate type list
+execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/types/typelist)
+
+# Check if PLY is installed
+find_package(PLY)
+IF(NOT PLY_FOUND)
+    message(WARNING "Python module PLY was not found. This may cause example generation to be very slow.")
+ENDIF()
+
 # Run example generation script
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate.py -i ${CMAKE_CURRENT_SOURCE_DIR}/examples -o ${CMAKE_CURRENT_SOURCE_DIR}/generated-examples -t ${CMAKE_CURRENT_SOURCE_DIR}/targets)
 
