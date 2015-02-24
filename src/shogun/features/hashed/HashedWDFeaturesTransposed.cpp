@@ -8,7 +8,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/features/HashedWDFeaturesTransposed.h>
+#include <shogun/features/hashed/HashedWDFeaturesTransposed.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>

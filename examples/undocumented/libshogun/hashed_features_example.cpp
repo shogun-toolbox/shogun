@@ -1,6 +1,6 @@
 #include <shogun/base/init.h>
-#include <shogun/features/HashedDenseFeatures.h>
-#include <shogun/features/HashedSparseFeatures.h>
+#include <shogun/features/hashed/HashedDenseFeatures.h>
+#include <shogun/features/hashed/HashedSparseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/PolyKernel.h>
 

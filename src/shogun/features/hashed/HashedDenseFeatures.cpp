@@ -8,7 +8,7 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/HashedDenseFeatures.h>
+#include <shogun/features/hashed/HashedDenseFeatures.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DynamicArray.h>
