@@ -75,6 +75,13 @@ public:
 	 */
 	virtual const char* get_name() const { return "ExactInferenceMethod"; }
 
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CExactInferenceMethod object
+	 */
+	static CExactInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

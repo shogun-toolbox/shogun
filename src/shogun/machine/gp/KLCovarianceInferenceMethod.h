@@ -95,6 +95,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "KLCovarianceInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type KL_COVARIANCE
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_COVARIANCE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLCovarianceInferenceMethod object
+	 */
+	static CKLCovarianceInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:
@@ -169,7 +182,8 @@ protected:
 	 *
 	 * @param the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 private:
 	void init();
 

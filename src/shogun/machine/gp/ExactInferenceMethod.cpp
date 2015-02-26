@@ -270,6 +270,18 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 	return result;
 }
 
+CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_EXACT)
+		SG_SERROR("Provided inference is not of type CExactInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CExactInferenceMethod*)inference;
+}
+
 SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
@@ -303,10 +315,12 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 
 	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
+		param->m_datatype.m_ctype==CT_SGVECTOR ||
+		param->m_datatype.m_ctype==CT_MATRIX ||
+		param->m_datatype.m_ctype==CT_SGMATRIX)
 	{
 		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
+			"Length of the parameter %s should not be NULL\n", param->m_name);
 		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
 	}
 	else

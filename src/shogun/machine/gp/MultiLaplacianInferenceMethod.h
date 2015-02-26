@@ -93,6 +93,20 @@ public:
 	 */
 	virtual const char* get_name() const { return "MultiLaplacianInferenceMethod"; }
 
+
+	/** return what type of inference we are
+	 *
+	 * @return inference type Laplacian
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_MULTIPLE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CMultiLaplacianInferenceMethod object
+	 */
+	static CMultiLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

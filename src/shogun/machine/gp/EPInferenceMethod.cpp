@@ -64,6 +64,18 @@ void CEPInferenceMethod::init()
 	m_tol=1e-4;
 }
 
+CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_EP)
+		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CEPInferenceMethod*)inference;
+}
+
 float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
@@ -455,7 +467,9 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 
 	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
+			param->m_datatype.m_ctype==CT_SGVECTOR ||
+			param->m_datatype.m_ctype==CT_MATRIX ||
+			param->m_datatype.m_ctype==CT_SGMATRIX)
 	{
 		REQUIRE(param->m_datatype.m_length_y,
 				"Length of the parameter %s should not be NULL\n", param->m_name)

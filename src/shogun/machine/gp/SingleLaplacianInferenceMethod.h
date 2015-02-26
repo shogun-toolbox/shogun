@@ -65,6 +65,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "SingleLaplacianInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type Laplacian_Single
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_SINGLE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CSingleLaplacianInferenceMethod object
+	 */
+	static CSingleLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:
@@ -111,7 +124,12 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** update data all matrices */
+	virtual void update();
 protected:
+
+	virtual void update_init();
+
 	/** update alpha matrix */
 	virtual void update_alpha();
 
@@ -184,6 +202,8 @@ protected:
 	SGMatrix<float64_t> m_Z;
 
 	SGVector<float64_t> m_g;
+
+	float64_t m_Psi;
 };
 }
 #endif /* HAVE_EIGEN3 */

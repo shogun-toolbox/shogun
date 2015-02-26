@@ -95,6 +95,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "KLCholeskyInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type KL_CHOLESKY
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_CHOLESKY; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLCholeskyInferenceMethod object
+	 */
+	static CKLCholeskyInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:

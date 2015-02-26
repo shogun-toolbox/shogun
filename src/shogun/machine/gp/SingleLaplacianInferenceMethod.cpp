@@ -99,6 +99,18 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_diagonal_vector()
 
 }
 
+CSingleLaplacianInferenceMethod* CSingleLaplacianInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	REQUIRE(inference, "Inference pointer not set.\n");
+
+	if (inference->get_inference_type()!=INF_LAPLACIAN_SINGLE)
+		SG_SERROR("Provided inference is not of type CSingleLaplacianInferenceMethod\n")
+
+	SG_REF(inference);
+	return (CSingleLaplacianInferenceMethod*)inference;
+}
+
 CSingleLaplacianInferenceMethod::~CSingleLaplacianInferenceMethod()
 {
 }
@@ -166,7 +178,25 @@ void CSingleLaplacianInferenceMethod::update_approx_cov()
 
 void CSingleLaplacianInferenceMethod::update_chol()
 {
+	// get log probability derivatives
+	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
+	m_d2lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
+	m_d3lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
+
+	// W = -d2lp
+	m_W=m_d2lp.clone();
+	m_W.scale(-1.0);
+	m_sW=SGVector<float64_t>(m_W.vlen);
+
+	// compute sW
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
+	Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
+
+	if (eigen_W.minCoeff()>0)
+		eigen_sW=eigen_W.cwiseSqrt();
+	else
+		//post.sW = sqrt(abs(W)).*sign(W); 
+		eigen_sW=((eigen_W.array().abs()+eigen_W.array())/2).sqrt()-((eigen_W.array().abs()-eigen_W.array())/2).sqrt();
 
 	// create eigen representation of kernel matrix
 	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -177,19 +207,18 @@ void CSingleLaplacianInferenceMethod::update_chol()
 
 	if (eigen_W.minCoeff() < 0)
 	{
-		// compute inverse of diagonal noise: iW = 1/W
-		VectorXd eigen_iW = (VectorXd::Ones(m_W.vlen)).cwiseQuotient(eigen_W);
-
+		//A = eye(n)+K.*repmat(w',n,1);
 		FullPivLU<MatrixXd> lu(
-			eigen_ktrtr*CMath::sq(m_scale)+MatrixXd(eigen_iW.asDiagonal()));
-
-		// compute cholesky: L = -(K + iW)^-1
-		eigen_L = -lu.inverse();
+			MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)+
+			eigen_ktrtr*CMath::sq(m_scale)*eigen_W.asDiagonal());
+		// compute cholesky: L = -(K + 1/W)^-1
+		//-iA = -inv(A)
+		eigen_L=-lu.inverse();
+		// -repmat(w,1,n).*iA == (-iA'.*repmat(w',n,1))'
+		eigen_L=eigen_W.asDiagonal()*eigen_L;
 	}
 	else
 	{
-		Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
-
 		// compute cholesky: L = chol(sW * sW' .* K + I)
 		LLT<MatrixXd> L(
 			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
@@ -199,12 +228,26 @@ void CSingleLaplacianInferenceMethod::update_chol()
 	}
 }
 
-void CSingleLaplacianInferenceMethod::update_alpha()
+void CSingleLaplacianInferenceMethod::update()
 {
-	float64_t Psi_Old = CMath::INFTY;
+	SG_DEBUG("entering\n");
+
+	CInferenceMethod::update();
+	update_init();
+	update_alpha();
+	update_chol();
+	update_approx_cov();
+	update_deriv();
+	update_parameter_hash();
+
+	SG_DEBUG("leaving\n");
+}
+
+
+void CSingleLaplacianInferenceMethod::update_init()
+{
 	float64_t Psi_New;
 	float64_t Psi_Def;
-
 	// get mean vector and create eigen representation of it
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -225,10 +268,6 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		// f = mean, if length of alpha and length of y doesn't match
 		eigen_mu=eigen_mean;
 
-		// compute W = -d2lp
-		m_W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-		m_W.scale(-1.0);
-
 		Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(
 			m_labels, m_mu));
 	}
@@ -238,10 +277,6 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 
 		// compute f = K * alpha + m
 		eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
-
-		// compute W = -d2lp
-		m_W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-		m_W.scale(-1.0);
 
 		Psi_New=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-
 			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
@@ -253,10 +288,29 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		{
 			m_alpha.zero();
 			eigen_mu=eigen_mean;
-			Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(
-				m_labels, m_mu));
+			Psi_New=Psi_Def;
 		}
 	}
+	m_Psi=Psi_New;
+}
+
+void CSingleLaplacianInferenceMethod::update_alpha()
+{
+	float64_t Psi_Old=CMath::INFTY;
+	float64_t Psi_New=m_Psi;
+
+	// get mean vector and create eigen representation of it
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+
+	// create eigen representation of kernel matrix
+	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
+
+	// compute W = -d2lp
+	m_W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
+	m_W.scale(-1.0);
 
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
@@ -328,23 +382,6 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 
 	// compute f = K * alpha + m
 	eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
-
-	// get log probability derivatives
-	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
-	m_d2lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-	m_d3lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
-
-	// W = -d2lp
-	m_W=m_d2lp.clone();
-	m_W.scale(-1.0);
-
-	// compute sW
-	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
-
-	if (eigen_W.minCoeff()>0)
-		eigen_sW=eigen_W.cwiseSqrt();
-	else
-		eigen_sW.setZero();
 }
 
 void CSingleLaplacianInferenceMethod::update_deriv()
@@ -482,11 +519,13 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 
 	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
+		param->m_datatype.m_ctype==CT_SGVECTOR ||
+		param->m_datatype.m_ctype==CT_MATRIX ||
+		param->m_datatype.m_ctype==CT_SGMATRIX)
 	{
 		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+			"Length of the parameter %s should not be NULL\n", param->m_name)
+			result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
 	}
 	else
 	{

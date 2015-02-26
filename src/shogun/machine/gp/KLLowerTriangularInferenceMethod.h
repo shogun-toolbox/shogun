@@ -118,7 +118,8 @@ protected:
 	 *
 	 * @param the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();
