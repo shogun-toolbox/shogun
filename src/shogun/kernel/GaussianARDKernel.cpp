@@ -12,29 +12,32 @@
 
 #include <shogun/kernel/GaussianARDKernel.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CGaussianARDKernel::CGaussianARDKernel() : CLinearARDKernel()
 {
-	init();
+	initialize();
 }
 
 CGaussianARDKernel::~CGaussianARDKernel()
 {
 }
 
-void CGaussianARDKernel::init()
+void CGaussianARDKernel::initialize()
 {
 	set_width(1.0);
 	SG_ADD(&m_width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 #ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
 CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
 		: CLinearARDKernel(size)
 {
-	init();
+	initialize();
 	set_width(width);
 }
 
@@ -42,7 +45,7 @@ CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size, float64_t width)
 		: CLinearARDKernel(size)
 {
-	init();
+	initialize();
 	set_width(width);
 }
 
@@ -115,6 +118,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(rhs, "Right features (rhs) not set!\n")
+	REQUIRE(lhs, "Left features (lhs) not set!\n")
 
 	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
 	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);

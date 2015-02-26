@@ -96,7 +96,7 @@ public:
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 private:
-	void init();
+	void initialize();
 
 protected:
 	/** ARD weights */

@@ -31,13 +31,17 @@
 
 #include <shogun/machine/gp/GaussianARDFITCKernel.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CGaussianARDFITCKernel::CGaussianARDFITCKernel() : CGaussianARDKernel()
 {
-	init();
+	initialize();
 }
-void CGaussianARDFITCKernel::init()
+void CGaussianARDFITCKernel::initialize()
 {
 }
 
@@ -45,19 +49,18 @@ CGaussianARDFITCKernel::~CGaussianARDFITCKernel()
 {
 }
 
-#ifdef HAVE_CXX11
-#include <shogun/mathematics/linalg/linalg.h>
+#ifdef HAVE_LINALG_LIB
 CGaussianARDFITCKernel::CGaussianARDFITCKernel(int32_t size, float64_t width)
 		: CGaussianARDKernel(size,width)
 {
-	init();
+	initialize();
 }
 
 CGaussianARDFITCKernel::CGaussianARDFITCKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size, float64_t width)
 		: CGaussianARDKernel(l, r, size, width)
 {
-	init();
+	initialize();
 }
 
 CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* kernel)
@@ -72,29 +75,18 @@ CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* ker
 	return (CGaussianARDFITCKernel*)kernel;
 }
 
-#include <typeinfo>
-CSGObject *CGaussianARDFITCKernel::shallow_copy() const
-{
-	// TODO: remove this after all the classes get shallow_copy properly implemented
-	// this assert is to avoid any subclass of CGaussianARDFITCKernel accidentally called
-	// with the implement here
-	ASSERT(typeid(*this) == typeid(CGaussianARDFITCKernel))
-	CGaussianARDFITCKernel *ker = new CGaussianARDFITCKernel(cache_size, m_width);
-	if (lhs)
-	{
-		ker->CGaussianARDKernel::init(lhs, rhs);
-	}
-	return ker;
-}
-
 SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
 	if (!strcmp(param->m_name, "latent_features"))
 	{
-		REQUIRE(lhs && rhs, "Features not set!\n")
-		REQUIRE(index>=0 && index<num_lhs,"")
+		REQUIRE(lhs, "Left features not set!\n");
+		REQUIRE(rhs, "Right features not set!\n");
+		REQUIRE(index>=0 && index<num_lhs,"Index (%d) is out of bound (%d)\n",
+			index, num_rhs);
 		int32_t idx_l=index;
+		//Note that CDotKernel requires lhs and rhs are CDotFeatures pointers
+		//This Kernel is a subclass of CDotKernel
 		SGVector<float64_t> left_vec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_l);
 		SGMatrix<float64_t> res(left_vec.vlen, num_rhs);
 
@@ -123,12 +115,10 @@ SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 					linalg::elementwise_product(right_transpose, weights, res_transpose);
 				}
 				else if(m_ARD_type==KT_FULL)
-				{
 					linalg::matrix_product(right_transpose, m_weights, res_transpose);
-				}
 				else
 				{
-					SG_ERROR("Unsupported ARD kernel\n");
+					SG_ERROR("Unsupported ARD type\n");
 				}
 
 			}
@@ -143,4 +133,5 @@ SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 		return CGaussianARDKernel::get_parameter_gradient(param, index);
 	}
 }
-#endif /* HAVE_CXX11 */
+#endif /* HAVE_LINALG_LIB */
+
