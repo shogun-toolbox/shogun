@@ -19,8 +19,13 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
 
     # Translate each example
     for f in os.listdir(inputDir):
+        # Ignore hidden files
+        if f[0] == ".":
+            continue
+
         # Parse the example file
-        ast = parse(os.path.join(inputDir,f))
+        with open(os.path.join(inputDir,f), 'r') as file:
+            ast = parse(file.read(), f)
         basename = f[:-len(".sg")]
 
         # Translate ast to each target language
