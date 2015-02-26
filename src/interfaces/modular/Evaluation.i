@@ -9,6 +9,7 @@
  */
 
 /* These functions return new Objects */
+%newobject CMachineEvaluation::get_evaluation_directions();
 %newobject CGradientEvaluation::evaluate();
 %newobject CCrossValidation::evaluate();
 

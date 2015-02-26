@@ -50,16 +50,14 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
 		CEvaluation* evaluation_criterion, bool autolock)
 {
-	CDynamicObjectArray* container_evaluation_criteria_list = new CDynamicObjectArray();
-	container_evaluation_criteria_list->push_back(evaluation_criterion);
-
 	init();
 
 	m_machine = machine;
 	m_features = features;
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criteria = container_evaluation_criteria_list;
+	m_evaluation_criteria = new CDynamicObjectArray();
+	m_evaluation_criteria->push_back(evaluation_criterion);
 	m_autolock = autolock;
 
 	SG_REF(m_machine);
@@ -91,15 +89,13 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
 		CSplittingStrategy* splitting_strategy,
 		CEvaluation* evaluation_criterion, bool autolock)
 {
-	CDynamicObjectArray* container_evaluation_criteria_list = new CDynamicObjectArray();
-	container_evaluation_criteria_list->push_back(evaluation_criterion);
-
 	init();
 
 	m_machine = machine;
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criteria = container_evaluation_criteria_list;
+	m_evaluation_criteria = new CDynamicObjectArray();
+	m_evaluation_criteria->push_back(evaluation_criterion);
 	m_autolock = autolock;
 
 	SG_REF(m_machine);
@@ -136,7 +132,7 @@ void CMachineEvaluation::init()
 	SG_ADD((CSGObject**)&m_splitting_strategy, "splitting_strategy",
 			"Used splitting strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_evaluation_criteria, "evaluation_criteria",
-			"Used evaluation criteria", MS_NOT_AVAILABLE);
+			"List of used evaluation criteria", MS_NOT_AVAILABLE);
 	SG_ADD(&m_do_unlock, "do_unlock",
 			"Whether machine should be unlocked after evaluation",
 			MS_NOT_AVAILABLE);
@@ -171,14 +167,16 @@ EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
 	return temp_eval->get_evaluation_direction();
 }
 
-CDynamicArray<EEvaluationDirection> CMachineEvaluation::get_evaluation_directions()
+CDynamicArray<EEvaluationDirection>* CMachineEvaluation::get_evaluation_directions()
 {
-	CDynamicArray<EEvaluationDirection> list_evaluation_directions = *(new CDynamicArray<EEvaluationDirection>());
+	CDynamicArray<EEvaluationDirection>* list_evaluation_directions = new CDynamicArray<EEvaluationDirection>();
 	int32_t num_eval = m_evaluation_criteria->get_num_elements();
 	for (int32_t i = 0; i < num_eval;i++)
 	{
+		//following line is type safe which is why we don't check
 		CEvaluation* temp_eval = (CEvaluation*) m_evaluation_criteria->get_element_safe(i);
-    	list_evaluation_directions.push_back(temp_eval->get_evaluation_direction());
+		list_evaluation_directions->push_back(temp_eval->get_evaluation_direction());
 	}
-    	return list_evaluation_directions;
+	SG_REF(list_evaluation_directions);
+	return list_evaluation_directions;
 }
