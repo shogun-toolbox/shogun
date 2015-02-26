@@ -69,7 +69,7 @@ public:
 	virtual ~CGaussianARDFITCKernel();
 
 private:
-	void init();
+	void initialize();
 
 #ifdef HAVE_CXX11
 public:
@@ -96,10 +96,6 @@ public:
 	 * @return casted CGaussianARDFITCKernel object
 	 */
 	static CGaussianARDFITCKernel* obtain_from_generic(CKernel* kernel);
-
-
-	/** Make a shallow copy of the kernel */
-	virtual CSGObject* shallow_copy() const;
 
 	/** return derivative with respect to specified parameter
 	 *

@@ -11,11 +11,16 @@
  */
 
 #include <shogun/kernel/LinearARDKernel.h>
+
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CLinearARDKernel::CLinearARDKernel() : CDotKernel()
 {
-	init();
+	initialize();
 }
 
 CLinearARDKernel::~CLinearARDKernel()
@@ -23,7 +28,7 @@ CLinearARDKernel::~CLinearARDKernel()
 	CKernel::cleanup();
 }
 
-void CLinearARDKernel::init()
+void CLinearARDKernel::initialize()
 {
 	m_ARD_type=KT_SCALAR;
 	m_weights=SGMatrix<float64_t>(1,1);
@@ -33,21 +38,17 @@ void CLinearARDKernel::init()
 }
 
 #ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-
 CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
 {
-	init();
+	initialize();
 }
 
 CLinearARDKernel::CLinearARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)	: CDotKernel(size)
 {
-	init();
+	initialize();
 	init(l,r);
 }
-
-
 
 bool CLinearARDKernel::init(CFeatures* l, CFeatures* r)
 {
@@ -89,7 +90,7 @@ SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>r
 		else if(m_ARD_type==KT_FULL)
 			linalg::matrix_product(m_weights, rtmp, right);
 		else
-			SG_ERROR("Unsupported ARD kernel\n");
+			SG_ERROR("Unsupported ARD type\n");
 	}
 	return right;
 }
@@ -116,7 +117,7 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 		else if(m_ARD_type==KT_FULL)
 			linalg::matrix_product(m_weights, ltmp, left_transpose);
 		else
-			SG_ERROR("Unsupported ARD kernel\n");
+			SG_ERROR("Unsupported ARD type\n");
 	}
 
 	SGMatrix<float64_t> res(1,1);
@@ -174,7 +175,7 @@ float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 		}
 		else
 		{
-			SG_ERROR("Unsupported ARD kernel\n");
+			SG_ERROR("Unsupported ARD type\n");
 		}
 
 	}
