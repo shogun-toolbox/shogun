@@ -67,6 +67,23 @@ typedef T_STATES* P_STATES ;
 
 //@}
 
+/**
+ * Developer's Note :
+ * - Changing the default Training type which is standard baum welch currently, would require to change 
+ *   the type passed to baum_welch_viterbi_train(BW_NORMAL) in train(CFeatures* data).
+ */
+
+/**
+ * @brief
+ * All currently supported Training types, with a default
+ * standard baum welch(BW_NORMAL), which will be used for training the given data.
+ *
+ * The enum defines various training algorithms types which need to be passed as argument (currently BW_NORMAL)
+ * to baum_welch_viterbi_train(BW_NORMAL) in train(CFeatures* data) to train using appropriate algorithm.
+ *
+ * Note - Currently BW_NORMAL is the default.
+ *
+ */
 /** Training type */
 enum BaumWelchViterbiType
 {
@@ -83,7 +100,16 @@ enum BaumWelchViterbiType
 };
 
 
-/** @brief class Model */
+/** @brief class Model 
+ * Constructor initializes all variables by allocating memory of predefined ARRAY_SIZE of 65336
+ * All variables are initializes to random values and normalized to satisfy stochasticity.
+ * Ex - transitions with constant probabilities are set to -1, values of transitions/emissions with constant probabilities are set to 1.0,
+ * learning matrices are set to -1.
+ * Sort methods use bubble sort defined in CMath to sort learning matrices a and b in ascending order from left to right and top to bottom.
+ * Get methods return the specific entry out of matrices/vectors from desired line/column/offset.
+ * Set methods set given values in the specified offset of matrices/vectors.
+ * States may be disallowed which are penalized with CMath::ALMOST_NEG_INFTY.
+ */
 class Model
 {
 	public:
@@ -304,6 +330,12 @@ class Model
 		 * and normalized to satisfy stochasticity.
 		 */
 		//@{
+		/**
+		 * @param a state transition matrix
+		 * @param b observation per state matrix
+		 * @param p initial distribution
+		 * @param q end state distribution
+		 */
 		/// transitions to be learned
 		int32_t* learn_a;
 
@@ -368,6 +400,19 @@ class Model
  * Several functions for tasks such as training,reading/writing models, reading observations,
  * calculation of derivatives are supplied.
  */
+
+/** @brief CHMM
+ * This class implements forward - backward algorithm.
+ * Forward algorithm computes joint probability distribution P(z_k,x_1 to k) for all k = 1 to n. (Method - forward_comp( ))
+ * Backward algorithm computes P(x_k+1 to n|z_k) for all k = 1 to n. (Method - backward_comp( ))
+ * baum_welch_viterbi_train(BaumWelchViterbiType type) is used to run BaumWelch or Viterbi training.
+ * Various algorithms implemented to train fully connected HMM and defined transitions are :
+ * baum-welch-algorithm and viterbi training. (Methods - estimate_model_baum_welch(CHMM* train), estimate_model_viterbi(CHMM* train) etc)
+ * To estimate linear model from observations linear_train method is implemented.
+ * Also to satisfy stochasticity normalize method is implemented.
+ * Best path is calculated using viterbi algorithm in method best_path( ).
+ */
+
 class CHMM : public CDistribution
 {
 	private:
@@ -476,14 +521,22 @@ class CHMM : public CDistribution
 		 * @param model model which holds definitions of states to be learned + consts
 		 * @param PSEUDO Pseudo Value
 		 */
-
 		CHMM(
 			int32_t N, int32_t M, Model* model, float64_t PSEUDO);
+
+		/// @param obs observations
 		CHMM(
 			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
+
+		/// @param p initial state distribution
+		/// @param q end state distribution
+		/// @param a state transition matrix
 		CHMM(
 			int32_t N, float64_t* p, float64_t* q, float64_t* a);
+
+		/// @param num_trans number of transitions
+		/// @param a_trans transition matrix
 		CHMM(
 			int32_t N, float64_t* p, float64_t* q, int32_t num_trans,
 			float64_t* a_trans);
@@ -505,7 +558,8 @@ class CHMM : public CDistribution
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
-		 *
+ 		 * Trained using baum_welch_viterbi_train(BW_NORMAL).
+		 * BW_NORMAL - standard baum welch
 		 * @return whether training was successful
 		 */
 		virtual bool train(CFeatures* data=NULL);
@@ -536,7 +590,9 @@ class CHMM : public CDistribution
 		 */
 		//@{
 		/** forward algorithm.
-		 * calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
+		 * The goal of algorithm is to compute the joint probability p(x_t,y_{1:t}). 
+		 * It takes advantage of the conditional independence rules of the hidden Markov model (HMM) to perform the calculation  			 * recursively (Using Dynamic programming).
+		 * Calculates Pr[O_0,O_1, ..., O_t, q_time=S_i| lambda] for 0<= time <= T-1
 		 * Pr[O|lambda] for time > T
 		 * @param time t
 		 * @param state i
@@ -547,7 +603,8 @@ class CHMM : public CDistribution
 			int32_t time, int32_t state, int32_t dimension);
 
 		/** backward algorithm.
-		 * calculates Pr[O_t+1,O_t+2, ..., O_T-1| q_time=S_i, lambda] for 0<= time <= T-1
+		 * It is the reverse of the forward algorithm. It calculates the sum-of-all-paths probability of starting at a character 			 * aligned to a state, and aligns the remainder of the sequence to the model. 
+		 * Calculates Pr[O_t+1,O_t+2, ..., O_T-1| q_time=S_i, lambda] for 0<= time <= T-1
 		 * Pr[O|lambda] for time >= T
 		 * @param time t
 		 * @param state i
@@ -623,6 +680,8 @@ class CHMM : public CDistribution
 		//@}
 
 		/**@name convergence criteria
+		 * @param num convergence criterion iterations
+		 * @param eps convergence criterion epsilon 1e-4
 		 */
 		inline bool set_iterations(int32_t num) { iterations=num; return true; }
 		inline int32_t get_iterations() { return iterations; }
@@ -693,22 +752,25 @@ class CHMM : public CDistribution
 		/// normalize the model to satisfy stochasticity
 		void normalize(bool keep_dead_states=false);
 
-		/// increases the number of states by num_states
-		/// the new a/b/p/q values are given the value default_val
-		/// where 0<=default_val<=1
+		/** increases the number of states by num_states
+		 * the new a/b/p/q values are given the value default_val
+		 * where 0<=default_val<=1
+		 */ 
 		void add_states(int32_t num_states, float64_t default_val=0);
 
-		/// appends the append_model to the current hmm, i.e.
-		/// two extra states are created. one is the end state of
-		/// the current hmm with outputs cur_out (of size M) and
-		/// the other state is the start state of the append_model.
-		/// transition probability from state 1 to states 1 is 1
+		/** appends the append_model to the current hmm, i.e.
+		 * two extra states are created. one is the end state of
+		 * the current hmm with outputs cur_out (of size M) and
+		 * the other state is the start state of the append_model.
+		 * transition probability from state 1 to states 1 is 1
+		 */
 		bool append_model(
 			CHMM* append_model, float64_t* cur_out, float64_t* app_out);
 
-		/// appends the append_model to the current hmm, here
-		/// no extra states are created. former q_i are multiplied by q_ji
-		/// to give the a_ij from the current hmm to the append_model
+		/** appends the append_model to the current hmm, here
+		 * no extra states are created. former q_i are multiplied by q_ji
+		 * to give the a_ij from the current hmm to the append_model
+		 */
 		bool append_model(CHMM* append_model);
 
 		/// set any model parameter with probability smaller than value to ZERO
