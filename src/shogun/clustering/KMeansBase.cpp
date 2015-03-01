@@ -66,7 +66,7 @@ void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 	m_mus_initial = centers;
 }
 
-void CKMeansBase::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
+void CKMeansBase::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> cl_list, int32_t XSize)
 {
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
@@ -75,7 +75,7 @@ void CKMeansBase::set_random_centers(SGVector<float64_t> weights_set, SGVector<i
 	{
 		const int32_t Cl=CMath::random(0, m_k-1);
 		weights_set[Cl]+=1.0;
-		ClList[i]=Cl;
+		cl_list[i]=Cl;
 
 		int32_t vlen=0;
 		bool vfree=false;
@@ -100,7 +100,7 @@ void CKMeansBase::set_random_centers(SGVector<float64_t> weights_set, SGVector<i
 }
 
 void CKMeansBase::set_initial_centers(SGVector<float64_t> weights_set, 
-				SGVector<int32_t> ClList, int32_t XSize)
+				SGVector<int32_t> cl_list, int32_t XSize)
 {
 	REQUIRE(m_mus_initial.matrix, 
 			"Initial cluster centers not supplied.\n");
@@ -132,7 +132,7 @@ void CKMeansBase::set_initial_centers(SGVector<float64_t> weights_set,
 				mini=dists[i*m_k+j];
 			}
 		}
-		ClList[i]=Cl;
+		cl_list[i]=Cl;
 	}
 
 	/* Compute the sum of all points belonging to a cluster
@@ -141,7 +141,7 @@ void CKMeansBase::set_initial_centers(SGVector<float64_t> weights_set,
 			(CDenseFeatures<float64_t>*)distance->get_lhs();
 	for (int32_t i=0; i<XSize; i++)
 	{
-		const int32_t Cl = ClList[i];
+		const int32_t Cl = cl_list[i];
 		weights_set[Cl]+=1.0;
 
 		int32_t vlen=0;
@@ -223,20 +223,6 @@ bool CKMeansBase::train_machine(CFeatures* data)
 	return true;
 }
 
-bool CKMeansBase::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool CKMeansBase::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
 void CKMeansBase::set_use_kmeanspp(bool kmpp)
 {
 	m_use_kmeanspp=kmpp;
@@ -249,7 +235,7 @@ bool CKMeansBase::get_use_kmeanspp() const
 
 void CKMeansBase::set_k(int32_t p_k)
 {
-	REQUIRE(p_k>0, "number of clusters should be > 0");
+	REQUIRE(p_k>0, "Provided number of clusters (%d) should be greater than 0", p_k);
 	this->m_k=p_k;
 }
 

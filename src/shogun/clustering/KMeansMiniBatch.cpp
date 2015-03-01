@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Parijat Mazumdar
  * Written (W) 2014 Saurabh Mahindre
  */
 
@@ -72,15 +73,15 @@ bool CKMeansMiniBatch::train_machine(CFeatures* data)
 	int32_t XSize;
 	XSize=initialize_training(data);	
 	
-	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
-	ClList.zero();
+	SGVector<int32_t> cl_list=SGVector<int32_t>(XSize);
+	cl_list.zero();
 	SGVector<float64_t> weights_set=SGVector<float64_t>(m_k);
 	weights_set.zero();
 
 	if (m_mus_initial.matrix)
-		set_initial_centers(weights_set, ClList, XSize);
+		set_initial_centers(weights_set, cl_list, XSize);
 	else
-		set_random_centers(weights_set, ClList, XSize);
+		set_random_centers(weights_set, cl_list, XSize);
 
 	CKMeansMiniBatchImpl::minibatch_KMeans(m_k, distance, m_batch_size, m_minib_iter, m_mus);
 

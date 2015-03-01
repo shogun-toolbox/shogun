@@ -39,17 +39,17 @@ bool CKMeans::train_machine(CFeatures* data)
 	int32_t XSize;
 	XSize=initialize_training(data);	
 	
-	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
-	ClList.zero();
+	SGVector<int32_t> cl_list=SGVector<int32_t>(XSize);
+	cl_list.zero();
 	SGVector<float64_t> weights_set=SGVector<float64_t>(m_k);
 	weights_set.zero();
 
 	if (m_mus_initial.matrix)
-		set_initial_centers(weights_set, ClList, XSize);
+		set_initial_centers(weights_set, cl_list, XSize);
 	else
-		set_random_centers(weights_set, ClList, XSize);
+		set_random_centers(weights_set, cl_list, XSize);
 
-	CKMeansLloydImpl::Lloyd_KMeans(m_k, distance, m_max_iter, m_mus, ClList, weights_set, m_fixed_centers);
+	CKMeansLloydImpl::Lloyd_KMeans(m_k, distance, m_max_iter, m_mus, cl_list, weights_set, m_fixed_centers);
 
 	compute_cluster_variances();
 	return true;

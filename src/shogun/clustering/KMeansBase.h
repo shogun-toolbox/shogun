@@ -25,25 +25,9 @@ namespace shogun
 {
 class CDistanceMachine;
 
-/** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
- *
- * It minimizes
- * \f[
- *  \sum_{i=1}^k\sum_{x_j\in S_i} (x_j-\mu_i)^2
- * \f]
- *
- * where \f$\mu_i\f$ are the cluster centers and \f$S_i,\;i=1,\dots,k\f$ are the index
- * sets of the clusters.
- *
- * Beware that this algorithm obtains only a <em>local</em> optimum.
- *
- * The option of using mini-batch based training was
- * added to this class. See ::EKMeansMethod
- *
- * cf. http://en.wikipedia.org/wiki/K-means_algorithm
- * cf. http://en.wikipedia.org/wiki/Lloyd's_algorithm
- *
- *
+/** @brief Class KMeansBase, a base class for various KMeans implementations.
+ * 
+ * The train_machine method should be overridden for different KMeans implementations.
  */
 class CKMeansBase : public CDistanceMachine
 {
@@ -75,20 +59,6 @@ class CKMeansBase : public CDistanceMachine
 		 * @return classifier type KMEANS
 		 */
 		virtual EMachineType get_classifier_type() { return CT_KMEANS; }
-
-		/** load distance machine from file
-		 *
-		 * @param srcfile file to load from
-		 * @return if loading was successful
-		 */
-		virtual bool load(FILE* srcfile);
-
-		/** save distance machine to file
-		 *
-		 * @param dstfile file to save to
-		 * @return if saving was successful
-		 */
-		virtual bool save(FILE* dstfile);
 
 		/** set k
 		 *
@@ -226,9 +196,9 @@ class CKMeansBase : public CDistanceMachine
 		* 
 		* @return initial cluster centers: matrix (k columns, dim rows)
 		*/
-		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
+		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> cl_list, int32_t XSize);
 		void set_initial_centers(SGVector<float64_t> weights_set, 
-					SGVector<int32_t> ClList, int32_t XSize);
+					SGVector<int32_t> cl_list, int32_t XSize);
 		void compute_cluster_variances();
 
 };

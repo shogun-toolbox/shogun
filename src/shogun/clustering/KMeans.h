@@ -19,7 +19,27 @@
 namespace shogun
 {
 class CKMeansBase;
-/** Class for the standard KMeans algorithm. */
+/** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
+ *
+ * It minimizes
+ * \f[
+ *  \sum_{i=1}^k\sum_{x_j\in S_i} (x_j-\mu_i)^2
+ * \f]
+ *
+ * where \f$\mu_i\f$ are the cluster centers and \f$S_i,\;i=1,\dots,k\f$ are the index
+ * sets of the clusters.
+ *
+ * Beware that this algorithm obtains only a <em>local</em> optimum.
+ *
+ * This class uses the Lloyd's algorithm.
+ * 
+ * Mini-batch based training can be done using the CKMeansMiniBatch class.
+ *
+ * cf. http://en.wikipedia.org/wiki/K-means_algorithm
+ * cf. http://en.wikipedia.org/wiki/Lloyd's_algorithm
+ *
+ *
+ */
 class CKMeans : public CKMeansBase
 {
 	public:
