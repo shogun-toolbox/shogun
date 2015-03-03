@@ -67,7 +67,8 @@ void CEPInferenceMethod::init()
 CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	REQUIRE(inference, "Inference pointer not set.\n");
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_EP)
 		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")

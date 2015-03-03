@@ -161,7 +161,8 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_likelihoo
 CMultiLaplacianInferenceMethod* CMultiLaplacianInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	REQUIRE(inference, "Inference pointer not set.\n");
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACIAN_MULTIPLE)
 		SG_SERROR("Provided inference is not of type CMultiLaplacianInferenceMethod!\n")

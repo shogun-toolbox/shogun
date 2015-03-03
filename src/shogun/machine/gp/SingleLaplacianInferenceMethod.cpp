@@ -85,6 +85,8 @@ CSingleLaplacianInferenceMethod::CSingleLaplacianInferenceMethod(CKernel* kern,
 
 void CSingleLaplacianInferenceMethod::init()
 {
+	m_Psi=0;
+	SG_ADD(&m_Psi, "Psi", "posterior log likelihood without constant terms", MS_NOT_AVAILABLE);
 	SG_ADD(&m_sW, "sW", "square root of W", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
@@ -102,7 +104,8 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_diagonal_vector()
 CSingleLaplacianInferenceMethod* CSingleLaplacianInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	REQUIRE(inference, "Inference pointer not set.\n");
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACIAN_SINGLE)
 		SG_SERROR("Provided inference is not of type CSingleLaplacianInferenceMethod\n")

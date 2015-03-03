@@ -273,7 +273,8 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	REQUIRE(inference, "Inference pointer not set.\n");
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_EXACT)
 		SG_SERROR("Provided inference is not of type CExactInferenceMethod!\n")

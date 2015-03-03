@@ -67,7 +67,8 @@ CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	REQUIRE(inference, "Inference pointer not set.\n");
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DUAL)
 		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n")
