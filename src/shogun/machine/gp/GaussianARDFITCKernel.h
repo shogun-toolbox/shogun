@@ -71,7 +71,7 @@ public:
 private:
 	void initialize();
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
@@ -108,7 +108,7 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
 		index_t index=-1);
-#endif /* HAVE_CXX11 */
+#endif /* HAVE_LINALG_LIB */
 };
 }
 
