@@ -22,6 +22,7 @@ using namespace shogun;
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 using namespace Eigen;
+#endif // HAVE_EIGEN3
 
 //function to create sparse matrix
 template<typename T>
@@ -41,6 +42,7 @@ SGSparseMatrix<T> GenerateSparseMatrix(const int32_t numberOfFeatures,
     return matrix;
 }
 
+#ifdef HAVE_EIGEN3
 TEST(SGSparseMatrix, multiply_float64_int32)
 {
 	const int32_t size=10;
@@ -210,7 +212,7 @@ TEST(SGSparseMatrix, get_transposed_more_features)
 {
     CRandom randGenerator(0);
     const float64_t sparseLevel=0.1;
- 
+
     const index_t numberOfFeatures=100;
     const index_t numberOfVectors=50;
     SGSparseMatrix<float64_t> sparseMatrix
@@ -232,7 +234,7 @@ TEST(SGSparseMatrix, get_transposed_more_vectors)
 {
     CRandom randGenerator(0);
     const float64_t sparseLevel=0.1;
- 
+
     const index_t numberOfFeatures=50;
     const index_t numberOfVectors=100;
     SGSparseMatrix<float64_t> sparseMatrix
