@@ -86,14 +86,18 @@ struct elementwise_square
 
 #ifdef HAVE_EIGEN3
 /**
- * @brief Specialization of generic elementwise_square for the Eigen3 backend
+ * @brief Partial specialization of generic elementwise_square for the Eigen3 backend
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_square<Backend::EIGEN3,Matrix>
 {
+	/** The scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** The return type */
 	typedef SGMatrix<T> ReturnType;
-	
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 
 	/**
@@ -109,7 +113,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 		compute(m, result);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *
@@ -123,7 +127,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 		compute(b, result);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
 	 *
@@ -134,10 +138,10 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> m = mat;
 		Eigen::Map<MatrixXt> r = result;
-		
+
 		r = m.array().template square();
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *
@@ -148,11 +152,11 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
 		Eigen::Map<MatrixXt> r = result;
-		
+
 		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
-		
+
 		r = m.array().template square();
 	}
 };
@@ -161,14 +165,16 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 
 #ifdef HAVE_VIENNACL
 /**
- * @brief Specialization of generic elementwise_square for the ViennaCL backend
+ * @brief Partial specialization of generic elementwise_square for the ViennaCL backend
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_square<Backend::VIENNACL,Matrix>
 {
+	/** The scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** The return type */
 	typedef CGPUMatrix<T> ReturnType;
-	
 
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
@@ -183,7 +189,7 @@ struct elementwise_square<Backend::VIENNACL,Matrix>
 		compute(m, result);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *
@@ -196,7 +202,7 @@ struct elementwise_square<Backend::VIENNACL,Matrix>
 		SG_SERROR("The operation elementwise_square() on a matrix block is currently not supported\n");
 		return CGPUMatrix<T>();
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
 	 *
@@ -206,18 +212,18 @@ struct elementwise_square<Backend::VIENNACL,Matrix>
 	static void compute(CGPUMatrix<T> mat, CGPUMatrix<T> result)
 	{
 		const std::string operation = "return element*element;";
-		
+
 		std::string kernel_name = "elementwise_square_" + ocl::get_type_string<T>();
-		viennacl::ocl::kernel& kernel = 
+		viennacl::ocl::kernel& kernel =
 			ocl::generate_single_arg_elementwise_kernel<T>(kernel_name, operation);
-		
+
 		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_rows*mat.num_cols));
-		
-		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
-			cl_int(mat.num_rows*mat.num_cols), cl_int(mat.offset), 
+
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(),
+			cl_int(mat.num_rows*mat.num_cols), cl_int(mat.offset),
 			result.vcl_matrix(), cl_int(result.offset)));
 	}
-	
+
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *

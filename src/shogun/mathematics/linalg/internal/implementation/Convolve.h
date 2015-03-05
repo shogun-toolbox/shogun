@@ -61,7 +61,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct convolve
 {
-	/** the scalar type */
+	/** The scalar type */
 	typedef typename Matrix::Scalar T;
 
 	/** Computes the 2D convolution of X with W
@@ -86,12 +86,17 @@ struct convolve
 
 #ifdef HAVE_EIGEN3
 
-/** Specialization of convolve for the Eigen3 backend */
-template <> template <class Matrix>
+/** Partial specialization of convolve for the Eigen3 backend */
+template <class Matrix>
 struct convolve<Backend::EIGEN3, Matrix>
 {
+	/** The scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen3 vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 
 	/** Computes the 2D convolution of X with W
@@ -151,10 +156,11 @@ struct convolve<Backend::EIGEN3, Matrix>
 
 #ifdef HAVE_VIENNACL
 
-/** Specialization of convolve for the ViennaCL backend */
-template <> template <class Matrix>
+/** Partial specialization of convolve for the ViennaCL backend */
+template <class Matrix>
 struct convolve<Backend::VIENNACL, Matrix>
 {
+	/** The scalar type */
 	typedef typename Matrix::Scalar T;
 
 	/** Generates the computation kernel for convolution with a stride of 1*/

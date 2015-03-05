@@ -225,7 +225,7 @@ struct rowwise_sum
  * @brief Specialization of generic sum which works with SGMatrix and uses Eigen3
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct sum<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -283,7 +283,7 @@ struct sum<Backend::EIGEN3,Matrix>
  * @brief Specialization of generic sum symmetric which works with SGMatrix and uses Eigen3
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct sum_symmetric<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -356,7 +356,7 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
  * @brief Specialization of generic colwise_sum which works with SGMatrix and uses Eigen3
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct colwise_sum<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -456,7 +456,7 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
  * @brief Specialization of generic rowwise_sum which works with SGMatrix and uses Eigen3
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct rowwise_sum<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -559,7 +559,7 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
  * @brief Specialization of generic sum which works with CGPUMatrix and uses ViennaCL
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct sum<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */
@@ -661,7 +661,7 @@ struct sum<Backend::VIENNACL,Matrix>
  * @brief Specialization of generic sum symmetric which works with CGPUMatrix and uses ViennaCL
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct sum_symmetric<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */
@@ -697,7 +697,7 @@ struct sum_symmetric<Backend::VIENNACL,Matrix>
  * @brief Specialization of generic colwise_sum which works with CGPUMatrix and uses ViennaCL
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct colwise_sum<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */
@@ -814,7 +814,7 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
  * @brief Specialization of generic rowwise_sum which works with CGPUMatrix and uses ViennaCL
  * as backend for computing sum.
  */
-template <> template <class Matrix>
+template <class Matrix>
 struct rowwise_sum<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */

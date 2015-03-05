@@ -61,7 +61,7 @@ struct scale
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Performs the operation B = alpha*A */
 	static void compute(Matrix A, Matrix B, Matrix C, T alpha, T beta);
 };
@@ -69,28 +69,33 @@ struct scale
 #ifdef HAVE_EIGEN3
 
 /** Specialization of scale for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct scale<Backend::EIGEN3, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen3 vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
-	
+
 	/** Performs the operation B = alpha*A */
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, T alpha)
 	{
 		Eigen::Map<MatrixXt> A_eig = A;
 		Eigen::Map<MatrixXt> B_eig = B;
-		
+
 		B_eig = alpha * A_eig;
 	}
-	
+
 	/** Performs the operation B = alpha*A */
 	static void compute(SGVector<T> A, SGVector<T> B, T alpha)
 	{
 		Eigen::Map<VectorXt> A_eig = A;
 		Eigen::Map<VectorXt> B_eig = B;
-		
+
 		B_eig = alpha * A_eig;
 	}
 };
@@ -99,17 +104,18 @@ struct scale<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of scale for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct scale<Backend::VIENNACL, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Performs the operation B = alpha*A */
 	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, T alpha)
 	{
 		B.vcl_matrix() = alpha*A.vcl_matrix();
 	}
-	
+
 	/** Performs the operation B = alpha*A */
 	static void compute(CGPUVector<T> A, CGPUVector<T> B, T alpha)
 	{
