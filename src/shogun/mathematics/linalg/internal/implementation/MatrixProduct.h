@@ -53,7 +53,7 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to compute matrix 
+/** Generic class which is specialized for different backends to compute matrix
  * products
  */
 template <enum Backend, class Matrix>
@@ -61,58 +61,61 @@ struct matrix_product
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
-	/** Performs matrix multiplication 
-	 * 
+
+	/** Performs matrix multiplication
+	 *
 	 * @param A First matrix
 	 * @param B Second matrix
 	 * @param C Result of the operation
 	 * @param transpose_A Whether to the transpose of A should be used instead of A
 	 * @param transpose_B Whether to the transpose of B should be used instead of B
-	 * @param overwrite If true, the values in C are overwritten with the result, 
+	 * @param overwrite If true, the values in C are overwritten with the result,
 	 * otherwise, the result is added to the existing values
 	 */
-	static void compute(Matrix A, Matrix B, Matrix C, 
+	static void compute(Matrix A, Matrix B, Matrix C,
 		bool transpose_A, bool transpose_B, bool overwrite);
 };
 
 #ifdef HAVE_EIGEN3
 
 /** Specialization of matrix_product for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct matrix_product<Backend::EIGEN3, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
-	
-	/** Performs matrix multiplication 
-	 * 
+
+	/** Performs matrix multiplication
+	 *
 	 * @param A First matrix
 	 * @param B Second matrix
 	 * @param C Result of the operation
 	 * @param transpose_A Whether to the transpose of A should be used instead of A
 	 * @param transpose_B Whether to the transpose of B should be used instead of B
-	 * @param overwrite If true, the values in C are overwritten with the result, 
+	 * @param overwrite If true, the values in C are overwritten with the result,
 	 * otherwise, the result is added to the existing values
 	 */
-	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C, 
+	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C,
 		bool transpose_A, bool transpose_B, bool overwrite)
 	{
 		Eigen::Map<MatrixXt> A_eig = A;
 		Eigen::Map<MatrixXt> B_eig = B;
 		Eigen::Map<MatrixXt> C_eig = C;
-		
+
 		if (overwrite)
 		{
 			if (transpose_A && transpose_B)
 				C_eig = A_eig.transpose() * B_eig.transpose();
-			
+
 			else if (transpose_A)
 				C_eig = A_eig.transpose() * B_eig;
-			
+
 			else if (transpose_B)
 				C_eig = A_eig * B_eig.transpose();
-			
+
 			else
 				C_eig = A_eig * B_eig;
 		}
@@ -120,13 +123,13 @@ struct matrix_product<Backend::EIGEN3, Matrix>
 		{
 			if (transpose_A && transpose_B)
 				C_eig += A_eig.transpose() * B_eig.transpose();
-			
+
 			else if (transpose_A)
 				C_eig += A_eig.transpose() * B_eig;
-			
+
 			else if (transpose_B)
 				C_eig += A_eig * B_eig.transpose();
-			
+
 			else
 				C_eig += A_eig * B_eig;
 		}
@@ -136,23 +139,24 @@ struct matrix_product<Backend::EIGEN3, Matrix>
 
 #ifdef HAVE_VIENNACL
 
-/** Specialization of matrix_product for the Eigen3 backend */
-template <> template <class Matrix>
+/** Specialization of matrix_product for the ViennaCL backend */
+template <class Matrix>
 struct matrix_product<Backend::VIENNACL, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
-	/** Performs matrix multiplication 
-	 * 
+
+	/** Performs matrix multiplication
+	 *
 	 * @param A First matrix
 	 * @param B Second matrix
 	 * @param C Result of the operation
 	 * @param transpose_A Whether to the transpose of A should be used instead of A
 	 * @param transpose_B Whether to the transpose of B should be used instead of B
-	 * @param overwrite If true, the values in C are overwritten with the result, 
+	 * @param overwrite If true, the values in C are overwritten with the result,
 	 * otherwise, the result is added to the existing values
 	 */
-	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, CGPUMatrix<T> C, 
+	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, CGPUMatrix<T> C,
 		bool transpose_A, bool transpose_B, bool overwrite)
 	{
 		if (overwrite)
@@ -160,15 +164,15 @@ struct matrix_product<Backend::VIENNACL, Matrix>
 			if (transpose_A && transpose_B)
 				C.vcl_matrix() = viennacl::linalg::prod(
 					viennacl::trans(A.vcl_matrix()), viennacl::trans(B.vcl_matrix()));
-			
+
 			else if (transpose_A)
 				C.vcl_matrix() = viennacl::linalg::prod(
 					viennacl::trans(A.vcl_matrix()), B.vcl_matrix());
-			
+
 			else if (transpose_B)
 				C.vcl_matrix() = viennacl::linalg::prod(
 					A.vcl_matrix(), viennacl::trans(B.vcl_matrix()));
-			
+
 			else
 				C.vcl_matrix() = viennacl::linalg::prod(A.vcl_matrix(), B.vcl_matrix());
 		}
@@ -177,15 +181,15 @@ struct matrix_product<Backend::VIENNACL, Matrix>
 			if (transpose_A && transpose_B)
 				C.vcl_matrix() += viennacl::linalg::prod(
 					viennacl::trans(A.vcl_matrix()), viennacl::trans(B.vcl_matrix()));
-			
+
 			else if (transpose_A)
 				C.vcl_matrix() += viennacl::linalg::prod(
 					viennacl::trans(A.vcl_matrix()), B.vcl_matrix());
-			
+
 			else if (transpose_B)
 				C.vcl_matrix() += viennacl::linalg::prod(
 					A.vcl_matrix(), viennacl::trans(B.vcl_matrix()));
-			
+
 			else
 				C.vcl_matrix() += viennacl::linalg::prod(A.vcl_matrix(), B.vcl_matrix());
 		}

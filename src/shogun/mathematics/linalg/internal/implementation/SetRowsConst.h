@@ -54,7 +54,7 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform 
+/** Generic class which is specialized for different backends to perform
  * the set_rows_const operation
  */
 template <enum Backend, class Matrix, class Vector>
@@ -63,7 +63,7 @@ struct set_rows_const
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 
-	/** Sets each row of a matrix to some constant value. That is, perfoms the 
+	/** Sets each row of a matrix to some constant value. That is, perfoms the
 	 * operation A[i,j] = v[i], for all i and j
 	 */
 	static void compute(Matrix A, Vector v);
@@ -72,21 +72,26 @@ struct set_rows_const
 #ifdef HAVE_EIGEN3
 
 /** Specialization of set_rows_const for the Eigen3 backend */
-template <> template <class Matrix, class Vector>
+template <class Matrix, class Vector>
 struct set_rows_const<Backend::EIGEN3, Matrix, Vector>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen3 vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
-	
-	/** Sets each row of a matrix to some constant value. That is, perfoms the 
+
+	/** Sets each row of a matrix to some constant value. That is, perfoms the
 	 * operation A[i,j] = v[i], for all i and j
 	 */
 	static void compute(SGMatrix<T> A, SGVector<T> v)
 	{
 		Eigen::Map<MatrixXt> A_eig = A;
 		Eigen::Map<VectorXt> v_eig = v;
-		
+
 		A_eig.colwise() = v_eig;
 	}
 };
@@ -95,22 +100,23 @@ struct set_rows_const<Backend::EIGEN3, Matrix, Vector>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of set_rows_const for the ViennaCL backend */
-template <> template <class Matrix, class Vector>
+template <class Matrix, class Vector>
 struct set_rows_const<Backend::VIENNACL, Matrix, Vector>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Generates the computation kernel */
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel()
 	{
 		std::string kernel_name = "set_rows_const_" + ocl::get_type_string<T>();
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
-		
+
 		source.append(
 			R"(
 				__kernel void KERNEL_NAME(
@@ -119,24 +125,24 @@ struct set_rows_const<Backend::VIENNACL, Matrix, Vector>
 				{
 					int i = get_global_id(0);
 					int j = get_global_id(1);
-					
-					if (i>=nrows || j>=ncols) 
+
+					if (i>=nrows || j>=ncols)
 						return;
-					
+
 					mat[offset + i+j*nrows] = vec[i+offset];
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_2D);
 		kernel.local_work_size(1, OCL_WORK_GROUP_SIZE_2D);
-		
+
 		return kernel;
 	}
-	
-	/** Sets each row of a matrix to some constant value. That is, perfoms the 
+
+	/** Sets each row of a matrix to some constant value. That is, perfoms the
 	 * operation A[i,j] = v[i], for all i and j
 	 */
 	static void compute(CGPUMatrix<T> A, CGPUVector<T> v)
@@ -144,9 +150,9 @@ struct set_rows_const<Backend::VIENNACL, Matrix, Vector>
 		viennacl::ocl::kernel& kernel = generate_kernel<T>();
 		kernel.global_work_size(0, ocl::align_to_multiple_2d(A.num_rows));
 		kernel.global_work_size(1, ocl::align_to_multiple_2d(A.num_cols));
-		
-		viennacl::ocl::enqueue(kernel(A.vcl_matrix(), 
-			cl_int(A.num_rows), cl_int(A.num_cols), cl_int(A.offset), 
+
+		viennacl::ocl::enqueue(kernel(A.vcl_matrix(),
+			cl_int(A.num_rows), cl_int(A.num_cols), cl_int(A.offset),
 			v.vcl_vector(), cl_int(v.offset)));
 	}
 };

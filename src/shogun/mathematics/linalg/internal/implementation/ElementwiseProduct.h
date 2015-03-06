@@ -52,15 +52,15 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform 
- * elementwise multiplication 
+/** Generic class which is specialized for different backends to perform
+ * elementwise multiplication
  */
 template <enum Backend, class Matrix>
 struct elementwise_product
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
 	static void compute(Matrix A, Matrix B, Matrix C);
 };
@@ -68,20 +68,25 @@ struct elementwise_product
 #ifdef HAVE_EIGEN3
 
 /** Specialization of elementwise_product for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_product<Backend::EIGEN3, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen3 vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
-	
+
 	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C)
 	{
 		Eigen::Map<MatrixXt> A_eig = A;
 		Eigen::Map<MatrixXt> B_eig = B;
 		Eigen::Map<MatrixXt> C_eig = C;
-		
+
 		C_eig = A_eig.array() * B_eig.array();
 	}
 };
@@ -90,11 +95,12 @@ struct elementwise_product<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of elementwise_product for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_product<Backend::VIENNACL, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
 	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, CGPUMatrix<T> C)
 	{

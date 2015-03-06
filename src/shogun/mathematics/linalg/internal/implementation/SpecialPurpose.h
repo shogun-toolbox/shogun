@@ -72,7 +72,7 @@ struct logistic
 #ifdef HAVE_EIGEN3
 
 /** Specialization of logistic for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct logistic<Backend::EIGEN3, Matrix>
 {
 	/** Scalar type */
@@ -91,7 +91,7 @@ struct logistic<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of logistic for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct logistic<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
@@ -132,7 +132,7 @@ struct multiply_by_logistic_derivative
 #ifdef HAVE_EIGEN3
 
 /** Specialization of multiply_by_logistic_derivative for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct multiply_by_logistic_derivative<Backend::EIGEN3, Matrix>
 {
 	/** Scalar type */
@@ -151,7 +151,7 @@ struct multiply_by_logistic_derivative<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of multiply_by_logistic_derivative for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct multiply_by_logistic_derivative<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
@@ -193,7 +193,7 @@ struct rectified_linear
 #ifdef HAVE_EIGEN3
 
 /** Specialization of rectified_linear for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct rectified_linear<Backend::EIGEN3, Matrix>
 {
 	/** Scalar type */
@@ -212,7 +212,7 @@ struct rectified_linear<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of rectified_linear for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct rectified_linear<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
@@ -253,7 +253,7 @@ struct multiply_by_rectified_linear_derivative
 #ifdef HAVE_EIGEN3
 
 /** Specialization of multiply_by_rectified_linear_derivative for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct multiply_by_rectified_linear_derivative<Backend::EIGEN3, Matrix>
 {
 	/** Scalar type */
@@ -273,7 +273,7 @@ struct multiply_by_rectified_linear_derivative<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of multiply_by_rectified_linear_derivative for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct multiply_by_rectified_linear_derivative<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
@@ -317,7 +317,7 @@ struct softmax
 #ifdef HAVE_EIGEN3
 
 /** Specialization of softmax for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct softmax<Backend::EIGEN3, Matrix>
 {
 	/** Scalar type */
@@ -352,7 +352,7 @@ struct softmax<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of softmax for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct softmax<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
@@ -436,7 +436,7 @@ struct cross_entropy
 
 #ifdef HAVE_EIGEN3
 /** Specialization of cross_entropy for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct cross_entropy<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -460,7 +460,7 @@ struct cross_entropy<Backend::EIGEN3,Matrix>
 
 #ifdef HAVE_VIENNACL
 /** Specialization of cross_entropy for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct cross_entropy<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */
@@ -553,7 +553,7 @@ struct squared_error
 
 #ifdef HAVE_EIGEN3
 /** Specialization of squared_error for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct squared_error<Backend::EIGEN3,Matrix>
 {
 	/** Scalar type */
@@ -577,7 +577,7 @@ struct squared_error<Backend::EIGEN3,Matrix>
 
 #ifdef HAVE_VIENNACL
 /** Specialization of squared_error for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct squared_error<Backend::VIENNACL,Matrix>
 {
 	/** Scalar type */
