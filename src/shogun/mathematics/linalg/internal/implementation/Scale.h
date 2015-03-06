@@ -66,6 +66,41 @@ struct scale
 	static void compute(Matrix A, Matrix B, Matrix C, T alpha, T beta);
 };
 
+/** Specialization of scale for the Native backend */
+template<class Matrix>
+struct scale<Backend::NATIVE, Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	
+	/** Performs the operation B = alpha*A */
+	static void compute(SGMatrix<T> A, SGMatrix<T> B, T alpha)
+	{
+		REQUIRE((A.num_rows==B.num_rows)&&(A.num_cols==B.num_cols),
+			"Dimensions of A(%dx%d) and B(%dx%d) don't match.\n",
+			A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+		
+		compute(A.matrix, B.matrix, A.num_rows*A.num_cols, alpha);
+	}
+	
+	/** Performs the operation B = alpha*A */
+	static void compute(SGVector<T> A, SGVector<T> B, T alpha)
+	{
+		REQUIRE(A.vlen==B.vlen,"Number of elements in A(%d) should be "
+			"equal to number of elements in (%d)!\n", A.vlen, B.vlen);
+		
+		compute(A.vector, B.vector, A.vlen, alpha);
+	}
+
+	/** Performs the operation B = alpha*A for len elements*/	
+	static void compute(T* A, T* B, index_t len, T alpha)
+	{
+		REQUIRE(A!=NULL&&B!=NULL, "invalid pointers to matrices");
+		
+		for (index_t i=0; i<len; i++)
+			B[i]=A[i]*alpha;
+	}
+};
+
 #ifdef HAVE_EIGEN3
 
 /** Specialization of scale for the Eigen3 backend */

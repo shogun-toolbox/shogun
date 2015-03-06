@@ -61,6 +61,20 @@ void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
 }
 
+/** Performs the operation B = alpha*A. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
+{
+	implementation::scale<backend, Matrix>::compute(A, B, alpha);
+}
+
+/** Performs the operation A = alpha*A. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void scale(Matrix A, typename Matrix::Scalar alpha)
+{
+	implementation::scale<backend, Matrix>::compute(A, A, alpha);
+}
+
 #ifdef HAVE_LINALG_LIB
 /** Performs matrix multiplication
  *
@@ -85,13 +99,6 @@ void subtract(Matrix A, Matrix B, Matrix C,
 	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
 {
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
-}
-
-/** Performs the operation B = alpha*A. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
-{
-	implementation::scale<backend, Matrix>::compute(A, B, alpha);
 }
 
 /** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
