@@ -26,7 +26,7 @@ using namespace Eigen;
 
 //function can generate both sparse and dense matrix accroding to sparse convention
 template<class MatrixType>
-void GenerateMatrixAccrodingToSparseConvention(const float64_t &sparseLevel,
+void GenerateMatrixAccordingToSparseConvention(const float64_t &sparseLevel,
                                                const int32_t   &numberOfFeatures,
                                                const int32_t   &numberOfVectors,
                                                const int32_t   &randSeed,
@@ -193,14 +193,15 @@ TEST(SGSparseMatrix, access_by_index_non_square)
 
     //generate a sparse and dense matrix and compare this entries
     SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-    GenerateMatrixAccrodingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
+    GenerateMatrixAccordingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
                                                                           numberOfFeatures,
                                                                           numberOfVectors,
                                                                           randSeed,
                                                                           &sparseMatrix);
 
-    SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures); denseMatrix.zero();
-    GenerateMatrixAccrodingToSparseConvention<SGMatrix<float64_t> >(sparseLevel,
+    SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures);
+    denseMatrix.zero();
+    GenerateMatrixAccordingToSparseConvention<SGMatrix<float64_t> >(sparseLevel,
                                                                     numberOfFeatures,
                                                                     numberOfVectors,
                                                                     randSeed,
@@ -219,7 +220,7 @@ TEST(SGSparseMatrix, get_transposed_more_features)
     const index_t randSeed=0;
 
     SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-    GenerateMatrixAccrodingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
+    GenerateMatrixAccordingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
                                                                           numberOfFeatures,
                                                                           numberOfVectors,
                                                                           randSeed,
@@ -245,7 +246,7 @@ TEST(SGSparseMatrix, get_transposed_more_vectors)
     const index_t randSeed=0;
 
     SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-    GenerateMatrixAccrodingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
+    GenerateMatrixAccordingToSparseConvention<SGSparseMatrix<float64_t> >(sparseLevel,
                                                                           numberOfFeatures,
                                                                           numberOfVectors,
                                                                           randSeed,
@@ -271,8 +272,9 @@ TEST(SGSparseMatrix, from_dense)
     const index_t numberOfVectors=100;
     const index_t randSeed=0;
 
-    SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures); denseMatrix.zero();
-    GenerateMatrixAccrodingToSparseConvention<SGMatrix<float64_t> >(sparseLevel,
+    SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures);
+    denseMatrix.zero();
+    GenerateMatrixAccordingToSparseConvention<SGMatrix<float64_t> >(sparseLevel,
                                                                     numberOfFeatures,
                                                                     numberOfVectors,
                                                                     randSeed,
