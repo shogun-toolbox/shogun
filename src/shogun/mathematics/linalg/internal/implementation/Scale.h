@@ -76,7 +76,7 @@ struct scale<Backend::NATIVE, Matrix>
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, T alpha)
 	{
 		REQUIRE((A.num_rows==B.num_rows)&&(A.num_cols==B.num_cols),
-			"Dimensions of A(%dx%d) and B(%dx%d) don't match.\n",
+			"Dimensions of A(%dx%d) and B(%dx%d) don't match.",
 			A.num_rows, A.num_cols, B.num_rows, B.num_cols);
 		
 		compute(A.matrix, B.matrix, A.num_rows*A.num_cols, alpha);
@@ -86,7 +86,7 @@ struct scale<Backend::NATIVE, Matrix>
 	static void compute(SGVector<T> A, SGVector<T> B, T alpha)
 	{
 		REQUIRE(A.vlen==B.vlen,"Number of elements in A(%d) should be "
-			"equal to number of elements in (%d)!\n", A.vlen, B.vlen);
+			"equal to number of elements in (%d)!", A.vlen, B.vlen);
 		
 		compute(A.vector, B.vector, A.vlen, alpha);
 	}
@@ -94,7 +94,7 @@ struct scale<Backend::NATIVE, Matrix>
 	/** Performs the operation B = alpha*A for len elements*/	
 	static void compute(T* A, T* B, index_t len, T alpha)
 	{
-		REQUIRE(A!=NULL&&B!=NULL, "invalid pointers to matrices");
+		REQUIRE(A!=NULL&&B!=NULL, "Invalid pointers to matrices.");
 		
 		for (index_t i=0; i<len; i++)
 			B[i]=A[i]*alpha;
