@@ -18,6 +18,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
+#include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/distance/MinkowskiMetric.h>
 

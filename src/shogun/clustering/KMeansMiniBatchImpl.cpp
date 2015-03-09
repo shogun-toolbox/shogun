@@ -93,3 +93,4 @@ SGVector<int32_t> CKMeansMiniBatchImpl::mbchoose_rand(int32_t b, int32_t num)
 	return ret;
 }
 }
+
