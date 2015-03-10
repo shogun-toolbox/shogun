@@ -47,12 +47,8 @@
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 		- Removing redundant and fixing implicit imports [Thoralf Klein]
 		- Hide many methods from SWIG, reducing compile memory by 500MiB [Heiko Strathmann, Fernando Iglesias, Thoralf Klein]
-
-2014-12-16 Fernando Iglesias <fernando.iglesias@shogun-toolbox.org>
-
-	* Cleanups:
 		- Drop empty generalised HMM [Fernando Iglesias]
-		- Drop unused math operations in SGVector and move randperm from SGVector to CMath, making the former more lightweight  [Fernando Iglesias].
+		- Drop unused math operations in SGVector and move randperm to CMath, making SGVector more lightweight  [Fernando Iglesias]
 
 2014-02-17 Soeren Sonnenburg <sonne@debian.org>
 
