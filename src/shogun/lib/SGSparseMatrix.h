@@ -107,15 +107,15 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			REQUIRE(i_row>=0, "index %d negative!\n", i_row);
 			REQUIRE(i_col>=0, "index %d negative!\n", i_col);
-			REQUIRE(i_row<num_vectors, "index should be less than %d, %d provided!\n",
-				num_vectors, i_row);
-			REQUIRE(i_col<num_features, "index should be less than %d, %d provided!\n",
-				num_features, i_col);
+			REQUIRE(i_row<num_features, "index should be less than %d, %d provided!\n",
+				num_features, i_row);
+			REQUIRE(i_col<num_vectors, "index should be less than %d, %d provided!\n",
+				num_vectors, i_col);
 
-			for (index_t i=0; i<sparse_matrix[i_row].num_feat_entries; ++i)
+			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
 			{
-				if (i_col==sparse_matrix[i_row].features[i].feat_index)
-					return sparse_matrix[i_row].features[i].entry;
+				if (i_row==sparse_matrix[i_col].features[i].feat_index)
+					return sparse_matrix[i_col].features[i].entry;
 			}
 			return 0;
 		}
@@ -128,24 +128,23 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			REQUIRE(i_row>=0, "index %d negative!\n", i_row);
 			REQUIRE(i_col>=0, "index %d negative!\n", i_col);
-			REQUIRE(i_row<num_vectors, "index should be less than %d, %d provided!\n",
-				num_vectors, i_row);
-			REQUIRE(i_col<num_features, "index should be less than %d, %d provided!\n",
-				num_features, i_col);
+			REQUIRE(i_row<num_features, "index should be less than %d, %d provided!\n",
+				num_features, i_row);
+			REQUIRE(i_col<num_vectors, "index should be less than %d, %d provided!\n",
+				num_vectors, i_col);
 
-			for (index_t i=0; i<sparse_matrix[i_row].num_feat_entries; ++i)
+			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
 			{
-				if (i_col==sparse_matrix[i_row].features[i].feat_index)
-					return sparse_matrix[i_row].features[i].entry;
+				if (i_row==sparse_matrix[i_col].features[i].feat_index)
+					return sparse_matrix[i_col].features[i].entry;
 			}
-			index_t j=sparse_matrix[i_row].num_feat_entries;
-			sparse_matrix[i_row].num_feat_entries=j+1;
-			sparse_matrix[i_row].features=SG_REALLOC(SGSparseVectorEntry<T>,
-				sparse_matrix[i_row].features, j, j+1);
-			sparse_matrix[i_row].features[j].feat_index=i_col;
-			sparse_matrix[i_row].features[j].entry=static_cast<T>(0);
-
-			return sparse_matrix[i_row].features[j].entry;
+			index_t j=sparse_matrix[i_col].num_feat_entries;
+			sparse_matrix[i_col].num_feat_entries=j+1;
+			sparse_matrix[i_col].features=SG_REALLOC(SGSparseVectorEntry<T>,
+				sparse_matrix[i_col].features, j, j+1);
+			sparse_matrix[i_col].features[j].feat_index=i_row;
+			sparse_matrix[i_col].features[j].entry=static_cast<T>(0);
+			return sparse_matrix[i_col].features[j].entry;
 		}
 
 		/** load sparse matrix from file
