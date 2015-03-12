@@ -48,6 +48,7 @@ SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
 {
 	matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
+	zero();
 }
 
 template <class T>
