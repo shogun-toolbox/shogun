@@ -27,16 +27,18 @@ using namespace Eigen;
 
 //function can generate both sparse and dense matrix accroding to sparse convention
 template<class MatrixType>
-void FillMatrixAccordingToSparseConvention(MatrixType& matrix, float64_t sparseLevel, int32_t m, int32_t n, int32_t randSeed)
+MatrixType GenerateMatrix(float64_t sparseLevel, int32_t m, int32_t n, int32_t randSeed)
 {
 	CRandom randGenerator(randSeed);
-	for (index_t i=0; i<n; ++i)
-		for (index_t j=0; j<m; ++j)
+	MatrixType matrix(m, n);
+	for (index_t i=0; i<m; ++i)
+		for (index_t j=0; j<n; ++j)
 		{
 			float64_t randomNumber=randGenerator.random(0.0,1.0);
 			if (randomNumber<=sparseLevel)
 				matrix(i,j)=randomNumber*100;
 		}
+	return matrix;
 }
 
 #ifdef HAVE_EIGEN3
@@ -189,16 +191,15 @@ TEST(SGSparseMatrix, access_by_index_non_square)
 	const index_t randSeed=0;
 
 	//generate a sparse and dense matrix and compare this entries
-	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	FillMatrixAccordingToSparseConvention(sparseMatrix, sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
+	SGSparseMatrix<float64_t> sparseMatrix=
+		GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
 
-	SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures);
-	denseMatrix.zero();
-	FillMatrixAccordingToSparseConvention(denseMatrix, sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
+	SGMatrix<float64_t> denseMatrix=
+		GenerateMatrix<SGMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
 
 	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
-			EXPECT_EQ(sparseMatrix(vecIndex,featIndex), denseMatrix(vecIndex,featIndex));
+			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), denseMatrix(featIndex,vecIndex));
 }
 
 TEST(SGSparseMatrix, get_transposed_more_features)
@@ -208,8 +209,8 @@ TEST(SGSparseMatrix, get_transposed_more_features)
 	const index_t numberOfVectors=50;
 	const index_t randSeed=0;
 
-	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	FillMatrixAccordingToSparseConvention(sparseMatrix, sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
+	SGSparseMatrix<float64_t> sparseMatrix=
+		GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
@@ -220,7 +221,7 @@ TEST(SGSparseMatrix, get_transposed_more_features)
 	//check contents
 	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
-			EXPECT_EQ(sparseMatrix(vecIndex,featIndex), sparseMatrixT(featIndex,vecIndex));
+			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), sparseMatrixT(vecIndex,featIndex));
 }
 
 TEST(SGSparseMatrix, get_transposed_more_vectors)
@@ -230,8 +231,8 @@ TEST(SGSparseMatrix, get_transposed_more_vectors)
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
-	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	FillMatrixAccordingToSparseConvention(sparseMatrix, sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
+	SGSparseMatrix<float64_t> sparseMatrix=
+		GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
@@ -242,7 +243,7 @@ TEST(SGSparseMatrix, get_transposed_more_vectors)
 	//check contents
 	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
-			EXPECT_EQ(sparseMatrix(vecIndex,featIndex), sparseMatrixT(featIndex,vecIndex));
+			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), sparseMatrixT(vecIndex,featIndex));
 }
 
 TEST(SGSparseMatrix, from_dense)
@@ -253,19 +254,18 @@ TEST(SGSparseMatrix, from_dense)
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
-	SGMatrix<float64_t> denseMatrix(numberOfVectors, numberOfFeatures);
-	denseMatrix.zero();
-	FillMatrixAccordingToSparseConvention(denseMatrix, sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
+	SGMatrix<float64_t> denseMatrix=
+		GenerateMatrix<SGMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed);
 
 	SGSparseMatrix<float64_t> sparseMatrix;
 	sparseMatrix.from_dense(denseMatrix);
 
 	//check dimension
-	EXPECT_EQ(sparseMatrix.num_features, numberOfVectors);
-	EXPECT_EQ(sparseMatrix.num_vectors, numberOfFeatures);
+	EXPECT_EQ(sparseMatrix.num_features, numberOfFeatures);
+	EXPECT_EQ(sparseMatrix.num_vectors, numberOfVectors);
 
 	//check contents
 	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
-			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), denseMatrix(vecIndex,featIndex));
+			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), denseMatrix(featIndex,vecIndex));
 }
