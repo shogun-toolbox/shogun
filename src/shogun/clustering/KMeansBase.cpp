@@ -398,7 +398,7 @@ void CKMeansBase::init()
 	m_fixed_centers=false;
 	m_use_kmeanspp=false;
 	SG_ADD(&m_max_iter, "m_max_iter", "Maximum number of iterations", MS_AVAILABLE);
-	SG_ADD(&m_k, "k", "m_k, the number of clusters", MS_AVAILABLE);
+	SG_ADD(&m_k, "m_k", "m_k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&m_dimensions, "m_dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
 	SG_ADD(&m_R, "m_R", "Cluster radiuses", MS_NOT_AVAILABLE);
 }
