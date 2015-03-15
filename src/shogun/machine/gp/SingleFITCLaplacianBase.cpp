@@ -1,0 +1,401 @@
+/*
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (W) 2015 Wu Lin
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
+ */
+
+#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+
+#ifdef HAVE_EIGEN3
+
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/features/DotFeatures.h>
+
+using namespace shogun;
+using namespace Eigen;
+
+CSingleFITCLaplacianBase::CSingleFITCLaplacianBase() : CFITCInferenceBase()
+{
+	init();
+}
+
+CSingleFITCLaplacianBase::CSingleFITCLaplacianBase(CKernel* kern, CFeatures* feat,
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+		: CFITCInferenceBase(kern, feat, m, lab, mod, lat)
+{
+	init();
+	check_fully_FITC();
+}
+
+void CSingleFITCLaplacianBase::init()
+{
+	m_fully_FITC=false;
+	m_lock=new CLock();
+	SG_ADD(&m_al, "al", "alpha", MS_NOT_AVAILABLE);
+	SG_ADD(&m_t, "t", "noise", MS_NOT_AVAILABLE);
+	SG_ADD(&m_B, "B", "B", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "w", "B*al", MS_NOT_AVAILABLE);
+	SG_ADD(&m_Rvdd, "Rvdd", "Rvdd", MS_NOT_AVAILABLE);
+	SG_ADD(&m_V, "V", "V", MS_NOT_AVAILABLE);
+	SG_ADD(&m_fully_FITC, "fully_FITC", "whether the kernel support fitc inference", MS_NOT_AVAILABLE);
+}
+
+void CSingleFITCLaplacianBase::set_kernel(CKernel* kern)
+{
+	CInferenceMethod::set_kernel(kern);
+	check_fully_FITC();
+}
+
+CSingleFITCLaplacianBase::~CSingleFITCLaplacianBase()
+{
+	delete m_lock;
+}
+
+void CSingleFITCLaplacianBase::check_fully_FITC()
+{
+	REQUIRE(m_kernel, "Kernel must be set first\n")
+	if (strstr(m_kernel->get_name(), "FITCKernel")!=NULL)
+		m_fully_FITC=true;
+	else
+	{
+		SG_WARNING( "The provided kernel does not support fully FITC inference\n");
+		m_fully_FITC=false;
+	}
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_cov_diagonal()
+{
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+
+	SGVector<float64_t> res(m_al.vlen);
+	Map<VectorXd> eigen_res(res.vector, res.vlen);
+	//-sum(W.*W,1)' - al.*al;
+	eigen_res=-eigen_W.cwiseProduct(eigen_W).colwise().sum().transpose()-eigen_al.array().pow(2).matrix();
+	return res;
+}
+
+float64_t CSingleFITCLaplacianBase::get_derivative_related_cov_helper(
+	SGMatrix<float64_t> dKuui, SGVector<float64_t> v, SGMatrix<float64_t> R)
+{
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
+	Map<VectorXd> eigen_v(v.vector, v.vlen);
+	Map<MatrixXd> eigen_R(R.matrix, R.num_rows, R.num_cols);
+
+	//-al'*(v.*al)-sum(W.*W,1)*v = v'*(-sum(W.*W,1)'-(al.*al))
+	SGVector<float64_t> di=get_derivative_related_cov_diagonal();
+	Map<VectorXd> eigen_di(di.vector, di.vlen);
+
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	float64_t result=(eigen_w.dot(eigen_dKuui*eigen_w)+eigen_v.dot(eigen_di)-
+			(eigen_R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
+
+	return result;
+}
+
+float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
+{
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	Map<VectorXd> eigen_ddiagKi(ddiagKi.vector, ddiagKi.vlen);
+	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
+	Map<MatrixXd> eigen_dKui(dKui.matrix, dKui.num_rows, dKui.num_cols);
+
+	// compute R=2*dKui-dKuui*B
+	SGMatrix<float64_t> R(dKui.num_rows, dKui.num_cols);
+	Map<MatrixXd> eigen_R(R.matrix, R.num_rows, R.num_cols);
+	eigen_R=2*eigen_dKui-eigen_dKuui*eigen_B;
+
+	// compute v=ddiagKi-sum(R.*B, 1)'
+	SGVector<float64_t> v(ddiagKi.vlen);
+	Map<VectorXd> eigen_v(v.vector, v.vlen);
+	eigen_v=eigen_ddiagKi-eigen_R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+
+	return get_derivative_related_cov(ddiagKi, dKuui, dKui, v, R);
+}
+
+float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui,
+	SGVector<float64_t> v, SGMatrix<float64_t> R)
+{
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	Map<VectorXd> eigen_ddiagKi(ddiagKi.vector, ddiagKi.vlen);
+	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
+	Map<MatrixXd> eigen_dKui(dKui.matrix, dKui.num_rows, dKui.num_cols);
+
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	float64_t result=get_derivative_related_cov_helper(dKuui, v, R);
+
+	// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*(v.*al)-
+	// sum(W.*W,1)*v- sum(sum((R*W').*(B*W'))))/2;
+	result+=(eigen_ddiagKi.dot(eigen_t))/2.0-
+			eigen_w.dot((eigen_dKui*eigen_al));
+	return result;
+
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	REQUIRE(param, "Param not set\n");
+	REQUIRE(!(strcmp(param->m_name, "scale")
+			&& strcmp(param->m_name, "inducing_noise")
+			&& strcmp(param->m_name, "inducing_features")),
+		    "Can't compute derivative of"
+			" the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	if (!strcmp(param->m_name, "inducing_noise"))
+		// wrt inducing_noise
+		// compute derivative wrt inducing noise
+		return get_derivative_wrt_inducing_noise(param);
+	else if (!strcmp(param->m_name, "inducing_features"))
+	{
+		SGVector<float64_t> res;
+		if (!m_fully_FITC)
+		{
+			int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
+			int32_t num_samples=m_inducing_features->get_num_vectors();
+			res=SGVector<float64_t>(dim*num_samples);
+			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully FITC inference\n",
+				param->m_name);
+			res.zero();
+			return res;
+		}
+		res=get_derivative_wrt_inducing_features(param);
+		return res;
+	}
+
+	// wrt scale
+	// clone kernel matrices
+	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();
+	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
+	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
+
+	// create eigen representation of kernel matrices
+	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
+	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
+
+	// compute derivatives wrt scale for each kernel matrix
+	ddiagKi*=m_scale*2.0;
+	dKuui*=m_scale*2.0;
+	dKui*=m_scale*2.0;
+	
+	SGVector<float64_t> result(1);
+	
+	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+	return result;
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
+		const TParameter* param)
+{
+	REQUIRE(param, "Param not set\n");
+	SGVector<float64_t> result;
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR ||
+			param->m_datatype.m_ctype==CT_MATRIX ||
+			param->m_datatype.m_ctype==CT_SGMATRIX)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name);
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+		result=SGVector<float64_t>(1);
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> deriv_trtr;
+		SGMatrix<float64_t> deriv_uu;
+		SGMatrix<float64_t> deriv_tru;
+
+		m_lock->lock();
+		m_kernel->init(m_features, m_features);
+		deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
+
+		m_kernel->init(m_inducing_features, m_inducing_features);
+		deriv_uu=m_kernel->get_parameter_gradient(param, i);
+
+		m_kernel->init(m_inducing_features, m_features);
+		deriv_tru=m_kernel->get_parameter_gradient(param, i);
+		m_lock->unlock();
+
+		// create eigen representation of derivatives
+		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
+				deriv_uu.num_cols);
+		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
+				deriv_tru.num_cols);
+
+		ddiagKi*=CMath::sq(m_scale);
+		dKuui*=CMath::sq(m_scale);
+		dKui*=CMath::sq(m_scale);
+
+		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+	}
+
+	return result;
+}
+
+float64_t CSingleFITCLaplacianBase::get_derivative_related_mean(SGVector<float64_t> dmu)
+{
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
+	return -eigen_dmu.dot(eigen_al);
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_mean(
+		const TParameter* param)
+{
+	REQUIRE(param, "Param not set\n");
+	SGVector<float64_t> result;
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+		result=SGVector<float64_t>(1);
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> dmu;
+
+		dmu=m_mean->get_parameter_derivative(m_features, param, i);
+
+		// compute dnlZ=-dm'*al
+		result[i]=get_derivative_related_mean(dmu);
+	}
+
+	return result;
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
+	const TParameter* param)
+{
+	REQUIRE(param, "Param not set\n");
+	REQUIRE(!strcmp(param->m_name, "inducing_noise"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	SGMatrix<float64_t> R(m_B.num_rows, m_B.num_cols);
+	Map<MatrixXd> eigen_R(R.matrix, R.num_rows, R.num_cols);
+	//dKuui = 2*snu2; R = -dKuui*B;
+	float64_t factor=2.0*m_ind_noise;
+	eigen_R=-eigen_B*factor;
+
+	SGVector<float64_t> v(m_B.num_cols);
+	Map<VectorXd> eigen_v(v.vector, v.vlen);
+	//v = -sum(R.*B,1)'; 
+	eigen_v=-eigen_R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+
+	SGMatrix<float64_t> dKuui=SGMatrix<float64_t>::create_identity_matrix(m_w.vlen,factor);
+
+	SGVector<float64_t> result(1);
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	result[0]=get_derivative_related_cov_helper(dKuui, v, R);
+
+	return result;
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_features(
+	SGMatrix<float64_t> BdK, const TParameter* param)
+{
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
+
+	int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
+	int32_t num_samples=m_inducing_features->get_num_vectors();
+	SGVector<float64_t>deriv_lat(dim*num_samples);
+	deriv_lat.zero();
+
+	m_lock->lock();
+	//asymtric part (related to xu and x)
+	m_kernel->init(m_inducing_features, m_features);
+	//A = (Kpu.*BdK)*diag(e);
+	MatrixXd A=CMath::sq(m_scale)*eigen_BdK;
+	for(int32_t lat_idx=0; lat_idx<A.rows(); lat_idx++)
+	{
+		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_idx*dim,dim);
+		SGMatrix<float64_t> deriv_mat=m_kernel->get_parameter_gradient(param, lat_idx);
+		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
+		deriv_lat_col_vec+=eigen_deriv_mat*(-A.row(lat_idx).transpose());
+	}
+	m_lock->unlock();
+
+	m_lock->lock();
+	//symtric part (related to xu and xu)
+	m_kernel->init(m_inducing_features, m_inducing_features);
+	//C = (Kpuu.*(BdK*B'))*diag(e);
+	MatrixXd C=CMath::sq(m_scale)*(eigen_BdK*eigen_B.transpose());
+	for(int32_t lat_lidx=0; lat_lidx<C.rows(); lat_lidx++)
+	{
+		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_lidx*dim,dim);
+		SGMatrix<float64_t> deriv_mat=m_kernel->get_parameter_gradient(param, lat_lidx);
+		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
+		deriv_lat_col_vec+=eigen_deriv_mat*(C.row(lat_lidx).transpose());
+	}
+	m_lock->unlock();
+	return deriv_lat;
+}
+
+SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_features(const TParameter* param)
+{
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	//v = diag_dK-1./g_sn2; 
+	SGVector<float64_t> v=get_derivative_related_cov_diagonal();
+	Map<VectorXd> eigen_v(v.vector, v.vlen);
+
+	//BdK = B.*repmat(v',nu,1) + BWt*W + (B*al)*al';
+	SGMatrix<float64_t> BdK(m_B.num_rows, m_B.num_cols);
+	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
+	eigen_BdK=eigen_B*eigen_v.asDiagonal()+eigen_w*(eigen_al.transpose())+
+		eigen_B*eigen_W.transpose()*eigen_W;
+
+	return get_derivative_related_inducing_features(BdK, param);
+}
+
+#endif /* HAVE_EIGEN3 */

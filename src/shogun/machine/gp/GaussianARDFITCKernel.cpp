@@ -78,7 +78,7 @@ CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* ker
 SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
-	if (!strcmp(param->m_name, "latent_features"))
+	if (!strcmp(param->m_name, "inducing_features"))
 	{
 		REQUIRE(lhs, "Left features not set!\n");
 		REQUIRE(rhs, "Right features not set!\n");

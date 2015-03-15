@@ -27,7 +27,7 @@ namespace shogun
 /** @brief The Fully Independent Conditional Training inference method class.
  *
  * This inference method computes the Cholesky and Alpha vectors approximately
- * with the help of latent variables. For more details, see "Sparse Gaussian
+ * with the help of inducing variables. For more details, see "Sparse Gaussian
  * Process using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani, NIPS 18, MIT
  * Press, 2005.
  *
@@ -50,11 +50,11 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
-	 * @param latent_features features to use
+	 * @param inducing_features features to use
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* latent_features);
+			CFeatures* inducing_features);
 
 	virtual ~CFITCInferenceMethod();
 
@@ -77,25 +77,25 @@ public:
 	 */
 	static CFITCInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
 
-	/** set latent features
+	/** set inducing features
 	 *
 	 * @param feat features to set
 	 */
-	virtual void set_latent_features(CFeatures* feat)
+	virtual void set_inducing_features(CFeatures* feat)
 	{
 		SG_REF(feat);
-		SG_UNREF(m_latent_features);
-		m_latent_features=feat;
+		SG_UNREF(m_inducing_features);
+		m_inducing_features=feat;
 	}
 
-	/** get latent features
+	/** get inducing features
 	 *
 	 * @return features
 	 */
-	virtual CFeatures* get_latent_features()
+	virtual CFeatures* get_inducing_features()
 	{
-		SG_REF(m_latent_features);
-		return m_latent_features;
+		SG_REF(m_inducing_features);
+		return m_inducing_features;
 	}
 
 	/** get negative log marginal likelihood
@@ -258,22 +258,22 @@ private:
 	void init();
 
 private:
-	/** latent features for approximation */
-	CFeatures* m_latent_features;
+	/** inducing features for approximation */
+	CFeatures* m_inducing_features;
 
-	/** noise of the latent variables */
+	/** noise of the inducing variables */
 	float64_t m_ind_noise;
 
-	/** Cholesky of covariance of latent features */
+	/** Cholesky of covariance of inducing features */
 	SGMatrix<float64_t> m_chol_uu;
 
-	/** Cholesky of covariance of latent features and training features */
+	/** Cholesky of covariance of inducing features and training features */
 	SGMatrix<float64_t> m_chol_utr;
 
-	/** covariance matrix of latent features */
+	/** covariance matrix of inducing features */
 	SGMatrix<float64_t> m_kuu;
 
-	/** covariance matrix of latent features and training features */
+	/** covariance matrix of inducing features and training features */
 	SGMatrix<float64_t> m_ktru;
 
 	/** diagonal of training kernel matrix + noise - diagonal of the matrix
