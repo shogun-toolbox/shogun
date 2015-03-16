@@ -34,21 +34,21 @@ CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		: CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
-	set_latent_features(lat);
+	set_inducing_features(lat);
 }
 
 void CFITCInferenceMethod::init()
 {
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "Latent features",
+	SG_ADD((CSGObject**)&m_inducing_features, "inducing_features", "inducing features",
 			MS_NOT_AVAILABLE);
 
-	m_latent_features=NULL;
+	m_inducing_features=NULL;
 	m_ind_noise=1e-10;
 }
 
 CFITCInferenceMethod::~CFITCInferenceMethod()
 {
-	SG_UNREF(m_latent_features);
+	SG_UNREF(m_inducing_features);
 }
 
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
@@ -84,9 +84,9 @@ void CFITCInferenceMethod::check_members() const
 			"FITC inference method can only use Gaussian likelihood function\n")
 	REQUIRE(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
 			"of CRegressionLabels\n")
-	REQUIRE(m_latent_features, "Latent features should not be NULL\n")
-	REQUIRE(m_latent_features->get_num_vectors(),
-			"Number of latent features must be greater than zero\n")
+	REQUIRE(m_inducing_features, "inducing features should not be NULL\n")
+	REQUIRE(m_inducing_features->get_num_vectors(),
+			"Number of inducing features must be greater than zero\n")
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
@@ -161,12 +161,12 @@ void CFITCInferenceMethod::update_train_kernel()
 {
 	CInferenceMethod::update_train_kernel();
 
-	// create kernel matrix for latent features
-	m_kernel->init(m_latent_features, m_latent_features);
+	// create kernel matrix for inducing features
+	m_kernel->init(m_inducing_features, m_inducing_features);
 	m_kuu=m_kernel->get_kernel_matrix();
 
-	// create kernel matrix for latent and training features
-	m_kernel->init(m_latent_features, m_features);
+	// create kernel matrix for inducing and training features
+	m_kernel->init(m_inducing_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
 }
 
@@ -177,7 +177,7 @@ void CFITCInferenceMethod::update_chol()
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	// eigen3 representation of covariance matrix of latent features (m_kuu)
+	// eigen3 representation of covariance matrix of inducing features (m_kuu)
 	// and training features (m_ktru)
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
@@ -188,7 +188,7 @@ void CFITCInferenceMethod::update_chol()
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // latent features Luu (m_chol_uu and eigen_chol_uu)
+    // inducing features Luu (m_chol_uu and eigen_chol_uu)
 	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
@@ -443,10 +443,10 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
 			m_kernel->init(m_features, m_features);
 			deriv_trtr=m_kernel->get_parameter_gradient(param).get_diagonal_vector();
 
-			m_kernel->init(m_latent_features, m_latent_features);
+			m_kernel->init(m_inducing_features, m_inducing_features);
 			deriv_uu=m_kernel->get_parameter_gradient(param);
 
-			m_kernel->init(m_latent_features, m_features);
+			m_kernel->init(m_inducing_features, m_features);
 			deriv_tru=m_kernel->get_parameter_gradient(param);
 		}
 		else
@@ -454,10 +454,10 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
 			m_kernel->init(m_features, m_features);
 			deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
 
-			m_kernel->init(m_latent_features, m_latent_features);
+			m_kernel->init(m_inducing_features, m_inducing_features);
 			deriv_uu=m_kernel->get_parameter_gradient(param, i);
 
-			m_kernel->init(m_latent_features, m_features);
+			m_kernel->init(m_inducing_features, m_features);
 			deriv_tru=m_kernel->get_parameter_gradient(param, i);
 		}
 

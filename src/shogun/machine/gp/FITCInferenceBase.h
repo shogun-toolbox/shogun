@@ -56,8 +56,8 @@ namespace shogun
  * where
  *\f$\Phi=\Sigma_{NM}\Sigma_{M}^{-1}\Sigma_{MN}\f$
  *\f$\Sigma_{N}\f$ is the kernel matrix on features
- *\f$\Sigma_{M}\f$ is the kernel matrix on latent features (A.K.A inducing points)
- *\f$\Sigma_{NM}=\Sigma_{MN}^{T}\f$ is the kernel matrix between features and latent features
+ *\f$\Sigma_{M}\f$ is the kernel matrix on inducing points
+ *\f$\Sigma_{NM}=\Sigma_{MN}^{T}\f$ is the kernel matrix between features and inducing features
  *
  * Note that the number of inducing points (m) is usually far less than the number of input points (n).
  * The idea of FITC approximation is to use a lower-ranked matrix plus a diagonal matrix to approximate the full kernel
@@ -66,9 +66,6 @@ namespace shogun
  *
  * Since we use \f$\Sigma_{fitc}\f$ to approximate \f$\Sigma_{N}\f$,
  * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$. 
- *
- * This specific implementation was inspired by the infFITC.m and infFITC_Laplace.me file
- * in the GPML toolbox.
  *
  */
 class CFITCInferenceBase: public CInferenceMethod
@@ -84,11 +81,11 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
-	 * @param latent_features features to use
+	 * @param inducing_features features to use
 	 */
 	CFITCInferenceBase(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* latent_features);
+			CFeatures* inducing_features);
 
 	virtual ~CFITCInferenceBase();
 
@@ -104,25 +101,25 @@ public:
 	 */
 	virtual const char* get_name() const { return "FITCBaseInferenceMethod"; }
 
-	/** set latent features
+	/** set inducing features
 	 *
 	 * @param feat features to set
 	 */
-	virtual void set_latent_features(CFeatures* feat)
+	virtual void set_inducing_features(CFeatures* feat)
 	{
 		SG_REF(feat);
-		SG_UNREF(m_latent_features);
-		m_latent_features=feat;
+		SG_UNREF(m_inducing_features);
+		m_inducing_features=feat;
 	}
 
-	/** get latent features
+	/** get inducing features
 	 *
 	 * @return features
 	 */
-	virtual CFeatures* get_latent_features()
+	virtual CFeatures* get_inducing_features()
 	{
-		SG_REF(m_latent_features);
-		return m_latent_features;
+		SG_REF(m_inducing_features);
+		return m_inducing_features;
 	}
 
 	/** get alpha vector
@@ -168,12 +165,12 @@ public:
 	 */
 	virtual float64_t get_inducing_noise();
 
-	/** returns derivative of negative log marginal likelihood wrt latent features (input)
+	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
 	 * Note that in order to call this method, kernel must support FITC inference
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_latent_features(const TParameter* param)=0;
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param)=0;
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -210,19 +207,19 @@ public:
 	virtual SGMatrix<float64_t> get_posterior_covariance()=0;
 
 protected:
-	/** convert latent features and features to the same represention
+	/** convert inducing features and features to the same represention
 	 *
 	 * Note that these two kinds of features can be different types.
 	 * The reasons are listed below.
-	 * 1. The type of the gradient wrt latent features is float64_t, which is used to update latent features
-	 * 2. Reason 1 implies that the type of latent features can be float64_t while the type of features does not required
+	 * 1. The type of the gradient wrt inducing features is float64_t, which is used to update inducing features
+	 * 2. Reason 1 implies that the type of inducing features can be float64_t while the type of features does not required
 	 * as float64_t 
 	 * 3. Reason 2 implies that the type of features must be a subclass of CDotFeatures, which can represent features as
 	 * float64_t
 	 */
 	virtual void convert_features();
 
-	/** check whether features and latent features are set
+	/** check whether features and inducing features are set
 	 */
 	virtual void check_features();
 
@@ -273,7 +270,7 @@ protected:
 			const TParameter* param)=0;
 
 	/** returns derivative of negative log marginal likelihood wrt
-	 * inducing noise (noise from latent features) parameter
+	 * inducing noise (noise from inducing features) parameter
 	 *
 	 * @param param parameter of given  FITCInferenceBase class
 	 *
@@ -298,16 +295,16 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
 			const TParameter* param)=0;
 
-	/** latent features for approximation */
-	CFeatures* m_latent_features;
+	/** inducing features for approximation */
+	CFeatures* m_inducing_features;
 
-	/** noise of the latent variables */
+	/** noise of the inducing variables */
 	float64_t m_ind_noise;
 
-	/** covariance matrix of latent features */
+	/** covariance matrix of inducing features */
 	SGMatrix<float64_t> m_kuu;
 
-	/** covariance matrix of latent features and training features */
+	/** covariance matrix of inducing features and training features */
 	SGMatrix<float64_t> m_ktru;
 
 	/** covariance matrix of the the posterior Gaussian distribution */

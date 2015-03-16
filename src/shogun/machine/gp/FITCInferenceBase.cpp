@@ -50,44 +50,44 @@ CFITCInferenceBase::CFITCInferenceBase() : CInferenceMethod()
 void CFITCInferenceBase::check_features()
 {
 	REQUIRE(m_features, "Input features not set\n")
-	REQUIRE(m_latent_features, "Latent features not set\n")
+	REQUIRE(m_inducing_features, "Inducing features not set\n")
 }
 
 void CFITCInferenceBase::convert_features()
 {
 	CDotFeatures *feat_type=dynamic_cast<CDotFeatures *>(m_features);
-	CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(m_latent_features);
+	CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(m_inducing_features);
 	REQUIRE(feat_type, "Input features (%s) must be DotFeatures"
 		" or one of its subclasses\n", m_features->get_name())
-	REQUIRE(lat_type, "Latent features (%s) must be"
-		" DotFeatures or one of its subclasses\n", m_latent_features->get_name())
+	REQUIRE(lat_type, "Inducing features (%s) must be"
+		" DotFeatures or one of its subclasses\n", m_inducing_features->get_name())
 	REQUIRE(feat_type->get_dim_feature_space()==lat_type->get_dim_feature_space(),
 		"The dim of feature spaces between"
-		" input features (%d) and latent features (%d) must be same\n",
+		" input features (%d) and inducing features (%d) must be same\n",
 		feat_type->get_dim_feature_space(),
 		lat_type->get_dim_feature_space())
-	if((m_features->get_feature_class()!=m_latent_features->get_feature_class())||
-		(m_features->get_feature_type()!=m_latent_features->get_feature_type()))
+	if((m_features->get_feature_class()!=m_inducing_features->get_feature_class())||
+		(m_features->get_feature_type()!=m_inducing_features->get_feature_type()))
 	{
-		if(m_features->get_feature_class()!=m_latent_features->get_feature_class())
+		if(m_features->get_feature_class()!=m_inducing_features->get_feature_class())
 		{
-			SG_WARNING("Input features (%s) and latent features (%s) are"
+			SG_WARNING("Input features (%s) and inducing features (%s) are"
 				" difference classes\n", m_features->get_name(),
-				m_latent_features->get_name());
+				m_inducing_features->get_name());
 		}
-		if(m_features->get_feature_type()!=m_latent_features->get_feature_type())
+		if(m_features->get_feature_type()!=m_inducing_features->get_feature_type())
 		{
-			SG_WARNING("Input features and latent features are difference types\n");
+			SG_WARNING("Input features and inducing features are difference types\n");
 		}
-		SG_WARNING("Input features and latent features may be deleted\n");
+		SG_WARNING("Input features and inducing features may be deleted\n");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
 		SG_UNREF(m_features);
 		m_features=new CDenseFeatures<float64_t>(feat_m);
 		SG_REF(m_features);
 		SGMatrix<float64_t> lat_m=lat_type->get_computed_dot_feature_matrix();
-		SG_UNREF(m_latent_features)
-		m_latent_features=new CDenseFeatures<float64_t>(lat_m);
-		SG_REF(m_latent_features);
+		SG_UNREF(m_inducing_features)
+		m_inducing_features=new CDenseFeatures<float64_t>(lat_m);
+		SG_REF(m_inducing_features);
 	}
 }
 
@@ -96,18 +96,18 @@ CFITCInferenceBase::CFITCInferenceBase(CKernel* kern, CFeatures* feat,
 		: CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
-	set_latent_features(lat);
+	set_inducing_features(lat);
 }
 
 void CFITCInferenceBase::init()
 {
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "Latent features",
+	SG_ADD((CSGObject**)&m_inducing_features, "inducing_features", "inducing features",
 			MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_ind_noise, "inducing_noise", "noise about inducing potins",
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
-	m_latent_features=NULL;
+	m_inducing_features=NULL;
 	m_ind_noise=1e-10;
 }
 
@@ -124,16 +124,16 @@ float64_t CFITCInferenceBase::get_inducing_noise()
 
 CFITCInferenceBase::~CFITCInferenceBase()
 {
-	SG_UNREF(m_latent_features);
+	SG_UNREF(m_inducing_features);
 }
 
 void CFITCInferenceBase::check_members() const
 {
 	CInferenceMethod::check_members();
 
-	REQUIRE(m_latent_features, "Latent features should not be NULL\n")
-	REQUIRE(m_latent_features->get_num_vectors(),
-			"Number of latent features must be greater than zero\n")
+	REQUIRE(m_inducing_features, "Inducing features should not be NULL\n")
+	REQUIRE(m_inducing_features->get_num_vectors(),
+			"Number of inducing features must be greater than zero\n")
 }
 
 SGVector<float64_t> CFITCInferenceBase::get_alpha()
@@ -160,12 +160,12 @@ void CFITCInferenceBase::update_train_kernel()
 	convert_features();
 	CInferenceMethod::update_train_kernel();
 
-	// create kernel matrix for latent features
-	m_kernel->init(m_latent_features, m_latent_features);
+	// create kernel matrix for inducing features
+	m_kernel->init(m_inducing_features, m_inducing_features);
 	m_kuu=m_kernel->get_kernel_matrix();
 
-	// create kernel matrix for latent and training features
-	m_kernel->init(m_latent_features, m_features);
+	// create kernel matrix for inducing and training features
+	m_kernel->init(m_inducing_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
 }
 

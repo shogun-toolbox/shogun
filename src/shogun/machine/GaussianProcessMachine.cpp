@@ -78,12 +78,12 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 
 	CFeatures* feat;
 
-	// use latent features for FITC inference method
+	// use inducing features for FITC inference method
 	if (m_method->get_inference_type()==INF_FITC)
 	{
 		CFITCInferenceMethod* fitc_method=
 			CFITCInferenceMethod::obtain_from_generic(m_method);
-		feat=fitc_method->get_latent_features();
+		feat=fitc_method->get_inducing_features();
 		SG_UNREF(fitc_method);
 	}
 	else
@@ -138,12 +138,12 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	CFeatures* feat;
 
-	// use latent features for FITC inference method
+	// use inducing features for FITC inference method
 	if (m_method->get_inference_type()==INF_FITC)
 	{
 		CFITCInferenceMethod* fitc_method=
 			CFITCInferenceMethod::obtain_from_generic(m_method);
-		feat=fitc_method->get_latent_features();
+		feat=fitc_method->get_inducing_features();
 		SG_UNREF(fitc_method);
 	}
 	else

@@ -55,12 +55,12 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	{
 		CFeatures* feat;
 
-		// use latent features for FITC inference method
+		// use inducing features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC)
 		{
 			CFITCInferenceMethod* fitc_method=
 				CFITCInferenceMethod::obtain_from_generic(m_method);
-			feat=fitc_method->get_latent_features();
+			feat=fitc_method->get_inducing_features();
 			SG_UNREF(fitc_method);
 		}
 		else
@@ -90,12 +90,12 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		// set latent features for FITC inference method
+		// set inducing features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC)
 		{
 			CFITCInferenceMethod* fitc_method=
 				CFITCInferenceMethod::obtain_from_generic(m_method);
-			fitc_method->set_latent_features(data);
+			fitc_method->set_inducing_features(data);
 			SG_UNREF(fitc_method);
 		}
 		else
