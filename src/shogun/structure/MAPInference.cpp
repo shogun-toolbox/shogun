@@ -11,6 +11,7 @@
 #include <shogun/structure/MAPInference.h>
 #include <shogun/structure/BeliefPropagation.h>
 #include <shogun/structure/GraphCut.h>
+#include <shogun/structure/GEMPLP.h>
 #include <shogun/labels/FactorGraphLabels.h>
 
 using namespace shogun;
@@ -37,6 +38,9 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			break;
 		case GRAPH_CUT:
 			m_infer_impl = new CGraphCut(fg);
+			break;
+		case GEMPLP:
+			m_infer_impl = new CGEMPLP(fg);
 			break;
 		case LOOPY_MAX_PROD:
 			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n",

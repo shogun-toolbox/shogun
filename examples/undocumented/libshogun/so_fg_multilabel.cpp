@@ -413,7 +413,14 @@ int main(int argc, char * argv[])
 	SG_SPRINT("\nExample 2.2: full-connected graph, graph-cuts inference\n");
 	param = MultilabelParameter(FULL, GRAPH_CUT);
 	test(param, labels_train, feats_train, labels_test, feats_test);
-	
+
+	SG_SPRINT("\nExample 3.1: tree structure, GEMPLP inference\n");
+	param = MultilabelParameter(TREE, GEMPLP);
+	test(param, labels_train, feats_train, labels_test, feats_test);
+
+	SG_SPRINT("\nExample 3.2: full-connected graph, GEMPLP inference\n");
+	param = MultilabelParameter(FULL, GEMPLP);
+	test(param, labels_train, feats_train, labels_test, feats_test);
 	exit_shogun();
 
 	return 0;

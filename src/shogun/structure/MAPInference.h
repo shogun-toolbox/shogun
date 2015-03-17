@@ -32,7 +32,8 @@ enum EMAPInferType
 	LOOPY_MAX_PROD = 1,
 	LP_RELAXATION = 2,
 	TRWS_MAX_PROD = 3,
-	GRAPH_CUT = 4
+	GRAPH_CUT = 4,
+	GEMPLP = 5
 };
 
 class CMAPInferImpl;
