@@ -1,3 +1,7 @@
+2015-03-17
+
+	- Add GEMPLP for approximate inference to the structured output framework [Jiaolong Xu].
+
 2015-01-26 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 4.0.0 (libshogun 17.0, data 0.9, parameter 1)
