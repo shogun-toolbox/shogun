@@ -7,8 +7,8 @@
  * Written (W) 2014 Parijat Mazumdar
  */
 
-#ifndef _MBKMEANSIMPL_H__
-#define _MBKMEANSIMPL_H__
+#ifndef _MBKMEANS_H__
+#define _MBKMEANS_H__
 
 #include <shogun/lib/config.h>
 
@@ -41,4 +41,3 @@ class CKMeansMiniBatchImpl
 };
 }
 #endif
-
