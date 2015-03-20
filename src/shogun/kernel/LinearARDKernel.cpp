@@ -35,6 +35,7 @@ void CLinearARDKernel::initialize()
 	m_weights.set_const(1.0);
 	SG_ADD(&m_weights, "weights", "Feature weights", MS_AVAILABLE,
 			GRADIENT_AVAILABLE);
+	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", MS_NOT_AVAILABLE);
 }
 
 #ifdef HAVE_LINALG_LIB

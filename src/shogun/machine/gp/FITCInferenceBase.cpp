@@ -156,8 +156,12 @@ SGMatrix<float64_t> CFITCInferenceBase::get_cholesky()
 
 void CFITCInferenceBase::update_train_kernel()
 {
+	//time complexity can be O(m*n) if the TO DO is done
 	check_features();
 	convert_features();
+	//to reduce the time complexity from O(n^2) to O(n)
+	//the kernel object only computes diagonal elements
+	//TO DO the following function call should be modified
 	CInferenceMethod::update_train_kernel();
 
 	// create kernel matrix for inducing features

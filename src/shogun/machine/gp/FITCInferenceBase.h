@@ -59,10 +59,10 @@ namespace shogun
  *\f$\Sigma_{M}\f$ is the kernel matrix on inducing points
  *\f$\Sigma_{NM}=\Sigma_{MN}^{T}\f$ is the kernel matrix between features and inducing features
  *
- * Note that the number of inducing points (m) is usually far less than the number of input points (n).
+ * Note that the number of inducing points (m) is usually far less than the number of input points (n). (the time complexity is computed based on the assumption m < n)
  * The idea of FITC approximation is to use a lower-ranked matrix plus a diagonal matrix to approximate the full kernel
  * matrix.
- * The time complexity of the main inference process can be reduced from O(n^3) to O(m*n^2).
+ * The time complexity of the main inference process can be reduced from O(n^3) to O(m^2*n).
  *
  * Since we use \f$\Sigma_{fitc}\f$ to approximate \f$\Sigma_{N}\f$,
  * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$. 
