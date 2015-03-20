@@ -10,7 +10,6 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
-#include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <gtest/gtest.h>
 
@@ -143,10 +142,11 @@ TEST(KMeans, minibatch_training_test)
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeansMiniBatch* clustering=new CKMeansMiniBatch(1, distance,initial_centers);
+	CKMeans* clustering=new CKMeans(1, distance,initial_centers);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
+		clustering->set_train_method(KMM_MINI_BATCH);
 		clustering->set_mbKMeans_params(4,1000);
 		clustering->train(features);
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
