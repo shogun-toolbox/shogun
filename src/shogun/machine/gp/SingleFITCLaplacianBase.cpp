@@ -91,6 +91,7 @@ void CSingleFITCLaplacianBase::check_fully_FITC()
 
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_cov_diagonal()
 {
+	//time complexity O(m*n)
 	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 
@@ -104,6 +105,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_cov_diagona
 float64_t CSingleFITCLaplacianBase::get_derivative_related_cov_helper(
 	SGMatrix<float64_t> dKuui, SGVector<float64_t> v, SGMatrix<float64_t> R)
 {
+	//time complexity O(m^2*n)
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
 	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
@@ -126,6 +128,7 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_cov_helper(
 float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
 {
+	//time complexity O(m^2*n)
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 	Map<VectorXd> eigen_ddiagKi(ddiagKi.vector, ddiagKi.vlen);
 	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
@@ -148,6 +151,7 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui,
 	SGVector<float64_t> v, SGMatrix<float64_t> R)
 {
+	//time complexity O(m^2*n)
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
@@ -164,12 +168,12 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_
 	result+=(eigen_ddiagKi.dot(eigen_t))/2.0-
 			eigen_w.dot((eigen_dKui*eigen_al));
 	return result;
-
 }
 
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
+	// the time complexity O(m^2*n) if the TO DO is done
 	REQUIRE(param, "Param not set\n");
 	REQUIRE(!(strcmp(param->m_name, "scale")
 			&& strcmp(param->m_name, "inducing_noise")
@@ -201,7 +205,11 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 
 	// wrt scale
 	// clone kernel matrices
-	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();
+	// to reduce the time complexity from O(n^2) to O(n)
+	// we need the kernel matrix support only compute diagonal elements
+	// TO DO the following function call should be modified
+	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();	
+
 	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
 	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
 
@@ -224,19 +232,11 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
+	// the time complexity O(m^2*n) if the TO DO is done
 	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR ||
-			param->m_datatype.m_ctype==CT_MATRIX ||
-			param->m_datatype.m_ctype==CT_SGMATRIX)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name);
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-		result=SGVector<float64_t>(1);
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -246,6 +246,9 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 
 		m_lock->lock();
 		m_kernel->init(m_features, m_features);
+		//to reduce the time complexity
+		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
+		//TO DO the following function call should be modified
 		deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
 
 		m_kernel->init(m_inducing_features, m_inducing_features);
@@ -274,6 +277,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 
 float64_t CSingleFITCLaplacianBase::get_derivative_related_mean(SGVector<float64_t> dmu)
 {
+	//time complexity O(n)
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 	Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 	return -eigen_dmu.dot(eigen_al);
@@ -282,17 +286,11 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_mean(SGVector<float64
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_mean(
 		const TParameter* param)
 {
+	//time complexity O(n)
 	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-		result=SGVector<float64_t>(1);
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -310,6 +308,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_mean(
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
+	//time complexity O(m^2*n)
 	REQUIRE(param, "Param not set\n");
 	REQUIRE(!strcmp(param->m_name, "inducing_noise"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
@@ -340,6 +339,11 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_features(
 	SGMatrix<float64_t> BdK, const TParameter* param)
 {
+	//time complexity depends on the implementation of the provided kernel
+	//time complexity is at least O(p*n*m), where p is the dimension (#) of features
+	//For an ARD kernel with KL_FULL, the time complexity is O(p*n*m*d),
+	//where the paramter \f$\Lambda\f$ of the ARD kerenl is a \f$d\f$-by-\f$p\f$ matrix,
+	//For an ARD kernel with KL_SCALAR and KL_DIAG, the time complexity is O(p*n*m)
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
 
@@ -352,6 +356,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	//asymtric part (related to xu and x)
 	m_kernel->init(m_inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
+	//Kpu=1 in our setting
 	MatrixXd A=CMath::sq(m_scale)*eigen_BdK;
 	for(int32_t lat_idx=0; lat_idx<A.rows(); lat_idx++)
 	{
@@ -366,6 +371,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	//symtric part (related to xu and xu)
 	m_kernel->init(m_inducing_features, m_inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
+	//Kpuu=1 in our setting
 	MatrixXd C=CMath::sq(m_scale)*(eigen_BdK*eigen_B.transpose());
 	for(int32_t lat_lidx=0; lat_lidx<C.rows(); lat_lidx++)
 	{
@@ -380,6 +386,11 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_features(const TParameter* param)
 {
+	//time complexity depends on the implementation of the provided kernel
+	//time complexity is at least O(max((p*n*m),(m^2*n))), where p is the dimension (#) of features
+	//For an ARD kernel with KL_FULL, the time complexity is O(max((p*n*m*d),(m^2*n)))
+	//where the paramter \f$\Lambda\f$ of the ARD kerenl is a \f$d\f$-by-\f$p\f$ matrix,
+	//For an ARD kernel with KL_SCALE and KL_DIAG, the time complexity is O(max((p*n*m),(m^2*n)))
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);

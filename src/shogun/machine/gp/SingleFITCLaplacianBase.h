@@ -54,6 +54,9 @@ namespace shogun
  * "A unifying view of sparse approximate Gaussian process regression."
  * The Journal of Machine Learning Research 6 (2005): 1939-1959.
  *
+ * Note that the number of inducing points (m) is usually far less than the number of input points (n).
+ * (the time complexity is computed based on the assumption m < n)
+ *
  * This specific implementation was inspired by the infFITC.m and infFITC_Laplace.m file
  * in the GPML toolbox.
  *
