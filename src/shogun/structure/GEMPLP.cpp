@@ -266,6 +266,12 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 
 void CGEMPLP::update_messages(int32_t id_region)
 {
+	REQUIRE(m_factors != NULL, "Factors are not set!\n");
+	
+	REQUIRE(m_factors->get_num_elements() > id_region, 
+			"Region id (%d) exceeds the factor elements' length (%d)!\n", 
+			id_region, m_factors->get_num_elements());
+	
 	CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(id_region));
 	SGVector<int32_t> vars = factor->get_variables();
 	SGVector<int32_t> cards = factor->get_cardinalities();
