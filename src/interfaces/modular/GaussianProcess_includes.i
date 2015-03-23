@@ -30,6 +30,8 @@
  #include <shogun/machine/gp/ExactInferenceMethod.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
+ #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+ #include <shogun/machine/gp/FITCInferenceBase.h>
  #include <shogun/machine/gp/EPInferenceMethod.h>
 
  #include <shogun/machine/gp/KLInferenceMethod.h>

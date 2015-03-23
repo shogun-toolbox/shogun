@@ -56,7 +56,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		CFeatures* feat;
 
 		// use inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC)
+		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
 		{
 			CFITCInferenceMethod* fitc_method=
 				CFITCInferenceMethod::obtain_from_generic(m_method);
@@ -91,7 +91,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	if (data)
 	{
 		// set inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC)
+		if (m_method->get_inference_type()==INF_FITC_REGRESSION)
 		{
 			CFITCInferenceMethod* fitc_method=
 				CFITCInferenceMethod::obtain_from_generic(m_method);

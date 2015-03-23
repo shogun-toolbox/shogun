@@ -20,6 +20,8 @@
 %rename(MultiLaplacianInferenceMethod) CMultiLaplacianInferenceMethod;
 %rename(SingleLaplacianInferenceMethodWithLBFGS) CSingleLaplacianInferenceMethodWithLBFGS;
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
+%rename(SingleFITCLaplacianBase) CSingleFITCLaplacianBase;
+%rename(FITCInferenceBase) CFITCInferenceBase;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
 %rename(LikelihoodModel) CLikelihoodModel;
@@ -85,6 +87,8 @@
 %include <shogun/machine/gp/ExactInferenceMethod.h>
 %include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
+%include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+%include <shogun/machine/gp/FITCInferenceBase.h>
 %include <shogun/machine/gp/EPInferenceMethod.h>
 
 %include <shogun/machine/gp/KLInferenceMethod.h>
