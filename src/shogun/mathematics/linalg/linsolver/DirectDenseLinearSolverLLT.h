@@ -7,8 +7,8 @@
  * Written (W) 2015 Yingrui Chang
  */
 
-#ifndef DIRECT_DENSE_LINEAR_SOLVER_H_
-#define DIRECT_DENSE_LINEAR_SOLVER_H_
+#ifndef DIRECT_DENSE_LINEAR_SOLVER_LLT_H_
+#define DIRECT_DENSE_LINEAR_SOLVER_LLT_H_
 
 #include <shogun/lib/config.h>
 
@@ -51,4 +51,4 @@ public:
 }
 
 #endif // HAVE_EIGEN3
-#endif // DIRECT_DENSE_LINEAR_SOLVER_H_
+#endif // DIRECT_DENSE_LINEAR_SOLVER_LLT_H_
