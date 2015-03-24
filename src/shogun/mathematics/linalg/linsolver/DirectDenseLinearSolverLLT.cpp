@@ -9,16 +9,15 @@
 
 #include <shogun/lib/config.h>
 #include <iostream>
-#include <shogun/mathematics/eigen3.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/DirectDenseLinearSolverLLT.h>
 #include <Eigen/LU>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
-using namespace std;
 
 namespace shogun
 {
