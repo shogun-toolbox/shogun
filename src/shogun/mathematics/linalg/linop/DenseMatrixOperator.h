@@ -11,6 +11,8 @@
 #define DENSE_MATRIX_OPERATOR_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linop/MatrixOperator.h>
