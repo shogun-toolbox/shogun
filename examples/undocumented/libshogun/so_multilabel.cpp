@@ -17,6 +17,7 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -49,9 +50,7 @@ void load_data(const char * file_name,
 		SGSparseVector<float64_t> feat_sample = feats[i];
 
 		for (index_t j = 0; j < dim_feat; j++)
-		{
 			feats_matrix[i * dim_feat + j] = feat_sample.get_feature(j);
-		}
 	}
 
 	multilabels = SG_MALLOC(SGVector<int32_t>, num_samples);
@@ -62,11 +61,9 @@ void load_data(const char * file_name,
 		SGVector<int32_t> multilabel_sample(label_sample.vlen);
 
 		for (index_t j = 0; j < label_sample.vlen; j++)
-		{
 			multilabel_sample[j] = label_sample[j];
-		}
 
-		multilabel_sample.qsort();
+		CMath::qsort(multilabel_sample);
 
 		multilabels[i] = multilabel_sample;
 	}
