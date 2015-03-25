@@ -42,7 +42,8 @@
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -79,12 +80,14 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	CFeatures* feat;
 
 	// use inducing features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC)
+	if (m_method->get_inference_type()==INF_FITC_REGRESSION ||
+		m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
 	{
-		CFITCInferenceMethod* fitc_method=
-			CFITCInferenceMethod::obtain_from_generic(m_method);
+		CSingleFITCLaplacianBase* fitc_method=
+			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
+		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
+			m_method->get_name());
 		feat=fitc_method->get_inducing_features();
-		SG_UNREF(fitc_method);
 	}
 	else
 		feat=m_method->get_features();
@@ -139,12 +142,14 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	CFeatures* feat;
 
 	// use inducing features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC)
+	if (m_method->get_inference_type()==INF_FITC_REGRESSION ||
+		m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
 	{
-		CFITCInferenceMethod* fitc_method=
-			CFITCInferenceMethod::obtain_from_generic(m_method);
+		CSingleFITCLaplacianBase* fitc_method=
+			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
+		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
+			m_method->get_name());
 		feat=fitc_method->get_inducing_features();
-		SG_UNREF(fitc_method);
 	}
 	else
 		feat=m_method->get_features();
@@ -160,6 +165,8 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	// get kernel matrix and create eigen representation of it
 	SGMatrix<float64_t> k_tsts=kernel->get_kernel_matrix();
+	//To DO in order to speed up the prediction process,
+	//we only need to obtain the diagonal elements of the kernel matrix
 	Map<MatrixXd> eigen_Kss(k_tsts.matrix, k_tsts.num_rows, k_tsts.num_cols);
 
 	// compute Kss=Kss*scale^2
