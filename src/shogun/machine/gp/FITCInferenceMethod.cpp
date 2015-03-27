@@ -77,7 +77,8 @@ void CFITCInferenceMethod::update()
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 		CInferenceMethod* inference)
 {
-	ASSERT(inference!=NULL);
+	if (inference==NULL)
+		return NULL;
 
 	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
 		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
@@ -131,7 +132,7 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
 	float64_t result=eigen_chol_utr.diagonal().array().log().sum()+
 		(-eigen_t.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
-		 m_ktrtr.num_rows*CMath::log(2*CMath::PI))/2.0;
+		 m_ktrtr_diag.vlen*CMath::log(2*CMath::PI))/2.0;
 
 	return result;
 }
@@ -150,8 +151,7 @@ void CFITCInferenceMethod::update_chol()
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 
-	//TO DO we only need tha diagonal elements of m_ktrtr
-	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
 	//Luu  = chol(Kuu+snu2*eye(nu));                         % Kuu + snu2*I = Luu'*Luu
@@ -176,11 +176,11 @@ void CFITCInferenceMethod::update_chol()
 	// create shogun and eigen3 representation of
 	// dg = diag(K) + sn2 - diag(Q)
 	// t = 1/dg
-	m_t=SGVector<float64_t>(m_ktrtr.num_cols);
+	m_t=SGVector<float64_t>(m_ktrtr_diag.vlen);
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 
 	//g_sn2 = diagK + sn2 - sum(V.*V,1)';          % g + sn2 = diag(K) + sn2 - diag(Q)
-	eigen_t=eigen_ktrtr.diagonal()*CMath::sq(m_scale)+CMath::sq(sigma)*
+	eigen_t=eigen_ktrtr_diag*CMath::sq(m_scale)+CMath::sq(sigma)*
 		VectorXd::Ones(m_t.vlen)-(V.cwiseProduct(V)).colwise().sum().adjoint();
 	eigen_t=MatrixXd::Ones(eigen_t.rows(),1).cwiseQuotient(eigen_t);
 
@@ -353,7 +353,7 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 		update();
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
-	m_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
 			m_Sigma.num_cols);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
@@ -378,11 +378,11 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 
 	//FITC approximated posterior covariance
 	//TO DO we only need tha diagonal elements of m_ktrtr
-	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
 	MatrixXd part1=eigen_V.adjoint()*(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols)));
 	eigen_Sigma=part1*part1.adjoint();
-	VectorXd part2=eigen_ktrtr.diagonal()*CMath::sq(m_scale)-(
+	VectorXd part2=eigen_ktrtr_diag*CMath::sq(m_scale)-(
 		eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 	eigen_Sigma+=part2.asDiagonal();
 

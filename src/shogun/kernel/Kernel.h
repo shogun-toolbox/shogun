@@ -855,6 +855,19 @@ class CKernel : public CSGObject
 			return SGMatrix<float64_t>();
 		}
 
+		/** return diagonal part of derivative with respect to specified parameter
+		 *
+		 * @param param the parameter
+		 * @param index the index of the element if parameter is a vector
+		 *
+		 * @return diagonal part of gradient with respect to parameter
+		 */
+		virtual SGVector<float64_t> get_parameter_gradient_diagonal(
+				const TParameter* param, index_t index=-1)
+		{
+			return get_parameter_gradient(param,index).get_diagonal_vector();
+		}
+
 		/** Obtains a kernel from a generic SGObject with error checking. Note
 		 * that if passing NULL, result will be NULL
 		 * @param kernel Object to cast to CKernel, is *not* SG_REFed

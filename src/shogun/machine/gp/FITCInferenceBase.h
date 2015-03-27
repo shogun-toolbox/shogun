@@ -313,6 +313,8 @@ protected:
 	/** mean vector of the the posterior Gaussian distribution */
 	SGVector<float64_t> m_mu;
 
+	/** diagonal elements of kernel matrix m_ktrtr */
+	SGVector<float64_t> m_ktrtr_diag;
 private:
 	/** init */
 	void init();

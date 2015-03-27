@@ -205,11 +205,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 
 	// wrt scale
 	// clone kernel matrices
-	// to reduce the time complexity from O(n^2) to O(n)
-	// we need the kernel matrix support only compute diagonal elements
-	// TO DO the following function call should be modified
-	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();	
-
+	SGVector<float64_t> deriv_trtr=m_ktrtr_diag.clone();
 	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
 	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
 
@@ -248,8 +244,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		m_kernel->init(m_features, m_features);
 		//to reduce the time complexity
 		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
-		//TO DO the following function call should be modified
-		deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
+		deriv_trtr=m_kernel->get_parameter_gradient_diagonal(param, i);
 
 		m_kernel->init(m_inducing_features, m_inducing_features);
 		deriv_uu=m_kernel->get_parameter_gradient(param, i);

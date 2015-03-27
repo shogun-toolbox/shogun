@@ -36,22 +36,22 @@ namespace shogun
  * There are three variants based on \f$||\cdot||\f$.
  * The default case is
  * \f$\sum_{i=1}^{p}{{[\lambda \times ({\bf x_i}-{\bf y_i})] }^2}\f$
- * where \f$\lambda\f$ is a scalar and \f$p\f$ is # of features
+ * where \f$\lambda\f$ is a scalar and \f$p\f$ is # of features.
  * To use this case,  please call set_scalar_weights(\f$\lambda\f$),
- * where \f$\lambda\f$ is a 1-by-1 matrix
+ * where \f$\lambda\f$ is a scalar.
  *
  * The second case is
  * \f$\sum_{i=1}^{p} {{[\lambda_i \times ({\bf x_i}-{\bf y_i})] }^2}\f$
  * where \f$\lambda\f$ is a vector (we use \f$\lambda\f$ as a column vector)
- * and \f$p\f$ is # of features
+ * and \f$p\f$ is # of features.
  * To use this case,  please call set_vector_weights(\f$\lambda\f$),
- * where \f$\lambda\f$ is a \f$p\f$-by-1 matrix
+ * where \f$\lambda\f$ is a vector.
  *
  * The last case is
  * \f$({\bf x}-{\bf y})^T \Lambda^T \Lambda ({\bf x}-{\bf y})\f$
  * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix,
- * \f$p\f$ is # of features and \f$d\f$ can be \f$ d \ge p\f$ or \f$ d \le p\f$
- * To use this case,  please call set_matrix_weights(\f$\Lambda\f$)
+ * \f$p\f$ is # of features and \f$d\f$ usually is \f$ d \le p\f$.
+ * To use this case, please call set_matrix_weights(\f$\Lambda\f$),
  * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix
  *
  * Indeed, the last case is more general than the first two cases.
