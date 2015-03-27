@@ -52,15 +52,28 @@ int main(int, char*[])
 	const int num_features = 5;
 	const int num_examples= 50;
 	
-	SGVector<float64_t> means(num_features);
-	for (int32_t i=0; i<num_features; i++)
-		means[i] = CMath::random(-1.0,1.0);
+	SGVector<float64_t> means;
+	SGMatrix<float64_t> X;
+	try
+	{
+		means = SGVector<float64_t>(num_features);
+		X = SGMatrix<float64_t>(num_features, num_examples);
+		
+	}
+	catch (ShogunException e)
+	{
+		// out of memory
+		SG_SPRINT(e.get_exception_string());
+		return 0;
+	}
 	
-	SGMatrix<float64_t> X(num_features, num_examples);
 	for (int32_t i=0; i<num_features; i++)
-		for (int32_t j=0; j<num_examples; j++)
-			X(i,j) = CMath::normal_random(means[i], 1.0);
+			means[i] = CMath::random(-1.0,1.0);
 	
+	for (int32_t i=0; i<num_features; i++)
+			for (int32_t j=0; j<num_examples; j++)
+				X(i,j) = CMath::normal_random(means[i], 1.0);
+			
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
 	
 	// Create a DBN

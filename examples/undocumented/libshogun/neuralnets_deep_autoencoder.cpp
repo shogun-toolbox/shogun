@@ -56,8 +56,18 @@ int main(int, char*[])
 	const int num_classes = 4;
 	const int num_examples_per_class = 20;
 	
-	SGMatrix<float64_t> X = CDataGenerator::generate_gaussians(
-		num_examples_per_class,num_classes,num_features);
+	SGMatrix<float64_t> X;
+	try
+	{
+		X = CDataGenerator::generate_gaussians(
+			num_examples_per_class,num_classes,num_features);
+	}
+	catch (ShogunException e)
+	{
+		// out of memory
+		SG_SPRINT(e.get_exception_string());
+		return 0;
+	}
 	
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
 	
