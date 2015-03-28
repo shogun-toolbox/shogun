@@ -9,7 +9,7 @@
 
 #include <shogun/lib/Hash.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/HashedDenseFeatures.h>
+#include <shogun/features/hashed/HashedDenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
