@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

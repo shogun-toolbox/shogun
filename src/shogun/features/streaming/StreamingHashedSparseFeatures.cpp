@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/streaming/StreamingHashedSparseFeatures.h>
-#include <shogun/features/HashedSparseFeatures.h>
+#include <shogun/features/hashed/HashedSparseFeatures.h>
 #include <shogun/io/streaming/StreamingFileFromSparseFeatures.h>
 
 namespace shogun
