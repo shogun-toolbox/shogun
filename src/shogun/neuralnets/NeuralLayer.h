@@ -39,6 +39,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {
@@ -147,10 +148,9 @@ public:
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations. To be used only with input layers
 	 * 
-	 * @param inputs activations of the neurons in the 
-	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
+	 * @param inputs dot features to store activations from
 	 */
-	virtual void compute_activations(SGMatrix<float64_t> inputs) { }
+	virtual void compute_activations(CFeatures* inputs) { }
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations. To be used only with non-input layers

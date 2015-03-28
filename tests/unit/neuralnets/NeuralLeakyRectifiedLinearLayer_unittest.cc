@@ -70,7 +70,9 @@ TEST(NeuralLeakyRectifiedLinearLayer, compute_activations)
 	layer.set_batch_size(x.num_cols);
 	
 	// compute the layer's activations
-	input->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.set_alpha(alpha);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();

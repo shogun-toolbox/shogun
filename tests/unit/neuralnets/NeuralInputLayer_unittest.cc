@@ -43,13 +43,15 @@ TEST(NeuralInputLayer, compute_activations)
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = CMath::random(-10.0,10.0);
 	
-	CNeuralInputLayer layer(5, 4);
+	CNeuralInputLayer layer(5);
 	layer.set_batch_size(x.num_cols);
 	
-	layer.compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	layer.compute_activations(xf);
+	SG_UNREF(xf);
 	SGMatrix<float64_t> A = layer.get_activations();
 	
 	for (int32_t i=0; i<A.num_rows; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
-			EXPECT_EQ(x(i+layer.get_start_index(), j), A(i,j));
+			EXPECT_EQ(x(i, j), A(i,j));
 }

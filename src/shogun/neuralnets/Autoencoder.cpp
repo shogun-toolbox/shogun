@@ -96,9 +96,9 @@ CAutoencoder::CAutoencoder(
 bool CAutoencoder::train(CFeatures* data)
 {
 	REQUIRE(data != NULL, "Invalid (NULL) feature pointer\n");
-	
-	SGMatrix<float64_t> inputs = features_to_matrix(data);
-	
+	CDotFeatures* dot_data = dynamic_cast<CDotFeatures*>(data);
+	REQUIRE(dot_data, "Dot features expected, got %s\n", data->get_name());
+
 	if (noise_type==AENT_DROPOUT)
 		dropout_input = noise_parameter;
 	if (noise_type==AENT_GAUSSIAN)
@@ -118,11 +118,18 @@ bool CAutoencoder::train(CFeatures* data)
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = true;
 
+	// TODO don't precompute whole feature matrix
+	int32_t dim = dot_data->get_dim_feature_space();
+	SGMatrix<float64_t> inputs(dot_data->get_dim_feature_space(), dot_data->get_num_vectors());
+	inputs.zero();
+	for (int i=0; i<dot_data->get_num_vectors(); i++)
+		dot_data->add_to_dense_vec(1.0, i, inputs.matrix+i*dim, dim);
+
 	bool result = false;
 	if (optimization_method==NNOM_GRADIENT_DESCENT)
-		result = train_gradient_descent(inputs, inputs);
+		result = train_gradient_descent(dot_data, inputs);
 	else if (optimization_method==NNOM_LBFGS)
-		result = train_lbfgs(inputs, inputs);
+		result = train_lbfgs(dot_data, inputs);
 	
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = false;

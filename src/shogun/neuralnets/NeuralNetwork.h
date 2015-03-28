@@ -38,6 +38,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {
@@ -236,11 +237,11 @@ protected:
 	virtual bool train_machine(CFeatures* data=NULL);
 	
 	/** trains the network using gradient descent*/
-	virtual bool train_gradient_descent(SGMatrix<float64_t> inputs, 
+	virtual bool train_gradient_descent(CDotFeatures* inputs, 
 			SGMatrix<float64_t> targets);
 	
 	/** trains the network using L-BFGS*/
-	virtual bool train_lbfgs(SGMatrix<float64_t> inputs, 
+	virtual bool train_lbfgs(CDotFeatures* inputs, 
 			SGMatrix<float64_t> targets);
 	
 	/** Applies forward propagation, computes the activations of each layer up 
@@ -264,7 +265,7 @@ protected:
 	 * 
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, int32_t j=-1);
+	//virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, int32_t j=-1);
 	
 	/** Sets the batch size (the number of train/test cases) the network is 
 	 * expected to deal with. 
@@ -289,7 +290,7 @@ protected:
 	 * 
 	 * @return error between the targets and the activations of the last layer
 	 */
-	virtual float64_t compute_gradients(SGMatrix<float64_t> inputs, 
+	virtual float64_t compute_gradients(CDotFeatures* inputs, 
 			SGMatrix<float64_t> targets, SGVector<float64_t> gradients);
 	
 	/** Forward propagates the inputs and computes the error between the output 
@@ -301,7 +302,7 @@ protected:
 	 * @param targets desired values for the network's output, matrix of size
 	 * num_neurons_output_layer*batch_size
 	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> inputs, 
+	virtual float64_t compute_error(CFeatures* inputs, 
 			SGMatrix<float64_t> targets);
 	
 	/** Computes the error between the output layer's activations and the given
@@ -483,14 +484,6 @@ protected:
 	 * initial value is false
 	 */
 	bool m_is_training;
-	
-private:
-	/** temperary pointers to the training data, used to pass the data to L-BFGS
-	 * routines 
-	 */
-	const SGMatrix<float64_t>* m_lbfgs_temp_inputs;
-	const SGMatrix<float64_t>* m_lbfgs_temp_targets;
 };
-	
 }
 #endif

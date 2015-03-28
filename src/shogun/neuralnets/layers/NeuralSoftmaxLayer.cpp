@@ -28,35 +28,74 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  * 
- * Written (W) 2015 Sanuj Sharma
+ * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
-CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer() : CNeuralRectifiedLinearLayer()
+CNeuralSoftmaxLayer::CNeuralSoftmaxLayer() : CNeuralLinearLayer()
 {
-	m_alpha=0.01;
 }
 
-CNeuralLeakyRectifiedLinearLayer::CNeuralLeakyRectifiedLinearLayer(int32_t num_neurons):
-CNeuralRectifiedLinearLayer(num_neurons)
+CNeuralSoftmaxLayer::CNeuralSoftmaxLayer(int32_t num_neurons): 
+CNeuralLinearLayer(num_neurons)
 {
-	m_alpha=0.01;
 }
 
-void CNeuralLeakyRectifiedLinearLayer::compute_activations(
-	SGVector<float64_t> parameters,
-	CDynamicObjectArray* layers)
+void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
+		CDynamicObjectArray* layers)
 {
 	CNeuralLinearLayer::compute_activations(parameters, layers);
 	
-	int32_t len = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<len; i++)
+	// to avoid exponentiating large numbers, the maximum activation is 
+	// subtracted from all the activations and the computations are done in the
+	// log domain
+	
+	float64_t max = m_activations.max_single();
+	
+	for (int32_t j=0; j<m_batch_size; j++)
 	{
-		m_activations[i] = CMath::max<float64_t>(m_alpha*m_activations[i], m_activations[i]);
+		float64_t sum = 0;
+		for (int32_t i=0; i<m_num_neurons; i++)
+		{
+			sum += CMath::exp(m_activations[i+j*m_num_neurons]-max);
+		}
+		float64_t normalizer = CMath::log(sum);
+		for (int32_t k=0; k<m_num_neurons; k++)
+		{
+			m_activations[k+j*m_num_neurons] =
+				CMath::exp(m_activations[k+j*m_num_neurons]-max-normalizer);
+		}
 	}
+}
+
+void CNeuralSoftmaxLayer::compute_local_gradients(SGMatrix<float64_t> targets)
+{
+	if (targets.num_rows == 0) 
+		SG_ERROR("Cannot be used as a hidden layer\n");
+	
+	int32_t len = m_num_neurons*m_batch_size;
+	for (int32_t i=0; i< len; i++)
+	{
+		m_local_gradients[i] = (m_activations[i]-targets[i])/m_batch_size;
+	}
+}
+
+float64_t CNeuralSoftmaxLayer::compute_error(SGMatrix<float64_t> targets)
+{	
+	int32_t len = m_num_neurons*m_batch_size;
+	float64_t sum = 0;
+	for (int32_t i=0; i< len; i++)
+	{
+		// to prevent taking the log of a zero
+		if (m_activations[i]==0) 
+			sum += targets[i]*CMath::log(1e-50);
+		else 
+			sum += targets[i]*CMath::log(m_activations[i]);
+	}
+	return -1*sum/m_batch_size;
 }

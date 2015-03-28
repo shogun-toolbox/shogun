@@ -79,8 +79,6 @@ CAutoencoder()
 
 void CDeepAutoencoder::pre_train(CFeatures* data)
 {
-	SGMatrix<float64_t> data_matrix = features_to_matrix(data);
-	
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
 	for (int32_t i=1; i<=num_encoding_layers; i++)
 	{
@@ -129,8 +127,8 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 		// forward propagate the data to obtain the training data for the 
 		// current autoencoder
 		for (int32_t j=0; j<i; j++)
-			get_layer(j)->set_batch_size(data_matrix.num_cols);
-		SGMatrix<float64_t> ae_input_matrix = forward_propagate(data_matrix, i-1);
+			get_layer(j)->set_batch_size(data->get_num_vectors());
+		SGMatrix<float64_t> ae_input_matrix = forward_propagate(data, i-1);
 		CDenseFeatures<float64_t> ae_input_features(ae_input_matrix);
 		for (int32_t j=0; j<i-1; j++)
 			get_layer(j)->set_batch_size(1);

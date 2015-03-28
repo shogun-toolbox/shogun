@@ -31,35 +31,33 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
-CNeuralRectifiedLinearLayer::CNeuralRectifiedLinearLayer() : CNeuralLinearLayer()
+CNeuralLogisticLayer::CNeuralLogisticLayer() : CNeuralLinearLayer()
 {
 }
 
-CNeuralRectifiedLinearLayer::CNeuralRectifiedLinearLayer(int32_t num_neurons): 
+CNeuralLogisticLayer::CNeuralLogisticLayer(int32_t num_neurons): 
 CNeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralRectifiedLinearLayer::compute_activations(
-		SGVector<float64_t> parameters,
+void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
 		CDynamicObjectArray* layers)
 {
 	CNeuralLinearLayer::compute_activations(parameters, layers);
 	
-	int32_t len = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<len; i++)
-	{
-		m_activations[i] = CMath::max<float64_t>(0, m_activations[i]);
-	}
+	// apply logistic activation function
+	int32_t length = m_num_neurons*m_batch_size;
+	for (int32_t i=0; i<length; i++)
+		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
 }
 
-float64_t CNeuralRectifiedLinearLayer::compute_contraction_term(
+float64_t CNeuralLogisticLayer::compute_contraction_term(
 	SGVector< float64_t > parameters)
 {
 	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
@@ -74,17 +72,17 @@ float64_t CNeuralRectifiedLinearLayer::compute_contraction_term(
 		for (int32_t j=0; j<num_inputs; j++)
 			sum_j += W(i,j)*W(i,j);
 		
-		for (int32_t k = 0; k<m_batch_size; k++)
+		for (int32_t k=0; k<m_batch_size; k++)
 		{
-			if (m_activations(i,k) > 0)
-				contraction_term += sum_j;
+			float64_t h_ = m_activations(i,k)*(1-m_activations(i,k));
+			contraction_term += h_*h_*sum_j;
 		}
 	}
 	
 	return (contraction_coefficient/m_batch_size) * contraction_term;
 }
 
-void CNeuralRectifiedLinearLayer::compute_contraction_term_gradients(
+void CNeuralLogisticLayer::compute_contraction_term_gradients(
 	SGVector< float64_t > parameters, SGVector< float64_t > gradients)
 {
 	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
@@ -98,39 +96,27 @@ void CNeuralRectifiedLinearLayer::compute_contraction_term_gradients(
 	{
 		for (int32_t i=0; i<m_num_neurons; i++)
 		{
-			if (m_activations(i,k) > 0)
+			for (int32_t j=0; j<num_inputs; j++)
 			{
-				for (int32_t j=0; j<num_inputs; j++)
-					WG(i,j) += 2 * (contraction_coefficient/m_batch_size) * W(i,j);
+				float64_t h = m_activations(i,k);
+				float64_t w = W(i,j);
+				float64_t h_ = w*h*(1-h);
+				
+				float64_t g = 2*w*(h-1)*h*(h*(2*w*h_-1)-w*h_+h*h);
+				
+				WG(i,j) += (contraction_coefficient/m_batch_size)*g;
 			}
 		}
 	}
 }
 
 
-void CNeuralRectifiedLinearLayer::compute_local_gradients(
-		SGMatrix<float64_t> targets)
+void CNeuralLogisticLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
-	if (targets.num_rows != 0)
-	{
-		int32_t length = m_num_neurons*m_batch_size;
-		for (int32_t i=0; i<length; i++)
-		{
-			if (m_activations[i]==0)
-				m_local_gradients[i] = 0;
-			else
-				m_local_gradients[i] = (m_activations[i]-targets[i])/m_batch_size;
-		}
-	}
-	else
-	{
-		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t i=0; i< len; i++)
-		{
-			if (m_activations[i]==0)
-				m_local_gradients[i] = 0;
-			else
-				m_local_gradients[i] = m_activation_gradients[i];
-		}
-	}
+	CNeuralLinearLayer::compute_local_gradients(targets);
+	
+	// multiply by the derivative of the logistic function
+	int32_t length = m_num_neurons*m_batch_size;
+	for (int32_t i=0; i<length; i++)
+		m_local_gradients[i] *= m_activations[i] * (1.0-m_activations[i]);
 }

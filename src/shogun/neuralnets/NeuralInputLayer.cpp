@@ -32,6 +32,7 @@
  */
 
 #include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
 
@@ -40,35 +41,32 @@ CNeuralInputLayer::CNeuralInputLayer() : CNeuralLayer()
 	init();
 }
 
-CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons, int32_t start_index): 
+CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons): 
 CNeuralLayer(num_neurons)
 {
 	init();
-	m_start_index = start_index;
 }
 
 CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height, 
-	int32_t num_channels, int32_t start_index): CNeuralLayer(width*height*num_channels)
+	int32_t num_channels): CNeuralLayer(width*height*num_channels)
 {
 	init();
 	m_width = width;
 	m_height = height;
-	m_start_index = start_index;
 }
 
-void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
+void CNeuralInputLayer::compute_activations(CFeatures* data)
 {
-	if (m_start_index == 0)
-	{
-		memcpy(m_activations.matrix, inputs.matrix, 
-			m_num_neurons*m_batch_size*sizeof(float64_t));
-	}
-	else
-	{
-		for (int32_t i=0; i<m_num_neurons; i++)
-			for (int32_t j=0; j<m_batch_size; j++)
-				m_activations(i,j) = inputs(m_start_index+i, j);
-	}
+	CDotFeatures* dot_data = dynamic_cast<CDotFeatures*>(data);
+	REQUIRE(dot_data, "Dot features expected");
+	m_activations.zero();
+
+	int32_t dim = dot_data->get_dim_feature_space();
+	REQUIRE(m_activations.num_rows == dim, "%d should match dimensionality %d", m_activations.num_rows, dim);
+	REQUIRE(m_activations.num_cols == data->get_num_vectors(), "%d should match number of vectors %d", m_activations.num_rows, data->get_num_vectors());
+	for (int i=0; i<data->get_num_vectors(); i++)
+		dot_data->add_to_dense_vec(1.0, i, m_activations.matrix + dim*i, dim);
+
 	if (gaussian_noise > 0)
 	{
 		int32_t len = m_num_neurons*m_batch_size;
@@ -79,10 +77,7 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 
 void CNeuralInputLayer::init()
 {
-	m_start_index = 0;
 	gaussian_noise = 0;
-	SG_ADD(&m_start_index, "start_index",
-	       "Start Index", MS_NOT_AVAILABLE);
 	SG_ADD(&gaussian_noise, "gaussian_noise",
 	       "Gaussian Noise Standard Deviation", MS_NOT_AVAILABLE);
 }

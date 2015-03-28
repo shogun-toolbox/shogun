@@ -216,7 +216,6 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	REQUIRE(max_num_epochs>=0,
 		"Maximum number of epochs (%i) must be >= 0\n", max_num_epochs);
 
-	SGMatrix<float64_t> inputs = features_to_matrix(data);
 	SGMatrix<float64_t> targets = labels_to_matrix(m_labels);
 
 	for (int32_t i=0; i<m_num_layers-1; i++)
@@ -232,9 +231,9 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 
 	bool result = false;
 	if (optimization_method==NNOM_GRADIENT_DESCENT)
-		result = train_gradient_descent(inputs, targets);
+		result = train_gradient_descent(dynamic_cast<CDotFeatures*>(data), targets);
 	else if (optimization_method==NNOM_LBFGS)
-		result = train_lbfgs(inputs, targets);
+		result = train_lbfgs(dynamic_cast<CDotFeatures*>(data), targets);
 
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = false;
@@ -243,7 +242,7 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	return result;
 }
 
-bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
+bool CNeuralNetwork::train_gradient_descent(CDotFeatures* inputs,
 		SGMatrix<float64_t> targets)
 {
 	REQUIRE(gd_learning_rate>0,
@@ -251,7 +250,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	REQUIRE(gd_momentum>=0,
 		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
 
-	int32_t training_set_size = inputs.num_cols;
+	int32_t training_set_size = inputs->get_num_vectors();
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
 	set_batch_size(gd_mini_batch_size);
 
@@ -270,6 +269,9 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 
 	bool continue_training = true;
 	float64_t alpha = gd_learning_rate;
+	SGVector<index_t> inputs_batch_subset(gd_mini_batch_size);
+	SGMatrix<float64_t> targets_batch;
+		//(targets.matrix+j*get_num_outputs(),
 
 	for (int32_t i=0; continue_training; i++)
 	{
@@ -283,16 +285,20 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 			if (j+gd_mini_batch_size>training_set_size)
 				j = training_set_size-gd_mini_batch_size;
 
-			SGMatrix<float64_t> targets_batch(targets.matrix+j*get_num_outputs(),
-				get_num_outputs(), gd_mini_batch_size, false);
 
-			SGMatrix<float64_t> inputs_batch(inputs.matrix+j*m_num_inputs,
-				m_num_inputs, gd_mini_batch_size, false);
+			targets_batch = 
+				SGMatrix<float64_t>(targets.matrix+j*get_num_outputs(),
+					get_num_outputs(), gd_mini_batch_size, false);
 
 			for (int32_t k=0; k<n_param; k++)
 				m_params[k] += gd_momentum*param_updates[k];
 
-			float64_t e = compute_gradients(inputs_batch, targets_batch, gradients);
+			for (int32_t k=j; k<gd_mini_batch_size; k++)
+				inputs_batch_subset[k-j] = k;
+
+			inputs->add_subset(inputs_batch_subset);
+			float64_t e = compute_gradients(inputs, targets_batch, gradients);
+			inputs->remove_subset();
 
 			// filter the errors
 			if (error==-1.0)
@@ -327,10 +333,17 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	return true;
 }
 
-bool CNeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
+struct CNeuralNetworkTrainingContext
+{
+	CNeuralNetwork* network;
+	CDotFeatures* features;
+	SGMatrix<float64_t> targets;
+};
+
+bool CNeuralNetwork::train_lbfgs(CDotFeatures* input,
 		const SGMatrix<float64_t> targets)
 {
-	int32_t training_set_size = inputs.num_cols;
+	int32_t training_set_size = input->get_num_vectors();
 	set_batch_size(training_set_size);
 
 	lbfgs_parameter_t lbfgs_param;
@@ -340,19 +353,18 @@ bool CNeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
 	lbfgs_param.past = 1;
 	lbfgs_param.delta = epsilon;
 
-	m_lbfgs_temp_inputs = &inputs;
-	m_lbfgs_temp_targets = &targets;
+	CNeuralNetworkTrainingContext context;
+	context.network = this;
+	context.features = input;
+	context.targets = targets;
 
 	int32_t result = lbfgs(m_total_num_parameters,
 			m_params,
 			NULL,
 			&CNeuralNetwork::lbfgs_evaluate,
 			&CNeuralNetwork::lbfgs_progress,
-			this,
+			&context,
 			&lbfgs_param);
-
-	m_lbfgs_temp_inputs = NULL;
-	m_lbfgs_temp_targets = NULL;
 
 	if (result==LBFGS_SUCCESS || 1)
 	{
@@ -375,12 +387,16 @@ float64_t CNeuralNetwork::lbfgs_evaluate(void* userdata,
 		const int32_t n,
 		const float64_t step)
 {
-	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(userdata);
+	CNeuralNetworkTrainingContext* context =
+		static_cast<CNeuralNetworkTrainingContext*>(userdata);
+	CNeuralNetwork* network = context->network;
+	CDotFeatures* features = context->features;
+	SGMatrix<float64_t> targets = context->targets;
 
 	SGVector<float64_t> grad_vector(grad, network->get_num_parameters(), false);
 
-	return network->compute_gradients(*network->m_lbfgs_temp_inputs,
-		*network->m_lbfgs_temp_targets, grad_vector);
+	return network->compute_gradients(features,
+		targets, grad_vector);
 }
 
 int CNeuralNetwork::lbfgs_progress(void* instance,
@@ -398,14 +414,7 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 
 SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
 {
-	SGMatrix<float64_t> inputs = features_to_matrix(data);
 	set_batch_size(data->get_num_vectors());
-	return forward_propagate(inputs, j);
-}
-
-SGMatrix<float64_t> CNeuralNetwork::forward_propagate(
-	SGMatrix<float64_t> inputs, int32_t j)
-{
 	if (j==-1)
 		j = m_num_layers-1;
 
@@ -414,7 +423,7 @@ SGMatrix<float64_t> CNeuralNetwork::forward_propagate(
 		CNeuralLayer* layer = get_layer(i);
 
 		if (layer->is_input())
-			layer->compute_activations(inputs);
+			layer->compute_activations(data);
 		else
 			layer->compute_activations(get_section(m_params, i), m_layers);
 
@@ -424,7 +433,7 @@ SGMatrix<float64_t> CNeuralNetwork::forward_propagate(
 	return get_layer(j)->get_activations();
 }
 
-float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
+float64_t CNeuralNetwork::compute_gradients(CDotFeatures* inputs,
 		SGMatrix<float64_t> targets, SGVector<float64_t> gradients)
 {
 	forward_propagate(inputs);
@@ -503,7 +512,7 @@ float64_t CNeuralNetwork::compute_error(SGMatrix<float64_t> targets)
 	return error;
 }
 
-float64_t CNeuralNetwork::compute_error(SGMatrix<float64_t> inputs,
+float64_t CNeuralNetwork::compute_error(CFeatures* inputs,
 		SGMatrix<float64_t> targets)
 {
 	forward_propagate(inputs);
@@ -534,15 +543,16 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	// numerically compute gradients
 	SGVector<float64_t> gradients_numerical(m_total_num_parameters);
 
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
 		float64_t c =
 			CMath::max<float64_t>(CMath::abs(approx_epsilon*m_params[i]),s);
 
 		m_params[i] += c;
-		float64_t error_plus = compute_error(x,y);
+		float64_t error_plus = compute_error(xf,y);
 		m_params[i] -= 2*c;
-		float64_t error_minus = compute_error(x,y);
+		float64_t error_minus = compute_error(xf,y);
 		m_params[i] += c;
 
 		gradients_numerical[i] = (error_plus-error_minus)/(2*c);
@@ -550,7 +560,8 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 
 	// compute gradients using backpropagation
 	SGVector<float64_t> gradients_backprop(m_total_num_parameters);
-	compute_gradients(x, y, gradients_backprop);
+	compute_gradients(xf, y, gradients_backprop);
+	SG_UNREF(xf);
 
 	float64_t sum = 0.0;
 	for (int32_t i=0; i<m_total_num_parameters; i++)
@@ -584,7 +595,9 @@ SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(CFeatures* features)
 		"Number of features (%i) must match the network's number of inputs "
 		"(%i)\n", inputs->get_num_features(), get_num_inputs());
 
-	return inputs->get_feature_matrix();
+	SGMatrix<float64_t> matrix = inputs->get_feature_matrix();
+	REQUIRE(matrix.matrix, "Feature matrix should not be empty");
+	return matrix;
 }
 
 SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(CLabels* labs)
@@ -727,8 +740,6 @@ void CNeuralNetwork::init()
 	m_layers = NULL;
 	m_total_num_parameters = 0;
 	m_batch_size = 1;
-	m_lbfgs_temp_inputs = NULL;
-	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
 
 	SG_ADD((machine_int_t*)&optimization_method, "optimization_method",
