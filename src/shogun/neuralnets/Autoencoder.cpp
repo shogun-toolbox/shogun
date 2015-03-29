@@ -33,8 +33,8 @@
 
 #include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <features/DenseFeatures.h>
 

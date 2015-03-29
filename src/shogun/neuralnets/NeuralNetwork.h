@@ -255,18 +255,6 @@ protected:
 	 */
 	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
 	
-	/** Applies forward propagation, computes the activations of each layer up 
-	 * to layer j
-	 * 
-	 * @param inputs inputs to the network, a matrix of size 
-	 * m_num_inputs*m_batch_size
-	 * @param j layer index at which the propagation should stop. If -1, the 
-	 * propagation continues up to the last layer
-	 * 
-	 * @return activations of the last layer
-	 */
-	//virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, int32_t j=-1);
-	
 	/** Sets the batch size (the number of train/test cases) the network is 
 	 * expected to deal with. 
 	 * Allocates memory for the activations, local gradients, input gradients

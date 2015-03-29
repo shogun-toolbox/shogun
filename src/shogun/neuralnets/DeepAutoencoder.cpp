@@ -35,10 +35,10 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 
 #include <string>
 

@@ -271,7 +271,6 @@ bool CNeuralNetwork::train_gradient_descent(CDotFeatures* inputs,
 	float64_t alpha = gd_learning_rate;
 	SGVector<index_t> inputs_batch_subset(gd_mini_batch_size);
 	SGMatrix<float64_t> targets_batch;
-		//(targets.matrix+j*get_num_outputs(),
 
 	for (int32_t i=0; continue_training; i++)
 	{

@@ -44,7 +44,7 @@
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
 
 using namespace shogun;
 
