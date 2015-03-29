@@ -108,9 +108,9 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			REQUIRE(i_row>=0, "Index %d negative!\n", i_row);
 			REQUIRE(i_col>=0, "Index %d negative!\n", i_col);
 			REQUIRE(i_row<num_features, "Provided index (%d) is larger than number of rows (%d)\n",
-				num_features, i_row);
+							i_row, num_features);
 			REQUIRE(i_col<num_vectors, "Provided index (%d) is larger than number of columns (%d)\n",
-				num_vectors, i_col);
+							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
 			{
@@ -129,9 +129,9 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			REQUIRE(i_row>=0, "Index %d negative!\n", i_row);
 			REQUIRE(i_col>=0, "Index %d negative!\n", i_col);
 			REQUIRE(i_row<num_features, "Provided index (%d) is larger than number of rows (%d)\n",
-				num_features, i_row);
+							i_row, num_features);
 			REQUIRE(i_col<num_vectors, "Provided index (%d) is larger than number of columns (%d)\n",
-				num_vectors, i_col);
+							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
 			{
