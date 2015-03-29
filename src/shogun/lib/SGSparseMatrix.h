@@ -105,11 +105,11 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		inline const T operator()(index_t i_row, index_t i_col) const
 		{
-			REQUIRE(i_row>=0, "Index %d negative!\n", i_row);
-			REQUIRE(i_col>=0, "Index %d negative!\n", i_col);
-			REQUIRE(i_row<num_features, "Provided index (%d) is larger than number of rows (%d)\n",
+			REQUIRE(i_row>=0, "Provided row index %d negative!\n", i_row);
+			REQUIRE(i_col>=0, "Provided column index %d negative!\n", i_col);
+			REQUIRE(i_row<num_features, "Provided row index (%d) is larger than number of rows (%d)\n",
 							i_row, num_features);
-			REQUIRE(i_col<num_vectors, "Provided index (%d) is larger than number of columns (%d)\n",
+			REQUIRE(i_col<num_vectors, "Provided column index (%d) is larger than number of columns (%d)\n",
 							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
@@ -126,11 +126,11 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		inline T& operator()(index_t i_row, index_t i_col)
 		{
-			REQUIRE(i_row>=0, "Index %d negative!\n", i_row);
-			REQUIRE(i_col>=0, "Index %d negative!\n", i_col);
-			REQUIRE(i_row<num_features, "Provided index (%d) is larger than number of rows (%d)\n",
+			REQUIRE(i_row>=0, "Provided row index %d negative!\n", i_row);
+			REQUIRE(i_col>=0, "Provided column index %d negative!\n", i_col);
+			REQUIRE(i_row<num_features, "Provided row index (%d) is larger than number of rows (%d)\n",
 							i_row, num_features);
-			REQUIRE(i_col<num_vectors, "Provided index (%d) is larger than number of columns (%d)\n",
+			REQUIRE(i_col<num_vectors, "Provided column index (%d) is larger than number of columns (%d)\n",
 							i_col, num_vectors);
 
 			for (index_t i=0; i<sparse_matrix[i_col].num_feat_entries; ++i)
