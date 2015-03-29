@@ -64,10 +64,21 @@ int main(int, char*[])
 	const int num_classes = 3;
 	const int num_examples_per_class = 15;
 	
-	SGMatrix<float64_t> X = CDataGenerator::generate_gaussians(
-		num_examples_per_class,num_classes,num_features);
-	
-	SGVector<float64_t> Y(num_classes*num_examples_per_class);
+	SGMatrix<float64_t> X;
+	SGVector<float64_t> Y;
+	try
+	{
+		X = CDataGenerator::generate_gaussians(
+			num_examples_per_class,num_classes,num_features);
+		
+		Y = SGVector<float64_t>(num_classes*num_examples_per_class);
+	}
+	catch (ShogunException e)
+	{
+		// out of memory
+		SG_SPRINT(e.get_exception_string());
+		return 0;
+	}
 	
 	for (int32_t i = 0; i < num_classes; i++)
 		for (int32_t j = 0; j < num_examples_per_class; j++)
