@@ -13,7 +13,7 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

@@ -8,7 +8,7 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/mathematics/Math.h>

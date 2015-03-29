@@ -10,7 +10,7 @@
 
 #include <shogun/features/streaming/StreamingHashedDenseFeatures.h>
 #include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
-#include <shogun/features/HashedDenseFeatures.h>
+#include <shogun/features/hashed/HashedDenseFeatures.h>
 
 namespace shogun
 {
