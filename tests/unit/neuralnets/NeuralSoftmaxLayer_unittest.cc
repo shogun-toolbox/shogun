@@ -31,7 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>

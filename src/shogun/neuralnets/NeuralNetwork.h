@@ -39,19 +39,15 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/neuralnets/NeuralNetworkOptimizer.h>
+#include <shogun/neuralnets/optimizers/LBFGS.h>
+#include <shogun/neuralnets/optimizers/SGD.h>
 
 namespace shogun
 {
 template<class T> class CDenseFeatures;
 class CDynamicObjectArray;
 class CNeuralLayer;
-
-/** optimization method for neural networks */
-enum ENNOptimizationMethod
-{
-	NNOM_GRADIENT_DESCENT=0,
-	NNOM_LBFGS=1
-};	
 
 /** @brief A generic multi-layer neural network
  *
@@ -232,29 +228,6 @@ public:
 	
 	virtual const char* get_name() const { return "NeuralNetwork";}
 	
-protected:	
-	/** trains the network */
-	virtual bool train_machine(CFeatures* data=NULL);
-	
-	/** trains the network using gradient descent*/
-	virtual bool train_gradient_descent(CDotFeatures* inputs, 
-			SGMatrix<float64_t> targets);
-	
-	/** trains the network using L-BFGS*/
-	virtual bool train_lbfgs(CDotFeatures* inputs, 
-			SGMatrix<float64_t> targets);
-	
-	/** Applies forward propagation, computes the activations of each layer up 
-	 * to layer j
-	 * 
-	 * @param data input features
-	 * @param j layer index at which the propagation should stop. If -1, the 
-	 * propagation continues up to the last layer
-	 * 
-	 * @return activations of the last layer
-	 */
-	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
-	
 	/** Sets the batch size (the number of train/test cases) the network is 
 	 * expected to deal with. 
 	 * Allocates memory for the activations, local gradients, input gradients
@@ -280,6 +253,46 @@ protected:
 	 */
 	virtual float64_t compute_gradients(CDotFeatures* inputs, 
 			SGMatrix<float64_t> targets, SGVector<float64_t> gradients);
+	
+	/** Returns total number of parameters in the network */
+	int32_t get_total_num_parameters() const
+	{
+		return m_total_num_parameters;
+	}
+	
+	/** Returns array where all the parameters of the network are stored */
+	SGVector<float64_t> get_params() const
+	{
+		return m_params;
+	}
+
+	void set_optimizer(CNeuralNetworkOptimizer* optimizer)
+	{
+		SG_REF(optimizer);
+		SG_UNREF(m_optimizer);
+		m_optimizer = optimizer;
+	}
+
+	CNeuralNetworkOptimizer* get_optimizer() const
+	{
+		SG_REF(m_optimizer);
+		return m_optimizer;
+	}
+
+protected:
+	/** trains the network */
+	virtual bool train_machine(CFeatures* data=NULL);
+	
+	/** Applies forward propagation, computes the activations of each layer up 
+	 * to layer j
+	 * 
+	 * @param data input features
+	 * @param j layer index at which the propagation should stop. If -1, the 
+	 * propagation continues up to the last layer
+	 * 
+	 * @return activations of the last layer
+	 */
+	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
 	
 	/** Forward propagates the inputs and computes the error between the output 
 	 * layer's activations and the given target activations.
@@ -320,32 +333,12 @@ protected:
 private:
 	void init();
 	
-	/** callback for l-bfgs */
-	static float64_t lbfgs_evaluate(void *userdata, 
-			const float64_t *W, 
-			float64_t *grad, 
-			const int32_t n, 
-			const float64_t step);
-
-	/** callback for l-bfgs */
-	static int lbfgs_progress(void *instance,
-			const float64_t *x,
-			const float64_t *g,
-			const float64_t fx,
-			const float64_t xnorm,
-			const float64_t gnorm,
-			const float64_t step,
-			int n,
-			int k,
-			int ls
-			);
 	
 	/** Returns the section of vector v that belongs to layer i */
 	template<class T>
 	SGVector<T> get_section(SGVector<T> v, int32_t i);
 public:
-	/** Optimization method, default is NNOM_LBFGS */
-	ENNOptimizationMethod optimization_method;
+
 	
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
@@ -394,44 +387,11 @@ public:
 	 */
 	int32_t max_num_epochs;
 	
-	/** size of the mini-batch used during gradient descent training, 
-	 * if 0 full-batch training is performed
-	 * default value is 0
-	 */
-	int32_t gd_mini_batch_size;
-	
-	/** gradient descent learning rate, defualt value 0.1 */
-	float64_t gd_learning_rate;
-	
-	/** gradient descent learning rate decay
-	 * learning rate is updated at each iteration i according to: 
-	 * alpha(i)=decay*alpha(i-1)
-	 * default value is 1.0 (no decay)
-	 */
-	float64_t gd_learning_rate_decay;
-	
-	/** gradient descent momentum multiplier
-	 * 
-	 * default value is 0.9
-	 * 
-	 * For more details on momentum, see this 
-	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html) 
-	 * [Sutskever, 2013]
-	 */
-	float64_t gd_momentum;
-	
-	/** Used to damp the error fluctuations when stochastic gradient descent is 
-	 * used. damping is done according to: 
-	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
-	 * where c is the damping coefficient
-	 * 
-	 * If -1, the damping coefficient is automatically computed according to:
-	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
-	 * 
-	 * default value is -1
-	 */
-	float64_t gd_error_damping_coeff;
 protected:
+	
+	/** Optimizer to be used */
+	CNeuralNetworkOptimizer* m_optimizer;
+
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
 	

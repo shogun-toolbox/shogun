@@ -31,7 +31,7 @@
  * Written (W) 2015 Sanuj Sharma
  */
 
-#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLeakyRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>

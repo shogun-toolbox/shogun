@@ -33,10 +33,10 @@
 
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/neuralnets/optimizers/LBFGS.h>
 
 using namespace shogun;
 
@@ -229,186 +229,14 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = true;
 
-	bool result = false;
-	if (optimization_method==NNOM_GRADIENT_DESCENT)
-		result = train_gradient_descent(dynamic_cast<CDotFeatures*>(data), targets);
-	else if (optimization_method==NNOM_LBFGS)
-		result = train_lbfgs(dynamic_cast<CDotFeatures*>(data), targets);
+	bool result = 
+		m_optimizer->optimize(this, dynamic_cast<CDotFeatures*>(data), targets);
 
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = false;
 	m_is_training = false;
 
 	return result;
-}
-
-bool CNeuralNetwork::train_gradient_descent(CDotFeatures* inputs,
-		SGMatrix<float64_t> targets)
-{
-	REQUIRE(gd_learning_rate>0,
-		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
-	REQUIRE(gd_momentum>=0,
-		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
-
-	int32_t training_set_size = inputs->get_num_vectors();
-	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
-	set_batch_size(gd_mini_batch_size);
-
-	int32_t n_param = get_num_parameters();
-	SGVector<float64_t> gradients(n_param);
-
-	// needed for momentum
-	SGVector<float64_t> param_updates(n_param);
-	param_updates.zero();
-
-	float64_t error_last_time = -1.0, error = -1.0;
-
-	float64_t c = gd_error_damping_coeff;
-	if (c==-1.0)
-		c = 0.99*(float64_t)gd_mini_batch_size/training_set_size + 1e-2;
-
-	bool continue_training = true;
-	float64_t alpha = gd_learning_rate;
-	SGVector<index_t> inputs_batch_subset(gd_mini_batch_size);
-	SGMatrix<float64_t> targets_batch;
-
-	for (int32_t i=0; continue_training; i++)
-	{
-		if (max_num_epochs!=0)
-			if (i>=max_num_epochs) break;
-
-		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
-		{
-			alpha = gd_learning_rate_decay*alpha;
-
-			if (j+gd_mini_batch_size>training_set_size)
-				j = training_set_size-gd_mini_batch_size;
-
-
-			targets_batch = 
-				SGMatrix<float64_t>(targets.matrix+j*get_num_outputs(),
-					get_num_outputs(), gd_mini_batch_size, false);
-
-			for (int32_t k=0; k<n_param; k++)
-				m_params[k] += gd_momentum*param_updates[k];
-
-			for (int32_t k=j; k<gd_mini_batch_size; k++)
-				inputs_batch_subset[k-j] = k;
-
-			inputs->add_subset(inputs_batch_subset);
-			float64_t e = compute_gradients(inputs, targets_batch, gradients);
-			inputs->remove_subset();
-
-			// filter the errors
-			if (error==-1.0)
-				error = e;
-			else
-				error = (1.0-c) * error + c*e;
-
-			for (int32_t k=0; k<n_param; k++)
-			{
-				param_updates[k] = gd_momentum*param_updates[k]
-						-alpha*gradients[k];
-
-				m_params[k] -= alpha*gradients[k];
-			}
-
-			if (error_last_time!=-1.0)
-			{
-				float64_t error_change = (error_last_time-error)/error;
-				if (error_change< epsilon && error_change>=0)
-				{
-					SG_INFO("Gradient Descent Optimization Converged\n");
-					continue_training = false;
-					break;
-				}
-
-				SG_INFO("Epoch %i: Error = %f\n",i, error);
-			}
-			error_last_time = error;
-		}
-	}
-
-	return true;
-}
-
-struct CNeuralNetworkTrainingContext
-{
-	CNeuralNetwork* network;
-	CDotFeatures* features;
-	SGMatrix<float64_t> targets;
-};
-
-bool CNeuralNetwork::train_lbfgs(CDotFeatures* input,
-		const SGMatrix<float64_t> targets)
-{
-	int32_t training_set_size = input->get_num_vectors();
-	set_batch_size(training_set_size);
-
-	lbfgs_parameter_t lbfgs_param;
-	lbfgs_parameter_init(&lbfgs_param);
-	lbfgs_param.max_iterations = max_num_epochs;
-	lbfgs_param.epsilon = 0;
-	lbfgs_param.past = 1;
-	lbfgs_param.delta = epsilon;
-
-	CNeuralNetworkTrainingContext context;
-	context.network = this;
-	context.features = input;
-	context.targets = targets;
-
-	int32_t result = lbfgs(m_total_num_parameters,
-			m_params,
-			NULL,
-			&CNeuralNetwork::lbfgs_evaluate,
-			&CNeuralNetwork::lbfgs_progress,
-			&context,
-			&lbfgs_param);
-
-	if (result==LBFGS_SUCCESS || 1)
-	{
-		SG_INFO("L-BFGS Optimization Converged\n");
-	}
-	else if (result==LBFGSERR_MAXIMUMITERATION)
-	{
-		SG_INFO("L-BFGS Max Number of Epochs reached\n");
-	}
-	else
-	{
-		SG_INFO("L-BFGS optimization ended with return code %i\n",result);
-	}
-	return true;
-}
-
-float64_t CNeuralNetwork::lbfgs_evaluate(void* userdata,
-		const float64_t* W,
-		float64_t* grad,
-		const int32_t n,
-		const float64_t step)
-{
-	CNeuralNetworkTrainingContext* context =
-		static_cast<CNeuralNetworkTrainingContext*>(userdata);
-	CNeuralNetwork* network = context->network;
-	CDotFeatures* features = context->features;
-	SGMatrix<float64_t> targets = context->targets;
-
-	SGVector<float64_t> grad_vector(grad, network->get_num_parameters(), false);
-
-	return network->compute_gradients(features,
-		targets, grad_vector);
-}
-
-int CNeuralNetwork::lbfgs_progress(void* instance,
-		const float64_t* x,
-		const float64_t* g,
-		const float64_t fx,
-		const float64_t xnorm,
-		const float64_t gnorm,
-		const float64_t step,
-		int n, int k, int ls)
-{
-	SG_SINFO("Epoch %i: Error = %f\n",k, fx);
-	return 0;
 }
 
 SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
@@ -721,18 +549,13 @@ CDynamicObjectArray* CNeuralNetwork::get_layers()
 
 void CNeuralNetwork::init()
 {
-	optimization_method = NNOM_LBFGS;
+	m_optimizer = new CLBFGSNeuralNetworkOptimizer();
 	dropout_hidden = 0.0;
 	dropout_input = 0.0;
 	max_norm = -1.0;
 	l2_coefficient = 0.0;
 	l1_coefficient = 0.0;
-	gd_mini_batch_size = 0;
 	max_num_epochs = 0;
-	gd_learning_rate = 0.1;
-	gd_learning_rate_decay = 1.0;
-	gd_momentum = 0.9;
-	gd_error_damping_coeff = -1.0;
 	epsilon = 1.0e-5;
 	m_num_inputs = 0;
 	m_num_layers = 0;
@@ -741,20 +564,10 @@ void CNeuralNetwork::init()
 	m_batch_size = 1;
 	m_is_training = false;
 
-	SG_ADD((machine_int_t*)&optimization_method, "optimization_method",
-	       "Optimization Method", MS_NOT_AVAILABLE);
-	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
-	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_optimizer, "optimizer",
+	       "Optimizer", MS_NOT_AVAILABLE);
 	SG_ADD(&max_num_epochs, "max_num_epochs",
 	       "Max number of Epochs", MS_NOT_AVAILABLE);
-	SG_ADD(&gd_learning_rate, "gd_learning_rate",
-	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
-	SG_ADD(&gd_learning_rate_decay, "gd_learning_rate_decay",
-	       "Gradient descent learning rate decay", MS_NOT_AVAILABLE);
-	SG_ADD(&gd_momentum, "gd_momentum",
-	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
-	SG_ADD(&gd_error_damping_coeff, "gd_error_damping_coeff",
-	       "Gradient Descent Error Damping Coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&epsilon, "epsilon",
 	       "Epsilon", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_inputs, "num_inputs",

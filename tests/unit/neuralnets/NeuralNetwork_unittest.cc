@@ -40,10 +40,10 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/NeuralLayers.h>
 #include <gtest/gtest.h>
 
@@ -423,8 +423,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->quick_connect();
 	network->initialize(0.1);
 
-	network->optimization_method = NNOM_GRADIENT_DESCENT;
-	network->gd_learning_rate = 10.0;
+	CSGDNeuralNetworkOptimizer* optimizer = new CSGDNeuralNetworkOptimizer();
+	optimizer->gd_learning_rate = 10.0;
+
+	network->set_optimizer(optimizer);
 	network->epsilon = 0.0;
 	network->max_num_epochs = 1000;
 	

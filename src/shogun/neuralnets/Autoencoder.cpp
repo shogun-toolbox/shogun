@@ -125,11 +125,7 @@ bool CAutoencoder::train(CFeatures* data)
 	for (int i=0; i<dot_data->get_num_vectors(); i++)
 		dot_data->add_to_dense_vec(1.0, i, inputs.matrix+i*dim, dim);
 
-	bool result = false;
-	if (optimization_method==NNOM_GRADIENT_DESCENT)
-		result = train_gradient_descent(dot_data, inputs);
-	else if (optimization_method==NNOM_LBFGS)
-		result = train_lbfgs(dot_data, inputs);
+	bool result = m_optimizer->optimize(this, dot_data, inputs);
 	
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = false;
