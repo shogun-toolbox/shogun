@@ -85,7 +85,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	{
 		CSingleFITCLaplacianBase* fitc_method=
 			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
-		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
+		REQUIRE(fitc_method, "Inference method %s does not support FITC inference\n",
 			m_method->get_name());
 		feat=fitc_method->get_inducing_features();
 	}
@@ -164,13 +164,11 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	kernel->init(data, data);
 
 	// get kernel matrix and create eigen representation of it
-	SGMatrix<float64_t> k_tsts=kernel->get_kernel_matrix();
-	//To DO in order to speed up the prediction process,
-	//we only need to obtain the diagonal elements of the kernel matrix
-	Map<MatrixXd> eigen_Kss(k_tsts.matrix, k_tsts.num_rows, k_tsts.num_cols);
+	SGVector<float64_t> k_tsts=kernel->get_kernel_diagonal();
+	Map<VectorXd> eigen_Kss_diag(k_tsts.vector, k_tsts.vlen);
 
 	// compute Kss=Kss*scale^2
-	eigen_Kss*=CMath::sq(m_method->get_scale());
+	eigen_Kss_diag*=CMath::sq(m_method->get_scale());
 
 	// compute kernel matrix: K(feat, data)*scale^2
 	kernel->init(feat, data);
@@ -193,7 +191,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	SGVector<float64_t> alpha=m_method->get_alpha();
 	const index_t n=k_trts.num_rows;
-	const index_t m=k_tsts.num_cols;
+	const index_t m=k_tsts.vlen;
 	const index_t C=alpha.vlen/n;
 	// result variance vector
 	SGVector<float64_t> s2(m*C*C);
@@ -213,7 +211,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 				eigen_sW.asDiagonal()*eigen_Ks);
 			MatrixXd eigen_sV=eigen_V.cwiseProduct(eigen_V);
 
-			eigen_s2=eigen_Kss.diagonal()-eigen_sV.colwise().sum().adjoint();
+			eigen_s2=eigen_Kss_diag-eigen_sV.colwise().sum().adjoint();
 		}
 		else
 		{
@@ -241,7 +239,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 							eigen_s2[bl_j+(bl_i+idx_m*C)*C]=(bj.block(0,idx_m,n,1).array()*c_cav.block(0,idx_m,n,1).array()).sum();
 					}
 					for (index_t idx_m=0; idx_m<m; idx_m++)
-						eigen_s2[bl_i+(bl_i+idx_m*C)*C]+=eigen_Kss(idx_m,idx_m)-(eigen_Ks.block(0,idx_m,n,1).array()*bi.block(0,idx_m,n,1).array()).sum();
+						eigen_s2[bl_i+(bl_i+idx_m*C)*C]+=eigen_Kss_diag(idx_m)-(eigen_Ks.block(0,idx_m,n,1).array()*bi.block(0,idx_m,n,1).array()).sum();
 				}
 			}
 			else
@@ -255,7 +253,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	{
 		// M = Ks .* (L * Ks)
 		MatrixXd eigen_M=eigen_Ks.cwiseProduct(eigen_L*eigen_Ks);
-		eigen_s2=eigen_Kss.diagonal()+eigen_M.colwise().sum().adjoint();
+		eigen_s2=eigen_Kss_diag+eigen_M.colwise().sum().adjoint();
 	}
 
 	return s2;

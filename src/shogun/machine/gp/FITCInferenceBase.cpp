@@ -107,6 +107,8 @@ void CFITCInferenceBase::init()
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
+	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", MS_NOT_AVAILABLE);
+
 	m_inducing_features=NULL;
 	m_ind_noise=1e-10;
 }
@@ -159,10 +161,9 @@ void CFITCInferenceBase::update_train_kernel()
 	//time complexity can be O(m*n) if the TO DO is done
 	check_features();
 	convert_features();
-	//to reduce the time complexity from O(n^2) to O(n)
-	//the kernel object only computes diagonal elements
-	//TO DO the following function call should be modified
-	CInferenceMethod::update_train_kernel();
+
+	m_kernel->init(m_features, m_features);
+	m_ktrtr_diag=m_kernel->get_kernel_diagonal();
 
 	// create kernel matrix for inducing features
 	m_kernel->init(m_inducing_features, m_inducing_features);

@@ -41,6 +41,14 @@ namespace shogun
  *
  * Note that the number of inducing points (m) is usually far less than the number of input points (n).
  * (the time complexity is computed based on the assumption m < n)
+ *
+ * Warning: the time complexity of method,
+ * CSingleFITCLaplacianBase::get_derivative_wrt_kernel(const TParameter* param),
+ * depends on the implementation of kernel method, get_parameter_gradient_diagonal(param, i).
+ * The default time complexity of the kernel method can be O(n^2)
+ *
+ * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method 
+ * CFITCInferenceMethod::get_posterior_covariance() is called
  */
 class CFITCInferenceMethod: public CSingleFITCLaplacianBase
 {

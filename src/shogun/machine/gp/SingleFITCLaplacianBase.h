@@ -60,6 +60,10 @@ namespace shogun
  * This specific implementation was inspired by the infFITC.m and infFITC_Laplace.m file
  * in the GPML toolbox.
  *
+ * Warning: the time complexity of method, get_derivative_wrt_kernel(const TParameter* param),
+ * depends on the implementation of kernel method, get_parameter_gradient_diagonal(param, i).
+ * The default time complexity of the kernel method can be O(n^2)
+ *
  */
 class CSingleFITCLaplacianBase: public CFITCInferenceBase
 {

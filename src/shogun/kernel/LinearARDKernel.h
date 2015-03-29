@@ -33,7 +33,7 @@ enum EARDKernelType
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf y})= \frac{||{\bf x}-{\bf y}||}
+ * k({\bf x},{\bf y})= ||{\bf x}-{\bf y}||
  * \f]
  *
  * There are three variants based on \f$||\cdot||\f$.
