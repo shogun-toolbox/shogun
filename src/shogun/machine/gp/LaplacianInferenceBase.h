@@ -119,20 +119,6 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
-	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
-	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
-	 * posterior:
-	 *
-	 * \f[
-	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
-	 * \f]
-	 *
-	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
-	 *
-	 * @return mean vector
-	 */
-	virtual SGVector<float64_t> get_posterior_mean();
-
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
 	 * the posterior:

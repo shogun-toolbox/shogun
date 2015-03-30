@@ -126,6 +126,20 @@ public:
 
 	/** update data all matrices */
 	virtual void update();
+
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
+	 * \f]
+	 *
+	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_mean();
 protected:
 
 	virtual void update_init();
@@ -183,7 +197,6 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
-
 private:
 	void init();
 

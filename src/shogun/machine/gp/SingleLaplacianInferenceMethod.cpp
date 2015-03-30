@@ -582,6 +582,24 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 	return result;
 }
+
+SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
+{
+
+	if (parameter_hash_changed())
+		update();
+
+	SGVector<float64_t> res(m_mu.vlen);
+	Map<VectorXd> eigen_res(res.vector, res.vlen);
+
+	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+	eigen_res=eigen_mu-eigen_mean;
+
+	return res;
+}
+
 }
 
 #endif /* HAVE_EIGEN3 */
