@@ -158,24 +158,30 @@ CNeuralNetwork::~CNeuralNetwork()
 CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
-	SGVector<float64_t> labels_vec(m_batch_size);
+	CBinaryLabels* labels = new CBinaryLabels(m_batch_size);
 
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
 		if (get_num_outputs()==1)
 		{
-			if (output_activations[i]>0.5) labels_vec[i] = 1;
-			else labels_vec[i] = -1;
+			if (output_activations[i]>0.5) labels->set_label(i, 1);
+			else labels->set_label(i, -1);
+			
+			labels->set_value(output_activations[i], i);
 		}
 		else if (get_num_outputs()==2)
 		{
-			if (output_activations[2*i]>output_activations[2*i+1])
-				labels_vec[i] = 1;
-			else labels_vec[i] = -1;
+			float64_t v1 = output_activations[2*i];
+			float64_t v2 = output_activations[2*i+1];
+			if (v1>v2)
+				labels->set_label(i, 1);
+			else labels->set_label(i, -1);
+			
+			labels->set_value(v2/(v1+v2), i);
 		}
 	}
-
-	return new CBinaryLabels(labels_vec);
+		
+	return labels;
 }
 
 CRegressionLabels* CNeuralNetwork::apply_regression(CFeatures* data)
@@ -200,8 +206,17 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 		labels_vec[i] = CMath::arg_max(
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
-
-	return new CMulticlassLabels(labels_vec);
+	
+	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
+	
+	labels->allocate_confidences_for(get_num_outputs());
+	for (int32_t i=0; i<m_batch_size; i++)
+	{
+		labels->set_multiclass_confidences(i, SGVector<float64_t>(
+			output_activations.matrix, get_num_outputs(), i*get_num_outputs()));
+	}
+	
+	return labels;
 }
 
 CDenseFeatures< float64_t >* CNeuralNetwork::transform(
@@ -462,7 +477,7 @@ float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
 					l1_coefficient*CMath::sign<float64_t>(m_params[i]);
 		}
 	}
-
+	
 	// max-norm regularization
 	if (max_norm != -1.0)
 	{

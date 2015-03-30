@@ -294,6 +294,11 @@ TEST(NeuralNetwork, binary_classification)
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
 	
+	EXPECT_NEAR(predictions->get_value(0), 0, 1e-8);
+	EXPECT_NEAR(predictions->get_value(1), 1, 1e-8);
+	EXPECT_NEAR(predictions->get_value(2), 1, 1e-8);
+	EXPECT_NEAR(predictions->get_value(3), 0, 1e-8);
+	
 	SG_UNREF(network);
 	SG_UNREF(features);
 	SG_UNREF(predictions);
@@ -347,6 +352,13 @@ TEST(NeuralNetwork, multiclass_classification)
 	
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
+	
+	for (int32_t i=0; i<4; i++)
+	{
+		SGVector<float64_t> confidences = predictions->get_multiclass_confidences(i);
+		EXPECT_NEAR(confidences[0], 1.0-targets_vector[i], 1e-8);
+		EXPECT_NEAR(confidences[1], targets_vector[i], 1e-8);
+	}
 	
 	SG_UNREF(network);
 	SG_UNREF(features);
