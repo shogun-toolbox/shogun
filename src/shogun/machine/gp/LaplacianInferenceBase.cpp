@@ -110,15 +110,6 @@ SGMatrix<float64_t> CLaplacianInferenceBase::get_cholesky()
 
 }
 
-SGVector<float64_t> CLaplacianInferenceBase::get_posterior_mean()
-{
-
-	if (parameter_hash_changed())
-		update();
-
-	return SGVector<float64_t>(m_mu);
-}
-
 SGMatrix<float64_t> CLaplacianInferenceBase::get_posterior_covariance()
 {
 	if (parameter_hash_changed())
