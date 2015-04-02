@@ -176,7 +176,7 @@ protected:
 	 * if the parameter is a matrix, index is the linearized index
 	 * of the matrix (column-major)
 	 * @param idx_a the row index of the gradient matrix
-	 * @param idx_b the row index of the gradient matrix
+	 * @param idx_b the column index of the gradient matrix
 	 * @param avec feature vector corresponding to idx_a
 	 * @param bvec feature vector corresponding to idx_b
 	 *
