@@ -350,7 +350,89 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	SG_UNREF(features_train)
 }
 
-TEST(GaussianARDKernel_matrix,get_kernel_matrix)
+TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
+{
+	index_t dim=2;
+	index_t m=3;
+	float64_t rel_tolerance=1e-10;
+	float64_t abs_tolerance;
+
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+	SGMatrix<float64_t> lat_feat_train2(dim, m);
+
+	lat_feat_train(0,0)=1;
+	lat_feat_train(0,1)=23;
+	lat_feat_train(0,2)=4;
+
+	lat_feat_train(1,0)=3;
+	lat_feat_train(1,1)=2;
+	lat_feat_train(1,2)=-5;
+
+	lat_feat_train2(0,0)=1;
+	lat_feat_train2(0,1)=23;
+	lat_feat_train2(0,2)=4;
+
+	lat_feat_train2(1,0)=3;
+	lat_feat_train2(1,1)=2;
+	lat_feat_train2(1,2)=-5;
+
+	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
+
+	float64_t ell=1.0;
+	CLinearARDKernel* kernel=new CGaussianARDKernel(10, 2*ell*ell);
+	
+	int32_t t_dim=2;
+	SGMatrix<float64_t> weights(t_dim,dim);
+	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	float64_t weight1=0.02;
+	float64_t weight2=-0.4;
+	float64_t weight3=0;
+	float64_t weight4=0.01;
+	weights(0,0)=weight1;
+	weights(0,1)=weight2;
+	weights(1,0)=weight3;
+	weights(1,1)=weight4;
+	kernel->set_matrix_weights(weights);
+	
+	SG_REF(latent_features_train)
+	SG_REF(latent_features_train2)
+
+	kernel->init(latent_features_train, latent_features_train2);
+	//result from GPML 3.5
+	//1.000000000000000   0.702682587860637   0.004907454025841
+	//0.702682587860637   1.000000000000000   0.053362341348083
+	//0.004907454025841   0.053362341348083   1.000000000000000
+	SGMatrix<float64_t> mat=kernel->get_kernel_matrix();
+	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	EXPECT_NEAR(mat(0,0),  1.000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	EXPECT_NEAR(mat(0,1),  0.702682587860637,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	EXPECT_NEAR(mat(0,2),  0.004907454025841,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(0.702682587860637, rel_tolerance);
+	EXPECT_NEAR(mat(1,0),  0.702682587860637,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	EXPECT_NEAR(mat(1,1),  1.000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	EXPECT_NEAR(mat(1,2),  0.053362341348083,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(0.004907454025841, rel_tolerance);
+	EXPECT_NEAR(mat(2,0),  0.004907454025841,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.053362341348083, rel_tolerance);
+	EXPECT_NEAR(mat(2,1),  0.053362341348083,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.000000000000000, rel_tolerance);
+	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
+	
+	// cleanup
+	SG_UNREF(kernel);
+	SG_UNREF(latent_features_train)
+	SG_UNREF(latent_features_train2)
+}
+
+
+TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 {
 	index_t n=6;
 	index_t dim=2;
