@@ -235,16 +235,14 @@ class CKernel : public CSGObject
 			REQUIRE(rhs, "CKernel::get_kernel_diagonal(): Right-handside "
 						"features missing!\n");
 
-			REQUIRE(lhs->get_num_vectors()==rhs->get_num_vectors(),
-					"CKernel::get_kernel_diagonal(): Left- and right-"
-					"handside features must be equal sized\n");
+			int32_t length=CMath::min(lhs->get_num_vectors(),rhs->get_num_vectors());
 
 			/* allocate space if necessary */
 			if (!preallocated.vector)
-				preallocated=SGVector<float64_t>(lhs->get_num_vectors());
+				preallocated=SGVector<float64_t>(length);
 			else
 			{
-				REQUIRE(preallocated.vlen==lhs->get_num_vectors(),
+				REQUIRE(preallocated.vlen==length,
 						"%s::get_kernel_diagonal(): Preallocated vector has"
 						" wrong size!\n", get_name());
 			}
