@@ -136,6 +136,15 @@ public:
 	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
 			index_t index=-1);
 
+	/** return diagonal part of derivative with respect to specified parameter
+	 *
+	 * @param param the parameter
+	 * @param index the index of the element if parameter is a vector
+	 *
+	 * @return diagonal part of gradient with respect to parameter
+	 */
+	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
+		const TParameter* param, index_t index=-1);
 protected:
 	/** compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors
@@ -159,6 +168,23 @@ protected:
 	 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
 	 */
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b);
+
+	/** helper function to compute derivative with respect to specified parameter
+	 *
+	 * @param param the parameter
+	 * @param index the index of the element if parameter is a vector or matrix
+	 * if the parameter is a matrix, index is the linearized index
+	 * of the matrix (column-major)
+	 * @param idx_a the row index of the gradient matrix
+	 * @param idx_b the column index of the gradient matrix
+	 * @param avec feature vector corresponding to idx_a
+	 * @param bvec feature vector corresponding to idx_b
+	 *
+	 * @return gradient at row idx_a and column idx_b with respect to parameter
+	 */
+	virtual float64_t get_parameter_gradient_helper(const TParameter* param,
+		index_t index, int32_t idx_a, int32_t idx_b,
+		SGVector<float64_t> avec, SGVector<float64_t> bvec);
 
 #endif /* HAVE_LINALG_LIB */
 };

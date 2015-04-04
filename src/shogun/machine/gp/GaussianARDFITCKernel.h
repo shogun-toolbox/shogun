@@ -108,6 +108,16 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
 		index_t index=-1);
+
+	/** return diagonal part of derivative with respect to specified parameter
+	 *
+	 * @param param the parameter
+	 * @param index the index of the element if parameter is a vector
+	 *
+	 * @return diagonal part of gradient with respect to parameter
+	 */
+	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
+		const TParameter* param, index_t index=-1);
 #endif /* HAVE_LINALG_LIB */
 };
 }

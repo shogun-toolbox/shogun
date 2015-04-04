@@ -75,9 +75,20 @@ CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* ker
 	return (CGaussianARDFITCKernel*)kernel;
 }
 
+SGVector<float64_t> CGaussianARDFITCKernel::get_parameter_gradient_diagonal(
+		const TParameter* param, index_t index)
+{
+	REQUIRE(param, "Param not set\n");
+	if (!strcmp(param->m_name, "inducing_features"))
+		return CKernel::get_parameter_gradient_diagonal(param, index);
+	else
+		return CGaussianARDKernel::get_parameter_gradient_diagonal(param, index);
+}
+
 SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
+	REQUIRE(param, "Param not set\n");
 	if (!strcmp(param->m_name, "inducing_features"))
 	{
 		REQUIRE(lhs, "Left features not set!\n");

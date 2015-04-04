@@ -11,6 +11,7 @@
  */
 
 #include <shogun/kernel/GaussianARDKernel.h>
+#include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
@@ -72,10 +73,79 @@ float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::exp(-result);
 }
 
+SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
+		const TParameter* param, index_t index)
+{
+	REQUIRE(param, "Param not set\n");
+	REQUIRE(lhs , "Left features not set!\n");
+	REQUIRE(rhs, "Right features not set!\n");
+
+	if (lhs==rhs) 
+	{
+		if (!strcmp(param->m_name, "weights") || !strcmp(param->m_name, "width"))
+		{
+			SGVector<float64_t> derivative(num_lhs);
+			derivative.zero();
+			return derivative;
+		}
+	}
+	else
+	{
+		int32_t length=CMath::min(num_lhs, num_rhs);
+		SGVector<float64_t> derivative(length);
+
+		for (index_t j=0; j<length; j++)
+		{
+			if (!strcmp(param->m_name, "weights") )
+			{
+				SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(j);
+				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(j);
+				derivative[j]=get_parameter_gradient_helper(param,index,j,j,avec,bvec);
+			}
+			else if (!strcmp(param->m_name, "width"))
+			{
+				SGVector<float64_t> avec, bvec;
+				derivative[j]=get_parameter_gradient_helper(param,index,j,j,avec,bvec);
+			}
+		}
+		return derivative;
+	}
+
+	SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
+	return SGVector<float64_t>();
+}
+
+
+float64_t CGaussianARDKernel::get_parameter_gradient_helper(
+	const TParameter* param, index_t index, int32_t idx_a,
+	int32_t idx_b, SGVector<float64_t> avec, SGVector<float64_t> bvec)
+{
+	REQUIRE(param, "Param not set\n");
+
+	if (!strcmp(param->m_name, "weights"))
+	{
+		linalg::add(avec, bvec, bvec, 1.0, -1.0);
+		float64_t scale=-kernel(idx_a,idx_b)/m_width;
+		return	compute_gradient_helper(bvec, bvec, scale, index);
+	}
+	else if (!strcmp(param->m_name, "width"))
+	{
+		float64_t tmp=kernel(idx_a,idx_b);
+		return -tmp*CMath::log(tmp)/m_width;
+	}
+	else
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
+		return 0.0;
+	}
+}
+
 SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
-	REQUIRE(lhs && rhs, "Features not set!\n")
+	REQUIRE(param, "Param not set\n");
+	REQUIRE(lhs , "Left features not set!\n");
+	REQUIRE(rhs, "Right features not set!\n");
 
 	if (!strcmp(param->m_name, "weights"))
 	{
@@ -86,9 +156,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 			for (index_t k=0; k<num_rhs; k++)
 			{
 				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(k);
-				linalg::add(avec, bvec, bvec, 1.0, -1.0);
-				float64_t scale=-kernel(j,k)/m_width;
-				derivative(j,k)=compute_gradient_helper(bvec, bvec, scale, index);
+				derivative(j,k)=get_parameter_gradient_helper(param,index,j,k,avec,bvec);
 			}
 		}
 		return derivative;
@@ -101,11 +169,10 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		{
 			for (index_t k=0; k<num_rhs; k++)
 			{
-				float64_t tmp=kernel(j,k);
-				derivative(j,k)=-tmp*CMath::log(tmp)/m_width;
+				SGVector<float64_t> avec, bvec;
+				derivative(j,k)=get_parameter_gradient_helper(param,index,j,k,avec,bvec);
 			}
 		}
-
 		return derivative;
 	}
 	else
@@ -117,8 +184,11 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 
 float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 {
-	REQUIRE(rhs, "Right features (rhs) not set!\n")
 	REQUIRE(lhs, "Left features (lhs) not set!\n")
+	REQUIRE(rhs, "Right features (rhs) not set!\n")
+
+	if (lhs==rhs && idx_a==idx_b) 
+		return 0.0;
 
 	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
 	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
