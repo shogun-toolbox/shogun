@@ -33,31 +33,25 @@ CCrossValidationMulticlassStorage::CCrossValidationMulticlassStorage(bool comput
 
 CCrossValidationMulticlassStorage::~CCrossValidationMulticlassStorage()
 {
-	if (m_compute_ROC)
+	if (m_compute_ROC && m_fold_ROC_graphs)
 	{
-		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
-			m_fold_ROC_graphs[i].~SGMatrix<float64_t>();
-
 		SG_FREE(m_fold_ROC_graphs);
 	}
 
-	if (m_compute_PRC)
+	if (m_compute_PRC && m_fold_PRC_graphs)
 	{
-		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
-			m_fold_PRC_graphs[i].~SGMatrix<float64_t>();
-
 		SG_FREE(m_fold_PRC_graphs);
 	}
 
-	if (m_compute_conf_matrices)
+	if (m_compute_conf_matrices && m_conf_matrices)
 	{
-		for (int32_t i=0; i<m_num_folds*m_num_runs; i++)
-			m_conf_matrices[i].~SGMatrix<int32_t>();
-
 		SG_FREE(m_conf_matrices);
 	}
 
-	SG_UNREF(m_binary_evaluations);
+	if (m_binary_evaluations)
+	{
+		SG_UNREF(m_binary_evaluations);
+	}
 };
 
 

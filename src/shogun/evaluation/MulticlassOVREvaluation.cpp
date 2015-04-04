@@ -28,12 +28,14 @@ CMulticlassOVREvaluation::CMulticlassOVREvaluation(CBinaryClassEvaluation* binar
 
 CMulticlassOVREvaluation::~CMulticlassOVREvaluation()
 {
-	SG_UNREF(m_binary_evaluation);
 	if (m_graph_results)
 	{
-		for (int32_t i=0; i<m_num_graph_results; i++)
-			m_graph_results[i].~SGMatrix<float64_t>();
 		SG_FREE(m_graph_results);
+	}
+
+	if (m_binary_evaluation)
+	{
+		SG_UNREF(m_binary_evaluation);
 	}
 }
 
