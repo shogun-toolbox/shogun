@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'modshogun'
 require 'pp'
 parameter_list=[['../data/train_sparsereal.light']]
