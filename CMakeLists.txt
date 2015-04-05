@@ -510,6 +510,7 @@ CHECK_CXX_SOURCE_COMPILES(
 AppendToDefines(HAVE_STD_ISNAN)
 
 # check SSE and SSE2 intrinsics header
+OPTION(DISABLE_SSE "Disable SSE and SSE2 features." OFF)
 IF((NOT CYGWIN) AND (NOT DISABLE_SSE))
 include(CheckIncludeFile)
 CHECK_INCLUDE_FILE(xmmintrin.h HAVE_BUILTIN_VECTOR)
