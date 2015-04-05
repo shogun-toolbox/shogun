@@ -21,6 +21,7 @@
  #include <shogun/structure/MultilabelModel.h>
  #include <shogun/structure/HashedMultilabelModel.h>
  #include <shogun/structure/MultilabelCLRModel.h>
+ #include <shogun/structure/HierarchicalMultilabelModel.h>
 
  #include <shogun/structure/FactorType.h>
  #include <shogun/structure/Factor.h>
