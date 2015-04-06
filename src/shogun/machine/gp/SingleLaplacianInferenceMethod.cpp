@@ -382,8 +382,11 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
 	}
+
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
-		SG_WARNING("Max iterations attained but the optimizer is not converged\n");
+	{
+		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+	}
 
 	// compute f = K * alpha + m
 	eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
