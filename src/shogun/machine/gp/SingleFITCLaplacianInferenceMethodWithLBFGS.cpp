@@ -49,8 +49,8 @@ CSingleFITCLaplacianInferenceMethodWithLBFGS::CSingleFITCLaplacianInferenceMetho
 
 CSingleFITCLaplacianInferenceMethodWithLBFGS::CSingleFITCLaplacianInferenceMethodWithLBFGS(
 	CKernel* kern, CFeatures* feat, CMeanFunction* m,
-	CLabels* lab, CLikelihoodModel* mod, CFeatures* latent_features)
-	: CSingleFITCLaplacianInferenceMethod(kern, feat, m, lab, mod, latent_features)
+	CLabels* lab, CLikelihoodModel* mod, CFeatures* inducing_features)
+	: CSingleFITCLaplacianInferenceMethod(kern, feat, m, lab, mod, inducing_features)
 {
 	init();
 }
@@ -166,6 +166,7 @@ float64_t CSingleFITCLaplacianInferenceMethodWithLBFGS::evaluate(
 	const int dim,
 	const float64_t step)
 {
+	//time complexity O(m*n)
 	/* Note that alpha = alpha_pre_iter - step * gradient_pre_iter */
 
 	/* Unfortunately we can not use dynamic_cast to cast the void * pointer to an
@@ -182,6 +183,7 @@ float64_t CSingleFITCLaplacianInferenceMethodWithLBFGS::evaluate(
 
 void CSingleFITCLaplacianInferenceMethodWithLBFGS::update_alpha()
 {
+	//time complexity O(m*n)
 	float64_t psi_new=m_Psi;
 
 	/* get mean vector and create eigen representation of it*/
@@ -261,6 +263,7 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
 	const int dim,
 	float64_t &psi)
 {
+	//time complexity O(m*n)
 	Map<VectorXd> eigen_alpha(alpha, dim);
 	SGVector<float64_t> f(dim);
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
@@ -282,6 +285,7 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 	float64_t *gradient,
 	const int dim)
 {
+	//time complexity O(m*n)
 	Map<VectorXd> eigen_alpha(alpha, dim);
 	Map<VectorXd> eigen_gradient(gradient, dim);
 	SGVector<float64_t> f(dim);

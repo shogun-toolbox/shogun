@@ -68,14 +68,14 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
-	 * @param latent_features features to use
+	 * @param inducing_features features to use
 	 */
 	CSingleFITCLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
 			CFeatures* features,
 			CMeanFunction* mean,
 			CLabels* labels,
 			CLikelihoodModel* model,
-			CFeatures* latent_features
+			CFeatures* inducing_features
 			);
 
 	virtual ~CSingleFITCLaplacianInferenceMethodWithLBFGS();
