@@ -1009,6 +1009,11 @@ IF(SWIG_WITH_SYSTEM_CFLAGS)
 	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} ${SYSTEM_CXX_FLAGS}")
 ENDIF(SWIG_WITH_SYSTEM_CFLAGS)
 
+OPTION(REDUCE_SWIG_DEBUG "Reduce debuginfo when compiling interfaces" OFF)
+IF(REDUCE_SWIG_DEBUG)
+	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -g1")
+ENDIF(REDUCE_SWIG_DEBUG)
+
 # python modular
 IF (PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
