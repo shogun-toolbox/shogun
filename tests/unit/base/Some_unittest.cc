@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #ifdef HAVE_CXX11
+#ifdef USE_REFERENCE_COUNTING
 using namespace shogun;
 
 TEST(Some,basic)
@@ -35,4 +36,5 @@ TEST(Some,get)
     SG_UNREF(raw);
     EXPECT_EQ(1, raw->ref_count());
 }
+#endif
 #endif
