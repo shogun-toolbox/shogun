@@ -426,6 +426,11 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
 	}
 
+	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
+	{
+		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+	}
+
 	// compute f = K * alpha + m
 	SGVector<float64_t> tmp=compute_mvmK(m_al);
 	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
@@ -614,6 +619,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVect
 SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
+	REQUIRE(param, "Param not set\n");
 	//time complexity O(m^2*n)
 	REQUIRE(!(strcmp(param->m_name, "scale")
 		&& strcmp(param->m_name, "inducing_noise")
@@ -803,7 +809,8 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_mean
 SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::derivative_helper_when_Wneg(
 	SGVector<float64_t> res, const TParameter *param)
 {
-	SG_WARNING("Derivative wrt %s cannot be computed since W is too negative\n", param->m_name);
+	REQUIRE(param, "Param not set\n");
+	SG_WARNING("Derivative wrt %s cannot be computed since W (the Hessian (diagonal) matrix) is too negative\n", param->m_name);
 	//dnlZ = struct('cov',0*hyp.cov, 'mean',0*hyp.mean, 'lik',0*hyp.lik);
 	res.zero();
 	return res;

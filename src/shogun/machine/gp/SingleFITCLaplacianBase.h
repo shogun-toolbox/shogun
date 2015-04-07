@@ -60,8 +60,10 @@ namespace shogun
  * This specific implementation was inspired by the infFITC.m and infFITC_Laplace.m file
  * in the GPML toolbox.
  *
- * Warning: the time complexity of method, get_derivative_wrt_kernel(const TParameter* param),
- * depends on the implementation of kernel method, get_parameter_gradient_diagonal(param, i).
+ * Warning: the time complexity of method,
+ * CSingleFITCLaplacianBase::get_derivative_wrt_kernel(const TParameter* param),
+ * depends on the implementation of virtual kernel method,
+ * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  */
@@ -108,7 +110,7 @@ protected:
 	 */
 	virtual void check_fully_FITC();
 
-	/** compute matrices which are required to compute negative log marginal
+	/** compute variables which are required to compute negative log marginal
 	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$
 	 *
 	 * Note that
@@ -124,7 +126,7 @@ protected:
 	virtual float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui);
 
-	/** compute matrices which are required to compute negative log marginal
+	/** compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt cov-like hyperparameter \f$\theta\f$
 	 *
 	 * Note that
@@ -143,7 +145,7 @@ protected:
 		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui,
 		SGVector<float64_t> v, SGMatrix<float64_t> R);
 
-	/** helper function to compute matrices which are required to compute negative log marginal
+	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt cov-like hyperparameter \f$\theta\f$
 	 *
 	 * Note that
@@ -169,14 +171,14 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
 		const TParameter* param);
 
-	/** helper function to compute matrices which are required to compute negative log marginal
+	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt the diagonal part of cov-like hyperparameter \f$\theta\f$
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
 	virtual SGVector<float64_t> get_derivative_related_cov_diagonal();
 
-	/** helper function to compute matrices which are required to compute negative log marginal
+	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt mean \f$\lambda\f$
 	 *
 	 * @param dmu \f$\frac{\partial {\mu_{n}}}{\partial {\lambda}}\f$
@@ -184,7 +186,7 @@ protected:
 	 */
 	virtual float64_t get_derivative_related_mean(SGVector<float64_t> dmu);
 
-	/** helper function to compute matrices which are required to compute negative log marginal
+	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt inducing features 
 	 *
 	 * Note that the kernel must support to compute the derivatives wrt inducing features

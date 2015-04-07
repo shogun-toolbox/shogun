@@ -362,6 +362,10 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		m_nlz+=Psi_New;
 	}
 
+	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
+	{
+		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+	}
 }
 
 void CMultiLaplacianInferenceMethod::update_deriv()
