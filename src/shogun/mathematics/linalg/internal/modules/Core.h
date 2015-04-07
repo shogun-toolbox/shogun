@@ -48,17 +48,43 @@ namespace linalg
 /** Performs the operation \f$C = \alpha A + \beta B\f$.
  * Works for both matrices and vectors.
  *
- * @param A First matrix
- * @param B Second matrix
+ * This version should be used for backend specific code requirements. For example,
+ * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
+ * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
+ * desired, use the version that does not support preallocated result matrix but
+ * returns the result in a newly created matrix instead.
+ *
+ * @param A First matrix/vector
+ * @param B Second matrix/vector
  * @param C Result of the operation
- * @param alpha scaling parameter for first matrix
- * @param beta scaling parameter for second matrix
+ * @param alpha scaling parameter for first matrix/vector
+ * @param beta scaling parameter for second matrix/vector
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
 		typename Matrix::Scalar beta=1.0)
 {
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
+}
+
+/** Performs the operation \f$C = \alpha A + \beta B\f$.
+ * Works for both matrices and vectors.
+ *
+ * This version returns the result in a newly created matrix/vector. If add
+ * is desired that will work irrespective of the backend and the matrix/vector
+ * type used, then this method should be used.
+ *
+ * @param A First matrix/vector
+ * @param B Second matrix/vector
+ * @param alpha scaling parameter for first matrix/vector
+ * @param beta scaling parameter for second matrix/vector
+ * @return The result of the operation
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+Matrix add(Matrix A, Matrix B, typename Matrix::Scalar alpha=1.0,
+		typename Matrix::Scalar beta=1.0)
+{
+	return implementation::add<backend, Matrix>::compute(A, B, alpha, beta);
 }
 
 /** Performs the operation B = alpha*A. Works for both matrices and vectors */
