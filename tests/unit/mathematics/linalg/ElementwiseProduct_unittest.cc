@@ -46,43 +46,81 @@
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
-TEST(ElementwiseProduct, eigen3_backend)
+TEST(ElementwiseProduct, SGMatrix_eigen3_backend)
 {
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::elementwise_product<linalg::Backend::EIGEN3>(A, B, C);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
 }
+
+#ifdef HAVE_VIENNACL
+TEST(ElementwiseProduct, CGPUMatrix_eigen3_backend)
+{
+	CGPUMatrix<float64_t> A(3,3);
+	CGPUMatrix<float64_t> B(3,3);
+
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	CGPUMatrix<float64_t> C = linalg::elementwise_product<linalg::Backend::EIGEN3>(A, B);
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
+}
+#endif // HAVE_VIENNACL
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
-TEST(ElementwiseProduct, viennacl_backend)
+TEST(ElementwiseProduct, CGPUMatrix_viennacl_backend)
 {
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
 	CGPUMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::elementwise_product<linalg::Backend::VIENNACL>(A, B, C);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
 }
+
+#ifdef HAVE_EIGEN3
+TEST(ElementwiseProduct, SGMatrix_viennacl_backend)
+{
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	SGMatrix<float64_t> C = linalg::elementwise_product<linalg::Backend::VIENNACL>(A, B);
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
+}
+#endif // HAVE_EIGEN3
 #endif // HAVE_VIENNACL
 
 #endif // HAVE_LINALG_LIB
