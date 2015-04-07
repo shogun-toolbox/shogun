@@ -85,8 +85,33 @@ struct matrix_product<Backend::EIGEN3, Matrix>
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 
+	/** Return type */
+	typedef SGMatrix<T> ReturnType;
+
 	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Performs matrix multiplication
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @param transpose_A Whether to the transpose of A should be used instead of A
+	 * @param transpose_B Whether to the transpose of B should be used instead of B
+	 * @return Result of the operation
+	 */
+	static ReturnType compute(SGMatrix<T> A, SGMatrix<T> B,
+		bool transpose_A, bool transpose_B)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+		REQUIRE(A.num_cols == B.num_rows, "Number of columns for A (%d) and "
+				"number of rows for B (%d) should be equal!\n", A.num_cols, B.num_rows);
+
+		ReturnType retMatrix(A.num_rows, B.num_cols);
+		compute(A, B, retMatrix, transpose_A, transpose_B, true);
+
+		return retMatrix;
+	}
 
 	/** Performs matrix multiplication
 	 *
@@ -145,6 +170,31 @@ struct matrix_product<Backend::VIENNACL, Matrix>
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
+	typedef CGPUMatrix<T> ReturnType;
+
+	/** Performs matrix multiplication
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @param transpose_A Whether to the transpose of A should be used instead of A
+	 * @param transpose_B Whether to the transpose of B should be used instead of B
+	 * @return Result of the operation
+	 */
+	static ReturnType compute(CGPUMatrix<T> A, CGPUMatrix<T> B,
+		bool transpose_A, bool transpose_B)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+		REQUIRE(A.num_cols == B.num_rows, "Number of columns for A (%d) and "
+				"number of rows for B (%d) should be equal!\n", A.num_cols, B.num_rows);
+
+		ReturnType retMatrix(A.num_rows, B.num_cols);
+		compute(A, B, retMatrix, transpose_A, transpose_B, true);
+
+		return retMatrix;
+	}
 
 	/** Performs matrix multiplication
 	 *
