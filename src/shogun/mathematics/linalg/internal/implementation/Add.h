@@ -89,6 +89,29 @@ struct add<Backend::NATIVE, Matrix>
 	 * Performs the operation C = alpha*A + beta*B.
 	 * @param A first matrix
 	 * @param B second matrix
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 * @return The return matrix
+	 */
+	static SGMatrix<T> compute(SGMatrix<T> A, SGMatrix<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+
+		SGMatrix<T> C(A.num_rows, A.num_cols);
+		compute(A.matrix, B.matrix, C.matrix, alpha, beta, A.num_rows*A.num_cols);
+
+		return C;
+	}
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first matrix
+	 * @param B second matrix
 	 * @param C matrix to store the result
 	 * @param alpha constant to be multiplied by the first matrix
 	 * @param beta constant to be multiplied by the second matrix
@@ -96,11 +119,36 @@ struct add<Backend::NATIVE, Matrix>
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C,
 		T alpha=1, T beta=1)
 	{
-		REQUIRE(A.num_rows == B.num_rows && B.num_rows == C.num_rows,
-			"Matrices should have same number of rows!\n");
-		REQUIRE(A.num_cols == B.num_cols && B.num_cols == C.num_cols,
-			"Matrices should have same number of columns!\n");
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+		REQUIRE(C.matrix, "Matrix C is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+		REQUIRE(A.num_rows == C.num_rows && A.num_cols == C.num_cols,
+				"Dimension mismatch! A(%d x %d) vs C(%d x %d)\n",
+				A.num_rows, A.num_cols, C.num_rows, C.num_cols);
 		compute(A.matrix, B.matrix, C.matrix, alpha, beta, A.num_rows*A.num_cols);
+	}
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first vector
+	 * @param B second vector
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 * @return The result vector
+	 */
+	static SGVector<T> compute(SGVector<T> A, SGVector<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.vlen == B.vlen, "Vectors should have same length! "
+				"A(%d) vs B(%d)\n", A.vlen, B.vlen);
+
+		SGVector<T> C(A.vlen);
+		compute(A.vector, B.vector, C.vector, alpha, beta, A.vlen);
+
+		return C;
 	}
 
 	/**
@@ -114,7 +162,11 @@ struct add<Backend::NATIVE, Matrix>
 	static void compute(SGVector<T> A, SGVector<T> B, SGVector<T> C,
 		T alpha=1, T beta=1)
 	{
-		REQUIRE(A.vlen == B.vlen, "Vectors should have same length!\n");
+		REQUIRE(A.vlen == B.vlen, "Vectors should have same length! "
+				"A(%d) vs B(%d)\n", A.vlen, B.vlen);
+		REQUIRE(A.vlen == C.vlen, "Vectors should have same length! "
+				"A(%d) vs C(%d)\n", A.vlen, C.vlen);
+
 		compute(A.vector, B.vector, C.vector, alpha, beta, A.vlen);
 	}
 
@@ -152,6 +204,29 @@ struct add<Backend::EIGEN3, Matrix>
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 
 	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 * @return The return matrix
+	 */
+	static SGMatrix<T> compute(SGMatrix<T> A, SGMatrix<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+
+		SGMatrix<T> C(A.num_rows, A.num_cols);
+		compute(A, B, C, alpha, beta);
+
+		return C;
+	}
+
+	/**
 	 * Performs the operation C = alpha*A + beta*B using Eigen3
 	 * @param A first matrix
 	 * @param B second matrix
@@ -167,6 +242,25 @@ struct add<Backend::EIGEN3, Matrix>
 		Eigen::Map<MatrixXt> C_eig=C;
 
 		C_eig=alpha*A_eig+beta*B_eig;
+	}
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first vector
+	 * @param B second vector
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 * @return The result vector
+	 */
+	static SGVector<T> compute(SGVector<T> A, SGVector<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.vlen == B.vlen, "Vectors should have same length! "
+				"A(%d) vs B(%d)\n", A.vlen, B.vlen);
+
+		SGVector<T> C(A.vlen);
+		compute(A, B, C, alpha, beta);
+
+		return C;
 	}
 
 	/**
@@ -201,6 +295,29 @@ struct add<Backend::VIENNACL, Matrix>
 	typedef typename Matrix::Scalar T;
 
 	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first matrix
+	 * @param B second matrix
+	 * @param alpha constant to be multiplied by the first matrix
+	 * @param beta constant to be multiplied by the second matrix
+	 * @return The return matrix
+	 */
+	static CGPUMatrix<T> compute(CGPUMatrix<T> A, CGPUMatrix<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix B is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+
+		CGPUMatrix<T> C(A.num_rows, A.num_cols);
+		compute(A, B, C, alpha, beta);
+
+		return C;
+	}
+
+	/**
 	 * Performs the operation C = alpha*A + beta*B using Viennacl
 	 * @param A first matrix
 	 * @param B second matrix
@@ -212,6 +329,25 @@ struct add<Backend::VIENNACL, Matrix>
 		T alpha, T beta)
 	{
 		C.vcl_matrix()=alpha*A.vcl_matrix()+beta*B.vcl_matrix();
+	}
+
+	/**
+	 * Performs the operation C = alpha*A + beta*B.
+	 * @param A first vector
+	 * @param B second vector
+	 * @param alpha constant to be multiplied by the first vector
+	 * @param beta constant to be multiplied by the second vector
+	 * @return The result vector
+	 */
+	static CGPUVector<T> compute(CGPUVector<T> A, CGPUVector<T> B, T alpha=1, T beta=1)
+	{
+		REQUIRE(A.vlen == B.vlen, "Vectors should have same length! "
+				"A(%d) vs B(%d)\n", A.vlen, B.vlen);
+
+		CGPUVector<T> C(A.vlen);
+		compute(A, B, C, alpha, beta);
+
+		return C;
 	}
 
 	/**
