@@ -111,22 +111,23 @@ public:
 	/** Creates a gpu matrix using data from an SGMatrix */
 	CGPUMatrix(const SGMatrix<T>& cpu_mat);
 
+	/** Converts the matrix into an SGMatrix */
+	operator SGMatrix<T>() const;
+
 #ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 	CGPUMatrix(const EigenMatrixXt& cpu_mat);
 
 	/** Converts the matrix into an Eigen3 matrix */
 	operator EigenMatrixXt() const;
-#endif
-#endif
-
-	/** Converts the matrix into an SGMatrix */
-	operator SGMatrix<T>() const;
+#endif // HAVE_EIGEN3
 
 	/** Returns a ViennaCL matrix wrapped around the data of this matrix. Can be
 	 * used to call native ViennaCL methods on this matrix
 	 */
 	VCLMatrixBase vcl_matrix();
+
+#endif // SWIG
 
 	/** Sets all the elements of the matrix to zero */
 	void zero();
