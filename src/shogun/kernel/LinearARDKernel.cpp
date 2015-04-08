@@ -122,7 +122,8 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	REQUIRE(lhs && rhs, "Features not set!\n");
+	REQUIRE(lhs, "Left features not set!\n");
+	REQUIRE(rhs, "Right features not set!\n");
 	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
 	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
 
@@ -179,7 +180,8 @@ float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
 	const TParameter* param, index_t index)
 {
-	REQUIRE(lhs && rhs, "Features not set!\n");
+	REQUIRE(lhs, "Left features not set!\n");
+	REQUIRE(rhs, "Right features not set!\n");
 
 	int32_t row_index, col_index;
 	if (m_ARD_type!=KT_SCALAR)
