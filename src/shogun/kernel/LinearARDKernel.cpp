@@ -82,14 +82,12 @@ SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>r
 	}
 	else
 	{
-		right=SGMatrix<float64_t> (m_weights.num_rows,1);
-
 		SGMatrix<float64_t> rtmp(right_vec.vector,right_vec.vlen,1,false);
 
 		if(m_ARD_type==KT_DIAG)
-			linalg::elementwise_product(m_weights, rtmp, right);
+			right=linalg::elementwise_product(m_weights, rtmp);
 		else if(m_ARD_type==KT_FULL)
-			linalg::matrix_product(m_weights, rtmp, right);
+			right=linalg::matrix_product(m_weights, rtmp);
 		else
 			SG_ERROR("Unsupported ARD type\n");
 	}
@@ -99,7 +97,7 @@ SGMatrix<float64_t> CLinearARDKernel::compute_right_product(SGVector<float64_t>r
 float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
 {
 	SGMatrix<float64_t> left;
-
+	SGMatrix<float64_t> left_transpose;
 	float64_t scalar_weight=1.0;
 	if (m_ARD_type==KT_SCALAR)
 	{
@@ -108,29 +106,23 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 	}
 	else
 	{
-		left=SGMatrix<float64_t>(1,m_weights.num_rows);
-
 		SGMatrix<float64_t> ltmp(avec.vector,avec.vlen,1,false);
-
-		SGMatrix<float64_t> left_transpose(left.matrix,left.num_cols,1,false);
 		if(m_ARD_type==KT_DIAG)
-			linalg::elementwise_product(m_weights, ltmp, left_transpose);
+			left_transpose=linalg::elementwise_product(m_weights, ltmp);
 		else if(m_ARD_type==KT_FULL)
-			linalg::matrix_product(m_weights, ltmp, left_transpose);
+			left_transpose=linalg::matrix_product(m_weights, ltmp);
 		else
 			SG_ERROR("Unsupported ARD type\n");
+		left=SGMatrix<float64_t>(left_transpose.matrix,1,left_transpose.num_rows,false);
 	}
-
-	SGMatrix<float64_t> res(1,1);
 	SGMatrix<float64_t> right=compute_right_product(bvec, scalar_weight);
-	linalg::matrix_product(left, right, res);
+	SGMatrix<float64_t> res=linalg::matrix_product(left, right);
 	return res[0]*scalar_weight;
 }
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	REQUIRE(lhs && rhs, "Features not set!\n")
-
+	REQUIRE(lhs && rhs, "Features not set!\n");
 	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
 	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
 
@@ -150,11 +142,11 @@ float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	{
 		SGMatrix<float64_t> left(avec.vector,1,avec.vlen,false);
 		SGMatrix<float64_t> right(bvec.vector,bvec.vlen,1,false);
-		SGMatrix<float64_t> res(1,1);
+		SGMatrix<float64_t> res;
 
 		if (m_ARD_type==KT_SCALAR)
 		{
-			linalg::matrix_product(left, right, res);
+			res=linalg::matrix_product(left, right);
 			result=2.0*res[0]*m_weights[0];
 		}
 		else if(m_ARD_type==KT_FULL)
@@ -166,11 +158,11 @@ float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 			SGVector<float64_t> row_vec=m_weights.get_row_vector(row_index);
 			SGMatrix<float64_t> row_vec_r(row_vec.vector,row_vec.vlen,1,false);
 
-			linalg::matrix_product(left, row_vec_r, res);
+			res=linalg::matrix_product(left, row_vec_r);
 			result=res[0]*bvec[col_index];
 
 			SGMatrix<float64_t> row_vec_l(row_vec.vector,1,row_vec.vlen,false);
-			linalg::matrix_product(row_vec_l, right, res);
+			res=linalg::matrix_product(row_vec_l, right);
 			result+=res[0]*avec[col_index];
 
 		}
