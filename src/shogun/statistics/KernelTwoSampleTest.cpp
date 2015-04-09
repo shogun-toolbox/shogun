@@ -82,7 +82,7 @@ SGVector<float64_t> CKernelTwoSampleTest::sample_null()
 
 		/* memory for index permutations, (would slow down loop) */
 		SGVector<index_t> ind_permutation(num_data);
-		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation,ind_permutation.vlen);
+		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
 
 		/* check if kernel is a custom kernel. In that case, changing features is
 		 * not what we want but just subsetting the kernel itself */

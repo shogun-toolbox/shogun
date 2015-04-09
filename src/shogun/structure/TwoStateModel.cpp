@@ -306,7 +306,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t >   lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
 
-	linalg::range_fill<linalg::Backend::NATIVE>(distort,distort.vlen);
+	linalg::range_fill<linalg::Backend::NATIVE>(distort);
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
 		lf = ll;

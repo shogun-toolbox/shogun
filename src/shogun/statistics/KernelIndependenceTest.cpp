@@ -93,7 +93,7 @@ SGVector<float64_t> CKernelIndependenceTest::sample_null()
 
 		/* memory for index permutations */
 		SGVector<index_t> ind_permutation(m_p->get_num_vectors());
-		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation,ind_permutation.vlen);
+		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
 
 		/* check if kernel is a custom kernel. In that case, changing features is
 		 * not what we want but just subsetting the kernel itself */

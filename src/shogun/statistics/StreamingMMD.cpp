@@ -271,13 +271,13 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 
 		/* permute */
 		SGVector<index_t> inds(merged->get_num_vectors());
-		linalg::range_fill<linalg::Backend::NATIVE>(inds,inds.vlen);
+		linalg::range_fill<linalg::Backend::NATIVE>(inds);
 		CMath::permute(inds);
 		merged->add_subset(inds);
 
 		/* copy back */
 		SGVector<index_t> copy(num_this_run);
-		linalg::range_fill<linalg::Backend::NATIVE>(copy,copy.vlen);
+		linalg::range_fill<linalg::Backend::NATIVE>(copy);
 		for (index_t i=0; i<2*num_blocks; ++i)
 		{
 			CFeatures* current=merged->copy_subset(copy);
