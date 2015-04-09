@@ -70,10 +70,21 @@ void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
  * @param len - length of the matrix to be filled
  * @param start - value to be assigned to first element of vector or matrix
  */	
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void range_fill(Matrix A, index_t len, typename Matrix::Scalar start=0.0)
+template <Backend backend=linalg_traits<Core>::backend,class Vector>
+void range_fill_vec(Vector* A, index_t len, Vector start=0.0)
 {
-	implementation::range_fill<backend, Matrix>::compute(A, len, start);
+	implementation::range_fill_vec<backend, Vector>::compute(A, len, start);
+}
+
+/** Range fill a vector or a matrix with start...start+len-1
+ * @param A - the matrix to be filled
+ * @param len - length of the matrix to be filled
+ * @param start - value to be assigned to first element of vector or matrix
+ */	
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void range_fill(Matrix A, typename Matrix::Scalar start=0.0)
+{
+	implementation::range_fill<backend, Matrix>::compute(A, start);
 }
 
 /** Performs matrix multiplication

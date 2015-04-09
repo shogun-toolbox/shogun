@@ -60,7 +60,8 @@ struct range_fill
      * @param len - length of the matrix to be filled
 	 * @param start - value to be assigned to first element of vector or matrix
 	 */	
-	static void compute(Matrix A, index_t len, T start);
+	static void compute(Matrix A, T start);
+
 };
 
 /**
@@ -77,11 +78,9 @@ struct range_fill<Backend::NATIVE, Matrix>
      * @param len - length of the matrix to be filled
 	 * @param start - value to be assigned to first element of vector or matrix
 	 */	
-	static void compute(SGMatrix<T> A, index_t len, T start=0)
+	static void compute(SGMatrix<T> A, T start)
 	{
-		REQUIRE(len>0,"Entered matrix length (currently %d) should be greater than 0.\n", len);
-		REQUIRE(len<=A.num_rows*A.num_cols,"Entered matrix length (currently %d) should be less than matrix size(%d).\n", len, A.num_rows*A.num_cols);
-		compute(A.matrix, len, start);
+		compute(A.matrix, A.num_rows*A.num_cols, start);
 	}
 
 	/** Range fill a vector with start...start+len-1
@@ -89,11 +88,9 @@ struct range_fill<Backend::NATIVE, Matrix>
      * @param len - length of the matrix to be filled
 	 * @param start - value to be assigned to first element of vector or matrix
 	 */	
-	static void compute(SGVector<T> A, index_t len, T start=0)
+	static void compute(SGVector<T> A, T start)
 	{
-		REQUIRE(len>0,"Entered vector length (currently %d) should be greater than 0.\n", len);
-		REQUIRE(len<=A.size(),"Entered vector length (currently %d) should be less than or equal to vector size(%d).\n", len, A.size());
-		compute(A.vector, len, start);
+		compute(A.vector, A.vlen, start);
 	}
 
 	/** Range fill a vector or a matrix with start...start+len-1
@@ -106,6 +103,37 @@ struct range_fill<Backend::NATIVE, Matrix>
 		std::iota(A, A+len, start);
 	}
 
+};
+
+/**
+ * @brief Generic class which is specialized for different backends to perform addition
+ */
+template <enum Backend, class Vector>
+struct range_fill_vec
+{
+	/** Range fill a vector or a matrix with start...start+len-1
+     * @param A - the matrix to be filled
+     * @param len - length of the matrix to be filled
+	 * @param start - value to be assigned to first element of vector or matrix
+	 */	
+	static void compute(Vector* A, index_t len, Vector start);
+};
+
+/**
+ *@brief Partial specialization of add for the Native backend
+ */
+template <class Vector>
+struct range_fill_vec<Backend::NATIVE, Vector>
+{
+	/** Range fill a vector or a matrix with start...start+len-1
+     * @param A - the matrix to be filled
+     * @param len - length of the matrix to be filled
+	 * @param start - value to be assigned to first element of vector or matrix
+	 */	
+	static void compute(Vector* A, index_t len, Vector start)
+	{
+		std::iota(A, A+len, start);
+	}	
 };
 
 }

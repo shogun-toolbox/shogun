@@ -42,7 +42,7 @@ TEST(RangeFillMatrix, native_backend)
 {	
 	SGMatrix<index_t> m(2,2);
 
-	linalg::range_fill<linalg::Backend::NATIVE>(m,4,0);
+	linalg::range_fill<linalg::Backend::NATIVE>(m);
 
 	for(int32_t i=0;i<4;i++)
 	{
@@ -54,8 +54,10 @@ TEST(RangeFillVector, native_backend)
 {
 	SGVector<float64_t> v(4);
 	SGVector<index_t> v2(4);
-	linalg::range_fill<linalg::Backend::NATIVE>(v,v.vlen,0.0);
-	linalg::range_fill<linalg::Backend::NATIVE>(v2,v2.vlen);
+	float64_t* w= SG_MALLOC(float64_t, 4);
+	linalg::range_fill_vec<linalg::Backend::NATIVE>(w,4,0.0);
+	linalg::range_fill<linalg::Backend::NATIVE>(v,0.0);
+	linalg::range_fill<linalg::Backend::NATIVE>(v2);
 	EXPECT_EQ(v.vlen, 4);
 	EXPECT_EQ(v2.vlen, 4);
 	for(int32_t i=0;i<4;i++)

@@ -61,7 +61,7 @@ bool CKernelRidgeRegression::train_machine_pinv()
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
 	m_svs=SGVector<index_t>(m_alpha.vlen);
-	linalg::range_fill<linalg::Backend::NATIVE>(m_svs,m_svs.vlen);
+	linalg::range_fill<linalg::Backend::NATIVE>(m_svs);
 
 	if (get_alphas().vlen!=n)
 	{
@@ -91,7 +91,7 @@ bool CKernelRidgeRegression::train_machine_gs()
 
 	// tell kernel machine that all alphas are needed as 'support vectors'
 	m_svs=SGVector<index_t>(m_alpha.vlen);
-	linalg::range_fill<linalg::Backend::NATIVE>(m_svs,m_svs.vlen);
+	linalg::range_fill<linalg::Backend::NATIVE>(m_svs);
 
 	if (get_alphas().vlen!=n)
 	{

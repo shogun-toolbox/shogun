@@ -47,7 +47,7 @@ void CDisjointSet::make_sets()
 {
 	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
 
-	linalg::range_fill<linalg::Backend::NATIVE>(m_parent,m_parent.vlen);
+	linalg::range_fill<linalg::Backend::NATIVE>(m_parent);
 	m_rank.zero();
 }
 
