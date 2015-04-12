@@ -22,7 +22,7 @@ CKMeans::CKMeans() : CKMeansBase()
 {
 }
 
-CKMeans::CKMeans(int32_t k, CDistance* d, bool use_kmpp) : CKMeansBase(k, d, use_kmpp)
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp) : CKMeansBase(k_, d, use_kmpp)
 {
 }
 

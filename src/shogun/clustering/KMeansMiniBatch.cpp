@@ -24,7 +24,7 @@ CKMeansMiniBatch::CKMeansMiniBatch() : CKMeansBase()
 	init();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k, CDistance* d, bool use_kmpp) : CKMeansBase(k, d, use_kmpp)
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_, CDistance* d, bool use_kmpp) : CKMeansBase(k_, d, use_kmpp)
 {
 	init();
 }
