@@ -7,8 +7,8 @@
  * Written (W) 2014 Parijat Mazumdar
  */
 
-#ifndef _LKMEANS_H__
-#define _LKMEANS_H__
+#ifndef _LKMEANSIMPL_H__
+#define _LKMEANSIMPL_H__
 
 #include <shogun/lib/config.h>
 
@@ -38,3 +38,4 @@ class CKMeansLloydImpl
 };
 }
 #endif
+
