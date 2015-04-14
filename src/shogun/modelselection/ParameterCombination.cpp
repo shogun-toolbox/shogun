@@ -308,6 +308,8 @@ void CParameterCombination::print_tree(int prefix_num) const
 		SG_SPRINT("%s", prefix)
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
+			EContainerType ctype = m_param->get_parameter(i)->m_datatype.m_ctype;
+
 			/* distinction between sgobject and values */
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
@@ -316,23 +318,22 @@ void CParameterCombination::print_tree(int prefix_num) const
 				SG_SPRINT("\"%s\":%s at %p ", param->m_name,
 						current_sgobject->get_name(), current_sgobject);
 			}
-
-		    else if (m_param->get_parameter(i)->m_datatype.m_ctype == CT_SGVECTOR)
-		    {
-				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
-			float64_t** param = (float64_t**)(m_param->
-					get_parameter(i)->m_parameter);
-			if (!m_param->get_parameter(i)->m_datatype.m_length_y)
+			else if (ctype == CT_SGVECTOR || ctype == CT_VECTOR)
 			{
-				SG_ERROR("Parameter vector %s has no length\n",
-						m_param->get_parameter(i)->m_name);
+				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
+				float64_t** param = (float64_t**)(m_param->
+						get_parameter(i)->m_parameter);
+				if (!m_param->get_parameter(i)->m_datatype.m_length_y)
+				{
+					SG_ERROR("Parameter vector %s has no length\n",
+							m_param->get_parameter(i)->m_name);
+				}
+
+				index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
+
+				for (index_t j = 0; j < length; j++)
+					SG_SPRINT("%f ", (*param)[j])
 			}
-
-			index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
-
-			for (index_t j = 0; j < length; j++)
-				SG_SPRINT("%f ", (*param)[j])
-		    }
 
 			else
 			{
