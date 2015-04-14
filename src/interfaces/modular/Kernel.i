@@ -103,6 +103,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(LinearARDKernel) CLinearARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
+%rename(SpectralMixtureKernel) CSpectralMixtureKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -218,5 +219,6 @@ namespace shogun
 %include <shogun/kernel/LinearARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
+%include <shogun/kernel/SpectralMixtureKernel.h>
 
 EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)
