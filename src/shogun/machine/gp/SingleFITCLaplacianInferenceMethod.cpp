@@ -333,6 +333,7 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 
 void CSingleFITCLaplacianInferenceMethod::update_alpha()
 {
+	//time complexity O(m^2*n)
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
@@ -356,7 +357,6 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
 
 	index_t iter=0;
-
 
 	m_Wneg=false;
 	while (Psi_Old-Psi_New>m_tolerance && iter<m_iter)
