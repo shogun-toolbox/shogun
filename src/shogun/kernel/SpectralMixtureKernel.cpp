@@ -47,13 +47,13 @@ bool CSpectralMixtureKernel::init_components(int32_t num_components)
 {
 	REQUIRE(has_features(), "Features not set - cannot initialize components.");
 
-	m_weights = SGVector<float64_t>(num_components);
+	m_weights=SGVector<float64_t>(num_components);
 	m_weights.set_const(1.0/num_components);
 
-	m_means = SGVector<float64_t>(num_components);
+	m_means=SGVector<float64_t>(num_components);
 	m_means.set_const(0.0);
 
-	m_stddeviations = SGVector<float64_t>(num_components);
+	m_stddeviations=SGVector<float64_t>(num_components);
 	m_stddeviations.set_const(1.0);
 
 	return true;
@@ -67,8 +67,8 @@ int32_t CSpectralMixtureKernel::get_num_components() const
 void CSpectralMixtureKernel::set_component_parameters(const SGVector<float64_t>& weights,
 	const SGVector<float64_t>& means, const SGVector<float64_t>& stddeviations)
 {
-	bool same_size = weights.size()==means.size() && weights.size()==stddeviations.size();
-	REQUIRE(same_size, "Weights, means, and stddeviations vectors must be of equal size");
+	bool same_size= (weights.size()==means.size()) && (weights.size()==stddeviations.size());
+	REQUIRE(same_size, "Weights, means, and stddeviations vectors must be of equal size.");
 
 	m_weights = weights;
 	m_means = means;
@@ -78,13 +78,13 @@ void CSpectralMixtureKernel::set_component_parameters(const SGVector<float64_t>&
 float64_t CSpectralMixtureKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(has_features(), "Features not set - cannot compute kernel value.");
-	REQUIRE(m_weights.size() > 0, "Mixture components not set - cannot compute kernel values");
+	REQUIRE(m_weights.size() > 0, "Mixture components not set - cannot compute kernel values.");
 
 	CDotFeatures* dotlhs = dynamic_cast<CDotFeatures*>(lhs);
 	CDotFeatures* dotrhs = dynamic_cast<CDotFeatures*>(rhs);
 
-	REQUIRE(dotlhs != NULL, "Left-hand side features could not be cast to CDotFeautres");
-	REQUIRE(dotrhs != NULL, "Right-hand side features could not be cast to CDotFeatures");
+	REQUIRE(dotlhs != NULL, "Left-hand-side features must be of type CDotFeatures");
+	REQUIRE(dotrhs != NULL, "Right-hand-side features must be of type CDotFeatures");
 
 	float64_t result = 0.0;
 	float64_t distance_sq = dotlhs->dot(idx_a, dotlhs, idx_a) + dotrhs->dot(idx_b, dotrhs, idx_b) - 2*dotlhs->dot(idx_a, dotrhs, idx_b);
@@ -110,8 +110,8 @@ SGMatrix<float64_t> CSpectralMixtureKernel::get_square_distance_matrix()
 	CDotFeatures* dot_lhs = dynamic_cast<CDotFeatures*>(lhs);
 	CDotFeatures* dot_rhs = dynamic_cast<CDotFeatures*>(rhs);
 
-	REQUIRE(dot_lhs != NULL, "Left-hand-side features are not of type CDotFeatures");
-	REQUIRE(dot_rhs != NULL, "Right-hand-side features are not of type CDotFeatures");
+	REQUIRE(dot_lhs != NULL, "Left-hand-side features must be of type CDotFeatures");
+	REQUIRE(dot_rhs != NULL, "Right-hand-side features must be of type CDotFeatures");
 	
 	SGMatrix<float64_t> lhs_mtrx = dot_lhs->get_computed_dot_feature_matrix();
 	SGMatrix<float64_t> rhs_mtrx = dot_rhs->get_computed_dot_feature_matrix();

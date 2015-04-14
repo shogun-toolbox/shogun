@@ -68,7 +68,7 @@ class CSpectralMixtureKernel: public CDotKernel
 		 *
 		 * @return kernel type K_SPECTRAL_MIXTURE
 		 */
-		virtual EKernelType get_kernel_type() { return (EKernelType)540; }
+		virtual EKernelType get_kernel_type() { return K_SPECTRALMIXTURE; }
 
 		/** return the kernel's name
 		 *
