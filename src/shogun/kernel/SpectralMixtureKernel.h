@@ -38,7 +38,7 @@ class CSpectralMixtureKernel: public CDotKernel
 		 * @param size cache size. Default value: 10
 		 */
 		CSpectralMixtureKernel(CDotFeatures* l, CDotFeatures* r,
-							   int32_t num_components, int32_t size=10);
+			int32_t num_components, int32_t size=10);
 
 		/** constructor with specific parameter initializations.
 		*
@@ -51,10 +51,9 @@ class CSpectralMixtureKernel: public CDotKernel
 		* @param stddeviations vector of standard deviations for each mixture component
 		* @param size cache size. Default value: 10
 		*/
-		CSpectralMixtureKernel(const SGVector<float64_t>& weights, 
-							   const SGVector<float64_t>& means,
-							   const SGVector<float64_t>& stddeviations,
-							   int32_t size=10);
+		CSpectralMixtureKernel(const SGVector<float64_t>& weights,
+			const SGVector<float64_t>& means,
+			const SGVector<float64_t>& stddeviations, int32_t size=10);
 
 		virtual bool init(CFeatures* lhs, CFeatures* rhs) { return CDotKernel::init(lhs, rhs); }
 
@@ -90,8 +89,8 @@ class CSpectralMixtureKernel: public CDotKernel
 		 * @param stddeviations vector with a standard deviation for each component
 		 */
 		virtual void set_component_parameters(const SGVector<float64_t>& weights, 
-											  const SGVector<float64_t>& means,
-											  const SGVector<float64_t>& stddeviations);
+			const SGVector<float64_t>& means,
+			const SGVector<float64_t>& stddeviations);
 
 		/** return the respective weight for each spectral mixture component.
 		 *
@@ -120,7 +119,7 @@ class CSpectralMixtureKernel: public CDotKernel
 		 * @return gradient with respect to parameter
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(
-				const TParameter* param, index_t index);
+			const TParameter* param, index_t index);
 
 	private:
 

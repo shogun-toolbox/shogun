@@ -25,10 +25,9 @@ CSpectralMixtureKernel::CSpectralMixtureKernel(CDotFeatures* l, CDotFeatures* r,
 	init_components(num_components);
 }
 
-CSpectralMixtureKernel::CSpectralMixtureKernel(const SGVector<float64_t>& weights, 
-											   const SGVector<float64_t>& means, 
-											   const SGVector<float64_t>& stddeviations, 
-											   int32_t size) : CDotKernel(size)
+CSpectralMixtureKernel::CSpectralMixtureKernel(const SGVector<float64_t>& weights,
+	const SGVector<float64_t>& means, const SGVector<float64_t>& stddeviations,
+	int32_t size) : CDotKernel(size)
 {
 	init();
 	set_component_parameters(weights, means, stddeviations);
@@ -65,9 +64,8 @@ int32_t CSpectralMixtureKernel::get_num_components() const
 	return m_weights.size();
 }
 
-void CSpectralMixtureKernel::set_component_parameters(const SGVector<float64_t>& weights, 
-													  const SGVector<float64_t>& means,
-													  const SGVector<float64_t>& stddeviations)
+void CSpectralMixtureKernel::set_component_parameters(const SGVector<float64_t>& weights,
+	const SGVector<float64_t>& means, const SGVector<float64_t>& stddeviations)
 {
 	bool same_size = weights.size()==means.size() && weights.size()==stddeviations.size();
 	REQUIRE(same_size, "Weights, means, and stddeviations vectors must be of equal size");
