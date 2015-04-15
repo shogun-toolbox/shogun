@@ -3,6 +3,7 @@ import sys
 from string import Template
 from sets import Set
 import os.path
+import argparse
 
 class Translator:
     def __init__(self, targetDict):
@@ -283,21 +284,24 @@ def loadTargetDict(targetJsonPath):
         raise Exception("Could not load target dictionary")
 
 if __name__ == "__main__":
-    # Extract target language from arguments (default target is python)
-    targets = [target for target in map(lambda arg:arg[len("--target="):] if "--target=" in arg else "", sys.argv) if target != ""]
-    target = targets[0] if len(targets) > 0 else "python"
+    # Parse command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--target", nargs='?', help="Translation target. Possible values: python, java, r, or octave. (default: python)")
+    parser.add_argument("path", nargs='?', help="Path to input file. If not specified input is read from stdin")
+    args = parser.parse_args()
 
-    # Extract input file from arguments
-    programFile = None
-    nonOptionArgs = map(lambda arg: arg if arg[0:1] != "-" else "", sys.argv)
-    paths = [path for path in nonOptionArgs if path != ""]
-    if len(paths) > 1:
-        with open(paths[1], "r") as inputFile:
-            programFile = inputFile
-    else:
-        programFile = sys.stdin
-
+    # Load target dictionary
+    target = "python"
+    if args.target:
+        target = args.target
     targetDict = loadTargetDict("targets/" + target + ".json")
-    programObject = json.load(programFile)
+
+    # Read from input file (stdin or given path)
+    programObject = None
+    if args.path:
+        with open(args.path, "r") as inputFile:
+            programObject = json.load(inputFile)
+    else:
+        programObject = json.load(sys.stdin)
 
     print translate(programObject, targetDict)
