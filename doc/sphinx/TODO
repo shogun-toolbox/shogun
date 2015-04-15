@@ -1,0 +1,2 @@
+-Add automatic links to Shogun class docs whenever we see CKNN, or CKNN::train
+-Think about a way to uniformly add a set of references (wiki, bixtex, weblink), in a way that changing the layout can be done globally
