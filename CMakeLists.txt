@@ -156,12 +156,6 @@ IF(ENABLE_COVERAGE)
 	SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
 ENDIF()
 
-OPTION(ENABLE_FPIC "Enable -fPIC on appropriate platforms" ON)
-IF(UNIX AND ENABLE_FPIC)
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-ENDIF()
-
 IF(ENABLE_TSAN)
 	IF (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		MESSAGE(WARNING "Thread-sanitizer results with an optimised (non-Debug) build may be misleading")
