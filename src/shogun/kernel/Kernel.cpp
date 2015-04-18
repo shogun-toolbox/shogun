@@ -763,6 +763,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_GAUSSIANARD)
 		ENUM_CASE(K_GAUSSIANARDFITC)
 		ENUM_CASE(K_STREAMING)
+		ENUM_CASE(K_PERIODIC)
 	}
 
 	switch (get_feature_class())

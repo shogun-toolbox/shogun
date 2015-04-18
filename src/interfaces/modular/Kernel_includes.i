@@ -74,4 +74,5 @@
 #include <shogun/kernel/LinearARDKernel.h>
 #include <shogun/kernel/GaussianARDKernel.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
+#include <shogun/kernel/PeriodicKernel.h>
 %}
