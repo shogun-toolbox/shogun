@@ -25,13 +25,15 @@
 
  #include <shogun/machine/gp/InferenceMethod.h>
  #include <shogun/machine/gp/LaplacianInferenceBase.h>
+ #include <shogun/machine/gp/FITCInferenceBase.h>
+ #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
  #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
- #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
- #include <shogun/machine/gp/FITCInferenceBase.h>
+ #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/EPInferenceMethod.h>
 
  #include <shogun/machine/gp/KLInferenceMethod.h>
