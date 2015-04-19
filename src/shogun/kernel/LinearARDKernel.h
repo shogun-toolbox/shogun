@@ -105,6 +105,12 @@ protected:
 	/** type of ARD kernel */
 	EARDKernelType m_ARD_type;
 
+	/** get features vector given idx
+	 *
+	 * @param idx index of CFeatures
+	 * @param hs features 
+	 * @return the features vector
+	 */
 	virtual SGVector<float64_t> get_feature_vector(int32_t idx, CFeatures* hs);
 
 #ifdef HAVE_LINALG_LIB
