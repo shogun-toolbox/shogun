@@ -105,6 +105,8 @@ protected:
 	/** type of ARD kernel */
 	EARDKernelType m_ARD_type;
 
+	virtual SGVector<float64_t> get_feature_vector(int32_t idx, CFeatures* hs);
+
 #ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
@@ -150,7 +152,7 @@ public:
 	 * @return gradient with respect to parameter
 	 */
 	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
-			index_t index=-1);
+			index_t index=-1)=0;
 
 	/** setter for feature/dimension weight (scalar kernel)
 	 * @param weight scalar weight
@@ -186,7 +188,7 @@ protected:
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(int32_t idx_a, int32_t idx_b)=0;
 
 	/** helper function used to compute kernel function for features avec and bvec
 	 *
@@ -219,6 +221,13 @@ protected:
 	 */
 	virtual SGMatrix<float64_t> compute_right_product(SGVector<float64_t>right_vec, float64_t & scalar_weight);
 
+	/** check whether index of gradient wrt weights is valid
+	 *
+	 * @param index the index of the element if parameter is a vector or matrix
+	 * if the parameter is a matrix, index is the linearized index
+	 * of the matrix (column-major)
+	 *
+	 */	virtual void check_weight_gradient_index(index_t index);
 #endif /* HAVE_LINALG_LIB */
 };
 }

@@ -11,6 +11,7 @@
  */
 
 #include <shogun/kernel/LinearARDKernel.h>
+#include <shogun/features/DenseFeatures.h>
 
 #ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
@@ -120,20 +121,24 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 	return res[0]*scalar_weight;
 }
 
-float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
+SGVector<float64_t> CLinearARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
 {
-	REQUIRE(lhs, "Left features not set!\n");
-	REQUIRE(rhs, "Right features not set!\n");
-	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
-	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
+	REQUIRE(hs, "Features not set!\n");
+	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
+	if (dense_hs)
+	{
+		return dense_hs->get_feature_vector(idx);
+	}
+	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
+	REQUIRE(dot_hs, "Kernel only support DotFeatures\n");
+	return dot_hs->get_computed_dot_feature_vector(idx);
 
-	return compute_helper(avec, bvec);
 }
 
 float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	SGVector<float64_t> bvec, float64_t scale, index_t index)
 {
-	float64_t result;
+	float64_t result=0.0;
 
 	if(m_ARD_type==KT_DIAG)
 	{
@@ -176,9 +181,7 @@ float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	return result*scale;
 }
 
-
-SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
-	const TParameter* param, index_t index)
+void CLinearARDKernel::check_weight_gradient_index(index_t index)
 {
 	REQUIRE(lhs, "Left features not set!\n");
 	REQUIRE(rhs, "Right features not set!\n");
@@ -204,26 +207,6 @@ SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(
 				col_index, m_weights.num_cols);
 		}
 	}
-	if (!strcmp(param->m_name, "weights"))
-	{
-		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
-
-		for (index_t j=0; j<num_lhs; j++)
-		{
-			SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(j);
-			for (index_t k=0; k<num_rhs; k++)
-			{
-				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(k);
-				derivative(j,k)=compute_gradient_helper(avec, bvec, 1.0, index);
-			}
-		}
-		return derivative;
-	}
-	else
-	{
-		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
-		return SGMatrix<float64_t>();
-	}
 }
 
 SGMatrix<float64_t> CLinearARDKernel::get_weights()
@@ -237,25 +220,20 @@ void CLinearARDKernel::set_weights(SGMatrix<float64_t> weights)
 		"Weight Matrix (%d-by-%d) must not be empty\n",
 		weights.num_rows, weights.num_cols);
 	if (weights.num_cols>1)
-	{
 		m_ARD_type=KT_FULL;
-	}
 	else
 	{
 		if (weights.num_rows==1)
-		{
 			m_ARD_type=KT_SCALAR;
-		}
 		else
-		{
 			m_ARD_type=KT_DIAG;
-		}
 	}
 	m_weights=weights;
 }
 
 void CLinearARDKernel::set_scalar_weights(float64_t weight)
 {
+	REQUIRE(weight>0, "Scalar (%f) weight should be positive\n",weight);
 	SGMatrix<float64_t> weights(1,1);
 	weights(0,0)=weight;
 	set_weights(weights);
@@ -272,4 +250,5 @@ void CLinearARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 {
 	set_weights(weights);
 }
+
 #endif //HAVE_LINALG_LIB
