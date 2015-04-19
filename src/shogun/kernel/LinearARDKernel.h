@@ -233,7 +233,8 @@ protected:
 	 * if the parameter is a matrix, index is the linearized index
 	 * of the matrix (column-major)
 	 *
-	 */	virtual void check_weight_gradient_index(index_t index);
+	 */
+	virtual void check_weight_gradient_index(index_t index);
 #endif /* HAVE_LINALG_LIB */
 };
 }
