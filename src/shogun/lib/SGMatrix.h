@@ -39,6 +39,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** The scalar type of the matrix */
 		typedef T Scalar;
 
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/** The container type for a given template argument */
+		template <typename ST> using container_type = SGMatrix<ST>;
+
+#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+
 		/** Default constructor */
 		SGMatrix();
 
@@ -168,6 +175,18 @@ template<class T> class SGMatrix : public SGReferencedData
 		inline SGMatrix<T> get()
 		{
 			return *this;
+		}
+
+		/** The data */
+		inline T* data() const
+		{
+			return matrix;
+		}
+
+		/** The size */
+		inline index_t size() const
+		{
+			return num_rows*num_cols;
 		}
 
 		/** Check for pointer identity */

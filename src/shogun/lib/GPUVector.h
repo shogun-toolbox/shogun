@@ -86,6 +86,9 @@ public:
 	/** The scalar type of the vector */
 	typedef T Scalar;
 
+	/** The container type for a given template argument */
+	template <typename ST> using container_type = CGPUVector<ST>;
+
 	/** Default Constructor */
 	CGPUVector();
 
@@ -120,8 +123,19 @@ public:
 
 	/** Converts the vector into an Eigen3 row vector */
 	operator EigenRowVectorXt() const;
-#endif
-#endif
+
+#endif // HAVE_EIGEN3
+	/** The data */
+	inline VCLVectorBase data()
+	{
+		return vcl_vector();
+	}
+
+	/** The size */
+	inline index_t size() const
+	{
+		return vlen;
+	}
 
 	/** Converts the vector into an SGVector */
 	operator SGVector<T>() const;
@@ -130,6 +144,7 @@ public:
 	 * used to call native ViennaCL methods on this vector
 	 */
 	VCLVectorBase vcl_vector();
+#endif // SWIG
 
 	/** Sets all the elements of the vector to zero */
 	void zero();

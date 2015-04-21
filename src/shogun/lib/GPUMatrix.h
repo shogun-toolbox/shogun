@@ -87,6 +87,9 @@ public:
 	/** The scalar type of the matrix */
 	typedef T Scalar;
 
+	/** The container type for a given template argument */
+	template <typename ST> using container_type = CGPUMatrix<ST>;
+
 	/** Default Constructor */
 	CGPUMatrix();
 
@@ -121,6 +124,18 @@ public:
 	/** Converts the matrix into an Eigen3 matrix */
 	operator EigenMatrixXt() const;
 #endif // HAVE_EIGEN3
+
+	/** The data */
+	inline VCLMatrixBase data()
+	{
+		return vcl_matrix();
+	}
+
+	/** The size */
+	inline index_t size() const
+	{
+		return num_rows*num_cols;
+	}
 
 	/** Returns a ViennaCL matrix wrapped around the data of this matrix. Can be
 	 * used to call native ViennaCL methods on this matrix

@@ -46,6 +46,13 @@ template<class T> class SGVector : public SGReferencedData
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/** The container type for a given template argument */
+		template <typename ST> using container_type = SGVector<ST>;
+
+#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+
 		/** Default constructor */
 		SGVector();
 
@@ -107,8 +114,14 @@ template<class T> class SGVector : public SGReferencedData
 		/** Size */
 		inline int32_t size() const { return vlen; }
 
+		/** Data pointer */
+		inline T* data() const
+		{
+			return vector;
+		}
+
 		/** Cast to pointer */
-		operator T*() { return vector; };
+		operator T*() { return vector; }
 
 		/** Fill vector with zeros */
 		void zero();
