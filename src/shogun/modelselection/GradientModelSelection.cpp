@@ -83,7 +83,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 			}
 		}
 		else
-
+		{
 			bool result=current_combination->set_parameter(param->m_name,
 					(float64_t)x[offset++], parent);
 			REQUIRE(result, "Parameter %s not found in combination tree\n",
@@ -225,6 +225,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		nlopt_opt opt=nlopt_create(NLOPT_LD_MMA, total_variables);
 
 		// currently we assume all parameters are positive
+		// (this is NOT true when inducing points and Full Matrix GaussianARDKernel are optimized)
 		// create lower bound vector (lb=-inf)
 		SGVector<double> lower_bound(total_variables);
 		lower_bound.set_const(1e-6);

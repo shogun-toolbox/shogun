@@ -778,7 +778,8 @@ void CParameterCombination::build_parameter_values_map(
 			if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||
 					type.m_ptype==PT_FLOATMAX)
 			{
-				if (type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR || type.m_ctype==CT_SGMATRIX || type.m_ctype==CT_MATRIX)
+				if (type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR ||
+					type.m_ctype==CT_SGMATRIX || type.m_ctype==CT_MATRIX)
 				{
 					SGVector<float64_t> value(*((float64_t **)param->m_parameter),
 							type.get_num_elements(), false);
