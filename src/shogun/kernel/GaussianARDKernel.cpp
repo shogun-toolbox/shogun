@@ -132,6 +132,8 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 	else if (!strcmp(param->m_name, "width"))
 	{
 		float64_t tmp=kernel(idx_a,idx_b);
+		if (tmp<=CMath::MACHINE_EPSILON)
+			return 0.0;
 		return -tmp*CMath::log(tmp)/m_width;
 	}
 	else
