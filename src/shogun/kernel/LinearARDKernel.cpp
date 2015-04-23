@@ -39,6 +39,19 @@ void CLinearARDKernel::initialize()
 	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", MS_NOT_AVAILABLE);
 }
 
+SGVector<float64_t> CLinearARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
+{
+	REQUIRE(hs, "Features not set!\n");
+	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
+	if (dense_hs)
+		return dense_hs->get_feature_vector(idx);
+
+	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
+	REQUIRE(dot_hs, "Kernel only supports DotFeatures\n");
+	return dot_hs->get_computed_dot_feature_vector(idx);
+
+}
+
 #ifdef HAVE_LINALG_LIB
 CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
 {
@@ -119,20 +132,6 @@ float64_t CLinearARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<fl
 	SGMatrix<float64_t> right=compute_right_product(bvec, scalar_weight);
 	SGMatrix<float64_t> res=linalg::matrix_product(left, right);
 	return res[0]*scalar_weight;
-}
-
-SGVector<float64_t> CLinearARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
-{
-	REQUIRE(hs, "Features not set!\n");
-	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
-	if (dense_hs)
-	{
-		return dense_hs->get_feature_vector(idx);
-	}
-	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
-	REQUIRE(dot_hs, "Kernel only support DotFeatures\n");
-	return dot_hs->get_computed_dot_feature_vector(idx);
-
 }
 
 float64_t CLinearARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
