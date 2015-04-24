@@ -33,7 +33,7 @@
 
 #include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -79,8 +79,12 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4;
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
 	map.compute_activations(params, layers, input_indices, A);
@@ -148,8 +152,12 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4;
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
 	map.compute_activations(params, layers, input_indices, A);
@@ -209,8 +217,12 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)*1e-4;
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
 	map.compute_activations(params, layers, input_indices, A);
@@ -272,8 +284,12 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4 - 2.5;
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
 	map.compute_activations(params, layers, input_indices, A);
@@ -337,8 +353,12 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
 	A.zero();
@@ -429,8 +449,12 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	
 	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
 	A.zero();
@@ -504,7 +528,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
-	input1->compute_activations(x1);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
 	
 	SGMatrix<float64_t> A(w*h,b);
 	A.zero();
@@ -578,7 +604,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
-	input1->compute_activations(x1);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
 	
 	SGMatrix<float64_t> A(w*h,b);
 	A.zero();

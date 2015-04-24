@@ -31,7 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -70,7 +70,9 @@ TEST(NeuralSoftmaxLayer, compute_activations)
 	layer.set_batch_size(x.num_cols);
 	
 	// compute the layer's activations
-	input->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	
@@ -156,7 +158,9 @@ TEST(NeuralSoftmaxLayer, compute_error)
 	}
 	
 	// compute the layer's activations and error
-	input->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	float64_t error = layer.compute_error(y);
@@ -217,7 +221,9 @@ TEST(NeuralSoftmaxLayer, compute_local_gradients)
 	}
 	
 	// compute the layer's local gradients
-	input->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.compute_activations(params, layers);
 	layer.compute_local_gradients(y);
 	SGMatrix<float64_t> LG = layer.get_local_gradients();

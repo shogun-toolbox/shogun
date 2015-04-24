@@ -31,7 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -79,8 +79,12 @@ TEST(NeuralLinearLayer, compute_activations)
 	layer.set_batch_size(x1.num_cols);
 	
 	// compute the layer's activations
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	
@@ -156,8 +160,12 @@ TEST(NeuralLinearLayer, compute_error)
 	layer.set_batch_size(x1.num_cols);
 	
 	// compute the layer's activations and error
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	float64_t error = layer.compute_error(y);
@@ -205,7 +213,9 @@ TEST(NeuralLinearLayer, compute_local_gradients)
 	layer.set_batch_size(x.num_cols);
 	
 	// compute the layer's local gradients
-	input1->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input1->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.compute_activations(params, layers);
 	layer.compute_local_gradients(y);
 	SGMatrix<float64_t> LG = layer.get_local_gradients();
@@ -275,8 +285,10 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_output)
 	layer.set_batch_size(x1.num_cols);
 	
 	// compute the layer's activations
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
 	layer.compute_activations(params, layers);
 	
 	// compute parameter gradients
@@ -289,20 +301,23 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_output)
 	for (int32_t i=0; i<layer.get_num_parameters(); i++)
 	{
 		params[i] += epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer.compute_activations(params, layers);
 		float64_t error_plus = layer.compute_error(y);
 		
 		params[i] -= 2*epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer.compute_activations(params, layers);
 		float64_t error_minus = layer.compute_error(y);
 		params[i] += epsilon;
 		
 		gradients_numerical[i] = (error_plus-error_minus)/(2*epsilon);
 	}
+	
+	SG_UNREF(x1f);
+	SG_UNREF(x2f);
 	
 	// compare
 	for (int32_t i=0; i<gradients.vlen; i++)
@@ -366,8 +381,10 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_hidden)
 	layer_out.set_batch_size(x1.num_cols);
 	
 	// compute activations
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
 	layer_hid->compute_activations(param_hid, layers);
 	layer_out.compute_activations(param_out, layers);
 	
@@ -386,15 +403,15 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_hidden)
 	for (int32_t i=0; i<layer_hid->get_num_parameters(); i++)
 	{
 		param_hid[i] += epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer_hid->compute_activations(param_hid, layers);
 		layer_out.compute_activations(param_out, layers);
 		float64_t error_plus = layer_out.compute_error(y);
 		
 		param_hid[i] -= 2*epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer_hid->compute_activations(param_hid, layers);
 		layer_out.compute_activations(param_out, layers);
 		float64_t error_minus = layer_out.compute_error(y);
@@ -403,6 +420,8 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_hidden)
 		gradients_hid_numerical[i] = (error_plus-error_minus)/(2*epsilon);
 	}
 	
+	SG_UNREF(x1f);
+	SG_UNREF(x2f);
 	// compare
 	for (int32_t i=0; i<gradients_hid_numerical.vlen; i++)
 		EXPECT_NEAR(gradients_hid_numerical[i], gradients_hid[i], 1e-6);

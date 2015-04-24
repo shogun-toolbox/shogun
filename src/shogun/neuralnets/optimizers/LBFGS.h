@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Shogun Toolbox Foundation
+ * Copyright (c) 2015, Shogun Toolbox Foundation
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without 
@@ -28,56 +28,49 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  * 
- * Written (W) 2014 Khaled Nasr
+ * Written (W) 2015 Khaled Nasr, Sergey Lisitsyn
  */
 
-#include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/features/DotFeatures.h>
+#ifndef __LBFGSNEURALNETWORKOPTIMIZER_H__
+#define __LBFGSNEURALNETWORKOPTIMIZER_H__
 
-using namespace shogun;
+#include <shogun/neuralnets/NeuralNetworkOptimizer.h>
 
-CNeuralInputLayer::CNeuralInputLayer() : CNeuralLayer()
+namespace shogun
 {
-	init();
+
+class CLBFGSNeuralNetworkOptimizer : public CNeuralNetworkOptimizer
+{
+public:
+	CLBFGSNeuralNetworkOptimizer();
+
+	virtual bool optimize(CNeuralNetwork* network,
+			CDotFeatures* data, SGMatrix<float64_t> targets);
+	
+	virtual const char* get_name() const { return "LBFGSNeuralNetworkOptimizer"; }
+
+private:
+	/** callback for l-bfgs */
+	static float64_t lbfgs_evaluate(void *userdata, 
+			const float64_t *W, 
+			float64_t *grad, 
+			const int32_t n, 
+			const float64_t step);
+
+	/** callback for l-bfgs */
+	static int lbfgs_progress(void *instance,
+			const float64_t *x,
+			const float64_t *g,
+			const float64_t fx,
+			const float64_t xnorm,
+			const float64_t gnorm,
+			const float64_t step,
+			int n,
+			int k,
+			int ls
+			);
+};
+
 }
 
-CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons): 
-CNeuralLayer(num_neurons)
-{
-	init();
-}
-
-CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height, 
-	int32_t num_channels): CNeuralLayer(width*height*num_channels)
-{
-	init();
-	m_width = width;
-	m_height = height;
-}
-
-void CNeuralInputLayer::compute_activations(CFeatures* data)
-{
-	CDotFeatures* dot_data = dynamic_cast<CDotFeatures*>(data);
-	REQUIRE(dot_data, "Dot features expected");
-	m_activations.zero();
-
-	int32_t dim = dot_data->get_dim_feature_space();
-	REQUIRE(m_activations.num_rows == dim, "%d should match dimensionality %d", m_activations.num_rows, dim);
-	REQUIRE(m_activations.num_cols == data->get_num_vectors(), "%d should match number of vectors %d", m_activations.num_rows, data->get_num_vectors());
-	for (int i=0; i<data->get_num_vectors(); i++)
-		dot_data->add_to_dense_vec(1.0, i, m_activations.matrix + dim*i, dim);
-
-	if (gaussian_noise > 0)
-	{
-		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t k=0; k<len; k++)
-			m_activations[k] += CMath::normal_random(0.0, gaussian_noise);
-	}
-}
-
-void CNeuralInputLayer::init()
-{
-	gaussian_noise = 0;
-	SG_ADD(&gaussian_noise, "gaussian_noise",
-	       "Gaussian Noise Standard Deviation", MS_NOT_AVAILABLE);
-}
+#endif

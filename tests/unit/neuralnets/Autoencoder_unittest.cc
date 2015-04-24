@@ -32,9 +32,9 @@
  */
 #include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>

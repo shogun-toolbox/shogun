@@ -28,36 +28,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  * 
- * Written (W) 2014 Khaled Nasr
+ * Written (W) 2015 Sanuj Sharma
  */
 
-#ifndef __NEURALSOFTMAXLAYER_H__
-#define __NEURALSOFTMAXLAYER_H__
+#ifndef __NEURALLEAKYRECTIFIEDLINEARLAYER_H__
+#define __NEURALLEAKYRECTIFIEDLINEARLAYER_H__
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
 
 namespace shogun
 {
-/** @brief Neural layer with linear neurons, with a 
- * [softmax activation](http://en.wikipedia.org/wiki/Softmax_function) function. 
- * can be only be used as an output layer. 
- * [Cross entropy](http://en.wikipedia.org/wiki/Cross_entropy) error measure is 
- * used.
+/** @brief Neural layer with [leaky rectified linear neurons]
+ * (http://en.wikipedia.org/wiki/Rectifier_%28neural_networks%29).
  * 
+ * Activations are computed according to max(alpha*(W*x+b),W*x+b) where W is the weight 
+ * matrix, b is the bias vector, x is the input vector, and alpha is a parameter usually
+ * between 0 and 1. Default value of alpha is 0.01.
+ * 
+ * When used as an output layer, a squared error measure is used
  */
-class CNeuralSoftmaxLayer : public CNeuralLinearLayer
+class CNeuralLeakyRectifiedLinearLayer : public CNeuralRectifiedLinearLayer
 {
 public:
 	/** default constructor */
-	CNeuralSoftmaxLayer();
+	CNeuralLeakyRectifiedLinearLayer();
 	
 	/** Constuctor
 	 * 
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralSoftmaxLayer(int32_t num_neurons);
+	CNeuralLeakyRectifiedLinearLayer(int32_t num_neurons);
 	
-	virtual ~CNeuralSoftmaxLayer() {}
+	virtual ~CNeuralLeakyRectifiedLinearLayer() {}
+
+	/** Sets the value of alpha used to calculate max(alpha*(W*x+b),W*x+b)
+	 * 
+	 * @param alpha new value of alpha
+	 */
+	virtual void set_alpha(float64_t alpha) { m_alpha=alpha; }
+
+	/** Gets the value of alpha used to calculate max(alpha*(W*x+b),W*x+b)
+	 * 
+	 * @return alpha
+	 */
+	virtual float64_t get_alpha() { return m_alpha; }
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations. To be used only with non-input layers
@@ -67,32 +81,20 @@ public:
 	 * 
 	 * @param layers Array of layers that form the network that this layer is 
 	 * being used with
+	 *
+	 * @param alpha parameter used in calculating max(alpha*x, x)
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+		CDynamicObjectArray* layers);
 	
-	/** Computes the gradients of the error with respect to this layer's
-	 * pre-activations. Results are stored in m_local_gradients. 
-	 * 
-	 * This is used by compute_gradients() and can be overriden to implement 
-	 * layers with different activation functions
-	 *
-	 * @param targets a matrix of size num_neurons*batch_size. If is_output is 
-	 * true, targets is the desired values for the layer's activations, 
-	 * otherwise it's an empty matrix
+	virtual const char* get_name() const { return "NeuralLeakyRectifiedLinearLayer"; }
+
+protected:
+	/** Parameter used to calculate max(alpha*(W*x+b),W*x+b).
+	 * Default value is 0.01
 	 */
-	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
-	
-	/** Computes the error between the layer's current activations and the given
-	 * target activations. Should only be used with output layers
-	 *
-	 * @param targets desired values for the layer's activations, matrix of size
-	 * num_neurons*batch_size
-	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> targets);
-	
-	virtual const char* get_name() const { return "NeuralSoftmaxLayer"; }
+	float64_t m_alpha;
 };
 	
 }
-#endif
+#endif //__NEURALLEAKYRECTIFIEDLINEARLAYER_H__

@@ -31,7 +31,7 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -70,7 +70,9 @@ TEST(NeuralRectifiedLinearLayer, compute_activations)
 	layer.set_batch_size(x.num_cols);
 	
 	// compute the layer's activations
-	input->compute_activations(x);
+	CDenseFeatures<float64_t>* xf = new CDenseFeatures<float64_t>(x);
+	input->compute_activations(xf);
+	SG_UNREF(xf);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	
@@ -157,8 +159,12 @@ TEST(NeuralRectifiedLinearLayer, compute_parameter_gradients_hidden)
 	layer_out.set_batch_size(x1.num_cols);
 	
 	// compute activations
-	input1->compute_activations(x1);
-	input2->compute_activations(x2);
+	CDenseFeatures<float64_t>* x1f = new CDenseFeatures<float64_t>(x1);
+	input1->compute_activations(x1f);
+	SG_UNREF(x1f);
+	CDenseFeatures<float64_t>* x2f = new CDenseFeatures<float64_t>(x2);
+	input2->compute_activations(x2f);
+	SG_UNREF(x2f);
 	layer_hid->compute_activations(param_hid, layers);
 	layer_out.compute_activations(param_out, layers);
 	
@@ -177,19 +183,24 @@ TEST(NeuralRectifiedLinearLayer, compute_parameter_gradients_hidden)
 	for (int32_t i=0; i<layer_hid->get_num_parameters(); i++)
 	{
 		param_hid[i] += epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		x1f = new CDenseFeatures<float64_t>(x1);
+		x2f = new CDenseFeatures<float64_t>(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer_hid->compute_activations(param_hid, layers);
 		layer_out.compute_activations(param_out, layers);
 		float64_t error_plus = layer_out.compute_error(y);
 		
 		param_hid[i] -= 2*epsilon;
-		input1->compute_activations(x1);
-		input2->compute_activations(x2);
+		input1->compute_activations(x1f);
+		input2->compute_activations(x2f);
 		layer_hid->compute_activations(param_hid, layers);
 		layer_out.compute_activations(param_out, layers);
 		float64_t error_minus = layer_out.compute_error(y);
 		param_hid[i] += epsilon;
+		
+		SG_UNREF(x1f);
+		SG_UNREF(x2f);
 		
 		gradients_hid_numerical[i] = (error_plus-error_minus)/(2*epsilon);
 	}

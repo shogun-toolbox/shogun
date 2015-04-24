@@ -40,10 +40,10 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/NeuralLayers.h>
 #include <gtest/gtest.h>
 
@@ -60,18 +60,15 @@ TEST(NeuralNetwork, backpropagation_linear)
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
 	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
-	network->connect(2,3);
-	network->connect(2,4);
-	network->connect(3,5);
+	network->connect(3,4);
 	network->connect(4,5);
 	
 	network->initialize();
@@ -92,18 +89,16 @@ TEST(NeuralNetwork, neural_layers_builder)
 	
 	CNeuralLayers* layers = new CNeuralLayers();
 	layers->input(5)
-	      ->input(7)
 	      ->linear(3)
 	      ->linear(6)
 	      ->linear(5)
 	      ->linear(4);
 	CNeuralNetwork* network = new CNeuralNetwork(layers->done());
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
 	network->connect(2,3);
-	network->connect(2,4);
-	network->connect(3,5);
+	network->connect(3,4);
 	network->connect(4,5);
 	
 	network->initialize();
@@ -127,18 +122,16 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLogisticLayer(3));
 	layers->append_element(new CNeuralLogisticLayer(6));
 	layers->append_element(new CNeuralLogisticLayer(5));
 	layers->append_element(new CNeuralLogisticLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
 	network->connect(2,3);
-	network->connect(2,4);
-	network->connect(3,5);
+	network->connect(3,4);
 	network->connect(4,5);
 	
 	network->initialize();
@@ -159,19 +152,17 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
 	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralSoftmaxLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
 	network->connect(2,3);
 	network->connect(2,4);
-	network->connect(3,5);
-	network->connect(4,5);
+	network->connect(3,4);
 	
 	network->initialize();
 	network->l1_coefficient = 0.03;
@@ -191,19 +182,17 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralRectifiedLinearLayer(3));
 	layers->append_element(new CNeuralRectifiedLinearLayer(6));
 	layers->append_element(new CNeuralRectifiedLinearLayer(5));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
 	network->connect(2,3);
 	network->connect(2,4);
-	network->connect(3,5);
-	network->connect(4,5);
+	network->connect(2,4);
 	
 	network->initialize();
 	network->l1_coefficient = 0.03;
@@ -222,8 +211,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	CMath::init_random(10);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(6,4));
-	layers->append_element(new CNeuralInputLayer(6,4));
+	layers->append_element(new CNeuralInputLayer(6));
 	layers->append_element(new CNeuralConvolutionalLayer(
 		CMAF_LOGISTIC,1, 1,1, 1,1, 1,1));
 	layers->append_element(new CNeuralConvolutionalLayer(
@@ -233,12 +221,11 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
-	network->connect(0,2);
+	network->connect(0,1);
 	network->connect(1,2);
 	network->connect(2,3);
+	network->connect(2,3);
 	network->connect(2,4);
-	network->connect(3,5);
-	network->connect(4,5);
 	
 	network->initialize();
 	network->l1_coefficient = 0.03;
@@ -448,8 +435,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->quick_connect();
 	network->initialize(0.1);
 
-	network->optimization_method = NNOM_GRADIENT_DESCENT;
-	network->gd_learning_rate = 10.0;
+	CSGDNeuralNetworkOptimizer* optimizer = new CSGDNeuralNetworkOptimizer();
+	optimizer->gd_learning_rate = 10.0;
+
+	network->set_optimizer(optimizer);
 	network->epsilon = 0.0;
 	network->max_num_epochs = 1000;
 	

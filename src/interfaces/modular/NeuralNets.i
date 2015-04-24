@@ -22,19 +22,23 @@
 %rename(Autoencoder) CAutoencoder;
 %rename(DeepAutoencoder) CDeepAutoencoder;
 %rename(NeuralLayers) CNeuralLayers;
+%rename(LBFGSNeuralNetworkOptimizer) CLBFGSNeuralNetworkOptimizer;
+%rename(SGDNeuralNetworkOptimizer) CSGDNeuralNetworkOptimizer;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
 %include <shogun/neuralnets/NeuralLayer.h>
-%include <shogun/neuralnets/NeuralInputLayer.h>
-%include <shogun/neuralnets/NeuralLinearLayer.h>
-%include <shogun/neuralnets/NeuralLogisticLayer.h>
-%include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-%include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+%include <shogun/neuralnets/layers/NeuralInputLayer.h>
+%include <shogun/neuralnets/layers/NeuralLinearLayer.h>
+%include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+%include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
+%include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
-%include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+%include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 %include <shogun/neuralnets/RBM.h>
 %include <shogun/neuralnets/DeepBeliefNetwork.h>
 %include <shogun/neuralnets/Autoencoder.h>
 %include <shogun/neuralnets/DeepAutoencoder.h>
 %include <shogun/neuralnets/NeuralLayers.h>
+%include <shogun/neuralnets/optimizers/LBFGS.h>
+%include <shogun/neuralnets/optimizers/SGD.h>

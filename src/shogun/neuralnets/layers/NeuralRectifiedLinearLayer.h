@@ -31,34 +31,34 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#ifndef __NEURALLOGISTICLAYER_H__
-#define __NEURALLOGISTICLAYER_H__
+#ifndef __NEURALRECTIFIEDLINEARLAYER_H__
+#define __NEURALRECTIFIEDLINEARLAYER_H__
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
 
 namespace shogun
 {
-/** @brief Neural layer with linear neurons, with a [logistic activation 
- * function](http://en.wikipedia.org/wiki/Logistic_function). can be used as a 
- * hidden layer or an output layer.
+/** @brief Neural layer with [rectified linear neurons]
+ * (http://en.wikipedia.org/wiki/Rectifier_%28neural_networks%29).
  * 
- * When used as an output layer, a 
- * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is 
- * used
+ * Activations are computed according to max(0,W*x+b) where W is the weight 
+ * matrix, b is the bias vector, and x is the input vector.
+ * 
+ * When used as an output layer, a squared error measure is used
  */
-class CNeuralLogisticLayer : public CNeuralLinearLayer
+class CNeuralRectifiedLinearLayer : public CNeuralLinearLayer
 {
 public:
 	/** default constructor */
-	CNeuralLogisticLayer();
+	CNeuralRectifiedLinearLayer();
 	
 	/** Constuctor
 	 * 
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralLogisticLayer(int32_t num_neurons);
+	CNeuralRectifiedLinearLayer(int32_t num_neurons);
 	
-	virtual ~CNeuralLogisticLayer() {}
+	virtual ~CNeuralRectifiedLinearLayer() {}
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations. To be used only with non-input layers
@@ -117,7 +117,7 @@ public:
 	 */
 	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
 	
-	virtual const char* get_name() const { return "NeuralLogisticLayer"; }
+	virtual const char* get_name() const { return "NeuralRectifiedLinearLayer"; }
 };
 	
 }

@@ -35,10 +35,10 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 
 #include <string>
 
@@ -79,8 +79,6 @@ CAutoencoder()
 
 void CDeepAutoencoder::pre_train(CFeatures* data)
 {
-	SGMatrix<float64_t> data_matrix = features_to_matrix(data);
-	
 	int32_t num_encoding_layers = (m_num_layers-1)/2;
 	for (int32_t i=1; i<=num_encoding_layers; i++)
 	{
@@ -115,22 +113,22 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 		ae->noise_type = EAENoiseType(pt_noise_type[i-1]);
 		ae->noise_parameter = pt_noise_parameter[i-1];
 		ae->set_contraction_coefficient(pt_contraction_coefficient[i-1]);
-		ae->optimization_method = ENNOptimizationMethod(pt_optimization_method[i-1]);
+		// ae->optimization_method = ENNOptimizationMethod(pt_optimization_method[i-1]);
 		ae->l2_coefficient = pt_l2_coefficient[i-1];
 		ae->l1_coefficient = pt_l1_coefficient[i-1];
 		ae->epsilon = pt_epsilon[i-1];
 		ae->max_num_epochs = pt_max_num_epochs[i-1];
-		ae->gd_learning_rate = pt_gd_learning_rate[i-1];
-		ae->gd_learning_rate_decay = pt_gd_learning_rate_decay[i-1];
-		ae->gd_momentum = pt_gd_momentum[i-1];
-		ae->gd_mini_batch_size = pt_gd_mini_batch_size[i-1];
-		ae->gd_error_damping_coeff = pt_gd_error_damping_coeff[i-1];
+		// ae->gd_learning_rate = pt_gd_learning_rate[i-1];
+		// ae->gd_learning_rate_decay = pt_gd_learning_rate_decay[i-1];
+		// ae->gd_momentum = pt_gd_momentum[i-1];
+		// ae->gd_mini_batch_size = pt_gd_mini_batch_size[i-1];
+		// ae->gd_error_damping_coeff = pt_gd_error_damping_coeff[i-1];
 		
 		// forward propagate the data to obtain the training data for the 
 		// current autoencoder
 		for (int32_t j=0; j<i; j++)
-			get_layer(j)->set_batch_size(data_matrix.num_cols);
-		SGMatrix<float64_t> ae_input_matrix = forward_propagate(data_matrix, i-1);
+			get_layer(j)->set_batch_size(data->get_num_vectors());
+		SGMatrix<float64_t> ae_input_matrix = forward_propagate(data, i-1);
 		CDenseFeatures<float64_t> ae_input_features(ae_input_matrix);
 		for (int32_t j=0; j<i-1; j++)
 			get_layer(j)->set_batch_size(1);
@@ -240,7 +238,7 @@ void CDeepAutoencoder::init()
 	pt_contraction_coefficient.set_const(0.0);
 	
 	pt_optimization_method = SGVector<int32_t>((m_num_layers-1)/2);
-	pt_optimization_method.set_const(NNOM_LBFGS);
+	// pt_optimization_method.set_const(NNOM_LBFGS);
 	
 	pt_l2_coefficient = SGVector<float64_t>((m_num_layers-1)/2);
 	pt_l2_coefficient.set_const(0.0);

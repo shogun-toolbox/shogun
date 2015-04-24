@@ -36,12 +36,11 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-/** @brief Represents an input layer. The layer can be either 
- * connected to all the input features that a network receives (default) or 
- * connected to just a small part of those features
+/** @brief Represents an input layer
  */
 class CNeuralInputLayer : public CNeuralLayer
 {
@@ -53,11 +52,8 @@ public:
 	 * 
 	 * @param num_neurons Number of neurons in this layer
 	 * 
-	 * @param start_index Index of the first feature that the layer connects to, 
-	 * i.e the activations of the layer are copied from 
-	 * input_features[start_index:start_index+num_neurons]
 	 */
-	CNeuralInputLayer(int32_t num_neurons, int32_t start_index = 0);
+	CNeuralInputLayer(int32_t num_neurons);
 	
 	/** Constructs an input layer that deals with images (for convolutional nets).
 	 * Sets the number of neurons to width*height*num_channels
@@ -68,37 +64,21 @@ public:
 	 * 
 	 * @param num_channels Number of channels
 	 * 
-	 * @param start_index Index of the first feature that the layer connects to, 
-	 * i.e the activations of the layer are copied from 
-	 * input_features[start_index:start_index+num_neurons]
 	 */
-	CNeuralInputLayer(int32_t width, int32_t height, int32_t num_channels, 
-		int32_t start_index = 0);
+	CNeuralInputLayer(int32_t width, int32_t height, int32_t num_channels);
 	
 	virtual ~CNeuralInputLayer() {}
 	
 	/** Returns true */
 	virtual bool is_input() { return true; }
 	
-	/** Copies inputs[start_index:start_index+num_neurons, :] into the 
+	/** Copies features from inputs into the 
 	 * layer's activations
 	 * 
 	 * @param inputs Input features matrix, size num_features*num_cases
 	 */
-	virtual void compute_activations(SGMatrix<float64_t> inputs);
-	
-	/** Gets the index of the first feature that the layer connects to, 
-	 * i.e the activations of the layer are copied from 
-	 * input_features[start_index:start_index+num_neurons]
-	 */
-	virtual int32_t get_start_index() { return m_start_index; }
-	
-	/** Sets the index of the first feature that the layer connects to, 
-	 * i.e the activations of the layer are copied from 
-	 * input_features[start_index:start_index+num_neurons]
-	 */
-	virtual void set_start_index(int32_t i) { m_start_index = i; }
-	
+	virtual void compute_activations(CFeatures* inputs);
+
 	virtual const char* get_name() const { return "NeuralInputLayer"; }
 	
 private:
@@ -110,12 +90,6 @@ public:
 	 */
 	float64_t gaussian_noise;
 
-protected:
-	/** Index of the first feature that the layer connects to, 
-	 * i.e the activations of the layer are copied from 
-	 * input_features[start_index:start_index+num_neurons]
-	 */
-	int32_t m_start_index;
 };
 }
 #endif

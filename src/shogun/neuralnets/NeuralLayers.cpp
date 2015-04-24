@@ -34,11 +34,11 @@
 #include <shogun/neuralnets/NeuralLayers.h>
 
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLeakyRectifiedLinearLayer.h>
+#include <shogun/neuralnets/layers/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
 
 using namespace shogun;
 

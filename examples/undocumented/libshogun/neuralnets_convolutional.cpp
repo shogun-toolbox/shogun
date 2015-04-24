@@ -42,8 +42,8 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/layers/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/layers/NeuralConvolutionalLayer.h>
 
 using namespace shogun;
 
