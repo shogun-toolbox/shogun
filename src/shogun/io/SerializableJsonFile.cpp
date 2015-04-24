@@ -41,8 +41,10 @@ CSerializableJsonFile::new_reader(char* dest_version, size_t n)
 	const char* ftype;
 	json_object* buf;
 
-	if ((buf = json_object_object_get(
-			 m_stack_stream.back(), STR_KEY_FILETYPE)) == NULL
+	bool success = json_object_object_get_ex(
+                         m_stack_stream.back(), STR_KEY_FILETYPE, &buf);
+
+	if (!success || buf == NULL
 		|| is_error(buf)
 		|| (ftype = json_object_get_string(buf)) == NULL)
 		return NULL;
@@ -71,18 +73,17 @@ bool
 CSerializableJsonFile::get_object_any(
 	json_object** dest, json_object* src, const char* key)
 {
-	*dest = json_object_object_get(src, key);
-
-	return !is_error(*dest);
+	return json_object_object_get_ex(src, key, & *dest);
 }
 
 bool
 CSerializableJsonFile::get_object(json_object** dest, json_object* src,
 								  const char* key, json_type t)
 {
-	*dest = json_object_object_get(src, key);
+        bool success = true ;
+        success = json_object_object_get_ex(src, key, & *dest);
 
-	return *dest != NULL && !is_error(*dest)
+	return success && *dest != NULL && !is_error(*dest)
 		&& json_object_is_type(*dest, t);
 }
 
