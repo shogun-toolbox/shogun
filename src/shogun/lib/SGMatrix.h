@@ -39,13 +39,6 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** The scalar type of the matrix */
 		typedef T Scalar;
 
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
-
-		/** The container type for a given template argument */
-		template <typename ST> using container_type = SGMatrix<ST>;
-
-#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
-
 		/** Default constructor */
 		SGMatrix();
 
@@ -65,6 +58,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
 
 #ifndef SWIG // SWIG should skip this part
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/** The container type for a given template argument */
+		template <typename ST> using container_type = SGMatrix<ST>;
+
+#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+
 		/**
 		 * Constructor for creating a SGMatrix from a SGVector with refcounting.
 		 * We do not copy the data here, just the pointer to data and the ref-
@@ -184,9 +184,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** The size */
-		inline index_t size() const
+		inline uint64_t size() const
 		{
-			return num_rows*num_cols;
+			const uint64_t c=num_cols;
+			return num_rows*c;
 		}
 
 		/** Check for pointer identity */

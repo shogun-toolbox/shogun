@@ -32,6 +32,7 @@
 #define ELEMENTWISE_OPERATIONS_H_
 
 #include <shogun/mathematics/linalg/internal/implementation/operations/Sin.h>
+#include <shogun/mathematics/linalg/internal/implementation/operations/opencl_operation.h>
 #include <shogun/mathematics/linalg/internal/implementation/util/AllocResultUtil.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseUnaryOperation.h>
 
@@ -86,6 +87,7 @@ void elementwise_compute_inplace(Operand operand, UnaryOp unary_op)
 		Operand, UnaryOp>::compute(operand, operand, unary_op);
 }
 
+#ifdef HAVE_VIENNACL
 /**
  * Template method for computing custom unary operations element-wise for matrices
  * and vectors using VIENNACL/OPENCL backend. Works for CGPUMatrix/CGPUVector.
@@ -100,9 +102,10 @@ template <class Operand>
 Operand elementwise_compute(Operand operand, std::string unary_op)
 {
 	Operand result=util::allocate_result<Operand,Operand>::alloc(operand);
+	operations::ocl_operation operation(unary_op);
 
 	implementation::elementwise_unary_operation<Backend::VIENNACL, Operand,
-		Operand, std::string>::compute(operand, result, unary_op);
+		Operand, operations::ocl_operation>::compute(operand, result, operation);
 
 	return result;
 }
@@ -119,9 +122,11 @@ Operand elementwise_compute(Operand operand, std::string unary_op)
 template <class Operand>
 void elementwise_compute_inplace(Operand operand, std::string unary_op)
 {
+	operations::ocl_operation operation(unary_op);
 	implementation::elementwise_unary_operation<Backend::VIENNACL, Operand,
-		Operand, std::string>::compute(operand, operand, unary_op);
+		Operand, operations::ocl_operation>::compute(operand, operand, operation);
 }
+#endif // HAVE_VIENNACL
 
 /**
  * Template method for computing element-wise sin for matrices and vectors.
@@ -141,8 +146,9 @@ elementwise_sin(Operand operand)
 
 	ReturnType result=util::allocate_result<Operand,ReturnType>::alloc(operand);
 
+	operations::sin<T> operation;
 	implementation::elementwise_unary_operation<backend, Operand,
-		ReturnType, operations::sin<T>>::compute(operand, result);
+		ReturnType, operations::sin<T>>::compute(operand, result, operation);
 
 	return result;
 }
@@ -162,8 +168,9 @@ void elementwise_sin_inplace(Operand operand)
 	typedef typename operations::sin<T>::return_type ST;
 	static_assert(std::is_same<T,ST>::value, "Scalar type mismatch!\n");
 
+	operations::sin<T> operation;
 	implementation::elementwise_unary_operation<backend, Operand,
-		Operand, operations::sin<T>>::compute(operand, operand);
+		Operand, operations::sin<T>>::compute(operand, operand, operation);
 }
 
 }

@@ -153,6 +153,17 @@ TEST(Elementwise_sin, SGMatrix_EIGEN3)
 		EXPECT_NEAR(CMath::sin(m[i]), sin_m[i], 1E-15);
 }
 
+TEST(Elementwise_sin, SGMatrix_EIGEN3_inplace)
+{
+	SGMatrix<float64_t> m(3,4);
+	std::iota(m.data(), m.data()+m.size(), 1);
+	SGMatrix<float64_t> m_copy(m.num_rows, m.num_cols);
+	std::copy(m.data(), m.data()+m.size(), m_copy.data());
+	linalg::elementwise_sin_inplace<linalg::Backend::EIGEN3>(m);
+	for (index_t i=0; i<m.size(); ++i)
+		EXPECT_NEAR(CMath::sin(m_copy[i]), m[i], 1E-15);
+}
+
 TEST(Elementwise_sin, SGVector_EIGEN3)
 {
 	SGVector<float64_t> v(3);
@@ -160,6 +171,17 @@ TEST(Elementwise_sin, SGVector_EIGEN3)
 	SGVector<float64_t> sin_v=linalg::elementwise_sin<linalg::Backend::EIGEN3>(v);
 	for (index_t i=0; i<v.size(); ++i)
 		EXPECT_NEAR(CMath::sin(v[i]), sin_v[i], 1E-15);
+}
+
+TEST(Elementwise_sin, SGVector_EIGEN3_inplace)
+{
+	SGVector<float64_t> v(3);
+	std::iota(v.data(), v.data()+v.size(), 1);
+	SGVector<float64_t> v_copy(v.size());
+	std::copy(v.data(), v.data()+v.size(), v_copy.data());
+	linalg::elementwise_sin_inplace<linalg::Backend::EIGEN3>(v);
+	for (index_t i=0; i<v.size(); ++i)
+		EXPECT_NEAR(CMath::sin(v_copy[i]), v[i], 1E-15);
 }
 #endif // HAVE_EIGEN3
 

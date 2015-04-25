@@ -38,6 +38,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/linalg/internal/opencl_config.h>
 #include <shogun/mathematics/linalg/internal/opencl_util.h>
+#include <shogun/mathematics/linalg/internal/implementation/operations/opencl_operation.h>
 #endif // HAVE_VIENNACL
 
 #include <algorithm>
@@ -63,10 +64,7 @@ struct elementwise_unary_operation
 };
 
 /**
- * @brief Specialization for elementwise_unary_operation with NATIVE backend. It
- * provides two compute methods, one works for predefined unary operators and
- * the other one works with custom unary operators.
- *
+ * @brief Specialization for elementwise_unary_operation with NATIVE backend.
  * The operand types MUST be of CPU types (SGMatrix/SGVector).
  */
 template <class Operand, class ReturnType, class UnaryOp>
@@ -78,29 +76,16 @@ struct elementwise_unary_operation<Backend::NATIVE, Operand, ReturnType, UnaryOp
 	/** The scalar type of the result */
 	using ST = typename ReturnType::Scalar;
 
+#ifdef HAVE_VIENNACL
 	/** Ensure that this struct is not being instantiated with any GPU operand types */
-	static_assert(!(std::is_same<CGPUMatrix<T>, Operand>::value
-				|| std::is_same<CGPUVector<T>, Operand>::value),
+	static_assert(std::is_same<SGMatrix<T>, Operand>::value
+			|| std::is_same<SGVector<T>, Operand>::value,
 			"NATIVE backend not allowed for GPU operands! Use SGMatrix/SGVector "
 			"in order to use NATIVE or use VIENNACL backend instead.\n");
+#endif // HAVE_VIENNACL
 
 	/**
 	 * Method compute that computes element-wise UnaryOp operation for the Operand.
-	 * This method is used for predefined standard unary operators.
-	 *
-	 * @param operand The operand on which element-wise unary operation has to be performed
-	 * @param result The result of applying the unary operator on each scalar of the operand
-	 */
-	static void compute(Operand operand, ReturnType result)
-	{
-		UnaryOp unary_op;
-		compute(operand, result, unary_op);
-	}
-
-	/**
-	 * Method compute that computes element-wise UnaryOp operation for the Operand.
-	 * This method is used for custom unary operations, such as lambda expressions or
-	 * function pointers as unary_op.
 	 *
 	 * @param operand The operand on which element-wise unary operation has to be performed
 	 * @param result The result of applying the unary operator on each scalar of the operand
@@ -110,23 +95,19 @@ struct elementwise_unary_operation<Backend::NATIVE, Operand, ReturnType, UnaryOp
 	static void compute(Operand operand, ReturnType result, UnaryOp unary_op)
 	{
 		static_assert(std::is_same<ST,decltype(unary_op(operand.data()[0]))>::value,
-				"The return type of the unary operator and the scalar types of the "
-				"result must be the same!\n");
+			"The return type of the unary operator and the scalar types of the "
+			"result must be the same!\n");
 
-		std::transform(operand.data(), operand.data()+operand.size(), result.data(),
-		[&unary_op](T& value)
-		{
-			return unary_op(value);
-		});
+#pragma omp parallel for
+		for (index_t i=0; i<operand.size(); ++i)
+			result.data()[i]=unary_op(operand.data()[i]);
 	}
 };
 
 #ifdef HAVE_EIGEN3
 /**
- * @brief Specialization for elementwise_unary_operation with EIGEN3 backend. It
- * provides one compute method which work for predefined unary operators in Eigen3.
- *
- * The operand types MUST be other than GPU types (CGPUMatrix/CGPUVector).
+ * @brief Specialization for elementwise_unary_operation with EIGEN3 backend.
+ * The operand types MUST be of CPU types (SGMatrix/SGVector).
  */
 template <class Operand, class ReturnType, class UnaryOp>
 struct elementwise_unary_operation<Backend::EIGEN3, Operand, ReturnType, UnaryOp>
@@ -137,11 +118,13 @@ struct elementwise_unary_operation<Backend::EIGEN3, Operand, ReturnType, UnaryOp
 	/** The scalar type of the result */
 	using ST = typename UnaryOp::return_type;
 
+#ifdef HAVE_VIENNACL
 	/** Ensure that this struct is not being instantiated with any GPU operand types */
-	static_assert(!(std::is_same<CGPUMatrix<T>, Operand>::value
-			 || std::is_same<CGPUVector<T>, Operand>::value),
-			"EIGEN3 backend not allowed for GPU operands! Use SGMatrix/SGVector "
-			"in order to use EIGEN3 or use VIENNACL backend instead.\n");
+	static_assert(std::is_same<SGMatrix<T>, Operand>::value
+			|| std::is_same<SGVector<T>, Operand>::value,
+			"NATIVE backend not allowed for GPU operands! Use SGMatrix/SGVector "
+			"in order to use NATIVE or use VIENNACL backend instead.\n");
+#endif // HAVE_VIENNACL
 
 	/**
 	 * Method compute that computes element-wise UnaryOp operation for the Operand
@@ -150,9 +133,8 @@ struct elementwise_unary_operation<Backend::EIGEN3, Operand, ReturnType, UnaryOp
 	 * @param operand The operand on which element-wise unary operation has to be performed
 	 * @param result The result of applying the unary operator on each scalar of the operand
 	 */
-	static void compute(Operand operand, ReturnType result)
+	static void compute(Operand operand, ReturnType result, UnaryOp unary_op)
 	{
-		UnaryOp unary_op;
 		auto eigen_result=unary_op.compute_using_eigen3(operand);
 		std::copy(eigen_result.data(), eigen_result.data()+eigen_result.size(), result.data());
 	}
@@ -162,11 +144,9 @@ struct elementwise_unary_operation<Backend::EIGEN3, Operand, ReturnType, UnaryOp
 #ifdef HAVE_VIENNACL
 /**
  * @brief Specialization for elementwise_unary_operation with VIENNACL backend.
- * It provides one compute method which works for predefined unary operators.
- *
  * The operand types MUST be of GPU types (CGPUMatrix/CGPUVector).
- *
  * The return type and the operand type must be the same for ViennaCL.
+ * The unary operator must be of ocl_operation type.
  */
 template <class Operand, class UnaryOp>
 struct elementwise_unary_operation<Backend::VIENNACL, Operand, Operand, UnaryOp>
@@ -186,68 +166,20 @@ struct elementwise_unary_operation<Backend::VIENNACL, Operand, Operand, UnaryOp>
 
 	/**
 	 * Method compute that computes element-wise UnaryOp operation for the Operand
-	 * using VIENNACL backend. Works for predefined unary operations.
+	 * using VIENNACL backend.
 	 *
 	 * @param operand The operand on which element-wise unary operation has to be performed
 	 * @param result The result of applying the unary operator on each scalar of the operand
 	 */
-	static void compute(Operand operand, Operand result)
+	static void compute(Operand operand, Operand result, operations::ocl_operation unary_op)
 	{
-		static const std::string operation=UnaryOp::operation();
-		static const std::string opname=UnaryOp::name();
-		static const std::string kernel_name=opname+"_"+ocl::get_type_string<T>();
+		const std::string operation=unary_op.get_operation();
+		std::hash<std::string> hash_fn;
+		const std::string hash=std::to_string(hash_fn(operation));
+		const std::string kernel_name="kernel_"+hash+"_"+ocl::get_type_string<T>();
 
 		viennacl::ocl::kernel& kernel=
 			ocl::generate_single_arg_elementwise_kernel<T>(kernel_name, operation);
-
-		kernel.global_work_size(0, ocl::align_to_multiple_1d(operand.size()));
-
-		viennacl::ocl::enqueue(kernel(operand.data(),
-			cl_int(operand.size()), cl_int(operand.offset),
-			result.data(), cl_int(result.offset)));
-	}
-};
-
-/**
- * @brief Specialization for elementwise_unary_operation with VIENNACL backend.
- * It provides one compute method which work for custom unary operators in VIENNACL.
- *
- * The operand types MUST be of GPU types (CGPUMatrix/CGPUVector).
- *
- * The return type and the operand type must be the same for ViennaCL.
- */
-template <class Operand>
-struct elementwise_unary_operation<Backend::VIENNACL, Operand, Operand, std::string>
-{
-	/** The scalar type of the operand */
-	using T = typename Operand::Scalar;
-
-	/** Ensure that the scalar type is not a std::complex<double> type */
-	static_assert(!std::is_same<T,complex128_t>::value,
-			"Complex numbers not supported!\n");
-
-	/** Ensure that this struct is being instantiated with only GPU operand types */
-	static_assert(std::is_same<CGPUMatrix<T>, Operand>::value ||
-			std::is_same<CGPUVector<T>, Operand>::value,
-			"VIENNACL backend not allowed for CPU operands! Use CGPUMatrix/CGPUVector "
-			"in order to use VIENNACL or use NATIVE/EIGEN3 backend instead.\n");
-
-	/**
-	 * Method compute that computes element-wise UnaryOp operation for the Operand
-	 * using VIENNACL backend. Works for custom unary operations.
-	 *
-	 * @param operand The operand on which element-wise unary operation has to be performed
-	 * @param result The result of applying the unary operator on each scalar of the operand
-	 * @param unary_op The operation body as string to be used inside an OpenCL kernel
-	 */
-	static void compute(Operand operand, Operand result, std::string unary_op)
-	{
-		std::hash<std::string> hash_fn;
-		std::string hash=std::to_string(hash_fn(unary_op));
-		std::string kernel_name="kernel_"+hash+"_"+ocl::get_type_string<T>();
-
-		viennacl::ocl::kernel& kernel=
-			ocl::generate_single_arg_elementwise_kernel<T>(kernel_name, unary_op);
 
 		kernel.global_work_size(0, ocl::align_to_multiple_1d(operand.size()));
 

@@ -39,6 +39,8 @@
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
 
+#include <shogun/mathematics/linalg/internal/implementation/operations/opencl_operation.h>
+
 namespace shogun
 {
 
@@ -50,15 +52,21 @@ namespace operations
 
 /**
  * Template struct sin for computing element-wise sin for matrices and vectors.
- * The operator() is for NATIVE backend implementation. method operations() is
- * for VIENNACL/OPENCL backend implementation. Methods compute_using_eigen3
+ * The operator() is for NATIVE backend implementation. Methods compute_using_eigen3
  * are for computing element-wise sin using EIGEN3 backend.
  */
 template <typename T>
-struct sin
+struct sin : public ocl_operation
 {
 	/** The return type */
 	using return_type = float64_t;
+
+	/*
+	 * Default constructor. Initializes the OpenCL operation
+	 */
+	sin() : ocl_operation("return sin(element);")
+	{
+	}
 
 	/**
 	 * @param val The scalar value
@@ -100,22 +108,6 @@ struct sin
 		return v.array().template cast<double>().sin();
 	}
 #endif // HAVE_EIGEN3
-
-	/**
-	 * @return The OpenCL sin operation to be used in a OpenCL kernel
-	 */
-	static constexpr std::string operation()
-	{
-		return "return sin(element);";
-	}
-
-	/**
-	 * @return The name of sin operation to be used in a OpenCL kernel
-	 */
-	static constexpr std::string name()
-	{
-		return "sin";
-	}
 };
 
 /**

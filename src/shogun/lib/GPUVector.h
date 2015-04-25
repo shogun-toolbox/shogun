@@ -42,7 +42,7 @@
 #include <shogun/lib/common.h>
 #include <memory>
 
-
+#ifndef SWIG // SWIG should skip this part
 namespace viennacl
 {
 	template <class, class, class> class vector_base;
@@ -76,6 +76,7 @@ namespace shogun
  */
 template <class T> class CGPUVector
 {
+
 	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 
@@ -110,7 +111,6 @@ public:
 	/** Creates a gpu vector using data from an SGVector */
 	CGPUVector(const SGVector<T>& cpu_vec);
 
-#ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 	/** Creates a gpu vector using data from an Eigen3 column vector */
 	CGPUVector(const EigenVectorXt& cpu_vec);
@@ -125,6 +125,7 @@ public:
 	operator EigenRowVectorXt() const;
 
 #endif // HAVE_EIGEN3
+
 	/** The data */
 	inline VCLVectorBase data()
 	{
@@ -144,7 +145,6 @@ public:
 	 * used to call native ViennaCL methods on this vector
 	 */
 	VCLVectorBase vcl_vector();
-#endif // SWIG
 
 	/** Sets all the elements of the vector to zero */
 	void zero();
@@ -189,6 +189,7 @@ public:
 };
 
 }
+#endif // SWIG
 
 #endif // HAVE_CXX11
 #endif // HAVE_VIENNACL
