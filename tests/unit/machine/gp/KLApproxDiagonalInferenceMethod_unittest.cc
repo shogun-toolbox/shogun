@@ -82,6 +82,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
 	// specify GP regression with KL inference
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
+	inf->set_compute_gradients(false);
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
@@ -201,6 +202,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
 	//
@@ -321,6 +323,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
 	//
@@ -990,6 +993,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likeliho
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
 	//
@@ -1049,6 +1053,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_like
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
 	//
@@ -1108,6 +1113,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_lik
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
 	//

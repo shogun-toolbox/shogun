@@ -84,6 +84,8 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
+
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
@@ -201,6 +203,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_logit_likelihood)
 	// specify GP classification with KL inference
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
@@ -319,6 +322,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
@@ -988,6 +992,7 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
@@ -1047,6 +1052,7 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_logit_likelihood
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
@@ -1106,6 +1112,7 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihoo
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
 	//
