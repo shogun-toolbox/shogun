@@ -150,6 +150,10 @@ public:
 	 * @return mean vector
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
+
+	/** update data all matrices */
+	virtual void update();
+	
 protected:
 
 	/** check if members of object are valid for inference */

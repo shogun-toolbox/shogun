@@ -199,6 +199,22 @@ void CMultiLaplacianInferenceMethod::update_chol()
 {
 }
 
+void CMultiLaplacianInferenceMethod::update()
+{
+	SG_DEBUG("entering\n");
+
+	CInferenceMethod::update();
+	update_alpha();
+	if (m_is_compute_gradients)
+	{
+		update_approx_cov();
+		update_deriv();
+	}
+	update_parameter_hash();
+
+	SG_DEBUG("leaving\n");
+}
+
 void CMultiLaplacianInferenceMethod::get_dpi_helper()
 {
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
@@ -487,6 +503,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 SGVector<float64_t> CMultiLaplacianInferenceMethod::get_posterior_mean()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 
