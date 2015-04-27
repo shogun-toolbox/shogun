@@ -81,7 +81,7 @@ TEST(ExactInferenceMethod,get_cholesky)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-
+	inf->set_compute_gradients(false);
 	/* do some checks against gpml toolbox*/
 	// L =
 	// 1.414213562373095   0.386132930109494   0.062877078699608
@@ -136,7 +136,7 @@ TEST(ExactInferenceMethod,get_alpha)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-
+	inf->set_compute_gradients(false);
 	/* do some checks against gpml toolbox*/
 
 	// alpha =
@@ -186,6 +186,7 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
+	inf->set_compute_gradients(false);
 
 	/* do some checks against gpml toolbox*/
 	// nlZ =
@@ -496,4 +497,62 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	SG_UNREF(inf);
 }
 
+TEST(ExactInferenceMethod,set_compute_gradients)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
+	// function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, lik);
+	inf->set_scale(0.8);
+
+	inf->set_compute_gradients(false);
+	inf->get_alpha();
+	inf->set_compute_gradients(true);
+
+	// comparison of posterior mean with result from GPML package
+	// 0.3613824450357372430886471
+	// 0.0032614946619217077480868
+	// -1.0762845465175703285609643
+	// 1.2348344945975837649854157
+	// -0.0750001215533616788500026 
+	SGVector<float64_t> mu=inf->get_posterior_mean();
+
+	EXPECT_NEAR(mu[0], 0.36138244503573730, 1E-15);
+	EXPECT_NEAR(mu[1], 0.00326149466192171, 1E-15);
+	EXPECT_NEAR(mu[2], -1.07628454651757055, 1E-15);
+	EXPECT_NEAR(mu[3], 1.23483449459758354, 1E-15);
+	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
+
+	// clean up
+	SG_UNREF(inf);
+}
 #endif /* HAVE_EIGEN3 */

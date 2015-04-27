@@ -45,9 +45,12 @@ void CExactInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
-	update_deriv();
-	update_mean();
-	update_cov();
+	if (m_is_compute_gradients)
+	{
+		update_deriv();
+		update_mean();
+		update_cov();
+	}
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -127,6 +130,7 @@ SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 
 SGVector<float64_t> CExactInferenceMethod::get_posterior_mean()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 
@@ -135,6 +139,8 @@ SGVector<float64_t> CExactInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CExactInferenceMethod::get_posterior_covariance()
 {
+	check_compute_gradients();
+
 	if (parameter_hash_changed())
 		update();
 
