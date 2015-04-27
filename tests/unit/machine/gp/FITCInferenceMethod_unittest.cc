@@ -97,7 +97,7 @@ TEST(FITCInferenceMethod,get_cholesky)
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
-
+	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
 	// -0.326180   0.148601   0.405579  -0.683624   0.319057  -0.073608
@@ -204,7 +204,7 @@ TEST(FITCInferenceMethod,get_cholesky_sparse)
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
-
+	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	SGMatrix<float64_t> L=inf->get_cholesky();
 
@@ -274,7 +274,7 @@ TEST(FITCInferenceMethod,get_alpha)
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
-
+	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	//  0.40342
@@ -343,7 +343,7 @@ TEST(FITCInferenceMethod,get_alpha_sparse)
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 	inf->set_scale(2.5);
-
+	inf->set_compute_gradients(false);
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
 
@@ -408,6 +408,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
+	inf->set_compute_gradients(false);
 
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
@@ -475,7 +476,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
 	// comparison of posterior negative marginal likelihood with result from
 	// GPML package
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
-
+	inf->set_compute_gradients(false);
 	EXPECT_NEAR(nml, 6.6776, 1E-4);
 
 	// clean up
@@ -1026,7 +1027,6 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
-
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise); 
 

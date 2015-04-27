@@ -68,7 +68,9 @@ void CFITCInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
-	update_deriv();
+	if (m_is_compute_gradients) 
+		update_deriv();
+
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -318,6 +320,7 @@ void CFITCInferenceMethod::update_deriv()
 
 SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 
@@ -349,6 +352,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 	//time complexity of the following operations is O(m*n^2)
