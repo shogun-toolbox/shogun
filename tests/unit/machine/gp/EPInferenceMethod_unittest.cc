@@ -62,6 +62,7 @@ TEST(EPInferenceMethod,get_cholesky_probit_likelihood)
 	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
+	inf->set_compute_gradients(false);
 
 	// comparison of cholesky with result from GPML package
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -142,6 +143,7 @@ TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
+	inf->set_compute_gradients(false);
 	// comparison of negative marginal likelihood with result from GPML package
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
 
@@ -193,6 +195,7 @@ TEST(EPInferenceMethod,get_alpha_probit_likelihood)
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
+	inf->set_compute_gradients(false);
 	// comparison of alpha with result from GPML package
 	SGVector<float64_t> alpha=inf->get_alpha();
 	EXPECT_NEAR(alpha[0], -0.481804252788557, 1E-3);
