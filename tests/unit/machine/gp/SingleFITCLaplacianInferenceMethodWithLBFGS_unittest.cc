@@ -121,6 +121,8 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
+
+	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML 3.5 package:
 	// L =
 	//-0.079160062284788  0.043573099312206   0.003733704862708
@@ -230,6 +232,8 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 	float64_t scale=4.0;
 	inf->set_scale(scale);
 
+	inf->set_compute_gradients(false);
+
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	//-0.366893026022809
@@ -317,6 +321,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	float64_t scale=5.0;
 	inf->set_scale(scale);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML 3.4 package using Newton method:
 	// nlZ =
