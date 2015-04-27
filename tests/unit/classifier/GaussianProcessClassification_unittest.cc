@@ -135,7 +135,7 @@ TEST(GaussianProcessClassification,get_mean_vector)
 	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
-
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -240,7 +240,7 @@ TEST(GaussianProcessClassification,get_variance_vector)
 	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
-
+	inf->set_compute_gradients(false);
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -345,7 +345,7 @@ TEST(GaussianProcessClassification,get_probabilities)
 	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
-
+	inf->set_compute_gradients(false);
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -460,6 +460,7 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 			mean, labels_train, likelihood);
 
 	inf->set_scale(1.5);
+	inf->set_compute_gradients(false);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -574,7 +575,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 		mean,
 		labels_train,
 		likelihood);
-
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -592,7 +593,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 		epsilon,
 		enable_newton_if_fail
 		);
-
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -756,7 +757,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 			mean,
 			labels_train,
 			likelihood);
-
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -774,7 +775,6 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 		epsilon,
 		enable_newton_if_fail
 		);
-
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -935,6 +935,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 	CSingleLaplacianInferenceMethodWithLBFGS* inf=new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train, mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -952,7 +953,6 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 		epsilon,
 		enable_newton_if_fail
 		);
-
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -1115,6 +1115,7 @@ TEST(GaussianProcessClassificationUsingKLCovariance,get_mean_vector)
 		mean,
 		labels_train,
 		likelihood);
+	inf->set_compute_gradients(false);
 
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -1280,6 +1281,7 @@ TEST(GaussianProcessClassificationUsingKLCovariance, get_variance_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -1444,6 +1446,7 @@ TEST(GaussianProcessClassificationUsingKLCovariance, get_probabilities)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -1606,6 +1609,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky,get_mean_vector)
 		mean,
 		labels_train,
 		likelihood);
+	inf->set_compute_gradients(false);
 
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -1771,6 +1775,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_variance_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -1934,6 +1939,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2097,6 +2103,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2261,6 +2268,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2424,6 +2432,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2587,6 +2596,7 @@ TEST(GaussianProcessClassificationUsingKLDual,get_mean_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2751,6 +2761,7 @@ TEST(GaussianProcessClassificationUsingKLDual, get_variance_vector)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2914,6 +2925,7 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 		labels_train,
 		likelihood);
 
+	inf->set_compute_gradients(false);
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -3087,7 +3099,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
 	inf->set_scale(scale);
-
+	inf->set_compute_gradients(false);
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
 
 	// train gaussian process classifier
@@ -3231,6 +3243,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
 	inf->set_scale(scale);
+	inf->set_compute_gradients(false);
 
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
 
@@ -3343,6 +3356,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 
 	const float64_t scale=CMath::sqrt(5.114014937226176);
 	inf->set_scale(scale);
+	inf->set_compute_gradients(false);
 
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
 
@@ -3436,6 +3450,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 
 	float64_t ind_noise=1e-6;
 	inf->set_inducing_noise(ind_noise); 
+	inf->set_compute_gradients(false);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -3556,6 +3571,8 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	float64_t scale=4.0;
 	inf->set_scale(scale);
 
+	inf->set_compute_gradients(false);
+
 	int32_t k=4;
 	SGMatrix<float64_t> feat_test(dim, k);
 	feat_test(0,0)=-0.81263;
@@ -3670,6 +3687,8 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
+
+	inf->set_compute_gradients(false);
 
 	int32_t k=4;
 	SGMatrix<float64_t> feat_test(dim, k);
