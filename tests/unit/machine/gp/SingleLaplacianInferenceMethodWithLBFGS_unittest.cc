@@ -96,8 +96,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 			mean,
 			labels_train,
 			likelihood);
-
-
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -213,6 +212,8 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -304,6 +305,8 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_pr
 			mean,
 			labels_train,
 			likelihood);
+
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -684,6 +687,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -800,6 +804,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 			labels_train,
 			likelihood);
 
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -891,6 +896,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_lo
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1063,6 +1069,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1172,6 +1179,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1256,6 +1264,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_ga
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1429,6 +1438,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1538,6 +1548,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
@@ -1622,6 +1633,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_
 			mean,
 			labels_train,
 			likelihood);
+	inf->set_compute_gradients(false);
 	int m = 100;
 	int max_linesearch = 1000;
 	int linesearch = 0;
