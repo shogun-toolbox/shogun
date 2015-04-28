@@ -98,4 +98,12 @@ ADD_CUSTOM_TARGET(unit-tests
 
 shogun_discover_tests(shogun-unit-test)
 
+# Add unittests to the dependencies of modular interfaces to make sure nothing
+# will infer with them being build single-threaded.
+IF(SWIG_SINGLE_THREADED)
+	FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+		ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} shogun-unit-test)
+	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+ENDIF(SWIG_SINGLE_THREADED)
+
 unset(CMAKE_DEFINITIONS)
