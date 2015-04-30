@@ -71,7 +71,7 @@ public:
 private:
 	void initialize();
 
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 public:
 	/** constructor
 	 *
@@ -118,7 +118,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index=-1);
-#endif /* HAVE_LINALG_LIB */
+#endif /* HAVE_LINALG_LIB and HAVE_EIGEN3 */
 };
 }
 

@@ -49,7 +49,9 @@ CGaussianARDFITCKernel::~CGaussianARDFITCKernel()
 {
 }
 
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
+using namespace Eigen;
+
 CGaussianARDFITCKernel::CGaussianARDFITCKernel(int32_t size, float64_t width)
 		: CGaussianARDKernel(size,width)
 {
@@ -98,42 +100,45 @@ SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
 		int32_t idx_l=index;
 		//Note that CDotKernel requires lhs and rhs are CDotFeatures pointers
 		//This Kernel is a subclass of CDotKernel
-		SGVector<float64_t> left_vec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_l);
+		SGVector<float64_t> left_vec=get_feature_vector(idx_l, lhs);
 		SGMatrix<float64_t> res(left_vec.vlen, num_rhs);
 
 		for (int32_t idx_r=0; idx_r<num_rhs; idx_r++)
 		{
-			SGVector<float64_t> right_vec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_r);
+			SGVector<float64_t> right_vec=get_feature_vector(idx_r, rhs);
 			SGMatrix<float64_t> res_transpose(res.get_column_vector(idx_r),1,left_vec.vlen,false);
-			linalg::add(left_vec, right_vec, right_vec, 1.0, -1.0);
+			Map<MatrixXd> eigen_res_transpose(res_transpose.matrix, res_transpose.num_rows, res_transpose.num_cols);
+
+			SGVector<float64_t> vec=linalg::add(left_vec, right_vec, 1.0, -1.0);
 			float64_t scalar_weight=1.0;
 			//column vector
-			SGMatrix<float64_t> right=compute_right_product(right_vec, scalar_weight);
+			SGMatrix<float64_t> right=compute_right_product(vec, scalar_weight);
 			//row vector
 			SGMatrix<float64_t> right_transpose(right.matrix,1,right.num_rows,false);
+			Map<MatrixXd> eigen_right_transpose(right_transpose.matrix, right_transpose.num_rows, right_transpose.num_cols);
 			if (m_ARD_type==KT_SCALAR)
 			{
 				scalar_weight*=m_weights[0];
-				SGMatrix<float64_t> weights(1,right.num_rows);
-				weights.set_const(scalar_weight);
-				linalg::matrix_product(right_transpose, weights, res_transpose);
+				eigen_res_transpose=eigen_right_transpose*scalar_weight;
 			}
 			else
 			{
 				if(m_ARD_type==KT_DIAG)
 				{
-					SGMatrix<float64_t> weights(m_weights.matrix,1,m_weights.num_rows,false);
-					linalg::elementwise_product(right_transpose, weights, res_transpose);
+					Map<MatrixXd> eigen_weights(m_weights.matrix, 1, m_weights.num_rows);
+					eigen_res_transpose=eigen_right_transpose.cwiseProduct(eigen_weights);
 				}
 				else if(m_ARD_type==KT_FULL)
-					linalg::matrix_product(right_transpose, m_weights, res_transpose);
+				{
+					Map<MatrixXd> eigen_weights(m_weights.matrix, m_weights.num_rows, m_weights.num_cols);
+					eigen_res_transpose=eigen_right_transpose*eigen_weights;
+				}
 				else
 				{
 					SG_ERROR("Unsupported ARD type\n");
 				}
 
 			}
-
 			for (index_t i=0; i<left_vec.vlen; i++)
 				res(i,idx_r)*=kernel(idx_l,idx_r)*-2.0/m_width;
 		}
