@@ -38,17 +38,17 @@ using namespace shogun;
 
 TEST(TreeMachineNode, build_tree)
 {
-	CTreeMachineNode<id3TreeNodeData>* root= 
+	CTreeMachineNode<id3TreeNodeData>* root=
 			new CTreeMachineNode<id3TreeNodeData>();
 
-	CTreeMachineNode<id3TreeNodeData>* child1= 
+	CTreeMachineNode<id3TreeNodeData>* child1=
 			new CTreeMachineNode<id3TreeNodeData>();
 	child1->machine(1);
 	child1->data.attribute_id=1;
 	child1->data.transit_if_feature_value=1.0;
 	child1->data.class_label=11.0;
 
-	CTreeMachineNode<id3TreeNodeData>* child2= 
+	CTreeMachineNode<id3TreeNodeData>* child2=
 			new CTreeMachineNode<id3TreeNodeData>();
 
 	root->add_child(child1);

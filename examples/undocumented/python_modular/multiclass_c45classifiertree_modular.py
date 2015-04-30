@@ -10,7 +10,7 @@ feattypes = array([False, False])
 
 parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
-def multiclass_c45classifiertree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):	
+def multiclass_c45classifiertree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, MulticlassLabels, CSVFile, C45ClassifierTree
 		from numpy import random, int32
@@ -29,7 +29,7 @@ def multiclass_c45classifiertree_modular(train=traindat,test=testdat,labels=labe
 	trsubset=subset[1+subset.size/3:subset.size]
 
 	# C4.5 Tree formation using training subset
-	train_labels.add_subset(trsubset)	
+	train_labels.add_subset(trsubset)
 	feats_train.add_subset(trsubset)
 
 	c=C45ClassifierTree()

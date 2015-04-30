@@ -170,7 +170,7 @@ float64_t CSingleFITCLaplacianInferenceMethodWithLBFGS::evaluate(
 	/* Note that alpha = alpha_pre_iter - step * gradient_pre_iter */
 
 	/* Unfortunately we can not use dynamic_cast to cast the void * pointer to an
-	 * object pointer. Therefore, make sure this method is private.  
+	 * object pointer. Therefore, make sure this method is private.
 	 */
 	CSingleFITCLaplacianInferenceMethodWithLBFGS * obj_prt
 		= static_cast<CSingleFITCLaplacianInferenceMethodWithLBFGS *>(obj);
@@ -218,11 +218,11 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::update_alpha()
 	/* In order to use the provided lbfgs function, we have to pass the object via
 	 * void * pointer, which the evaluate method will use static_cast to cast
 	 * the pointer to an object pointer.
-	 * Therefore, make sure the evaluate method is a private method of the class. 
+	 * Therefore, make sure the evaluate method is a private method of the class.
 	 * Because the evaluate method is defined in a class, we have to pass the
 	 * method pointer to the lbfgs function via static method
 	 * If we also use the progress method, make sure the method is static and
-	 * private. 
+	 * private.
 	 */
 	void * obj_prt = static_cast<void *>(this);
 
@@ -232,9 +232,9 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::update_alpha()
 	/* clean up*/
 	m_mean_f = NULL;
 
-	/* Note that ret should be zero if the minimization 
+	/* Note that ret should be zero if the minimization
 	 * process terminates without an error.
-	 * A non-zero value indicates an error. 
+	 * A non-zero value indicates an error.
 	 */
 	if (m_enable_newton_if_fail && ret != 0 && ret != LBFGS_ALREADY_MINIMIZED)
 	{
@@ -254,7 +254,7 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::update_alpha()
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
 	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
-	//post.alpha = R0'*(V*alpha); 
+	//post.alpha = R0'*(V*alpha);
 	eigen_post_alpha=eigen_R0.transpose()*(eigen_V*eigen_alpha);
 }
 

@@ -9,10 +9,10 @@ TEST(GEMPLP, find_intersections_index)
 {
 	CGEMPLP* mplp = new CGEMPLP();
 	SG_REF(mplp);
-	
+
 	SGVector<int32_t> clique_A(3);
 	SGVector<int32_t> clique_B(3);
-	
+
 	for (int32_t i = 0; i < 3; i++)
 	{
 		clique_A[i] = i;
@@ -27,16 +27,16 @@ TEST(GEMPLP, find_intersections_index)
 	k = mplp->find_intersection_index(clique_A, clique_B);
 	EXPECT_EQ(k, 0);
 	EXPECT_EQ(mplp->m_all_intersections.size(), 1);
-	EXPECT_EQ(mplp->m_all_intersections[0][0], 2);	
+	EXPECT_EQ(mplp->m_all_intersections[0][0], 2);
 
 	clique_B[1] = 1;
 	k = mplp->find_intersection_index(clique_A, clique_B);
 	EXPECT_EQ(k, 1);
 	EXPECT_EQ(mplp->m_all_intersections.size(), 2);
-	EXPECT_EQ(mplp->m_all_intersections[1].size(), 2);	
-	EXPECT_EQ(mplp->m_all_intersections[1][0], 1);	
-	EXPECT_EQ(mplp->m_all_intersections[1][1], 2);	
-	
+	EXPECT_EQ(mplp->m_all_intersections[1].size(), 2);
+	EXPECT_EQ(mplp->m_all_intersections[1][0], 1);
+	EXPECT_EQ(mplp->m_all_intersections[1][1], 2);
+
 	SG_UNREF(mplp);
 }
 
@@ -55,16 +55,16 @@ TEST(GEMPLP, max_in_subdimension)
 	dims_max[0] = 2;
 
 	// define target nd array
-	SGNDArray<float64_t> arr_tar(dims_tar);	
-	arr_tar[0] = 0; // (0,0)	
+	SGNDArray<float64_t> arr_tar(dims_tar);
+	arr_tar[0] = 0; // (0,0)
 	arr_tar[1] = 1;	// (0,1)
 	arr_tar[2] = 2;	// (1,0)
 	arr_tar[3] = 3;	// (1,1)
 
 	// define result nd array
 	SGNDArray<float64_t> arr_max(dims_max);
-	
-	// define sub-dimension	
+
+	// define sub-dimension
 	SGVector<int32_t> subset_inds(1);
 	subset_inds[0] = 0;
 
@@ -112,9 +112,9 @@ TEST(GEMPLP, convert_energy_to_potential)
 	SG_REF(mplp);
 
 	CFactor* factor = dynamic_cast<CFactor*>(mplp->m_factors->get_element(0));
-	
+
 	SGNDArray<float64_t> message = mplp->convert_energy_to_potential(factor);
-	
+
 	EXPECT_EQ(message.len_array, 4);
 	EXPECT_EQ(message.array[0], -0.0);
 	EXPECT_EQ(message.array[1], -0.2);
@@ -134,14 +134,14 @@ TEST(GEMPLP, simple_chain)
 	SG_REF(fg_test_data);
 
 	CFactorGraph* fg_simple = fg_test_data->simple_chain_graph();
-	
+
 	CMAPInference infer_met(fg_simple, GEMPLP);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
-	
+
 	EXPECT_EQ(assignment[0],0);
 	EXPECT_EQ(assignment[1],0);
 	EXPECT_NEAR(0.4, infer_met.get_energy(), 1E-10);
@@ -160,14 +160,14 @@ TEST(GEMPLP, random_chain)
 	float64_t min_energy_expected; // expected minimum energy
 
 	CFactorGraph* fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
-		
+
 	CMAPInference infer_met(fg_random, GEMPLP);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
-	
+
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
 	for (int32_t i = 0; i < assignment.size(); i++)

@@ -164,10 +164,10 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	// first entry: all coefficients are zero
 	m_beta_path.push_back(beta);
 	m_beta_idx.push_back(0);
-	
+
 	//maximum allowed active variables at a time
 	int32_t max_active_allowed = CMath::min(n_vec-1, n_fea);
-	
+
 	//========================================
 	// main loop
 	//========================================

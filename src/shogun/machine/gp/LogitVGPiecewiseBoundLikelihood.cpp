@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * https://github.com/emtiyaz/VariationalApproxExample
  * and the reference paper is
  * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
@@ -184,7 +184,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	//This function is based on the Matlab code,
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute f
 	//and the formula of the appendix
-	
+
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
 	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
 	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
@@ -194,7 +194,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 
-	index_t num_rows = m_bound.num_rows; 
+	index_t num_rows = m_bound.num_rows;
 	index_t num_cols = m_mu.vlen;
 
 	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
@@ -202,22 +202,22 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
 	float64_t l_bak = eigen_l(0);
-	//l(1) = 0; 
+	//l(1) = 0;
 	eigen_l(0) = 0;
 
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
-	//h(end) = 0; 
+	//h(end) = 0;
 	eigen_h(eigen_h.size()-1) = 0;
 
 	//ex0 = ch-cl;
 	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
 
 	//%ex1= v.*(pl-ph) + m.*(ch-cl);
-	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose() 
+	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose()
 		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
 
 	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
-	
+
 	//bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph
 	MatrixXd eigen_ex2 = ((eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
 		- (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
@@ -233,15 +233,15 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection(
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
 
 	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
-	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array() 
-		+ eigen_ex1.array().colwise()*eigen_b.array() 
+	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array()
+		+ eigen_ex1.array().colwise()*eigen_b.array()
 		+ eigen_ex0.array().colwise()*eigen_c.array()).colwise().sum().matrix();
 
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
 
 	Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
-	eigen_f = eigen_lab.cwiseProduct(eigen_mu) - eigen_f; 
+	eigen_f = eigen_lab.cwiseProduct(eigen_mu) - eigen_f;
 	return f;
 }
 
@@ -254,10 +254,10 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	//and the formula of the appendix
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
 	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
-	//We take the derivative wrt to param. Only mu or sigma2 can be the param 
+	//We take the derivative wrt to param. Only mu or sigma2 can be the param
 	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
-		"Can't compute derivative of the variational expection ", 
-		"of log LogitLikelihood using the piecewise bound ", 
+		"Can't compute derivative of the variational expection ",
+		"of log LogitLikelihood using the piecewise bound ",
 		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter",
 		get_name(), param->m_name);
 
@@ -270,7 +270,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 
-	index_t num_rows = m_bound.num_rows; 
+	index_t num_rows = m_bound.num_rows;
 	index_t num_cols = m_mu.vlen;
 
 	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
@@ -281,10 +281,10 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	const Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 
 	float64_t l_bak = eigen_l(0);
-	//l(1) = 0; 
+	//l(1) = 0;
 	eigen_l(0) = 0;
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
-	//h(end) = 0; 
+	//h(end) = 0;
 	eigen_h(eigen_h.size()-1) = 0;
 
 	SGVector<float64_t> result(m_mu.vlen);
@@ -304,7 +304,7 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 
 		//gmu = bsxfun(@times, dmu2, _a) + bsxfun(@times, pl.*l - ph.*h + ch - chl, b) + bsxfun(@times, pl - ph, c)
 		//gmu = sum(gmu,1)
-		eigen_gmu = ((eigen_dmu2.array().colwise()*eigen_a.array()) 
+		eigen_gmu = ((eigen_dmu2.array().colwise()*eigen_a.array())
 			+ ((eigen_weighted_pdf_diff + eigen_cdf_diff).array().colwise()*eigen_b.array())
 			+ ( (eigen_pl - eigen_ph).array().colwise()*eigen_c.array())).colwise().sum().matrix();
 
@@ -369,7 +369,7 @@ bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 		m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
 
 		//Convert the input label to standard label used in the class
-		//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
+		//Note that Shogun uses  -1 and 1 as labels and this class internally uses
 		//0 and 1 repectively.
 		for(index_t i = 0; i < m_lab.size(); ++i)
 			m_lab[i] = CMath::max(m_lab[i], 0.0);
@@ -387,25 +387,25 @@ void CLogitVGPiecewiseBoundLikelihood::init_likelihood()
 
 void CLogitVGPiecewiseBoundLikelihood::init()
 {
-	SG_ADD(&m_bound, "bound", 
+	SG_ADD(&m_bound, "bound",
 		"Variational piecewise bound for logit likelihood",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_pl, "pdf_l", 
+	SG_ADD(&m_pl, "pdf_l",
 		"The pdf given the lower range and parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_ph, "pdf_h", 
+	SG_ADD(&m_ph, "pdf_h",
 		"The pdf given the higher range and parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_cdf_diff, "cdf_h_minus_cdf_l", 
+	SG_ADD(&m_cdf_diff, "cdf_h_minus_cdf_l",
 		"The CDF difference between the lower and higher range given the parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_l2_plus_s2, "l2_plus_sigma2", 
+	SG_ADD(&m_l2_plus_s2, "l2_plus_sigma2",
 		"The result of l^2 + sigma^2",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_h2_plus_s2, "h2_plus_sigma2", 
+	SG_ADD(&m_h2_plus_s2, "h2_plus_sigma2",
 		"The result of h^2 + sigma^2",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_weighted_pdf_diff, "weighted_pdf_diff", 
+	SG_ADD(&m_weighted_pdf_diff, "weighted_pdf_diff",
 		"The result of l*pdf(l_norm)-h*pdf(h_norm)",
 		MS_NOT_AVAILABLE);
 
@@ -417,7 +417,7 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute common variables later
 	//used in get_variational_expection and get_variational_first_derivative
-	
+
 	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
 	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
 	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
@@ -427,7 +427,7 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 
-	index_t num_rows = m_bound.num_rows; 
+	index_t num_rows = m_bound.num_rows;
 	index_t num_cols = m_mu.vlen;
 
 	m_pl = SGMatrix<float64_t>(num_rows,num_cols);
@@ -454,7 +454,7 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	//bsxfun(@minus,h,m)
 	eigen_zh = ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array()).matrix();
 
-	VectorXd eigen_s_inv = eigen_s2.array().sqrt().inverse().matrix(); 
+	VectorXd eigen_s_inv = eigen_s2.array().sqrt().inverse().matrix();
 
 	//zl = bsxfun(@times, bsxfun(@minus,l,m), 1./sqrt(v))
 	eigen_zl = (eigen_zl.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
@@ -484,7 +484,7 @@ void CLogitVGPiecewiseBoundLikelihood::precompute()
 	//ph = bsxfun(@times, normpdf(zh), 1./sqrt(v));
 	eigen_ph = (eigen_ph.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
 
-	SGMatrix<float64_t> & cl = zl; 
+	SGMatrix<float64_t> & cl = zl;
 	SGMatrix<float64_t> & ch = zh;
 
 	for (index_t r = 0; r < zl.num_rows; r++)

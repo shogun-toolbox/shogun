@@ -47,7 +47,7 @@ float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 	for (int32_t i=0;i<dim;i++)
 	{
 		float64_t dim_dist=(node->data.bbox_lower[i]-feat[i])+CMath::abs(feat[i]-node->data.bbox_lower[i]);
-		dim_dist+=(feat[i]-node->data.bbox_upper[i])+CMath::abs(feat[i]-node->data.bbox_upper[i]);		
+		dim_dist+=(feat[i]-node->data.bbox_upper[i])+CMath::abs(feat[i]-node->data.bbox_upper[i]);
 		dist+=add_dim_dist(0.5*dim_dist);
 	}
 
@@ -59,7 +59,7 @@ float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
 	SGVector<float64_t> noder_lower=noder->data.bbox_lower;
-	SGVector<float64_t> noder_upper=noder->data.bbox_upper;			
+	SGVector<float64_t> noder_upper=noder->data.bbox_upper;
 	float64_t dist=0;
 	for(int32_t i=0;i<noder_lower.vlen;i++)
 	{
@@ -76,7 +76,7 @@ float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
 	SGVector<float64_t> noder_lower=noder->data.bbox_lower;
-	SGVector<float64_t> noder_upper=noder->data.bbox_upper;			
+	SGVector<float64_t> noder_upper=noder->data.bbox_upper;
 	float64_t dist=0;
 	for(int32_t i=0;i<noder_lower.vlen;i++)
 	{
@@ -101,7 +101,7 @@ void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float6
 	}
 
 	lower=actual_dists(lower);
-	upper=actual_dists(upper);	
+	upper=actual_dists(upper);
 }
 
 void CKDTree::init_node(bnode_t* node, index_t start, index_t end)

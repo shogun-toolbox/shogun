@@ -26,14 +26,14 @@ namespace shogun
 /** Matrix decomposition method for PCA */
 enum EPCAMethod
 {
-	/** if N>D then EVD is chosen automatically else SVD is chosen 
-	 * (D-dimensions N-number of vectors) 
+	/** if N>D then EVD is chosen automatically else SVD is chosen
+	 * (D-dimensions N-number of vectors)
 	 */
-	AUTO = 10,	
+	AUTO = 10,
 	/** SVD based PCA. Time complexity ~14dn^2 (d-dimensions n-number of vectors) */
 	SVD = 20,
-	/** Eigenvalue decomposition of covariance matrix. 
-	 * Time complexity ~10d^3 (d-dimensions n-number of vectors) 
+	/** Eigenvalue decomposition of covariance matrix.
+	 * Time complexity ~10d^3 (d-dimensions n-number of vectors)
 	 */
 	EVD = 30
 };
@@ -57,9 +57,9 @@ enum EPCAMemoryMode
 	 * at once for a short amount of time initially.
 	 */
 	MEM_REALLOCATE,
-	/** The feature matrix is modified in-place to generate the new matrix. 
-	 * Output matrix dimensions are changed to target dims, but actual matrix 
-	 * size remains same internally. Modifies initial data matrix 
+	/** The feature matrix is modified in-place to generate the new matrix.
+	 * Output matrix dimensions are changed to target dims, but actual matrix
+	 * size remains same internally. Modifies initial data matrix
 	 */
 	MEM_IN_PLACE
 };
@@ -80,18 +80,18 @@ enum EPCAMemoryMode
  * The covariance matrix \f$XX^T\f$ is first formed internally and then
  * its eigenvectors and eigenvalues are computed.
  * The time complexity of this method is \f$~10D^3\f$ and should be used when N > D.
- * 
+ *
  * <em>SVD</em> : Singular Value Decomposition of feature matrix X
  * The transpose of feature matrix, \f$X^T\f$, is decomposed using SVD.\f$X^T = UDV^T\f$
  * The matrix V in this decomposition contains the required eigenvectors and
  * the diagonal entries of the diagonal matrix D correspond to the non-negative
  * eigenvalues. Eigenvalue, \f$e_i\f$, is derived from a diagonal element, \f$d_i\f$,
- * using the formula \f$e_i = \frac{\sqrt{d_i}}{N-1}\f$. 
+ * using the formula \f$e_i = \frac{\sqrt{d_i}}{N-1}\f$.
  * The time complexity of this method is \f$~14DN^2\f$ and should be used when N < D.
  *
  * <em>AUTO</em> : This mode automagically chooses one of the above modes for the user
  * based on whether N > D (chooses EVD) or N < D (chooses SVD).
- * 
+ *
  * This class provides 3 modes to determine the value of T :
  *
  * <em>FIXED_NUMBER</em> : T is supplied by user directly using set_target_dims method
@@ -107,7 +107,7 @@ enum EPCAMemoryMode
  * An option for whitening the transformation matrix is also given - do_whitening. Setting this
  * option normalizes the eigenvectors (ie. the columns of transformation matrix) by dividing them
  * with the square root of corresponding eigenvalues.
- * 
+ *
  * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
 class CPCA: public CDimensionReductionPreprocessor
@@ -119,10 +119,10 @@ class CPCA: public CDimensionReductionPreprocessor
 		 * @param do_whitening normalize columns(eigenvectors) in transformation matrix
 		 * @param mode mode of pca : FIXED_NUMBER/VARIANCE_EXPLAINED/THRESHOLD
 		 * @param thresh threshold value for VARIANCE_EXPLAINED or THRESHOLD mode
-		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default] 
+		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default]
 		 * @param mem_mode memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6, 
+		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6,
 					EPCAMethod method=AUTO, EPCAMemoryMode mem_mode=MEM_REALLOCATE);
 
 		/** special constructor for FIXED_NUMBER mode

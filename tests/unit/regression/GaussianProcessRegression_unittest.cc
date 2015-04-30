@@ -560,7 +560,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -600,7 +600,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	//1.878118517080519
 	//0.697568637099934
 	//4.354657330167651
-	
+
 	EXPECT_NEAR(mean_vector[0], 0.817143553262107, 1E-10);
 	EXPECT_NEAR(mean_vector[1], 1.001048686764744, 1E-10);
 	EXPECT_NEAR(mean_vector[2], 2.182234371254691, 1E-10);

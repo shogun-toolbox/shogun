@@ -84,14 +84,14 @@ TEST(GraphCut, graph_cut_random)
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
 	SG_REF(fg_test_data);
 	CFactorGraph* fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
-	
+
 	CMAPInference infer_met(fg_random, GRAPH_CUT);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
-	
+
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
 	for (int32_t i = 0; i < assignment.size(); i++)
@@ -103,13 +103,13 @@ TEST(GraphCut, graph_cut_random)
 	SG_UNREF(fg_random);
 }
 
-// Test graph-cuts with SOSVM framework 
+// Test graph-cuts with SOSVM framework
 // using randomly generated synthetic data
 TEST(GraphCut, graph_cut_sosvm)
 {
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
 	SG_REF(fg_test_data);
-	
+
 	EXPECT_NEAR(fg_test_data->test_sosvm(GRAPH_CUT), 0, 0.1);
 
 	SG_UNREF(fg_test_data);

@@ -10,7 +10,7 @@ feattypes = array([False, False])
 
 parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
-def multiclass_cartree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):	
+def multiclass_cartree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, MulticlassLabels, CSVFile, CARTree, PT_MULTICLASS
 	except ImportError:

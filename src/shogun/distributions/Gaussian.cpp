@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Alesis Novik
- * Written (W) 2014 Parijat Mazumdar 
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/lib/config.h>
@@ -128,7 +128,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 	for (int32_t i=0;i<len;i++)
 	{
 		alpha_k_sum+=alpha_k[i];
-		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);		
+		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
 		SGVector<float64_t>::add(mean.vector, alpha_k[i], v.vector, 1, mean.vector, v.vlen);
 	}
 

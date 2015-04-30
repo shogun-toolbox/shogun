@@ -270,7 +270,7 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_logit_likelihood)
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(1.080493372046284, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.080493372046284,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -386,7 +386,7 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_probit_likelihood)
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(1.216329768018010, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.216329768018010,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -690,7 +690,7 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_logit_likelihood)
 	//0.113585701478720   0.086020351983001   0.795196757855660   0.295546558157168   0.020998235505635
 	//0.250515288102739   0.492913876934693   0.295546558157168   0.677608447921106   0.400514239283206
 	//0.211318414874201   0.471026718609916   0.020998235505635   0.400514239283206   0.714639675393856
-	// 
+	//
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
 	float64_t rel_tolerance = 1e-2;
@@ -806,7 +806,7 @@ TEST(KLCovarianceInferenceMethod,get_posterior_mean_probit_likelihood)
 	//0.563581584765779
 	//0.568910892345396
 	//-0.563558402061117
-	// 
+	//
 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 
@@ -939,7 +939,7 @@ TEST(KLCovarianceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	EXPECT_NEAR(posterior_covariance(4,3),  0.000000011016475,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.675923161214598, rel_tolerance);
 	EXPECT_NEAR(posterior_covariance(4,4),  0.675923161214598,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -1176,9 +1176,9 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 	// lik =
 	//-0.208254635605496
 	//0.024939622917056
-	// 
+	//
 	// cov =
-	//-0.80584941351205596760    
+	//-0.80584941351205596760
 	//-0.41852168768504860452
 
 	float64_t rel_tolerance = 1e-2;
@@ -1342,7 +1342,7 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	// cov =
 	//-0.034304800769586
 	//0.028091203761949
-	
+
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 

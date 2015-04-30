@@ -41,8 +41,8 @@
 namespace shogun
 {
 /** @brief CV2SGFactory copies data from OpenCV's cv::Mat data structure into
- * Shogun's SGMatrix and DenseFeatures format. The Mat is the basic image 
- * container class of OpenCV which is also a general matrix class. For this 
+ * Shogun's SGMatrix and DenseFeatures format. The Mat is the basic image
+ * container class of OpenCV which is also a general matrix class. For this
  * conversion, you need to have 2-D matrices.
  */
 class CV2SGFactory
@@ -52,7 +52,7 @@ class CV2SGFactory
 		CV2SGFactory();
 		/*destructor*/
 		~CV2SGFactory();
-		/* get SGMatrix from the Mat object. The choice of the data type for the 
+		/* get SGMatrix from the Mat object. The choice of the data type for the
 		 * resulting SGMatrix is completely yours irrespective of the cv::Mat
 		 * data type
 		 * @param cv::Mat to be converted

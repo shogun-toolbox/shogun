@@ -42,18 +42,18 @@ namespace shogun
 {
 
 /** @brief This class implements the CHAID algorithm proposed by Kass (1980) for decision tree learning.
- * CHAID consists of three steps: merging, splitting and stopping. A tree is grown by repeatedly using these 
+ * CHAID consists of three steps: merging, splitting and stopping. A tree is grown by repeatedly using these
  * three steps on each node starting from the root node. CHAID accepts nominal or ordinal categorical predictors
  * only. If predictors are continuous, they have to be transformed into ordinal predictors before tree growing.
  * \n \n
  * CONVERTING CONTINUOUS PREDICTORS TO ORDINAL : \n
  * Continuous predictors are converted to ordinal by binning. The number of bins (K) has to be supplied by the user.
- * Given K, a predictor is split in such a way that all the bins get the same number (more or less) of distinct 
+ * Given K, a predictor is split in such a way that all the bins get the same number (more or less) of distinct
  * predictor values. The maximum feature value in each bin is used as a breakpoint.
  * \n \n
  * MERGING : \n
  * During the merging step, allowable pairs of categories of a predictor are evaluated for similarity. If the similarity
- * of a pair is above a threshold, the categories constituting the pair are merged into a single category. The process is 
+ * of a pair is above a threshold, the categories constituting the pair are merged into a single category. The process is
  * repeated until there is no pair left having high similarity between its categories. Similarity between categories is
  * evaluated using the p_value
  * \n \n
@@ -64,17 +64,17 @@ namespace shogun
  * \n \n
  * STOPPING : \n
  * The tree growing process stops if any of the following conditions is satisfied : \n
- * 1. If a node becomes pure; that is, all cases in a node have identical values of the dependent variable, 
+ * 1. If a node becomes pure; that is, all cases in a node have identical values of the dependent variable,
  * the node will not be split. \n
  * 2. If all cases in a node have identical values for each predictor, the node will not be split. \n
  * 3. If the current tree depth reaches the user specified maximum tree depth limit value, the tree growing process will stop. \n
  * 4. If the size of a node is less than the user-specified minimum node size value, the node will not be split.
  * \n \n
  * p_value CALCULATIONS FOR NOMINAL DEPENDENT VARIABLE: \n
- * If the dependent variable is nominal categorical, a contingency (or count) table is formed using classes of Y as 
- * columns and categories of the predictor X as rows. The p_value is computed using the entries of this table and 
- * Pearson chi-squared statistic, For more details, please see : 
- * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_categorical.htm 
+ * If the dependent variable is nominal categorical, a contingency (or count) table is formed using classes of Y as
+ * columns and categories of the predictor X as rows. The p_value is computed using the entries of this table and
+ * Pearson chi-squared statistic, For more details, please see :
+ * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_categorical.htm
  * \n \n
  * p_value CALCULATIONS FOR ORDINAL DEPENDENT VARIABLE: \n
  * If the dependent variable Y is categorical ordinal, the null hypothesis of independence of X and Y is tested
@@ -83,9 +83,9 @@ namespace shogun
  * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_ordinal.htm
  * \n \n
  * p_value CALCULATIONS FOR CONTINUOUS DEPENDENT VARIABLE: \n
- * If the dependent variable Y is continuous, an ANOVA F test is performed that tests if the means of Y for 
- * different categories of X are the same. For more details please see : 
- * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_scale.htm 
+ * If the dependent variable Y is continuous, an ANOVA F test is performed that tests if the means of Y for
+ * different categories of X are the same. For more details please see :
+ * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_scale.htm
  */
 class CCHAIDTree : public CTreeMachine<CHAIDTreeNodeData>
 {
@@ -94,12 +94,12 @@ public:
 	CCHAIDTree();
 
 	/** constructor
-	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)  
+	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)
 	 */
 	CCHAIDTree(int32_t dependent_vartype);
 
 	/** constructor
-	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)  
+	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)
 	 * @param feature_types type of various attributes (0-nominal, 1-ordinal or 2-continuous)
 	 * @param num_breakpoints number of breakpoints for continuous to ordinal conversion of attributes
 	 */
@@ -124,29 +124,29 @@ public:
 	 */
 	virtual bool is_label_valid(CLabels* lab) const;
 
-	/** classify data using Classification Tree 
+	/** classify data using Classification Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
 	 * data with the actual breakpoint values used for classification
 	 * @param data data to be classified
-	 * @return MulticlassLabels corresponding to labels of various test vectors 
+	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** Get regression labels using Regression Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
 	 * data with the actual breakpoint values used for classification
-	 * @param data data whose regression output is needed 
-	 * @return Regression output for various test vectors 
+	 * @param data data whose regression output is needed
+	 * @return Regression output for various test vectors
 	 */
 	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
 	/** set weights of data points
-	 * @param w vector of weights 
+	 * @param w vector of weights
 	 */
 	void set_weights(SGVector<float64_t> w);
 
 	/** get weights of data points
-	 * @return vector of weights 
+	 * @return vector of weights
 	 */
 	SGVector<float64_t> get_weights() const;
 
@@ -154,7 +154,7 @@ public:
 	void clear_weights();
 
 	/** set feature types of various features
-	 * @param ft vector with feature types : 0-nominal, 1-ordinal or 2-continuous 
+	 * @param ft vector with feature types : 0-nominal, 1-ordinal or 2-continuous
 	 */
 	void set_feature_types(SGVector<int32_t> ft);
 
@@ -166,12 +166,12 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
-	/** set dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous 
+	/** set dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous
 	 * @param var integer corresponding to the dependent variable type
 	 */
-	void set_dependent_vartype(int32_t var); 
+	void set_dependent_vartype(int32_t var);
 
-	/** get dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous 
+	/** get dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous
 	 * @return integer corresponding to the dependent variable type
 	 */
 	int32_t get_dependent_vartype() const { return m_dependent_vartype; }
@@ -252,7 +252,7 @@ private:
 	 * @param pv stores p_value
 	 * @return vector with category labels for each unique value of the chosen attribute
 	 */
-	SGVector<int32_t> merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels, 
+	SGVector<int32_t> merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 								SGVector<float64_t> weights, float64_t &pv);
 
 	/** executes merge step of the tree growing process for nominal features
@@ -263,7 +263,7 @@ private:
 	 * @param pv stores p_value
 	 * @return vector with category labels for each unique value of the chosen attribute
 	 */
-	SGVector<int32_t> merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels, 
+	SGVector<int32_t> merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 								SGVector<float64_t> weights, float64_t &pv);
 
 	/** applies the decision tree learnt to test data
@@ -287,13 +287,13 @@ private:
 	 * @param feats feature vector represented in terms of categories
 	 * @param labels labels associated with features
 	 * @param weights weights associated with features
-	 * @return whether missing values category is merged 
+	 * @return whether missing values category is merged
 	 */
 	bool handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels, SGVector<float64_t> weights);
 
 	/** calculates adjusted p_value using Bonferroni adjustments
-	 * 
-	 * @param p_value unadjusted p_value 
+	 *
+	 * @param p_value unadjusted p_value
 	 * @param inum_cat number of categories of a predictor before merging
 	 * @param fnum_cat number of categories of a predictor after merging
 	 * @param ft feature type : 0 for nominal 1 for ordinal
@@ -304,7 +304,7 @@ private:
 
 	/** calculates unadjusted p_value
 	 *
-	 * @param feat chosen attribute values of all data vectors 
+	 * @param feat chosen attribute values of all data vectors
 	 * @param labels labels associated with data
 	 * @param weights weights associated with data
 	 * @return p_value of the data
@@ -313,7 +313,7 @@ private:
 
 	/** calculates ANOVA F-statistic
 	 *
-	 * @param feat chosen attribute values of all data vectors 
+	 * @param feat chosen attribute values of all data vectors
 	 * @param labels labels associated with data
 	 * @param weights weights associated with data
 	 * @param r stores unique feature categories
@@ -323,7 +323,7 @@ private:
 
 	/** calculates likelihood ratio statistic
 	 *
-	 * @param feat chosen attribute values of all data vectors 
+	 * @param feat chosen attribute values of all data vectors
 	 * @param labels labels associated with data
 	 * @param weights weights associated with data
 	 * @param r stores number of rows in contingency table
@@ -335,7 +335,7 @@ private:
 
 	/** calculates Pearson's Chi-squared statistic
 	 *
-	 * @param feat chosen attribute values of all data vectors 
+	 * @param feat chosen attribute values of all data vectors
 	 * @param labels labels associated with data
 	 * @param weights weights associated with data
 	 * @param r stores number of rows in contingency table
@@ -346,18 +346,18 @@ private:
 
 	/** calculates hypothesis under row effects model
 	 *
-	 * @param ct contingency table 
+	 * @param ct contingency table
 	 * @param wt weight table [Note : the weight table is modified by the method]
 	 * @param score score of class of columns [Note : the score vector is modified by the method]
-	 * @return  matrix containing estimated cell frequencies 
+	 * @return  matrix containing estimated cell frequencies
 	 */
 	SGMatrix<float64_t> expected_cf_row_effects_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt, SGVector<float64_t> score);
 
 	/** calculates null hypothesis of independence
 	 *
-	 * @param ct contingency table 
+	 * @param ct contingency table
 	 * @param wt weight table [Note : the weight table is modified by the method]
-	 * @return  matrix containing estimated cell frequencies 
+	 * @return  matrix containing estimated cell frequencies
 	 */
 	SGMatrix<float64_t> expected_cf_indep_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt);
 
@@ -365,14 +365,14 @@ private:
 	 * @param lab labels
 	 * @param weights associated weights
 	 * @param mean stores the mean label
-	 * @return sum of squared deviation 
+	 * @return sum of squared deviation
 	 */
 	float64_t sum_of_squared_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights, float64_t &mean);
 
 	/** converts continuous features to ordinal via binning. Forms conversion matrix m_cont_breakpoints.
 	 * NOTE : This method changes data matrix. The continuous feature values
 	 * are replaced with the actual feature values used.
-	 * 
+	 *
 	 * @param feats features
 	 * @return whether data matrix is updated
 	 */
@@ -380,7 +380,7 @@ private:
 
 	/** converts continuous features to ordinal using conversion matrix m_cont_breakpoints.
 	 * NOTE : This method changes data matrix.
-	 * 
+	 *
 	 * @param feats features
 	 */
 	void modify_data_matrix(CDenseFeatures<float64_t>* feats);

@@ -158,12 +158,12 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 
 	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
 
-	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified" 
+	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
 	" (%d here) is not the same as the number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
 
 	if (m_weights_set)
 	{
-		REQUIRE(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently %d) should be same as" 
+		REQUIRE(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently %d) should be same as"
 				" the number of vectors in data (presently %d)",m_weights.vlen,feats->get_num_vectors())
 	}
 	else
@@ -217,9 +217,9 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	}
 	else if (m_dependent_vartype==0 || m_dependent_vartype==1)
 	{
-		SGVector<float64_t> lab=labels_vec.clone();	
+		SGVector<float64_t> lab=labels_vec.clone();
 		CMath::qsort(lab);
-		// stores max total weight for a single label 
+		// stores max total weight for a single label
 		int32_t max=weights[0];
 		// stores one of the indices having max total weight
 		int32_t maxi=0;
@@ -255,7 +255,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	}
 	else
 	{
-		SG_ERROR("dependent variable type should be either 0(nominal) or 1(ordinal) or 2(continuous)\n");	
+		SG_ERROR("dependent variable type should be either 0(nominal) or 1(ordinal) or 2(continuous)\n");
 	}
 
 	// check stopping rules
@@ -406,7 +406,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	return node;
 }
 
-SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels, 
+SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 							SGVector<float64_t> weights, float64_t &pv)
 {
 	SGVector<float64_t> ufeats=feats.clone();
@@ -427,7 +427,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 		inum_cat--;
 	}
 
-	int32_t fnum_cat=inum_cat; 
+	int32_t fnum_cat=inum_cat;
 
 	// if chosen attribute (MISSING excluded) has 1 category only
 	if (inum_cat==1)
@@ -441,7 +441,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 		if (fnum_cat==2)
 			break;
 
-		// scan all allowable pairs of categories to find most similar one 
+		// scan all allowable pairs of categories to find most similar one
 		int32_t cat_index_max=-1;
 		float64_t max_merge_pv=CMath::MIN_REAL_NUMBER;
 		for (int32_t i=0;i<inum_cat-1;i++)
@@ -547,12 +547,12 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 	return cat;
 }
 
-SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels, 
+SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 								SGVector<float64_t> weights, float64_t &pv)
 {
 	SGVector<float64_t> ufeats=feats.clone();
 	int32_t inum_cat=ufeats.unique(ufeats.vector,ufeats.vlen);
-	int32_t fnum_cat=inum_cat; 
+	int32_t fnum_cat=inum_cat;
 
 	SGVector<int32_t> cat(inum_cat);
 	cat.range_fill(0);
@@ -778,7 +778,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 		SG_UNREF(feat_index);
 	}
 
-	// compare if MISSING being merged is better than not being merged 
+	// compare if MISSING being merged is better than not being merged
 	SGVector<float64_t> feats_copy(feats.vlen);
 	for (int32_t i=0;i<feats.vlen;i++)
 	{
@@ -936,7 +936,7 @@ float64_t CCHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float
 	return nu/de;
 }
 
-float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, 
+float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels,
 						SGVector<float64_t> weights, int32_t &r, int32_t &c)
 {
 	SGVector<float64_t> ufeat=feat.clone();

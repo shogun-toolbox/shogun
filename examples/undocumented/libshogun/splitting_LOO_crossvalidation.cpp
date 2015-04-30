@@ -32,9 +32,9 @@ int main(int argc, char **argv)
 		{
 			labels->set_label(i, CMath::random(-10.0, 10.0));
 		//	SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
-		
+
 		}
-		
+
 		//SG_SPRINT("\n");
 
 		/* build Leave one out splitting strategy */

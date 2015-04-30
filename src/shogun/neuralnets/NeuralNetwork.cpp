@@ -166,7 +166,7 @@ CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 		{
 			if (output_activations[i]>0.5) labels->set_label(i, 1);
 			else labels->set_label(i, -1);
-			
+
 			labels->set_value(output_activations[i], i);
 		}
 		else if (get_num_outputs()==2)
@@ -176,11 +176,11 @@ CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 			if (v1>v2)
 				labels->set_label(i, 1);
 			else labels->set_label(i, -1);
-			
+
 			labels->set_value(v2/(v1+v2), i);
 		}
 	}
-		
+
 	return labels;
 }
 
@@ -206,16 +206,16 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 		labels_vec[i] = CMath::arg_max(
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
-	
+
 	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
-	
+
 	labels->allocate_confidences_for(get_num_outputs());
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
 		labels->set_multiclass_confidences(i, SGVector<float64_t>(
 			output_activations.matrix, get_num_outputs(), i*get_num_outputs()));
 	}
-	
+
 	return labels;
 }
 
@@ -477,7 +477,7 @@ float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
 					l1_coefficient*CMath::sign<float64_t>(m_params[i]);
 		}
 	}
-	
+
 	// max-norm regularization
 	if (max_norm != -1.0)
 	{

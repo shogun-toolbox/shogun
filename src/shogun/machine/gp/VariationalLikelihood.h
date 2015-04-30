@@ -45,7 +45,7 @@ template<class T> class SGVector;
 
 /** @brief The Variational Likelihood base class.
  *
- * The class computes approximately the following variational expection 
+ * The class computes approximately the following variational expection
  * \f$E_q{log{P(y|f)}}=\sum_{i}E_{q}{log{P(y_i|f_i)}}\f$ and
  * the distribution \f$p(y|f)\f$,
  * where \f$y\f$ are the labels, \f$f\f$ is the prediction function,
@@ -59,14 +59,14 @@ public:
 
 	virtual ~CVariationalLikelihood();
 
-	/** returns the expection of the logarithm of a given probability distribution 
+	/** returns the expection of the logarithm of a given probability distribution
 	 * wrt the variational distribution.
 	 *
 	 * @return expection
 	 */
 	virtual SGVector<float64_t> get_variational_expection()=0;
 
-	/** get derivative of the variational expection of log likelihood 
+	/** get derivative of the variational expection of log likelihood
 	 * with respect to given parameter
 	 *
 	 * @param param parameter

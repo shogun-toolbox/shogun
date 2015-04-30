@@ -39,7 +39,7 @@ namespace shogun
 {
 /* template class CEMBase<MixModelData>;  // this f*ckes up mp-gcc on Mac OSX 10.10 */
 
-/** @brief This is the implementation of EM specialized for Mixture models.   
+/** @brief This is the implementation of EM specialized for Mixture models.
  */
 class CEMMixtureModel : public CEMBase<MixModelData>
 {
@@ -51,10 +51,10 @@ class CEMMixtureModel : public CEMBase<MixModelData>
 		virtual ~CEMMixtureModel();
 
 		/** returns name of class */
-		virtual const char* get_name() const { return "EMMixtureModel"; }		
+		virtual const char* get_name() const { return "EMMixtureModel"; }
 
 		/** expectation step
-		 * 
+		 *
 		 * @return updated value log_likelihood
 		 */
 		virtual float64_t expectation_step();

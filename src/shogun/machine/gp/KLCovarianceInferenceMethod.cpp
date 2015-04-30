@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -90,7 +90,7 @@ void CKLCovarianceInferenceMethod::init()
 SGVector<float64_t> CKLCovarianceInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
-	 * but also a vector corresponding to the diagonal part of W 
+	 * but also a vector corresponding to the diagonal part of W
 	 *
 	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
 	 * K is generated from cov function
@@ -131,7 +131,7 @@ bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
-	
+
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	index_t len=m_alpha.vlen/2;
@@ -153,7 +153,7 @@ bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 
 	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, m_scale);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	
+
 	//solve L'*V=diag(sW)*K
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
@@ -239,7 +239,7 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	for(index_t idx=0; idx<eigen_t.rows(); idx++)
 		trace +=(eigen_t.col(idx).array().pow(2)).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+eigen_L.diagonal().array().log().sum();
 	result+=0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace);
 	return result;

@@ -6,8 +6,8 @@
 %newobject reconstruct(CDenseFeatures<float64_t>* data);
 %newobject transform(CDenseFeatures<float64_t>* data);
 %newobject done();
- 
-/* Remove C Prefix */ 
+
+/* Remove C Prefix */
 %rename(NeuralNetwork) CNeuralNetwork;
 %rename(NeuralLayer) CNeuralLayer;
 %rename(NeuralInputLayer) CNeuralInputLayer;

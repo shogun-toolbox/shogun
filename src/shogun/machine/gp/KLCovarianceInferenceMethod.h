@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -57,7 +57,7 @@ namespace shogun
  * Since lambda is always non-positive according to the paper,
  * this implementation uses log(-lambda) as representation, which assumes lambda is always negative.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -174,7 +174,7 @@ protected:
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
+	 * Note that
 	 * get_derivative_wrt_inference_method(const TParameter* param)
 	 * and
 	 * get_derivative_wrt_kernel(const TParameter* param)

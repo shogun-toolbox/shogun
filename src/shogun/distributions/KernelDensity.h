@@ -45,7 +45,7 @@ enum EEvaluationMode
 	EM_KDTREE_SINGLE,
 	EM_BALLTREE_SINGLE,
 	EM_KDTREE_DUAL,
-	EM_BALLTREE_DUAL	
+	EM_BALLTREE_DUAL
 };
 
 /** @brief This class implements the kernel density estimation technique. Kernel density estimation is a non-parametric
@@ -69,7 +69,7 @@ public :
 	 * @param eval evaluation mode
 	 * @param leaf_size min allowed vectors in leaves of the underlying tree
 	 * @param atol absolute tolerance
-	 * @param rtol relative tolerance   
+	 * @param rtol relative tolerance
 	 */
 	CKernelDensity(float64_t bandwidth=1.0, EKernelType kernel_type=K_GAUSSIAN, EDistanceType dist=D_EUCLIDEAN, EEvaluationMode eval=EM_BALLTREE_SINGLE, int32_t leaf_size=1, float64_t atol=0, float64_t rtol=0);
 
@@ -80,17 +80,17 @@ public :
 	 *
 	 * @return KernelDensity
 	 */
-	virtual const char* get_name() const { return "KernelDensity"; } 
+	virtual const char* get_name() const { return "KernelDensity"; }
 
 	/** form tree using input points
-	 * 
+	 *
 	 * @param data data points to be used for density estimation
-	 * @return true 
+	 * @return true
 	 */
 	virtual bool train(CFeatures* data=NULL);
 
 	/** compute kde for given test points
-	 * 
+	 *
 	 * @param test data points at which kernel density is to be evaluated
 	 * @param leaf_size leaf size of query tree (ignored in case of single tree evaluation mode)
 	 * @return log of estimated kernel density velues at given test points
@@ -114,7 +114,7 @@ public :
 
 	/** return log derivative
 	 * NOT IMPLEMENTED
-	 * 
+	 *
 	 * @param num_param index number of the parameter
 	 * @param num_example index number of example
 	 * @return log of derivative of example
@@ -206,4 +206,4 @@ private :
 };
 } /* shogun */
 
-#endif /* _KERNELDENSITY_H__ */ 
+#endif /* _KERNELDENSITY_H__ */

@@ -22,7 +22,7 @@ namespace shogun
 /** Implementation class for the standard KMeans algorithm. */
 class CKMeansLloydImpl
 {
-	public:	
+	public:
 		/** Lloyd's KMeans training method
 		 *
 		 * @param k parameter k
@@ -31,9 +31,9 @@ class CKMeansLloydImpl
 		 * @param mus cluster centers matrix (k columns)
 		 * @param ClList cluster number each data vector belongs (size no_of_vectors)
 		 * @param weights_set no. of points belonging to each cluster (size k)
-		 * @param fixed_centers keep centers fixed or not 
+		 * @param fixed_centers keep centers fixed or not
 		 */
-		static void Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+		static void Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus,
 			SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers);
 };
 }

@@ -65,7 +65,7 @@ namespace shogun
  * The time complexity of the main inference process can be reduced from O(n^3) to O(m^2*n).
  *
  * Since we use \f$\Sigma_{fitc}\f$ to approximate \f$\Sigma_{N}\f$,
- * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$. 
+ * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$.
  *
  */
 class CFITCInferenceBase: public CInferenceMethod
@@ -213,7 +213,7 @@ protected:
 	 * The reasons are listed below.
 	 * 1. The type of the gradient wrt inducing features is float64_t, which is used to update inducing features
 	 * 2. Reason 1 implies that the type of inducing features can be float64_t while the type of features does not required
-	 * as float64_t 
+	 * as float64_t
 	 * 3. Reason 2 implies that the type of features must be a subclass of CDotFeatures, which can represent features as
 	 * float64_t
 	 */

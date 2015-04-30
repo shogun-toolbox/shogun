@@ -51,7 +51,7 @@ void CFactorGraphModel::init()
 	m_inf_type = TREE_MAX_PROD;
 	m_factor_types = new CDynamicObjectArray();
 	m_verbose = false;
-	
+
 	SG_REF(m_factor_types);
 }
 
@@ -417,10 +417,10 @@ void CFactorGraphModel::init_primal_opt(
 	REQUIRE(m_factor_types != NULL, "%s::init_primal_opt(): no factor types!\n", get_name());
 
 	int32_t dim_w = get_dim();
-	
+
 	switch (m_inf_type)
 	{
-		case GRAPH_CUT:	
+		case GRAPH_CUT:
 			lb.resize_vector(dim_w);
 			ub.resize_vector(dim_w);
 			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -CMath::INFTY);
@@ -431,7 +431,7 @@ void CFactorGraphModel::init_primal_opt(
 				CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
 				int32_t w_dim = ftype->get_w_dim();
 				SGVector<int32_t> card = ftype->get_cardinalities();
-		
+
 				// TODO: Features of pairwise factor are assume to be 1. Consider more general case, e.g., edge features are availabel.
 				// for pairwise factors with binary labels
 				if (card.size() == 2 &&  card[0] == 2 && card[1] == 2)
@@ -450,15 +450,15 @@ void CFactorGraphModel::init_primal_opt(
 					// w[2]*1 = E(0, 1)
 					// w[3]*1 = E(1, 1)
 					// thus, w[2] + w[1] - w[0] - w[3] > 0
-					// since factor graph model is over-parametering, 
-					// the constrain can be written as w[2] > 0, w[1] > 0, w[0] = 0, w[3] = 0		
+					// since factor graph model is over-parametering,
+					// the constrain can be written as w[2] > 0, w[1] > 0, w[0] = 0, w[3] = 0
 					lb[fw_map[0]] = 0;
 					ub[fw_map[0]] = 0;
 					lb[fw_map[3]] = 0;
 					ub[fw_map[3]] = 0;
 					lb[fw_map[1]] = 0;
 					lb[fw_map[2]] = 0;
-				}		
+				}
 				SG_UNREF(ftype);
 			}
 			break;

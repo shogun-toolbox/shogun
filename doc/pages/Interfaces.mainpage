@@ -6,7 +6,7 @@ a *script* file, where standard file IO is used to read in /write out data
 (optionally even tcp/ip). More importantly, it interfaces to established matrix
 and statistics packages, such as Matlab(tm), Octave, R and Python. SHOGUN comes
 in three flavours, the so called
-\subpage modularinterfaces, the 
+\subpage modularinterfaces, the
 \subpage staticinterfaces, and the \subpage elwmsinterface
 
 \li

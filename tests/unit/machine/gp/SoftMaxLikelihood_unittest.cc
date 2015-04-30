@@ -37,8 +37,8 @@
 
 using namespace shogun;
 
-/* Results compare with softmax likelihood implementation in 
- * GPStuff toolbox 
+/* Results compare with softmax likelihood implementation in
+ * GPStuff toolbox
  * http://becs.aalto.fi/en/research/bayes/gpstuff/install.html
  */
 

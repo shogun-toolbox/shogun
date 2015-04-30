@@ -29,7 +29,7 @@
  */
 
 #include <shogun/distributions/EMMixtureModel.h>
-#include <shogun/distributions/Distribution.h> 
+#include <shogun/distributions/Distribution.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -61,7 +61,7 @@ float64_t CEMMixtureModel::expectation_step()
 
 		// fill row of alpha
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
-			data.alpha(i,j)=CMath::exp(alpha_ij[j]-normalize);		
+			data.alpha(i,j)=CMath::exp(alpha_ij[j]-normalize);
 	}
 
 	return log_likelihood;

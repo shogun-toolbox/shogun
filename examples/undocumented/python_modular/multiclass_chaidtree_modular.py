@@ -10,7 +10,7 @@ feattypes = array([2, 2],dtype=int32)
 
 parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
-def multiclass_chaidtree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):	
+def multiclass_chaidtree_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, MulticlassLabels, CSVFile, CHAIDTree
 	except ImportError:

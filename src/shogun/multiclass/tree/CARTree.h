@@ -42,16 +42,16 @@ namespace shogun
 {
 
 /** @brief This class implements the Classification And Regression Trees algorithm by Breiman et al for decision tree learning.
- * A CART tree is a binary decision tree that is constructed by splitting a node into two child nodes repeatedly, beginning with 
+ * A CART tree is a binary decision tree that is constructed by splitting a node into two child nodes repeatedly, beginning with
  * the root node that contains the whole dataset. \n \n
  * TREE GROWING PROCESS : \n
  * During the tree growing process, we recursively split a node into left child and right child so that the resulting nodes are "purest".
- * We do this until any of the stopping criteria is met. To find the best split, we scan through all possible splits in all predictive  
+ * We do this until any of the stopping criteria is met. To find the best split, we scan through all possible splits in all predictive
  * attributes. The best split is one that maximises some splitting criterion. For classification tasks, ie. when the dependent attribute
  * is categorical, the Gini index is used. For regression tasks, ie. when the dependent variable is continuous, least squares deviation is
  * used. The algorithm uses two stopping criteria : if node becomes completely "pure", ie. all its members have identical dependent
  * variable, or all of them have identical predictive attributes (independent variables). \n \n
- * 
+ *
  * COST-COMPLEXITY PRUNING : \n
  * The maximal tree, \f$T_max\f$ grown during tree growing process is bound to overfit. Hence pruning becomes necessary. Cost-Complexity
  * pruning yields a list of subtrees of varying depths using the complexity normalized resubstitution error, \f$R_\alpha(T)\f$. The
@@ -67,11 +67,11 @@ namespace shogun
  * as possible. While choosing a surrogate split, all splits alternative to the best split are scaned and the degree of closeness between the
  * two is measured using a metric called predictive measure of association, \f$\lambda_{i,j}\f$. \n
  * \f$\lambda_{i,j} = \frac{min(P_L,P_R)-(1-P_{L_iL_j}-P_{R_iR_j})}{min(P_L,P_R)}\f$ \n
- * where \f$P_L\f$ and \f$P_R\f$ are the node probabilities for the optimal split of node i into left and right nodes respectively, 
- * \f$P_{L_iL_j}\f$ (\f$P_{R_iR_j}\f$ resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
- * to the Left (Right resp.). \n 
- * We use best surrogate split, 2nd best surrogate split and so on until all data points with missing attributes in a node 
- * have been sent to left/right child. If all possible surrogate splits are used up but some data points are still to be 
+ * where \f$P_L\f$ and \f$P_R\f$ are the node probabilities for the optimal split of node i into left and right nodes respectively,
+ * \f$P_{L_iL_j}\f$ (\f$P_{R_iR_j}\f$ resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation
+ * to the Left (Right resp.). \n
+ * We use best surrogate split, 2nd best surrogate split and so on until all data points with missing attributes in a node
+ * have been sent to left/right child. If all possible surrogate splits are used up but some data points are still to be
  * assigned left/right child, majority rule is used, ie. the data points are assigned the child where majority of data points
  * have gone from the node. \n
  * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
@@ -84,7 +84,7 @@ public:
 
 	/** constructor
 	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous)
-	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION 
+	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION
 	 */
 	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type=PT_MULTICLASS);
 
@@ -112,7 +112,7 @@ public:
 	/** get problem type - multiclass classification or regression
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
-	virtual EProblemType get_machine_problem_type() const { return m_mode; } 
+	virtual EProblemType get_machine_problem_type() const { return m_mode; }
 
 	/** set problem type - multiclass classification or regression
 	 * @param mode EProblemType PT_MULTICLASS or PT_REGRESSION
@@ -127,13 +127,13 @@ public:
 
 	/** classify data using Classification Tree
 	 * @param data data to be classified
-	 * @return MulticlassLabels corresponding to labels of various test vectors 
+	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** Get regression labels using Regression Tree
-	 * @param data data whose regression output is needed 
-	 * @return Regression output for various test vectors 
+	 * @param data data whose regression output is needed
+	 * @return Regression output for various test vectors
 	 */
 	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
@@ -146,12 +146,12 @@ public:
 	void prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
 
 	/** set weights of data points
-	 * @param w vector of weights 
+	 * @param w vector of weights
 	 */
 	void set_weights(SGVector<float64_t> w);
 
 	/** get weights of data points
-	 * @return vector of weights 
+	 * @return vector of weights
 	 */
 	SGVector<float64_t> get_weights() const;
 
@@ -159,20 +159,20 @@ public:
 	void clear_weights();
 
 	/** set feature types of various features
-	 * @param ft bool vector true for nominal feature false for continuous feature type 
+	 * @param ft bool vector true for nominal feature false for continuous feature type
 	 */
 	void set_feature_types(SGVector<bool> ft);
 
 	/** set feature types of various features
-	 * @return bool vector - true for nominal feature false for continuous feature type 
+	 * @return bool vector - true for nominal feature false for continuous feature type
 	 */
 	SGVector<bool> get_feature_types() const;
 
 	/** clear feature types of various features */
 	void clear_feature_types();
 
-	/** get number of subsets used for cross validation 
-	 * 
+	/** get number of subsets used for cross validation
+	 *
 	 * @return number of folds used in cross validation
 	 */
 	int32_t get_num_folds() const;
@@ -214,13 +214,13 @@ public:
 	void unset_cv_pruning() { m_apply_cv_pruning=false; }
 
 	/** get label epsilon
-	 * 
+	 *
 	 * @return equality range for regression labels
 	 */
 	 float64_t get_label_epsilon() { return m_label_epsilon; }
 
 	/** set label epsilon
-	 * 
+	 *
 	 * @param epsilon equality range for regression labels
 	 */
 	 void set_label_epsilon(float64_t epsilon);
@@ -264,8 +264,8 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 
-		SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, 
+	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec,
+		SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing,
 		int32_t &count_left, int32_t &count_right);
 
 
@@ -274,7 +274,7 @@ protected:
 	 * @param data training data matrix
 	 * @param weights vector of weights of data points
 	 * @param nm_left whether a data point is put into left child (available for only data points with non-missing attribute attr)
-	 * @param attr best attribute chosen for split 
+	 * @param attr best attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
 	SGVector<bool> surrogate_split(SGMatrix<float64_t> data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr);
@@ -289,11 +289,11 @@ protected:
 	 * @param is_left whether a vector goes into left child
 	 * @param weights weights of training data vectors
 	 * @param p min(p_l,p_r) in the lambda formula
-	 * @param attr surrogate attribute chosen for split 
+	 * @param attr surrogate attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	void handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs, 
-		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left, 
+	void handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs,
+		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left,
 									SGVector<float64_t> weights, float64_t p, int32_t attr);
 
 	/** handles missing values for a chosen nominal surrogate attribute
@@ -305,11 +305,11 @@ protected:
 	 * @param is_left whether a vector goes into left child
 	 * @param weights weights of training data vectors
 	 * @param p min(p_l,p_r) in the lambda formula
-	 * @param attr surrogate attribute chosen for split 
+	 * @param attr surrogate attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	void handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs, 
-		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left, 
+	void handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs,
+		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left,
 									SGVector<float64_t> weights, float64_t p, int32_t attr);
 
 	/** returns gain in regression case
@@ -332,7 +332,7 @@ protected:
 	float64_t gain(SGVector<float64_t> wleft, SGVector<float64_t> wright, SGVector<float64_t> wtotal);
 
 	/** returns Gini impurity of a node
-	 * 
+	 *
 	 * @param weighted_lab_classes vector of weights associated with various labels
 	 * @param total_weight stores the total weight of all classes
 	 * @return Gini index of the node
@@ -340,7 +340,7 @@ protected:
 	float64_t gini_impurity_index(SGVector<float64_t> weighted_lab_classes, float64_t &total_weight);
 
 	/** returns least squares deviation
-	 * 
+	 *
 	 * @param labels regression labels
 	 * @param weights weights of regression data points
 	 * @param total_weight stores sum of weights in weights vector

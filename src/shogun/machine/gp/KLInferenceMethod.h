@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -52,7 +52,7 @@ namespace Eigen
 {
 	template <class, int, int, int, int, int> class Matrix;
 	template <class, int> class LDLT;
-	
+
 	typedef Matrix<float64_t,-1,-1,0,-1,-1> MatrixXd;
 }
 
@@ -66,7 +66,7 @@ namespace shogun
  * via minimizing the KL divergence between variational Gaussian distribution
  * and posterior distribution.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -181,18 +181,18 @@ public:
 
 	/* set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
-	 * @param m The number of corrections to approximate the inverse hessian matrix. 
+	 * @param m The number of corrections to approximate the inverse hessian matrix.
 	 * Default value is 100.
-	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
+	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update.
 	 * Default value is 1000.
-	 * @param linesearch The line search algorithm. 
+	 * @param linesearch The line search algorithm.
 	 * Default value is using the backtracking with the strong Wolfe condition line search
-	 * @param max_iterations The maximum number of iterations for L-BFGS update. 
+	 * @param max_iterations The maximum number of iterations for L-BFGS update.
 	 * Default value is 1000.
 	 * @param delta Delta for convergence test based on the change of function value.
-	 * Default value is 0.  
+	 * Default value is 0.
 	 * @param past Distance for delta-based convergence test.
-	 * Default value is 0. 
+	 * Default value is 0.
 	 * @param epsilon Epsilon for convergence test based on the change of gradient.
 	 * Default value is 1e-5
 	 * @param min_step The minimum step of the line search.
@@ -209,7 +209,7 @@ public:
 	 * Default value is 1e-16.
 	 * @param orthantwise_c Coeefficient for the L1 norm of variables.
 	 * This parameter should be set to zero for standard minimization problems.
-	 * Setting this parameter to a positive value activates 
+	 * Setting this parameter to a positive value activates
 	 * Orthant-Wise Limited-memory Quasi-Newton (OWL-QN) method. Default value is 0.
 	 * @param orthantwise_start Start index for computing L1 norm of the variables.
 	 * This parameter is valid only for OWL-QN method. Default value is 0.
@@ -324,7 +324,7 @@ protected:
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
+	 * Note that
 	 * get_derivative_wrt_inference_method(const TParameter* param)
 	 * and
 	 * get_derivative_wrt_kernel(const TParameter* param)
@@ -416,7 +416,7 @@ protected:
 	/** covariance matrix of the approximation to the posterior */
 	SGMatrix<float64_t> m_Sigma;
 
-	/** variational parameter sigma2 
+	/** variational parameter sigma2
 	 * Note that sigma2 = diag(m_Sigma)
 	 */
 	SGVector<float64_t> m_s2;

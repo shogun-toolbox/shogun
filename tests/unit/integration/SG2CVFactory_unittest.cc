@@ -25,7 +25,7 @@ template<typename SG_T>void test_helper(int cv_type)
 	SGMatrix<SG_T> sgMat=SGMatrix<SG_T>::create_identity_matrix(3, 1);
 	sgMat(0,1)=3;
 	sgMat(0,2)=4;
-	CDenseFeatures<SG_T>* sgDense=new CDenseFeatures<SG_T>(sgMat); 
+	CDenseFeatures<SG_T>* sgDense=new CDenseFeatures<SG_T>(sgMat);
 	SG_REF(sgDense)
 	Mat cvMat1=SG2CVFactory::get_cvMat_from_features<SG_T>(sgDense, cv_type);
 	Mat cvMat2=SG2CVFactory::get_cvMat<SG_T>(sgMat, cv_type);

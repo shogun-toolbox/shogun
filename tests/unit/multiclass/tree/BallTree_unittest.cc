@@ -58,7 +58,7 @@ TEST(BallTree,tree_structure)
 	EXPECT_EQ(3,node->data.end_idx);
 	EXPECT_EQ(0,node->data.center[0]);
 	EXPECT_EQ(0,node->data.center[1]);
-	EXPECT_EQ(4,node->data.radius);	
+	EXPECT_EQ(4,node->data.radius);
 
 	CBinaryTreeMachineNode<NbodyTreeNodeData>* child=node->left();
 
@@ -109,7 +109,7 @@ TEST(BallTree, knn_query)
 
 	EXPECT_EQ(3,ind(0,0));
 	EXPECT_EQ(0,ind(1,0));
-	EXPECT_EQ(2,ind(2,0));		
+	EXPECT_EQ(2,ind(2,0));
 
 	SG_UNREF(qfeats);
 	SG_UNREF(feats);

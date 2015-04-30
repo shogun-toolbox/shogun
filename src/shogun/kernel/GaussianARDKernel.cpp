@@ -80,7 +80,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 	REQUIRE(lhs , "Left features not set!\n");
 	REQUIRE(rhs, "Right features not set!\n");
 
-	if (lhs==rhs) 
+	if (lhs==rhs)
 	{
 		if (!strcmp(param->m_name, "weights") || !strcmp(param->m_name, "width"))
 		{
@@ -190,7 +190,7 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	REQUIRE(lhs, "Left features (lhs) not set!\n")
 	REQUIRE(rhs, "Right features (rhs) not set!\n")
 
-	if (lhs==rhs && idx_a==idx_b) 
+	if (lhs==rhs && idx_a==idx_b)
 		return 0.0;
 
 	SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);

@@ -172,10 +172,10 @@ class TestPythonTranslator(unittest.TestCase):
 
     def test_translateArgumentListMultipleExpr(self):
         argumentListAST =  [
-            {"Expr": {"Identifier": "kernel"}}, 
-            {"Expr": {"Identifier": "feats_train"}}, 
-            {"Expr": {"Identifier": "zmean"}}, 
-            {"Expr": {"Identifier": "labels"}}, 
+            {"Expr": {"Identifier": "kernel"}},
+            {"Expr": {"Identifier": "feats_train"}},
+            {"Expr": {"Identifier": "zmean"}},
+            {"Expr": {"Identifier": "labels"}},
             {"Expr": {"Identifier": "lik"}}
         ]
         translation = self.translator.translateArgumentList(argumentListAST)

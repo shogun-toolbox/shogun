@@ -19,9 +19,9 @@ using namespace std;
 using namespace shogun;
 
 #define NO_OF_EIGENFACES 359
-#define NO_OF_FISHERFACES 39 
+#define NO_OF_FISHERFACES 39
 
-static void read_csv(const string& filename, vector<Mat>& images, 
+static void read_csv(const string& filename, vector<Mat>& images,
 		vector<float64_t>& labels, char separator=';')
 {
 	std::ifstream file(filename.c_str(), ifstream::in);
@@ -99,12 +99,12 @@ int main()
 	//	 [ Img1[L]   Img2[L]   Img3[L]   Img4[L] ......   ImgS[L];]here L = length  and S = size.
 	//	 ]
 
-	// convert the Stacked_mats into the CDenseFeatures of Shogun. 
-	// From here on we will be performing our PCA algo in Shogun. 
+	// convert the Stacked_mats into the CDenseFeatures of Shogun.
+	// From here on we will be performing our PCA algo in Shogun.
 	CDenseFeatures<float64_t>* Face_features=new CDenseFeatures<float64_t>(Stacked_mats);
-	SG_REF(Face_features) 
+	SG_REF(Face_features)
 
-	// We initialise the Preprocessor CPCA of Shogun which performs principal 
+	// We initialise the Preprocessor CPCA of Shogun which performs principal
 	// component analysis on input features.
 	CPCA* pca=new CPCA();
 	SG_REF(pca);
@@ -118,7 +118,7 @@ int main()
 	// to centralize our test image later.
 	SGVector<float64_t> mean=pca->get_mean();
 
-	// Get the transformation matrix. It is a matrix which Shogun stores internally 
+	// Get the transformation matrix. It is a matrix which Shogun stores internally
 	// whose dimensions are:  ( length * NO_OF_EIGENFACES )
 	SGMatrix<float64_t> pca_eigenvectors=pca->get_transformation_matrix();
 
@@ -137,7 +137,7 @@ int main()
 	//			        *
 	//			pca_projection (359  X 399)
 	//
-	// So in effect we just reduced the dimensions of each of our 
+	// So in effect we just reduced the dimensions of each of our
 	// training images. We will further reduce it using LDA.
 
 	// Convert the Labels in the form of CMulticlassLabels
@@ -185,10 +185,10 @@ int main()
 	SGMatrix<float64_t>Wfinal=SGMatrix<float64_t>::matrix_multiply
 		(pca_eigenvectors, lda_eigenvectors);
 
-	// Now we must get our test image readied. We simply follow the 
+	// Now we must get our test image readied. We simply follow the
 	// steps that we did above for the training images.
 	Mat testimage=imread("../../../data/att_dataset/testing/383.pgm",0);
-	
+
 	// we flatten the test image
 	SGMatrix<float64_t> testimage_sgmat=CV2SGFactory::get_sgmatrix<float64_t>
 		(testimage);
@@ -200,8 +200,8 @@ int main()
 	mean.scale_vector(-1, mean.vector, mean.vlen);
 	testimage_sgvec.add(mean);
 
-	// now we must project it into the PCA subspace. This is done by performing 
-	// the Dot product between testimage and the WFINAL. 
+	// now we must project it into the PCA subspace. This is done by performing
+	// the Dot product between testimage and the WFINAL.
 	SGVector<float64_t> testimage_projected_vec(NO_OF_FISHERFACES);
 
 	for (int i=0; i<NO_OF_FISHERFACES; ++i)
@@ -210,10 +210,10 @@ int main()
 
 	// For Eucledian Distance measure, we need to compare the above formed matrix
 	// to the lda_projection
-	// The one that gives the minimum distance between them will be identified 
-	// as the closest of the training image and that person will be identified 
-	// from the label of the identified image. 
-	
+	// The one that gives the minimum distance between them will be identified
+	// as the closest of the training image and that person will be identified
+	// from the label of the identified image.
+
 	// we need to have the Densefeature pointer of the lda_projection.
 	// It is the lhs.
 	CDenseFeatures<float64_t>* lhs=

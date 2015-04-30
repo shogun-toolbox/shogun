@@ -29,7 +29,7 @@
  */
 
 #include <shogun/distributions/MixtureModel.h>
-#include <shogun/mathematics/Math.h> 
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/EMMixtureModel.h>
@@ -72,7 +72,7 @@ bool CMixtureModel::train(CFeatures* data)
 		SG_ERROR("No features to train on.\n")
 	}
 
-	// set training points in all components of the mixture 
+	// set training points in all components of the mixture
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
 		CDistribution* comp=CDistribution::obtain_from_generic(m_components->get_element(i));

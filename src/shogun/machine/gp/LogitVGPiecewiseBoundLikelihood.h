@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * https://github.com/emtiyaz/VariationalApproxExample
  * and the reference paper is
  * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
@@ -46,8 +46,8 @@
 
 namespace shogun
 {
-/** @brief Class that models Logit likelihood and 
- * uses variational piecewise bound to approximate 
+/** @brief Class that models Logit likelihood and
+ * uses variational piecewise bound to approximate
  * the following variational expection of log likelihood
  * \f[
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
@@ -90,7 +90,7 @@ public:
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
 
-	/** returns the expection of the logarithm of a logit distribution 
+	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using piecewise bound
 	 *
 	 * For each sample i, using the piecewise bound to

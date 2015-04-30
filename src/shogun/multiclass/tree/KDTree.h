@@ -51,18 +51,18 @@ public:
 	 * @param d distance type
 	 */
 	CKDTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
-	
+
 	/** Destructor */
 	virtual ~CKDTree();
 
 	/** get name
-	 * @return class of the tree 
+	 * @return class of the tree
 	 */
 	virtual const char* get_name() const { return "KDTree"; }
 
 private:
 	/** find minimum distance between node and a query vector
-	 * 
+	 *
 	 * @param node present node
 	 * @param feat query vector
 	 * @param dim dimensions of query vector
@@ -71,7 +71,7 @@ private:
 	float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim);
 
 	/** find minimum distance between 2 nodes
-	 * 
+	 *
 	 * @param nodeq node containing active query vectors
 	 * @param noder node containing active training vectors
 	 * @return min distance between 2 nodes
@@ -79,7 +79,7 @@ private:
 	virtual float64_t min_dist_dual(bnode_t* nodeq, bnode_t* noder);
 
 	/** find max distance between 2 nodes
-	 * 
+	 *
 	 * @param nodeq node containing active query vectors
 	 * @param noder node containing active training vectors
 	 * @return max distance between 2 nodes

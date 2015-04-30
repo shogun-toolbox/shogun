@@ -18,14 +18,14 @@
 using namespace shogun;
 
 TEST(SplittingStrategy,standard)
-{	
+{
 	index_t fold_sizes;
 	index_t num_labels;
 	index_t num_subsets;
 	index_t runs=100;
 
 	while (runs-->0)
-	{	
+	{
 		fold_sizes=0;
 		num_labels=CMath::random(10, 150);
 		num_subsets=CMath::random(1, 5);
@@ -36,7 +36,7 @@ TEST(SplittingStrategy,standard)
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, CMath::random(-10.0, 10.0));
-		
+
 		/* build splitting strategy */
 		CCrossValidationSplitting* splitting=
 				new CCrossValidationSplitting(labels, num_subsets);
@@ -52,7 +52,7 @@ TEST(SplittingStrategy,standard)
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
-			{	
+			{
 				/*check if fold indices are disjoint*/
 				SGVector<index_t> temp=total.find((index_t)subset.vector[j]);
 				EXPECT_EQ(temp.vlen,0);
@@ -91,7 +91,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 	index_t runs=50;
 
 	while (runs-->0)
-	{	
+	{
 		fold_sizes=0;
 		num_labels=CMath::random(11, 100);
 		num_classes=CMath::random(2, 10);
@@ -103,11 +103,11 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 			labels->set_label(i, CMath::random()%num_classes);
 
 		SGVector<float64_t> classes=labels->get_unique_labels();
-		
+
 		/*No. of labels belonging to one class*/
 		SGVector<index_t> class_labels(num_classes);
 		SGVector<index_t>::fill_vector(class_labels.vector, class_labels.vlen, 0);
-			
+
 		/*check total no. of class labels*/
 		for (index_t i=0; i<num_classes; ++i)
 		{
@@ -116,7 +116,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 			       if ((int32_t)labels->get_label(j)==i)
 				       ++class_labels.vector[i];
 			}
-		}		
+		}
 
 
 		/* build splitting strategy */
@@ -170,7 +170,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 	index_t runs=50;
 
 	while (runs-->0)
-	{	
+	{
 		num_labels=CMath::random(11, 100);
 		num_classes=CMath::random(2, 10);
 		num_subsets=CMath::random(1, 10);
@@ -183,7 +183,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 		/*No. of labels belonging to one class*/
 		SGVector<index_t> class_labels(num_classes);
 		SGVector<index_t>::fill_vector(class_labels.vector, class_labels.vlen, 0);
-			
+
 		/*check total no. of class labels*/
 		for (index_t i=0; i<num_classes; ++i)
 		{
@@ -192,7 +192,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 			       if ((int32_t)labels->get_label(j)==i)
 				       ++class_labels.vector[i];
 			}
-		}		
+		}
 
 
 		/* build splitting strategy */
@@ -224,7 +224,7 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 					if ((int32_t)labels->get_label(subset.vector[k])==i)
 						++temp_count;
 				}
-				
+
 				total_count+=temp_count;
 				/* at most one difference */
 				EXPECT_LE(CMath::abs(temp_count-count),1);
@@ -251,11 +251,11 @@ TEST(SplittingStrategy,LOO)
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 			labels->set_label(i, CMath::random(-10.0, 10.0));
-		
+
 		/* build Leave one out splitting strategy */
 		CLOOCrossValidationSplitting* splitting=
 				new CLOOCrossValidationSplitting(labels);
-		
+
 		splitting->build_subsets();
 
 		SGVector<index_t> total(num_labels);

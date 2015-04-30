@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -152,7 +152,7 @@ bool CKLDualInferenceMethod::lbfgs_precompute()
 
 	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, m_scale);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	
+
 	//solve L'*V=diag(sW)*K
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
@@ -239,7 +239,7 @@ float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SG
 	for(index_t idx=0; idx<eigen_t.rows(); idx++)
 		trace +=(eigen_t.col(idx).array().pow(2)).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+eigen_L.diagonal().array().log().sum();
 
 	result+=0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace);

@@ -71,7 +71,7 @@ We get the respective indices of the training and testing data and store it in t
 ```
 
 We declare a few ```cv::Mat``` objects below, they will be used later use for our work.
-* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
+* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file.
 * ```all_responses```: for containing all the responses.
 * ```shogun_all_responses```: for containing all the responses for **Shogun**.
 * ```traindata```: for containing all the training data.
@@ -105,20 +105,20 @@ We declare a few ```cv::Mat``` objects below, they will be used later use for ou
             shogun_all_responses.at<float>(h)=1;
         else if (all_responses.at<float>(h) == 11)
             shogun_all_responses.at<float>(h)=2;
-        else 
+        else
             shogun_all_responses.at<float>(h)=3;
     }
 
 ```
 
 ```CPP
-// Filling in shogun_testresponse, shogun_trainresponse, opencv_testresponse, opencv_trainresponse, 
+// Filling in shogun_testresponse, shogun_trainresponse, opencv_testresponse, opencv_trainresponse,
 // traindata, and testdata mats.
-   
+
    for(int i=0; i<mytraindataidx.cols; i++)
     {
         opencv_trainresponse.at<int>(i)=all_responses.at<float>(mytraindataidx.at<int>(i));
-        shogun_trainresponse.at<int>(i)=shogun_all_responses.at<float>(mytraindataidx.at<int>(i));    
+        shogun_trainresponse.at<int>(i)=shogun_all_responses.at<float>(mytraindataidx.at<int>(i));
         for(int j=0; j<=numfeatures; j++)
             traindata.at<float>(i, j)=all_Data.at<float>(mytraindataidx.at<int>(i), j);
     }
@@ -137,14 +137,14 @@ We train the **OpenCV** k-NN over the ```traindata``` Mat we just prepared.
     CvKNearest opencv_knn(traindata, opencv_trainresponse);
     opencv_knn.train(traindata, opencv_trainresponse);
 ```
-We test the trained model over the ```testdata``` Mat. 
+We test the trained model over the ```testdata``` Mat.
 
 Then, evaluate the accuracy using the ```opencv_trainresponse``` Mat.
 ```CPP
     Mat results(1,1,CV_32F);
     Mat neighbourResponses = Mat::ones(1,10,CV_32F);
     Mat dist = Mat::ones(1, 10, CV_32F);
- 
+
     int ko=0;
 
     for (int i=0;i<testdata.rows;++i)
@@ -157,24 +157,24 @@ Then, evaluate the accuracy using the ```opencv_trainresponse``` Mat.
     cout << "The accuracy of OpenCV's k-NN is: " << 100.0 * ko/testdata.rows << endl;
 ```
 
-We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_trainfeatures``` for training the **Shogun** k-NN over it. 
+We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_trainfeatures``` for training the **Shogun** k-NN over it.
 ```CPP
 
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
-    SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix, 
+    SGMatrix<float64_t>::transpose_matrix(shogun_traindata.matrix,
     		shogun_traindata.num_rows, shogun_traindata.num_cols);
     CDenseFeatures<float64_t>* shogun_trainfeatures = new CDenseFeatures<float64_t>(shogun_traindata);
 ```
 
 We form the ```CMulticlassLabels``` object named ```labels``` for containing the responses from the ```shogun_trainresponse``` Mat.
 ```CPP
-    CDenseFeatures<float64_t>* shogun_dense_response = 
+    CDenseFeatures<float64_t>* shogun_dense_response =
     		CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
     CMulticlassLabels* labels = new CMulticlassLabels(shogun_vector_response);
 ```
 
-We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_testfeatures``` for testing. 
+We, as usual, prepare the ```CDenseFeatures``` object namely ```shogun_testfeatures``` for testing.
 ```CPP
     SGMatrix<float64_t> shogun_testdata = CV2SGFactory::get_sgmatrix<float64_t>(testdata);
     SGMatrix<float64_t>::transpose_matrix(shogun_testdata.matrix,
@@ -199,15 +199,15 @@ Test it!
 
     int ki=0;
     for(int i=0; i<sgvec.vlen; ++i)
-    { 
+    {
         if(shogun_testresponse.at<float>(i) == sgvec[i])
         ++ki;
     }
 
     cout << "The accuracy of Shogun's k-NN is: " << (float)100.0 *ki/sgvec.vlen << endl;
- 	
+
 	SG_UNREF(knn)
-	SG_UNREF(output)  
+	SG_UNREF(output)
 
     return 0;
 }

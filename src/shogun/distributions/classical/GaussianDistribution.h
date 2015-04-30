@@ -115,7 +115,7 @@ public:
 
 	/** Computes the univariate pdf for one given sample.
 	 *
-	 * @param sample is a given sample 
+	 * @param sample is a given sample
 	 * @param mu is the mean of univariate Normal distribution (default value is 0.0)
 	 * @param sigma2 is the variance of univariate Normal distribution (default value is 1.0)
 	 * @return the pdf of the distribution given the sample
