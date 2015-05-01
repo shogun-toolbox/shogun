@@ -214,7 +214,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_logit_likelihood)
 	//0.005090523727770   0.003576487184405  -0.175680126714968   0.013003746250537   0.000889849322114
 	//0.011082454381435   0.020229751169512   0.013003746250537  -0.178972749964575   0.016753869203624
 	//0.009003906401798   0.018619008505207   0.000889849322114   0.016753869203624  -0.171929471862666
-	// 
+	//
 
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -275,7 +275,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_logit_likelihood)
 	EXPECT_NEAR(L(4,3),  0.016753869203624,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.171929471862666, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  -0.171929471862666,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -333,7 +333,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	//0.087938852628916   0.051598292635512  -0.419635915905524   0.078693188687297   0.033820499045629
 	//0.087869435051067   0.086536297491354   0.078693188687303  -0.458310607482338   0.068079128523596
 	//0.101286220204592   0.084303187510047   0.033820499045638   0.068079128523585  -0.469848756925620
-	// 
+	//
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
 	float64_t rel_tolerance = 1e-2;
@@ -393,7 +393,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	EXPECT_NEAR(L(4,3),  0.068079128523585,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.469848756925620, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  -0.469848756925620,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -444,7 +444,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_t_likelihood)
 	//0.889154609732680
 	//0.946682723777487
 	//0.814125173299711
-	// 
+	//
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 
 	float64_t rel_tolerance = 1e-2;
@@ -697,7 +697,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_logit_likelihood)
 	//0.113585694023662   0.086020320758721   0.795196807963229   0.295546542244499   0.020998208707717
 	//0.250515273722783   0.492913804360438   0.295546542244499   0.677608376722589   0.400514223102444
 	//0.211318428812988   0.471026706991197   0.020998208707717   0.400514223102444   0.714639742908927
-	// 
+	//
 
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
@@ -816,7 +816,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_probit_likelihood)
 	//0.385527955754856
 	//0.322231483097811
 	//-0.062241963916682
-	// 
+	//
 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 
@@ -890,7 +890,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_probit_likelihood)
 	//0.258036061496451   0.175180647367563   0.390420468722475   0.271865272760877   0.105793037165707
 	//0.249092866479063   0.283840694594427   0.271865272760877   0.297244512625976   0.205738003168112
 	//0.259977028483369   0.250369106608605   0.105793037165707   0.205738003168112   0.368531445290527
-	// 
+	//
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
 
@@ -1193,12 +1193,12 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	// lik =
 	//-0.208254633811686
 	//0.024939620577627
-	// 
-	// 
+	//
+	//
 	// cov =
 	//-0.805849415403716
 	//-0.418521621175371
-	// 
+	//
 
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
@@ -1283,7 +1283,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 	// cov =
 	// 0.275308238001720
 	//-0.138232607204219
-	
+
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 
@@ -1362,7 +1362,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	// cov =
 	//0.299593140038451
 	//0.401789648589235
-	// 
+	//
 	float64_t rel_tolerance = 1e-2;
 	float64_t abs_tolerance;
 

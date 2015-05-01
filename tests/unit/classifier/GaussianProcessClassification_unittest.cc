@@ -584,12 +584,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -766,12 +766,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -944,12 +944,12 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -2025,7 +2025,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.530973067357162,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.510365430874851, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.510365430874851,  abs_tolerance);
-	
+
 	SG_UNREF(gpc);
 	}
 
@@ -2518,7 +2518,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.530837190248529,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.510305138487094, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.510305138487094,  abs_tolerance);
-	
+
 	SG_UNREF(gpc);
 	}
 
@@ -3010,7 +3010,7 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 	EXPECT_NEAR(probabilities[23],  0.526932363156156,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.508669245296206, rel_tolerance);
 	EXPECT_NEAR(probabilities[24],  0.508669245296206,  abs_tolerance);
-	
+
 	SG_UNREF(gpc);
 	}
 
@@ -3154,7 +3154,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 	EXPECT_NEAR(mean_matrix(1,8),  0.155590137438104,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.262537147766292, rel_tolerance);
 	EXPECT_NEAR(mean_matrix(1,9),  0.262537147766292,  abs_tolerance);
-	
+
 	SG_UNREF(gpc);
 }
 
@@ -3255,7 +3255,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
 	SGMatrix<float64_t> variance_matrix(variance_vector.vector, C, m, false);
 
-	
+
 	//0.249642303718200   0.246892076745162   0.237282230243870   0.216467221239879   0.230674540362865   0.249716846163020 0.243943184224802   0.188439563066926   0.131755968107814   0.197173723102424
 	//0.249642303718200   0.246892076745162   0.237282230243870   0.216467221239878   0.230674540362865 0.249716846163020 0.243943184224802   0.188439563066926   0.131755968107815   0.197173723102423
 
@@ -3300,7 +3300,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	EXPECT_NEAR(variance_matrix(1,8),  0.131755968107815,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.197173723102423, rel_tolerance);
 	EXPECT_NEAR(variance_matrix(1,9),  0.197173723102423,  abs_tolerance);
-	
+
 	SG_UNREF(gpc);
 }
 
@@ -3310,7 +3310,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 
 	SGMatrix<float64_t> feat_train(2, n);
 	SGVector<index_t> lab_train(n);
-	
+
 	index_t m=3;
 	SGMatrix<float64_t> feat_test(2, m);
 
@@ -3449,7 +3449,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 	inf->set_compute_gradients(false);
 
 	float64_t scale=4.0;
@@ -3566,7 +3566,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -3683,7 +3683,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);

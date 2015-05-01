@@ -54,13 +54,13 @@ CUAIFile::~CUAIFile()
 }
 
 void CUAIFile::init()
-{ 
+{
     SG_ADD((CSGObject**)&m_line_reader, "line_reader", "line reader used to read lines from file", MS_NOT_AVAILABLE);
     SG_ADD((CSGObject**)&m_parser, "parser", "parser used to parse file", MS_NOT_AVAILABLE);
     SG_ADD((CSGObject**)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file", MS_NOT_AVAILABLE);
     SG_ADD((CSGObject**)&m_tokenizer, "tokenizer", "tokenizer used to parse file", MS_NOT_AVAILABLE);
     SG_ADD(&m_delimiter, "delimiter", "delimiter used in get_vector function", MS_NOT_AVAILABLE);
-    
+
     SG_ADD(&m_num_vars, "num_vars", "number of variables", MS_NOT_AVAILABLE);
     SG_ADD(&m_num_factors, "num_factors", "number of factors", MS_NOT_AVAILABLE);
     SG_ADD(&m_net_type, "net_type", "network type (either BAYES or MARKOV)", MS_NOT_AVAILABLE);
@@ -87,7 +87,7 @@ void CUAIFile::init()
 void CUAIFile::init_with_defaults()
 {
     m_delimiter=' ';
-    
+
     m_tokenizer=new CDelimiterTokenizer(true);
     m_tokenizer->delimiters[m_delimiter]=1;
     SG_REF(m_tokenizer);
@@ -180,13 +180,13 @@ void CUAIFile::parse()
     line = m_line_reader->read_line();
     m_parser->set_text(line);
     m_net_type = m_parser->read_string();
-    
+
     line = m_line_reader->read_line();
     m_parser->set_text(line);
     m_num_vars = m_parser->read_int();
 
     get_vector(m_vars_card.vector, m_vars_card.vlen);
-    
+
     line = m_line_reader->read_line();
     m_parser->set_text(line);
     m_num_factors = m_parser->read_int();
@@ -200,7 +200,7 @@ void CUAIFile::parse()
         num_elems = m_parser->read_int();
         SGVector<int32_t> vars_index(num_elems);
         for (int32_t j=0; j<num_elems; j++)
-            vars_index[j] = m_parser->read_int(); 
+            vars_index[j] = m_parser->read_int();
         m_factors_scope[i] = vars_index;
     }
 
@@ -240,7 +240,7 @@ void CUAIFile::set_num_vars(int32_t num_vars)
 
 void CUAIFile::set_vars_card(SGVector<int32_t> vars_card)
 {
-    REQUIRE (m_num_vars == vars_card.vlen, 
+    REQUIRE (m_num_vars == vars_card.vlen,
         "Variables mismatch. Expected %d variables, got %d variables",
          m_num_vars, vars_card.vlen);
 
@@ -259,7 +259,7 @@ void CUAIFile::set_factors_scope(int num_factors,
 {
     REQUIRE(num_factors == m_num_factors, "Factors mismatch. Expected %d factors; \
         got %d factors", m_num_factors, num_factors)
-    
+
     m_factors_scope = new SGVector<int32_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)
     {
@@ -299,7 +299,7 @@ void CUAIFile::get_preamble(SGVector<char>& net_type,
     num_vars = m_num_vars;
     vars_card = m_vars_card;
     num_factors = m_num_factors;
-    
+
     factors_scope = new SGVector<int32_t> [m_num_factors];
     for (int32_t i=0; i<m_num_factors; i++)
         factors_scope[i] = m_factors_scope[i];

@@ -36,7 +36,7 @@ public:
 	 * @param do_line_search whether do analytical line search
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	CFWSOSVM(CStructuredModel* model, CStructuredLabels* labs, 
+	CFWSOSVM(CStructuredModel* model, CStructuredLabels* labs,
 			bool do_line_search = true, bool verbose = false);
 
 	/** destructor */

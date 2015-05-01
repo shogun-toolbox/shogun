@@ -1,33 +1,33 @@
 /*
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its 
- * contributors may be used to endorse or promote products derived from this 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from this
  * software without specific prior written permission.
 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * Written (W) 2014 Khaled Nasr
  */
 
@@ -50,41 +50,41 @@ using namespace shogun;
 CNeuralNetwork* CNeuralNetworkFileReader::read_file(const char* file_path)
 {
 	json_object* json_network = json_object_from_file(file_path);
-	
-	if (is_error(json_network)) 
+
+	if (is_error(json_network))
 	{
 		SG_ERROR("Error while opening file: %s!\n", file_path);
 		return NULL;
 	}
-	
+
 	CNeuralNetwork* network = parse_network(json_network);
-	
+
 	json_object_put(json_network);
-	
+
 	return network;
 }
 
 CNeuralNetwork* CNeuralNetworkFileReader::read_string(const char* str)
 {
 	json_object* json_network = json_tokener_parse(str);
-	
-	if (is_error(json_network)) 
+
+	if (is_error(json_network))
 	{
 		SG_ERROR("Error while parsing the given string\n");
 		return NULL;
 	}
-	
+
 	CNeuralNetwork* network = parse_network(json_network);
-	
+
 	json_object_put(json_network);
-	
+
 	return network;
 }
 
 CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_network)
 {
 	CNeuralNetwork* network = new CNeuralNetwork;
-	
+
 	// find the layers
 	json_object_iter iter;
 	json_object* json_layers = NULL;
@@ -93,12 +93,12 @@ CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_networ
 		if (string_equal(iter.key, "layers"))
 			json_layers = iter.val;
 	}
-	
+
 	if (json_layers)
 		network->set_layers(parse_layers(iter.val));
 	else
 		SG_ERROR("No layers found in file\n");
-	
+
 	// set the connections
 	json_object_iter layers_iter;
 	json_object_object_foreachC(json_layers, layers_iter)
@@ -109,19 +109,19 @@ CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_networ
 			if (string_equal(layer_iter.key, "inputs"))
 			{
 				int32_t len = json_object_array_length(layer_iter.val);
-				
+
 				for (int32_t i=0; i<len; i++)
 				{
 					const char* input_key = json_object_get_string(
 						json_object_array_get_idx(layer_iter.val, i));
-					
+
 					int32_t from = find_layer_index(json_layers, input_key);
 					int32_t to = find_layer_index(json_layers, layers_iter.key);
-					
+
 					if (from == -1)
-						SG_ERROR("Invalid layer identifier (%s) in layer (%s)\n", 
+						SG_ERROR("Invalid layer identifier (%s) in layer (%s)\n",
 							input_key, layers_iter.key);
-					
+
 					network->connect(from, to);
 				}
 			}
@@ -168,44 +168,44 @@ CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_networ
 			network->gd_momentum = json_object_get_double(iter.val);
 		else if (string_equal(iter.key, "gd_error_damping_coeff"))
 			network->gd_error_damping_coeff = json_object_get_double(iter.val);
-		
+
 		else if (!string_equal(iter.key, "layers"))
 			SG_ERROR("Invalid parameter (%s)\n", iter.key);
 	}
-	
+
 	network->initialize(sigma);
-	
+
 	return network;
 }
 
 CDynamicObjectArray* CNeuralNetworkFileReader::parse_layers(
 		json_object* json_layers)
-{	
+{
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	
+
 	json_object_iter iter;
 	json_object_object_foreachC(json_layers, iter)
 	{
 		layers->append_element(parse_layer(iter.val));
 	}
-	
+
 	return layers;
 }
 
 CNeuralLayer* CNeuralNetworkFileReader::parse_layer(json_object* json_layer)
 {
 	json_object_iter iter;
-	
+
 	CNeuralLayer* layer = NULL;
 	const char* type = NULL;
-	
-	// find the layer type and create a appropriate instance 
+
+	// find the layer type and create a appropriate instance
 	json_object_object_foreachC(json_layer, iter)
 	{
 		if (string_equal(iter.key, "type"))
-		{	
+		{
 			type = json_object_get_string(iter.val);
-			
+
 			if (string_equal(type, "NeuralInputLayer"))
 				layer = new CNeuralInputLayer();
 			else if (string_equal(type, "NeuralLinearLayer"))
@@ -220,7 +220,7 @@ CNeuralLayer* CNeuralNetworkFileReader::parse_layer(json_object* json_layer)
 				SG_ERROR("Unknown layer type: %s", type);
 		}
 	}
-	
+
 	// fill in the fields
 	json_object_object_foreachC(json_layer, iter)
 	{
@@ -228,18 +228,18 @@ CNeuralLayer* CNeuralNetworkFileReader::parse_layer(json_object* json_layer)
 		{
 			layer->set_num_neurons(json_object_get_int(iter.val));
 		}
-		else if(string_equal(type,"NeuralInputLayer") && 
+		else if(string_equal(type,"NeuralInputLayer") &&
 			string_equal(iter.key, "start_index"))
 		{
 			((CNeuralInputLayer*)layer)->set_start_index(
 				json_object_get_int(iter.val));
 		}
 	}
-	
+
 	return layer;
 }
 
-int32_t CNeuralNetworkFileReader::find_layer_index(json_object* json_layers, 
+int32_t CNeuralNetworkFileReader::find_layer_index(json_object* json_layers,
 		const char* layer_key)
 {
 	int32_t index = 0;
@@ -252,7 +252,7 @@ int32_t CNeuralNetworkFileReader::find_layer_index(json_object* json_layers,
 		else
 			index++;
 	}
-	
+
 	return -1;
 }
 

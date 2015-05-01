@@ -108,7 +108,7 @@ protected:
 	/** get features vector given idx
 	 *
 	 * @param idx index of CFeatures
-	 * @param hs features 
+	 * @param hs features
 	 * @return the features vector
 	 */
 	virtual SGVector<float64_t> get_feature_vector(int32_t idx, CFeatures* hs);

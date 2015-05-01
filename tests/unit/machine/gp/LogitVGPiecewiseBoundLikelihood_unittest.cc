@@ -28,14 +28,14 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  *
- * Code adapted from 
+ * Code adapted from
  * https://github.com/emtiyaz/VariationalApproxExample
  *
  * and the reference paper is
  * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
  * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
  *
- * 
+ *
  */
 
 #include <shogun/lib/config.h>

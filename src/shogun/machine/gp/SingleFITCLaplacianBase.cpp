@@ -118,7 +118,7 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_cov_helper(
 	SGVector<float64_t> di=get_derivative_related_cov_diagonal();
 	Map<VectorXd> eigen_di(di.vector, di.vlen);
 
-	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2;
 	float64_t result=(eigen_w.dot(eigen_dKuui*eigen_w)+eigen_v.dot(eigen_di)-
 			(eigen_R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
 
@@ -160,7 +160,7 @@ float64_t CSingleFITCLaplacianBase::get_derivative_related_cov(SGVector<float64_
 	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
 	Map<MatrixXd> eigen_dKui(dKui.matrix, dKui.num_rows, dKui.num_cols);
 
-	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2;
 	float64_t result=get_derivative_related_cov_helper(dKuui, v, R);
 
 	// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*(v.*al)-
@@ -218,9 +218,9 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 	ddiagKi*=m_scale*2.0;
 	dKuui*=m_scale*2.0;
 	dKui*=m_scale*2.0;
-	
+
 	SGVector<float64_t> result(1);
-	
+
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 	return result;
 }
@@ -319,13 +319,13 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
 
 	SGVector<float64_t> v(m_B.num_cols);
 	Map<VectorXd> eigen_v(v.vector, v.vlen);
-	//v = -sum(R.*B,1)'; 
+	//v = -sum(R.*B,1)';
 	eigen_v=-eigen_R.cwiseProduct(eigen_B).colwise().sum().adjoint();
 
 	SGMatrix<float64_t> dKuui=SGMatrix<float64_t>::create_identity_matrix(m_w.vlen,factor);
 
 	SGVector<float64_t> result(1);
-	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2; 
+	//(w'*dKuui*w -al'*(v.*al)- sum(W.*W,1)*v - sum(sum((R*W').*BWt)))/2;
 	result[0]=get_derivative_related_cov_helper(dKuui, v, R);
 
 	return result;
@@ -391,7 +391,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_featur
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
-	//v = diag_dK-1./g_sn2; 
+	//v = diag_dK-1./g_sn2;
 	SGVector<float64_t> v=get_derivative_related_cov_diagonal();
 	Map<VectorXd> eigen_v(v.vector, v.vlen);
 

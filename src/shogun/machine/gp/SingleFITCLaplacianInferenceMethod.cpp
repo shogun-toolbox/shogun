@@ -183,7 +183,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::compute_mvmK(SGVector<f
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
 
 	//Kal = V'*(V*al) + d0.*al;
-	eigen_res= eigen_V.transpose()*(eigen_V*eigen_al)+eigen_dg.cwiseProduct(eigen_al); 
+	eigen_res= eigen_V.transpose()*(eigen_V*eigen_al)+eigen_dg.cwiseProduct(eigen_al);
 	return res;
 }
 
@@ -224,7 +224,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelih
 	if (m_Wneg)
 	{
 		SG_WARNING("nlZ cannot be computed since W is too negative");
-		//nlZ = NaN; 
+		//nlZ = NaN;
 		return CMath::NOT_A_NUMBER;
 	}
 	//time complexity O(m^2*n)
@@ -235,7 +235,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelih
 	// get log likelihood
 	float64_t lp=SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels,
 		m_mu));
-	
+
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	Map<VectorXd>eigen_t(m_t.vector, m_t.vlen);
 	MatrixXd A=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(m_V.num_rows,m_V.num_rows);
@@ -270,7 +270,7 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 	m_chol_R0=get_chol_inv(cor_kuu);
 	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
 
-	//V = R0*Ku;  m-by-n matrix 
+	//V = R0*Ku;  m-by-n matrix
 	m_V=SGMatrix<float64_t>(m_chol_R0.num_cols, m_ktru.num_cols);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 
@@ -434,7 +434,7 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 
 	m_alpha=SGVector<float64_t>(m_chol_R0.num_cols);
 	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
-	//post.alpha = R0'*(V*alpha); 
+	//post.alpha = R0'*(V*alpha);
 	//m-by-1 vector
 	eigen_post_alpha=eigen_R0.transpose()*(eigen_V*eigen_al);
 }
@@ -478,7 +478,7 @@ void CSingleFITCLaplacianInferenceMethod::update_chol()
 	m_t=SGVector<float64_t>(m_W.vlen);
 	Map<VectorXd>eigen_t(m_t.vector, m_t.vlen);
 
-	//dd = 1./(1+d0.*W);   
+	//dd = 1./(1+d0.*W);
 	VectorXd dd=MatrixXd::Ones(Wd0_1.rows(),1).cwiseQuotient(Wd0_1);
 	eigen_t=eigen_W.cwiseProduct(dd);
 
@@ -498,7 +498,7 @@ void CSingleFITCLaplacianInferenceMethod::update_chol()
 	m_L=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	//post.L = -B*R0tV'; 
+	//post.L = -B*R0tV';
 	eigen_L=-B*R0tV.transpose();
 
 	SGMatrix<float64_t> tmp=get_chol_inv(A);
@@ -582,7 +582,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVect
 	Map<MatrixXd> eigen_dKuui(dKuui.matrix, dKuui.num_rows, dKuui.num_cols);
 	//m-by-n matrix
 	Map<MatrixXd> eigen_dKui(dKui.matrix, dKui.num_rows, dKui.num_cols);
-	
+
 	// compute R=2*dKui-dKuui*B
 	SGMatrix<float64_t> dA(dKui.num_rows, dKui.num_cols);
 	Map<MatrixXd> eigen_dA(dA.matrix, dA.num_rows, dA.num_cols);
@@ -611,7 +611,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVect
 	//KZb = mvmK(mvmZ(b,RVdd,t),V,d0);
 	SGVector<float64_t> KZb=compute_mvmK(compute_mvmZ(b));
 	Map<VectorXd> eigen_KZb(KZb.vector, KZb.vlen);
-	//dnlZ.cov(i) = dnlZ.cov(i) - dfhat'*( b-KZb );   
+	//dnlZ.cov(i) = dnlZ.cov(i) - dfhat'*( b-KZb );
 	result-=eigen_dfhat.dot(eigen_b-eigen_KZb);
 	return result;
 }
@@ -673,7 +673,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 	ddiagKi*=m_scale*2.0;
 	dKuui*=m_scale*2.0;
 	dKui*=m_scale*2.0;
-	
+
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 	return result;
 }
@@ -701,11 +701,11 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_like
 	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
 
 	//explicit term
-	//dnlZ.lik(i) = -g'*d2lp_dhyp - sum(lp_dhyp);                
+	//dnlZ.lik(i) = -g'*d2lp_dhyp - sum(lp_dhyp);
 	result[0]=-eigen_g.dot(eigen_d2lp_dhyp)-eigen_lp_dhyp.sum();
 
 	//implicit term
-	//b = mvmK(dlp_dhyp,V,d0);  
+	//b = mvmK(dlp_dhyp,V,d0);
 	SGVector<float64_t> b=compute_mvmK(dlp_dhyp);
 	//dnlZ.lik(i) = dnlZ.lik(i) - dfhat'*(b-mvmK(mvmZ(b,RVdd,t),V,d0));
 	result[0]-= get_derivative_implicit_term_helper(b);
@@ -768,7 +768,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_mean(SGVec
 	//implicit term
 	//Zdm = mvmZ(dm,RVdd,t);
 	//tmp = mvmK(Zdm,V,d0)
-	//dnlZ.mean(i) = dnlZ.mean(i) - dfhat'*(dm-mvmK(Zdm,V,d0)); 
+	//dnlZ.mean(i) = dnlZ.mean(i) - dfhat'*(dm-mvmK(Zdm,V,d0));
 	result-=get_derivative_implicit_term_helper(dmu);
 
 	return result;
@@ -833,7 +833,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
 	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
 
-	//q = dfhat - mvmZ(mvmK(dfhat,V,d0),RVdd,t);             
+	//q = dfhat - mvmZ(mvmK(dfhat,V,d0),RVdd,t);
 	SGVector<float64_t> q=compute_mvmZ(compute_mvmK(m_dfhat));
 	Map<VectorXd> eigen_q(q.vector, q.vlen);
 	eigen_q=eigen_dfhat-eigen_q;
@@ -843,7 +843,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 	//-v_1=get_derivative_related_cov_diagonal= -(alpha.*alpha + sum(RVdd.*RVdd,1)')
 	//implicit term
 	//-v_2=-2*dlp.*q
-	//neg_v = -(diag_dK+ 2*dlp.*q);        
+	//neg_v = -(diag_dK+ 2*dlp.*q);
 	SGVector<float64_t> neg_v=get_derivative_related_cov_diagonal();
 	Map<VectorXd> eigen_neg_v(neg_v.vector, neg_v.vlen);
 	eigen_neg_v-=2*eigen_dlp.cwiseProduct(eigen_q);
@@ -957,7 +957,7 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covarianc
 	MatrixXd tmp3=((eigen_dg.cwiseProduct(eigen_dg)).cwiseProduct(eigen_t)).asDiagonal();
 	eigen_Sigma-=tmp3;
 	*/
-	
+
 	return SGMatrix<float64_t>(m_Sigma);
 }
 

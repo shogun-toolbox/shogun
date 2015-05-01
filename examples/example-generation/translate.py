@@ -37,15 +37,15 @@ class Translator:
         return programTemplate.substitute(program=targetProgram, dependencies=self.dependenciesString(), programName=programName)
 
     def dependenciesString(self):
-        """ Returns dependency import string 
-            e.g. for python: "from modshogun import RealFeatures\n\n" 
+        """ Returns dependency import string
+            e.g. for python: "from modshogun import RealFeatures\n\n"
         """
 
         if not "Dependencies" in self.targetDict:
-            # Dependency strings are optional so we just return empty string 
+            # Dependency strings are optional so we just return empty string
             return ""
 
-        # Three types of dependencies: a list of all classes used, 
+        # Three types of dependencies: a list of all classes used,
         # a list of all explicitly constructed classes,
         # and list of all enums used. All are optional.
         allClassDependencies = ""

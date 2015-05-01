@@ -177,6 +177,6 @@ void CSubsetStack::remove_subset()
 
 		/* otherwise, active subset is just empty */
 	}
-	
+
 	/* do nothing if nothing on stack */
 }

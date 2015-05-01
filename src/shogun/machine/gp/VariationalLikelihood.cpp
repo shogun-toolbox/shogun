@@ -55,16 +55,16 @@ void CVariationalLikelihood::set_likelihood(CLikelihoodModel * lik)
 
 void CVariationalLikelihood::init()
 {
-	//m_likelihood will be specified by its subclass 
+	//m_likelihood will be specified by its subclass
 	//via the init_likelihood method
 	m_likelihood = NULL;
 	SG_REF(m_likelihood);
 
-	SG_ADD(&m_lab, "labels", 
+	SG_ADD(&m_lab, "labels",
 		"The label of the data\n",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD((CSGObject**)&m_likelihood, "likelihood", 
+	SG_ADD((CSGObject**)&m_likelihood, "likelihood",
 		"The distribution used to model the data\n",
 		MS_NOT_AVAILABLE);
 }

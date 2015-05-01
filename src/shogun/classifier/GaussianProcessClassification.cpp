@@ -31,7 +31,7 @@
  * Code adapted from
  * Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * and 
+ * and
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
@@ -79,7 +79,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 		{
 			SG_NOTIMPLEMENTED
 		}
-		else 
+		else
 			data=m_method->get_features();
 	}
 	else
@@ -96,7 +96,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	}
 	CMulticlassLabels *result=new CMulticlassLabels();
 	result->set_int_labels(lab);
-	
+
 	SG_UNREF(data);
 
 	return result;

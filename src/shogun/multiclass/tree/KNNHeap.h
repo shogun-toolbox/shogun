@@ -49,7 +49,7 @@ class CKNNHeap
 public:
 	/** constructor
 	 *
-	 * @param k heap capacity i.e. the number of least distance values to be stored 
+	 * @param k heap capacity i.e. the number of least distance values to be stored
 	 */
 	CKNNHeap(int32_t k=1);
 

@@ -555,7 +555,7 @@ BmrmStatistics svm_bmrm_solver(
 			helper->add_debug_info(primal, bmrm.nIter, train_error);
 
 			float64_t info_tstop=ttime.cur_time_diff(false);
-			
+
 			SG_SINFO("On iteration %4d, tim=%.3lf, primal=%.3lf, train_error=%lf\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
 		}
 

@@ -38,27 +38,27 @@ using namespace shogun;
 
 TEST(TreeMachine, tree_building_test)
 {
-	CTreeMachineNode<id3TreeNodeData>* root= 
+	CTreeMachineNode<id3TreeNodeData>* root=
 			new CTreeMachineNode<id3TreeNodeData>();
 	SG_REF(root);
-	
+
 	CTreeMachine<id3TreeNodeData>* tree=
 			new CTreeMachine<id3TreeNodeData>();
 	tree->set_root(root);
-	
+
 	SG_UNREF(root);
 
-	CTreeMachineNode<id3TreeNodeData>* child1= 
+	CTreeMachineNode<id3TreeNodeData>* child1=
 			new CTreeMachineNode<id3TreeNodeData>();
 
-	CTreeMachineNode<id3TreeNodeData>* child2= 
+	CTreeMachineNode<id3TreeNodeData>* child2=
 			new CTreeMachineNode<id3TreeNodeData>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
-	CTreeMachineNode<id3TreeNodeData>* child3= 
+	CTreeMachineNode<id3TreeNodeData>* child3=
 			new CTreeMachineNode<id3TreeNodeData>();
 
 	CDynamicObjectArray* insert_children = new CDynamicObjectArray();
@@ -94,7 +94,7 @@ TEST(TreeMachine, clone_tree_test)
 {
 	CTreeMachineNode<id3TreeNodeData>* root=new CTreeMachineNode<id3TreeNodeData>();
 	SG_REF(root);
-	
+
 	CTreeMachine<id3TreeNodeData>* tree=new CTreeMachine<id3TreeNodeData>();
 	tree->set_root(root);
 	SG_UNREF(root);

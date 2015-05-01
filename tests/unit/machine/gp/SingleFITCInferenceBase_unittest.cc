@@ -112,7 +112,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=3.0;
 	inf->set_scale(scale);

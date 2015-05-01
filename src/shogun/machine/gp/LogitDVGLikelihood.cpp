@@ -81,7 +81,7 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_objective_value()
 		eigen_reslut.fill(CMath::INFTY);
 		return result;
 	}
-		
+
 	for (index_t i=0; i<result.vlen; ++i)
 	{
 		float64_t lambda=m_lambda[i];
@@ -96,8 +96,8 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
 	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	REQUIRE(!strcmp(param->m_name, "lambda"),
-		"Can't compute derivative of the variational expection ", 
-		"of log LogitLikelihood in dual setting", 
+		"Can't compute derivative of the variational expection ",
+		"of log LogitLikelihood in dual setting",
 		"wrt %s.%s parameter. The function only accepts lambda as parameter\n",
 		get_name(), param->m_name);
 

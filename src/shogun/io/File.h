@@ -44,7 +44,7 @@ public:
 	 */
 	CFile(FILE* f, const char* name=NULL);
 
-#ifdef HAVE_FDOPEN 
+#ifdef HAVE_FDOPEN
 	/** constructor
 	 *
 	 * @param fd already opened file descriptor

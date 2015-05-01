@@ -90,7 +90,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_cholesky)
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	// choose Gaussian kernel with sigma = 2 
+	// choose Gaussian kernel with sigma = 2
 	float64_t ell=1.0;
 
 	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
@@ -117,7 +117,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_cholesky)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -228,7 +228,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_alpha)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -325,7 +325,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_negative_log_marginal_likelihood)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -391,7 +391,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	// choose Gaussian kernel with sigma = 2 
+	// choose Gaussian kernel with sigma = 2
 	float64_t ell=1.0;
 
 	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
@@ -418,7 +418,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -439,7 +439,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 
 
 	// result from GPML 3.5 package:
-	//dnlz = 
+	//dnlz =
 	//mean: -0.005787909020849
 	//cov: [-0.244187111559869]
 	//lik: []
@@ -482,7 +482,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlz_weights(1,1),  -0.000362096140397,  abs_tolorance);
 
 	//Note that in the latest GPML3.5, derivatives wrt xu (covSEfact) does not support yet
-	//In Shohun's implementation, the derivatives wrt xu are supported. 
+	//In Shohun's implementation, the derivatives wrt xu are supported.
 	//TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
 	//SGVector<float64_t> tmp=gradient->get_element(lat_param);
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);

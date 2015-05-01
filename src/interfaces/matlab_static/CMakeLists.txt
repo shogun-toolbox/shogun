@@ -3,3 +3,11 @@ ADD_CUSTOM_TARGET(matlab_static ALL
 	DEPENDS shogun
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Compiling MATLAB static interface")
+
+# Add static-interface to the dependencies of modular interfaces to make
+# sure nothing will infer with them being build single-threaded.
+IF(SWIG_SINGLE_THREADED)
+	FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+		ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} matlab_static)
+	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+ENDIF(SWIG_SINGLE_THREADED)

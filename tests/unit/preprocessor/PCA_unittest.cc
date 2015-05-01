@@ -69,7 +69,7 @@ TEST(PCA, PCA_N_greater_D_EVD)
 
 	float64_t epsilon = 0.00000000000001;
 
-	// comparing outputs against MATLAB 'princomp' implementation 
+	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(0.041855883987175,eigvec[0],epsilon);
 	EXPECT_NEAR(0.291219269837891,eigvec[1],epsilon);
 	EXPECT_NEAR(5.077526030285309,eigvec[2],epsilon);
@@ -128,7 +128,7 @@ TEST(PCA, PCA_N_equals_D_EVD)
 
 	float64_t epsilon = 0.00000001;
 
-	// comparing outputs against MATLAB 'princomp' implementation 
+	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(0.0,eigvec[0],epsilon);
 	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
 	EXPECT_NEAR(5.03495863,eigvec[2],epsilon);
@@ -244,7 +244,7 @@ TEST(PCA, PCA_N_greater_D_SVD)
 
 	float64_t epsilon = 0.0000000000001;
 
-	// comparing outputs against BRMLtoolbox MATLAB 
+	// comparing outputs against BRMLtoolbox MATLAB
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(0.041855883987175,eigvec[2],epsilon);
 	EXPECT_NEAR(0.291219269837891,eigvec[1],epsilon);
@@ -304,7 +304,7 @@ TEST(PCA, PCA_N_equals_D_SVD)
 
 	float64_t epsilon = 0.00000001;
 
-	// comparing outputs against MATLAB 'princomp' implementation 
+	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(5.03495863,eigvec[0],epsilon);
 	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
 	EXPECT_NEAR(0.0,eigvec[2],epsilon);
@@ -363,7 +363,7 @@ TEST(PCA, PCA_N_less_D_SVD)
 
 	float64_t epsilon = 0.0000000000001;
 
-	// comparing outputs against BRMLtoolbox MATLAB 
+	// comparing outputs against BRMLtoolbox MATLAB
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(0,eigvec[2],epsilon);
 	EXPECT_NEAR(2.327794822241147,eigvec[1],epsilon);
@@ -415,7 +415,7 @@ TEST(PCA, PCA_MEM_IN_PLACE)
 
 	float64_t epsilon = 0.00000001;
 
-	// comparing outputs against MATLAB 'princomp' implementation 
+	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(5.03495863,eigvec[0],epsilon);
 	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
 	EXPECT_NEAR(0.0,eigvec[2],epsilon);
@@ -477,7 +477,7 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 
 	SGVector<float64_t> finalVector=pca->apply_to_feature_vector(inputVector);
 
-	// comparing outputs against BRMLtoolbox MATLAB 
+	// comparing outputs against BRMLtoolbox MATLAB
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(-1.835430614937060, finalVector[0], 1e-13);
 	EXPECT_NEAR(0.511467003751085, finalVector[1], 1e-13);

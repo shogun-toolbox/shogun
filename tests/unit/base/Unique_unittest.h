@@ -10,7 +10,7 @@ public:
     int get();
 private:
     class Self;
-    shogun::Unique<Self> self;   
+    shogun::Unique<Self> self;
 };
 
 #endif

@@ -324,7 +324,7 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
-	
+
 	return get_negative_log_marginal_likelihood_helper();
 }
 

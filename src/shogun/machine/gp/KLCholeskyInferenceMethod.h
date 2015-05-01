@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -53,9 +53,9 @@ namespace shogun
  *
  * The class is implemented based on the KL method in the Challis's paper,
  * which uses full Cholesky represention.
- * Note that C is not unique according to the definition of C in the paper. 
+ * Note that C is not unique according to the definition of C in the paper.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -165,7 +165,7 @@ private:
 	SGMatrix<float64_t> m_C;
 
 	/** The K^{-1}C matrix */
-	SGMatrix<float64_t> m_InvK_C; 
+	SGMatrix<float64_t> m_InvK_C;
 
 };
 }

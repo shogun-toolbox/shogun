@@ -48,7 +48,7 @@ namespace shogun
 class CConstMean : public CMeanFunction
 {
 public:
-	/** default constructor 
+	/** default constructor
 	 * the default value of mean is 0
 	 */
 	CConstMean();

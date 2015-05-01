@@ -30,7 +30,7 @@
 
 #include <shogun/multiclass/tree/KNNHeap.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h> 
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

@@ -163,7 +163,7 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 	EXPECT_NEAR(L(4,3),  0,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(1.166811061103276, rel_tolerance);
 	EXPECT_NEAR(L(4,4),  1.166811061103276,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -220,7 +220,7 @@ TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
 	//0.166834580661953
 	//-0.611796692525262
 	//-0.751590461358533
-	// 
+	//
 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 	float64_t rel_tolerance = 1e-3;
@@ -236,7 +236,7 @@ TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
 	EXPECT_NEAR(posterior_mean[3],  -0.611796692525262,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.751590461358533, rel_tolerance);
 	EXPECT_NEAR(posterior_mean[4],  -0.751590461358533,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }
@@ -293,7 +293,7 @@ TEST(KLDualInferenceMethod,get_posterior_covariance_logit_likelihood)
 	//0.058787302341417   0.040850804014863   0.591312958820500   0.190279380766388  -0.006726650771869
 	//0.154084602498963   0.363298426339381   0.190279380766388   0.517484336632909   0.278169558166845
 	//0.131457795981947   0.348467345102775  -0.006726650771869   0.278169558166845   0.576951507929158
-	// 
+	//
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
 	float64_t rel_tolerance = 1e-3;

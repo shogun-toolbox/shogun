@@ -52,7 +52,7 @@ void test_cross_validation()
 	/* create knn */
 	CEuclideanDistance* distance = new CEuclideanDistance(features, features);
 	CKNN* knn=new CKNN (k, distance, labels);
-	
+
 	/* train and output */
 	knn->train(features);
 	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features));

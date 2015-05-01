@@ -67,7 +67,7 @@ We divide the data available to us into two equal parts. The first half is used 
 ```CPP
 
     CvTrainTestSplit spl((float)0.5);
-    mlData.set_train_test_split(&spl);  
+    mlData.set_train_test_split(&spl);
 ```
 
 We get the respective indices of the training and testing data and store it in the ```cv::Mat``` format.
@@ -80,7 +80,7 @@ We get the respective indices of the training and testing data and store it in t
 ```
 
 We declare few cv::Mat objects down there which we will later use .
-* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file. 
+* ```all_Data```: for containing the whole matrix offered to us by the ```.data``` file.
 * ```all_responses```: for containing all the responses.
 * ```opencv_all_responses```: for containing all the responses for **OpenCV**.
 * ```shogun_all_responses```: for containing all the responses for **Shogun**.
@@ -91,7 +91,7 @@ We declare few cv::Mat objects down there which we will later use .
 * ```shogun_testresponse```: for containing all the outputs of the test data(for **Shogun**). This will be used for evaluation purpose.
 * ```opencv_testresponse```: for containing all the outputs of the test data(for **OpenCV**). This will be used for evaluation purpose.
 
- 
+
 ```CPP
 
     Mat all_Data(temp);
@@ -111,7 +111,7 @@ As for now **OpenCV** doesnot support multiclass responses. The workaround is to
 
 Hence here we create ```4``` tuples, each one for a separate class.
 ```CPP
-   
+
     float data1[]={1,0,0,0};
     float data2[]={0,1,0,0};
     float data3[]={0,0,1,0};
@@ -144,7 +144,7 @@ We fill in the responses from ```all_responses``` to the two respective response
             data3Mat.copyTo(opencv_all_responses.row(h));
             shogun_all_responses.at<float>(h)=2;
         }
-        else 
+        else
         {
             data4Mat.copyTo(opencv_all_responses.row(h));
             shogun_all_responses.at<float>(h)=3;
@@ -159,7 +159,7 @@ We fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, `
    for(int i=0; i<mytraindataidx.cols; i++)
     {
         opencv_all_responses.row(mytraindataidx.at<int>(i)).copyTo(opencv_trainresponse.row(i));
-        shogun_trainresponse.at<int>(i)=shogun_all_responses.at<float>(mytraindataidx.at<int>(i));    
+        shogun_trainresponse.at<int>(i)=shogun_all_responses.at<float>(mytraindataidx.at<int>(i));
         for(int j=0; j<=numfeatures; j++)
         {
             traindata.at<float>(i, j)=all_Data.at<float>(mytraindataidx.at<int>(i), j);
@@ -173,7 +173,7 @@ We fill in the ```traindata ```,  ```testdata```, ```opencv_train_response```, `
         for(int j=0; j<=numfeatures; j++)
         {
             testdata.at<float>(i, j)=all_Data.at<float>(mytestdataidx.at<int>(i), j);
-        }   
+        }
     }
 
 ```
@@ -206,7 +206,7 @@ Test it!
     int k=0;
     Mat predicted_tuple(1,4, CV_32F);
     for (int i=0; i<testdata.rows; ++i)
-    { 
+    {
         neural_network.predict(testdata.row(i), predicted_tuple);
         minMaxLoc(predicted_tuple,NULL,NULL,NULL,&p_max);
         minMaxLoc(opencv_testresponse.row(i),NULL, NULL, NULL, &test_max);
@@ -272,11 +272,11 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
 ```CPP
     CDynamicObjectArray* layers = new CDynamicObjectArray();
     layers->append_element(new CNeuralInputLayer(6));
-    layers->append_element(new CNeuralLogisticLayer(10)); 
+    layers->append_element(new CNeuralLogisticLayer(10));
     layers->append_element(new CNeuralLogisticLayer(4));
 ```
 
-* Here we have to make a connection between the three layers that we formed above. To connect each neuron of one layer to each one of the layer suceeding it, we can directly use ```quick_connect()```. However If particular connections are to be made separately, we may have to use ```connect()```.  
+* Here we have to make a connection between the three layers that we formed above. To connect each neuron of one layer to each one of the layer suceeding it, we can directly use ```quick_connect()```. However If particular connections are to be made separately, we may have to use ```connect()```.
 
 ```CPP
     CNeuralNetwork* network = new CNeuralNetwork(layers);
@@ -289,7 +289,7 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
     network->initialize(0.1);
 ```
 
-* Specify the training parameters if needed. 
+* Specify the training parameters if needed.
 
 ```CPP
     network->epsilon = 1e-8;

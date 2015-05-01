@@ -28,7 +28,7 @@
 #of the authors and should not be interpreted as representing official policies,
 #either expressed or implied, of the Shogun Development Team.
 
-#This example is about learning and using eigenfaces in Shogun. 
+#This example is about learning and using eigenfaces in Shogun.
 #We demonstrate how to use them for a set of faces.
 
 #OpenCV must be installed
@@ -74,9 +74,9 @@ class EigenFaces():
         self.pca = PCA()
         #set dimension
         self.pca.set_target_dim(self._num_components);
-        #compute PCA     
+        #compute PCA
         self.pca.init(features)
-       
+
         for sampleIdx in range(features.get_num_vectors()):
             v = features.get_feature_vector(sampleIdx);
             p = self.pca.apply_to_feature_vector(v);
@@ -139,10 +139,10 @@ def readImages(list_filenames):
                             interpolation=cv2.INTER_LINEAR);
         images[:,index] = imagen.reshape(imagen.shape[0]*imagen.shape[1],1).T;
         index=index + 1
-        #don't read the last value (last value is to test eigenfaces)         
+        #don't read the last value (last value is to test eigenfaces)
         if( (len(list_filenames)-1)==index):
             break
-    print "OK! " 
+    print "OK! "
     return images
 
 #contains images (path) and labels
@@ -175,7 +175,7 @@ def plot_gallery(images, titles, h, w, n_row=3, n_col=4):
 
 if __name__ == '__main__':
     #return list of filenames and labels
-    [list_filenames, list_labels] = get_imlist(os.pardir + os.sep + 
+    [list_filenames, list_labels] = get_imlist(os.pardir + os.sep +
                                          os.pardir + os.sep + os.pardir+
                                          os.sep + os.pardir + os.sep +'data' +
                                          os.sep +'att_dataset' + os.sep +
@@ -192,8 +192,8 @@ if __name__ == '__main__':
 
     for n in range(N_SUBSET):
         show_images_titles.append("Sample image " + str(n));
-        show_images.append(test_images[:,n].reshape(IMAGE_HEIGHT, IMAGE_WIDHT))  
-         
+        show_images.append(test_images[:,n].reshape(IMAGE_HEIGHT, IMAGE_WIDHT))
+
     #this class resolves the eigenfaces
     eigenfaces = EigenFaces(100)
 
@@ -209,8 +209,8 @@ if __name__ == '__main__':
     #get mean and reshape ( height and width original size)
     mean = eigenfaces.getMean().reshape(IMAGE_HEIGHT, IMAGE_WIDHT);
     show_images_titles.append( "Mean face");
-    show_images.append(mean)  
-    
+    show_images.append(mean)
+
     #Reconstruction with diferents values of eigenvectos
 
     #Read the last image of the file to test Eigenfaces
@@ -222,17 +222,17 @@ if __name__ == '__main__':
 
     reconstructions = range(10, 250, 50)
     reconstructions_images = np.empty( (IMAGE_HEIGHT, IMAGE_WIDHT*len(reconstructions) ), np.uint8)
-    
+
 
     #Reconstruct 10 eigen vectors to 300, step 15
     for i in reconstructions:
 
-        print "Reconstruct with " + str(i) + " eigenvectors" 
+        print "Reconstruct with " + str(i) + " eigenvectors"
 
         pca = PCA()
         #set dimension
         pca.set_target_dim(i);
-        #compute PCA     
+        #compute PCA
         pca.init(RealFeatures(images))
 
         pca.apply_to_feature_vector(RealFeatures(imageAsRow)
@@ -245,11 +245,11 @@ if __name__ == '__main__':
         reconstruction = np.asmatrix( np.asarray(projection, np.float64))* \
                          np.asmatrix( pca.get_transformation_matrix()).T
         reconstruction = reconstruction + pca.get_mean()
-        
+
         #prepare the data to visualize in one window
         show_images_titles.append( str(i) + " eigenvectors" );
-        show_images.append(reconstruction.reshape(IMAGE_HEIGHT, IMAGE_WIDHT))      
-    
+        show_images.append(reconstruction.reshape(IMAGE_HEIGHT, IMAGE_WIDHT))
+
     plot_gallery(show_images, show_images_titles, IMAGE_HEIGHT,
                  IMAGE_WIDHT, 4, 4);
     pl.show()

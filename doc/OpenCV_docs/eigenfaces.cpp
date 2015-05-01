@@ -74,7 +74,7 @@ int main()
     // A Shogun Matrix for holding all the training images in their flattened form.
     // no. of rows=total features per image.
     // np. of cols=total number of training images.
-    SGMatrix<float64_t> Stacked_mats=SGMatrix<float64_t>(length, size);   
+    SGMatrix<float64_t> Stacked_mats=SGMatrix<float64_t>(length, size);
 
 
     // In the following snippet we perform these three steps.
@@ -104,12 +104,12 @@ int main()
     //                                                            ]
 
 
-    // convert the Stacked_mats into the CDenseFeatures of Shogun. 
-    // From here on we will be performing our PCA algo in Shogun. 
-    CDenseFeatures<float64_t>* Face_features=new CDenseFeatures<float64_t>(Stacked_mats); 
-    SG_REF(Face_features); 
-    
-    // We initialise the Preprocessor CPCA of Shogun which performs principal 
+    // convert the Stacked_mats into the CDenseFeatures of Shogun.
+    // From here on we will be performing our PCA algo in Shogun.
+    CDenseFeatures<float64_t>* Face_features=new CDenseFeatures<float64_t>(Stacked_mats);
+    SG_REF(Face_features);
+
+    // We initialise the Preprocessor CPCA of Shogun which performs principal
     // component analysis on input features.
     CPCA* pca=new CPCA();
     SG_REF(pca);
@@ -122,15 +122,15 @@ int main()
 
     // Get the mean of all the flattened training images. we will be using this
     // to centralize our test image later.
-    SGVector<float64_t> mean=pca->get_mean() ;  
+    SGVector<float64_t> mean=pca->get_mean() ;
 
-    // Get the transformation matrix. It is a matrix which Shogun stores internally 
-    // whose dimensions are:  ( length * NO_OF_EIGENFACES )     
+    // Get the transformation matrix. It is a matrix which Shogun stores internally
+    // whose dimensions are:  ( length * NO_OF_EIGENFACES )
     SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 
     // The following is the output of PCA. It's dimensions are: ( NO_OF_EIGENFACES * size )
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(Face_features);
-	
+
     // The overall summary of what we did above for say,
     // number of training images=300 ( with each image of size 20*30 pixels)
     // & no. of eigenfaces required=50 is,
@@ -139,7 +139,7 @@ int main()
     //                                          *
     //                                          |
     //                                          |
-    //                                          *               
+    //                                          *
     //                                       finalmat    (50  X 300)
     //
     // So in effect we just reduced the dimensions of each of our training images
@@ -163,7 +163,7 @@ int main()
 
 
     // we centralize the test image by subtracting the mean from it.
-    SGVector<float64_t> testimage_sgvec( temp2.get_column_vector(0), temp2.num_cols, false); 
+    SGVector<float64_t> testimage_sgvec( temp2.get_column_vector(0), temp2.num_cols, false);
     mean.scale_vector(-1, mean.vector, mean.vlen);
 
 
@@ -172,31 +172,31 @@ int main()
 
 
 
-    // now we must project it into the PCA subspace. This is done by performing 
-    // the Dot product between testimage and the transformation matrix. 
+    // now we must project it into the PCA subspace. This is done by performing
+    // the Dot product between testimage and the transformation matrix.
     float64_t testimage_projected_array[NO_OF_EIGENFACES];
     for (int i=0; i<NO_OF_EIGENFACES; ++i)
     {
         testimage_projected_array[i]=
-        SGVector<float64_t>::dot(testimage_sgvec.vector, transmat.get_column_vector(i), testimage_sgvec.vlen); 
+        SGVector<float64_t>::dot(testimage_sgvec.vector, transmat.get_column_vector(i), testimage_sgvec.vlen);
     }
 
-    // we here convert the projected testimage(array) into Shogun Vector. 
+    // we here convert the projected testimage(array) into Shogun Vector.
     SGVector<float64_t> testimage_projected_vec(testimage_projected_array, NO_OF_EIGENFACES, false);
 
 
 
 
     // For Eucledian Distance measure, we need to compare the above formed matrix
-    // to the finalmat. 
-    // The one that gives the minimum distance between them will be identified 
-    // as the closest of the training image and that person will be identified 
-    // from the label of the identified image. 
+    // to the finalmat.
+    // The one that gives the minimum distance between them will be identified
+    // as the closest of the training image and that person will be identified
+    // from the label of the identified image.
 
     // we need to have the Densefeature pointer of the finalmat.
     // finalmat_densefeature_ptr is the lhs.
     CDenseFeatures<float64_t>* finalmat_densefeature_ptr=new CDenseFeatures<float64_t>(finalmat);
-    SG_REF(finalmat_densefeature_ptr); 
+    SG_REF(finalmat_densefeature_ptr);
 
     // and similarly we just need to convert the testimage_sgvec into the DenseFeature pointer for the rhs.
     SGMatrix<float64_t>data_matrix(testimage_projected_vec.vlen, 1);
@@ -207,7 +207,7 @@ int main()
 
 
 
-    CEuclideanDistance* euclid=new CEuclideanDistance(finalmat_densefeature_ptr,testimage_dense);   
+    CEuclideanDistance* euclid=new CEuclideanDistance(finalmat_densefeature_ptr,testimage_dense);
     SG_REF(euclid);
     float64_t distance_array[size];
     int min_index=0;

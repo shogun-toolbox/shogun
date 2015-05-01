@@ -42,7 +42,7 @@ namespace shogun
 {
 
 /** @brief class TreeMachine, a base class for tree based multiclass classifiers.
- * This class is derived from CBaseMulticlassMachine and stores the root node 
+ * This class is derived from CBaseMulticlassMachine and stores the root node
  * (of class type CTreeMachineNode) to the tree structure
  */
 template <class T> class CTreeMachine : public CBaseMulticlassMachine
@@ -68,7 +68,7 @@ public:
 	}
 
 	/** get name
-	 * @return class of the tree 
+	 * @return class of the tree
 	 */
 	virtual const char* get_name() const { return "TreeMachine"; }
 

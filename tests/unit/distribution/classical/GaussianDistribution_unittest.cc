@@ -194,19 +194,19 @@ TEST(GaussianDistribution,univariate_log_pdf)
 	sigma2 = 100;
 	sample = 1.0;
 	EXPECT_NEAR(CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
-		CMath::log(0.026608524989875), 1e-3); 
+		CMath::log(0.026608524989875), 1e-3);
 
 	mu = 5.0;
 	sigma2 = 25;
 	sample = 1.0;
 	EXPECT_NEAR(CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
-		CMath::log(0.057938310552297), 1e-3); 
+		CMath::log(0.057938310552297), 1e-3);
 
 	mu = 2.0;
 	sigma2 = 16.0;
 	sample = 0;
 	EXPECT_NEAR(CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
-		CMath::log(0.088016331691075), 1e-3); 
+		CMath::log(0.088016331691075), 1e-3);
 }
 
 

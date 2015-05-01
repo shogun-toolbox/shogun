@@ -137,7 +137,7 @@ int32_t CRandomForest::get_num_random_features() const
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_subset_size();
-} 
+}
 
 void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 {

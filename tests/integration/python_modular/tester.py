@@ -40,7 +40,7 @@ def compare_floats(a,b, tolerance):
 	#	print("b", a[bad])
 	#	import pdb
 	#	pdb.set_trace()
-		
+
 	return np.all(ok_idx == True)
 
 

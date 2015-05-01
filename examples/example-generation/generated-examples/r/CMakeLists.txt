@@ -7,7 +7,7 @@ FOREACH(EXAMPLE ${R_EXAMPLES})
 ENDFOREACH()
 
 # For now, the generated examples are not installed in the R library
-# When the switch to the example generation is complete, the following lines may be uncommented 
+# When the switch to the example generation is complete, the following lines may be uncommented
 #install(FILES ${R_EXAMPLES}
 #	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/demo
 #	COMPONENT r)

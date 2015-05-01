@@ -71,7 +71,7 @@ enum EMCSamplerType
  * The reference pseudo code is the algorithm 3.4 of the GPML textbook
  *
  * The implementation of predictive statistics is based on the mc sampler.
- * The basic idea of the sampler is that 
+ * The basic idea of the sampler is that
  * first generating samples from the posterior Gaussian distribution given by mu and s2
  * and then using the samplers to estimate the predictive marginal distribution.
  *
@@ -256,7 +256,7 @@ public:
 	 */
 	virtual bool supports_multiclass() const { return true; }
 
-	/** 
+	/**
 	 * set the num_samples used in the mc sampler
 	 * @param num_samples number of samples to be generated
 	 *
@@ -328,7 +328,7 @@ private:
 	 *
 	 * @param func function (NxC where N is num vectors and C num classes)
 	 *
-	 * @return derivative (NxCxCxC 4-d matrix linearized ie. Element(n,c1,c2,c3) = 
+	 * @return derivative (NxCxCxC 4-d matrix linearized ie. Element(n,c1,c2,c3) =
 	 * array[\f$n*C^{3}+c1*C^{2}+c2*C+c3\f$] where C is num_classes)
 	 */
 	SGVector<float64_t> get_log_probability_derivative3_f(SGMatrix<float64_t> func) const;

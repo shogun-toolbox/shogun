@@ -77,5 +77,5 @@ def variational_classifier_modular(kl_inference,train_fname=traindat,test_fname=
 
 if __name__=="__main__":
 	print("variational_classifier")
-	for parameter in parameter_list: 
+	for parameter in parameter_list:
 		variational_classifier_modular(*parameter)

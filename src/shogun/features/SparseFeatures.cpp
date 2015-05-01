@@ -297,13 +297,13 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 				set_preprocessed(i);
 				CSparsePreprocessor<ST>* p = (CSparsePreprocessor<ST>*) get_preprocessor(i);
 				SG_INFO("preprocessing using preproc %s\n", p->get_name())
-				
+
 				if (p->apply_to_sparse_feature_matrix(this) == NULL)
 				{
 					SG_UNREF(p);
 					return false;
 				}
-				
+
 				SG_UNREF(p);
 			}
 		}

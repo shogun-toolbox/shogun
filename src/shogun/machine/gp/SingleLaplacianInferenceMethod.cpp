@@ -198,7 +198,7 @@ void CSingleLaplacianInferenceMethod::update_chol()
 	if (eigen_W.minCoeff()>0)
 		eigen_sW=eigen_W.cwiseSqrt();
 	else
-		//post.sW = sqrt(abs(W)).*sign(W); 
+		//post.sW = sqrt(abs(W)).*sign(W);
 		eigen_sW=((eigen_W.array().abs()+eigen_W.array())/2).sqrt()-((eigen_W.array().abs()-eigen_W.array())/2).sqrt();
 
 	// create eigen representation of kernel matrix

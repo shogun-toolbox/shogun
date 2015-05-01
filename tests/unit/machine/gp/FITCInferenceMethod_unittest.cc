@@ -96,7 +96,7 @@ TEST(FITCInferenceMethod,get_cholesky)
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
@@ -203,7 +203,7 @@ TEST(FITCInferenceMethod,get_cholesky_sparse)
 	inf->set_scale(2.5);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -273,7 +273,7 @@ TEST(FITCInferenceMethod,get_alpha)
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
@@ -345,7 +345,7 @@ TEST(FITCInferenceMethod,get_alpha_sparse)
 	inf->set_scale(2.5);
 	inf->set_compute_gradients(false);
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	// comparison of posterior alpha with result from GPML package:
 	SGVector<float64_t> alpha=inf->get_alpha();
@@ -407,7 +407,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 	inf->set_compute_gradients(false);
 
 	// comparison of posterior negative marginal likelihood with
@@ -471,7 +471,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
 	inf->set_scale(2.5);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	// comparison of posterior negative marginal likelihood with result from
 	// GPML package
@@ -532,7 +532,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
@@ -622,7 +622,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	inf->set_scale(2.5);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
@@ -730,7 +730,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -787,7 +787,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	EXPECT_NEAR(dnlZ_sf2, 4.756295043167128, 1E-10);
 
 	//Note that in the latest GPML3.5, derivatives wrt xu (covSEfact) does not support yet
-	//In Shohun's implementation, the derivatives wrt xu are supported. 
+	//In Shohun's implementation, the derivatives wrt xu are supported.
 	//TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
 	//SGVector<float64_t> tmp=gradient->get_element(lat_param);
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
@@ -887,7 +887,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -951,7 +951,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	EXPECT_NEAR(dnlZ_sf2, 5.226913608720613, 1E-10);
 
 	//Note that in the latest GPML3.5, derivatives wrt xu (covSEfact) does not support yet
-	//In Shohun's implementation, the derivatives wrt xu are supported. 
+	//In Shohun's implementation, the derivatives wrt xu are supported.
 	//TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
 	//SGVector<float64_t> tmp=gradient->get_element(lat_param);
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
@@ -1028,7 +1028,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=3.0;
 	inf->set_scale(scale);

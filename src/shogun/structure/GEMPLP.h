@@ -93,14 +93,14 @@ public:
 private:
 	/** Initialize GEMPLP with factor graph */
 	void init();
-	
+
 	/** Message updating on a region
 	 *
 	 * Please refer to "GEMPLP" in NIPS paper of
 	 * A. Globerson and T. Jaakkola [1] for more details.
-	 *	
+	 *
 	 */
-	void update_messages(int32_t id_region);	
+	void update_messages(int32_t id_region);
 
 public:
 	/** Computer the maximum value along the sub-dimension

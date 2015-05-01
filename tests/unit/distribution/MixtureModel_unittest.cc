@@ -31,7 +31,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/MixtureModel.h>
-#include <shogun/distributions/Gaussian.h> 
+#include <shogun/distributions/Gaussian.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -40,7 +40,7 @@ using namespace shogun;
 
 TEST(MixtureModel,gaussian_mixture_model)
 {
-	sg_rand->set_seed(2);	
+	sg_rand->set_seed(2);
 	SGMatrix<float64_t> data(1,400);
 
 	for (int32_t i=0;i<100;i++)
@@ -80,7 +80,7 @@ TEST(MixtureModel,gaussian_mixture_model)
 
 	float64_t eps=1e-8;
 	EXPECT_NEAR(m[0],9.863760378,eps);
-	EXPECT_NEAR(cov(0,0),0.956568199,eps);	
+	EXPECT_NEAR(cov(0,0),0.956568199,eps);
 
 	SG_FREE(cov.matrix);
 	SG_UNREF(outg);
@@ -92,7 +92,7 @@ TEST(MixtureModel,gaussian_mixture_model)
 	cov=outg->get_cov();
 
 	EXPECT_NEAR(m[0],-0.208122793,eps);
-	EXPECT_NEAR(cov(0,0),1.095106568,eps);	
+	EXPECT_NEAR(cov(0,0),1.095106568,eps);
 
 	SG_FREE(cov.matrix);
 	SG_UNREF(outg);

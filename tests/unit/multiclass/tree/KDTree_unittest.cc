@@ -114,7 +114,7 @@ TEST(KDTree, knn_query)
 
 	EXPECT_EQ(3,ind(0,0));
 	EXPECT_EQ(0,ind(1,0));
-	EXPECT_EQ(2,ind(2,0));		
+	EXPECT_EQ(2,ind(2,0));
 
 	SG_UNREF(qfeats);
 	SG_UNREF(feats);

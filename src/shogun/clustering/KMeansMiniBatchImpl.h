@@ -29,13 +29,13 @@ class CKMeansMiniBatchImpl
 		 * @param distance distance
  		 * @param batch_size parameter batch size
 		 * @param minib_iter parameter number of iterations
-		 * @param mus cluster centers matrix (k columns) 
+		 * @param mus cluster centers matrix (k columns)
 		 */
 		static void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus);
 
 	private:
 		/* choose b integers between 0 and num-1
-		 * 
+		 *
 		 */
 		static SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num);
 };

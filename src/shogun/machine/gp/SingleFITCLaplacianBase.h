@@ -48,7 +48,7 @@ namespace shogun
  * This base class implements the (explicit) derivatives of negative log marginal likelihood
  * wrt hyperparameter for FITC regression and FITC single Laplace.
  * For FITC single Laplace, we can compute further implicit derivatives.
- * For FITC regression, these explicit derivatives are the full derivatives. 
+ * For FITC regression, these explicit derivatives are the full derivatives.
  *
  * For more details, see Quiñonero-Candela, Joaquin, and Carl Edward Rasmussen.
  * "A unifying view of sparse approximate Gaussian process regression."
@@ -90,7 +90,7 @@ public:
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SingleFITCLaplacianBase 
+	 * @return name SingleFITCLaplacianBase
 	 */
 	virtual const char* get_name() const { return "SingleFITCLaplacianBase"; }
 
@@ -187,7 +187,7 @@ protected:
 	virtual float64_t get_derivative_related_mean(SGVector<float64_t> dmu);
 
 	/** helper function to compute variables which are required to compute negative log marginal
-	 * likelihood derivatives wrt inducing features 
+	 * likelihood derivatives wrt inducing features
 	 *
 	 * Note that the kernel must support to compute the derivatives wrt inducing features
 	 *
@@ -277,7 +277,7 @@ protected:
 	/* w=B*al */
 	SGVector<float64_t> m_w;
 
-	/** Rvdd=W 
+	/** Rvdd=W
 	 * where W is defined in infFITC.m and Rvdd is defined in infFITC_Laplace.m
 	 * Note that W is NOT the diagonal matrix
 	 */
@@ -286,7 +286,7 @@ protected:
 	/* a lock used to parallelly compute derivatives wrt hyperparameters */
 	CLock* m_lock;
 
-	/** whether the kernel supports 
+	/** whether the kernel supports
 	 * to compute the derivatives wrt to inducing features
 	 */
 	bool m_fully_FITC;

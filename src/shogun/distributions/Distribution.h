@@ -202,7 +202,7 @@ class CDistribution : public CSGObject
 		 * @param object generic object
 		 * @return Distribution object
 		 */
-		static CDistribution* obtain_from_generic(CSGObject* object);				
+		static CDistribution* obtain_from_generic(CSGObject* object);
 
 	protected:
 		/** feature vectors */

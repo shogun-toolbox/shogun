@@ -48,7 +48,7 @@ namespace shogun
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
- * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method 
+ * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
  * CFITCInferenceMethod::get_posterior_covariance() is called
  */
 class CFITCInferenceMethod: public CSingleFITCLaplacianBase

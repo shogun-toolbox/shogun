@@ -63,7 +63,7 @@ public:
 	 * \f$ b = \frac{1}{n} [\cdots, L_i(y), \cdots]_{m} \f$,
 	 * and \f$ \alpha \f$ are dual variables.
 	 *
-	 * @param w is primal variables, given by \f$ A\alpha \f$ 
+	 * @param w is primal variables, given by \f$ A\alpha \f$
 	 * @param aloss is the average loss, given by \f$ b^T\alpha \f$
 	 * @param lbda regularization parameter lambda
 	 * @return dual objective value

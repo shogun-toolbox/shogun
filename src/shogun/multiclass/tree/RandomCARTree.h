@@ -41,7 +41,7 @@ namespace shogun
 {
 
 /** @brief This class implements randomized CART algorithm used in the tree growing process of candidate trees in Random Forests algorithm.
- * The tree growing process is different from the original CART algorithm because of the input attributes which are considered for each node  
+ * The tree growing process is different from the original CART algorithm because of the input attributes which are considered for each node
  * split. In randomized CART, a few (fixed number) attributes are randomly chosen from all available attributes while deciding the best split.
  * This is unlike the original CART where all available attributes are considered while deciding the best split.
  */
@@ -85,7 +85,7 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
+	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec,
 	SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, int32_t &count_left,
 														 int32_t &count_right);
 

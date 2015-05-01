@@ -277,13 +277,13 @@ TEST(SGVectorTest, convert_to_matrix)
 TEST(SGVectorTest, to_eigen3_column_vector)
 {
 	const int n = 9;
-	
+
 	SGVector<float64_t> sg_vec(9);
 	for (int32_t i=0; i<n; i++)
 		sg_vec[i] = i;
-	
+
 	Eigen::Map<Eigen::VectorXd> eigen_vec = sg_vec;
-	
+
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
 }
@@ -291,13 +291,13 @@ TEST(SGVectorTest, to_eigen3_column_vector)
 TEST(SGVectorTest, from_eigen3_column_vector)
 {
 	const int n = 9;
-	
+
 	Eigen::VectorXd eigen_vec(9);
 	for (int32_t i=0; i<n; i++)
 		eigen_vec[i] = i;
-	
+
 	SGVector<float64_t> sg_vec = eigen_vec;
-	
+
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }
@@ -305,13 +305,13 @@ TEST(SGVectorTest, from_eigen3_column_vector)
 TEST(SGVectorTest, to_eigen3_row_vector)
 {
 	const int n = 9;
-	
+
 	SGVector<float64_t> sg_vec(9);
 	for (int32_t i=0; i<n; i++)
 		sg_vec[i] = i;
-	
+
 	Eigen::Map<Eigen::RowVectorXd> eigen_vec = sg_vec;
-	
+
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
 }
@@ -319,13 +319,13 @@ TEST(SGVectorTest, to_eigen3_row_vector)
 TEST(SGVectorTest, from_eigen3_row_vector)
 {
 	const int n = 9;
-	
+
 	Eigen::RowVectorXd eigen_vec(9);
 	for (int32_t i=0; i<n; i++)
 		eigen_vec[i] = i;
-	
+
 	SGVector<float64_t> sg_vec = eigen_vec;
-	
+
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }

@@ -82,7 +82,7 @@ namespace shogun
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
 		sg_cancel_computations=cancel_computations;
-		
+
 		init_from_env();
 	}
 
@@ -185,7 +185,7 @@ namespace shogun
 		SG_REF(sg_rand);
 		return sg_rand;
 	}
-	
+
 	void init_from_env()
 	{
 		char* env_log_val = NULL;

@@ -72,11 +72,11 @@ void CLibSVMFile::init_with_defaults()
 	m_delimiter_feat_tokenizer=new CDelimiterTokenizer(true);
 	m_delimiter_feat_tokenizer->delimiters[m_delimiter_feat]=1;
 	SG_REF(m_delimiter_feat_tokenizer);
-    
+
 	m_delimiter_label_tokenizer=new CDelimiterTokenizer(true);
 	m_delimiter_label_tokenizer->delimiters[m_delimiter_label]=1;
 	SG_REF(m_delimiter_label_tokenizer);
-	
+
 	m_line_tokenizer=new CDelimiterTokenizer(true);
 	m_line_tokenizer->delimiters['\n']=1;
 	SG_REF(m_line_tokenizer);
@@ -393,11 +393,11 @@ bool CLibSVMFile::is_feat_entry(const SGVector<char> entry)
 	parser->set_tokenizer(m_delimiter_feat_tokenizer);
 	parser->set_text(entry);
 	bool isfeat = false;
-	
+
 	if (parser->has_next())
 	{
 		parser->read_real();
-                
+
 		if (parser->has_next())
 			isfeat = true;
 

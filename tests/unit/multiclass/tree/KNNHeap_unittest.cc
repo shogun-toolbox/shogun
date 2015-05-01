@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/multiclass/tree/KNNHeap.h> 
+#include <shogun/multiclass/tree/KNNHeap.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -51,7 +51,7 @@ TEST(KNNHeap, heap_formation)
 	EXPECT_EQ(sorted[1],2);
 	EXPECT_EQ(sorted[2],1);
 	EXPECT_EQ(sorted[3],4);
-	EXPECT_EQ(sorted[4],5);	
+	EXPECT_EQ(sorted[4],5);
 
 	delete(heap);
 }

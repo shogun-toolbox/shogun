@@ -45,8 +45,8 @@ namespace shogun
  * The node contains a pointer to its parent and a vector of
  * pointers to its children. A node of this class can have
  * only one parent but any number of children.The node also
- * contains data which can be of any type and has to be 
- * specified using template specifier. 
+ * contains data which can be of any type and has to be
+ * specified using template specifier.
  */
 template <typename T>
 class CTreeMachineNode
@@ -72,7 +72,7 @@ public:
 	}
 
 	/** get name
-	 * @return class of the node 
+	 * @return class of the node
 	 */
 	virtual const char* get_name() const { return "TreeMachineNode"; }
 
@@ -85,7 +85,7 @@ public:
 	}
 
 	/** get machine
-	 * @return machine index 
+	 * @return machine index
 	 */
 	int32_t machine()
 	{
@@ -101,7 +101,7 @@ public:
 	}
 
 	/** get parent node
-	 * @return pointer to parent node 
+	 * @return pointer to parent node
 	 */
 	CTreeMachineNode* parent()
 	{
@@ -157,7 +157,7 @@ protected:
 	 * @param node node data to print
 	 * @param depth depth of the node in the tree
 	 */
-	static void debug_print_impl(data_print_func_t data_print_func, 
+	static void debug_print_impl(data_print_func_t data_print_func,
 				CTreeMachineNode<T>* node, int32_t depth)
 	{
 		for (int32_t i=0;i<depth;++i)
@@ -168,7 +168,7 @@ protected:
 		CDynamicObjectArray* children_vector=node->get_children();
 		for (int32_t j=0;j<children_vector->get_num_elements();j++)
 		{
-			CTreeMachineNode<T>* child=(CTreeMachineNode<T>*) 
+			CTreeMachineNode<T>* child=(CTreeMachineNode<T>*)
 						children_vector->get_element(j);
 			debug_print_impl(data_print_func,child,depth+1);
 			SG_UNREF(child);
@@ -200,7 +200,7 @@ protected:
 	/** machine index */
 	int32_t m_machine;
 
-	/** Dynamic array of pointers to children */ 
+	/** Dynamic array of pointers to children */
 	CDynamicObjectArray* m_children;
 
 };

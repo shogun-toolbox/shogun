@@ -53,7 +53,7 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 		case TRWS_MAX_PROD:
 			SG_ERROR("%s::CMAPInference(): TRW-S has not been implemented!\n",
 				get_name());
-			break;	
+			break;
 		default:
 			SG_ERROR("%s::CMAPInference(): unsupported inference method!\n",
 				get_name());

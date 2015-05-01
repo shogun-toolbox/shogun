@@ -24,7 +24,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseMatrix.h> 
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/io/SerializableFile.h>
 
 using namespace shogun;
@@ -3294,7 +3294,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 			float64_t accuracy, bool tolerant)
 {
 	SG_SDEBUG("entering TParameter::compare_ptype()\n");
-	
+
 	if ((data1 && !data2) || (!data1 && data2))
 	{
 		SG_SINFO("leaving TParameter::compare_ptype(): data1 is at %p while "
@@ -3445,10 +3445,10 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	{
 		float32_t casted1=*((float32_t*)data1);
 		float32_t casted2=*((float32_t*)data2);
-		
+
 		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT32: "
 				"data1=%f, data2=%f\n", casted1, casted2);
-		
+
 		return CMath::fequals<float32_t>(casted1, casted2, accuracy, tolerant);
 		break;
 	}
@@ -3456,7 +3456,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	{
 		float64_t casted1=*((float64_t*)data1);
 		float64_t casted2=*((float64_t*)data2);
-		
+
 		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT64: "
 				"data1=%f, data2=%f\n", casted1, casted2);
 
@@ -3467,10 +3467,10 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	{
 		floatmax_t casted1=*((floatmax_t*)data1);
 		floatmax_t casted2=*((floatmax_t*)data2);
-		
+
 		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
 				"data1=%f, data2=%f\n", casted1, casted2);
-		
+
 		return CMath::fequals<floatmax_t>(casted1, casted2, accuracy, tolerant);
 		break;
 	}
@@ -3683,7 +3683,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 		void* data1, void* data2, float64_t accuracy, bool tolerant)
 {
 	SG_SDEBUG("entering TParameter::compare_stype()\n");
-	
+
 	size_t size_ptype=TSGDataType::sizeof_ptype(ptype);
 
 	/* Avoid comparing NULL */
