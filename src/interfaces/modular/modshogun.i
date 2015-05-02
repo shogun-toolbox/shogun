@@ -18,6 +18,7 @@
 %}
 
 %include "swig_config.h"
+%include <shogun/lib/config.h>
 
 %define DOCSTR
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."

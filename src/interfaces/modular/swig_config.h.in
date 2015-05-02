@@ -1,8 +1,6 @@
 #ifndef __SHOGUN_SWIG_CONFIG_H__
 #define __SHOGUN_SWIG_CONFIG_H__
 
-#include <shogun/lib/config.h>
-
 #cmakedefine PYTHON3 1
 #cmakedefine HAVE_PYTHON 1
 #cmakedefine HAVE_OCTAVE 1
