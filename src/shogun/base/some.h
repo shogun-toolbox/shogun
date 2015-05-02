@@ -1,6 +1,8 @@
 #ifndef __SG_SOME_H__
 #define __SG_SOME_H__
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_CXX11
 #include <memory>
 

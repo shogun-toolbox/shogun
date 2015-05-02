@@ -8,9 +8,10 @@
  * Copyright (C) 2013 Fernando J. Iglesias Garcia
  */
 
+#include <shogun/metric/LMNN.h>
+
 #ifdef HAVE_EIGEN3
 
-#include <shogun/metric/LMNN.h>
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/mathematics/Math.h>
 

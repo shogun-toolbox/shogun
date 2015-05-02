@@ -1,6 +1,6 @@
-#ifdef HAVE_EIGEN3
-
 #include <shogun/mathematics/ajd/JADiagOrth.h>
+
+#ifdef HAVE_EIGEN3
 
 #include <shogun/base/init.h>
 

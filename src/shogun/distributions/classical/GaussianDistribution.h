@@ -29,12 +29,14 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifdef HAVE_EIGEN3
 
 #ifndef GAUSSIANDISTRIBUTION_H
 #define GAUSSIANDISTRIBUTION_H
 
 #include <shogun/lib/config.h>
+
+#ifdef HAVE_EIGEN3
+
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
@@ -142,5 +144,5 @@ protected:
 
 }
 
-#endif // GAUSSIANDISTRIBUTION_H
 #endif // HAVE_EIGEN3
+#endif // GAUSSIANDISTRIBUTION_H
