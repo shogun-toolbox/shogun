@@ -42,7 +42,7 @@
 #include <shogun/lib/common.h>
 #include <memory>
 
-
+#ifndef SWIG // SWIG should skip this part
 namespace viennacl
 {
 	template <class, class, class> class vector_base;
@@ -76,6 +76,7 @@ namespace shogun
  */
 template <class T> class CGPUVector
 {
+
 	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 
@@ -85,6 +86,9 @@ template <class T> class CGPUVector
 public:
 	/** The scalar type of the vector */
 	typedef T Scalar;
+
+	/** The container type for a given template argument */
+	template <typename ST> using container_type = CGPUVector<ST>;
 
 	/** Default Constructor */
 	CGPUVector();
@@ -107,7 +111,6 @@ public:
 	/** Creates a gpu vector using data from an SGVector */
 	CGPUVector(const SGVector<T>& cpu_vec);
 
-#ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 	/** Creates a gpu vector using data from an Eigen3 column vector */
 	CGPUVector(const EigenVectorXt& cpu_vec);
@@ -120,8 +123,20 @@ public:
 
 	/** Converts the vector into an Eigen3 row vector */
 	operator EigenRowVectorXt() const;
-#endif
-#endif
+
+#endif // HAVE_EIGEN3
+
+	/** The data */
+	inline VCLVectorBase data()
+	{
+		return vcl_vector();
+	}
+
+	/** The size */
+	inline index_t size() const
+	{
+		return vlen;
+	}
 
 	/** Converts the vector into an SGVector */
 	operator SGVector<T>() const;
@@ -174,6 +189,7 @@ public:
 };
 
 }
+#endif // SWIG
 
 #endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

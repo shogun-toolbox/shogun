@@ -188,5 +188,7 @@ struct MODULE \
 #include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
+#include <shogun/mathematics/linalg/internal/modules/ElementwiseOperations.h>
+
 #endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #endif // LINALG_H_
