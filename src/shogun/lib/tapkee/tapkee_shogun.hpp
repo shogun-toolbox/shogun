@@ -10,6 +10,8 @@
 #ifndef TAPKEE_SHOGUN_ADAPTER
 #define TAPKEE_SHOGUN_ADAPTER
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/io/SGIO.h>

@@ -17,6 +17,8 @@
 #endif // defined(__APPLE__)
 %}
 
+%include "swig_config.h"
+
 %define DOCSTR
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef

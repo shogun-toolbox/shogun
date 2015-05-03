@@ -7,12 +7,12 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#ifdef HAVE_PROTOBUF
-
 #ifndef __PROTOBUFFILE_H__
 #define __PROTOBUFFILE_H__
 
 #include <shogun/lib/config.h>
+
+#ifdef HAVE_PROTOBUF
 
 #include <shogun/io/File.h>
 
@@ -636,6 +636,5 @@ private:
 
 }
 
-#endif /** __PROTOBUFFILE_H__ */
-
 #endif /** HAVE_PROTOBUF */
+#endif /** __PROTOBUFFILE_H__ */

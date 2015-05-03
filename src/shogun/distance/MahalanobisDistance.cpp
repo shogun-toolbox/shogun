@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_LAPACK
 
 #include <shogun/lib/common.h>

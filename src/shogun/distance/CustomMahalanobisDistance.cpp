@@ -8,9 +8,10 @@
  * Copyright (C) 2013 Fernando J. Iglesias Garcia
  */
 
+#include <shogun/distance/CustomMahalanobisDistance.h>
+
 #ifdef HAVE_EIGEN3
 
-#include <shogun/distance/CustomMahalanobisDistance.h>
 #include <Eigen/Dense>
 
 using namespace shogun;

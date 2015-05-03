@@ -1,8 +1,3 @@
-# transform defines to -D<definition> string
-foreach(D IN LISTS DEFINES)
-	SET(CMAKE_DEFINITIONS "${CMAKE_DEFINITIONS} -D${D}")
-endforeach()
-
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
 ExternalProject_Get_Property(GoogleMock source_dir)
@@ -87,7 +82,6 @@ FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
 ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST})
 target_link_libraries(shogun-unit-test shogun gmock gtest ${SANITIZER_LIBRARY})
-set_target_properties(shogun-unit-test PROPERTIES COMPILE_DEFINITIONS "${DEFINES}")
 IF (SANITIZER_FLAGS)
 	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()

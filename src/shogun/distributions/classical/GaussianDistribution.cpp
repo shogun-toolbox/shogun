@@ -7,9 +7,10 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
+#include <shogun/distributions/classical/GaussianDistribution.h>
+
 #ifdef HAVE_EIGEN3
 
-#include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 
