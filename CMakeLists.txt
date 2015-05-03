@@ -68,6 +68,13 @@ IF (
 		FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
 	ENDIF()
 
+	# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
+	# typemapping created for earlier versions of SWIG.
+	# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
+	IF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
+	ENDIF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)

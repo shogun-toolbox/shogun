@@ -3,11 +3,6 @@
 
 %include <shogun/lib/config.h>
 
-/* Needed for C# / Mono interface for now */
-#ifdef SWIGCSHARP
-#define SWIG2_CSHARP
-#endif /* SWIGCSHARP */
-
 #ifndef DARWIN
 #cmakedefine SWIGWORDSIZE64 1
 #endif /* DARWIN */
