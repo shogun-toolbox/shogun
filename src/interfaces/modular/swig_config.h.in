@@ -1,6 +1,17 @@
 #ifndef __SHOGUN_SWIG_CONFIG_H__
 #define __SHOGUN_SWIG_CONFIG_H__
 
+%include <shogun/lib/config.h>
+
+/* Needed for C# / Mono interface for now */
+#ifdef SWIGCSHARP
+#define SWIG2_CSHARP
+#endif /* SWIGCSHARP */
+
+#ifndef DARWIN
+#cmakedefine SWIGWORDSIZE64 1
+#endif /* DARWIN */
+
 #cmakedefine PYTHON3 1
 #cmakedefine HAVE_PYTHON 1
 #cmakedefine HAVE_OCTAVE 1
