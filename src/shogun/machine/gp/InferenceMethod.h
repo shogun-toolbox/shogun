@@ -365,6 +365,17 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_multiclass_E();
 
+	/** set whether gradients are computed
+	 *
+	 * @param is_enabled if true, gradients will be computed
+	 */
+	virtual void set_compute_gradients(bool is_enabled);
+
+	/** whether gradients are computed
+	 *
+	 * @return whether gradients are computed
+	 */
+	virtual bool is_compute_gradients();
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -428,6 +439,8 @@ protected:
 	 */
 	static void* get_derivative_helper(void* p);
 
+	/** ensure that gradients computation is enabled*/
+	virtual void check_compute_gradients();
 private:
 	void init();
 
@@ -461,6 +474,9 @@ protected:
 
 	/** the matrix used for multi classification*/
 	SGMatrix<float64_t> m_E;
+
+	/** whether gradients are computed*/
+	bool m_is_compute_gradients;
 };
 }
 #endif /* HAVE_EIGEN3 */

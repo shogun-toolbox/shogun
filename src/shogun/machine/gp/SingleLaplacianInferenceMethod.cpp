@@ -239,8 +239,11 @@ void CSingleLaplacianInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	if (m_is_compute_gradients) 
+	{
+		update_approx_cov();
+		update_deriv();
+	}
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -590,7 +593,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
 {
-
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 

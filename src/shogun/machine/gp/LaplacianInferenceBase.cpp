@@ -77,20 +77,6 @@ CLaplacianInferenceBase::~CLaplacianInferenceBase()
 {
 }
 
-void CLaplacianInferenceBase::update()
-{
-	SG_DEBUG("entering\n");
-
-	CInferenceMethod::update();
-	update_alpha();
-	update_chol();
-	update_approx_cov();
-	update_deriv();
-	update_parameter_hash();
-
-	SG_DEBUG("leaving\n");
-}
-
 SGVector<float64_t> CLaplacianInferenceBase::get_alpha()
 {
 	if (parameter_hash_changed())
@@ -112,6 +98,7 @@ SGMatrix<float64_t> CLaplacianInferenceBase::get_cholesky()
 
 SGMatrix<float64_t> CLaplacianInferenceBase::get_posterior_covariance()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 

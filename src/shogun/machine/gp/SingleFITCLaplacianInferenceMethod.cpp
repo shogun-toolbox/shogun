@@ -138,8 +138,8 @@ void CSingleFITCLaplacianInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	if (m_is_compute_gradients) 
+		update_deriv();
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -250,10 +250,6 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelih
 		A.diagonal().array().log().sum()+(eigen_W.cwiseProduct(eigen_dg)+MatrixXd::Ones(eigen_dg.rows(),1)).array().log().sum()/2.0;
 
 	return result;
-}
-
-void CSingleFITCLaplacianInferenceMethod::update_approx_cov()
-{
 }
 
 void CSingleFITCLaplacianInferenceMethod::update_init()
@@ -531,13 +527,17 @@ void CSingleFITCLaplacianInferenceMethod::update_chol()
 		eigen_L+=B*lu.inverse()*B.transpose();
 	}
 
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	m_g=SGVector<float64_t>(m_dg.vlen);
-	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
-	//g = d/2 + sum(((R*R0)*P).^2,1)'/2
-	eigen_g=((eigen_dg.cwiseProduct(dd)).array()+
-		((eigen_tmp*eigen_R0)*(eigen_ktru*CMath::sq(m_scale))*dd.asDiagonal()
-		 ).array().pow(2).colwise().sum().transpose())/2;
+	if (m_is_compute_gradients)
+	{
+		Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+		m_g=SGVector<float64_t>(m_dg.vlen);
+		Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
+		//g = d/2 + sum(((R*R0)*P).^2,1)'/2
+		eigen_g=((eigen_dg.cwiseProduct(dd)).array()+
+			((eigen_tmp*eigen_R0)*(eigen_ktru*CMath::sq(m_scale))*dd.asDiagonal()
+			).array().pow(2).colwise().sum().transpose())/2;
+
+	}
 }
 
 void CSingleFITCLaplacianInferenceMethod::update_deriv()
@@ -894,6 +894,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 
 SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 
@@ -920,6 +921,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covariance()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 	//time complexity of the following operations is O(m*n^2)

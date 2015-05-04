@@ -161,8 +161,11 @@ void CKLInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	if (m_is_compute_gradients)
+	{
+		update_approx_cov();
+		update_deriv();
+	}
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -230,6 +233,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 
 SGVector<float64_t> CKLInferenceMethod::get_posterior_mean()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 
@@ -238,6 +242,7 @@ SGVector<float64_t> CKLInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CKLInferenceMethod::get_posterior_covariance()
 {
+	check_compute_gradients();
 	if (parameter_hash_changed())
 		update();
 

@@ -229,9 +229,6 @@ protected:
 	/** update cholesky matrix */
 	virtual void update_chol();
 
-	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
-
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */

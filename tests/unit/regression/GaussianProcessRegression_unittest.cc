@@ -83,6 +83,7 @@ TEST(GaussianProcessRegression,apply_regression)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
+	inf->set_compute_gradients(false);
 
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
@@ -146,7 +147,7 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-
+	inf->set_compute_gradients(false);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	// train model
@@ -207,7 +208,7 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 	// specify GP regression with exact inference
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
 			mean, labels_train, liklihood);
-
+	inf->set_compute_gradients(false);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	// train model
@@ -270,7 +271,7 @@ TEST(GaussianProcessRegression, get_mean_vector)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-
+	inf->set_compute_gradients(false);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	// train model
@@ -327,7 +328,7 @@ TEST(GaussianProcessRegression, get_variance_vector_1)
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-
+	inf->set_compute_gradients(false);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	// train model
@@ -387,7 +388,7 @@ TEST(GaussianProcessRegression, get_variance_vector_2)
 	// specify GP regression with exact inference
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
 			mean, labels_train, liklihood);
-
+	inf->set_compute_gradients(false);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	// train model
@@ -468,7 +469,7 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
-
+	inf->set_compute_gradients(false);
 	// create GPR and train
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 	gpr->train();
@@ -558,7 +559,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
-
+	inf->set_compute_gradients(false);
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise);
 

@@ -75,6 +75,7 @@ void CInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_compute_gradients, "is_compute_gradients", "whether gradients are computed", MS_NOT_AVAILABLE);
 
 	m_kernel=NULL;
 	m_model=NULL;
@@ -82,6 +83,7 @@ void CInferenceMethod::init()
 	m_features=NULL;
 	m_mean=NULL;
 	m_scale=1.0;
+	m_is_compute_gradients=true;
 
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
@@ -149,6 +151,7 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 CMap<TParameter*, SGVector<float64_t> >* CInferenceMethod::
 get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* params)
 {
+	check_compute_gradients();
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
 
@@ -294,4 +297,21 @@ void CInferenceMethod::update_train_kernel()
 	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
+void CInferenceMethod::set_compute_gradients(bool is_enabled)
+{
+	if (is_enabled && !m_is_compute_gradients)
+		update();
+	m_is_compute_gradients=is_enabled;
+}
+
+bool CInferenceMethod::is_compute_gradients()
+{
+	return m_is_compute_gradients;
+}
+
+void CInferenceMethod::check_compute_gradients()
+{
+	REQUIRE(m_is_compute_gradients,
+		"Gradients computation must be enabled set_compute_gradients(true)\n");
+}
 #endif /* HAVE_EIGEN3 */

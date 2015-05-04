@@ -84,6 +84,7 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_t_likelihood)
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//
@@ -200,6 +201,7 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_logit_likelihood)
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//
@@ -316,6 +318,7 @@ TEST(KLCovarianceInferenceMethod,get_cholesky_probit_likelihood)
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//
@@ -980,6 +983,7 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//
@@ -1039,6 +1043,7 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_logit_likeliho
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//
@@ -1097,6 +1102,7 @@ TEST(KLCovarianceInferenceMethod,get_negative_marginal_likelihood_probit_likelih
 	CKLCovarianceInferenceMethod* inf=new CKLCovarianceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/b64a015491833562d11a
 	//

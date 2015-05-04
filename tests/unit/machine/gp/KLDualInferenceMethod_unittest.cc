@@ -91,6 +91,7 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 
 	float64_t scale=2.0;
 	inf->set_scale(scale);
+	inf->set_compute_gradients(false);
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/f9c9439698c1b0a0934a
@@ -399,6 +400,7 @@ TEST(KLDualInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/f9c9439698c1b0a0934a
 	//

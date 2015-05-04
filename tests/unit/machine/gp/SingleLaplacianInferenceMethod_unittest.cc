@@ -60,6 +60,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_gaussian_likelihood)
 	// specify GP regression with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
+	inf->set_compute_gradients(false);
 
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
@@ -139,6 +140,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_t_likelihood)
 	// specify GP regression with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
+	inf->set_compute_gradients(false);
 
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
@@ -225,6 +227,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_logit_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
 	// 1.11695   0.03594   0.04463   0.09123   0.07623
@@ -309,6 +312,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_probit_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
 	// 1.22980   0.00000   0.00000   0.00100   0.00002
@@ -388,6 +392,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_gaussian_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	// 0.112590
@@ -443,6 +448,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_t_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	// 0.124677
@@ -504,6 +510,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_logit_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	// 0.45082
@@ -564,6 +571,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_probit_likelihood)
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
 	// -0.50646
@@ -619,6 +627,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_li
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
 	// nlZ =
@@ -667,6 +676,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihoo
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
 	// nlZ =
@@ -721,6 +731,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likel
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
 	// nlZ =
@@ -774,6 +785,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_probit_like
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	inf->set_compute_gradients(false);
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
 	// nlZ =

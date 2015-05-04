@@ -131,9 +131,6 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_covariance();
 
-	/** update data all matrices */
-	virtual void update();
-
 	/** get tolerance for newton iterations
 	 *
 	 * @return tolerance for newton iterations
@@ -182,14 +179,13 @@ public:
 	 */
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
+	/** update data all matrices */
+	virtual void update()=0;
 private:
 	/** init */
 	void init();
 
 protected:
-
-	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov()=0;
 
 	/** derivative of log likelihood with respect to function location */
 	SGVector<float64_t> m_dlp;
