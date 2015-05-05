@@ -254,6 +254,7 @@ void CSGObject::update_parameter_hash()
 	uint32_t carry=0;
 	uint32_t length=0;
 
+	m_hash=0;
 	get_parameter_incremental_hash(m_hash, carry, length);
 	m_hash=CHash::FinalizeIncrementalMurmurHash3(m_hash, carry, length);
 
