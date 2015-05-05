@@ -176,7 +176,7 @@ public:
 	 */
 	virtual void set_model(CLikelihoodModel* mod);
 
-	/** update data all matrices */
+	/** update all matrices except gradients */
 	virtual void update();
 
 	/* set L-BFGS parameters
@@ -283,6 +283,9 @@ public:
 	 */
 	virtual void set_min_coeff_kernel(float64_t min_coeff_kernel);
 protected:
+
+	/** update gradients */
+	virtual void compute_gradient();
 
 	/** The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not*/
 	float64_t m_min_coeff_kernel;
