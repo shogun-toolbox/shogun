@@ -111,18 +111,29 @@ SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 
 SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
 SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
+}
+
+void CEPInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		// update matrices to compute derivatives
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
 }
 
 void CEPInferenceMethod::update()
@@ -269,8 +280,7 @@ void CEPInferenceMethod::update()
 	// update vector alpha
 	update_alpha();
 
-	// update matrices to compute derivatives
-	update_deriv();
+	m_gradient_update=false;
 
 	// update hash of the parameters
 	update_parameter_hash();

@@ -224,10 +224,13 @@ public:
 		return m_model->supports_binary();
 	}
 
-	/** update data all matrices */
+	/** update all matrices Expect gradients*/
 	virtual void update();
 
 protected:
+	/** update gradients */
+	virtual void compute_gradient();
+
 	/** update alpha matrix */
 	virtual void update_alpha();
 
