@@ -273,7 +273,7 @@ TEST(GaussianLikelihood,get_first_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
 	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels, func,
 			param);
@@ -318,7 +318,7 @@ TEST(GaussianLikelihood,get_second_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
 	SGVector<float64_t> dlp_dhyp=likelihood->get_second_derivative(labels, func,
 			param);
@@ -363,7 +363,7 @@ TEST(GaussianLikelihood,get_third_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
 	SGVector<float64_t> d2lp_dhyp=likelihood->get_third_derivative(labels, func,
 			param);

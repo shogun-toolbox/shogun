@@ -86,9 +86,9 @@ private:
 	void init();
 
 	/** scale parameter */
-	float64_t m_sigma;
+	float64_t m_log_sigma;
 	/** degrees of freedom */
-	float64_t m_df;
+	float64_t m_log_df;
 
 };
 }

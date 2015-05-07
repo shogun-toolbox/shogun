@@ -13,6 +13,7 @@
 #define CGAUSSIANLIKELIHOOD_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_EIGEN3
 
@@ -55,7 +56,7 @@ public:
 	 *
 	 * @return noise standard deviation
 	 */
-	float64_t get_sigma() { return m_sigma; }
+	float64_t get_sigma() { return CMath::exp(m_log_sigma); }
 
 	/** sets the noise standard deviation
 	 *
@@ -63,8 +64,9 @@ public:
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "Standard deviation must be greater than zero\n")
-		m_sigma=sigma;
+		REQUIRE(sigma>0.0, "Standard deviation (%f) must be greater than zero\n",
+			sigma)
+		m_log_sigma=CMath::log(sigma);
 	}
 
 	/** helper method used to specialize a base class instance
@@ -244,7 +246,7 @@ private:
 	void init();
 
 	/** standard deviation */
-	float64_t m_sigma;
+	float64_t m_log_sigma;
 };
 }
 #endif /* HAVE_EIGEN3 */

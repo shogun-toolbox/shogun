@@ -60,7 +60,7 @@ public:
 	 *
 	 * @return scale parameter
 	 */
-	float64_t get_sigma() { return m_sigma; }
+	float64_t get_sigma() const { return CMath::exp(m_log_sigma); }
 
 	/** sets the scale parameter
 	 *
@@ -68,15 +68,15 @@ public:
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
-		m_sigma=sigma;
+		REQUIRE(sigma>0.0, "Scale parameter (%f) must be greater than zero\n", sigma);
+		m_log_sigma=CMath::log(sigma);
 	}
 
 	/** get degrees of freedom
 	 *
 	 * @return degrees of freedom
 	 */
-	float64_t get_degrees_freedom() { return m_df; }
+	float64_t get_degrees_freedom() const { return CMath::exp(m_log_df)+1; }
 
 	/** set degrees of freedom
 	 *
@@ -84,8 +84,8 @@ public:
 	 */
 	void set_degrees_freedom(float64_t df)
 	{
-		REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
-		m_df=df;
+		REQUIRE(df>1.0, "Number of degrees (%f) of freedom must be greater than one\n", df)
+		m_log_df=CMath::log(df-1);
 	}
 
 	/** helper method used to specialize a base class instance
@@ -264,10 +264,10 @@ private:
 	void init();
 
 	/** scale parameter */
-	float64_t m_sigma;
+	float64_t m_log_sigma;
 
 	/** degrees of freedom */
-	float64_t m_df;
+	float64_t m_log_df;
 };
 }
 #endif /* HAVE_EIGEN3 */

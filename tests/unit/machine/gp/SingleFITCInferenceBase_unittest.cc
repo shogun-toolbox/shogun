@@ -128,7 +128,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	// get parameters to compute derivatives
 	//TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
 	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
