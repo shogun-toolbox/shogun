@@ -430,7 +430,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	// get parameters to compute derivatives
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
+	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
 
 

@@ -155,7 +155,7 @@ void CFITCInferenceMethod::update_chol()
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
 	//Luu  = chol(Kuu+snu2*eye(nu));                         % Kuu + snu2*I = Luu'*Luu
-	LLT<MatrixXd> Luu(eigen_kuu*CMath::exp(m_log_scale*2.0)+m_ind_noise*MatrixXd::Identity(
+	LLT<MatrixXd> Luu(eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of

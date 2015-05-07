@@ -103,25 +103,25 @@ void CFITCInferenceBase::init()
 {
 	SG_ADD((CSGObject**)&m_inducing_features, "inducing_features", "inducing features",
 			MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_ind_noise, "inducing_noise", "noise about inducing potins",
+	SG_ADD(&m_log_ind_noise, "log_inducing_noise", "noise about inducing potins in log domain",
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", MS_NOT_AVAILABLE);
 
 	m_inducing_features=NULL;
-	m_ind_noise=1e-10;
+	m_log_ind_noise=CMath::log(1e-10);
 }
 
 void CFITCInferenceBase::set_inducing_noise(float64_t noise)
 {
-	REQUIRE(!(noise<0), "Noise for inducing points must be non-negative");
-	m_ind_noise=noise;
+	REQUIRE(noise>0, "Noise (%f) for inducing points must be postive",noise);
+	m_log_ind_noise=CMath::log(noise);
 }
 
 float64_t CFITCInferenceBase::get_inducing_noise()
 {
-	return m_ind_noise;
+	return CMath::exp(m_log_ind_noise);
 }
 
 CFITCInferenceBase::~CFITCInferenceBase()

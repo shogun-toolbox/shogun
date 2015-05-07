@@ -176,13 +176,13 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 	// the time complexity O(m^2*n) if the TO DO is done
 	REQUIRE(param, "Param not set\n");
 	REQUIRE(!(strcmp(param->m_name, "log_scale")
-			&& strcmp(param->m_name, "inducing_noise")
+			&& strcmp(param->m_name, "log_inducing_noise")
 			&& strcmp(param->m_name, "inducing_features")),
 		    "Can't compute derivative of"
 			" the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
-	if (!strcmp(param->m_name, "inducing_noise"))
+	if (!strcmp(param->m_name, "log_inducing_noise"))
 		// wrt inducing_noise
 		// compute derivative wrt inducing noise
 		return get_derivative_wrt_inducing_noise(param);
@@ -299,7 +299,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
 {
 	//time complexity O(m^2*n)
 	REQUIRE(param, "Param not set\n");
-	REQUIRE(!strcmp(param->m_name, "inducing_noise"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_inducing_noise"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -308,7 +308,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(
 	SGMatrix<float64_t> R(m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_R(R.matrix, R.num_rows, R.num_cols);
 	//dKuui = 2*snu2; R = -dKuui*B;
-	float64_t factor=2.0*m_ind_noise;
+	float64_t factor=2.0*CMath::exp(m_log_ind_noise);
 	eigen_R=-eigen_B*factor;
 
 	SGVector<float64_t> v(m_B.num_cols);
