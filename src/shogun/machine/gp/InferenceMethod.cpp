@@ -293,8 +293,7 @@ void CInferenceMethod::check_members() const
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-			"Number of training vectors must match number of labels, which is "
-			"%d, but number of training vectors is %d\n",
+			"Number of training vectors (%d) must match number of labels (%d)\n",
 			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
