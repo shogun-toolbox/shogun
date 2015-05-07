@@ -1171,7 +1171,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 
 	// get parameters to compute derivatives
 	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
 	TParameter* df_param=lik->m_gradient_parameters->get_parameter("df");
 
@@ -1264,7 +1264,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 
 	// get parameters to compute derivatives
 	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
 	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
@@ -1343,7 +1343,7 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 
 	// get parameters to compute derivatives
 	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
 	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];

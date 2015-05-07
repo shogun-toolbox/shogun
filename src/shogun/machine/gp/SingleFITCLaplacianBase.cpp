@@ -175,7 +175,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 {
 	// the time complexity O(m^2*n) if the TO DO is done
 	REQUIRE(param, "Param not set\n");
-	REQUIRE(!(strcmp(param->m_name, "scale")
+	REQUIRE(!(strcmp(param->m_name, "log_scale")
 			&& strcmp(param->m_name, "inducing_noise")
 			&& strcmp(param->m_name, "inducing_features")),
 		    "Can't compute derivative of"
@@ -215,13 +215,10 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
 
 	// compute derivatives wrt scale for each kernel matrix
-	ddiagKi*=m_scale*2.0;
-	dKuui*=m_scale*2.0;
-	dKui*=m_scale*2.0;
-
 	SGVector<float64_t> result(1);
 
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 	return result;
 }
 
@@ -260,11 +257,8 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
 				deriv_tru.num_cols);
 
-		ddiagKi*=CMath::sq(m_scale);
-		dKuui*=CMath::sq(m_scale);
-		dKui*=CMath::sq(m_scale);
-
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;
@@ -352,7 +346,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	m_kernel->init(m_inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
 	//Kpu=1 in our setting
-	MatrixXd A=CMath::sq(m_scale)*eigen_BdK;
+	MatrixXd A=CMath::exp(m_log_scale*2.0)*eigen_BdK;
 	for(int32_t lat_idx=0; lat_idx<A.rows(); lat_idx++)
 	{
 		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_idx*dim,dim);
@@ -367,7 +361,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	m_kernel->init(m_inducing_features, m_inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
 	//Kpuu=1 in our setting
-	MatrixXd C=CMath::sq(m_scale)*(eigen_BdK*eigen_B.transpose());
+	MatrixXd C=CMath::exp(m_log_scale*2.0)*(eigen_BdK*eigen_B.transpose());
 	for(int32_t lat_lidx=0; lat_lidx<C.rows(); lat_lidx++)
 	{
 		Map<VectorXd> deriv_lat_col_vec(deriv_lat.vector+lat_lidx*dim,dim);

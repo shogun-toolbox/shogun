@@ -59,7 +59,7 @@ namespace shogun
 class CMultiPsiLine : public func_base
 {
 public:
-	float64_t scale;
+	float64_t log_scale;
 	MatrixXd K;
 	VectorXd dalpha;
 	VectorXd start_alpha;
@@ -83,7 +83,7 @@ public:
 		float64_t result=0;
 		for(index_t bl=0; bl<C; bl++)
 		{
-			eigen_f.block(bl*n,0,n,1)=K*alpha->block(bl*n,0,n,1)*CMath::sq(scale);
+			eigen_f.block(bl*n,0,n,1)=K*alpha->block(bl*n,0,n,1)*CMath::exp(log_scale*2.0);
 			result+=alpha->block(bl*n,0,n,1).dot(eigen_f.block(bl*n,0,n,1))/2.0;
 			eigen_f.block(bl*n,0,n,1)+=eigen_m;
 		}
@@ -188,8 +188,8 @@ void CMultiLaplacianInferenceMethod::update_approx_cov()
 	MatrixXd eigen_U(C*n,n);
 	for(index_t bl=0; bl<C; bl++)
 	{
-		eigen_U.block(bl*n,0,n,n)=eigen_K*CMath::sq(m_scale)*eigen_E.block(0,bl*n,n,n);
-		eigen_Sigma.block(bl*n,bl*n,n,n)=(MatrixXd::Identity(n,n)-eigen_U.block(bl*n,0,n,n))*(eigen_K*CMath::sq(m_scale));
+		eigen_U.block(bl*n,0,n,n)=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_E.block(0,bl*n,n,n);
+		eigen_Sigma.block(bl*n,bl*n,n,n)=(MatrixXd::Identity(n,n)-eigen_U.block(bl*n,0,n,n))*(eigen_K*CMath::exp(m_log_scale*2.0));
 	}
 	MatrixXd eigen_V=eigen_M.triangularView<Upper>().adjoint().solve(eigen_U.transpose());
 	eigen_Sigma+=eigen_V.transpose()*eigen_V;
@@ -260,7 +260,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 	{
 		Map<VectorXd> alpha(m_alpha.vector, m_alpha.vlen);
 		for(index_t bl=0; bl<C; bl++)
-			eigen_mu.block(bl*n,0,n,1)=eigen_ktrtr*CMath::sq(m_scale)*alpha.block(bl*n,0,n,1);
+			eigen_mu.block(bl*n,0,n,1)=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*alpha.block(bl*n,0,n,1);
 
 		//alpha'*(f-m)/2.0
 		Psi_New=alpha.dot(eigen_mu)/2.0;
@@ -305,7 +305,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		for(index_t bl=0; bl<C; bl++)
 		{
 			VectorXd eigen_sD=eigen_dpi.block(bl*n,0,n,1).cwiseSqrt();
-			LLT<MatrixXd> chol_tmp((eigen_sD*eigen_sD.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+			LLT<MatrixXd> chol_tmp((eigen_sD*eigen_sD.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp(m_log_scale*2.0))+
 				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 			MatrixXd eigen_L_tmp=chol_tmp.matrixU();
 			MatrixXd eigen_E_bl=eigen_L_tmp.triangularView<Upper>().adjoint().solve(MatrixXd(eigen_sD.asDiagonal()));
@@ -333,7 +333,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 
 		Map<VectorXd> &eigen_c=eigen_W;
 		for(index_t bl=0; bl<C; bl++)
-			eigen_c.block(bl*n,0,n,1)=eigen_E.block(0,bl*n,n,n)*(eigen_ktrtr*CMath::sq(m_scale)*eigen_b.block(bl*n,0,n,1));
+			eigen_c.block(bl*n,0,n,1)=eigen_E.block(0,bl*n,n,n)*(eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_b.block(bl*n,0,n,1));
 
 		Map<MatrixXd> c_tmp(eigen_c.data(),n,C);
 
@@ -346,7 +346,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		// perform Brent's optimization
 		CMultiPsiLine func;
 
-		func.scale=m_scale;
+		func.log_scale=m_log_scale;
 		func.K=eigen_ktrtr;
 		func.dalpha=eigen_dalpha;
 		func.start_alpha=eigen_alpha;
@@ -403,7 +403,7 @@ float64_t CMultiLaplacianInferenceMethod::get_derivative_helper(SGMatrix<float64
 SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -411,13 +411,10 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference
 
 	SGVector<float64_t> result(1);
 
-	SGMatrix<float64_t> dK(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
-
 	// compute derivative K wrt scale
-	eigen_dK=eigen_K*m_scale*2.0;
 
-	result[0]=get_derivative_helper(dK);
+	result[0]=get_derivative_helper(m_ktrtr);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 
 	return result;
 }
@@ -442,10 +439,8 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
-		eigen_dK=eigen_dK*CMath::sq(m_scale);
-
 		result[i]=get_derivative_helper(dK);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;

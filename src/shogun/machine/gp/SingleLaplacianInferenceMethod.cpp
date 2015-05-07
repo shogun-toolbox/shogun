@@ -34,7 +34,7 @@ namespace shogun
 class CPsiLine : public func_base
 {
 public:
-	float64_t scale;
+	float64_t log_scale;
 	MatrixXd K;
 	VectorXd dalpha;
 	VectorXd start_alpha;
@@ -53,7 +53,7 @@ public:
 
 		// compute alpha=alpha+x*dalpha and f=K*alpha+m
 		(*alpha)=start_alpha+x*dalpha;
-		eigen_f=K*(*alpha)*CMath::sq(scale)+eigen_m;
+		eigen_f=K*(*alpha)*CMath::exp(log_scale*2.0)+eigen_m;
 
 		// get first and second derivatives of log likelihood
 		(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
@@ -145,7 +145,7 @@ float64_t CSingleLaplacianInferenceMethod::get_negative_log_marginal_likelihood(
 		Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::sq(m_scale)*eigen_sW.asDiagonal());
+			eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_sW.asDiagonal());
 
 		result=(eigen_alpha.dot(eigen_mu-eigen_mean))/2.0-
 			lp+log(lu.determinant())/2.0;
@@ -170,13 +170,13 @@ void CSingleLaplacianInferenceMethod::update_approx_cov()
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+			eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 
 	// compute covariance matrix of the posterior:
 	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
 	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
 	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
 }
 
 void CSingleLaplacianInferenceMethod::update_chol()
@@ -213,7 +213,7 @@ void CSingleLaplacianInferenceMethod::update_chol()
 		//A = eye(n)+K.*repmat(w',n,1);
 		FullPivLU<MatrixXd> lu(
 			MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::sq(m_scale)*eigen_W.asDiagonal());
+			eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_W.asDiagonal());
 		// compute cholesky: L = -(K + 1/W)^-1
 		//-iA = -inv(A)
 		eigen_L=-lu.inverse();
@@ -224,7 +224,7 @@ void CSingleLaplacianInferenceMethod::update_chol()
 	{
 		// compute cholesky: L = chol(sW * sW' .* K + I)
 		LLT<MatrixXd> L(
-			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp(m_log_scale*2.0))+
 			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
 		eigen_L = L.matrixU();
@@ -279,7 +279,7 @@ void CSingleLaplacianInferenceMethod::update_init()
 		Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 		// compute f = K * alpha + m
-		eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+		eigen_mu=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 
 		Psi_New=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-
 			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
@@ -356,18 +356,18 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		// compute sW = sqrt(W)
 		eigen_sW=eigen_W.cwiseSqrt();
 
-		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp(m_log_scale*2.0))+
 			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
 		VectorXd b=eigen_W.cwiseProduct(eigen_mu - eigen_mean)+eigen_dlp;
 
 		VectorXd dalpha=b-eigen_sW.cwiseProduct(
-			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::sq(m_scale))))-eigen_alpha;
+			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::exp(m_log_scale*2.0))))-eigen_alpha;
 
 		// perform Brent's optimization
 		CPsiLine func;
 
-		func.scale=m_scale;
+		func.log_scale=m_log_scale;
 		func.K=eigen_ktrtr;
 		func.dalpha=dalpha;
 		func.start_alpha=eigen_alpha;
@@ -389,7 +389,7 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 	}
 
 	// compute f = K * alpha + m
-	eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 }
 
 void CSingleLaplacianInferenceMethod::update_deriv()
@@ -417,11 +417,11 @@ void CSingleLaplacianInferenceMethod::update_deriv()
 
 		// compute iA = (I + K * diag(W))^-1
 		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-				eigen_K*CMath::sq(m_scale)*eigen_W.asDiagonal());
+				eigen_K*CMath::exp(m_log_scale*2.0)*eigen_W.asDiagonal());
 		MatrixXd iA=lu.inverse();
 
 		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
-		eigen_g=(iA.cwiseProduct(eigen_K*CMath::sq(m_scale))).rowwise().sum()/2.0;
+		eigen_g=(iA.cwiseProduct(eigen_K*CMath::exp(m_log_scale*2.0))).rowwise().sum()/2.0;
 	}
 	else
 	{
@@ -433,10 +433,10 @@ void CSingleLaplacianInferenceMethod::update_deriv()
 
 		// solve L'*C=diag(sW)*K
 		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
-				eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+				eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 
 		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
-		eigen_g=(eigen_K.diagonal()*CMath::sq(m_scale)-
+		eigen_g=(eigen_K.diagonal()*CMath::exp(m_log_scale*2.0)-
 				(C.cwiseProduct(C)).colwise().sum().adjoint())/2.0;
 	}
 
@@ -451,7 +451,7 @@ void CSingleLaplacianInferenceMethod::update_deriv()
 SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -465,17 +465,16 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_inferenc
 	SGVector<float64_t> result(1);
 
 	// compute derivative K wrt scale
-	MatrixXd dK=eigen_K*m_scale*2.0;
-
 	// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
-	result[0]=(eigen_Z.cwiseProduct(dK)).sum()/2.0-
-		(eigen_alpha.adjoint()*dK).dot(eigen_alpha)/2.0;
+	result[0]=(eigen_Z.cwiseProduct(eigen_K)).sum()/2.0-
+		(eigen_alpha.adjoint()*eigen_K).dot(eigen_alpha)/2.0;
 
 	// compute b=dK*dlp
-	VectorXd b=dK*eigen_dlp;
+	VectorXd b=eigen_K*eigen_dlp;
 
 	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*b));
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 
 	return result;
 }
@@ -509,7 +508,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_likeliho
 
 	// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
 	result[0]=-eigen_g.dot(eigen_d2lp_dhyp)-eigen_lp_dhyp.sum()-
-		eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+		eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*b));
 
 	return result;
 }
@@ -548,8 +547,9 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_kernel(
 		VectorXd b=eigen_dK*eigen_dlp;
 
 		// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*
+		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*CMath::exp(m_log_scale*2.0)*
 				(eigen_Z*b));
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;
@@ -582,7 +582,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 		// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
 		result[i]=-eigen_alpha.dot(eigen_dmu)-eigen_dfhat.dot(eigen_dmu-
-				eigen_K*CMath::sq(m_scale)*(eigen_Z*eigen_dmu));
+				eigen_K*CMath::exp(m_log_scale*2.0)*(eigen_Z*eigen_dmu));
 	}
 
 	return result;

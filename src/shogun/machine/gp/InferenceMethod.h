@@ -326,13 +326,13 @@ public:
 	 *
 	 * @return kernel scale
 	 */
-	virtual float64_t get_scale() const { return m_scale; }
+	virtual float64_t get_scale() const;
 
 	/** set kernel scale
 	 *
 	 * @param scale scale to be set
 	 */
-	virtual void set_scale(float64_t scale) { m_scale=scale; }
+	virtual void set_scale(float64_t scale);
 
 	/** whether combination of inference method and given likelihood function
 	 * supports regression
@@ -454,7 +454,7 @@ protected:
 	SGMatrix<float64_t> m_L;
 
 	/** kernel scale */
-	float64_t m_scale;
+	float64_t m_log_scale;
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
