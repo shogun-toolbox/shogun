@@ -1160,12 +1160,12 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihoo
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
 	TParameter* df_param=lik->m_gradient_parameters->get_parameter("df");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
@@ -1251,10 +1251,10 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_logit_likel
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1329,10 +1329,10 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
 
 	//Reference result is generated from the Matlab code, which can be found at

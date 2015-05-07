@@ -542,11 +542,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 
@@ -632,11 +632,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
 
-	float64_t dnlZ_ell=4*CMath::sq(ell)*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=2.5*(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 

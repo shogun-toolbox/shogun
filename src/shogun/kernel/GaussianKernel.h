@@ -106,13 +106,13 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @param w kernel width
 		 */
-		virtual void set_width(float64_t w)	{ width=w; }
+		virtual void set_width(float64_t w);
 
 		/** return the kernel's width
 		 *
 		 * @return kernel width
 		 */
-		virtual float64_t get_width() const	{ return width;	}
+		virtual float64_t get_width() const;
 
 		/** set the compact option
 		 *
@@ -189,7 +189,7 @@ class CGaussianKernel: public CDotKernel
 
 	protected:
 		/** width */
-		float64_t width;
+		float64_t m_log_width;
 		/** squared left-hand side */
 		float64_t* sq_lhs;
 		/** squared right-hand side */
