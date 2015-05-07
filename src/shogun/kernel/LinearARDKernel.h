@@ -79,9 +79,9 @@ public:
 
 	/** return the kernel's name
 	 *
-	 * @return name LinearARDKernel
+	 * @return name 
 	 */
-	virtual const char* get_name() const { return "LinearARDKernel"; }
+	virtual const char* get_name() const=0;
 
 	/** return feature class the kernel can deal with
 	 *
