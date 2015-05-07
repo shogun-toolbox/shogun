@@ -1,7 +1,7 @@
 include_directories(${OCTAVE_INCLUDE_DIRS} ${SYSTEM_INCLUDES} ${INCLUDES})
 
 add_library(octave_static SHARED OctaveInterface.cpp)
-target_link_libraries(octave_static shogun ${OCTAVE_LIBRARIES})
+target_link_libraries(octave_static shogun ${OCTAVE_LIBRARY})
 
 # Add static-interface to the dependencies of modular interfaces to make
 # sure nothing will infer with them being build single-threaded.
