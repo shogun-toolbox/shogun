@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	/* create gaussian kernel with cache 10MB, width will be changed later */
-	CGaussianKernel* kernel = new CGaussianKernel(10, 0);
+	CGaussianKernel* kernel = new CGaussianKernel(10, 2.0);
 	kernel->init(features, features);
 
 	/* create n labels (+1,-1,+1,-1,...) */
@@ -56,16 +56,17 @@ int main(int argc, char** argv)
 	/* iterate over different width parameters */
 	for (int32_t k=0; k<10; ++k)
 	{
-		SG_SPRINT("\n\ncurrent kernel width: 2^%d=%f\n", k, CMath::pow(2.0,k));
 
 		float64_t width=CMath::pow(2.0,k);
+		float64_t log_width=CMath::log(width/2.0)/2.0;
 
 		/* create parameter to change current kernel width */
 		Parameter* param=new Parameter();
-		param->add(&width, "width", "");
+		param->add(&log_width, "log_width", "");
 
 		/* tell kernel to use the newly produced parameter */
 		kernel->m_parameters->set_from_parameters(param);
+		SG_SPRINT("\n\ncurrent kernel width: 2^%d=%f\n", k, kernel->get_width());
 
 		/* print kernel matrix */
 		for (int32_t i=0; i<n; i++)
@@ -90,4 +91,5 @@ int main(int argc, char** argv)
 
 	exit_shogun();
 	return 0;
+
 }

@@ -15,6 +15,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -43,8 +44,8 @@ CModelSelectionParameters* create_param_tree()
 	root->append_child(param_gaussian_kernel);
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("width");
-	param_gaussian_kernel_width->build_values(1.0, 2.0, R_EXP);
+			new CModelSelectionParameters("log_width");
+	param_gaussian_kernel_width->build_values(0.0, 0.5*CMath::log(2.0), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	return root;
