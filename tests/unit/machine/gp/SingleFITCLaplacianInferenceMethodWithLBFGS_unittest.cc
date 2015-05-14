@@ -91,19 +91,17 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -199,19 +197,17 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -294,10 +290,9 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	float64_t ell=1.0;
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
@@ -375,10 +370,9 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
-	float64_t ell=1.0;
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
@@ -417,10 +411,10 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	//
 	// get parameters to compute derivatives
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
+	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
 
-	float64_t dnlz_weight1=(-1.0/weight1)*(gradient->get_element(weights_param))[0];
-	float64_t dnlz_weight2=(-1.0/weight2)*(gradient->get_element(weights_param))[1];
+	float64_t dnlz_weight1=-(gradient->get_element(weights_param))[0];
+	float64_t dnlz_weight2=-(gradient->get_element(weights_param))[1];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");

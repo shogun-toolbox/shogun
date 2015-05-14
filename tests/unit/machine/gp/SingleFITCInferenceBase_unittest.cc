@@ -91,8 +91,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);
@@ -130,7 +129,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
+	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
 	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
 
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
@@ -138,9 +137,8 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
 
-	float64_t dnlz_weight1=(-1.0/weight1)*(gradient->get_element(weights_param))[0];
-	float64_t dnlz_weight2=(-1.0/weight2)*(gradient->get_element(weights_param))[1];
-
+	float64_t dnlz_weight1=-(gradient->get_element(weights_param))[0];
+	float64_t dnlz_weight2=-(gradient->get_element(weights_param))[1];
 
 	dnlZ_lik+=dnlZ_noise;
 
@@ -181,7 +179,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	SG_UNREF(parameter_dictionary);
 
 
-	CKernel* kernel2=new CGaussianKernel(10, 2*ell*ell);
+	CKernel* kernel2=new CGaussianKernel(10, 2.0);
 	inf->set_kernel(kernel2);
 
 	// build parameter dictionary
