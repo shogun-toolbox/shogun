@@ -165,8 +165,9 @@ public:
 		return m_model->supports_regression();
 	}
 
-	/** update all matrices */
+	/** update matrices except gradients*/
 	virtual void update();
+
 
 protected:
 	/** check if members of object are valid for inference */
@@ -229,6 +230,8 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
 
+	/** update gradients */
+	virtual void compute_gradient();
 private:
 	/** covariance matrix of the the posterior Gaussian distribution */
 	SGMatrix<float64_t> m_Sigma;

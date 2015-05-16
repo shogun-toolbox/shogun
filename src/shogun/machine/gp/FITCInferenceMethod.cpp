@@ -60,6 +60,17 @@ void CFITCInferenceMethod::init()
 CFITCInferenceMethod::~CFITCInferenceMethod()
 {
 }
+void CFITCInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
+}
 
 void CFITCInferenceMethod::update()
 {
@@ -68,7 +79,7 @@ void CFITCInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -318,8 +329,7 @@ void CFITCInferenceMethod::update_deriv()
 
 SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	m_mu=SGVector<float64_t>(m_al.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -349,8 +359,8 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
+
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);

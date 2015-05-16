@@ -487,8 +487,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 SGVector<float64_t> CMultiLaplacianInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	SGVector<float64_t> res(m_mu.vlen);
 	Map<VectorXd> eigen_res(res.vector, res.vlen);

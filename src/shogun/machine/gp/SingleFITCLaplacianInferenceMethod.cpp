@@ -130,6 +130,19 @@ void CSingleFITCLaplacianInferenceMethod::init()
 	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements", MS_NOT_AVAILABLE);
 }
 
+void CSingleFITCLaplacianInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		update_approx_cov();
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
+}
+
 void CSingleFITCLaplacianInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
@@ -138,8 +151,7 @@ void CSingleFITCLaplacianInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -894,8 +906,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 
 SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	SGVector<float64_t> res(m_mu.vlen);
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
@@ -920,8 +931,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);

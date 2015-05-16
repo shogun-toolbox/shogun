@@ -190,6 +190,8 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
 			const TParameter* param);
 
+	/** update gradients */
+	virtual void compute_gradient();
 protected:
 	/** Cholesky of covariance of inducing features */
 	SGMatrix<float64_t> m_chol_uu;

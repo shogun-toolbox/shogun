@@ -131,7 +131,7 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_covariance();
 
-	/** update data all matrices */
+	/** update all matrices except gradients*/
 	virtual void update();
 
 	/** get tolerance for newton iterations
@@ -187,6 +187,8 @@ private:
 	void init();
 
 protected:
+	/** update gradients */
+	virtual void compute_gradient();
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;
