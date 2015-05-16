@@ -108,7 +108,7 @@ struct max<Backend::NATIVE, Matrix>
 
 	/**
 	 * Returns the largest element in a vector or matrix passed as a pointer.
-	 * @param m input vector or matrix
+	 * @param vec input vector or matrix
 	 * @param len length of the vector or matrix
 	 * @return largest value in the input vector or matrix
 	 */

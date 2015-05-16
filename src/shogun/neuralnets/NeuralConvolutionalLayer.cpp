@@ -47,7 +47,8 @@ CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
 		int32_t num_maps,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width, int32_t pooling_height,
-		int32_t stride_x, int32_t stride_y) : CNeuralLayer()
+		int32_t stride_x, int32_t stride_y,
+		EInitializationMode initialization_mode) : CNeuralLayer()
 {
 	init();
 	m_num_maps = num_maps;
@@ -57,6 +58,7 @@ CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
 	m_pooling_height = pooling_height;
 	m_stride_x = stride_x;
 	m_stride_y = stride_y;
+	m_initialization_mode = initialization_mode;
 }
 
 void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
@@ -135,10 +137,19 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 
 		for (int32_t i=0; i<num_parameters_per_map; i++)
 		{
-			map_params[i] = CMath::normal_random(0.0, sigma);
-
-			// turn off regularization for the bias, on for the rest of the parameters
-			map_param_regularizable[i] = (i != 0);
+			if (m_initialization_mode == NORMAL)
+			{
+				map_params[i] = CMath::normal_random(0.0, sigma);
+				// turn off regularization for the bias, on for the rest of the parameters
+				map_param_regularizable[i] = (i != 0);
+			}
+			else // for the case when m_initialization_mode = RE_NORMAL
+			{
+				map_params[i] = CMath::normal_random(0.0,
+					CMath::sqrt(2.0/(m_input_height*m_input_width*m_input_num_channels)));
+				// initialize b=0
+				map_param_regularizable[i] = 0;
+			}
 		}
 	}
 }
@@ -267,6 +278,7 @@ void CNeuralConvolutionalLayer::init()
 	m_pooling_height = 1;
 	m_stride_x = 1;
 	m_stride_y = 1;
+	m_initialization_mode = NORMAL;
 	m_activation_function = CMAF_IDENTITY;
 
 	SG_ADD(&m_num_maps, "num_maps", "Number of maps", MS_NOT_AVAILABLE);
@@ -280,7 +292,11 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD(&m_pooling_height, "pooling_height", "Pooling Height", MS_NOT_AVAILABLE);
 	SG_ADD(&m_stride_x, "stride_x", "X Stride", MS_NOT_AVAILABLE);
 	SG_ADD(&m_stride_y, "stride_y", "Y Stride", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_activation_function, "activation_function",
+
+	SG_ADD((machine_int_t*) &m_initialization_mode, "initialization_mode", "Initialization Mode",
+		MS_NOT_AVAILABLE);
+	
+	SG_ADD((machine_int_t*) &m_activation_function, "activation_function", 
 		"Activation Function", MS_NOT_AVAILABLE);
 
 	SG_ADD(&m_convolution_output, "convolution_output",
