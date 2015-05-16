@@ -103,7 +103,8 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		SGVector<float64_t> left_vec=get_feature_vector(idx_l, lhs);
 		SGMatrix<float64_t> res(left_vec.vlen, num_rhs);
 
-		SGMatrix<float64_t> weights=get_weights();
+		lazy_update_weights();
+
 		for (int32_t idx_r=0; idx_r<num_rhs; idx_r++)
 		{
 			SGVector<float64_t> right_vec=get_feature_vector(idx_r, rhs);
@@ -117,19 +118,19 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 
 			if (m_ARD_type==KT_SCALAR)
 			{
-				scalar_weight*=weights[0];
+				scalar_weight*=m_weights_raw[0];
 				eigen_res_col_vec=eigen_right_col_vec*scalar_weight;
 			}
 			else
 			{
 				if(m_ARD_type==KT_DIAG)
 				{
-					Map<VectorXd> eigen_weights(weights.matrix, m_log_weights.vlen);
+					Map<VectorXd> eigen_weights(m_weights_raw.matrix, m_log_weights.vlen);
 					eigen_res_col_vec=eigen_right_col_vec.cwiseProduct(eigen_weights);
 				}
 				else if(m_ARD_type==KT_FULL)
 				{
-					Map<MatrixXd> eigen_weights(weights.matrix, weights.num_rows, weights.num_cols);
+					Map<MatrixXd> eigen_weights(m_weights_raw.matrix, m_weights_raw.num_rows, m_weights_raw.num_cols);
 					eigen_res_col_vec=eigen_weights*eigen_right_col_vec;
 				}
 				else

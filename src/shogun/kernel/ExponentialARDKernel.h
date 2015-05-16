@@ -101,17 +101,14 @@ private:
 	void initialize();
 
 protected:
+	SGMatrix<float64_t> m_weights_raw;
+
 	/** ARD weights */
 	SGVector<float64_t> m_log_weights;
 
 	index_t m_weights_rows;
 
 	index_t m_weights_cols;
-
-	/** squared left-hand side */
-	//SGVector<float64_t> m_sq_lhs;
-	/** squared right-hand side */
-	//SGVector<float64_t> m_sq_rhs;
 
 	/** type of ARD kernel */
 	EARDKernelType m_ARD_type;
@@ -212,8 +209,9 @@ public:
 	virtual void set_matrix_weights(SGMatrix<float64_t> weights);
 
 
-	//virtual void set_weights(SGMatrix<float64_t> weights);
+	virtual void set_weights(SGMatrix<float64_t> weights);
 protected:
+	void lazy_update_weights();
 
 	SGMatrix<float64_t> get_weighted_vector(SGVector<float64_t> vec);
 

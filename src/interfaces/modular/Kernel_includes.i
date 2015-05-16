@@ -34,7 +34,6 @@
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/kernel/InverseMultiQuadricKernel.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/kernel/LinearKernel.h>
 #include <shogun/kernel/string/LinearStringKernel.h>
 #include <shogun/kernel/string/SparseSpatialSampleStringKernel.h>
 #include <shogun/kernel/string/LocalAlignmentStringKernel.h>
@@ -72,11 +71,12 @@
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/kernel/JensenShannonKernel.h>
+#include <shogun/kernel/LinearKernel.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <shogun/kernel/PeriodicKernel.h>
 
 #ifdef HAVE_LINALG_LIB
- #include <shogun/kernel/LinearARDKernel.h>
+#include <shogun/kernel/ExponentialARDKernel.h>
  #include <shogun/kernel/GaussianARDKernel.h>
 
 #ifdef HAVE_EIGEN3 

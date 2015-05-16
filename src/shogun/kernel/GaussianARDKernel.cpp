@@ -30,6 +30,11 @@ CGaussianARDKernel::~CGaussianARDKernel()
 
 void CGaussianARDKernel::initialize()
 {
+	m_sq_lhs=SGVector<float64_t>();
+	m_sq_rhs=SGVector<float64_t>();
+	SG_ADD(&m_sq_lhs, "sq_lhs", "", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sq_rhs, "sq_rhs", "", MS_NOT_AVAILABLE);
+
 }
 
 #ifdef HAVE_LINALG_LIB
@@ -48,8 +53,37 @@ CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
 
 bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 {
-	return CExponentialARDKernel::init(l,r);
+	bool status=CExponentialARDKernel::init(l,r);
+
+	if (m_ARD_type==KT_SCALAR)
+		precompute_squared();
+
+	return status;
 }
+
+SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(CDotFeatures* df)
+{
+	REQUIRE(df, "Features not set\n")
+	int32_t num_vec=df->get_num_vectors();
+	SGVector<float64_t> sq(num_vec);
+	for (int32_t i=0; i<num_vec; i++)
+		sq[i]=df->dot(i,df, i);
+	return sq;
+}
+
+void CGaussianARDKernel::precompute_squared()
+{
+	if (!lhs || !rhs)
+		return;
+	SG_SPRINT("called\n");
+	m_sq_lhs=precompute_squared_helper((CDotFeatures*) lhs);
+
+	if (lhs==rhs)
+		m_sq_rhs=m_sq_lhs;
+	else
+		m_sq_rhs=precompute_squared_helper((CDotFeatures*) rhs);
+}
+
 
 CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
 {
@@ -169,15 +203,23 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 	{
 		int32_t length=CMath::min(num_lhs, num_rhs);
 		SGVector<float64_t> derivative(length);
-
+		check_weight_gradient_index(index);
 		for (index_t j=0; j<length; j++)
 		{
 			if (!strcmp(param->m_name, "log_weights") )
 			{
-				check_weight_gradient_index(index);
-				SGVector<float64_t> avec=get_feature_vector(j, lhs);
-				SGVector<float64_t> bvec=get_feature_vector(j, rhs);
-				derivative[j]=get_parameter_gradient_helper(param,index,j,j,avec,bvec);
+				if (m_ARD_type==KT_SCALAR)
+				{
+					float64_t dist=distance(j,j);
+					derivative[j]=CMath::exp(-dist)*(-dist*2.0);
+				}
+				else
+				{
+					SGVector<float64_t> avec=get_feature_vector(j, lhs);
+					SGVector<float64_t> bvec=get_feature_vector(j, rhs);
+					derivative[j]=get_parameter_gradient_helper(param,index,j,j,avec,bvec);
+				}
+
 			}
 		}
 		return derivative;
@@ -217,13 +259,22 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 	if (!strcmp(param->m_name, "log_weights"))
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
+		check_weight_gradient_index(index);
 		for (index_t j=0; j<num_lhs; j++)
 		{
 			SGVector<float64_t> avec=get_feature_vector(j, lhs);
 			for (index_t k=0; k<num_rhs; k++)
 			{
-				SGVector<float64_t> bvec=get_feature_vector(k, rhs);
-				derivative(j,k)=get_parameter_gradient_helper(param,index,j,k,avec,bvec);
+				if (m_ARD_type==KT_SCALAR)
+				{
+					float64_t dist=distance(j,k);
+					derivative(j,k)=CMath::exp(-dist)*(-dist*2.0);
+				}
+				else
+				{
+					SGVector<float64_t> bvec=get_feature_vector(k, rhs);
+					derivative(j,k)=get_parameter_gradient_helper(param,index,j,k,avec,bvec);
+				}
 			}
 		}
 		return derivative;
@@ -243,10 +294,19 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	if (lhs==rhs && idx_a==idx_b)
 		return 0.0;
 
-	SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);
-	SGVector<float64_t> bvec=get_feature_vector(idx_b, rhs);
-	avec=linalg::add(avec, bvec, 1.0, -1.0);
-	float64_t result=compute_helper(avec, avec);
+	float64_t result;
+	if (m_ARD_type==KT_SCALAR)
+	{
+		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*CDotKernel::compute(idx_a,idx_b));
+		result*=CMath::exp(2.0*m_log_weights[0]);
+	}
+	else
+	{
+		SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);
+		SGVector<float64_t> bvec=get_feature_vector(idx_b, rhs);
+		avec=linalg::add(avec, bvec, 1.0, -1.0);
+		result=compute_helper(avec, avec);
+	}
 	return result/2.0;
 }
 #endif /* HAVE_LINALG_LIB */

@@ -138,6 +138,15 @@ public:
 
 protected:
 
+	virtual void precompute_squared();
+
+	virtual SGVector<float64_t> precompute_squared_helper(CDotFeatures* df);
+
+	/** squared left-hand side */
+	SGVector<float64_t> m_sq_lhs;
+	/** squared right-hand side */
+	SGVector<float64_t> m_sq_rhs;
+
 	/** helper function used to compute kernel function for features avec and bvec
 	 *
 	 * @param avec left feature vector

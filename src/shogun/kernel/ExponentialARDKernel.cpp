@@ -40,12 +40,16 @@ void CExponentialARDKernel::initialize()
 	m_weights_rows=1.0;
 	m_weights_cols=1.0;
 
+
 	SG_ADD(&m_log_weights, "log_weights", "Feature weights in log domain", MS_AVAILABLE,
 			GRADIENT_AVAILABLE);
 
 	SG_ADD(&m_weights_rows, "weights_rows", "Row of feature weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights_cols, "weights_cols", "Column of feature weights", MS_NOT_AVAILABLE);
 	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", MS_NOT_AVAILABLE);
+
+	m_weights_raw=SGMatrix<float64_t>();
+	SG_ADD(&m_weights_raw, "weights_raw", "", MS_NOT_AVAILABLE);
 
 	//m_sq_lhs=SGVector<float64_t>();
 	//m_sq_rhs=SGVector<float64_t>();
@@ -68,52 +72,61 @@ SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeat
 
 #ifdef HAVE_LINALG_LIB
 
-/*
-void CExponenmialARDKernel::set_weights(SGMatrix<float64_t> weights)
+void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 {
-	REQUIRE(weights.num_row>0 && weights.num_cols>0, "Weights matrix is non-empty\n");
+	REQUIRE(weights.num_rows>0 && weights.num_cols>0, "Weights matrix is non-empty\n");
 	if (weights.num_rows==1)
 	{
 		if(weights.num_cols>1)
-			set_vector_weights(weights.get_row_vector(0));
+		{
+			SGVector<float64_t> vec(weights.matrix,weights.num_cols,false);
+			set_vector_weights(vec);
+		}
 		else
 			set_scalar_weights(weights[0]);
 	}
 	else
 		set_matrix_weights(weights);
 }
-*/
+
+void CExponentialARDKernel::lazy_update_weights()
+{
+	if (parameter_hash_changed())
+	{
+		if (m_ARD_type==KT_SCALAR || m_ARD_type==KT_DIAG)
+		{
+			SGMatrix<float64_t> log_weights(m_log_weights.vector,1,m_log_weights.vlen,false);
+			m_weights_raw=linalg::elementwise_compute(m_log_weights,
+				[  ](float64_t& value)
+				{
+				return CMath::exp(value);
+				});
+		}
+		else if (m_ARD_type==KT_FULL)
+		{
+			m_weights_raw=SGMatrix<float64_t>(m_weights_rows,m_weights_cols);
+			m_weights_raw.set_const(0.0);
+			index_t offset=0;
+			for (int i=0;i<m_weights_raw.num_cols && i<m_weights_raw.num_rows;i++)
+			{
+				float64_t* begin=m_weights_raw.get_column_vector(i);
+				std::copy(m_log_weights.vector+offset,m_log_weights.vector+offset+m_weights_raw.num_rows-i,begin+i);
+				begin[i]=CMath::exp(begin[i]);
+				offset+=m_weights_raw.num_rows-i;
+			}
+		}
+		else
+		{
+			SG_ERROR("Unsupported ARD type\n");
+		}
+		update_parameter_hash();
+	}
+}
 
 SGMatrix<float64_t> CExponentialARDKernel::get_weights()
 {
-	SGMatrix<float64_t> res;
-	if (m_ARD_type==KT_SCALAR || m_ARD_type==KT_DIAG)
-	{
-		SGMatrix<float64_t> log_weights(m_log_weights.vector,1,m_log_weights.vlen,false);
-		res=linalg::elementwise_compute(m_log_weights,
-			[  ](float64_t& value)
-			{
-			return CMath::exp(value);
-			});
-	}
-	else if (m_ARD_type==KT_FULL)
-	{
-		res=SGMatrix<float64_t>(m_weights_rows,m_weights_cols);
-		res.set_const(0.0);
-		index_t offset=0;
-		for (int i=0;i<res.num_cols && i<res.num_rows;i++)
-		{
-			float64_t* begin=res.get_column_vector(i);
-			std::copy(m_log_weights.vector+offset,m_log_weights.vector+offset+res.num_rows-i,begin+i);
-			begin[i]=CMath::exp(begin[i]);
-			offset+=res.num_rows-i;
-		}
-	}
-	else
-	{
-		SG_ERROR("Unsupported ARD type\n");
-	}
-	return res;
+	lazy_update_weights();
+	return SGMatrix<float64_t>(m_weights_raw);
 }
 
 void CExponentialARDKernel::set_scalar_weights(float64_t weight)
@@ -129,6 +142,8 @@ void CExponentialARDKernel::set_scalar_weights(float64_t weight)
 
 void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 {
+	REQUIRE(rhs==NULL && lhs==NULL,
+		"Setting vector weights must be before initialize features\n");
 	REQUIRE(weights.vlen>0, "Vector weight should be non-empty\n");
 	m_log_weights=SGVector<float64_t>(weights.vlen);
 	for(index_t i=0; i<weights.vlen; i++)
@@ -145,6 +160,8 @@ void CExponentialARDKernel::set_vector_weights(SGVector<float64_t> weights)
 
 void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 {
+	REQUIRE(rhs==NULL && lhs==NULL,
+		"Setting matrix weights must be before initialize features\n");
 	REQUIRE(weights.num_cols>0, "Matrix weight should be non-empty");
 	REQUIRE(weights.num_rows>=weights.num_cols,
 		"Number of row (%d) must be not less than number of column (%d)",

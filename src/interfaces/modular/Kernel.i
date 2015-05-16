@@ -101,8 +101,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(RationalQuadraticKernel) CRationalQuadraticKernel;
 %rename(MultiquadricKernel) CMultiquadricKernel;
 %rename(JensenShannonKernel) CJensenShannonKernel;
-#ifdef HAVE_LINALG_LIB
-%rename(LinearARDKernel) CLinearARDKernel;
+%rename(ExponentialARDKernel) CExponentialARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 
 #ifdef HAVE_EIGEN3 
@@ -226,7 +225,7 @@ namespace shogun
 %include <shogun/kernel/RationalQuadraticKernel.h>
 %include <shogun/kernel/JensenShannonKernel.h>
 #ifdef HAVE_LINALG_LIB
-%include <shogun/kernel/LinearARDKernel.h>
+%include <shogun/kernel/ExponentialARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
 
 #ifdef HAVE_EIGEN3 
