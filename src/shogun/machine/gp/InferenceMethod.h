@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Roman Votyakov
  * Written (W) 2013-2014 Heiko Strathmann
+ * Written (W) 2015 Wu Lin
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
  */
@@ -355,7 +356,7 @@ public:
 	 */
 	virtual bool supports_multiclass() const { return false; }
 
-	/** update all matrices */
+	/** update matrices except gradients */
 	virtual void update();
 
 	/** get the E matrix used for multi classification
@@ -428,6 +429,8 @@ protected:
 	 */
 	static void* get_derivative_helper(void* p);
 
+	/** update gradients */
+	virtual void compute_gradient();
 private:
 	void init();
 
@@ -461,6 +464,9 @@ protected:
 
 	/** the matrix used for multi classification*/
 	SGMatrix<float64_t> m_E;
+
+	/** Whether gradients are updated */
+	bool m_gradient_update;
 };
 }
 #endif /* HAVE_EIGEN3 */

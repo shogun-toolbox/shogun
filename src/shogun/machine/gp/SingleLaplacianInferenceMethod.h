@@ -124,7 +124,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** update data all matrices */
+	/** update all matrices except gradients*/
 	virtual void update();
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution

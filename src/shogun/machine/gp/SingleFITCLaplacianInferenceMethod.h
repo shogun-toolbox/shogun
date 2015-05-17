@@ -204,7 +204,7 @@ public:
 	 */
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
-	/** update data all matrices */
+	/** update matrices except gradients*/
 	virtual void update();
 
 	/** get negative log marginal likelihood
@@ -220,6 +220,9 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood();
 protected:
+	/** update gradients */
+	virtual void compute_gradient();
+
 	/** pre-compution for Newton's method*/
 	virtual void update_init();
 

@@ -95,7 +95,7 @@ enum ENNOptimizationMethod
  * due to their stochastic nature. Use gradient descent instead.
  *
  * During training, the error at each iteration is logged as MSG_INFO. (to turn
- * on info messages call io.set_loglevel(MSG_INFO)).
+ * on info messages call sg_io->set_loglevel(MSG_INFO)).
  *
  * The network stores the parameters of all the  layers in a single array. This
  * makes it easy to train a network of any combination of arbitrary layer types
