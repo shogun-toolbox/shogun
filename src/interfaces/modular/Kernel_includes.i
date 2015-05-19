@@ -71,8 +71,16 @@
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/kernel/JensenShannonKernel.h>
-#include <shogun/kernel/LinearARDKernel.h>
-#include <shogun/kernel/GaussianARDKernel.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <shogun/kernel/PeriodicKernel.h>
+
+#ifdef HAVE_LINALG_LIB
+ #include <shogun/kernel/LinearARDKernel.h>
+ #include <shogun/kernel/GaussianARDKernel.h>
+
+#ifdef HAVE_EIGEN3 
+ #include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#endif
+
+#endif
 %}
