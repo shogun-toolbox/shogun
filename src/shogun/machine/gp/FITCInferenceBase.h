@@ -38,6 +38,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -107,9 +108,11 @@ public:
 	 */
 	virtual void set_inducing_features(CFeatures* feat)
 	{
-		SG_REF(feat);
-		SG_UNREF(m_inducing_features);
-		m_inducing_features=feat;
+		REQUIRE(feat,"Input inducing features must be not empty\n");
+		CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(feat);
+		REQUIRE(lat_type, "Inducing features (%s) must be"
+			" DotFeatures or one of its subclasses\n", feat->get_name());
+		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
 	}
 
 	/** get inducing features
@@ -118,8 +121,11 @@ public:
 	 */
 	virtual CFeatures* get_inducing_features()
 	{
-		SG_REF(m_inducing_features);
-		return m_inducing_features;
+		SGMatrix<float64_t> out(m_inducing_features.matrix,
+			m_inducing_features.num_rows,m_inducing_features.num_cols,false);
+		CFeatures* inducing_features=new CDenseFeatures<float64_t>(out);
+		SG_REF(inducing_features);
+		return inducing_features;
 	}
 
 	/** get alpha vector
@@ -296,7 +302,7 @@ protected:
 			const TParameter* param)=0;
 
 	/** inducing features for approximation */
-	CFeatures* m_inducing_features;
+	SGMatrix<float64_t> m_inducing_features;
 
 	/** noise of the inducing variables */
 	float64_t m_ind_noise;
