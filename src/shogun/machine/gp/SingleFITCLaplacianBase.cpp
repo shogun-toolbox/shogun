@@ -484,7 +484,6 @@ void CSingleFITCLaplacianBase::enable_optimizing_inducing_features(bool is_optmi
 	m_opt_inducing_features=is_optmization;
 }
 
-//bug when gpc/gpr is used
 void CSingleFITCLaplacianBase::optimize_inducing_features()
 {
 	if (!m_opt_inducing_features)
