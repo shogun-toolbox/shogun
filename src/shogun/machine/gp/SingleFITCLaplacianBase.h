@@ -99,7 +99,80 @@ public:
 	 * @param kern kernel to set
 	 */
 	virtual void set_kernel(CKernel* kern);
+
+#ifdef HAVE_NLOPT
+	/** opitmize inducing features
+	 */
+	virtual void optimize_inducing_features();
+
+	/** set the lower bound of inducing features
+	 *
+	 * @param bound lower bound constrains of inducing features
+	 *
+	 * Note that if the length of the bound can be 1,
+	 * it means the bound constraint applies to each dimension of inducing features
+	 *
+	 * Note that if the length of the bound is greater than 1,
+	 * it means each dimension of the bound constraint applies to the corresponding dimension of inducing features
+	 */
+	virtual void set_lower_bound_of_inducing_features(SGVector<float64_t> bound);
+
+	/** set the upper bound of inducing features
+	 *
+	 * @param bound upper bound constrains of inducing features
+	 *
+	 * Note that if the length of the bound can be 1,
+	 * it means the bound constraint applies to each dimension of inducing features
+	 *
+	 * Note that if the length of the bound is greater than 1,
+	 * it means each dimension of the bound constraint applies to the corresponding dimension of inducing features
+	 */
+	virtual void set_upper_bound_of_inducing_features(SGVector<float64_t> bound);
+
+	/** set the tolearance used in optimization of inducing features
+	 *
+	 * @param tol tolearance 
+	 */
+	virtual void set_tolearance_for_inducing_features(float64_t tol);
+
+	/** set the max number of iterations used in optimization of inducing features
+	 *
+	 * @param it max number of iterations
+	 */
+	virtual void set_max_iterations_for_inducing_features(int32_t it);
+
+	/** whether enable to opitmize inducing features
+	 *
+	 * @param is_optmization enable optimization
+	 */
+	virtual void enable_optimizing_inducing_features(bool is_optmization);
+#endif
+
 protected:
+
+#ifdef HAVE_NLOPT
+	/** check the bound constraint is vailid or not
+	 *
+	 * @param bound bound constrains of inducing features
+	 */
+	virtual void check_bound(SGVector<float64_t> bound);
+
+	/** lower bound of inducing features */
+	SGVector<float64_t> m_lower_bound;
+
+	/** upper bound of inducing features */
+	SGVector<float64_t> m_upper_bound;
+
+	/**  max number of iterations */
+	float64_t m_max_ind_iterations;
+
+	/**  tolearance used in optimizing inducing_features */
+	float64_t m_ind_tolerance;
+
+	/**  whether optimize inducing features */
+	bool m_opt_inducing_features;
+#endif
+
 	/** check whether the provided kernel can
 	 * compute the gradient wrt inducing features
 	 *
@@ -293,9 +366,12 @@ protected:
 
 	/* V defined in infFITC.m and infFITC_Laplace.m */
 	SGMatrix<float64_t> m_V;
+
 private:
 	/* init */
 	void init();
+
+	static double nlopt_function(unsigned n, const double* x, double* grad, void* func_data);
 };
 }
 #endif /* HAVE_EIGEN3 */
