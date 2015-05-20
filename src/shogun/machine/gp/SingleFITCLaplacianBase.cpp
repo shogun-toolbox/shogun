@@ -496,7 +496,7 @@ void CSingleFITCLaplacianBase::optimize_inducing_features()
 	SGMatrix<float64_t>& lat_m=m_inducing_features;
 	SGVector<double> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
 
-	// create nlopt object and choose MMA (Method of Moving Asymptotes)
+	// create nlopt object and choose LBFGS
 	// optimization algorithm
 	nlopt_opt opt=nlopt_create(NLOPT_LD_LBFGS, lat_m.num_rows*lat_m.num_cols);
 
