@@ -19,7 +19,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
-using namespace shogun;
+using namespace distance;
 
 CMahalanobisDistance::CMahalanobisDistance() : CRealDistance()
 {

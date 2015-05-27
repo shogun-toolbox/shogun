@@ -15,7 +15,7 @@
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/io/SGIO.h>
 
-using namespace shogun;
+using namespace distance;
 
 CCustomDistance::CCustomDistance() : CDistance()
 {

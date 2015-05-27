@@ -15,7 +15,7 @@
 #include <shogun/distance/KernelDistance.h>
 #include <shogun/features/DenseFeatures.h>
 
-using namespace shogun;
+using namespace distance;
 
 CKernelDistance::CKernelDistance() : CDistance()
 {

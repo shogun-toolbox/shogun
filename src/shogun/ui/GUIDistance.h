@@ -17,6 +17,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
 
+using namespace distance;
+
 namespace shogun
 {
 class CSGInterface;
@@ -35,7 +37,7 @@ class CGUIDistance : public CSGObject
 	~CGUIDistance();
 
 	/** get current distance */
-	CDistance* get_distance();
+	distance::CDistance* get_distance();
 	/** set new distance */
 	bool set_distance(CDistance* dist);
 

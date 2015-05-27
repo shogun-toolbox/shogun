@@ -12,7 +12,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclideanDistance.h>
 
-using namespace shogun;
+using namespace distance;
 
 CEuclideanDistance::CEuclideanDistance() : CRealDistance()
 {

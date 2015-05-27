@@ -19,7 +19,9 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/distance/StringDistance.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief class ManhattanWordDistance */
 class CManhattanWordDistance: public CStringDistance<uint16_t>

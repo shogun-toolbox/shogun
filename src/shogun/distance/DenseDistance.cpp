@@ -1,6 +1,6 @@
 #include <shogun/distance/DenseDistance.h>
 
-namespace shogun {
+namespace distance {
 
 template <class ST> bool CDenseDistance<ST>::init(CFeatures* l, CFeatures* r)
 {

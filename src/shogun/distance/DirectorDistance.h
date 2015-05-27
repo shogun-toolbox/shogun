@@ -18,7 +18,9 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/distance/Distance.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 
 #define IGNORE_IN_CLASSLIST

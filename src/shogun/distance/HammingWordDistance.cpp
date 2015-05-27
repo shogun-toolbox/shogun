@@ -18,7 +18,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 
-using namespace shogun;
+using namespace distance;
 
 CHammingWordDistance::CHammingWordDistance()
 {

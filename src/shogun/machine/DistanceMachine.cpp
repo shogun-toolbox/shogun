@@ -17,7 +17,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct D_THREAD_PARAM
 {
-    CDistance* d;
+    distance::CDistance* d;
     float64_t* r;
     int32_t idx_r_start;
     int32_t idx_start;
@@ -192,7 +192,7 @@ void* CDistanceMachine::run_distance_thread_lhs(void* p)
 void* CDistanceMachine::run_distance_thread_rhs(void* p)
 {
     D_THREAD_PARAM* params= (D_THREAD_PARAM*) p;
-    CDistance* distance=params->d;
+    distance::CDistance* distance=params->d;
     float64_t* res=params->r;
     int32_t idx_res_start=params->idx_r_start;
     int32_t idx_act=params->idx_start;
@@ -260,14 +260,14 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	return best_index;
 }
 
-void CDistanceMachine::set_distance(CDistance* d)
+void CDistanceMachine::set_distance(distance::CDistance* d)
 {
 	SG_REF(d);
 	SG_UNREF(distance);
 	distance=d;
 }
 
-CDistance* CDistanceMachine::get_distance() const
+distance::CDistance* CDistanceMachine::get_distance() const
 {
 	SG_REF(distance);
 	return distance;

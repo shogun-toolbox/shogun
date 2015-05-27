@@ -17,7 +17,7 @@
 #include <shogun/distance/MinkowskiMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CMinkowskiMetric::CMinkowskiMetric() : CDenseDistance<float64_t>()
 {

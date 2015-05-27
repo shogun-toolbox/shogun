@@ -16,6 +16,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
 
+using namespace distance;
+
 namespace shogun
 {
 class CSGInterface;

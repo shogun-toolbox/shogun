@@ -18,6 +18,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
 
+using namespace distance;
+
 namespace shogun
 {
 class CDistanceMachine;
@@ -46,7 +48,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param merges the merges
 		 * @param d distance
 		 */
-		CHierarchical(int32_t merges, CDistance* d);
+		CHierarchical(int32_t merges, distance::CDistance* d);
 		virtual ~CHierarchical();
 
 		/** problem type */

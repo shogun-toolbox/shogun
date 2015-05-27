@@ -611,7 +611,7 @@ CKernel* CGUIKernel::create_tppk(int32_t size, float64_t* km, int32_t rows, int3
 
 CKernel* CGUIKernel::create_distance(int32_t size, float64_t width)
 {
-	CDistance* dist=ui->ui_distance->get_distance();
+	distance::CDistance* dist=ui->ui_distance->get_distance();
 	if (!dist)
 		SG_ERROR("No distance set for DistanceKernel.\n")
 

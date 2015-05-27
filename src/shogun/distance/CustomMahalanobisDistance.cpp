@@ -14,7 +14,7 @@
 
 #include <Eigen/Dense>
 
-using namespace shogun;
+using namespace distance;
 using namespace Eigen;
 
 CCustomMahalanobisDistance::CCustomMahalanobisDistance() : CRealDistance()

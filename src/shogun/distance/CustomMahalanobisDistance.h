@@ -19,7 +19,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 
 /**

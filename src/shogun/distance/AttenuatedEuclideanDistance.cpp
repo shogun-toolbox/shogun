@@ -13,7 +13,7 @@
 #include <shogun/distance/AttenuatedEuclideanDistance.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance() : CRealDistance()
 {

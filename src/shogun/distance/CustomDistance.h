@@ -18,7 +18,9 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief The Custom Distance allows for custom user provided distance matrices.
  *

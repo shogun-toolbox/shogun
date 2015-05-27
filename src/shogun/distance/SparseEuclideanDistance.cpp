@@ -14,7 +14,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/SparseFeatures.h>
 
-using namespace shogun;
+using namespace distance;
 
 CSparseEuclideanDistance::CSparseEuclideanDistance()
 : CSparseDistance<float64_t>()

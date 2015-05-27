@@ -14,7 +14,7 @@
 #include <shogun/distance/CosineDistance.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CCosineDistance::CCosineDistance()
 : CDenseDistance<float64_t>()

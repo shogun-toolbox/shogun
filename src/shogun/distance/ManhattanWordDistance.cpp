@@ -15,7 +15,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/io/SGIO.h>
 
-using namespace shogun;
+using namespace distance;
 
 CManhattanWordDistance::CManhattanWordDistance()
 : CStringDistance<uint16_t>()

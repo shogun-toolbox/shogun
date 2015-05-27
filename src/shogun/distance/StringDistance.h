@@ -16,7 +16,9 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/StringFeatures.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief template class StringDistance */
 template <class ST> class CStringDistance : public CDistance

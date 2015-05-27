@@ -19,14 +19,14 @@ CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(): CKernel(0), distance(N
 	init();
 }
 
-CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(int32_t cache, float64_t coefficient, CDistance* dist)
+CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(int32_t cache, float64_t coefficient, distance::CDistance* dist)
 : CKernel(cache), distance(dist), coef(coefficient)
 {
 	SG_REF(distance);
 	init();
 }
 
-CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coefficient, CDistance* dist)
+CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coefficient, distance::CDistance* dist)
 : CKernel(10), distance(dist), coef(coefficient)
 {
 	SG_REF(distance);

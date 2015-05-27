@@ -14,7 +14,7 @@
 #include <shogun/distance/JensenMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CJensenMetric::CJensenMetric() : CDenseDistance<float64_t>()
 {
