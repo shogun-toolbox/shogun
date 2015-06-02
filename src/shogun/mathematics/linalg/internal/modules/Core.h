@@ -35,10 +35,10 @@
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
 #include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
-#include <shogun/mathematics/linalg/internal/implementation/Apply.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 #include <shogun/mathematics/linalg/internal/implementation/Convolve.h>
+#include <shogun/mathematics/linalg/internal/implementation/RangeFill.h>
 
 namespace shogun
 {
@@ -49,17 +49,11 @@ namespace linalg
 /** Performs the operation \f$C = \alpha A + \beta B\f$.
  * Works for both matrices and vectors.
  *
- * This version should be used for backend specific code requirements. For example,
- * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
- * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
- * desired, use the version that does not support preallocated result matrix but
- * returns the result in a newly created matrix instead.
- *
- * @param A First matrix/vector
- * @param B Second matrix/vector
+ * @param A First matrix
+ * @param B Second matrix
  * @param C Result of the operation
- * @param alpha scaling parameter for first matrix/vector
- * @param beta scaling parameter for second matrix/vector
+ * @param alpha scaling parameter for first matrix
+ * @param beta scaling parameter for second matrix
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
@@ -68,80 +62,21 @@ void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
 }
 
-/** Performs the operation \f$C = \alpha A + \beta B\f$.
- * Works for both matrices and vectors.
- *
- * This version returns the result in a newly created matrix/vector. If add
- * is desired that will work irrespective of the backend and the matrix/vector
- * type used, then this method should be used.
- *
- * @param A First matrix/vector
- * @param B Second matrix/vector
- * @param alpha scaling parameter for first matrix/vector
- * @param beta scaling parameter for second matrix/vector
- * @return The result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-Matrix add(Matrix A, Matrix B, typename Matrix::Scalar alpha=1.0,
-		typename Matrix::Scalar beta=1.0)
-{
-	return implementation::add<backend, Matrix>::compute(A, B, alpha, beta);
-}
-
-/** Performs the operation B = alpha*A. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
-{
-	implementation::scale<backend, Matrix>::compute(A, B, alpha);
-}
-
-/** Performs the operation A = alpha*A. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void scale(Matrix A, typename Matrix::Scalar alpha)
-{
-	implementation::scale<backend, Matrix>::compute(A, A, alpha);
-}
 
 #ifdef HAVE_LINALG_LIB
-/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
- *
- * This version should be used for backend specific code requirements. For example,
- * use this with CGPUMatrix, CGPUVector and explicitly set ViennaCL backend, or
- * SGMatrix, SGVector and explicitly set Eigen3 backend. If matrix-type/backend-type
- * independent code is desired, use the version that does not support preallocated
- * result vector but returns the result in a newly created vector instead.
- *
- * @param A The matrix
- * @param b The vector
- * @param x Result vector
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
-void apply(Matrix A, Vector b, Vector x, bool transpose=false)
+
+/** Range fill a vector or a matrix with start...start+len-1
+ * @param A - the matrix to be filled
+ * @param len - length of the matrix to be filled
+ * @param start - value to be assigned to first element of vector or matrix
+ */	
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void range_fill(Matrix A, index_t len, typename Matrix::Scalar start=0.0)
 {
-	implementation::apply<backend,Matrix,Vector>::compute(A, b, x, transpose);
+	implementation::range_fill<backend, Matrix>::compute(A, len, start);
 }
 
-/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
- *
- * This version returns the result in a newly created vector. If apply is desired
- * that will work irrespective of the backend and the matrix/vector type used,
- * then this method should be used.
- *
- * @param A The matrix
- * @param b The vector
- * @param x Result vector
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
-Vector apply(Matrix A, Vector b, bool transpose=false)
-{
-	return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
-}
-
-/** Performs matrix multiplication. This version should be used for backend specific
- * code requirements. For example, use this with CGPUMatrix and explicitly set
- * ViennaCL backend, or SGMatrix and explicitly set Eigen3 backend. If matrix-type/
- * backend-type independent code is desired, use the version that does not support
- * preallocated result matrix but returns the result in a newly created matrix instead.
+/** Performs matrix multiplication
  *
  * @param A First matrix
  * @param B Second matrix
@@ -158,23 +93,6 @@ void matrix_product(Matrix A, Matrix B, Matrix C,
 	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
 }
 
-/** Performs matrix multiplication. This version returns the result in a newly
- * created matrix. If matrix-product is desired that will work irrespective of the
- * backend and the matrix type used, then this method should be used.
- *
- * @param A First matrix
- * @param B Second matrix
- * @param transpose_A Whether to the transpose of A should be used instead of A
- * @param transpose_B Whether to the transpose of B should be used instead of B
- * @return Result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-typename implementation::matrix_product<backend,Matrix>::ReturnType matrix_product(Matrix A, Matrix B,
-	bool transpose_A=false, bool transpose_B=false)
-{
-	return implementation::matrix_product<backend, Matrix>::compute(A, B, transpose_A, transpose_B);
-}
-
 /** Performs the operation C = alpha*A - beta*B. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void subtract(Matrix A, Matrix B, Matrix C,
@@ -183,38 +101,18 @@ void subtract(Matrix A, Matrix B, Matrix C,
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
 }
 
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
- *
- * This version should be used for backend specific code requirements. For example,
- * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
- * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
- * desired, use the version that does not support preallocated result matrix but
- * returns the result in a newly created matrix instead.
- *
- * @param A First matrix
- * @param B Second matrix
- * @param C Result of the operation
- */
+/** Performs the operation B = alpha*A. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
+{
+	implementation::scale<backend, Matrix>::compute(A, B, alpha);
+}
+
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void elementwise_product(Matrix A, Matrix B, Matrix C)
 {
 	implementation::elementwise_product<backend, Matrix>::compute(A, B, C);
-}
-
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
- *
- * This version returns the result in a newly created matrix. If elementwise-product
- * is desired that will work irrespective of the backend and the matrix type used,
- * then this method should be used.
- *
- * @param A First matrix
- * @param B Second matrix
- * @return The result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-typename implementation::elementwise_product<backend,Matrix>::ReturnType elementwise_product(Matrix A, Matrix B)
-{
-	return implementation::elementwise_product<backend,Matrix>::compute(A, B);
 }
 
 /**
