@@ -11,6 +11,8 @@
 #include <shogun/structure/DisjointSet.h>
 #include <shogun/base/Parameter.h>
 
+#include <shogun/mathematics/linalg/linalg.h>
+
 using namespace shogun;
 
 CDisjointSet::CDisjointSet()
@@ -45,7 +47,7 @@ void CDisjointSet::make_sets()
 {
 	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
 
-	m_parent.range_fill();
+	linalg::range_fill<linalg::Backend::NATIVE>(m_parent,m_parent.vlen);
 	m_rank.zero();
 }
 

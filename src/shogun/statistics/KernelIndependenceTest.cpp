@@ -35,6 +35,8 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#include <shogun/mathematics/linalg/linalg.h>
+ 
 using namespace shogun;
 
 CKernelIndependenceTest::CKernelIndependenceTest() :
@@ -91,7 +93,7 @@ SGVector<float64_t> CKernelIndependenceTest::sample_null()
 
 		/* memory for index permutations */
 		SGVector<index_t> ind_permutation(m_p->get_num_vectors());
-		ind_permutation.range_fill();
+		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation,ind_permutation.vlen);
 
 		/* check if kernel is a custom kernel. In that case, changing features is
 		 * not what we want but just subsetting the kernel itself */
