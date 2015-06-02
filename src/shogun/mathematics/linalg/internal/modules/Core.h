@@ -62,23 +62,8 @@ void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
 	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
 }
 
-
-#ifdef HAVE_LINALG_LIB
-
 /** Range fill a vector or a matrix with start...start+len-1
  * @param A - the matrix to be filled
- * @param len - length of the matrix to be filled
- * @param start - value to be assigned to first element of vector or matrix
- */	
-template <Backend backend=linalg_traits<Core>::backend,class Vector>
-void range_fill_vec(Vector* A, index_t len, Vector start=0.0)
-{
-	implementation::range_fill_vec<backend, Vector>::compute(A, len, start);
-}
-
-/** Range fill a vector or a matrix with start...start+len-1
- * @param A - the matrix to be filled
- * @param len - length of the matrix to be filled
  * @param start - value to be assigned to first element of vector or matrix
  */	
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
@@ -86,6 +71,21 @@ void range_fill(Matrix A, typename Matrix::Scalar start=0.0)
 {
 	implementation::range_fill<backend, Matrix>::compute(A, start);
 }
+
+/** Range fill a pointer array with start...start+len-1
+ * @param A - the array to be filled
+ * @param len - length of the array to be filled
+ * @param start - value to be assigned to first element of array
+ */	
+template <typename T>
+void range_fill(T* A, index_t len, T start=0.0)
+{
+	SGVector<T> V(A,len,false);
+	implementation::range_fill<Backend::NATIVE,SGVector<T> >::compute(V, start);
+}
+
+#ifdef HAVE_LINALG_LIB
+
 
 /** Performs matrix multiplication
  *
