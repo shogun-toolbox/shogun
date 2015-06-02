@@ -52,15 +52,14 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct range_fill
 {
-	/**Scalar type */
-	typedef typename Matrix::Scalar T;
+    /**Scalar type */
+    typedef typename Matrix::Scalar T;
 
-	/**Range fill a vector or a matrix with start...start+len-1
+    /**Range fill a vector or a matrix with start...start+len-1
      * @param A - the matrix to be filled
-     * @param len - length of the matrix to be filled
-	 * @param start - value to be assigned to first element of vector or matrix
-	 */	
-	static void compute(Matrix A, T start);
+     * @param start - value to be assigned to first element of vector or matrix
+     */ 
+    static void compute(Matrix A, T start);
 
 };
 
@@ -70,61 +69,52 @@ struct range_fill
 template <class Matrix>
 struct range_fill<Backend::NATIVE, Matrix>
 {
-	/** Scalar type */
-	typedef typename Matrix::Scalar T;
+    /** Scalar type */
+    typedef typename Matrix::Scalar T;
 
-	/** Range fill a matrix with start...start+len-1
+    /** Range fill a matrix with start...start+len-1
      * @param A - the matrix to be filled
      * @param len - length of the matrix to be filled
-	 * @param start - value to be assigned to first element of vector or matrix
-	 */	
-	static void compute(SGMatrix<T> A, T start)
-	{
-		compute(A.matrix, A.num_rows*A.num_cols, start);
-	}
+     * @param start - value to be assigned to first element of vector or matrix
+     */ 
+    static void compute(Matrix A, T start)
+    {
+        compute(A.data(), A.size(), start);
+    }
 
-	/** Range fill a vector with start...start+len-1
+    
+    /** Range fill a matrix with start...start+len-1
      * @param A - the matrix to be filled
      * @param len - length of the matrix to be filled
-	 * @param start - value to be assigned to first element of vector or matrix
-	 */	
-	static void compute(SGVector<T> A, T start)
-	{
-		compute(A.vector, A.vlen, start);
-	}
+     * @param start - value to be assigned to first element of vector or matrix
+     */ 
+    static void compute(SGMatrix<T> A, T start)
+    {
+        compute(A.matrix, A.num_rows*A.num_cols, start);
+    }
 
-	/**Range fill a vector or a matrix with start...start+len-1
+    /** Range fill a vector with start...start+len-1
      * @param A - the matrix to be filled
      * @param len - length of the matrix to be filled
-	 * @param start - value to be assigned to first element of vector or matrix
-	 */	
-	static void compute(T* A, index_t len, T start)
-	{
-		std::iota(A, A+len, start);
-	}
+     * @param start - value to be assigned to first element of vector or matrix
+     */ 
+    static void compute(SGVector<T> A, T start)
+    {
+        compute(A.vector, A.vlen, start);
+    }
+
+    /**Range fill a vector or a matrix with start...start+len-1
+     * @param A - the matrix to be filled
+     * @param len - length of the matrix to be filled
+     * @param start - value to be assigned to first element of vector or matrix
+     */ 
+    static void compute(T* A, index_t len, T start)
+    {
+        std::iota(A, A+len, start);
+    }
 
 };
 
-/**
- * @brief Generic class which is specialized for different backends to perform addition
- */
-template <enum Backend, class Vector>
-struct range_fill_vec
-{
-	static void compute(Vector* A, index_t len, Vector start);
-};
-
-/**
- *@brief Partial specialization of add for the Native backend
- */
-template <class Vector>
-struct range_fill_vec<Backend::NATIVE, Vector>
-{
-	static void compute(Vector* A, index_t len, Vector start)
-	{
-		std::iota(A, A+len, start);
-	}	
-};
 
 }
 
