@@ -77,17 +77,6 @@ struct range_fill<Backend::NATIVE, Matrix>
      * @param len - length of the matrix to be filled
      * @param start - value to be assigned to first element of vector or matrix
      */ 
-    static void compute(Matrix A, T start)
-    {
-        compute(A.data(), A.size(), start);
-    }
-
-    
-    /** Range fill a matrix with start...start+len-1
-     * @param A - the matrix to be filled
-     * @param len - length of the matrix to be filled
-     * @param start - value to be assigned to first element of vector or matrix
-     */ 
     static void compute(SGMatrix<T> A, T start)
     {
         compute(A.matrix, A.num_rows*A.num_cols, start);

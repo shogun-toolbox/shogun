@@ -54,8 +54,6 @@ TEST(RangeFillVector, native_backend)
 {
 	SGVector<float64_t> v(4);
 	SGVector<index_t> v2(4);
-	float64_t* w= SG_MALLOC(float64_t, 4);
-	linalg::range_fill(w,4,0.0);
 	linalg::range_fill<linalg::Backend::NATIVE>(v,0.0);
 	linalg::range_fill<linalg::Backend::NATIVE>(v2);
 	EXPECT_EQ(v.vlen, 4);
@@ -64,7 +62,6 @@ TEST(RangeFillVector, native_backend)
 	{
 		EXPECT_NEAR(v[i], i, 1e-9);	
 		EXPECT_NEAR(v2[i], i, 1e-9);	
-		EXPECT_NEAR(w[i], i, 1e-9);	
 	}	
 	
 }
