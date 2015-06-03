@@ -16,6 +16,8 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
+#include <shogun/mathematics/linalg/linalg.h>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -345,8 +347,8 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 	float64_t* w= SG_MALLOC(float64_t, d);
 	float64_t* out= SG_MALLOC(float64_t, num);
 	float64_t* alphas= SG_MALLOC(float64_t, num);
-	SGVector<float64_t>::range_fill_vector(w, d, 17.0);
-	SGVector<float64_t>::range_fill_vector(alphas, num, 1.2345);
+	linalg::range_fill(w, d, 17.0);
+	linalg::range_fill(alphas, num, 1.2345);
 	//SGVector<float64_t>::fill_vector(w, d, 17.0);
 	//SGVector<float64_t>::fill_vector(alphas, num, 1.2345);
 
