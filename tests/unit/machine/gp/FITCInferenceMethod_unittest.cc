@@ -41,7 +41,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -702,7 +702,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -854,7 +854,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -1009,7 +1009,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);

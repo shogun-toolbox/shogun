@@ -37,7 +37,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -93,7 +93,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 
 	float64_t ell=1.0;
 
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -201,7 +201,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 
 	float64_t ell=1.0;
 
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -297,7 +297,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	float64_t ell=1.0;
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
@@ -378,7 +378,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	float64_t ell=1.0;
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
