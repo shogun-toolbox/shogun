@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef CFITCINFERENCEBASE_H
-#define CFITCINFERENCEBASE_H
+#ifndef CSPARSEINFERENCEBASE_H
+#define CSPARSEINFERENCEBASE_H
 
 #include <shogun/lib/config.h>
 
@@ -49,10 +49,10 @@ namespace shogun
  * "A unifying view of sparse approximate Gaussian process regression."
  * The Journal of Machine Learning Research 6 (2005): 1939-1959.
  *
- * The key idea of FITC inference is to use the following kernel matrix \f$\Sigma_{fitc}\f$
+ * The key idea of Sparse inference is to use the following kernel matrix \f$\Sigma_{fitc}\f$
  * to approximate a kernel matrix, \f$\Sigma_{N}\f$ derived from a GP prior.
  *\f[
- *\Sigma_{fitc}=\textbf{diag}(\Sigma_{N}-\Phi)+\Phi
+ *\Sigma_{Sparse}=\textbf{diag}(\Sigma_{N}-\Phi)+\Phi
  *\f]
  * where
  *\f$\Phi=\Sigma_{NM}\Sigma_{M}^{-1}\Sigma_{MN}\f$
@@ -61,19 +61,19 @@ namespace shogun
  *\f$\Sigma_{NM}=\Sigma_{MN}^{T}\f$ is the kernel matrix between features and inducing features
  *
  * Note that the number of inducing points (m) is usually far less than the number of input points (n). (the time complexity is computed based on the assumption m < n)
- * The idea of FITC approximation is to use a lower-ranked matrix plus a diagonal matrix to approximate the full kernel
+ * The idea of Sparse approximation is to use a lower-ranked matrix plus a diagonal matrix to approximate the full kernel
  * matrix.
  * The time complexity of the main inference process can be reduced from O(n^3) to O(m^2*n).
  *
- * Since we use \f$\Sigma_{fitc}\f$ to approximate \f$\Sigma_{N}\f$,
- * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$.
+ * Since we use \f$\Sigma_{Sparse}\f$ to approximate \f$\Sigma_{N}\f$,
+ * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{Sparse}\f$.
  *
  */
-class CFITCInferenceBase: public CInferenceMethod
+class CSparseInferenceBase: public CInferenceMethod
 {
 public:
 	/** default constructor */
-	CFITCInferenceBase();
+	CSparseInferenceBase();
 
 	/** constructor
 	 *
@@ -84,23 +84,23 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CFITCInferenceBase(CKernel* kernel, CFeatures* features,
+	CSparseInferenceBase(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CFITCInferenceBase();
+	virtual ~CSparseInferenceBase();
 
 	/** return what type of inference we are
 	 *
-	 * @return inference type FITC
+	 * @return inference type Sparse
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_FITC; }
+	virtual EInferenceType get_inference_type() const { return INF_SPARSE; }
 
 	/** returns the name of the inference method
 	 *
-	 * @return name FITCBase
+	 * @return name SparseBase
 	 */
-	virtual const char* get_name() const { return "FITCBaseInferenceMethod"; }
+	virtual const char* get_name() const { return "SparseBaseInferenceMethod"; }
 
 	/** set inducing features
 	 *
@@ -172,7 +172,7 @@ public:
 	virtual float64_t get_inducing_noise();
 
 	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
-	 * Note that in order to call this method, kernel must support FITC inference
+	 * Note that in order to call this method, kernel must support Sparse inference
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -278,7 +278,7 @@ protected:
 	/** returns derivative of negative log marginal likelihood wrt
 	 * inducing noise (noise from inducing features) parameter
 	 *
-	 * @param param parameter of given  FITCInferenceBase class
+	 * @param param parameter of given  SparseInferenceBase class
 	 *
 	 * In order to enforce symmetrc positive definiteness of the kernel matrix on inducing points,
 	 * \f$\Sigma_{M}\f$, the following ridge trick is used since the matrix is learned from data.
@@ -291,7 +291,7 @@ protected:
 	 *
 	 * In practice, we use the corrected matrix, \Sigma_{M'} in the following approximation.
 	 *\f[
-	 *\Sigma_{fitc}=\textbf{diag}(\Sigma_{N}-\Phi)+\Phi
+	 *\Sigma_{Sparse}=\textbf{diag}(\Sigma_{N}-\Phi)+\Phi
 	 *\f]
 	 * where
 	 *\f$\Phi=\Sigma_{NM}\Sigma_{M'}^{-1}\Sigma_{MN}\f$
@@ -327,4 +327,4 @@ private:
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* CFITCINFERENCEBASE_H */
+#endif /* CSPARSEINFERENCEBASE_H */

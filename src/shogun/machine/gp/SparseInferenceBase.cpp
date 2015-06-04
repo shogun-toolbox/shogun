@@ -29,7 +29,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#include <shogun/machine/gp/FITCInferenceBase.h>
+#include <shogun/machine/gp/SparseInferenceBase.h>
 
 #ifdef HAVE_EIGEN3
 
@@ -41,17 +41,17 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceBase::CFITCInferenceBase() : CInferenceMethod()
+CSparseInferenceBase::CSparseInferenceBase() : CInferenceMethod()
 {
 	init();
 }
 
-void CFITCInferenceBase::check_features()
+void CSparseInferenceBase::check_features()
 {
 	REQUIRE(m_features, "Input features not set\n")
 }
 
-void CFITCInferenceBase::convert_features()
+void CSparseInferenceBase::convert_features()
 {
 	CDotFeatures *feat_type=dynamic_cast<CDotFeatures *>(m_features);
 
@@ -88,7 +88,7 @@ void CFITCInferenceBase::convert_features()
 	SG_UNREF(lat_type);
 }
 
-CFITCInferenceBase::CFITCInferenceBase(CKernel* kern, CFeatures* feat,
+CSparseInferenceBase::CSparseInferenceBase(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
 		: CInferenceMethod(kern, feat, m, lab, mod)
 {
@@ -96,7 +96,7 @@ CFITCInferenceBase::CFITCInferenceBase(CKernel* kern, CFeatures* feat,
 	set_inducing_features(lat);
 }
 
-void CFITCInferenceBase::init()
+void CSparseInferenceBase::init()
 {
 	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
 			MS_AVAILABLE, GRADIENT_AVAILABLE);
@@ -110,22 +110,22 @@ void CFITCInferenceBase::init()
 	m_ind_noise=1e-10;
 }
 
-void CFITCInferenceBase::set_inducing_noise(float64_t noise)
+void CSparseInferenceBase::set_inducing_noise(float64_t noise)
 {
 	REQUIRE(!(noise<0), "Noise for inducing points must be non-negative");
 	m_ind_noise=noise;
 }
 
-float64_t CFITCInferenceBase::get_inducing_noise()
+float64_t CSparseInferenceBase::get_inducing_noise()
 {
 	return m_ind_noise;
 }
 
-CFITCInferenceBase::~CFITCInferenceBase()
+CSparseInferenceBase::~CSparseInferenceBase()
 {
 }
 
-void CFITCInferenceBase::check_members() const
+void CSparseInferenceBase::check_members() const
 {
 	CInferenceMethod::check_members();
 
@@ -133,7 +133,7 @@ void CFITCInferenceBase::check_members() const
 	REQUIRE(m_inducing_features.num_cols, "Inducing features should not be empty\n")
 }
 
-SGVector<float64_t> CFITCInferenceBase::get_alpha()
+SGVector<float64_t> CSparseInferenceBase::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -142,7 +142,7 @@ SGVector<float64_t> CFITCInferenceBase::get_alpha()
 	return result;
 }
 
-SGMatrix<float64_t> CFITCInferenceBase::get_cholesky()
+SGMatrix<float64_t> CSparseInferenceBase::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -151,7 +151,7 @@ SGMatrix<float64_t> CFITCInferenceBase::get_cholesky()
 	return result;
 }
 
-void CFITCInferenceBase::update_train_kernel()
+void CSparseInferenceBase::update_train_kernel()
 {
 	//time complexity can be O(m*n) if the TO DO is done
 	check_features();
