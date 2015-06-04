@@ -75,7 +75,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	// features
 	if (!data)
 	{
-		if (m_method->get_inference_type()==INF_FITC)
+		if (m_method->get_inference_type()==INF_SPARSE)
 		{
 			SG_NOTIMPLEMENTED
 		}

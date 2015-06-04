@@ -650,7 +650,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 			int32_t num_samples=m_inducing_features.num_cols;
 			len=dim*num_samples;
 		}
-		else if (!m_fully_FITC)
+		else if (!m_fully_sparse)
 			return CSingleFITCLaplacianBase::get_derivative_wrt_inference_method(param);
 		else
 			return get_derivative_wrt_inducing_features(param);
