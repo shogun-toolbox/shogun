@@ -70,6 +70,8 @@ void CSingleFITCLaplacianBase::init()
 	SG_ADD(&m_V, "V", "V", MS_NOT_AVAILABLE);
 	SG_ADD(&m_fully_FITC, "fully_FITC",
 		"whether the kernel support fitc inference", MS_NOT_AVAILABLE);
+
+#ifdef HAVE_NLOPT
 	SG_ADD(&m_upper_bound, "upper_bound",
 		"upper bound of inducing features", MS_NOT_AVAILABLE);
 	SG_ADD(&m_lower_bound, "lower_bound",
@@ -86,6 +88,7 @@ void CSingleFITCLaplacianBase::init()
 	m_opt_inducing_features=false;
 	m_lower_bound=SGVector<float64_t>();
 	m_upper_bound=SGVector<float64_t>();
+#endif
 }
 
 void CSingleFITCLaplacianBase::set_kernel(CKernel* kern)
