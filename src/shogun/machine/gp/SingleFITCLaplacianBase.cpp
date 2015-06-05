@@ -73,7 +73,6 @@ CSingleFITCLaplacianBase::~CSingleFITCLaplacianBase()
 	delete m_lock;
 }
 
-
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_cov_diagonal()
 {
 	//time complexity O(m*n)
