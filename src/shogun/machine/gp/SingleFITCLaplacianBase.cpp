@@ -31,6 +31,11 @@
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
+#ifdef HAVE_NLOPT
+#include <nlopt.h>
+#include <shogun/features/DenseFeatures.h>
+#endif
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
@@ -40,22 +45,20 @@
 using namespace shogun;
 using namespace Eigen;
 
-CSingleFITCLaplacianBase::CSingleFITCLaplacianBase() : CFITCInferenceBase()
+CSingleFITCLaplacianBase::CSingleFITCLaplacianBase() : CSingleSparseInferenceBase()
 {
 	init();
 }
 
 CSingleFITCLaplacianBase::CSingleFITCLaplacianBase(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CFITCInferenceBase(kern, feat, m, lab, mod, lat)
+		: CSingleSparseInferenceBase(kern, feat, m, lab, mod, lat)
 {
 	init();
-	check_fully_FITC();
 }
 
 void CSingleFITCLaplacianBase::init()
 {
-	m_fully_FITC=false;
 	m_lock=new CLock();
 	SG_ADD(&m_al, "al", "alpha", MS_NOT_AVAILABLE);
 	SG_ADD(&m_t, "t", "noise", MS_NOT_AVAILABLE);
@@ -63,13 +66,6 @@ void CSingleFITCLaplacianBase::init()
 	SG_ADD(&m_w, "w", "B*al", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Rvdd, "Rvdd", "Rvdd", MS_NOT_AVAILABLE);
 	SG_ADD(&m_V, "V", "V", MS_NOT_AVAILABLE);
-	SG_ADD(&m_fully_FITC, "fully_FITC", "whether the kernel support fitc inference", MS_NOT_AVAILABLE);
-}
-
-void CSingleFITCLaplacianBase::set_kernel(CKernel* kern)
-{
-	CInferenceMethod::set_kernel(kern);
-	check_fully_FITC();
 }
 
 CSingleFITCLaplacianBase::~CSingleFITCLaplacianBase()
@@ -77,17 +73,6 @@ CSingleFITCLaplacianBase::~CSingleFITCLaplacianBase()
 	delete m_lock;
 }
 
-void CSingleFITCLaplacianBase::check_fully_FITC()
-{
-	REQUIRE(m_kernel, "Kernel must be set first\n")
-	if (strstr(m_kernel->get_name(), "FITCKernel")!=NULL)
-		m_fully_FITC=true;
-	else
-	{
-		SG_WARNING( "The provided kernel does not support fully FITC inference\n");
-		m_fully_FITC=false;
-	}
-}
 
 SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_cov_diagonal()
 {
@@ -189,10 +174,10 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 	else if (!strcmp(param->m_name, "inducing_features"))
 	{
 		SGVector<float64_t> res;
-		if (!m_fully_FITC)
+		if (!m_fully_sparse)
 		{
-			int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
-			int32_t num_samples=m_inducing_features->get_num_vectors();
+			int32_t dim=m_inducing_features.num_rows;
+			int32_t num_samples=m_inducing_features.num_cols;
 			res=SGVector<float64_t>(dim*num_samples);
 			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully FITC inference\n",
 				param->m_name);
@@ -231,6 +216,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
 
+	CFeatures *inducing_features=get_inducing_features();
 	for (index_t i=0; i<result.vlen; i++)
 	{
 		SGVector<float64_t> deriv_trtr;
@@ -243,10 +229,10 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
 		deriv_trtr=m_kernel->get_parameter_gradient_diagonal(param, i);
 
-		m_kernel->init(m_inducing_features, m_inducing_features);
+		m_kernel->init(inducing_features, inducing_features);
 		deriv_uu=m_kernel->get_parameter_gradient(param, i);
 
-		m_kernel->init(m_inducing_features, m_features);
+		m_kernel->init(inducing_features, m_features);
 		deriv_tru=m_kernel->get_parameter_gradient(param, i);
 		m_lock->unlock();
 
@@ -260,7 +246,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
-
+	SG_UNREF(inducing_features);
 	return result;
 }
 
@@ -336,14 +322,15 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
 
-	int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
-	int32_t num_samples=m_inducing_features->get_num_vectors();
+	int32_t dim=m_inducing_features.num_rows;
+	int32_t num_samples=m_inducing_features.num_cols;
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 
 	m_lock->lock();
+	CFeatures *inducing_features=get_inducing_features();
 	//asymtric part (related to xu and x)
-	m_kernel->init(m_inducing_features, m_features);
+	m_kernel->init(inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
 	//Kpu=1 in our setting
 	MatrixXd A=CMath::exp(m_log_scale*2.0)*eigen_BdK;
@@ -358,7 +345,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 
 	m_lock->lock();
 	//symtric part (related to xu and xu)
-	m_kernel->init(m_inducing_features, m_inducing_features);
+	m_kernel->init(inducing_features, inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
 	//Kpuu=1 in our setting
 	MatrixXd C=CMath::exp(m_log_scale*2.0)*(eigen_BdK*eigen_B.transpose());
@@ -369,6 +356,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		deriv_lat_col_vec+=eigen_deriv_mat*(C.row(lat_lidx).transpose());
 	}
+	SG_UNREF(inducing_features);
 	m_lock->unlock();
 	return deriv_lat;
 }
@@ -397,5 +385,4 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_featur
 
 	return get_derivative_related_inducing_features(BdK, param);
 }
-
 #endif /* HAVE_EIGEN3 */

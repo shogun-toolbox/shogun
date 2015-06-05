@@ -36,7 +36,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/FITCInferenceBase.h>
+#include <shogun/machine/gp/SingleSparseInferenceBase.h>
 #include <shogun/lib/Lock.h>
 
 namespace shogun
@@ -67,7 +67,7 @@ namespace shogun
  * The default time complexity of the kernel method can be O(n^2)
  *
  */
-class CSingleFITCLaplacianBase: public CFITCInferenceBase
+class CSingleFITCLaplacianBase: public CSingleSparseInferenceBase
 {
 public:
 	/** default constructor */
@@ -94,21 +94,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "SingleFITCLaplacianBase"; }
 
-	/** set kernel
-	 *
-	 * @param kern kernel to set
-	 */
-	virtual void set_kernel(CKernel* kern);
 protected:
-	/** check whether the provided kernel can
-	 * compute the gradient wrt inducing features
-	 *
-	 * Note that currently we check the name of the provided kernel
-	 * to determine whether the kernel can compute the derivatives wrt inducing_features
-	 *
-	 * The name of a supported Kernel must end with "FITCKernel"
-	 */
-	virtual void check_fully_FITC();
 
 	/** compute variables which are required to compute negative log marginal
 	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$
@@ -286,13 +272,9 @@ protected:
 	/* a lock used to parallelly compute derivatives wrt hyperparameters */
 	CLock* m_lock;
 
-	/** whether the kernel supports
-	 * to compute the derivatives wrt to inducing features
-	 */
-	bool m_fully_FITC;
-
 	/* V defined in infFITC.m and infFITC_Laplace.m */
 	SGMatrix<float64_t> m_V;
+
 private:
 	/* init */
 	void init();

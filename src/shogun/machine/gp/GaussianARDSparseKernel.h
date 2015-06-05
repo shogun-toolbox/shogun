@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef GAUSSIANARDFITCKERNEL_H
-#define GAUSSIANARDFITCKERNEL_H
+#ifndef GAUSSIANARDSPARSEKERNEL_H
+#define GAUSSIANARDSPARSEKERNEL_H
 
 #include <shogun/lib/config.h>
 
@@ -41,32 +41,32 @@ namespace shogun
 {
 
 /** @brief Gaussian Kernel with Automatic Relevance Detection with supporting
- * FITC inference
+ * Sparse inference
  *
  * This kernel supports to compute the gradient wrt latent features (inducing points),
  * which are not hyper-parameters of the kernel.
  *
  * */
-class CGaussianARDFITCKernel: public CGaussianARDKernel
+class CGaussianARDSparseKernel: public CGaussianARDKernel
 {
 public:
 	/** default constructor */
-	CGaussianARDFITCKernel();
+	CGaussianARDSparseKernel();
 
 	/** return what type of kernel we are
 	 *
 	 * @return kernel type GAUSSIANARD
 	 */
-	virtual EKernelType get_kernel_type() { return K_GAUSSIANARDFITC; }
+	virtual EKernelType get_kernel_type() { return K_GAUSSIANARDSPARSE; }
 
 	/** return the kernel's name
 	 *
-	 * @return name GaussianARDFITCKernel
+	 * @return name GaussianARDSparseKernel
 	 */
-	virtual const char* get_name() const { return "GaussianARDFITCKernel"; }
+	virtual const char* get_name() const { return "GaussianARDSparseKernel"; }
 
 	/** destructor */
-	virtual ~CGaussianARDFITCKernel();
+	virtual ~CGaussianARDSparseKernel();
 
 private:
 	void initialize();
@@ -78,7 +78,7 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	CGaussianARDFITCKernel(int32_t size, float64_t width);
+	CGaussianARDSparseKernel(int32_t size, float64_t width);
 
 	/** constructor
 	 *
@@ -87,15 +87,15 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	CGaussianARDFITCKernel(CDotFeatures* l, CDotFeatures* r,
+	CGaussianARDSparseKernel(CDotFeatures* l, CDotFeatures* r,
 		int32_t size=10, float64_t width=2.0);
 
 
-	/** @param kernel is casted to CGaussianARDFITCKernel, error if not possible
+	/** @param kernel is casted to CGaussianARDSparseKernel, error if not possible
 	 * is SG_REF'ed
-	 * @return casted CGaussianARDFITCKernel object
+	 * @return casted CGaussianARDSparseKernel object
 	 */
-	static CGaussianARDFITCKernel* obtain_from_generic(CKernel* kernel);
+	static CGaussianARDSparseKernel* obtain_from_generic(CKernel* kernel);
 
 	/** return derivative with respect to specified parameter
 	 *
@@ -122,4 +122,4 @@ public:
 };
 }
 
-#endif /* GAUSSIANARDFITCKERNEL_H */
+#endif /* GAUSSIANARDSPARSEKERNEL_H */

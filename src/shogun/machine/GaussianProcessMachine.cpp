@@ -87,6 +87,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
 		REQUIRE(fitc_method, "Inference method %s does not support FITC inference\n",
 			m_method->get_name());
+		fitc_method->optimize_inducing_features();
 		feat=fitc_method->get_inducing_features();
 	}
 	else
@@ -141,7 +142,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	CFeatures* feat;
 
-	bool is_FITC=false;
+	bool is_sparse=false;
 	// use inducing features for FITC inference method
 	if (m_method->get_inference_type()==INF_FITC_REGRESSION ||
 		m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
@@ -150,8 +151,9 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
 		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
 			m_method->get_name());
+		fitc_method->optimize_inducing_features();
 		feat=fitc_method->get_inducing_features();
-		is_FITC=true;
+		is_sparse=true;
 	}
 	else
 		feat=m_method->get_features();
@@ -198,7 +200,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	SGVector<float64_t> s2(m*C*C);
 	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
 
-	if (eigen_L.isUpperTriangular() && !is_FITC)
+	if (eigen_L.isUpperTriangular() && !is_sparse)
 	{
 		if (alpha.vlen==L.num_rows)
 		{

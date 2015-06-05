@@ -29,7 +29,7 @@
  *
  */
 
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 
 #ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
@@ -37,47 +37,47 @@
 
 using namespace shogun;
 
-CGaussianARDFITCKernel::CGaussianARDFITCKernel() : CGaussianARDKernel()
+CGaussianARDSparseKernel::CGaussianARDSparseKernel() : CGaussianARDKernel()
 {
 	initialize();
 }
-void CGaussianARDFITCKernel::initialize()
+void CGaussianARDSparseKernel::initialize()
 {
 }
 
-CGaussianARDFITCKernel::~CGaussianARDFITCKernel()
+CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
 {
 }
 
 #if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 using namespace Eigen;
 
-CGaussianARDFITCKernel::CGaussianARDFITCKernel(int32_t size, float64_t width)
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size, float64_t width)
 		: CGaussianARDKernel(size,width)
 {
 	initialize();
 }
 
-CGaussianARDFITCKernel::CGaussianARDFITCKernel(CDotFeatures* l,
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size, float64_t width)
 		: CGaussianARDKernel(l, r, size, width)
 {
 	initialize();
 }
 
-CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* kernel)
+CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel* kernel)
 {
-	if (kernel->get_kernel_type()!=K_GAUSSIANARDFITC)
+	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{
-		SG_SERROR("Provided kernel is not of type CGaussianARDFITCKernel!\n");
+		SG_SERROR("Provided kernel is not of type CGaussianARDSparseKernel!\n");
 	}
 
 	/* since an additional reference is returned */
 	SG_REF(kernel);
-	return (CGaussianARDFITCKernel*)kernel;
+	return (CGaussianARDSparseKernel*)kernel;
 }
 
-SGVector<float64_t> CGaussianARDFITCKernel::get_parameter_gradient_diagonal(
+SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index)
 {
 	REQUIRE(param, "Param not set\n");
@@ -87,7 +87,7 @@ SGVector<float64_t> CGaussianARDFITCKernel::get_parameter_gradient_diagonal(
 		return CGaussianARDKernel::get_parameter_gradient_diagonal(param, index);
 }
 
-SGMatrix<float64_t> CGaussianARDFITCKernel::get_parameter_gradient(
+SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
 	REQUIRE(param, "Param not set\n");

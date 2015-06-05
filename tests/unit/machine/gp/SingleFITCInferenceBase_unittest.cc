@@ -36,7 +36,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
@@ -92,7 +92,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);

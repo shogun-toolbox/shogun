@@ -33,7 +33,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -534,7 +534,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
