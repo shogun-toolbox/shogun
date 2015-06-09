@@ -37,7 +37,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -50,45 +49,43 @@ CFITCInferenceBase::CFITCInferenceBase() : CInferenceMethod()
 void CFITCInferenceBase::check_features()
 {
 	REQUIRE(m_features, "Input features not set\n")
-	REQUIRE(m_inducing_features, "Inducing features not set\n")
 }
 
 void CFITCInferenceBase::convert_features()
 {
 	CDotFeatures *feat_type=dynamic_cast<CDotFeatures *>(m_features);
-	CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(m_inducing_features);
+
+	SGMatrix<float64_t>lat_m(m_inducing_features.matrix,
+		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
+	CDotFeatures *lat_type=new CDenseFeatures<float64_t>(lat_m);
+
 	REQUIRE(feat_type, "Input features (%s) must be DotFeatures"
 		" or one of its subclasses\n", m_features->get_name())
-	REQUIRE(lat_type, "Inducing features (%s) must be"
-		" DotFeatures or one of its subclasses\n", m_inducing_features->get_name())
 	REQUIRE(feat_type->get_dim_feature_space()==lat_type->get_dim_feature_space(),
 		"The dim of feature spaces between"
 		" input features (%d) and inducing features (%d) must be same\n",
 		feat_type->get_dim_feature_space(),
 		lat_type->get_dim_feature_space())
-	if((m_features->get_feature_class()!=m_inducing_features->get_feature_class())||
-		(m_features->get_feature_type()!=m_inducing_features->get_feature_type()))
+	if((m_features->get_feature_class()!=lat_type->get_feature_class())||
+		(m_features->get_feature_type()!=lat_type->get_feature_type()))
 	{
-		if(m_features->get_feature_class()!=m_inducing_features->get_feature_class())
+		if(m_features->get_feature_class()!=lat_type->get_feature_class())
 		{
 			SG_WARNING("Input features (%s) and inducing features (%s) are"
 				" difference classes\n", m_features->get_name(),
-				m_inducing_features->get_name());
+				lat_type->get_name());
 		}
-		if(m_features->get_feature_type()!=m_inducing_features->get_feature_type())
+		if(m_features->get_feature_type()!=lat_type->get_feature_type())
 		{
 			SG_WARNING("Input features and inducing features are difference types\n");
 		}
-		SG_WARNING("Input features and inducing features may be deleted\n");
+		SG_WARNING("Input features may be deleted\n");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
 		SG_UNREF(m_features);
 		m_features=new CDenseFeatures<float64_t>(feat_m);
 		SG_REF(m_features);
-		SGMatrix<float64_t> lat_m=lat_type->get_computed_dot_feature_matrix();
-		SG_UNREF(m_inducing_features)
-		m_inducing_features=new CDenseFeatures<float64_t>(lat_m);
-		SG_REF(m_inducing_features);
 	}
+	SG_UNREF(lat_type);
 }
 
 CFITCInferenceBase::CFITCInferenceBase(CKernel* kern, CFeatures* feat,
@@ -101,7 +98,7 @@ CFITCInferenceBase::CFITCInferenceBase(CKernel* kern, CFeatures* feat,
 
 void CFITCInferenceBase::init()
 {
-	SG_ADD((CSGObject**)&m_inducing_features, "inducing_features", "inducing features",
+	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
 			MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD(&m_ind_noise, "inducing_noise", "noise about inducing potins",
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
@@ -109,7 +106,7 @@ void CFITCInferenceBase::init()
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_ktrtr_diag, "ktrtr_diag", "diagonal elements of kernel matrix m_ktrtr", MS_NOT_AVAILABLE);
 
-	m_inducing_features=NULL;
+	m_inducing_features=SGMatrix<float64_t>();
 	m_ind_noise=1e-10;
 }
 
@@ -126,16 +123,14 @@ float64_t CFITCInferenceBase::get_inducing_noise()
 
 CFITCInferenceBase::~CFITCInferenceBase()
 {
-	SG_UNREF(m_inducing_features);
 }
 
 void CFITCInferenceBase::check_members() const
 {
 	CInferenceMethod::check_members();
 
-	REQUIRE(m_inducing_features, "Inducing features should not be NULL\n")
-	REQUIRE(m_inducing_features->get_num_vectors(),
-			"Number of inducing features must be greater than zero\n")
+	REQUIRE(m_inducing_features.num_rows, "Inducing features should not be empty\n")
+	REQUIRE(m_inducing_features.num_cols, "Inducing features should not be empty\n")
 }
 
 SGVector<float64_t> CFITCInferenceBase::get_alpha()
@@ -165,13 +160,17 @@ void CFITCInferenceBase::update_train_kernel()
 	m_kernel->init(m_features, m_features);
 	m_ktrtr_diag=m_kernel->get_kernel_diagonal();
 
+	CFeatures* inducing_features=get_inducing_features();
+
 	// create kernel matrix for inducing features
-	m_kernel->init(m_inducing_features, m_inducing_features);
+	m_kernel->init(inducing_features, inducing_features);
 	m_kuu=m_kernel->get_kernel_matrix();
 
 	// create kernel matrix for inducing and training features
-	m_kernel->init(m_inducing_features, m_features);
+	m_kernel->init(inducing_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
+
+	SG_UNREF(inducing_features);
 }
 
 #endif /* HAVE_EIGEN3 */

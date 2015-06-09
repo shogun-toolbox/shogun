@@ -87,6 +87,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
 		REQUIRE(fitc_method, "Inference method %s does not support FITC inference\n",
 			m_method->get_name());
+		fitc_method->optimize_inducing_features();
 		feat=fitc_method->get_inducing_features();
 	}
 	else
@@ -150,6 +151,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
 		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
 			m_method->get_name());
+		fitc_method->optimize_inducing_features();
 		feat=fitc_method->get_inducing_features();
 		is_FITC=true;
 	}
