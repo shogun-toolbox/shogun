@@ -5,6 +5,7 @@
 #include <shogun/kernel/PyramidChi2.h>
 #include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/kernel/AUCKernel.h>
+#include <shogun/kernel/BesselKernel.h>
 #include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
 #include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
 #include <shogun/kernel/CauchyKernel.h>
