@@ -99,7 +99,7 @@ struct elementwise_unary_operation<Backend::NATIVE, Operand, ReturnType, UnaryOp
 			"result must be the same!\n");
 
 #pragma omp parallel for
-		for (index_t i=0; i<operand.size(); ++i)
+		for (decltype(operand.size()) i=0; i<operand.size(); ++i)
 			result.data()[i]=unary_op(operand.data()[i]);
 	}
 };

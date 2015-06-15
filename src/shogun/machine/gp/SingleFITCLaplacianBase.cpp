@@ -31,6 +31,11 @@
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
+#ifdef HAVE_NLOPT
+#include <nlopt.h>
+#include <shogun/features/DenseFeatures.h>
+#endif
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
@@ -63,7 +68,27 @@ void CSingleFITCLaplacianBase::init()
 	SG_ADD(&m_w, "w", "B*al", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Rvdd, "Rvdd", "Rvdd", MS_NOT_AVAILABLE);
 	SG_ADD(&m_V, "V", "V", MS_NOT_AVAILABLE);
-	SG_ADD(&m_fully_FITC, "fully_FITC", "whether the kernel support fitc inference", MS_NOT_AVAILABLE);
+	SG_ADD(&m_fully_FITC, "fully_FITC",
+		"whether the kernel support fitc inference", MS_NOT_AVAILABLE);
+
+#ifdef HAVE_NLOPT
+	SG_ADD(&m_upper_bound, "upper_bound",
+		"upper bound of inducing features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_lower_bound, "lower_bound",
+		"lower bound of inducing features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_ind_iterations, "max_ind_iterations",
+		"max number of iterations used in inducing features optimization", MS_NOT_AVAILABLE);
+	SG_ADD(&m_ind_tolerance, "ind_tolerance",
+		"tolearance used in inducing features optimization", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_inducing_features,
+		"opt_inducing_features", "whether optimize inducing features", MS_NOT_AVAILABLE);
+
+	m_max_ind_iterations=50;
+	m_ind_tolerance=1e-3;
+	m_opt_inducing_features=false;
+	m_lower_bound=SGVector<float64_t>();
+	m_upper_bound=SGVector<float64_t>();
+#endif
 }
 
 void CSingleFITCLaplacianBase::set_kernel(CKernel* kern)
@@ -84,7 +109,7 @@ void CSingleFITCLaplacianBase::check_fully_FITC()
 		m_fully_FITC=true;
 	else
 	{
-		SG_WARNING( "The provided kernel does not support fully FITC inference\n");
+		SG_WARNING( "The provided kernel does not support to optimize inducing features\n");
 		m_fully_FITC=false;
 	}
 }
@@ -191,8 +216,8 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inference_metho
 		SGVector<float64_t> res;
 		if (!m_fully_FITC)
 		{
-			int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
-			int32_t num_samples=m_inducing_features->get_num_vectors();
+			int32_t dim=m_inducing_features.num_rows;
+			int32_t num_samples=m_inducing_features.num_cols;
 			res=SGVector<float64_t>(dim*num_samples);
 			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully FITC inference\n",
 				param->m_name);
@@ -231,6 +256,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
 
+	CFeatures *inducing_features=get_inducing_features();
 	for (index_t i=0; i<result.vlen; i++)
 	{
 		SGVector<float64_t> deriv_trtr;
@@ -243,10 +269,10 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
 		deriv_trtr=m_kernel->get_parameter_gradient_diagonal(param, i);
 
-		m_kernel->init(m_inducing_features, m_inducing_features);
+		m_kernel->init(inducing_features, inducing_features);
 		deriv_uu=m_kernel->get_parameter_gradient(param, i);
 
-		m_kernel->init(m_inducing_features, m_features);
+		m_kernel->init(inducing_features, m_features);
 		deriv_tru=m_kernel->get_parameter_gradient(param, i);
 		m_lock->unlock();
 
@@ -260,7 +286,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_kernel(
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
-
+	SG_UNREF(inducing_features);
 	return result;
 }
 
@@ -336,14 +362,15 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 	Map<MatrixXd> eigen_BdK(BdK.matrix, BdK.num_rows, BdK.num_cols);
 
-	int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
-	int32_t num_samples=m_inducing_features->get_num_vectors();
+	int32_t dim=m_inducing_features.num_rows;
+	int32_t num_samples=m_inducing_features.num_cols;
 	SGVector<float64_t>deriv_lat(dim*num_samples);
 	deriv_lat.zero();
 
 	m_lock->lock();
+	CFeatures *inducing_features=get_inducing_features();
 	//asymtric part (related to xu and x)
-	m_kernel->init(m_inducing_features, m_features);
+	m_kernel->init(inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
 	//Kpu=1 in our setting
 	MatrixXd A=CMath::exp(m_log_scale*2.0)*eigen_BdK;
@@ -358,7 +385,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 
 	m_lock->lock();
 	//symtric part (related to xu and xu)
-	m_kernel->init(m_inducing_features, m_inducing_features);
+	m_kernel->init(inducing_features, inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
 	//Kpuu=1 in our setting
 	MatrixXd C=CMath::exp(m_log_scale*2.0)*(eigen_BdK*eigen_B.transpose());
@@ -369,6 +396,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		deriv_lat_col_vec+=eigen_deriv_mat*(C.row(lat_lidx).transpose());
 	}
+	SG_UNREF(inducing_features);
 	m_lock->unlock();
 	return deriv_lat;
 }
@@ -397,5 +425,125 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_featur
 
 	return get_derivative_related_inducing_features(BdK, param);
 }
+
+#ifdef HAVE_NLOPT
+
+void CSingleFITCLaplacianBase::check_bound(SGVector<float64_t> bound)
+{
+	if (bound.vlen>1)
+	{
+		REQUIRE(m_inducing_features.num_rows, "Inducing features must set before this method is called\n");
+		REQUIRE(m_inducing_features.num_rows==bound.vlen,
+			"Inducing features (%d) and bound constraints (%d) are different\n");
+	}
+}
+
+void CSingleFITCLaplacianBase::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
+{
+	check_bound(bound);
+	m_lower_bound=bound;
+}
+void CSingleFITCLaplacianBase::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
+{
+	check_bound(bound);
+	m_upper_bound=bound;
+}
+
+void CSingleFITCLaplacianBase::set_max_iterations_for_inducing_features(int32_t it)
+{
+	REQUIRE(it>0, "Iteration (%d) must be positive\n",it);
+	m_max_ind_iterations=it;
+}
+void CSingleFITCLaplacianBase::set_tolearance_for_inducing_features(float64_t tol)
+{
+
+	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
+	m_ind_tolerance=tol;
+}
+double CSingleFITCLaplacianBase::nlopt_function(unsigned n, const double* x, double* grad, void* func_data)
+{
+	CSingleFITCLaplacianBase* object=static_cast<CSingleFITCLaplacianBase *>(func_data);
+	REQUIRE(object,"func_data must be SingleFITCLaplacianBase pointer\n");
+
+	double nlz=object->get_negative_log_marginal_likelihood();
+	object->compute_gradient();
+
+	TParameter* param=object->m_gradient_parameters->get_parameter("inducing_features");
+	SGVector<float64_t> derivatives=object->get_derivative_wrt_inducing_features(param);
+
+	std::copy(derivatives.vector,derivatives.vector+n,grad);
+
+	return nlz;
+}
+
+void CSingleFITCLaplacianBase::enable_optimizing_inducing_features(bool is_optmization)
+{
+	m_opt_inducing_features=is_optmization;
+}
+
+void CSingleFITCLaplacianBase::optimize_inducing_features()
+{
+	if (!m_opt_inducing_features)
+		return;
+
+	check_fully_FITC();
+	REQUIRE(m_fully_FITC,"Please use a kernel which supports to optimize inducing features\n");
+
+	//features by samples
+	SGMatrix<float64_t>& lat_m=m_inducing_features;
+	SGVector<double> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
+
+	// create nlopt object and choose LBFGS
+	// optimization algorithm
+	nlopt_opt opt=nlopt_create(NLOPT_LD_LBFGS, lat_m.num_rows*lat_m.num_cols);
+
+	if (m_lower_bound.vlen>0)
+	{
+		SGVector<double> lower_bound(lat_m.num_rows*lat_m.num_cols);
+		if(m_lower_bound.vlen==1)
+			lower_bound.set_const(m_lower_bound[0]);
+		else
+		{
+			for(index_t j=0; j<lat_m.num_cols; j++)
+				std::copy(m_lower_bound.vector, m_lower_bound.vector+m_lower_bound.vlen,
+					lower_bound.vector+j*lat_m.num_rows);
+		}
+		// set upper and lower bound
+		nlopt_set_lower_bounds(opt, lower_bound.vector);
+	}
+	if (m_upper_bound.vlen>0)
+	{
+		SGVector<double> upper_bound(lat_m.num_rows*lat_m.num_cols);
+		if(m_upper_bound.vlen==1)
+			upper_bound.set_const(m_upper_bound[0]);
+		else
+		{
+			for(index_t j=0; j<lat_m.num_cols; j++)
+				std::copy(m_upper_bound.vector, m_upper_bound.vector+m_upper_bound.vlen,
+					upper_bound.vector+j*lat_m.num_rows);
+		}
+		// set upper and upper bound
+		nlopt_set_upper_bounds(opt, upper_bound.vector);
+	}
+
+	// set maximum number of evaluations
+	nlopt_set_maxeval(opt, m_max_ind_iterations);
+	// set absolute argument tolearance
+	nlopt_set_xtol_abs1(opt, m_ind_tolerance);
+	nlopt_set_ftol_abs(opt, m_ind_tolerance);
+
+	nlopt_set_min_objective(opt, CSingleFITCLaplacianBase::nlopt_function, this);
+
+	// the minimum objective value, upon return
+	double minf;
+
+	// optimize our function
+	nlopt_result result=nlopt_optimize(opt, x.vector, &minf);
+	REQUIRE(result>0, "NLopt failed while optimizing objective function!\n");
+
+	// clean up
+	nlopt_destroy(opt);
+}
+#endif
 
 #endif /* HAVE_EIGEN3 */

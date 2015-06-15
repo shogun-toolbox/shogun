@@ -237,7 +237,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelih
 	{
 		SG_WARNING("nlZ cannot be computed since W is too negative");
 		//nlZ = NaN;
-		return CMath::NOT_A_NUMBER;
+		return CMath::INFTY;
 	}
 	//time complexity O(m^2*n)
 	Map<VectorXd> eigen_alpha(m_al.vector, m_al.vlen);
@@ -646,8 +646,8 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 	{
 		if(m_Wneg)
 		{
-			int32_t dim=((CDotFeatures *)m_inducing_features)->get_dim_feature_space();
-			int32_t num_samples=m_inducing_features->get_num_vectors();
+			int32_t dim=m_inducing_features.num_rows;
+			int32_t num_samples=m_inducing_features.num_cols;
 			len=dim*num_samples;
 		}
 		else if (!m_fully_FITC)
@@ -734,6 +734,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kern
 		return derivative_helper_when_Wneg(result, param);
 
 	m_lock->lock();
+	CFeatures *inducing_features=get_inducing_features();
 	for (index_t i=0; i<result.vlen; i++)
 	{
 		//time complexity O(m^2*n)
@@ -744,10 +745,10 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kern
 		m_kernel->init(m_features, m_features);
 		deriv_trtr=m_kernel->get_parameter_gradient_diagonal(param, i);
 
-		m_kernel->init(m_inducing_features, m_inducing_features);
+		m_kernel->init(inducing_features, inducing_features);
 		deriv_uu=m_kernel->get_parameter_gradient(param, i);
 
-		m_kernel->init(m_inducing_features, m_features);
+		m_kernel->init(inducing_features, m_features);
 		deriv_tru=m_kernel->get_parameter_gradient(param, i);
 
 		// create eigen representation of derivatives
@@ -760,6 +761,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kern
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
+	SG_UNREF(inducing_features);
 	m_lock->unlock();
 
 	return result;

@@ -47,6 +47,11 @@
 
 #include <string>
 
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#include <initializer_list>
+#include <shogun/mathematics/linalg/internal/implementation/operations/Parameter.h>
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
 namespace shogun
 {
 
@@ -215,10 +220,61 @@ viennacl::ocl::kernel& generate_two_arg_elementwise_kernel(
 	return kernel;
 }
 
+/**
+ * This method replaces all occurances of a string with another string.
+ * The code is based on a Stack Overflow answer, link below.
+ *
+ * http://stackoverflow.com/questions/2896600/how-to-replace-all-occurrences-of-a-character-in-string
+ *
+ * @param str The string in which the substitution is going to occur.
+ * @param from The string which will be substituted
+ * @param to The string which will be the substitution for 'from'
+ * @return The string with all occurances of 'from' substituted by 'to'
+ */
+inline std::string replace_all(std::string str, const std::string& from, const std::string& to)
+{
+	size_t start_pos=0;
+	while ((start_pos=str.find(from, start_pos))!=std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos+=to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
 }
+
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+/**
+ * This method can be used to pass custom operations to be performed by OpenCL
+ * element-wise for GPU vectors/matrices. The users can pass a format-string
+ * for their desired expressions with optional parameters (if there are any),
+ * enclosed by opening and closing braces, e.g. "{param_name1}". In case there
+ * are any such parameters, then this string should be followed by a number of
+ * shogun::linalg::ocl::Parameter objects to be substituted in place of those params.
+ * These Parameter objects can be created on the fly.
+ *
+ * See ElementwiseOperations_unittest.cc and elementwise_benchmark.cpp for an
+ * example of its usage.
+ *
+ * @param str The format string
+ * @param params The initializer list of optional Parameters
+ * @return The final expression string ready to be used by the OpenCL kernel.
+ */
+inline std::string format(const char* str, std::initializer_list<shogun::linalg::ocl::Parameter> params)
+{
+	std::string fmt(str);
+	for (auto i=params.begin(); i!=params.end(); ++i)
+		fmt=replace_all(fmt, "{"+i->m_name+"}", *i);
+	return fmt.append("\n");
 }
-}
-}
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+} // ocl
+
+} // implementation
+
+} // linalg
+
+} // shogun
 
 #endif // HAVE_VIENNACL
 
