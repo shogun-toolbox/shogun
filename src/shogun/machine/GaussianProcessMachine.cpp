@@ -79,16 +79,13 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 
 	CFeatures* feat;
 
-	// use inducing features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC_REGRESSION ||
-		m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+	CSingleSparseInferenceBase* sparse_method=
+		dynamic_cast<CSingleSparseInferenceBase *>(m_method);
+	// use inducing features for sparse inference method
+	if (sparse_method)
 	{
-		CSingleFITCLaplacianBase* fitc_method=
-			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
-		REQUIRE(fitc_method, "Inference method %s does not support FITC inference\n",
-			m_method->get_name());
-		fitc_method->optimize_inducing_features();
-		feat=fitc_method->get_inducing_features();
+		sparse_method->optimize_inducing_features();
+		feat=sparse_method->get_inducing_features();
 	}
 	else
 		feat=m_method->get_features();
@@ -143,16 +140,13 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	CFeatures* feat;
 
 	bool is_sparse=false;
-	// use inducing features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC_REGRESSION ||
-		m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+	CSingleSparseInferenceBase* sparse_method=
+		dynamic_cast<CSingleSparseInferenceBase *>(m_method);
+	// use inducing features for sparse inference method
+	if (sparse_method)
 	{
-		CSingleFITCLaplacianBase* fitc_method=
-			dynamic_cast<CSingleFITCLaplacianBase *>(m_method);
-		REQUIRE(fitc_method, "Inference method %s must support FITC inference\n",
-			m_method->get_name());
-		fitc_method->optimize_inducing_features();
-		feat=fitc_method->get_inducing_features();
+		sparse_method->optimize_inducing_features();
+		feat=sparse_method->get_inducing_features();
 		is_sparse=true;
 	}
 	else
