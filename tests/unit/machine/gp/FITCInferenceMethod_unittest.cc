@@ -747,7 +747,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
-		TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
+	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
 
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
