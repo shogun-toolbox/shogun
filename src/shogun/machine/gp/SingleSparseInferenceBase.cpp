@@ -63,6 +63,7 @@ void CSingleSparseInferenceBase::init()
 	m_fully_sparse=false;
 	SG_ADD(&m_fully_sparse, "fully_Sparse",
 		"whether the kernel support sparse inference", MS_NOT_AVAILABLE);
+	m_lock=new CLock();
 
 #ifdef HAVE_NLOPT
 	SG_ADD(&m_upper_bound, "upper_bound",
@@ -91,6 +92,7 @@ void CSingleSparseInferenceBase::set_kernel(CKernel* kern)
 
 CSingleSparseInferenceBase::~CSingleSparseInferenceBase()
 {
+	delete m_lock;
 }
 
 void CSingleSparseInferenceBase::check_fully_sparse()
@@ -103,6 +105,100 @@ void CSingleSparseInferenceBase::check_fully_sparse()
 		SG_WARNING( "The provided kernel does not support to optimize inducing features\n");
 		m_fully_sparse=false;
 	}
+}
+
+SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	// the time complexity O(m^2*n) if the TO DO is done
+	REQUIRE(param, "Param not set\n");
+	REQUIRE(!(strcmp(param->m_name, "log_scale")
+			&& strcmp(param->m_name, "log_inducing_noise")
+			&& strcmp(param->m_name, "inducing_features")),
+		    "Can't compute derivative of"
+			" the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	if (!strcmp(param->m_name, "log_inducing_noise"))
+		// wrt inducing_noise
+		// compute derivative wrt inducing noise
+		return get_derivative_wrt_inducing_noise(param);
+	else if (!strcmp(param->m_name, "inducing_features"))
+	{
+		SGVector<float64_t> res;
+		if (!m_fully_sparse)
+		{
+			int32_t dim=m_inducing_features.num_rows;
+			int32_t num_samples=m_inducing_features.num_cols;
+			res=SGVector<float64_t>(dim*num_samples);
+			SG_WARNING("Derivative wrt %s cannot be computed since the kernel does not support fully sparse inference\n",
+				param->m_name);
+			res.zero();
+			return res;
+		}
+		res=get_derivative_wrt_inducing_features(param);
+		return res;
+	}
+
+	// wrt scale
+	// clone kernel matrices
+	SGVector<float64_t> deriv_trtr=m_ktrtr_diag.clone();
+	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
+	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
+
+	// create eigen representation of kernel matrices
+	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
+	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
+
+	// compute derivatives wrt scale for each kernel matrix
+	SGVector<float64_t> result(1);
+
+	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
+	return result;
+}
+
+SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
+	const TParameter* param)
+{
+	REQUIRE(param, "Param not set\n");
+	SGVector<float64_t> result;
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
+
+	CFeatures *inducing_features=get_inducing_features();
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> deriv_trtr;
+		SGMatrix<float64_t> deriv_uu;
+		SGMatrix<float64_t> deriv_tru;
+
+		m_lock->lock();
+		m_kernel->init(m_features, m_features);
+		//to reduce the time complexity
+		//the kernel object only computes diagonal elements of gradients wrt hyper-parameter
+		deriv_trtr=m_kernel->get_parameter_gradient_diagonal(param, i);
+
+		m_kernel->init(inducing_features, inducing_features);
+		deriv_uu=m_kernel->get_parameter_gradient(param, i);
+
+		m_kernel->init(inducing_features, m_features);
+		deriv_tru=m_kernel->get_parameter_gradient(param, i);
+		m_lock->unlock();
+
+		// create eigen representation of derivatives
+		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
+				deriv_uu.num_cols);
+		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
+				deriv_tru.num_cols);
+
+		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+		result[i]*=CMath::exp(m_log_scale*2.0);
+	}
+	SG_UNREF(inducing_features);
+	return result;
 }
 
 #ifdef HAVE_NLOPT

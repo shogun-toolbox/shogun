@@ -196,16 +196,6 @@ protected:
 	virtual void update_deriv()=0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
-	 *
-	 * @param param parameter of given inference class
-	 *
-	 * @return derivative of negative log marginal likelihood
-	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
-
-	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
 	 *
 	 * @param param parameter of given likelihood model
@@ -214,16 +204,6 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
 			const TParameter* param)=0;
-
-	/** returns derivative of negative log marginal likelihood wrt kernel's
-	 * parameter
-	 *
-	 * @param param parameter of given kernel
-	 *
-	 * @return derivative of negative log marginal likelihood
-	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -268,9 +248,6 @@ protected:
 	 * Note that W is NOT the diagonal matrix
 	 */
 	SGMatrix<float64_t> m_Rvdd;
-
-	/* a lock used to parallelly compute derivatives wrt hyperparameters */
-	CLock* m_lock;
 
 	/* V defined in infFITC.m and infFITC_Laplace.m */
 	SGMatrix<float64_t> m_V;

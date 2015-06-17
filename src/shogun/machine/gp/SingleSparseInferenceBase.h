@@ -128,6 +128,52 @@ public:
 
 protected:
 
+	/** compute variables which are required to compute negative log marginal
+	 * likelihood full derivatives wrt  cov-like hyperparameter \f$\theta\f$
+	 *
+	 * Note that
+	 * scale, which is a hyperparameter in inference_method, is a cov-like hyperparameter
+	 * hyperparameters in cov function are cov-like hyperparameters
+	 *
+	 * @param ddiagKi \f$\textbf{diag}(\frac{\partial {\Sigma_{n}}}{\partial {\theta}})\f$
+	 * @param dKuui \f$\frac{\partial {\Sigma_{m}}}{\partial {\theta}}\f$
+	 * @param dKui \f$\frac{\partial {\Sigma_{m,n}}}{\partial {\theta}}\f$
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)=0;
+
+	/** returns derivative of negative log marginal likelihood wrt inducing noise
+	 *
+	 * @param param parameter of given inference class
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
+		const TParameter* param)=0;
+
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * CInferenceMethod class
+	 *
+	 * @param param parameter of CInferenceMethod class
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
+			const TParameter* param);
+
+
+	/** returns derivative of negative log marginal likelihood wrt kernel's
+	 * parameter
+	 *
+	 * @param param parameter of given kernel
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_kernel(
+			const TParameter* param);
 #ifdef HAVE_NLOPT
 	/** check the bound constraint is vailid or not
 	 *
@@ -173,10 +219,21 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param)=0;
 
 	bool m_fully_sparse;
+
+	/* a lock used to parallelly compute derivatives wrt hyperparameters */
+	CLock* m_lock;
 private:
 	/* init */
 	void init();
 
+	/** helper function is passed to the nlopt API
+	 *
+	 * @param n the length of the variables to be optimized (minimized)
+	 * @param x pointer of the variables
+	 * @param grad pointer of gradients of current x to be stored
+	 * @param func_data pointer of extra information used in opitmization
+	 * @return negative marginal log likelihood (minimized function value)
+	 * */
 	static double nlopt_function(unsigned n, const double* x, double* grad, void* func_data);
 };
 }
