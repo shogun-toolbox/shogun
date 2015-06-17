@@ -45,7 +45,8 @@ enum EInferenceType
 	INF_KL_DIAGONAL=51,
 	INF_KL_CHOLESKY=52,
 	INF_KL_COVARIANCE=53,
-	INF_KL_DUAL=54
+	INF_KL_DUAL=54,
+	INF_KL_SPARSE_REGRESSION=55
 };
 
 /** @brief The Inference Method base class.
