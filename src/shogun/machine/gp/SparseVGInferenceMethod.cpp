@@ -61,11 +61,31 @@ CSparseVGInferenceMethod::CSparseVGInferenceMethod(CKernel* kern, CFeatures* fea
 
 void CSparseVGInferenceMethod::init()
 {
+	m_yy=0.0;
+	m_f3=0.0;
+	m_sigma2=0.0;
+	m_trk=0.0;
+	m_Tmm=SGMatrix<float64_t>();
+	m_Tnm=SGMatrix<float64_t>();
+	m_inv_Lm=SGMatrix<float64_t>();
+	m_inv_La=SGMatrix<float64_t>();
+	m_Knm_inv_Lm=SGMatrix<float64_t>();
+
+	SG_ADD(&m_yy, "yy", "yy", MS_NOT_AVAILABLE);
+	SG_ADD(&m_f3, "f3", "f3", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sigma2, "sigma2", "sigma2", MS_NOT_AVAILABLE);
+	SG_ADD(&m_trk, "trk", "trk", MS_NOT_AVAILABLE);
+	SG_ADD(&m_Tmm, "Tmm", "Tmm", MS_NOT_AVAILABLE);
+	SG_ADD(&m_Tnm, "Tnm", "Tnm", MS_NOT_AVAILABLE);
+	SG_ADD(&m_inv_Lm, "inv_Lm", "inv_Lm", MS_NOT_AVAILABLE);
+	SG_ADD(&m_inv_La, "inv_La", "inv_La", MS_NOT_AVAILABLE);
+	SG_ADD(&m_Knm_inv_Lm, "Knm_Inv_Lm", "Knm_Inv_Lm", MS_NOT_AVAILABLE);
 }
 
 CSparseVGInferenceMethod::~CSparseVGInferenceMethod()
 {
 }
+
 void CSparseVGInferenceMethod::compute_gradient()
 {
 	CInferenceMethod::compute_gradient();
@@ -116,6 +136,8 @@ void CSparseVGInferenceMethod::check_members() const
 
 SGVector<float64_t> CSparseVGInferenceMethod::get_diagonal_vector()
 {
+	SG_NOTIMPLEMENTED
+	//the inference method does not need to use this 
 	return SGVector<float64_t>();
 }
 
@@ -271,11 +293,15 @@ void CSparseVGInferenceMethod::update_deriv()
 
 SGVector<float64_t> CSparseVGInferenceMethod::get_posterior_mean()
 {
+	SG_NOTIMPLEMENTED
+	//TODO: implement this method once I get time
 	return SGVector<float64_t>();
 }
 
 SGMatrix<float64_t> CSparseVGInferenceMethod::get_posterior_covariance()
 {
+	SG_NOTIMPLEMENTED
+	//TODO: implement this method once I get time
 	return SGMatrix<float64_t>();
 }
 
@@ -331,9 +357,7 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_inducing_featur
 		//DXunm/model.sigma2;
 		deriv_lat_col_vec+=eigen_deriv_mat*(-CMath::exp(m_log_scale*2.0)/m_sigma2*eigen_Tnm.col(lat_idx));
 	}
-	m_lock->unlock();
 
-	m_lock->lock();
 	//symtric part (related to xu and xu)
 	m_kernel->init(inducing_features, inducing_features);
 	for(int32_t lat_lidx=0; lat_lidx<eigen_Tmm.cols(); lat_lidx++)

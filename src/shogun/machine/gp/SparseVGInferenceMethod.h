@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from Gaussian Process Machine Learning Toolbox
+ * Code adapted from
  * http://www.aueb.gr/users/mtitsias/code/varsgp.tar.gz
  */
 
@@ -42,9 +42,10 @@
 
 namespace shogun
 {
-
-/** @brief The  inference method class.
- *
+/** @brief The inference method class based on the Titsias' variational bound.
+ * For more details, see Titsias, Michalis K.
+ * "Variational learning of inducing variables in sparse Gaussian processes."
+ * International Conference on Artificial Intelligence and Statistics. 2009.
  *
  * NOTE: The Gaussian Likelihood Function must be used for this inference
  * method.
@@ -238,14 +239,23 @@ protected:
 	/** update gradients */
 	virtual void compute_gradient();
 protected:
+	/* inv_Lm=inv(Lm) where Lm*Lm'=Kmm */
 	SGMatrix<float64_t> m_inv_Lm;
+	/* Knm*inv_Lm */
 	SGMatrix<float64_t> m_Knm_inv_Lm;
+	/* invLa=inv(La) where La*La'=sigma2*eye(m)+inv_Lm*Kmn*Knm*inv_Lm' */
 	SGMatrix<float64_t> m_inv_La;
+	/* yy=(y-meanfun)'*(y-meanfun) */
 	float64_t m_yy;
+	/* the term used to compute gradient wrt likelihood and marginal likelihood*/
 	float64_t m_f3;
+	/* square of sigma from Gaussian likelihood*/
 	float64_t m_sigma2;
+	/* the trace term to compute marginal likelihood*/
 	float64_t m_trk;
+	/* a matrix used to compute gradients wrt kernel (Kmm)*/
 	SGMatrix<float64_t> m_Tmm;
+	/* a matrix used to compute gradients wrt kernel (Knm)*/
 	SGMatrix<float64_t> m_Tnm;
 private:
 	/** init */
