@@ -251,3 +251,191 @@ TEST(DenseSubSamplesFeatures, test3)
 	SG_UNREF(features_train0);
 	SG_UNREF(latent_features_train0);
 }
+
+TEST(DenseSubSamplesFeatures, test5)
+{
+	index_t n=6;
+	index_t dim=2;
+	index_t m=4;
+	float64_t rel_tolorance=1e-10;
+	float64_t abs_tolorance;
+
+	SGMatrix<float64_t> feat_train(dim, n);
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+
+	feat_train(0,0)=0.81263;
+	feat_train(0,1)=0.99976;
+	feat_train(0,2)=1.17037;
+	feat_train(0,3)=1.51752;
+	feat_train(0,4)=1.57765;
+	feat_train(0,5)=3.89440;
+
+	feat_train(1,0)=0.5;
+	feat_train(1,1)=0.4576;
+	feat_train(1,2)=5.17637;
+	feat_train(1,3)=2.56752;
+	feat_train(1,4)=4.57765;
+	feat_train(1,5)=2.89440;
+
+	lat_feat_train(0,0)=1.00000;
+	lat_feat_train(0,1)=3.00000;
+	lat_feat_train(0,2)=4.00000;
+	lat_feat_train(0,3)=-8.00000;
+
+	lat_feat_train(1,0)=3.00000;
+	lat_feat_train(1,1)=2.00000;
+	lat_feat_train(1,2)=5.00000;
+	lat_feat_train(1,3)=-7.00000;
+
+	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+
+	SGVector<int32_t> idx1(n/2);
+	for(int i=0; i<n; i++)
+	{
+		if (i%2==0)
+			idx1[i/2]=i;
+	}
+	SG_REF(features_train0);
+	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	SGVector<int32_t> idx2(m/2);
+	for(int i=0; i<m; i++)
+	{
+		if (i%2==0)
+			idx2[i/2]=i;
+	}
+	SG_REF(latent_features_train0);
+	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+	for(int i=0; i<n; i++)
+	{
+		for(int j=0; j<m; j++)
+		{
+			if (i%2==0 && j%2==0)
+			{
+				float64_t res=latent_features_train0->dot(j,features_train0,i);
+				abs_tolorance = CMath::get_abs_tolerance(res, rel_tolorance);
+
+				float64_t res1=latent_features_train1->dot(j/2,features_train0,i);
+				EXPECT_NEAR(res1, res, abs_tolorance);
+
+				float64_t res2=latent_features_train1->dot(j/2,features_train1,i/2);
+				EXPECT_NEAR(res2, res, abs_tolorance);
+			}
+
+		}
+	}
+
+	SG_UNREF(features_train1);
+	SG_UNREF(latent_features_train1);
+	SG_UNREF(features_train0);
+	SG_UNREF(latent_features_train0);
+}
+
+TEST(DenseSubSamplesFeatures, test6)
+{
+	index_t n=6;
+	index_t dim=2;
+	index_t m=4;
+	float64_t rel_tolorance=1e-10;
+	float64_t abs_tolorance;
+
+	SGMatrix<float64_t> feat_train(dim, n);
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+
+	feat_train(0,0)=0.81263;
+	feat_train(0,1)=0.99976;
+	feat_train(0,2)=1.17037;
+	feat_train(0,3)=1.51752;
+	feat_train(0,4)=1.57765;
+	feat_train(0,5)=3.89440;
+
+	feat_train(1,0)=0.5;
+	feat_train(1,1)=0.4576;
+	feat_train(1,2)=5.17637;
+	feat_train(1,3)=2.56752;
+	feat_train(1,4)=4.57765;
+	feat_train(1,5)=2.89440;
+
+	lat_feat_train(0,0)=1.00000;
+	lat_feat_train(0,1)=3.00000;
+	lat_feat_train(0,2)=4.00000;
+	lat_feat_train(0,3)=-8.00000;
+
+	lat_feat_train(1,0)=3.00000;
+	lat_feat_train(1,1)=2.00000;
+	lat_feat_train(1,2)=5.00000;
+	lat_feat_train(1,3)=-7.00000;
+
+	CDenseFeatures<float64_t>* features_train0=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* latent_features_train0=new CDenseFeatures<float64_t>(lat_feat_train);
+
+	SGVector<int32_t> idx1(n/2);
+	for(int i=0; i<n; i++)
+	{
+		if (i%2==0)
+			idx1[i/2]=i;
+	}
+	SG_REF(features_train0);
+	CDenseSubSamplesFeatures<float64_t>* features_train1=new CDenseSubSamplesFeatures<float64_t>(features_train0, idx1);
+
+	SGVector<int32_t> idx2(m/2);
+	for(int i=0; i<m; i++)
+	{
+		if (i%2==0)
+			idx2[i/2]=i;
+	}
+	SG_REF(latent_features_train0);
+	CDenseSubSamplesFeatures<float64_t>* latent_features_train1=new CDenseSubSamplesFeatures<float64_t>(latent_features_train0, idx2);
+
+
+	SGMatrix<float64_t> feat_train2(dim, n/2);
+	SGMatrix<float64_t> lat_feat_train2(dim, m/2);
+
+	feat_train2(0,0)=0.81263;
+	feat_train2(0,1)=1.17037;
+	feat_train2(0,2)=1.57765;
+
+	feat_train2(1,0)=0.5;
+	feat_train2(1,1)=5.17637;
+	feat_train2(1,2)=4.57765;
+
+	lat_feat_train2(0,0)=1.00000;
+	lat_feat_train2(0,1)=4.00000;
+
+	lat_feat_train2(1,0)=3.00000;
+	lat_feat_train2(1,1)=5.00000;
+
+	CDenseFeatures<float64_t>* features_train2=new CDenseFeatures<float64_t>(feat_train2);
+	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
+
+
+	float64_t ell=0.5;
+	CKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+
+	kernel->init(latent_features_train2, features_train2);
+	SGMatrix<float64_t> res2=kernel->get_kernel_matrix();
+
+	SG_REF(features_train1);
+	SG_REF(latent_features_train1);
+	kernel->init(latent_features_train1, features_train1);
+	SGMatrix<float64_t> res1=kernel->get_kernel_matrix();
+
+	for(index_t i=0; i<res1.num_rows; i++)
+	{
+		for(index_t j=0; j<res1.num_cols; j++)
+		{
+			abs_tolorance = CMath::get_abs_tolerance(res2(i,j), rel_tolorance);
+			EXPECT_NEAR(res1(i,j), res2(i,j), abs_tolorance);
+		}
+	}
+
+	SG_UNREF(kernel);
+	SG_UNREF(features_train1);
+	SG_UNREF(latent_features_train1);
+	SG_UNREF(features_train0);
+	SG_UNREF(latent_features_train0);
+	SG_UNREF(features_train2);
+	SG_UNREF(latent_features_train2);
+}

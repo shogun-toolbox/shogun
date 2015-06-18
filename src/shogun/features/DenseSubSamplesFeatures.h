@@ -63,7 +63,7 @@ public:
 	/** set the underlying features */
 	void set_features(CDenseFeatures<ST> *fea);
 
-	/** set the index into the subset of features */
+	/** set the index into the subset of samples */
 	void set_subset_idx(SGVector<int32_t> idx);
 
 	/** duplicate feature object
@@ -86,7 +86,7 @@ public:
 	 *
 	 * abstract base method
 	 *
-	 * @return feature class like STRING, SIMPLE, SPARSE...
+	 * @return feature class 
 	 */
 	virtual EFeatureClass get_feature_class() const;
 
@@ -94,7 +94,7 @@ public:
 	 *
 	 * abstract base method
 	 *
-	 * @return number of examples/vectors (possibly of subset, if implemented)
+	 * @return number of examples/vectors/samples
 	 */
 	virtual int32_t get_num_vectors() const;
 
@@ -103,7 +103,7 @@ public:
 	 * (not mix this up with the dimensionality of the input space, usually
 	 * obtained via get_num_features())
 	 *
-	 * @return dimensionality
+	 * @return dimensionality/features
 	 */
 	virtual int32_t get_dim_feature_space() const;
 
