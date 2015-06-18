@@ -107,7 +107,7 @@ int main(int, char*[])
 	// create and initialize the network
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_net(0.1);
 
 	// uncomment this line to enable info logging
 	// network->io->set_loglevel(MSG_INFO);

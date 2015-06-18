@@ -50,7 +50,7 @@ TEST(DeepBeliefNetwork, convert_to_neural_network)
 	dbn.add_hidden_layer(4);
 	dbn.add_hidden_layer(8);
 
-	dbn.initialize();
+	dbn.initialize_neural_net();
 
 	CNeuralNetwork* nn = dbn.convert_to_neural_network();
 

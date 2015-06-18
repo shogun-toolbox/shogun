@@ -1090,7 +1090,7 @@ IF(DOXYGEN_FOUND)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
 	ENDIF()
 ENDIF()
-
+add_definitions(-std=c++11)
 include(ShogunPackaging)
 
 message(STATUS "===================================================================================================================")

@@ -39,9 +39,9 @@ using namespace shogun;
 
 CGaussianARDFITCKernel::CGaussianARDFITCKernel() : CGaussianARDKernel()
 {
-	initialize();
+	initialize_kernel();
 }
-void CGaussianARDFITCKernel::initialize()
+void CGaussianARDFITCKernel::initialize_kernel()
 {
 }
 
@@ -55,14 +55,14 @@ using namespace Eigen;
 CGaussianARDFITCKernel::CGaussianARDFITCKernel(int32_t size, float64_t width)
 		: CGaussianARDKernel(size,width)
 {
-	initialize();
+	initialize_kernel();
 }
 
 CGaussianARDFITCKernel::CGaussianARDFITCKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size, float64_t width)
 		: CGaussianARDKernel(l, r, size, width)
 {
-	initialize();
+	initialize_kernel();
 }
 
 CGaussianARDFITCKernel* CGaussianARDFITCKernel::obtain_from_generic(CKernel* kernel)

@@ -74,7 +74,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
 
@@ -106,7 +106,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
 
@@ -141,7 +141,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -173,7 +173,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -205,7 +205,7 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -240,7 +240,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_net();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -282,7 +282,7 @@ TEST(NeuralNetwork, binary_classification)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_net(0.1);
 
 	network->epsilon = 1e-8;
 
@@ -341,7 +341,7 @@ TEST(NeuralNetwork, multiclass_classification)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_net(0.1);
 
 	network->epsilon = 1e-8;
 
@@ -392,7 +392,7 @@ TEST(NeuralNetwork, regression)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(1e-6);
+	network->initialize_neural_net(1e-6);
 
 	network->epsilon = 1e-6;
 
@@ -446,7 +446,7 @@ TEST(NeuralNetwork, gradient_descent)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_net(0.1);
 
 	network->optimization_method = NNOM_GRADIENT_DESCENT;
 	network->gd_learning_rate = 10.0;

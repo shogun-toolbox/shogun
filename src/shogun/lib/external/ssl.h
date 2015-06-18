@@ -135,9 +135,9 @@ inline bool operator<(const Delta& a , const Delta& b)
 	return (a.delta < b.delta);
 }
 
-void initialize(struct vector_double *A, int32_t k, float64_t a);
+void initialize_vector(struct vector_double *A, int32_t k, float64_t a);
 /* initializes a vector_double to be of length k, all elements set to a */
-void initialize(struct vector_int *A, int32_t k);
+void initialize_vector(struct vector_int *A, int32_t k);
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
 void GetLabeledData(struct data *Data_Labeled, const struct data *Data);
 /* extracts labeled data from Data and copies it into Data_Labeled */

@@ -84,7 +84,7 @@ void CRBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
 			m_visible_state_offsets->element(n-1)+m_visible_group_sizes->element(n-1));
 }
 
-void CRBM::initialize(float64_t sigma)
+void CRBM::initialize_neural_net(float64_t sigma)
 {
 	m_num_params = m_num_visible + m_num_hidden + m_num_visible*m_num_hidden;
 	m_params = SGVector<float64_t>(m_num_params);

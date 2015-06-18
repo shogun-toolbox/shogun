@@ -72,7 +72,7 @@ TEST(NeuralLinearLayer, compute_activations)
 	input_indices[1] = 1;
 
 	// initialize the layer
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_net_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 1.0);
@@ -149,7 +149,7 @@ TEST(NeuralLinearLayer, compute_error)
 
 	// initialize the layer
 	CNeuralLinearLayer layer(y.num_rows);
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_net_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 1.0);
@@ -198,7 +198,7 @@ TEST(NeuralLinearLayer, compute_local_gradients)
 
 	// initialize the layer
 	CNeuralLinearLayer layer(y.num_rows);
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_net_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 0.01);
@@ -268,7 +268,7 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_output)
 
 	// initialize the layer
 	CNeuralLinearLayer layer(y.num_rows);
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_net_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 0.01);
@@ -351,7 +351,7 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_hidden)
 		y[i] = CMath::random(0.0,1.0);
 
 	// initialize the hidden layer
-	layer_hid->initialize(layers, input_indices_hid);
+	layer_hid->initialize_neural_net_layer(layers, input_indices_hid);
 	SGVector<float64_t> param_hid(layer_hid->get_num_parameters());
 	SGVector<bool> param_regularizable_hid(layer_hid->get_num_parameters());
 	layer_hid->initialize_parameters(param_hid, param_regularizable_hid, 0.01);
@@ -359,7 +359,7 @@ TEST(NeuralLinearLayer, compute_parameter_gradients_hidden)
 
 	// initialize the output layer
 	CNeuralLinearLayer layer_out(y.num_rows);
-	layer_out.initialize(layers, input_indices_out);
+	layer_out.initialize_neural_net_layer(layers, input_indices_out);
 	SGVector<float64_t> param_out(layer_out.get_num_parameters());
 	SGVector<bool> param_regularizable_out(layer_out.get_num_parameters());
 	layer_out.initialize_parameters(param_out, param_regularizable_out, 0.01);

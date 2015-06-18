@@ -95,7 +95,7 @@ void CNeuralNetwork::disconnect_all()
 	m_adj_matrix.zero();
 }
 
-void CNeuralNetwork::initialize(float64_t sigma)
+void CNeuralNetwork::initialize_neural_net(float64_t sigma)
 {
 	for (int32_t j=0; j<m_num_layers; j++)
 	{
@@ -117,7 +117,7 @@ void CNeuralNetwork::initialize(float64_t sigma)
 				}
 			}
 
-			get_layer(j)->initialize(m_layers, input_indices);
+			get_layer(j)->initialize_neural_net_layer(m_layers, input_indices);
 		}
 	}
 

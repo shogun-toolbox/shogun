@@ -110,7 +110,7 @@ public:
 private:
 
 	/** default init */
-	void initialize();
+	void initialize_preprocessor();
 
 protected:
 

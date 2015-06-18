@@ -21,7 +21,7 @@ using namespace shogun;
 
 CLinearARDKernel::CLinearARDKernel() : CDotKernel()
 {
-	initialize();
+	initialize_kernel();
 }
 
 CLinearARDKernel::~CLinearARDKernel()
@@ -29,7 +29,7 @@ CLinearARDKernel::~CLinearARDKernel()
 	CKernel::cleanup();
 }
 
-void CLinearARDKernel::initialize()
+void CLinearARDKernel::initialize_kernel()
 {
 	m_ARD_type=KT_SCALAR;
 	m_weights=SGMatrix<float64_t>(1,1);
@@ -55,13 +55,13 @@ SGVector<float64_t> CLinearARDKernel::get_feature_vector(int32_t idx, CFeatures*
 #ifdef HAVE_LINALG_LIB
 CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
 {
-	initialize();
+	initialize_kernel();
 }
 
 CLinearARDKernel::CLinearARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)	: CDotKernel(size)
 {
-	initialize();
+	initialize_kernel();
 	init(l,r);
 }
 
