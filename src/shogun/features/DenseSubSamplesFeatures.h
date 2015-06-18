@@ -44,7 +44,7 @@ template<class ST> class CDenseFeatures;
 template<class ST> class SGVector;
 class CDotFeatures;
 
-/** SubSamples wrap features but only uses a subset of the variables */
+/** SubSamples wrap CDotFeatures but only uses a subset of samples */
 template<class ST> class CDenseSubSamplesFeatures: public CDotFeatures
 {
 public:
