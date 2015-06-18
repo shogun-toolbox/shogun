@@ -410,10 +410,11 @@ TEST(DenseSubSamplesFeatures, test6)
 	CDenseFeatures<float64_t>* features_train2=new CDenseFeatures<float64_t>(feat_train2);
 	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
 
-
 	float64_t ell=0.5;
 	CKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
 
+	SG_REF(features_train2);
+	SG_REF(latent_features_train2);
 	kernel->init(latent_features_train2, features_train2);
 	SGMatrix<float64_t> res2=kernel->get_kernel_matrix();
 
