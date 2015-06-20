@@ -166,7 +166,7 @@ void test(int32_t num_samples)
 #ifdef USE_MOSEK
 	primcp->get_slacks().display_vector("slacks");
 	primcp->get_w().display_vector("w_mosek");
-#endif 
+#endif
 	bmrm->get_w().display_vector("w_bmrm");
 	sgd->get_w().display_vector("w_sgd");
 	fw->get_w().display_vector("w_fw");

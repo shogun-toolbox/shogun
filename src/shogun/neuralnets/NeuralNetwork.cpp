@@ -166,7 +166,7 @@ CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 		{
 			if (output_activations[i]>0.5) labels->set_label(i, 1);
 			else labels->set_label(i, -1);
-			
+
 			labels->set_value(output_activations[i], i);
 		}
 		else if (get_num_outputs()==2)
@@ -176,11 +176,11 @@ CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 			if (v1>v2)
 				labels->set_label(i, 1);
 			else labels->set_label(i, -1);
-			
+
 			labels->set_value(v2/(v1+v2), i);
 		}
 	}
-		
+
 	return labels;
 }
 
@@ -206,16 +206,16 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 		labels_vec[i] = CMath::arg_max(
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
-	
+
 	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
-	
+
 	labels->allocate_confidences_for(get_num_outputs());
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
 		labels->set_multiclass_confidences(i, SGVector<float64_t>(
 			output_activations.matrix, get_num_outputs(), i*get_num_outputs()));
 	}
-	
+
 	return labels;
 }
 
@@ -308,6 +308,18 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 				m_params[k] += gd_momentum*param_updates[k];
 
 			float64_t e = compute_gradients(inputs_batch, targets_batch, gradients);
+
+
+			for (int32_t k=0; k<m_num_layers; k++)
+			{
+				SGVector<float64_t> layer_gradients = get_section(gradients, k);
+				if (layer_gradients.vlen > 0)
+				{
+					SG_INFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", k,get_layer(k)->get_name(),
+						CMath::max(layer_gradients.vector, layer_gradients.vlen),
+						SGVector<float64_t>::sum(layer_gradients.vector, layer_gradients.vlen)/layer_gradients.vlen);
+				}
+			}
 
 			// filter the errors
 			if (error==-1.0)
@@ -408,6 +420,19 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 		int n, int k, int ls)
 {
 	SG_SINFO("Epoch %i: Error = %f\n",k, fx);
+
+	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(instance);
+	SGVector<float64_t> gradients((float64_t*)g, network->get_num_parameters(), false);
+	for (int32_t i=0; i<network->m_num_layers; i++)
+	{
+		SGVector<float64_t> layer_gradients = network->get_section(gradients, i);
+		if (layer_gradients.vlen > 0)
+		{
+			SG_SINFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", i, network->get_layer(i)->get_name(),
+				CMath::max(layer_gradients.vector, layer_gradients.vlen),
+				SGVector<float64_t>::sum(layer_gradients.vector, layer_gradients.vlen)/layer_gradients.vlen);
+		}
+	}
 	return 0;
 }
 
@@ -477,7 +502,7 @@ float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
 					l1_coefficient*CMath::sign<float64_t>(m_params[i]);
 		}
 	}
-	
+
 	// max-norm regularization
 	if (max_norm != -1.0)
 	{

@@ -29,7 +29,7 @@
  */
 
 #include <shogun/multiclass/tree/NbodyTree.h>
-#include <shogun/distributions/KernelDensity.h> 
+#include <shogun/distributions/KernelDensity.h>
 
 using namespace shogun;
 
@@ -77,7 +77,7 @@ void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 		float64_t mdist=min_dist(root,qfeats.matrix+i*dim,dim);
 		query_knn_single(heap,mdist,root,qfeats.matrix+i*dim,dim);
 		memcpy(m_knn_dists.matrix+i*k,heap->get_dists(),k*sizeof(float64_t));
-		memcpy(m_knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));		
+		memcpy(m_knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));
 
 		delete(heap);
 	}
@@ -186,12 +186,12 @@ void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node
 	if (min_dist_left<=min_dist_right)
 	{
 		query_knn_single(heap,min_dist_left,cleft,arr,dim);
-		query_knn_single(heap,min_dist_right,cright,arr,dim);		
+		query_knn_single(heap,min_dist_right,cright,arr,dim);
 	}
 	else
 	{
-		query_knn_single(heap,min_dist_right,cright,arr,dim);		
-		query_knn_single(heap,min_dist_left,cleft,arr,dim);		
+		query_knn_single(heap,min_dist_right,cright,arr,dim);
+		query_knn_single(heap,min_dist_left,cleft,arr,dim);
 	}
 
 	SG_UNREF(cleft);
@@ -243,7 +243,7 @@ void CNbodyTree::get_kde_single(bnode_t* node,float64_t* data, EKernelType kerne
 	if ((log_norm+spread_node+n_total-n_node)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_node))
 		return;
 
-	// global bound criterion met	
+	// global bound criterion met
 	if ((log_norm+spread_global)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_global))
 		return;
 
@@ -303,7 +303,7 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 	bool global_criterion=(log_norm+spread_global)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_global);
 	bool local_criterion=(log_norm+spread_node+n_total-n_node)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_node);
 
-	// global bound criterion met || local bound criterion met	
+	// global bound criterion met || local bound criterion met
 	if (global_criterion || local_criterion)
 	{
 		// log density of all query points in the node is increased by K(mean + spread/2)
@@ -414,14 +414,14 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 		return;
 	}
 
-	// if none of above -  apply 4 way recursion in both trees: left-left, left-right, right-left, right-right 
+	// if none of above -  apply 4 way recursion in both trees: left-left, left-right, right-left, right-right
 	bnode_t* refchildl=refnode->left();
 	bnode_t* refchildr=refnode->right();
 	bnode_t* querychildl=querynode->left();
 	bnode_t* querychildr=querynode->right();
 
 	float64_t refn_l=refchildl->data.end_idx-refchildl->data.start_idx+1;
-	float64_t refn_r=refchildr->data.end_idx-refchildr->data.start_idx+1;	
+	float64_t refn_r=refchildr->data.end_idx-refchildr->data.start_idx+1;
 	float64_t queryn_l=querychildl->data.end_idx-querychildl->data.start_idx+1;
 	float64_t queryn_r=querychildr->data.end_idx-querychildr->data.start_idx+1;
 
@@ -455,7 +455,7 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 	min_bound_global=logsumexp(min_bound_global,lower_bound_lr);
 	min_bound_global=logsumexp(min_bound_global,lower_bound_rl);
 	min_bound_global=logsumexp(min_bound_global,lower_bound_rr);
-				
+
 	spread_global=logdiffexp(spread_global,spread_node);
 	spread_global=logsumexp(spread_global,spread_ll);
 	spread_global=logsumexp(spread_global,spread_lr);
@@ -531,12 +531,12 @@ void CNbodyTree::init()
 	m_dist=D_EUCLIDEAN;
 	m_knn_done=false;
 	m_knn_dists=SGMatrix<float64_t>();
-	m_knn_indices=SGMatrix<index_t>();	
+	m_knn_indices=SGMatrix<index_t>();
 
 	SG_ADD(&m_data,"m_data","data matrix",MS_NOT_AVAILABLE);
 	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size",MS_NOT_AVAILABLE);
 	SG_ADD(&m_vec_id,"m_vec_id","id of vectors",MS_NOT_AVAILABLE);
 	SG_ADD(&m_knn_done,"knn_done","knn done or not",MS_NOT_AVAILABLE);
 	SG_ADD(&m_knn_dists,"m_knn_dists","knn distances",MS_NOT_AVAILABLE);
-	SG_ADD(&m_knn_indices,"knn_indices","knn indices",MS_NOT_AVAILABLE);					
+	SG_ADD(&m_knn_indices,"knn_indices","knn indices",MS_NOT_AVAILABLE);
 }

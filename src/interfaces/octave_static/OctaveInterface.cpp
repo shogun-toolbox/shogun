@@ -644,7 +644,7 @@ void COctaveInterface::run_octave_init()
 void COctaveInterface::run_octave_exit()
 {
 #if defined(OCTAVE_MAJOR_VERSION) && OCTAVE_MAJOR_VERSION >= 3 && defined(OCTAVE_MINOR_VERSION) && OCTAVE_MINOR_VERSION >= 8
-	clean_up_and_exit (0); 
+	clean_up_and_exit (0);
 #else
 	do_octave_atexit();
 #endif

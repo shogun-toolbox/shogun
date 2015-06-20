@@ -120,7 +120,7 @@ public:
                               SGVector<int32_t>*& factors_scope);
 
     /** Function to access factor table
-     * 
+     *
      * @param factors_table table of all the factors
      */
     virtual void get_factors_table(SGVector<float64_t>*& factors_table);

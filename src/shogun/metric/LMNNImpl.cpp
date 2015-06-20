@@ -8,9 +8,10 @@
  * Copyright (C) 2013 Fernando J. Iglesias Garcia
  */
 
+#include <shogun/metric/LMNNImpl.h>
+
 #ifdef HAVE_EIGEN3
 
-#include <shogun/metric/LMNNImpl.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/PCA.h>

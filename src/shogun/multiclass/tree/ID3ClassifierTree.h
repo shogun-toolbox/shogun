@@ -42,7 +42,7 @@
 namespace shogun
 {
 
-/** @brief class ID3ClassifierTree, implements classifier tree for discrete feature 
+/** @brief class ID3ClassifierTree, implements classifier tree for discrete feature
  * values using the ID3 algorithm. The training algorithm implemented is as follows :
  *
  * function ID3 (R: a set of non-categorical attributes, C: the categorical attribute, S: a training set)\n
@@ -53,18 +53,18 @@ namespace shogun
  *	   return a single node with that value;
  *
  *	If R is empty,\n
- * 	   return a single node with as value the most frequent 
- * of the values of the categorical attribute that are found in records of S;\n 
+ * 	   return a single node with as value the most frequent
+ * of the values of the categorical attribute that are found in records of S;\n
  * [note that then there will be errors, that is, records that will be improperly classified];
  *
- *	Let D be the attribute with largest Gain(D,S) 
+ *	Let D be the attribute with largest Gain(D,S)
  * among attributes in R;
  *
  *	Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;\n
- *	Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting 
+ *	Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting
  * respectively of records with value dj for attribute D;
  *
- *	Return a tree with root labeled D and arcs labeled 
+ *	Return a tree with root labeled D and arcs labeled
  * \f$d_1, d_2, .., d_m\f$ going respectively to the trees \n
  *	ID3(R-{D}, C, \f$S_1\f$), .., ID3(R-{D}, C, \f$S_m\f$);
  *
@@ -86,12 +86,12 @@ public:
 	virtual const char* get_name() const { return "ID3ClassifierTree"; }
 
 	/** classify data using ID3 Tree
-	 * @param data data to be classified 
+	 * @param data data to be classified
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** prune id3 decision tree - uses reduced error pruning algorithm
-	 * 
+	 *
 	 * cf. http://en.wikipedia.org/wiki/Pruning_%28decision_trees%29#Reduced_error_pruning
 	 *
 	 * At each node, starting from leaf nodes up to the root node, this
@@ -101,8 +101,8 @@ public:
 	 * the root node. At each node, it prunes its children first and then itself.
 	 * As the algorithm goes down each level during recursion, it creates the new
 	 * set of features by pushing subset into subset stack. While retracting, it pops
-	 * these subsets to access previous state of feature matrix (see add_subset() and 
-	 * remove_subset() in Shogun documentation). 
+	 * these subsets to access previous state of feature matrix (see add_subset() and
+	 * remove_subset() in Shogun documentation).
 	 *
 	 * @param validation_data feature vectors from validation dataset
 	 * @param validation_labels multiclass labels from validation dataset
@@ -113,7 +113,7 @@ public:
 	bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
 
 protected:
-	
+
 	/** train machine - build ID3 Tree from training data
 	 * @param data training data
 	 */
@@ -130,21 +130,21 @@ private:
 	 * @return pointer to the root of the ID3 tree
 	 */
 	node_t* id3train(CFeatures* data, CMulticlassLabels* class_labels, SGVector<int32_t> values, int level = 0);
-	
+
 	/** informational gain attribute for selecting best feature at each node of ID3 Tree
 	 *
 	 * @param attr_no index to the chosen feature in data matrix supplied
 	 * @param data data matrix
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
-	 */	
-	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels* class_labels);	
-	
+	 */
+	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels* class_labels);
+
 	/** computes entropy (aka randomness) in data
 	 *
 	 * @param labels labels of parameters chosen
 	 * @return entropy
-	 */		
+	 */
 	float64_t entropy(CMulticlassLabels* labels);
 
 	/** recursive tree pruning method - called within prune_tree method

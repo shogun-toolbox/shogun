@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -98,7 +98,7 @@ TEST(StudentsTVGLikelihood,get_variational_expection)
 	SGVector<float64_t> aa= lik->get_variational_expection();
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-11.89826714196972723414, rel_tolerance);
 	EXPECT_NEAR(aa[0],  -11.89826714196972723414,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.96351546699513479499, rel_tolerance);

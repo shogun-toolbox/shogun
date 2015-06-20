@@ -1,8 +1,8 @@
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_CXX11_ATOMIC
 #include <atomic>
 #endif
-
-#include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Lock.h>

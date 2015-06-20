@@ -169,7 +169,7 @@ void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t>
 	m_lab=(((CBinaryLabels*)lab)->get_labels()).clone();
 
 	//Convert the input label to standard label used in the class
-	//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
+	//Note that Shogun uses  -1 and 1 as labels and this class internally uses
 	//0 and 1 repectively.
 	for(index_t i = 0; i < m_lab.size(); ++i)
 		m_lab[i]=CMath::max(m_lab[i], 0.0);

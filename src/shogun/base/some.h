@@ -1,6 +1,8 @@
 #ifndef __SG_SOME_H__
 #define __SG_SOME_H__
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_CXX11
 #include <memory>
 
@@ -14,7 +16,7 @@ namespace shogun
 	 * as std::shared_ptr: any operation involving copying increases
 	 * the count and once deleted this wrapper decreases the counter.
 	 *
-	 * Note: Due to SG_REF/SG_UNREF used in Shogun now, it also imitates 
+	 * Note: Due to SG_REF/SG_UNREF used in Shogun now, it also imitates
 	 * Shogun references so that shared_ptr counter should always
 	 * be equal to the Shogun's object reference count. This will stay
 	 * until SG_REF/SG_UNREF are gone.
@@ -31,12 +33,12 @@ namespace shogun
 			Some& operator=(const Some<T>& other);
 			~Some();
 
-			/** Casts the underlying object back to raw pointer 
+			/** Casts the underlying object back to raw pointer
 			 *
 			 * @return raw pointer (with SG_REF)
 			 */
 			operator T*();
-			/** Call member function or access member of T 
+			/** Call member function or access member of T
 			 *
 			 * @return raw pointer (without SG_REF)
 			 */
@@ -81,7 +83,7 @@ namespace shogun
 	/** Creates an instance of any class
 	 * that is wrapped with a shared pointer like
 	 * structure @ref Some
-	 * 
+	 *
 	 * @param args arguments to construct instance of T with (T should
 	 * have compatible constructor)
 	 *

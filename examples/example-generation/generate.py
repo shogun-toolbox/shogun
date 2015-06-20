@@ -33,7 +33,7 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
             translation = translate(ast, targetDict=target)
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
-            
+
             # Create directory if it does not exist
             if not os.path.exists(directory):
                 os.makedirs(directory)

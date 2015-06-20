@@ -96,7 +96,7 @@ TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
 	CRegressionLabels* labels=new CRegressionLabels(lab);
-	SG_REF(labels);	
+	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression();
 	lars->set_labels((CLabels*) labels);
 	lars->train(features);
@@ -203,7 +203,7 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
 	CRegressionLabels* labels=new CRegressionLabels(lab);
-	SG_REF(labels);	
+	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
 	lars->set_labels(labels);
 	lars->train(features);

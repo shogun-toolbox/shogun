@@ -125,7 +125,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// compute derivatives of log probability wrt f
-	
+
 	if (i==1)
 		eigen_r=eigen_dlp;
 	else

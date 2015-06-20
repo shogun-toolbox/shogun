@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     char *test_labels_file_name = mktemp(filename_tmp);
 
     if (argc > 4) {
-        int32_t idx = 1;        
+        int32_t idx = 1;
 
         C = atof(argv[idx++]);
         train_file_name = argv[idx++];

@@ -230,7 +230,7 @@ protected:
 	virtual float64_t get_derivative_helper(SGMatrix<float64_t> dK);
 
 	/** the helper used to compute gradient of GP for inference
-	 * 
+	 *
 	 * construct the \f$\pi$\f vector defined in the algorithm 3.3 of the GPML textbook
 	 * Noth that the vector is stored in m_W
 	 *

@@ -1,33 +1,33 @@
 /*
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its 
- * contributors may be used to endorse or promote products derived from this 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from this
  * software without specific prior written permission.
 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * Written (W) 2014 Khaled Nasr
  */
 
@@ -47,6 +47,11 @@
 
 #include <string>
 
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#include <initializer_list>
+#include <shogun/mathematics/linalg/internal/implementation/operations/Parameter.h>
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
 namespace shogun
 {
 
@@ -58,7 +63,7 @@ namespace implementation
 
 namespace ocl
 {
-	
+
 /** Returns a string representing type T */
 template <class T>
 std::string get_type_string()
@@ -68,7 +73,7 @@ std::string get_type_string()
 
 /** Return a source code string with some appropriate definitions for:
  * DATATYPE, KERNEL_NAME, WORK_GROUP_SIZE_1D, WORK_GROUP_SIZE_2D
- * 
+ *
  * If the datatype is float64_t, the appropriate pragma for enabling double
  * precision is also appended to the source code
  */
@@ -76,14 +81,14 @@ template <class T>
 std::string generate_kernel_preamble(std::string kernel_name)
 {
 	std::string type_string = get_type_string<T>();
-	
+
 	std::string source = "";
 	viennacl::ocl::append_double_precision_pragma<T>(viennacl::ocl::current_context(), source);
 	source.append("#define DATATYPE " + type_string + "\n");
 	source.append("#define KERNEL_NAME " + kernel_name + "\n");
 	source.append("#define WORK_GROUP_SIZE_1D " + std::to_string(OCL_WORK_GROUP_SIZE_1D) + "\n");
 	source.append("#define WORK_GROUP_SIZE_2D " + std::to_string(OCL_WORK_GROUP_SIZE_2D) + "\n");
-	
+
 	return source;
 }
 
@@ -104,32 +109,32 @@ inline viennacl::ocl::kernel& compile_kernel(std::string kernel_name, std::strin
 {
 	viennacl::ocl::program & prog =
 		viennacl::ocl::current_context().add_program(source, kernel_name);
-		
+
 	return prog.get_kernel(kernel_name);
 }
 
-/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_1D */ 
+/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_1D */
 inline uint32_t align_to_multiple_1d(uint32_t n)
 {
 	return viennacl::tools::align_to_multiple<uint32_t>(n, OCL_WORK_GROUP_SIZE_1D);
 }
 
-/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_2D */ 
+/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_2D */
 inline uint32_t align_to_multiple_2d(uint32_t n)
 {
 	return viennacl::tools::align_to_multiple<uint32_t>(n, OCL_WORK_GROUP_SIZE_2D);
 }
 
-/** Generates a kernel that performs a single argument elementwise operation on 
+/** Generates a kernel that performs a single argument elementwise operation on
  * a vector
- * 
- * The operation is specified by a string containing OpenCL code that performs 
- * an operation on a variable called "element" and returns the result. For 
+ *
+ * The operation is specified by a string containing OpenCL code that performs
+ * an operation on a variable called "element" and returns the result. For
  * example the operation string: "return element+1;" will produce a kernel that
  * adds 1 to all elements of a vector.
- * 
+ *
  * The kernel will have the following arguments:
- * __global DATATYPE* vec, int size, int vec_offset, __global DATATYPE* result, 
+ * __global DATATYPE* vec, int size, int vec_offset, __global DATATYPE* result,
  * int result_offset
  */
 template <class T>
@@ -138,45 +143,45 @@ viennacl::ocl::kernel& generate_single_arg_elementwise_kernel(
 {
 	if (ocl::kernel_exists(kernel_name))
 		return ocl::get_kernel(kernel_name);
-	
+
 	std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
-	
+
 	source.append("inline DATATYPE operation(DATATYPE element)\n{\n");
 	source.append(operation);
 	source.append("\n}\n");
-	
+
 	source.append(
 		R"(
 			__kernel void KERNEL_NAME(
-				__global DATATYPE* vec, int size, int vec_offset, 
+				__global DATATYPE* vec, int size, int vec_offset,
 				__global DATATYPE* result, int result_offset)
 			{
 				int i = get_global_id(0);
-				
+
 				if (i<size)
 					result[i+result_offset] = operation(vec[i+vec_offset]);
 			}
 		)"
 	);
-	
+
 	viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-	
+
 	kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
-	
+
 	return kernel;
 }
 
-/** Generates a kernel that performs a two-argument elementwise operation on 
+/** Generates a kernel that performs a two-argument elementwise operation on
  * a vector
- * 
- * The operation is specified by a string containing OpenCL code that performs 
- * an operation on variables called "element1" and "element2" and returns the result. For 
+ *
+ * The operation is specified by a string containing OpenCL code that performs
+ * an operation on variables called "element1" and "element2" and returns the result. For
  * example the operation string: "return element1+element2;" will produce a kernel that
  * adds adds two vectors together
- * 
+ *
  * The kernel will have the following arguments:
- * __global DATATYPE* vec1, int size, int vec1_offset, 
- * __global DATATYPE* vec2, int vec2_offset, 
+ * __global DATATYPE* vec1, int size, int vec1_offset,
+ * __global DATATYPE* vec2, int vec2_offset,
  * __global DATATYPE* result, int result_offset
  */
 template <class T>
@@ -185,40 +190,91 @@ viennacl::ocl::kernel& generate_two_arg_elementwise_kernel(
 {
 	if (ocl::kernel_exists(kernel_name))
 		return ocl::get_kernel(kernel_name);
-	
+
 	std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
-	
+
 	source.append("inline DATATYPE operation(DATATYPE element1, DATATYPE element2)\n{\n");
 	source.append(operation);
 	source.append("\n}\n");
-	
+
 	source.append(
 		R"(
 			__kernel void KERNEL_NAME(
-				__global DATATYPE* vec1, int size, int vec1_offset, 
-				__global DATATYPE* vec2, int vec2_offset, 
+				__global DATATYPE* vec1, int size, int vec1_offset,
+				__global DATATYPE* vec2, int vec2_offset,
 				__global DATATYPE* result, int result_offset)
 			{
 				int i = get_global_id(0);
-				
+
 				if (i<size)
-					result[i+result_offset] = 
+					result[i+result_offset] =
 						operation(vec1[i+vec1_offset], vec2[i+vec2_offset]);
 			}
 		)"
 	);
-	
+
 	viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-	
+
 	kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
-	
+
 	return kernel;
 }
 
+/**
+ * This method replaces all occurances of a string with another string.
+ * The code is based on a Stack Overflow answer, link below.
+ *
+ * http://stackoverflow.com/questions/2896600/how-to-replace-all-occurrences-of-a-character-in-string
+ *
+ * @param str The string in which the substitution is going to occur.
+ * @param from The string which will be substituted
+ * @param to The string which will be the substitution for 'from'
+ * @return The string with all occurances of 'from' substituted by 'to'
+ */
+inline std::string replace_all(std::string str, const std::string& from, const std::string& to)
+{
+	size_t start_pos=0;
+	while ((start_pos=str.find(from, start_pos))!=std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos+=to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
 }
+
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+/**
+ * This method can be used to pass custom operations to be performed by OpenCL
+ * element-wise for GPU vectors/matrices. The users can pass a format-string
+ * for their desired expressions with optional parameters (if there are any),
+ * enclosed by opening and closing braces, e.g. "{param_name1}". In case there
+ * are any such parameters, then this string should be followed by a number of
+ * shogun::linalg::ocl::Parameter objects to be substituted in place of those params.
+ * These Parameter objects can be created on the fly.
+ *
+ * See ElementwiseOperations_unittest.cc and elementwise_benchmark.cpp for an
+ * example of its usage.
+ *
+ * @param str The format string
+ * @param params The initializer list of optional Parameters
+ * @return The final expression string ready to be used by the OpenCL kernel.
+ */
+inline std::string format(const char* str, std::initializer_list<shogun::linalg::ocl::Parameter> params)
+{
+	std::string fmt(str);
+	for (auto i=params.begin(); i!=params.end(); ++i)
+		fmt=replace_all(fmt, "{"+i->m_name+"}", *i);
+	return fmt.append("\n");
 }
-}
-}
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+} // ocl
+
+} // implementation
+
+} // linalg
+
+} // shogun
 
 #endif // HAVE_VIENNACL
 

@@ -404,7 +404,7 @@ public:
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
-	/** Evaluates the CDF of the chi square distribution with 
+	/** Evaluates the CDF of the chi square distribution with
 	 * parameter k at \f$x\f$. Based on Wikipedia definition.
 	 *
 	 * @param x position to evaluate
@@ -533,7 +533,7 @@ public:
 	/** The log determinant of a dense matrix
 	 *
 	 * If determinant of the input matrix is positive, it returns the logarithm of the value.
-	 * If not, it returns CMath::INFTY 
+	 * If not, it returns CMath::INFTY
 	 * Note that the input matrix is not required to be symmetric positive definite.
 	 * This method is slower than log_det() if input matrix is known to be symmetric positive definite
 	 *

@@ -66,7 +66,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
 	SG_REF(fg_test_data);
 	CFactorGraph* fg = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
-	
+
 	EXPECT_TRUE(fg->is_acyclic_graph());
 	EXPECT_TRUE(fg->is_connected_graph());
 	EXPECT_TRUE(fg->is_tree_graph());
@@ -78,7 +78,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
-	
+
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
 	for (int32_t i = 0; i < assignment.size(); i++)

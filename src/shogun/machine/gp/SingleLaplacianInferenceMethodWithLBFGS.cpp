@@ -171,7 +171,7 @@ float64_t CSingleLaplacianInferenceMethodWithLBFGS::evaluate(
 	/* Note that alpha = alpha_pre_iter - step * gradient_pre_iter */
 
 	/* Unfortunately we can not use dynamic_cast to cast the void * pointer to an
-	 * object pointer. Therefore, make sure this method is private.  
+	 * object pointer. Therefore, make sure this method is private.
 	 */
 	CSingleLaplacianInferenceMethodWithLBFGS * obj_prt
 		= static_cast<CSingleLaplacianInferenceMethodWithLBFGS *>(obj);
@@ -222,11 +222,11 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 	/* In order to use the provided lbfgs function, we have to pass the object via
 	 * void * pointer, which the evaluate method will use static_cast to cast
 	 * the pointer to an object pointer.
-	 * Therefore, make sure the evaluate method is a private method of the class. 
+	 * Therefore, make sure the evaluate method is a private method of the class.
 	 * Because the evaluate method is defined in a class, we have to pass the
 	 * method pointer to the lbfgs function via static method
 	 * If we also use the progress method, make sure the method is static and
-	 * private. 
+	 * private.
 	 */
 	void * obj_prt = static_cast<void *>(this);
 
@@ -236,9 +236,9 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 	/* clean up*/
 	m_mean_f = NULL;
 
-	/* Note that ret should be zero if the minimization 
+	/* Note that ret should be zero if the minimization
 	 * process terminates without an error.
-	 * A non-zero value indicates an error. 
+	 * A non-zero value indicates an error.
 	 */
 	if (m_enable_newton_if_fail && ret != 0 && ret != LBFGS_ALREADY_MINIMIZED)
 	{

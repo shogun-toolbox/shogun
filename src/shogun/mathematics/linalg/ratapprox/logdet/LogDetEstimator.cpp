@@ -38,7 +38,7 @@ CLogDetEstimator::CLogDetEstimator()
 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
-CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
+CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 	: CSGObject()
 {
 	init();

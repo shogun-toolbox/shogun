@@ -69,7 +69,7 @@ struct C45TreeNodeData
 	}
 
 	/** print data
-	 * @param data the data to be printed  
+	 * @param data the data to be printed
 	 */
 	static void print_data(const C45TreeNodeData &data)
 	{

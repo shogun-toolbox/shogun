@@ -38,7 +38,7 @@ template<typename CV_T, typename SG_T>void test_helper_matrix()
 
 	CDenseFeatures<SG_T>* sgDense=CV2SGFactory::get_dense_features<SG_T>(cvMat);
 	SG_REF(sgDense)
-	SGMatrix<SG_T> sgMat2=sgDense->get_feature_matrix(); 
+	SGMatrix<SG_T> sgMat2=sgDense->get_feature_matrix();
 	k=0;
 	for (index_t i=0; i<cvMat.rows; ++i)
 		for (index_t j=0; j<cvMat.cols; ++j)

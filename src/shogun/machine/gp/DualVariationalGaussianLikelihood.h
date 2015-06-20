@@ -32,7 +32,7 @@
  * Fast Dual Variational Inference for Non-Conjugate Latent Gaussian Models. ICML2013
  */
 
-#ifndef _DUALVARIATIONALGAUSSIANLIKELIHOOD_H_ 
+#ifndef _DUALVARIATIONALGAUSSIANLIKELIHOOD_H_
 #define _DUALVARIATIONALGAUSSIANLIKELIHOOD_H_
 
 #include <shogun/lib/config.h>
@@ -42,7 +42,7 @@
 
 namespace shogun
 {
-/** @brief Class that models dual variational likelihood 
+/** @brief Class that models dual variational likelihood
  *
  * This likelihood model is described in the reference paper
  * Mohammad Emtiyaz Khan, Aleksandr Y. Aravkin, Michael P. Friedlander, Matthias Seeger
@@ -74,14 +74,14 @@ public:
 	 */
 	virtual const char* get_name() const { return "DualVariationalGaussianLikelihood"; }
 
-	/** returns the expection of the logarithm of a given probability distribution 
+	/** returns the expection of the logarithm of a given probability distribution
 	 * wrt the variational distribution given m_mu and m_s2
 	 *
 	 * @return expection
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
 
-	/** get derivative of the variational expection of log likelihood 
+	/** get derivative of the variational expection of log likelihood
 	 * with respect to given parameter
 	 *
 	 * @param param parameter
@@ -122,13 +122,13 @@ public:
 		SGVector<float64_t> s2, const CLabels* lab);
 
 	/** check whether the dual parameters are valid or not.
-	 * 
+	 *
 	 *  @return true if dual parameters are valid
 	 */
 	virtual bool dual_parameters_valid() const;
 
 	/** this method is used for adjusting step size
-	 * to ensure the updated value satisfied lower/upper bound constrain  
+	 * to ensure the updated value satisfied lower/upper bound constrain
 	 *
 	 * The updated value is defined as below.
 	 * lambda_new = m_lambda + direction * step
@@ -200,7 +200,7 @@ public:
 	virtual SGVector<float64_t> get_dual_first_derivative(const TParameter* param) const=0;
 
 	/** set the m_strict_scale
-	 * 
+	 *
 	 * @param strict_scale must be between 0 and 1 exclusively
 	 *
 	 */
@@ -226,9 +226,9 @@ protected:
 	 */
 	SGVector<float64_t> m_lambda;
 
-	/** The value used to ensure strict bound(s) for m_lambda in adjust_step_wrt_dual_parameter() 
-	 * 
-	 * Note that the value should be between 0 and 1 exclusively. 
+	/** The value used to ensure strict bound(s) for m_lambda in adjust_step_wrt_dual_parameter()
+	 *
+	 * Note that the value should be between 0 and 1 exclusively.
 	 *
 	 * The default value is 1e-5.
 	 */

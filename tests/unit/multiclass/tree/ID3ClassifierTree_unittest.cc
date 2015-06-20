@@ -190,7 +190,7 @@ TEST(ID3ClassifierTree, classify_simple)
 	EXPECT_EQ(0.0,res_vector[1]);
 	EXPECT_EQ(0.0,res_vector[2]);
 	EXPECT_EQ(1.0,res_vector[3]);
-	EXPECT_EQ(1.0,res_vector[4]);	
+	EXPECT_EQ(1.0,res_vector[4]);
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
@@ -209,7 +209,7 @@ TEST(ID3ClassifierTree, tree_prune)
 	{
 		for (int32_t a=0;a<8;a++)
 			data(0,i*8+a)=num;
-	
+
 		num++;
 	}
 

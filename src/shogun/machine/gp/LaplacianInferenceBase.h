@@ -98,7 +98,7 @@ public:
 	/** get Cholesky decomposition matrix
 	 *
 	 * @return Cholesky decomposition of matrix:
-	 * 
+	 *
 	 *
 	 * for binary and regression case
 	 * \f[
@@ -114,7 +114,7 @@ public:
 	 * \f]
 	 *
 	 * where \f$E_\text{c}\f$ is the matrix defined in the algorithm 3.3 of the GPML textbook for class c
-	 * Note the E matrix is used to store these E_\text{c} matrices, where E=[E_1, E_2, ..., E_C], 
+	 * Note the E matrix is used to store these E_\text{c} matrices, where E=[E_1, E_2, ..., E_C],
 	 * where C is the number of classes and C should be greater than 1.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
@@ -131,7 +131,7 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_covariance();
 
-	/** update data all matrices */
+	/** update all matrices except gradients*/
 	virtual void update();
 
 	/** get tolerance for newton iterations
@@ -187,6 +187,8 @@ private:
 	void init();
 
 protected:
+	/** update gradients */
+	virtual void compute_gradient();
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;

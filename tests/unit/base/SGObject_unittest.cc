@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Heiko Strathmann
  * Written (W) 2014 Thoralf Klein
+ * Written (W) 2015 Wu Lin
  */
 
 #include <shogun/labels/BinaryLabels.h>
@@ -219,5 +220,94 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(predictions_copy);
 	SG_UNREF(gpr);
 	SG_UNREF(gpr_copy);
+}
+
+TEST(SGObject,update_parameter_hash)
+{
+	index_t n=3;
+
+	SGMatrix<float64_t> X(1, n);
+	SGMatrix<float64_t> X_test(1, n);
+	SGVector<float64_t> Y(n);
+
+	X[0]=0;
+	X[1]=1.1;
+	X[2]=2.2;
+
+	X_test[0]=0.3;
+	X_test[1]=1.3;
+	X_test[2]=2.5;
+
+	for (index_t i=0; i<n; ++i)
+	{
+		Y[i]=CMath::sin(X(0, i));
+	}
+
+	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
+	CRegressionLabels* label_train=new CRegressionLabels(Y);
+
+	float64_t sigma=1;
+	float64_t shogun_sigma=sigma*sigma*2;
+	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
+	CZeroMean* mean=new CZeroMean();
+	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	lik->set_sigma(1);
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+			mean, label_train, lik);
+
+	SGMatrix<float64_t> L=inf->get_cholesky();
+	uint32_t hash1=inf->m_hash;
+
+	inf->update_parameter_hash();
+	inf->update_parameter_hash();
+	uint32_t hash2=inf->m_hash;
+
+	EXPECT_TRUE(hash1==hash2);
+
+	SG_UNREF(inf);
+}
+
+TEST(SGObject,parameter_hash_changed)
+{
+	index_t n=3;
+
+	SGMatrix<float64_t> X(1, n);
+	SGMatrix<float64_t> X_test(1, n);
+	SGVector<float64_t> Y(n);
+
+	X[0]=0;
+	X[1]=1.1;
+	X[2]=2.2;
+
+	X_test[0]=0.3;
+	X_test[1]=1.3;
+	X_test[2]=2.5;
+
+	for (index_t i=0; i<n; ++i)
+	{
+		Y[i]=CMath::sin(X(0, i));
+	}
+
+	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
+	CRegressionLabels* label_train=new CRegressionLabels(Y);
+
+	float64_t sigma=1;
+	float64_t shogun_sigma=sigma*sigma*2;
+	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
+	CZeroMean* mean=new CZeroMean();
+	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	lik->set_sigma(1);
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+			mean, label_train, lik);
+	EXPECT_TRUE(inf->parameter_hash_changed());
+
+	SGMatrix<float64_t> L=inf->get_cholesky();
+	EXPECT_FALSE(inf->parameter_hash_changed());
+
+	inf->update_parameter_hash();
+	inf->update_parameter_hash();
+	EXPECT_FALSE(inf->parameter_hash_changed());
+
+	SG_UNREF(inf);
 }
 #endif //HAVE_EIGEN3

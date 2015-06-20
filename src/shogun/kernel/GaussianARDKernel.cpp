@@ -80,7 +80,7 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 	REQUIRE(lhs , "Left features not set!\n");
 	REQUIRE(rhs, "Right features not set!\n");
 
-	if (lhs==rhs) 
+	if (lhs==rhs)
 	{
 		if (!strcmp(param->m_name, "weights") || !strcmp(param->m_name, "width"))
 		{
@@ -98,8 +98,9 @@ SGVector<float64_t> CGaussianARDKernel::get_parameter_gradient_diagonal(
 		{
 			if (!strcmp(param->m_name, "weights") )
 			{
-				SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(j);
-				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(j);
+				check_weight_gradient_index(index);
+				SGVector<float64_t> avec=get_feature_vector(j, lhs);
+				SGVector<float64_t> bvec=get_feature_vector(j, rhs);
 				derivative[j]=get_parameter_gradient_helper(param,index,j,j,avec,bvec);
 			}
 			else if (!strcmp(param->m_name, "width"))
@@ -131,6 +132,8 @@ float64_t CGaussianARDKernel::get_parameter_gradient_helper(
 	else if (!strcmp(param->m_name, "width"))
 	{
 		float64_t tmp=kernel(idx_a,idx_b);
+		if (tmp<=CMath::MACHINE_EPSILON)
+			return 0.0;
 		return -tmp*CMath::log(tmp)/m_width;
 	}
 	else
@@ -152,10 +155,10 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 		for (index_t j=0; j<num_lhs; j++)
 		{
-			SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(j);
+			SGVector<float64_t> avec=get_feature_vector(j, lhs);
 			for (index_t k=0; k<num_rhs; k++)
 			{
-				SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(k);
+				SGVector<float64_t> bvec=get_feature_vector(k, rhs);
 				derivative(j,k)=get_parameter_gradient_helper(param,index,j,k,avec,bvec);
 			}
 		}
@@ -187,11 +190,11 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 	REQUIRE(lhs, "Left features (lhs) not set!\n")
 	REQUIRE(rhs, "Right features (rhs) not set!\n")
 
-	if (lhs==rhs && idx_a==idx_b) 
+	if (lhs==rhs && idx_a==idx_b)
 		return 0.0;
 
-	SGVector<float64_t> avec=((CDotFeatures *)lhs)->get_computed_dot_feature_vector(idx_a);
-	SGVector<float64_t> bvec=((CDotFeatures *)rhs)->get_computed_dot_feature_vector(idx_b);
+	SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);
+	SGVector<float64_t> bvec=get_feature_vector(idx_b, rhs);
 	avec=linalg::add(avec, bvec, 1.0, -1.0);
 	float64_t result=compute_helper(avec, avec);
 	return result/m_width;

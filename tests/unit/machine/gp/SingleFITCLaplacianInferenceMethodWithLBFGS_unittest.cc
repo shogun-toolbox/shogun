@@ -117,7 +117,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -225,7 +225,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=4.0;
 	inf->set_scale(scale);
@@ -312,7 +312,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=5.0;
 	inf->set_scale(scale);
@@ -393,7 +393,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
-	inf->set_inducing_noise(ind_noise); 
+	inf->set_inducing_noise(ind_noise);
 
 	float64_t scale=5.0;
 	inf->set_scale(scale);
@@ -407,14 +407,14 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// result from GPML 3.4 package:
-	//dnlz = 
+	//dnlz =
 	//mean: []
 	//cov: [0.889369895665482 0.260954643384094 0.579311763908738]
 	//lik: []
 	//dnlz.xu'
 	//0.140255088672368  -0.060040496377590  -0.157432965446797
 	//0.125896281241220  -0.067325533249551  -0.007553979244171
-	// 
+	//
 	// get parameters to compute derivatives
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
@@ -448,7 +448,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	EXPECT_NEAR(deriv_lat(1,1),  -0.067325533249551,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(-0.007553979244171, rel_tolorance);
 	EXPECT_NEAR(deriv_lat(1,2),  -0.007553979244171,  abs_tolorance);
-	
+
 	// clean up
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);

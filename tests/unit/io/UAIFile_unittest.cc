@@ -8,11 +8,11 @@ using namespace shogun;
 TEST(UAIFileTest, preamble)
 {
     CUAIFile* fout = new CUAIFile("UAIFileTest_unittest_preamble.uai", 'w', NULL);
-    
+
     fout->set_net_type("MARKOV");
-    
+
     fout->set_num_vars(3);
-    
+
     SGVector<int32_t> vars_card(3);
     vars_card[0] = 2;
     vars_card[1] = 2;
@@ -21,36 +21,36 @@ TEST(UAIFileTest, preamble)
 
     fout->set_num_factors(2);
 
-    SGVector<int32_t>* factors_scope = new SGVector<int32_t>[2];               
-    SGVector<int32_t> f_s1(2);                                                 
-    f_s1[0] = 0;                                                               
-    f_s1[1] = 1;                                                               
-    factors_scope[0] = f_s1;                                                   
-    SGVector<int32_t> f_s2(2);                                                 
-    f_s2[0] = 1;                                                               
-    f_s2[1] = 2;                                                               
-    factors_scope[1] = f_s2;                                                   
-    fout->set_factors_scope(2, factors_scope);    
+    SGVector<int32_t>* factors_scope = new SGVector<int32_t>[2];
+    SGVector<int32_t> f_s1(2);
+    f_s1[0] = 0;
+    f_s1[1] = 1;
+    factors_scope[0] = f_s1;
+    SGVector<int32_t> f_s2(2);
+    f_s2[0] = 1;
+    f_s2[1] = 2;
+    factors_scope[1] = f_s2;
+    fout->set_factors_scope(2, factors_scope);
 
-    SGVector<float64_t>* factors_table = new SGVector<float64_t> [2];           
-    SGVector<float64_t> f_t1(4);                                              
-    f_t1[0] = 0.2;                                                             
-    f_t1[1] = 2.2;                                                             
-    f_t1[2] = 3.2;                                                             
-    f_t1[3] = 4.2;                                                                                                                                            
-    SGVector<float64_t> f_t2(6);                                              
-    f_t2[0] = 0.2;                                                             
-    f_t2[1] = 2.2;                                                             
-    f_t2[2] = 3.2;                                                             
-    f_t2[3] = 4.2;                                                             
-    f_t2[4] = 5.2;                                                             
-    f_t2[5] = 6.2;                                                                                                                                         
-    factors_table[0] = f_t1;                                                    
-    factors_table[1] = f_t2;                                                    
-    fout->set_factors_table(2, factors_table);  
+    SGVector<float64_t>* factors_table = new SGVector<float64_t> [2];
+    SGVector<float64_t> f_t1(4);
+    f_t1[0] = 0.2;
+    f_t1[1] = 2.2;
+    f_t1[2] = 3.2;
+    f_t1[3] = 4.2;
+    SGVector<float64_t> f_t2(6);
+    f_t2[0] = 0.2;
+    f_t2[1] = 2.2;
+    f_t2[2] = 3.2;
+    f_t2[3] = 4.2;
+    f_t2[4] = 5.2;
+    f_t2[5] = 6.2;
+    factors_table[0] = f_t1;
+    factors_table[1] = f_t2;
+    fout->set_factors_table(2, factors_table);
 
     SG_UNREF(fout);
-    
+
     CUAIFile* fin = new CUAIFile("UAIFileTest_unittest_preamble.uai", 'r', NULL);
 
     SGVector<char> net_type;

@@ -29,7 +29,6 @@ ENDIF()
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp)
 set_target_properties(libshogun PROPERTIES
-    COMPILE_DEFINITIONS "${DEFINES}"
     POSITION_INDEPENDENT_CODE TRUE)
 IF (SANITIZER_FLAGS)
   set_target_properties(libshogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})

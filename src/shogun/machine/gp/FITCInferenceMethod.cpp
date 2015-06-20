@@ -60,6 +60,17 @@ void CFITCInferenceMethod::init()
 CFITCInferenceMethod::~CFITCInferenceMethod()
 {
 }
+void CFITCInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
+}
 
 void CFITCInferenceMethod::update()
 {
@@ -68,7 +79,7 @@ void CFITCInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -140,7 +151,7 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 void CFITCInferenceMethod::update_chol()
 {
 	//time complexits O(m^2*n)
-	
+
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
@@ -167,7 +178,7 @@ void CFITCInferenceMethod::update_chol()
 
 	// solve Luu' * V = Ktru
 	//V  = Luu'\Ku;                                     % V = inv(Luu')*Ku => V'*V = Q
-	
+
 	m_V=SGMatrix<float64_t>(m_chol_uu.num_cols, m_ktru.num_cols);
 	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 	V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru*
@@ -220,7 +231,7 @@ void CFITCInferenceMethod::update_chol()
 		V*eigen_r.cwiseProduct(sqrt_t));
 
 	// compute iKuu
-	//iKuu = solve_chol(Luu,eye(nu));  
+	//iKuu = solve_chol(Luu,eye(nu));
 	MatrixXd iKuu=Luu.solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of posterior cholesky
@@ -248,7 +259,7 @@ void CFITCInferenceMethod::update_alpha()
 	m_alpha=SGVector<float64_t>(m_chol_uu.num_rows);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	//post.alpha = Luu\(Lu\be); 
+	//post.alpha = Luu\(Lu\be);
 	eigen_alpha=eigen_chol_utr.triangularView<Upper>().solve(eigen_be);
 	eigen_alpha=eigen_chol_uu.triangularView<Upper>().solve(eigen_alpha);
 }
@@ -256,7 +267,7 @@ void CFITCInferenceMethod::update_alpha()
 void CFITCInferenceMethod::update_deriv()
 {
 	//time complexits O(m^2*n)
-	
+
 	// create eigen representation of Ktru, Lu, Luu, dg, be
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
@@ -318,8 +329,7 @@ void CFITCInferenceMethod::update_deriv()
 
 SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	m_mu=SGVector<float64_t>(m_al.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -337,7 +347,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 	SG_UNREF(lik);
 	eigen_mu=(eigen_y-eigen_m)-eigen_al*CMath::sq(sigma);
 	*/
-	
+
 	//FITC approximated posterior mean
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
@@ -349,8 +359,8 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
+
 	//time complexity of the following operations is O(m*n^2)
 	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);

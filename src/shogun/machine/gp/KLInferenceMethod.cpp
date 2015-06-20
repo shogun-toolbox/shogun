@@ -153,6 +153,19 @@ CKLInferenceMethod::~CKLInferenceMethod()
 {
 }
 
+void CKLInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		update_approx_cov();
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
+}
+
 void CKLInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
@@ -161,8 +174,7 @@ void CKLInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -228,18 +240,17 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 	return ldlt;
 }
 
+
 SGVector<float64_t> CKLInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
 SGMatrix<float64_t> CKLInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
 }
@@ -319,7 +330,7 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
-	
+
 	return get_negative_log_marginal_likelihood_helper();
 }
 

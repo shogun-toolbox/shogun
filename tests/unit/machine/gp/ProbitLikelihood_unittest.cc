@@ -330,7 +330,7 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	func[7]=85.3333397917583056369039695709943771362305;
 	func[8]=140.1904854167975713608029764145612716674805;
 	func[9]=176.1904854167975713608029764145612716674805;
-	
+
 	labels=new CBinaryLabels(lab);
 	dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);

@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -54,7 +54,7 @@ namespace shogun
  * The class is implemented based on the KL method in the Challis's paper,
  * which uses lower triangular represention.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -95,7 +95,7 @@ public:
 	 *
 	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
-	 * Note that this vector is not avaliable for the KL method 
+	 * Note that this vector is not avaliable for the KL method
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
@@ -110,7 +110,7 @@ protected:
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
+	 * Note that
 	 * get_derivative_wrt_inference_method(const TParameter* param)
 	 * and
 	 * get_derivative_wrt_kernel(const TParameter* param)
@@ -134,10 +134,10 @@ protected:
 	float64_t m_log_det_Kernel;
 
 	/**The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale) */
-	SGMatrix<float64_t> m_Kernel_LsD; 
+	SGMatrix<float64_t> m_Kernel_LsD;
 
 	/**The permutation sequence of P, where P are defined in LDLT factorization on Kernel*sq(m_scale) */
-	SGVector<index_t> m_Kernel_P; 
+	SGVector<index_t> m_Kernel_P;
 
 	/** compute the inv(corrected_Kernel*sq(m_scale))*A
 	 *

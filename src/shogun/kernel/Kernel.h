@@ -115,7 +115,8 @@ enum EKernelType
 	K_LINEARARD = 500,
 	K_GAUSSIANARD = 510,
 	K_GAUSSIANARDFITC = 511,
-	K_STREAMING = 520
+	K_STREAMING = 520,
+	K_PERIODIC = 530
 };
 
 /** kernel property */

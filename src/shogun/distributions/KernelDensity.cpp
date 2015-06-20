@@ -81,7 +81,7 @@ bool CKernelDensity::train(CFeatures* data)
 		{
 			tree=new CBallTree(m_leaf_size,m_dist);
 			break;
-		}		
+		}
 		default:
 		{
 			SG_ERROR("Evaluation mode not recognized\n");
@@ -115,7 +115,7 @@ SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* t
 	else
 		SG_ERROR("Query tree root not found!\n")
 
-	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();	
+	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();
 	SGVector<float64_t> ret=tree->log_kernel_density_dual(test->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);
 
 	SG_UNREF(root);

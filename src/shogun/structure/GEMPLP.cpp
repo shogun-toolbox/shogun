@@ -37,8 +37,8 @@ CGEMPLP::~CGEMPLP()
 }
 
 void CGEMPLP::init()
-{	
-	SGVector<int32_t> fg_var_sizes = m_fg->get_cardinalities();	
+{
+	SGVector<int32_t> fg_var_sizes = m_fg->get_cardinalities();
 	m_factors = m_fg->get_factors();
 
 	int32_t num_factors = m_factors->get_num_elements();
@@ -65,7 +65,7 @@ void CGEMPLP::init()
 			if (j != i)
 				m_region_intersections[j].insert(k);
 		}
-	}	
+	}
 
 	m_region_inds_intersections.resize(num_factors);
 	m_msgs_from_region.resize(num_factors);
@@ -76,31 +76,31 @@ void CGEMPLP::init()
 		CFactor* factor_c = dynamic_cast<CFactor*>(m_factors->get_element(c));
 		SGVector<int32_t> vars_c = factor_c->get_variables();
 		SG_UNREF(factor_c);
-		
+
 		m_region_inds_intersections[c].resize(m_region_intersections[c].size());
 		m_msgs_from_region[c].resize(m_region_intersections[c].size());
 
 		int32_t s = 0;
 
-		for (set<int>::iterator t = m_region_intersections[c].begin(); 
+		for (set<int>::iterator t = m_region_intersections[c].begin();
 				t != m_region_intersections[c].end(); t++)
 		{
 			SGVector<int32_t> curr_intersection = m_all_intersections[*t];
 			SGVector<int32_t> inds_s(curr_intersection.size());
 			SGVector<int32_t> dims_array(curr_intersection.size());
-			
+
 			for (int32_t i = 0; i < inds_s.size(); i++)
 			{
 				inds_s[i] = vars_c.find(curr_intersection[i])[0];
-				REQUIRE(inds_s[i] >= 0, 
+				REQUIRE(inds_s[i] >= 0,
 						"Intersection contains variable %d which is not in the region %d", curr_intersection[i], c);
 
 				dims_array[i] = fg_var_sizes[curr_intersection[i]];
 			}
-			
+
 			// initialize indices of intersections inside the region
 			m_region_inds_intersections[c][s] = inds_s;
-			
+
 			// initialize messages from region and set it 0
 			SGNDArray<float64_t> message(dims_array);
 			message.set_const(0);
@@ -114,19 +114,19 @@ void CGEMPLP::init()
 
 	// initialize messages in intersections and set it 0
 	m_msgs_into_intersections.resize(m_all_intersections.size());
-	
+
 	for (uint32_t i = 0; i < m_all_intersections.size(); i++)
 	{
 		SGVector<int32_t> vars_intersection = m_all_intersections[i];
 		SGVector<int32_t> dims_array(vars_intersection.size());
-		
+
 		for (int32_t j = 0; j < dims_array.size(); j++)
 			dims_array[j] = fg_var_sizes[vars_intersection[j]];
-	
+
 		SGNDArray<float64_t> curr_array(dims_array);
 		curr_array.set_const(0);
 		m_msgs_into_intersections[i] = curr_array.clone();
-	}	
+	}
 }
 
 SGNDArray<float64_t> CGEMPLP::convert_energy_to_potential(CFactor* factor)
@@ -165,11 +165,11 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 				tmp.push_back(region_A[i]);
 		}
 	}
-	
+
 	// return -1 if intersetion is empty
 	if (tmp.size() == 0)	return -1;
 
-	
+
 	SGVector<int32_t> sAB(tmp.size());
 	for (uint32_t i = 0; i < tmp.size(); i++)
 		sAB[i] = tmp[i];
@@ -182,7 +182,7 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 
 	if (k == (int32_t)m_all_intersections.size())
 		m_all_intersections.push_back(sAB);
-	
+
 	return k;
 }
 
@@ -194,7 +194,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 
 	// iterate over message loop
 	SG_SDEBUG("Running MPLP for %d iterations\n",  m_param.m_max_iter);
-	
+
 	float64_t last_obj = CMath::INFTY;
 
 	// block coordinate desent, outer loop
@@ -206,13 +206,13 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 			CFactor* factor_c = dynamic_cast<CFactor*>(m_factors->get_element(c));
 			SGVector<int32_t> vars = factor_c->get_variables();
 			SG_UNREF(factor_c);
-			
+
 			if (vars.size() == 1 && it > 0)
 				continue;
 
 			update_messages(c);
 		}
-		
+
 		// calculate the objective value
 		float64_t obj = 0;
 		int32_t max_at;
@@ -224,17 +224,17 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 			if (m_all_intersections[s].size() == 1)
 				assignment[m_all_intersections[s][0]] = max_at;
 		}
-		
+
 		// get the value of the decoded solution
 		float64_t int_val = 0;
-	
+
 		// iterates over factors
 		for (int32_t c = 0; c < m_factors->get_num_elements(); c++)
 		{
 			CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(c));
 			SGVector<int32_t> vars = factor->get_variables();
 			SGVector<int32_t> var_assignment(vars.size());
-			
+
 			for (int32_t i = 0; i < vars.size(); i++)
 				var_assignment[i] = assignment[vars[i]];
 
@@ -243,7 +243,7 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 
 			SG_UNREF(factor);
 		}
-		
+
 		float64_t obj_del = last_obj - obj;
 		float64_t int_gap = obj - int_val;
 
@@ -251,13 +251,13 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 
 		if (obj_del < m_param.m_obj_del_thr && it > 16)
 			break;
-		
+
 		if (int_gap < m_param.m_int_gap_thr)
 			break;
 
 		last_obj = obj;
 	}
-	
+
 	float64_t energy = m_fg->evaluate_energy(assignment);
 	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", energy);
 
@@ -267,11 +267,11 @@ float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 void CGEMPLP::update_messages(int32_t id_region)
 {
 	REQUIRE(m_factors != NULL, "Factors are not set!\n");
-	
-	REQUIRE(m_factors->get_num_elements() > id_region, 
-			"Region id (%d) exceeds the factor elements' length (%d)!\n", 
+
+	REQUIRE(m_factors->get_num_elements() > id_region,
+			"Region id (%d) exceeds the factor elements' length (%d)!\n",
 			id_region, m_factors->get_num_elements());
-	
+
 	CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(id_region));
 	SGVector<int32_t> vars = factor->get_variables();
 	SGVector<int32_t> cards = factor->get_cardinalities();
@@ -287,15 +287,15 @@ void CGEMPLP::update_messages(int32_t id_region)
 	// \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)
 	int32_t s = 0;
 
-	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin(); 
+	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin();
 				t != m_region_intersections[id_region].end(); t++)
 	{
 		int32_t id_intersection = *t;
 		SGNDArray<float64_t> tmp = m_msgs_into_intersections[id_intersection].clone();
 		tmp -= m_msgs_from_region[id_region][s];
-		
+
 		lam_minus.push_back(tmp);
-		
+
 		if (vars.size() == (int32_t)m_region_inds_intersections[id_region][s].size())
 			lam_sum += tmp;
 		else
@@ -309,10 +309,10 @@ void CGEMPLP::update_messages(int32_t id_region)
 		m_msgs_into_intersections[id_intersection] -= m_msgs_from_region[id_region][s];
 		s++;
 	}
-	
+
 	s = 0;
 
-	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin(); 
+	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin();
 				t != m_region_intersections[id_region].end(); t++)
 	{
 		// maximazation: \max_{x_c} \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)
@@ -328,11 +328,11 @@ void CGEMPLP::update_messages(int32_t id_region)
 		s++;
 	}
 
-	SG_UNREF(factor);	
+	SG_UNREF(factor);
 }
 
 void CGEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t> &subset_inds, SGNDArray<float64_t> &max_res) const
-{	
+{
 	// If the subset equals the target array then maximizing would
 	// give us the target array (assuming there is no reordering)
 	if (subset_inds.size() == tar_arr.num_dims)
@@ -351,7 +351,7 @@ void CGEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<int32_t
 	for (int32_t vi = 0; vi < tar_arr.len_array; vi++)
 	{
 		int32_t y = 0;
-		
+
 		if (subset_inds.size() == 1)
 			y = inds_for_tar[subset_inds[0]];
 		else if (subset_inds.size() == 2)

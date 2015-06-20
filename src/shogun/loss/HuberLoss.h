@@ -49,7 +49,7 @@ public:
 
 	/** constructor
 	 *
-	 * @param delta Huber delta 
+	 * @param delta Huber delta
 	 */
 	CHuberLoss(float64_t delta);
 

@@ -417,7 +417,7 @@ if __name__ == "__main__":
         with open(args.path, 'r') as file:
             programString = file.read()
         filePath = args.path
-    else: 
+    else:
         programString = sys.stdin.read()
         filePath = "sys.stdin"
 
@@ -426,4 +426,4 @@ if __name__ == "__main__":
     # Parse input and print json output
     program = parse(programString, filePath)
 
-    print json.dumps(program, indent=indentWidth) 
+    print json.dumps(program, indent=indentWidth)

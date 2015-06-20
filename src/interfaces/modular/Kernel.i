@@ -34,6 +34,7 @@
 %rename(PyramidChi2) CPyramidChi2;
 %rename(ANOVAKernel) CANOVAKernel;
 %rename(AUCKernel) CAUCKernel;
+%rename(BesselKernel) CBesselKernel;
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 %rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
 %rename(CircularKernel) CCircularKernel;
@@ -100,9 +101,17 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(RationalQuadraticKernel) CRationalQuadraticKernel;
 %rename(MultiquadricKernel) CMultiquadricKernel;
 %rename(JensenShannonKernel) CJensenShannonKernel;
+#ifdef HAVE_LINALG_LIB
 %rename(LinearARDKernel) CLinearARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
+
+#ifdef HAVE_EIGEN3 
+%rename(GaussianARDFITCKernel) CGaussianARDFITCKernel;
+#endif
+
+#endif
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
+%rename(PeriodicKernel) CPeriodicKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -162,6 +171,7 @@ namespace shogun
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>
 %include <shogun/kernel/AUCKernel.h>
+%include <shogun/kernel/BesselKernel.h>
 %include <shogun/kernel/CauchyKernel.h>
 %include <shogun/kernel/CircularKernel.h>
 %include <shogun/kernel/Chi2Kernel.h>
@@ -215,8 +225,16 @@ namespace shogun
 %include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
 %include <shogun/kernel/JensenShannonKernel.h>
+#ifdef HAVE_LINALG_LIB
 %include <shogun/kernel/LinearARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
+
+#ifdef HAVE_EIGEN3 
+%include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#endif
+
+#endif
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
+%include <shogun/kernel/PeriodicKernel.h>
 
 EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)

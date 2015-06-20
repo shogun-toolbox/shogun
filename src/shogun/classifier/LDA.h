@@ -26,14 +26,14 @@ namespace shogun
 /** Method for solving LDA */
 enum ELDAMethod
 {
-	/** if N>D then FLD_LDA is chosen automatically else SVD_LDA is chosen 
-	 * (D-dimensions N-number of vectors) 
+	/** if N>D then FLD_LDA is chosen automatically else SVD_LDA is chosen
+	 * (D-dimensions N-number of vectors)
 	 */
-	AUTO_LDA = 10,	
-	/** Singular Value Decomposition based LDA.  
+	AUTO_LDA = 10,
+	/** Singular Value Decomposition based LDA.
 	*/
 	SVD_LDA = 20,
-	/** Fisher two class discrimiant based LDA. 
+	/** Fisher two class discrimiant based LDA.
 	*/
 	FLD_LDA = 30
 };
@@ -46,7 +46,7 @@ template <class ST> class CDenseFeatures;
  * both classes a gaussian distributed with equal co-variance. To find a linear
  * separation \f${\bf w}\f$ in training, the in-between class variance is
  * maximized and the within class variance is minimized.
- * 
+ *
  * This class provides 3 method options to compute the LDA :
  * <em>::FLD_LDA</em> : Two class Fisher Discriminant Analysis.
  * \f[
@@ -68,20 +68,20 @@ template <class ST> class CDenseFeatures;
  * <em>::SVD_LDA</em> : Singular Valued decomposition method.
  * The above derivation of Fisher's LDA requires the invertibility of the within
  * class matrix. However, this condition gets void when there are fewer data-points
- * than dimensions. A solution is to require that \f${\bf W}\f$ lies only in the subspace 
+ * than dimensions. A solution is to require that \f${\bf W}\f$ lies only in the subspace
  * spanned by the data. A basis of the data \f${\bf X}\f$ is found using the thin-SVD technique
- * which returns an orthonormal non-square basis matrix \f${\bf Q}\f$. We then require the 
+ * which returns an orthonormal non-square basis matrix \f${\bf Q}\f$. We then require the
  * solution \f${\bf w}\f$ to be expressed in this basis.
  * \f[{\bf W} := {\bf Q} {\bf{W^\prime}}\f]
  * The between class Matrix is replaced with:
  * \f[{\bf S_b^\prime} \equiv {{\bf Q^T}{\bf S_b } {\bf Q}\f]
  * The within class Matrix is replaced with:
  * \f[{\bf S_w^\prime} \equiv {{\bf Q^T}{\bf S_w} {\bf Q}\f]
- * In this case {\bf S_w^\prime} is guranteed invertible since {\bf S_w} has 
- * been projected down to the basis that spans the data. 
+ * In this case {\bf S_w^\prime} is guranteed invertible since {\bf S_w} has
+ * been projected down to the basis that spans the data.
  * see: Bayesian Reasoning and Machine Learning, section 16.3.1.
  *
- * <em>::AUTO_LDA</em> : This mode automagically chooses one of the above modes for 
+ * <em>::AUTO_LDA</em> : This mode automagically chooses one of the above modes for
  * the users based on whether N > D (chooses ::FLD_LDA) or N < D(chooses ::SVD_LDA)
  * \sa CLinearMachine
  * \sa http://en.wikipedia.org/wiki/Linear_discriminant_analysis

@@ -23,13 +23,13 @@ const char fname_svm_multilabel[] = "../../../../data/multilabel/yeast_test.svm"
 void test_libsvmfile_multilabel(const char* fname)
 {
 	FILE* pfile = fopen(fname, "r");
-	
+
     if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", fname);
 		return;
 	}
-	
+
     fclose(pfile);
 
 	/* sparse data from matrix*/

@@ -20,7 +20,7 @@ namespace shogun
 
 /** @brief The Factor Analysis class is used to embed
  * data using Factor Analysis algorithm.
- * 
+ *
  * Factor analysis aims at describing how several observed variables are
  * correlated to each other by means of identifying a set of unobserved
  * variables, the so-called factors. Desirably, the number of factors is

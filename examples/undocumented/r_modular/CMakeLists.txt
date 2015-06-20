@@ -4,6 +4,8 @@ FOREACH(EXAMPLE ${R_EXAMPLES})
 	add_test(NAME r_modular-${EXAMPLE_NAME}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			COMMAND ${R_EXECUTABLE} --no-restore --no-save --no-readline --slave -f ${EXAMPLE})
+	set_property(TEST r_modular-${EXAMPLE_NAME}
+			PROPERTY ENVIRONMENT "R_LIBS_USER=\"$ENV{R_LIBS_USER}\"")
 ENDFOREACH()
 
 install(FILES ${R_EXAMPLES}

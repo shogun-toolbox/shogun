@@ -75,6 +75,8 @@ void CInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", MS_NOT_AVAILABLE);
+	
 
 	m_kernel=NULL;
 	m_model=NULL;
@@ -82,6 +84,7 @@ void CInferenceMethod::init()
 	m_features=NULL;
 	m_mean=NULL;
 	m_scale=1.0;
+	m_gradient_update=false;
 
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
@@ -152,8 +155,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
 
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	// get number of derivatives
 	const index_t num_deriv=params->get_num_elements();
@@ -294,4 +296,9 @@ void CInferenceMethod::update_train_kernel()
 	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
+void CInferenceMethod::compute_gradient()
+{
+	if (parameter_hash_changed())
+		update();
+}
 #endif /* HAVE_EIGEN3 */

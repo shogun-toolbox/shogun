@@ -42,6 +42,7 @@
 #include <shogun/lib/common.h>
 #include <memory>
 
+#ifndef SWIG // SWIG should skip this part
 namespace viennacl
 {
 	template <class, class, class, class> class matrix_base;
@@ -78,6 +79,7 @@ template <class> class SGMatrix;
  */
 template <class T> class CGPUMatrix
 {
+
 	typedef viennacl::matrix_base<T, viennacl::column_major, std::size_t, std::ptrdiff_t> VCLMatrixBase;
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 
@@ -86,6 +88,9 @@ template <class T> class CGPUMatrix
 public:
 	/** The scalar type of the matrix */
 	typedef T Scalar;
+
+	/** The container type for a given template argument */
+	template <typename ST> using container_type = CGPUMatrix<ST>;
 
 	/** Default Constructor */
 	CGPUMatrix();
@@ -114,20 +119,31 @@ public:
 	/** Converts the matrix into an SGMatrix */
 	operator SGMatrix<T>() const;
 
-#ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
+	/** Creates a gpu matrix using data from an Eigen3 matrix */
 	CGPUMatrix(const EigenMatrixXt& cpu_mat);
 
 	/** Converts the matrix into an Eigen3 matrix */
 	operator EigenMatrixXt() const;
 #endif // HAVE_EIGEN3
 
+	/** The data */
+	inline VCLMatrixBase data()
+	{
+		return vcl_matrix();
+	}
+
+	/** The size */
+	inline uint64_t size() const
+	{
+		const uint64_t c=num_cols;
+		return num_rows*c;
+	}
+
 	/** Returns a ViennaCL matrix wrapped around the data of this matrix. Can be
 	 * used to call native ViennaCL methods on this matrix
 	 */
 	VCLMatrixBase vcl_matrix();
-
-#endif // SWIG
 
 	/** Sets all the elements of the matrix to zero */
 	void zero();
@@ -191,6 +207,7 @@ public:
 };
 
 }
+#endif // SWIG
 
 #endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

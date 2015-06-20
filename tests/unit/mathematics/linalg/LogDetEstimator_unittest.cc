@@ -84,7 +84,7 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 
 	CSparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
-	
+
 	CLogDetEstimator estimator(sm);
 
 	CIndependentComputationEngine* e=

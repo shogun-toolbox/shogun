@@ -42,11 +42,11 @@ namespace shogun
 {
 
 /** @brief This class implements the stochastic gradient boosting algorithm for ensemble learning invented by Jerome H. Friedman. This class
- * works with a variety of loss functions like squared loss, exponential loss, Huber loss etc which can be accessed through Shogun's 
+ * works with a variety of loss functions like squared loss, exponential loss, Huber loss etc which can be accessed through Shogun's
  * CLossFunction interface (cf. http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1CLossFunction.html). Additionally, it can create
  * an ensemble of any regressor class derived from the CMachine class (cf. http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1CMachine.html).
  * For one dimensional optimization, this class uses the backtracking linesearch accessed via Shogun's L-BFGS class.
- * A concise description of the algorithm implemented can be found in the following link : 
+ * A concise description of the algorithm implemented can be found in the following link :
  * http://en.wikipedia.org/wiki/Gradient_boosting#Algorithm
  */
 class CStochasticGBMachine : public CMachine
@@ -54,13 +54,13 @@ class CStochasticGBMachine : public CMachine
 public:
 	/** Constructor
 	 *
-	 * @param machine The class of machine which will constitute the ensemble 
+	 * @param machine The class of machine which will constitute the ensemble
 	 * @param loss loss function
 	 * @param num_iterations number of iterations of boosting
 	 * @param subset_fraction fraction of trainining vectors to be chosen randomly w/o replacement
 	 * @param learning_rate shrinkage factor
 	 */
-	CStochasticGBMachine(CMachine* machine=NULL, CLossFunction* loss=NULL, int32_t num_iterations=100, 
+	CStochasticGBMachine(CMachine* machine=NULL, CLossFunction* loss=NULL, int32_t num_iterations=100,
 						float64_t learning_rate=1.0, float64_t subset_fraction=0.6);
 
 	/** Destructor */
@@ -143,7 +143,7 @@ protected:
 	/** train machine
 	 *
 	 * @param data training data
-	 * @return true 
+	 * @return true
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
@@ -182,7 +182,7 @@ protected:
 
 	/** apply lbfgs to get gamma
 	 *
-	 * @param instance stores parameters to be passed to lbfgs_evaluate 
+	 * @param instance stores parameters to be passed to lbfgs_evaluate
 	 * @return gamma
 	 */
 	float64_t get_gamma(void* instance);

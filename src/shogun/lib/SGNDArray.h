@@ -28,7 +28,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		/** default constructor */
 		SGNDArray();
 
-		/** constructor for setting params 
+		/** constructor for setting params
 		 *
 		 * @param a data of the array
 		 * @param d dimentions of the array
@@ -38,29 +38,29 @@ template<class T> class SGNDArray : public SGReferencedData
 		SGNDArray(T* a, index_t* d, index_t nd, bool ref_counting=true);
 
 		/** constructor to create new ndarray in memory
-		 * 
+		 *
 		 * @param d dimentions of the array
 		 * @param nd number of dimentions
 		 * @param ref_counting if true, count the reference
 		 */
 		SGNDArray(index_t* d, index_t nd, bool ref_counting=true);
-		
+
 		/** constructor to create new ndarray of given bases
-		 * 
+		 *
 		 * @param d dimentions of the array
 		 * @param ref_counting if true, count the reference
 		 */
 		SGNDArray(SGVector<index_t> d, bool ref_counting=true);
 
-		/** copy constructor 
-		 * 
+		/** copy constructor
+		 *
 		 * @param orig the original N-d array
 		 */
 		SGNDArray(const SGNDArray &orig);
 
 		/** empty destructor */
 		virtual ~SGNDArray();
-		
+
 		/** @return the cloned N-d array */
 		SGNDArray<T> clone() const;
 
@@ -80,7 +80,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		 * @param matIdx matrix index
 		 */
 		void transpose_matrix(index_t matIdx) const;
-	
+
 		/** operator overload for ndarray read only access
 		 *
 		 * @param index to access
@@ -98,37 +98,37 @@ template<class T> class SGNDArray : public SGReferencedData
 		{
 			return array[index];
 		}
-	
+
 		/** @return dimentions of the N-d array*/
 		SGVector<index_t> get_dimensions() const;
 
 		/** set N-d array to a constant
 		 *
-		 * @param const_elem constant value to set N-d array to 
+		 * @param const_elem constant value to set N-d array to
 		 */
 		void set_const(T const_elem);
-        
+
 		/** operator overload of multiplication assignment
 		 *
 		 * @param val a scalar value to multiply
 		 * @return the result N-d array
 		 */
 		SGNDArray<T>& operator*=(T val);
-		
+
 		/** operator overload of addition assignment
 		 *
 		 * @param ndarray N-d array to add
 		 * @returns the result N-d array
 		 */
 		SGNDArray<T>& operator+=(SGNDArray& ndarray);
-		
+
 		/** operator overload of subtruction assignment
 		 *
 		 * @param ndarray N-d array to add
 		 * @returns the result N-d array
 		 */
 		SGNDArray<T>& operator-=(SGNDArray& ndarray);
-		
+
 		/** find the maximum value of the elements
 		 *
 		 * @param max_at the index of the maximum element, index is in 1-d flattend array.
@@ -136,21 +136,21 @@ template<class T> class SGNDArray : public SGReferencedData
 		 * @return the maximum value
 		 */
 		T max_element(index_t& max_at);
-		
+
 		/** expand to a big size array
 		 *
 		 * @param big_array the target big size array
 		 * @param axes the axis where the current ndarray will be replicated
 		 */
 		void expand(SGNDArray& big_array, SGVector<index_t>& axes);
-		
+
 		/** get the value at index
 		 *
 		 * @param index vector of indices where the value to retrieve of the array is located
 		 * @return the value at index
 		 */
 		T get_value(SGVector<index_t> index) const;
-		
+
 		/** get the next index from the current one
 		 *
 		 * @param curr_index the current index

@@ -31,7 +31,7 @@
  * Code adapted from
  * Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * and 
+ * and
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 

@@ -4,7 +4,7 @@
 namespace shogun
 {
 
-	/** Holds unique pointer that is deleted once this holder is deleted. 
+	/** Holds unique pointer that is deleted once this holder is deleted.
 	 * Its main usage is to hold a pointer to implementation (pimpl idiom):
 	 *
 	 * class Self;

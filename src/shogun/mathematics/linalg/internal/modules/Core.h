@@ -35,6 +35,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
 #include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
+#include <shogun/mathematics/linalg/internal/implementation/Apply.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 #include <shogun/mathematics/linalg/internal/implementation/Convolve.h>
@@ -102,6 +103,40 @@ void scale(Matrix A, typename Matrix::Scalar alpha)
 }
 
 #ifdef HAVE_LINALG_LIB
+/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
+ *
+ * This version should be used for backend specific code requirements. For example,
+ * use this with CGPUMatrix, CGPUVector and explicitly set ViennaCL backend, or
+ * SGMatrix, SGVector and explicitly set Eigen3 backend. If matrix-type/backend-type
+ * independent code is desired, use the version that does not support preallocated
+ * result vector but returns the result in a newly created vector instead.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param x Result vector
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
+void apply(Matrix A, Vector b, Vector x, bool transpose=false)
+{
+	implementation::apply<backend,Matrix,Vector>::compute(A, b, x, transpose);
+}
+
+/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
+ *
+ * This version returns the result in a newly created vector. If apply is desired
+ * that will work irrespective of the backend and the matrix/vector type used,
+ * then this method should be used.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param x Result vector
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
+Vector apply(Matrix A, Vector b, bool transpose=false)
+{
+	return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
+}
+
 /** Performs matrix multiplication. This version should be used for backend specific
  * code requirements. For example, use this with CGPUMatrix and explicitly set
  * ViennaCL backend, or SGMatrix and explicitly set Eigen3 backend. If matrix-type/

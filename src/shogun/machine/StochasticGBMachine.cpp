@@ -34,7 +34,7 @@
 
 using namespace shogun;
 
-CStochasticGBMachine::CStochasticGBMachine(CMachine* machine, CLossFunction* loss, int32_t num_iterations, 
+CStochasticGBMachine::CStochasticGBMachine(CMachine* machine, CLossFunction* loss, int32_t num_iterations,
 						float64_t learning_rate, float64_t subset_fraction)
 : CMachine()
 {
@@ -219,7 +219,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 
 		SG_UNREF(dlabels);
 		SG_UNREF(hm);
-		SG_UNREF(wlearner);		
+		SG_UNREF(wlearner);
 	}
 
 	SG_UNREF(interf);
@@ -304,13 +304,13 @@ float64_t CStochasticGBMachine::get_gamma(void* instance)
 	lbfgs_parameter_init(&lbfgs_param);
 	lbfgs_param.linesearch=2;
 
-	float64_t gamma=0;	
+	float64_t gamma=0;
 	lbfgs(1,&gamma,NULL,CStochasticGBMachine::lbfgs_evaluate,NULL,instance,&lbfgs_param);
 
 	return gamma;
 }
 
-float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim, 
+float64_t CStochasticGBMachine::lbfgs_evaluate(void *obj, const float64_t *parameters, float64_t *gradient, const int dim,
 												const float64_t step)
 {
 	REQUIRE(obj,"object cannot be NULL\n")

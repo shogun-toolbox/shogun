@@ -49,7 +49,7 @@ void CRandomCARTree::set_feature_subset_size(int32_t size)
 	m_randsubset_size=size;
 }
 
-int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
+int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec,
 	SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing_final, int32_t &count_left,
 														 int32_t &count_right)
 {
@@ -81,7 +81,7 @@ int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector
 				total_wclasses[j]+=weights[i];
 				break;
 			}
-				
+
 		}
 	}
 
@@ -221,13 +221,13 @@ int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector
 
 			// O(N)
 			// find best split for non-nominal attribute - choose threshold (z)
-			float64_t z=feats[sorted_args[0]];  
+			float64_t z=feats[sorted_args[0]];
 			right_wclasses[simple_labels[sorted_args[0]]]-=weights[sorted_args[0]];
 			left_wclasses[simple_labels[sorted_args[0]]]+=weights[sorted_args[0]];
 			for (int32_t j=1;j<n_nm_vecs;j++)
 			{
 				if (feats[sorted_args[j]]<=z+EQ_DELTA)
-				{	
+				{
 					right_wclasses[simple_labels[sorted_args[j]]]-=weights[sorted_args[j]];
 					left_wclasses[simple_labels[sorted_args[j]]]+=weights[sorted_args[j]];
 					continue;

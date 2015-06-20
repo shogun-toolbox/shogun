@@ -97,7 +97,7 @@ enum EMessageLocation
 #define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
-// printf like funktions (with additional severity level)
+// printf like functions (with additional severity level)
 // for object derived from CSGObject
 #define SG_GCDEBUG(...) {											\
 	if (SG_UNLIKELY(io->loglevel_above(MSG_GCDEBUG)))				\

@@ -52,7 +52,7 @@ namespace shogun
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
- * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method 
+ * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
  * CSingleFITCLaplacianInferenceMethod::get_posterior_covariance() is called
  *
  * This specific implementation was adapted from the infFITC_Laplace.m file in the
@@ -204,7 +204,7 @@ public:
 	 */
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
-	/** update data all matrices */
+	/** update matrices except gradients*/
 	virtual void update();
 
 	/** get negative log marginal likelihood
@@ -220,6 +220,9 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood();
 protected:
+	/** update gradients */
+	virtual void compute_gradient();
+
 	/** pre-compution for Newton's method*/
 	virtual void update_init();
 
@@ -298,7 +301,7 @@ protected:
 
 	/** efficiently compute the matrix-vector product
 	 * \f$ \inv{\inv{W}+\Sigma} \times x$\f, where \f$\Sigma$\f is
-	 * the FITC equivalent covariance n-by-n matrix (prior) of f_n 
+	 * the FITC equivalent covariance n-by-n matrix (prior) of f_n
 	 *
 	 * @param x input vector
 	 *
@@ -407,7 +410,7 @@ protected:
 	/** g defined in infFITC_Laplace.m*/
 	SGVector<float64_t> m_g;
 
-	/** the negative log likelihood without constant terms of 
+	/** the negative log likelihood without constant terms of
 	 * \f[
 	 * -log(p(f_n|y))
 	 * \f]

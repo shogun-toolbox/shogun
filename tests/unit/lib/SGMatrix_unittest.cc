@@ -30,6 +30,74 @@ TEST(SGMatrixTest,ctor_zero_const)
 	}
 }
 
+TEST(SGMatrixTest, SGVector_ctor)
+{
+	SGVector<float64_t> v(5);
+	for (index_t i=0; i<5; ++i)
+		v[i]=i;
+
+	EXPECT_EQ(v.ref_count(), 1);
+	{
+		SGMatrix<float64_t> m(v);
+		EXPECT_EQ(v.ref_count(), 2);
+		EXPECT_EQ(m.num_rows, 5);
+		EXPECT_EQ(m.num_cols, 1);
+
+		for (index_t j=0; j<m.num_cols; ++j)
+		{
+			for (index_t i=0; i<m.num_rows; ++i)
+				EXPECT_NEAR(m(i, j), v[j*m.num_rows+i], 1e-15);
+		}
+	}
+	EXPECT_EQ(v.ref_count(), 1);
+}
+
+TEST(SGMatrixTest, SGVector_ctor_row_col_specified)
+{
+	SGVector<float64_t> v(6);
+	for (index_t i=0; i<6; ++i)
+		v[i]=i;
+
+	EXPECT_EQ(v.ref_count(), 1);
+	{
+		SGMatrix<float64_t> m(v, 3, 2);
+		EXPECT_EQ(v.ref_count(), 2);
+		EXPECT_EQ(m.num_rows, 3);
+		EXPECT_EQ(m.num_cols, 2);
+
+		for (index_t j=0; j<m.num_cols; ++j)
+		{
+			for (index_t i=0; i<m.num_rows; ++i)
+				EXPECT_NEAR(m(i, j), v[j*m.num_rows+i], 1e-15);
+		}
+	}
+	EXPECT_EQ(v.ref_count(), 1);
+}
+
+TEST(SGMatrixTest, SGVector_ctor_no_refcount)
+{
+	float64_t *vec=SG_MALLOC(float64_t, 6);
+	SGVector<float64_t> v(vec, 6, false);
+	for (index_t i=0; i<6; ++i)
+		v[i]=i;
+
+	EXPECT_EQ(v.ref_count(), -1);
+	{
+		SGMatrix<float64_t> m(v, 3, 2);
+		EXPECT_EQ(v.ref_count(), -1);
+		EXPECT_EQ(m.num_rows, 3);
+		EXPECT_EQ(m.num_cols, 2);
+
+		for (index_t j=0; j<m.num_cols; ++j)
+		{
+			for (index_t i=0; i<m.num_rows; ++i)
+				EXPECT_NEAR(m(i, j), v[j*m.num_rows+i], 1e-15);
+		}
+	}
+	EXPECT_EQ(v.ref_count(), -1);
+	SG_FREE(vec);
+}
+
 TEST(SGMatrixTest,setget)
 {
 	SGMatrix<index_t> v(3,2);
@@ -430,28 +498,28 @@ TEST(SGMatrixTest, to_eigen3)
 {
 	const int nrows = 3;
 	const int ncols = 4;
-	
+
 	SGMatrix<float64_t> sg_mat(nrows,ncols);
  	for (int32_t i=0; i<nrows*ncols; i++)
  		sg_mat[i] = i;
-	
+
 	Eigen::Map<Eigen::MatrixXd> eigen_mat = sg_mat;
-	
+
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(sg_mat[i], eigen_mat(i));
 }
- 
+
 TEST(SGMatrixTest, from_eigen3)
 {
 	const int nrows = 3;
 	const int ncols = 4;
-	
+
 	Eigen::MatrixXd eigen_mat(nrows,ncols);
 	for (int32_t i=0; i<nrows*ncols; i++)
 		eigen_mat(i) = i;
-	
+
 	SGMatrix<float64_t> sg_mat = eigen_mat;
-	
+
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(eigen_mat(i), sg_mat[i]);
 }

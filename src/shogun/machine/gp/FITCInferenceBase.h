@@ -38,6 +38,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -65,7 +66,7 @@ namespace shogun
  * The time complexity of the main inference process can be reduced from O(n^3) to O(m^2*n).
  *
  * Since we use \f$\Sigma_{fitc}\f$ to approximate \f$\Sigma_{N}\f$,
- * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$. 
+ * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{fitc}\f$.
  *
  */
 class CFITCInferenceBase: public CInferenceMethod
@@ -107,9 +108,11 @@ public:
 	 */
 	virtual void set_inducing_features(CFeatures* feat)
 	{
-		SG_REF(feat);
-		SG_UNREF(m_inducing_features);
-		m_inducing_features=feat;
+		REQUIRE(feat,"Input inducing features must be not empty\n");
+		CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(feat);
+		REQUIRE(lat_type, "Inducing features (%s) must be"
+			" DotFeatures or one of its subclasses\n", feat->get_name());
+		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
 	}
 
 	/** get inducing features
@@ -118,8 +121,11 @@ public:
 	 */
 	virtual CFeatures* get_inducing_features()
 	{
-		SG_REF(m_inducing_features);
-		return m_inducing_features;
+		SGMatrix<float64_t> out(m_inducing_features.matrix,
+			m_inducing_features.num_rows,m_inducing_features.num_cols,false);
+		CFeatures* inducing_features=new CDenseFeatures<float64_t>(out);
+		SG_REF(inducing_features);
+		return inducing_features;
 	}
 
 	/** get alpha vector
@@ -213,7 +219,7 @@ protected:
 	 * The reasons are listed below.
 	 * 1. The type of the gradient wrt inducing features is float64_t, which is used to update inducing features
 	 * 2. Reason 1 implies that the type of inducing features can be float64_t while the type of features does not required
-	 * as float64_t 
+	 * as float64_t
 	 * 3. Reason 2 implies that the type of features must be a subclass of CDotFeatures, which can represent features as
 	 * float64_t
 	 */
@@ -296,7 +302,7 @@ protected:
 			const TParameter* param)=0;
 
 	/** inducing features for approximation */
-	CFeatures* m_inducing_features;
+	SGMatrix<float64_t> m_inducing_features;
 
 	/** noise of the inducing variables */
 	float64_t m_ind_noise;

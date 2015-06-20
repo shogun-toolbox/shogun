@@ -21,7 +21,6 @@
 
 namespace shogun
 {
-
 /** @brief Gaussian Kernel with Automatic Relevance Detection computed
  * on CDotFeatures.
  *

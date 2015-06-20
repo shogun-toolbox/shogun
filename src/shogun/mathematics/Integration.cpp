@@ -531,7 +531,7 @@ void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> 
 		{
 			MatrixXd v = MatrixXd::Zero(n,n);
 
-			//b = sqrt( (1:N-1)/2 )';    
+			//b = sqrt( (1:N-1)/2 )';
 			//[V,D] = eig( diag(b,1) + diag(b,-1) );
 			v.block(0, 1, n-1, n-1).diagonal() = (0.5*ArrayXd::LinSpaced(n-1,1,n-1)).sqrt();
 			v.block(1, 0, n-1, n-1).diagonal() = v.block(0, 1, n-1, n-1).diagonal();
@@ -600,7 +600,7 @@ void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t
 		5.5787388058932014800461729464586824178696,
 		6.5105901570136532896526659897062927484512,
 		7.6190485416797573137159815814811736345291
-		
+
 	};
 
 	for (index_t idx = 0; idx < n; idx++)

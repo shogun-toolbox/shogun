@@ -1,9 +1,9 @@
-"""Graphical example illustrating improvement of convergence of KMeans 
+"""Graphical example illustrating improvement of convergence of KMeans
 when cluster centers are initialized by KMeans++ algorithm.
 
-In this example, 4 vertices of a rectangle are chosen: (0,0) (0,100) (10,0) (10,100). 
-There are 500 points normally distributed about each vertex. 
-Therefore, the ideal cluster centers for k=2 are the global minima ie (5,0) (5,100). 
+In this example, 4 vertices of a rectangle are chosen: (0,0) (0,100) (10,0) (10,100).
+There are 500 points normally distributed about each vertex.
+Therefore, the ideal cluster centers for k=2 are the global minima ie (5,0) (5,100).
 
 Written (W) 2014 Parijat Mazumdar
 """

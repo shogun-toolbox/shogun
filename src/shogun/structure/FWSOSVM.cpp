@@ -137,8 +137,8 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 						"to be set true\n", m_model->get_name());
 			}
 
-			// 3) loss_i = L(y_i, y_pred) 
-			float64_t loss_i = result->delta; 
+			// 3) loss_i = L(y_i, y_pred)
+			float64_t loss_i = result->delta;
 			ASSERT(loss_i - CMath::dot(m_w.vector, psi_i.vector, m_w.vlen) >= -1e-12);
 
 			// 4) update w_s and ell_s
@@ -161,7 +161,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		if (m_verbose)
 		{
 			float64_t primal = CSOSVMHelper::primal_objective(m_w, m_model, m_lambda);
-			float64_t dual = CSOSVMHelper::dual_objective(m_w, m_ell, m_lambda); 
+			float64_t dual = CSOSVMHelper::dual_objective(m_w, m_ell, m_lambda);
 			ASSERT(CMath::fequals_abs(primal - dual, dual_gap, 1e-12));
 			float64_t train_error = CSOSVMHelper::average_loss(m_w, m_model); // Note train_error isn't ell_s
 
@@ -170,7 +170,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 
 			m_helper->add_debug_info(primal, (1.0*k) / N, train_error, dual, dual_gap);
 		}
-	
+
 		// 6) check duality gap
 		if (dual_gap <= m_gap_threshold)
 		{

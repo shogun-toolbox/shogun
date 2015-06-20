@@ -107,27 +107,27 @@ SGVector<T>::~SGVector()
 }
 
 #ifdef HAVE_EIGEN3
-template <class T> 
+template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size())
 {
-	
+
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size())
 {
-	
+
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::operator EigenVectorXtMap() const
 {
 	return EigenVectorXtMap(vector, vlen);
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::operator EigenRowVectorXtMap() const
 {
 	return EigenRowVectorXtMap(vector, vlen);

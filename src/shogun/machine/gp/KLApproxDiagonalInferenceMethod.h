@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -53,10 +53,10 @@ namespace shogun
  *
  * The class is implemented based on the KL method in the Challis's paper
  * which uses 1-band (diagonal) represention.
- * Note that in order to do variational inference, each diagonal element should be positive. 
+ * Note that in order to do variational inference, each diagonal element should be positive.
  * This implementation updates the diagonal elements in log domain.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -68,7 +68,7 @@ namespace shogun
  * The adapted Matlab code can be found at
  * https://gist.github.com/yorkerlin/d8acb388d03c6976728e
  *
- * Note that "ApproxDiagonal" means a variational diagonal co-variance matrix 
+ * Note that "ApproxDiagonal" means a variational diagonal co-variance matrix
  * is used in inference.
  */
 class CKLApproxDiagonalInferenceMethod: public CKLLowerTriangularInferenceMethod

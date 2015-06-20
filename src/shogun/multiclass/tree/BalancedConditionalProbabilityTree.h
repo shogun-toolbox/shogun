@@ -63,7 +63,7 @@ protected:
 private:
 	/** depth of subtree
 	 * @param node pointer to the subtree root
-	 * @return the depth of the subtree 
+	 * @return the depth of the subtree
 	 */
 	int32_t tree_depth(bnode_t *node);
 

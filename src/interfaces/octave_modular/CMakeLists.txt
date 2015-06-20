@@ -1,7 +1,7 @@
 include(CommonModularInterface)
 include_directories(${OCTAVE_INCLUDE_DIRS})
 
-GENERATE_MODULAR_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} ${OCTAVE_LIBRARIES})
+GENERATE_MODULAR_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} ${OCTAVE_LIBRARY})
 set_target_properties(octave_modular PROPERTIES PREFIX "")
 set_target_properties(octave_modular PROPERTIES SUFFIX ".oct")
 
