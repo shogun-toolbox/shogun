@@ -165,7 +165,7 @@ void CExactInferenceMethod::update_chol()
 	/* creates views on kernel and cholesky matrix and perform cholesky */
 	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	LLT<MatrixXd> llt(K*(CMath::sq(m_scale)/CMath::sq(sigma))+
+	LLT<MatrixXd> llt(K*(CMath::exp(m_log_scale*2.0)/CMath::sq(sigma))+
 		MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 	L=llt.matrixU();
 }
@@ -209,7 +209,7 @@ void CExactInferenceMethod::update_mean()
 	m_mu=SGVector<float64_t>(m.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha;
 }
 
 void CExactInferenceMethod::update_cov()
@@ -225,7 +225,7 @@ void CExactInferenceMethod::update_cov()
 
 	// compute V = L^(-1) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_K*CMath::sq(m_scale));
+			eigen_K*CMath::exp(m_log_scale*2.0));
 
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
@@ -233,7 +233,7 @@ void CExactInferenceMethod::update_cov()
 	eigen_V = eigen_V/sigma;
 
 	// compute covariance matrix of the posterior: Sigma = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
 }
 
 void CExactInferenceMethod::update_deriv()
@@ -265,7 +265,7 @@ void CExactInferenceMethod::update_deriv()
 SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -275,7 +275,8 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 	SGVector<float64_t> result(1);
 
 	// compute derivative wrt kernel scale: dnlZ=sum(Q.*K*scale*2)/2
-	result[0]=(eigen_Q.cwiseProduct(eigen_K)*m_scale*2.0).sum()/2.0;
+	result[0]=(eigen_Q.cwiseProduct(eigen_K)).sum();
+	result[0]*=CMath::exp(m_log_scale*2.0);
 
 	return result;
 }
@@ -296,7 +297,7 @@ CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
 SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "sigma"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			m_model->get_name(), param->m_name)
 
@@ -340,7 +341,8 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_kernel(
 		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 
 		// compute derivative wrt kernel parameter: dnlZ=sum(Q.*dK*scale)/2.0
-		result[i]=(eigen_Q.cwiseProduct(eigen_dK)*CMath::sq(m_scale)).sum()/2.0;
+		result[i]=(eigen_Q.cwiseProduct(eigen_dK)).sum();
+		result[i]*=CMath::exp(m_log_scale*2.0)/2.0;
 	}
 
 	return result;

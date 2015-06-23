@@ -101,6 +101,7 @@ def create_param_tree():
     from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from modshogun import ParameterCombination
     from modshogun import GaussianKernel, PolyKernel
+    import math
     root=ModelSelectionParameters()
 
     tau=ModelSelectionParameters("tau")
@@ -122,8 +123,8 @@ def create_param_tree():
     #gaussian_kernel.print_modsel_params()
 
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
-    gaussian_kernel_width=ModelSelectionParameters("width");
-    gaussian_kernel_width.build_values(5.0, 6.0, R_EXP, 1.0, 2.0)
+    gaussian_kernel_width=ModelSelectionParameters("log_width");
+    gaussian_kernel_width.build_values(2.0*math.log(2.0), 2.5*math.log(2.0), R_LINEAR, 1.0)
     param_gaussian_kernel.append_child(gaussian_kernel_width)
     root.append_child(param_gaussian_kernel)
 

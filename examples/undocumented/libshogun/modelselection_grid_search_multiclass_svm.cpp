@@ -32,8 +32,8 @@ CModelSelectionParameters* build_param_tree(CKernel* kernel)
 
 	CModelSelectionParameters * params_kernel=new CModelSelectionParameters("kernel", kernel);
 	root->append_child(params_kernel);
-	CModelSelectionParameters * params_kernel_width=new CModelSelectionParameters("width");
-	params_kernel_width->build_values(-1.0, 1.0, R_EXP);
+	CModelSelectionParameters * params_kernel_width=new CModelSelectionParameters("log_width");
+	params_kernel_width->build_values(-CMath::log(2.0), 0.0, R_LINEAR);
 	params_kernel->append_child(params_kernel_width);
 
 	return root;

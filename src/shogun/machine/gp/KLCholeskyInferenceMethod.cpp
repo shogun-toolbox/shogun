@@ -123,7 +123,7 @@ bool CKLCholeskyInferenceMethod::lbfgs_precompute()
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 
 	update_C();
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
@@ -166,7 +166,7 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
 	//dnlZ_alpha  = -K*(df-alpha);
-	eigen_dnlz_alpha=eigen_K*CMath::sq(m_scale)*(-eigen_df+eigen_alpha);
+	eigen_dnlz_alpha=eigen_K*CMath::exp(m_log_scale*2.0)*(-eigen_df+eigen_alpha);
 
 	Map<VectorXd> eigen_dnlz_C_seq(gradient.vector+len, gradient.vlen-len);
 

@@ -273,8 +273,8 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
 
 	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels, func,
 			param1);
@@ -327,8 +327,8 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
 
 	SGVector<float64_t> dlp_dhyp1=likelihood->get_second_derivative(labels,
 			func, param1);
@@ -381,8 +381,8 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("log_df");
 
 	SGVector<float64_t> d2lp_dhyp1=likelihood->get_third_derivative(labels,
 			func, param1);

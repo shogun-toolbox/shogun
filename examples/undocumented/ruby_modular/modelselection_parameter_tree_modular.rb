@@ -46,8 +46,8 @@ def modelselection_parameter_tree_modular()
 
 	root.append_child(param_gaussian_kernel)
 
-	param_gaussian_kernel_width=Modshogun::ModelSelectionParameters.new('width')
-	param_gaussian_kernel_width.build_values(1, 2, Modshogun::R_EXP)
+	param_gaussian_kernel_width=Modshogun::ModelSelectionParameters.new('log_width')
+	param_gaussian_kernel_width.build_values(0.0, 0.5*Math.log(2.0), Modshogun::R_LINEAR)
 	param_gaussian_kernel.append_child(param_gaussian_kernel_width)
 
 	ds_kernel=Modshogun::DistantSegmentsKernel.new

@@ -416,12 +416,12 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	//0.125896281241220  -0.067325533249551  -0.007553979244171
 	//
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
 
 	float64_t dnlz_weight1=(-1.0/weight1)*(gradient->get_element(weights_param))[0];
 	float64_t dnlz_weight2=(-1.0/weight2)*(gradient->get_element(weights_param))[1];
-	float64_t dnlZ_sf2=scale*(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	TParameter* lat_param=inf->m_gradient_parameters->get_parameter("inducing_features");
 	SGVector<float64_t> dnlZ_lat=gradient->get_element(lat_param);

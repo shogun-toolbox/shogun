@@ -542,15 +542,15 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
+	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	dnlZ_lik+=dnlZ_noise;
 	// comparison of partial derivatives of negative log marginal likelihood
@@ -632,15 +632,15 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 
-	float64_t dnlZ_ell=4*CMath::sq(ell)*(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=2.5*(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
+	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	dnlZ_lik+=dnlZ_noise;
 
@@ -743,13 +743,13 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
+	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
 		TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
 
-	float64_t dnlZ_sf2=scale*(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];
@@ -900,13 +900,13 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
-	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("inducing_noise");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
+	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
 	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
 	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
 
-	float64_t dnlZ_sf2=scale*(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 	float64_t dnlZ_mean=(gradient->get_element(mean_param))[0];

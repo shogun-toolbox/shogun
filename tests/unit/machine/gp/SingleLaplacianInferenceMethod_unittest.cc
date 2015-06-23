@@ -833,11 +833,11 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
@@ -903,12 +903,12 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likeli
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("df");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
+	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
@@ -983,10 +983,10 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
@@ -996,6 +996,78 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 	// -0.068637
 	EXPECT_NEAR(dnlZ_ell, 0.266464, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, -0.068637, 1E-6);
+
+	// clean up
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
+	SG_UNREF(inf);
+}
+
+TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood2)
+{
+	// create some easy classification data:
+	// y=sign(sqrt(x1.^2+x2.^2)-1)
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=0.8822936;
+	feat_train(0, 1)=-0.7160792;
+	feat_train(0, 2)=0.9178174;
+	feat_train(0, 3)=-0.0135544;
+	feat_train(0, 4)=-0.5275911;
+
+	feat_train(1, 0)=-0.9597321;
+	feat_train(1, 1)=0.0231289;
+	feat_train(1, 2)=0.8284935;
+	feat_train(1, 3)=0.0023812;
+	feat_train(1, 4)=-0.7218931;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+			features_train,	mean, labels_train, likelihood);
+
+	inf->set_scale(3.0);
+
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
+
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
+
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	// cov =
+	// 0.491724666688135 -0.009208911107503
+	EXPECT_NEAR(dnlZ_ell, 0.491724666688135, 1E-6);
+	EXPECT_NEAR(dnlZ_sf2, -0.009208911107503, 1E-6);
 
 	// clean up
 	SG_UNREF(gradient);
@@ -1053,10 +1125,10 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_l
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with

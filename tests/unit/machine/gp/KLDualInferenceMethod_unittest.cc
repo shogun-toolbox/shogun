@@ -471,11 +471,11 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=scale*(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/f9c9439698c1b0a0934a

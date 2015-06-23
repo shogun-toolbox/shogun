@@ -227,16 +227,16 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		// currently we assume all parameters are positive
 		// (this is NOT true when inducing points and Full Matrix GaussianARDKernel are optimized)
 		// create lower bound vector (lb=-inf)
-		SGVector<double> lower_bound(total_variables);
-		lower_bound.set_const(1e-6);
+		//SGVector<double> lower_bound(total_variables);
+		//lower_bound.set_const(1e-6);
 
 		// create upper bound vector (ub=inf)
-		SGVector<double> upper_bound(total_variables);
-		upper_bound.set_const(HUGE_VAL);
+		//SGVector<double> upper_bound(total_variables);
+		//upper_bound.set_const(HUGE_VAL);
 
 		// set upper and lower bound
-		nlopt_set_lower_bounds(opt, lower_bound.vector);
-		nlopt_set_upper_bounds(opt, upper_bound.vector);
+		//nlopt_set_lower_bounds(opt, lower_bound.vector);
+		//nlopt_set_upper_bounds(opt, upper_bound.vector);
 
 		// set maximum number of evaluations
 		nlopt_set_maxeval(opt, m_max_evaluations);

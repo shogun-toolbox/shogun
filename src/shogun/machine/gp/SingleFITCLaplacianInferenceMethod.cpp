@@ -50,7 +50,7 @@ namespace shogun
 class CFITCPsiLine : public func_base
 {
 public:
-	float64_t scale;
+	float64_t log_scale;
 	VectorXd dalpha;
 	VectorXd start_alpha;
 	SGVector<float64_t>* alpha;
@@ -280,7 +280,7 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 
 	SGMatrix<float64_t> cor_kuu(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_cor_kuu(cor_kuu.matrix, cor_kuu.num_rows, cor_kuu.num_cols);
-	eigen_cor_kuu=eigen_kuu*CMath::sq(m_scale)+m_ind_noise*MatrixXd::Identity(
+	eigen_cor_kuu=eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols);
 	//R0 = chol_inv(Kuu+snu2*eye(nu)); m-by-m matrix
 	m_chol_R0=get_chol_inv(cor_kuu);
@@ -290,11 +290,11 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 	m_V=SGMatrix<float64_t>(m_chol_R0.num_cols, m_ktru.num_cols);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 
-	eigen_V=eigen_R0*(eigen_ktru*CMath::sq(m_scale));
+	eigen_V=eigen_R0*(eigen_ktru*CMath::exp(m_log_scale*2.0));
 	m_dg=SGVector<float64_t>(m_ktrtr_diag.vlen);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 	//d0 = diagK-sum(V.*V,1)';
-	eigen_dg=eigen_ktrtr_diag*CMath::sq(m_scale)-(eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
+	eigen_dg=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)-(eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 
 	// get mean vector and create eigen representation of it
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
@@ -422,7 +422,7 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 		//perform Brent's optimization
 		CFITCPsiLine func;
 
-		func.scale=m_scale;
+		func.log_scale=m_log_scale;
 		func.dalpha=dalpha;
 		func.start_alpha=eigen_al;
 		func.alpha=&m_al;
@@ -548,7 +548,7 @@ void CSingleFITCLaplacianInferenceMethod::update_chol()
 	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
 	//g = d/2 + sum(((R*R0)*P).^2,1)'/2
 	eigen_g=((eigen_dg.cwiseProduct(dd)).array()+
-		((eigen_tmp*eigen_R0)*(eigen_ktru*CMath::sq(m_scale))*dd.asDiagonal()
+		((eigen_tmp*eigen_R0)*(eigen_ktru*CMath::exp(m_log_scale*2.0))*dd.asDiagonal()
 		 ).array().pow(2).colwise().sum().transpose())/2;
 }
 
@@ -633,8 +633,8 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 {
 	REQUIRE(param, "Param not set\n");
 	//time complexity O(m^2*n)
-	REQUIRE(!(strcmp(param->m_name, "scale")
-		&& strcmp(param->m_name, "inducing_noise")
+	REQUIRE(!(strcmp(param->m_name, "log_scale")
+		&& strcmp(param->m_name, "log_inducing_noise")
 		&& strcmp(param->m_name, "inducing_features")),
 		"Can't compute derivative of"
 		" the nagative log marginal likelihood wrt %s.%s parameter\n",
@@ -664,7 +664,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 		return derivative_helper_when_Wneg(result, param);
 	}
 
-	if (!strcmp(param->m_name, "inducing_noise"))
+	if (!strcmp(param->m_name, "log_inducing_noise"))
 		// wrt inducing_noise
 		// compute derivative wrt inducing noise
 		return get_derivative_wrt_inducing_noise(param);
@@ -682,11 +682,8 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
 
 	// compute derivatives wrt scale for each kernel matrix
-	ddiagKi*=m_scale*2.0;
-	dKuui*=m_scale*2.0;
-	dKui*=m_scale*2.0;
-
 	result[0]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 	return result;
 }
 
@@ -761,11 +758,8 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kern
 		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
 				deriv_tru.num_cols);
 
-		ddiagKi*=CMath::sq(m_scale);
-		dKuui*=CMath::sq(m_scale);
-		dKui*=CMath::sq(m_scale);
-
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 	SG_UNREF(inducing_features);
 	m_lock->unlock();
@@ -896,7 +890,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 	//b = (t1.*dlp-T'*(T*dlp))*2;
 	SGVector<float64_t> b(eigen_t1.rows());
 	Map<VectorXd> eigen_b(b.vector, b.vlen);
-	float64_t factor=2.0*m_ind_noise;
+	float64_t factor=2.0*CMath::exp(m_log_ind_noise);
 	eigen_b=(eigen_t1.cwiseProduct(eigen_dlp)-eigen_B.transpose()*(eigen_B*eigen_dlp))*factor;
 
 	//KZb = mvmK(mvmZ(b,RVdd,t),V,d0);
@@ -926,7 +920,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 	//time complexity of the following operation is O(m*n)
 	Map<VectorXd> eigen_post_alpha(m_alpha.vector, m_alpha.vlen);
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	eigen_res=CMath::sq(m_scale)*eigen_Ktru.adjoint()*eigen_post_alpha;
+	eigen_res=CMath::exp(m_log_scale*2.0)*eigen_Ktru.adjoint()*eigen_post_alpha;
 
 	return res;
 }
@@ -950,7 +944,7 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covarianc
 	//FITC equivalent prior
 	MatrixXd prior=eigen_V.transpose()*eigen_V+diagonal_part;
 
-	MatrixXd tmp=CMath::sq(m_scale)*eigen_Ktru;
+	MatrixXd tmp=CMath::exp(m_log_scale*2.0)*eigen_Ktru;
 	eigen_Sigma=prior-tmp.adjoint()*eigen_L*tmp;
 
 	/*

@@ -250,7 +250,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 		return;
 	}
 	/* compute f = K * alpha + m*/
-	eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
+	eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
 }
 
 void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
@@ -268,7 +268,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
 		m_mean_f->vlen);
 	/* f = K * alpha + mean_f given alpha*/
 	eigen_f
-		= kernel * ((eigen_alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+		= kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
 
 	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
 	psi = eigen_alpha.dot(eigen_f - eigen_mean_f) * 0.5;
@@ -291,7 +291,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 		m_mean_f->vlen);
 
 	/* f = K * alpha + mean_f given alpha*/
-	eigen_f = kernel * ((eigen_alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+	eigen_f = kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
 		m_model->get_log_probability_derivative_f(m_labels, f, 1);
@@ -299,7 +299,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
 	/* g_alpha = K * (alpha - dlp_f)*/
-	eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::sq(m_scale));
+	eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::exp(m_log_scale*2.0));
 }
 
 } /* namespace shogun */

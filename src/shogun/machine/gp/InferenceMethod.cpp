@@ -17,6 +17,7 @@
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Lock.h>
 
 using namespace shogun;
@@ -35,6 +36,17 @@ struct GRADIENT_THREAD_PARAM
 CInferenceMethod::CInferenceMethod()
 {
 	init();
+}
+
+float64_t CInferenceMethod::get_scale() const
+{
+	return CMath::exp(m_log_scale);
+}
+
+void CInferenceMethod::set_scale(float64_t scale)
+{
+	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
+	m_log_scale=CMath::log(scale);
 }
 
 SGMatrix<float64_t> CInferenceMethod::get_multiclass_E()
@@ -69,7 +81,7 @@ CInferenceMethod::~CInferenceMethod()
 void CInferenceMethod::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
-	SG_ADD(&m_scale, "scale", "Kernel scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
 		MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
@@ -83,7 +95,7 @@ void CInferenceMethod::init()
 	m_labels=NULL;
 	m_features=NULL;
 	m_mean=NULL;
-	m_scale=1.0;
+	m_log_scale=0.0;
 	m_gradient_update=false;
 
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
@@ -121,7 +133,7 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 	memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
 			sizeof(float64_t)*m_ktrtr.num_rows*m_ktrtr.num_cols);
 	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
-		scaled_kernel.matrix[i]*=CMath::sq(m_scale);
+		scaled_kernel.matrix[i]*=CMath::exp(m_log_scale*2.0);
 
 	/* add ridge */
 	for (index_t i=0; i<cov.num_rows; ++i)
@@ -283,8 +295,7 @@ void CInferenceMethod::check_members() const
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-			"Number of training vectors must match number of labels, which is "
-			"%d, but number of training vectors is %d\n",
+			"Number of training vectors (%d) must match number of labels (%d)\n",
 			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")

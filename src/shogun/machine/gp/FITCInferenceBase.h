@@ -305,7 +305,7 @@ protected:
 	SGMatrix<float64_t> m_inducing_features;
 
 	/** noise of the inducing variables */
-	float64_t m_ind_noise;
+	float64_t m_log_ind_noise;
 
 	/** covariance matrix of inducing features */
 	SGMatrix<float64_t> m_kuu;

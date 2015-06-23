@@ -216,7 +216,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 	eigen_K=eigen_K+m_noise_factor*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	Eigen::LDLT<Eigen::MatrixXd> ldlt;
-	ldlt.compute(eigen_K*CMath::sq(m_scale));
+	ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
 
 	float64_t attempt_count=0;
 	MatrixXd Kernel_D=ldlt.vectorD();
@@ -233,7 +233,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 		noise_factor*=m_exp_factor;
 		//updat the noise  eigen_K=eigen_K+noise_factor*(m_exp_factor^attempt_count)*Identity()
 		eigen_K=eigen_K+(noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
-		ldlt.compute(eigen_K*CMath::sq(m_scale));
+		ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
 		Kernel_D=ldlt.vectorD();
 	}
 
@@ -410,19 +410,16 @@ float64_t CKLInferenceMethod::lbfgs_optimization()
 
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_inference_method(const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	SGMatrix<float64_t> dK(m_mu.vlen, m_mu.vlen);
-	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
-	// compute derivative K wrt scale
-	eigen_dK=eigen_K*m_scale*2.0;
 
 	SGVector<float64_t> result(1);
 
-	result[0]=get_derivative_related_cov(dK);
+	result[0]=get_derivative_related_cov(m_ktrtr);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 
 	return result;
 }
@@ -444,10 +441,8 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParamet
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
-		eigen_dK*=CMath::sq(m_scale);
-
 		result[i]=get_derivative_related_cov(dK);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;
