@@ -115,16 +115,24 @@ BENCHMARK(CGPUMatrix, elementwise, 10, 1000)
 
 	std::string data_type=linalg::implementation::ocl::get_type_string<float32_t>();
 
-	std::string s_weights=std::to_string(weights);
-	std::string s_std_dev=std::to_string(std_dev);
-	std::string s_mean=std::to_string(mean);
-	std::string s_pi=std::to_string(CMath::PI);
-
 	std::string operation;
-	operation.append(data_type+" outer_factor=-2*"+s_pi+"*sqrt(element)*pow("+s_weights+", 2);\n");
-	operation.append(data_type+" exp_factor=exp(-2*pow("+s_pi+",2)*element*pow("+s_std_dev+", 2));\n");
-	operation.append(data_type+" sin_factor=sin(2*"+s_pi+"*sqrt(element)*"+s_mean+");\n");
-	operation.append("return outer_factor*exp_factor*sin_factor;");
+	operation.append(linalg::implementation::ocl::format(
+	R"(
+		{type} {var1} = -2*{pi}*sqrt(element)*pow({weights}, 2);
+		{type} {var2} = exp(-2*pow({pi}, 2)*element*pow({stddev}, 2));
+		{type} {var3} = sin(2*{pi}*sqrt(element)*{mean});
+		return {var1}*{var2}*{var3};
+	)",
+	{
+		linalg::ocl::Parameter("type")=data_type,
+		linalg::ocl::Parameter("var1")="outer_factor",
+		linalg::ocl::Parameter("var2")="exp_factor",
+		linalg::ocl::Parameter("var3")="sin_factor",
+		linalg::ocl::Parameter("pi")=CMath::PI,
+		linalg::ocl::Parameter("weights")=weights,
+		linalg::ocl::Parameter("stddev")=std_dev,
+		linalg::ocl::Parameter("mean")=mean
+	}));
 
 	linalg::elementwise_compute_inplace(data.m_gpu, operation);
 }

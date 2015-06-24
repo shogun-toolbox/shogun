@@ -57,6 +57,7 @@ namespace shogun
 		C_MATRIX = 180,
 		C_FACTOR_GRAPH = 190,
 		C_INDEX = 200,
+		C_SUB_SAMPLES_DENSE=300,
 		C_ANY = 1000
 	};
 

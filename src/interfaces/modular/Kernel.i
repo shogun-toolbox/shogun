@@ -34,6 +34,7 @@
 %rename(PyramidChi2) CPyramidChi2;
 %rename(ANOVAKernel) CANOVAKernel;
 %rename(AUCKernel) CAUCKernel;
+%rename(BesselKernel) CBesselKernel;
 %rename(AvgDiagKernelNormalizer) CAvgDiagKernelNormalizer;
 %rename(RidgeKernelNormalizer) CRidgeKernelNormalizer;
 %rename(CircularKernel) CCircularKernel;
@@ -170,6 +171,7 @@ namespace shogun
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>
 %include <shogun/kernel/AUCKernel.h>
+%include <shogun/kernel/BesselKernel.h>
 %include <shogun/kernel/CauchyKernel.h>
 %include <shogun/kernel/CircularKernel.h>
 %include <shogun/kernel/Chi2Kernel.h>

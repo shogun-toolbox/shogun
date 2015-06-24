@@ -243,9 +243,7 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_related_inducing_fe
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		deriv_lat_col_vec+=eigen_deriv_mat*(-A.row(lat_idx).transpose());
 	}
-	m_lock->unlock();
 
-	m_lock->lock();
 	//symtric part (related to xu and xu)
 	m_kernel->init(inducing_features, inducing_features);
 	//C = (Kpuu.*(BdK*B'))*diag(e);
