@@ -30,10 +30,13 @@ CGaussianARDKernel::~CGaussianARDKernel()
 
 void CGaussianARDKernel::init()
 {
+
+#ifdef HAVE_LINALG_LIB
 	m_sq_lhs=SGVector<float64_t>();
 	m_sq_rhs=SGVector<float64_t>();
 	SG_ADD(&m_sq_lhs, "sq_lhs", "squared left-hand side", MS_NOT_AVAILABLE);
 	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side", MS_NOT_AVAILABLE);
+#endif
 }
 
 #ifdef HAVE_LINALG_LIB
