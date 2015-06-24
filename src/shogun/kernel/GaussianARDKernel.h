@@ -79,7 +79,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "GaussianARDKernel"; }
 private:
-	void initialize();
+	void init();
 
 #ifdef HAVE_LINALG_LIB
 public:
@@ -137,9 +137,17 @@ public:
 		const TParameter* param, index_t index=-1);
 
 protected:
-
+	/** helper function to compute quadratic terms in
+	 * (a-b)^2 (== a^2+b^2-2ab)
+	 */
 	virtual void precompute_squared();
 
+	/** helper function to compute quadratic terms in
+	 * (a-b)^2 (== a^2+b^2-2ab)
+	 *
+	 * @param buf buffer to store squared terms (will be allocated)
+	 * @param df dot feature object based on which k(i,i) is computed
+	 * */
 	virtual SGVector<float64_t> precompute_squared_helper(CDotFeatures* df);
 
 	/** squared left-hand side */

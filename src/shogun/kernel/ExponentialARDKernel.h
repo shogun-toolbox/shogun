@@ -98,16 +98,19 @@ public:
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 private:
-	void initialize();
+	void init();
 
 protected:
+	/** feature weights in standard domain in the matrix layout, which is only used in get_weights()*/
 	SGMatrix<float64_t> m_weights_raw;
 
-	/** ARD weights */
+	/** feature weights in log domain in vector layout*/
 	SGVector<float64_t> m_log_weights;
 
+	/** the number of rows of feature weights for vector layout*/
 	index_t m_weights_rows;
 
+	/** the number of columns of feature weights for vector layout*/
 	index_t m_weights_cols;
 
 	/** type of ARD kernel */
@@ -208,11 +211,21 @@ public:
 	 */
 	virtual void set_matrix_weights(SGMatrix<float64_t> weights);
 
-
-	virtual void set_weights(SGMatrix<float64_t> weights);
 protected:
+	/** a general setter for feature/dimension weights (matrix kernel)
+	 * @param weights the weights can be scalar/vector/lower triangular matrix
+	 */
+	virtual void set_weights(SGMatrix<float64_t> weights);
+
+	/** convert the weights in log domain to standard domain when get_weights() is called*/
 	void lazy_update_weights();
 
+	/** convert the m_log_weights in vector format to the matrix format in standard domain
+	 *
+	 * @param vec weights in log domain in vector layout
+	 *
+	 * @return weights in standard domain in matrix layout
+	 * */
 	SGMatrix<float64_t> get_weighted_vector(SGVector<float64_t> vec);
 
 	/** helper function used to compute kernel value

@@ -21,34 +21,33 @@ using namespace shogun;
 
 CGaussianARDKernel::CGaussianARDKernel() : CExponentialARDKernel()
 {
-	initialize();
+	init();
 }
 
 CGaussianARDKernel::~CGaussianARDKernel()
 {
 }
 
-void CGaussianARDKernel::initialize()
+void CGaussianARDKernel::init()
 {
 	m_sq_lhs=SGVector<float64_t>();
 	m_sq_rhs=SGVector<float64_t>();
-	SG_ADD(&m_sq_lhs, "sq_lhs", "", MS_NOT_AVAILABLE);
-	SG_ADD(&m_sq_rhs, "sq_rhs", "", MS_NOT_AVAILABLE);
-
+	SG_ADD(&m_sq_lhs, "sq_lhs", "squared left-hand side", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side", MS_NOT_AVAILABLE);
 }
 
 #ifdef HAVE_LINALG_LIB
 CGaussianARDKernel::CGaussianARDKernel(int32_t size)
 		: CExponentialARDKernel(size)
 {
-	initialize();
+	init();
 }
 
 CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)
 		: CExponentialARDKernel(size)
 {
-	initialize();
+	init();
 }
 
 bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
@@ -125,9 +124,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 	float64_t result=0.0;
 
 	if(m_ARD_type==KT_DIAG)
-	{
 		result=2.0*avec[index]*bvec[index]*CMath::exp(2.0*m_log_weights[index]);
-	}
 	else
 	{
 		SGMatrix<float64_t> res;

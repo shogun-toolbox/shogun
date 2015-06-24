@@ -22,7 +22,7 @@ using namespace shogun;
 
 CExponentialARDKernel::CExponentialARDKernel() : CDotKernel()
 {
-	initialize();
+	init();
 }
 
 CExponentialARDKernel::~CExponentialARDKernel()
@@ -30,7 +30,7 @@ CExponentialARDKernel::~CExponentialARDKernel()
 	CKernel::cleanup();
 }
 
-void CExponentialARDKernel::initialize()
+void CExponentialARDKernel::init()
 {
 	m_ARD_type=KT_SCALAR;
 
@@ -49,12 +49,8 @@ void CExponentialARDKernel::initialize()
 	SG_ADD((int *)(&m_ARD_type), "type", "ARD kernel type", MS_NOT_AVAILABLE);
 
 	m_weights_raw=SGMatrix<float64_t>();
-	SG_ADD(&m_weights_raw, "weights_raw", "", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weights_raw, "weights_raw", "Features weights in standard domain", MS_NOT_AVAILABLE);
 
-	//m_sq_lhs=SGVector<float64_t>();
-	//m_sq_rhs=SGVector<float64_t>();
-	//SG_ADD(&m_sq_lhs, "sq_lhs", "", MS_NOT_AVAILABLE);
-	//SG_ADD(&m_sq_rhs, "sq_rhs", "", MS_NOT_AVAILABLE);
 }
 
 SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
@@ -187,13 +183,13 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 
 CExponentialARDKernel::CExponentialARDKernel(int32_t size) : CDotKernel(size)
 {
-	initialize();
+	init();
 }
 
 CExponentialARDKernel::CExponentialARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)	: CDotKernel(size)
 {
-	initialize();
+	init();
 	init(l,r);
 }
 
