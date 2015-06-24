@@ -42,7 +42,7 @@
 namespace shogun
 {
 
-/** @brief The Fully Independent Conditional Training inference base class
+/** @brief The sparse inference base class
  * for classification and regression for 1-D labels (1D regression and binary classification)
  */
 class CSingleSparseInferenceBase: public CSparseInferenceBase
