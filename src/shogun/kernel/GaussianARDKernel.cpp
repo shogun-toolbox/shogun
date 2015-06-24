@@ -39,6 +39,32 @@ void CGaussianARDKernel::init()
 #endif
 }
 
+float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
+{
+	float64_t result=0.0;
+#ifdef HAVE_LINALG_LIB
+	REQUIRE(lhs, "Left features (lhs) not set!\n")
+	REQUIRE(rhs, "Right features (rhs) not set!\n")
+
+	if (lhs==rhs && idx_a==idx_b)
+		return result;
+
+	if (m_ARD_type==KT_SCALAR)
+	{
+		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*CDotKernel::compute(idx_a,idx_b));
+		result*=CMath::exp(2.0*m_log_weights[0]);
+	}
+	else
+	{
+		SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);
+		SGVector<float64_t> bvec=get_feature_vector(idx_b, rhs);
+		avec=linalg::add(avec, bvec, 1.0, -1.0);
+		result=compute_helper(avec, avec);
+	}
+#endif /* HAVE_LINALG_LIB */
+	return result/2.0;
+}
+
 #ifdef HAVE_LINALG_LIB
 CGaussianARDKernel::CGaussianARDKernel(int32_t size)
 		: CExponentialARDKernel(size)
@@ -284,29 +310,5 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
 		return SGMatrix<float64_t>();
 	}
-}
-
-float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
-{
-	REQUIRE(lhs, "Left features (lhs) not set!\n")
-	REQUIRE(rhs, "Right features (rhs) not set!\n")
-
-	if (lhs==rhs && idx_a==idx_b)
-		return 0.0;
-
-	float64_t result;
-	if (m_ARD_type==KT_SCALAR)
-	{
-		result=(m_sq_lhs[idx_a]+m_sq_rhs[idx_b]-2.0*CDotKernel::compute(idx_a,idx_b));
-		result*=CMath::exp(2.0*m_log_weights[0]);
-	}
-	else
-	{
-		SGVector<float64_t> avec=get_feature_vector(idx_a, lhs);
-		SGVector<float64_t> bvec=get_feature_vector(idx_b, rhs);
-		avec=linalg::add(avec, bvec, 1.0, -1.0);
-		result=compute_helper(avec, avec);
-	}
-	return result/2.0;
 }
 #endif /* HAVE_LINALG_LIB */
