@@ -84,7 +84,7 @@ public:
 	 */
 	virtual const char* get_name() const { return "GaussianARDKernel"; }
 private:
-	void initialize();
+	void initialize_kernel();
 
 protected:
 	/** kernel width */

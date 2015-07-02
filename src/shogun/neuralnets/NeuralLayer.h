@@ -106,8 +106,8 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize(CDynamicObjectArray* layers,
-			SGVector<int32_t> input_indices);
+	virtual void initialize_neural_net_layer(CDynamicObjectArray *layers,
+											 SGVector<int32_t> input_indices);
 
 	/** Sets the batch_size and allocates memory for m_activations and
 	 * m_input_gradients accordingly. Must be called before forward or backward

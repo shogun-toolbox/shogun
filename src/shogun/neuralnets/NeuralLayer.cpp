@@ -58,7 +58,7 @@ CNeuralLayer::~CNeuralLayer()
 {
 }
 
-void CNeuralLayer::initialize(CDynamicObjectArray* layers,
+void CNeuralLayer::initialize_neural_net_layer(CDynamicObjectArray* layers,
 		SGVector< int32_t > input_indices)
 {
 	m_input_indices = input_indices;

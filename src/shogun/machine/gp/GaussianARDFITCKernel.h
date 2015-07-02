@@ -69,7 +69,7 @@ public:
 	virtual ~CGaussianARDFITCKernel();
 
 private:
-	void initialize();
+	void initialize_kernel();
 
 #if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 public:

@@ -50,10 +50,10 @@ CNeuralLayer(num_neurons)
 {
 }
 
-void CNeuralLinearLayer::initialize(CDynamicObjectArray* layers,
+void CNeuralLinearLayer::initialize_neural_net_layer(CDynamicObjectArray* layers,
 		SGVector< int32_t > input_indices)
 {
-	CNeuralLayer::initialize(layers, input_indices);
+	CNeuralLayer::initialize_neural_net_layer(layers, input_indices);
 
 	m_num_parameters = m_num_neurons;
 	for (int32_t i=0; i<input_indices.vlen; i++)

@@ -190,7 +190,7 @@ CHMM::CHMM(CHMM* h)
 
 	this->N=h->get_N();
 	this->M=h->get_M();
-	status=initialize(NULL, h->get_pseudo());
+	status= initialize_hmm(NULL, h->get_pseudo());
 	this->copy_model(h);
 	set_observations(h->p_observations);
 }
@@ -206,7 +206,7 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
-	status=initialize(p_model, p_PSEUDO);
+	status= initialize_hmm(p_model, p_PSEUDO);
 }
 
 CHMM::CHMM(
@@ -222,7 +222,7 @@ CHMM::CHMM(
 	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
-	initialize(model, p_PSEUDO);
+	initialize_hmm(model, p_PSEUDO);
 	set_observations(obs);
 }
 
@@ -393,7 +393,7 @@ CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
-	status=initialize(NULL, p_PSEUDO, model_file);
+	status= initialize_hmm(NULL, p_PSEUDO, model_file);
 }
 
 CHMM::~CHMM()
@@ -595,7 +595,7 @@ void CHMM::free_state_dependend_arrays()
 	end_state_distribution_q=NULL;
 }
 
-bool CHMM::initialize(Model* m, float64_t pseudo, FILE* modelfile)
+bool CHMM::initialize_hmm(Model* m, float64_t pseudo, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;

@@ -152,7 +152,7 @@ public:
 	 * @param sigma standard deviation of the gaussian used to randomly
 	 * initialize the parameters
 	 */
-	virtual void initialize(float64_t sigma = 0.01f);
+	virtual void initialize_neural_net(float64_t sigma = 0.01f);
 
 	virtual ~CNeuralNetwork();
 

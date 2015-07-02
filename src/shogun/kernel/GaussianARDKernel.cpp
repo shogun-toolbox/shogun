@@ -21,14 +21,14 @@ using namespace shogun;
 
 CGaussianARDKernel::CGaussianARDKernel() : CLinearARDKernel()
 {
-	initialize();
+	initialize_kernel();
 }
 
 CGaussianARDKernel::~CGaussianARDKernel()
 {
 }
 
-void CGaussianARDKernel::initialize()
+void CGaussianARDKernel::initialize_kernel()
 {
 	set_width(1.0);
 	SG_ADD(&m_width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
@@ -38,7 +38,7 @@ void CGaussianARDKernel::initialize()
 CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
 		: CLinearARDKernel(size)
 {
-	initialize();
+	initialize_kernel();
 	set_width(width);
 }
 
@@ -46,7 +46,7 @@ CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size, float64_t width)
 		: CLinearARDKernel(size)
 {
-	initialize();
+	initialize_kernel();
 	set_width(width);
 }
 

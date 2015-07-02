@@ -81,7 +81,7 @@ class CNeuralLayer;
  * Steps for using the DBN class:
  * 	- Specify the number of visible units and their type using the constructor
  * 	- Add the hidden layers using add_visible_layer() and add_hidden_layer().
- * 	- Initialize the DBN using initialize()
+ * 	- Initialize the DBN using initialize_neural_net()
  * 	- Pre-train the DBN using pre_train()
  * 	- Optionally do some unsupervised fine-tuning using train()
  * 	- If needed, call convert_to_neural_network() to convert the DBN into a
@@ -116,7 +116,7 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * weights
 	 */
-	virtual void initialize(float64_t sigma = 0.01);
+	virtual void initialize_neural_net(float64_t sigma = 0.01);
 
 	/** Sets the number of train/test cases the RBM will deal with
 	 *

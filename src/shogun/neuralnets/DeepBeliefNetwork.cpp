@@ -73,7 +73,7 @@ void CDeepBeliefNetwork::add_hidden_layer(int32_t num_units)
 	m_num_layers++;
 }
 
-void CDeepBeliefNetwork::initialize(float64_t sigma)
+void CDeepBeliefNetwork::initialize_neural_net(float64_t sigma)
 {
 	m_bias_index_offsets = SGVector<int32_t>(m_num_layers);
 	m_weights_index_offsets = SGVector<int32_t>(m_num_layers-1);
@@ -164,7 +164,7 @@ void CDeepBeliefNetwork::pre_train(int32_t index,
 		rbm.add_visible_group(m_layer_sizes->element(index), m_visible_units_type);
 	else
 		rbm.add_visible_group(m_layer_sizes->element(index), RBMVUT_BINARY);
-	rbm.initialize(m_sigma);
+	rbm.initialize_neural_net(m_sigma);
 
 	rbm.cd_num_steps = pt_cd_num_steps[index];
 	rbm.cd_persistent = pt_cd_persistent[index];
@@ -252,7 +252,7 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 	else
 		top_rbm.add_visible_group(m_layer_sizes->element(0), m_visible_units_type);
 
-	top_rbm.initialize();
+	top_rbm.initialize_neural_net();
 	top_rbm.m_params = SGVector<float64_t>(
 		m_params.vector+m_bias_index_offsets[m_num_layers-2],
 		top_rbm.get_num_parameters(), false);
@@ -373,7 +373,7 @@ CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 
 	network->quick_connect();
-	network->initialize(sigma);
+	network->initialize_neural_net(sigma);
 
 	for (int32_t i=1; i<m_num_layers; i++)
 	{
