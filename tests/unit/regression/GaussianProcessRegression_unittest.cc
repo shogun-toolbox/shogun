@@ -33,7 +33,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -44,6 +44,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
+#include <shogun/machine/gp/SparseVGInferenceMethod.h>
 
 using namespace shogun;
 
@@ -489,6 +490,129 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	SG_UNREF(gpr);
 }
 
+TEST(GaussianProcessRegression,sparse_vg_regression)
+{
+	index_t n=6;
+	index_t dim=2;
+	index_t m=3;
+	float64_t abs_tolerance,rel_tolerance=1e-6;
+
+	SGMatrix<float64_t> feat_train(dim, n);
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0,0)=-0.81263;
+	feat_train(0,1)=-0.99976;
+	feat_train(0,2)=1.17037;
+	feat_train(0,3)=1.51752;
+	feat_train(0,4)=1.57765;
+	feat_train(0,5)=3.89440;
+
+	feat_train(1,0)=0.5;
+	feat_train(1,1)=0.4576;
+	feat_train(1,2)=5.17637;
+	feat_train(1,3)=2.56752;
+	feat_train(1,4)=4.57765;
+	feat_train(1,5)=2.89440;
+
+	lat_feat_train(0,0)=1.00000;
+	lat_feat_train(0,1)=3.00000;
+	lat_feat_train(0,2)=4.00000;
+
+	lat_feat_train(1,0)=3.00000;
+	lat_feat_train(1,1)=2.00000;
+	lat_feat_train(1,2)=-5.00000;
+
+	lab_train[0]=0.46;
+	lab_train[1]=0.7;
+	lab_train[2]=-1.16;
+	lab_train[3]=1.5;
+	lab_train[4]=3.5;
+	lab_train[5]=-5.0;
+
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	float64_t ell=log(2.0);
+	CKernel* kernel=new CGaussianKernel(10,2.0*exp(ell*2.0));
+
+
+	float64_t mean_weight=0.0;
+	CConstMean* mean=new CConstMean(mean_weight);
+
+	float64_t sigma=0.5;
+	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+
+	// specify GP regression with FITC inference
+	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+		mean, labels_train, lik, inducing_features_train);
+
+	float64_t ind_noise=1e-6;
+	inf->set_inducing_noise(ind_noise);
+
+	float64_t scale=1.5;
+	inf->set_scale(scale);
+
+	inf->enable_optimizing_inducing_features(false);
+
+	int32_t k=4;
+	SGMatrix<float64_t> feat_test(dim, k);
+	feat_test(0,0)=0.81263;
+	feat_test(0,1)=-0.9976;
+	feat_test(0,2)=0.17037;
+	feat_test(0,3)=0.5172;
+
+	feat_test(1,0)=0.5;
+	feat_test(1,1)=0.456;
+	feat_test(1,2)=3.1767;
+	feat_test(1,3)=1.5652;
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+
+	// train model
+	gpr->train();
+	SG_REF(features_test);
+	SGVector<float64_t> mean_vector=gpr->get_mean_vector(features_test);
+	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
+	SG_UNREF(features_test);
+	// comparison of mean and variance with result from varsgpv package:
+	// http://www.aueb.gr/users/mtitsias/code/varsgp.tar.gz
+	//mustar =
+	//-0.246280335053918
+	//0.781735233521474
+	//2.841201927903070
+	//1.072110958530009
+	//varstar =
+	//1.970193540002217
+	//2.341819379690606
+	//0.670229188503544
+	//1.293072726669006
+	
+	abs_tolerance = CMath::get_abs_tolerance(-0.246280335053918, rel_tolerance);
+	EXPECT_NEAR(mean_vector[0],  -0.246280335053918,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.781735233521474, rel_tolerance);
+	EXPECT_NEAR(mean_vector[1],  0.781735233521474,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.841201927903070, rel_tolerance);
+	EXPECT_NEAR(mean_vector[2],  2.841201927903070,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.072110958530009, rel_tolerance);
+	EXPECT_NEAR(mean_vector[3],  1.072110958530009,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(1.970193540002217, rel_tolerance);
+	EXPECT_NEAR(var_vector[0],  1.970193540002217,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.341819379690606, rel_tolerance);
+	EXPECT_NEAR(var_vector[1],  2.341819379690606,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.670229188503544, rel_tolerance);
+	EXPECT_NEAR(var_vector[2],  0.670229188503544,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.293072726669006, rel_tolerance);
+	EXPECT_NEAR(var_vector[3],  1.293072726669006,  abs_tolerance);
+	
+	// clean up
+	SG_UNREF(gpr);
+}
+
 #ifdef HAVE_LINALG_LIB
 TEST(GaussianProcessRegression,fitc_regression)
 {
@@ -534,7 +658,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -589,7 +713,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
 	SG_UNREF(features_test);
 
-	// comparison of variance with result from GPML 3.5 package:
+	// comparison of mean and variance with result from GPML 3.5 package:
 	//ymu =
 	//0.817143553262107
 	//1.001048686764744

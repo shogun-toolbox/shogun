@@ -34,7 +34,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LINALG_LIB
-#include <shogun/machine/gp/GaussianARDFITCKernel.h>
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #endif
 
 #ifdef HAVE_EIGEN3
@@ -3411,7 +3411,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
 
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -3527,7 +3527,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
 
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -3642,7 +3642,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=1.0;
 
-	CLinearARDKernel* kernel=new CGaussianARDFITCKernel(10, 2*ell*ell);
+	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
