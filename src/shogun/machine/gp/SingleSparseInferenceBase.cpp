@@ -201,64 +201,9 @@ SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
 	return result;
 }
 
-#ifdef HAVE_NLOPT
-
-void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound)
-{
-	if (bound.vlen>1)
-	{
-		REQUIRE(m_inducing_features.num_rows, "Inducing features must set before this method is called\n");
-		REQUIRE(m_inducing_features.num_rows==bound.vlen,
-			"The length of Inducing features (%d)",
-			" and the length of bound constraints (%d) are different\n");
-	}
-}
-
-void CSingleSparseInferenceBase::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
-{
-	check_bound(bound);
-	m_lower_bound=bound;
-}
-void CSingleSparseInferenceBase::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
-{
-	check_bound(bound);
-	m_upper_bound=bound;
-}
-
-void CSingleSparseInferenceBase::set_max_iterations_for_inducing_features(int32_t it)
-{
-	REQUIRE(it>0, "Iteration (%d) must be positive\n",it);
-	m_max_ind_iterations=it;
-}
-void CSingleSparseInferenceBase::set_tolearance_for_inducing_features(float64_t tol)
-{
-
-	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
-	m_ind_tolerance=tol;
-}
-double CSingleSparseInferenceBase::nlopt_function(unsigned n, const double* x, double* grad, void* func_data)
-{
-	CSingleSparseInferenceBase* object=static_cast<CSingleSparseInferenceBase *>(func_data);
-	REQUIRE(object,"func_data must be SingleSparseInferenceBase pointer\n");
-
-	double nlz=object->get_negative_log_marginal_likelihood();
-	object->compute_gradient();
-
-	TParameter* param=object->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> derivatives=object->get_derivative_wrt_inducing_features(param);
-
-	std::copy(derivatives.vector,derivatives.vector+n,grad);
-
-	return nlz;
-}
-
-void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
-{
-	m_opt_inducing_features=is_optmization;
-}
-
 void CSingleSparseInferenceBase::optimize_inducing_features()
 {
+#ifdef HAVE_NLOPT
 	if (!m_opt_inducing_features)
 		return;
 
@@ -319,7 +264,65 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 
 	// clean up
 	nlopt_destroy(opt);
+#endif /* HAVE_NLOPT */
 }
+
+#ifdef HAVE_NLOPT
+
+void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound)
+{
+	if (bound.vlen>1)
+	{
+		REQUIRE(m_inducing_features.num_rows, "Inducing features must set before this method is called\n");
+		REQUIRE(m_inducing_features.num_rows==bound.vlen,
+			"The length of Inducing features (%d)",
+			" and the length of bound constraints (%d) are different\n");
+	}
+}
+
+void CSingleSparseInferenceBase::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
+{
+	check_bound(bound);
+	m_lower_bound=bound;
+}
+void CSingleSparseInferenceBase::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
+{
+	check_bound(bound);
+	m_upper_bound=bound;
+}
+
+void CSingleSparseInferenceBase::set_max_iterations_for_inducing_features(int32_t it)
+{
+	REQUIRE(it>0, "Iteration (%d) must be positive\n",it);
+	m_max_ind_iterations=it;
+}
+void CSingleSparseInferenceBase::set_tolearance_for_inducing_features(float64_t tol)
+{
+
+	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
+	m_ind_tolerance=tol;
+}
+double CSingleSparseInferenceBase::nlopt_function(unsigned n, const double* x, double* grad, void* func_data)
+{
+	CSingleSparseInferenceBase* object=static_cast<CSingleSparseInferenceBase *>(func_data);
+	REQUIRE(object,"func_data must be SingleSparseInferenceBase pointer\n");
+
+	double nlz=object->get_negative_log_marginal_likelihood();
+	object->compute_gradient();
+
+	TParameter* param=object->m_gradient_parameters->get_parameter("inducing_features");
+	SGVector<float64_t> derivatives=object->get_derivative_wrt_inducing_features(param);
+
+	std::copy(derivatives.vector,derivatives.vector+n,grad);
+
+	return nlz;
+}
+
+void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
+{
+	m_opt_inducing_features=is_optmization;
+}
+
 #endif /* HAVE_NLOPT */
 
 #endif /* HAVE_EIGEN3 */

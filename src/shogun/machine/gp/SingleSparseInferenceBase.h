@@ -78,10 +78,10 @@ public:
 	 */
 	virtual void set_kernel(CKernel* kern);
 
-#ifdef HAVE_NLOPT
 	/** opitmize inducing features
 	 */
 	virtual void optimize_inducing_features();
+#ifdef HAVE_NLOPT
 
 	/** set the lower bound of inducing features
 	 *
