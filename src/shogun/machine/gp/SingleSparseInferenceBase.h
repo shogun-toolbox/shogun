@@ -78,7 +78,6 @@ public:
 	 */
 	virtual void set_kernel(CKernel* kern);
 
-#ifdef HAVE_NLOPT
 	/** opitmize inducing features
 	 */
 	virtual void optimize_inducing_features();
@@ -124,7 +123,6 @@ public:
 	 * @param is_optmization enable optimization
 	 */
 	virtual void enable_optimizing_inducing_features(bool is_optmization);
-#endif
 
 protected:
 
@@ -174,7 +172,7 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_kernel(
 			const TParameter* param);
-#ifdef HAVE_NLOPT
+
 	/** check the bound constraint is vailid or not
 	 *
 	 * @param bound bound constrains of inducing features
@@ -195,7 +193,6 @@ protected:
 
 	/**  whether optimize inducing features */
 	bool m_opt_inducing_features;
-#endif
 
 	/** check whether the provided kernel can
 	 * compute the gradient wrt inducing features

@@ -65,7 +65,6 @@ void CSingleSparseInferenceBase::init()
 		"whether the kernel support sparse inference", MS_NOT_AVAILABLE);
 	m_lock=new CLock();
 
-#ifdef HAVE_NLOPT
 	SG_ADD(&m_upper_bound, "upper_bound",
 		"upper bound of inducing features", MS_NOT_AVAILABLE);
 	SG_ADD(&m_lower_bound, "lower_bound",
@@ -81,7 +80,6 @@ void CSingleSparseInferenceBase::init()
 	m_opt_inducing_features=false;
 	m_lower_bound=SGVector<float64_t>();
 	m_upper_bound=SGVector<float64_t>();
-#endif
 }
 
 void CSingleSparseInferenceBase::set_kernel(CKernel* kern)
@@ -201,8 +199,6 @@ SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
 	return result;
 }
 
-#ifdef HAVE_NLOPT
-
 void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound)
 {
 	if (bound.vlen>1)
@@ -259,6 +255,7 @@ void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_opt
 
 void CSingleSparseInferenceBase::optimize_inducing_features()
 {
+#ifdef HAVE_NLOPT
 	if (!m_opt_inducing_features)
 		return;
 
@@ -319,7 +316,9 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 
 	// clean up
 	nlopt_destroy(opt);
+#else
+	SG_PRINT("For this functionality we require NLOPT library\n");
+#endif
 }
-#endif /* HAVE_NLOPT */
 
 #endif /* HAVE_EIGEN3 */
