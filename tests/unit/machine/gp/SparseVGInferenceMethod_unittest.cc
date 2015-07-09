@@ -272,7 +272,7 @@ TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_fea
 	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10,2.0);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	kernel->set_scalar_weights(1.0/2.0);
 
 	float64_t mean_weight=0.0;

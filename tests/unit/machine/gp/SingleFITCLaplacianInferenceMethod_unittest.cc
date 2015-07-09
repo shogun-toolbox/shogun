@@ -91,7 +91,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_cholesky)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a lower triangular matrix
@@ -198,7 +198,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_alpha)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a lower triangular matrix
@@ -292,7 +292,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_negative_log_marginal_likelihood)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -380,7 +380,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type

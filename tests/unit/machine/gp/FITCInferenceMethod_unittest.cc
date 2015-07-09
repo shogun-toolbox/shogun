@@ -702,7 +702,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -846,7 +846,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
@@ -994,7 +994,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);

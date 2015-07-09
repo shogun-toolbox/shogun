@@ -3409,7 +3409,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a lower triangular matrix
@@ -3523,7 +3523,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
 	//the weights is a lower triangular matrix
@@ -3636,7 +3636,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type

@@ -91,7 +91,7 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDFITCKernel* kernel=new CGaussianARDFITCKernel(10);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);
