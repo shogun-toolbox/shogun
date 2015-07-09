@@ -101,6 +101,8 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(RationalQuadraticKernel) CRationalQuadraticKernel;
 %rename(MultiquadricKernel) CMultiquadricKernel;
 %rename(JensenShannonKernel) CJensenShannonKernel;
+
+#ifdef HAVE_LINALG_LIB
 %rename(ExponentialARDKernel) CExponentialARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 
@@ -109,6 +111,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 #endif
 
 #endif
+
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
 %rename(PeriodicKernel) CPeriodicKernel;
 

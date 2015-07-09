@@ -52,13 +52,13 @@ CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
 #if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 using namespace Eigen;
 
-CGaussianARDFITCKernel::CGaussianARDFITCKernel(int32_t size)
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
 		: CGaussianARDKernel(size)
 {
 	initialize();
 }
 
-CGaussianARDFITCKernel::CGaussianARDFITCKernel(CDotFeatures* l,
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)
 		: CGaussianARDKernel(l, r, size)
 {
