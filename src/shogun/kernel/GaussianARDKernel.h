@@ -27,12 +27,10 @@ namespace shogun
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf y})= exp(-\frac{||{\bf x}-{\bf y}||}{2})
+ * k({\bf x},{\bf y})= \exp(-\frac{\Vert {\bf x}-{\bf y} \Vert}{2})
  * \f]
  *
- * where \f$\tau\f$ is the kernel width.
- *
- * There are three variants based on \f$||\cdot||\f$.
+ * There are three variants based on \f$\Vert \cdot \Vert \f$.
  * The default case is
  * \f$\sum_{i=1}^{p}{{[\lambda \times ({\bf x_i}-{\bf y_i})] }^2}\f$
  * where \f$\lambda\f$ is a positive scalar and \f$p\f$ is # of features.

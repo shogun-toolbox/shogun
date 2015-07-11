@@ -33,10 +33,10 @@ enum EARDKernelType
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf y})= exp(-||{\bf x}-{\bf y}||)
+ * k({\bf x},{\bf y})= \exp(-\Vert{\bf x}-{\bf y}\Vert)
  * \f]
  *
- * There are three variants based on \f$||\cdot||\f$.
+ * There are three variants based on \f$ \Vert \cdot \Vert \f$.
  * The default case is
  * \f$ \lambda \times \lambda \times \textbf{distance}(x,y)\f$
  * where \f$\lambda\f$ is a positive scalar and \f$p\f$ is # of features
