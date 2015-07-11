@@ -10,8 +10,8 @@
  * Adapted from WeightedDegreeRBFKernel.h
  */
 
-#ifndef LINEARARDKERNEL_H
-#define LINEARARDKERNEL_H
+#ifndef EXPONENTIALARDKERNEL_H
+#define EXPONENTIALARDKERNEL_H
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
@@ -27,61 +27,63 @@ enum EARDKernelType
 	KT_FULL=30
 };
 
-/** @brief Linear Kernel with Automatic Relevance Detection computed
+/** @brief Exponential Kernel with Automatic Relevance Detection computed
  * on CDotFeatures.
  *
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf y})= ||{\bf x}-{\bf y}||
+ * k({\bf x},{\bf y})= \exp(-\Vert{\bf x}-{\bf y}\Vert)
  * \f]
  *
- * There are three variants based on \f$||\cdot||\f$.
+ * There are three variants based on \f$ \Vert \cdot \Vert \f$.
  * The default case is
- * \f$\sum_{i=1}^{p}{{[\lambda \times ({\bf x_i}-{\bf y_i})] }^2}\f$
- * where \f$\lambda\f$ is a scalar and \f$p\f$ is # of features
+ * \f$ \lambda \times \lambda \times \textbf{distance}(x,y)\f$
+ * where \f$\lambda\f$ is a positive scalar and \f$p\f$ is # of features
  * To use this case,  please call set_scalar_weights(\f$\lambda\f$),
- * where \f$\lambda\f$ is a 1-by-1 matrix
+ * where \f$\lambda\f$ is a scalar.
  *
  * The second case is
- * \f$\sum_{i=1}^{p} {{[\lambda_i \times ({\bf x_i}-{\bf y_i})] }^2}\f$
- * where \f$\lambda\f$ is a vector (we use \f$\lambda\f$ as a column vector)
+ * \f$ \textbf{distance}( \lambda .* x, \lambda .* y)\f$
+ * where \f$.*\f$ is element-wise product, 
+ * \f$\lambda\f$ is a positive vector (we use \f$\lambda\f$ as a column vector)
  * and \f$p\f$ is # of features
  * To use this case,  please call set_vector_weights(\f$\lambda\f$),
- * where \f$\lambda\f$ is a \f$p\f$-by-1 matrix
+ * where \f$\lambda\f$ is a \f$p\f$-by-1 vector.
  *
  * The last case is
- * \f$({\bf x}-{\bf y})^T \Lambda^T \Lambda ({\bf x}-{\bf y})\f$
- * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix,
- * \f$p\f$ is # of features and \f$d\f$ can be \f$ d \ge p\f$ or \f$ d \le p\f$
+ * \f$ \textbf{distance}( \Lambda^T \times x, \Lambda^T \times y)\f$
+ * where \f$\Lambda^T\f$ is a \f$d\f$-by-\f$p\f$ upper triangular matrix with positive diagonal elements,
+ * \f$p\f$ is # of features and \f$d\f$ can be \f$ d \le p\f$
  * To use this case,  please call set_matrix_weights(\f$\Lambda\f$),
- * where \f$\Lambda\f$ is a \f$d\f$-by-\f$p\f$ matrix
+ * where \f$\Lambda\f$ is a \f$p\f$-by-\f$d\f$ lower triangular matrix.
+ * Note that only the lower triangular part of \f$\Lambda\f$ will be used
  *
  *
  * Indeed, the last case is more general than the first two cases.
- * When \f$\Lambda=\lambda I\f$ is, the last case becomes the first case.
+ * When \f$\Lambda=\lambda \times I\f$ is, the last case becomes the first case.
  * When \f$\Lambda=\textbf{diag}(\lambda) \f$ is, the last case becomes the second case.
  *
  */
-class CLinearARDKernel: public CDotKernel
+class CExponentialARDKernel: public CDotKernel
 {
 public:
 	/** default constructor */
-	CLinearARDKernel();
+	CExponentialARDKernel();
 
-	virtual ~CLinearARDKernel();
+	virtual ~CExponentialARDKernel();
 
 	/** return what type of kernel we are
 	 *
-	 * @return kernel type LINEARARD
+	 * @return kernel type ExponentialARD
 	 */
-	virtual EKernelType get_kernel_type() { return K_LINEARARD; }
+	virtual EKernelType get_kernel_type() { return K_EXPONENTIALARD; }
 
 	/** return the kernel's name
 	 *
 	 * @return name 
 	 */
-	virtual const char* get_name() const=0;
+	virtual const char* get_name() const { return "ExponentialARDKernel"; }
 
 	/** return feature class the kernel can deal with
 	 *
@@ -96,11 +98,20 @@ public:
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 private:
-	void initialize();
+	void init();
 
 protected:
-	/** ARD weights */
-	SGMatrix<float64_t> m_weights;
+	/** feature weights in standard domain in the matrix layout, which is only used in get_weights()*/
+	SGMatrix<float64_t> m_weights_raw;
+
+	/** feature weights in log domain in vector layout*/
+	SGVector<float64_t> m_log_weights;
+
+	/** the number of rows of feature weights for vector layout*/
+	index_t m_weights_rows;
+
+	/** the number of columns of feature weights for vector layout*/
+	index_t m_weights_cols;
 
 	/** type of ARD kernel */
 	EARDKernelType m_ARD_type;
@@ -113,13 +124,38 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_feature_vector(int32_t idx, CFeatures* hs);
 
+	/** compute the distance between features a and b
+	 * idx_{a,b} denote the index of the feature vectors
+	 * in the corresponding feature object
+	 *
+	 * @param idx_a index a
+	 * @param idx_b index b
+	 * @return computed the distance
+	 *
+	 */
+	virtual float64_t distance(int32_t idx_a, int32_t idx_b)=0;
+
+	/** compute kernel function for features a and b
+	 * idx_{a,b} denote the index of the feature vectors
+	 * in the corresponding feature object
+	 *
+	 * @param idx_a index a
+	 * @param idx_b index b
+	 * @return computed kernel function at indices a,b
+	 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
+	 */
+	virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+	{
+		return CMath::exp(-distance(idx_a,idx_b));
+	}
+
 #ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
 	 * @param size cache size
 	 */
-	CLinearARDKernel(int32_t size);
+	CExponentialARDKernel(int32_t size);
 
 	/** constructor
 	 *
@@ -127,7 +163,7 @@ public:
 	 * @param r features of right-hand side
 	 * @param size cache size
 	 */
-	CLinearARDKernel(CDotFeatures* l, CDotFeatures* r,
+	CExponentialARDKernel(CDotFeatures* l, CDotFeatures* r,
 			int32_t size=10);
 
 
@@ -141,7 +177,7 @@ public:
 
 
 	/** return current feature/dimension weights in matrix form
-	 * Note that a diagonal matrix weights is considered as a column matrix (p-by-one matrix)
+	 * Note that a vector weights is considered as a row vector (one-by-p matrix)
 	 * where p is the number of features
 	 * Note that a scalar weights is considered as a one-by-one matrix
 	 *
@@ -161,71 +197,49 @@ public:
 			index_t index=-1)=0;
 
 	/** setter for feature/dimension weight (scalar kernel)
-	 * @param weight scalar weight
+	 * @param weight positive scalar weight
 	 */
 	virtual void set_scalar_weights(float64_t weight);
 
 	/** setter for feature/dimension weights (vector kernel)
-	 * @param weights vector weight
+	 * @param weights positive vector weight
 	 */
 	virtual void set_vector_weights(SGVector<float64_t> weights);
 
 	/** setter for feature/dimension weights (matrix kernel)
-	 * @param weights matrix weight
+	 * @param weights a lower triangular matrix weight with positive diagonal elements
 	 */
 	virtual void set_matrix_weights(SGMatrix<float64_t> weights);
 
 protected:
-
-	/** setter for feature/dimension weights
-	 * Note that a diagonal matrix weights is considered as a column matrix (p-by-one matrix)
-	 * where p is the number of features
-	 * Note that a scalar weights is considered as one-by-one matrix
-	 *
-	 * @param weights weights in vector form to set
+	/** a general setter for feature/dimension weights (matrix kernel)
+	 * @param weights the weights can be scalar/vector/lower triangular matrix
 	 */
 	virtual void set_weights(SGMatrix<float64_t> weights);
 
-	/** compute kernel function for features a and b
-	 * idx_{a,b} denote the index of the feature vectors
-	 * in the corresponding feature object
-	 *
-	 * @param idx_a index a
-	 * @param idx_b index b
-	 * @return computed kernel function at indices a,b
-	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b)=0;
+	/** convert the weights in log domain to standard domain when get_weights() is called*/
+	void lazy_update_weights();
 
-	/** helper function used to compute kernel function for features avec and bvec
+	/** convert the m_log_weights in vector format to the matrix format in standard domain
 	 *
-	 * @param avec left feature vector
-	 * @param bvec right feature vector
-	 * @return computed kernel value
-	 */
-	virtual float64_t compute_helper(SGVector<float64_t> avec,
-		SGVector<float64_t>bvec);
-
-	/** helper function used to compute derivative with respect to weights
+	 * @param vec weights in log domain in vector layout
 	 *
-	 * @param avec left feature vector
-	 * @param bvec right feature vector
-	 * @param scale scaling value
-	 * @param index the linearized index of a weight matrix (column-major)
-	 *
-	 * @return gradient with respect to parameter
-	 */
-	virtual float64_t compute_gradient_helper(SGVector<float64_t> avec, SGVector<float64_t> bvec,
-		float64_t scale, index_t index);
+	 * @return weights in standard domain in matrix layout
+	 * */
+	SGMatrix<float64_t> get_weighted_vector(SGVector<float64_t> vec);
 
 	/** helper function used to compute kernel value
 	 *
-	 * The function is to compute \f$V=\Lambda ({\bf x}-{\bf y})\f$
+	 * The function is to compute 
+	 * for scalar weights: \f$V=\textbf{vec}\f$ and scalar_weight=\f$\lambda\f$
+	 * for vector weights: \f$V=\lambda .* \textbf{vec}\f$ 
+	 * for matrix weights: \f$V=\Lambda^T * \textbf{vec}\f$ 
 	 *
-	 * @param right_vec right feature vector
+	 * @param vec feature vector
 	 * @param scalar_weight set the scaling value, which is used in the scalar case (first case).
 	 * @return the result of \f$V\f$
 	 */
-	virtual SGMatrix<float64_t> compute_right_product(SGVector<float64_t>right_vec, float64_t & scalar_weight);
+	virtual SGMatrix<float64_t> compute_right_product(SGVector<float64_t>vec, float64_t & scalar_weight);
 
 	/** check whether index of gradient wrt weights is valid
 	 *
@@ -238,4 +252,4 @@ protected:
 #endif /* HAVE_LINALG_LIB */
 };
 }
-#endif /* _LINEARARDKERNEL_H_ */
+#endif /* EXPONENTIALARDKERNEL_H */

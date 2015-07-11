@@ -76,20 +76,17 @@ public:
 	/** constructor
 	 *
 	 * @param size cache size
-	 * @param width kernel width
 	 */
-	CGaussianARDSparseKernel(int32_t size, float64_t width);
+	CGaussianARDSparseKernel(int32_t size);
 
 	/** constructor
 	 *
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 * @param size cache size
-	 * @param width kernel width
 	 */
 	CGaussianARDSparseKernel(CDotFeatures* l, CDotFeatures* r,
-		int32_t size=10, float64_t width=2.0);
-
+		int32_t size=10);
 
 	/** @param kernel is casted to CGaussianARDSparseKernel, error if not possible
 	 * is SG_REF'ed

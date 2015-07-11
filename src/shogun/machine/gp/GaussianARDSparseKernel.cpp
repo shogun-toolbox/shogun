@@ -52,15 +52,15 @@ CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
 #if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 using namespace Eigen;
 
-CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size, float64_t width)
-		: CGaussianARDKernel(size,width)
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
+		: CGaussianARDKernel(size)
 {
 	initialize();
 }
 
 CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size, float64_t width)
-		: CGaussianARDKernel(l, r, size, width)
+		CDotFeatures* r, int32_t size)
+		: CGaussianARDKernel(l, r, size)
 {
 	initialize();
 }
@@ -103,35 +103,35 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		SGVector<float64_t> left_vec=get_feature_vector(idx_l, lhs);
 		SGMatrix<float64_t> res(left_vec.vlen, num_rhs);
 
+		lazy_update_weights();
+
 		for (int32_t idx_r=0; idx_r<num_rhs; idx_r++)
 		{
 			SGVector<float64_t> right_vec=get_feature_vector(idx_r, rhs);
-			SGMatrix<float64_t> res_transpose(res.get_column_vector(idx_r),1,left_vec.vlen,false);
-			Map<MatrixXd> eigen_res_transpose(res_transpose.matrix, res_transpose.num_rows, res_transpose.num_cols);
+			Map<VectorXd> eigen_res_col_vec(res.get_column_vector(idx_r),left_vec.vlen);
 
 			SGVector<float64_t> vec=linalg::add(left_vec, right_vec, 1.0, -1.0);
 			float64_t scalar_weight=1.0;
 			//column vector
 			SGMatrix<float64_t> right=compute_right_product(vec, scalar_weight);
-			//row vector
-			SGMatrix<float64_t> right_transpose(right.matrix,1,right.num_rows,false);
-			Map<MatrixXd> eigen_right_transpose(right_transpose.matrix, right_transpose.num_rows, right_transpose.num_cols);
+			Map<VectorXd> eigen_right_col_vec(right.matrix,right.num_rows);
+
 			if (m_ARD_type==KT_SCALAR)
 			{
-				scalar_weight*=m_weights[0];
-				eigen_res_transpose=eigen_right_transpose*scalar_weight;
+				scalar_weight*=m_weights_raw[0];
+				eigen_res_col_vec=eigen_right_col_vec*scalar_weight;
 			}
 			else
 			{
 				if(m_ARD_type==KT_DIAG)
 				{
-					Map<MatrixXd> eigen_weights(m_weights.matrix, 1, m_weights.num_rows);
-					eigen_res_transpose=eigen_right_transpose.cwiseProduct(eigen_weights);
+					Map<VectorXd> eigen_weights(m_weights_raw.matrix, m_log_weights.vlen);
+					eigen_res_col_vec=eigen_right_col_vec.cwiseProduct(eigen_weights);
 				}
 				else if(m_ARD_type==KT_FULL)
 				{
-					Map<MatrixXd> eigen_weights(m_weights.matrix, m_weights.num_rows, m_weights.num_cols);
-					eigen_res_transpose=eigen_right_transpose*eigen_weights;
+					Map<MatrixXd> eigen_weights(m_weights_raw.matrix, m_weights_raw.num_rows, m_weights_raw.num_cols);
+					eigen_res_col_vec=eigen_weights*eigen_right_col_vec;
 				}
 				else
 				{
@@ -140,7 +140,7 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 
 			}
 			for (index_t i=0; i<left_vec.vlen; i++)
-				res(i,idx_r)*=kernel(idx_l,idx_r)*-2.0/m_width;
+				res(i,idx_r)*=-kernel(idx_l,idx_r);
 		}
 		return res;
 	}

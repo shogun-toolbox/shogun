@@ -657,18 +657,17 @@ TEST(GaussianProcessRegression,fitc_regression)
 	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
-	float64_t ell=1.0;
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 

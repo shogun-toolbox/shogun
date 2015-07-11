@@ -91,19 +91,17 @@ TEST(SingleFITCLaplacianInferenceMethod,get_cholesky)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
-	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	SGMatrix<float64_t> weights(dim,t_dim);
+	//the weights is a lower triangular matrix
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -200,19 +198,17 @@ TEST(SingleFITCLaplacianInferenceMethod,get_alpha)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
-	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	SGMatrix<float64_t> weights(dim,t_dim);
+	//the weights is a lower triangular matrix
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -296,19 +292,17 @@ TEST(SingleFITCLaplacianInferenceMethod,get_negative_log_marginal_likelihood)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -338,8 +332,6 @@ TEST(SingleFITCLaplacianInferenceMethod,get_negative_log_marginal_likelihood)
 
 	SG_UNREF(inf);
 }
-
-
 
 TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 {
@@ -388,19 +380,17 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -431,7 +421,7 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 	TParameter* mean_param=mean->m_gradient_parameters->get_parameter("mean");
 	TParameter* noise_param=inf->m_gradient_parameters->get_parameter("log_inducing_noise");
-	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("weights");
+	TParameter* weights_param=kernel->m_gradient_parameters->get_parameter("log_weights");
 
 
 	// result from GPML 3.5 package:
@@ -450,13 +440,6 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	float64_t dnlZ_noise=(gradient->get_element(noise_param))[0];
 
 	SGVector<float64_t> dnlz_weights_vec=gradient->get_element(weights_param);
-	SGMatrix<float64_t> dnlz_weights(dnlz_weights_vec.vector,t_dim, dim, false);
-	dnlz_weights(0,0)*=weight1;
-	dnlz_weights(1,1)*=weight4;
-	//dnlz_weights(1,0) should be non-zero
-	//since the kernel matrix in the Shogun's implementation does not
-	//have the "upper triangular matrix" constraint
-	dnlz_weights(1,0)=0.0;
 
 	abs_tolorance = CMath::get_abs_tolerance(-0.244187111559869, rel_tolorance);
 	EXPECT_NEAR(dnlZ_sf2, -0.244187111559869,  abs_tolorance);
@@ -468,14 +451,11 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_noise, 3.423607267495644e-07,  abs_tolorance);
 
 	abs_tolorance = CMath::get_abs_tolerance(0.036402571652033, rel_tolorance);
-	EXPECT_NEAR(dnlz_weights(0,0),  0.036402571652033,  abs_tolorance);
+	EXPECT_NEAR(dnlz_weights_vec[0],  0.036402571652033,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(2.291652389327975, rel_tolorance);
-	EXPECT_NEAR(dnlz_weights(0,1),  2.291652389327975,  abs_tolorance);
-
-	abs_tolorance = CMath::get_abs_tolerance(0, rel_tolorance);
-	EXPECT_NEAR(dnlz_weights(1,0),  0,  abs_tolorance);
+	EXPECT_NEAR(dnlz_weights_vec[1],  2.291652389327975,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolerance(-0.000362096140397, rel_tolorance);
-	EXPECT_NEAR(dnlz_weights(1,1),  -0.000362096140397,  abs_tolorance);
+	EXPECT_NEAR(dnlz_weights_vec[2],  -0.000362096140397,  abs_tolorance);
 
 	//Note that in the latest GPML3.5, derivatives wrt xu (covSEfact) does not support yet
 	//In Shohun's implementation, the derivatives wrt xu are supported.

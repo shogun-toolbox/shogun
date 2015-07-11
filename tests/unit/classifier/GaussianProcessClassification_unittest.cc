@@ -3409,19 +3409,17 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
-	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	SGMatrix<float64_t> weights(dim,t_dim);
+	//the weights is a lower triangular matrix
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -3525,19 +3523,17 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
-	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	//the weights is a lower triangular matrix
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
@@ -3640,19 +3636,17 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	float64_t ell=1.0;
-
-	CLinearARDKernel* kernel=new CGaussianARDSparseKernel(10, 2*ell*ell);
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
 	int32_t t_dim=2;
-	SGMatrix<float64_t> weights(t_dim,dim);
+	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
 	float64_t weight1=0.02;
 	float64_t weight2=-0.4;
 	float64_t weight3=0;
 	float64_t weight4=0.01;
 	weights(0,0)=weight1;
-	weights(0,1)=weight2;
-	weights(1,0)=weight3;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
