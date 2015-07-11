@@ -17,6 +17,7 @@
 %rename(ExactInferenceMethod) CExactInferenceMethod;
 %rename(LaplacianInferenceBase) CLaplacianInferenceBase;
 %rename(SparseInferenceBase) CSparseInferenceBase;
+%rename(SingleSparseInferenceBase) CSingleSparseInferenceBase;
 %rename(SingleFITCLaplacianBase) CSingleFITCLaplacianBase;
 %rename(SingleLaplacianInferenceMethod) CSingleLaplacianInferenceMethod;
 %rename(MultiLaplacianInferenceMethod) CMultiLaplacianInferenceMethod;
@@ -85,6 +86,7 @@
 %include <shogun/machine/gp/InferenceMethod.h>
 %include <shogun/machine/gp/LaplacianInferenceBase.h>
 %include <shogun/machine/gp/SparseInferenceBase.h>
+%include <shogun/machine/gp/SingleSparseInferenceBase.h>
 %include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 %include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 %include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>

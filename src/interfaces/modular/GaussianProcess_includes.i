@@ -28,6 +28,7 @@
  #include <shogun/machine/gp/SparseInferenceBase.h>
  #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/SingleSparseInferenceBase.h>
  #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
