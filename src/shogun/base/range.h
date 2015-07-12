@@ -1,9 +1,10 @@
 #ifndef __SG_RANGE_H__
 #define __SG_RANGE_H__
 
+#include <shogun/lib/config.h>
 #include <iterator>
-#include <iostream>
 
+#ifdef HAVE_CXX11
 namespace shogun
 {
 
@@ -19,13 +20,13 @@ namespace shogun
     class Range
     {
         public:
-            /** Creates range.
-             * Assumes start < end.
+            /** Creates range with specified bounds.
+             * Assumes rbegin < rend.
              *
-             * @param   start   start of range
-             * @param   end     end of range
+             * @param   rbegin   lower bound of range
+             * @param   rend     upper bound of range (excluding)
              */
-            Range(T start, T end) : m_start(start), m_end(end)
+            Range(T rbegin, T rend) : m_begin(rbegin), m_end(rend)
             {
             }
 
@@ -75,7 +76,7 @@ namespace shogun
              */
             Iterator begin() const
             {
-                return Iterator(m_start);
+                return Iterator(m_begin);
             }
             /** Create iterator that corresponds to the end of range.
              *
@@ -86,41 +87,42 @@ namespace shogun
                 return Iterator(m_end);
             }
         private:
-            /** start of range */
-            T m_start;
+            /** begin of range */
+            T m_begin;
             /** end of range */
             T m_end;
     };
 
-    /** Creates @ref Range with specified upper boundary.
+    /** Creates @ref Range with specified upper bound.
      *
      * @code
      *  for (auto i : range(100)) { ... }
      * @endcode
      *
-     * @param   end     end of range
+     * @param   rend     upper bound of range (excluding)
      */
     template <typename T>
-    inline Range<T> range(T end)
+    inline Range<T> range(T rend)
     {
-        return Range<T>(0, end);
+        return Range<T>(0, rend);
     }
 
-    /** Creates @ref Range with specified boundaries.
+    /** Creates @ref Range with specified bounds.
      *
      * @code
      *  for (auto i : range(0, 100)) { ... }
      * @endcode
      *
-     * @param   start   start of range
-     * @param   end     end of range
+     * @param   rbegin  lower bound of range
+     * @param   rend    upper bound of range (excluding)
      */
     template <typename T>
-    inline Range<T> range(T start, T end)
+    inline Range<T> range(T rbegin, T rend)
     {
-        return Range<T>(start, end);
+        return Range<T>(rbegin, rend);
     }
 
 }
 
+#endif /* HAVE_CXX */
 #endif /* __SG_RANGE_H__ */
