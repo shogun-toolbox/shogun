@@ -77,6 +77,13 @@ template<class ST> CFeatures* CDenseSubSamplesFeatures<ST>::duplicate() const
 	return new CDenseSubSamplesFeatures(m_fea, m_idx);
 }
 
+template<class ST> bool CDenseSubSamplesFeatures<ST>::get_feature_class_compatibility (EFeatureClass rhs) const
+{
+	if (this->get_feature_class()==rhs || m_fea->get_feature_class()==rhs)
+		return true;
+	return false;
+}
+
 template<class ST> EFeatureType CDenseSubSamplesFeatures<ST>::get_feature_type() const
 
 {
