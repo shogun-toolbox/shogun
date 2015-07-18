@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Parijat Mazumdar, Wu Lin
+ * Written (w) 2014 Wu Lin
+ * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
