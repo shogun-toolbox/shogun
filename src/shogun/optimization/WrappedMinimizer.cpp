@@ -27,7 +27,6 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * This code specifically adapted from function in approxKL.m and infKL.m
  */
 #include <shogun/lib/config.h>
 #include <shogun/optimization/WrappedMinimizer.h>
