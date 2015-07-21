@@ -199,26 +199,31 @@ SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
 	return result;
 }
 
-void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound)
+void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound, const char* name)
 {
 	if (bound.vlen>1)
 	{
-		REQUIRE(m_inducing_features.num_rows, "Inducing features must set before this method is called\n");
+		REQUIRE(m_inducing_features.num_rows>0, "Inducing features must set before this method is called\n");
 		REQUIRE(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
 			"The length of inducing features (%dx%d)",
 			" and the length of bound constraints (%d) are different\n", 
-			m_inducing_features.num_rows,m_inducing_features.num_cols);
+			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
+	}
+	else if(bound.vlen==1)
+	{
+		SG_WARNING("All inducing_features (%dx%d) are constrainted by the single value (%f) in the %s bound\n",
+			m_inducing_features.num_rows,m_inducing_features.num_cols,bound[0],name);
 	}
 }
 
 void CSingleSparseInferenceBase::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
 {
-	check_bound(bound);
+	check_bound(bound,"lower");
 	m_lower_bound=bound;
 }
 void CSingleSparseInferenceBase::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
 {
-	check_bound(bound);
+	check_bound(bound, "upper");
 	m_upper_bound=bound;
 }
 
@@ -281,7 +286,7 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 			for(index_t j=0; j<lat_m.num_cols; j++)
 				std::copy(m_lower_bound.vector, m_lower_bound.vector+m_lower_bound.vlen,
 					lower_bound.vector+j*lat_m.num_rows);
-			// set upper and lower bound
+			// set lower bound
 			nlopt_set_lower_bounds(opt, lower_bound.vector);
 		}
 	}
@@ -295,7 +300,7 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 			for(index_t j=0; j<lat_m.num_cols; j++)
 				std::copy(m_upper_bound.vector, m_upper_bound.vector+m_upper_bound.vlen,
 					upper_bound.vector+j*lat_m.num_rows);
-			// set upper and upper bound
+			// set upper bound
 			nlopt_set_upper_bounds(opt, upper_bound.vector);
 		}
 	}
