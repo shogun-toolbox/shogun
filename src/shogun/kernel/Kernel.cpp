@@ -106,7 +106,18 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l, r)
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class()==r->get_feature_class())
+	if (l->support_compatible_class())
+	{
+		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			l->get_name(), r->get_name());
+	}
+	else
+	{
+		REQUIRE(l->get_feature_class()==r->get_feature_class(),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			l->get_name(), r->get_name())
+	}
 	ASSERT(l->get_feature_type()==r->get_feature_type())
 
 	//remove references to previous features

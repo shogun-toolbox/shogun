@@ -68,8 +68,19 @@ class CDotKernel : public CKernel
 
 			ASSERT(l->has_property(FP_DOT))
 			ASSERT(r->has_property(FP_DOT))
-			ASSERT(l->get_feature_type() == r->get_feature_type())
-			ASSERT(l->get_feature_class() == r->get_feature_class())
+			ASSERT(l->get_feature_type() == r->get_feature_type());
+			if (l->support_compatible_class())
+			{
+				REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
+					"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+					l->get_name(), r->get_name());
+			}
+			else
+			{
+				REQUIRE(l->get_feature_class()==r->get_feature_class(),
+					"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+					l->get_name(), r->get_name())
+			}
 
 			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
 			{

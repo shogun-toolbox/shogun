@@ -314,6 +314,23 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims);
 
+		/** does this class support compatible computation bewteen difference classes?
+		 * for example, this->dot(rhs_prt),
+		 * can rhs_prt be an instance of a difference class?
+		 *
+		 * @return whether this class supports compatible computation
+		 */
+		virtual bool support_compatible_class() const {return false;}
+
+		/** Given a class in right hand side, does this class support compatible computation? 
+		 *
+		 * for example, is this->dot(rhs_prt) valid,
+		 * where rhs_prt is the class in right hand side 
+		 *
+		 * @param rhs, the class in right hand side 
+		 * @return whether this class supports compatible computation
+		 */
+		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 	private:
 		void init();
 
