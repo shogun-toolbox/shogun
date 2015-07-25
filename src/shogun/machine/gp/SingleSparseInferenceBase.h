@@ -86,8 +86,8 @@ public:
 	 *
 	 * @param bound lower bound constrains of inducing features
 	 *
-	 * Note that if the length of the bound can be 1,
-	 * it means the bound constraint applies to each dimension of inducing features
+	 * Note that if the length of the bound is 1,
+	 * it means the bound constraint applies to each dimension of all inducing features
 	 *
 	 * Note that if the length of the bound is greater than 1,
 	 * it means each dimension of the bound constraint applies to the corresponding dimension of inducing features
@@ -98,8 +98,8 @@ public:
 	 *
 	 * @param bound upper bound constrains of inducing features
 	 *
-	 * Note that if the length of the bound can be 1,
-	 * it means the bound constraint applies to each dimension of inducing features
+	 * Note that if the length of the bound is 1,
+	 * it means the bound constraint applies to each dimension of all inducing features
 	 *
 	 * Note that if the length of the bound is greater than 1,
 	 * it means each dimension of the bound constraint applies to the corresponding dimension of inducing features
@@ -176,8 +176,9 @@ protected:
 	/** check the bound constraint is vailid or not
 	 *
 	 * @param bound bound constrains of inducing features
+	 * @param name the name of the bound 
 	 */
-	virtual void check_bound(SGVector<float64_t> bound);
+	virtual void check_bound(SGVector<float64_t> bound, const char* name);
 
 	/** lower bound of inducing features */
 	SGVector<float64_t> m_lower_bound;
