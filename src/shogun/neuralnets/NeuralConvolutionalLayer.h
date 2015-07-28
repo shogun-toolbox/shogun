@@ -40,6 +40,22 @@
 
 namespace shogun
 {
+
+/** Specifies the type of initialization of parameters/weights for this layer.
+ */
+enum EInitializationMode
+{
+	/** Specify the standard deviation of the Gaussian Distribution at the time
+	 * of initialization of the network */
+	NORMAL=0,
+	/** Sets standard deviation to
+	 * \f[
+	 * \sqrt{\frac{2}{input\_width\times input\_height\times input\_channels}}
+	 * \f]
+	 */
+	RE_NORMAL=1,
+};
+
 /** @brief Main component in [convolutional neural networks]
  * (http://en.wikipedia.org/wiki/Convolutional_neural_network)
  *
@@ -86,8 +102,9 @@ public:
 		int32_t num_maps,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width=1, int32_t pooling_height=1,
-		int32_t stride_x=1, int32_t stride_y=1);
-
+		int32_t stride_x=1, int32_t stride_y=1,
+		EInitializationMode initialization_mode=NORMAL);
+	
 	virtual ~CNeuralConvolutionalLayer() {}
 
 	/** Sets the batch_size and allocates memory for m_activations and
@@ -237,6 +254,9 @@ protected:
 
 	/** Row indices of the max elements for each pooling region */
 	SGMatrix<float64_t> m_max_indices;
+
+	/** Parameters initialization mode */
+	EInitializationMode m_initialization_mode;
 };
 
 }
