@@ -7,7 +7,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/distributions/classical/GaussianDistributionNew.h>
 
 #ifdef HAVE_EIGEN3
 
@@ -17,12 +17,12 @@
 using namespace shogun;
 using namespace Eigen;
 
-CGaussianDistribution::CGaussianDistribution() : CProbabilityDistribution()
+CGaussianDistributionNew::CGaussianDistributionNew() : CProbabilityDistribution()
 {
 	init();
 }
 
-CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
+CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 		float64_t cov, bool cov_is_cholesky) :
 				CProbabilityDistribution(mean.vlen)
 {
@@ -34,7 +34,7 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 	m_cov(1,1)=cov;
 }
 
-CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
+CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 		SGVector<float64_t> cov, bool cov_is_cholesky) :
 				CProbabilityDistribution(mean.vlen)
 {
@@ -46,10 +46,10 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 
 	m_mean=mean;
 
-	m_cov=convert_to_matrix(cov,1,cov.vlen,false);
+	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
 }
 
-CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
+CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 		SGMatrix<float64_t> cov, bool cov_is_cholesky) :
 				CProbabilityDistribution(mean.vlen)
 {
@@ -89,53 +89,53 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		m_cov=cov;
 }
 
-CGaussianDistribution::~CGaussianDistribution()
+CGaussianDistributionNew::~CGaussianDistributionNew()
 {
 
 }
 
-CGaussianDistribution::set_mean(SGVector<float64_t> mean)
+void CGaussianDistributionNew::set_mean(SGVector<float64_t> mean)
 {
 	m_mean=mean;
 }
 
-CGaussianDistribution::set_cov(float64_t cov)
+void CGaussianDistributionNew::set_cov(float64_t cov)
 {
 	m_cov=SGMatrix<float64_t>(1,1);
 	m_cov(1,1)=cov;
 }
 
-CGaussianDistribution::set_cov(SGVector<float64_t> cov)
+void CGaussianDistributionNew::set_cov(SGVector<float64_t> cov)
 {
-	m_cov=convert_to_matrix(cov,1,cov.vlen,false);
+	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
 }
 
-CGaussianDistribution::set_cov(SGMatrix<float64_t> cov)
+void CGaussianDistributionNew::set_cov(SGMatrix<float64_t> cov)
 {
 	m_cov=cov;
 }
 
-SGVector<float64_t> CGaussianDistribution::get_mean() const
+SGVector<float64_t> CGaussianDistributionNew::get_mean() const
 {
 	return m_mean;
 }
 
-float64_t CGaussianDistribution::get_cov_spherical() const
+float64_t CGaussianDistributionNew::get_cov_spherical() const
 {
 	return *m_cov.data();
 }
 
-SGVector<float64_t> CGaussianDistribution::get_cov_diag() const
+SGVector<float64_t> CGaussianDistributionNew::get_cov_diag() const
 {
 	return m_cov.get_row_vector(0);
 }
 
-SGMatrix<float64_t> CGaussianDistribution::get_cov_full() const
+SGMatrix<float64_t> CGaussianDistributionNew::get_cov_full() const
 {
 	return m_cov;
 }
 
-SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
+SGMatrix<float64_t> CGaussianDistributionNew::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
 	REQUIRE(num_samples>0, "Number of samples (%d) must be positive\n",
@@ -176,7 +176,7 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	return samples;
 }
 
-SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
+SGVector<float64_t> CGaussianDistributionNew::log_pdf_multiple(SGMatrix<float64_t> samples) const
 {
 	REQUIRE(samples.num_cols>0, "Number of samples must be positive, but is %d\n",
 			samples.num_cols);
@@ -234,7 +234,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 
 }
 
-void CGaussianDistribution::init()
+void CGaussianDistributionNew::init()
 {
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cov, "L", "Lower factor of covariance matrix, "

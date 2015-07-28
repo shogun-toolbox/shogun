@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef GAUSSIANDISTRIBUTION_H
-#define GAUSSIANDISTRIBUTION_H
+#ifndef GAUSSIANDISTRIBUTIONNEW_H
+#define GAUSSIANDISTRIBUTIONNEW_H
 
 #include <shogun/lib/config.h>
 
@@ -59,11 +59,11 @@ namespace shogun
  * \f$\Sigma=LL^T\f$.
  */
 
-class CGaussianDistribution: public CProbabilityDistribution
+class CGaussianDistributionNew: public CProbabilityDistribution
 {
 public:
 	/** Default constructor */
-	CGaussianDistribution();
+	CGaussianDistributionNew();
 
 	/** Constructor for which takes Gaussian mean and its covariance matrix.
 	 * It is also possible to pass a precomputed matrix factor of the specified
@@ -74,17 +74,17 @@ public:
 	 * @param cov_is_cholesky whether cov is a Cholesky factorization of the covariance or not
 	 * (default is false). If false, the Cholesky factorization is explicitly computed
 	 */
-	CGaussianDistribution(SGVector<float64_t> mean, float64_t cov,
+	CGaussianDistributionNew(SGVector<float64_t> mean, float64_t cov,
 			bool cov_is_cholesky=false);
 
-	CGaussianDistribution(SGVector<float64_t> mean, SGVector<float64_t> cov,
+	CGaussianDistributionNew(SGVector<float64_t> mean, SGVector<float64_t> cov,
 			bool cov_is_cholesky=false);
 
-	CGaussianDistribution(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
+	CGaussianDistributionNew(SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 			bool cov_is_cholesky=false);
 
 	/** Destructor */
-	virtual ~CGaussianDistribution();
+	virtual ~CGaussianDistributionNew();
 
 	void set_mean(SGVector<float64_t> cov);
 	void set_cov(float64_t cov);
@@ -147,13 +147,13 @@ public:
 			+ CMath::log(2.0 * CMath::PI) + CMath::log(sigma2));
 	}
 
-	static float64_t multivariate_log_pdf(SGVector<float64_t> sample, SGVector<float64_t> mu, SGVector<float64_t> cov)
-	{
-		// TODO:
-		REQUIRE(sigma2 > 0, "Variance should be positive\n");
-		return -0.5 * (CMath::pow(sample - mu, 2) / sigma2
-			+ CMath::log(2.0 * CMath::PI) + CMath::log(sigma2));
-	}
+//	static float64_t multivariate_log_pdf(SGVector<float64_t> sample, SGVector<float64_t> mu, SGVector<float64_t> cov)
+//	{
+//		// TODO:
+//		REQUIRE(sigma2 > 0, "Variance should be positive\n");
+//		return -0.5 * (CMath::pow(sample - mu, 2) / sigma2
+//			+ CMath::log(2.0 * CMath::PI) + CMath::log(sigma2));
+//	}
 
 private:
 
