@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Wu Lin
+ * Written (w) 2015 Alessandro Ialongo
  * Written (W) 2013 Heiko Strathmann
  * All rights reserved.
  *
@@ -86,7 +86,7 @@ public:
 	/** Destructor */
 	virtual ~CGaussianDistributionNew();
 
-	void set_mean(SGVector<float64_t> cov);
+	void set_mean(SGVector<float64_t> mean);
 	void set_cov(float64_t cov);
 	void set_cov(SGVector<float64_t> cov);
 	void set_cov(SGMatrix<float64_t> cov);
@@ -132,6 +132,7 @@ public:
 		return "GaussianDistribution";
 	}
 
+	char* get_cov_type() const;
 
 	/** Computes the univariate pdf for one given sample.
 	 *
@@ -157,7 +158,7 @@ public:
 
 private:
 
-	/** Initialses and registers parameters */
+	/** Initialises and registers parameters */
 	void init();
 
 protected:
@@ -167,6 +168,9 @@ protected:
 	/** Lower factor of covariance matrix (depends on factorization type).
 	 * Covariance (approximation) is given by \f$\Sigma=LL^T\f$ */
 	SGMatrix<float64_t> m_cov;
+	char* m_cov_type;
+
+	void compute_cholesky(SGMatrix<float64_t> cov);
 };
 
 }

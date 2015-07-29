@@ -1,11 +1,38 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2015 Alessandro Ialongo
  * Written (W) 2013 Heiko Strathmann
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
+
+
+// Do we need to initialise m_dimension or is it somehow done automatically?
+// How should we store (i.e. under which type) m_cov_type?
 
 #include <shogun/distributions/classical/GaussianDistributionNew.h>
 
@@ -31,22 +58,26 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 	m_mean=mean;
 
 	m_cov=SGMatrix<float64_t>(1,1);
-	m_cov(1,1)=cov;
+	m_cov(0,0)=cov;
+
+	m_cov_type="Float";
 }
 
 CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 		SGVector<float64_t> cov, bool cov_is_cholesky) :
 				CProbabilityDistribution(mean.vlen)
 {
-	REQUIRE(mean.vlen==cov.vlen, "Mean must have same dimension as "
-			"covariance, which is %dx%d, but is %d\n",
-			cov.vlen, cov.vlen, mean.vlen);
+	REQUIRE(mean.vlen==cov.vlen,
+			"Mean dimension (%d) and covariance dimension (%d) do not match\n",
+			mean.vlen, cov.vlen);
 
 	init();
 
 	m_mean=mean;
 
 	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
+
+	m_cov_type="Vector";
 }
 
 CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
@@ -55,9 +86,9 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 {
 	REQUIRE(cov.num_rows==cov.num_cols, "Covariance must be square but is "
 			"%dx%d\n", cov.num_rows, cov.num_cols);
-	REQUIRE(mean.vlen==cov.num_cols, "Mean must have same dimension as "
-			"covariance, which is %dx%d, but is %d\n",
-			cov.num_rows, cov.num_cols, mean.vlen);
+	REQUIRE(mean.vlen==cov.num_cols,
+			"Mean dimension (%d) and covariance dimension (%d) do not match\n",
+			mean.vlen, cov.num_cols);
 
 	init();
 
@@ -65,28 +96,12 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 
 	if (!cov_is_cholesky)
 	{
-		Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
-		m_cov=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
-		Map<MatrixXd> eigen_L(m_cov.matrix, m_cov.num_rows, m_cov.num_cols);
-
-		/* compute cholesky */
-		LLT<MatrixXd> llt(eigen_cov);
-		if (llt.info()==NumericalIssue)
-		{
-			/* try to compute smalles eigenvalue for information */
-			SelfAdjointEigenSolver<MatrixXd> solver(eigen_cov);
-			if (solver.info() == Success)
-			{
-				VectorXd ev=solver.eigenvalues();
-				SG_ERROR("Error computing Cholesky of Gaussian's covariance. "
-						"Smallest Eigenvalue is %f.\n", ev[0]);
-			}
-		}
-
-		eigen_L=llt.matrixL();
+		compute_cholesky(cov);
 	}
 	else
 		m_cov=cov;
+
+	m_cov_type="Matrix";
 }
 
 CGaussianDistributionNew::~CGaussianDistributionNew()
@@ -102,17 +117,23 @@ void CGaussianDistributionNew::set_mean(SGVector<float64_t> mean)
 void CGaussianDistributionNew::set_cov(float64_t cov)
 {
 	m_cov=SGMatrix<float64_t>(1,1);
-	m_cov(1,1)=cov;
+	m_cov(0,0)=cov;
+
+	m_cov_type="Float";
 }
 
 void CGaussianDistributionNew::set_cov(SGVector<float64_t> cov)
 {
 	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
+
+	m_cov_type="Vector";
 }
 
 void CGaussianDistributionNew::set_cov(SGMatrix<float64_t> cov)
 {
 	m_cov=cov;
+
+	m_cov_type="Matrix";
 }
 
 SGVector<float64_t> CGaussianDistributionNew::get_mean() const
@@ -133,6 +154,11 @@ SGVector<float64_t> CGaussianDistributionNew::get_cov_diag() const
 SGMatrix<float64_t> CGaussianDistributionNew::get_cov_full() const
 {
 	return m_cov;
+}
+
+char* CGaussianDistributionNew::get_cov_type() const
+{
+	return m_cov_type;
 }
 
 SGMatrix<float64_t> CGaussianDistributionNew::sample(int32_t num_samples,
@@ -174,6 +200,31 @@ SGMatrix<float64_t> CGaussianDistributionNew::sample(int32_t num_samples,
 	eigen_samples.colwise()+=eigen_mean;
 
 	return samples;
+}
+
+void CGaussianDistributionNew::compute_cholesky(SGMatrix<float64_t> cov)
+{
+	Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
+	m_cov=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
+	Map<MatrixXd> eigen_L(m_cov.matrix, m_cov.num_rows, m_cov.num_cols);
+
+	/* compute cholesky */
+	LLT<MatrixXd> llt(eigen_cov);
+	if (llt.info()==NumericalIssue)
+	{
+		/* try to compute smallest eigenvalue for information */
+		SelfAdjointEigenSolver<MatrixXd> solver(eigen_cov);
+		if (solver.info() == Success)
+		{
+			VectorXd ev=solver.eigenvalues();
+			SG_ERROR("Error computing Cholesky of Gaussian's covariance. "
+					"Smallest Eigenvalue is %f.\n", ev[0]);
+		}
+		else
+			SG_ERROR("Error computing Cholesky of Gaussian's covariance. "
+					"Numerical Issue (could not compute eigenvalues)");
+	}
+	eigen_L = llt.matrixL();
 }
 
 SGVector<float64_t> CGaussianDistributionNew::log_pdf_multiple(SGMatrix<float64_t> samples) const
@@ -237,8 +288,10 @@ SGVector<float64_t> CGaussianDistributionNew::log_pdf_multiple(SGMatrix<float64_
 void CGaussianDistributionNew::init()
 {
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_cov, "L", "Lower factor of covariance matrix, "
-			"depending on the factorization type.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_cov, "cov", "Covariance matrix, "
+			"can be float, SGVector, or SGMatrix (cholesky).", MS_NOT_AVAILABLE);
+//	SG_ADD(&m_cov_type, "cov_type", "Type of covariance matrix, "
+//				"can be 'Float', 'Vector', or 'Matrix'.", MS_NOT_AVAILABLE);
 }
 
 #endif // HAVE_EIGEN3
