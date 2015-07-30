@@ -55,8 +55,8 @@ private:
 	{
 		m_learning_rate_count=0;
 		m_corrected_direction=SGVector<float64_t>();
-		SG_ADD(&m_corrected_direction, "", "", MS_NOT_AVAILABLE);
-		SG_ADD(&m_learning_rate_count, "", "", MS_NOT_AVAILABLE);
+		SG_ADD(&m_corrected_direction, "corrected_direction", "corrected_direction", MS_NOT_AVAILABLE);
+		SG_ADD(&m_learning_rate_count, "learning_rate_count", "learning_rate_count", MS_NOT_AVAILABLE);
 	}
 	
 };
