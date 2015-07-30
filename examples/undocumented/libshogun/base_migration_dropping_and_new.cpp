@@ -117,7 +117,9 @@ void check_equalness(CTestClassOld* old_instance,
 void test_migration()
 {
 	char filename_template[] = "migration_dropping_test.XXXXXX";
-	char* filename = mktemp(filename_template);
+    int fd = mkstemp(filename_template);
+    ASSERT(fd != -1);
+	char* filename = filename_template;
 
 	/* create one instance of each class */
 	CTestClassOld* old_instance=new CTestClassOld();
