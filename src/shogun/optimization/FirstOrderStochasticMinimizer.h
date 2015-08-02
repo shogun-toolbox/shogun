@@ -106,12 +106,19 @@ public:
 
 	virtual CMinimizerContext* save_to_context()
 	{
-		//REQUIRE(m_gradient_updater,"");
 		CMinimizerContext* result=new CMinimizerContext();
-		m_gradient_updater->update_context(result);
+		update_context(result);
 		return result;
 	}
+
 protected:
+	virtual void update_context(CMinimizerContext* context)
+	{
+		//REQUIRE(context,"Context must set\n");
+		//REQUIRE(m_gradient_updater,"");
+		m_gradient_updater->update_context(context);
+	}
+
 	/*  the gradient update step */
 	CDescendUpdater* m_gradient_updater;
 
