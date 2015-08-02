@@ -151,8 +151,8 @@ public:
 void test_load_file_parameters()
 {
 	char filename_tmp[] = "/tmp/file_params_test.XXXXXX";
-        int fd = mkstemp(filename_tmp);
-        ASSERT(fd != -1);
+	int fd = mkstemp(filename_tmp);
+	ASSERT(fd != -1);
 	char* filename = filename_tmp;
 
 	/* create one instance of each class */

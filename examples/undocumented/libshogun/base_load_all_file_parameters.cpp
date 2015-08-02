@@ -155,9 +155,9 @@ public:
 void test_load_file_parameter()
 {
 	char filename_tmp[] = "load_all_file_test.XXXXXX";
-        int fd = mkstemp(filename_tmp);
-        ASSERT(fd != -1);
-        char* filename = filename_tmp;
+	int fd = mkstemp(filename_tmp);
+	ASSERT(fd != -1);
+	char* filename = filename_tmp;
 
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
