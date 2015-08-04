@@ -29,48 +29,54 @@
  *
  */
 
-#ifndef MINIMIZERCONTEXT_H
-#define MINIMIZERCONTEXT_H
+#ifndef L2PENALTY_H
+#define L2PENALTY_H
+#include <shogun/optimization/Penalty.h>
 #include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/SGObject.h>
-
 namespace shogun
 {
-class CMinimizerContext: public CSGObject
+/** @brief The class is about L2 penalty/regularization.
+ *
+ * For L2 penalty, \f$L2(w)\f$
+ * \f[
+ * L2(w)=\frac{w^t w}{2}
+ * \f]
+ */
+
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class L2Penalty: public Penalty
 {
 public:
-	/*  Constructor */
-	CMinimizerContext()
-		:CSGObject()
-	{
-		init();
-	}
+	/* Constructor */
+	L2Penalty():Penalty() {}
 
-	/** Returns the name of the inference method
+	/* Destructor */
+	virtual ~L2Penalty() {}
+
+	/** Given the value of a target variable,
+	 * this method returns the penalty of the variable 
 	 *
-	 * @return name MinimizerContext
+	 * @param variable value of the variable
+	 * @return penalty of the variable
 	 */
-	virtual const char* get_name() const {return "MinimizerContext";}
+	virtual float64_t get_penalty(float64_t variable) {return 0.5*variable*variable;}
 
-	/*  Used in gradient updater class */
-	SGVector<float64_t> m_corrected_direction;
-
-	/*  Used in learn rate class */
-	int32_t m_learning_rate_count;
-
-private:
-	/*  Init */
-	void init()
-	{
-		m_learning_rate_count=0;
-		m_corrected_direction=SGVector<float64_t>();
-		SG_ADD(&m_corrected_direction, "corrected_direction", "corrected_direction", MS_NOT_AVAILABLE);
-		SG_ADD(&m_learning_rate_count, "learning_rate_count", "learning_rate_count", MS_NOT_AVAILABLE);
-	}
-	
+	/** Return the gradient of the penalty wrt a target variable
+	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
+	 *
+	 * For L2 penalty
+	 * \f[
+	 * \frac{\partial L2(w) }{\partial w}=w
+	 * \f]
+	 *
+	 * @param variable value of a target variable
+	 * @param gradient unregularized/unpenalized gradient of the variable
+	 * @return the gradient of the penalty wrt the variable
+	 */
+	virtual float64_t get_penalty_gradient(float64_t variable,
+		float64_t gradient_of_variable) {return variable;}
 };
+
 }
 
 #endif

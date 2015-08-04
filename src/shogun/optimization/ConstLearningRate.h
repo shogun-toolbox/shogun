@@ -29,48 +29,77 @@
  *
  */
 
-#ifndef MINIMIZERCONTEXT_H
-#define MINIMIZERCONTEXT_H
+#ifndef CONSTLEARNINGRATE_H
+#define CONSTLEARNINGRATE_H
+#include <shogun/optimization/LearningRate.h>
 #include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
-class CMinimizerContext: public CSGObject
+/** @brief This is a learning rate class for a descent-based minimizer.
+ *
+ * This class gives a const learning rate during descent update.
+ *
+ */
+
+#define IGNORE_IN_CLASSLIST
+IGNORE_IN_CLASSLIST class ConstLearningRate: public LearningRate
 {
 public:
 	/*  Constructor */
-	CMinimizerContext()
-		:CSGObject()
+	ConstLearningRate():LearningRate() { init(); }
+
+	/*  Destructor */
+	virtual ~ConstLearningRate() {}
+
+	/** Set the const learning rate
+	 *
+	 * @param learning_rate learning_rate must be positive and usually is not greater than 1.0
+	 */
+	virtual void set_const_learning_rate(float64_t learning_rate)
 	{
-		init();
+		REQUIRE(learning_rate>0.0, "learning_rate (%f) must be positive",learning_rate);
+		m_const_learning_rate=learning_rate;
 	}
 
-	/** Returns the name of the inference method
+	/** Get the learning rate for descent direction
 	 *
-	 * @return name MinimizerContext
+	 * Note that the learning rate usually is positive
+	 *
+	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual const char* get_name() const {return "MinimizerContext";}
+	virtual float64_t get_learning_rate()
+	{
+		REQUIRE(m_const_learning_rate>0.0,"learning_rate must set\n");
+		return m_const_learning_rate;
+	}
 
-	/*  Used in gradient updater class */
-	SGVector<float64_t> m_corrected_direction;
+	/** Update a context object to store mutable variables
+	 *
+	 * @param context, a context object
+	 */
+	virtual void update_context(CMinimizerContext* context) {}
 
-	/*  Used in learn rate class */
-	int32_t m_learning_rate_count;
+	/** Return a context object which stores mutable variables
+	 * Usually it is used in serialization.
+	 *
+	 * @return a context object
+	 */
+	virtual void load_from_context(CMinimizerContext* context) {}
+
+protected:
+
+	/* const_learning_rate */
+	float64_t m_const_learning_rate;
 
 private:
 	/*  Init */
 	void init()
 	{
-		m_learning_rate_count=0;
-		m_corrected_direction=SGVector<float64_t>();
-		SG_ADD(&m_corrected_direction, "corrected_direction", "corrected_direction", MS_NOT_AVAILABLE);
-		SG_ADD(&m_learning_rate_count, "learning_rate_count", "learning_rate_count", MS_NOT_AVAILABLE);
+		m_const_learning_rate=0.0;
 	}
-	
 };
+
 }
 
 #endif

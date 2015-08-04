@@ -67,7 +67,7 @@ public:
 	 * @return the gradient of the penalty wrt the variable
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable)=0;
+		float64_t gradient)=0;
 };
 
 }
