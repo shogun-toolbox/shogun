@@ -32,7 +32,11 @@ int main(int argc, char* argv[])
     char *train_file_name = (char*)"../data/train_sparsereal.light";
     char *test_file_name = (char*)"../data/test_sparsereal.light";
     char filename_tmp[] = "test_sparsereal.light.labels.XXXXXX";
-    char *test_labels_file_name = mktemp(filename_tmp);
+    int fd = mkstemp(filename_tmp);
+    ASSERT(fd != -1);
+    int retval = close(fd);
+    ASSERT(retval != -1);
+    char *test_labels_file_name = filename_tmp;
 
     if (argc > 4) {
         int32_t idx = 1;
