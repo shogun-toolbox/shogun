@@ -39,21 +39,36 @@ namespace shogun
  *
  * This class gives the interface used in a first-order gradient-based unconstrained minimizer
  *
+ * For example: least square cost function \f$f(w)\f$
+ * \f[
+ * f(w)=\sum_i{(y_i-w^T x_i)^2}
+ * \f]
+ * where \f$w\f$ is target variable, \f$x_i\f$ is features of the i-th sample,
+ * and \f$y_i\f$ is the lable of the i-th sample.
+ *
  */
-class CFirstOrderCostFunction
+class FirstOrderCostFunction
 {
 public:
-	/** Get the cost given current variables 
+	/** Get the cost given current target variables 
+	 *
+	 * For least square, that is the value of \f$f(w)\f$ given \f$w\f$ is known
 	 *
 	 * @return cost
 	 */
 	virtual float64_t get_cost()=0;
-	/** Obtain reference of variables 
+	/** Obtain a reference of target variables 
+	 * Minimizers will modify target variables in place.
+	 *
+	 * For least square, that is \f$w\f$
 	 *
 	 * @return reference of variables
 	 */
 	virtual SGVector<float64_t> obtain_variable_reference()=0;
-	/** Get the gradient value of variables 
+	/** Get the gradient value wrt target variables 
+	 *
+	 * For least square, that is the value of
+	 * \f$\frac{\partial f(w) }{\partial w}\f$ given \f$w\f$ is known
 	 *
 	 * @return gradient of variables
 	 */
