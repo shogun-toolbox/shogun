@@ -39,24 +39,51 @@ namespace shogun
  *
  * The class gives the interface used in first order stochastic minimizers
  *
- * the cost function must be Written as a finite sample-specific sum of cost  
- * for example:
- * f=0.5*\sum_i{ (y_i-x_i'w)^2 }, where (y_i,x_i) is the i-th sample, y_i is the label and x_i is the features 
- *
+ * The cost function must be Written as a finite sample-specific sum of cost.  
+ * For example, least squares cost function,
+ * \f[
+ * f(w)=\frac{ \sum_i{ (y_i-w^t x_i)^2 } }{2}
+ * \f]
+ * where \f$(y_i,x_i)\f$ is the i-th sample,
+ * \f$y_i\f$ is the label and \f$x_i\f$ is the features 
  */
-class CFirstOrderStochasticCostFunction: public CFirstOrderCostFunction
+class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
 public:
-	/* initialize to get samples
+	/* Initialize to get samples
 	 *
 	 */
 	virtual void begin_sample()=0;
 
-	/* get next sample
+	/* Get next sample
 	 *
 	 * @return false if reach the end of sample sequence
 	 * */
 	virtual bool next_sample()=0;
+
+	/** Get the SAMPLE gradient value wrt target variables 
+	 *
+	 * WARNING
+	 * This method does return 
+	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$
+	 * instead of
+	 * \f$\sum_i{ \frac{\partial f_i(w) }{\partial w} }\f$
+	 *
+	 * For least squares, that is the value of
+	 * \f$\frac{\partial f_i(w) }{\partial w}\f$ given \f$w\f$ is known
+	 * where the index \f$i\f$ is obtained by next_sample() 
+	 *
+	 * @return sample gradient of variables
+	 */
+	virtual SGVector<float64_t> get_gradient()=0;
+
+	/** Get the cost given current target variables 
+	 *
+	 * For least squares, that is the value of \f$f(w)\f$.
+	 *
+	 * @return cost
+	 */
+	virtual float64_t get_cost()=0;
 };
 
 }

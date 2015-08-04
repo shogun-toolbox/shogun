@@ -50,7 +50,7 @@ public:
 	 */
 	virtual float64_t get_learning_rate()=0;
 
-	/** Update a context object to stores mutable variables
+	/** Update a context object to store mutable variables
 	 * used in learning rate
 	 *
 	 * @param context, a context object

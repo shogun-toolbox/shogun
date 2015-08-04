@@ -60,14 +60,14 @@ public:
 	/** Obtain a reference of target variables 
 	 * Minimizers will modify target variables in place.
 	 *
-	 * For least square, that is \f$w\f$
+	 * For least squares, that is \f$w\f$
 	 *
 	 * @return reference of variables
 	 */
 	virtual SGVector<float64_t> obtain_variable_reference()=0;
 	/** Get the gradient value wrt target variables 
 	 *
-	 * For least square, that is the value of
+	 * For least squares, that is the value of
 	 * \f$\frac{\partial f(w) }{\partial w}\f$ given \f$w\f$ is known
 	 *
 	 * @return gradient of variables
