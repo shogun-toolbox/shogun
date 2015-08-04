@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef CDESCENDUPDATER_H
-#define CDESCENDUPDATER_H
+#ifndef DESCENDUPDATER_H
+#define DESCENDUPDATER_H
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/optimization/MinimizerContext.h>
@@ -38,27 +38,38 @@ namespace shogun
 {
 /** @brief This is a base class for descend update.
  *
- * the base class do the following job:
- * Given variable_reference and its negative_descend_direction
- * the update_variable function will do
- * variable_reference-=update_variable(negative_descend_direction)
+ * The class give the interface used in descend-based minimizer.
  *
- * Note that an example of a negative_descend_direction is gradient  
+ * Given a target variable, \f$w\f$, and its negative descend direction \f$d\f$,
+ * the class will update \f$w\f$  based on \f$d\f$ (eg, subtracting \f$d\f$)
+ *
+ * Note that an example of \f$d\f$ is to simply use the gradient wrt \f$w\f$. 
  *
  */
-class CDescendUpdater
+class DescendUpdater
 {
 public:
-	/**update the variable_reference based on the negative_descend_direction
+	/** Update the target variable based on the given negative descend direction
+	 *
+	 * Note that this method will update the target variable in place.
 	 * 
 	 * @param variable_reference a reference of the target variable
-	 * @param negative_descend_direction the negative descend direction given the current variable
+	 * @param negative_descend_direction the negative descend direction given the current value
 	 */
 	virtual void update_variable(SGVector<float64_t> variable_reference,
 		SGVector<float64_t> negative_descend_direction)=0;
 
+	/** Update a context object to store mutable variables
+	 * used in descend update
+	 *
+	 * @param context, a context object
+	 */
 	virtual void update_context(CMinimizerContext* context)=0;
 
+	/** Load the given context object to restore mutable variables
+	 *
+	 * @param context, a context object
+	 */
 	virtual void load_from_context(CMinimizerContext* context)=0;
 };
 

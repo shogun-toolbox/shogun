@@ -31,41 +31,43 @@
 
 #ifndef PENALTY_H
 #define PENALTY_H
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
 namespace shogun
 {
 /** @brief The base class for penalty/regularization used in minimization.
  *
- * this is an interface used in minimization
+ * This is the interface of regularizers used in minimization
  *
  */
-class CPenalty
+class Penalty
 {
 public:
-	/** Given the value of a variable, this method returns the penalty of this variable 
+	/** Given the value of a target variable,
+	 * this method returns the penalty of the variable 
 	 *
-	 * For example, for L2 penalty
-	 * penalty=0.5*variable*variable
+	 * For L2 penalty, \f$L2(w)\f$
+	 * \f[
+	 * L2(w)=\frac{w^t w}{2}
+	 * \f]
 	 *
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
 	virtual float64_t get_penalty(float64_t variable)=0;
 
-	/** this method returns the gradient with respect to the penalty
+	/** Returns the gradient of the penalty wrt a target variable
+	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
 	 *
-	 * For example, for L2 penalty
-	 * gradient_wrt_penalty=variable
-	 * Note that penalized gradient=unpenalized gradient+gradient_wrt_penalty
+	 * For L2 penalty
+	 * \f[
+	 * \frac{\partial L2(w) }{\partial w}=w
+	 * \f]
 	 *
-	 * @param variable value of the variable
+	 * @param variable value of a target variable
 	 * @param gradient unregularized/unpenalized gradient of the variable
-	 * @return the gradient of penalty of the variable
+	 * @return the gradient of the penalty wrt the variable
 	 */
-	virtual float64_t get_gradient_wrt_penalty(float64_t variable,
+	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable)=0;
-
 };
 
 }

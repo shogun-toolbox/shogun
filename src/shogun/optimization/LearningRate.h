@@ -34,25 +34,33 @@
 #include <shogun/optimization/MinimizerContext.h>
 namespace shogun
 {
-/** @brief The base class about learning rate for a descent-based minimizer.
+/** @brief The base class about learning rate for descent-based minimizers.
  *
- * This is an interface class used in descent based minimizers.
+ * This is the interface used in descent based minimizers.
  *
  */
-class CLearningRate
+class LearningRate
 {
 public:
 
-	/** get the learning rate for descent direction
-	 
+	/** Get a learning rate for descent direction
 	 * Note that the learning rate usually is positive
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
 	virtual float64_t get_learning_rate()=0;
 
+	/** Update a context object to stores mutable variables
+	 * used in learning rate
+	 *
+	 * @param context, a context object
+	 */
 	virtual void update_context(CMinimizerContext* context)=0;
 
+	/** Load the given context object to restore mutable variables
+	 *
+	 * @param context, a context object
+	 */
 	virtual void load_from_context(CMinimizerContext* context)=0;
 };
 
