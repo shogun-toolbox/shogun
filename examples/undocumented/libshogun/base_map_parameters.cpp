@@ -245,6 +245,8 @@ void test_load_file_parameter()
 	char filename_tmp[] = "map_params_test.XXXXXX";
 	int fd = mkstemp(filename_tmp);
 	ASSERT(fd != -1);
+	int retval = close(fd);
+	ASSERT(retval != -1);
 	char* filename = filename_tmp;
 
 	/* create one instance of each class */

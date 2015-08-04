@@ -119,6 +119,8 @@ void test_migration()
 	char filename_template[] = "migration_dropping_test.XXXXXX";
 	int fd = mkstemp(filename_template);
 	ASSERT(fd != -1);
+	int retval = close(fd);
+	ASSERT(retval != -1);
 	char* filename = filename_template;
 
 	/* create one instance of each class */

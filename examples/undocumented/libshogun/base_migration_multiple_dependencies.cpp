@@ -134,6 +134,8 @@ void test_migration()
 	char filename_tmp[] = "migration_multiple_dep_test.XXXXXX";
 	int fd = mkstemp(filename_tmp);
 	ASSERT(fd != -1);
+	int retval = close(fd);
+	ASSERT(retval != -1);
 	char* filename = filename_tmp;
 
 	/* create one instance of each class */

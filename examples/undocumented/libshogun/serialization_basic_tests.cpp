@@ -80,6 +80,8 @@ void test_test_class_serial()
 	char filename_tmp[] = "serialization_test.XXXXXX";
 	int fd = mkstemp(filename_tmp);
 	ASSERT(fd != -1);
+	int retval = close(fd);
+	ASSERT(retval != -1);
 	char* filename = filename_tmp;
 
 	CTestClass* to_save=new CTestClass(10, 0, 0);
