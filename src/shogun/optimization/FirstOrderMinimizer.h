@@ -42,6 +42,9 @@ namespace shogun
  *
  * This class gives the interface of a first-order gradient-based unconstrained minimizer
  *
+ * This kind of minimizers will find optimal target variables based on gradient information wrt target variables.
+ * For example, the gradient descend method is a minimizer.
+ *
  * A minimizer need the following things as input:
  * a supported cost function object 
  * a penalty object if regularization is enabled
