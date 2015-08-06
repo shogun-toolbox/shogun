@@ -118,6 +118,17 @@ template<class T> class SGMatrix : public SGReferencedData
 			return &matrix[c*num_rows];
 		}
 
+		SGVector<T>* get_column_sg_vector(index_t col) const
+		{
+			const int64_t c = col;
+			SGVector<T>* colv(num_rows);
+			for (int64_t i = 0; i < num_rows; i++)
+			{
+				colv[i] = &matrix[c*num_rows+i];
+			}
+			return colv;
+		}
+
 		/** Get a row vector
 		 *
 		 * @param row row index

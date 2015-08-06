@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2015 Alessandro Ialongo
+ * Written (W) 2014 Wu Lin
  * Written (W) 2013 Heiko Strathmann
  * All rights reserved.
  *
@@ -30,10 +31,6 @@
  *
  */
 
-
-// Do we need to initialise m_dimension or is it somehow done automatically?
-// How should we store (i.e. under which type) m_cov_type?
-
 #include <shogun/distributions/classical/GaussianDistributionNew.h>
 
 #ifdef HAVE_EIGEN3
@@ -55,12 +52,14 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 {
 	init();
 
+	m_dimension=mean.vlen;
+
 	m_mean=mean;
 
 	m_cov=SGMatrix<float64_t>(1,1);
 	m_cov(0,0)=cov;
 
-	m_cov_type="Float";
+	m_cov_type=COV_SPHERICAL;
 }
 
 CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
@@ -68,16 +67,18 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 				CProbabilityDistribution(mean.vlen)
 {
 	REQUIRE(mean.vlen==cov.vlen,
-			"Mean dimension (%d) and covariance dimension (%d) do not match\n",
+			"Mean dimension (%d) and covariance (diagonal) dimension (%d) do not match\n",
 			mean.vlen, cov.vlen);
 
 	init();
 
+	m_dimension=mean.vlen;
+
 	m_mean=mean;
 
-	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
+	m_cov=cov.convert_to_matrix(cov,cov.vlen,1,false);
 
-	m_cov_type="Vector";
+	m_cov_type=COV_DIAGONAL;
 }
 
 CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
@@ -92,16 +93,18 @@ CGaussianDistributionNew::CGaussianDistributionNew(SGVector<float64_t> mean,
 
 	init();
 
+	m_dimension=mean.vlen;
+
 	m_mean=mean;
 
 	if (!cov_is_cholesky)
 	{
-		compute_cholesky(cov);
+		update_cholesky(cov);
 	}
 	else
 		m_cov=cov;
 
-	m_cov_type="Matrix";
+	m_cov_type=COV_FULL;
 }
 
 CGaussianDistributionNew::~CGaussianDistributionNew()
@@ -119,21 +122,21 @@ void CGaussianDistributionNew::set_cov(float64_t cov)
 	m_cov=SGMatrix<float64_t>(1,1);
 	m_cov(0,0)=cov;
 
-	m_cov_type="Float";
+	m_cov_type=COV_SPHERICAL;
 }
 
 void CGaussianDistributionNew::set_cov(SGVector<float64_t> cov)
 {
-	m_cov=cov.convert_to_matrix(cov,1,cov.vlen,false);
+	m_cov=cov.convert_to_matrix(cov,cov.vlen,1,false);
 
-	m_cov_type="Vector";
+	m_cov_type=COV_DIAGONAL;
 }
 
 void CGaussianDistributionNew::set_cov(SGMatrix<float64_t> cov)
 {
 	m_cov=cov;
 
-	m_cov_type="Matrix";
+	m_cov_type=COV_FULL;
 }
 
 SGVector<float64_t> CGaussianDistributionNew::get_mean() const
@@ -143,20 +146,64 @@ SGVector<float64_t> CGaussianDistributionNew::get_mean() const
 
 float64_t CGaussianDistributionNew::get_cov_spherical() const
 {
-	return *m_cov.data();
+	REQUIRE(m_cov_type==COV_SPHERICAL,"Covariance is not spherical");
+	return m_cov(0,0);
 }
 
 SGVector<float64_t> CGaussianDistributionNew::get_cov_diag() const
 {
-	return m_cov.get_row_vector(0);
+	REQUIRE(m_cov_type==COV_DIAGONAL,"Covariance is not diagonal");
+	return * m_cov.get_column_sg_vector(0);
+}
+
+SGMatrix<float64_t> CGaussianDistributionNew::get_cov_cholesky() const
+{
+	REQUIRE(m_cov_type==COV_FULL,"Covariance is not cholesky");
+	return m_cov;
+}
+
+// This returns a copy
+SGMatrix<float64_t> CGaussianDistributionNew::get_cov_full_cholesky() const
+{
+	REQUIRE(m_cov_type==COV_FULL,"Covariance is not cholesky");
+
+	Map<MatrixXd> eigen_cov(m_cov.matrix, m_cov.num_rows, m_cov.num_cols);
+	SGMatrix<float64_t> cov_full=SGMatrix<float64_t>(m_cov.num_rows, m_cov.num_cols);
+	Map<MatrixXd> eigen_cov_full(cov_full.matrix, cov_full.num_rows, cov_full.num_cols);
+	eigen_cov_full = eigen_cov*eigen_cov.transpose();
+	return cov_full;
 }
 
 SGMatrix<float64_t> CGaussianDistributionNew::get_cov_full() const
 {
-	return m_cov;
+	switch (m_cov_type)
+	{
+		case COV_SPHERICAL:
+			SGMatrix<float64_t> cov_full(m_dimension, m_dimension);
+			for (index_t i=0; i<m_dimension; ++i)
+			{
+				for (index_t j=0; j<m_dimension; ++j)
+					cov_full(i,j)=i==j ? m_cov(0,0) : 0.0;
+			}
+			return cov_full;
+		case COV_DIAGONAL:
+			SGMatrix<float64_t> cov_full(m_dimension, m_dimension);
+			for (index_t i=0; i<m_dimension; ++i)
+			{
+				for (index_t j=0; j<m_dimension; ++j)
+					cov_full(i,j)=i==j ? m_cov(i,0) : 0.0;
+			}
+			return cov_full;
+		case COV_FULL:
+			Map<MatrixXd> eigen_cov(m_cov.matrix, m_cov.num_rows, m_cov.num_cols);
+			SGMatrix<float64_t> cov_full=SGMatrix<float64_t>(m_cov.num_rows, m_cov.num_cols);
+			Map<MatrixXd> eigen_cov_full(cov_full.matrix, cov_full.num_rows, cov_full.num_cols);
+			eigen_cov_full = eigen_cov*eigen_cov.transpose();
+			return cov_full;
+	}
 }
 
-char* CGaussianDistributionNew::get_cov_type() const
+ECovType CGaussianDistributionNew::get_cov_type() const
 {
 	return m_cov_type;
 }
@@ -202,7 +249,7 @@ SGMatrix<float64_t> CGaussianDistributionNew::sample(int32_t num_samples,
 	return samples;
 }
 
-void CGaussianDistributionNew::compute_cholesky(SGMatrix<float64_t> cov)
+void CGaussianDistributionNew::update_cholesky(SGMatrix<float64_t> cov)
 {
 	Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
 	m_cov=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
@@ -287,11 +334,13 @@ SGVector<float64_t> CGaussianDistributionNew::log_pdf_multiple(SGMatrix<float64_
 
 void CGaussianDistributionNew::init()
 {
+	m_dimension=0
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cov, "cov", "Covariance matrix, "
 			"can be float, SGVector, or SGMatrix (cholesky).", MS_NOT_AVAILABLE);
-//	SG_ADD(&m_cov_type, "cov_type", "Type of covariance matrix, "
-//				"can be 'Float', 'Vector', or 'Matrix'.", MS_NOT_AVAILABLE);
+//	SG_ADD((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.",MS_NOT_AVAILABLE);
+	SG_ADD(&m_cov_type, "cov_type", "Type of covariance matrix, "
+				"can be 'COV_SPHERICAL', 'COV_DIAGONAL', or 'COV_FULL'.", MS_NOT_AVAILABLE);
 }
 
 #endif // HAVE_EIGEN3

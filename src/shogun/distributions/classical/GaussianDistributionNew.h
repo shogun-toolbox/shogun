@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2015 Alessandro Ialongo
+ * Written (W) 2015 Alessandro Ialongo
+ * Written (W) 2014 Wu Lin
  * Written (W) 2013 Heiko Strathmann
  * All rights reserved.
  *
@@ -43,6 +44,17 @@
 
 namespace shogun
 {
+
+/** Covariance type */
+enum ECovType
+{
+	/// spherical covariance
+	COV_SPHERICAL,
+	/// diagonal covariance
+	COV_DIAGONAL,
+	/// cholesky decomposition of the covariance
+	COV_FULL
+};
 /** TODO commenting properly the new fields
  */
 
@@ -94,6 +106,8 @@ public:
 	SGVector<float64_t> get_mean() const;
 	float64_t get_cov_spherical() const;
 	SGVector<float64_t> get_cov_diag() const;
+	SGMatrix<float64_t> get_cov_cholesky() const
+	SGMatrix<float64_t> get_cov_full_cholesky() const;
 	SGMatrix<float64_t> get_cov_full() const;
 
 	/** Samples from the distribution multiple times
@@ -132,7 +146,10 @@ public:
 		return "GaussianDistribution";
 	}
 
-	char* get_cov_type() const;
+	ECovType get_cov_type() const
+	{
+		return m_cov_type;
+	}
 
 	/** Computes the univariate pdf for one given sample.
 	 *
@@ -162,15 +179,17 @@ private:
 	void init();
 
 protected:
+	int32_t m_dimension;
 	/** Mean */
 	SGVector<float64_t> m_mean;
 
 	/** Lower factor of covariance matrix (depends on factorization type).
 	 * Covariance (approximation) is given by \f$\Sigma=LL^T\f$ */
 	SGMatrix<float64_t> m_cov;
-	char* m_cov_type;
 
-	void compute_cholesky(SGMatrix<float64_t> cov);
+	ECovType m_cov_type;
+
+	void update_cholesky(SGMatrix<float64_t> cov);
 };
 
 }
