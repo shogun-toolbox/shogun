@@ -9,6 +9,13 @@ cmake_minimum_required(VERSION 2.8.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
 
+# Needed for hardening-flags in Fedora.  This policy will pass
+# all compiler-flags to stuff like 'FIND_PACKAGE()'.  Introduced
+# with CMake 3.2.0.
+IF(POLICY CMP0056)
+	CMAKE_POLICY(SET CMP0056 NEW)
+ENDIF(POLICY CMP0056)
+
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
