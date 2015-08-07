@@ -4,17 +4,19 @@
 # $ cmake ..
 # $ make
 
+### Policies need to be set *BEFORE* calling 'project()' !!!
+# Needed for hardening-flags in Fedora.  This policy will pass
+# all compiler-flags to stuff like 'FIND_PACKAGE()'.  Introduced
+# with CMake 3.2.0.  See documentation:
+# http://www.cmake.org/cmake/help/v3.3/policy/CMP0056.html
+IF(POLICY CMP0056)
+	CMAKE_POLICY(SET CMP0056 NEW)
+ENDIF(POLICY CMP0056)
+
 project(shogun)
 cmake_minimum_required(VERSION 2.8.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
-
-# Needed for hardening-flags in Fedora.  This policy will pass
-# all compiler-flags to stuff like 'FIND_PACKAGE()'.  Introduced
-# with CMake 3.2.0.
-IF(POLICY CMP0056)
-	CMAKE_POLICY(SET CMP0056 NEW)
-ENDIF(POLICY CMP0056)
 
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
