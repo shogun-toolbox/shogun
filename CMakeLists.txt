@@ -11,6 +11,7 @@
 # http://www.cmake.org/cmake/help/v3.3/policy/CMP0056.html
 IF(POLICY CMP0056)
 	CMAKE_POLICY(SET CMP0056 NEW)
+	SET(CMAKE_POLICY_DEFAULT_CMP0056 NEW)
 ENDIF(POLICY CMP0056)
 
 project(shogun)
