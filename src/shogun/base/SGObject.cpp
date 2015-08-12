@@ -6,13 +6,9 @@
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
  * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013-2014 Thoralf Klein
+ * Written (W) 2013 Thoralf Klein
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
-
-#include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
-#include <shogun/lib/RefCount.h>
 
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
@@ -119,67 +115,27 @@ namespace shogun
 using namespace shogun;
 
 CSGObject::CSGObject()
+: SGRefObject()
 {
 	init();
 	set_global_objects();
-	m_refcount = new RefCount(0);
-
-	SG_SGCDEBUG("SGObject created (%p)\n", this)
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-:io(orig.io), parallel(orig.parallel), version(orig.version)
+:SGRefObject(orig), io(orig.io), parallel(orig.parallel), version(orig.version)
 {
 	init();
 	set_global_objects();
-	m_refcount = new RefCount(0);
-
-	SG_SGCDEBUG("SGObject copied (%p)\n", this)
 }
 
 CSGObject::~CSGObject()
 {
-	SG_SGCDEBUG("SGObject destroyed (%p)\n", this)
-
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
 	delete m_parameter_map;
-	delete m_refcount;
 }
-
-#ifdef USE_REFERENCE_COUNTING
-int32_t CSGObject::ref()
-{
-	int32_t count = m_refcount->ref();
-	SG_SGCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::ref_count()
-{
-	int32_t count = m_refcount->ref_count();
-	SG_SGCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::unref()
-{
-	int32_t count = m_refcount->unref();
-	if (count<=0)
-	{
-		SG_SGCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
-		delete this;
-		return 0;
-	}
-	else
-	{
-		SG_SGCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
-		return m_refcount->ref_count();
-	}
-}
-#endif //USE_REFERENCE_COUNTING
 
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>

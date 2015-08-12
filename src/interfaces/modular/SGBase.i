@@ -2,8 +2,8 @@
 %include "stdint.i"
 %include "exception.i"
 
-%feature("ref")   shogun::CSGObject "SG_REF($this);"
-%feature("unref") shogun::CSGObject "SG_UNREF($this);"
+%feature("ref")   shogun::SGRefObject "SG_REF($this);"
+%feature("unref") shogun::SGRefObject "SG_UNREF($this);"
 
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
@@ -106,6 +106,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
+ #include <shogun/base/SGRefObject.h>
  #include <shogun/base/SGObject.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
@@ -321,6 +322,7 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+%include <shogun/base/SGRefObject.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
