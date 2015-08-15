@@ -54,11 +54,15 @@ public:
 	 *
 	 * For least square, that is the value of \f$f(w)\f$ given \f$w\f$ is known
 	 *
+	 * This method will be called by FirstOrderMinimizer::minimize()
+	 *
 	 * @return cost
 	 */
 	virtual float64_t get_cost()=0;
 	/** Obtain a reference of target variables 
 	 * Minimizers will modify target variables in place.
+	 *
+	 * This method will be called by FirstOrderMinimizer::minimize()
 	 *
 	 * For least squares, that is \f$w\f$
 	 *
@@ -69,6 +73,8 @@ public:
 	 *
 	 * For least squares, that is the value of
 	 * \f$\frac{\partial f(w) }{\partial w}\f$ given \f$w\f$ is known
+	 *
+	 * This method will be called by FirstOrderMinimizer::minimize()
 	 *
 	 * @return gradient of variables
 	 */

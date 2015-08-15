@@ -50,14 +50,14 @@ namespace shogun
 class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
 public:
-	/* Initialize to get samples
+	/* Initialize to generate a sample sequence
 	 *
 	 */
 	virtual void begin_sample()=0;
 
 	/* Get next sample
 	 *
-	 * @return false if reach the end of sample sequence
+	 * @return false if reach the end of the sample sequence
 	 * */
 	virtual bool next_sample()=0;
 
@@ -65,11 +65,11 @@ public:
 	 *
 	 * WARNING
 	 * This method does return 
-	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$
+	 * \f$ \frac{\partial f_i(w) }{\partial w} \f$,
 	 * instead of
 	 * \f$\sum_i{ \frac{\partial f_i(w) }{\partial w} }\f$
 	 *
-	 * For least squares, that is the value of
+	 * For least squares cost function, that is the value of
 	 * \f$\frac{\partial f_i(w) }{\partial w}\f$ given \f$w\f$ is known
 	 * where the index \f$i\f$ is obtained by next_sample() 
 	 *
