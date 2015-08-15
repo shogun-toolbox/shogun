@@ -52,6 +52,7 @@ public:
 	/** Update the target variable based on the given negative descend direction
 	 *
 	 * Note that this method will update the target variable in place.
+	 * This method will be called by FirstOrderMinimizer::minimize()
 	 * 
 	 * @param variable_reference a reference of the target variable
 	 * @param negative_descend_direction the negative descend direction given the current value
@@ -62,11 +63,17 @@ public:
 	/** Update a context object to store mutable variables
 	 * used in descend update
 	 *
+	 * This method will be called by
+	 * FirstOrderMinimizer::save_to_context()
+	 *
 	 * @param context, a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)=0;
 
 	/** Load the given context object to restore mutable variables
+	 *
+	 * This method will be called by
+	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
 	 *
 	 * @param context, a context object
 	 */

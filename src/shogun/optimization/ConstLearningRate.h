@@ -36,7 +36,7 @@
 
 namespace shogun
 {
-/** @brief This is a learning rate class for a descent-based minimizer.
+/** @brief This implements the const learning rate class for a descent-based minimizer.
  *
  * This class gives a const learning rate during descent update.
  *
@@ -76,12 +76,18 @@ public:
 
 	/** Update a context object to store mutable variables
 	 *
+	 * This method will be called by
+	 * DescendUpdaterWithCorrection::update_context()
+	 *
 	 * @param context, a context object
 	 */
 	virtual void update_context(CMinimizerContext* context) {}
 
 	/** Return a context object which stores mutable variables
 	 * Usually it is used in serialization.
+	 *
+	 * This method will be called by
+	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
 	 *
 	 * @return a context object
 	 */

@@ -35,7 +35,11 @@ namespace shogun
 {
 /** @brief The base class for penalty/regularization used in minimization.
  *
- * This is the interface of regularizers used in minimization
+ * This is the interface of regularizers used in minimizers.
+ * (eg,
+ * FirstOrderMinimizer::update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var)
+ * FirstOrderMinimizer::get_penalty(SGVector<float64_t> var)
+ * ) 
  *
  */
 class Penalty

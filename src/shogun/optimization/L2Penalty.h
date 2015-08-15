@@ -35,7 +35,7 @@
 #include <shogun/lib/config.h>
 namespace shogun
 {
-/** @brief The class is about L2 penalty/regularization.
+/** @brief The class implements L2 penalty/regularization within the FirstOrderMinimizer framework.
  *
  * For L2 penalty, \f$L2(w)\f$
  * \f[
