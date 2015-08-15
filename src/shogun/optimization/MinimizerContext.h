@@ -48,6 +48,12 @@ public:
 		init();
 	}
 
+	/*  Destructor */
+	virtual ~CMinimizerContext()
+	{
+		SG_UNREF(m_additional_context);
+	}
+
 	/** Returns the name of the inference method
 	 *
 	 * @return name MinimizerContext
@@ -60,14 +66,18 @@ public:
 	/*  Used in learn rate class */
 	int32_t m_learning_rate_count;
 
+	/*  Store additional information */
+	CSGObject* m_additional_context;
 private:
 	/*  Init */
 	void init()
 	{
 		m_learning_rate_count=0;
+		m_additional_context=NULL;
 		m_corrected_direction=SGVector<float64_t>();
 		SG_ADD(&m_corrected_direction, "corrected_direction", "corrected_direction", MS_NOT_AVAILABLE);
 		SG_ADD(&m_learning_rate_count, "learning_rate_count", "learning_rate_count", MS_NOT_AVAILABLE);
+		SG_ADD(&m_additional_context, "additional_context", "additional_context", MS_NOT_AVAILABLE);
 	}
 	
 };

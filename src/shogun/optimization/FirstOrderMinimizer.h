@@ -45,10 +45,10 @@ namespace shogun
  * This kind of minimizers will find optimal target variables based on gradient information wrt target variables.
  * For example, the gradient descend method is a minimizer.
  *
- * A minimizer need the following things as input:
- * a supported cost function object 
- * a penalty object if regularization is enabled
- * a context object to restore mutable variables if deserialization is actived
+ * A minimizer requires the following objects as input:
+ * a supported cost function object (eg, FirstOrderCostFunction )
+ * a penalty object if regularization is enabled (eg, Penalty )
+ * a context object to restore mutable variables if deserialization is actived (eg, CMinimizerContext )
  *
  */
 class FirstOrderMinimizer
@@ -79,7 +79,7 @@ public:
 	 */
 	virtual float64_t minimize()=0;
 
-	/** Does minimizer support batch update
+	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
@@ -126,10 +126,7 @@ public:
 	 */
 	virtual void set_penalty_type(Penalty* penalty_type)
 	{
-		if(m_penalty_type!=penalty_type)
-		{
-			m_penalty_type=penalty_type;
-		}
+		m_penalty_type=penalty_type;
 	}
 protected:
 
