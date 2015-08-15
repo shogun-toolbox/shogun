@@ -31,20 +31,22 @@
 
 #ifndef GRADIENTDESCENDUPDATER_H
 #define GRADIENTDESCENDUPDATER_H
-#include <shogun/optimization/DescendUpdater.h>
+#include <shogun/optimization/DescendUpdaterWithCorrection.h>
 #include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
-/** @brief The class is about the plain gradient descend method.
+/** @brief The class implements the gradient descend method.
  *
- * Given a target variable, \f$w\f$, and its gradient, \f$d\f$, this class performs the following update.
+ * Given a target variable, \f$w\f$, and its gradient, \f$d\f$,
+ * without gradient correction (eg, momentum correction),
+ * this class performs the following update.
  * \f[
  *  w^{new} = w - \lambda d
  * \f],
  * where \f$\lambda\f$ is a learning rate.
  */
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class GradientDescendUpdater: public DescendUpdater
+IGNORE_IN_CLASSLIST class GradientDescendUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */
@@ -64,17 +66,10 @@ public:
 	 */
 	virtual void set_learning_rate(LearningRate *learning_rate);
 
-	/** Update the variable_reference based on the negative_descend_direction
-	 *
-	 * Plain gradient descend update:
-	 * variable_reference -= learning_rate*gradient
-	 * 
-	 * @param variable_reference a reference of the target variable, which supports in place update
-	 * @param gradient gradient of the variable_reference
-	 */
-	virtual void update_variable(SGVector<float64_t> variable_reference, SGVector<float64_t> gradient);
-
 	/** Update a context object to store mutable variables
+	 *
+	 * This method will be called by
+	 * FirstOrderMinimizer::save_to_context()
 	 *
 	 * @param context, a context object
 	 */
@@ -83,17 +78,44 @@ public:
 	/** Return a context object which stores mutable variables
 	 * Usually it is used in serialization.
 	 *
+	 * This method will be called by
+	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
+	 *
 	 * @return a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context);
 
-protected:
+	/** Update the target variable based on the given negative descend direction
+	 *
+	 * Note that this method will update the target variable in place.
+	 * This method will be called by FirstOrderMinimizer::minimize()
+	 * 
+	 * @param variable_reference a reference of the target variable
+	 * @param raw_negative_descend_direction the negative descend direction given the current value
+	 */
+	virtual void update_variable(SGVector<float64_t> variable_reference,
+		SGVector<float64_t> raw_negative_descend_direction);
 
-	/* learning_rate */
+protected:
+	/** Get the negative descend direction given current variable and gradient
+	 *
+	 * It will be called at update_variable()
+	 *
+	 * @param variable current variable
+	 * @param gradient current gradient
+	 * 
+	 * @return negative descend direction (that is, the given gradient in the class)
+	 */
+	virtual float64_t get_negative_descend_direction(float64_t variable,
+		float64_t gradient);
+
+	/* learning_rate object */
 	LearningRate* m_learning_rate;
 
+	/* learning_rate at iteration */
+	float64_t m_iteration_learning_rate;
 private:
-	/*  init */
+	/*  Init */
 	void init();
 };
 

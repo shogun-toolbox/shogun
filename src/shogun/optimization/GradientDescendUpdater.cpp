@@ -34,13 +34,13 @@
 using namespace shogun;
 
 GradientDescendUpdater::GradientDescendUpdater()
-	:DescendUpdater()
+	:DescendUpdaterWithCorrection()
 {
 	init();
 }
 
 GradientDescendUpdater::GradientDescendUpdater(LearningRate *learning_rate)
-	:DescendUpdater()
+	:DescendUpdaterWithCorrection()
 {
 	init();
 	set_learning_rate(learning_rate);
@@ -49,10 +49,7 @@ GradientDescendUpdater::GradientDescendUpdater(LearningRate *learning_rate)
 void GradientDescendUpdater::set_learning_rate(LearningRate *learning_rate)
 {
 	REQUIRE(learning_rate,"Learning_rate must set\n");
-	if(m_learning_rate!=learning_rate)
-	{
-		m_learning_rate=learning_rate;
-	}
+	m_learning_rate=learning_rate;
 }
 
 GradientDescendUpdater::~GradientDescendUpdater()
@@ -62,10 +59,12 @@ GradientDescendUpdater::~GradientDescendUpdater()
 void GradientDescendUpdater::init()
 {
 	m_learning_rate=NULL;
+	m_iteration_learning_rate=0;
 }
 
 void GradientDescendUpdater::update_context(CMinimizerContext* context)
 {
+	DescendUpdaterWithCorrection::update_context(context);
 	REQUIRE(m_learning_rate,"Learning_rate must set\n");
 	REQUIRE(context, "Context must set\n");
 	m_learning_rate->update_context(context);
@@ -73,27 +72,24 @@ void GradientDescendUpdater::update_context(CMinimizerContext* context)
 
 void GradientDescendUpdater::load_from_context(CMinimizerContext* context)
 {
+	DescendUpdaterWithCorrection::load_from_context(context);
 	REQUIRE(m_learning_rate,"learning_rate must set\n");
 	REQUIRE(context, "context must set\n");
 	m_learning_rate->load_from_context(context);
 }
 
-void GradientDescendUpdater::update_variable(
-	SGVector<float64_t> variable_reference,
-	SGVector<float64_t> gradient)
+float64_t GradientDescendUpdater::get_negative_descend_direction(float64_t variable,
+	float64_t gradient)
 {
-	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
+	return m_iteration_learning_rate*gradient;
+}
+
+void GradientDescendUpdater::update_variable(SGVector<float64_t> variable_reference,
+	SGVector<float64_t> raw_negative_descend_direction)
+{
 	REQUIRE(m_learning_rate,"learning_rate must set\n");
-	REQUIRE(variable_reference.vlen==gradient.vlen,
-		"The length of variable_reference (%d) and the length of gradient (%d) do not match\n",
-		variable_reference.vlen,gradient.vlen);
-
-	float64_t learning_rate=m_learning_rate->get_learning_rate();
-
-	for(auto idx=0; idx<variable_reference.vlen; idx++)
-	{
-		//Plain Gradient Descend
-		//variable -= learning_rate*gradient
-		variable_reference[idx]-=learning_rate*gradient[idx];
-	}
+	// must call LearningRate::get_learning_rate() here
+	// if we want to decay the learning rate at each iteration
+	m_iteration_learning_rate=m_learning_rate->get_learning_rate();
+	DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction);
 }
