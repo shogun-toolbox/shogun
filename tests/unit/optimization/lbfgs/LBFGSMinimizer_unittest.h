@@ -36,16 +36,15 @@
 using namespace shogun;
 class CPiecewiseQuadraticObject;
 
-class CMyCostFunction: public CFirstOrderCostFunction
+class MyCostFunction: public FirstOrderCostFunction
 {
 public:
-	CMyCostFunction();
-	virtual ~CMyCostFunction();
+	MyCostFunction();
+	virtual ~MyCostFunction();
 	void set_target(CPiecewiseQuadraticObject *obj);
 	virtual float64_t get_cost();
-	virtual CMap<TParameter*, SGVector<float64_t> >* obtain_variable_reference();
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient();
-	virtual const char* get_name() const {return "MyCostFunction";}
+	virtual SGVector<float64_t> obtain_variable_reference();
+	virtual SGVector<float64_t> get_gradient();
 private:
 	void init();
 	CPiecewiseQuadraticObject *m_obj;
@@ -53,14 +52,12 @@ private:
 
 class CPiecewiseQuadraticObject: public CSGObject
 {
-friend class CMyCostFunction;
+friend class MyCostFunction;
 public:
 	CPiecewiseQuadraticObject();
 	virtual ~CPiecewiseQuadraticObject();
 	void set_init_x(SGVector<float64_t> init_x);
 	void set_truth_x(SGVector<float64_t> truth_x);
-	void set_init_y(SGVector<float64_t> init_y);
-	void set_truth_y(SGVector<float64_t> truth_y);
 	float64_t get_value();
 	virtual const char* get_name() const {return "PiecewiseQuadraticObject";}
 private:
@@ -69,7 +66,5 @@ private:
 	void init();
 	SGVector<float64_t> m_init_x;
 	SGVector<float64_t> m_truth_x;
-	SGVector<float64_t> m_init_y;
-	SGVector<float64_t> m_truth_y;
 };
 #endif
