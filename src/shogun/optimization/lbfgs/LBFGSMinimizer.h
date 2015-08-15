@@ -31,7 +31,7 @@
 
 #ifndef LBFGSMINIMIZER_H
 #define LBFGSMINIMIZER_H
-#include <shogun/optimization/WrappedMinimizer.h>
+#include <shogun/optimization/FirstOrderMinimizer.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 namespace shogun
 {
@@ -48,35 +48,31 @@ enum ELBFGSLineSearch
 /** @brief The class wraps the Shogun's C-style LBFGS minimizer
  *
  */
-class CLBFGSMinimizer: public CWrappedMinimizer
+class LBFGSMinimizer: public FirstOrderMinimizer
 {
 public:
-	/** default constructor */
-	CLBFGSMinimizer();
-	/** constructor
-	 * @param fun cost function
-	 */
-	CLBFGSMinimizer(CFirstOrderCostFunction *fun);
-	/** destructor */
-	virtual ~CLBFGSMinimizer();
+	/*  Default constructor */
+	LBFGSMinimizer();
 
-	/** return the name of a minimizer.
-	 *
-	 *  @return LBFGSMinimizer 
+	/** Constructor
+	 * @param fun cost function (user have to manully delete the pointer)
 	 */
-	virtual const char* get_name() const {return "LBFGSMinimizer";}
+	LBFGSMinimizer(FirstOrderCostFunction *fun);
 
-	/** do minimization and get the optimal value 
+	/*  Destructor */
+	virtual ~LBFGSMinimizer();
+
+	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimization();
+	virtual float64_t minimize();
 
-	/** does minimizer support batch update
+	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
-	virtual bool support_batch_update() const {return true;}
+	virtual bool supports_batch_update() const {return true;}
 
 	/* set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
@@ -131,8 +127,24 @@ public:
 		float64_t orthantwise_c = 0.0,
 		int orthantwise_start = 0,
 		int orthantwise_end = 1);
+
+
+	/** Return a context object which stores mutable variables
+	 * Usually it is used in serialization.
+	 *
+	 * @return a context object
+	 */
+	virtual CMinimizerContext* save_to_context() {return new CMinimizerContext();}
+
+	/** Load the given context object to restores mutable variables
+	 * Usually it is used in deserialization.
+	 *
+	 * @param context, a context object
+	 */
+	virtual void load_from_context(CMinimizerContext* context) {}
+
 private:
-	/* helper function is passed to the LBFGS API
+	/* A helper function is used in the C-style LBFGS API
 	 * Note that this function should be static and
 	 * private.
 	 * */
@@ -142,8 +154,12 @@ private:
 		const int dim,
 		const float64_t step);
 
-	/* init */
+	/* Init */
 	void init();
+
+protected:
+	/* Init before minimization */
+	virtual void init_minimization();
 
 	/* The number of corrections to approximate the inverse hessian matrix.*/
 	int m_m;
@@ -192,6 +208,9 @@ private:
 
 	/* End index for computing L1 norm of the variables.*/
 	int m_orthantwise_end;
+
+	/* Target variable */
+	SGVector<float64_t> m_target_variable;
 };
 
 }

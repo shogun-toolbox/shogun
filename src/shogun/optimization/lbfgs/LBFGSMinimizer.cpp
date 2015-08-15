@@ -29,80 +29,33 @@
  *
  */
 #include <shogun/lib/config.h>
+#include <algorithm>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
 using namespace shogun;
 
-CLBFGSMinimizer::CLBFGSMinimizer()
-	:CWrappedMinimizer()
+LBFGSMinimizer::LBFGSMinimizer()
+	:FirstOrderMinimizer()
 {
 	init();
 }
 
-CLBFGSMinimizer::~CLBFGSMinimizer()
+LBFGSMinimizer::~LBFGSMinimizer()
 {
 }
 
-CLBFGSMinimizer::CLBFGSMinimizer(CFirstOrderCostFunction *fun)
-	:CWrappedMinimizer(fun)
+LBFGSMinimizer::LBFGSMinimizer(FirstOrderCostFunction *fun)
+	:FirstOrderMinimizer(fun)
 {
 	init();
 }
 
-void CLBFGSMinimizer::init()
+void LBFGSMinimizer::init()
 {
 	set_lbfgs_parameters();
-	SG_ADD(&m_m, "m",
-		"The number of corrections to approximate the inverse Hessian matrix",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_linesearch, "max_linesearch",
-		"The maximum number of trials to do line search for each L-BFGS update",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_linesearch, "linesearch",
-		"The line search algorithm",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iterations, "max_iterations",
-		"The maximum number of iterations for L-BFGS update",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_delta, "delta",
-		"Delta for convergence test based on the change of function value",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_past, "past",
-		"Distance for delta-based convergence test",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_epsilon, "epsilon",
-		"Epsilon for convergence test based on the change of gradient",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_min_step, "min_step",
-		"The minimum step of the line search",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_step, "max_step",
-		"The maximum step of the line search",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_ftol, "ftol",
-		"A parameter used in Armijo condition",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_wolfe, "wolfe",
-		"A parameter used in curvature condition",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_gtol, "gtol",
-		"A parameter used in Morethuente linesearch to control the accuracy",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_xtol, "xtol",
-		"The machine precision for floating-point values",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_c, "orthantwise_c",
-		"Coeefficient for the L1 norm of variables",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_start, "orthantwise_start",
-		"Start index for computing L1 norm of the variables",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_end, "orthantwise_end",
-		"End index for computing L1 norm of the variables",
-		MS_NOT_AVAILABLE);
 }
 
-void CLBFGSMinimizer::set_lbfgs_parameters(
+void LBFGSMinimizer::set_lbfgs_parameters(
 		int m,
 		int max_linesearch,
 		ELBFGSLineSearch linesearch,
@@ -138,7 +91,14 @@ void CLBFGSMinimizer::set_lbfgs_parameters(
 	m_orthantwise_end = orthantwise_end;
 }
 
-float64_t CLBFGSMinimizer::minimization()
+void LBFGSMinimizer::init_minimization()
+{
+	REQUIRE(m_fun, "Cost function not set!\n");
+	m_target_variable=m_fun->obtain_variable_reference();
+	REQUIRE(m_target_variable.vlen>0,"Target variable from cost function must not empty!\n");
+}
+
+float64_t LBFGSMinimizer::minimize()
 {
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_param.m = m_m;
@@ -158,43 +118,39 @@ float64_t CLBFGSMinimizer::minimization()
 	lbfgs_param.orthantwise_start = m_orthantwise_start;
 	lbfgs_param.orthantwise_end = m_orthantwise_end;
 
-	minimization_init();
+	init_minimization();
 
 	float64_t cost=0.0;
-	int error_code=lbfgs(m_variable_vec.vlen, m_variable_vec.vector,
-		&cost, CLBFGSMinimizer::evaluate,
+	int error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
+		&cost, LBFGSMinimizer::evaluate,
 		NULL, this, &lbfgs_param);
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-		SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
-			error_code);
+		//SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+			//error_code);
 	}
-
-	if(!m_is_in_place)
-		copy_in_parameter_order(m_variable_vec.vector, m_variable_vec.vlen, m_variable, m_variable);
 
 	return cost;
 }
 
-float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
+float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 	float64_t *gradient, const int dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CLBFGSMinimizer * obj_prt
-		= static_cast<CLBFGSMinimizer *>(obj);
+	LBFGSMinimizer * obj_prt
+		= static_cast<LBFGSMinimizer *>(obj);
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
-	//update variable
-	if (!obj_prt->m_is_in_place)
-		copy_in_parameter_order(variable, dim, obj_prt->m_variable, obj_prt->m_variable);
-
 	//get the gradient wrt variable_new
-	CMap<TParameter*, SGVector<float64_t> >* grad=obj_prt->m_fun->get_gradient();
-	copy_in_parameter_order(grad,obj_prt->m_variable, gradient, dim);
+	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
+	REQUIRE(grad.vlen==dim,
+		"The length of gradient (%d) and the length of variable (%d) do not match\n",
+		grad.vlen,dim);
 
-	SG_UNREF(grad);
+	std::copy(grad.vector,grad.vector+dim,gradient);
+
 	float64_t cost=obj_prt->m_fun->get_cost();
 	return cost;
 }
