@@ -924,6 +924,19 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		/** Computes logarithm of 1 plus argument, v
+		 *
+		 * The method is computed in a way that is accurate
+		 * even if the value of v is near zero
+		 *
+		 * @param v the argument
+		 * @return log base e of (1.0+v) or ln(1.0+v)
+		 */
+		static inline float64_t log1p(float64_t v)
+		{
+			return ::log1p(v);
+		}
+
 		/// log(x), x being a complex128_t
 		COMPLEX128_STDMATH(log)
 
