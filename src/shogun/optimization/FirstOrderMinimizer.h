@@ -146,7 +146,7 @@ protected:
 		if(m_penalty_type)
 		{
 			REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
-			for(auto idx=0; idx<var.vlen; idx++)
+			for(index_t idx=0; idx<var.vlen; idx++)
 				penalty+=m_penalty_weight*m_penalty_type->get_penalty(var[idx]);
 		}
 		return penalty;
@@ -171,7 +171,7 @@ protected:
 		if(m_penalty_type)
 		{
 			REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
-			for(auto idx=0; idx<var.vlen; idx++)
+			for(index_t idx=0; idx<var.vlen; idx++)
 			{
 				float64_t grad=gradient[idx];
 				float64_t variable=var[idx];

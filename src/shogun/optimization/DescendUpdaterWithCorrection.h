@@ -81,7 +81,7 @@ public:
 			}
 		}
 
-		for(auto idx=0; idx<variable_reference.vlen; idx++)
+		for(index_t idx=0; idx<variable_reference.vlen; idx++)
 		{
 			float64_t negative_descend_direction=get_negative_descend_direction(
 				variable_reference[idx], raw_negative_descend_direction[idx]);
