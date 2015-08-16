@@ -229,7 +229,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	layers->append_element(new CNeuralConvolutionalLayer(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, EInitializationMode::RE_NORMAL));
+		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, RE_NORMAL));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 
