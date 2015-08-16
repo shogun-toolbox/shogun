@@ -31,7 +31,7 @@
 
 #ifndef NLOPTMINIMIZER_H
 #define NLOPTMINIMIZER_H
-#include <shogun/optimization/WrappedMinimizer.h>
+#include <shogun/optimization/FirstOrderMinimizer.h>
 
 #ifdef HAVE_NLOPT
 #include <nlopt.h>
@@ -39,45 +39,54 @@
 namespace shogun
 {
 
-/* The class wraps the nlopt minimizer
+/* The class wraps the external NLOPT library
  *
- * This minimizer support bound constrainted minimization and unconstrainted minimization.
+ * This minimizer supports bound constrainted minimization
+ * and unconstrainted minimization using the NLOPT library
  *
  */
-class CNLOPTMinimizer: public CWrappedMinimizer
+class NLOPTMinimizer:public FirstOrderMinimizer
 {
 public:
-	/** default constructor */
-	CNLOPTMinimizer();
+	/** Default constructor */
+	NLOPTMinimizer();
 
-	/** constructor
+	/** Constructor
 	 * @param fun cost function
 	 */
-	CNLOPTMinimizer(CFirstOrderCostFunction *fun);
+	NLOPTMinimizer(FirstOrderCostFunction *fun);
 
-	/** destructor */
-	virtual ~CNLOPTMinimizer();
+	/** Destructor */
+	virtual ~NLOPTMinimizer();
 
-	/** do minimization and get the optimal value 
+	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimization();
+	virtual float64_t minimize();
 
-	/** does minimizer support batch update
+	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
-	virtual bool support_batch_update() const {return true;}
+	virtual bool supports_batch_update() const {return true;}
 
-	/** return the name of a minimizer.
+	/** Return a context object which stores mutable variables
+	 * Usually it is used in serialization.
 	 *
-	 *  @return NLOPTMinimizer 
+	 * @return a context object
 	 */
-	virtual const char* get_name() const {return "NLOPTMinimizer";}
+	virtual CMinimizerContext* save_to_context() {return new CMinimizerContext();}
+
+	/** Load the given context object to restores mutable variables
+	 * Usually it is used in deserialization.
+	 *
+	 * @param context, a context object
+	 */
+	virtual void load_from_context(CMinimizerContext* context) {}
 
 #ifdef HAVE_NLOPT
-	/* set L-BFGS parameters
+	/* Set parameters used in NLOPT
 	 * For details please see http://ab-initio.mit.edu/wiki/index.php/NLopt_C-plus-plus_Reference
 	 *
 	 * @param algorithm provided by NLOPT for minimization
@@ -90,8 +99,20 @@ public:
 		float64_t variable_tolerance=1e-6,
 		float64_t function_tolerance=1e-6);
 private:
+	/* A helper function will be called by the NLOPT library
+	 * Note that this function should be static and
+	 * private.
+	 * */
 	static double nlopt_function(unsigned dim, const double* variable,
 		double* gradient, void* func_data);
+
+protected:
+
+	/* Target variable */
+	SGVector<float64_t> m_target_variable;
+
+	/* Init before minimization */
+	virtual void init_minimization();
 
 	/** max number of iterations */
 	float64_t m_max_iterations;

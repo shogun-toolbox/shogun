@@ -36,26 +36,36 @@
 namespace shogun
 {
 
-/** @brief The first order cost function base class.
+/** @brief The first order cost function base class with bound constrains.
  *
  * This class gives the interface used in
  * a first-order gradient-based bound constrained minimizer
  *
  */
-class CFirstOrderBoundConstraintsCostFunction: public CFirstOrderCostFunction
+class FirstOrderBoundConstraintsCostFunction: public FirstOrderCostFunction
 {
 public:
-	/** get the lower bound of variables 
+	/** Get the lower bound of variables 
+	 * 
+	 * Usually the length of the bound should equal to the length of target variables.
+	 *
+	 * If the length of the bound is 1,
+	 * the bound constrain is applied to all target variables.
 	 *
 	 * @return the lower bound
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_lower_bound()=0;
+	virtual SGVector<float64_t> get_lower_bound()=0;
 
-	/** get the upper bound of variables 
+	/** Get the upper bound of variables 
+	 *
+	 * Usually the length of the bound should equal to the length of target variables.
+	 *
+	 * If the length of the bound is 1,
+	 * the bound constrain is applied to all target variables.
 	 *
 	 * @return the upper bound
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_upper_bound()=0;
+	virtual SGVector<float64_t> get_upper_bound()=0;
 };
 
 }
