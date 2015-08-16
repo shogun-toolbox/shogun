@@ -36,11 +36,11 @@
 using namespace shogun;
 class CPiecewiseQuadraticObject;
 
-class MyCostFunction: public FirstOrderCostFunction
+class LBFGSTestCostFunction: public FirstOrderCostFunction
 {
 public:
-	MyCostFunction();
-	virtual ~MyCostFunction();
+	LBFGSTestCostFunction();
+	virtual ~LBFGSTestCostFunction();
 	void set_target(CPiecewiseQuadraticObject *obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
@@ -52,7 +52,7 @@ private:
 
 class CPiecewiseQuadraticObject: public CSGObject
 {
-friend class MyCostFunction;
+friend class LBFGSTestCostFunction;
 public:
 	CPiecewiseQuadraticObject();
 	virtual ~CPiecewiseQuadraticObject();

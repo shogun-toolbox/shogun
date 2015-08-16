@@ -127,8 +127,8 @@ float64_t LBFGSMinimizer::minimize()
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
 	{
-		//SG_WARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
-			//error_code);
+		SG_SWARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+			error_code);
 	}
 
 	return cost;

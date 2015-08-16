@@ -33,23 +33,23 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
 
-MyCostFunction::MyCostFunction()
+LBFGSTestCostFunction::LBFGSTestCostFunction()
 	:FirstOrderCostFunction()
 {
 	init();
 }
 
-void MyCostFunction::init()
+void LBFGSTestCostFunction::init()
 {
 	m_obj=NULL;
 }
 
-MyCostFunction::~MyCostFunction()
+LBFGSTestCostFunction::~LBFGSTestCostFunction()
 {
 	SG_UNREF(m_obj);
 }
 
-void MyCostFunction::set_target(CPiecewiseQuadraticObject *obj)
+void LBFGSTestCostFunction::set_target(CPiecewiseQuadraticObject *obj)
 {
 	if(obj!=m_obj)
 	{
@@ -59,13 +59,13 @@ void MyCostFunction::set_target(CPiecewiseQuadraticObject *obj)
 	}
 }
 
-float64_t MyCostFunction::get_cost()
+float64_t LBFGSTestCostFunction::get_cost()
 {
 	REQUIRE(m_obj,"object not set\n");
 	return m_obj->get_value();
 }
 
-SGVector<float64_t> MyCostFunction::obtain_variable_reference()
+SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
@@ -86,7 +86,7 @@ SGVector<float64_t> MyCostFunction::obtain_variable_reference()
 	return variables;
 }
 
-SGVector<float64_t> MyCostFunction::get_gradient()
+SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
 	CMap<TParameter*, CSGObject*>* parameters=new CMap<TParameter*, CSGObject*>();
@@ -196,7 +196,7 @@ TEST(LBFGSMinimizer,test1)
 	obj->set_init_x(init_x);
 	obj->set_truth_x(truth_x);
 
-	MyCostFunction *b=new MyCostFunction();
+	LBFGSTestCostFunction *b=new LBFGSTestCostFunction();
 	SG_REF(obj);
 	b->set_target(obj);
 	
@@ -220,7 +220,7 @@ TEST(LBFGSMinimizer,test2)
 	obj->set_init_x(init_x);
 	obj->set_truth_x(truth_x);
 
-	MyCostFunction *b=new MyCostFunction();
+	LBFGSTestCostFunction *b=new LBFGSTestCostFunction();
 	SG_REF(obj);
 	b->set_target(obj);
 
