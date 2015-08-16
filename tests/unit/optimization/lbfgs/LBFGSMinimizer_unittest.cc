@@ -77,7 +77,7 @@ SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 	for(index_t i=0; i<num_variables; i++)
 	{
 		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node->data==m_obj)
+		if(node && node->data==m_obj)
 		{
 			variables=m_obj->get_variable(node->key);
 		}
@@ -98,7 +98,7 @@ SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 	for(index_t i=0; i<num_gradients; i++)
 	{
 		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
-		if(node->data==m_obj)
+		if(node && node->data==m_obj)
 		{
 			gradients=m_obj->get_gradient(node->key);
 		}
