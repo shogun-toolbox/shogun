@@ -28,8 +28,9 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#include <gtest/gtest.h>
 #include "NLOPTMinimizer_unittest.h"
+#ifdef HAVE_NLOPT
+#include <gtest/gtest.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
@@ -320,3 +321,4 @@ TEST(NLOPTMinimizer,test2)
 	delete b;
 	delete opt;
 }
+#endif /*  #ifdef HAVE_NLOPT */

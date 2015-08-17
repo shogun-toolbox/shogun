@@ -28,9 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <shogun/lib/config.h>
+#ifdef HAVE_NLOPT
 #ifndef NLOPTMINIMIZER_UNITTEST_H
 #define NLOPTMINIMIZER_UNITTEST_H
-#include <shogun/lib/config.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
 using namespace shogun;
@@ -78,4 +79,5 @@ private:
 	float64_t m_x_upper_bound;
 };
 
-#endif
+#endif /*  NLOPTMINIMIZER_UNITTEST_H */
+#endif /*  HAVE_NLOPT */
