@@ -172,7 +172,7 @@ SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 		if(node && node->data==m_obj)
 		{
 			grad=m_obj->get_gradient(node->key);
-			for(auto idx=0; idx<grad.vlen; idx++)
+			for(index_t idx=0; idx<grad.vlen; idx++)
 				grad[idx]/=get_sample_size();
 		}
 	}
@@ -288,7 +288,7 @@ SGVector<float64_t> ClassificationForTestCostFunction::get_average_gradient()
 
 	Map<VectorXd> e_w(m_weight.vector,m_weight.vlen);
 	Map<MatrixXd> e_x(m_features.matrix, m_features.num_rows, m_features.num_cols);
-	for(auto idx=0; idx<m_labels.vlen; idx++)
+	for(index_t idx=0; idx<m_labels.vlen; idx++)
 	{
 		float64_t w = 1.0-(1.0/(exp(m_labels[idx]*e_w.dot(e_x.col(idx)))+1.0));
 		w= w*m_labels[idx]/m_labels.vlen;
@@ -331,7 +331,7 @@ float64_t ClassificationForTestCostFunction::get_cost()
 	Map<VectorXd> e_w(m_weight.vector,m_weight.vlen);
 	Map<MatrixXd> e_x(m_features.matrix, m_features.num_rows, m_features.num_cols);
 	float64_t cost=0.0;
-	for(auto idx=0; idx<m_labels.vlen; idx++)
+	for(index_t idx=0; idx<m_labels.vlen; idx++)
 	{
 		cost+=log(exp(m_labels[idx]*e_w.dot(e_x.col(idx)))+1.0);
 	}
