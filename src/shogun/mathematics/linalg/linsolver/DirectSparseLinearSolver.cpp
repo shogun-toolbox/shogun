@@ -31,7 +31,7 @@ CDirectSparseLinearSolver::~CDirectSparseLinearSolver()
 }
 
 SGVector<float64_t> CDirectSparseLinearSolver::solve(
-		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b)
+		CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");

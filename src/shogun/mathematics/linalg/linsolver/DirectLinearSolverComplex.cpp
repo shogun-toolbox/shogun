@@ -12,6 +12,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
@@ -41,7 +42,7 @@ CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 }
 
 SGVector<complex128_t> CDirectLinearSolverComplex::solve(
-		CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >* A, SGVector<float64_t> b)
+		CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> x(b.vlen);
 

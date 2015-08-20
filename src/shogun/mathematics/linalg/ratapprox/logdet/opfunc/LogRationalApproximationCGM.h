@@ -19,7 +19,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class RetType, class OperandType> class CLinearOperator;
+template<class T> class CLinearOperator;
 class CCGMShiftedFamilySolver;
 class CJobResultAggregator;
 class CIndependentComputationEngine;
@@ -49,7 +49,7 @@ public:
 	 * the number of shifts automatically
 	 */
 	CLogRationalApproximationCGM(
-		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
+		CLinearOperator<float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		CCGMShiftedFamilySolver* linear_solver,
