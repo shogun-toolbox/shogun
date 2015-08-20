@@ -84,7 +84,7 @@ public:
 		for(index_t idx=0; idx<variable_reference.vlen; idx++)
 		{
 			float64_t negative_descend_direction=get_negative_descend_direction(
-				variable_reference[idx], raw_negative_descend_direction[idx]);
+				variable_reference[idx], raw_negative_descend_direction[idx], idx);
 			if(m_correction)
 			{
 				variable_reference[idx]+=m_correction->get_corrected_descend_direction(
@@ -143,11 +143,12 @@ protected:
 	 *
 	 * @param variable current variable
 	 * @param raw_negative_descend_direction current raw negative descend direction
+	 * @param idx the index of the variable
 	 * 
 	 * @return negative descend direction
 	 */
 	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t raw_negative_descend_direction)=0;
+		float64_t raw_negative_descend_direction, index_t idx)=0;
 
 	/*  descend correction object */
 	DescendCorrection* m_correction;

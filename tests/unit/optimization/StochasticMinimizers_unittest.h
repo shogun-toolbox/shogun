@@ -30,9 +30,9 @@
  */
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifndef SGDMINIMIZER_UNITTEST_H
-#define SGDMINIMIZER_UNITTEST_H
-#include <shogun/optimization/FirstOrderStochasticCostFunction.h>
+#ifndef STOCHASTICMINIMIZERS_UNITTEST_H
+#define STOCHASTICMINIMIZERS_UNITTEST_H
+#include <shogun/optimization/FirstOrderSAGCostFunction.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/SGObject.h>
@@ -40,15 +40,17 @@ using namespace shogun;
 
 class CRegressionExample;
 
-class SGDTestStochasticCostFunction: public FirstOrderStochasticCostFunction
+class RegressionForTestCostFunction: public FirstOrderSAGCostFunction
 {
 public:
-	SGDTestStochasticCostFunction();
-	virtual ~SGDTestStochasticCostFunction();
+	RegressionForTestCostFunction();
+	virtual ~RegressionForTestCostFunction();
 	void set_target(CRegressionExample *obj);
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
+	virtual SGVector<float64_t> get_average_gradient();
+	virtual int32_t get_sample_size();
 	virtual void begin_sample();
 	virtual bool next_sample();
 private:
@@ -57,9 +59,37 @@ private:
 	CRegressionExample* m_obj;
 };
 
+class ClassificationForTestCostFunction: public FirstOrderSAGCostFunction
+{
+public:
+	ClassificationForTestCostFunction();
+	virtual ~ClassificationForTestCostFunction(){}
+	virtual void set_data(SGMatrix<float64_t> features, SGVector<float64_t> labels);
+	virtual float64_t get_cost();
+	virtual void set_sample_sequences(SGVector<int32_t> index, index_t num_sequences);
+
+	virtual SGVector<float64_t> obtain_variable_reference();
+	virtual SGVector<float64_t> get_gradient();
+	virtual void begin_sample();
+	virtual bool next_sample();
+	virtual int32_t get_sample_size();
+	virtual SGVector<float64_t> get_average_gradient();
+
+private:
+	SGVector<int32_t> m_sample_sequences;
+	index_t m_num_sequences;
+	bool is_begin;
+	SGVector<float64_t> m_labels;
+	SGMatrix<float64_t> m_features;
+	SGVector<float64_t> m_weight;
+	index_t m_sample_idx;
+	index_t m_call_times;
+	void init();
+};
+
 class CRegressionExample: public CSGObject
 {
-friend class SGDTestStochasticCostFunction;
+friend class RegressionForTestCostFunction;
 public:
 	CRegressionExample();
 	virtual ~CRegressionExample(){}
@@ -71,6 +101,7 @@ public:
 private:
 	int get_sample_size();
 	SGVector<float64_t> get_gradient(TParameter * param, index_t idx);
+	SGVector<float64_t> get_gradient(TParameter * param);
 	SGVector<float64_t> get_variable(TParameter * param);
 	SGMatrix<float64_t> m_x;
 	SGVector<float64_t> m_w;
