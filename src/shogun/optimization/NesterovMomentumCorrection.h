@@ -38,25 +38,31 @@ namespace shogun
 /** @brief This implements the Nesterov's Accelerated Gradient (NAG) correction.
  *
  * Given a target variable, \f$w\f$, and its gradient, \f$d\f$, the momentum method performs the following update.
- *  \f$ w_{ahead}= w + \mu v \f$
- *  \f$ v^{new} = \mu v - \lambda d_{ahead} \f$
- *  \f$ w^{new} = w + v \f$
+ * \f{eqnarray*}{
+ *   w_{ahead} &=&  w + \mu v \\
+ *   v^{new}   &=& \mu v - \lambda d_{ahead} \\
+ *   w^{new}   &=& w + v 
+ * \f}
  * where \f$mu\f$ is a momentum, \f$d_{ahead}\f$ is the gradient of \f$w_{ahead}\f$, \f$v\f$ is a previous descend direction, \f$\lambda\f$ is a learning rate, and \f$v^{new}\f$ is a corrected descend direction.
  *
  *  Note that the Nesterov momentum correction makes use of \f$d_{ahead}\f$  instead of the gradient of \f$w\f$, \f$d\f$.
  *
  * In practice, we use the following implementation:
- * \f$ v^{old} = v \f$
- * \f$ v^{new} = \mu  v^{old} - \lambda d \f$
- * \f$ w^{new} = w - \mu  v^{old} + (1 + \mu) v^{new} \f$
+ * \f{eqnarray*}{
+ *   v^{old} &=& v \\
+ *   v^{new} &=& \mu  v^{old} - \lambda d \\
+ *   w^{new} &=& w - \mu  v^{old} + (1 + \mu) v^{new}
+ * \f}
  * The trick used in this implementation is we store \f$w_{ahead}\f$ and rename it as \f$w\f$
  *
  * Given a decay learning_rate, \f$w_{ahead}$\f is very close to \f$w$\f. 
  * When an optimal solution \f$w^{opt}\f$ is found, \f$w_{ahead}=w^{opt}$\f since \f$d^{opt}=0\f$
  *
  * The get_corrected_descend_direction methods will do 
- * \f$ v^{old} = v \f$
- * \f$ v^{new} = \mu  v^{old} - \lambda d \f$
+ * \f{eqnarray*}{
+ *   v^{old} &=& v \\
+ *   v^{new} &=& \mu  v^{old} - \lambda d
+ * \f}
  * and return \f$ -\mu  v^{old} + (1 + \mu) v^{new}\f$
  *
  * A good introduction to the momentum update can be found at
