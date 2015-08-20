@@ -79,7 +79,7 @@ void GradientDescendUpdater::load_from_context(CMinimizerContext* context)
 }
 
 float64_t GradientDescendUpdater::get_negative_descend_direction(float64_t variable,
-	float64_t gradient)
+	float64_t gradient, index_t idx)
 {
 	return m_iteration_learning_rate*gradient;
 }

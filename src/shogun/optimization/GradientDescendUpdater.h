@@ -103,11 +103,12 @@ protected:
 	 *
 	 * @param variable current variable
 	 * @param gradient current gradient
+	 * @param idx the index of the variable
 	 * 
 	 * @return negative descend direction (that is, the given gradient in the class)
 	 */
 	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t gradient);
+		float64_t gradient, index_t idx);
 
 	/* learning_rate object */
 	LearningRate* m_learning_rate;
