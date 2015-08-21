@@ -37,16 +37,19 @@ namespace shogun
 {
 /** @brief This implements the plain momentum correction.
  *
- * Given a target variable, \f$w\f$, and its gradient, \f$d\f$, the momentum method performs the following update.
+ * Given a target variable, \f$w\f$, and a current descend direction, \f$d\f$,
+ * the momentum method performs the following update:
  * \f{eqnarray*}{
- *  v^{new} &=& \mu v - \lambda d \\
+ *  v^{new} &=& \mu v - d \\
  *  w^{new} &=& w + v^{new}
  *  \f}
- * where \f$mu\f$ is a momentum, \f$v\f$ is a previous descend direction, \f$\lambda\f$ is a learning rate, and \f$v^{new}\f$ is a corrected descend direction.
+ * where \f$\mu\f$ is a momentum, \f$v\f$ is a previous descend direction, \f$d\f$ is a current descend direction
+ * (eg, \f$d=\lambda g\f$, where \f$\lambda\f$ is a learn rate, \f$g\f$ is gradient),
+ * and \f$v^{new}\f$ is a corrected descend direction.
  *
- * The get_corrected_descend_direction methods will do 
+ * The get_corrected_descend_direction() methods will do 
  * \f[
- *  v^{new} = \mu v - \lambda d
+ *  v^{new} = \mu v -  d
  * \f]
  * and return \f$v^{new}\f$
  *
