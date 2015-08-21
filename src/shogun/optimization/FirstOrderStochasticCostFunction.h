@@ -42,7 +42,7 @@ namespace shogun
  * The cost function must be Written as a finite sample-specific sum of cost.  
  * For example, least squares cost function,
  * \f[
- * f(w)=\frac{ \sum_i{ (y_i-w^t x_i)^2 } }{2}
+ * f(w)=\frac{ \sum_i{ (y_i-w^T x_i)^2 } }{2}
  * \f]
  * where \f$(y_i,x_i)\f$ is the i-th sample,
  * \f$y_i\f$ is the label and \f$x_i\f$ is the features 
