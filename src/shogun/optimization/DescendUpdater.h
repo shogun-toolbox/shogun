@@ -40,10 +40,10 @@ namespace shogun
  *
  * The class give the interface used in descend-based minimizer.
  *
- * Given a target variable, \f$w\f$, and its negative descend direction \f$d\f$,
- * the class will update \f$w\f$  based on \f$d\f$ (eg, subtracting \f$d\f$)
+ * Given a target variable, \f$w\f$, and its negative descend direction \f$g\f$,
+ * the class will update \f$w\f$  based on \f$g\f$ (eg, subtracting \f$g\f$)
  *
- * Note that an example of \f$d\f$ is to simply use the gradient wrt \f$w\f$. 
+ * Note that an example of \f$g\f$ is to simply use the gradient wrt \f$w\f$. 
  *
  */
 class DescendUpdater

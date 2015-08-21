@@ -41,9 +41,9 @@ namespace shogun
  *
  * The class enables descend update with descend-based correction.
  *
- * Given a target variable, \f$w\f$, and its negative descend direction \f$d\f$,
- * the class will first correct the descend direction, \f$d\f$, and then update \f$w\f$
- * based on \f$d^{corrected}\f$ (eg, subtracting \f$d^{corrected}\f$)
+ * Given a target variable, \f$w\f$, and its negative descend direction \f$g\f$,
+ * the class will first correct the descend direction, \f$g\f$, and then update \f$w\f$
+ * based on \f$g^{corrected}\f$ (eg, subtracting \f$g^{corrected}\f$)
  *
  * Note that an example of \f$d\f$ is to simply use the gradient wrt \f$w\f$. 
  * An example of using descend based correction can be found at StandardMomentumCorrection

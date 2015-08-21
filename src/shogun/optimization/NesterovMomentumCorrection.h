@@ -62,10 +62,10 @@ namespace shogun
  * Given a decay learning_rate, \f$w_{ahead}\f$ is very close to \f$w\f$. 
  * When an optimal solution \f$w^{opt}\f$ is found, \f$w_{ahead}=w^{opt}\f$ since \f$d^{opt}=0\f$
  *
- * The get_corrected_descend_direction methods will do 
+ * The get_corrected_descend_direction methods() will do 
  * \f{eqnarray*}{
  *   v^{old} &=& v \\
- *   v^{new} &=& \mu  v^{old} - \lambda d
+ *   v^{new} &=& \mu  v^{old} - d
  * \f}
  * and return \f$ -\mu  v^{old} + (1 + \mu) v^{new}\f$
  *
