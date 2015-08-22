@@ -282,7 +282,7 @@ TEST(NeuralNetwork, binary_classification)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_network(0.1);
 
 	network->epsilon = 1e-8;
 
@@ -341,7 +341,7 @@ TEST(NeuralNetwork, multiclass_classification)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_network(0.1);
 
 	network->epsilon = 1e-8;
 
@@ -392,7 +392,7 @@ TEST(NeuralNetwork, regression)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(1e-6);
+	network->initialize_neural_network(1e-6);
 
 	network->epsilon = 1e-6;
 
@@ -446,7 +446,7 @@ TEST(NeuralNetwork, gradient_descent)
 
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.1);
+	network->initialize_neural_network(0.1);
 
 	network->optimization_method = NNOM_GRADIENT_DESCENT;
 	network->gd_learning_rate = 10.0;

@@ -63,7 +63,7 @@ TEST(NeuralLogisticLayer, compute_activations)
 	input_indices[0] = 0;
 
 	// initialize the layer
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 1.0);
@@ -124,7 +124,7 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 	input_indices[0] = 0;
 
 	// initialize the layer
-	layer.initialize(layers, input_indices);
+	layer.initialize_neural_layer(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 1.0);
