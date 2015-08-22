@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-template<class RetType, class OperandType> class CLinearOperator;
+template<class T> class CLinearOperator;
 template<class T> class SGVector;
 
 /**
@@ -51,7 +51,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >* A,
+	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

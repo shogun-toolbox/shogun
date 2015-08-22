@@ -54,8 +54,8 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(
-		CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >* A, SGVector<float64_t> b);
+	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
+			SGVector<float64_t> b);
 
 	/** @return object name */
 	virtual const char* get_name() const
