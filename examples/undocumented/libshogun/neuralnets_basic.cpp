@@ -87,7 +87,7 @@ int main(int, char*[])
 
 	// initialize the network
 	network->quick_connect();
-	network->initialize();
+	network->initialize_neural_network();
 
 	// uncomment this line to enable info logging
 	// network->io->set_loglevel(MSG_INFO);

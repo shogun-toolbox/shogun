@@ -74,7 +74,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
 
@@ -106,7 +106,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
 
@@ -141,7 +141,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -173,7 +173,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -205,7 +205,7 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
@@ -240,7 +240,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	network->connect(3,5);
 	network->connect(4,5);
 
-	network->initialize();
+	network->initialize_neural_network();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);

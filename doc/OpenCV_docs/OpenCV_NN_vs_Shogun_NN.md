@@ -249,7 +249,7 @@ To use Neural Networks in **Shogun** the following things need to be done:
 
 * Specify how the layers are connected together. This can be done using either ```connect()``` or ```quick_connect()```.
 
-* Call ```initialize()```.
+* Call ```initialize_neural_network()```.
 
 * Specify the training parameters if needed.
 
