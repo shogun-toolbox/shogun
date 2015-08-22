@@ -84,7 +84,7 @@ public:
 
 private:
 	/** Register params and initialize with default values */
-	void initialize();
+	void initialize_parameters();
 
 };
 

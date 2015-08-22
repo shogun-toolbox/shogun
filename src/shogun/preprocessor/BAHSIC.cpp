@@ -35,10 +35,10 @@ using namespace shogun;
 
 CBAHSIC::CBAHSIC() : CKernelDependenceMaximization()
 {
-	initialize();
+	initialize_parameters();
 }
 
-void CBAHSIC::initialize()
+void CBAHSIC::initialize_parameters()
 {
 	m_estimator=new CHSIC();
 	SG_REF(m_estimator);

@@ -83,7 +83,7 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize(CDynamicObjectArray* layers,
+	virtual void initialize_neural_layer(CDynamicObjectArray* layers,
 			SGVector<int32_t> input_indices);
 
 	/** Initializes the layer's parameters. The layer should fill the given

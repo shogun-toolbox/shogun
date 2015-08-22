@@ -79,7 +79,7 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 }
 
 
-void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers,
+void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 		SGVector< int32_t > input_indices)
 {
 	CNeuralLayer* first_input_layer =
@@ -103,7 +103,7 @@ void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers,
 
 	m_num_neurons = m_width*m_height*m_num_maps;
 
-	CNeuralLayer::initialize(layers, input_indices);
+	CNeuralLayer::initialize_neural_layer(layers, input_indices);
 
 	m_input_num_channels = 0;
 	for (int32_t l=0; l<input_indices.vlen; l++)

@@ -70,7 +70,7 @@ enum ENNOptimizationMethod
  * i must be less than j.
  * 	- Specify how the layers are connected together. This can be done using
  * either connect() or quick_connect().
- * 	- Call initialize()
+ * 	- Call initialize_neural_network()
  * 	- Specify the training parameters if needed
  * 	- Train set_labels() and train()
  * 	- If needed, the network with the learned parameters can be stored on disk
@@ -152,7 +152,7 @@ public:
 	 * @param sigma standard deviation of the gaussian used to randomly
 	 * initialize the parameters
 	 */
-	virtual void initialize(float64_t sigma = 0.01f);
+	virtual void initialize_neural_network(float64_t sigma = 0.01f);
 
 	virtual ~CNeuralNetwork();
 

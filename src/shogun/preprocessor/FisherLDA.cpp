@@ -52,12 +52,12 @@ using namespace shogun;
 CFisherLDA::CFisherLDA (EFLDAMethod method, float64_t thresh):
 	CDimensionReductionPreprocessor()
 {
-	initialize();
+	initialize_parameters();
 	m_method=method;
 	m_threshold=thresh;
 }
 
-void CFisherLDA::initialize()
+void CFisherLDA::initialize_parameters()
 {
 	m_method=AUTO_FLDA;
 	m_threshold=0.01;
