@@ -153,7 +153,9 @@ float64_t CGaussianDistributionNew::get_cov_spherical() const
 SGVector<float64_t> CGaussianDistributionNew::get_cov_diag() const
 {
 	REQUIRE(m_cov_type==COV_DIAGONAL,"Covariance is not diagonal");
-	return * m_cov.get_column_sg_vector(0);
+	SGVector<float_64_t> cov_copy(m_dimension);
+	memcpy(m_cov.matrix,cov_copy.vector,sizeof(float64_t)*m_dimension);
+	return cov_copy;
 }
 
 SGMatrix<float64_t> CGaussianDistributionNew::get_cov_cholesky() const
@@ -203,7 +205,7 @@ SGMatrix<float64_t> CGaussianDistributionNew::get_cov_full() const
 	}
 }
 
-ECovType CGaussianDistributionNew::get_cov_type() const
+ECovTypes CGaussianDistributionNew::get_cov_type() const
 {
 	return m_cov_type;
 }

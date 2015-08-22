@@ -46,7 +46,7 @@ namespace shogun
 {
 
 /** Covariance type */
-enum ECovType
+enum ECovTypes
 {
 	/// spherical covariance
 	COV_SPHERICAL,
@@ -106,7 +106,7 @@ public:
 	SGVector<float64_t> get_mean() const;
 	float64_t get_cov_spherical() const;
 	SGVector<float64_t> get_cov_diag() const;
-	SGMatrix<float64_t> get_cov_cholesky() const
+	SGMatrix<float64_t> get_cov_cholesky() const;
 	SGMatrix<float64_t> get_cov_full_cholesky() const;
 	SGMatrix<float64_t> get_cov_full() const;
 
@@ -146,7 +146,7 @@ public:
 		return "GaussianDistribution";
 	}
 
-	ECovType get_cov_type() const
+	ECovTypes get_cov_type() const
 	{
 		return m_cov_type;
 	}
@@ -187,7 +187,7 @@ protected:
 	 * Covariance (approximation) is given by \f$\Sigma=LL^T\f$ */
 	SGMatrix<float64_t> m_cov;
 
-	ECovType m_cov_type;
+	ECovTypes m_cov_type;
 
 	void update_cholesky(SGMatrix<float64_t> cov);
 };
