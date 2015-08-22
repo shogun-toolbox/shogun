@@ -47,7 +47,7 @@ namespace shogun
  * (eg, \f$d=\lambda g\f$, where \f$\lambda\f$ is a learn rate, \f$g\f$ is gradient),
  * and \f$v^{new}\f$ is a corrected descend direction.
  *
- * The get_corrected_descend_direction() methods will do 
+ * The get_corrected_descend_direction() method will do 
  * \f[
  *  v^{new} = \mu v -  d
  * \f]

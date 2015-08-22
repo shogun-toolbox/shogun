@@ -39,8 +39,9 @@ namespace shogun
 {
 /** @brief This is a base class for momentum correction methods.
  *
- * The interfact will be used in DescendUpdaterWithCorrection::update_variable()
- * An example of descend based correction is NesterovMomentumCorrection
+ * The interfact will be used in DescendUpdaterWithCorrection::update_variable().
+ *
+ * An example of descend based correction is NesterovMomentumCorrection 
  */
 class MomentumCorrection: public DescendCorrection
 {

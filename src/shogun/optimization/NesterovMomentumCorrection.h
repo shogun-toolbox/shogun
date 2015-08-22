@@ -48,7 +48,7 @@ namespace shogun
  * (eg, \f$ d_{ahead}=\lambda g_{ahead}\f$, where \f$\lambda\f$ is learning rate, \f$g_{ahead}\f$ is gradient wrt \f$w_{ahead}\f$),
  * \f$v\f$ is a previous descend direction, and \f$v^{new}\f$ is a corrected descend direction.
  *
- *  Note that the Nesterov momentum correction makes use of \f$d_{ahead}\f$  instead of the gradient of \f$w\f$, \f$d\f$.
+ * Note that the Nesterov momentum correction makes use of \f$d_{ahead}\f$  instead of \f$d\f$.
  *
  * In practice, we use the following implementation:
  * \f{eqnarray*}{
@@ -57,12 +57,12 @@ namespace shogun
  *   w^{new} &=& w - \mu  v^{old} + (1 + \mu) v^{new}
  * \f}
  * where \f$d\f$ is descend direction wrt \f$w\f$
- * The trick used in this implementation is we store \f$w_{ahead}\f$ and rename it as \f$w\f$
  *
+ * The trick used in this implementation is we store \f$w_{ahead}\f$ and rename it as \f$w\f$
  * Given a decay learning_rate, \f$w_{ahead}\f$ is very close to \f$w\f$. 
  * When an optimal solution \f$w^{opt}\f$ is found, \f$w_{ahead}=w^{opt}\f$ since \f$d^{opt}=0\f$
  *
- * The get_corrected_descend_direction methods() will do 
+ * The get_corrected_descend_direction() method will do 
  * \f{eqnarray*}{
  *   v^{old} &=& v \\
  *   v^{new} &=& \mu  v^{old} - d
