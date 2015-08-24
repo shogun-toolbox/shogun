@@ -68,11 +68,12 @@ public:
 	 *
 	 * @param negative_descend_direction the negative descend direction
 	 * @param idx the index of the direction
+	 * @param delta update the change to correct descend direction
 	 * 
 	 * @return corrected descend direction
 	 */
 	virtual float64_t get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx)=0;
+		index_t idx, float64_t& delta)=0;
 
 	/** Update a context object to store mutable variables
 	 * used in descend update

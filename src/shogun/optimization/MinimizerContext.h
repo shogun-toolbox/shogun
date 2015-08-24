@@ -35,6 +35,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/StringMap.h>
 
 namespace shogun
 {
@@ -51,7 +52,9 @@ public:
 	/*  Destructor */
 	virtual ~CMinimizerContext()
 	{
-		SG_UNREF(m_additional_context);
+		SG_UNREF(m_int32_map);
+		SG_UNREF(m_float64_map);
+		SG_UNREF(m_sgvector_float64_map);
 	}
 
 	/** Returns the name of the inference method
@@ -60,24 +63,71 @@ public:
 	 */
 	virtual const char* get_name() const {return "MinimizerContext";}
 
-	/*  Used in gradient updater class */
-	SGVector<float64_t> m_corrected_direction;
+	virtual void save_data(const std::string& key, SGVector<float64_t> value)
+	{
+		REQUIRE(!m_sgvector_float64_map->contains(key),
+			"Failed to save data due to duplicate key:%s\n", key.c_str());
+		m_sgvector_float64_map->add(key, value);
+		REQUIRE(m_sgvector_float64_map->contains(key),
+			"Failed to save data for key:%s\n", key.c_str());
+	}
 
-	/*  Used in learn rate class */
-	int32_t m_learning_rate_count;
+	virtual void save_data(const std::string& key, float64_t value)
+	{
+		REQUIRE(!m_float64_map->contains(key),
+			"Failed to save data due to duplicate key:%s\n", key.c_str());
+		m_float64_map->add(key, value);
+		REQUIRE(m_float64_map->contains(key),
+			"Failed to save data for key:%s\n", key.c_str());
+	}
 
-	/*  Store additional information */
-	CSGObject* m_additional_context;
+	virtual void save_data(const std::string& key, int32_t value)
+	{
+		REQUIRE(!m_int32_map->contains(key),
+			"Failed to save data due to duplicate key:%s\n", key.c_str());
+		m_int32_map->add(key, value);
+		REQUIRE(m_int32_map->contains(key),
+			"Failed to save data for key:%s\n", key.c_str());
+	}
+
+	virtual SGVector<float64_t> get_SGVector_float64(const std::string& key)
+	{
+		REQUIRE(m_sgvector_float64_map->contains(key),
+			"Failed to load data because key:%s does not exist\n", key.c_str());
+		return m_sgvector_float64_map->get_element(key);
+	}
+
+	virtual float64_t get_float64(const std::string& key)
+	{
+		REQUIRE(m_float64_map->contains(key),
+			"Failed to load data because key:%s does not exist\n", key.c_str());
+		return m_float64_map->get_element(key);
+	}
+
+	virtual int32_t get_data_int32(const std::string& key)
+	{
+		REQUIRE(m_int32_map->contains(key),
+			"Failed to load data because key:%s does not exist\n", key.c_str());
+		return m_int32_map->get_element(key);
+	}
+
+protected:
+	CStringMap<int32_t> *m_int32_map;
+	CStringMap<float64_t> *m_float64_map;
+	CStringMap< SGVector<float64_t> > *m_sgvector_float64_map;
 private:
 	/*  Init */
 	void init()
 	{
-		m_learning_rate_count=0;
-		m_additional_context=NULL;
-		m_corrected_direction=SGVector<float64_t>();
-		SG_ADD(&m_corrected_direction, "corrected_direction", "corrected_direction", MS_NOT_AVAILABLE);
-		SG_ADD(&m_learning_rate_count, "learning_rate_count", "learning_rate_count", MS_NOT_AVAILABLE);
-		SG_ADD(&m_additional_context, "additional_context", "additional_context", MS_NOT_AVAILABLE);
+		m_int32_map=new CStringMap<int32_t>();
+		m_float64_map=new CStringMap<float64_t>();
+		m_sgvector_float64_map=new CStringMap< SGVector<float64_t> >();
+		SG_REF(m_int32_map);
+		SG_REF(m_float64_map);
+		SG_REF(m_sgvector_float64_map);
+		SG_ADD((CSGObject **)&m_int32_map, "int32_map", "int32_map", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_float64_map, "float64_map", "float64_map", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_sgvector_float64_map, "sgvector_float64_map", "sgvector_float64_map", MS_NOT_AVAILABLE);
 	}
 	
 };
