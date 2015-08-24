@@ -76,15 +76,17 @@ public:
 	 *
 	 * @param gradient gradient
 	 * @param idx the index of the direction
+	 * @param delta update the change to correct descend direction
 	 * 
 	 * @return corrected descend direction
 	 */
-	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx)
+	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx, float64_t& delta)
 	{
 		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
 		m_previous_descend_direction[idx]=
 			m_weight*m_previous_descend_direction[idx]-gradient;
-		return m_previous_descend_direction[idx];
+		delta=m_previous_descend_direction[idx];
+		return delta;
 	}
 
 private:

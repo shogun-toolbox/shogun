@@ -58,8 +58,8 @@ namespace shogun
  * \f}
  * where \f$d\f$ is descend direction wrt \f$w\f$
  *
- * The trick used in this implementation is we store \f$w_{ahead}\f$ and rename it as \f$w\f$
- * Given a decay learning_rate, \f$w_{ahead}\f$ is very close to \f$w\f$. 
+ * The trick used in this implementation is we store \f$w_{ahead}\f$ and rename it as \f$w\f$.
+ * Given a decay descend direction (eg, \f$d=\lambda g_{ahead}\f$, where \f$\lambda\f$ is a decay learning rate), \f$w_{ahead}\f$ is very close to \f$w\f$. 
  * When an optimal solution \f$w^{opt}\f$ is found, \f$w_{ahead}=w^{opt}\f$ since \f$d^{opt}=0\f$
  *
  * The get_corrected_descend_direction() method will do 
@@ -92,15 +92,18 @@ public:
 	 *
 	 * @param gradient gradient
 	 * @param idx the index of the direction
+	 * @param delta update the change to correct descend direction
 	 * 
 	 * @return corrected descend direction
 	 */
-	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx)
+	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx,
+		float64_t& delta)
 	{
 		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
 		float64_t tmp=m_weight*m_previous_descend_direction[idx];
 		m_previous_descend_direction[idx]=tmp-gradient;
-		return (1.0+m_weight)*m_previous_descend_direction[idx]-tmp;
+		delta=m_previous_descend_direction[idx];
+		return (1.0+m_weight)*delta-tmp;
 	}
 private:
 	/*  Init */
