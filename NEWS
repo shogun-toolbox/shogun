@@ -1,4 +1,5 @@
 2016-02-17 Björn Esser <me@besser82.io>
+
 	* SHOGUN Release version 4.2.0 (libshogun 17.2, data 0.11, parameter 1)
 	* Bugfixes:
 		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].

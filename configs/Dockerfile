@@ -3,39 +3,30 @@ MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get install -qq software-properties-common lsb-release
 RUN add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) multiverse"
+RUN add-apt-repository -y ppa:rosmo/swig3.0.7
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN add-apt-repository -y ppa:george-edison55/cmake-3.x
 RUN apt-get update -qq
 RUN apt-get upgrade -y
 
+RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+
 # install dependencies
-RUN apt-get install -qq --no-install-recommends make gcc g++ libc6-dev libbz2-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapack-dev cmake libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev liblzma-dev swig2.0 python-dev python-numpy python-scipy python-matplotlib python-pandas python-setuptools python-networkx python-tornado python-pip python-zmq python-jinja2 git-core wget
+RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
+    libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
+    libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapack-dev cmake \
+    libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
+    liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-scipy \
+    python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
+    lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
+    oracle-java8-installer ruby ruby-dev
 
-RUN pip install ipython
-
-#RUN cd /tmp && wget 'http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.16.tar.gz'
-#RUN cd /tmp;\
-#	tar zxpf arprec-2.2.16.tar.gz;\
-#	cd arprec-2.2.16;\
-#	./configure --enable-shared;\
-#	make install
-
-#RUN cd /tmp && wget 'http://cscapes.cs.purdue.edu/download/ColPack/ColPack-1.0.9.tar.gz'
-#RUN cd /tmp;\
-#	tar zxpf ColPack-1.0.9.tar.gz;\
-#	cd ColPack-1.0.9;\
-#	./configure;\
-#	make install
-
-ADD . /shogun
-RUN ls /shogun
-
-RUN mkdir /shogun/build;\
-	cd /shogun/build;\
-	cmake -DPythonModular=ON -DUSE_SWIG_DIRECTORS=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON ..;\
-	make;\
-	make install
-
-VOLUME ['/shogun/doc/ipython-notebooks']
-
-WORKDIR /shogun/doc/ipython-notebooks
-EXPOSE 8888
-CMD ['ipython', 'notebook', '--pylab=inline', '--ip=*', '--MappingKernelManager.time_to_dead=10', '--MappingKernelManager.first_beat=3']
+RUN gem install narray
+RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig
+ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.18.tar.gz /tmp
+RUN cd /tmp;\
+    tar zxpf arprec-2.2.18.tar.gz;\
+    cd arprec-2.2.18;\
+    ./configure --enable-shared;\
+    make install; ldconfig
