@@ -119,15 +119,16 @@ private:
 	/*  Init */
 	void init()
 	{
-		m_int32_map=new CStringMap<int32_t>();
 		m_float64_map=new CStringMap<float64_t>();
+		m_int32_map=new CStringMap<int32_t>();
 		m_sgvector_float64_map=new CStringMap< SGVector<float64_t> >();
+		SG_REF(m_sgvector_float64_map);
 		SG_REF(m_int32_map);
 		SG_REF(m_float64_map);
-		SG_REF(m_sgvector_float64_map);
-		SG_ADD((CSGObject **)&m_int32_map, "int32_map", "int32_map", MS_NOT_AVAILABLE);
-		SG_ADD((CSGObject **)&m_float64_map, "float64_map", "float64_map", MS_NOT_AVAILABLE);
-		SG_ADD((CSGObject **)&m_sgvector_float64_map, "sgvector_float64_map", "sgvector_float64_map", MS_NOT_AVAILABLE);
+		//TODO: uncomment the following lines when CMap (including CStringMap) supports load_serializable() and save_serializable()
+		//SG_ADD((CSGObject **)&m_int32_map, "int32_map", "int32_map", MS_NOT_AVAILABLE);
+		//SG_ADD((CSGObject **)&m_float64_map, "float64_map", "float64_map", MS_NOT_AVAILABLE);
+		//SG_ADD((CSGObject **)&m_sgvector_float64_map, "sgvector_float64_map", "sgvector_float64_map", MS_NOT_AVAILABLE);
 	}
 	
 };
