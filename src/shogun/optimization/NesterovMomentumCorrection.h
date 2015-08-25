@@ -90,20 +90,20 @@ public:
 
 	/** Get corrected descend direction
 	 *
-	 * @param gradient gradient
+	 * @param negative_descend_direction the negative descend direction
 	 * @param idx the index of the direction
-	 * @param delta update the change to correct descend direction
-	 * 
-	 * @return corrected descend direction
-	 */
-	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx,
-		float64_t& delta)
+	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
+	*/
+	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx)
 	{
 		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
 		float64_t tmp=m_weight*m_previous_descend_direction[idx];
-		m_previous_descend_direction[idx]=tmp-gradient;
-		delta=m_previous_descend_direction[idx];
-		return (1.0+m_weight)*delta-tmp;
+		m_previous_descend_direction[idx]=tmp-negative_descend_direction;
+		DescendPair pair;
+		pair.delta=m_previous_descend_direction[idx];
+		pair.descend_direction=(1.0+m_weight)*pair.delta-tmp;
+		return pair;
 	}
 private:
 	/*  Init */

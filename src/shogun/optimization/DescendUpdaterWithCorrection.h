@@ -87,9 +87,9 @@ public:
 				variable_reference[idx], raw_negative_descend_direction[idx], idx);
 			if(m_correction)
 			{
-				float64_t delta=0;
-				variable_reference[idx]+=m_correction->get_corrected_descend_direction(
-					negative_descend_direction, idx, delta);
+				DescendPair pair=m_correction->get_corrected_descend_direction(
+					negative_descend_direction, idx);
+				variable_reference[idx]+=pair.descend_direction;
 			}
 			else
 			{

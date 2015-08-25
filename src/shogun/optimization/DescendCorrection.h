@@ -36,6 +36,20 @@
 #include <shogun/optimization/MinimizerContext.h>
 namespace shogun
 {
+#define IGNORE_IN_CLASSLIST
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+IGNORE_IN_CLASSLIST struct DescendPair
+{
+	DescendPair()
+	{
+		descend_direction=0.0;
+		delta=0.0;
+	}
+
+	float64_t descend_direction;
+	float64_t delta;
+};
+#endif
 /** @brief This is a base class for descend based correction method.
  *
  * The interfact will be used in DescendUpdaterWithCorrection::update_variable()
@@ -68,12 +82,10 @@ public:
 	 *
 	 * @param negative_descend_direction the negative descend direction
 	 * @param idx the index of the direction
-	 * @param delta update the change to correct descend direction
-	 * 
-	 * @return corrected descend direction
+	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	 */
-	virtual float64_t get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx, float64_t& delta)=0;
+	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx)=0;
 
 	/** Update a context object to store mutable variables
 	 * used in descend update
