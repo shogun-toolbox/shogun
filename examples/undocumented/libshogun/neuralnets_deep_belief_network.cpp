@@ -82,7 +82,7 @@ int main(int, char*[])
 	dbn->add_hidden_layer(10);
 	dbn->add_hidden_layer(20);
 
-	dbn->initialize();
+	dbn->initialize_neural_network();
 
 	// uncomment this line to enable info logging
 	// dbn->io->set_loglevel(MSG_INFO);

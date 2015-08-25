@@ -42,11 +42,11 @@ namespace shogun
 template <class ST>
 CFeatureSelection<ST>::CFeatureSelection() : CPreprocessor()
 {
-	initialize();
+	initialize_parameters();
 }
 
 template <class ST>
-void CFeatureSelection<ST>::initialize()
+void CFeatureSelection<ST>::initialize_parameters()
 {
 	SG_ADD(&m_target_dim, "target_dim", "target dimension",
 			MS_NOT_AVAILABLE);

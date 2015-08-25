@@ -249,7 +249,7 @@ To use Neural Networks in **Shogun** the following things need to be done:
 
 * Specify how the layers are connected together. This can be done using either ```connect()``` or ```quick_connect()```.
 
-* Call ```initialize()```.
+* Call ```initialize_neural_network()```.
 
 * Specify the training parameters if needed.
 
@@ -286,7 +286,7 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
 * Initialize the network. The input is nothing but the standard deviation of the gaussian which is used to randomly initialize the parameters. We chose ```0.1``` here.
 
 ```CPP
-    network->initialize(0.1);
+    network->initialize_neural_network(0.1);
 ```
 
 * Specify the training parameters if needed.

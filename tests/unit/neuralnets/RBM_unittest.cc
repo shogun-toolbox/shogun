@@ -48,7 +48,7 @@ TEST(RBM, gibbs_sampling)
 	int32_t num_hidden = 6;
 
 	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.initialize();
+	rbm.initialize_neural_network();
 	rbm.set_batch_size(1);
 
 	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
@@ -92,7 +92,7 @@ TEST(RBM, free_energy_binary)
 	int32_t batch_size = 3;
 
 	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.initialize();
+	rbm.initialize_neural_network();
 
 	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
 		rbm.get_weights()[i] = i*1.0e-2;
@@ -123,7 +123,7 @@ TEST(RBM, free_energy_gradients)
 	rbm.add_visible_group(4, RBMVUT_BINARY);
 	rbm.add_visible_group(6, RBMVUT_GAUSSIAN);
 	rbm.add_visible_group(5, RBMVUT_BINARY);
-	rbm.initialize();
+	rbm.initialize_neural_network();
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
@@ -161,7 +161,7 @@ TEST(RBM, pseudo_likelihood_binary)
 	int32_t batch_size = 1;
 
 	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.initialize();
+	rbm.initialize_neural_network();
 
 	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
 		rbm.get_weights()[i] = i*1.0e-2;

@@ -118,7 +118,7 @@ TEST(Autoencoder, contractive_logistic)
 	CMath::init_random(10);
 
 	CAutoencoder ae(10, new CNeuralLogisticLayer(15));
-	ae.initialize();
+	ae.initialize_neural_network();
 
 	ae.set_contraction_coefficient(1.0);
 

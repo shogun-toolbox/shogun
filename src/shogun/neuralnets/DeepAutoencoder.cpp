@@ -66,7 +66,7 @@ CAutoencoder()
 			get_layer(i)->autoencoder_position = NLAP_DECODING;
 	}
 
-	initialize(m_sigma);
+	initialize_neural_network(m_sigma);
 
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
@@ -185,7 +185,7 @@ CNeuralNetwork* CDeepAutoencoder::convert_to_neural_network(
 
 	CNeuralNetwork* net = new CNeuralNetwork(layers);
 	net->quick_connect();
-	net->initialize(sigma);
+	net->initialize_neural_network(sigma);
 
 	SGVector<float64_t> net_params = net->get_parameters();
 

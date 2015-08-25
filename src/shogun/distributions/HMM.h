@@ -520,7 +520,7 @@ class CHMM : public CDistribution
 		 * @param PSEUDO Pseudo Value
 		 * @param model_file Filehandle to a hmm model file (*.mod)
 		 */
-		bool initialize(Model* model, float64_t PSEUDO, FILE* model_file=NULL);
+		bool initialize_hmm(Model* model, float64_t PSEUDO, FILE* model_file=NULL);
 		//@}
 
 		/// allocates memory that depends on N

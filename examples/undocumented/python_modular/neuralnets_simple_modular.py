@@ -19,7 +19,7 @@ def neuralnets_simple_modular (train_fname, test_fname,
 	layers = NeuralLayers()
 	network = NeuralNetwork(layers.input(feats_train.get_num_features()).linear(50).softmax(2).done())
 	network.quick_connect()
-	network.initialize()
+	network.initialize_neural_network()
 
 	network.set_labels(labels)
 	network.train(feats_train)

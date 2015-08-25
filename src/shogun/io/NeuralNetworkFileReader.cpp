@@ -173,7 +173,7 @@ CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_networ
 			SG_ERROR("Invalid parameter (%s)\n", iter.key);
 	}
 
-	network->initialize(sigma);
+	network->initialize_neural_network(sigma);
 
 	return network;
 }

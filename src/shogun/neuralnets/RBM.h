@@ -159,7 +159,7 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * weights
 	 */
-	virtual void initialize(float64_t sigma=0.01);
+	virtual void initialize_neural_network(float64_t sigma=0.01);
 
 	/** Sets the number of train/test cases the RBM will deal with
 	 *

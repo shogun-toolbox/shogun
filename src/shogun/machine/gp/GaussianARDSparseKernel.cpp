@@ -39,9 +39,9 @@ using namespace shogun;
 
 CGaussianARDSparseKernel::CGaussianARDSparseKernel() : CGaussianARDKernel()
 {
-	initialize();
+	initialize_sparse_kernel();
 }
-void CGaussianARDSparseKernel::initialize()
+void CGaussianARDSparseKernel::initialize_sparse_kernel()
 {
 }
 
@@ -55,14 +55,14 @@ using namespace Eigen;
 CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
 		: CGaussianARDKernel(size)
 {
-	initialize();
+	initialize_sparse_kernel();
 }
 
 CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
 		CDotFeatures* r, int32_t size)
 		: CGaussianARDKernel(l, r, size)
 {
-	initialize();
+	initialize_sparse_kernel();
 }
 
 CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel* kernel)

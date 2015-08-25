@@ -148,7 +148,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 
 	private:
 
-		void initialize();
+		void initialize_parameters();
 
 	protected:
 

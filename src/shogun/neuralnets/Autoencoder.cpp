@@ -65,7 +65,7 @@ CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
 	hidden_layer->autoencoder_position = NLAP_ENCODING;
 	decoding_layer->autoencoder_position = NLAP_DECODING;
 
-	initialize(sigma);
+	initialize_neural_network(sigma);
 }
 
 CAutoencoder::CAutoencoder(
@@ -89,7 +89,7 @@ CAutoencoder::CAutoencoder(
 	hidden_layer->autoencoder_position = NLAP_ENCODING;
 	decoding_layer->autoencoder_position = NLAP_DECODING;
 
-	initialize(sigma);
+	initialize_neural_network(sigma);
 }
 
 
