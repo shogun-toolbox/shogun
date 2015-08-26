@@ -117,7 +117,7 @@ public:
 	{
 		REQUIRE(context, "context must set\n");
 		std::string key="MomentumCorrection::m_previous_descend_direction";
-		SGVector<float64_t> value=context->get_SGVector_float64(key);
+		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
 		m_previous_descend_direction=SGVector<float64_t>(value.vlen);
 		std::copy(value.vector, value.vector+value.vlen,
 			m_previous_descend_direction.vector);

@@ -89,7 +89,7 @@ void RmsPropUpdater::load_from_context(CMinimizerContext* context)
 	DescendUpdaterWithCorrection::load_from_context(context);
 	REQUIRE(context, "Context must set\n");
 	std::string key="RmsPropUpdater::m_gradient_accuracy";
-	SGVector<float64_t> value=context->get_SGVector_float64(key);
+	SGVector<float64_t> value=context->get_data_sgvector_float64(key);
 	m_gradient_accuracy=SGVector<float64_t>(value.vlen);
 	std::copy(value.vector, value.vector+value.vlen,
 		m_gradient_accuracy.vector);
@@ -98,7 +98,8 @@ void RmsPropUpdater::load_from_context(CMinimizerContext* context)
 float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx)
 {
-	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen, "");
+	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen,
+		"Index (%d) is invalid\n", idx);
 	float64_t scale=m_decay_factor*m_gradient_accuracy[idx]+
 		(1.0-m_decay_factor)*gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
@@ -109,7 +110,10 @@ float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,
 void RmsPropUpdater::update_variable(SGVector<float64_t> variable_reference,
 	SGVector<float64_t> raw_negative_descend_direction)
 {
-	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen, "");
+	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
+	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
+		"The length of variable_reference (%d) and the length of gradient (%d) do not match\n",
+		variable_reference.vlen,raw_negative_descend_direction.vlen);
 	if(m_gradient_accuracy.vlen==0)
 	{
 		m_gradient_accuracy=SGVector<float64_t>(variable_reference.vlen);

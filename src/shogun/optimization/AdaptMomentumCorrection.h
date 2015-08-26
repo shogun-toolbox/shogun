@@ -53,7 +53,7 @@ public:
 	virtual void set_momentum_correction(MomentumCorrection* correction)
 	{
 		REQUIRE(correction,"MomentumCorrection must not NULL\n");
-		REQUIRE(correction != this, "MomentumCorrection can be itself\n");
+		REQUIRE(correction != this, "MomentumCorrection can not be itself\n");
 		m_momentum_correction=correction;
 	}
 
@@ -136,6 +136,8 @@ public:
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{
+		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
+		m_momentum_correction->update_context(context);
 		REQUIRE(context, "context must set\n");
 		SGVector<float64_t> value(m_descend_rate.vlen);
 		std::copy(m_descend_rate.vector,
@@ -154,9 +156,11 @@ public:
 	 */
 	virtual void load_from_context(CMinimizerContext* context)
 	{
+		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
+		m_momentum_correction->load_from_context(context);
 		REQUIRE(context, "context must set\n");
 		std::string key="AdaptMomentumCorrection::m_descend_rate";
-		SGVector<float64_t> value=context->get_SGVector_float64(key);
+		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
 		m_descend_rate=SGVector<float64_t>(value.vlen);
 		std::copy(value.vector, value.vector+value.vlen,
 			m_descend_rate.vector);

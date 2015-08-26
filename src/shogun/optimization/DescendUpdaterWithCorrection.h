@@ -108,7 +108,7 @@ public:
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{
-		REQUIRE(context, "context must set\n");
+		REQUIRE(context, "Context must set\n");
 		if(m_correction)
 			m_correction->update_context(context);
 	}
@@ -122,7 +122,7 @@ public:
 	 */
 	virtual void load_from_context(CMinimizerContext* context)
 	{
-		REQUIRE(context, "context must set\n");
+		REQUIRE(context, "Context must set\n");
 		if(m_correction)
 			m_correction->load_from_context(context);
 	}

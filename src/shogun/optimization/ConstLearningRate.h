@@ -81,7 +81,10 @@ public:
 	 *
 	 * @param context, a context object
 	 */
-	virtual void update_context(CMinimizerContext* context) {}
+	virtual void update_context(CMinimizerContext* context)
+	{
+		REQUIRE(context, "Context must set\n");
+	}
 
 	/** Return a context object which stores mutable variables
 	 * Usually it is used in serialization.
@@ -91,7 +94,10 @@ public:
 	 *
 	 * @return a context object
 	 */
-	virtual void load_from_context(CMinimizerContext* context) {}
+	virtual void load_from_context(CMinimizerContext* context)
+	{
+		REQUIRE(context, "Context must set\n");
+	}
 
 protected:
 

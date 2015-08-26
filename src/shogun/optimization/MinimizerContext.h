@@ -90,14 +90,14 @@ public:
 			"Failed to save data for key:%s\n", key.c_str());
 	}
 
-	virtual SGVector<float64_t> get_SGVector_float64(const std::string& key)
+	virtual SGVector<float64_t> get_data_sgvector_float64(const std::string& key)
 	{
 		REQUIRE(m_sgvector_float64_map->contains(key),
 			"Failed to load data because key:%s does not exist\n", key.c_str());
 		return m_sgvector_float64_map->get_element(key);
 	}
 
-	virtual float64_t get_float64(const std::string& key)
+	virtual float64_t get_data_float64(const std::string& key)
 	{
 		REQUIRE(m_float64_map->contains(key),
 			"Failed to load data because key:%s does not exist\n", key.c_str());
