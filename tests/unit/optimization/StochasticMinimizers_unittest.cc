@@ -41,6 +41,10 @@
 #include <gtest/gtest.h>
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/StandardMomentumCorrection.h>
+#include <shogun/optimization/AdaDeltaUpdater.h>
+#include <shogun/optimization/NesterovMomentumCorrection.h>
+#include <shogun/optimization/RmsPropUpdater.h>
+#include <shogun/optimization/AdaptMomentumCorrection.h>
 using namespace shogun;
 using namespace Eigen;
 
@@ -336,6 +340,20 @@ float64_t ClassificationForTestCostFunction::get_cost()
 		cost+=log(exp(m_labels[idx]*e_w.dot(e_x.col(idx)))+1.0);
 	}
 	return cost;
+}
+
+
+void ClassificationForTestCostFunction2::begin_sample()
+{
+	m_sample_idx=-1;
+}
+
+bool ClassificationForTestCostFunction2::next_sample()
+{
+	m_sample_idx++;
+	if(m_sample_idx>=m_labels.vlen)
+		return false;
+	return true;
 }
 
 TEST(SGDMinimizer,test1)
@@ -938,5 +956,229 @@ TEST(SVRGMinimizer,test2)
 	delete rate;
 	delete updater;
 	delete penalty_type;
+}
+
+TEST(AdaDeltaUpdater, test1)
+{
+	SGVector<float64_t> y(20);
+	SGMatrix<float64_t> x(2,20);
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
+	
+	y[0]=1; 
+	y[1]=-1; 
+	y[2]=-1; 
+	y[3]=1; 
+	y[4]=1; 
+	y[5]=-1; 
+	y[6]=-1; 
+	y[7]=1; 
+	y[8]=1; 
+	y[9]=-1; 
+	y[10]=1;
+	y[11]=-1; 
+	y[12]=1; 
+	y[13]=1; 
+	y[14]=1; 
+	y[15]=1; 
+	y[16]=-1; 
+	y[17]=-1; 
+	y[18]=-1; 
+	y[19]=-1; 
+                   
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(x, y);
+
+	SGDMinimizer* opt=new SGDMinimizer(bb);
+	AdaDeltaUpdater* updater=new AdaDeltaUpdater();
+	updater->set_learning_rate(1.8);
+	updater->set_epsilon(1e-6);
+	updater->set_decay_factor(0.95);
+	MomentumCorrection* momentum_correction=new NesterovMomentumCorrection();
+	momentum_correction->set_correction_weight(0.99);
+	updater->set_descend_correction(momentum_correction);
+	
+	opt->set_gradient_updater(updater);
+	opt->set_number_passes(1);
+
+	//The reference result is from https://github.com/BRML/climin
+	//w=
+	//9.322789137268 -5.041678838144
+	//cost=
+	//0.0999328675763
+	opt->minimize();
+	float64_t cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.0999328675763,1e-10);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],9.322789137268,1e-10);
+	EXPECT_NEAR(w[1],-5.041678838144,1e-10);
+	CMinimizerContext* context=opt->save_to_context();
+	delete opt;
+	delete updater;
+	delete momentum_correction;
+
+	SGDMinimizer* opt2=new SGDMinimizer(bb);
+	AdaDeltaUpdater* updater2=new AdaDeltaUpdater();
+	updater2->set_learning_rate(1.8);
+	updater2->set_epsilon(1e-6);
+	updater2->set_decay_factor(0.95);
+	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
+	momentum_correction2->set_correction_weight(0.99);
+	updater2->set_descend_correction(momentum_correction2);
+	
+	opt2->set_gradient_updater(updater2);
+	opt2->set_number_passes(1);
+	opt2->load_from_context(context);
+	delete context;
+	opt2->minimize();
+	//The reference result is from https://github.com/BRML/climin
+	//w=
+	//37.005870439442 -10.868474774524
+	//cost=
+	//0.52542975268
+	cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.52542975268,1e-10);
+	w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],37.005870439442,1e-10);
+	EXPECT_NEAR(w[1],-10.868474774524,1e-10);
+
+	delete opt2;
+	delete updater2;
+	delete momentum_correction2;
+	delete bb;
+}
+
+TEST(AdaptMomentumCorrection, test1)
+{
+	SGVector<float64_t> y(20);
+	SGMatrix<float64_t> x(2,20);
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
+	
+	y[0]=1; 
+	y[1]=-1; 
+	y[2]=-1; 
+	y[3]=1; 
+	y[4]=1; 
+	y[5]=-1; 
+	y[6]=-1; 
+	y[7]=1; 
+	y[8]=1; 
+	y[9]=-1; 
+	y[10]=1;
+	y[11]=-1; 
+	y[12]=1; 
+	y[13]=1; 
+	y[14]=1; 
+	y[15]=1; 
+	y[16]=-1; 
+	y[17]=-1; 
+	y[18]=-1; 
+	y[19]=-1; 
+                   
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(x, y);
+
+	SGDMinimizer* opt=new SGDMinimizer(bb);
+	RmsPropUpdater* updater=new RmsPropUpdater();
+	updater->set_learning_rate(1.0);
+	updater->set_epsilon(0.0);
+	updater->RmsPropUpdater::set_decay_factor(0.9);
+	MomentumCorrection* momentum_correction=new NesterovMomentumCorrection();
+	momentum_correction->set_correction_weight(0.5);
+	AdaptMomentumCorrection* correction=new AdaptMomentumCorrection();
+	correction->set_momentum_correction(momentum_correction);
+	correction->set_init_descend_rate(0.9);
+	correction->set_adapt_rate(0.1, 0.05, 2.0);
+	updater->set_descend_correction(correction);
+	opt->set_gradient_updater(updater);
+	opt->set_number_passes(1);
+
+	//The reference result is from https://github.com/BRML/climin
+	//w=
+	//13.014770067941 -6.735459931220
+	//cost=
+	//0.0874683992352
+	opt->minimize();
+	float64_t cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.0874683992352,1e-10);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],13.014770067941,1e-10);
+	EXPECT_NEAR(w[1],-6.735459931220,1e-10);
+
+	CMinimizerContext* context=opt->save_to_context();
+	delete opt;
+	delete updater;
+	delete correction;
+	delete momentum_correction;
+	SGDMinimizer* opt2=new SGDMinimizer(bb);
+	RmsPropUpdater* updater2=new RmsPropUpdater();
+	updater2->set_learning_rate(1.0);
+	updater2->set_epsilon(0.0);
+	updater2->RmsPropUpdater::set_decay_factor(0.9);
+	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
+	momentum_correction2->set_correction_weight(0.5);
+	AdaptMomentumCorrection* correction2=new AdaptMomentumCorrection();
+	correction2->set_momentum_correction(momentum_correction2);
+	correction2->set_init_descend_rate(0.9);
+	correction2->set_adapt_rate(0.1, 0.05, 2.0);
+	updater2->set_descend_correction(correction2);
+	opt2->set_gradient_updater(updater2);
+	opt2->set_number_passes(1);
+	opt2->load_from_context(context);
+	delete context;
+	opt2->minimize();
+
+	//The reference result is from https://github.com/BRML/climin
+	//w=
+	//13.898448669614 -11.852199405401
+	//cost=
+	//0.0750873577032
+	cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.0750873577032,1e-10);
+	w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],13.898448669614,1e-10);
+	EXPECT_NEAR(w[1],-11.852199405401,1e-10);
+	delete opt2;
+	delete updater2;
+	delete correction2;
+	delete momentum_correction2;
+	delete bb;
 }
 #endif /* HAVE_EIGEN3 */
