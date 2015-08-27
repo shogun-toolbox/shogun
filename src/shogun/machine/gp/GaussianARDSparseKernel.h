@@ -69,7 +69,7 @@ public:
 	virtual ~CGaussianARDSparseKernel();
 
 private:
-	void initialize_sparse_kernel();
+	void init();
 
 #if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
 public:
