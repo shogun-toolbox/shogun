@@ -67,7 +67,6 @@ public:
 	virtual void set_data(SGMatrix<float64_t> features, SGVector<float64_t> labels);
 	virtual float64_t get_cost();
 	virtual void set_sample_sequences(SGVector<int32_t> index, index_t num_sequences);
-
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
 	virtual void begin_sample();
@@ -75,16 +74,26 @@ public:
 	virtual int32_t get_sample_size();
 	virtual SGVector<float64_t> get_average_gradient();
 
-private:
+protected:
+	index_t m_sample_idx;
 	SGVector<int32_t> m_sample_sequences;
 	index_t m_num_sequences;
 	bool is_begin;
 	SGVector<float64_t> m_labels;
 	SGMatrix<float64_t> m_features;
 	SGVector<float64_t> m_weight;
-	index_t m_sample_idx;
 	index_t m_call_times;
 	void init();
+};
+
+class ClassificationForTestCostFunction2: public ClassificationForTestCostFunction
+{
+public:
+	ClassificationForTestCostFunction2()
+		:ClassificationForTestCostFunction(){};
+	virtual ~ClassificationForTestCostFunction2(){};
+	virtual void begin_sample();
+	virtual bool next_sample();
 };
 
 class CRegressionExample: public CSGObject

@@ -81,10 +81,10 @@ public:
 	 *
 	 * @param negative_descend_direction the negative descend direction
 	 * @param idx the index of the direction
-	 * 
-	 * @return corrected descend direction
+	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
+
 	 */
-	virtual float64_t get_corrected_descend_direction(float64_t negative_descend_direction,
+	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
 		index_t idx)=0;
 
 	/** Update a context object to store mutable variables
@@ -98,10 +98,12 @@ public:
 	virtual void update_context(CMinimizerContext* context)
 	{
 		REQUIRE(context, "context must set\n");
-		context->m_corrected_direction=SGVector<float64_t>(m_previous_descend_direction.vlen);
+		SGVector<float64_t> value(m_previous_descend_direction.vlen);
 		std::copy(m_previous_descend_direction.vector,
 			m_previous_descend_direction.vector+m_previous_descend_direction.vlen,
-			context->m_corrected_direction.vector);
+			value.vector);
+		std::string key="MomentumCorrection::m_previous_descend_direction";
+		context->save_data(key, value);
 	}
 
 	/** Load the given context object to restore mutable variables
@@ -114,12 +116,34 @@ public:
 	virtual void load_from_context(CMinimizerContext* context)
 	{
 		REQUIRE(context, "context must set\n");
-		m_previous_descend_direction=SGVector<float64_t>((context->m_corrected_direction).vlen);
-		std::copy((context->m_corrected_direction).vector,
-			(context->m_corrected_direction).vector+(context->m_corrected_direction).vlen,
-		m_previous_descend_direction.vector);
+		std::string key="MomentumCorrection::m_previous_descend_direction";
+		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
+		m_previous_descend_direction=SGVector<float64_t>(value.vlen);
+		std::copy(value.vector, value.vector+value.vlen,
+			m_previous_descend_direction.vector);
 	}
 
+	/** Get the previous descend direction (velocity) given the index
+	 *
+	 * @param idx, index of the previous descend direction
+	 *
+	 * @return the previous descend direction
+	 */
+	virtual float64_t get_previous_descend_direction(index_t idx)
+	{
+		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,
+			"Index (%d) is invalid\n", idx);
+		return m_previous_descend_direction[idx];
+	}
+
+	/** Get the length of the previous descend direction (velocity)
+	 *
+	 * @return the length of the previous descend direction
+	 */
+	virtual float64_t get_length_previous_descend_direction()
+	{
+		return m_previous_descend_direction.vlen;
+	}
 protected:
 	/*  used in momentum methods */
 	SGVector<float64_t> m_previous_descend_direction;

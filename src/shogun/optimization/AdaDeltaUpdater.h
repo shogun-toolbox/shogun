@@ -29,89 +29,99 @@
  *
  */
 
-#ifndef CONSTLEARNINGRATE_H
-#define CONSTLEARNINGRATE_H
+#ifndef ADADELTAUPDATER_H
+#define ADADELTAUPDATER_H
+#include <shogun/optimization/DescendUpdaterWithCorrection.h>
 #include <shogun/optimization/LearningRate.h>
-#include <shogun/lib/config.h>
-
 namespace shogun
 {
-/** @brief This implements the const learning rate class for a descent-based minimizer.
- *
- * This class gives a const learning rate during descent update.
- *
+/** @brief The class implements the AdaDelta method.
  */
-
 #define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class ConstLearningRate: public LearningRate
+IGNORE_IN_CLASSLIST class AdaDeltaUpdater: public DescendUpdaterWithCorrection
 {
 public:
-	/*  Constructor */
-	ConstLearningRate():LearningRate() { init(); }
+	/* Constructor */
+	AdaDeltaUpdater();
 
-	/*  Destructor */
-	virtual ~ConstLearningRate() {}
+	/* Destructor */
+	virtual ~AdaDeltaUpdater();
 
-	/** Set the const learning rate
+	/** Set learning rate
 	 *
-	 * @param learning_rate learning_rate must be positive and usually is not greater than 1.0
+	 * @param learning_rate learning rate
 	 */
-	virtual void set_const_learning_rate(float64_t learning_rate)
-	{
-		REQUIRE(learning_rate>0.0, "learning_rate (%f) must be positive",learning_rate);
-		m_const_learning_rate=learning_rate;
-	}
+	virtual void set_learning_rate(float64_t learning_rate);
 
-	/** Get the learning rate for descent direction
+	/** Set epsilon
 	 *
-	 * Note that the learning rate usually is positive
-	 *
-	 * @return the learning rate (A.K.A step size/length)
+	 * @param epsilon epsilon
 	 */
-	virtual float64_t get_learning_rate()
-	{
-		REQUIRE(m_const_learning_rate>0.0,"learning_rate must set\n");
-		return m_const_learning_rate;
-	}
+	virtual void set_epsilon(float64_t epsilon);
+
+	/** Set decay_factor
+	 *
+	 * @param decay_factor decay factor
+	 */
+	virtual void set_decay_factor(float64_t decay_factor);
 
 	/** Update a context object to store mutable variables
 	 *
 	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
+	 * FirstOrderMinimizer::save_to_context()
 	 *
 	 * @param context, a context object
 	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
+	virtual void update_context(CMinimizerContext* context);
 
 	/** Return a context object which stores mutable variables
 	 * Usually it is used in serialization.
 	 *
 	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
+	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
 	 *
 	 * @return a context object
 	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
+	virtual void load_from_context(CMinimizerContext* context);
+
+	/** Update the target variable based on the given negative descend direction
+	 *
+	 * Note that this method will update the target variable in place.
+	 * This method will be called by FirstOrderMinimizer::minimize()
+	 * 
+	 * @param variable_reference a reference of the target variable
+	 * @param raw_negative_descend_direction the negative descend direction given the current value
+	 */
+	virtual void update_variable(SGVector<float64_t> variable_reference,
+		SGVector<float64_t> raw_negative_descend_direction);
 
 protected:
+	/** Get the negative descend direction given current variable and gradient
+	 *
+	 * It will be called at update_variable()
+	 *
+	 * @param variable current variable
+	 * @param gradient current gradient
+	 * @param idx the index of the variable
+	 * 
+	 * @return negative descend direction (that is, the given gradient in the class)
+	 */
+	virtual float64_t get_negative_descend_direction(float64_t variable,
+		float64_t gradient, index_t idx);
 
-	/* const_learning_rate */
-	float64_t m_const_learning_rate;
+	/* learning_rate at iteration */
+	float64_t m_learning_rate;
 
+	float64_t m_epsilon;
+
+	float64_t m_decay_factor;
+
+	SGVector<float64_t> m_gradient_accuracy;
+	SGVector<float64_t> m_gradient_delta_accuracy;
 private:
 	/*  Init */
-	void init()
-	{
-		m_const_learning_rate=0.0;
-	}
+	void init();
 };
 
 }
-
 #endif

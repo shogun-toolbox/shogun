@@ -72,19 +72,23 @@ public:
 	/*  Destructor */
 	virtual ~StandardMomentumCorrection() {}
 
+
 	/** Get corrected descend direction
 	 *
-	 * @param gradient gradient
+	 * @param negative_descend_direction the negative descend direction
 	 * @param idx the index of the direction
-	 * 
-	 * @return corrected descend direction
-	 */
-	virtual float64_t get_corrected_descend_direction(float64_t gradient, index_t idx)
+	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
+	*/
+	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx)
 	{
 		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
+		DescendPair pair;
 		m_previous_descend_direction[idx]=
-			m_weight*m_previous_descend_direction[idx]-gradient;
-		return m_previous_descend_direction[idx];
+			m_weight*m_previous_descend_direction[idx]-negative_descend_direction;
+		pair.delta=m_previous_descend_direction[idx];
+		pair.descend_direction=m_previous_descend_direction[idx];
+		return pair;
 	}
 
 private:
