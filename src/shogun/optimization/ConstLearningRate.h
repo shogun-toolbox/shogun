@@ -42,8 +42,7 @@ namespace shogun
  *
  */
 
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class ConstLearningRate: public LearningRate
+class ConstLearningRate: public LearningRate
 {
 public:
 	/*  Constructor */

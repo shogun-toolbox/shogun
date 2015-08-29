@@ -43,8 +43,7 @@ namespace shogun
  * \f]
  */
 
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class L2Penalty: public Penalty
+class L2Penalty: public Penalty
 {
 public:
 	/* Constructor */

@@ -36,9 +36,8 @@
 #include <shogun/optimization/MinimizerContext.h>
 namespace shogun
 {
-#define IGNORE_IN_CLASSLIST
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-IGNORE_IN_CLASSLIST struct DescendPair
+struct DescendPair
 {
 	DescendPair()
 	{

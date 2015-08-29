@@ -42,8 +42,7 @@ namespace shogun
  * http://cs231n.github.io/neural-networks-3/#sgd
  */
 
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class SGDMinimizer: public FirstOrderStochasticMinimizer
+class SGDMinimizer: public FirstOrderStochasticMinimizer
 {
 public:
 	/** Default constructor */

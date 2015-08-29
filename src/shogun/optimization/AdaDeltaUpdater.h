@@ -37,8 +37,7 @@ namespace shogun
 {
 /** @brief The class implements the AdaDelta method.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class AdaDeltaUpdater: public DescendUpdaterWithCorrection
+class AdaDeltaUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */
