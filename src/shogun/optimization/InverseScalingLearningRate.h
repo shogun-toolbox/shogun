@@ -50,8 +50,7 @@ namespace shogun
  * and \f$k\f$ is the exponent term.
  *
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class InverseScalingLearningRate: public LearningRate
+class InverseScalingLearningRate: public LearningRate
 {
 public:
 	/*  Constructor */

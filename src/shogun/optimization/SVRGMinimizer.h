@@ -44,8 +44,7 @@ namespace shogun
  * Advances in Neural Information Processing Systems. 2013.
  */
 
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class SVRGMinimizer: public FirstOrderStochasticMinimizer
+class SVRGMinimizer: public FirstOrderStochasticMinimizer
 {
 public:
 	/** Default constructor */

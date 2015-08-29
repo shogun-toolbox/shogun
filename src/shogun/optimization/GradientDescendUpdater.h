@@ -45,8 +45,7 @@ namespace shogun
  * \f],
  * where \f$\lambda\f$ is a learning rate.
  */
-#define IGNORE_IN_CLASSLIST
-IGNORE_IN_CLASSLIST class GradientDescendUpdater: public DescendUpdaterWithCorrection
+class GradientDescendUpdater: public DescendUpdaterWithCorrection
 {
 public:
 	/* Constructor */
