@@ -59,7 +59,6 @@ GradientDescendUpdater::~GradientDescendUpdater()
 void GradientDescendUpdater::init()
 {
 	m_learning_rate=NULL;
-	m_iteration_learning_rate=0;
 }
 
 void GradientDescendUpdater::update_context(CMinimizerContext* context)
@@ -81,7 +80,7 @@ void GradientDescendUpdater::load_from_context(CMinimizerContext* context)
 float64_t GradientDescendUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t gradient, index_t idx)
 {
-	return m_iteration_learning_rate*gradient;
+	return m_learning_rate->get_learning_rate(false)*gradient;
 }
 
 void GradientDescendUpdater::update_variable(SGVector<float64_t> variable_reference,
@@ -90,6 +89,6 @@ void GradientDescendUpdater::update_variable(SGVector<float64_t> variable_refere
 	REQUIRE(m_learning_rate,"learning_rate must set\n");
 	// must call LearningRate::get_learning_rate() here
 	// if we want to decay the learning rate at each iteration
-	m_iteration_learning_rate=m_learning_rate->get_learning_rate();
+	m_learning_rate->get_learning_rate(true);
 	DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction);
 }

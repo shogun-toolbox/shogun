@@ -60,14 +60,15 @@ public:
 	virtual ~InverseScalingLearningRate() {}
 
 	/** Get the learning rate for descent direction
-	 * Note that every time this method is called, the call counter will increase by 1
-	 * Note that the learning rate usually is positive
+	 * @param with_update do we update the mutable variables
+	 * Note that if with_update is true, every time this method is called, the call counter will increase by 1
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate()
+	virtual float64_t get_learning_rate(bool with_update)
 	{
-		m_call_counter++;
+		if(with_update)
+			m_call_counter++;
 		return m_initial_learning_rate/CMath::pow(m_intercept+m_slope*m_call_counter,m_exponent);
 	}
 

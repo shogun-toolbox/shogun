@@ -46,13 +46,13 @@ namespace shogun
 class LearningRate
 {
 public:
-
 	/** Get a learning rate for descent direction
 	 * Note that the learning rate usually is positive
+	 * @param with_update do we update the mutable variables?
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate()=0;
+	virtual float64_t get_learning_rate(bool with_update)=0;
 
 	/** Update a context object to store mutable variables
 	 * used in learning rate

@@ -95,6 +95,11 @@ public:
 	virtual void update_variable(SGVector<float64_t> variable_reference,
 		SGVector<float64_t> raw_negative_descend_direction);
 
+
+	virtual LearningRate* get_learning_rate()
+	{
+		return m_learning_rate;
+	}
 protected:
 	/** Get the negative descend direction given current variable and gradient
 	 *
@@ -112,8 +117,6 @@ protected:
 	/* learning_rate object */
 	LearningRate* m_learning_rate;
 
-	/* learning_rate at iteration */
-	float64_t m_iteration_learning_rate;
 private:
 	/*  Init */
 	void init();

@@ -62,12 +62,13 @@ public:
 	}
 
 	/** Get the learning rate for descent direction
+	 * @param with_update do we update the mutable variables?
 	 *
 	 * Note that the learning rate usually is positive
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate()
+	virtual float64_t get_learning_rate(bool with_update)
 	{
 		REQUIRE(m_const_learning_rate>0.0,"learning_rate must set\n");
 		return m_const_learning_rate;

@@ -137,6 +137,14 @@ public:
 			m_correction=correction;
 	}
 
+	/** Do we enable descend correction?
+	 *
+	 * @return whether we enable descend correction
+	 */
+	virtual bool enables_descend_correction()
+	{
+		return m_correction!=NULL;
+	}
 protected:
 	/** Get the negative descend direction given current variable and raw negative descend direction
 	 *
