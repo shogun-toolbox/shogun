@@ -43,7 +43,7 @@ void AdaDeltaUpdater::set_learning_rate(float64_t learning_rate)
 {
 	REQUIRE(learning_rate>0,"Learning_rate (%f) must be positive\n",
 		learning_rate);
-	m_learning_rate=learning_rate;
+	m_build_in_learning_rate=learning_rate;
 }
 
 void AdaDeltaUpdater::set_epsilon(float64_t epsilon)
@@ -69,7 +69,7 @@ void AdaDeltaUpdater::init()
 {
 	m_decay_factor=0.9;
 	m_epsilon=1e-6;
-	m_learning_rate=1.0;
+	m_build_in_learning_rate=1.0;
 	m_gradient_accuracy=SGVector<float64_t>();
 	m_gradient_delta_accuracy=SGVector<float64_t>();
 }
@@ -113,7 +113,7 @@ void AdaDeltaUpdater::load_from_context(CMinimizerContext* context)
 }
 
 float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,
-	float64_t gradient, index_t idx)
+	float64_t gradient, index_t idx, float64_t learning_rate)
 {
 	REQUIRE(idx>=0 && idx<m_gradient_accuracy.vlen,
 		"Index (%d) is invalid\n", idx);
@@ -122,14 +122,14 @@ float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,
 	float64_t scale=m_decay_factor*m_gradient_accuracy[idx]+
 		(1.0-m_decay_factor)*gradient*gradient;
 	m_gradient_accuracy[idx]=scale;
-	float64_t res=m_learning_rate*gradient*CMath::sqrt(m_gradient_delta_accuracy[idx]+m_epsilon)/CMath::sqrt(scale+m_epsilon);
+	float64_t res=m_build_in_learning_rate*gradient*CMath::sqrt(m_gradient_delta_accuracy[idx]+m_epsilon)/CMath::sqrt(scale+m_epsilon);
 	m_gradient_delta_accuracy[idx]=m_decay_factor*m_gradient_delta_accuracy[idx]+(1.0-m_decay_factor)*res*res;
 	return res;
 
 }
 
 void AdaDeltaUpdater::update_variable(SGVector<float64_t> variable_reference,
-	SGVector<float64_t> raw_negative_descend_direction)
+	SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 {
 	REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
 	REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
@@ -155,7 +155,7 @@ void AdaDeltaUpdater::update_variable(SGVector<float64_t> variable_reference,
 		for(index_t idx=0; idx<variable_reference.vlen; idx++)
 		{
 			float64_t neg_des_dir=get_negative_descend_direction(
-				variable_reference[idx], raw_negative_descend_direction[idx], idx);
+				variable_reference[idx], raw_negative_descend_direction[idx], idx, learning_rate);
 
 			DescendPair pair=m_correction->get_corrected_descend_direction(
 				neg_des_dir, idx);
@@ -167,6 +167,6 @@ void AdaDeltaUpdater::update_variable(SGVector<float64_t> variable_reference,
 	}
 	else
 	{
-		DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction);
+		DescendUpdaterWithCorrection::update_variable(variable_reference, raw_negative_descend_direction, learning_rate);
 	}
 }

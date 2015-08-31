@@ -62,12 +62,14 @@ public:
 	}
 
 	/** Get the learning rate for descent direction
-	 *
 	 * Note that the learning rate usually is positive
+	 *
+	 * @param iter_counter the number of iterations
+	 *
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate()
+	virtual float64_t get_learning_rate(int32_t iter_counter)
 	{
 		REQUIRE(m_const_learning_rate>0.0,"learning_rate must set\n");
 		return m_const_learning_rate;

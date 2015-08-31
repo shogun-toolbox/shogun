@@ -70,7 +70,9 @@ void SVRGMinimizer::init_minimization()
 		sgd.set_gradient_updater(m_gradient_updater);
 		sgd.set_penalty_weight(m_penalty_weight);
 		sgd.set_penalty_type(m_penalty_type);
+		sgd.set_learning_rate(m_learning_rate);
 		sgd.minimize();
+		m_iter_counter+=sgd.get_iteration_counter();
 	}
 }
 
@@ -94,6 +96,11 @@ float64_t SVRGMinimizer::minimize()
 		fun->begin_sample();
 		while(fun->next_sample())
 		{
+			m_iter_counter++;
+			float64_t learning_rate=1.0;
+			if(m_learning_rate)
+				learning_rate=m_learning_rate->get_learning_rate(m_iter_counter);
+
 			SGVector<float64_t> grad_new=m_fun->get_gradient();
 			SGVector<float64_t> var(variable_reference.vlen);
 			std::copy(variable_reference.vector, variable_reference.vector+variable_reference.vlen, var.vector);
@@ -106,7 +113,7 @@ float64_t SVRGMinimizer::minimize()
 				grad_new[idx]+=(m_average_gradient[idx]-grad_old[idx]);
 
 			update_gradient(grad_new,variable_reference);
-			m_gradient_updater->update_variable(variable_reference,grad_new);
+			m_gradient_updater->update_variable(variable_reference,grad_new,learning_rate);
 		}
 	}
 	float64_t cost=m_fun->get_cost();
