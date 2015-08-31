@@ -74,6 +74,25 @@ public:
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return variable;}
+
+	/** Update a context object to store mutable variables
+	 * used in learning rate
+	 *
+	 * @param context, a context object
+	 */
+	virtual void update_context(CMinimizerContext* context)
+	{
+		REQUIRE(context, "Context must set\n");
+	}
+
+	/** Load the given context object to restore mutable variables
+	 *
+	 * @param context, a context object
+	 */
+	virtual void load_from_context(CMinimizerContext* context)
+	{
+		REQUIRE(context, "Context must set\n");
+	}
 };
 
 }
