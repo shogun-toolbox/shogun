@@ -30,6 +30,7 @@
  */
 #include <shogun/optimization/SGDMinimizer.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
+#include <shogun/optimization/SparsePenalty.h>
 #include <shogun/lib/config.h>
 using namespace shogun;
 
@@ -65,10 +66,16 @@ float64_t SGDMinimizer::minimize()
 			float64_t learning_rate=1.0;
 			if(m_learning_rate)
 				learning_rate=m_learning_rate->get_learning_rate(m_iter_counter);
-
 			SGVector<float64_t> grad=m_fun->get_gradient();
 			update_gradient(grad,variable_reference);
 			m_gradient_updater->update_variable(variable_reference,grad,learning_rate);
+
+			SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
+			if(sparse_penalty)
+			{
+				REQUIRE(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used\n");
+				sparse_penalty->update_sparse_variable(variable_reference,learning_rate*m_penalty_weight);
+			}
 		}
 	}
 	float64_t cost=m_fun->get_cost();
