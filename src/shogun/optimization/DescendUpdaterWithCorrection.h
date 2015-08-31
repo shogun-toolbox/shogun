@@ -62,9 +62,10 @@ public:
 	 * 
 	 * @param variable_reference a reference of the target variable
 	 * @param raw_negative_descend_direction the negative descend direction given the current value
+	 * @param learning_rate learning rate
 	 */
 	virtual void update_variable(SGVector<float64_t> variable_reference,
-		SGVector<float64_t> raw_negative_descend_direction)
+		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate)
 	{
 		REQUIRE(variable_reference.vlen>0,"variable_reference must set\n");
 		REQUIRE(variable_reference.vlen==raw_negative_descend_direction.vlen,
@@ -84,7 +85,7 @@ public:
 		for(index_t idx=0; idx<variable_reference.vlen; idx++)
 		{
 			float64_t negative_descend_direction=get_negative_descend_direction(
-				variable_reference[idx], raw_negative_descend_direction[idx], idx);
+				variable_reference[idx], raw_negative_descend_direction[idx], idx, learning_rate);
 			if(m_correction)
 			{
 				DescendPair pair=m_correction->get_corrected_descend_direction(
@@ -153,11 +154,12 @@ protected:
 	 * @param variable current variable
 	 * @param raw_negative_descend_direction current raw negative descend direction
 	 * @param idx the index of the variable
+	 * @param learning_rate learning rate
 	 * 
 	 * @return negative descend direction
 	 */
 	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t raw_negative_descend_direction, index_t idx)=0;
+		float64_t raw_negative_descend_direction, index_t idx, float64_t learning_rate)=0;
 
 	/*  descend correction object */
 	DescendCorrection* m_correction;

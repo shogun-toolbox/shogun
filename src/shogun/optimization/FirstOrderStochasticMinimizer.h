@@ -33,6 +33,7 @@
 #include <shogun/optimization/FirstOrderMinimizer.h>
 #include <shogun/optimization/FirstOrderStochasticCostFunction.h>
 #include <shogun/optimization/DescendUpdater.h>
+#include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
 
@@ -133,8 +134,12 @@ public:
 	virtual void load_from_context(CMinimizerContext* context)
 	{
 		REQUIRE(context,"Context must set\n");
-		REQUIRE(m_gradient_updater,"Gradient updater must set\n");
+		REQUIRE(m_gradient_updater,"Descend updater must set\n");
 		m_gradient_updater->load_from_context(context);
+		if(m_learning_rate)
+			m_learning_rate->load_from_context(context);
+		std::string key="FirstOrderStochasticMinimizer::m_iter_counter";
+		m_iter_counter=context->get_data_int32(key);
 	}
 
 	/** Return a context object which stores mutable variables
@@ -149,6 +154,12 @@ public:
 		return result;
 	}
 
+	virtual void set_learning_rate(LearningRate *learning_rate)
+	{
+		m_learning_rate=learning_rate;
+	}
+
+	virtual int32_t get_iteration_counter() {return m_iter_counter;}
 protected:
 
 	/** Update a context object to store mutable variables
@@ -158,8 +169,12 @@ protected:
 	virtual void update_context(CMinimizerContext* context)
 	{
 		REQUIRE(context,"Context must set\n");
-		REQUIRE(m_gradient_updater,"Gradient updater must set\n");
+		REQUIRE(m_gradient_updater,"Descend updater must set\n");
 		m_gradient_updater->update_context(context);
+		if(m_learning_rate)
+			m_learning_rate->update_context(context);
+		std::string key="FirstOrderStochasticMinimizer::m_iter_counter";
+		context->save_data(key, m_iter_counter);
 	}
 
 	/* the gradient update step */
@@ -169,7 +184,7 @@ protected:
 	virtual void init_minimization()
 	{
 		REQUIRE(m_fun,"Cost function must set\n");
-		REQUIRE(m_gradient_updater,"Gradient updater must set\n");
+		REQUIRE(m_gradient_updater,"Descend updater must set\n");
 		REQUIRE(m_num_passes>0, "The number to go through data must set\n");
 		m_cur_passes=0;
 	}
@@ -180,13 +195,20 @@ protected:
 	/*  current iteration to go through data */
 	int32_t m_cur_passes;
 
+	int32_t m_iter_counter;
+
+	/* learning_rate object */
+	LearningRate* m_learning_rate;
+	
 private:
 	/* Init */
 	void init()
 	{
 		m_gradient_updater=NULL;
+		m_learning_rate=NULL;
 		m_num_passes=0;
 		m_cur_passes=0;
+		m_iter_counter=0;
 	}
 };
 

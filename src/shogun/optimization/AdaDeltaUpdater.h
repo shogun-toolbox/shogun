@@ -90,9 +90,10 @@ public:
 	 * 
 	 * @param variable_reference a reference of the target variable
 	 * @param raw_negative_descend_direction the negative descend direction given the current value
+	 * @param learning_rate learning rate
 	 */
 	virtual void update_variable(SGVector<float64_t> variable_reference,
-		SGVector<float64_t> raw_negative_descend_direction);
+		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate);
 
 protected:
 	/** Get the negative descend direction given current variable and gradient
@@ -102,14 +103,15 @@ protected:
 	 * @param variable current variable
 	 * @param gradient current gradient
 	 * @param idx the index of the variable
+	 * @param learning_rate learning rate
 	 * 
 	 * @return negative descend direction (that is, the given gradient in the class)
 	 */
 	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t gradient, index_t idx);
+		float64_t gradient, index_t idx, float64_t learning_rate);
 
 	/* learning_rate at iteration */
-	float64_t m_learning_rate;
+	float64_t m_build_in_learning_rate;
 
 	float64_t m_epsilon;
 

@@ -403,8 +403,9 @@ TEST(SGDMinimizer,test1)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.01);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	opt->set_gradient_updater(updater);
+	opt->set_learning_rate(rate);
 
 	int32_t num_passes=20;
 	opt->set_number_passes(num_passes);
@@ -471,8 +472,9 @@ TEST(SGDMinimizer,test2)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.01);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	opt.set_gradient_updater(updater);
+	opt.set_learning_rate(rate);
 
 	int32_t num_passes=20;
 	opt.set_number_passes(num_passes);
@@ -538,11 +540,12 @@ TEST(SGDMinimizer,test3)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.0001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 
+	opt->set_learning_rate(rate);
 	opt->set_gradient_updater(updater);
 
 	int32_t num_passes=20;
@@ -611,11 +614,12 @@ TEST(SGDMinimizer,test4)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.0001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 	opt->set_gradient_updater(updater);
+	opt->set_learning_rate(rate);
 
 	int32_t num_passes=20;
 	opt->set_number_passes(num_passes);
@@ -683,11 +687,12 @@ TEST(SGDMinimizer,test5)
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(0.001);
 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 
+	opt->set_learning_rate(rate);
 	opt->set_gradient_updater(updater);
 	opt->set_number_passes(5);
 
@@ -704,11 +709,12 @@ TEST(SGDMinimizer,test5)
 
 	ConstLearningRate* rate2=new ConstLearningRate();
 	rate2->set_const_learning_rate(0.001);
-	GradientDescendUpdater* updater2=new GradientDescendUpdater(rate2);
+	GradientDescendUpdater* updater2=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction2=new StandardMomentumCorrection();
 	momentum_correction2->set_correction_weight(0.9);
 	updater2->set_descend_correction(momentum_correction2);
 	opt2->set_gradient_updater(updater2);
+	opt2->set_learning_rate(rate2);
 
 	opt2->load_from_context(context);
 	opt2->set_number_passes(15);
@@ -779,12 +785,13 @@ TEST(SVRGMinimizer,test1)
 	rate->set_const_learning_rate(0.001);
 
 	//using momentum method 
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction=new StandardMomentumCorrection();
 	//momentum=0.9
 	momentum_correction->set_correction_weight(0.9);
 	updater->set_descend_correction(momentum_correction);
 
+	opt->set_learning_rate(rate);
 	opt->set_gradient_updater(updater);
 	opt->set_number_passes(6);
 	opt->set_sgd_number_passes(2);
@@ -804,11 +811,12 @@ TEST(SVRGMinimizer,test1)
 
 	ConstLearningRate* rate2=new ConstLearningRate();
 	rate2->set_const_learning_rate(0.001);
-	GradientDescendUpdater* updater2=new GradientDescendUpdater(rate2);
+	GradientDescendUpdater* updater2=new GradientDescendUpdater();
 	MomentumCorrection* momentum_correction2=new StandardMomentumCorrection();
 	momentum_correction2->set_correction_weight(0.9);
 	updater2->set_descend_correction(momentum_correction2);
 	opt2->set_gradient_updater(updater2);
+	opt2->set_learning_rate(rate2);
 
 	//can be used in deserialization
 	opt2->load_from_context(context);
@@ -931,10 +939,11 @@ TEST(SVRGMinimizer,test2)
 
 	ConstLearningRate* rate=new ConstLearningRate();
 	rate->set_const_learning_rate(1.758619054751211);
-	GradientDescendUpdater* updater=new GradientDescendUpdater(rate);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
 	opt->set_gradient_updater(updater);
 	//since there are 5 samples sequences, we set the number of passes is 5
 	opt->set_number_passes(5);
+	opt->set_learning_rate(rate);
 	opt->set_sgd_number_passes(0);
 	opt->set_average_update_interval(1);
 

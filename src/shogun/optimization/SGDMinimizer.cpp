@@ -61,9 +61,14 @@ float64_t SGDMinimizer::minimize()
 		fun->begin_sample();
 		while(fun->next_sample())
 		{
+			m_iter_counter++;
+			float64_t learning_rate=1.0;
+			if(m_learning_rate)
+				learning_rate=m_learning_rate->get_learning_rate(m_iter_counter);
+
 			SGVector<float64_t> grad=m_fun->get_gradient();
 			update_gradient(grad,variable_reference);
-			m_gradient_updater->update_variable(variable_reference,grad);
+			m_gradient_updater->update_variable(variable_reference,grad,learning_rate);
 		}
 	}
 	float64_t cost=m_fun->get_cost();

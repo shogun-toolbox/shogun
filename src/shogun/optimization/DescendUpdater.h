@@ -56,9 +56,10 @@ public:
 	 * 
 	 * @param variable_reference a reference of the target variable
 	 * @param negative_descend_direction the negative descend direction given the current value
+	 * @param learning_rate learning rate
 	 */
 	virtual void update_variable(SGVector<float64_t> variable_reference,
-		SGVector<float64_t> negative_descend_direction)=0;
+		SGVector<float64_t> negative_descend_direction, float64_t learning_rate)=0;
 
 	/** Update a context object to store mutable variables
 	 * used in descend update
