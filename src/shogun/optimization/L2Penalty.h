@@ -74,6 +74,11 @@ public:
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return variable;}
+
+	/** Does the penalty enforce the sparsity constraint ?
+	 * @return true if it enforces the constraint
+	 */
+	virtual bool enforce_sparsity() {return false;}
 };
 
 }

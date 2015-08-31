@@ -29,55 +29,45 @@
  *
  */
 
-#ifndef PENALTY_H
-#define PENALTY_H
+#ifndef L1PENALTY_H
+#define L1PENALTY_H
+#include <shogun/optimization/Penalty.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 namespace shogun
 {
-/** @brief The base class for penalty/regularization used in minimization.
+/** @brief The is the base class for L1 penalty/regularization within the FirstOrderMinimizer framework.
  *
- * This is the interface of regularizers used in minimizers.
- * (eg,
- * FirstOrderMinimizer::update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var)
- * FirstOrderMinimizer::get_penalty(SGVector<float64_t> var)
- * ) 
- *
+ * For L1 penalty, \f$L1(w)\f$
+ * \f[
+ * L1(w)=|w|
+ * \f]
  */
-class Penalty
+
+class L1Penalty: public Penalty
 {
 public:
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 
 	 *
-	 * For L2 penalty, \f$L2(w)\f$
-	 * \f[
-	 * L2(w)=\frac{w^t w}{2}
-	 * \f]
-	 *
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable)=0;
+	virtual float64_t get_penalty(float64_t variable) {return CMath::abs(variable);}
 
-	/** Returns the gradient of the penalty wrt a target variable
-	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
-	 *
-	 * For L2 penalty
-	 * \f[
-	 * \frac{\partial L2(w) }{\partial w}=w
-	 * \f]
-	 *
-	 * @param variable value of a target variable
-	 * @param gradient unregularized/unpenalized gradient of the variable
-	 * @return the gradient of the penalty wrt the variable
-	 */
+
 	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient)=0;
+		float64_t gradient_of_variable)=0;
+
+	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_delta)=0;
+
 
 	/** Does the penalty enforce the sparsity constraint ?
 	 * @return true if it enforces the constraint
 	 */
-	virtual bool enforce_sparsity()=0;
+	virtual bool enforce_sparsity() {return true;}
 };
 
 }
+
 #endif
