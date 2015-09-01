@@ -96,6 +96,9 @@ public:
 			value.vector);
 		std::string key="L1PenaltyForTG::m_q";
 		context->save_data(key, value);
+
+		key="L1PenaltyForTG::m_u";
+		context->save_data(key, m_u);
 	}
 
 	/** Load the given context object to restore mutable variables
@@ -111,6 +114,9 @@ public:
 		m_q=SGVector<float64_t>(value.vlen);
 		std::copy(value.vector, value.vector+value.vlen,
 			m_q.vector);
+
+		key="L1PenaltyForTG::m_u";
+		m_u=context->get_data_float64(key);
 	}
 protected:
 	float64_t m_u;
