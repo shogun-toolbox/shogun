@@ -126,7 +126,7 @@ namespace shogun
          */
         inline bool is_absent() const
         {
-            return m_absence_reason != nullptr;
+            return m_absence_reason != NULL;
         }
 
         /** Returns true if value is present, false otherwise.
@@ -135,7 +135,7 @@ namespace shogun
          */
         inline bool is_present() const
         {
-            return m_absence_reason == nullptr;
+            return m_absence_reason == NULL;
         }
 
     private:
@@ -154,7 +154,7 @@ namespace shogun
         }
         Maybe(const T& value) :
             m_value(value),
-            m_absence_reason(nullptr)
+            m_absence_reason(NULL)
         {
         }
 
