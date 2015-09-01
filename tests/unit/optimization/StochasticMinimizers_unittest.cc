@@ -45,6 +45,8 @@
 #include <shogun/optimization/NesterovMomentumCorrection.h>
 #include <shogun/optimization/RmsPropUpdater.h>
 #include <shogun/optimization/AdaptMomentumCorrection.h>
+#include <shogun/optimization/L1PenaltyForTG.h>
+#include <shogun/optimization/InverseScalingLearningRate.h>
 using namespace shogun;
 using namespace Eigen;
 
@@ -1190,4 +1192,210 @@ TEST(AdaptMomentumCorrection, test1)
 	delete momentum_correction2;
 	delete bb;
 }
+
+TEST(L1PenaltyForTG, test1)
+{
+	SGVector<float64_t> y(20);
+	SGMatrix<float64_t> x(2,20);
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
+	
+	y[0]=1; 
+	y[1]=-1; 
+	y[2]=-1; 
+	y[3]=1; 
+	y[4]=1; 
+	y[5]=-1; 
+	y[6]=-1; 
+	y[7]=1; 
+	y[8]=1; 
+	y[9]=-1; 
+	y[10]=1;
+	y[11]=-1; 
+	y[12]=1; 
+	y[13]=1; 
+	y[14]=1; 
+	y[15]=1; 
+	y[16]=-1; 
+	y[17]=-1; 
+	y[18]=-1; 
+	y[19]=-1; 
+                   
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(x, y);
+	SGDMinimizer* opt=new SGDMinimizer(bb);
+
+	ConstLearningRate* rate=new ConstLearningRate();
+	rate->set_const_learning_rate(0.01);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	opt->set_gradient_updater(updater);
+
+	opt->set_penalty_weight(0.01);
+	L1Penalty* penalty_type=new L1PenaltyForTG();
+
+	penalty_type->set_rounding_eplison(0);
+	opt->set_penalty_type(penalty_type);
+	opt->set_number_passes(1);
+	opt->set_learning_rate(rate);
+
+	opt->minimize();
+	//the loss in the reference program is log(1+exp(-y*w*x))
+	//However, the loss in our implementation is log(1+exp(y*w*x))
+	//
+	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
+	//w=
+	//-0.047225925298 
+	//0.018566844801 
+	//
+	//cost=
+	//0.679635661120
+	float64_t cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.679635661120,1e-10);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],0.047225925298,1e-10);
+	EXPECT_NEAR(w[1],-0.018566844801,1e-10);
+
+	delete bb;
+	delete opt;
+	delete updater;
+	delete penalty_type;
+	delete rate;
+}
+
+TEST(L1PenaltyForTG, test2)
+{
+	SGVector<float64_t> y(20);
+	SGMatrix<float64_t> x(2,20);
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
+	
+	y[0]=1; 
+	y[1]=-1; 
+	y[2]=-1; 
+	y[3]=1; 
+	y[4]=1; 
+	y[5]=-1; 
+	y[6]=-1; 
+	y[7]=1; 
+	y[8]=1; 
+	y[9]=-1; 
+	y[10]=1;
+	y[11]=-1; 
+	y[12]=1; 
+	y[13]=1; 
+	y[14]=1; 
+	y[15]=1; 
+	y[16]=-1; 
+	y[17]=-1; 
+	y[18]=-1; 
+	y[19]=-1; 
+                   
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(x, y);
+	SGDMinimizer* opt=new SGDMinimizer(bb);
+
+	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
+	rate->set_initial_learning_rate(0.1);
+	rate->set_exponent(0.6);
+	rate->set_slope(1.0);
+	rate->set_intercept(0.0);
+
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	opt->set_gradient_updater(updater);
+
+	opt->set_penalty_weight(0.01);
+	L1Penalty* penalty_type=new L1PenaltyForTG();
+	penalty_type->set_rounding_eplison(0);
+	
+	opt->set_penalty_type(penalty_type);
+	opt->set_number_passes(1);
+	opt->set_learning_rate(rate);
+	opt->minimize();
+
+	CMinimizerContext* context=opt->save_to_context();
+	delete opt;
+	delete rate;
+	delete updater;
+	delete penalty_type;
+
+	SGDMinimizer* opt2=new SGDMinimizer(bb);
+
+	InverseScalingLearningRate* rate2= new InverseScalingLearningRate();
+	rate2->set_initial_learning_rate(0.1);
+	rate2->set_exponent(0.6);
+	rate2->set_slope(1.0);
+	rate2->set_intercept(0.0);
+
+	GradientDescendUpdater* updater2=new GradientDescendUpdater();
+	opt2->set_gradient_updater(updater2);
+	opt2->set_penalty_weight(0.01);
+	L1Penalty* penalty_type2=new L1PenaltyForTG();
+	penalty_type2->set_rounding_eplison(0);
+
+	opt2->set_penalty_type(penalty_type2);
+	opt2->set_number_passes(1);
+	opt2->set_learning_rate(rate2);
+	opt2->load_from_context(context);
+	delete context;
+
+	opt2->minimize();
+	//the loss in the reference program is log(1+exp(-y*w*x))
+	//However, the loss in our implementation is log(1+exp(y*w*x))
+	//
+	//result from sklearn.linear_model.SGDClassifier (v.0.16.1)
+	//w=
+	//-0.203765743995 
+	//0.109255680811 
+	//cost=
+	//0.633950836133
+	//
+	float64_t cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.633950836133,1e-10);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],0.203765743995,1e-10);
+	EXPECT_NEAR(w[1],-0.109255680811,1e-10);
+
+	delete opt2;
+	delete rate2;
+	delete updater2;
+	delete penalty_type2;
+	delete bb;
+}
+
 #endif /* HAVE_EIGEN3 */
