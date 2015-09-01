@@ -1,85 +1,184 @@
 #ifndef __SG_MAYBE_H__
 #define __SG_MAYBE_H__
 
-#ifdef HAVE_CXX11
-
 #include <shogun/lib/ShogunException.h>
 
 namespace shogun
 {
 
-	/** @class Holder that represents an object that can be 
-	 * either present or absent. Quite simllar to std::optional
-	 * introduced in C++14 but provides a way to pass the reason 
-	 * of absence (e.g. "incorrect parameter").
-	 */
-	template <typename T>
-	class Maybe
-	{
-		public:
-			Maybe(const T& val) :
-				value(val),
-				absenceReason(nullptr)
-			{
-			}
-			Maybe(const Maybe& other) :
-				value(other.value),
-				absenceReason(other.absenceReason)
-			{
-			}
+    /** Represents non-typed absent value.
+     *
+     * Can be casted to any @see Maybe<T> resulting
+     * in Maybe with absent value.
+     *
+     * Contains reason for absence as a regular C string.
+     */
+    class Nothing
+    {
+    public:
+        Nothing(const char* reason = "just absent, sorry") :
+            m_absence_reason(reason)
+        {
+        }
+        Nothing(const Nothing& other) :
+            m_absence_reason(other.m_absence_reason)
+        {
+        }
+        const char* m_absence_reason;
+    };
 
-			/** Returns instance of the class that correspond
-			 * to absent value. 
-			 *
-			 * @param reason a reason why the object is absent
-			 *
-			 */
-			static Maybe<T> nope(const char* reason="Unknown")
-			{
-				return Maybe(reason);
-			}
+    /** @class Holder that represents an object that can be
+     * either present or absent. Quite simllar to std::optional
+     * introduced in C++14, but provides a way to pass the reason
+     * of absence (e.g. "incorrect parameter").
+     *
+     * Essentially, instances are created via @see Just or @see Nothing
+     *
+     * @code
+     *      Maybe<int> absent_value = Nothing();
+     *      Maybe<int> present_value = Just(3);
+     * @endcode
+     *
+     * To check whether value is present, regular implicit cast to bool is used:
+     *
+     * @code
+     *      if (maybe_value)
+     *      {
+     *          // value exists!
+     *      }
+     *      else
+     *      {
+     *          // value doesn't exist!
+     *      }
+     * @endcode
+     *
+     * To obtain value, @see value is used:
+     *
+     * @code
+     *      // may throw an exception
+     *      int value = unreliable.value();
+     * @endcode
+     *
+     * To provide default values, @see value_or is used:
+     *
+     * @code
+     *      int value = unreliable.value_or(9);
+     * @endcode
+     *
+     */
+    template <typename T>
+    class Maybe
+    {
+    public:
+        /** Creates an instance from nothing resulting in absent value.
+         *
+         * @param   nothing     instance of nothing
+         *
+         */
+        Maybe(const Nothing& nothing) :
+            m_value(),
+            m_absence_reason(nothing.m_absence_reason)
+        {
+        }
+        /** Copy constructor.
+         *
+         * @param   other       other instance of Maybe for the same type
+         */
+        Maybe(const Maybe<T>& other) :
+            m_value(other.m_value),
+            m_absence_reason(other.m_absence_reason)
+        {
+        }
 
-			/** Evaluates to true when object is present, false
-			 * otherwise.
-			 *
-			 */
-			inline operator bool() const
-			{
-				return absenceReason != nullptr;
-			}
-			
-			/** Returns instance if it is present, fails otherwise
-			 */
-			inline operator T() const
-			{
-				if (*this)
-					return value;
-				else
-					throw ShogunException("Tried to access absent object");
-			}
-			/** Provides a way to call member functions and access
-			 * members of the object if it is present, fails otherwise
-			 */
-			inline T* operator->()
-			{
-				if (*this)
-					return &value;
-				else
-					throw ShogunException("Tried to access absent object");
-			}
-		private:
-			Maybe();
-			Maybe(const char* reason) :
-				value(),
-				absenceReason(reason)
-			{
-			}
+        /** Evaluates to true when object is present, false otherwise.
+         *
+         * Equivalent to @see is_present()
+         */
+        inline operator bool() const
+        {
+            return is_present();
+        }
 
-		private:
-			T value;
-			const char* absenceReason;
-	};
+        /** Returns value if it is present, fails otherwise.
+         *
+         * @throw   ShogunException     if retrieved value is absent
+         */
+        inline T& value()
+        {
+            return *get();
+        }
+
+        /** Returns value if it is present, or the provided default value.
+         *
+         * Doesn't throw any exception.
+         */
+        inline T value_or(const T& v)
+        {
+            if (is_present())
+                return *get();
+            else
+                return v;
+        }
+
+        /** Returns true if value is absent, false otherwise.
+         *
+         * Doesn't throw any exception.
+         */
+        inline bool is_absent() const
+        {
+            return m_absence_reason != nullptr;
+        }
+
+        /** Returns true if value is present, false otherwise.
+         *
+         * Doesn't throw any exception.
+         */
+        inline bool is_present() const
+        {
+            return m_absence_reason == nullptr;
+        }
+
+    private:
+        inline T* get()
+        {
+            if (is_present())
+                return &m_value;
+            else
+                throw ShogunException("Tried to access inexistent object");
+        }
+        Maybe();
+        Maybe(const char* reason, bool) :
+            m_value(),
+            m_absence_reason(reason)
+        {
+        }
+        Maybe(const T& value) :
+            m_value(value),
+            m_absence_reason(nullptr)
+        {
+        }
+
+    public:
+        template <typename Q>
+        friend Maybe<Q> Just(const Q& value);
+
+    private:
+        T m_value;
+        const char* m_absence_reason;
+    };
+
+    /** Wraps provided value into Maybe
+     * with present value.
+     *
+     * Doesn't throw any exception.
+     *
+     * @param   value   the value to wrap
+     */
+    template <typename T>
+    static Maybe<T> Just(const T& value)
+    {
+        return Maybe<T>(value);
+    }
 
 }
-#endif
 #endif
