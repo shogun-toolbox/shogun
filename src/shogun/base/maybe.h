@@ -6,6 +6,11 @@
 namespace shogun
 {
 
+    namespace detail
+    {
+        static const char* NO_REASON_FOR_ABSENCE = "AVAILABLE";
+    }
+
     /** Represents non-typed absent value.
      *
      * Can be casted to any @see Maybe<T> resulting
@@ -16,7 +21,7 @@ namespace shogun
     class Nothing
     {
     public:
-        Nothing(const char* reason = "just absent, sorry") :
+        Nothing(const char* reason = "no specific reason") :
             m_absence_reason(reason)
         {
         }
@@ -126,7 +131,7 @@ namespace shogun
          */
         inline bool is_absent() const
         {
-            return m_absence_reason != NULL;
+            return m_absence_reason != detail::NO_REASON_FOR_ABSENCE;
         }
 
         /** Returns true if value is present, false otherwise.
@@ -135,7 +140,7 @@ namespace shogun
          */
         inline bool is_present() const
         {
-            return m_absence_reason == NULL;
+            return m_absence_reason == detail::NO_REASON_FOR_ABSENCE;
         }
 
     private:
@@ -154,7 +159,7 @@ namespace shogun
         }
         Maybe(const T& value) :
             m_value(value),
-            m_absence_reason(NULL)
+            m_absence_reason(detail::NO_REASON_FOR_ABSENCE)
         {
         }
 
