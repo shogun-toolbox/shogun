@@ -112,7 +112,7 @@ namespace shogun
          *
          * Doesn't throw any exception.
          */
-        inline T value_or(const T& v)
+        inline T& value_or(T& v)
         {
             if (is_present())
                 return *get();
