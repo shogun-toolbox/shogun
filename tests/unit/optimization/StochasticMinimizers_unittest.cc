@@ -359,29 +359,80 @@ bool ClassificationForTestCostFunction2::next_sample()
 	return true;
 }
 
-TEST(SGDMinimizer,test1)
+struct ClassificationCase
 {
-	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
+	static SGVector<float64_t> y;
+	static SGMatrix<float64_t> x;
+	static void init();
+};
+
+SGVector<float64_t> ClassificationCase::y=SGVector<float64_t>();
+SGMatrix<float64_t> ClassificationCase::x=SGMatrix<float64_t>();
+
+void ClassificationCase::init()
+{
+	y=SGVector<float64_t>(20);
+	x=SGMatrix<float64_t>(2,20);
+	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
+	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
+	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
+	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
+	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
+	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
+	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
+	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
+	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
+	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
+	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
+	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
+	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
+	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
+	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
+	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
+	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
+	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
+	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
+	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
+	y[0]=1; 
+	y[1]=-1; 
+	y[2]=-1; 
+	y[3]=1; 
+	y[4]=1; 
+	y[5]=-1; 
+	y[6]=-1; 
+	y[7]=1; 
+	y[8]=1; 
+	y[9]=-1; 
+	y[10]=1;
+	y[11]=-1; 
+	y[12]=1; 
+	y[13]=1; 
+	y[14]=1; 
+	y[15]=1; 
+	y[16]=-1; 
+	y[17]=-1; 
+	y[18]=-1; 
+	y[19]=-1; 
+}
+
+
+struct RegressionCase
+{
+	static SGVector<float64_t> y;
+	static SGMatrix<float64_t> x;
+	static void init();
+};
+
+SGVector<float64_t> RegressionCase::y=SGVector<float64_t>();
+SGMatrix<float64_t> RegressionCase::x=SGMatrix<float64_t>();
+
+void RegressionCase::init()
+{
 	//the data is simulated from y=0.3*x1-1.5*x2+2.0*x3 with the Gaussian noise(mean=0,variance=1.0)
 	//where the ground truth w is [0.3,-1.5,2.0]
 	//there are 10 samples
-
-	//set init value of w to be estimated
-	w.set_const(0.0);
-
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
-
+	y=SGVector<float64_t> (10);
+	x=SGMatrix<float64_t> (10,3);
 	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
 	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
 	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
@@ -392,11 +443,29 @@ TEST(SGDMinimizer,test1)
 	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
 	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
 	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
+	y[0]=17.826341;
+	y[1]=28.947688;
+	y[2]=32.482436;
+	y[3]=5.475718;
+	y[4]=-26.082733;
+	y[5]=0.645608;
+	y[6]=1.794406;
+	y[7]=9.251004;
+	y[8]=-31.176166;
+	y[9]=30.801085;
+}
 
+TEST(SGDMinimizer,test1)
+{
+	SGVector<float64_t> w(3);
+	//set init value of w to be estimated
+	w.set_const(0.0);
+
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
 
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -413,7 +482,7 @@ TEST(SGDMinimizer,test1)
 	int32_t num_passes=20;
 	opt->set_number_passes(num_passes);
 
-	float64_t cost=opt->minimize()/y.vlen;
+	float64_t cost=opt->minimize()/RegressionCase::y.vlen;
 
 	//the result is from the svrg software using plain stochastic gradient descent
 	//http://riejohnson.com/svrg_download.html
@@ -432,40 +501,13 @@ TEST(SGDMinimizer,test1)
 TEST(SGDMinimizer,test2)
 {
 	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	//the data is simulated from y=0.3*x1-1.5*x2+2.0*x3 with the Gaussian noise(mean=0,variance=1.0)
-	//where the ground truth w is [0.3,-1.5,2.0]
-	//there are 10 samples
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
-
-	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
-	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
-	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
-	x(3,0)=-0.0883632752317; x(3,1)=-7.40468796501; x(3,2)=-3.07220055411;
-	x(4,0)=5.18231755738; x(4,1)=4.95152973815; x(4,2)=-9.9870338276;
-	x(5,0)=4.26708114291; x(5,1)=7.10165654603; x(5,2)=4.9253650409;
-	x(6,0)=8.18854988953; x(6,1)=2.12501081402; x(6,2)=0.879753850301;
-	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
-	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
-	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
-
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
-
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -502,35 +544,13 @@ TEST(SGDMinimizer,test2)
 TEST(SGDMinimizer,test3)
 {
 	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
+	//set init value of w to be estimated
 	w.set_const(0.0);
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
 
-	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
-	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
-	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
-	x(3,0)=-0.0883632752317; x(3,1)=-7.40468796501; x(3,2)=-3.07220055411;
-	x(4,0)=5.18231755738; x(4,1)=4.95152973815; x(4,2)=-9.9870338276;
-	x(5,0)=4.26708114291; x(5,1)=7.10165654603; x(5,2)=4.9253650409;
-	x(6,0)=8.18854988953; x(6,1)=2.12501081402; x(6,2)=0.879753850301;
-	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
-	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
-	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
-
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
-
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -576,35 +596,13 @@ TEST(SGDMinimizer,test3)
 TEST(SGDMinimizer,test4)
 {
 	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
+	//set init value of w to be estimated
 	w.set_const(0.0);
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
 
-	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
-	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
-	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
-	x(3,0)=-0.0883632752317; x(3,1)=-7.40468796501; x(3,2)=-3.07220055411;
-	x(4,0)=5.18231755738; x(4,1)=4.95152973815; x(4,2)=-9.9870338276;
-	x(5,0)=4.26708114291; x(5,1)=7.10165654603; x(5,2)=4.9253650409;
-	x(6,0)=8.18854988953; x(6,1)=2.12501081402; x(6,2)=0.879753850301;
-	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
-	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
-	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
-
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
-
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -628,7 +626,7 @@ TEST(SGDMinimizer,test4)
 	opt->set_number_passes(num_passes);
 
 	float64_t cost=opt->minimize();
-	cost=(cost-aa->get_cost())+aa->get_cost()/y.vlen;
+	cost=(cost-aa->get_cost())+aa->get_cost()/RegressionCase::y.vlen;
 
 	//the result is from the svrg software using plain stochastic gradient descent
 	//http://riejohnson.com/svrg_download.html
@@ -649,35 +647,13 @@ TEST(SGDMinimizer,test4)
 TEST(SGDMinimizer,test5)
 {
 	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
+	//set init value of w to be estimated
 	w.set_const(0.0);
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
 
-	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
-	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
-	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
-	x(3,0)=-0.0883632752317; x(3,1)=-7.40468796501; x(3,2)=-3.07220055411;
-	x(4,0)=5.18231755738; x(4,1)=4.95152973815; x(4,2)=-9.9870338276;
-	x(5,0)=4.26708114291; x(5,1)=7.10165654603; x(5,2)=4.9253650409;
-	x(6,0)=8.18854988953; x(6,1)=2.12501081402; x(6,2)=0.879753850301;
-	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
-	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
-	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
-
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
-
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -743,35 +719,13 @@ TEST(SGDMinimizer,test5)
 TEST(SVRGMinimizer,test1)
 {
 	SGVector<float64_t> w(3);
-	SGVector<float64_t> y(10);
-	SGMatrix<float64_t> x(10,3);
+	//set init value of w to be estimated
 	w.set_const(0.0);
-	y[0]=17.826341;
-	y[1]=28.947688;
-	y[2]=32.482436;
-	y[3]=5.475718;
-	y[4]=-26.082733;
-	y[5]=0.645608;
-	y[6]=1.794406;
-	y[7]=9.251004;
-	y[8]=-31.176166;
-	y[9]=30.801085;
 
-	x(0,0)=3.18934210549; x(0,1)=-6.36734839959; x(0,2)=3.87646568343;
-	x(1,0)=9.71965286623; x(1,1)=-6.49372199537; x(1,2)=7.85930917808;
-	x(2,0)=0.590611116182; x(2,1)=-9.78182994856; x(2,2)=8.12538297323;
-	x(3,0)=-0.0883632752317; x(3,1)=-7.40468796501; x(3,2)=-3.07220055411;
-	x(4,0)=5.18231755738; x(4,1)=4.95152973815; x(4,2)=-9.9870338276;
-	x(5,0)=4.26708114291; x(5,1)=7.10165654603; x(5,2)=4.9253650409;
-	x(6,0)=8.18854988953; x(6,1)=2.12501081402; x(6,2)=0.879753850301;
-	x(7,0)=5.5827306913; x(7,1)=8.77507993975; x(7,2)=9.94739194247;
-	x(8,0)=6.51074058756; x(8,1)=9.82537500991; x(8,2)=-8.74331697256;
-	x(9,0)=-7.26254338011; x(9,1)=-9.73370985632; x(9,2)=8.32055931886;
-
+	RegressionCase::init();
 	CRegressionExample* aa=new CRegressionExample();
-
-	aa->set_x(x);
-	aa->set_y(y);
+	aa->set_x(RegressionCase::x);
+	aa->set_y(RegressionCase::y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -850,50 +804,6 @@ TEST(SVRGMinimizer,test1)
 
 TEST(SVRGMinimizer,test2)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
 	//We fix the sample sequences
 	//Note that we a pass of going through a data set can be called a sample sequence
 	//We generalize the definition of "sample sequence". A sample sequence can be a subset of the data set.
@@ -930,13 +840,14 @@ TEST(SVRGMinimizer,test2)
 	seq[23]=0;
 	seq[24]=18;
 
+	ClassificationCase::init();
 	ClassificationForTestCostFunction* bb=new ClassificationForTestCostFunction();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 	//there are 5 sample sequences
 	bb->set_sample_sequences(seq, 5);
 
 	SVRGMinimizer* opt=new SVRGMinimizer(bb);
-	opt->set_penalty_weight(1.0/y.vlen);
+	opt->set_penalty_weight(1.0/ClassificationCase::y.vlen);
 	L2Penalty* penalty_type=new L2Penalty();
 	opt->set_penalty_type(penalty_type);
 
@@ -972,52 +883,9 @@ TEST(SVRGMinimizer,test2)
 
 TEST(AdaDeltaUpdater, test1)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
+	ClassificationCase::init();
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 	AdaDeltaUpdater* updater=new AdaDeltaUpdater();
@@ -1080,52 +948,9 @@ TEST(AdaDeltaUpdater, test1)
 
 TEST(AdaptMomentumCorrection, test1)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
+	ClassificationCase::init();
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 	RmsPropUpdater* updater=new RmsPropUpdater();
@@ -1196,52 +1021,9 @@ TEST(AdaptMomentumCorrection, test1)
 
 TEST(L1PenaltyForTG, test1)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
+	ClassificationCase::init();
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	ConstLearningRate* rate=new ConstLearningRate();
@@ -1283,52 +1065,9 @@ TEST(L1PenaltyForTG, test1)
 
 TEST(L1PenaltyForTG, test2)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
+	ClassificationCase::init();
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
@@ -1401,52 +1140,9 @@ TEST(L1PenaltyForTG, test2)
 
 TEST(ElasticNetPenalty, test1)
 {
-	SGVector<float64_t> y(20);
-	SGMatrix<float64_t> x(2,20);
-	x(0,0)=-0.731271511775; x(1,0)=0.694867473874; 
-	x(0,1)=0.527549237953; x(1,1)=-0.489861948521; 
-	x(0,2)=-0.00912982581612; x(1,2)=-0.101017870423; 
-	x(0,3)=0.303185945446; x(1,3)=0.577446702271; 
-	x(0,4)=-0.812280826452; x(1,4)=-0.943305046956; 
-	x(0,5)=0.67153020784; x(1,5)=-0.13446586419; 
-	x(0,6)=0.524560164916; x(1,6)=-0.995787893298; 
-	x(0,7)=-0.10922561189; x(1,7)=0.443080064682; 
-	x(0,8)=-0.542475557459; x(1,8)=0.890541391108;           
-	x(0,9)=0.802854915223; x(1,9)=-0.938820033933; 
-	x(0,10)=-0.949108278013; x(1,10)=0.082824945587; 
-	x(0,11)=0.878298325557; x(1,11)=-0.237591524624; 
-	x(0,12)=-0.566801205739; x(1,12)=-0.155766848835; 
-	x(0,13)=-0.94191842485; x(1,13)=-0.556616667454; 
-	x(0,14)=-0.124224812699; x(1,14)=-0.0083755172363; 
-	x(0,15)=-0.533831099485; x(1,15)=-0.538266916918; 
-	x(0,16)=-0.420436770819; x(1,16)=-0.957020589468; 
-	x(0,17)=0.675155951325; x(1,17)=0.112908645305; 
-	x(0,18)=0.284588725865; x(1,18)=-0.628187468211; 
-	x(0,19)=0.985086824352; x(1,19)=0.719893057591;
-	
-	y[0]=1; 
-	y[1]=-1; 
-	y[2]=-1; 
-	y[3]=1; 
-	y[4]=1; 
-	y[5]=-1; 
-	y[6]=-1; 
-	y[7]=1; 
-	y[8]=1; 
-	y[9]=-1; 
-	y[10]=1;
-	y[11]=-1; 
-	y[12]=1; 
-	y[13]=1; 
-	y[14]=1; 
-	y[15]=1; 
-	y[16]=-1; 
-	y[17]=-1; 
-	y[18]=-1; 
-	y[19]=-1; 
-                   
+	ClassificationCase::init();
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(x, y);
+	bb->set_data(ClassificationCase::x, ClassificationCase::y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
