@@ -65,7 +65,7 @@ public:
 
 	virtual void set_rounding_eplison(float64_t eplison)
 	{
-		REQUIRE(eplison>=0,"");
+		REQUIRE(eplison>=0,"Rounding eplison (%f) should be non-negative\n", eplison);
 		m_rounding_eplison=eplison;
 	}
 

@@ -359,17 +359,15 @@ bool ClassificationForTestCostFunction2::next_sample()
 	return true;
 }
 
-struct ClassificationCase
+struct ClassificationFixture
 {
-	static SGVector<float64_t> y;
-	static SGMatrix<float64_t> x;
-	static void init();
+	ClassificationFixture(){init();}
+	SGVector<float64_t> y;
+	SGMatrix<float64_t> x;
+	void init();
 };
 
-SGVector<float64_t> ClassificationCase::y=SGVector<float64_t>();
-SGMatrix<float64_t> ClassificationCase::x=SGMatrix<float64_t>();
-
-void ClassificationCase::init()
+void ClassificationFixture::init()
 {
 	y=SGVector<float64_t>(20);
 	x=SGMatrix<float64_t>(2,20);
@@ -416,17 +414,15 @@ void ClassificationCase::init()
 }
 
 
-struct RegressionCase
+struct RegressionFixture
 {
-	static SGVector<float64_t> y;
-	static SGMatrix<float64_t> x;
-	static void init();
+	RegressionFixture() {init();}
+	SGVector<float64_t> y;
+	SGMatrix<float64_t> x;
+	void init();
 };
 
-SGVector<float64_t> RegressionCase::y=SGVector<float64_t>();
-SGMatrix<float64_t> RegressionCase::x=SGMatrix<float64_t>();
-
-void RegressionCase::init()
+void RegressionFixture::init()
 {
 	//the data is simulated from y=0.3*x1-1.5*x2+2.0*x3 with the Gaussian noise(mean=0,variance=1.0)
 	//where the ground truth w is [0.3,-1.5,2.0]
@@ -461,11 +457,11 @@ TEST(SGDMinimizer,test1)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
 
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -482,7 +478,7 @@ TEST(SGDMinimizer,test1)
 	int32_t num_passes=20;
 	opt->set_number_passes(num_passes);
 
-	float64_t cost=opt->minimize()/RegressionCase::y.vlen;
+	float64_t cost=opt->minimize()/data.y.vlen;
 
 	//the result is from the svrg software using plain stochastic gradient descent
 	//http://riejohnson.com/svrg_download.html
@@ -504,10 +500,10 @@ TEST(SGDMinimizer,test2)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -547,10 +543,10 @@ TEST(SGDMinimizer,test3)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -599,10 +595,10 @@ TEST(SGDMinimizer,test4)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -626,7 +622,7 @@ TEST(SGDMinimizer,test4)
 	opt->set_number_passes(num_passes);
 
 	float64_t cost=opt->minimize();
-	cost=(cost-aa->get_cost())+aa->get_cost()/RegressionCase::y.vlen;
+	cost=(cost-aa->get_cost())+aa->get_cost()/data.y.vlen;
 
 	//the result is from the svrg software using plain stochastic gradient descent
 	//http://riejohnson.com/svrg_download.html
@@ -650,10 +646,10 @@ TEST(SGDMinimizer,test5)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -722,10 +718,10 @@ TEST(SVRGMinimizer,test1)
 	//set init value of w to be estimated
 	w.set_const(0.0);
 
-	RegressionCase::init();
+	RegressionFixture data;
 	CRegressionExample* aa=new CRegressionExample();
-	aa->set_x(RegressionCase::x);
-	aa->set_y(RegressionCase::y);
+	aa->set_x(data.x);
+	aa->set_y(data.y);
 	aa->set_init_w(w);
 	RegressionForTestCostFunction *fun=new RegressionForTestCostFunction();
 	fun->set_target(aa);
@@ -840,14 +836,14 @@ TEST(SVRGMinimizer,test2)
 	seq[23]=0;
 	seq[24]=18;
 
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction* bb=new ClassificationForTestCostFunction();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 	//there are 5 sample sequences
 	bb->set_sample_sequences(seq, 5);
 
 	SVRGMinimizer* opt=new SVRGMinimizer(bb);
-	opt->set_penalty_weight(1.0/ClassificationCase::y.vlen);
+	opt->set_penalty_weight(1.0/data.y.vlen);
 	L2Penalty* penalty_type=new L2Penalty();
 	opt->set_penalty_type(penalty_type);
 
@@ -883,9 +879,9 @@ TEST(SVRGMinimizer,test2)
 
 TEST(AdaDeltaUpdater, test1)
 {
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 	AdaDeltaUpdater* updater=new AdaDeltaUpdater();
@@ -948,9 +944,9 @@ TEST(AdaDeltaUpdater, test1)
 
 TEST(AdaptMomentumCorrection, test1)
 {
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 	RmsPropUpdater* updater=new RmsPropUpdater();
@@ -1021,9 +1017,9 @@ TEST(AdaptMomentumCorrection, test1)
 
 TEST(L1PenaltyForTG, test1)
 {
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	ConstLearningRate* rate=new ConstLearningRate();
@@ -1065,9 +1061,9 @@ TEST(L1PenaltyForTG, test1)
 
 TEST(L1PenaltyForTG, test2)
 {
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
@@ -1140,9 +1136,9 @@ TEST(L1PenaltyForTG, test2)
 
 TEST(ElasticNetPenalty, test1)
 {
-	ClassificationCase::init();
+	ClassificationFixture data;
 	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
-	bb->set_data(ClassificationCase::x, ClassificationCase::y);
+	bb->set_data(data.x, data.y);
 	SGDMinimizer* opt=new SGDMinimizer(bb);
 
 	InverseScalingLearningRate* rate= new InverseScalingLearningRate();
