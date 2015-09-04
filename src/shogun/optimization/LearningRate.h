@@ -58,17 +58,12 @@ public:
 	/** Update a context object to store mutable variables
 	 * used in learning rate
 	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
-	 *
 	 * @param context, a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)=0;
 
 	/** Load the given context object to restore mutable variables
 	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
 	 * @param context, a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context)=0;

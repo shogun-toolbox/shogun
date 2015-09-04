@@ -77,9 +77,6 @@ public:
 
 	/** Update a context object to store mutable variables
 	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
-	 *
 	 * @param context, a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)
@@ -89,9 +86,6 @@ public:
 
 	/** Return a context object which stores mutable variables
 	 * Usually it is used in serialization.
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
 	 *
 	 * @return a context object
 	 */

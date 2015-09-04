@@ -135,23 +135,12 @@ public:
 	{
 		REQUIRE(context,"Context must set\n");
 		REQUIRE(m_gradient_updater,"Descend updater must set\n");
+		FirstOrderMinimizer::load_from_context(context);
 		m_gradient_updater->load_from_context(context);
 		if(m_learning_rate)
 			m_learning_rate->load_from_context(context);
 		std::string key="FirstOrderStochasticMinimizer::m_iter_counter";
 		m_iter_counter=context->get_data_int32(key);
-	}
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual CMinimizerContext* save_to_context()
-	{
-		CMinimizerContext* result=new CMinimizerContext();
-		update_context(result);
-		return result;
 	}
 
 	virtual void set_learning_rate(LearningRate *learning_rate)
@@ -170,6 +159,7 @@ protected:
 	{
 		REQUIRE(context,"Context must set\n");
 		REQUIRE(m_gradient_updater,"Descend updater must set\n");
+		FirstOrderMinimizer::update_context(context);
 		m_gradient_updater->update_context(context);
 		if(m_learning_rate)
 			m_learning_rate->update_context(context);

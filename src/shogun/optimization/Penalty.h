@@ -31,6 +31,7 @@
 
 #ifndef PENALTY_H
 #define PENALTY_H
+#include <shogun/optimization/MinimizerContext.h>
 namespace shogun
 {
 /** @brief The base class for penalty/regularization used in minimization.
@@ -72,6 +73,20 @@ public:
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient)=0;
+
+	/** Update a context object to store mutable variables
+	 * used in learning rate
+	 *
+	 * @param context, a context object
+	 */
+	virtual void update_context(CMinimizerContext* context)=0;
+
+	/** Load the given context object to restore mutable variables
+	 *
+	 * @param context, a context object
+	 */
+	virtual void load_from_context(CMinimizerContext* context)=0;
+
 };
 
 }

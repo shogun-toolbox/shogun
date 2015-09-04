@@ -29,72 +29,27 @@
  *
  */
 
-#ifndef L2PENALTY_H
-#define L2PENALTY_H
+#ifndef SPARSEPENALTY_H
+#define SPARSEPENALTY_H
 #include <shogun/optimization/Penalty.h>
-#include <shogun/lib/config.h>
 namespace shogun
 {
-/** @brief The class implements L2 penalty/regularization within the FirstOrderMinimizer framework.
+/** @brief The base class for sparse penalty/regularization used in minimization.
  *
- * For L2 penalty, \f$L2(w)\f$
- * \f[
- * L2(w)=\frac{w^t w}{2}
- * \f]
+ * This is the interface of regularizers used in minimizers.
+ * (eg,
+ * FirstOrderMinimizer::update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var)
+ * FirstOrderMinimizer::get_penalty(SGVector<float64_t> var)
+ * ) 
+ *
  */
-
-class L2Penalty: public Penalty
+class SparsePenalty: public Penalty
 {
 public:
-	/* Constructor */
-	L2Penalty():Penalty() {}
+	virtual void update_sparse_variable(SGVector<float64_t> variable,
+		float64_t penalty_delta)=0;
 
-	/* Destructor */
-	virtual ~L2Penalty() {}
-
-	/** Given the value of a target variable,
-	 * this method returns the penalty of the variable 
-	 *
-	 * @param variable value of the variable
-	 * @return penalty of the variable
-	 */
-	virtual float64_t get_penalty(float64_t variable) {return 0.5*variable*variable;}
-
-	/** Return the gradient of the penalty wrt a target variable
-	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
-	 *
-	 * For L2 penalty
-	 * \f[
-	 * \frac{\partial L2(w) }{\partial w}=w
-	 * \f]
-	 *
-	 * @param variable value of a target variable
-	 * @param gradient unregularized/unpenalized gradient of the variable
-	 * @return the gradient of the penalty wrt the variable
-	 */
-	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable) {return variable;}
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context, a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context, a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
 };
 
 }
-
 #endif

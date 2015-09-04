@@ -29,51 +29,57 @@
  *
  */
 
-#ifndef L2PENALTY_H
-#define L2PENALTY_H
-#include <shogun/optimization/Penalty.h>
+#ifndef L1PENALTYFORTG_H
+#define L1PENALTYFORTG_H
+#include <shogun/optimization/L1Penalty.h>
 #include <shogun/lib/config.h>
+
+#include <iostream>
 namespace shogun
 {
-/** @brief The class implements L2 penalty/regularization within the FirstOrderMinimizer framework.
+/** @brief The is the base class for L1 penalty/regularization within the FirstOrderMinimizer framework.
  *
- * For L2 penalty, \f$L2(w)\f$
+ * For L1 penalty, \f$L1(w)\f$
  * \f[
- * L2(w)=\frac{w^t w}{2}
+ * L1(w)=\| w \|_1 = \sum_i \| w_i \|
  * \f]
+ *
+ * Stochastic Gradient Descent Training for L1-regularized Log-linear Models with Cumulative Penalty
  */
 
-class L2Penalty: public Penalty
+class L1PenaltyForTG: public L1Penalty
 {
 public:
 	/* Constructor */
-	L2Penalty():Penalty() {}
+	L1PenaltyForTG():L1Penalty() { init(); }
 
 	/* Destructor */
-	virtual ~L2Penalty() {}
+	virtual ~L1PenaltyForTG() {}
 
-	/** Given the value of a target variable,
-	 * this method returns the penalty of the variable 
-	 *
-	 * @param variable value of the variable
-	 * @return penalty of the variable
-	 */
-	virtual float64_t get_penalty(float64_t variable) {return 0.5*variable*variable;}
-
-	/** Return the gradient of the penalty wrt a target variable
-	 * Note that the penalized gradient=unpenalized gradient+penalty_gradient
-	 *
-	 * For L2 penalty
-	 * \f[
-	 * \frac{\partial L2(w) }{\partial w}=w
-	 * \f]
-	 *
-	 * @param variable value of a target variable
-	 * @param gradient unregularized/unpenalized gradient of the variable
-	 * @return the gradient of the penalty wrt the variable
-	 */
-	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable) {return variable;}
+	virtual void update_sparse_variable(SGVector<float64_t> variable,
+		float64_t penalty_delta)
+	{
+		if(m_q.vlen==0)
+		{
+			m_q=SGVector<float64_t>(variable.vlen);
+			m_q.set_const(0.0);
+		}
+		else
+		{
+			REQUIRE(variable.vlen==m_q.vlen,
+				"The length of variable (%d) is changed. Last time, the length of variable was %d", variable.vlen, m_q.vlen);
+		}
+		m_u+=penalty_delta;
+		for(index_t idx=0; idx<variable.vlen; idx++)
+		{
+			float64_t z=variable[idx];
+			if(z>0.0)
+				variable[idx]=get_sparse_variable(z, m_u+m_q[idx]);
+			else if(z<0.0)
+				variable[idx]=get_sparse_variable(z, m_u-m_q[idx]);
+			m_q[idx]+=variable[idx]-z;
+		}
+	}
 
 	/** Update a context object to store mutable variables
 	 * used in learning rate
@@ -83,6 +89,16 @@ public:
 	virtual void update_context(CMinimizerContext* context)
 	{
 		REQUIRE(context, "Context must set\n");
+		L1Penalty::update_context(context);
+		SGVector<float64_t> value(m_q.vlen);
+		std::copy(m_q.vector,
+			m_q.vector+m_q.vlen,
+			value.vector);
+		std::string key="L1PenaltyForTG::m_q";
+		context->save_data(key, value);
+
+		key="L1PenaltyForTG::m_u";
+		context->save_data(key, m_u);
 	}
 
 	/** Load the given context object to restore mutable variables
@@ -92,7 +108,27 @@ public:
 	virtual void load_from_context(CMinimizerContext* context)
 	{
 		REQUIRE(context, "Context must set\n");
+		L1Penalty::load_from_context(context);
+		std::string key="L1PenaltyForTG::m_q";
+		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
+		m_q=SGVector<float64_t>(value.vlen);
+		std::copy(value.vector, value.vector+value.vlen,
+			m_q.vector);
+
+		key="L1PenaltyForTG::m_u";
+		m_u=context->get_data_float64(key);
 	}
+protected:
+	float64_t m_u;
+	SGVector<float64_t> m_q;
+
+private:
+	void init()
+	{
+		m_u=0;
+		m_q=SGVector<float64_t>();
+	}
+
 };
 
 }

@@ -100,14 +100,24 @@ public:
 	 *
 	 * @return a context object
 	 */
-	virtual CMinimizerContext* save_to_context()=0;
+	virtual CMinimizerContext* save_to_context()
+	{
+		CMinimizerContext* result=new CMinimizerContext();
+		update_context(result);
+		return result;
+	}
 
 	/** Load the given context object to restores mutable variables
 	 * Usually it is used in deserialization.
 	 *
 	 * @param context, a context object
 	 */
-	virtual void load_from_context(CMinimizerContext* context)=0;
+	virtual void load_from_context(CMinimizerContext* context)
+	{
+		REQUIRE(context,"Context must set\n");
+		if(m_penalty_type)
+			m_penalty_type->load_from_context(context);
+	}
 
 	/** Set the weight of penalty
 	 *
@@ -129,6 +139,17 @@ public:
 		m_penalty_type=penalty_type;
 	}
 protected:
+
+	/** Update a context object to store mutable variables
+	 *
+	 * @param context, a context object
+	 */
+	virtual void update_context(CMinimizerContext* context)
+	{
+		REQUIRE(context,"Context must set\n");
+		if(m_penalty_type)
+			m_penalty_type->update_context(context);
+	}
 
 	/** Get the penalty given target variables
 	 * For L2 penalty,
