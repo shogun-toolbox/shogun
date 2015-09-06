@@ -60,7 +60,9 @@ float64_t SMIDASMinimizer::minimize()
 		m_dual_variable=m_mapping_fun->get_dual_variable(variable_reference);
 	else
 	{
-		REQUIRE(m_dual_variable.vlen==variable_reference.vlen,"");
+		REQUIRE(m_dual_variable.vlen==variable_reference.vlen,
+			"The length (%d) of dual variable must match the length (%d) of variable\n",
+			m_dual_variable.vlen, variable_reference.vlen);
 	}
 	L1Penalty* penalty_type=dynamic_cast<L1Penalty*>(m_penalty_type);
 	REQUIRE(penalty_type,"For now only L1Penalty is supported. Please use the penalty for this minimizer\n");
