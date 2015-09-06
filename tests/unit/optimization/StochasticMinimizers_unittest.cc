@@ -48,6 +48,8 @@
 #include <shogun/optimization/L1PenaltyForTG.h>
 #include <shogun/optimization/InverseScalingLearningRate.h>
 #include <shogun/optimization/ElasticNetPenalty.h>
+#include <shogun/optimization/SMIDASMinimizer.h>
+#include <shogun/optimization/PNormMappingFunction.h>
 using namespace shogun;
 using namespace Eigen;
 
@@ -1206,4 +1208,78 @@ TEST(ElasticNetPenalty, test1)
 	delete bb;
 }
 
+TEST(SMIDASMinimizer, test1)
+{
+	ClassificationFixture data;
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(data.x, data.y);
+	SMIDASMinimizer* opt=new SMIDASMinimizer(bb);
+
+	ConstLearningRate* rate=new ConstLearningRate();
+	rate->set_const_learning_rate(0.01);
+	GradientDescendUpdater* updater=new GradientDescendUpdater();
+	opt->set_gradient_updater(updater);
+	PNormMappingFunction* mapping=new PNormMappingFunction();
+	mapping->set_norm(2.0);
+	opt->set_mapping_function(mapping);
+
+	opt->set_penalty_weight(0.01);
+	L1Penalty* penalty_type=new L1Penalty();
+	penalty_type->set_rounding_eplison(1e-8);
+	opt->set_penalty_type(penalty_type);
+	opt->set_number_passes(1);
+	opt->set_learning_rate(rate);
+
+	opt->minimize();
+	CMinimizerContext* context=opt->save_to_context();
+
+	delete rate;
+	delete opt;
+	delete updater;
+	delete penalty_type;
+	delete mapping;
+
+	SMIDASMinimizer* opt2=new SMIDASMinimizer(bb);
+
+	ConstLearningRate* rate2=new ConstLearningRate();
+	rate2->set_const_learning_rate(0.01);
+	GradientDescendUpdater* updater2=new GradientDescendUpdater();
+	opt2->set_gradient_updater(updater2);
+	PNormMappingFunction* mapping2=new PNormMappingFunction();
+	mapping2->set_norm(2.0);
+	opt2->set_mapping_function(mapping2);
+	opt2->set_penalty_weight(0.01);
+	L1Penalty* penalty_type2=new L1Penalty();
+	penalty_type2->set_rounding_eplison(1e-8);
+	opt2->set_penalty_type(penalty_type2);
+	opt2->set_number_passes(1);
+	opt2->set_learning_rate(rate2);
+	opt2->load_from_context(context);
+	delete context;
+
+	opt2->minimize();
+	//the loss in the reference program is log(1+exp(-y*w*x))
+	//However, the loss in our implementation is log(1+exp(y*w*x))
+	//
+	//reference result from http://mloss.org/software/view/208/
+	//
+	//w=
+	//-0.0934993 
+	//0.0367823
+	//
+	//cost=
+	//0.666646 
+	float64_t cost=bb->get_cost()/bb->get_sample_size();
+	EXPECT_NEAR(cost,0.666646,1e-6);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],0.0934993,1e-6);
+	EXPECT_NEAR(w[1],-0.0367823,1e-6);
+
+	delete rate2;
+	delete opt2;
+	delete updater2;
+	delete penalty_type2;
+	delete mapping2;
+	delete bb;
+}
 #endif /* HAVE_EIGEN3 */
