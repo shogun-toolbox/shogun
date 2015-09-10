@@ -69,11 +69,11 @@ public:
 		m_rounding_eplison=eplison;
 	}
 
-	virtual void update_sparse_variable(SGVector<float64_t> variable,
-		float64_t penalty_delta)
+	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight)
 	{
 		for(index_t idx=0; idx<variable.vlen; idx++)
-			variable[idx]=get_sparse_variable(variable[idx], penalty_delta);
+			variable[idx]=get_sparse_variable(variable[idx], proximal_weight);
 	}
 
 	/** Update a context object to store mutable variables
@@ -94,20 +94,18 @@ public:
 	{
 		REQUIRE(context, "Context must set\n");
 	}
-protected:
-	float64_t m_rounding_eplison;
 
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_delta)
+	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
 	{
 	  if (variable>0.0)
 	  {
-		  variable-=penalty_delta;
+		  variable-=penalty_weight;
 		  if (variable<0.0)
 			  variable=0.0;
 	  }
 	  else
 	  {
-		  variable+=penalty_delta;
+		  variable+=penalty_weight;
 		  if (variable>0.0)
 			  variable=0.0;
 	  }
@@ -116,6 +114,9 @@ protected:
 	  return variable;
 		return 0;
 	}
+protected:
+	float64_t m_rounding_eplison;
+
 
 private:
 	void init()

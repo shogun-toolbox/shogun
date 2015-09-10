@@ -34,6 +34,8 @@
 #include <shogun/optimization/FirstOrderStochasticCostFunction.h>
 #include <shogun/optimization/DescendUpdater.h>
 #include <shogun/optimization/LearningRate.h>
+#include <shogun/optimization/SparsePenalty.h>
+#include <shogun/optimization/ProximalPenalty.h>
 namespace shogun
 {
 
@@ -150,6 +152,21 @@ public:
 
 	virtual int32_t get_iteration_counter() {return m_iter_counter;}
 protected:
+	virtual void do_proximal_operation(SGVector<float64_t>variable_reference)
+	{
+		ProximalPenalty* proximal_penalty=dynamic_cast<ProximalPenalty*>(m_penalty_type);
+		if(proximal_penalty)
+		{
+			float64_t proximal_weight=m_penalty_weight;
+			SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
+			if(sparse_penalty)
+			{
+				REQUIRE(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used\n");
+				proximal_weight*=m_learning_rate->get_learning_rate(m_iter_counter);
+			}
+			proximal_penalty->update_variable_for_proximity(variable_reference,proximal_weight);
+		}
+	}
 
 	/** Update a context object to store mutable variables
 	 *

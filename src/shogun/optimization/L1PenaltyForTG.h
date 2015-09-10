@@ -56,8 +56,8 @@ public:
 	/* Destructor */
 	virtual ~L1PenaltyForTG() {}
 
-	virtual void update_sparse_variable(SGVector<float64_t> variable,
-		float64_t penalty_delta)
+	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight)
 	{
 		if(m_q.vlen==0)
 		{
@@ -69,7 +69,7 @@ public:
 			REQUIRE(variable.vlen==m_q.vlen,
 				"The length of variable (%d) is changed. Last time, the length of variable was %d", variable.vlen, m_q.vlen);
 		}
-		m_u+=penalty_delta;
+		m_u+=proximal_weight;
 		for(index_t idx=0; idx<variable.vlen; idx++)
 		{
 			float64_t z=variable[idx];
