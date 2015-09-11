@@ -93,11 +93,11 @@ public:
 		m_l1_penalty->set_rounding_eplison(eplison);
 	}
 
-	virtual void update_sparse_variable(SGVector<float64_t> variable,
-		float64_t penalty_delta)
+	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight)
 	{
 		check_ratio();
-		m_l1_penalty->update_sparse_variable(variable, penalty_delta*m_l1_ratio);
+		m_l1_penalty->update_variable_for_proximity(variable, proximal_weight*m_l1_ratio);
 	}
 
 	/** Update a context object to store mutable variables
@@ -121,6 +121,12 @@ public:
 		REQUIRE(context, "Context must set\n");
 		m_l1_penalty->load_from_context(context);
 		m_l2_penalty->load_from_context(context);
+	}
+
+	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
+	{
+		check_ratio();
+		return m_l1_penalty->get_sparse_variable(variable, penalty_weight*m_l1_ratio);
 	}
 protected:
 	virtual void check_ratio()

@@ -29,9 +29,9 @@
  *
  */
 
-#ifndef SPARSEPENALTY_H
-#define SPARSEPENALTY_H
-#include <shogun/optimization/ProximalPenalty.h>
+#ifndef PROXIMALPENALTY_H
+#define PROXIMALPENALTY_H
+#include <shogun/optimization/Penalty.h>
 namespace shogun
 {
 /** @brief The base class for sparse penalty/regularization used in minimization.
@@ -43,10 +43,11 @@ namespace shogun
  * ) 
  *
  */
-class SparsePenalty: public ProximalPenalty
+class ProximalPenalty: public Penalty
 {
 public:
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)=0;
+	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight)=0;
 
 };
 

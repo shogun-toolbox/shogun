@@ -79,7 +79,7 @@ float64_t SMIDASMinimizer::minimize()
 
 			SGVector<float64_t> grad=m_fun->get_gradient();
 			m_gradient_updater->update_variable(m_dual_variable,grad, learning_rate);
-			penalty_type->update_sparse_variable(m_dual_variable, m_penalty_weight*learning_rate);
+			penalty_type->update_variable_for_proximity(m_dual_variable, m_penalty_weight*learning_rate);
 			m_mapping_fun->update_variable(variable_reference, m_dual_variable);
 		}
 	}

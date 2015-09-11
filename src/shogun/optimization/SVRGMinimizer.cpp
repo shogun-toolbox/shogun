@@ -117,12 +117,7 @@ float64_t SVRGMinimizer::minimize()
 			update_gradient(grad_new,variable_reference);
 			m_gradient_updater->update_variable(variable_reference,grad_new,learning_rate);
 
-			SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
-			if(sparse_penalty)
-			{
-				REQUIRE(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used\n");
-				sparse_penalty->update_sparse_variable(variable_reference,learning_rate*m_penalty_weight);
-			}
+			do_proximal_operation(variable_reference);
 		}
 	}
 	float64_t cost=m_fun->get_cost();
