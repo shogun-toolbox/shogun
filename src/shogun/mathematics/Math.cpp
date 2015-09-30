@@ -16,10 +16,10 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <float.h>
 
 #ifndef NAN
 #include <stdlib.h>
@@ -44,12 +44,18 @@ int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -2
 
 const float64_t CMath::NOT_A_NUMBER    	=  NAN;
 const float64_t CMath::INFTY            =  INFINITY;	// infinity
-const float64_t CMath::ALMOST_INFTY		=  +1e+20;		//a large number
-const float64_t CMath::ALMOST_NEG_INFTY =  -1000;
+const float64_t CMath::ALMOST_INFTY		=  +1e+300;		//a large number
+const float64_t CMath::ALMOST_NEG_INFTY =  -1e+300;
 const float64_t CMath::PI=M_PI;
-const float64_t CMath::MACHINE_EPSILON=5E-16;
-const float64_t CMath::MAX_REAL_NUMBER=1E300;
-const float64_t CMath::MIN_REAL_NUMBER=1E-300;
+const float64_t CMath::MACHINE_EPSILON=DBL_EPSILON;
+const float64_t CMath::MAX_REAL_NUMBER=DBL_MAX;
+const float64_t CMath::MIN_REAL_NUMBER=DBL_MIN;
+const float32_t CMath::F_MAX_VAL32=FLT_MAX;
+const float32_t CMath::F_MIN_NORM_VAL32=FLT_MIN;
+const float64_t CMath::F_MAX_VAL64=DBL_MAX;
+const float64_t CMath::F_MIN_NORM_VAL64=DBL_MIN;
+const float32_t CMath::F_MIN_VAL32=(FLT_MIN * FLT_EPSILON);
+const float64_t CMath::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
 
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
@@ -79,6 +85,40 @@ CMath::~CMath()
 	SG_FREE(CMath::logtable);
 	CMath::logtable=NULL;
 #endif
+}
+
+float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
+{
+	float64_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
+	r = ev1.dot(ev2);
+#elif HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_ddot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
+#endif
+	return r;
+}
+
+float32_t CMath::dot(const float32_t* v1, const float32_t* v2, int32_t n)
+{
+	float32_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
+	r = ev1.dot(ev2);
+#elif HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_sdot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
+#endif
+	return r;
 }
 
 #ifdef USE_LOGCACHE
@@ -115,21 +155,21 @@ void CMath::init_log_table()
 void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
 {
   int32_t changed=1;
-  if (a[0]==-1) return ;
+  if (a[0]==-1) return;
   while (changed)
   {
-      changed=0; int32_t i=0 ;
+      changed=0; int32_t i=0;
       while ((a[(i+1)*cols]!=-1) && (a[(i+1)*cols+1]!=-1)) // to be sure
 	  {
 		  if (a[i*cols+sort_col]>a[(i+1)*cols+sort_col])
 		  {
 			  for (int32_t j=0; j<cols; j++)
-				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]) ;
-			  changed=1 ;
-		  } ;
-		  i++ ;
-	  } ;
-  } ;
+				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]);
+			  changed=1;
+		  };
+		  i++;
+	  };
+  };
 }
 
 void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
@@ -206,7 +246,6 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 	}
 	output[n-1] = end;
 }
-
 
 int CMath::is_nan(double f)
 {
@@ -355,3 +394,19 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 	return endptr != buf.vector;
 }
 
+float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance)
+{
+	REQUIRE(rel_tolerance > 0 && rel_tolerance < 1.0,
+		"Relative tolerance (%f) should be less than 1.0 and positive\n", rel_tolerance);
+	REQUIRE(is_finite(true_value),
+		"The true_value should be finite\n");
+	float64_t abs_tolerance = rel_tolerance;
+	if (abs(true_value)>0.0)
+	{
+		if (log(abs(true_value)) + log(rel_tolerance) < log(F_MIN_VAL64))
+			abs_tolerance = F_MIN_VAL64;
+		else
+			abs_tolerance = abs(true_value * rel_tolerance);
+	}
+	return abs_tolerance;
+}

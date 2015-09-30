@@ -11,7 +11,8 @@
 #ifndef _HIERARCHICAL_H__
 #define _HIERARCHICAL_H__
 
-#include <stdio.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>

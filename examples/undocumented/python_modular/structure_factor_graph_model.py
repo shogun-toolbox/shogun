@@ -97,7 +97,7 @@ parameter_list = [[samples,labels,w_all,ftype_all]]
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
 	from modshogun import SOSVMHelper, LabelsFactory
 	from modshogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
-	from modshogun import DualLibQPBMSOSVM, StochasticSOSVM
+	from modshogun import DualLibQPBMSOSVM, StochasticSOSVM, FWSOSVM
 
 	# create model
 	model = FactorGraphModel(tr_samples, tr_labels, TREE_MAX_PROD, False)
@@ -150,6 +150,21 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print('SGD: Average training error is %.4f' % SOSVMHelper.average_loss(sgd.get_w(), model))
 	#hp = sgd.get_helper()
 	#print hp.get_primal_values()
+	#print hp.get_eff_passes()
+	#print hp.get_train_errors()
+
+	# --- training with FW ---
+	fw = FWSOSVM(model, tr_labels)
+	#fw.set_verbose(True)
+	fw.set_lambda(0.01)
+	fw.set_gap_threshold(0.01)
+	fw.train()
+
+	# evaluation
+	#print('FW: Average training error is %.4f' % SOSVMHelper.average_loss(fw.get_w(), model))
+	#hp = fw.get_helper()
+	#print hp.get_primal_values()
+	#print hp.get_dual_values()
 	#print hp.get_eff_passes()
 	#print hp.get_train_errors()
 

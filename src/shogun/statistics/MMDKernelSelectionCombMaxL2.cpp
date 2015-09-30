@@ -21,7 +21,7 @@ CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2() :
 }
 
 CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2(
-		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelectionComb(mmd)
+		CKernelTwoSampleTest* mmd) : CMMDKernelSelectionComb(mmd)
 {
 	/* currently, this method is only developed for the linear time MMD */
 	REQUIRE(mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD ||
@@ -34,17 +34,16 @@ CMMDKernelSelectionCombMaxL2::~CMMDKernelSelectionCombMaxL2()
 {
 }
 
-#ifdef HAVE_LAPACK
 SGVector<float64_t> CMMDKernelSelectionCombMaxL2::compute_measures()
 {
 	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+	CCombinedKernel* kernel=(CCombinedKernel*)m_estimator->get_kernel();
 	index_t num_kernels=kernel->get_num_subkernels();
 	SG_UNREF(kernel);
 
 	/* compute mmds for all underlying kernels and create identity matrix Q
 	 * (see NIPS paper) */
-	SGVector<float64_t> mmds=m_mmd->compute_statistic(true);
+	SGVector<float64_t> mmds=m_estimator->compute_statistic(true);
 
 	/* free matrix by hand since it is static */
 	SG_FREE(m_Q.matrix);
@@ -69,4 +68,3 @@ SGVector<float64_t> CMMDKernelSelectionCombMaxL2::compute_measures()
 
 	return result;
 }
-#endif

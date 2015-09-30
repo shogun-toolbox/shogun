@@ -12,8 +12,8 @@
 	train_regression
 
 	set_features TEST ../data/fm_test_real.dat
-	svrlight_out.txt = classify
-	! rm svrlight_out.txt
+	out-regression_svrlight.txt = classify
+	! rm out-regression_svrlight.txt
 %catch
 %	disp('No support for SVRLight available.')
 %end

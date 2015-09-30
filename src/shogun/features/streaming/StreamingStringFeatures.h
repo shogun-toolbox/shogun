@@ -10,12 +10,15 @@
 #ifndef _STREAMING_STRINGFEATURES__H__
 #define _STREAMING_STRINGFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/io/streaming/InputParser.h>
 
+#include <shogun/lib/SGString.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/Alphabet.h>
 

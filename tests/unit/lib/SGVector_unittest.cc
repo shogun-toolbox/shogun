@@ -3,6 +3,10 @@
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 using namespace shogun;
 
 TEST(SGVectorTest,ctor)
@@ -79,20 +83,6 @@ TEST(SGVectorTest,add)
 		EXPECT_EQ(c[i], 2*a[i]);
 }
 
-TEST(SGVectorTest,dot)
-{
-	CMath::init_random(17);
-	SGVector<float64_t> a(10);
-	a.random(0.0, 1024.0);
-	float64_t dot_val = 0.0;
-
-	for (int32_t i = 0; i < a.vlen; ++i)
-		dot_val += a[i]*a[i];
-
-	float64_t sgdot_val = a.dot(a.vector,a.vector, a.vlen);
-	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
-}
-
 TEST(SGVectorTest,norm)
 {
 	CMath::init_random(17);
@@ -100,7 +90,7 @@ TEST(SGVectorTest,norm)
 	a.random(-50.0, 1024.0);
 
 	/* check l-2 norm */
-	float64_t l2_norm = CMath::sqrt(a.dot(a.vector,a.vector, a.vlen));
+	float64_t l2_norm = CMath::sqrt(CMath::dot(a.vector,a.vector, a.vlen));
 	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
 
 	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);
@@ -123,32 +113,14 @@ TEST(SGVectorTest,misc)
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 
-	/* test, min, max, sum */
-	int arg_max = 0, arg_max_abs = 0;
-	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
+	/* test, sum */
+	float64_t sum = 0.0, sum_abs = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
 		sum_abs += CMath::abs(a[i]);
-		if (CMath::abs(a[i]) > max_abs)
-		{
-			max_abs = CMath::abs(a[i]);
-			arg_max_abs=i;
-		}
-		if (a[i] > max)
-		{
-			max = a[i];
-			arg_max=i;
-		}
-		if (a[i] < min)
-			min = a[i];
 	}
 
-	EXPECT_EQ(min, SGVector<float64_t>::min(a.vector,a.vlen));
-	EXPECT_EQ(max, SGVector<float64_t>::max(a.vector,a.vlen));
-	EXPECT_EQ(arg_max, SGVector<float64_t>::arg_max(a.vector,1, a.vlen, NULL));
-	EXPECT_EQ(max_abs, SGVector<float64_t>::max_abs(a.vector,a.vlen));
-	EXPECT_EQ(arg_max_abs, SGVector<float64_t>::arg_max_abs(a.vector, 1, a.vlen, NULL));
 	EXPECT_EQ(sum, SGVector<float64_t>::sum(a.vector,a.vlen));
 	EXPECT_DOUBLE_EQ(sum_abs, SGVector<float64_t>::sum_abs(a.vector, a.vlen));
 
@@ -200,7 +172,7 @@ TEST(SGVectorTest,complex128_tests)
 		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
 		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
 	}
-	a.permute();
+
 	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
 	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-14);
 	EXPECT_NEAR(sum.imag(), 0.0, 1E-14);
@@ -224,31 +196,7 @@ TEST(SGVectorTest,complex128_tests)
 	EXPECT_NEAR(norm2.real(), 10.0, 1E-14);
 	EXPECT_NEAR(norm2.imag(), 12.0, 1E-14);
 
-	// tests ::maths
-	a.set_const(complex128_t(1.0, 2.0));
-	a.abs();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 2.23606797749978980505, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 0.0, 1E-14);
-	}
-
-	a.set_const(complex128_t(1.0, 2.0));
-	a.sin();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 3.16577851321616821068, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 1.95960104142160607132, 1E-14);
-	}
-
-	a.set_const(complex128_t(1.0, 2.0));
-	a.cos();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 2.03272300701966557313, 1E-14);
-		EXPECT_NEAR(a[i].imag(), -3.05189779915179970615, 1E-14);
-	}
-
+	// tests ::get_real and ::get_imag
 	a.set_const(complex128_t(1.0, 2.0));
 	SGVector<float64_t> a_real=a.get_real();
 	SGVector<float64_t> a_imag=a.get_imag();
@@ -324,66 +272,62 @@ TEST(SGVectorTest, convert_to_matrix)
 	}
 }
 
-TEST(SGVectorTest,qsort)
+#ifdef HAVE_EIGEN3
+
+TEST(SGVectorTest, to_eigen3_column_vector)
 {
-	SGVector<index_t> v(4);
-	v[0]=12;
-	v[1]=1;
-	v[2]=7;
-	v[3]=9;
-
-	v.qsort();
-
-	EXPECT_EQ(v.vlen, 4);
-	EXPECT_EQ(v[0], 1);
-	EXPECT_EQ(v[1], 7);
-	EXPECT_EQ(v[2], 9);
-	EXPECT_EQ(v[3], 12);
+	const int n = 9;
+	
+	SGVector<float64_t> sg_vec(9);
+	for (int32_t i=0; i<n; i++)
+		sg_vec[i] = i;
+	
+	Eigen::Map<Eigen::VectorXd> eigen_vec = sg_vec;
+	
+	for (int32_t i=0; i<n; i++)
+		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
 }
 
-TEST(SGVectorTest,is_sorted)
+TEST(SGVectorTest, from_eigen3_column_vector)
 {
-	SGVector<index_t> v(4);
-	v[0]=12;
-	v[1]=1;
-	v[2]=7;
-	v[3]=9;
-
-	EXPECT_EQ(v.is_sorted(), false);
-	v.qsort();
-
-	EXPECT_EQ(v.is_sorted(), true);
+	const int n = 9;
+	
+	Eigen::VectorXd eigen_vec(9);
+	for (int32_t i=0; i<n; i++)
+		eigen_vec[i] = i;
+	
+	SGVector<float64_t> sg_vec = eigen_vec;
+	
+	for (int32_t i=0; i<n; i++)
+		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }
 
-TEST(SGVectorTest,is_sorted_0)
+TEST(SGVectorTest, to_eigen3_row_vector)
 {
-	SGVector<index_t> v(0);
-
-	EXPECT_EQ(v.is_sorted(), true);
-	v.qsort();
-
-	EXPECT_EQ(v.is_sorted(), true);
+	const int n = 9;
+	
+	SGVector<float64_t> sg_vec(9);
+	for (int32_t i=0; i<n; i++)
+		sg_vec[i] = i;
+	
+	Eigen::Map<Eigen::RowVectorXd> eigen_vec = sg_vec;
+	
+	for (int32_t i=0; i<n; i++)
+		EXPECT_EQ(sg_vec[i], eigen_vec[i]);
 }
 
-TEST(SGVectorTest,is_sorted_1)
+TEST(SGVectorTest, from_eigen3_row_vector)
 {
-	SGVector<index_t> v(1);
-	v[0]=12;
-
-	EXPECT_EQ(v.is_sorted(), true);
-	v.qsort();
-
-	EXPECT_EQ(v.is_sorted(), true);
+	const int n = 9;
+	
+	Eigen::RowVectorXd eigen_vec(9);
+	for (int32_t i=0; i<n; i++)
+		eigen_vec[i] = i;
+	
+	SGVector<float64_t> sg_vec = eigen_vec;
+	
+	for (int32_t i=0; i<n; i++)
+		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }
 
-TEST(SGVectorTest,is_sorted_2)
-{
-	SGVector<index_t> v(2);
-	v[0]=12;
-	v[1]=1;
-
-	EXPECT_EQ(v.is_sorted(), false);
-	v.qsort();
-
-	EXPECT_EQ(v.is_sorted(), true);
-}
+#endif

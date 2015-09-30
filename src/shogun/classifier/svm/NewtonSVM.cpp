@@ -290,7 +290,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 
 		memset(temp1, 0, sizeof(float64_t)*sv_len);
 		SGVector<float64_t>::vector_multiply(temp1, outzsv, Ysv, sv_len);
-		tempg=SGVector<float64_t>::dot(temp1, Xsv, sv_len);
+		tempg=CMath::dot(temp1, Xsv, sv_len);
 		g=wd+(t*dd);
 		g-=tempg;
 

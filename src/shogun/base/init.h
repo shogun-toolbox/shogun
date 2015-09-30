@@ -11,6 +11,8 @@
 #ifndef __SG_INIT_H__
 #define __SG_INIT_H__
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 
 namespace shogun
@@ -105,6 +107,10 @@ void set_global_rand(CRandom* rand);
  * @return random object
  */
 CRandom* get_global_rand();
+
+/** Checks environment variables and modifies global objects
+ */
+void init_from_env();
 
 /// function called to print normal messages
 extern void (*sg_print_message)(FILE* target, const char* str);

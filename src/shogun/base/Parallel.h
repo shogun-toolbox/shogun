@@ -12,8 +12,8 @@
 #define PARALLEL_H__
 
 #include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

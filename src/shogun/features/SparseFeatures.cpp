@@ -1,9 +1,8 @@
+#include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/SGIO.h>
 
 #include <string.h>
@@ -11,6 +10,8 @@
 
 namespace shogun
 {
+
+template <class ST> class CSparsePreprocessor;
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
 : CDotFeatures(size), feature_cache(NULL)
@@ -287,18 +288,24 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 {
 	SG_INFO("force: %d\n", force_preprocessing)
 
-	if ( sparse_feature_matrix.sparse_matrix && get_num_preprocessors() )
+	if (sparse_feature_matrix.sparse_matrix && get_num_preprocessors())
 	{
 		for (int32_t i=0; i<get_num_preprocessors(); i++)
 		{
-			if ( (!is_preprocessed(i) || force_preprocessing) )
+			if (!is_preprocessed(i) || force_preprocessing)
 			{
 				set_preprocessed(i);
-				SG_INFO("preprocessing using preproc %s\n", get_preprocessor(i)->get_name())
-				if (((CSparsePreprocessor<ST>*) get_preprocessor(i))->apply_to_sparse_feature_matrix(this) == NULL)
+				CSparsePreprocessor<ST>* p = (CSparsePreprocessor<ST>*) get_preprocessor(i);
+				SG_INFO("preprocessing using preproc %s\n", p->get_name())
+				
+				if (p->apply_to_sparse_feature_matrix(this) == NULL)
+				{
+					SG_UNREF(p);
 					return false;
+				}
+				
+				SG_UNREF(p);
 			}
-			return true;
 		}
 		return true;
 	}

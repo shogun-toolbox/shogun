@@ -2,6 +2,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/Random.h>
 
 #include <cstdio>
 #include <cstring>

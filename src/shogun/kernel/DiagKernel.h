@@ -11,6 +11,8 @@
 #ifndef _DIAGKERNEL_H___
 #define _DIAGKERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 

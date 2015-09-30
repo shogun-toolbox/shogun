@@ -20,7 +20,7 @@ def statistics_mmd_kernel_selection_single(m,distance,stretch,num_blobs,angle,se
 	from modshogun import MMDKernelSelectionMedian
 	from modshogun import MMDKernelSelectionMax
 	from modshogun import MMDKernelSelectionOpt
-	from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+	from modshogun import PERMUTATION, MMD1_GAUSSIAN
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math
 

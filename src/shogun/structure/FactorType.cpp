@@ -10,6 +10,7 @@
 
 #include <shogun/structure/FactorType.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/SGSparseVector.h>
 
 using namespace shogun;
 

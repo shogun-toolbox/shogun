@@ -16,8 +16,9 @@
 #endif
 #include <time.h>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 
 #if defined(_MSC_VER) || defined(__MINGW32__)

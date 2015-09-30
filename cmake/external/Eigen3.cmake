@@ -5,8 +5,8 @@ ExternalProject_Add(
 	Eigen3
 	PREFIX ${CMAKE_BINARY_DIR}/Eigen3
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/Eigen3
-	URL http://ubuntu.osuosl.org/ubuntu/pool/universe/e/eigen3/eigen3_3.1.2.orig.tar.bz2
-	URL_MD5 e9c081360dde5e7dcb8eba3c8430fde2
+	URL http://bitbucket.org/eigen/eigen/get/3.1.4.tar.bz2
+	URL_MD5 15a7914c3768d51a3637fb3d64556a28
 	CMAKE_ARGS -DEIGEN_INCLUDE_INSTALL_DIR:PATH=${THIRD_PARTY_DIR}/include/eigen
 		-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}${CMAKE_DEFINITIONS}
 		-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}${CMAKE_DEFINITIONS}

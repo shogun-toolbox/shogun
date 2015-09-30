@@ -13,6 +13,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/io/LibSVMFile.h>
 
 using namespace shogun;
 

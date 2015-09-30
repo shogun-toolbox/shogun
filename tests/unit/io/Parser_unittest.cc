@@ -1,6 +1,7 @@
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/Parser.h>
+#include <shogun/io/SGIO.h>
 
 #include <gtest/gtest.h>
 

@@ -11,14 +11,18 @@
 #ifndef _STREAMING_SPARSEFEATURES__H__
 #define _STREAMING_SPARSEFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/lib/DataType.h>
 #include <shogun/io/streaming/InputParser.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/features/FeatureTypes.h>
 
 namespace shogun
 {
+class CStreamingFile;
+
 /** @brief This class implements streaming features with sparse feature vectors.
  * The vector is represented as an SGSparseVector<T>. Each entry is of type
  * SGSparseVectorEntry<T> with members `feat_index' and `entry'.

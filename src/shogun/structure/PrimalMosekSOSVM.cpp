@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Shell Hu
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -40,6 +41,8 @@ void CPrimalMosekSOSVM::init()
 	//FIXME model selection available for SO machines
 	SG_ADD(&m_regularization, "regularization", "Regularization constant", MS_NOT_AVAILABLE);
 	SG_ADD(&m_epsilon, "epsilon", "Violation tolerance", MS_NOT_AVAILABLE);
+	SG_ADD(&m_lb, "lb", "Lower bounds", MS_NOT_AVAILABLE);
+	SG_ADD(&m_ub, "ub", "Upper bounds", MS_NOT_AVAILABLE);
 
 	m_regularization = 1.0;
 	m_epsilon = 0.0;
@@ -83,10 +86,22 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SGVector< float64_t > a, b, lb, ub;
 	m_model->init_primal_opt(m_regularization, A, a, B, b, lb, ub, C);
 
+	REQUIRE(lb.vlen == 0 || lb.vlen == M,
+		"%s::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
+
+	REQUIRE(ub.vlen == 0 || ub.vlen == M,
+		"%s::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
+
+	if (lb.vlen == M)
+		set_lower_bounds(lb);
+
+	if (ub.vlen == M)
+		set_upper_bounds(ub);
+
 	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to %.2f.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
-	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) == MSK_RES_OK,
+	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, m_lb, m_ub, A, b) == MSK_RES_OK,
 		"Mosek error in PrimalMosekSOSVM initializing SO-SVM.\n")
 
 	// Initialize the weight vector
@@ -215,9 +230,24 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	// Dimensionality of the joint feature space
 	int32_t M = m_w.vlen;
 
-	return	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
-		result->delta -
-		SGVector< float64_t >::dot(m_w.vector, result->psi_truth.vector, M);
+	if(result->psi_computed)
+	{
+		return	CMath::dot(m_w.vector, result->psi_pred.vector, M) +
+			result->delta -
+			CMath::dot(m_w.vector, result->psi_truth.vector, M);
+	}
+	else if(result->psi_computed_sparse)
+	{
+		return result->psi_pred_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0) +
+			result->delta -
+			result->psi_truth_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
+	}
+	else
+	{
+		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				"to be set true\n", m_model->get_name());
+		return 0;
+	}
 }
 
 bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) const
@@ -242,8 +272,22 @@ bool CPrimalMosekSOSVM::add_constraint(
 	int32_t M = m_model->get_dim();
 	SGVector< float64_t > dPsi(M);
 
-	for ( int i = 0 ; i < M ; ++i )
-		dPsi[i] = result->psi_pred[i] - result->psi_truth[i]; // -dPsi(y)
+	if (result->psi_computed)
+	{
+		for ( int i = 0 ; i < M ; ++i )
+			dPsi[i] = result->psi_pred[i] - result->psi_truth[i]; // -dPsi(y)
+	}
+	else if(result->psi_computed_sparse)
+	{
+		dPsi.zero();
+		result->psi_pred_sparse.add_to_dense(1.0, dPsi.vector, dPsi.vlen);
+		result->psi_truth_sparse.add_to_dense(-1.0, dPsi.vector, dPsi.vlen);
+	}
+	else
+	{
+		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				"to be set true\n", m_model->get_name());
+	}
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx,
 			m_model->get_num_aux(), -result->delta) == MSK_RES_OK );
@@ -268,6 +312,16 @@ void CPrimalMosekSOSVM::set_regularization(float64_t C)
 void CPrimalMosekSOSVM::set_epsilon(float64_t epsilon)
 {
 	m_epsilon = epsilon;
+}
+
+void CPrimalMosekSOSVM::set_lower_bounds(SGVector< float64_t > lb)
+{
+	m_lb = lb.clone();
+}
+
+void CPrimalMosekSOSVM::set_upper_bounds(SGVector< float64_t > ub)
+{
+	m_ub = ub.clone();
 }
 
 #endif /* USE_MOSEK */

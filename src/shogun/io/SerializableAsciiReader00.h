@@ -10,10 +10,15 @@
 #ifndef __SERIALIZABLE_ASCII_READER_00_H__
 #define __SERIALIZABLE_ASCII_READER_00_H__
 
-#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/lib/config.h>
+
+#include <shogun/io/SerializableFile.h>
 
 namespace shogun
 {
+class CSerializableAsciiFile;
+template <class T> struct SGSparseVectorEntry;
+
 /** @brief Serializable ascii reader */
 class SerializableAsciiReader00
 	: public CSerializableFile::TSerializableReader {

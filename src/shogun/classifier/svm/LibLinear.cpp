@@ -123,7 +123,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 	liblinear_problem prob;
 	if (use_bias)
 	{
-		prob.n=w.vlen+1;
+		if(liblinear_solver_type!=L2R_LR_DUAL)
+			prob.n=w.vlen+1;
+		else
+			prob.n=w.vlen;
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
 	}
 	else
@@ -1176,7 +1179,7 @@ void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, do
 	int max_iter = 1000;
 	int *index = new int[l];
 	double *alpha = new double[2*l]; // store alpha and C - alpha
-	int32_t *y = SG_MALLOC(int32_t, l);
+	int32_t *y = new int32_t[l];
 	int max_inner_iter = 100; // for inner Newton
 	double innereps = 1e-2;
 	double innereps_min = CMath::min(1e-8, eps);
@@ -1289,9 +1292,9 @@ void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, do
 			}
 		}
 
-		iter++;
 		if(iter == 0)
 			Gmax_init = Gmax;
+		iter++;
 
 		SG_SABS_PROGRESS(Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6)
 

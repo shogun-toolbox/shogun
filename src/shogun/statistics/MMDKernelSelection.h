@@ -1,25 +1,48 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012-2013 Heiko Strathmann
+ * Written (w) 2014 Soumyajit De
+ * All rights reserved.
  *
- * Written (W) 2012-2013 Heiko Strathmann
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #ifndef __MMDKERNELSELECTION_H_
 #define __MMDKERNELSELECTION_H_
 
-#include <shogun/base/SGObject.h>
+#include <shogun/lib/config.h>
+#include <shogun/statistics/KernelSelection.h>
 
 namespace shogun
 {
 
-class CKernelTwoSampleTestStatistic;
+class CKernelTwoSampleTest;
 class CKernel;
 
 /** @brief Base class for kernel selection for MMD-based two-sample test
- * statistic implementations (e.g. MMD).
+ * statistic implementations.
  * Provides abstract methods for selecting kernels and computing criteria or
  * kernel weights for the implemented method. In order to implement new methods
  * for kernel selection, simply write a new implementation of this class.
@@ -31,7 +54,7 @@ class CKernel;
  * This kernel can then be passed to the MMD instance to perform a test.
  *
  */
-class CMMDKernelSelection: public CSGObject
+class CMMDKernelSelection: public CKernelSelection
 {
 public:
 
@@ -43,7 +66,7 @@ public:
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelection(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelection(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelection();
@@ -65,16 +88,11 @@ public:
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const=0;
+	virtual const char* get_name() const
+	{
+		return "MMDKernelSelection";
+	}
 
-private:
-
-	/** Initializer */
-	void init();
-
-protected:
-	/** Underlying MMD instance */
-	CKernelTwoSampleTestStatistic* m_mmd;
 };
 
 }

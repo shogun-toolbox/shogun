@@ -6,6 +6,8 @@
  *
  * Written (W) 2012 Heiko Strathmann
  */
+
+#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/labels/BinaryLabels.h>

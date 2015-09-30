@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Alesis Novik
+ * Written (W) 2014 Parijat Mazumdar 
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/lib/config.h>
@@ -22,11 +23,14 @@ CGaussian::CGaussian() : CDistribution(), m_constant(0), m_d(), m_u(), m_mean(),
 	register_params();
 }
 
-CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov,
-					ECovType cov_type) : CDistribution(), m_d(), m_u(), m_cov_type(cov_type)
+CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type)
+ : CDistribution()
 {
 	ASSERT(mean.vlen==cov.num_rows)
 	ASSERT(cov.num_rows==cov.num_cols)
+	m_d=SGVector<float64_t>();
+	m_u=SGMatrix<float64_t>();
+	m_cov_type=cov_type;
 
 	m_mean=mean;
 
@@ -108,6 +112,110 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
 	return answer;
+}
+
+float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
+{
+	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
+	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL\n")
+	int32_t num_dim=dotdata->get_dim_feature_space();
+
+	// compute mean
+
+	float64_t alpha_k_sum=0;
+	SGVector<float64_t> mean(num_dim);
+	mean.fill_vector(mean.vector,mean.vlen,0);
+	for (int32_t i=0;i<len;i++)
+	{
+		alpha_k_sum+=alpha_k[i];
+		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);		
+		SGVector<float64_t>::add(mean.vector, alpha_k[i], v.vector, 1, mean.vector, v.vlen);
+	}
+
+	for (int32_t i=0; i<num_dim; i++)
+		mean[i]/=alpha_k_sum;
+
+	set_mean(mean);
+
+	// compute covariance matrix
+
+	float64_t* cov_sum=NULL;
+	ECovType cov_type=get_cov_type();
+	if (cov_type==FULL)
+	{
+		cov_sum=SG_MALLOC(float64_t, num_dim*num_dim);
+		memset(cov_sum, 0, num_dim*num_dim*sizeof(float64_t));
+	}
+	else if(cov_type==DIAG)
+	{
+		cov_sum=SG_MALLOC(float64_t,num_dim);
+		memset(cov_sum, 0, num_dim*sizeof(float64_t));
+	}
+	else if(cov_type==SPHERICAL)
+	{
+		cov_sum=SG_MALLOC(float64_t,1);
+		cov_sum[0]=0;
+	}
+
+	for (int32_t j=0; j<len; j++)
+	{
+		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
+		SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+
+		switch (cov_type)
+		{
+			case FULL:
+				cblas_dger(CblasRowMajor, num_dim, num_dim, alpha_k[j], v.vector, 1, v.vector,
+							 1, (double*) cov_sum, num_dim);
+
+				break;
+			case DIAG:
+				for (int32_t k=0; k<num_dim; k++)
+					cov_sum[k]+=v.vector[k]*v.vector[k]*alpha_k[j];
+
+				break;
+			case SPHERICAL:
+				float64_t temp=0;
+
+				for (int32_t k=0; k<num_dim; k++)
+					temp+=v.vector[k]*v.vector[k];
+
+				cov_sum[0]+=temp*alpha_k[j];
+				break;
+		}
+	}
+
+	switch (cov_type)
+	{
+		case FULL:
+			for (int32_t j=0; j<num_dim*num_dim; j++)
+				cov_sum[j]/=alpha_k_sum;
+
+			float64_t* d0;
+			d0=SGMatrix<float64_t>::compute_eigenvectors(cov_sum, num_dim, num_dim);
+
+			set_d(SGVector<float64_t>(d0, num_dim));
+			set_u(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
+
+			break;
+
+		case DIAG:
+			for (int32_t j=0; j<num_dim; j++)
+				cov_sum[j]/=alpha_k_sum;
+
+			set_d(SGVector<float64_t>(cov_sum,num_dim));
+
+			break;
+
+		case SPHERICAL:
+			cov_sum[0]/=alpha_k_sum*num_dim;
+
+			set_d(SGVector<float64_t>(cov_sum,1));
+
+			break;
+	}
+
+	return alpha_k_sum;
 }
 
 float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
@@ -217,11 +325,11 @@ SGMatrix<float64_t> CGaussian::get_cov()
 
 void CGaussian::register_params()
 {
-	m_parameters->add(&m_u, "m_u", "Unitary matrix.");
-	m_parameters->add(&m_d, "m_d", "Diagonal.");
-	m_parameters->add(&m_mean, "m_mean", "Mean.");
-	m_parameters->add(&m_constant, "m_constant", "Constant part.");
-	m_parameters->add((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.");
+	SG_ADD(&m_u, "m_u", "Unitary matrix.",MS_NOT_AVAILABLE);
+	SG_ADD(&m_d, "m_d", "Diagonal.",MS_NOT_AVAILABLE);
+	SG_ADD(&m_mean, "m_mean", "Mean.",MS_NOT_AVAILABLE);
+	SG_ADD(&m_constant, "m_constant", "Constant part.",MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&m_cov_type, "m_cov_type", "Covariance type.",MS_NOT_AVAILABLE);
 }
 
 void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
@@ -238,18 +346,14 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 			m_u.num_cols=cov.num_rows;
 			break;
 		case DIAG:
-			m_d.vector=SG_MALLOC(float64_t, cov.num_rows);
-
+			m_d=SGVector<float64_t>(cov.num_rows);
 			for (int32_t i=0; i<cov.num_rows; i++)
-				m_d.vector[i]=cov.matrix[i*cov.num_rows+i];
+				m_d[i]=cov.matrix[i*cov.num_rows+i];
 
-			m_d.vlen=cov.num_rows;
 			break;
 		case SPHERICAL:
-			m_d.vector=SG_MALLOC(float64_t, 1);
-
+			m_d=SGVector<float64_t>(1);
 			m_d.vector[0]=cov.matrix[0];
-			m_d.vlen=1;
 			break;
 	}
 }

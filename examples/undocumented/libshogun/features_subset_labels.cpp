@@ -38,8 +38,9 @@ void test()
 	SGVector<float64_t>::display_vector(labels_data.vector, labels_data.vlen, "labels");
 
 	/* create subset indices */
-	SGVector<index_t> subset_idx(SGVector<index_t>::randperm(num_subset_idx),
-			num_subset_idx);
+	SGVector<index_t> subset_idx(num_subset_idx);
+	subset_idx.range_fill();
+	CMath::permute(subset_idx);
 
 	/* print subset indices */
 	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");

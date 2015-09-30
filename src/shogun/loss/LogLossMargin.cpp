@@ -10,6 +10,7 @@
  */
 
 #include <shogun/loss/LogLossMargin.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

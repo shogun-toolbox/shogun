@@ -10,6 +10,8 @@
 #ifndef __LOOCROSSVALIDATIONSPLITTING_H_
 #define __LOOCROSSVALIDATIONSPLITTING_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/CrossValidationSplitting.h>
 
 namespace shogun

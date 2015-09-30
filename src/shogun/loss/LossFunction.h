@@ -17,9 +17,10 @@
 #ifndef _LOSSFUNCTION_H__
 #define _LOSSFUNCTION_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-#include <math.h>
 
 namespace shogun
 {
@@ -30,6 +31,9 @@ namespace shogun
 		L_SMOOTHHINGELOSS = 10,
 		L_SQUAREDHINGELOSS = 20,
 		L_SQUAREDLOSS = 30,
+		L_EXPONENTIALLOSS = 40,
+		L_ABSOLUTEDEVIATIONLOSS = 50,
+		L_HUBERLOSS = 60,
 		L_LOGLOSS = 100,
 		L_LOGLOSSMARGIN = 110
 	};

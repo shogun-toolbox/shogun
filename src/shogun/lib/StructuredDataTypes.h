@@ -11,7 +11,10 @@
 #ifndef _STRUCTURED_DATA_TYPES__H__
 #define _STRUCTURED_DATA_TYPES__H__
 
-namespace shogun {
+#include <shogun/lib/config.h>
+
+namespace shogun
+{
 
 /** structured data type */
 enum EStructuredDataType
@@ -19,7 +22,8 @@ enum EStructuredDataType
 	SDT_UNKNOWN = 0,
 	SDT_REAL = 1,
 	SDT_SEQUENCE = 2,
-	SDT_FACTOR_GRAPH = 3
+	SDT_FACTOR_GRAPH = 3,
+	SDT_SPARSE_MULTILABEL = 4
 };
 
 #define STRUCTURED_DATA_TYPE(SDT) \

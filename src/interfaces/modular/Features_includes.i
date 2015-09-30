@@ -32,7 +32,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+#include <shogun/labels/MultilabelLabels.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/FKFeatures.h>
@@ -51,4 +51,5 @@
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/MatrixFeatures.h>
+#include <shogun/features/IndexFeatures.h>
 %}

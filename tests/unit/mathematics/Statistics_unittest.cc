@@ -1,16 +1,19 @@
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+
 using namespace Eigen;
 
 TEST(Statistics, fit_sigmoid)
@@ -328,6 +331,216 @@ TEST(Statistics, lnormal_cdf)
 
 	lphi=CStatistics::lnormal_cdf(20.0);
 	EXPECT_NEAR(lphi, 0.0, 1e-6);
+
+	const index_t dim=10;
+	SGVector<float64_t> t(dim);
+	t[0]=0.197197002817524946749;
+	t[1]=0.0056939283141627128337;
+	t[2]=11.17348207854067787537;
+	t[3]=0.513878566283254256675;
+	t[4]=4.34696415708135575073;
+	t[5]=-8.69392831416271150147;
+	t[6]=-17.38785662832542300293;
+	t[7]=-34.42874909956949380785;
+	t[8]=-67.46964157081356461276;
+	t[9]=-136.67410392703391153191;
+
+	SGVector<float64_t> res(dim);
+	for(index_t i = 0; i < dim; i++)
+		res[i]=CStatistics::lnormal_cdf(t[i]);
+
+	float64_t rel_tolerance = 1e-2;
+	float64_t abs_tolerance;
+
+	abs_tolerance = CMath::get_abs_tolerance(-0.54789890348158110100, rel_tolerance);
+	EXPECT_NEAR(res[0],  -0.54789890348158110100,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.68861439622252362813, rel_tolerance);
+	EXPECT_NEAR(res[1],  -0.68861439622252362813,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.00000000000000000000, rel_tolerance);
+	EXPECT_NEAR(res[2],  0.00000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.36192936264423153370, rel_tolerance);
+	EXPECT_NEAR(res[3],  -0.36192936264423153370,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00000690176209610232, rel_tolerance);
+	EXPECT_NEAR(res[4],  -0.00000690176209610232,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-40.88657697941886226545, rel_tolerance);
+	EXPECT_NEAR(res[5],  -40.88657697941886226545,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-154.94677031185918281153, rel_tolerance);
+	EXPECT_NEAR(res[6],  -154.94677031185918281153,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-597.12805462746462126233, rel_tolerance);
+	EXPECT_NEAR(res[7],  -597.12805462746462126233,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-2281.20710267821459638071, rel_tolerance);
+	EXPECT_NEAR(res[8],  -2281.20710267821459638071,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-9345.74193347713662660681, rel_tolerance);
+	EXPECT_NEAR(res[9],  -9345.74193347713662660681,  abs_tolerance);
+
 }
 
 #endif // HAVE_EIGEN3
+
+TEST(Statistics, chi2_cdf)
+{
+	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
+	EXPECT_NEAR(chi2c, 0.03743423, 1e-7);
+
+	chi2c=CStatistics::chi2_cdf(10.0, 5.0);
+	EXPECT_NEAR(chi2c, 0.92476475, 1e-7);
+
+	chi2c=CStatistics::chi2_cdf(1.0, 15.0);
+	EXPECT_NEAR(chi2c, 0.00000025, 1e-7);
+}
+
+TEST(Statistics, fdistribution_cdf)
+{
+	float64_t fdcdf=CStatistics::fdistribution_cdf(0.5, 3.0, 5.0);
+	EXPECT_NEAR(fdcdf,0.30154736, 1e-7);
+
+	fdcdf=CStatistics::fdistribution_cdf(100, 3.0, 5.0);
+	EXPECT_NEAR(fdcdf, 0.99993031, 1e-7);
+
+	fdcdf=CStatistics::fdistribution_cdf(1.0, 30.0, 15.0);
+	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
+}
+
+#ifdef HAVE_EIGEN3
+// TEST 1
+TEST(Statistics, log_det_general_test_1)
+{
+	// create a small test matrix, symmetric positive definite
+	index_t size = 3;
+	SGMatrix<float64_t> m(size, size);
+
+	// initialize the matrix
+	m(0, 0) =   4; m(0, 1) =  12; m(0, 2) = -16;
+	m(1, 0) =  12; m(1, 1) =  37; m(1, 2) = -43;
+	m(2, 0) = -16; m(2, 1) = -43; m(2, 2) =  98;
+
+	/* the cholesky decomposition gives m = L.L', where
+	 * L = [(2, 0, 0), (6, 1, 0), (-8, 5, 3)].
+	 * 2 * (log(2) + log(1) + log(3)) = 3.58351893846
+	 */
+	Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
+	EXPECT_NEAR(CStatistics::log_det_general(m), log(M.determinant()), 1E-10);
+
+}
+
+// TEST 2
+TEST(Statistics, log_det_general_test_2)
+{
+	// create a fixed symmetric positive definite matrix
+	index_t size = 100;
+	VectorXd A = VectorXd::LinSpaced(size, 1, size);
+	MatrixXd M = A * A.transpose() + MatrixXd::Identity(size, size);
+
+	// copy the matrix to a SGMatrix to pass it to log_det
+	SGMatrix<float64_t> K(size,size);
+	for( int32_t j = 0; j < size; ++j ) {
+		for( int32_t i = 0; i < size; ++i ) {
+			K(i,j) = M(i,j);
+		}
+	}
+
+	// check if log_det is equal to log(det(M))
+	EXPECT_NEAR(CStatistics::log_det_general(K), 12.731839097176634, 1E-10);
+}
+
+TEST(Statistics,log_det_general_test_3)
+{
+	float64_t rel_tolerance = 1e-10;
+	float64_t abs_tolerance, result;
+
+	index_t size = 5;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0) = 17.0;
+	A(0,1) = 24.0;
+	A(0,2) = 1.0;
+	A(0,3) = 8.0;
+	A(0,4) = 15.0;
+	A(1,0) = 23.0;
+	A(1,1) = 5.0;
+	A(1,2) = 7.0;
+	A(1,3) = 14.0;
+	A(1,4) = 16.0;
+	A(2,0) = 4.0;
+	A(2,1) = 6.0;
+	A(2,2) = 13.0;
+	A(2,3) = 20.0;
+	A(2,4) = 22.0;
+	A(3,0) = 10.0;
+	A(3,1) = 12.0;
+	A(3,2) = 19.0;
+	A(3,3) = 21.0;
+	A(3,4) = 3.0;
+	A(4,0) = 11.0;
+	A(4,1) = 18.0;
+	A(4,2) = 25.0;
+	A(4,3) = 2.0;
+	A(4,4) = 9.0;
+	result = CStatistics::log_det_general(A);
+	abs_tolerance = CMath::get_abs_tolerance(15.438851375567365, rel_tolerance);
+	EXPECT_NEAR(result, 15.438851375567365, abs_tolerance);
+}
+
+TEST(Statistics,log_det_general_test_4)
+{
+	float64_t result;
+	index_t size = 6;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0) = 35.000000;
+	A(0,1) = 1.000000;
+	A(0,2) = 6.000000;
+	A(0,3) = 26.000000;
+	A(0,4) = 19.000000;
+	A(0,5) = 24.000000;
+	A(1,0) = 3.000000;
+	A(1,1) = 32.000000;
+	A(1,2) = 7.000000;
+	A(1,3) = 21.000000;
+	A(1,4) = 23.000000;
+	A(1,5) = 25.000000;
+	A(2,0) = 31.000000;
+	A(2,1) = 9.000000;
+	A(2,2) = 2.000000;
+	A(2,3) = 22.000000;
+	A(2,4) = 27.000000;
+	A(2,5) = 20.000000;
+	A(3,0) = 8.000000;
+	A(3,1) = 28.000000;
+	A(3,2) = 33.000000;
+	A(3,3) = 17.000000;
+	A(3,4) = 10.000000;
+	A(3,5) = 15.000000;
+	A(4,0) = 30.000000;
+	A(4,1) = 5.000000;
+	A(4,2) = 34.000000;
+	A(4,3) = 12.000000;
+	A(4,4) = 14.000000;
+	A(4,5) = 16.000000;
+	A(5,0) = 4.000000;
+	A(5,1) = 36.000000;
+	A(5,2) = 29.000000;
+	A(5,3) = 13.000000;
+	A(5,4) = 18.000000;
+	A(5,5) = 11.000000;
+	result = CStatistics::log_det_general(A);
+	EXPECT_EQ(result, CMath::INFTY);
+}
+#endif // HAVE_EIGEN3
+
+TEST(Statistics, vector_mean_test)
+{
+	CMath::init_random(17);
+	SGVector<float64_t> a(10);
+	a.random(-1024.0, 1024.0);
+	floatmax_t sum_a=0;
+	for(int i=0; i<a.vlen; i++)
+		sum_a+=a[i];
+
+	EXPECT_EQ(sum_a/a.vlen, CStatistics::mean(a));
+}
+
+TEST(Statistics, vector_mean_overflow_test)
+{
+	SGVector<float64_t> a(10);
+	a.set_const(std::numeric_limits<float64_t>::max());
+	EXPECT_EQ(std::numeric_limits<float64_t>::max(), CStatistics::mean(a));
+}

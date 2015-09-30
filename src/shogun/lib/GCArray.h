@@ -11,8 +11,11 @@
 #ifndef __GCARRAY_H__
 #define __GCARRAY_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

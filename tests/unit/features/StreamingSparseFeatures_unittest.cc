@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include <gtest/gtest.h>
 
-#include <shogun/base/init.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
+#include <shogun/io/LibSVMFile.h>
 
 using namespace shogun;
 

@@ -13,7 +13,8 @@ types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
 		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
 config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
-	"USE_MOSEK", "HAVE_EIGEN3", "HAVE_COLPACK", "HAVE_NLOPT", "HAVE_PROTOBUF"]
+	"USE_MOSEK", "HAVE_EIGEN3", "HAVE_COLPACK", "HAVE_NLOPT", "HAVE_PROTOBUF",
+	"HAVE_VIENNACL"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"
@@ -88,7 +89,7 @@ def get_includes(classes):
 
 	includes=[]
 	for o in result:
-		includes.append('#include "%s"' % o.strip().lstrip('./'))
+		includes.append('#include <shogun/%s>' % o.strip().lstrip('./'))
 	return includes
 
 def get_definitions(classes):

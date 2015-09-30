@@ -46,7 +46,7 @@ int32_t CMulticlassOneVsRestStrategy::decide_label(SGVector<float64_t> outputs)
 	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
 		return CDenseLabels::REJECTION_LABEL;
 
-	return SGVector<float64_t>::arg_max(outputs.vector, 1, outputs.vlen);
+	return CMath::arg_max(outputs.vector, 1, outputs.vlen);
 }
 
 SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)

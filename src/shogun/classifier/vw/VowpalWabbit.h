@@ -16,6 +16,8 @@
 #ifndef _VOWPALWABBIT_H__
 #define _VOWPALWABBIT_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/classifier/vw/vw_common.h>
 #include <shogun/classifier/vw/learners/VwAdaptiveLearner.h>
 #include <shogun/classifier/vw/learners/VwNonAdaptiveLearner.h>

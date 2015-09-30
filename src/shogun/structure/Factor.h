@@ -11,6 +11,8 @@
 #ifndef __FACTOR_RELATED_H__
 #define __FACTOR_RELATED_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
@@ -133,6 +135,9 @@ public:
 
 	/** @return adjacent variables */
 	const SGVector<int32_t> get_variables() const;
+
+	/** @return number of the adjacent variables */
+	const int32_t get_num_vars() const;
 
 	/** set variables
 	 *

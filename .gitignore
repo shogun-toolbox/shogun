@@ -27,6 +27,8 @@ configure.log
 *.oct
 .localvimrc
 *.DS_Store
+cscope.*
+cpplint.py
 
 *~
 \#*\#
@@ -127,8 +129,11 @@ configure.log
 # cmake
 /CMakeFiles/
 CMakeCache.txt
-/build
+/build*
 /third_party
 
 # protobuf
 src/shogun/io/protobuf/*.pb.*
+
+# ipython notebook
+.ipynb_checkpoints/

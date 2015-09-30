@@ -9,6 +9,9 @@
  */
 #ifndef _FEATURE_TYPES__H__
 #define _FEATURE_TYPES__H__
+
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 
@@ -53,6 +56,7 @@ namespace shogun
 		C_LATENT = 170,
 		C_MATRIX = 180,
 		C_FACTOR_GRAPH = 190,
+		C_INDEX = 200,
 		C_ANY = 1000
 	};
 

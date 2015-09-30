@@ -10,12 +10,15 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/base/SGObject.h>
+
 #include <shogun/lib/memory.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGString.h>
 
 using namespace shogun;
 
@@ -24,6 +27,7 @@ CFile::CFile() : CSGObject()
 	file=NULL;
 	filename=NULL;
 	variable_name=NULL;
+	task='\0';
 }
 
 CFile::CFile(FILE* f, const char* name) : CSGObject()
@@ -31,6 +35,7 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 	file=f;
 	filename=NULL;
 	variable_name=NULL;
+	task='\0';
 
 	if (name)
 		set_variable_name(name);
@@ -41,6 +46,7 @@ CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
 	file=fdopen(fd, mode);
 	filename=NULL;
 	variable_name=NULL;
+	task=mode[0];
 
 	if (name)
 		set_variable_name(name);
@@ -179,12 +185,12 @@ CFile::~CFile()
 void CFile::set_variable_name(const char* name)
 {
 	SG_FREE(variable_name);
-	variable_name=strdup(name);
+	variable_name=get_strdup(name);
 }
 
 char* CFile::get_variable_name()
 {
-	return strdup(variable_name);
+	return get_strdup(variable_name);
 }
 
 #define SPARSE_VECTOR_GETTER(type)										\

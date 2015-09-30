@@ -1,7 +1,4 @@
 language: cpp
-compiler:
-  - gcc
-  - clang
 notifications:
   email: false
   irc:
@@ -12,60 +9,115 @@ notifications:
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 matrix:
+  fast_finish: true
   include:
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="sudo pip install -q cpp-coveralls" COVERALLS=1
     - compiler: clang
-      python: 2.7
+    - compiler: gcc
+      env:
+      - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DENABLE_CCACHE=OFF"
+      - CUSTOM_PKG="sudo pip install -q cpp-coveralls"
+      - COVERALLS=1
+    - compiler: clang
+      python: "2.7_with_system_site_packages"
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="python-scipy swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="python-numpy python-scipy swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --no-index --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
+      env:
+      - CMAKE_OPTIONS="-DPythonModular=ON -DCMAKE_PREFIX_PATH=/home/travis/miniconda/envs/testenv -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: clang
       rvm: 1.8.7
       language: ruby
-      env: CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" CUSTOM_PKG="gem install narray" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - CUSTOM_PKG="gem install narray"
+      - EXTRA_PACKAGES="swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: clang
       jdk: oraclejdk7
       language: java
-      env: CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="jblas swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="jblas swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: clang
-      env: CMAKE_OPTIONS="-DCSharpModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DCSharpModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: clang
-      env: CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
+      - CC=clang
+      - CXX=clang++
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="octave liboctave-dev swig2.0"
+      env:
+      - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="octave liboctave-dev swig2.0"
     - compiler: clang
-      env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
+      env:
+      - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="r-base-core swig2.0"
+      - CC=clang
+      - CXX=clang++
     - language: objective-c
-      env: OSX=1
-  allow_failures:
-    - compiler: clang
-      env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
-virtualenv:
-  system_site_packages: true
+      env:
+      - OSX=1
+      - CUSTOM_PKG="curl -O -L https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2"
 before_install:
- - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:kubuntu-ppa/backports ; sudo apt-get update -qq ; fi
- - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ; sudo apt-get update -qq ; else brew update ; fi
- - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew list cmake || brew install cmake ; fi
- - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
- - $CUSTOM_PKG
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I git+https://github.com/pypa/pip@1.5#egg=pip ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I -U setuptools ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install wheel ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install $PIP_ARGS numpy ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install $PIP_ARGS scipy ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install --use-mirrors jinja2 ; fi
+  - if [ -z $OSX ] ; then
+      sudo apt-add-repository -y ppa:kubuntu-ppa/backports ;
+      sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ;
+      sudo apt-add-repository -y ppa:yade-users/external ;
+      sudo apt-add-repository -y ppa:ondrej/php5 ;
+      sudo apt-add-repository -y ppa:robotics/ppa ;
+      sudo apt-add-repository -y ppa:swt-techie/swig ;
+      sudo apt-get update -qq ;
+    else
+      brew update ;
+    fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then
+      wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh ;
+      bash miniconda.sh -b -p $HOME/miniconda ;
+      export PATH=$HOME/miniconda/bin:$PATH ;
+      conda config --set always_yes yes --set changeps1 no ;
+      conda update conda ;
+    fi
+install:
+  - if [ -z $OSX ] ; then
+      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
+    else
+      brew install ccache eigen json-c;
+    fi
+  - eval $CUSTOM_PKG
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv ; fi
 before_script:
   - mkdir build
   - cd build
+  - cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS ..
 script:
-  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS ..
-  - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then make -j 2 ; else make -j 4 ; fi
+  - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then
+      make -j 2 ;
+    else
+      make -j 4 ;
+    fi
   - sudo make install
   - ctest --output-on-failure -j 2
 after_success:
-  - cd ..
-  - coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null
+  - if [ $COVERALLS ] ; then
+      cd .. ;
+      coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null ;
+    fi

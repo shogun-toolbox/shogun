@@ -11,21 +11,16 @@
 #define __STREAMING_FILE_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/io/IOBuffer.h>
-#include <shogun/classifier/vw/vw_common.h>
-
-#include <ctype.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 namespace shogun
 {
+template <class ST> struct SGSparseVectorEntry;
+class VwExample;
+
 /** @brief A Streaming File access class.
  *
  * - Vectors are read as one vector per line
@@ -52,6 +47,7 @@ namespace shogun
 		/** default destructor */
 		virtual ~CStreamingFile();
 
+#ifndef SWIG // SWIG should skip this
 		/**
 		 * Closes the file
 		 */
@@ -285,6 +281,8 @@ namespace shogun
 		 * @param label label
 		 */
 		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
+#endif // #ifndef SWIG // SWIG should skip this
+
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StreamingFile"; }

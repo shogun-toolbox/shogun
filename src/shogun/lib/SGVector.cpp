@@ -106,6 +106,34 @@ SGVector<T>::~SGVector()
 	unref();
 }
 
+#ifdef HAVE_EIGEN3
+template <class T> 
+SGVector<T>::SGVector(EigenVectorXt& vec)
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size())
+{
+	
+}
+
+template <class T> 
+SGVector<T>::SGVector(EigenRowVectorXt& vec)
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size())
+{
+	
+}
+
+template <class T> 
+SGVector<T>::operator EigenVectorXtMap() const
+{
+	return EigenVectorXtMap(vector, vlen);
+}
+
+template <class T> 
+SGVector<T>::operator EigenRowVectorXtMap() const
+{
+	return EigenRowVectorXtMap(vector, vlen);
+}
+#endif
+
 template<class T>
 void SGVector<T>::zero()
 {
@@ -156,82 +184,6 @@ void SGVector<T>::random(T min_value, T max_value)
 }
 
 COMPLEX128_ERROR_TWOARGS(random)
-
-template<class T>
-void SGVector<T>::randperm()
-{
-	randperm(vector, vlen);
-}
-
-COMPLEX128_ERROR_NOARG(randperm)
-
-template <class T>
-void SGVector<T>::qsort()
-{
-	CMath::qsort<T>(vector, vlen);
-}
-
-COMPLEX128_ERROR_NOARG(qsort)
-
-/** Helper functor for the function argsort */
-template<class T>
-struct IndexSorter
-{
-	/** constructor */
-	IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
-
-	/** access operator */
-	bool operator() (index_t i, index_t j) const
-	{
-		return data[i] < data[j];
-	}
-
-	/** data */
-	const T* data;
-};
-
-template<class T>
-SGVector<index_t> SGVector<T>::argsort()
-{
-	IndexSorter<T> cmp(this);
-	SGVector<index_t> idx(vlen);
-	for (index_t i=0; i < vlen; ++i)
-		idx[i] = i;
-
-	std::sort(idx.vector, idx.vector+vlen, cmp);
-
-	return idx;
-}
-
-template <>
-SGVector<index_t> SGVector<complex128_t>::argsort()
-{
-	SG_SERROR("SGVector::argsort():: Not supported for complex128_t\n");
-	SGVector<index_t> idx(vlen);
-	return idx;
-}
-
-template <class T>
-bool SGVector<T>::is_sorted() const
-{
-        if (vlen < 2)
-              return true;
-
-        for(int32_t i=1; i<vlen; i++)
-        {
-              if (vector[i-1] > vector[i])
-                    return false;
-        }
-
-        return true;
-}
-
-template <>
-bool SGVector<complex128_t>::is_sorted() const
-{
-	SG_SERROR("SGVector::is_sorted():: Not supported for complex128_t\n");
-	return false;
-}
 
 template <class T>
 index_t SGVector<T>::find_position_to_insert(T element)
@@ -611,42 +563,6 @@ void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 }
 
 template <class T>
-float64_t SGVector<T>::dot(const float64_t* v1, const float64_t* v2, int32_t n)
-{
-	float64_t r=0;
-#ifdef HAVE_EIGEN3
-	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
-	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
-	r = ev1.dot(ev2);
-#elif HAVE_LAPACK
-	int32_t skip=1;
-	r = cblas_ddot(n, v1, skip, v2, skip);
-#else
-	for (int32_t i=0; i<n; i++)
-		r+=v1[i]*v2[i];
-#endif
-	return r;
-}
-
-template <class T>
-float32_t SGVector<T>::dot(const float32_t* v1, const float32_t* v2, int32_t n)
-{
-	float32_t r=0;
-#ifdef HAVE_EIGEN3
-	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
-	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
-	r = ev1.dot(ev2);
-#elif HAVE_LAPACK
-	int32_t skip=1;
-	r = cblas_sdot(n, v1, skip, v2, skip);
-#else
-	for (int32_t i=0; i<n; i++)
-		r+=v1[i]*v2[i];
-#endif
-	return r;
-}
-
-template <class T>
 	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
 	{
 		for (int32_t i=0; i<len; i++)
@@ -658,88 +574,6 @@ void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
 	complex128_t min_value, complex128_t max_value)
 {
 	SG_SNOTIMPLEMENTED
-}
-
-template <class T>
-SGVector<T> SGVector<T>::randperm_vec(int32_t n)
-{
-	return SGVector<T>(randperm(n), n);
-}
-
-template <>
-SGVector<complex128_t> SGVector<complex128_t>::randperm_vec(int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-	SGVector<complex128_t> perm(n);
-	return perm;
-}
-
-template <class T>
-T* SGVector<T>::randperm(int32_t n)
-{
-	T* perm = SG_MALLOC(T, n);
-	randperm(perm, n);
-
-	return perm;
-}
-
-template <>
-complex128_t* SGVector<complex128_t>::randperm(int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-	SGVector<complex128_t> perm(n);
-	return perm.vector;
-}
-
-template <class T>
-void SGVector<T>::randperm(T* perm, int32_t n)
-{
-	for (int32_t i = 0; i < n; i++)
-		perm[i] = i;
-	permute(perm,n);
-}
-
-template <>
-void SGVector<complex128_t>::randperm(complex128_t* perm, int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-}
-
-/** permute */
-template <class T>
-void SGVector<T>::permute(T* vec, int32_t n)
-{
-	for (int32_t i = 0; i < n; i++)
-		CMath::swap(vec[i], vec[CMath::random(i, n-1)]);
-}
-
-template <class T>
-void SGVector<T>::permute(T* vec, int32_t n, CRandom * rand)
-{
-	for (int32_t i = 0; i < n; i++)
-		CMath::swap(vec[i], vec[rand->random(i, n-1)]);
-}
-
-template<class T>
-void SGVector<T>::permute()
-{
-	SGVector<T>::permute(vector, vlen);
-}
-
-template<class T>
-void SGVector<T>::permute(CRandom * rand)
-{
-        SGVector<T>::permute(vector, vlen, rand);
-}
-
-template <class T>
-void SGVector<T>::permute_vector(SGVector<T> vec)
-{
-	for (index_t i=0; i<vec.vlen; ++i)
-	{
-		CMath::swap(vec.vector[i],
-				vec.vector[CMath::random(i, vec.vlen-1)]);
-	}
 }
 
 template <>
@@ -853,7 +687,7 @@ float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
 #ifdef HAVE_LAPACK
 	norm = cblas_dnrm2(n, v, 1);
 #else
-	norm = CMath::sqrt(SGVector::dot(v, v, n));
+	norm = CMath::sqrt(CMath::dot(v, v, n));
 #endif
 	return norm;
 }
@@ -921,189 +755,6 @@ complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64
 	return complex128_t(0.0);
 }
 
-/** @return min(vec) */
-template <class T>
-	T SGVector<T>::min(T* vec, int32_t len)
-	{
-		ASSERT(len>0)
-		T minv=vec[0];
-
-		for (int32_t i=1; i<len; i++)
-			minv=CMath::min(vec[i], minv);
-
-		return minv;
-	}
-
-#ifdef HAVE_LAPACK
-template <>
-float64_t SGVector<float64_t>::max_abs(float64_t* vec, int32_t len)
-{
-	ASSERT(len>0)
-	int32_t skip = 1;
-	int32_t idx = cblas_idamax(len, vec, skip);
-
-	return CMath::abs(vec[idx]);
-}
-
-template <>
-float32_t SGVector<float32_t>::max_abs(float32_t* vec, int32_t len)
-{
-	ASSERT(len>0)
-	int32_t skip = 1;
-	int32_t idx = cblas_isamax(len, vec, skip);
-
-	return CMath::abs(vec[idx]);
-}
-#endif
-
-/** @return max_abs(vec) */
-template <class T>
-T SGVector<T>::max_abs(T* vec, int32_t len)
-{
-	ASSERT(len>0)
-	T maxv=CMath::abs(vec[0]);
-
-	for (int32_t i=1; i<len; i++)
-		maxv=CMath::max(CMath::abs(vec[i]), maxv);
-
-	return maxv;
-}
-
-template <>
-complex128_t SGVector<complex128_t>::max_abs(complex128_t* vec, int32_t len)
-{
-	SG_SNOTIMPLEMENTED
-	return complex128_t(0.0);
-}
-
-/** @return max(vec) */
-template <class T>
-T SGVector<T>::max(T* vec, int32_t len)
-{
-	ASSERT(len>0)
-	T maxv=vec[0];
-
-	for (int32_t i=1; i<len; i++)
-		maxv=CMath::max(vec[i], maxv);
-
-	return maxv;
-}
-
-#ifdef HAVE_LAPACK
-template <>
-int32_t SGVector<float64_t>::arg_max_abs(float64_t* vec, int32_t inc, int32_t len, float64_t* maxv_ptr)
-{
-	ASSERT(len>0 || inc > 0)
-	int32_t idx = cblas_idamax(len, vec, inc);
-
-	if (maxv_ptr != NULL)
-		*maxv_ptr = CMath::abs(vec[idx*inc]);
-
-	return idx;
-}
-
-template <>
-int32_t SGVector<float32_t>::arg_max_abs(float32_t* vec, int32_t inc, int32_t len, float32_t* maxv_ptr)
-{
-	ASSERT(len>0 || inc > 0)
-	int32_t idx = cblas_isamax(len, vec, inc);
-
-	if (maxv_ptr != NULL)
-		*maxv_ptr = CMath::abs(vec[idx*inc]);
-
-	return idx;
-}
-#endif
-
-template <class T>
-int32_t SGVector<T>::arg_max_abs(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
-{
-	ASSERT(len > 0 || inc > 0)
-
-	T maxv = CMath::abs(vec[0]);
-	int32_t maxIdx = 0;
-
-	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-	{
-		if (CMath::abs(vec[j]) > maxv)
-			maxv = CMath::abs(vec[j]), maxIdx = i;
-	}
-
-	if (maxv_ptr != NULL)
-		*maxv_ptr = maxv;
-
-	return maxIdx;
-}
-
-template <>
-int32_t SGVector<complex128_t>::arg_max_abs(complex128_t * vec, int32_t inc,
-	int32_t len, complex128_t * maxv_ptr)
-{
-	int32_t maxIdx = 0;
-	SG_SERROR("SGVector::arg_max_abs():: Not supported for complex128_t\n");
-	return maxIdx;
-}
-
-template <class T>
-int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
-{
-	ASSERT(len > 0 || inc > 0)
-
-	T maxv = vec[0];
-	int32_t maxIdx = 0;
-
-	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-	{
-		if (vec[j] > maxv)
-			maxv = vec[j], maxIdx = i;
-	}
-
-	if (maxv_ptr != NULL)
-		*maxv_ptr = maxv;
-
-	return maxIdx;
-}
-
-template <>
-int32_t SGVector<complex128_t>::arg_max(complex128_t * vec, int32_t inc,
-	int32_t len, complex128_t * maxv_ptr)
-{
-	int32_t maxIdx=0;
-	SG_SERROR("SGVector::arg_max():: Not supported for complex128_t\n");
-	return maxIdx;
-}
-
-
-/// return arg_min(vec)
-template <class T>
-int32_t SGVector<T>::arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr)
-{
-	ASSERT(len > 0 || inc > 0)
-
-	T minv = vec[0];
-	int32_t minIdx = 0;
-
-	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-	{
-		if (vec[j] < minv)
-			minv = vec[j], minIdx = i;
-	}
-
-	if (minv_ptr != NULL)
-		*minv_ptr = minv;
-
-	return minIdx;
-}
-
-template <>
-int32_t SGVector<complex128_t>::arg_min(complex128_t * vec, int32_t inc,
-	int32_t len, complex128_t * minv_ptr)
-{
-	int32_t minIdx=0;
-	SG_SERROR("SGVector::arg_min():: Not supported for complex128_t\n");
-	return minIdx;
-}
-
 /// return sum(abs(vec))
 template <class T>
 T SGVector<T>::sum_abs(T* vec, int32_t len)
@@ -1132,13 +783,6 @@ float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
 	return result;
 }
 #endif
-
-/// return sum(abs(vec))
-template <class T>
-bool SGVector<T>::fequal(T x, T y, float64_t precision)
-{
-	return CMath::abs(x-y)<precision;
-}
 
 template <class T>
 int32_t SGVector<T>::unique(T* output, int32_t size)
@@ -1202,23 +846,6 @@ void SGVector<T>::scale(T alpha)
 	scale_vector(alpha, vector, vlen);
 }
 
-template<class T> float64_t SGVector<T>::mean() const
-{
-	float64_t cum = 0;
-
-	for ( index_t i = 0 ; i < vlen ; ++i )
-		cum += vector[i];
-
-	return cum/vlen;
-}
-
-template <>
-float64_t SGVector<complex128_t>::mean() const
-{
-	SG_SNOTIMPLEMENTED
-	return float64_t(0.0);
-}
-
 template<class T> void SGVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)
@@ -1252,108 +879,6 @@ template<>
 void SGVector<complex128_t>::save(CFile* saver)
 {
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
-}
-
-
-#define MATHOP(op)								\
-template <class T> void SGVector<T>::op()		\
-{												\
-	for (int32_t i=0; i<vlen; i++)				\
-		vector[i]=(T) CMath::op((double) vector[i]);		\
-}
-
-MATHOP(abs)
-MATHOP(acos)
-MATHOP(asin)
-MATHOP(atan)
-MATHOP(cos)
-MATHOP(cosh)
-MATHOP(exp)
-MATHOP(log)
-MATHOP(log10)
-MATHOP(sin)
-MATHOP(sinh)
-MATHOP(sqrt)
-MATHOP(tan)
-MATHOP(tanh)
-#undef MATHOP
-
-#define COMPLEX128_MATHOP(op)								\
-template <>\
-void SGVector<complex128_t>::op()		\
-{												\
-	for (int32_t i=0; i<vlen; i++)				\
-		vector[i]=complex128_t(CMath::op(vector[i]));		\
-}
-
-COMPLEX128_MATHOP(abs)
-COMPLEX128_MATHOP(sin)
-COMPLEX128_MATHOP(cos)
-COMPLEX128_MATHOP(tan)
-COMPLEX128_MATHOP(sinh)
-COMPLEX128_MATHOP(cosh)
-COMPLEX128_MATHOP(tanh)
-COMPLEX128_MATHOP(exp)
-COMPLEX128_MATHOP(log)
-COMPLEX128_MATHOP(log10)
-COMPLEX128_MATHOP(sqrt)
-#undef COMPLEX128_MATHOP
-
-#define COMPLEX128_MATHOP_NOTIMPLEMENTED(op)								\
-template <>\
-void SGVector<complex128_t>::op()		\
-{												\
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",#op);\
-}
-
-COMPLEX128_MATHOP_NOTIMPLEMENTED(asin)
-COMPLEX128_MATHOP_NOTIMPLEMENTED(acos)
-COMPLEX128_MATHOP_NOTIMPLEMENTED(atan)
-#undef COMPLEX128_MATHOP_NOTIMPLEMENTED
-
-template <class T> void SGVector<T>::atan2(T x)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=CMath::atan2(vector[i], x);
-}
-
-BOOL_ERROR_ONEARG(atan2)
-COMPLEX128_ERROR_ONEARG(atan2)
-
-template <class T> void SGVector<T>::pow(T q)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=(T) CMath::pow((double) vector[i], (double) q);
-}
-
-template <class T>
-SGVector<float64_t> SGVector<T>::linspace_vec(T start, T end, int32_t n)
-{
-	return SGVector<float64_t>(linspace(start, end, n), n);
-}
-
-template <class T>
-float64_t* SGVector<T>::linspace(T start, T end, int32_t n)
-{
-	float64_t* output = SG_MALLOC(float64_t, n);
-	CMath::linspace(output, start, end, n);
-
-	return output;
-}
-
-template <>
-float64_t* SGVector<complex128_t>::linspace(complex128_t start, complex128_t end, int32_t n)
-{
-	float64_t* output = SG_MALLOC(float64_t, n);
-	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
-	return output;
-}
-
-template <>
-void SGVector<complex128_t>::pow(complex128_t q)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=CMath::pow(vector[i], q);
 }
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()

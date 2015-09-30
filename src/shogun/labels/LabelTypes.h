@@ -8,6 +8,10 @@
  */
 #ifndef _LABEL_TYPES__H__
 #define _LABEL_TYPES__H__
+
+#include <shogun/lib/config.h>
+
+
 enum ELabelType
 {
 	/// binary labels +1/-1
@@ -20,7 +24,7 @@ enum ELabelType
 	LT_STRUCTURED = 4,
 	/// latent latent labels
 	LT_LATENT = 5,
-	/// multiple output multiclass
-	LT_MULTICLASS_MULTIPLE_OUTPUT = 6
+	/// sparse label class for multilabel classification (sets of labels)
+	LT_SPARSE_MULTILABEL = 6,
 };
 #endif

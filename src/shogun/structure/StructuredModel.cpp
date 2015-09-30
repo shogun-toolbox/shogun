@@ -13,7 +13,16 @@
 
 using namespace shogun;
 
-CResultSet::CResultSet() : CSGObject(), argmax(NULL)
+CResultSet::CResultSet()
+: CSGObject(), argmax(NULL),
+	psi_computed_sparse(false),
+	psi_computed(false),
+	psi_truth(SGVector<float64_t>(0)),
+	psi_pred(SGVector<float64_t>(0)),
+	psi_truth_sparse(SGSparseVector<float64_t>(0)),
+	psi_pred_sparse(SGSparseVector<float64_t>(0)),
+	score(0),
+	delta(0)
 {
 }
 
@@ -60,8 +69,8 @@ void CStructuredModel::init_primal_opt(
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
 		SGVector< float64_t > & b,
-		SGVector< float64_t > lb,
-		SGVector< float64_t > ub,
+		SGVector< float64_t > & lb,
+		SGVector< float64_t > & ub,
 		SGMatrix< float64_t > & C)
 {
 	SG_ERROR("init_primal_opt is not implemented for %s!\n", get_name())
@@ -112,6 +121,27 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 			"implemented for %s!\n", get_name());
 
 	return SGVector< float64_t >();
+}
+
+SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		int32_t lab_idx)
+{
+	CStructuredData* label = m_labels->get_label(lab_idx);
+	SGSparseVector< float64_t > ret = get_sparse_joint_feature_vector(feat_idx, label);
+	SG_UNREF(label);
+
+	return ret;
+}
+
+SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
+{
+	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+			"implemented for %s!\n", get_name());
+
+	return SGSparseVector< float64_t >();
 }
 
 float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)

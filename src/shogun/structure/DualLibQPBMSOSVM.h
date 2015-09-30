@@ -11,6 +11,8 @@
 #ifndef _DUALLIBQPBMSOSVM__H__
 #define _DUALLIBQPBMSOSVM__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/structure/BmrmStatistics.h>
@@ -209,7 +211,17 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 					"solution must match the model's dimension!\n");
 			m_w=W;
 		}
-
+		
+		/** set enableing/disabling storing training information
+		 *
+		 * @param store_train_info		Flag enabling/disabling storing training information,
+		 * 								Storing training information requires extra computational costs.
+		 */
+		inline void set_store_train_info(bool store_train_info)
+		{
+			m_store_train_info=store_train_info;
+		}
+		
 		/** get classifier type
 		 *
 		 * @return classifier type CT_LIBQPSOSVM
@@ -262,6 +274,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** training algorithm */
 		ESolver m_solver;
+
+		/** store training information*/
+		bool m_store_train_info;
 
 }; /* class CDualLibQPBMSOSVM */
 

@@ -11,31 +11,37 @@
 #ifndef _RANDOMKITCHENSINKS_DOT_FEATURES_H__
 #define _RANDOMKITCHENSINKS_DOT_FEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {
 
-/** @brief class that implements the Random Kitchen Sinks for the DotFeatures
+/** @brief class that implements the Random Kitchen Sinks (RKS) for the DotFeatures
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
- * The Random Kitchen Sinks algorithm expects:
- *		a dataset to work on
- *		a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
- *		a probability distrubution p, from which to draw the a's
- *		the number of samples K to draw from p.
+ * RKS input:
+ *		- a dataset \f$\{x_i, y_i\}_{i=1,\dots,m}\f$ of \f$m\f$ points to work on
+ *		- \f$\phi(x; w)\f$: a bounded feature function s.t. \f$|\phi(x; w)| \leq 1\f$, where \f$w\f$ is the function parameter
+ *		- \f$p(w)\f$: a probability distrubution function, from which to draw the \f$w\f$
+ *		- \f$K\f$: the number of samples to draw from \f$p(w)\f$
+ * 		- \f$C\f$: a scalar, which is chosen to be large enough in practice.
  *
- * Then:
- *		it draws K a's from p
- *		it computes for each vector in the dataset
- *			Zi = [phi(Xi;a0), ..., phi(Xi;aK)]
- *		and then solves the empirical risk minimization problem for all Zi, either
- *			through least squares or through a linear SVM.
+ * RKS output:
+ * 		A function \f$\hat{f}(x) = \sum_{k=1}^{K} \phi(x; w_k)\alpha_k\f$
+ *		1. Draw \f$w_1,\dots,w_K\f$ iid from \f$p(w)\f$
+ *		2. Featurize the input: \f$z_i = [\phi(x_i; w_1),\dots,\phi(x_i; w_K)]^{\top}\f$
+ *		3. With \f$w\f$ fixed, solve the empirical risk minimization problem:
+ * 		\f[ \underset{\alpha \in \mathbf{R}^K}{\text{minimize}} \quad \frac{1}{m}\sum_{i=1}^{m} c(\alpha^{\top} z_i, y_i) \f]
+ * 		\f[ \text{s.t.} \quad \|\alpha\|_{\infty} \leq C/K. \f]
+ *		  for vector \f$\alpha\f$, either through least squares when \f$c(y', y)\f$ is the quadratic loss or through a linear SVM when \f$c(y', y)\f$ is the hinge loss.
  *
  * This class implements the vector transformation on-the-fly whenever it is needed.
  * In order for it to work, the class expects the user to implement a subclass of
- * CRKSFunctions and implement in there the functions phi and p and then pass an
- * instantiated object of that class to the constructor.
+ * CRKSFunctions and implement in there the functions \f$\phi\f$ and \f$p\f$ and then pass an
+ * instantiated object of that class to the constructor. For example, in the derived class CRandomFourierDotFeatures,
+ * random fourier features are implemented as \f$ z(x) = \sqrt{2/K}\cos(w^{\top}x + b)\f$, where \f$w\f$ drawn from a Gaussian distribution and \f$b\f$ from a uniform distribution.
  *
  * Further useful resources, include :
  *	http://www.shloosl.com/~ali/random-features/

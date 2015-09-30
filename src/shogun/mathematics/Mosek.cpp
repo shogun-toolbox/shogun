@@ -115,6 +115,22 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	// Set the constant term in the objective equal to zero
 	m_rescode = MSK_putcfix(m_task, 0.0);
 
+	// Set default lower and upper bounds on variables
+	if (lb.vlen == 0)
+	{
+		lb = SGVector< float64_t >(M);
+		SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -MSK_INFINITY);
+	}
+
+	if (ub.vlen == 0)
+	{
+		ub = SGVector< float64_t >(M);
+		SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, +MSK_INFINITY);
+	}
+
+	REQUIRE(lb.vlen >= M, "CMosek::init_sosvm(): lb.vlen < dimension of feature space.\n");
+	REQUIRE(ub.vlen >= M, "CMosek::init_sosvm(): ub.vlen < dimension of feature space.\n");
+
 	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
 	{
 		// Set the linear term c_j in the objective
@@ -123,12 +139,39 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 		else
 			m_rescode = MSK_putcj(m_task, j, 1.0);
 
-		// Set the bounds on x_j: blx[j] <= x_j <= bux[j]
-		// TODO set bounds lb and ub given by init_opt for w
+		// Set the bounds on x_j: lb[j] <= x_j <= ub[j]
 		if ( j < M )
 		{
-			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
-					MSK_BK_FR, -MSK_INFINITY, +MSK_INFINITY);
+			if (lb[j] > -MSK_INFINITY && ub[j] < +MSK_INFINITY && lb[j] != ub[j])
+			{
+				// ranged
+				m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+						MSK_BK_RA, lb[j], ub[j]);
+			}
+			else if (lb[j] > -MSK_INFINITY && ub[j] < +MSK_INFINITY && lb[j] == ub[j])
+			{
+				// fixed
+				m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+						MSK_BK_FX, lb[j], ub[j]);
+			}
+			else if (lb[j] <= -MSK_INFINITY && ub[j] < +MSK_INFINITY)
+			{
+				// upper bounded
+				m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+						MSK_BK_UP, -MSK_INFINITY, ub[j]);
+			}
+			else if (lb[j] > -MSK_INFINITY && ub[j] >= +MSK_INFINITY)
+			{
+				// lower bounded
+				m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+						MSK_BK_LO, lb[j], +MSK_INFINITY);
+			}
+			else
+			{
+				// free
+				m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+						MSK_BK_FR, -MSK_INFINITY, +MSK_INFINITY);
+			}
 		}
 
 		// The slack and the auxiliary variables are required to be positive

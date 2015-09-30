@@ -28,6 +28,7 @@ CHistogram::CHistogram(CStringFeatures<uint16_t> *f)
 {
 	hist=SG_CALLOC(float64_t, 1<<16);
 	features=f;
+	SG_REF(features);
 }
 
 CHistogram::~CHistogram()

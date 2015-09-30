@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
@@ -201,7 +203,7 @@ protected:
 	virtual bool train_machine(CFeatures* data);
 
 	/** train node */
-	node_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	bnode_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	/** init node */
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	/** train node with initialization */

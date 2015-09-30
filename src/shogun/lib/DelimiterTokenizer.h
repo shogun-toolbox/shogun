@@ -11,11 +11,14 @@
 #ifndef _DELIMITERTOKENIZER__H__
 #define	_DELIMITERTOKENIZER__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/Tokenizer.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
-class CTokenizer;
 
 /** @brief The class CDelimiterTokenizer is used to tokenize
  *  a SGVector<char> into tokens using custom chars as delimiters.

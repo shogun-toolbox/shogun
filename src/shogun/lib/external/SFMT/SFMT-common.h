@@ -25,6 +25,8 @@
 extern "C" {
 #endif
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/external/SFMT/SFMT.h>
 
 inline static void do_recursion(w128_t * r, w128_t * a, w128_t * b,

@@ -11,6 +11,8 @@
 #ifndef __LATENTMODEL_H__
 #define __LATENTMODEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/DotFeatures.h>

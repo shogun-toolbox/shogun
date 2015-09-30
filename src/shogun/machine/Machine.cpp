@@ -10,8 +10,6 @@
  */
 
 #include <shogun/machine/Machine.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
@@ -279,5 +277,3 @@ CLatentLabels* CMachine::apply_locked_latent(SGVector<index_t> indices)
 			"for %s\n", get_name());
 	return NULL;
 }
-
-

@@ -11,9 +11,10 @@
  * Implementation of the Proximal Point P-BMRM (p3bm)
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libppbm.h>
+#include <shogun/structure/libp3bm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
+ #include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -21,7 +22,6 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H, *H2;
-static uint32_t BufSize;
 
 /*----------------------------------------------------------------------
   Returns pointer at i-th column of Hessian matrix.
@@ -227,7 +227,7 @@ BmrmStatistics svm_p3bm_solver(
 	for (uint32_t p=1; p<cp_models; ++p)
 	{
 		Rt[p] = machine->risk(subgrad_t[p], W, info[p]);
-		b[p]=SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
+		b[p]=CMath::dot(subgrad_t[p], W, nDim) - Rt[p];
 		add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 	}
 
@@ -237,7 +237,7 @@ BmrmStatistics svm_p3bm_solver(
 	for (uint32_t p=0; p<cp_models; ++p)
 		R+=Rt[p];
 
-	sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
+	sq_norm_W=CMath::dot(W, W, nDim);
 	sq_norm_Wdiff=0.0;
 
 	for (uint32_t j=0; j<nDim; ++j)
@@ -288,7 +288,7 @@ BmrmStatistics svm_p3bm_solver(
 
 				for (uint32_t p=0; p<cp_models; ++p)
 				{
-					rsum=SGVector<float64_t>::dot(A_1, subgrad_t[p], nDim);
+					rsum=CMath::dot(A_1, subgrad_t[p], nDim);
 
 					H[LIBBMRM_INDEX(p, cp_i, BufSize)]=rsum;
 				}
@@ -306,7 +306,7 @@ BmrmStatistics svm_p3bm_solver(
 
 				for (uint32_t p=0; p<cp_models; ++p)
 				{
-					rsum=SGVector<float64_t>::dot(A_1, subgrad_t[p], nDim);
+					rsum=CMath::dot(A_1, subgrad_t[p], nDim);
 
 					H[LIBBMRM_INDEX(p3bmrm.nCP+p, cp_i, BufSize)]=rsum;
 				}
@@ -353,7 +353,7 @@ BmrmStatistics svm_p3bm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -412,7 +412,7 @@ BmrmStatistics svm_p3bm_solver(
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
-					rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+					rsum = CMath::dot(A_1, prevW, nDim);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -512,7 +512,7 @@ BmrmStatistics svm_p3bm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -562,13 +562,13 @@ BmrmStatistics svm_p3bm_solver(
 		for (uint32_t p=0; p<cp_models; ++p)
 		{
 			Rt[p] = machine->risk(subgrad_t[p], W, info[p]);
-			b[p3bmrm.nCP+p] = SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
+			b[p3bmrm.nCP+p] = CMath::dot(subgrad_t[p], W, nDim) - Rt[p];
 			add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 			R+=Rt[p];
 		}
 
-		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
-		sq_norm_prevW=SGVector<float64_t>::dot(prevW, prevW, nDim);
+		sq_norm_W=CMath::dot(W, W, nDim);
+		sq_norm_prevW=CMath::dot(prevW, prevW, nDim);
 		sq_norm_Wdiff=0.0;
 
 		for (uint32_t j=0; j<nDim; ++j)
@@ -651,6 +651,10 @@ BmrmStatistics svm_p3bm_solver(
 					&CPList_tail, H, diag_H, beta, map,
 					cleanAfter, b, I, cp_models);
 		}
+
+		// next CP would exceed BufSize
+		if (p3bmrm.nCP+1 >= BufSize)
+			p3bmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
 		if (verbose)

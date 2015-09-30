@@ -16,6 +16,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/MulticlassLabels.h>
 
+#include <vector>
+
 using namespace shogun;
 
 

@@ -11,6 +11,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
 
 using namespace shogun;
 

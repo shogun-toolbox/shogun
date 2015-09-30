@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/mathematics/Math.h>
 
@@ -174,4 +174,18 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 	SG_FREE(KD);
 
 	return result;
+}
+
+CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
+{
+	if (!kernel)
+		return NULL;
+
+	REQUIRE(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
+				"not of type CANOVAKernel, but type %d!\n",
+				kernel->get_kernel_type())
+
+	/* since an additional reference is returned */
+	SG_REF(kernel);
+	return (CANOVAKernel*)kernel;
 }

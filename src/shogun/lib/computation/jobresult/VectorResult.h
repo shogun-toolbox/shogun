@@ -11,9 +11,10 @@
 #define VECTOR_RESULT_H_
 
 #include <shogun/lib/config.h>
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/computation/jobresult/JobResult.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {

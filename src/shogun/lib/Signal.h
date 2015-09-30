@@ -11,6 +11,8 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
+#include <shogun/lib/config.h>
+
 #ifndef DISABLE_CANCEL_CALLBACK
 namespace shogun
 {
@@ -21,7 +23,6 @@ extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/base/init.h>
 
 #ifndef WIN32
 #include <signal.h>

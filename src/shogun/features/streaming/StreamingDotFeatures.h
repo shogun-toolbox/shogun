@@ -10,13 +10,18 @@
 #ifndef _STREAMING_DOTFEATURES__H__
 #define _STREAMING_DOTFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/io/streaming/StreamingFile.h>
+#include <shogun/features/FeatureTypes.h>
+#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {
+class CDotFeatures;
+class CStreamingFile;
+
 /** @brief Streaming features that support dot products among other operations.
  *
  * DotFeatures support the following operations:
@@ -180,10 +185,6 @@ public:
 	 */
 	virtual void free_feature_iterator(void* iterator);
 
-protected:
-
-	/// feature weighting in combined dot features
-	float32_t combined_weight;
 };
 }
 #endif // _STREAMING_DOTFEATURES__H__

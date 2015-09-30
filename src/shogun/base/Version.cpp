@@ -9,8 +9,10 @@
  */
 
 #include <shogun/base/Version.h>
-#include <shogun/base/SGObject.h>
 #include <shogun/lib/versionstring.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/RefCount.h>
 
 using namespace shogun;

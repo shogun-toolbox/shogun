@@ -1,10 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012-2013 Heiko Strathmann
+ * Written (w) 2014 Soumyajit De
+ * All rights reserved.
  *
- * Written (W) 2012-2013 Heiko Strathmann
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <shogun/statistics/HSIC.h>
@@ -15,54 +37,46 @@
 
 using namespace shogun;
 
-CHSIC::CHSIC() :
-		CKernelIndependenceTestStatistic()
+CHSIC::CHSIC() : CKernelIndependenceTest()
 {
-	init();
-}
-
-CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
-		index_t m) :
-		CKernelIndependenceTestStatistic(kernel_p, kernel_q, m_p_and_q, m)
-{
-	if (p_and_q && p_and_q->get_num_vectors()/2!=m)
-	{
-		SG_ERROR("%s: Only features with equal number of vectors are currently "
-				"possible\n", get_name());
-	}
-
 	init();
 }
 
 CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p,
 		CFeatures* q) :
-		CKernelIndependenceTestStatistic(kernel_p, kernel_q, p, q)
+		CKernelIndependenceTest(kernel_p, kernel_q, p, q)
 {
+	init();
+
 	if (p && q && p->get_num_vectors()!=q->get_num_vectors())
 	{
-		SG_ERROR("%s: Only features with equal number of vectors are currently "
-				"possible\n", get_name());
+		SG_ERROR("Only features with equal number of vectors are currently "
+				"possible\n");
 	}
-
-	init();
+	else
+		m_num_features=p->get_num_vectors();
 }
 
 CHSIC::~CHSIC()
 {
-
 }
 
 void CHSIC::init()
 {
+	SG_ADD(&m_num_features, "num_features",
+			"Number of features from each of the distributions",
+			MS_NOT_AVAILABLE);
 
+	m_num_features=0;
 }
 
 float64_t CHSIC::compute_statistic()
 {
-	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
-			"kernel specified!\n", get_name());
+	SG_DEBUG("entering!\n");
 
-	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name())
+	REQUIRE(m_kernel_p && m_kernel_q, "No or only one kernel specified!\n");
+
+	REQUIRE(m_p && m_q, "features needed!\n")
 
 	/* compute kernel matrices */
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
@@ -72,7 +86,9 @@ float64_t CHSIC::compute_statistic()
 	K.center();
 
 	/* compute MATLAB: sum(sum(Kc' .* (L))), which is biased HSIC */
-	index_t m=m_m;
+	index_t m=m_num_features;
+	SG_DEBUG("Number of samples %d!\n", m);
+
 	float64_t result=0;
 	for (index_t i=0; i<m; ++i)
 	{
@@ -82,6 +98,8 @@ float64_t CHSIC::compute_statistic()
 
 	/* return m times statistic */
 	result/=m;
+
+	SG_DEBUG("leaving!\n");
 
 	return result;
 }
@@ -100,8 +118,8 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 	}
 
 	default:
-		/* bootstrapping is handled there */
-		result=CTwoDistributionsTestStatistic::compute_p_value(statistic);
+		/* sampling null is handled there */
+		result=CIndependenceTest::compute_p_value(statistic);
 		break;
 	}
 
@@ -122,8 +140,8 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 	}
 
 	default:
-		/* bootstrapping is handled there */
-		result=CTwoDistributionsTestStatistic::compute_threshold(alpha);
+		/* sampling null is handled there */
+		result=CIndependenceTest::compute_threshold(alpha);
 		break;
 	}
 
@@ -132,12 +150,11 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 
 SGVector<float64_t> CHSIC::fit_null_gamma()
 {
-	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
-			"kernel specified!\n", get_name());
+	REQUIRE(m_kernel_p && m_kernel_q, "No or only one kernel specified!\n");
 
-	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name())
+	REQUIRE(m_p && m_q, "features needed!\n")
 
-	index_t m=m_m;
+	index_t m=m_num_features;
 
 	/* compute kernel matrices */
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
@@ -212,84 +229,13 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 	result[0]=a;
 	result[1]=b;
 
-	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name())
+	SG_DEBUG("leaving!\n")
 	return result;
 }
 
-SGMatrix<float64_t> CHSIC::get_kernel_matrix_K()
+SGVector<float64_t> CHSIC::sample_null()
 {
-	SGMatrix<float64_t> K;
-
-	/* subset for selecting only data from one distribution */
-	SGVector<index_t> subset(m_m);
-	subset.range_fill();
-
-	/* distinguish between custom and normal kernels */
-	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised when a subset is added */
-		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
-		custom_kernel_p->add_row_subset(subset);
-		custom_kernel_p->add_col_subset(subset);
-
-		K=custom_kernel_p->get_kernel_matrix();
-
-		custom_kernel_p->remove_row_subset();
-		custom_kernel_p->remove_col_subset();
-	}
-	else
-	{
-		m_p_and_q->add_subset(subset);
-		m_kernel_p->init(m_p_and_q, m_p_and_q);
-		K=m_kernel_p->get_kernel_matrix();
-		m_p_and_q->remove_subset();
-
-		/* re-init kernel since subset was changed */
-		m_kernel_p->init(m_p_and_q, m_p_and_q);
-	}
-
-	return K;
-}
-
-SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
-{
-	SGMatrix<float64_t> L;
-
-	/* subset for selecting only data from one distribution */
-	SGVector<index_t> subset(m_m);
-	subset.range_fill();
-	subset.add(m_m);
-
-	/* now second half of data for L */
-	if (m_kernel_q->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised when a subset is added */
-		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
-		custom_kernel_q->add_row_subset(subset);
-		custom_kernel_q->add_col_subset(subset);
-
-		L=custom_kernel_q->get_kernel_matrix();
-
-		custom_kernel_q->remove_row_subset();
-		custom_kernel_q->remove_col_subset();
-	}
-	else
-	{
-		m_p_and_q->add_subset(subset);
-		m_kernel_q->init(m_p_and_q, m_p_and_q);
-		L=m_kernel_q->get_kernel_matrix();
-		m_p_and_q->remove_subset();
-
-		/* re-init kernel since subset was changed */
-		m_kernel_q->init(m_p_and_q, m_p_and_q);
-	}
-
-	return L;
-}
-
-SGVector<float64_t> CHSIC::bootstrap_null()
-{
-	SG_DEBUG("entering CHSIC::bootstrap_null()\n")
+	SG_DEBUG("entering!\n")
 
 	/* replace current kernel via precomputed custom kernel and call superclass
 	 * method */
@@ -298,9 +244,11 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	CKernel* kernel_p=m_kernel_p;
 	CKernel* kernel_q=m_kernel_q;
 
-	/* init kernels before to be sure that everything is fine */
-	m_kernel_p->init(m_p_and_q, m_p_and_q);
-	m_kernel_q->init(m_p_and_q, m_p_and_q);
+	/* init kernels before to be sure that everything is fine
+	 * kernel function between two samples from different distributions
+	 * is never computed - in fact, they may as well have different features */
+	m_kernel_p->init(m_p, m_p);
+	m_kernel_q->init(m_q, m_q);
 
 	/* precompute kernel matrices */
 	CCustomKernel* precomputed_p=new CCustomKernel(m_kernel_p);
@@ -312,9 +260,11 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	m_kernel_p=precomputed_p;
 	m_kernel_q=precomputed_q;
 
-	/* use superclass bootstrapping which permutes custom kernels */
-	SGVector<float64_t> null_samples=
-			CKernelIndependenceTestStatistic::bootstrap_null();
+	/* use superclass sample_null which shuffles the entries for one
+	 * distribution using index permutation on rows and columns of
+	 * kernel matrix from one distribution, while accessing the other
+	 * in its original order and then compute statistic */
+	SGVector<float64_t> null_samples=CKernelIndependenceTest::sample_null();
 
 	/* restore kernels */
 	m_kernel_p=kernel_p;
@@ -323,7 +273,19 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	SG_UNREF(precomputed_p);
 	SG_UNREF(precomputed_q);
 
-
-	SG_DEBUG("leaving CHSIC::bootstrap_null()\n")
+	SG_DEBUG("leaving!\n")
 	return null_samples;
 }
+
+void CHSIC::set_p(CFeatures* p)
+{
+	CIndependenceTest::set_p(p);
+	m_num_features=p->get_num_vectors();
+}
+
+void CHSIC::set_q(CFeatures* q)
+{
+	CIndependenceTest::set_q(q);
+	m_num_features=q->get_num_vectors();
+}
+

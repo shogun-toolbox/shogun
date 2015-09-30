@@ -10,6 +10,8 @@
 #ifndef MULTICLASSOVREVALUATION_H_
 #define MULTICLASSOVREVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/labels/Labels.h>

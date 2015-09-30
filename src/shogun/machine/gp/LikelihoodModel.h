@@ -13,8 +13,11 @@
 #ifndef CLIKELIHOODMODEL_H_
 #define CLIKELIHOODMODEL_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -26,7 +29,8 @@ enum ELikelihoodModelType
 	LT_GAUSSIAN=10,
 	LT_STUDENTST=20,
 	LT_LOGIT=30,
-	LT_PROBIT=40
+	LT_PROBIT=40,
+	LT_SOFTMAX=50
 };
 
 /** @brief The Likelihood model base class.

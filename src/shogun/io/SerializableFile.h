@@ -12,14 +12,14 @@
 #ifndef __SERIALIZABLE_FILE_H__
 #define __SERIALIZABLE_FILE_H__
 
-#include <stdio.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {
-	class CSGObject;
+template <class T> struct SGSparseVectorEntry;
 
 /** @brief serializable file */
 class CSerializableFile :public CSGObject

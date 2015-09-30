@@ -10,11 +10,15 @@
 #ifndef __STREAMING_FILEFROMFEATURES_H__
 #define __STREAMING_FILEFROMFEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/features/Features.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
+class CFeatures;
+
 /** @brief Class StreamingFileFromFeatures to read vector-by-vector
  * from a CFeatures object.
  *

@@ -304,10 +304,11 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t >   lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
 
+	distort.range_fill();
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
 		lf = ll;
-		distort.randperm();
+		CMath::permute(distort);
 
 		for ( int32_t j = 0 ; j < d1.vlen ; ++j )
 			d1[j] = distort[j];
@@ -324,8 +325,6 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	}
 
 	// Substitute some features by pure noise
-	SGVector< int32_t > ridx(num_features);
-	ridx.randperm();
 	for ( int32_t i = 0 ; i < num_noise_features ; ++i )
 	{
 		int32_t idx = i*signal.num_cols;

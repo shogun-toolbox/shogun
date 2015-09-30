@@ -10,6 +10,7 @@
  */
 
 #include <shogun/loss/SmoothHingeLoss.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

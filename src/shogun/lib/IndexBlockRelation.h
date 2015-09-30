@@ -10,11 +10,14 @@
 #ifndef INDEXBLOCKRELATION_H_
 #define INDEXBLOCKRELATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/List.h>
 
 namespace shogun
 {
+
+class CList;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EIndexBlockRelationType

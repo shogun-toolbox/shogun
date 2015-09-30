@@ -11,6 +11,8 @@
 #ifndef CGRADIENTEVALUATION_H_
 #define CGRADIENTEVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/EvaluationResult.h>

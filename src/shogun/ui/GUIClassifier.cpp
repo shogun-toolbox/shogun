@@ -279,13 +279,15 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
 		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
 	}
+#endif //HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 	else if (strcmp(name,"LDA")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLDA();
 		SG_INFO("created LDA object\n")
 	}
-#endif //HAVE_LAPACK
+#endif //HAVE_EIGEN3
 #ifdef USE_CPLEX
 	else if (strcmp(name,"LPM")==0)
 	{
@@ -740,7 +742,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 		((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 	}
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 	if (ctype==CT_LDA)
 	{
 		if (trainfeatures->get_feature_type()!=F_DREAL ||
@@ -748,7 +750,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 		SG_ERROR("LDA requires train features of class SIMPLE type REAL.\n")
 		((CLDA*) classifier)->set_gamma(gamma);
 	}
-#endif
+#endif //HAVE_EIGEN3
 
 	if (ctype==CT_SVMOCAS)
 		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
@@ -805,6 +807,8 @@ bool CGUIClassifier::load(char* filename, char* type)
 	if (new_classifier(type))
 	{
 		FILE* model_file=fopen(filename, "r");
+		REQUIRE(model_file != NULL, "SVM/Classifier loading failed on file %s.\n", filename);
+
 		CSerializableAsciiFile* ascii_file = new CSerializableAsciiFile(model_file,'r');
 
 		if (ascii_file)

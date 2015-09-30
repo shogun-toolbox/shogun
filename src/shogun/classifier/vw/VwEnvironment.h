@@ -15,6 +15,8 @@
 #ifndef _VW_ENV_H__
 #define _VW_ENV_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/DataType.h>

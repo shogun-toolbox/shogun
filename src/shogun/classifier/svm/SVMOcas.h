@@ -12,6 +12,8 @@
 #ifndef _SVMOCAS_H___
 #define _SVMOCAS_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/lib/external/libocas.h>

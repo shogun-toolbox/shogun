@@ -7,7 +7,6 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/base/init.h>
 #include <shogun/io/LineReader.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>

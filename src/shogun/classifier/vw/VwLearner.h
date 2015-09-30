@@ -16,6 +16,8 @@
 #ifndef _VW_LEARNER_H__
 #define _VW_LEARNER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/classifier/vw/vw_common.h>

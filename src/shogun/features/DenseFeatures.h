@@ -14,12 +14,16 @@
 #ifndef _DENSEFEATURES__H__
 #define _DENSEFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/DataType.h>
+
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun {
 template<class ST> class CStringFeatures;
@@ -467,6 +471,18 @@ public:
 	 * @return new CFeatures instance with copies of feature data
 	 */
 	virtual CFeatures* copy_subset(SGVector<index_t> indices);
+
+	/** Creates a new CFeatures instance containing only the dimensions
+	 * of the feature vector which are specified by the provided indices.
+	 *
+	 * This method is needed for feature selection tasks
+	 *
+	 * possible with subset
+	 *
+	 * @param dims indices of feature dimensions to copy
+	 * @return new CFeatures instance with copies of specified features
+	 */
+	virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims);
 
 	/** checks if the contents of this CDenseFeatures object are the same to
 	 * the contents of rhs

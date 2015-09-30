@@ -15,9 +15,6 @@
 #ifndef QPBSVMLIB_H__
 #define QPBSVMLIB_H__
 
-#include <math.h>
-#include <limits.h>
-
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>

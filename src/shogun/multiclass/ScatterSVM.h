@@ -17,7 +17,6 @@
 #include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

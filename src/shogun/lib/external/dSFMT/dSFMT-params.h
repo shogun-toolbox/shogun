@@ -1,6 +1,8 @@
 #ifndef DSFMT_PARAMS_H
 #define DSFMT_PARAMS_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 
 /*----------------------

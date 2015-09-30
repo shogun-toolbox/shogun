@@ -20,7 +20,7 @@ CMMDKernelSelectionOpt::CMMDKernelSelectionOpt() :
 }
 
 CMMDKernelSelectionOpt::CMMDKernelSelectionOpt(
-		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
+		CKernelTwoSampleTest* mmd, float64_t lambda) :
 		CMMDKernelSelection(mmd)
 {
 	init();
@@ -43,7 +43,7 @@ SGVector<float64_t> CMMDKernelSelectionOpt::compute_measures()
 	 * kernel was asserted to be a combined one */
 	SGVector<float64_t> mmds;
 	SGVector<float64_t> vars;
-	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_variance(mmds, vars, true);
+	((CLinearTimeMMD*)m_estimator)->compute_statistic_and_variance(mmds, vars, true);
 
 	/* we know that the underlying MMD is linear time version, cast is safe */
 	SGVector<float64_t> measures(mmds.vlen);

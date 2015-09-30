@@ -6,7 +6,7 @@
  *
  * Written (W) 2008-2010 Soeren Sonnenburg
  * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Thoralf Klein
+ * Written (W) 2013-2014 Thoralf Klein
  * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -14,27 +14,23 @@
 #define __SGOBJECT_H__
 
 #include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/base/SGRefObject.h>
 #include <shogun/lib/ShogunException.h>
-
-#include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
-#include <shogun/io/SGIO.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
 namespace shogun
 {
-class IO;
+class RefCount;
+class SGIO;
 class Parallel;
-class Version;
 class Parameter;
 class ParameterMap;
 class SGParamInfo;
-class SGRefObject;
 class CSerializableFile;
 
 template <class T, class K> class CMap;
@@ -42,6 +38,20 @@ template <class T, class K> class CMap;
 struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
+
+/*******************************************************************************
+ * define reference counter macros
+ ******************************************************************************/
+
+#ifdef USE_REFERENCE_COUNTING
+#define SG_REF(x) { if (x) (x)->ref(); }
+#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
+#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
+#else
+#define SG_REF(x)
+#define SG_UNREF(x)
+#define SG_UNREF_NO_NULL(x)
+#endif
 
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
@@ -99,7 +109,7 @@ enum EGradientAvailability
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject : public SGRefObject
+class CSGObject
 {
 public:
 	/** default constructor */
@@ -111,23 +121,40 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
+#ifdef USE_REFERENCE_COUNTING
+	/** increase reference counter
+	 *
+	 * @return reference count
+	 */
+	int32_t ref();
+
+	/** display reference counter
+	 *
+	 * @return reference count
+	 */
+	int32_t ref_count();
+
+	/** decrement reference counter and deallocate object if refcount is zero
+	 * before or after decrementing it
+	 *
+	 * @return reference count
+	 */
+	int32_t unref();
+#endif //USE_REFERENCE_COUNTING
+
+#ifdef TRACE_MEMORY_ALLOCS
+	static void list_memory_allocs();
+#endif
+
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	virtual CSGObject *shallow_copy() const
-	{
-		SG_NOTIMPLEMENTED
-		return NULL;
-	}
+	virtual CSGObject *shallow_copy() const;
 
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
-	virtual CSGObject *deep_copy() const
-	{
-		SG_NOTIMPLEMENTED
-		return NULL;
-	}
+	virtual CSGObject *deep_copy() const;
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -360,8 +387,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void load_serializable_pre() throw (ShogunException);
 
@@ -370,8 +396,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void load_serializable_post() throw (ShogunException);
 
@@ -380,8 +405,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void save_serializable_pre() throw (ShogunException);
 
@@ -390,18 +414,18 @@ protected:
 	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_POST
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
 public:
-	/** Updates the hash of current parameter combination.
-	 *
-	 * @return bool if parameter combination has changed since last
-	 * update.
+	/** Updates the hash of current parameter combination */
+	virtual void update_parameter_hash();
+
+	/**
+	 * @return whether parameter combination has changed since last update
 	 */
-	virtual bool update_parameter_hash();
+	virtual bool parameter_hash_changed();
 
 	/** Recursively compares the current SGObject to another one. Compares all
 	 * registered numerical parameters, recursion upon complex (SGObject)
@@ -412,9 +436,10 @@ public:
 	 *
 	 * @param other object to compare with
 	 * @param accuracy accuracy to use for comparison (optional)
+	 * @param tolerant allows linient check on float equality (within accuracy)
 	 * @return true if all parameters were equal, false if not
 	 */
-	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
+	virtual bool equals(CSGObject* other, float64_t accuracy=0.0, bool tolerant=false);
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
@@ -455,18 +480,16 @@ private:
 	int32_t load_parameter_version(CSerializableFile* file,
 			const char* prefix="");
 
-	/*Gets an incremental hash of all parameters as well as the parameters
-	 * of CSGObject children of the current object's parameters.
+	/** Gets an incremental hash of all parameters as well as the parameters of
+	 * CSGObject children of the current object's parameters.
 	 *
-	 * @param param Parameter to hash
-	 * @param current hash
+	 * @param hash the computed hash returned by reference
 	 * @param carry value for Murmur3 incremental hash
-	 * @param total_length total byte length of all hashed
-	 * parameters so far. Byte length of parameters will be added
-	 * to the total length
+	 * @param total_length total byte length of all hashed parameters so
+	 * far. Byte length of parameters will be added to the total length
 	 */
-	void get_parameter_incremental_hash(Parameter* param,
-			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
+	void get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
+			uint32_t& total_length);
 
 public:
 	/** io */
@@ -500,6 +523,8 @@ private:
 	bool m_load_post_called;
 	bool m_save_pre_called;
 	bool m_save_post_called;
+
+	RefCount* m_refcount;
 };
 }
 #endif // __SGOBJECT_H__

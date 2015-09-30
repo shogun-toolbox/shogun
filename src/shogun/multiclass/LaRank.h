@@ -49,15 +49,14 @@
 #ifndef LARANK_H
 #define LARANK_H
 
-#include <ctime>
 #include <vector>
-#include <algorithm>
-#include <sys/time.h>
 #include <set>
 #include <map>
 #define STDEXT_NAMESPACE __gnu_cxx
 #define std_hash_map std::map
 #define std_hash_set std::set
+
+#include <shogun/lib/config.h>
 
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>

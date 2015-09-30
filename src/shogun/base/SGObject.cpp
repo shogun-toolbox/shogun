@@ -6,33 +6,34 @@
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
  * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Thoralf Klein
+ * Written (W) 2013-2014 Thoralf Klein
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
+#include <shogun/lib/RefCount.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/init.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>
+#include <shogun/io/SerializableFile.h>
 
-#include "class_list.h"
+#include <shogun/base/class_list.h>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 namespace shogun
 {
-	class CMath;
 	class Parallel;
-	class IO;
-	class Version;
 
 	extern Parallel* sg_parallel;
 	extern SGIO* sg_io;
@@ -118,26 +119,88 @@ namespace shogun
 using namespace shogun;
 
 CSGObject::CSGObject()
-: SGRefObject()
 {
 	init();
 	set_global_objects();
+	m_refcount = new RefCount(0);
+
+	SG_SGCDEBUG("SGObject created (%p)\n", this)
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-:SGRefObject(orig), io(orig.io), parallel(orig.parallel), version(orig.version)
+:io(orig.io), parallel(orig.parallel), version(orig.version)
 {
 	init();
 	set_global_objects();
+	m_refcount = new RefCount(0);
+
+	SG_SGCDEBUG("SGObject copied (%p)\n", this)
 }
 
 CSGObject::~CSGObject()
 {
+	SG_SGCDEBUG("SGObject destroyed (%p)\n", this)
+
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
 	delete m_parameter_map;
+	delete m_refcount;
+}
+
+#ifdef USE_REFERENCE_COUNTING
+int32_t CSGObject::ref()
+{
+	int32_t count = m_refcount->ref();
+	SG_SGCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
+	return m_refcount->ref_count();
+}
+
+int32_t CSGObject::ref_count()
+{
+	int32_t count = m_refcount->ref_count();
+	SG_SGCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
+	return m_refcount->ref_count();
+}
+
+int32_t CSGObject::unref()
+{
+	int32_t count = m_refcount->unref();
+	if (count<=0)
+	{
+		SG_SGCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
+		delete this;
+		return 0;
+	}
+	else
+	{
+		SG_SGCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
+		return m_refcount->ref_count();
+	}
+}
+#endif //USE_REFERENCE_COUNTING
+
+#ifdef TRACE_MEMORY_ALLOCS
+#include <shogun/lib/Map.h>
+extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
+
+void CSGObject::list_memory_allocs()
+{
+	shogun::list_memory_allocs();
+}
+#endif
+
+CSGObject * CSGObject::shallow_copy() const
+{
+	SG_NOTIMPLEMENTED
+	return NULL;
+}
+
+CSGObject * CSGObject::deep_copy() const
+{
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 void CSGObject::set_global_objects()
@@ -184,26 +247,32 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 	sg_parallel=new_parallel;
 }
 
-bool CSGObject::update_parameter_hash()
+void CSGObject::update_parameter_hash()
 {
-	uint32_t new_hash = 0;
-	uint32_t carry = 0;
-	uint32_t length = 0;
+	SG_DEBUG("entering\n")
 
-	get_parameter_incremental_hash(m_parameters, new_hash,
-			carry, length);
+	uint32_t carry=0;
+	uint32_t length=0;
 
-	new_hash = CHash::FinalizeIncrementalMurmurHash3(new_hash,
-			carry, length);
+	get_parameter_incremental_hash(m_hash, carry, length);
+	m_hash=CHash::FinalizeIncrementalMurmurHash3(m_hash, carry, length);
 
-	if(new_hash != m_hash)
-	{
-		m_hash = new_hash;
-		return true;
-	}
+	SG_DEBUG("leaving\n")
+}
 
-	else
-		return false;
+bool CSGObject::parameter_hash_changed()
+{
+	SG_DEBUG("entering\n")
+
+	uint32_t hash=0;
+	uint32_t carry=0;
+	uint32_t length=0;
+
+	get_parameter_incremental_hash(hash, carry, length);
+	hash=CHash::FinalizeIncrementalMurmurHash3(hash, carry, length);
+
+	SG_DEBUG("leaving\n")
+	return (m_hash!=hash);
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -262,7 +331,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	if (!m_save_pre_called)
 	{
 		SG_SWARNING("%s%s::save_serializable_pre(): Implementation "
-				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
+				   "error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
 				   "called!\n", prefix, get_name());
 		return false;
 	}
@@ -289,7 +358,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	if (!m_save_post_called)
 	{
 		SG_SWARNING("%s%s::save_serializable_post(): Implementation "
-				   "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
+				   "error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
 				   "called!\n", prefix, get_name());
 		return false;
 	}
@@ -305,6 +374,8 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 bool CSGObject::load_serializable(CSerializableFile* file,
 		const char* prefix, int32_t param_version)
 {
+	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
+
 	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name())
 	try
 	{
@@ -972,6 +1043,8 @@ bool CSGObject::save_parameter_version(CSerializableFile* file,
 int32_t CSGObject::load_parameter_version(CSerializableFile* file,
 		const char* prefix)
 {
+	REQUIRE(file != NULL, "Serializable file object should be != NULL");
+
 	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
 	int32_t v;
 	TParameter tp(&t, &v, "version_parameter", "");
@@ -1030,6 +1103,8 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
+	m_save_pre_called = false;
+	m_save_post_called = false;
 	m_hash = 0;
 }
 
@@ -1124,32 +1199,44 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 	return result;
 }
 
-void CSGObject::get_parameter_incremental_hash(Parameter* param,
-		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
+void CSGObject::get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
+		uint32_t& total_length)
 {
-	if (!param)
-		return;
-
-	for (index_t i=0; i<param->get_num_parameters(); i++)
+	for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
 	{
-		TParameter* p = param->get_parameter(i);
-		SG_DEBUG("Updating hash for parameter \"%s\"\n", p->m_name ? p->m_name : "(nil)");
+		TParameter* p=m_parameters->get_parameter(i);
 
-		if (!p || !p->is_valid())
-			continue;
+		SG_DEBUG("Updating hash for parameter %s.%s\n", get_name(), p->m_name);
 
-		if (p->m_datatype.m_ptype != PT_SGOBJECT)
+		if (p->m_datatype.m_ptype == PT_SGOBJECT)
 		{
-			p->get_incremental_hash(hash, carry, total_length);
-			continue;
+			if (p->m_datatype.m_ctype == CT_SCALAR)
+			{
+				CSGObject* child = *((CSGObject**)(p->m_parameter));
+
+				if (child)
+				{
+					child->get_parameter_incremental_hash(hash, carry,
+							total_length);
+				}
+			}
+			else if (p->m_datatype.m_ctype==CT_VECTOR ||
+					p->m_datatype.m_ctype==CT_SGVECTOR)
+			{
+				CSGObject** child=(*(CSGObject***)(p->m_parameter));
+
+				for (index_t j=0; j<*(p->m_datatype.m_length_y); j++)
+				{
+					if (child[j])
+					{
+						child[j]->get_parameter_incremental_hash(hash, carry,
+								total_length);
+					}
+				}
+			}
 		}
-
-		CSGObject* child = *((CSGObject**)(p->m_parameter));
-
-		if (child)
-			get_parameter_incremental_hash(
-					child->m_parameters, hash,
-					carry, total_length);
+		else
+			p->get_incremental_hash(hash, carry, total_length);
 	}
 }
 
@@ -1174,7 +1261,7 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-bool CSGObject::equals(CSGObject* other, float64_t accuracy)
+bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 {
 	SG_DEBUG("entering %s::equals()\n", get_name());
 
@@ -1256,7 +1343,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 		}
 
 		/* use equals method of TParameter from here */
-		if (!this_param->equals(other_param, accuracy))
+		if (!this_param->equals(other_param, accuracy, tolerant))
 		{
 			SG_INFO("leaving %s::equals(): parameters at position %d with name"
 					" \"%s\" differs from other object parameter with name "

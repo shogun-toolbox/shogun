@@ -414,7 +414,6 @@ namespace shogun
 %include <shogun/lib/computation/engine/SerialComputationEngine.h>
 
 /* Independent compution-job */
-%rename (IndependentJob) CIndepenentJob;
 %include <shogun/lib/computation/job/IndependentJob.h>
 
 /* Independent computation-job results */

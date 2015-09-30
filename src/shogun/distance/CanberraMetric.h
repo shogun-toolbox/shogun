@@ -11,6 +11,8 @@
 #ifndef _CANBERRAMETRIC_H__
 #define _CANBERRAMETRIC_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/distance/DenseDistance.h>
 #include <shogun/features/DenseFeatures.h>

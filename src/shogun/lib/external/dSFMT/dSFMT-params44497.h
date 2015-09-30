@@ -1,6 +1,8 @@
 #ifndef DSFMT_PARAMS44497_H
 #define DSFMT_PARAMS44497_H
 
+#include <shogun/lib/config.h>
+
 /* #define DSFMT_N	427 */
 /* #define DSFMT_MAXDEGREE	44536 */
 #define DSFMT_POS1	304

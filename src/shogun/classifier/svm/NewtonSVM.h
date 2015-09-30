@@ -11,6 +11,8 @@
 #ifndef _NEWTONSVM_H___
 #define _NEWTONSVM_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>

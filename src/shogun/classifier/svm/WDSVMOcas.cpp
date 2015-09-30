@@ -425,8 +425,8 @@ int CWDSVMOcas::add_new_cut(
 
 	// insert new_a into the last column of sparse_A
 	for(i=0; i < nSel; i++)
-		new_col_H[i] = SGVector<float32_t>::dot(new_a, cuts[i], nDim) + c_bias[nSel]*c_bias[i];
-	new_col_H[nSel] = SGVector<float32_t>::dot(new_a, new_a, nDim) + CMath::sq(c_bias[nSel]);
+		new_col_H[i] = CMath::dot(new_a, cuts[i], nDim) + c_bias[nSel]*c_bias[i];
+	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim) + CMath::sq(c_bias[nSel]);
 
 	cuts[nSel]=new_a;
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
@@ -632,8 +632,8 @@ void CWDSVMOcas::compute_W(
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = SGVector<float32_t>::dot(W,W, nDim) +CMath::sq(bias);
-	*dp_WoldW = SGVector<float32_t>::dot(W,oldW, nDim) + bias*old_bias;;
+	*sq_norm_W = CMath::dot(W,W, nDim) +CMath::sq(bias);
+	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;

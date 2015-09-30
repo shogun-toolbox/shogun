@@ -11,6 +11,8 @@
 #ifndef BMRM_RETURN_VALUE_H_
 #define BMRM_RETURN_VALUE_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/lib/SGVector.h>

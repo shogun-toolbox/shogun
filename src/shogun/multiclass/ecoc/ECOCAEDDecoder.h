@@ -11,6 +11,7 @@
 #ifndef ECOCAEDDECODER_H__
 #define ECOCAEDDECODER_H__
 
+#include <shogun/lib/config.h>
 
 #include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
 #include <shogun/mathematics/Math.h>

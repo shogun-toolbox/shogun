@@ -12,6 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
+#include <shogun/lib/SGVector.h>
 #include <unistd.h>
 
 using namespace shogun;

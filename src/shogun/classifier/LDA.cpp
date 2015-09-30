@@ -5,195 +5,225 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2014 Abhijeet Kislay
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+#include <shogun/lib/config.h>
 
+#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
-
-#ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/LDA.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/eigen3.h>
 
+using namespace Eigen;
 using namespace shogun;
 
-CLDA::CLDA(float64_t gamma)
-: CLinearMachine(), m_gamma(gamma)
+CLDA::CLDA(float64_t gamma, ELDAMethod method)
+	:CLinearMachine()
 {
+	init();
+	m_method=method;
+	m_gamma=gamma;
 }
 
-CLDA::CLDA(float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
-: CLinearMachine(), m_gamma(gamma)
+CLDA::CLDA(float64_t gamma, CDenseFeatures<float64_t> *traindat,
+			CLabels *trainlab, ELDAMethod method)
+	:CLinearMachine(), m_gamma(gamma)
 {
+	init();
 	set_features(traindat);
 	set_labels(trainlab);
+	m_method=method;
+	m_gamma=gamma;
 }
 
+void CLDA::init()
+{
+	m_method=AUTO_LDA;
+	m_gamma=0;
+	SG_ADD((machine_int_t*) &m_method, "m_method", 
+		"Method used for LDA calculation", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_gamma, "m_gamma", 
+		"Regularization parameter", MS_NOT_AVAILABLE);
+} 
 
 CLDA::~CLDA()
 {
 }
 
-bool CLDA::train_machine(CFeatures* data)
+bool CLDA::train_machine(CFeatures *data)
 {
-	ASSERT(m_labels)
-	if (data)
+	REQUIRE(m_labels, "Labels for the given features are not specified!\n")
+	REQUIRE(m_labels->get_label_type()==LT_BINARY, "The labels should of type"
+			" CBinaryLabels! you provided %s \n",m_labels->get_name())
+
+	if(data)
 	{
-		if (!data->has_property(FP_DOT))
+		if(!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(features)
-	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
-	ASSERT(train_labels.vector)
 
-	int32_t num_feat=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
-	ASSERT(num_vec==train_labels.vlen)
+	REQUIRE(features, "Features are not provided!\n")
+	SGVector<int32_t>train_labels=((CBinaryLabels *)m_labels)->get_int_labels();
+	REQUIRE(train_labels.vector,"Provided Labels are empty!\n")
 
-	int32_t* classidx_neg=SG_MALLOC(int32_t, num_vec);
-	int32_t* classidx_pos=SG_MALLOC(int32_t, num_vec);
+	SGMatrix<float64_t>feature_matrix=((CDenseFeatures<float64_t>*)features)
+										->get_feature_matrix();
+	int32_t num_feat=feature_matrix.num_rows;
+	int32_t num_vec=feature_matrix.num_cols;
+	REQUIRE(num_vec==train_labels.vlen,"Number of training examples(%d) should be "
+		"equal to number of labels specified(%d)!\n", num_vec, train_labels.vlen);
+
+	SGVector<int32_t> classidx_neg(num_vec);
+	SGVector<int32_t> classidx_pos(num_vec);
 
 	int32_t i=0;
-	int32_t j=0;
 	int32_t num_neg=0;
 	int32_t num_pos=0;
-	for (i=0; i<train_labels.vlen; i++)
+
+	for(i=0; i<train_labels.vlen; i++)
 	{
 		if (train_labels.vector[i]==-1)
 			classidx_neg[num_neg++]=i;
-		else if (train_labels.vector[i]==+1)
+		
+		else if(train_labels.vector[i]==+1)
 			classidx_pos[num_pos++]=i;
-		else
-		{
-			SG_ERROR("found label != +/- 1 bailing...")
-			return false;
-		}
-	}
-
-	if (num_neg<=0 || num_pos<=0)
-	{
-		SG_ERROR("whooooo ? only a single class found\n")
-		return false;
 	}
 
 	w=SGVector<float64_t>(num_feat);
-
-	float64_t* mean_neg=SG_MALLOC(float64_t, num_feat);
-	memset(mean_neg,0,num_feat*sizeof(float64_t));
-
-	float64_t* mean_pos=SG_MALLOC(float64_t, num_feat);
-	memset(mean_pos,0,num_feat*sizeof(float64_t));
-
-	/* calling external lib */
-	double* scatter=SG_MALLOC(double, num_feat*num_feat);
-	double* buffer=SG_MALLOC(double, num_feat*CMath::max(num_neg, num_pos));
-	int nf = (int) num_feat;
-
-	CDenseFeatures<float64_t>* rf = (CDenseFeatures<float64_t>*) features;
+	w.zero();
+	MatrixXd fmatrix=Map<MatrixXd>(feature_matrix.matrix, num_feat, num_vec);
+	VectorXd mean_neg(num_feat);
+	mean_neg=VectorXd::Zero(num_feat);
+	VectorXd mean_pos(num_feat);
+	mean_pos=VectorXd::Zero(num_feat);
+	
 	//mean neg
-	for (i=0; i<num_neg; i++)
-	{
-		int32_t vlen;
-		bool vfree;
-		float64_t* vec=
-			rf->get_feature_vector(classidx_neg[i], vlen, vfree);
-		ASSERT(vec)
+	for(i=0; i<num_neg; i++)
+		mean_neg+=fmatrix.col(classidx_neg[i]);
+	mean_neg/=(float64_t)num_neg;
 
-		for (j=0; j<vlen; j++)
-		{
-			mean_neg[j]+=vec[j];
-			buffer[num_feat*i+j]=vec[j];
-		}
-
-		rf->free_feature_vector(vec, classidx_neg[i], vfree);
-	}
-
-	for (j=0; j<num_feat; j++)
-		mean_neg[j]/=num_neg;
-
-	for (i=0; i<num_neg; i++)
-	{
-		for (j=0; j<num_feat; j++)
-			buffer[num_feat*i+j]-=mean_neg[j];
-	}
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf,
-		(int) num_neg, 1.0, buffer, nf, buffer, nf, 0, scatter, nf);
+	// get m(-ve) - mean(-ve)
+	for(i=0; i<num_neg; i++)
+		fmatrix.col(classidx_neg[i])-=mean_neg;
 
 	//mean pos
-	for (i=0; i<num_pos; i++)
+	for(i=0; i<num_pos; i++)
+		mean_pos+=fmatrix.col(classidx_pos[i]);
+	mean_pos/=(float64_t)num_pos;
+
+	// get m(+ve) - mean(+ve)
+	for(i=0; i<num_pos; i++)
+		fmatrix.col(classidx_pos[i])-=mean_pos;
+
+	SGMatrix<float64_t>scatter_matrix(num_feat, num_feat);
+	Map<MatrixXd> scatter(scatter_matrix.matrix, num_feat, num_feat);
+
+	if (m_method == FLD_LDA || (m_method==AUTO_LDA && num_vec>num_feat))
 	{
-		int32_t vlen;
-		bool vfree;
-		float64_t* vec=
-			rf->get_feature_vector(classidx_pos[i], vlen, vfree);
-		ASSERT(vec)
+		// covariance matrix.
+		MatrixXd cov_mat(num_feat, num_feat);
+		cov_mat=fmatrix*fmatrix.transpose();
+		scatter=cov_mat/(num_vec-1);
+		float64_t trace=scatter.trace();
+		double s=1.0-m_gamma;
+		scatter *=s;
+		scatter.diagonal()+=VectorXd::Constant(num_feat, trace*m_gamma/num_feat);
 
-		for (j=0; j<vlen; j++)
-		{
-			mean_pos[j]+=vec[j];
-			buffer[num_feat*i+j]=vec[j];
-		}
+		// the usual way
+		// we need to find a Basic Linear Solution of A.x=b for 'x'.
+		// Instead of crudely Inverting A, we go for solve() using Decompositions.
+		// where:
+		// MatrixXd A=scatter;
+		// VectorXd b=mean_pos-mean_neg;
+		// VectorXd x=w;
+		Map<VectorXd> x(w.vector, num_feat);
+		LLT<MatrixXd> decomposition(scatter);
+		x=decomposition.solve(mean_pos-mean_neg);
 
-		rf->free_feature_vector(vec, classidx_pos[i], vfree);
+		// get the weights w_neg(for -ve class) and w_pos(for +ve class)
+		VectorXd w_neg=decomposition.solve(mean_neg);
+		VectorXd w_pos=decomposition.solve(mean_pos);
+
+		// get the bias.
+		bias=0.5*(w_neg.dot(mean_neg)-w_pos.dot(mean_pos));
 	}
 
-	for (j=0; j<num_feat; j++)
-		mean_pos[j]/=num_pos;
-
-	for (i=0; i<num_pos; i++)
+	else
 	{
-		for (j=0; j<num_feat; j++)
-			buffer[num_feat*i+j]-=mean_pos[j];
+		//for algorithmic detail, please refer to section 16.3.1. of Bayesian
+		//Reasoning and Machine Learning by David Barber.
+
+		//we will perform SVD here.
+		MatrixXd fmatrix1=Map<MatrixXd>(feature_matrix.matrix, num_feat, num_vec);
+
+		// to hold the centered positive and negative class data
+		MatrixXd cen_pos(num_feat,num_pos);
+		MatrixXd cen_neg(num_feat,num_neg);
+
+		for(i=0; i<num_pos;i++)
+			cen_pos.col(i)=fmatrix.col(classidx_pos[i]);
+
+		for(i=0; i<num_neg;i++)
+			cen_neg.col(i)=fmatrix.col(classidx_neg[i]);
+
+		//+ve covariance matrix
+		cen_pos=cen_pos*cen_pos.transpose()/(float64_t(num_pos-1));
+
+		//-ve covariance matrix
+		cen_neg=cen_neg*cen_neg.transpose()/(float64_t(num_neg-1));
+
+		//within class matrix
+		MatrixXd Sw= num_pos*cen_pos+num_neg*cen_neg;
+		float64_t trace=Sw.trace();
+		double s=1.0-m_gamma;
+		Sw *=s;
+		Sw.diagonal()+=VectorXd::Constant(num_feat, trace*m_gamma/num_feat);
+
+		//total mean
+		VectorXd mean_total=(num_pos*mean_pos+num_neg*mean_neg)/(float64_t)num_vec;
+
+		//between class matrix 
+		MatrixXd Sb(num_feat,2);
+		Sb.col(0)=sqrt(num_pos)*(mean_pos-mean_total);
+		Sb.col(1)=sqrt(num_neg)*(mean_neg-mean_total);
+
+		JacobiSVD<MatrixXd> svd(fmatrix1, ComputeThinU);
+
+		// basis to represent the solution
+		MatrixXd Q=svd.matrixU(); 
+		// modified between class scatter
+		Sb=Q.transpose()*(Sb*(Sb.transpose()))*Q;
+		
+		// modified within class scatter
+		Sw=Q.transpose()*Sw*Q;
+
+		// to find SVD((inverse(Chol(Sw)))' * Sb * (inverse(Chol(Sw))))
+		//1.get Cw=Chol(Sw)
+		//find the decomposition of Cw'.
+		HouseholderQR<MatrixXd> decomposition(Sw.llt().matrixU().transpose());
+
+		//2.get P=inv(Cw')*Sb_new
+		//MatrixXd P=decomposition.solve(Sb);
+		//3. final value to be put in SVD will be therefore:
+		// final_ output =(inv(Cw')*(P'))'
+		JacobiSVD<MatrixXd> svd2(decomposition.solve((decomposition.solve(Sb))
+					.transpose()).transpose(), ComputeThinU);
+
+		// Since this is a linear classifier, with only binary classes,
+		// we need to keep only the 1st eigenvector.
+		Map<VectorXd> x(w.vector, num_feat);
+		x=Q*(svd2.matrixU().col(0));
+		// get the bias
+		bias=(x.transpose()*mean_total);
+		bias=bias*(-1); 
 	}
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf, (int) num_pos,
-		1.0/(train_labels.vlen-1), buffer, nf, buffer, nf,
-		1.0/(train_labels.vlen-1), scatter, nf);
-
-	float64_t trace=SGMatrix<float64_t>::trace((float64_t*) scatter, num_feat, num_feat);
-
-	double s=1.0-m_gamma; /* calling external lib; indirectly */
-	for (i=0; i<num_feat*num_feat; i++)
-		scatter[i]*=s;
-
-	for (i=0; i<num_feat; i++)
-		scatter[i*num_feat+i]+= trace*m_gamma/num_feat;
-
-	double* inv_scatter= (double*) SGMatrix<float64_t>::pinv(
-		scatter, num_feat, num_feat, NULL);
-
-	float64_t* w_pos=buffer;
-	float64_t* w_neg=&buffer[num_feat];
-
-	cblas_dsymv(CblasColMajor, CblasUpper, nf, 1.0, inv_scatter, nf,
-		(double*) mean_pos, 1, 0., (double*) w_pos, 1);
-	cblas_dsymv(CblasColMajor, CblasUpper, nf, 1.0, inv_scatter, nf,
-		(double*) mean_neg, 1, 0, (double*) w_neg, 1);
-
-	bias=0.5*(SGVector<float64_t>::dot(w_neg, mean_neg, num_feat)-SGVector<float64_t>::dot(w_pos, mean_pos, num_feat));
-	for (i=0; i<num_feat; i++)
-		w.vector[i]=w_pos[i]-w_neg[i];
-
-#ifdef DEBUG_LDA
-	SG_PRINT("bias: %f\n", bias)
-	SGVector<float64_t>::display_vector(w.vector, num_feat, "w");
-	SGVector<float64_t>::display_vector(w_pos, num_feat, "w_pos");
-	SGVector<float64_t>::display_vector(w_neg, num_feat, "w_neg");
-	SGVector<float64_t>::display_vector(mean_pos, num_feat, "mean_pos");
-	SGVector<float64_t>::display_vector(mean_neg, num_feat, "mean_neg");
-#endif
-
-	SG_FREE(mean_neg);
-	SG_FREE(mean_pos);
-	SG_FREE(scatter);
-	SG_FREE(inv_scatter);
-	SG_FREE(classidx_neg);
-	SG_FREE(classidx_pos);
-	SG_FREE(buffer);
 	return true;
 }
-#endif
+#endif//HAVE_EIGEN3

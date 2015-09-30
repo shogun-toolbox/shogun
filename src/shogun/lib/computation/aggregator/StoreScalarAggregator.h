@@ -11,12 +11,12 @@
 #define STORE_SCALAR_AGGREGATOR_H_
 
 #include <shogun/lib/config.h>
+
 #include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 
 namespace shogun
 {
 class CJobResult;
-template<class T> class CScalarResult;
 
 /** @brief Template class that aggregates scalar job results in each
  * submit_result call, finalize then transforms current aggregation into

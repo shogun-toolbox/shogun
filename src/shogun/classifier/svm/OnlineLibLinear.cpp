@@ -14,6 +14,7 @@
 #include <shogun/classifier/svm/OnlineLibLinear.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -68,13 +69,34 @@ COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
 
 void COnlineLibLinear::init()
 {
-		C1=1;
-		C2=1;
-		use_bias=false;
+	C1=1;
+	C2=1;
+	Cp=1;
+	Cn=1;
+	use_bias=false;
 
-		m_parameters->add(&C1, "C1",  "C Cost constant 1.");
-		m_parameters->add(&C2, "C2",  "C Cost constant 2.");
-		m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+	m_parameters->add(&C1, "C1",  "C Cost constant 1.");
+	m_parameters->add(&C2, "C2",  "C Cost constant 2.");
+	m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
+
+	PG = 0;
+	PGmax_old = CMath::INFTY;
+	PGmin_old = -CMath::INFTY;
+	PGmax_new = -CMath::INFTY;
+	PGmin_new = CMath::INFTY;
+
+	diag[0]=0;diag[1]=0;diag[2]=0;
+	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
+
+	v = 0;
+	nSV = 0;
+
+	// TODO: "local" variables only used in one method
+	C = 0;
+	d = 0;
+	G = 0;
+	QD = 0;
+	alpha_current = 0;
 }
 
 COnlineLibLinear::~COnlineLibLinear()
@@ -85,6 +107,8 @@ void COnlineLibLinear::start_train()
 {
 	Cp = C1;
 	Cn = C2;
+	bias = false;
+
 	PGmax_old = CMath::INFTY;
 	PGmin_old = -CMath::INFTY;
 	PGmax_new = -CMath::INFTY;
@@ -92,11 +116,6 @@ void COnlineLibLinear::start_train()
 
 	diag[0]=0;diag[1]=0;diag[2]=0;
 	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
-
-	bias = 0;
-
-	PGmax_new = -CMath::INFTY;
-	PGmin_new = CMath::INFTY;
 
 	v = 0;
 	nSV = 0;
@@ -122,6 +141,7 @@ void COnlineLibLinear::stop_train()
 void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 {
 	alpha_current = 0;
+	int32_t y_current = 0;
 	if (label > 0)
 		y_current = +1;
 	else
@@ -129,10 +149,10 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 
 	QD = diag[y_current + 1];
 	// Dot product of vector with itself
-	QD += SGVector<float32_t>::dot(ex.vector, ex.vector, ex.vlen);
+	QD += CMath::dot(ex.vector, ex.vector, ex.vlen);
 
 	// Dot product of vector with learned weights
-	G = SGVector<float32_t>::dot(ex.vector, w, w_dim);
+	G = CMath::dot(ex.vector, w, w_dim);
 
 	if (use_bias)
 		G += bias;
@@ -189,6 +209,7 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 {
 	alpha_current = 0;
+	int32_t y_current = 0;
 	if (label > 0)
 		y_current = +1;
 	else

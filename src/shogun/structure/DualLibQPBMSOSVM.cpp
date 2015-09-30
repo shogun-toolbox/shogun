@@ -79,6 +79,7 @@ void CDualLibQPBMSOSVM::init()
 	set_K(0.4);
 	set_Tmax(100);
 	set_cp_models(1);
+	set_store_train_info(false);
 	set_solver(BMRM);
 }
 
@@ -87,7 +88,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	if (m_verbose)
+	if (m_verbose||m_store_train_info)
 	{
 		if (m_helper != NULL)
 			SG_UNREF(m_helper);
@@ -104,7 +105,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 		case BMRM:
 			m_result=svm_bmrm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
-					m_verbose);
+					m_store_train_info);
 			break;
 		case PPBMRM:
 			m_result=svm_ppbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,

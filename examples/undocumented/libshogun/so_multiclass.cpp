@@ -1,3 +1,4 @@
+#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/evaluation/StructuredAccuracy.h>
@@ -16,6 +17,7 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/lib/Time.h>
+#include <shogun/base/init.h>
 
 #include <stdio.h>
 

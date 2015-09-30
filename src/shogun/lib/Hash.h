@@ -32,12 +32,15 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/external/PMurHash.h>
 
 namespace shogun
 {
+struct substring;
+
 /** @brief Collection of Hashing Functions
  *
  * This class implements a number of hashing functions like

@@ -487,7 +487,7 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 	ST* vec1 = get_feature_vector(vec_idx1, len1, free1);
 	ST* vec2 = sf->get_feature_vector(vec_idx2, len2, free2);
 
-	float64_t result = SGVector<ST>::dot(vec1, vec2, len1);
+	float64_t result = CMath::dot(vec1, vec2, len1);
 
 	free_feature_vector(vec1, vec_idx1, free1);
 	sf->free_feature_vector(vec2, vec_idx2, free2);
@@ -603,6 +603,36 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 
 	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
 	SG_REF(result);
+	return result;
+}
+
+template<class ST>
+CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
+{
+	SG_DEBUG("Entering!\n");
+
+	// sanity checks
+	index_t max=CMath::max(dims.vector, dims.vlen);
+	index_t min=CMath::min(dims.vector, dims.vlen);
+	REQUIRE(max<num_features && min>=0,
+			"Provided dimensions is in the range [%d, %d] but they "
+			"have to be within [0, %d]! But it \n", min, max, num_features);
+
+	SGMatrix<ST> feature_matrix_copy(dims.vlen, get_num_vectors());
+
+	for (index_t i=0; i<dims.vlen; ++i)
+	{
+		for (index_t j=0; j<get_num_vectors(); ++j)
+		{
+			index_t real_idx=m_subset_stack->subset_idx_conversion(j);
+			feature_matrix_copy(i, j)=feature_matrix(dims[i], real_idx);
+		}
+	}
+
+	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
+	SG_REF(result);
+
+	SG_DEBUG("Leaving!\n");
 	return result;
 }
 
@@ -882,7 +912,7 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features)
-	float64_t result = SGVector<float64_t>::dot(vec1, vec2, num_features);
+	float64_t result = CMath::dot(vec1, vec2, num_features);
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 
@@ -997,7 +1027,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	/* count number of vectors (not elements) processed so far */
 	index_t num_processed=num_vectors;
 
-	/* now copy data of other features bock wise */
+	/* now copy data of other features block wise */
 	other=others->get_first_element();
 	while (other)
 	{

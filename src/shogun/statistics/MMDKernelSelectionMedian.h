@@ -10,6 +10,8 @@
 #ifndef __MMDKERNELSELECTIONMEDIAN_H_
 #define __MMDKERNELSELECTIONMEDIAN_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/MMDKernelSelection.h>
 
 namespace shogun
@@ -48,7 +50,7 @@ public:
 	 * median distance on. Since the median is stable, this do need need to be
 	 * all data, but a small subset is sufficient.
 	 */
-	CMMDKernelSelectionMedian(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionMedian(CKernelTwoSampleTest* mmd,
 			index_t num_data_distance=1000);
 
 	/** Destructor */
@@ -65,7 +67,7 @@ public:
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionMedian"; }
+	virtual const char* get_name() const { return "MMDKernelSelectionMedian"; }
 
 private:
 	/* initialises and registers member variables */

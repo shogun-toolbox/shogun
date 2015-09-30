@@ -20,8 +20,8 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/mathematics/Math.h>
 #include <limits>
-#include <math.h>
 
 #ifdef HAVE_ARPREC
 #include <arprec/mp_real.h>

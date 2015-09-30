@@ -24,7 +24,6 @@
 
 using namespace shogun;
 
-
 void kernel_choice_linear_time_mmd_opt_single()
 {
 	/* Note that the linear time mmd is designed for large datasets. Results on

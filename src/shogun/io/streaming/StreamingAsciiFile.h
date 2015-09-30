@@ -10,18 +10,25 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
-#include <shogun/io/CSVFile.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/v_array.h>
 
 namespace shogun
 {
+
+struct substring;
+template <class ST> struct SGSparseVectorEntry;
+template <class T> class DynArray;
+
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
  * The object must be initialized like a CCSVFile.
  */
 class CStreamingAsciiFile: public CStreamingFile
 {
+
 public:
 	/**
 	 * Default constructor
@@ -48,6 +55,7 @@ public:
 	 */
 	void set_delimiter(char delimiter);
 
+#ifndef SWIG // SWIG should skip this
 	/**
 	 * Utility function to convert a string to a boolean value
 	 *
@@ -94,6 +102,8 @@ public:
 	GET_VECTOR_DECL(floatmax_t)
 #undef GET_VECTOR_DECL
 
+#endif // #ifndef SWIG // SWIG should skip this
+
 	/** @return object name */
 	virtual const char* get_name() const
 	{
@@ -110,6 +120,17 @@ private:
 	 */
 	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 
+	/**
+	 * Split a given substring into an array of substrings
+	 * based on a specified delimiter
+	 *
+	 * @param delim delimiter to use
+	 * @param s substring to tokenize
+	 * @param ret array of substrings, returned
+	 */
+	void tokenize(char delim, substring s, v_array<substring> &ret);
+
+private:
 	/// Helper for parsing
 	v_array<substring> words;
 

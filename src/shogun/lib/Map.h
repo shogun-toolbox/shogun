@@ -12,6 +12,8 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Hash.h>

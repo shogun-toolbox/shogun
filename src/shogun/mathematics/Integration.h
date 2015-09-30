@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (w) 2014 Wu Lin
  * Written (W) 2013 Roman Votyakov
  *
  * The abscissae and weights for Gauss-Kronrod rules are taken form
@@ -13,6 +14,11 @@
  * See method comments which functions are adapted from GNU Octave,
  * file quadgk.m: Copyright (C) 2008-2012 David Bateman under GPLv3
  * http://www.gnu.org/software/octave/
+ *
+ * See method comments which functions are adapted from
+ * Gaussian Process Machine Learning Toolbox, file util/gauher.m,
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
 #ifndef _INTEGRATION_H_
@@ -29,6 +35,7 @@
 
 namespace shogun
 {
+template<class T> class SGVector;
 
 /** @brief Class that contains certain methods related to numerical
  * integration
@@ -90,6 +97,57 @@ public:
 	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
 	static float64_t integrate_quadgh(CFunction* f);
+
+	/** numerically evaluate integral of the following kind
+	 *
+	 * \f[
+	 * \int_{-\infty}^{\infty}e^{-x^2}f(x)dx
+	 * \f]
+	 *
+	 * using provided Gauss-Hermite points
+	 *
+	 * \f[
+	 * \int_{-\infty}^{\infty}e^{-x^2}f(x)dx \approx
+	 * \sum_{i=1}^{64} w_if(x_i)
+	 * \f]
+	 *
+	 * where x_i and w_i - ith node and weight for the provided 
+	 * Gauss-Hermite formula respectively.
+	 *
+	 * @param f integrable function of one variable
+	 * @param x the provided array of nodes  
+	 * @param w the provided array of weights
+	 *
+	 * @return approximate value of the
+	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
+	 */
+
+	static float64_t integrate_quadgh_customized(CFunction* f,
+		SGVector<float64_t> xgh, SGVector<float64_t> wgh);
+
+
+	/** generate Gauss-Hermite nodes
+	 *
+	 * Adapted form Gaussian Process Machine Learning Toolbox
+	 * (file util/gauher.m)
+	 *
+	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param wgh weights are saved in this pre-allocated array
+	 *
+	 */
+	static void generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh);
+
+
+	/** generate 20 Gauss-Hermite nodes using precomputed result
+	 *
+	 * Adapted form Gaussian Process Machine Learning Toolbox
+	 * (file util/gauher.m)
+	 *
+	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param wgh weights are saved in this pre-allocated array
+	 *
+	 */
+	static void generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh);
 
 	/** get object name
 	 *

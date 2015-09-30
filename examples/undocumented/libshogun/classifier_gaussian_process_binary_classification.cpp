@@ -16,12 +16,12 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/io/CSVFile.h>
 
 using namespace shogun;
@@ -63,6 +63,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X_train);
 	CBinaryLabels* lab_train=new CBinaryLabels(y_train);
 	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
+	SG_REF(feat_test);
 
 	// create Gaussian kernel with width = 2.0
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2.0);
@@ -79,19 +80,19 @@ int main(int argc, char** argv)
 	// create logit likelihood model
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
-	// you can easily switch between Laplace and EP approximation by
+	// you can easily switch between SingleLaplace and EP approximation by
 	// uncommenting/commenting the following lines:
 
-	// specify Laplace approximation inference method
-	// CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	// specify SingleLaplace approximation inference method
+	// CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 	//		feat_train, mean, lab_train, lik);
 
 	// specify EP approximation inference method
 	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, feat_train, mean,
 			lab_train, lik);
 
-	// create and train GP classifier, which uses Laplace approximation
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	// create and train GP classifier, which uses SingleLaplace approximation
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// apply binary classification to the test data and get -1/+1
@@ -114,6 +115,7 @@ int main(int argc, char** argv)
 	// free up memory
 	SG_UNREF(gpc);
 	SG_UNREF(predictions);
+	SG_UNREF(feat_test);
 
 	exit_shogun();
 	return 0;

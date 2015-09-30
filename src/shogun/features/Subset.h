@@ -11,6 +11,8 @@
 #ifndef __SUBSET_H_
 #define __SUBSET_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>
@@ -29,9 +31,7 @@ public:
 
 	/** constructor
 	 *
-	 * @param subset_idx vector of subset indices. Is always copied.
-	 * TODO, this might be changes once reference counting for SGVectors is
-	 * there
+	 * @param subset_idx vector of subset indices.
 	 */
 	CSubset(SGVector<index_t> subset_idx);
 

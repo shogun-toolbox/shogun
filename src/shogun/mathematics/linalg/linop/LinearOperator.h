@@ -21,7 +21,7 @@ template<class T> class SGVector;
 /** @brief Abstract template base class that represents a linear operator,
  *  e.g. a matrix
  */
-template<class T> class CLinearOperator : public CSGObject
+template<class RetType, class OperandType> class CLinearOperator : public CSGObject
 {
 public:
 	/** default constructor */
@@ -61,12 +61,12 @@ public:
 	}
 
 	/**
-	 * abstract method that applies the linear operator to a vector
+	 * abstract method that applies the linear operator to Operand(eg. a vector)
 	 *
-	 * @param b the vector to which the linear operator applies
-	 * @return the result vector
+	 * @param b the Operand to which the linear operator applies
+	 * @return the result(eg. a vector)
 	 */
-	virtual SGVector<T> apply(SGVector<T> b) const = 0;
+	virtual RetType apply(OperandType b) const = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

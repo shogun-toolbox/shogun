@@ -14,7 +14,7 @@
 #include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
-#include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 
 #include <climits>
 #include <limits>
@@ -25,7 +25,7 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H;
-static uint32_t BufSize;
+uint32_t BufSize;
 
 void add_cutting_plane(
 		bmrm_ll**	tail,
@@ -193,7 +193,7 @@ BmrmStatistics svm_bmrm_solver(
 		uint32_t         cleanAfter,
 		float64_t        K,
 		uint32_t         Tmax,
-		bool             verbose)
+		bool             store_train_info)
 {
 	BmrmStatistics bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
@@ -385,9 +385,7 @@ BmrmStatistics svm_bmrm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
-
-	if (verbose)
-		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
+	SG_SINFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -395,7 +393,7 @@ BmrmStatistics svm_bmrm_solver(
 	bmrm.hist_Fd[0]=bmrm.Fd;
 	bmrm.hist_wdist[0]=0.0;
 
-	if (verbose)
+	if (store_train_info)
 		helper = machine->get_helper();
 
 	/* main loop */
@@ -416,7 +414,7 @@ BmrmStatistics svm_bmrm_solver(
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
-				rsum= SGVector<float64_t>::dot(A_1, A_2, nDim);
+				rsum= CMath::dot(A_1, A_2, nDim);
 
 				H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)]
@@ -425,7 +423,7 @@ BmrmStatistics svm_bmrm_solver(
 		}
 
 		A_2=get_cutting_plane(CPList_tail);
-		rsum = SGVector<float64_t>::dot(A_2, A_2, nDim);
+		rsum = CMath::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/_lambda;
 
@@ -438,7 +436,7 @@ BmrmStatistics svm_bmrm_solver(
 
 #if 0
 		/* TODO: scaling...*/
-		float64_t scale = SGVector<float64_t>::max(diag_H, BufSize)/(1000.0*_lambda);
+		float64_t scale = CMath::max(diag_H, BufSize)/(1000.0*_lambda);
 		SGVector<float64_t> sb(bmrm.nCP);
 		sb.zero();
 		sb.vec1_plus_scalar_times_vec2(sb.vector, 1/scale, b, bmrm.nCP);
@@ -490,8 +488,8 @@ BmrmStatistics svm_bmrm_solver(
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
-		b[bmrm.nCP]=SGVector<float64_t>::dot(subgrad, W, nDim) - R;
+		sq_norm_W=CMath::dot(W, W, nDim);
+		b[bmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)
@@ -513,8 +511,7 @@ BmrmStatistics svm_bmrm_solver(
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
-		if (verbose)
-			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
+		SG_SINFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
@@ -548,23 +545,23 @@ BmrmStatistics svm_bmrm_solver(
 			bmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
-		if (verbose && SG_UNLIKELY(sg_io->loglevel_above(MSG_DEBUG)))
+		if (store_train_info)
 		{
-			float64_t debug_tstart=ttime.cur_time_diff(false);
+			float64_t info_tstart=ttime.cur_time_diff(false);
 
-			SGVector<float64_t> w_debug(W, nDim, false);
-			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
-			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			SGVector<float64_t> w_info(W, nDim, false);
+			float64_t primal = CSOSVMHelper::primal_objective(w_info, model, _lambda);
+			float64_t train_error = CSOSVMHelper::average_loss(w_info, model);
 			helper->add_debug_info(primal, bmrm.nIter, train_error);
 
-			float64_t debug_tstop=ttime.cur_time_diff(false);
-			SG_SPRINT("%4d: add_debug_info: tim=%.3lf, primal=%.3lf, train_error=%lf\n",
-				bmrm.nIter, debug_tstop-debug_tstart, primal, train_error);
+			float64_t info_tstop=ttime.cur_time_diff(false);
+			
+			SG_SINFO("On iteration %4d, tim=%.3lf, primal=%.3lf, train_error=%lf\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
 		}
 
 	} /* end of main loop */
 
-	if (verbose)
+	if (store_train_info)
 	{
 		helper->terminate();
 		SG_UNREF(helper);

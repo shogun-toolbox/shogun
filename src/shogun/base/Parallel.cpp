@@ -10,6 +10,8 @@
 
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/RefCount.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>
@@ -30,7 +32,7 @@ Parallel::Parallel()
 Parallel::Parallel(const Parallel& orig)
 {
 	num_threads=orig.get_num_threads();
-	m_refcount = new RefCount(orig.m_refcount->ref_count());
+	m_refcount = new RefCount();
 }
 
 Parallel::~Parallel()

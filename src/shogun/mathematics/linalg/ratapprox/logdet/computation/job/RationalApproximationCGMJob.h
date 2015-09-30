@@ -18,7 +18,7 @@
 namespace shogun
 {
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
+template<class RetType, class OperandType> class CLinearOperator;
 template<class T> class CStoreScalarAggregator;
 class CCGMShiftedFamilySolver;
 
@@ -46,7 +46,7 @@ public:
 	 */
 	CRationalApproximationCGMJob(CStoreScalarAggregator<float64_t>* aggregator,
 		CCGMShiftedFamilySolver* linear_solver,
-		CLinearOperator<float64_t>* linear_operator,
+		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
 		SGVector<float64_t> vector, SGVector<complex128_t> shifts,
 		SGVector<complex128_t> weights, float64_t const_multiplier);
 
@@ -64,7 +64,7 @@ public:
 
 private:
 	/** the real valued linear operator of linear system to be solved */
-	CLinearOperator<float64_t>* m_operator;
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* m_operator;
 
 	/** the vector of the system to be solved */
 	SGVector<float64_t> m_vector;

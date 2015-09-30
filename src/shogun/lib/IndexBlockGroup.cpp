@@ -8,6 +8,8 @@
  */
 
 #include <shogun/lib/IndexBlockGroup.h>
+#include <shogun/lib/IndexBlock.h>
+#include <shogun/lib/List.h>
 
 using namespace shogun;
 

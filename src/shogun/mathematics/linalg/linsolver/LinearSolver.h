@@ -16,7 +16,7 @@
 namespace shogun
 {
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
+template<class RetType, class OperandType> class CLinearOperator;
 
 /** @brief Abstract template base class that provides an abstract solve method
  * for linear systems, that takes a linear operator \f$A\f$, a vector \f$b\f$,
@@ -43,7 +43,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<SGVector<T>, SGVector<T> >* A, SGVector<ST> b) = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

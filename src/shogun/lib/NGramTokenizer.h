@@ -11,17 +11,20 @@
 #ifndef _NGRAMTOKENIZER__H__
 #define	_NGRAMTOKENIZER__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/Tokenizer.h>
 
 namespace shogun
 {
-class CTokenizer;
+template <class T> class SGVector;
 
 /** @brief The class CNGramTokenizer is used to tokenize
  *  a SGVector<char> into n-grams
  */
 class CNGramTokenizer: public CTokenizer
 {
+
 public:
     /** Constructor
 	 *

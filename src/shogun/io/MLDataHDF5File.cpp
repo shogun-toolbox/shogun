@@ -12,15 +12,11 @@
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <hdf5.h>
 #include <curl/curl.h>
 #include <shogun/lib/memory.h>
 #include <shogun/io/MLDataHDF5File.h>
-
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
 
 using namespace shogun;
 
@@ -201,34 +197,6 @@ GET_MATRIX(get_matrix, float32_t, (CT_MATRIX, ST_NONE, PT_FLOAT32))
 GET_MATRIX(get_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
 GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
-
-void CMLDataHDF5File::get_ndarray(uint8_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(char*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(int32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(float32_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(float64_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(int16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
-
-void CMLDataHDF5File::get_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
-{
-}
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
 void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\

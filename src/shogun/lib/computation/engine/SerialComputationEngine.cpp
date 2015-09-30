@@ -10,6 +10,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/computation/job/IndependentJob.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
+#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

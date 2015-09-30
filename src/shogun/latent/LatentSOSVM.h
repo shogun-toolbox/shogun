@@ -11,6 +11,8 @@
 #ifndef __LATENTSOSVM_H__
 #define __LATENTSOSVM_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/LinearLatentMachine.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 

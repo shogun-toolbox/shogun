@@ -19,6 +19,7 @@
 #include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <vector>
+#include <shogun/lib/SGVector.h>
 
 using namespace Eigen;
 
@@ -32,7 +33,7 @@ CLanczosEigenSolver::CLanczosEigenSolver()
 }
 
 CLanczosEigenSolver::CLanczosEigenSolver(
-	CLinearOperator<float64_t>* linear_operator)
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator)
 	: CEigenSolver(linear_operator)
 {
 	init();

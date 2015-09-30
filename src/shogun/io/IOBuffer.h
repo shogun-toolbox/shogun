@@ -16,14 +16,11 @@
 #ifndef IOBUFFER_H__
 #define IOBUFFER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/v_array.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/DataType.h>
 #include <shogun/base/SGObject.h>
-
-#include <stdio.h>
-#include <fcntl.h>
 
 #ifndef O_LARGEFILE //for OSX
 #define O_LARGEFILE 0

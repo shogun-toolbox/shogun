@@ -11,6 +11,8 @@
 #ifndef _LOCALALIGNMENTSTRINGKERNEL_H___
 #define _LOCALALIGNMENTSTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/kernel/string/StringKernel.h>
 

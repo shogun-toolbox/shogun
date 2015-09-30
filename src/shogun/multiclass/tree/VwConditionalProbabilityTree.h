@@ -13,6 +13,8 @@
 
 #include <map>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 
@@ -32,7 +34,7 @@ struct VwConditionalProbabilityTreeNodeData
 };
 
 /** define shortcut for the node type */
-typedef CTreeMachineNode<VwConditionalProbabilityTreeNodeData> node_t;
+typedef CBinaryTreeMachineNode<VwConditionalProbabilityTreeNodeData> bnode_t;
 
 /** Conditional Probability Tree using Vowpal Wabbit for base machine. */
 class CVwConditionalProbabilityTree: public CTreeMachine<VwConditionalProbabilityTreeNodeData>
@@ -99,14 +101,14 @@ protected:
 	 * @param ex VwExample instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(VwExample *ex, node_t *node);
+	void train_path(VwExample *ex, bnode_t *node);
 
 	/** train a single node
 	 * @param ex VwExample instance of the training example
 	 * @param node the node
 	 * @return the predicted value for the example
 	 */
-	float64_t train_node(VwExample *ex, node_t *node);
+	float64_t train_node(VwExample *ex, bnode_t *node);
 
 	/** create a new VW machine for a node
 	 * @param ex the VwExample instance for training the new machine
@@ -118,7 +120,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(node_t *node, VwExample *ex)=0;
+	virtual bool which_subtree(bnode_t *node, VwExample *ex)=0;
 
 	/** compute conditional probabilities for ex along the whole tree for predicting */
 	void compute_conditional_probabilities(VwExample *ex);
@@ -126,10 +128,10 @@ protected:
 	/** accumulate along the path to the root the conditional probability for a
 	 * particular leaf node.
 	 */
-	float64_t accumulate_conditional_probability(node_t *leaf);
+	float64_t accumulate_conditional_probability(bnode_t *leaf);
 
 	int32_t m_num_passes; ///< number of passes for online training
-	std::map<int32_t, node_t*> m_leaves; ///< class => leaf mapping
+	std::map<int32_t, bnode_t*> m_leaves; ///< class => leaf mapping
 	CStreamingVwFeatures *m_feats; ///< online features
 };
 

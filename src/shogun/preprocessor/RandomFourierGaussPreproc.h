@@ -12,8 +12,7 @@
 #ifndef _RANDOMFOURIERGAUSSPREPROC__H__
 #define _RANDOMFOURIERGAUSSPREPROC__H__
 
-#include <vector>
-#include <algorithm>
+#include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>

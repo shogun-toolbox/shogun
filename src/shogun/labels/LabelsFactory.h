@@ -10,6 +10,8 @@
 #ifndef _LABELS_FACTORY__H__
 #define _LABELS_FACTORY__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -21,7 +23,7 @@ namespace shogun
 	class CMulticlassLabels;
 	class CRegressionLabels;
 	class CStructuredLabels;
-	class CMulticlassMultipleOutputLabels;
+	class CMultilabelLabels;
 	class CMulticlassSOLabels;
 
 /** @brief The helper class to specialize base class instances of labels
@@ -59,11 +61,11 @@ public:
 	 */
 	static CStructuredLabels* to_structured(CLabels* base_labels);
 
-	/** specialize a base class instance to CMulticlassMultipleOutputLabels
+	/** specialize a base class instance to CMultilabelLabels
 	 *
-	 * @param base_labels its dynamic type must be CMulticlassMultipleOutputLabels
+	 * @param base_labels its dynamic type must be CMultilabelLabels
 	 */
-	static CMulticlassMultipleOutputLabels* to_multiclass_multiple_output(CLabels* base_labels);
+	static CMultilabelLabels* to_multilabel_output(CLabels* base_labels);
 
 	/** specialize a base class instance to CMulticlassSOLabels
 	 *

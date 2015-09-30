@@ -8,11 +8,9 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <typeinfo>
-
 #include <shogun/machine/LinearLatentMachine.h>
 #include <shogun/features/LatentFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <shogun/latent/LatentModel.h>
 
 using namespace shogun;
 

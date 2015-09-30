@@ -11,6 +11,8 @@
 #ifndef _GMNPSVM_H___
 #define _GMNPSVM_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/features/Features.h>

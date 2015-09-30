@@ -13,9 +13,12 @@
 %rename(ConditionalProbabilityTree) CConditionalProbabilityTree;
 %rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
 %rename(RelaxedTree) CRelaxedTree;
-%rename(RelaxedTreeNodeData) CRelaxedTreeNodeData;
 %rename(TreeMachineNode) CTreeMachineNode;
 %rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
+%rename(ID3ClassifierTree) CID3ClassifierTree;
+%rename(C45ClassifierTree) CC45ClassifierTree;
+%rename(CARTree) CCARTree;
+%rename(CHAIDTree) CCHAIDTree;
 
 %rename(RejectionStrategy) CRejectionStrategy;
 %rename(ThresholdRejectionStrategy) CThresholdRejectionStrategy;
@@ -31,7 +34,7 @@
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MKLMulticlass) CMKLMulticlass;
 
-%newobject apply_multiclass_multiple_output();
+%newobject apply_multilabel_output();
 
 %rename(ECOCStrategy) CECOCStrategy;
 %rename(ECOCEncoder) CECOCEncoder;
@@ -74,6 +77,10 @@ namespace shogun
 {
     %template(TreeMachineWithConditionalProbabilityTreeNodeData) CTreeMachine<ConditionalProbabilityTreeNodeData>;
     %template(TreeMachineWithRelaxedTreeNodeData) CTreeMachine<RelaxedTreeNodeData>;
+    %template(TreeMachineWithID3TreeNodeData) CTreeMachine<id3TreeNodeData>;
+    %template(TreeMachineWithC45TreeNodeData) CTreeMachine<C45TreeNodeData>;
+    %template(TreeMachineWithCARTreeNodeData) CTreeMachine<CARTreeNodeData>;
+    %template(TreeMachineWithCHAIDTreeNodeData) CTreeMachine<CHAIDTreeNodeData>;
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
@@ -82,6 +89,10 @@ namespace shogun
 %include <shogun/multiclass/tree/RelaxedTree.h>
 %include <shogun/multiclass/tree/TreeMachineNode.h>
 %include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+%include <shogun/multiclass/tree/ID3ClassifierTree.h>
+%include <shogun/multiclass/tree/C45ClassifierTree.h>
+%include <shogun/multiclass/tree/CARTree.h>
+%include <shogun/multiclass/tree/CHAIDTree.h>
 
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>

@@ -14,7 +14,13 @@
 */
 
 #include <string.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+
 #include <shogun/io/IOBuffer.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/v_array.h>
 
 using namespace shogun;
 

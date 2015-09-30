@@ -12,4 +12,5 @@ c 0.017
 train_classifier
 
 set_features TEST ../data/fm_test_real.dat
-out.txt = classify
+out-classifier_mpdsvm.txt = classify
+! rm out-classifier_mpdsvm.txt

@@ -12,6 +12,8 @@
 #ifndef MULTICLASSSTRATEGY_H__
 #define MULTICLASSSTRATEGY_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>

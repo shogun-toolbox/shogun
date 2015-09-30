@@ -217,6 +217,9 @@ SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
 	for (int32_t i=0; i<sstack->get_size(); i++)
 		subset_inv_map[sstack->subset_idx_conversion(i)] = i;
 
+	SG_UNREF(sstack);
+	sstack=NULL;
+
 	SGVector<index_t>* subset_tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{

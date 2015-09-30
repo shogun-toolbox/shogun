@@ -11,6 +11,8 @@
 #ifndef _REGRESSION_H__
 #define _REGRESSION_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 	/// type of regressor

@@ -12,6 +12,8 @@
 #ifndef _IMPLICITSPECFEATURES_H___
 #define _IMPLICITSPECFEATURES_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DotFeatures.h>

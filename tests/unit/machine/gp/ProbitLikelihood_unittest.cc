@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Wu Lin
  * Written (W) 2013 Roman Votyakov
  */
 
@@ -14,6 +15,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -303,8 +305,104 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[7], 0.269474219, 1E-9);
 	EXPECT_NEAR(d3lp[8], -0.235025555, 1E-9);
 	EXPECT_NEAR(d3lp[9], 0.230230621, 1E-9);
-
 	// clean up
+	SG_UNREF(labels);
+
+	lab[0]=1.0;
+	lab[1]=1.0;
+	lab[2]=1.0;
+	lab[3]=1.0;
+	lab[4]=1.0;
+	lab[5]=-1.0;
+	lab[6]=-1.0;
+	lab[7]=-1.0;
+	lab[8]=-1.0;
+	lab[9]=-1.0;
+
+
+	func[0]=241.9354699509236468202288961037993431091309;
+	func[1]=2.0238097083359516403788802563212811946869;
+	func[2]=4.8095242708398782127687809406779706478119;
+	func[3]=5.0476194166719032807577605126425623893738;
+	func[4]=11.6190485416797564255375618813559412956238;
+	func[5]=23.2380970833595128510751237627118825912476;
+	func[6]=46.4761941667190257021502475254237651824951;
+	func[7]=85.3333397917583056369039695709943771362305;
+	func[8]=140.1904854167975713608029764145612716674805;
+	func[9]=176.1904854167975713608029764145612716674805;
+	
+	labels=new CBinaryLabels(lab);
+	dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
+	d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
+	d3lp=likelihood->get_log_probability_derivative_f(labels, func, 3);
+
+	float64_t abs_tolerance, rel_tolerance;
+	rel_tolerance=1e-2;
+
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(dlp[0],  0.0000000000000000000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0525961606087547994814457297252374701202, rel_tolerance);
+	EXPECT_NEAR(dlp[1],  0.0525961606087547994814457297252374701202,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000037841107748951116192758468981249820, rel_tolerance);
+	EXPECT_NEAR(dlp[2],  0.0000037841107748951116192758468981249820,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000011703950725430704780759402425238669, rel_tolerance);
+	EXPECT_NEAR(dlp[3],  0.0000011703950725430704780759402425238669,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000000019299030137, rel_tolerance);
+	EXPECT_NEAR(dlp[4],  0.0000000000000000000000000000019299030137,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-23.2809719446751230975678481627255678176880, rel_tolerance);
+	EXPECT_NEAR(dlp[5],  -23.2809719446751230975678481627255678176880,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-46.4976906821641904343778151087462902069092, rel_tolerance);
+	EXPECT_NEAR(dlp[6],  -46.4976906821641904343778151087462902069092,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-85.3450553244290972543240059167146682739258, rel_tolerance);
+	EXPECT_NEAR(dlp[7],  -85.3450553244290972543240059167146682739258,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-140.1976178427906631895893951877951622009277, rel_tolerance);
+	EXPECT_NEAR(dlp[8],  -140.1976178427906631895893951877951622009277,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-176.1961607265705254121712641790509223937988, rel_tolerance);
+	EXPECT_NEAR(dlp[9],  -176.1961607265705254121712641790509223937988,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(d2lp[0],  -0.0000000000000000000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.1092109765719768421643465217130142264068, rel_tolerance);
+	EXPECT_NEAR(d2lp[1],  -0.1092109765719768421643465217130142264068,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000181997869348990967198250595648900685, rel_tolerance);
+	EXPECT_NEAR(d2lp[2],  -0.0000181997869348990967198250595648900685,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000059077102631701492848541150404440003, rel_tolerance);
+	EXPECT_NEAR(d2lp[3],  -0.0000059077102631701492848541150404440003,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000000224236367964, rel_tolerance);
+	EXPECT_NEAR(d2lp[4],  -0.0000000000000000000000000000224236367964,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9981684434205588818400656236917711794376, rel_tolerance);
+	EXPECT_NEAR(d2lp[5],  -0.9981684434205588818400656236917711794376,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9995383259136347842144232345162890851498, rel_tolerance);
+	EXPECT_NEAR(d2lp[6],  -0.9995383259136347842144232345162890851498,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9998627839438671838223626764374785125256, rel_tolerance);
+	EXPECT_NEAR(d2lp[7],  -0.9998627839438671838223626764374785125256,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9999491336714748657144014032382983714342, rel_tolerance);
+	EXPECT_NEAR(d2lp[8],  -0.9999491336714748657144014032382983714342,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.9999677929284884747573869390180334448814, rel_tolerance);
+	EXPECT_NEAR(d2lp[9],  -0.9999677929284884747573869390180334448814,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000000000000000000, rel_tolerance);
+	EXPECT_NEAR(d3lp[0],  0.0000000000000000000000000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.1799142301624994111364230775507166981697, rel_tolerance);
+	EXPECT_NEAR(d3lp[1],  0.1799142301624994111364230775507166981697,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000837483439526362955255753273142715898, rel_tolerance);
+	EXPECT_NEAR(d3lp[2],  0.0000837483439526362955255753273142715898,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000286494917886164182272389078232066595, rel_tolerance);
+	EXPECT_NEAR(d3lp[3],  0.0000286494917886164182272389078232066595,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000002586114214045, rel_tolerance);
+	EXPECT_NEAR(d3lp[4],  0.0000000000000000000000000002586114214045,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0001559162402209324227442266419529914856, rel_tolerance);
+	EXPECT_NEAR(d3lp[5],  -0.0001559162402209324227442266419529914856,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000198121972587728123471606522798538208, rel_tolerance);
+	EXPECT_NEAR(d3lp[6],  -0.0000198121972587728123471606522798538208,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000032132095526549164787866175174713135, rel_tolerance);
+	EXPECT_NEAR(d3lp[7],  -0.0000032132095526549164787866175174713135,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000007251051385992468567565083503723145, rel_tolerance);
+	EXPECT_NEAR(d3lp[8],  -0.0000007251051385992468567565083503723145,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.0000003646392769951489754021167755126953, rel_tolerance);
+	EXPECT_NEAR(d3lp[9],  -0.0000003646392769951489754021167755126953,  abs_tolerance);
+
+
 	SG_UNREF(likelihood);
 	SG_UNREF(labels);
 }

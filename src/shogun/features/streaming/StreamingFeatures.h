@@ -11,6 +11,8 @@
 #ifndef _STREAMING_FEATURES__H__
 #define _STREAMING_FEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/streaming/StreamingFile.h>
@@ -177,11 +179,12 @@ public:
 	 */
 	virtual void reset_stream();
 
-	/** Returns a CFeatures instance which contains num_elements elements from
-	 * the underlying stream
+	/** Returns a new CFeatures instance which contains num_elements elements from
+	 * the underlying stream. Not SG_REF'ed
 	 *
 	 * @param num_elements num elements to save from stream
-	 * @return CFeatures object of underlying type, NULL if not enough data
+	 * @return CFeatures object of underlying type, might be smaller than
+	 * requested if the stream stopped. A warning is issued in this case.
 	 *
 	 * NOT IMPLEMENTED!
 	 */

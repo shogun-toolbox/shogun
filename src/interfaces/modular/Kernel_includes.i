@@ -73,5 +73,5 @@
 #include <shogun/kernel/JensenShannonKernel.h>
 #include <shogun/kernel/LinearARDKernel.h>
 #include <shogun/kernel/GaussianARDKernel.h>
-#include <shogun/kernel/string/StringSubsequenceKernel.h>
+#include <shogun/kernel/string/SubsequenceStringKernel.h>
 %}

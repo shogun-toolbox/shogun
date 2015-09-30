@@ -23,9 +23,18 @@
 %rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
+%rename(FisherLda) CFisherLDA;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
+
+/* Feature selection framework */
+%rename(DependenceMaximization) CDependenceMaximization;
+%rename(KernelDependenceMaximization) CDependenceMaximization;
+%rename(BAHSIC) CBAHSIC;
+
+%newobject shogun::CFeatureSelection::apply;
+%newobject shogun::CFeatureSelection::remove_feats;
 
 %newobject shogun::CKernelPCA::apply_to_string_features;
 
@@ -95,6 +104,31 @@ namespace shogun
     %template(DecompressCharString) CDecompressString<char>;
 #endif
 }
+
+/* Templates Class FeatureSelection */
+%include <shogun/preprocessor/FeatureSelection.h>
+namespace shogun
+{
+#ifdef USE_FLOAT64
+    %template(RealFeatureSelection) CFeatureSelection<float64_t>;
+#endif
+#ifdef USE_UINT64
+    %template(UlongFeatureSelection) CFeatureSelection<uint64_t>;
+#endif
+#ifdef USE_UINT16
+    %template(WordFeatureSelection) CFeatureSelection<uint16_t>;
+#endif
+#ifdef USE_INT16
+    %template(ShortFeatureSelection) CFeatureSelection<int16_t>;
+#endif
+#ifdef USE_UINT8
+    %template(ByteFeatureSelection) CFeatureSelection<uint8_t>;
+#endif
+#ifdef USE_CHAR
+    %template(CharFeatureSelection) CFeatureSelection<char>;
+#endif
+}
+
 %include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/NormOne.h>
 %include <shogun/preprocessor/SumOne.h>
@@ -107,7 +141,11 @@ namespace shogun
 
 %include <shogun/preprocessor/PCA.h>
 %include <shogun/preprocessor/KernelPCA.h>
+%include <shogun/preprocessor/FisherLDA.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
 
+%include <shogun/preprocessor/DependenceMaximization.h>
+%include <shogun/preprocessor/KernelDependenceMaximization.h>
+%include <shogun/preprocessor/BAHSIC.h>

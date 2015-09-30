@@ -11,8 +11,11 @@
 #ifndef _CALPHABET__H__
 #define _CALPHABET__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
