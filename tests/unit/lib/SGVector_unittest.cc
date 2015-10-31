@@ -1,6 +1,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
@@ -8,6 +9,8 @@
 #endif
 
 using namespace shogun;
+using namespace linalg;
+
 
 TEST(SGVectorTest,ctor)
 {
@@ -181,12 +184,9 @@ TEST(SGVectorTest,complex128_tests)
 	for (index_t i=0; i<res.vlen; ++i)
 		EXPECT_EQ(res[i], i);
 
-	a.scale(complex128_t(1.0));
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
-	}
+	// removed EXPECT_NEAR block for SFVector::scale
+	// but inserted linalg because further tests are made on data after scaling
+	linalg::scale<linalg::Backend::NATIVE>(a, complex128_t(1.0));
 
 	// tests ::norm
 	float64_t norm1=SGVector<complex128_t>::onenorm(a.vector, 1);

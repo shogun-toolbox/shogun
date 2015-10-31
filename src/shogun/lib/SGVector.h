@@ -429,9 +429,6 @@ template<class T> class SGVector : public SGReferencedData
 			return idx;
 		}
 
-		/// Scale vector inplace
-		void scale(T alpha);
-
 		/** Load vector from file
 		 *
 		 * @param loader File object via which to load data

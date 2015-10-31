@@ -12,7 +12,10 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 
+#include <shogun/mathematics/linalg/linalg.h>
+
 using namespace shogun;
+using namespace linalg;
 
 CMeanRule::CMeanRule()
 	: CCombinationRule()
@@ -35,7 +38,7 @@ SGVector<float64_t> CMeanRule::combine(const SGMatrix<float64_t>& ensemble_resul
 	SGVector<float64_t> mean_labels(row_sum, ensemble_result.num_rows);
 
 	float64_t scale = 1/(float64_t)ensemble_result.num_cols;
-	mean_labels.scale(scale);
+	linalg::scale<linalg::Backend::NATIVE>(mean_labels, scale);
 
 	return mean_labels;
 }

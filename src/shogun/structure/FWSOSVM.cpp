@@ -12,8 +12,11 @@
 #include <shogun/structure/FWSOSVM.h>
 #include <shogun/labels/LabelsFactory.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
+using namespace linalg;
+
 
 CFWSOSVM::CFWSOSVM()
 : CLinearStructuredOutputMachine()
@@ -149,7 +152,8 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 
 		} // end si
 
-		w_s.scale(1.0 / (N*m_lambda));
+		linalg::scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
+
 		ell_s /= N;
 
 		// 5) duality gap

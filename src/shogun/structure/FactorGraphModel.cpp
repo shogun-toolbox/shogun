@@ -11,7 +11,8 @@
 #include <shogun/structure/FactorGraphModel.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/features/FactorGraphFeatures.h>
- #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 #ifdef HAVE_STD_UNORDERED_MAP
 	#include <unordered_map>
@@ -22,6 +23,8 @@
 #endif
 
 using namespace shogun;
+using namespace linalg;
+
 
 CFactorGraphModel::CFactorGraphModel()
 	: CStructuredModel()
@@ -271,7 +274,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	}
 
 	// negation (-E(x,y) = <w,phi(x,y)>)
-	psi.scale(-1.0);
+	linalg::scale<linalg::Backend::NATIVE>(psi, -1.0);
 
 	SG_UNREF(facs);
 	SG_UNREF(fg);

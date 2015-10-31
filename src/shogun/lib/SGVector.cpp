@@ -839,12 +839,6 @@ void SGVector<float32_t>::scale_vector(float32_t alpha, float32_t* vec, int32_t 
 }
 #endif
 
-template<class T>
-void SGVector<T>::scale(T alpha)
-{
-	scale_vector(alpha, vector, vlen);
-}
-
 template<class T> void SGVector<T>::load(CFile* loader)
 {
 	REQUIRE(loader, "Require a valid 'c FILE pointer'\n");

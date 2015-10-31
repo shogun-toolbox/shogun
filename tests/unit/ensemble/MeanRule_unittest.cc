@@ -1,9 +1,12 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
+using namespace linalg;
+
 
 void generate_random_ensemble_matrix(SGMatrix<float64_t>& em)
 {
@@ -31,7 +34,8 @@ TEST(MeanRule, combine_matrix)
 		SGVector<float64_t> rv = ensemble_matrix.get_row_vector(i);
 		expected[i] = SGVector<float64_t>::sum(rv, ensemble_matrix.num_cols);
 	}
-	expected.scale(1/(float64_t)num_classifiers);
+
+	linalg::scale<linalg::Backend::NATIVE>(expected, 1/(float64_t)num_classifiers);
 
 	SGVector<float64_t> combined = mr->combine(ensemble_matrix);
 

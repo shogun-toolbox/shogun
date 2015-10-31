@@ -42,9 +42,15 @@
 #include <shogun/lib/DynamicArray.h>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 using namespace Eigen;
+using namespace linalg;
+
+
+
+
 
 // try to use previously allocated memory for SGVector
 #define CREATE_SGVECTOR(vec, len, sg_type) \
@@ -179,7 +185,7 @@ void CEPInferenceMethod::update()
 
 	// get and scale diagonal of the kernel matrix
 	SGVector<float64_t> ktrtr_diag=m_ktrtr.get_diagonal_vector();
-	ktrtr_diag.scale(CMath::exp(m_log_scale*2.0));
+	linalg::scale<linalg::Backend::NATIVE>(ktrtr_diag, CMath::exp(m_log_scale*2.0));
 
 	// marginal likelihood for ttau = tnu = 0
 	float64_t nlZ0=-SGVector<float64_t>::sum(m_model->get_log_zeroth_moments(

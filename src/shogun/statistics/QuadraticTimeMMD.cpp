@@ -36,8 +36,10 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
+using namespace linalg;
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -1022,8 +1024,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum_DEPRECATED(
 	}
 
 	/* when m=n, return m*MMD^2 instead */
-	if (m==n)
-		null_samples.scale(0.5);
+	if (m==n) {
+		linalg::scale<linalg::Backend::NATIVE>(null_samples, 0.5);
+	}
 
 	return null_samples;
 }

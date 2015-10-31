@@ -12,8 +12,11 @@
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/labels/LabelsFactory.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
+using namespace linalg;
+
 
 CStochasticSOSVM::CStochasticSOSVM()
 : CLinearStructuredOutputMachine()
@@ -146,7 +149,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 
 			w_s = psi_i.clone();
-			w_s.scale(1.0 / (N*m_lambda));
+			linalg::scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
 
 			// 4) step-size gamma
 			float64_t gamma = 1.0 / (k+1.0);

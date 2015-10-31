@@ -21,8 +21,10 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
+using namespace linalg;
 using namespace Eigen;
 
 namespace shogun
@@ -59,7 +61,8 @@ public:
 		(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
 
 		(*W)=lik->get_log_probability_derivative_f(lab, (*f), 2);
-		W->scale(-1.0);
+		linalg::scale<linalg::Backend::NATIVE>(*W, -1.0);
+
 
 		// compute psi=alpha'*(f-m)/2-lp
 		float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0-
@@ -188,7 +191,7 @@ void CSingleLaplacianInferenceMethod::update_chol()
 
 	// W = -d2lp
 	m_W=m_d2lp.clone();
-	m_W.scale(-1.0);
+	linalg::scale<linalg::Backend::NATIVE>(m_W, -1.0);
 	m_sW=SGVector<float64_t>(m_W.vlen);
 
 	// compute sW
@@ -312,7 +315,8 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 
 	// compute W = -d2lp
 	m_W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-	m_W.scale(-1.0);
+	linalg::scale<linalg::Backend::NATIVE>(m_W, -1.0);
+
 
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 

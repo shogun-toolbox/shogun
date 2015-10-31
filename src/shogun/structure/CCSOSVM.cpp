@@ -12,8 +12,10 @@
 #include <shogun/mathematics/Mosek.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
+using namespace linalg;
 
 CCCSOSVM::CCCSOSVM()
 	: CLinearStructuredOutputMachine()
@@ -538,7 +540,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		if (result->psi_computed)
 		{
 			new_constraint.add(result->psi_truth);
-			result->psi_pred.scale(-1.0);
+			linalg::scale<linalg::Backend::NATIVE>(result->psi_pred, -1.0);
 			new_constraint.add(result->psi_pred);
 		}
 		else if(result->psi_computed_sparse)
@@ -563,7 +565,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	}
 	/* scaling */
 	float64_t scale = 1/(float64_t)num_samples;
-	new_constraint.scale(scale);
+	linalg::scale<linalg::Backend::NATIVE>(new_constraint, scale);
 	*margin *= scale;
 
 	/* find the nnz elements in new_constraint */
