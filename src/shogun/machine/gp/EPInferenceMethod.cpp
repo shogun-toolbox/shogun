@@ -48,8 +48,6 @@ using namespace shogun;
 using namespace Eigen;
 using namespace linalg;
 
-
-
 // try to use previously allocated memory for SGVector
 #define CREATE_SGVECTOR(vec, len, sg_type) \
 	{ \
