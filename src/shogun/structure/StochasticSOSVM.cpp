@@ -149,7 +149,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 
 			w_s = psi_i.clone();
-			linalg::scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
+			scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
 
 			// 4) step-size gamma
 			float64_t gamma = 1.0 / (k+1.0);

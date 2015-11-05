@@ -11,11 +11,9 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-
 #include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
-using namespace linalg;
 
 CMeanRule::CMeanRule()
 	: CCombinationRule()

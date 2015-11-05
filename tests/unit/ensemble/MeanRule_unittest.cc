@@ -35,7 +35,7 @@ TEST(MeanRule, combine_matrix)
 		expected[i] = SGVector<float64_t>::sum(rv, ensemble_matrix.num_cols);
 	}
 
-	linalg::scale<linalg::Backend::NATIVE>(expected, 1/(float64_t)num_classifiers);
+	scale<linalg::Backend::NATIVE>(expected, 1/(float64_t)num_classifiers);
 
 	SGVector<float64_t> combined = mr->combine(ensemble_matrix);
 

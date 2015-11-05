@@ -540,7 +540,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		if (result->psi_computed)
 		{
 			new_constraint.add(result->psi_truth);
-			linalg::scale<linalg::Backend::NATIVE>(result->psi_pred, -1.0);
+			scale<linalg::Backend::NATIVE>(result->psi_pred, -1.0);
 			new_constraint.add(result->psi_pred);
 		}
 		else if(result->psi_computed_sparse)

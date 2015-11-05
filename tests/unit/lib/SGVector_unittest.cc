@@ -184,9 +184,12 @@ TEST(SGVectorTest,complex128_tests)
 	for (index_t i=0; i<res.vlen; ++i)
 		EXPECT_EQ(res[i], i);
 
-	// removed EXPECT_NEAR block for SFVector::scale
-	// but inserted linalg because further tests are made on data after scaling
-	linalg::scale<linalg::Backend::NATIVE>(a, complex128_t(1.0));
+	scale<linalg::Backend::NATIVE>(a, complex128_t(1.0));
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+	}
 
 	// tests ::norm
 	float64_t norm1=SGVector<complex128_t>::onenorm(a.vector, 1);
