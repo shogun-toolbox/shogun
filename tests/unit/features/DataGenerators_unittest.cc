@@ -124,7 +124,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	}
 
 	/* average */
-	linalg::scale<linalg::Backend::NATIVE>(avg, 1.0/num_runs);
+	scale<linalg::Backend::NATIVE>(avg, 1.0/num_runs);
 
 	//avg.display_vector("mean_shift");
 

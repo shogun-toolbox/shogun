@@ -152,7 +152,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 
 		} // end si
 
-		linalg::scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
+		scale<linalg::Backend::NATIVE>(w_s, 1.0 / (N*m_lambda));
 
 		ell_s /= N;
 

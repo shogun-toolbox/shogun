@@ -1024,9 +1024,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum_DEPRECATED(
 	}
 
 	/* when m=n, return m*MMD^2 instead */
-	if (m==n) {
-		linalg::scale<linalg::Backend::NATIVE>(null_samples, 0.5);
-	}
+	if (m==n)
+		scale<linalg::Backend::NATIVE>(null_samples, 0.5);
+
 
 	return null_samples;
 }

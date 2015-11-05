@@ -274,7 +274,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	}
 
 	// negation (-E(x,y) = <w,phi(x,y)>)
-	linalg::scale<linalg::Backend::NATIVE>(psi, -1.0);
+	scale<linalg::Backend::NATIVE>(psi, -1.0);
 
 	SG_UNREF(facs);
 	SG_UNREF(fg);
