@@ -3,6 +3,8 @@ if(SYSTEM_INCLUDES)
 endif()
 include_directories(${INCLUDES})
 
+include(GenerateExportHeader)
+
 FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
@@ -27,11 +29,10 @@ IF (PROTOBUF_FOUND)
 ENDIF()
 
 # add target to compile the libshogun sources
-add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp)
-set_target_properties(libshogun PROPERTIES
-    POSITION_INDEPENDENT_CODE TRUE)
+add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp lib/config.h.in)
+set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (SANITIZER_FLAGS)
-  set_target_properties(libshogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+  set_property(libshogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()
 
 IF (PROTOBUF_FOUND)
@@ -102,10 +103,18 @@ if(MSVC)
   SET(POSTLINKFLAGS ${POSTLINKFLAGS} winmm)
 endif()
 add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-set_target_properties(shogun PROPERTIES
-                      VERSION ${LIBSHOGUNVER}
-                      SOVERSION ${LIBSHOGUNSO})
-
+generate_export_header(shogun)
+set_target_properties(
+  shogun PROPERTIES
+  VERSION ${LIBSHOGUNVER}
+  SOVERSION ${LIBSHOGUNSO}
+  INTERFACE_shogun_MAJOR_VERSION ${SHOGUN_VERSION_MAJOR})
+set_property(TARGET shogun APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${SHOGUN_VERSION_MAJOR})
+target_include_directories(shogun PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+  $<INSTALL_INTERFACE:include/shogun>
+)
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 # add bundled libraries to dependency
@@ -116,7 +125,7 @@ endif()
 # add target for static library if enabled
 if (BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-  set_target_properties(shogun-static PROPERTIES OUTPUT_NAME shogun)
+  set_property(TARGET shogun-static PROPERTY OUTPUT_NAME shogun)
   if(MSVC)
     target_link_libraries(shogun winmm.lib)
   endif()
@@ -134,12 +143,16 @@ IF (CTAGS_FOUND)
 ENDIF()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-LIST(APPEND LIBSHOGUN_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
-LIST(APPEND LIBSHOGUN_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h)
 
-INSTALL(FILES ${LIBSHOGUN_HEADERS}
-        DESTINATION include/shogun
-        COMPONENT headers)
+set(INCLUDE_INSTALL_DIR include/shogun)
+INSTALL(
+  FILES
+    ${LIBSHOGUN_HEADERS}
+    "${CMAKE_CURRENT_BINARY_DIR}/shogun_export.h"
+    ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h
+  DESTINATION include/shogun
+  COMPONENT headers)
 
 IF (LIB_INSTALL_DIR)
   SET(SHOGUN_LIB_INSTALL ${LIB_INSTALL_DIR})
@@ -147,7 +160,42 @@ ELSE()
   SET(SHOGUN_LIB_INSTALL lib)
 ENDIF()
 
-INSTALL(TARGETS shogun
+INSTALL(
+  TARGETS shogun 
+  EXPORT ShogunTargets
   ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
   LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
-  COMPONENT libraries)
+  INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
+)
+
+include(CMakePackageConfigHelpers)
+set(CONFIG_PACKAGE_DIR ${SHOGUN_LIB_INSTALL}/cmake/shogun)
+configure_package_config_file(
+  ${CMAKE_SOURCE_DIR}/cmake/ShogunConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake
+  INSTALL_DESTINATION ${SHOGUN_LIB_INSTALL}/cmake/shogun
+  PATH_VARS INCLUDE_INSTALL_DIR CONFIG_PACKAGE_DIR)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
+  VERSION ${VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+export(EXPORT ShogunTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/ShogunTargets.cmake"
+  NAMESPACE shogun::
+)
+
+install(
+  EXPORT ShogunTargets
+  FILE ShogunTargets.cmake
+  NAMESPACE shogun::
+  DESTINATION ${CONFIG_PACKAGE_DIR}
+)
+
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/ShogunConfigVersion.cmake"
+  DESTINATION ${CONFIG_PACKAGE_DIR}
+)

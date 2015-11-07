@@ -1,0 +1,6 @@
+@PACKAGE_INIT@
+
+set_and_check(shogun_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("@PACKAGE_CONFIG_PACKAGE_DIR@/ShogunTargets.cmake")
+check_required_components(shogun)
