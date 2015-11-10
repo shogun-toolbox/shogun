@@ -65,3 +65,11 @@ MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
                     )
     ENDIF()
 ENDMACRO()
+
+function(PrintLine)
+	message(STATUS "===================================================================================================================")
+endfunction()
+
+function(PrintStatus MSG)
+	message(STATUS "${MSG}")
+endfunction()

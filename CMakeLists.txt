@@ -74,6 +74,16 @@ SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
+SET(AVAILABLE_INTERFACES PythonModular;OctaveModular;JavaModular;PerlModular;RubyModular;CSharpModular;RModular;LuaModular)
+SET(PythonModularDescription "Python")
+SET(OctaveModularDescription "Octave")
+SET(JavaModularDescription "Java")
+SET(PerlModularDescription "Perl")
+SET(RubyModularDescription "Ruby")
+SET(CSharpModularDescription "C#")
+SET(RModularDescription "R")
+SET(LuaModularDescription "Lua")
+
 INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/src
 	${CMAKE_BINARY_DIR}/src
@@ -391,21 +401,9 @@ ENDIF()
 OPTION(OpenCV "OpenCV Integration" OFF)
 
 #interfaces
-OPTION(PythonModular "Python Modular" OFF)
-OPTION(LuaModular "Lua Modular" OFF)
-OPTION(RModular "R Modular" OFF)
-OPTION(OctaveModular "Octave Modular" OFF)
-OPTION(JavaModular "Java Modular" OFF)
-OPTION(PerlModular "Perl Modular" OFF)
-OPTION(RubyModular "Ruby Modular" OFF)
-OPTION(CSharpModular "CSharp Modular" OFF)
-
-SET(STATIC_INTERFACES PythonStatic;OctaveStatic;RStatic;MatlabStatic;CmdLineStatic)
-FOREACH(static_interface ${STATIC_INTERFACES})
-	if(${static_interface})
-		MESSAGE(FATAL_ERROR "Static interfaces are deprecated, use the corresponding modular interface!")
-	endif()
-ENDFOREACH()
+ForEach(Interface ${AVAILABLE_INTERFACES})
+    OPTION(${Interface} ${Interface}Description OFF)
+EndForEach(Interface)
 
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
@@ -1189,53 +1187,31 @@ ENDIF()
 
 include(ShogunPackaging)
 
-message(STATUS "===================================================================================================================")
-message(STATUS "Summary of Configuration Variables")
+PrintLine()
+PrintStatus("Summary of Configuration Variables")
 include(FeatureSummary)
 feature_summary(WHAT ALL)
 
-message(STATUS "===================================================================================================================")
-message(STATUS "Enabled Integration")
+PrintLine()
+PrintStatus("Integration")
 
 PrintInterfaceStatus("OpenCV Integration" OpenCV)
 
-message(STATUS
-"===================================================================================================================")
-message(STATUS "Enabled Interfaces")
+PrintLine()
+PrintStatus("Interfaces")
 
-message(STATUS "  libshogun is ON")
+ForEach(Interface ${AVAILABLE_INTERFACES})
+    PrintInterfaceStatus("${${Interface}Description} interface" ${Interface})
+EndForEach(Interface)
 
-PrintInterfaceStatus("python" PythonModular)
-PrintInterfaceStatus("octave" OctaveModular)
-PrintInterfaceStatus("java" JavaModular)
-PrintInterfaceStatus("perl" PerlModular)
-PrintInterfaceStatus("ruby" RubyModular)
-PrintInterfaceStatus("csharp" CSharpModular)
-PrintInterfaceStatus("R   " RModular)
-PrintInterfaceStatus("lua" LuaModular)
-
-message(STATUS "")
-message(STATUS "")
-message(STATUS "------------------------------------")
-IF(LICENSE_GPL_SHOGUN)
-	message(STATUS "Shogun will be built GPL3 compatible")
-ELSE()
-	message(STATUS "Shogun will be built BSD3 compatible")
-ENDIF()
-message(STATUS "------------------------------------")
-message(STATUS "")
-
-message(STATUS "===================================================================================================================")
-
-message(STATUS "To compile shogun type")
-message(STATUS "  make")
-message(STATUS "")
-message(STATUS "To install shogun to ${CMAKE_INSTALL_PREFIX} type")
-message(STATUS "  make install")
-message(STATUS "")
-message(STATUS "or to install to a custom directory")
-message(STATUS "  make install DESTDIR=/my/special/path")
-message(STATUS "  (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix")
-message(STATUS "===================================================================================================================")
-
-
+PrintLine()
+PrintStatus("To compile shogun type")
+PrintStatus("  make")
+PrintStatus("")
+PrintStatus("To install shogun to ${CMAKE_INSTALL_PREFIX} type")
+PrintStatus("  make install")
+PrintStatus("")
+PrintStatus("or to install to a custom directory")
+PrintStatus("  make install DESTDIR=/my/special/path")
+PrintStatus("  (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix")
+PrintLine()
