@@ -1,3 +1,12 @@
+Macro(IsAnyTrue LIST RESULT)
+	Set(${RESULT} "FALSE")
+	ForEach(Element ${LIST})
+		If(${Element})
+			Set(${RESULT} "TRUE")
+		EndIf()
+	EndForEach(Element)
+EndMacro()
+
 MACRO(MergeCFLAGS)
 	SET(MERGED_C_FLAGS ${CMAKE_C_FLAGS})
 	SET(MERGED_CXX_FLAGS ${CMAKE_CXX_FLAGS})
