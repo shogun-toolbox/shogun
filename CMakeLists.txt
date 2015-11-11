@@ -25,7 +25,7 @@ IF(POLICY CMP0054)
 ENDIF(POLICY CMP0054)
 
 project(shogun)
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 3.0)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
 
