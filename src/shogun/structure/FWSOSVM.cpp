@@ -145,7 +145,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			ASSERT(loss_i - CMath::dot(m_w.vector, psi_i.vector, m_w.vlen) >= -1e-12);
 
 			// 4) update w_s and ell_s
-			w_s.add(psi_i);
+			add<linalg::Backend::NATIVE>(w_s, psi_i, w_s);
 			ell_s += loss_i;
 
 			SG_UNREF(result);

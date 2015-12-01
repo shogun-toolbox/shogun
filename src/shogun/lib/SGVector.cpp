@@ -25,6 +25,7 @@
 #include <algorithm>
 
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -276,6 +277,15 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 	result.add(x);
 	return result;
 }
+
+
+template<class T>
+SGVector<T> SGVector<T>::operator+= (SGVector<T> x)
+{
+	linalg::add<linalg::Backend::NATIVE>(*this, x, *this);
+	return *this;
+}
+
 
 template<class T>
 void SGVector<T>::add(const SGVector<T> x)

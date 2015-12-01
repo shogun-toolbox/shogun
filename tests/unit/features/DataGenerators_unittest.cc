@@ -119,7 +119,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		gen->get_next_example();
-		avg.add(gen->get_vector());
+		add<linalg::Backend::NATIVE>(avg, gen->get_vector(), avg);
 		gen->release_example();
 	}
 

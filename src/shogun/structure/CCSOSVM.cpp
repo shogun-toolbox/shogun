@@ -539,9 +539,9 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		CResultSet* result = m_model->argmax(m_w, i);
 		if (result->psi_computed)
 		{
-			new_constraint.add(result->psi_truth);
+			add<linalg::Backend::NATIVE>(new_constraint, result->psi_truth, new_constraint);
 			scale<linalg::Backend::NATIVE>(result->psi_pred, -1.0);
-			new_constraint.add(result->psi_pred);
+			add<linalg::Backend::NATIVE>(new_constraint, result->psi_pred, new_constraint);
 		}
 		else if(result->psi_computed_sparse)
 		{

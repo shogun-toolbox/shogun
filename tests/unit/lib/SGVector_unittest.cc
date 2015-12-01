@@ -76,7 +76,7 @@ TEST(SGVectorTest,add)
 	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);
 	SGVector<float64_t> c(b_clone, 10);
 
-	c.add(a);
+	add<linalg::Backend::NATIVE>(c, a, c);
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(c[i], a[i]+b[i]);
 
