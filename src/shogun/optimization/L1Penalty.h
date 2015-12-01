@@ -112,11 +112,9 @@ public:
 	  if (CMath::abs(variable)<m_rounding_eplison)
 		  variable=0.0;
 	  return variable;
-		return 0;
 	}
 protected:
 	float64_t m_rounding_eplison;
-
 
 private:
 	void init()
