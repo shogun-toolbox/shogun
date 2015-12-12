@@ -6,6 +6,15 @@ from translate import translate
 import json
 import argparse
 
+def subfilesRelative(directory, filter_by):
+    """ Returns a generator of pairs (subpath, filename) in a given directory.
+        Filenames are filtered by the filter_by function.
+    """
+    for dir_, _, files in os.walk(directory):
+        for file in files:
+            if filter_by(file):
+                yield os.path.relpath(dir_, inputDir), file
+
 def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
     # Load all target dictionaries
     targets = []
@@ -18,15 +27,11 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
             targets.append(json.load(tFile))
 
     # Translate each example
-    for f in os.listdir(inputDir):
-        # Ignore hidden files
-        if f[0] == ".":
-            continue
-
+    for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
         # Parse the example file
-        with open(os.path.join(inputDir,f), 'r') as file:
-            ast = parse(file.read(), f)
-        basename = f[:-len(".sg")]
+        with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
+            ast = parse(file.read(), os.path.join(dirRelative, filename))
+        basename = os.path.splitext(filename)[0]
 
         # Translate ast to each target language
         for target in targets:
@@ -39,7 +44,16 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
                 os.makedirs(directory)
 
             # Write translation
-            with open(os.path.join(directory, basename + extension), "w") as nf:
+            outputFile = os.path.join(directory, dirRelative, os.path.splitext(filename)[0]+extension)
+
+            # create subdirectories if they don't exist yet
+            try:
+                print 'Creating ', os.path.dirname(outputFile)
+                os.makedirs(os.path.dirname(outputFile))
+            except OSError:
+                pass
+
+            with open(outputFile, "w") as nf:
                 nf.write(translation)
 
 if __name__ == "__main__":

@@ -49,3 +49,4 @@ IF (CmdLineStatic AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_st
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_static)
 ENDIF()
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples_v2)
