@@ -11,6 +11,21 @@
  		- Added BFGS based optimisation for GP inference [Wu Lin].
  		- Updated Notebook for variational GP inference [Wu Lin].
 		- New framework for stochastic optimisation (l1/2 loss, mirror descent, proximal gradients, adagrad) [Wu Lin].
+		- New Shogun meta-language for automatically generating code listings in all target languages [Esben Sörig].
+		- Added periodic kernel [Esben Sörig].
+		- Add gradient output functionality in Neural Nets [Sanuj Sharma].
+	* Bugfixes:
+		- Fixes for java_modular build using OpenJDK [Björn Esser]
+		- Catch uncaught exceptions in Neural Net code [Khaled Nasr]
+		- Fix build of modular interfaces with SWIG 3.0.5 on MacOSX [Björn Esser]
+		- Fix segfaults when calling delete[] twice on SGMatrix-instances [Björn Esser]
+	* Cleanup, efficiency updates, and API Changes:
+	- 	- Added GPU based dot-products to linalg [Rahul De].
+		- Added scale methods to linalg [Rahul De].
+		- Added element wise products to linalg [Rahul De].
+		- Added element-wise unary operators in linalg [Rahul De].
+	
+	
 
 2015-01-26 Soeren Sonnenburg <sonne@debian.org>
 
