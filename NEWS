@@ -15,10 +15,11 @@
 		- Added periodic kernel [Esben Sörig].
 		- Add gradient output functionality in Neural Nets [Sanuj Sharma].
 	* Bugfixes:
-		- Fixes for java_modular build using OpenJDK [Björn Esser]
-		- Catch uncaught exceptions in Neural Net code [Khaled Nasr]
-		- Fix build of modular interfaces with SWIG 3.0.5 on MacOSX [Björn Esser]
-		- Fix segfaults when calling delete[] twice on SGMatrix-instances [Björn Esser]
+		- Fixes for java_modular build using OpenJDK [Björn Esser].
+		- Catch uncaught exceptions in Neural Net code [Khaled Nasr].
+		- Fix build of modular interfaces with SWIG 3.0.5 on MacOSX [Björn Esser].
+		- Fix segfaults when calling delete[] twice on SGMatrix-instances [Björn Esser].
+		- Patch SWIG to fix a problem with SWIG and Python >= 3.5 [Björn Esser].
 	* Cleanup, efficiency updates, and API Changes:
 	- 	- Added GPU based dot-products to linalg [Rahul De].
 		- Added scale methods to linalg [Rahul De].
