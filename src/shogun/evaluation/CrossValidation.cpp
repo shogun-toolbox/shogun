@@ -13,7 +13,6 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/lib/List.h>
