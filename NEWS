@@ -19,6 +19,7 @@
 		- Catch uncaught exceptions in Neural Net code [Khaled Nasr].
 		- Fix build of modular interfaces with SWIG 3.0.5 on MacOSX [Björn Esser].
 		- Fix segfaults when calling delete[] twice on SGMatrix-instances [Björn Esser].
+		- Fix for building with full-hardening-(CXX|LD)FLAGS [Björn Esser].
 		- Patch SWIG to fix a problem with SWIG and Python >= 3.5 [Björn Esser].
 	* Cleanup, efficiency updates, and API Changes:
 		- Added GPU based dot-products to linalg [Rahul De].
