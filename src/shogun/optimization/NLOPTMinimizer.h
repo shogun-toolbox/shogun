@@ -39,7 +39,7 @@
 namespace shogun
 {
 
-/* The class wraps the external NLOPT library
+/* @brief The class wraps the external NLOPT library
  *
  * This minimizer supports bound constrainted minimization
  * and unconstrainted minimization using the NLOPT library

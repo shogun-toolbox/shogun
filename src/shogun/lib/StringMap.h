@@ -36,7 +36,9 @@
 
 namespace shogun
 {
-
+/**
+* @brief The class is a customized map for the optimization framework.
+*/
 #define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST template<class T> class CStringMap: public CMap<std::string, T>
 {
