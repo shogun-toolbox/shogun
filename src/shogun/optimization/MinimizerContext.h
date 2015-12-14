@@ -39,6 +39,9 @@
 
 namespace shogun
 {
+/**
+* @brief The class is used to serialize and deserialize variables for the optimization framework.
+*/
 class CMinimizerContext: public CSGObject
 {
 public:
