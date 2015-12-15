@@ -119,7 +119,7 @@ protected:
 	CStringMap<float64_t> *m_float64_map;
 	CStringMap< SGVector<float64_t> > *m_sgvector_float64_map;
 private:
-	/*  Init */
+	/**  Init */
 	void init()
 	{
 		m_float64_map=new CStringMap<float64_t>();

@@ -103,14 +103,14 @@ protected:
 	virtual float64_t get_negative_descend_direction(float64_t variable,
 		float64_t gradient, index_t idx, float64_t learning_rate);
 
-	/* learning_rate at iteration */
+	/** learning_rate at iteration */
 	float64_t m_build_in_learning_rate;
 
 	float64_t m_epsilon;
 
 	SGVector<float64_t> m_gradient_accuracy;
 private:
-	/*  Init */
+	/**  Init */
 	void init();
 };
 

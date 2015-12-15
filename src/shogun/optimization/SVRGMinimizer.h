@@ -106,22 +106,22 @@ public:
 	}
 
 protected:
-	/*  init the minimization process */
+	/**  init the minimization process */
 	virtual void init_minimization();
 
-	/* the number to go through data  using SGD before SVRG update */
+	/** the number to go through data  using SGD before SVRG update */
 	int32_t m_num_sgd_passes;
 
-	/* interval to average gradient */
+	/** interval to average gradient */
 	int32_t m_svrg_interval;
 
-	/*  used to store average gradient */
+	/**  used to store average gradient */
 	SGVector<float64_t> m_average_gradient;
 
-	/*  used to store previous result */
+	/**  used to store previous result */
 	SGVector<float64_t> m_previous_variable;
 private:
-	/* Init */
+	/** Init */
 	void init();
 };
 

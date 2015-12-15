@@ -50,12 +50,12 @@ namespace shogun
 class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
 public:
-	/* Initialize to generate a sample sequence
+	/** Initialize to generate a sample sequence
 	 *
 	 */
 	virtual void begin_sample()=0;
 
-	/* Get next sample
+	/** Get next sample
 	 *
 	 * @return false if reach the end of the sample sequence
 	 * */
