@@ -68,7 +68,7 @@ public:
 	/** Load the given context object to restores mutable variables
 	 * Usually it is used in deserialization.
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context)
 	{
@@ -84,7 +84,7 @@ protected:
 
 	/** Update a context object to store mutable variables
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{

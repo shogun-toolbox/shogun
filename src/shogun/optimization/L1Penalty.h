@@ -79,7 +79,7 @@ public:
 	/** Update a context object to store mutable variables
 	 * used in learning rate
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{
@@ -88,7 +88,7 @@ public:
 
 	/** Load the given context object to restore mutable variables
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context)
 	{
@@ -114,9 +114,11 @@ public:
 	  return variable;
 	}
 protected:
+	/** eplison */
 	float64_t m_rounding_eplison;
 
 private:
+	/** init */
 	void init()
 	{
 		m_rounding_eplison=1e-8;
