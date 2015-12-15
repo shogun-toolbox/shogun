@@ -72,7 +72,7 @@ public:
 
 	/** Set the initial learning rate
 	 *
-	 * @param learning_rate learning_rate must be positive
+	 * @param initial_learning_rate initial_learning_rate must be positive
 	 */
 	virtual void set_initial_learning_rate(float64_t initial_learning_rate)
 	{

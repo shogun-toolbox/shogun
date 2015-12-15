@@ -69,7 +69,7 @@ public:
 	 * \f]
 	 *
 	 * @param variable value of a target variable
-	 * @param gradient unregularized/unpenalized gradient of the variable
+	 * @param gradient_of_variable unregularized/unpenalized gradient of the variable
 	 * @return the gradient of the penalty wrt the variable
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
