@@ -44,6 +44,8 @@
 #include <algorithm>
 #include <type_traits>
 
+#ifndef SWIG // SWIG should skip this part
+
 namespace shogun
 {
 
@@ -195,4 +197,6 @@ struct elementwise_unary_operation<Backend::VIENNACL, Operand, Operand, UnaryOp>
 }
 
 }
+
+#endif // SWIG
 #endif // ELEMENTWISE_OPERATION_H_
