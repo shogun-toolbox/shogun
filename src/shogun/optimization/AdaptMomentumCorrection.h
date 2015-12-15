@@ -60,7 +60,7 @@ public:
 	/*  Destructor */
 	virtual ~AdaptMomentumCorrection() { m_momentum_correction=NULL; };
 
-	/*  Is the m_previous_descend_direction initialized?
+	/**  Is the m_previous_descend_direction initialized?
 	 *
 	 *  @return whether m_previous_descend_direction is initialized
 	 */
@@ -76,7 +76,7 @@ public:
 		m_momentum_correction->set_correction_weight(weight);
 	}
 
-	/*  Initialize m_previous_descend_direction?
+	/**  Initialize m_previous_descend_direction?
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */

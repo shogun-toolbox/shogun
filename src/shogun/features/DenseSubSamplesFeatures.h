@@ -189,7 +189,7 @@ public:
 	 * for example, is this->dot(rhs_prt) valid,
 	 * where rhs_prt is the class in right hand side 
 	 *
-	 * @param rhs, the class in right hand side 
+	 * @param rhs the class in right hand side 
 	 * @return whether this class supports compatible computation
 	 */
 	virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;

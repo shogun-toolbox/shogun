@@ -114,7 +114,7 @@ public:
 
 	/** Update a context object to store mutable variables
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{

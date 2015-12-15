@@ -125,7 +125,7 @@ public:
 
 	/** Get the previous descend direction (velocity) given the index
 	 *
-	 * @param idx, index of the previous descend direction
+	 * @param idx index of the previous descend direction
 	 *
 	 * @return the previous descend direction
 	 */
