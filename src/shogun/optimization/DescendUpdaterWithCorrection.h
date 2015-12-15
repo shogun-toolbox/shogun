@@ -105,7 +105,7 @@ public:
 	 * This method will be called by
 	 * FirstOrderMinimizer::save_to_context()
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)
 	{
@@ -119,7 +119,7 @@ public:
 	 * This method will be called by
 	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context)
 	{

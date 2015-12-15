@@ -201,17 +201,17 @@ protected:
 		}
 	}
 
-	/* Cost function */
+	/** Cost function */
 	FirstOrderCostFunction *m_fun;
 
-	/* the type of penalty*/
+	/** the type of penalty*/
 	Penalty* m_penalty_type;
 
-	/* the weight of penalty*/
+	/** the weight of penalty*/
 	float64_t m_penalty_weight;
 
 private:
-	/*  init */
+	/**  init */
 	void init()
 	{
 		m_fun=NULL;

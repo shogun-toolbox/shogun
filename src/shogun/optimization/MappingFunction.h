@@ -52,7 +52,7 @@ public:
 	 * This method will be called by
 	 * SMDMinimizer::update_context()
 	 *
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void update_context(CMinimizerContext* context)=0;
 
@@ -60,7 +60,7 @@ public:
 	 *
 	 * This method will be called by
 	 * SMDMinimizer::load_from_context(CMinimizerContext* context)
-	 * @param context, a context object
+	 * @param context a context object
 	 */
 	virtual void load_from_context(CMinimizerContext* context)=0;
 };
