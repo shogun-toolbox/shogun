@@ -190,7 +190,7 @@ protected:
 	float64_t m_rate_max;
 	float64_t m_init_descend_rate;
 private:
-	/* Init */
+	/** Init */
 	void init()
 	{
 		m_momentum_correction=NULL;

@@ -131,16 +131,16 @@ public:
 		REQUIRE(context, "Context must set\n");
 	}
 protected:
-	/*  exponent */
+	/**  exponent */
 	float64_t m_exponent;
-	/*  slope */
+	/**  slope */
 	float64_t m_slope;
-	/*  intercept */
+	/**  intercept */
 	float64_t m_intercept;
-	/*  init_learning_rate */
+	/**  init_learning_rate */
 	float64_t m_initial_learning_rate;
 private:
-	/*  Init */
+	/**  Init */
 	void init()
 	{
 		m_exponent=0.5;

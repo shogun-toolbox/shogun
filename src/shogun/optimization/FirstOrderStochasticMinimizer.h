@@ -184,10 +184,10 @@ protected:
 		context->save_data(key, m_iter_counter);
 	}
 
-	/* the gradient update step */
+	/** the gradient update step */
 	DescendUpdater* m_gradient_updater;
 
-	/* init the minimization process*/
+	/** init the minimization process*/
 	virtual void init_minimization()
 	{
 		REQUIRE(m_fun,"Cost function must set\n");
@@ -196,19 +196,19 @@ protected:
 		m_cur_passes=0;
 	}
 
-	/*  iteration to go through data */
+	/**  iteration to go through data */
 	int32_t m_num_passes;
 
-	/*  current iteration to go through data */
+	/**  current iteration to go through data */
 	int32_t m_cur_passes;
 
 	int32_t m_iter_counter;
 
-	/* learning_rate object */
+	/** learning_rate object */
 	LearningRate* m_learning_rate;
 	
 private:
-	/* Init */
+	/** Init */
 	void init()
 	{
 		m_gradient_updater=NULL;

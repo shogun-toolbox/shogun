@@ -106,11 +106,11 @@ public:
 	virtual void load_from_context(CMinimizerContext* context)=0;
 
 protected:
-	/*  weight of correction */
+	/**  weight of correction */
 	float64_t m_weight;
 
 private:
-	/* Init */
+	/** Init */
 	void init()
 	{
 		m_weight=0.0;
