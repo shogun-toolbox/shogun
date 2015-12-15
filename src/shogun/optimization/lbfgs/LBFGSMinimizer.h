@@ -36,7 +36,7 @@
 namespace shogun
 {
 
-/* linesearch method */
+/** linesearch method */
 enum ELBFGSLineSearch
 {
     MORETHUENTE=LBFGS_LINESEARCH_MORETHUENTE,

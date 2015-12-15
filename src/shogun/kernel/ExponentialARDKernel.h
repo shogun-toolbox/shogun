@@ -20,6 +20,7 @@
 namespace shogun
 {
 
+/** ExponentialARD type */
 enum EARDKernelType
 {
 	KT_SCALAR=10,
