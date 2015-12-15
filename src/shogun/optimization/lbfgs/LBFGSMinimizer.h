@@ -45,9 +45,7 @@ enum ELBFGSLineSearch
     BACKTRACKING_STRONG_WOLFE=LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE
 };
 
-/** @brief The class wraps the Shogun's C-style LBFGS minimizer
- *
- */
+/** @brief The class wraps the Shogun's C-style LBFGS minimizer  */
 class LBFGSMinimizer: public FirstOrderMinimizer
 {
 public:
@@ -74,7 +72,7 @@ public:
 	 */
 	virtual bool supports_batch_update() const {return true;}
 
-	/* set L-BFGS parameters
+	/** set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
 	 * @param m The number of corrections to approximate the inverse hessian matrix.
 	 * Default value is 100.
@@ -144,72 +142,71 @@ public:
 	virtual void load_from_context(CMinimizerContext* context) {}
 
 private:
-	/* A helper function is used in the C-style LBFGS API
+	/** A helper function is used in the C-style LBFGS API
 	 * Note that this function should be static and
-	 * private.
-	 * */
+	 * private. */
 	static float64_t evaluate(void *obj,
 		const float64_t *variable,
 		float64_t *gradient,
 		const int dim,
 		const float64_t step);
 
-	/* Init */
+	/** Init */
 	void init();
 
 protected:
-	/* Init before minimization */
+	/** Init before minimization */
 	virtual void init_minimization();
 
-	/* The number of corrections to approximate the inverse hessian matrix.*/
+	/** The number of corrections to approximate the inverse hessian matrix.*/
 	int m_m;
 
-	/* The maximum number of trials to do line search for each L-BFGS update.*/
+	/** The maximum number of trials to do line search for each L-BFGS update.*/
 	int m_max_linesearch;
 
-	/* The line search algorithm.*/
+	/** The line search algorithm.*/
 	int m_linesearch;
 
-	/* The maximum number of iterations for L-BFGS update.*/
+	/** The maximum number of iterations for L-BFGS update.*/
 	int m_max_iterations;
 
-	/* Delta for convergence test based on the change of function value.*/
+	/** Delta for convergence test based on the change of function value.*/
 	float64_t m_delta;
 
-	/* Distance for delta-based convergence test.*/
+	/** Distance for delta-based convergence test.*/
 	int m_past;
 
-	/* Epsilon for convergence test based on the change of gradient.*/
+	/** Epsilon for convergence test based on the change of gradient.*/
 	float64_t m_epsilon;
 
-	/* The minimum step of the line search.*/
+	/** The minimum step of the line search.*/
 	float64_t m_min_step;
 
-	/* The maximum step of the line search.*/
+	/** The maximum step of the line search.*/
 	float64_t m_max_step;
 
-	/* A parameter used in Armijo condition.*/
+	/** A parameter used in Armijo condition.*/
 	float64_t m_ftol;
 
-	/* A parameter used in curvature condition.*/
+	/** A parameter used in curvature condition.*/
 	float64_t m_wolfe;
 
-	/* A parameter used in Morethuente linesearch to control the accuracy.*/
+	/** A parameter used in Morethuente linesearch to control the accuracy.*/
 	float64_t m_gtol;
 
-	/* The machine precision for floating-point values.*/
+	/** The machine precision for floating-point values.*/
 	float64_t m_xtol;
 
-	/* Coeefficient for the L1 norm of variables.*/
+	/** Coeefficient for the L1 norm of variables.*/
 	float64_t m_orthantwise_c;
 
-	/* Start index for computing L1 norm of the variables.*/
+	/** Start index for computing L1 norm of the variables.*/
 	int m_orthantwise_start;
 
-	/* End index for computing L1 norm of the variables.*/
+	/** End index for computing L1 norm of the variables.*/
 	int m_orthantwise_end;
 
-	/* Target variable */
+	/** Target variable */
 	SGVector<float64_t> m_target_variable;
 };
 
