@@ -112,8 +112,10 @@ protected:
 	/** learning_rate at iteration */
 	float64_t m_build_in_learning_rate;
 
+	/** epsilon */
 	float64_t m_epsilon;
 
+	/** decay term */
 	float64_t m_decay_factor;
 
 	SGVector<float64_t> m_gradient_accuracy;
