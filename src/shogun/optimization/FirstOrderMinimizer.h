@@ -156,7 +156,7 @@ protected:
 	 * the target variable is \f$w\f$
 	 * and
 	 * the value of penalty is \f$\lambda \frac{w^t w}{2}\f$,
-	 * where \lambda is the weight of penalty
+	 * where \f$\lambda\f$ is the weight of penalty
 	 *
 	 *
 	 * @param var the variable used in regularization

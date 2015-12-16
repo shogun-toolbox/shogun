@@ -161,11 +161,11 @@ protected:
 	virtual float64_t get_negative_descend_direction(float64_t variable,
 		float64_t raw_negative_descend_direction, index_t idx, float64_t learning_rate)=0;
 
-	/*  descend correction object */
+	/** descend correction object */
 	DescendCorrection* m_correction;
 
 private:
-	/*  Init */
+	/**  Init */
 	void init()
 	{
 		m_correction=NULL;
