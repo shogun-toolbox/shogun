@@ -53,6 +53,10 @@ public:
 	 */
 	virtual void set_learning_rate(float64_t learning_rate);
 
+	/** Set epsilon
+	 *
+	 * @param epsilon epsilon must be positive
+	 */
 	virtual void set_epsilon(float64_t epsilon);
 
 	/** Update a context object to store mutable variables
@@ -106,6 +110,7 @@ protected:
 	/** learning_rate at iteration */
 	float64_t m_build_in_learning_rate;
 
+	/** epsilon */
 	float64_t m_epsilon;
 
 	SGVector<float64_t> m_gradient_accuracy;
