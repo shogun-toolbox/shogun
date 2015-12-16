@@ -59,6 +59,10 @@ public:
 		delete m_l2_penalty;
 	}
 
+	/** set l1_ratio
+	 *
+	 * @param ratio ratio must be in (0.0,1.0)
+	 * */
 	virtual void set_l1_ratio(float64_t ratio)
 	{
 		REQUIRE(ratio>0.0 && ratio<1.0, "");
@@ -128,17 +132,26 @@ public:
 		check_ratio();
 		return m_l1_penalty->get_sparse_variable(variable, penalty_weight*m_l1_ratio);
 	}
+
 protected:
+
+	/** check l1_ratio */
 	virtual void check_ratio()
 	{
 		REQUIRE(m_l1_ratio>0, "l1_ratio must set\n");
 	}
 
+	/** l1_ratio for L1 penalty and (1.0-l1_ratio) for L2 penalty */
 	float64_t m_l1_ratio;
+
+	/** L1Penalty */
 	L1Penalty* m_l1_penalty;
+
+	/** L2Penalty */
 	L2Penalty* m_l2_penalty;
 
 private:
+	/**  init */
 	void init()
 	{
 		m_l1_ratio=0;

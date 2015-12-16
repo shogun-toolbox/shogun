@@ -45,10 +45,10 @@ namespace shogun
 class ConstLearningRate: public LearningRate
 {
 public:
-	/*  Constructor */
+	/**  Constructor */
 	ConstLearningRate():LearningRate() { init(); }
 
-	/*  Destructor */
+	/**  Destructor */
 	virtual ~ConstLearningRate() {}
 
 	/** Set the const learning rate
@@ -96,11 +96,11 @@ public:
 
 protected:
 
-	/* const_learning_rate */
+	/** const_learning_rate */
 	float64_t m_const_learning_rate;
 
 private:
-	/*  Init */
+	/**  Init */
 	void init()
 	{
 		m_const_learning_rate=0.0;
