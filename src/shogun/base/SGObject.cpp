@@ -18,6 +18,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
@@ -144,6 +145,7 @@ CSGObject::~CSGObject()
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
+	delete m_parameter_map;
 	delete m_refcount;
 }
 
@@ -312,7 +314,7 @@ void CSGObject::print_serializable(const char* prefix)
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
-		const char* prefix)
+		const char* prefix, int32_t param_version)
 {
 	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name())
 	try
@@ -334,6 +336,10 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 				   "called!\n", prefix, get_name());
 		return false;
 	}
+
+	/* save parameter version */
+	if (!save_parameter_version(file, prefix, param_version))
+		return false;
 
 	if (!m_parameters->save(file, prefix))
 		return false;
@@ -367,7 +373,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 }
 
 bool CSGObject::load_serializable(CSerializableFile* file,
-		const char* prefix)
+		const char* prefix, int32_t param_version)
 {
 	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
 
@@ -389,6 +395,128 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
 				   "called!\n", prefix, get_name());
 		return false;
+	}
+
+	/* try to load version of parameters */
+	int32_t file_version=load_parameter_version(file, prefix);
+	SG_DEBUG("file_version=%d, current_version=%d\n", file_version, param_version)
+
+	if (file_version<0)
+	{
+		SG_WARNING("%s%s::load_serializable(): File contains no parameter "
+			"version. Seems like your file is from the days before this "
+			"was introduced. Ignore warning or serialize with this version "
+			"of shogun to get rid of above and this warnings.\n",
+			prefix, get_name());
+	}
+
+	if (file_version>param_version)
+	{
+		if (param_version==Version::get_version_parameter())
+		{
+			SG_WARNING("%s%s::load_serializable(): parameter version of file "
+					"larger than the one of shogun. Try with a more recent"
+					"version of shogun.\n", prefix, get_name());
+		}
+		else
+		{
+			SG_WARNING("%s%s::load_serializable(): parameter version of file "
+					"larger than the current. This is probably an implementation"
+					" error.\n", prefix, get_name());
+		}
+		return false;
+	}
+
+	if (file_version==param_version)
+	{
+		/* load normally if file has current version */
+		SG_DEBUG("loading normally\n")
+
+		/* load all parameters, except new ones */
+		for (int32_t i=0; i<m_parameters->get_num_parameters(); i++)
+		{
+			TParameter* current=m_parameters->get_parameter(i);
+
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+				continue;
+
+			if (!current->load(file, prefix))
+				return false;
+		}
+	}
+	else
+	{
+		/* load all parameters from file, mappings to current version */
+		DynArray<TParameter*>* param_base=load_all_file_parameters(file_version,
+				param_version, file, prefix);
+
+		/* create an array of param infos from current parameters */
+		DynArray<const SGParamInfo*>* param_infos=
+				new DynArray<const SGParamInfo*>();
+		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+		{
+			TParameter* current=m_parameters->get_parameter(i);
+
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+				continue;
+
+			param_infos->append_element(
+					new SGParamInfo(current, param_version));
+		}
+
+		/* map all parameters, result may be empty if input is */
+		map_parameters(param_base, file_version, param_infos);
+		SG_DEBUG("mapping is done!\n")
+
+		/* this is assumed now, mapping worked or no parameters in base */
+		ASSERT(file_version==param_version || !param_base->get_num_elements())
+
+		/* delete above created param infos */
+		for (index_t i=0; i<param_infos->get_num_elements(); ++i)
+			delete param_infos->get_element(i);
+
+		delete param_infos;
+
+		/* replace parameters by loaded and mapped */
+		SG_DEBUG("replacing parameter data by loaded/mapped values\n")
+		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+		{
+			TParameter* current=m_parameters->get_parameter(i);
+			char* s=SG_MALLOC(char, 200);
+			current->m_datatype.to_string(s, 200);
+			SG_DEBUG("processing \"%s\": %s\n", current->m_name, s)
+			SG_FREE(s);
+
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+			{
+				SG_DEBUG("%s is new, skipping\n", current->m_name)
+				continue;
+			}
+
+			/* search for current parameter in mapped ones */
+			index_t index=CMath::binary_search(param_base->get_array(),
+					param_base->get_num_elements(), current);
+
+			TParameter* migrated=param_base->get_element(index);
+
+			/* now copy data from migrated TParameter instance
+			 * (this automatically deletes the old data allocations) */
+			SG_DEBUG("copying migrated data into parameter\n")
+			current->copy_data(migrated);
+		}
+
+		/* delete the migrated parameter data base */
+		SG_DEBUG("deleting old parameter base\n")
+		for (index_t i=0; i<param_base->get_num_elements(); ++i)
+		{
+			TParameter* current=param_base->get_element(i);
+			SG_DEBUG("deleting old \"%s\"\n", current->m_name)
+			delete current;
+		}
+		delete param_base;
 	}
 
 	try
@@ -413,6 +541,518 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this)
 
 	return true;
+}
+
+DynArray<TParameter*>* CSGObject::load_file_parameters(
+		const SGParamInfo* param_info, int32_t file_version,
+		CSerializableFile* file, const char* prefix)
+{
+	/* ensure that recursion works */
+	SG_SDEBUG("entering %s::load_file_parameters\n", get_name())
+	if (file_version>param_info->m_param_version)
+	{
+		SG_SERROR("parameter version of \"%s\" in file (%d) is more recent than"
+				" provided %d!\n", param_info->m_name, file_version,
+				param_info->m_param_version);
+	}
+
+	DynArray<TParameter*>* result_array=new DynArray<TParameter*>();
+
+	/* do mapping */
+	char* s=param_info->to_string();
+	SG_SDEBUG("try to get mapping for: %s\n", s)
+	SG_FREE(s);
+
+	/* mapping has only be deleted if was created here (no mapping was found) */
+	bool free_mapped=false;
+	DynArray<const SGParamInfo*>* mapped=m_parameter_map->get(param_info);
+	if (!mapped)
+	{
+		/* since a new mapped array will be created, set deletion flag */
+		free_mapped=true;
+		mapped=new DynArray<const SGParamInfo*>();
+
+		/* if no mapping was found, nothing has changed. Simply create new param
+		 * info with decreased version */
+		SG_SDEBUG("no mapping found\n")
+		if (file_version<param_info->m_param_version)
+		{
+			/* create new array and put param info with decreased version in */
+			mapped->append_element(new SGParamInfo(param_info->m_name,
+					param_info->m_ctype, param_info->m_stype,
+					param_info->m_ptype, param_info->m_param_version-1));
+
+			SG_SDEBUG("using:\n")
+			for (index_t i=0; i<mapped->get_num_elements(); ++i)
+			{
+				s=mapped->get_element(i)->to_string();
+				SG_SDEBUG("\t%s\n", s)
+				SG_FREE(s);
+			}
+		}
+		else
+		{
+			/* create new array and put original param info in */
+			SG_SDEBUG("reached file version\n")
+			mapped->append_element(param_info->duplicate());
+		}
+	}
+	else
+	{
+		SG_SDEBUG("found:\n")
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+		{
+			s=mapped->get_element(i)->to_string();
+			SG_SDEBUG("\t%s\n", s)
+			SG_FREE(s);
+		}
+	}
+
+
+	/* case file version same as provided version.
+	 * means that parameters have to be loaded from file, recursion stops */
+	if (file_version==param_info->m_param_version)
+	{
+		SG_SDEBUG("recursion stop, loading from file\n")
+		/* load all parameters in mapping from file */
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+		{
+			const SGParamInfo* current=mapped->get_element(i);
+			s=current->to_string();
+			SG_SDEBUG("loading %s\n", s)
+			SG_FREE(s);
+
+			TParameter* loaded;
+			/* allocate memory for length and matrix/vector
+			 * This has to be done because this stuff normally is in the class
+			 * variables which do not exist in this case. Deletion is handled
+			 * via the allocated_from_scratch flag of TParameter */
+
+			/* create type and copy lengths, empty data for now */
+			TSGDataType type(current->m_ctype, current->m_stype,
+					current->m_ptype);
+			loaded=new TParameter(&type, NULL, current->m_name, "");
+
+			/* allocate data/length variables for the TParameter, lengths are not
+			 * important now, so set to one */
+			SGVector<index_t> dims(2);
+			dims[0]=1;
+			dims[1]=1;
+			loaded->allocate_data_from_scratch(dims);
+
+			/* tell instance to load data from file */
+			if (!loaded->load(file, prefix))
+			{
+				s=param_info->to_string();
+				SG_ERROR("Could not load %s. The reason for this might be wrong "
+						"parameter mappings\n", s);
+				SG_FREE(s);
+			}
+
+			SG_DEBUG("loaded lengths: y=%d, x=%d\n",
+					loaded->m_datatype.m_length_y ? *loaded->m_datatype.m_length_y : -1,
+					loaded->m_datatype.m_length_x ? *loaded->m_datatype.m_length_x : -1);
+
+			/* append new TParameter to result array */
+			result_array->append_element(loaded);
+		}
+		SG_SDEBUG("done loading from file\n")
+	}
+	/* recursion with mapped type, a mapping exists in this case (ensured by
+	 * above assert) */
+	else
+	{
+		/* for all elements in mapping, do recursion */
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+		{
+			const SGParamInfo* current=mapped->get_element(i);
+			s=current->to_string();
+			SG_SDEBUG("starting recursion over %s\n", s)
+
+			/* recursively get all file parameters for this parameter */
+			DynArray<TParameter*>* recursion_array=
+					load_file_parameters(current, file_version, file, prefix);
+
+			SG_SDEBUG("recursion over %s done\n", s)
+			SG_FREE(s);
+
+			/* append all recursion data to current array */
+			SG_SDEBUG("appending all results to current result\n")
+			for (index_t j=0; j<recursion_array->get_num_elements(); ++j)
+				result_array->append_element(recursion_array->get_element(j));
+
+			/* clean up */
+			delete recursion_array;
+		}
+	}
+
+	SG_SDEBUG("cleaning up old mapping \n")
+
+
+	/* clean up mapping */
+	if (free_mapped)
+	{
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+			delete mapped->get_element(i);
+
+		delete mapped;
+	}
+
+	SG_SDEBUG("leaving %s::load_file_parameters\n", get_name())
+	return result_array;
+}
+
+DynArray<TParameter*>* CSGObject::load_all_file_parameters(int32_t file_version,
+		int32_t current_version, CSerializableFile* file, const char* prefix)
+{
+	DynArray<TParameter*>* result=new DynArray<TParameter*>();
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		TParameter* current=m_parameters->get_parameter(i);
+
+		/* extract current parameter info */
+		const SGParamInfo* info=new SGParamInfo(current, current_version);
+
+		/* skip new parameters */
+		if (is_param_new(*info))
+		{
+			delete info;
+			continue;
+		}
+
+		/* in the other case, load parameters data from file */
+		DynArray<TParameter*>* temp=load_file_parameters(info, file_version,
+				file, prefix);
+
+		/* and append them all to array */
+		for (index_t j=0; j<temp->get_num_elements(); ++j)
+			result->append_element(temp->get_element(j));
+
+		/* clean up */
+		delete temp;
+		delete info;
+	}
+
+	/* sort array before returning */
+	CMath::qsort(result->get_array(), result->get_num_elements());
+
+	return result;
+}
+
+void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
+		int32_t& base_version, DynArray<const SGParamInfo*>* target_param_infos)
+{
+	SG_DEBUG("entering %s::map_parameters\n", get_name())
+	/* NOTE: currently the migration is done step by step over every version */
+
+	if (!target_param_infos->get_num_elements())
+	{
+		SG_DEBUG("no target parameter infos\n")
+		SG_DEBUG("leaving %s::map_parameters\n", get_name())
+		return;
+	}
+
+	/* map all target parameter infos once */
+	DynArray<const SGParamInfo*>* mapped_infos=
+			new DynArray<const SGParamInfo*>();
+	DynArray<SGParamInfo*>* to_delete=new DynArray<SGParamInfo*>();
+	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
+	{
+		const SGParamInfo* current=target_param_infos->get_element(i);
+
+		char* s=current->to_string();
+		SG_DEBUG("trying to get parameter mapping for %s\n", s)
+		SG_FREE(s);
+
+		DynArray<const SGParamInfo*>* mapped=m_parameter_map->get(current);
+
+		if (mapped)
+		{
+			mapped_infos->append_element(mapped->get_element(0));
+			for (index_t j=0; j<mapped->get_num_elements(); ++j)
+			{
+				s=mapped->get_element(j)->to_string();
+				SG_DEBUG("found mapping: %s\n", s)
+				SG_FREE(s);
+			}
+		}
+		else
+		{
+			/* these have to be deleted above */
+			SGParamInfo* no_change=new SGParamInfo(*current);
+			no_change->m_param_version--;
+			s=no_change->to_string();
+			SG_DEBUG("no mapping found, using %s\n", s)
+			SG_FREE(s);
+			mapped_infos->append_element(no_change);
+			to_delete->append_element(no_change);
+		}
+	}
+
+	/* assert that at least one mapping exists */
+	ASSERT(mapped_infos->get_num_elements())
+	int32_t mapped_version=mapped_infos->get_element(0)->m_param_version;
+
+	/* assert that all param versions are equal for now (if not empty param) */
+	for (index_t i=1; i<mapped_infos->get_num_elements(); ++i)
+	{
+		ASSERT(mapped_infos->get_element(i)->m_param_version==mapped_version ||
+				*mapped_infos->get_element(i)==SGParamInfo());
+	}
+
+	/* recursion, after this call, base is at version of mapped infos */
+	if (mapped_version>base_version)
+		map_parameters(param_base, base_version, mapped_infos);
+
+	/* delete mapped parameter infos array */
+	delete mapped_infos;
+
+	/* delete newly created parameter infos which have to name or type change */
+	for (index_t i=0; i<to_delete->get_num_elements(); ++i)
+		delete to_delete->get_element(i);
+
+	delete to_delete;
+
+	ASSERT(base_version==mapped_version)
+
+	/* do migration of one version step, create new base */
+	DynArray<TParameter*>* new_base=new DynArray<TParameter*>();
+	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
+	{
+		char* s=target_param_infos->get_element(i)->to_string();
+		SG_DEBUG("migrating one step to target: %s\n", s)
+		SG_FREE(s);
+		TParameter* p=migrate(param_base, target_param_infos->get_element(i));
+		new_base->append_element(p);
+	}
+
+	/* replace base by new base, delete old base, if it was created in migrate */
+	SG_DEBUG("deleting parameters base version %d\n", base_version)
+	for (index_t i=0; i<param_base->get_num_elements(); ++i)
+		delete param_base->get_element(i);
+
+	SG_DEBUG("replacing old parameter base\n")
+	*param_base=*new_base;
+	base_version=mapped_version+1;
+
+	SG_DEBUG("new parameter base of size %d:\n", param_base->get_num_elements())
+	for (index_t i=0; i<param_base->get_num_elements(); ++i)
+	{
+		TParameter* current=param_base->get_element(i);
+		TSGDataType type=current->m_datatype;
+		if (type.m_ptype==PT_SGOBJECT)
+		{
+			if (type.m_ctype==CT_SCALAR)
+			{
+				CSGObject* object=*(CSGObject**)current->m_parameter;
+				SG_DEBUG("(%d:) \"%s\": sgobject \"%s\" at %p\n", i,
+						current->m_name, object ? object->get_name() : "",
+								object);
+			}
+			else
+			{
+				index_t len=1;
+				len*=type.m_length_x ? *type.m_length_x : 1;
+				len*=type.m_length_y ? *type.m_length_y : 1;
+				CSGObject** array=*(CSGObject***)current->m_parameter;
+				for (index_t j=0; j<len; ++j)
+				{
+					CSGObject* object=array[j];
+					SG_DEBUG("(%d:) \"%s\": sgobject \"%s\" at %p\n", i,
+							current->m_name, object ? object->get_name() : "",
+									object);
+				}
+			}
+		}
+		else
+		{
+			char* s=SG_MALLOC(char, 200);
+			current->m_datatype.to_string(s, 200);
+			SG_DEBUG("(%d:) \"%s\": type: %s at %p\n", i, current->m_name, s,
+					current->m_parameter);
+			SG_FREE(s);
+		}
+	}
+
+	/* because content was copied, new base may be deleted */
+	delete new_base;
+
+	/* sort the just created new base */
+	SG_DEBUG("sorting base\n")
+	CMath::qsort(param_base->get_array(), param_base->get_num_elements());
+
+	/* at this point the param_base is at the same version as the version of
+	 * the provided parameter infos */
+	SG_DEBUG("leaving %s::map_parameters\n", get_name())
+}
+
+void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
+		const SGParamInfo* target, TParameter*& replacement,
+		TParameter*& to_migrate, char* old_name)
+{
+	SG_DEBUG("CSGObject::entering CSGObject::one_to_one_migration_prepare() for "
+			"\"%s\"\n", target->m_name);
+
+	/* generate type of target structure */
+	TSGDataType type(target->m_ctype, target->m_stype, target->m_ptype);
+
+	/* first find index of needed data.
+	 * in this case, element in base with same name or old name */
+	char* name=target->m_name;
+	if (old_name)
+		name=old_name;
+
+	/* dummy for searching, search and save result in to_migrate parameter */
+	TParameter* t=new TParameter(&type, NULL, name, "");
+	index_t i=CMath::binary_search(param_base->get_array(),
+			param_base->get_num_elements(), t);
+	delete t;
+
+	/* assert that something is found */
+	ASSERT(i>=0)
+	to_migrate=param_base->get_element(i);
+
+	/* result structure, data NULL for now */
+	replacement=new TParameter(&type, NULL, target->m_name,
+			to_migrate->m_description);
+
+	SGVector<index_t> dims(2);
+	dims[0]=1;
+	dims[1]=1;
+	/* allocate content to write into, lengths are needed for this */
+	if (to_migrate->m_datatype.m_length_x)
+		dims[0]=*to_migrate->m_datatype.m_length_x;
+
+	if (to_migrate->m_datatype.m_length_y)
+		dims[1]=*to_migrate->m_datatype.m_length_y;
+
+	replacement->allocate_data_from_scratch(dims);
+
+	/* in case of sgobject, copy pointer data and SG_REF */
+	if (to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
+	{
+		/* note that the memory is already allocated before the migrate call */
+		CSGObject* object=*((CSGObject**)to_migrate->m_parameter);
+		*((CSGObject**)replacement->m_parameter)=object;
+		SG_REF(object);
+		SG_DEBUG("copied and SG_REF sgobject pointer for \"%s\" at %p\n",
+				object->get_name(), object);
+	}
+
+	/* tell the old TParameter to delete its data on deletion */
+	to_migrate->m_delete_data=true;
+
+	SG_DEBUG("CSGObject::leaving CSGObject::one_to_one_migration_prepare() for "
+			"\"%s\"\n", target->m_name);
+}
+
+TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
+		const SGParamInfo* target)
+{
+	SG_DEBUG("entering %s::migrate\n", get_name())
+	/* this is only executed, iff there was no migration method which handled
+	 * migration to the provided target. In this case, it is assumed that the
+	 * parameter simply has not changed. Verify this here and return copy of
+	 * data in case its true.
+	 * If not, throw an exception -- parameter migration HAS to be implemented
+	 * by hand everytime, a parameter changes type or name. */
+
+	TParameter* result=NULL;
+
+	/* first find index of needed data.
+	 * in this case, element in base with same name */
+	/* type is also needed */
+	TSGDataType type(target->m_ctype, target->m_stype,
+			target->m_ptype);
+
+	/* dummy for searching, search and save result */
+	TParameter* t=new TParameter(&type, NULL, target->m_name, "");
+	index_t i=CMath::binary_search(param_base->get_array(),
+			param_base->get_num_elements(), t);
+	delete t;
+
+	/* check if name change occurred while no migration method was specified */
+	if (i<0)
+	{
+		SG_ERROR("Name change for parameter that has to be mapped to \"%s\","
+				" and to no migration method available\n", target->m_name);
+	}
+
+	TParameter* to_migrate=param_base->get_element(i);
+
+	/* check if element in base is equal to target one */
+	if (*target==SGParamInfo(to_migrate, target->m_param_version))
+	{
+		char* s=SG_MALLOC(char, 200);
+		to_migrate->m_datatype.to_string(s, 200);
+		SG_DEBUG("nothing changed, using old data: %s\n", s)
+		SG_FREE(s);
+		result=new TParameter(&to_migrate->m_datatype, NULL, to_migrate->m_name,
+				to_migrate->m_description);
+
+		SGVector<index_t> dims(2);
+		dims[0]=1;
+		dims[1]=1;
+		if (to_migrate->m_datatype.m_length_x)
+			dims[0]=*to_migrate->m_datatype.m_length_x;
+
+		if (to_migrate->m_datatype.m_length_y)
+			dims[1]=*to_migrate->m_datatype.m_length_y;
+
+		/* allocate lengths and evtl scalar data but not non-scalar data (no
+		 * new_cont call */
+		result->allocate_data_from_scratch(dims, false);
+
+		/* now use old data */
+		if (to_migrate->m_datatype.m_ctype==CT_SCALAR &&
+				to_migrate->m_datatype.m_ptype!=PT_SGOBJECT)
+		{
+			/* copy data */
+			SG_DEBUG("copying scalar data\n")
+			memcpy(result->m_parameter,to_migrate->m_parameter,
+					to_migrate->m_datatype.get_size());
+		}
+		else
+		{
+			/* copy content of pointer */
+			SG_DEBUG("copying content of poitner for non-scalar data\n")
+			*(void**)result->m_parameter=*(void**)(to_migrate->m_parameter);
+		}
+	}
+	else
+	{
+		char* s=target->to_string();
+		SG_ERROR("No migration method available for %s!\n", s)
+		SG_FREE(s);
+	}
+
+	SG_DEBUG("leaving %s::migrate\n", get_name())
+
+	return result;
+}
+
+bool CSGObject::save_parameter_version(CSerializableFile* file,
+		const char* prefix, int32_t param_version)
+{
+	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
+	TParameter p(&t, &param_version, "version_parameter",
+			"Version of parameters of this object");
+	return p.save(file, prefix);
+}
+
+int32_t CSGObject::load_parameter_version(CSerializableFile* file,
+		const char* prefix)
+{
+	REQUIRE(file != NULL, "Serializable file object should be != NULL");
+
+	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
+	int32_t v;
+	TParameter tp(&t, &v, "version_parameter", "");
+	if (tp.load(file, prefix))
+		return v;
+	else
+		return -1;
 }
 
 void CSGObject::load_serializable_pre() throw (ShogunException)
@@ -460,6 +1100,7 @@ void CSGObject::init()
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
+	m_parameter_map=new ParameterMap();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
@@ -548,6 +1189,15 @@ index_t CSGObject::get_modsel_param_index(const char* param_name)
 	}
 
 	return index;
+}
+
+bool CSGObject::is_param_new(const SGParamInfo param_info) const
+{
+	/* check if parameter is new in this version (has empty mapping) */
+	DynArray<const SGParamInfo*>* value=m_parameter_map->get(&param_info);
+	bool result=value && *value->get_element(0) == SGParamInfo();
+
+	return result;
 }
 
 void CSGObject::get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,

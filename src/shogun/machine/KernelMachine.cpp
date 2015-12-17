@@ -13,6 +13,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/ParameterMap.h>
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -694,6 +695,19 @@ void CKernelMachine::init()
 	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+		new SGParamInfo("custom_kernel", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+		new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+		new SGParamInfo("kernel_backup", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+		new SGParamInfo()
+	);
+	m_parameter_map->finalize_map();
 }
 
 bool CKernelMachine::supports_locking() const
