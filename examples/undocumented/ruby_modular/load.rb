@@ -1,9 +1,6 @@
-require 'rubygems'
-require 'narray'
 require 'modshogun'
 
 # for debugging purposes...
-#require 'rubygems'
 #require "pry"
 
 def LoadMatrix(filename, type = :numbers)

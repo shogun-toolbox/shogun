@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'narray'
 require 'modshogun'
 require 'load'
 require 'pp'
