@@ -1,7 +1,5 @@
-require 'rubygems'
 require 'modshogun'
 require 'load'
-require 'narray'
 require 'pp'
 
 parameter_list = [[1,7],[2,8]]

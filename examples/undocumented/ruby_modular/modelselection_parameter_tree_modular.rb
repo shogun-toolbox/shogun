@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'modshogun'
 require 'load'
 require 'pp'

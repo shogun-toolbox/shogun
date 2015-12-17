@@ -1,7 +1,5 @@
-require 'rubygems'
 require 'modshogun'
 require 'load'
-require 'narray'
 
 @num = 1000
 @dist = 1
