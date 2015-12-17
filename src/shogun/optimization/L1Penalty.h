@@ -60,15 +60,36 @@ public:
 	 */
 	virtual float64_t get_penalty(float64_t variable) {return CMath::abs(variable);}
 
+
+
+	/** Return the gradient of the penalty wrt a target variable
+	 *
+	 * Note that for L1 penalty we do not compute the gradient/sub-gradient in our implementation.
+	 * Instead, we do a proximal projection.
+	 *
+	 * @param variable value of a target variable
+	 * @param gradient_of_variable unregularized/unpenalized gradient of the variable
+	 * @return the gradient of the penalty wrt the variable
+	 */
+
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return 0.0;}
 
+	/** Set the rounding eplison
+	 *
+	 * @param eplison rounding eplison
+	 *
+	 */
 	virtual void set_rounding_eplison(float64_t eplison)
 	{
 		REQUIRE(eplison>=0,"Rounding eplison (%f) should be non-negative\n", eplison);
 		m_rounding_eplison=eplison;
 	}
 
+	/** Do proximal projection/operation in place
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)
 	{
@@ -95,6 +116,11 @@ public:
 		REQUIRE(context, "Context must set\n");
 	}
 
+	/** Get the sparse variable
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 * @return sparse value of the variable
+	 */
 	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
 	{
 	  if (variable>0.0)

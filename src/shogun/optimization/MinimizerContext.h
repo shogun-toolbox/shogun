@@ -106,9 +106,9 @@ public:
 			"Failed to save data for key:%s\n", key.c_str());
 	}
 
-	/** Save data into the map
+	/** Get data from the map
 	 * @param key the name of data
-	 * @param value the data
+	 * @return value from map
 	 */
 	virtual SGVector<float64_t> get_data_sgvector_float64(const std::string& key)
 	{
@@ -117,9 +117,9 @@ public:
 		return m_sgvector_float64_map->get_element(key);
 	}
 
-	/** Save data into the map
+	/** Get data from the map
 	 * @param key the name of data
-	 * @param value the data
+	 * @return value from map
 	 */
 	virtual float64_t get_data_float64(const std::string& key)
 	{
@@ -128,9 +128,9 @@ public:
 		return m_float64_map->get_element(key);
 	}
 
-	/** Save data into the map
+	/** Get data from the map
 	 * @param key the name of data
-	 * @param value the data
+	 * @return value from map
 	 */
 	virtual int32_t get_data_int32(const std::string& key)
 	{
