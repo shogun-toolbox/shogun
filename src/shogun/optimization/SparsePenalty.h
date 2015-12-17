@@ -46,6 +46,11 @@ namespace shogun
 class SparsePenalty: public ProximalPenalty
 {
 public:
+	/** Get the sparse variable
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 * @return sparse value of the variable
+	 */
 	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)=0;
 
 };

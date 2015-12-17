@@ -46,6 +46,10 @@ namespace shogun
 class ProximalPenalty: public Penalty
 {
 public:
+	/** Do proximal projection/operation in place
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)=0;
 

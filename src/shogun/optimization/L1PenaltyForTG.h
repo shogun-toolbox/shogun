@@ -56,6 +56,10 @@ public:
 	/* Destructor */
 	virtual ~L1PenaltyForTG() {}
 
+	/** Do proximal projection/operation in place
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)
 	{
@@ -123,6 +127,7 @@ protected:
 	SGVector<float64_t> m_q;
 
 private:
+	/** init */
 	void init()
 	{
 		m_u=0;

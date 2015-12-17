@@ -145,6 +145,9 @@ public:
 		m_iter_counter=context->get_data_int32(key);
 	}
 
+	/** Set the learning rate of a minimizer
+	 * @param learning_rate learn rate or step size
+	 */
 	virtual void set_learning_rate(LearningRate *learning_rate)
 	{
 		m_learning_rate=learning_rate;
