@@ -48,7 +48,7 @@ void AdaGradUpdater::set_learning_rate(float64_t learning_rate)
 
 void AdaGradUpdater::set_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>0,"Epsilon (%f) must be positive\n",
+	REQUIRE(epsilon>=0,"Epsilon (%f) must be non-negative\n",
 		epsilon);
 	m_epsilon=epsilon;
 }

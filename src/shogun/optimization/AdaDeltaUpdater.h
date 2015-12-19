@@ -132,16 +132,16 @@ protected:
 	/** learning_rate \f$\alpha$\f at iteration */
 	float64_t m_build_in_learning_rate;
 
-	/** \f$epsilon$\f */
+	/** \f$ \epsilon $\f */
 	float64_t m_epsilon;
 
-	/** decay term \f$\lambda$\f */
+	/** decay term (\f$ \lambda $\f) */
 	float64_t m_decay_factor;
 
-	/** \f$g_\theta$\f */
+	/** \f$ g_\theta $\f */
 	SGVector<float64_t> m_gradient_accuracy;
 
-	/** \f$s_\theta$\f */
+	/** \f$ s_\theta $\f */
 	SGVector<float64_t> m_gradient_delta_accuracy;
 private:
 	/**  Init */
