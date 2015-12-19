@@ -60,29 +60,6 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
-	/** Allocates data for this instance from scratch. This is one of the core
-	 * methods in parameter migration. It is used if parameters have to be
-	 * loaded from file without having a class instance to put the data into.
-	 * Namely, the data length variables are allocated,
-	 * for numeric scalars, the memory is allocated,
-	 * for SG_OBJECT scalars, a pointer to an CSGObject is allocated,
-	 * for non-scalars, the pointer to the data is allocated
-	 * for non-scalars, the actual data is also allocated via cont_new()
-	 *
-	 * @param dims desired length of the data
-	 * @param new_cont_call whether new_cont should be called, if false, only scalar
-	 * non-sgobject data will be allocated (needed for migration)
-	 * */
-	void allocate_data_from_scratch(SGVector<index_t> dims,	bool new_cont_call=true);
-
-	/** Given another TParameter instance (with same type, except for lengths)
-	 * all its data is copied to the current one. This means in case of numeric
-	 * scalars that the value is copied and in SG_OBJECT scalars and any arrays
-	 * that the pointer to the data is copied. The old data is overwritten.
-	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
-	 * @param source source TParameter instance to copy from */
-	void copy_data(const TParameter* source);
-
 	/** Numerically this instance with another instance. Compares recursively
 	 * in case of non-numerical parameters
 	 *
@@ -151,7 +128,6 @@ struct TParameter
 	bool copy(TParameter* target);
 
 
-
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 
@@ -169,19 +145,6 @@ struct TParameter
 	char* m_name;
 	/** description of parameter */
 	char* m_description;
-
-	/** if this is set true, the data, m_parameter points to, m_parameter
-	 * itself, and possible lengths of the type will be deleted in destructor.
-	 * This is needed because in data migration, TParameter instances are
-	 * created from scratch without having a class instance and allocated data
-	 * has to ne deleted in this case.
-	 * The only way to set this is via an alternate constructor, false by
-	 * default */
-	bool m_delete_data;
-
-	/** @return true if data was not allocated by a class which registered
-	 * its parameter, but from scratch using allocate_data_from_scratch */
-	bool m_was_allocated_from_scratch;
 
 	/** Incrementally get a hash from parameter value
 	 *
@@ -244,8 +207,8 @@ public:
 	/* load from serializable file
 	 * @param file source file
 	 * @param prefix prefix
+	 * */
 	virtual bool load(CSerializableFile* file, const char* prefix="");
-	 */
 
 	/** getter for number of parameters
 	 * @return number of parameters
