@@ -35,8 +35,10 @@
 #include <shogun/mathematics/Math.h>
 namespace shogun
 {
-/** @brief This implements the P-norm mapping function
+/** @brief This implements the P-norm mapping/projection function
  *
+ *
+ * Reference:
  * Gentile, Claudio. "The robustness of the p-norm algorithms."
  * Machine Learning 53.3 (2003): 265-299.
  */
@@ -50,6 +52,9 @@ public:
 	}
 	virtual ~PNormMappingFunction() {}
 
+	/** Get the degree of the Norm   
+	 * @param p degree of the norm
+	 */
 	virtual void set_norm(float64_t p)
 	{
 		if(p<2.0)
@@ -60,17 +65,29 @@ public:
 			m_p=p;
 	}
 
+	/** Get dual variable
+	 *
+	 * @param variable primal variable 
+	 * @return dual variable 
+	 *
+	 */
 	virtual SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable)
 	{
 		SGVector<float64_t> dual_variable(variable.vlen);
 		float64_t q=1.0/(1.0-1.0/m_p);
-		transformation(variable, dual_variable, q);
+		projection(variable, dual_variable, q);
 		return dual_variable;
 	}
 
+	/** Update primal variable in place given dual variable
+	 *
+	 * @param variable primal variable to be updated
+	 * @param dual_variable dual variable are known
+	 *
+	 */
 	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable)
 	{
-		transformation(dual_variable, variable, m_p);
+		projection(dual_variable, variable, m_p);
 	}
 
 	/** Update a context object to store mutable variables
@@ -97,11 +114,19 @@ public:
 		REQUIRE(context, "Contest must not NULL\n");
 	}
 protected:
+	/** P-norm  */
 	float64_t m_p;
 
-	virtual void transformation(SGVector<float64_t> input, SGVector<float64_t> output, float64_t degree)
+	/** Project the input variable 
+	 *
+	 * @param input input variable
+	 * @param output store the result
+	 * @param degree the parameter of the projection
+	 */
+	virtual void projection(SGVector<float64_t> input, SGVector<float64_t> output, float64_t degree)
 	{
-		REQUIRE(input.vlen==output.vlen,"");
+		REQUIRE(input.vlen==output.vlen,"The lenght (%d) of input and the length (%d) of output are diffent\n",
+			input.vlen, output.vlen);
 		float64_t scale=0.0;
 		for(index_t idx=0; idx<input.vlen; idx++)
 		{

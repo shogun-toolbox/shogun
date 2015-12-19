@@ -36,8 +36,9 @@
 namespace shogun
 {
 
-/** @brief The class implements the stochastic mirror descend (SMD) minimizer
+/** @brief The class implements the Stochastic MIrror Descent mAde Sparse (SMIDAS) minimizer
  *
+ * Reference:
  * Shai Shalev-Shwartz and Ambuj Tewari,
  * Stochastic methods for l1 regularized loss minimization.
  * Proceedings of the 26th International Conference on Machine Learning,
@@ -63,7 +64,6 @@ public:
 	 * @return optimal value
 	 */
 	virtual float64_t minimize();
-
 
 	/** Load the given context object to restores mutable variables
 	 * Usually it is used in deserialization.
@@ -97,8 +97,10 @@ protected:
 		context->save_data(key, value);
 	}
 
+	/** init minimization  */
 	virtual void init_minimization();
 
+	/** dual variable */
 	SGVector<float64_t> m_dual_variable;
 
 private:
