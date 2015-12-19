@@ -39,7 +39,7 @@ namespace shogun
  *	\f[
  *	\begin{array}{l}
  *	g_\theta=(1-\lambda){(\frac{ \partial f(\cdot) }{\partial \theta })}^2+\lambda g_\theta\\
- *	d_\theta=\alpha\frac{\sqrt{s_\theta+\epsilon}}{\sqrt{g_t+\epsilon}}\frac{ \partial f(\cdot) }{\partial \theta }\\
+ *	d_\theta=\alpha\frac{\sqrt{s_\theta+\epsilon}}{\sqrt{g_\theta+\epsilon}}\frac{ \partial f(\cdot) }{\partial \theta }\\
  *	s_\theta=(1-\lambda){(d_\theta)}^2+\lambda s_\theta
  *	\end{array}
  *	\f]
