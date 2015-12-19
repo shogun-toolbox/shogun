@@ -187,6 +187,8 @@ target_languages = (
         ('java', 'java')
         )
 
+generated_examples_path = None
+
 html_context = {
         'target_languages': 
         [x[0] for x in target_languages]
