@@ -42,6 +42,10 @@ namespace shogun
  * FirstOrderMinimizer::get_penalty(SGVector<float64_t> var)
  * ) 
  *
+ * Reference:
+ * Proximal gradient method
+ * www.eecs.berkeley.edu/~elghaoui/Teaching/EE227A/lecture18.pdf
+ *
  */
 class ProximalPenalty: public Penalty
 {
