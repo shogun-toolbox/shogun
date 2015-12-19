@@ -39,14 +39,6 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 	"structure_discrete_hmsvm_bmrm.cpp"
 	"structure_hmsvm_mosek.cpp"
 	"structure_plif_hmsvm_bmrm.cpp"
-	"base_load_all_file_parameters.cpp"
-	"base_load_file_parameters.cpp"
-	"base_map_parameters.cpp"
-	"base_parameter_map.cpp"
-	"base_migration_dropping_and_new.cpp"
-	"base_migration_type_conversion.cpp"
-	"base_migration_new_buggy.cpp"
-	"base_migration_multiple_dependencies.cpp"
 )
 
 FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
@@ -61,7 +53,7 @@ FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 	set_property(TEST libshogun-${EXAMPLE} PROPERTY
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-
+	
 	# Add examples to the dependencies of modular interfaces to make sure
 	# nothing will infer with them being build single-threaded.
 	IF(SWIG_SINGLE_THREADED)
