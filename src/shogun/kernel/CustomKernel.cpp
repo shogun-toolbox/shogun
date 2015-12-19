@@ -15,6 +15,7 @@
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -43,6 +44,25 @@ void CCustomKernel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", MS_NOT_AVAILABLE);
 	SG_ADD(&upper_diagonal, "upper_diagonal", "Upper diagonal", MS_NOT_AVAILABLE);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("free_km", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("row_subset_stack", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("col_subset_stack", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
+	m_parameter_map->finalize_map();
 }
 
 CCustomKernel::CCustomKernel()

@@ -1,6 +1,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -31,6 +32,12 @@ CMulticlassLabels::~CMulticlassLabels()
 
 void CMulticlassLabels::init()
 {
+	/* for this to work, migration has to be fixed */
+//	SG_ADD(&m_multiclass_confidences, "multiclass_confidences", "Vectors of "
+//			"multiclass confidences", MS_NOT_AVAILABLE);
+
+//	m_parameter_map->finalize_map();
+
 	m_multiclass_confidences=SGMatrix<float64_t>();
 }
 
