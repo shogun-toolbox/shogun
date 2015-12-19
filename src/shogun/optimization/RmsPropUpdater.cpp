@@ -48,7 +48,7 @@ void RmsPropUpdater::set_learning_rate(float64_t learning_rate)
 
 void RmsPropUpdater::set_epsilon(float64_t epsilon)
 {
-	REQUIRE(epsilon>=0,"Epsilon (%f) must be non-negative\n",
+	REQUIRE(epsilon>0,"Epsilon (%f) must be positive\n",
 		epsilon);
 	m_epsilon=epsilon;
 }
