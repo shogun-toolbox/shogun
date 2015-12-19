@@ -13,7 +13,13 @@ IF(NOT PLY_FOUND)
 ENDIF()
 
 # Run example generation script
-execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py -i ${CMAKE_CURRENT_SOURCE_DIR}/meta -o ${CMAKE_CURRENT_SOURCE_DIR} -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets)
+add_custom_target(shogun_meta_examples
+    COMMAND ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py
+    -i ${CMAKE_CURRENT_SOURCE_DIR}/meta
+    -o ${CMAKE_CURRENT_BINARY_DIR}
+    -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
+    COMMENT "Generating examples from meta-language")
 
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)

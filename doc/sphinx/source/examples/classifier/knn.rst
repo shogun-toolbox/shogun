@@ -8,10 +8,6 @@ Since Pythagoras, we know that :math:`a^2 + b^2 = c^2`. Use that for KNN.
 Example
 -------
 
-Lets setup environment:
-
-.. sgexample:: knn.sg:begin
-
 Imagine you have some training and test data.
 
 .. sgexample:: knn.sg:load_data
@@ -27,4 +23,3 @@ Once you have chosen a distance, create an instance of the CKNN classifier, pass
 Now we run the KNN algorithm and apply it to test data
 
 .. sgexample:: knn.sg:train_and_apply
-.. sgexample:: knn.sg:end

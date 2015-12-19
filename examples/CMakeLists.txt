@@ -50,3 +50,5 @@ IF (CmdLineStatic AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_st
 ENDIF()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples_v2)
+
+add_custom_target(examples DEPENDS shogun_meta_examples)
