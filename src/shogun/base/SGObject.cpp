@@ -391,6 +391,9 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 		return false;
 	}
 
+	if (!m_parameters->load(file, prefix))
+		return false;
+
 	try
 	{
 		load_serializable_post();
