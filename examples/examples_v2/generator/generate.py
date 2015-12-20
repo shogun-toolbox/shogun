@@ -48,7 +48,6 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
 
             # create subdirectories if they don't exist yet
             try:
-                print 'Creating ', os.path.dirname(outputFile)
                 os.makedirs(os.path.dirname(outputFile))
             except OSError:
                 pass
