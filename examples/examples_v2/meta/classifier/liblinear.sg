@@ -1,0 +1,16 @@
+CSVFile train_data("../data/fm_train_real.dat")
+CSVFile test_data("../data/fm_test_real.dat")
+CSVFile label_data("../data/label_train_twoclass.dat")
+
+RealFeatures feats_train(train_data)
+RealFeatures feats_test(test_data)
+BinaryLabels labels(label_data)
+
+LibLinear svm(0.9, feats_train, labels)
+svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL)
+svm.set_epsilon(0.001)
+svm.set_bias_enabled(True)
+svm.train()
+BinaryLabels predictions = svm.apply_binary(feats_test)
+
+print predictions.get_labels()
