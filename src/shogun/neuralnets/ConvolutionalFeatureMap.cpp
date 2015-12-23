@@ -37,6 +37,10 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif // HAVE_LINALG_LIB
+
 
 using namespace shogun;
 
@@ -283,6 +287,30 @@ void CConvolutionalFeatureMap::convolve(
 			outputs.matrix+i*outputs.num_rows + outputs_row_offset,
 			m_output_height, m_output_width, false);
 
+#if defined(HAVE_LINALG_LIB)
+		if(m_autoencoder_position == NLAP_NONE)
+			linalg::convolve(image, weights, result, flip, reset_output, m_stride_x, m_stride_y);
+		else
+		{
+			SGMatrix<float64_t> result_clone = result.clone();
+			for (int32_t x=0; x<m_input_width; x+=m_stride_x)
+			{
+				for (int32_t y=0; y<m_input_height; y+=m_stride_y)
+				{
+					result_clone(y/m_stride_y,x/m_stride_x) = result(y,x);
+				}
+			}
+			linalg::convolve(image, weights, result_clone, flip, reset_output, m_stride_x, m_stride_y);
+			for (int32_t x=0; x<m_input_width; x+=m_stride_x)
+			{
+				for (int32_t y=0; y<m_input_height; y+=m_stride_y)
+				{
+					result(y,x) = result_clone(y/m_stride_y,x/m_stride_x);
+				}
+			}
+		}
+
+#else
 		for (int32_t x=0; x<m_input_width; x+=m_stride_x)
 		{
 			for (int32_t y=0; y<m_input_height; y+=m_stride_y)
@@ -309,6 +337,7 @@ void CConvolutionalFeatureMap::convolve(
 				result(res_y,res_x) = sum;
 			}
 		}
+#endif
 	}
 }
 
