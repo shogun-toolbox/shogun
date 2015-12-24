@@ -284,9 +284,9 @@ void elementwise_square(Matrix m, ResultMatrix result)
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void convolve(Matrix X, Matrix W, Matrix Y, bool flip = false,
-	bool overwrite=true, int32_t stride_x=1, int32_t stride_y=1)
+	bool overwrite=true, int32_t stride_x=1, int32_t stride_y=1, ENLAutoencoderPosition autoencoder_position=NLAP_NONE)
 {
-	implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y);
+	implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y, autoencoder_position);
 }
 #endif // HAVE_LINALG_LIB
 

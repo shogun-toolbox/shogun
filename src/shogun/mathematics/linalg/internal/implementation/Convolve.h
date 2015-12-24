@@ -34,6 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/neuralnets/NeuralLayer.h>
 
 #include <shogun/io/SGIO.h>
 
@@ -79,7 +80,7 @@ struct convolve
 	 * @param stride_y Stride in the y (row) direction
 	 */
 	static void compute(Matrix X, Matrix W, Matrix Y, bool flip ,
-		bool overwrite, int32_t stride_x, int32_t stride_y);
+		bool overwrite, int32_t stride_x, int32_t stride_y, ENLAutoencoderPosition autoencoder_position = NLAP_NONE);
 };
 
 
@@ -110,7 +111,7 @@ struct convolve<Backend::EIGEN3, Matrix>
 	 * @param stride_y Stride in the y (row) direction
 	 */
 	static void compute(SGMatrix<T> X, SGMatrix<T> W, SGMatrix<T> Y, bool flip ,
-		bool overwrite, int32_t stride_x, int32_t stride_y)
+		bool overwrite, int32_t stride_x, int32_t stride_y, ENLAutoencoderPosition autoencoder_position = NLAP_NONE)
 	{
 		int32_t width = X.num_cols;
 		int32_t height = X.num_rows;
@@ -123,11 +124,11 @@ struct convolve<Backend::EIGEN3, Matrix>
 
 		for (int32_t x=0; x<width; x+=stride_x)
 		{
-			int32_t xout = x/stride_x;
+			int32_t xout = autoencoder_position == NLAP_NONE ? x/stride_x : x;
 
 			for (int32_t y=0; y<height; y+=stride_y)
 			{
-				int32_t yout = y/stride_y;
+				int32_t yout = autoencoder_position == NLAP_NONE ? y/stride_y : y;
 
 				T sum = overwrite ? 0 : Y(yout,xout);
 				for (int32_t x1=x-rx; x1<=x+rx; x1++)
@@ -376,7 +377,7 @@ struct convolve<Backend::VIENNACL, Matrix>
 	 * @param stride_y Stride in the y (row) direction
 	 */
 	static void compute(CGPUMatrix<T> X, CGPUMatrix<T> W, CGPUMatrix<T> Y, bool flip ,
-		bool overwrite, int32_t stride_x, int32_t stride_y)
+		bool overwrite, int32_t stride_x, int32_t stride_y, ENLAutoencoderPosition autoencoder_position = NLAP_NONE)
 	{
 		if (stride_x==1 && stride_y==1)
 		{
