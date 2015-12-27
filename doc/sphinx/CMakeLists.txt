@@ -23,6 +23,12 @@ add_custom_target(shogun_sphinx_doc_extensions
     "${BINARY_BUILD_DIR}"
     COMMENT "Copying Sphinx extensions to ${BINARY_BUILD_DIR}")
 
+add_custom_target(shogun_sphinx_doc_templates
+    ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/templates"
+    "${BINARY_BUILD_DIR}/templates"
+    COMMENT "Copying Sphinx templates to ${BINARY_BUILD_DIR}")
+
 add_custom_target(shogun_sphinx_doc ALL
     ${SPHINX_EXECUTABLE}
     -q -b html
@@ -32,5 +38,5 @@ add_custom_target(shogun_sphinx_doc ALL
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
     COMMENT "Building HTML documentation with Sphinx"
-    DEPENDS shogun_sphinx_doc_extensions shogun_meta_examples)
+    DEPENDS shogun_sphinx_doc_extensions shogun_sphinx_doc_templates shogun_meta_examples)
 
