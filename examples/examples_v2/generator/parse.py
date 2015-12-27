@@ -26,12 +26,15 @@ class SlowParser:
     def shogunType(self):
         basepath = os.path.dirname(__file__)
         type = self.pp.Forward()
-        with open(os.path.join(basepath,"types/typelist"), "r") as typelist:
-            for line in typelist:
-                # Make sure the line is not an empty string
-                if line.replace('\n', '') != '':
-                    type = type ^ self.pp.Literal(line.replace('\n', ''))
 
+        # This is probably a temporary solution, we treat any [a-zA-Z_][a-zA-Z0-9_]* as valid shogun keyword
+        type = type ^ self.pp.Word(self.pp.srange("[a-zA-Z_]"), self.pp.srange("[a-zA-Z0-9_]"))
+
+        # with open(os.path.join(basepath,"types/typelist"), "r") as typelist:
+        #     for line in typelist:
+        #         # Make sure the line is not an empty string
+        #         if line.replace('\n', '') != '':
+        #             type = type ^ self.pp.Literal(line.replace('\n', ''))
         return type
 
     def grammar(self):

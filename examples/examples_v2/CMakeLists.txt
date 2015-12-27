@@ -3,14 +3,16 @@
 # Check which interfaces are turned on
 # Add CMakeLists file for each turned on interface
 
-# Generate type list
-#execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/typelist)
 
 # Check if PLY is installed
 find_package(PLY)
 IF(NOT PLY_FOUND)
     message(WARNING "Python module PLY was not found. This may cause example generation to be very slow.")
 ENDIF()
+
+# Disabled (temporary) as non-portable solution. This is replaced by allowing any [a-zA-Z_][a-zA-Z0-9_]* as shogun keyword
+# Generate type list
+# execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/typelist)
 
 # Run example generation script
 add_custom_target(shogun_meta_examples
