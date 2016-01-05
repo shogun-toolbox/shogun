@@ -172,7 +172,8 @@ class FastParser:
         from ply import yacc
 
         # Add all shogun types to reserved identifiers
-        self.addShogunTypes(self.reserved)
+        # (this is commented out as we allow any identifier to be shogun one)
+        #self.addShogunTypes(self.reserved)
 
         # Build the lexer and the parser
         self.lexer = lex.lex(module=self,optimize=1)
@@ -211,7 +212,7 @@ class FastParser:
         "STRINGLITERAL",
         "BOOLLITERAL",
         "BASICTYPE",
-        "SHOGUNTYPE",
+        #"SHOGUNTYPE",
         "PRINTKEYWORD",
         "COMMA",
         "DOT",
@@ -295,7 +296,7 @@ class FastParser:
         p[0] = {"BasicType": p[1]}
 
     def p_objectType(self, p):
-        "objecttype : SHOGUNTYPE"
+        "objecttype : IDENTIFIER"
         p[0] = {"ObjectType": p[1]}
 
     def p_argumentList_nonEmpty(self, p):
