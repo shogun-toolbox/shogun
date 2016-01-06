@@ -179,7 +179,7 @@ html_static_path = ['static']
 target_languages = (
         ('python', 'py'),
         ('octave', 'm'),
-        ('r', 'r'),
+        ('r', 'R'),
         ('java', 'java')
         )
 
