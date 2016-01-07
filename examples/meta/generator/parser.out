@@ -1,0 +1,895 @@
+Created by PLY version 3.8 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> statements
+Rule 2     statements -> statement statements
+Rule 3     statements -> comment statements
+Rule 4     statements -> <empty>
+Rule 5     comment -> COMMENT
+Rule 6     type -> basictype
+Rule 7     type -> objecttype
+Rule 8     basictype -> BASICTYPE
+Rule 9     objecttype -> IDENTIFIER
+Rule 10    argumentListNonEmpty -> expr
+Rule 11    argumentListNonEmpty -> expr COMMA argumentListNonEmpty
+Rule 12    argumentList -> argumentListNonEmpty
+Rule 13    argumentList -> <empty>
+Rule 14    identifier -> IDENTIFIER
+Rule 15    methodCall -> identifier DOT identifier LPAREN argumentList RPAREN
+Rule 16    enum -> ENUMKEYWORD identifier DOT identifier
+Rule 17    string -> STRINGLITERAL
+Rule 18    bool -> BOOLLITERAL
+Rule 19    numeral -> NUMERAL
+Rule 20    expr -> enum
+Rule 21    expr -> methodCall
+Rule 22    expr -> string
+Rule 23    expr -> bool
+Rule 24    expr -> numeral
+Rule 25    expr -> identifier
+Rule 26    assignment -> identifier EQUALS expr
+Rule 27    initialisation -> type identifier EQUALS expr
+Rule 28    initialisation -> type identifier LPAREN argumentList RPAREN
+Rule 29    output -> PRINTKEYWORD expr
+Rule 30    statement -> initialisation NEWLINE
+Rule 31    statement -> assignment NEWLINE
+Rule 32    statement -> expr NEWLINE
+Rule 33    statement -> output NEWLINE
+Rule 34    statement -> NEWLINE
+
+Terminals, with rules where they appear
+
+BASICTYPE            : 8
+BOOLLITERAL          : 18
+COMMA                : 11
+COMMENT              : 5
+DOT                  : 15 16
+ENUMKEYWORD          : 16
+EQUALS               : 26 27
+IDENTIFIER           : 9 14
+LPAREN               : 15 28
+NEWLINE              : 30 31 32 33 34
+NUMERAL              : 19
+PRINTKEYWORD         : 29
+RPAREN               : 15 28
+STRINGLITERAL        : 17
+error                : 
+
+Nonterminals, with rules where they appear
+
+argumentList         : 15 28
+argumentListNonEmpty : 11 12
+assignment           : 31
+basictype            : 6
+bool                 : 23
+comment              : 3
+enum                 : 20
+expr                 : 10 11 26 27 29 32
+identifier           : 15 15 16 16 25 26 27 28
+initialisation       : 30
+methodCall           : 21
+numeral              : 24
+objecttype           : 7
+output               : 33
+program              : 0
+statement            : 2
+statements           : 1 2 3
+string               : 22
+type                 : 27 28
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . statements
+    (2) statements -> . statement statements
+    (3) statements -> . comment statements
+    (4) statements -> .
+    (30) statement -> . initialisation NEWLINE
+    (31) statement -> . assignment NEWLINE
+    (32) statement -> . expr NEWLINE
+    (33) statement -> . output NEWLINE
+    (34) statement -> . NEWLINE
+    (5) comment -> . COMMENT
+    (27) initialisation -> . type identifier EQUALS expr
+    (28) initialisation -> . type identifier LPAREN argumentList RPAREN
+    (26) assignment -> . identifier EQUALS expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (29) output -> . PRINTKEYWORD expr
+    (6) type -> . basictype
+    (7) type -> . objecttype
+    (14) identifier -> . IDENTIFIER
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (8) basictype -> . BASICTYPE
+    (9) objecttype -> . IDENTIFIER
+
+    $end            reduce using rule 4 (statements -> .)
+    NEWLINE         shift and go to state 8
+    COMMENT         shift and go to state 6
+    PRINTKEYWORD    shift and go to state 7
+    IDENTIFIER      shift and go to state 14
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    BASICTYPE       shift and go to state 16
+
+    comment                        shift and go to state 1
+    basictype                      shift and go to state 2
+    statements                     shift and go to state 3
+    string                         shift and go to state 17
+    assignment                     shift and go to state 18
+    enum                           shift and go to state 19
+    initialisation                 shift and go to state 4
+    program                        shift and go to state 10
+    bool                           shift and go to state 11
+    statement                      shift and go to state 12
+    expr                           shift and go to state 21
+    output                         shift and go to state 23
+    identifier                     shift and go to state 24
+    type                           shift and go to state 15
+    methodCall                     shift and go to state 25
+    numeral                        shift and go to state 13
+    objecttype                     shift and go to state 26
+
+state 1
+
+    (3) statements -> comment . statements
+    (2) statements -> . statement statements
+    (3) statements -> . comment statements
+    (4) statements -> .
+    (30) statement -> . initialisation NEWLINE
+    (31) statement -> . assignment NEWLINE
+    (32) statement -> . expr NEWLINE
+    (33) statement -> . output NEWLINE
+    (34) statement -> . NEWLINE
+    (5) comment -> . COMMENT
+    (27) initialisation -> . type identifier EQUALS expr
+    (28) initialisation -> . type identifier LPAREN argumentList RPAREN
+    (26) assignment -> . identifier EQUALS expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (29) output -> . PRINTKEYWORD expr
+    (6) type -> . basictype
+    (7) type -> . objecttype
+    (14) identifier -> . IDENTIFIER
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (8) basictype -> . BASICTYPE
+    (9) objecttype -> . IDENTIFIER
+
+    $end            reduce using rule 4 (statements -> .)
+    NEWLINE         shift and go to state 8
+    COMMENT         shift and go to state 6
+    PRINTKEYWORD    shift and go to state 7
+    IDENTIFIER      shift and go to state 14
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    BASICTYPE       shift and go to state 16
+
+    comment                        shift and go to state 1
+    basictype                      shift and go to state 2
+    statements                     shift and go to state 27
+    string                         shift and go to state 17
+    assignment                     shift and go to state 18
+    enum                           shift and go to state 19
+    initialisation                 shift and go to state 4
+    bool                           shift and go to state 11
+    statement                      shift and go to state 12
+    expr                           shift and go to state 21
+    output                         shift and go to state 23
+    identifier                     shift and go to state 24
+    type                           shift and go to state 15
+    methodCall                     shift and go to state 25
+    numeral                        shift and go to state 13
+    objecttype                     shift and go to state 26
+
+state 2
+
+    (6) type -> basictype .
+
+    IDENTIFIER      reduce using rule 6 (type -> basictype .)
+
+
+state 3
+
+    (1) program -> statements .
+
+    $end            reduce using rule 1 (program -> statements .)
+
+
+state 4
+
+    (30) statement -> initialisation . NEWLINE
+
+    NEWLINE         shift and go to state 28
+
+
+state 5
+
+    (19) numeral -> NUMERAL .
+
+    NEWLINE         reduce using rule 19 (numeral -> NUMERAL .)
+    COMMA           reduce using rule 19 (numeral -> NUMERAL .)
+    RPAREN          reduce using rule 19 (numeral -> NUMERAL .)
+
+
+state 6
+
+    (5) comment -> COMMENT .
+
+    NEWLINE         reduce using rule 5 (comment -> COMMENT .)
+    COMMENT         reduce using rule 5 (comment -> COMMENT .)
+    PRINTKEYWORD    reduce using rule 5 (comment -> COMMENT .)
+    IDENTIFIER      reduce using rule 5 (comment -> COMMENT .)
+    ENUMKEYWORD     reduce using rule 5 (comment -> COMMENT .)
+    STRINGLITERAL   reduce using rule 5 (comment -> COMMENT .)
+    BOOLLITERAL     reduce using rule 5 (comment -> COMMENT .)
+    NUMERAL         reduce using rule 5 (comment -> COMMENT .)
+    BASICTYPE       reduce using rule 5 (comment -> COMMENT .)
+    $end            reduce using rule 5 (comment -> COMMENT .)
+
+
+state 7
+
+    (29) output -> PRINTKEYWORD . expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    string                         shift and go to state 17
+    expr                           shift and go to state 30
+    enum                           shift and go to state 19
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    methodCall                     shift and go to state 25
+
+state 8
+
+    (34) statement -> NEWLINE .
+
+    NEWLINE         reduce using rule 34 (statement -> NEWLINE .)
+    COMMENT         reduce using rule 34 (statement -> NEWLINE .)
+    PRINTKEYWORD    reduce using rule 34 (statement -> NEWLINE .)
+    IDENTIFIER      reduce using rule 34 (statement -> NEWLINE .)
+    ENUMKEYWORD     reduce using rule 34 (statement -> NEWLINE .)
+    STRINGLITERAL   reduce using rule 34 (statement -> NEWLINE .)
+    BOOLLITERAL     reduce using rule 34 (statement -> NEWLINE .)
+    NUMERAL         reduce using rule 34 (statement -> NEWLINE .)
+    BASICTYPE       reduce using rule 34 (statement -> NEWLINE .)
+    $end            reduce using rule 34 (statement -> NEWLINE .)
+
+
+state 9
+
+    (18) bool -> BOOLLITERAL .
+
+    COMMA           reduce using rule 18 (bool -> BOOLLITERAL .)
+    RPAREN          reduce using rule 18 (bool -> BOOLLITERAL .)
+    NEWLINE         reduce using rule 18 (bool -> BOOLLITERAL .)
+
+
+state 10
+
+    (0) S' -> program .
+
+
+
+state 11
+
+    (23) expr -> bool .
+
+    COMMA           reduce using rule 23 (expr -> bool .)
+    RPAREN          reduce using rule 23 (expr -> bool .)
+    NEWLINE         reduce using rule 23 (expr -> bool .)
+
+
+state 12
+
+    (2) statements -> statement . statements
+    (2) statements -> . statement statements
+    (3) statements -> . comment statements
+    (4) statements -> .
+    (30) statement -> . initialisation NEWLINE
+    (31) statement -> . assignment NEWLINE
+    (32) statement -> . expr NEWLINE
+    (33) statement -> . output NEWLINE
+    (34) statement -> . NEWLINE
+    (5) comment -> . COMMENT
+    (27) initialisation -> . type identifier EQUALS expr
+    (28) initialisation -> . type identifier LPAREN argumentList RPAREN
+    (26) assignment -> . identifier EQUALS expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (29) output -> . PRINTKEYWORD expr
+    (6) type -> . basictype
+    (7) type -> . objecttype
+    (14) identifier -> . IDENTIFIER
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (8) basictype -> . BASICTYPE
+    (9) objecttype -> . IDENTIFIER
+
+    $end            reduce using rule 4 (statements -> .)
+    NEWLINE         shift and go to state 8
+    COMMENT         shift and go to state 6
+    PRINTKEYWORD    shift and go to state 7
+    IDENTIFIER      shift and go to state 14
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    BASICTYPE       shift and go to state 16
+
+    comment                        shift and go to state 1
+    basictype                      shift and go to state 2
+    statements                     shift and go to state 32
+    string                         shift and go to state 17
+    assignment                     shift and go to state 18
+    enum                           shift and go to state 19
+    initialisation                 shift and go to state 4
+    bool                           shift and go to state 11
+    statement                      shift and go to state 12
+    expr                           shift and go to state 21
+    output                         shift and go to state 23
+    identifier                     shift and go to state 24
+    type                           shift and go to state 15
+    methodCall                     shift and go to state 25
+    numeral                        shift and go to state 13
+    objecttype                     shift and go to state 26
+
+state 13
+
+    (24) expr -> numeral .
+
+    COMMA           reduce using rule 24 (expr -> numeral .)
+    RPAREN          reduce using rule 24 (expr -> numeral .)
+    NEWLINE         reduce using rule 24 (expr -> numeral .)
+
+
+state 14
+
+    (14) identifier -> IDENTIFIER .
+    (9) objecttype -> IDENTIFIER .
+
+    EQUALS          reduce using rule 14 (identifier -> IDENTIFIER .)
+    DOT             reduce using rule 14 (identifier -> IDENTIFIER .)
+    NEWLINE         reduce using rule 14 (identifier -> IDENTIFIER .)
+    IDENTIFIER      reduce using rule 9 (objecttype -> IDENTIFIER .)
+
+
+state 15
+
+    (27) initialisation -> type . identifier EQUALS expr
+    (28) initialisation -> type . identifier LPAREN argumentList RPAREN
+    (14) identifier -> . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 29
+
+    identifier                     shift and go to state 33
+
+state 16
+
+    (8) basictype -> BASICTYPE .
+
+    IDENTIFIER      reduce using rule 8 (basictype -> BASICTYPE .)
+
+
+state 17
+
+    (22) expr -> string .
+
+    COMMA           reduce using rule 22 (expr -> string .)
+    RPAREN          reduce using rule 22 (expr -> string .)
+    NEWLINE         reduce using rule 22 (expr -> string .)
+
+
+state 18
+
+    (31) statement -> assignment . NEWLINE
+
+    NEWLINE         shift and go to state 34
+
+
+state 19
+
+    (20) expr -> enum .
+
+    COMMA           reduce using rule 20 (expr -> enum .)
+    RPAREN          reduce using rule 20 (expr -> enum .)
+    NEWLINE         reduce using rule 20 (expr -> enum .)
+
+
+state 20
+
+    (17) string -> STRINGLITERAL .
+
+    NEWLINE         reduce using rule 17 (string -> STRINGLITERAL .)
+    COMMA           reduce using rule 17 (string -> STRINGLITERAL .)
+    RPAREN          reduce using rule 17 (string -> STRINGLITERAL .)
+
+
+state 21
+
+    (32) statement -> expr . NEWLINE
+
+    NEWLINE         shift and go to state 35
+
+
+state 22
+
+    (16) enum -> ENUMKEYWORD . identifier DOT identifier
+    (14) identifier -> . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 29
+
+    identifier                     shift and go to state 36
+
+state 23
+
+    (33) statement -> output . NEWLINE
+
+    NEWLINE         shift and go to state 37
+
+
+state 24
+
+    (26) assignment -> identifier . EQUALS expr
+    (25) expr -> identifier .
+    (15) methodCall -> identifier . DOT identifier LPAREN argumentList RPAREN
+
+    EQUALS          shift and go to state 38
+    NEWLINE         reduce using rule 25 (expr -> identifier .)
+    DOT             shift and go to state 39
+
+
+state 25
+
+    (21) expr -> methodCall .
+
+    COMMA           reduce using rule 21 (expr -> methodCall .)
+    RPAREN          reduce using rule 21 (expr -> methodCall .)
+    NEWLINE         reduce using rule 21 (expr -> methodCall .)
+
+
+state 26
+
+    (7) type -> objecttype .
+
+    IDENTIFIER      reduce using rule 7 (type -> objecttype .)
+
+
+state 27
+
+    (3) statements -> comment statements .
+
+    $end            reduce using rule 3 (statements -> comment statements .)
+
+
+state 28
+
+    (30) statement -> initialisation NEWLINE .
+
+    NEWLINE         reduce using rule 30 (statement -> initialisation NEWLINE .)
+    COMMENT         reduce using rule 30 (statement -> initialisation NEWLINE .)
+    PRINTKEYWORD    reduce using rule 30 (statement -> initialisation NEWLINE .)
+    IDENTIFIER      reduce using rule 30 (statement -> initialisation NEWLINE .)
+    ENUMKEYWORD     reduce using rule 30 (statement -> initialisation NEWLINE .)
+    STRINGLITERAL   reduce using rule 30 (statement -> initialisation NEWLINE .)
+    BOOLLITERAL     reduce using rule 30 (statement -> initialisation NEWLINE .)
+    NUMERAL         reduce using rule 30 (statement -> initialisation NEWLINE .)
+    BASICTYPE       reduce using rule 30 (statement -> initialisation NEWLINE .)
+    $end            reduce using rule 30 (statement -> initialisation NEWLINE .)
+
+
+state 29
+
+    (14) identifier -> IDENTIFIER .
+
+    DOT             reduce using rule 14 (identifier -> IDENTIFIER .)
+    COMMA           reduce using rule 14 (identifier -> IDENTIFIER .)
+    RPAREN          reduce using rule 14 (identifier -> IDENTIFIER .)
+    NEWLINE         reduce using rule 14 (identifier -> IDENTIFIER .)
+    LPAREN          reduce using rule 14 (identifier -> IDENTIFIER .)
+    EQUALS          reduce using rule 14 (identifier -> IDENTIFIER .)
+
+
+state 30
+
+    (29) output -> PRINTKEYWORD expr .
+
+    NEWLINE         reduce using rule 29 (output -> PRINTKEYWORD expr .)
+
+
+state 31
+
+    (25) expr -> identifier .
+    (15) methodCall -> identifier . DOT identifier LPAREN argumentList RPAREN
+
+    COMMA           reduce using rule 25 (expr -> identifier .)
+    RPAREN          reduce using rule 25 (expr -> identifier .)
+    NEWLINE         reduce using rule 25 (expr -> identifier .)
+    DOT             shift and go to state 39
+
+
+state 32
+
+    (2) statements -> statement statements .
+
+    $end            reduce using rule 2 (statements -> statement statements .)
+
+
+state 33
+
+    (27) initialisation -> type identifier . EQUALS expr
+    (28) initialisation -> type identifier . LPAREN argumentList RPAREN
+
+    EQUALS          shift and go to state 40
+    LPAREN          shift and go to state 41
+
+
+state 34
+
+    (31) statement -> assignment NEWLINE .
+
+    NEWLINE         reduce using rule 31 (statement -> assignment NEWLINE .)
+    COMMENT         reduce using rule 31 (statement -> assignment NEWLINE .)
+    PRINTKEYWORD    reduce using rule 31 (statement -> assignment NEWLINE .)
+    IDENTIFIER      reduce using rule 31 (statement -> assignment NEWLINE .)
+    ENUMKEYWORD     reduce using rule 31 (statement -> assignment NEWLINE .)
+    STRINGLITERAL   reduce using rule 31 (statement -> assignment NEWLINE .)
+    BOOLLITERAL     reduce using rule 31 (statement -> assignment NEWLINE .)
+    NUMERAL         reduce using rule 31 (statement -> assignment NEWLINE .)
+    BASICTYPE       reduce using rule 31 (statement -> assignment NEWLINE .)
+    $end            reduce using rule 31 (statement -> assignment NEWLINE .)
+
+
+state 35
+
+    (32) statement -> expr NEWLINE .
+
+    NEWLINE         reduce using rule 32 (statement -> expr NEWLINE .)
+    COMMENT         reduce using rule 32 (statement -> expr NEWLINE .)
+    PRINTKEYWORD    reduce using rule 32 (statement -> expr NEWLINE .)
+    IDENTIFIER      reduce using rule 32 (statement -> expr NEWLINE .)
+    ENUMKEYWORD     reduce using rule 32 (statement -> expr NEWLINE .)
+    STRINGLITERAL   reduce using rule 32 (statement -> expr NEWLINE .)
+    BOOLLITERAL     reduce using rule 32 (statement -> expr NEWLINE .)
+    NUMERAL         reduce using rule 32 (statement -> expr NEWLINE .)
+    BASICTYPE       reduce using rule 32 (statement -> expr NEWLINE .)
+    $end            reduce using rule 32 (statement -> expr NEWLINE .)
+
+
+state 36
+
+    (16) enum -> ENUMKEYWORD identifier . DOT identifier
+
+    DOT             shift and go to state 42
+
+
+state 37
+
+    (33) statement -> output NEWLINE .
+
+    NEWLINE         reduce using rule 33 (statement -> output NEWLINE .)
+    COMMENT         reduce using rule 33 (statement -> output NEWLINE .)
+    PRINTKEYWORD    reduce using rule 33 (statement -> output NEWLINE .)
+    IDENTIFIER      reduce using rule 33 (statement -> output NEWLINE .)
+    ENUMKEYWORD     reduce using rule 33 (statement -> output NEWLINE .)
+    STRINGLITERAL   reduce using rule 33 (statement -> output NEWLINE .)
+    BOOLLITERAL     reduce using rule 33 (statement -> output NEWLINE .)
+    NUMERAL         reduce using rule 33 (statement -> output NEWLINE .)
+    BASICTYPE       reduce using rule 33 (statement -> output NEWLINE .)
+    $end            reduce using rule 33 (statement -> output NEWLINE .)
+
+
+state 38
+
+    (26) assignment -> identifier EQUALS . expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    string                         shift and go to state 17
+    expr                           shift and go to state 43
+    enum                           shift and go to state 19
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    methodCall                     shift and go to state 25
+
+state 39
+
+    (15) methodCall -> identifier DOT . identifier LPAREN argumentList RPAREN
+    (14) identifier -> . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 29
+
+    identifier                     shift and go to state 44
+
+state 40
+
+    (27) initialisation -> type identifier EQUALS . expr
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    string                         shift and go to state 17
+    expr                           shift and go to state 45
+    enum                           shift and go to state 19
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    methodCall                     shift and go to state 25
+
+state 41
+
+    (28) initialisation -> type identifier LPAREN . argumentList RPAREN
+    (12) argumentList -> . argumentListNonEmpty
+    (13) argumentList -> .
+    (10) argumentListNonEmpty -> . expr
+    (11) argumentListNonEmpty -> . expr COMMA argumentListNonEmpty
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    RPAREN          reduce using rule 13 (argumentList -> .)
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    argumentList                   shift and go to state 46
+    string                         shift and go to state 17
+    expr                           shift and go to state 47
+    enum                           shift and go to state 19
+    methodCall                     shift and go to state 25
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    argumentListNonEmpty           shift and go to state 48
+
+state 42
+
+    (16) enum -> ENUMKEYWORD identifier DOT . identifier
+    (14) identifier -> . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 29
+
+    identifier                     shift and go to state 49
+
+state 43
+
+    (26) assignment -> identifier EQUALS expr .
+
+    NEWLINE         reduce using rule 26 (assignment -> identifier EQUALS expr .)
+
+
+state 44
+
+    (15) methodCall -> identifier DOT identifier . LPAREN argumentList RPAREN
+
+    LPAREN          shift and go to state 50
+
+
+state 45
+
+    (27) initialisation -> type identifier EQUALS expr .
+
+    NEWLINE         reduce using rule 27 (initialisation -> type identifier EQUALS expr .)
+
+
+state 46
+
+    (28) initialisation -> type identifier LPAREN argumentList . RPAREN
+
+    RPAREN          shift and go to state 51
+
+
+state 47
+
+    (10) argumentListNonEmpty -> expr .
+    (11) argumentListNonEmpty -> expr . COMMA argumentListNonEmpty
+
+    RPAREN          reduce using rule 10 (argumentListNonEmpty -> expr .)
+    COMMA           shift and go to state 52
+
+
+state 48
+
+    (12) argumentList -> argumentListNonEmpty .
+
+    RPAREN          reduce using rule 12 (argumentList -> argumentListNonEmpty .)
+
+
+state 49
+
+    (16) enum -> ENUMKEYWORD identifier DOT identifier .
+
+    COMMA           reduce using rule 16 (enum -> ENUMKEYWORD identifier DOT identifier .)
+    RPAREN          reduce using rule 16 (enum -> ENUMKEYWORD identifier DOT identifier .)
+    NEWLINE         reduce using rule 16 (enum -> ENUMKEYWORD identifier DOT identifier .)
+
+
+state 50
+
+    (15) methodCall -> identifier DOT identifier LPAREN . argumentList RPAREN
+    (12) argumentList -> . argumentListNonEmpty
+    (13) argumentList -> .
+    (10) argumentListNonEmpty -> . expr
+    (11) argumentListNonEmpty -> . expr COMMA argumentListNonEmpty
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    RPAREN          reduce using rule 13 (argumentList -> .)
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    argumentList                   shift and go to state 53
+    string                         shift and go to state 17
+    expr                           shift and go to state 47
+    enum                           shift and go to state 19
+    argumentListNonEmpty           shift and go to state 48
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    methodCall                     shift and go to state 25
+
+state 51
+
+    (28) initialisation -> type identifier LPAREN argumentList RPAREN .
+
+    NEWLINE         reduce using rule 28 (initialisation -> type identifier LPAREN argumentList RPAREN .)
+
+
+state 52
+
+    (11) argumentListNonEmpty -> expr COMMA . argumentListNonEmpty
+    (10) argumentListNonEmpty -> . expr
+    (11) argumentListNonEmpty -> . expr COMMA argumentListNonEmpty
+    (20) expr -> . enum
+    (21) expr -> . methodCall
+    (22) expr -> . string
+    (23) expr -> . bool
+    (24) expr -> . numeral
+    (25) expr -> . identifier
+    (16) enum -> . ENUMKEYWORD identifier DOT identifier
+    (15) methodCall -> . identifier DOT identifier LPAREN argumentList RPAREN
+    (17) string -> . STRINGLITERAL
+    (18) bool -> . BOOLLITERAL
+    (19) numeral -> . NUMERAL
+    (14) identifier -> . IDENTIFIER
+
+    ENUMKEYWORD     shift and go to state 22
+    STRINGLITERAL   shift and go to state 20
+    BOOLLITERAL     shift and go to state 9
+    NUMERAL         shift and go to state 5
+    IDENTIFIER      shift and go to state 29
+
+    string                         shift and go to state 17
+    expr                           shift and go to state 47
+    enum                           shift and go to state 19
+    methodCall                     shift and go to state 25
+    bool                           shift and go to state 11
+    numeral                        shift and go to state 13
+    identifier                     shift and go to state 31
+    argumentListNonEmpty           shift and go to state 54
+
+state 53
+
+    (15) methodCall -> identifier DOT identifier LPAREN argumentList . RPAREN
+
+    RPAREN          shift and go to state 55
+
+
+state 54
+
+    (11) argumentListNonEmpty -> expr COMMA argumentListNonEmpty .
+
+    RPAREN          reduce using rule 11 (argumentListNonEmpty -> expr COMMA argumentListNonEmpty .)
+
+
+state 55
+
+    (15) methodCall -> identifier DOT identifier LPAREN argumentList RPAREN .
+
+    NEWLINE         reduce using rule 15 (methodCall -> identifier DOT identifier LPAREN argumentList RPAREN .)
+    COMMA           reduce using rule 15 (methodCall -> identifier DOT identifier LPAREN argumentList RPAREN .)
+    RPAREN          reduce using rule 15 (methodCall -> identifier DOT identifier LPAREN argumentList RPAREN .)
+

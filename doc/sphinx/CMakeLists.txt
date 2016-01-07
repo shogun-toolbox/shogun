@@ -40,7 +40,7 @@ add_custom_target(shogun_sphinx_doc ALL
     -q -b html
     -c "${BINARY_BUILD_DIR}"
     -d "${SPHINX_CACHE_DIR}"
-    -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/examples_v2/"
+    -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
     COMMENT "Building HTML documentation with Sphinx"
