@@ -77,9 +77,9 @@ IF (
    )
 	IF(RModular)
 		FIND_PACKAGE(SWIG 2.0.5 REQUIRED)
-	ELSE()
+	ELSE(RModular)
 		FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
-	ENDIF()
+	ENDIF(RModular)
 
 	# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
 	# typemapping created for earlier versions of SWIG.
