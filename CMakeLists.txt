@@ -909,6 +909,16 @@ IF (PythonModular OR PythonStatic)
 			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
 		ENDIF()
 
+		# SWIG-generated Python-wrappers fail to build
+		# for Python >=3.5 with SWIG < 3.0.8.  Make CMake
+		# emit an error and fail to configure.
+		IF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
+			("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
+			MESSAGE(FATAL_ERROR
+				"Building Python_modular interface for Python >= 3.5 requires SWIG >= 3.0.8.")
+		ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
+			("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
+
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 		ENDIF()
