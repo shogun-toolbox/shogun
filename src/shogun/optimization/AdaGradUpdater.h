@@ -45,10 +45,10 @@ namespace shogun
  *	\f]
  *
  * where
- * \f$ \frac{ \partial f(\cdot) }{\partial \theta } \f$ is a negative descend direction (eg, gradient) wrt \f$\theta$\f,
- * \f$\epsilon$\f is used to avoid dividing by 0,
+ * \f$ \frac{ \partial f(\cdot) }{\partial \theta } \f$ is a negative descend direction (eg, gradient) wrt \f$\theta\f$,
+ * \f$\epsilon\f$ is used to avoid dividing by 0,
  * \f$ \alpha \f$ is a build-in learning rate
- * \f$d_\theta$\f is a corrected negative descend direction.
+ * \f$d_\theta\f$ is a corrected negative descend direction.
  *
  * Duchi, John, Elad Hazan, and Yoram Singer. "Adaptive subgradient methods for online learning and stochastic optimization."
  * The Journal of Machine Learning Research 12 (2011): 2121-2159.
@@ -112,24 +112,24 @@ protected:
 	 *
 	 * It will be called at update_variable()
 	 *
-	 * @param variable current variable (eg, \f$\theta$\f)
-	 * @param gradient current gradient (eg, \f$ \frac{ \partial f(\cdot) }{\partial \theta }$\f)
+	 * @param variable current variable (eg, \f$\theta\f$)
+	 * @param gradient current gradient (eg, \f$ \frac{ \partial f(\cdot) }{\partial \theta }\f$)
 	 * @param idx the index of the variable
 	 * @param learning_rate learning rate (for AdaGrad, learning_rate is NOT used because there is a build-in
 	 * learning_rate)
 	 * 
-	 * @return negative descend direction (that is, \f$\d_\theta$\f)
+	 * @return negative descend direction (that is, \f$d_\theta\f$)
 	 */
 	virtual float64_t get_negative_descend_direction(float64_t variable,
 		float64_t gradient, index_t idx, float64_t learning_rate);
 
-	/** learning_rate \f$\alpha$\f at iteration */
+	/** learning_rate \f$ \alpha \f$ at iteration */
 	float64_t m_build_in_learning_rate;
 
-	/** \f$epsilon$\f */
+	/** \f$ epsilon \f$ */
 	float64_t m_epsilon;
 
-	/** \f$g_\theta$\f */
+	/** \f$ g_\theta \f$ */
 	SGVector<float64_t> m_gradient_accuracy;
 private:
 	/**  Init */

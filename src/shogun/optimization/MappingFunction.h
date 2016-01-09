@@ -41,10 +41,21 @@ namespace shogun
 class MappingFunction
 {
 public:
+	/** Get dual variable
+	 *
+	 * @param variable primal variable 
+	 * @return dual variable 
+	 *
+	 */
 	virtual SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable)=0;
 
+	/** Update primal variable in place given dual variable
+	 *
+	 * @param variable primal variable to be updated
+	 * @param dual_variable dual variable are known
+	 *
+	 */
 	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable)=0;
-
 
 	/** Update a context object to store mutable variables
 	 * used in learning rate

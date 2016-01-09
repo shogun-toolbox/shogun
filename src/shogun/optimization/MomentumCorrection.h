@@ -57,7 +57,7 @@ public:
 	/*  Destructor */
 	virtual ~MomentumCorrection() {};
 
-	/*  Is the m_previous_descend_direction initialized?
+	/**  Is the m_previous_descend_direction initialized?
 	 *
 	 *  @return whether m_previous_descend_direction is initialized
 	 */
@@ -66,7 +66,7 @@ public:
 		return m_previous_descend_direction.vlen>0;
 	}
 
-	/*  Initialize m_previous_descend_direction?
+	/**  Initialize m_previous_descend_direction?
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
@@ -145,7 +145,7 @@ public:
 		return m_previous_descend_direction.vlen;
 	}
 protected:
-	/*  used in momentum methods */
+	/**  used in momentum methods */
 	SGVector<float64_t> m_previous_descend_direction;
 
 private:

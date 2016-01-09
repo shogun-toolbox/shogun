@@ -42,6 +42,11 @@ namespace shogun
  * \f[
  * L1(w)=\| w \|_1 = \sum_i \| w_i \|
  * \f]
+ *
+ * This class implements the soft-threshold method.
+ * Reference:
+ * Proximal gradient method
+ * www.eecs.berkeley.edu/~elghaoui/Teaching/EE227A/lecture18.pdf
  */
 
 class L1Penalty: public SparsePenalty
@@ -61,7 +66,6 @@ public:
 	virtual float64_t get_penalty(float64_t variable) {return CMath::abs(variable);}
 
 
-
 	/** Return the gradient of the penalty wrt a target variable
 	 *
 	 * Note that for L1 penalty we do not compute the gradient/sub-gradient in our implementation.
@@ -75,20 +79,20 @@ public:
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return 0.0;}
 
-	/** Set the rounding eplison
+	/** Set the rounding epslion
 	 *
-	 * @param eplison rounding eplison
+	 * @param epslion rounding epslion
 	 *
 	 */
-	virtual void set_rounding_eplison(float64_t eplison)
+	virtual void set_rounding_epslion(float64_t epslion)
 	{
-		REQUIRE(eplison>=0,"Rounding eplison (%f) should be non-negative\n", eplison);
-		m_rounding_eplison=eplison;
+		REQUIRE(epslion>=0,"Rounding epslion (%f) should be non-negative\n", epslion);
+		m_rounding_epslion=epslion;
 	}
 
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable
-	 * @param penalty_weight weight of the penalty
+	 * @param proximal_weight weight of the penalty
 	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)
@@ -135,19 +139,19 @@ public:
 		  if (variable>0.0)
 			  variable=0.0;
 	  }
-	  if (CMath::abs(variable)<m_rounding_eplison)
+	  if (CMath::abs(variable)<m_rounding_epslion)
 		  variable=0.0;
 	  return variable;
 	}
 protected:
-	/** eplison */
-	float64_t m_rounding_eplison;
+	/** rounding epslion */
+	float64_t m_rounding_epslion;
 
 private:
 	/** init */
 	void init()
 	{
-		m_rounding_eplison=1e-8;
+		m_rounding_epslion=1e-8;
 	}
 };
 

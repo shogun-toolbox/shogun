@@ -1032,7 +1032,7 @@ TEST(L1PenaltyForTG, test1)
 	opt->set_penalty_weight(0.01);
 	L1Penalty* penalty_type=new L1PenaltyForTG();
 
-	penalty_type->set_rounding_eplison(0);
+	penalty_type->set_rounding_epslion(0);
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(1);
 	opt->set_learning_rate(rate);
@@ -1079,7 +1079,7 @@ TEST(L1PenaltyForTG, test2)
 
 	opt->set_penalty_weight(0.01);
 	L1Penalty* penalty_type=new L1PenaltyForTG();
-	penalty_type->set_rounding_eplison(0);
+	penalty_type->set_rounding_epslion(0);
 	
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(1);
@@ -1104,7 +1104,7 @@ TEST(L1PenaltyForTG, test2)
 	opt2->set_gradient_updater(updater2);
 	opt2->set_penalty_weight(0.01);
 	L1Penalty* penalty_type2=new L1PenaltyForTG();
-	penalty_type2->set_rounding_eplison(0);
+	penalty_type2->set_rounding_epslion(0);
 
 	opt2->set_penalty_type(penalty_type2);
 	opt2->set_number_passes(1);
@@ -1225,7 +1225,7 @@ TEST(SMIDASMinimizer, test1)
 
 	opt->set_penalty_weight(0.01);
 	L1Penalty* penalty_type=new L1Penalty();
-	penalty_type->set_rounding_eplison(1e-8);
+	penalty_type->set_rounding_epslion(1e-8);
 	opt->set_penalty_type(penalty_type);
 	opt->set_number_passes(1);
 	opt->set_learning_rate(rate);
@@ -1250,7 +1250,7 @@ TEST(SMIDASMinimizer, test1)
 	opt2->set_mapping_function(mapping2);
 	opt2->set_penalty_weight(0.01);
 	L1Penalty* penalty_type2=new L1Penalty();
-	penalty_type2->set_rounding_eplison(1e-8);
+	penalty_type2->set_rounding_epslion(1e-8);
 	opt2->set_penalty_type(penalty_type2);
 	opt2->set_number_passes(1);
 	opt2->set_learning_rate(rate2);

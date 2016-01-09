@@ -153,8 +153,17 @@ public:
 		m_learning_rate=learning_rate;
 	}
 
+	/** How many samples/mini-batch does the minimizer use?
+	 *
+	 * @return the number of samples/mini-batches used in optimization
+	 */
 	virtual int32_t get_iteration_counter() {return m_iter_counter;}
 protected:
+	/** Do proximal update in place 
+	 *
+	 * @param variable_reference variable_reference to be updated
+	 *
+	 */
 	virtual void do_proximal_operation(SGVector<float64_t>variable_reference)
 	{
 		ProximalPenalty* proximal_penalty=dynamic_cast<ProximalPenalty*>(m_penalty_type);
@@ -205,6 +214,7 @@ protected:
 	/**  current iteration to go through data */
 	int32_t m_cur_passes;
 
+	/**  number of used samples/mini-batches */
 	int32_t m_iter_counter;
 
 	/** learning_rate object */

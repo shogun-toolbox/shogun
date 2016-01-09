@@ -44,6 +44,9 @@ namespace shogun
  * L1(w)=\| w \|_1 = \sum_i \| w_i \|
  * \f]
  *
+ * This class implements the truncated gradient method.
+ *
+ * Reference:
  * Stochastic Gradient Descent Training for L1-regularized Log-linear Models with Cumulative Penalty
  */
 
@@ -58,7 +61,7 @@ public:
 
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable
-	 * @param penalty_weight weight of the penalty
+	 * @param proximal_weight weight of the penalty
 	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)
@@ -123,7 +126,9 @@ public:
 		m_u=context->get_data_float64(key);
 	}
 protected:
+	/** u is defined in Figure 2 of the reference */
 	float64_t m_u;
+	/** q is defined in Figure 2 of the reference */
 	SGVector<float64_t> m_q;
 
 private:

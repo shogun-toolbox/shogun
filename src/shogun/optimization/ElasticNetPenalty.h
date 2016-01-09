@@ -45,6 +45,10 @@ namespace shogun
  * ElasticNet(w)= \lambda \| w \|_1 + (1.0-\lambda) \| w \|_2
  * \f]
  * where \f$\lambda\f$ is the l1_ratio.
+ *
+ * Reference:
+ * Zou, Hui, and Trevor Hastie. "Regularization and variable selection via the elastic net."
+ * Journal of the Royal Statistical Society: Series B (Statistical Methodology) 67.2 (2005): 301-320.
  */
 
 class ElasticNetPenalty: public SparsePenalty
@@ -83,6 +87,12 @@ public:
 		return penalty;
 	}
 
+	/** Return the gradient of the penalty wrt a target variable
+	 *
+	 * @param variable value of a target variable
+	 * @param gradient_of_variable unregularized/unpenalized gradient of the variable
+	 * @return the gradient of the penalty wrt the variable
+	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable)
 	{
@@ -92,11 +102,20 @@ public:
 		return grad;
 	}
 
-	virtual void set_rounding_eplison(float64_t eplison)
+	/** Set the rounding epslion for L1 penalty
+	 *
+	 * @param epslion rounding epslion
+	 *
+	 */
+	virtual void set_rounding_epslion(float64_t epslion)
 	{
-		m_l1_penalty->set_rounding_eplison(eplison);
+		m_l1_penalty->set_rounding_epslion(epslion);
 	}
 
+	/** Do proximal projection/operation in place
+	 * @param variable the raw variable
+	 * @param proximal_weight weight of the penalty
+	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
 		float64_t proximal_weight)
 	{
@@ -127,6 +146,11 @@ public:
 		m_l2_penalty->load_from_context(context);
 	}
 
+	/** Get the sparse variable
+	 * @param variable the raw variable
+	 * @param penalty_weight weight of the penalty
+	 * @return sparse value of the variable
+	 */
 	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
 	{
 		check_ratio();

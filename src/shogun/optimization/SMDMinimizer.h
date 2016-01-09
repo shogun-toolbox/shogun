@@ -61,9 +61,12 @@ public:
 	 */
 	virtual float64_t minimize();
 
+	/** Set projection function
+	 * @param mapping_fun mapping/projection function
+	 */
 	virtual void set_mapping_function(MappingFunction* mapping_fun)
 	{
-		REQUIRE(mapping_fun, "");
+		REQUIRE(mapping_fun, "mapping/projection function must be set\n");
 		m_mapping_fun=mapping_fun;
 	}
 
@@ -90,9 +93,10 @@ protected:
 		REQUIRE(m_mapping_fun,"MappingFunction must set\n");
 		m_mapping_fun->update_context(context);
 	}
-	/*  init the minimization process */
+	/**  init the minimization process */
 	virtual void init_minimization();
 
+	/** mapping function */
 	MappingFunction* m_mapping_fun;
 private:
 	  /* Init */
