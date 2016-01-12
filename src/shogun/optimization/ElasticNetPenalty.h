@@ -102,14 +102,14 @@ public:
 		return grad;
 	}
 
-	/** Set the rounding epslion for L1 penalty
+	/** Set the rounding epsilon for L1 penalty
 	 *
-	 * @param epslion rounding epslion
+	 * @param epsilon rounding epsilon
 	 *
 	 */
-	virtual void set_rounding_epslion(float64_t epslion)
+	virtual void set_rounding_epsilon(float64_t epsilon)
 	{
-		m_l1_penalty->set_rounding_epslion(epslion);
+		m_l1_penalty->set_rounding_epsilon(epsilon);
 	}
 
 	/** Do proximal projection/operation in place
