@@ -442,6 +442,18 @@ public:
 	 * default value is -1
 	 */
 	float64_t gd_error_damping_coeff;
+
+   /** Used in RmsProp stochastic optimization 
+    * RmsProp scales each gradient down by its running average.
+    * It then updates the parameters acc. to the learning_rate.
+    *     scale=decay_factor*scale+(1-decay_factor)*gradient*gradient
+    *     param=param-learning_rate*gradient/sqrt(scale+epsilon)
+    * @epsilon: default=1e-6
+    * @decay_factor: default=0.9
+    */
+  float64_t rms_epsilon;
+  float64_t rms_decay_factor;
+
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;

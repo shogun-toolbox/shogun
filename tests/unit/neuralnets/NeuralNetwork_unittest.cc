@@ -452,8 +452,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->gd_learning_rate = 10.0;
 	network->epsilon = 0.0;
 	network->max_num_epochs = 1000;
-
-	network->set_labels(labels);
+  network->rms_epsilon = 1.0;
+  network->rms_decay_factor = 0.99;
+	
+  network->set_labels(labels);
 	network->train(features);
 
 	CBinaryLabels* predictions = network->apply_binary(features);
@@ -464,4 +466,52 @@ TEST(NeuralNetwork, gradient_descent)
 	SG_UNREF(network);
 	SG_UNREF(features);
 	SG_UNREF(predictions);
+}
+
+TEST(NeuralNetwork, rms_prop)
+{
+	CMath::init_random(100);
+
+	int32_t N = 20;
+	SGMatrix<float64_t> inputs_matrix(1,N);
+	SGVector<float64_t> targets_vector(N);
+
+	for (int32_t i=0; i<N; i++)
+	{
+		inputs_matrix(0,i) = i;
+		targets_vector[i] = i*i;
+  }
+
+	CDenseFeatures<float64_t>* features =
+		new CDenseFeatures<float64_t>(inputs_matrix);
+
+	CBinaryLabels* labels = new CBinaryLabels(targets_vector);
+
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(1));
+	layers->append_element(new CNeuralLogisticLayer(5));
+	layers->append_element(new CNeuralLogisticLayer(1));
+
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->quick_connect();
+	network->initialize_neural_network(0.1);
+
+	network->optimization_method = NNOM_GRADIENT_DESCENT;
+	network->gd_learning_rate = 10.0;
+	network->epsilon = 0.0;
+	network->max_num_epochs = 1000;
+  network->rms_epsilon = 1e-6;
+  network->rms_decay_factor = 0.9;
+	
+  network->set_labels(labels);
+	network->train(features);
+
+	CBinaryLabels* predictions = network->apply_binary(features);
+
+	for (int32_t i=0; i<N; i++)
+		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
+
+	SG_UNREF(network);
+	SG_UNREF(features);
+  SG_UNREF(predictions);
 }
