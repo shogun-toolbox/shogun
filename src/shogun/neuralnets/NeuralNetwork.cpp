@@ -34,6 +34,7 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/optimization/RmsPropUpdater.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>
@@ -264,7 +265,11 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	REQUIRE(gd_learning_rate>0,
 		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
 	REQUIRE(gd_momentum>=0,
-		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
+    		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
+	REQUIRE(rms_epsilon>=0,
+    		"RmsProp epsilon (%f) must be non-negative\n", rms_epsilon);
+	REQUIRE(rms_decay_factor>=0 && rms_decay_factor<1.0,
+    		"RmsProp decay factor (%f) must be in range [0,1)\n", rms_decay_factor);
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
@@ -276,6 +281,12 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	// needed for momentum
 	SGVector<float64_t> param_updates(n_param);
 	param_updates.zero();
+
+	// RmsPropUpdater object 
+	RmsPropUpdater rmsprop_updater;
+	rmsprop_updater.set_learning_rate(gd_learning_rate);
+	rmsprop_updater.set_epsilon(rms_epsilon);
+	rmsprop_updater.set_decay_factor(rms_decay_factor);
 
 	float64_t error_last_time = -1.0, error = -1.0;
 
@@ -309,7 +320,6 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 
 			float64_t e = compute_gradients(inputs_batch, targets_batch, gradients);
 
-
 			for (int32_t k=0; k<m_num_layers; k++)
 			{
 				SGVector<float64_t> layer_gradients = get_section(gradients, k);
@@ -331,9 +341,10 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 			{
 				param_updates[k] = gd_momentum*param_updates[k]
 						-alpha*gradients[k];
-
-				m_params[k] -= alpha*gradients[k];
 			}
+
+			// updating params
+			rmsprop_updater.update_variable(m_params,gradients,alpha);
 
 			if (error_last_time!=-1.0)
 			{
@@ -762,6 +773,8 @@ void CNeuralNetwork::init()
 	gd_momentum = 0.9;
 	gd_error_damping_coeff = -1.0;
 	epsilon = 1.0e-5;
+	rms_epsilon = 1e-6;
+	rms_decay_factor = 0.9;
 	m_num_inputs = 0;
 	m_num_layers = 0;
 	m_layers = NULL;
@@ -787,6 +800,10 @@ void CNeuralNetwork::init()
 	       "Gradient Descent Error Damping Coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&epsilon, "epsilon",
 	       "Epsilon", MS_NOT_AVAILABLE);
+	SG_ADD(&rms_epsilon, "rms_epsilon",
+	     	"RmsProp Epsilon", MS_NOT_AVAILABLE);
+	SG_ADD(&rms_decay_factor, "rms_decay_factor",
+         	"RmsProp Decay Factor", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_inputs, "num_inputs",
 	       "Number of Inputs", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_layers, "num_layers",
