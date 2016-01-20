@@ -452,10 +452,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->gd_learning_rate = 10.0;
 	network->epsilon = 0.0;
 	network->max_num_epochs = 1000;
-  network->rms_epsilon = 1.0;
-  network->rms_decay_factor = 0.99;
-	
-  network->set_labels(labels);
+	network->rms_epsilon = 1.0;
+	network->rms_decay_factor = 0.99;
+
+	network->set_labels(labels);
 	network->train(features);
 
 	CBinaryLabels* predictions = network->apply_binary(features);
@@ -480,7 +480,7 @@ TEST(NeuralNetwork, rms_prop)
 	{
 		inputs_matrix(0,i) = i;
 		targets_vector[i] = i*i;
-  }
+  	}
 
 	CDenseFeatures<float64_t>* features =
 		new CDenseFeatures<float64_t>(inputs_matrix);
@@ -500,10 +500,10 @@ TEST(NeuralNetwork, rms_prop)
 	network->gd_learning_rate = 10.0;
 	network->epsilon = 0.0;
 	network->max_num_epochs = 1000;
-  network->rms_epsilon = 1e-6;
-  network->rms_decay_factor = 0.9;
-	
-  network->set_labels(labels);
+	network->rms_epsilon = 1e-6;
+	network->rms_decay_factor = 0.9;
+
+	network->set_labels(labels);
 	network->train(features);
 
 	CBinaryLabels* predictions = network->apply_binary(features);
@@ -513,5 +513,5 @@ TEST(NeuralNetwork, rms_prop)
 
 	SG_UNREF(network);
 	SG_UNREF(features);
-  SG_UNREF(predictions);
+  	SG_UNREF(predictions);
 }
