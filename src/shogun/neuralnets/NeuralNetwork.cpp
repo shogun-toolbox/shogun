@@ -266,9 +266,9 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
 	REQUIRE(gd_momentum>=0,
     	"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
-    REQUIRE(rms_epsilon>=0,
+	REQUIRE(rms_epsilon>=0,
     	"RmsProp epsilon (%f) must be non-negative\n", rms_epsilon);
-    REQUIRE(rms_decay_factor>=0 && rms_decay_factor<1.0,
+	REQUIRE(rms_decay_factor>=0 && rms_decay_factor<1.0,
     	"RmsProp decay factor (%f) must be in range [0,1)\n", rms_decay_factor);
 
 	int32_t training_set_size = inputs.num_cols;
