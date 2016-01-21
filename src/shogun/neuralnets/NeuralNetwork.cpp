@@ -264,7 +264,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	REQUIRE(gd_learning_rate>0,
 		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
 	REQUIRE(gd_momentum>=0,
-		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
+		"Gradient descent momentum (%f) must be >= 0\n", gd_momentum);
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
