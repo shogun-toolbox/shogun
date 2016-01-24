@@ -34,6 +34,11 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/optimization/DescendUpdater.h>
+#include <shogun/optimization/AdaDeltaUpdater.h>
+#include <shogun/optimization/AdaGradUpdater.h>
+#include <shogun/optimization/GradientDescendUpdater.h>
+#include <shogun/optimization/RmsPropUpdater.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>
@@ -265,6 +270,10 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
 	REQUIRE(gd_momentum>=0,
 		"Gradient descent momentum (%f) must be >= 0\n", gd_momentum);
+	REQUIRE(du_epsilon>0,
+		"Descend Updater Epsilon (%f) must be > 0", du_epsilon);
+	REQUIRE(du_decay_factor>=0 && du_decay_factor<1,
+		"Descend Updater Decay Factor (%f) must be in [0, 1)", du_decay_factor);
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
@@ -276,6 +285,9 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	// needed for momentum
 	SGVector<float64_t> param_updates(n_param);
 	param_updates.zero();
+
+	// intialize descend_updater object 
+	initialize_descend_updater();
 
 	float64_t error_last_time = -1.0, error = -1.0;
 
@@ -331,9 +343,9 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 			{
 				param_updates[k] = gd_momentum*param_updates[k]
 						-alpha*gradients[k];
-
-				m_params[k] -= alpha*gradients[k];
 			}
+
+			descend_updater->update_variable(m_params,gradients,alpha);
 
 			if (error_last_time!=-1.0)
 			{
@@ -352,6 +364,27 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	}
 
 	return true;
+}
+
+void CNeuralNetwork::initialize_descend_updater()
+{
+	switch(descend_updater_method)
+	{
+		case 0:
+			descend_updater=new GradientDescendUpdater();
+			break;
+		case 1:
+			descend_updater=new AdaDeltaUpdater();
+			break;
+		case 2:
+			descend_updater=new AdaGradUpdater();
+			break;
+		case 3:
+			descend_updater=new RmsPropUpdater();
+			break;
+		default:
+			break;
+	}
 }
 
 bool CNeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
@@ -392,6 +425,7 @@ bool CNeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
 	else
 	{
 		SG_INFO("L-BFGS optimization ended with return code %i\n",result);
+		
 	}
 	return true;
 }
@@ -750,6 +784,7 @@ CDynamicObjectArray* CNeuralNetwork::get_layers()
 void CNeuralNetwork::init()
 {
 	optimization_method = NNOM_LBFGS;
+	descend_updater_method = GRAD_DESC;
 	dropout_hidden = 0.0;
 	dropout_input = 0.0;
 	max_norm = -1.0;
@@ -761,6 +796,8 @@ void CNeuralNetwork::init()
 	gd_learning_rate_decay = 1.0;
 	gd_momentum = 0.9;
 	gd_error_damping_coeff = -1.0;
+	du_epsilon = 1e-6;
+	du_decay_factor = 0.9;
 	epsilon = 1.0e-5;
 	m_num_inputs = 0;
 	m_num_layers = 0;
@@ -773,6 +810,8 @@ void CNeuralNetwork::init()
 
 	SG_ADD((machine_int_t*)&optimization_method, "optimization_method",
 	       "Optimization Method", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&descend_updater_method, "descend_updater_method",
+			"Descend Updater Method", MS_NOT_AVAILABLE);
 	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
 	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
 	SG_ADD(&max_num_epochs, "max_num_epochs",
@@ -785,6 +824,10 @@ void CNeuralNetwork::init()
 	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
 	SG_ADD(&gd_error_damping_coeff, "gd_error_damping_coeff",
 	       "Gradient Descent Error Damping Coeff", MS_NOT_AVAILABLE);
+	SG_ADD(&du_epsilon, "du_epsilon",
+	       "Descend Updater Epsilon", MS_NOT_AVAILABLE);
+	SG_ADD(&du_decay_factor, "du_decay_factor",
+	       "Descend Updater Decay Factor", MS_NOT_AVAILABLE);
 	SG_ADD(&epsilon, "epsilon",
 	       "Epsilon", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_inputs, "num_inputs",

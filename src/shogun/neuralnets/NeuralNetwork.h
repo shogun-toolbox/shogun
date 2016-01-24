@@ -44,12 +44,22 @@ namespace shogun
 template<class T> class CDenseFeatures;
 class CDynamicObjectArray;
 class CNeuralLayer;
+class DescendUpdater;
 
 /** optimization method for neural networks */
 enum ENNOptimizationMethod
 {
 	NNOM_GRADIENT_DESCENT=0,
 	NNOM_LBFGS=1
+};
+
+/** gradient descent updater optimization for neural networks */
+enum DescendUpdaterMethod
+{
+	GRAD_DESC=0,
+	ADA_DELTA=1,
+	ADA_GRAD=2,
+	RMS_PROP=3
 };
 
 /** @brief A generic multi-layer neural network
@@ -331,6 +341,8 @@ protected:
 private:
 	void init();
 
+	void initialize_descend_updater();
+	
 	/** callback for l-bfgs */
 	static float64_t lbfgs_evaluate(void *userdata,
 			const float64_t *W,
@@ -357,6 +369,9 @@ private:
 public:
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod optimization_method;
+
+	/** Gradient Descend Updater method, default is GRAD_DESC */
+	DescendUpdaterMethod descend_updater_method;
 
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
@@ -442,6 +457,20 @@ public:
 	 * default value is -1
 	 */
 	float64_t gd_error_damping_coeff;
+
+	//@{
+	/** Used in Gradient Descend Updater optimization. 
+	 * DescendUpdater object is instantiated using enum DESCEND_UPDATER.
+	 * epsilon and decay_factor are data members for DescendUpdater object.
+	 *
+	 * default value of epsilon is 1e-6
+	 * default value of decay_factor is 0.9
+	 */
+	DescendUpdater *descend_updater;
+	float64_t du_epsilon;
+	float64_t du_decay_factor;
+	//@}
+
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
