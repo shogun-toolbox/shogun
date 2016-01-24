@@ -466,6 +466,7 @@ void CFactorGraphModel::init_primal_opt(
 		case LOOPY_MAX_PROD:
 		case LP_RELAXATION:
 		case TRWS_MAX_PROD:
+		case GEMPLP:
 			break;
 	}
 }
