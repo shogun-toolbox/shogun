@@ -39,6 +39,15 @@ RmsPropUpdater::RmsPropUpdater()
 	init();
 }
 
+RmsPropUpdater::RmsPropUpdater(float64_t learning_rate,float64_t epsilon,float64_t decay_factor)
+	:DescendUpdaterWithCorrection()
+{
+	init();
+	set_learning_rate(learning_rate);
+	set_epsilon(epsilon);
+	set_decay_factor(decay_factor);
+}
+
 void RmsPropUpdater::set_learning_rate(float64_t learning_rate)
 {
 	REQUIRE(learning_rate>0,"Learning_rate (%f) must be positive\n",
