@@ -370,16 +370,16 @@ void CNeuralNetwork::initialize_descend_updater()
 {
 	switch(descend_updater_method)
 	{
-		case 0:
+		case GRAD_DESC:
 			descend_updater=new GradientDescendUpdater();
 			break;
-		case 1:
+		case ADA_DELTA:
 			descend_updater=new AdaDeltaUpdater();
 			break;
-		case 2:
+		case ADA_GRAD:
 			descend_updater=new AdaGradUpdater();
 			break;
-		case 3:
+		case RMS_PROP:
 			descend_updater=new RmsPropUpdater();
 			break;
 		default:
