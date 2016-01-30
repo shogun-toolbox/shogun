@@ -79,15 +79,15 @@ public:
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return 0.0;}
 
-	/** Set the rounding epslion
+	/** Set the rounding epsilon
 	 *
-	 * @param epslion rounding epslion
+	 * @param epsilon rounding epsilon
 	 *
 	 */
-	virtual void set_rounding_epslion(float64_t epslion)
+	virtual void set_rounding_epsilon(float64_t epsilon)
 	{
-		REQUIRE(epslion>=0,"Rounding epslion (%f) should be non-negative\n", epslion);
-		m_rounding_epslion=epslion;
+		REQUIRE(epsilon>=0,"Rounding epsilon (%f) should be non-negative\n", epsilon);
+		m_rounding_epsilon=epsilon;
 	}
 
 	/** Do proximal projection/operation in place
@@ -139,19 +139,19 @@ public:
 		  if (variable>0.0)
 			  variable=0.0;
 	  }
-	  if (CMath::abs(variable)<m_rounding_epslion)
+	  if (CMath::abs(variable)<m_rounding_epsilon)
 		  variable=0.0;
 	  return variable;
 	}
 protected:
-	/** rounding epslion */
-	float64_t m_rounding_epslion;
+	/** rounding epsilon */
+	float64_t m_rounding_epsilon;
 
 private:
 	/** init */
 	void init()
 	{
-		m_rounding_epslion=1e-8;
+		m_rounding_epsilon=1e-8;
 	}
 };
 
