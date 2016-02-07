@@ -42,7 +42,7 @@ namespace shogun
  * \f{eqnarray*}{
  *   w_{ahead} &=&  w + \mu v \\
  *   v^{new}   &=& \mu v - d_{ahead} \\
- *   w^{new}   &=& w + v 
+ *   w^{new}   &=& w + v^{new} 
  * \f}
  * where \f$\mu\f$ is a momentum, \f$d_{ahead}\f$ is descend direction wrt \f$w_{ahead}\f$
  * (eg, \f$ d_{ahead}=\lambda g_{ahead}\f$, where \f$\lambda\f$ is learning rate, \f$g_{ahead}\f$ is gradient wrt \f$w_{ahead}\f$),

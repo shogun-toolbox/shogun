@@ -38,6 +38,14 @@ namespace shogun
 {
 /** @brief This implements the adaptive momentum correction method.
  *
+ * A standard momentum correction performs update based on a momentum (eg, \f$\mu$\f), a previous descend direction (eg, \f$v\f$) and a
+ * current descend direction (eg, \f$d\f$).
+ *
+ * The idea of adaptive momentum correction method is
+ * If signs of the last two momentum corrections are different, the current descend direction is discounted
+ * On the other hand, if the the signs are the same, the method raises the current descend direction 
+ * Please see method get_corrected_descend_direction() for details
+ *
  */
 class AdaptMomentumCorrection: public MomentumCorrection
 {
@@ -50,6 +58,10 @@ public:
 		init();
 	}
 
+	/** Set a standard momentum method 
+	 * @param correction standard momentum method (eg, StandardMomentumCorrection)
+	 *
+	 */
 	virtual void set_momentum_correction(MomentumCorrection* correction)
 	{
 		REQUIRE(correction,"MomentumCorrection must not NULL\n");
@@ -60,9 +72,9 @@ public:
 	/*  Destructor */
 	virtual ~AdaptMomentumCorrection() { m_momentum_correction=NULL; };
 
-	/**  Is the m_previous_descend_direction initialized?
+	/** Is the standard momentum method  initialized?
 	 *
-	 *  @return whether m_previous_descend_direction is initialized
+	 *  @return whether the standard method  is initialized
 	 */
 	virtual bool is_initialized()
 	{
@@ -70,13 +82,17 @@ public:
 		return m_momentum_correction->is_initialized();
 	}
 
+	/** Set the weight (momentum) for the standard momentum method
+	 *
+	 * @param weight momentum
+	 */
 	virtual void set_correction_weight(float64_t weight)
 	{
 		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
 		m_momentum_correction->set_correction_weight(weight);
 	}
 
-	/**  Initialize m_previous_descend_direction?
+	/**  Initialize m_previous_descend_direction
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
@@ -166,6 +182,12 @@ public:
 			m_descend_rate.vector);
 	}
 
+	/** Set adaptive weights used in this method
+	 *
+	 * @param adapt_rate the rate is used to discount/raise the current descend direction (see get_corrected_descend_direction() )
+	 * @param adapt_min minimum of the rate
+	 * @param adapt_max minimum of the rate
+	 */
 	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=CMath::INFTY)
 	{
 		REQUIRE(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate (%f) must in (0,1)\n", adapt_rate);
@@ -177,17 +199,27 @@ public:
 		m_rate_max=rate_max;
 	}
 
+	/** Set the init rate used to discount/raise the current descend direction 
+	 *
+	 * @param init_descend_rate the init rate (default 1.0)
+	 */
 	virtual void set_init_descend_rate(float64_t init_descend_rate)
 	{
 		REQUIRE(init_descend_rate>0,"Init speedup rate (%f) must be positive\n", init_descend_rate);
 		m_init_descend_rate=init_descend_rate;
 	}
 protected:
+	/** element wise rate used to discount/raise the current descend direction  */
 	SGVector<float64_t> m_descend_rate;
+	/** the standard momentum method */
 	MomentumCorrection* m_momentum_correction;
+	/** the adapt rate */
 	float64_t m_adapt_rate;
+	/** the minimum of the adapt rate */
 	float64_t m_rate_min;
+	/** the maximum of the adapt rate */
 	float64_t m_rate_max;
+	/** the init rate */
 	float64_t m_init_descend_rate;
 private:
 	/** Init */
