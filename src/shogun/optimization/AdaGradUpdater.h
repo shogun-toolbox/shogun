@@ -59,6 +59,13 @@ public:
 	/* Constructor */
 	AdaGradUpdater();
 
+	/** Parameterized Constructor
+	 * 
+	 * @param learning_rate learning_rate
+	 * @param epsilon epsilon
+	 */
+	AdaGradUpdater(float64_t learning_rate,float64_t epsilon);
+
 	/* Destructor */
 	virtual ~AdaGradUpdater();
 

@@ -61,6 +61,14 @@ public:
 	/* Constructor */
 	AdaDeltaUpdater();
 
+	/** Parameterized Constructor
+	 *
+	 * @param learning_rate learning_rate
+	 * @param epsilon epsilon
+	 * @param decay_factor decay_factor 
+	 */
+	AdaDeltaUpdater(float64_t learning_rate,float64_t epsilon,float64_t decay_factor);
+	
 	/* Destructor */
 	virtual ~AdaDeltaUpdater();
 

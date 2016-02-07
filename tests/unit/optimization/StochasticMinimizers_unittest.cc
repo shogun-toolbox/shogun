@@ -914,10 +914,12 @@ TEST(AdaDeltaUpdater, test1)
 	delete momentum_correction;
 
 	SGDMinimizer* opt2=new SGDMinimizer(bb);
-	AdaDeltaUpdater* updater2=new AdaDeltaUpdater();
+	AdaDeltaUpdater* updater2=new AdaDeltaUpdater(1.8,1e-6,0.95);
+	/*
 	updater2->set_learning_rate(1.8);
 	updater2->set_epsilon(1e-6);
 	updater2->set_decay_factor(0.95);
+	*/
 	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
 	momentum_correction2->set_correction_weight(0.99);
 	updater2->set_descend_correction(momentum_correction2);
@@ -983,10 +985,12 @@ TEST(AdaptMomentumCorrection, test1)
 	delete correction;
 	delete momentum_correction;
 	SGDMinimizer* opt2=new SGDMinimizer(bb);
-	RmsPropUpdater* updater2=new RmsPropUpdater();
+	RmsPropUpdater* updater2=new RmsPropUpdater(1.0,0.0,0.9);
+	/*	
 	updater2->set_learning_rate(1.0);
 	updater2->set_epsilon(0.0);
 	updater2->RmsPropUpdater::set_decay_factor(0.9);
+	*/	
 	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
 	momentum_correction2->set_correction_weight(0.5);
 	AdaptMomentumCorrection* correction2=new AdaptMomentumCorrection();
