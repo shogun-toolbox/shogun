@@ -43,7 +43,7 @@ namespace shogun
         const char* m_absence_reason;
     };
 
-    /** @class Holder that represents an object that can be
+    /** @brief Holder that represents an object that can be
      * either present or absent. Quite simllar to std::optional
      * introduced in C++14, but provides a way to pass the reason
      * of absence (e.g. "incorrect parameter").
@@ -168,8 +168,8 @@ namespace shogun
             m_absence_reason(reason)
         {
         }
-        Maybe(const T& value) :
-            m_value(value),
+        Maybe(const T& someValue) :
+            m_value(someValue),
             m_absence_reason(detail::NO_REASON_FOR_ABSENCE)
         {
         }
