@@ -15,6 +15,11 @@ namespace shogun
 	class Unique
 	{
 		public:
+			/** Creates an instance of something unique.
+			 *
+			 * Calls default constructor of type T.
+			 *
+			 */
 			Unique() : data()
 			{
 				data = new T();
@@ -24,14 +29,18 @@ namespace shogun
 				delete reinterpret_cast<T*>(data);
 			}
 
-			Unique(const Unique& other);
+			/** Not implemented copy constructor */
+			Unique(const Unique&);
+			/** Not implemented assignment operator */
 			Unique& operator=(const Unique& other);
 
+			/** Access underlying unique object as a raw pointer */
 			inline T* operator->() const
 			{
 				return reinterpret_cast<T*>(data);
 			}
 		private:
+			/** Untyped data storage */
 			void* data;
 	};
 

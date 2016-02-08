@@ -98,6 +98,7 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 	protected:
 
 		class Self;
+		/** Pointer to implementation */
 		Unique<Self> self;
 
 };

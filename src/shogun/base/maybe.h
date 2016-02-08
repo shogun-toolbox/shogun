@@ -21,14 +21,25 @@ namespace shogun
     class Nothing
     {
     public:
+        /** Createst an instance of nothing aka absent value.
+         *
+         * @param reason the reason something is absent
+         */
         Nothing(const char* reason = "no specific reason") :
             m_absence_reason(reason)
         {
         }
+        /** Copies nothing from nothing, inheriting absence reason.
+         *
+         * @param other other instance of nothing
+         */
         Nothing(const Nothing& other) :
             m_absence_reason(other.m_absence_reason)
         {
         }
+        /** Represents a reason why something is absent.
+         * Memory is not managed.
+         */
         const char* m_absence_reason;
     };
 

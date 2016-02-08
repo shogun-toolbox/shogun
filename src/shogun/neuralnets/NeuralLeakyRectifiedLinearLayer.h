@@ -82,7 +82,6 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 *
-	 * @param alpha parameter used in calculating max(alpha*x, x)
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
 		CDynamicObjectArray* layers);
