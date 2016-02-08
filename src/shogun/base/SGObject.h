@@ -194,8 +194,6 @@ public:
 	 * @param file where to save the object; will be closed during
 	 * returning if PREFIX is an empty string.
 	 * @param prefix prefix for members
-	 * @param param_version (optional) a parameter version different to (this
-	 * is mainly for testing, better do not use)
 	 * @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
@@ -207,27 +205,11 @@ public:
 	 *
 	 *  @param file where to load from
 	 *  @param prefix prefix for members
-	 *  @param param_version (optional) a parameter version different to (this
-	 * is mainly for testing, better do not use)
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
 			const char* prefix="");
-
-	/** loads some specified parameters from a file with a specified version
-	 * The provided parameter info has a version which is recursively mapped
-	 * until the file parameter version is reached.
-	 * Note that there may be possibly multiple parameters in the mapping,
-	 * therefore, a set of TParameter instances is returned
-	 *
-	 * @param param_info information of parameter
-	 * @param file_version parameter version of the file, must be <= provided
-	 * parameter version
-	 * @param file file to load from
-	 * @param prefix prefix for members
-	 * @return new array with TParameter instances with the attached data
-	 */
 
 	/** set the io object
 	 *
