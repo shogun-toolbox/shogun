@@ -38,7 +38,7 @@ namespace shogun
 {
 /** @brief This implements the adaptive momentum correction method.
  *
- * A standard momentum correction performs update based on a momentum (eg, \f$\mu$\f), a previous descend direction (eg, \f$v\f$) and a
+ * A standard momentum correction performs update based on a momentum (eg, \f$\mu\f$), a previous descend direction (eg, \f$v\f$) and a
  * current descend direction (eg, \f$d\f$).
  *
  * The idea of adaptive momentum correction method is
