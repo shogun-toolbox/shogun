@@ -12,6 +12,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
@@ -41,7 +42,7 @@ CConjugateGradientSolver::~CConjugateGradientSolver()
 }
 
 SGVector<float64_t> CConjugateGradientSolver::solve(
-	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b)
+	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
 	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..\n");
 

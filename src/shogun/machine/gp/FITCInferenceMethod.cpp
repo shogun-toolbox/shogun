@@ -1,17 +1,34 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (W) 2015 Wu Lin
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * All rights reserved.
  *
- * Code adapted from Gaussian Process Machine Learning Toolbox
- * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
@@ -24,43 +41,35 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceMethod::CFITCInferenceMethod() : CInferenceMethod()
+CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCLaplacianBase()
 {
 	init();
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CInferenceMethod(kern, feat, m, lab, mod)
+		: CSingleFITCLaplacianBase(kern, feat, m, lab, mod, lat)
 {
 	init();
-	set_latent_features(lat);
 }
 
 void CFITCInferenceMethod::init()
 {
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "Latent features",
-			MS_NOT_AVAILABLE);
-
-	m_latent_features=NULL;
-	m_ind_noise=1e-10;
 }
 
 CFITCInferenceMethod::~CFITCInferenceMethod()
 {
-	SG_UNREF(m_latent_features);
 }
-
-CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+void CFITCInferenceMethod::compute_gradient()
 {
-	ASSERT(inference!=NULL);
+	CInferenceMethod::compute_gradient();
 
-	if (inference->get_inference_type()!=INF_FITC)
-		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
-
-	SG_REF(inference);
-	return (CFITCInferenceMethod*)inference;
+	if (!m_gradient_update)
+	{
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
 }
 
 void CFITCInferenceMethod::update()
@@ -70,23 +79,33 @@ void CFITCInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
 }
 
+CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
+		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CFITCInferenceMethod*)inference;
+}
+
 void CFITCInferenceMethod::check_members() const
 {
-	CInferenceMethod::check_members();
+	CSingleFITCLaplacianBase::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 			"FITC inference method can only use Gaussian likelihood function\n")
 	REQUIRE(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
 			"of CRegressionLabels\n")
-	REQUIRE(m_latent_features, "Latent features should not be NULL\n")
-	REQUIRE(m_latent_features->get_num_vectors(),
-			"Number of latent features must be greater than zero\n")
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
@@ -111,103 +130,74 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	if (parameter_hash_changed())
 		update();
 
+	//time complexity of the following operations is O(m*n)
+
 	// create eigen representations of chol_utr, dg, r, be
     Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 			m_chol_utr.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 
 	// compute negative log marginal likelihood:
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
 	float64_t result=eigen_chol_utr.diagonal().array().log().sum()+
-		(eigen_dg.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
-		 m_ktrtr.num_rows*CMath::log(2*CMath::PI))/2.0;
+		(-eigen_t.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
+		 m_ktrtr_diag.vlen*CMath::log(2*CMath::PI))/2.0;
 
 	return result;
-}
-
-SGVector<float64_t> CFITCInferenceMethod::get_alpha()
-{
-	if (parameter_hash_changed())
-		update();
-
-	SGVector<float64_t> result(m_alpha);
-	return result;
-}
-
-SGMatrix<float64_t> CFITCInferenceMethod::get_cholesky()
-{
-	if (parameter_hash_changed())
-		update();
-
-	SGMatrix<float64_t> result(m_L);
-	return result;
-}
-
-SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
-{
-	SG_NOTIMPLEMENTED
-	return SGVector<float64_t>();
-}
-
-SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
-{
-	SG_NOTIMPLEMENTED
-	return SGMatrix<float64_t>();
-}
-
-void CFITCInferenceMethod::update_train_kernel()
-{
-	CInferenceMethod::update_train_kernel();
-
-	// create kernel matrix for latent features
-	m_kernel->init(m_latent_features, m_latent_features);
-	m_kuu=m_kernel->get_kernel_matrix();
-
-	// create kernel matrix for latent and training features
-	m_kernel->init(m_latent_features, m_features);
-	m_ktru=m_kernel->get_kernel_matrix();
 }
 
 void CFITCInferenceMethod::update_chol()
 {
+	//time complexits O(m^2*n)
+
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	// eigen3 representation of covariance matrix of latent features (m_kuu)
+	// eigen3 representation of covariance matrix of inducing features (m_kuu)
 	// and training features (m_ktru)
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
-	LLT<MatrixXd> Luu(eigen_kuu*CMath::sq(m_scale)+m_ind_noise*MatrixXd::Identity(
+	//Luu  = chol(Kuu+snu2*eye(nu));                         % Kuu + snu2*I = Luu'*Luu
+	LLT<MatrixXd> Luu(eigen_kuu*CMath::exp(m_log_scale*2.0)+CMath::exp(m_log_ind_noise)*MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // latent features Luu (m_chol_uu and eigen_chol_uu)
+    // inducing features Luu (m_chol_uu and eigen_chol_uu)
 	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
 	eigen_chol_uu=Luu.matrixU();
 
 	// solve Luu' * V = Ktru
-	MatrixXd V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru*
-			CMath::sq(m_scale));
+	//V  = Luu'\Ku;                                     % V = inv(Luu')*Ku => V'*V = Q
+
+	m_V=SGMatrix<float64_t>(m_chol_uu.num_cols, m_ktru.num_cols);
+	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru*
+			CMath::exp(m_log_scale*2.0));
 
 	// create shogun and eigen3 representation of
 	// dg = diag(K) + sn2 - diag(Q)
-	m_dg=SGVector<float64_t>(m_ktrtr.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	// t = 1/dg
+	m_t=SGVector<float64_t>(m_ktrtr_diag.vlen);
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 
-	eigen_dg=eigen_ktrtr.diagonal()*CMath::sq(m_scale)+CMath::sq(sigma)*
-		VectorXd::Ones(m_dg.vlen)-(V.cwiseProduct(V)).colwise().sum().adjoint();
+	//g_sn2 = diagK + sn2 - sum(V.*V,1)';          % g + sn2 = diag(K) + sn2 - diag(Q)
+	eigen_t=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)+CMath::sq(sigma)*
+		VectorXd::Ones(m_t.vlen)-(V.cwiseProduct(V)).colwise().sum().adjoint();
+	eigen_t=MatrixXd::Ones(eigen_t.rows(),1).cwiseQuotient(eigen_t);
 
 	// solve Lu' * Lu = V * diag(1/dg) * V' + I
-	LLT<MatrixXd> Lu(V*((VectorXd::Ones(m_dg.vlen)).cwiseQuotient(eigen_dg)).asDiagonal()*
+	//Lu = chol(eye(nu) + (V./repmat(g_sn2',nu,1))*V');  % Lu'*Lu=I+V*diag(1/g_sn2)*V'
+	LLT<MatrixXd> Lu(V*((VectorXd::Ones(m_t.vlen)).cwiseProduct(eigen_t)).asDiagonal()*
 			V.adjoint()+MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
@@ -224,21 +214,24 @@ void CFITCInferenceMethod::update_chol()
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute sgrt_dg = sqrt(dg)
-	VectorXd sqrt_dg=eigen_dg.array().sqrt();
+	VectorXd sqrt_t=eigen_t.array().sqrt();
 
 	// create shogun and eigen3 representation of labels adjusted for
 	// noise and means (m_r)
+	//r  = (y-m)./sqrt(g_sn2);
 	m_r=SGVector<float64_t>(y.vlen);
 	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
-	eigen_r=(eigen_y-eigen_m).cwiseQuotient(sqrt_dg);
+	eigen_r=(eigen_y-eigen_m).cwiseProduct(sqrt_t);
 
 	// compute be
+	//be = Lu'\(V*(r./sqrt(g_sn2)));
 	m_be=SGVector<float64_t>(m_chol_utr.num_cols);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 	eigen_be=eigen_chol_utr.triangularView<Upper>().adjoint().solve(
-		V*eigen_r.cwiseQuotient(sqrt_dg));
+		V*eigen_r.cwiseProduct(sqrt_t));
 
 	// compute iKuu
+	//iKuu = solve_chol(Luu,eye(nu));
 	MatrixXd iKuu=Luu.solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of posterior cholesky
@@ -246,6 +239,7 @@ void CFITCInferenceMethod::update_chol()
 	m_L=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_chol(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
+	//post.L  = solve_chol(Lu*Luu,eye(nu)) - iKuu;
 	eigen_chol=eigen_prod.triangularView<Upper>().adjoint().solve(
 		MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 	eigen_chol=eigen_prod.triangularView<Upper>().solve(eigen_chol)-iKuu;
@@ -253,6 +247,7 @@ void CFITCInferenceMethod::update_chol()
 
 void CFITCInferenceMethod::update_alpha()
 {
+	//time complexity O(m^2) since triangular.solve is O(m^2)
     Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
@@ -264,19 +259,22 @@ void CFITCInferenceMethod::update_alpha()
 	m_alpha=SGVector<float64_t>(m_chol_uu.num_rows);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
+	//post.alpha = Luu\(Lu\be);
 	eigen_alpha=eigen_chol_utr.triangularView<Upper>().solve(eigen_be);
 	eigen_alpha=eigen_chol_uu.triangularView<Upper>().solve(eigen_alpha);
 }
 
 void CFITCInferenceMethod::update_deriv()
 {
+	//time complexits O(m^2*n)
+
 	// create eigen representation of Ktru, Lu, Luu, dg, be
 	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
 			m_chol_utr.num_cols);
 	Map<MatrixXd> eigen_Luu(m_chol_uu.matrix, m_chol_uu.num_rows,
 			m_chol_uu.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 
 	// get and create eigen representation of labels
@@ -288,16 +286,17 @@ void CFITCInferenceMethod::update_deriv()
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute V=inv(Luu')*Ku
-	MatrixXd V=eigen_Luu.triangularView<Upper>().adjoint().solve(eigen_Ktru*
-			CMath::sq(m_scale));
+	Map<MatrixXd> V(m_V.matrix, m_V.num_rows, m_V.num_cols);
 
 	// create shogun and eigen representation of al
 	m_al=SGVector<float64_t>(m.vlen);
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 
 	// compute al=(Kt+sn2*eye(n))\y
+	//r  = (y-m)./sqrt(g_sn2);
+	//al = r./sqrt(g_sn2) - (V'*(Lu\be))./g_sn2;      % al = (Kt+sn2*eye(n))\(y-m)
 	eigen_al=((eigen_y-eigen_m)-(V.adjoint()*
-		eigen_Lu.triangularView<Upper>().solve(eigen_be))).cwiseQuotient(eigen_dg);
+		eigen_Lu.triangularView<Upper>().solve(eigen_be))).cwiseProduct(eigen_t);
 
 	// compute inv(Kuu+snu2*I)=iKuu
 	MatrixXd iKuu=eigen_Luu.triangularView<Upper>().adjoint().solve(
@@ -308,7 +307,8 @@ void CFITCInferenceMethod::update_deriv()
 	m_B=SGMatrix<float64_t>(iKuu.rows(), eigen_Ktru.cols());
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
-	eigen_B=iKuu*eigen_Ktru*CMath::sq(m_scale);
+	//B = iKuu*Ku; w = B*al;
+	eigen_B=iKuu*eigen_Ktru*CMath::exp(m_log_scale*2.0);
 
 	// create shogun and eigen representation of w
 	m_w=SGVector<float64_t>(m_B.num_rows);
@@ -317,74 +317,101 @@ void CFITCInferenceMethod::update_deriv()
 	eigen_w=eigen_B*eigen_al;
 
 	// create shogun and eigen representation of W
-	m_W=SGMatrix<float64_t>(m_chol_utr.num_cols, m_dg.vlen);
-	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+	m_Rvdd=SGMatrix<float64_t>(m_chol_utr.num_cols, m_t.vlen);
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
 
 	// compute W=Lu'\(V./repmat(g_sn2',nu,1))
+	//W = Lu'\(V./repmat(g_sn2',nu,1));
 	eigen_W=eigen_Lu.triangularView<Upper>().adjoint().solve(V*VectorXd::Ones(
-		m_dg.vlen).cwiseQuotient(eigen_dg).asDiagonal());
+		m_t.vlen).cwiseProduct(eigen_t).asDiagonal());
 }
 
-SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_inference_method(
-		const TParameter* param)
+
+SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
-			"the nagative log marginal likelihood wrt %s.%s parameter\n",
-			get_name(), param->m_name)
+	compute_gradient();
 
-	// create eigen representation of dg, al, B, W, w
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	m_mu=SGVector<float64_t>(m_al.vlen);
+	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+
+	/*
+	//true posterior mean with equivalent FITC prior
+	//time complexity of the following operations is O(n)
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
-	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+	eigen_mu=(eigen_y-eigen_m)-eigen_al*CMath::sq(sigma);
+	*/
 
-	// clone kernel matrices
-	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();
-	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
-	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
+	//FITC approximated posterior mean
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	//time complexity of the following operation is O(m*n)
+	eigen_mu=CMath::exp(m_log_scale*2.0)*eigen_Ktru.adjoint()*eigen_alpha;
 
-	// create eigen representation of kernel matrices
-	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
-	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
+	return SGVector<float64_t>(m_mu);
+}
 
-	// compute derivatives wrt scale for each kernel matrix
-	ddiagKi*=m_scale*2.0;
-	dKuui*=m_scale*2.0;
-	dKui*=m_scale*2.0;
+SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
+{
+	compute_gradient();
 
-	// compute R=2*dKui-dKuui*B
-	MatrixXd R=2*dKui-dKuui*eigen_B;
+	//time complexity of the following operations is O(m*n^2)
+	//Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if this method is called
+	m_Sigma=SGMatrix<float64_t>(m_ktrtr_diag.vlen, m_ktrtr_diag.vlen);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
+			m_Sigma.num_cols);
+	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
+	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
+			m_chol_utr.num_cols);
 
-	// compute v=ddiagKi-sum(R.*B, 1)'
-	VectorXd v=ddiagKi-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+	/*
+	//true posterior mean with equivalent FITC prior
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
+	VectorXd diag_part=CMath::sq(sigma)*eigen_t;
+	// diag(sigma2/dg)*V'*(Lu\eye(n))
+	MatrixXd part1=diag_part.asDiagonal()*eigen_V.adjoint()*
+		(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
+		m_kuu.num_rows, m_kuu.num_cols)));
+	eigen_Sigma=part1*part1.adjoint();
+	VectorXd part2=(VectorXd::Ones(m_t.vlen)-diag_part)*CMath::sq(sigma);
+	eigen_Sigma+=part2.asDiagonal();
+	*/
 
-	SGVector<float64_t> result(1);
+	//FITC approximated posterior covariance
+	//TO DO we only need tha diagonal elements of m_ktrtr
+	Map<VectorXd> eigen_ktrtr_diag(m_ktrtr_diag.vector, m_ktrtr_diag.vlen);
+	MatrixXd part1=eigen_V.adjoint()*(eigen_Lu.triangularView<Upper>().solve(MatrixXd::Identity(
+		m_kuu.num_rows, m_kuu.num_cols)));
+	eigen_Sigma=part1*part1.adjoint();
+	VectorXd part2=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)-(
+		eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
+	eigen_Sigma+=part2.asDiagonal();
 
-	// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*(v.*al)-
-	// sum(W.*W,1)*v- sum(sum((R*W').*(B*W'))))/2;
-	result[0]=(ddiagKi.dot(VectorXd::Ones(m_dg.vlen).cwiseQuotient(eigen_dg))+
-			eigen_w.dot(dKuui*eigen_w-2*(dKui*eigen_al))-
-			eigen_al.dot(v.cwiseProduct(eigen_al))-
-			eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
-			(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
-
-	return result;
+	return SGMatrix<float64_t>(m_Sigma);
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "sigma"), "Can't compute derivative of "
+	//time complexity O(m*n)
+	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			m_model->get_name(), param->m_name)
 
 	// create eigen representation of dg, al, w, W and B
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
-	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
 	// get the sigma variable from the Gaussian likelihood model
@@ -394,137 +421,10 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 
 	SGVector<float64_t> result(1);
 
-	result[0]=CMath::sq(sigma)*(VectorXd::Ones(m_dg.vlen).cwiseQuotient(
-		eigen_dg).sum()-eigen_W.cwiseProduct(eigen_W).sum()-eigen_al.dot(eigen_al));
-
-	float64_t dKuui=2.0*m_ind_noise;
-	MatrixXd R=-dKuui*eigen_B;
-	VectorXd v=-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
-
-	result[0]=result[0]+((eigen_w.dot(dKuui*eigen_w))-eigen_al.dot(
-		v.cwiseProduct(eigen_al))-eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
-		(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
-
-	return result;
-}
-
-SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
-		const TParameter* param)
-{
-	// create eigen representation of dg, al, w, W, B
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
-	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
-	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
-
-	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-			result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
-
-	for (index_t i=0; i<result.vlen; i++)
-	{
-		SGVector<float64_t> deriv_trtr;
-		SGMatrix<float64_t> deriv_uu;
-		SGMatrix<float64_t> deriv_tru;
-
-		if (result.vlen==1)
-		{
-			m_kernel->init(m_features, m_features);
-			deriv_trtr=m_kernel->get_parameter_gradient(param).get_diagonal_vector();
-
-			m_kernel->init(m_latent_features, m_latent_features);
-			deriv_uu=m_kernel->get_parameter_gradient(param);
-
-			m_kernel->init(m_latent_features, m_features);
-			deriv_tru=m_kernel->get_parameter_gradient(param);
-		}
-		else
-		{
-			m_kernel->init(m_features, m_features);
-			deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
-
-			m_kernel->init(m_latent_features, m_latent_features);
-			deriv_uu=m_kernel->get_parameter_gradient(param, i);
-
-			m_kernel->init(m_latent_features, m_features);
-			deriv_tru=m_kernel->get_parameter_gradient(param, i);
-		}
-
-		// create eigen representation of derivatives
-		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
-				deriv_uu.num_cols);
-		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
-				deriv_tru.num_cols);
-
-		ddiagKi*=CMath::sq(m_scale);
-		dKuui*=CMath::sq(m_scale);
-		dKui*=CMath::sq(m_scale);
-
-		// compute R=2*dKui-dKuui*B
-		MatrixXd R=2*dKui-dKuui*eigen_B;
-
-		// compute v=ddiagKi-sum(R.*B, 1)'
-		VectorXd v=ddiagKi-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
-
-		// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*
-		// (v.*al)-sum(W.*W,1)*v- sum(sum((R*W').*(B*W'))))/2;
-		result[i]=(ddiagKi.dot(VectorXd::Ones(m_dg.vlen).cwiseQuotient(eigen_dg))+
-				eigen_w.dot(dKuui*eigen_w-2*(dKui*eigen_al))-
-				eigen_al.dot(v.cwiseProduct(eigen_al))-
-				eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
-				(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
-	}
-
-	return result;
-}
-
-SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_mean(
-		const TParameter* param)
-{
-	// create eigen representation of al vector
-	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
-
-	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
-
-	for (index_t i=0; i<result.vlen; i++)
-	{
-		SGVector<float64_t> dmu;
-
-		if (result.vlen==1)
-			dmu=m_mean->get_parameter_derivative(m_features, param);
-		else
-			dmu=m_mean->get_parameter_derivative(m_features, param, i);
-
-		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
-
-		// compute dnlZ=-dm'*al
-		result[i]=-eigen_dmu.dot(eigen_al);
-	}
+	//diag_dK = 1./g_sn2 - sum(W.*W,1)' - al.*al;                  % diag(dnlZ/dK)
+	//dnlZ.lik = sn2*sum(diag_dK) without noise term
+	result[0]=CMath::sq(sigma)*(VectorXd::Ones(m_t.vlen).cwiseProduct(
+		eigen_t).sum()-eigen_W.cwiseProduct(eigen_W).sum()-eigen_al.dot(eigen_al));
 
 	return result;
 }

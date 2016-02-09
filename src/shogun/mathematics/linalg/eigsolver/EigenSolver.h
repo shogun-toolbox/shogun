@@ -37,7 +37,7 @@ public:
 	 * @param linear_operator real valued self-adjoint linear operator
 	 * whose eigenvalues have to be found
 	 */
-	CEigenSolver(CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator)
+	CEigenSolver(CLinearOperator<float64_t>* linear_operator)
 	: CSGObject()
 	{
 		init();
@@ -96,7 +96,7 @@ protected:
 	float64_t m_max_eigenvalue;
 
 	/** the linear solver whose eigenvalues have to be found */
-	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* m_linear_operator;
+	CLinearOperator<float64_t>* m_linear_operator;
 
 	/** flag that denotes that the minimum eigenvalue is already computed */
 	bool m_is_computed_min;

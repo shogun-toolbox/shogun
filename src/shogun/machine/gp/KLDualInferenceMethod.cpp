@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -62,6 +62,19 @@ CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 		: CKLInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
+}
+
+CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_KL_DUAL)
+		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLDualInferenceMethod*)inference;
 }
 
 SGVector<float64_t> CKLDualInferenceMethod::get_alpha()
@@ -137,23 +150,23 @@ bool CKLDualInferenceMethod::lbfgs_precompute()
 	Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
 	eigen_sW=eigen_W.array().sqrt().matrix();
 
-	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, m_scale);
+	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, CMath::exp(m_log_scale));
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	
+
 	//solve L'*V=diag(sW)*K
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	//Sigma=inv(inv(K)+diag(W))=K-K*diag(sW)*inv(L)'*inv(L)*diag(sW)*K
 	//v=abs(diag(Sigma))
-	eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+	eigen_s2=(eigen_K.diagonal().array()*CMath::exp(m_log_scale*2.0)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 
 	//construct mu
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 	return true;
 }
 
@@ -226,7 +239,7 @@ float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SG
 	for(index_t idx=0; idx<eigen_t.rows(); idx++)
 		trace +=(eigen_t.col(idx).array().pow(2)).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+eigen_L.diagonal().array().log().sum();
 
 	result+=0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace);
@@ -242,8 +255,9 @@ float64_t CKLDualInferenceMethod::get_negative_log_marginal_likelihood_helper()
 	return CMath::NOT_A_NUMBER;
 }
 
-float64_t CKLDualInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
+float64_t CKLDualInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -291,7 +305,7 @@ void CKLDualInferenceMethod::update_alpha()
 		SGVector<float64_t> sW_tmp(len);
 		Map<VectorXd> eigen_sW(sW_tmp.vector, sW_tmp.vlen);
 		eigen_sW=eigen_W.array().sqrt().matrix();
-		SGMatrix<float64_t> L_tmp=CMatrixOperations::get_choleksy(W_tmp, sW_tmp, m_ktrtr, m_scale);
+		SGMatrix<float64_t> L_tmp=CMatrixOperations::get_choleksy(W_tmp, sW_tmp, m_ktrtr, CMath::exp(m_log_scale*2.0));
 		Map<MatrixXd> eigen_L(L_tmp.matrix, L_tmp.num_rows, L_tmp.num_cols);
 
 		lik->set_dual_parameters(W_tmp, m_labels);
@@ -306,12 +320,12 @@ void CKLDualInferenceMethod::update_alpha()
 		SGVector<float64_t> mu_tmp(len);
 		Map<VectorXd> eigen_mu(mu_tmp.vector, mu_tmp.vlen);
 		//mu=K*alpha+m
-		eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+		eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 		//construct s2
-		MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+		MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 		SGVector<float64_t> s2_tmp(len);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
-		eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+		eigen_s2=(eigen_K.diagonal().array()*CMath::exp(m_log_scale*2.0)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 
 		lik->set_variational_distribution(mu_tmp, s2_tmp, m_labels);
 
@@ -447,7 +461,7 @@ void CKLDualInferenceMethod::update_chol()
 
 void CKLDualInferenceMethod::update_approx_cov()
 {
-	m_Sigma=CMatrixOperations::get_inverse(m_L, m_ktrtr, m_sW, m_V, m_scale);
+	m_Sigma=CMatrixOperations::get_inverse(m_L, m_ktrtr, m_sW, m_V, CMath::exp(m_log_scale));
 }
 
 } /* namespace shogun */

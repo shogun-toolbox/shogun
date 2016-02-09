@@ -1,15 +1,35 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2013 Roman Votyakov
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (W) 2013 Heiko Strathmann
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * Written (W) 2013 Roman Votyakov
+ * Written (W) 2012 Jacob Walker
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -17,6 +37,7 @@
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Lock.h>
 
 using namespace shogun;
@@ -35,6 +56,17 @@ struct GRADIENT_THREAD_PARAM
 CInferenceMethod::CInferenceMethod()
 {
 	init();
+}
+
+float64_t CInferenceMethod::get_scale() const
+{
+	return CMath::exp(m_log_scale);
+}
+
+void CInferenceMethod::set_scale(float64_t scale)
+{
+	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
+	m_log_scale=CMath::log(scale);
 }
 
 SGMatrix<float64_t> CInferenceMethod::get_multiclass_E()
@@ -69,19 +101,22 @@ CInferenceMethod::~CInferenceMethod()
 void CInferenceMethod::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
-	SG_ADD(&m_scale, "scale", "Kernel scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
 		MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated", MS_NOT_AVAILABLE);
+	
 
 	m_kernel=NULL;
 	m_model=NULL;
 	m_labels=NULL;
 	m_features=NULL;
 	m_mean=NULL;
-	m_scale=1.0;
+	m_log_scale=0.0;
+	m_gradient_update=false;
 
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
@@ -118,7 +153,7 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 	memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
 			sizeof(float64_t)*m_ktrtr.num_rows*m_ktrtr.num_cols);
 	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
-		scaled_kernel.matrix[i]*=CMath::sq(m_scale);
+		scaled_kernel.matrix[i]*=CMath::exp(m_log_scale*2.0);
 
 	/* add ridge */
 	for (index_t i=0; i<cov.num_rows; ++i)
@@ -152,8 +187,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
 
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	// get number of derivatives
 	const index_t num_deriv=params->get_num_elements();
@@ -281,8 +315,7 @@ void CInferenceMethod::check_members() const
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-			"Number of training vectors must match number of labels, which is "
-			"%d, but number of training vectors is %d\n",
+			"Number of training vectors (%d) must match number of labels (%d)\n",
 			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
@@ -294,4 +327,9 @@ void CInferenceMethod::update_train_kernel()
 	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
+void CInferenceMethod::compute_gradient()
+{
+	if (parameter_hash_changed())
+		update();
+}
 #endif /* HAVE_EIGEN3 */

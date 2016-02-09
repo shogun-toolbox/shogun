@@ -63,6 +63,13 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector(const SGVector &orig);
 
 #ifndef SWIG // SWIG should skip this part
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/** The container type for a given template argument */
+		template <typename ST> using container_type = SGVector<ST>;
+
+#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+
 #ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 column vector */
 		SGVector(EigenVectorXt& vec);
@@ -75,8 +82,8 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Wraps an Eigen3 row vector around the data of this matrix */
 		operator EigenRowVectorXtMap() const;
-#endif
-#endif
+#endif // HAVE_EIGEN3
+#endif // SWIG
 
 		/** Set vector to a constant
 		 *
@@ -107,8 +114,14 @@ template<class T> class SGVector : public SGReferencedData
 		/** Size */
 		inline int32_t size() const { return vlen; }
 
+		/** Data pointer */
+		inline T* data() const
+		{
+			return vector;
+		}
+
 		/** Cast to pointer */
-		operator T*() { return vector; };
+		operator T*() { return vector; }
 
 		/** Fill vector with zeros */
 		void zero();

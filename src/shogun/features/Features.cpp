@@ -351,3 +351,10 @@ CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims)
 			get_name());
 	return NULL;
 }
+
+bool CFeatures::get_feature_class_compatibility(EFeatureClass rhs) const
+{
+	if (this->get_feature_class()==rhs)
+		return true;
+	return false;
+}

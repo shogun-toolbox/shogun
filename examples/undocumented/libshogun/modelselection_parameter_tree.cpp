@@ -103,8 +103,8 @@ CModelSelectionParameters* create_param_tree_1()
 	root->append_child(param_gaussian_kernel);
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("width");
-	param_gaussian_kernel_width->build_values(1, 2, R_EXP);
+			new CModelSelectionParameters("log_width");
+	param_gaussian_kernel_width->build_values(0.0, 0.5*CMath::log(2), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
@@ -316,18 +316,18 @@ CModelSelectionParameters* create_param_tree_5()
 	param_inf->append_child(param_inf_gaussian);
 
 	CModelSelectionParameters* param_inf_gaussian_sigma=
-			new CModelSelectionParameters("sigma");
+			new CModelSelectionParameters("log_sigma");
 	param_inf_gaussian->append_child(param_inf_gaussian_sigma);
-	param_inf_gaussian_sigma->build_values(2.0, 3.0, R_EXP);
+	param_inf_gaussian_sigma->build_values(2.0*CMath::log(2.0), 3.0*CMath::log(2.0), R_LINEAR);
 
 	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
 			"kernel", gaussian_kernel);
 	param_inf->append_child(param_inf_kernel_1);
 
 	CModelSelectionParameters* param_inf_kernel_width=
-			new CModelSelectionParameters("width");
+			new CModelSelectionParameters("log_width");
 	param_inf_kernel_1->append_child(param_inf_kernel_width);
-	param_inf_kernel_width->build_values(1.0, 2.0, R_EXP);
+	param_inf_kernel_width->build_values(0.0, 0.5*CMath::log(2.0), R_LINEAR);
 
 	CModelSelectionParameters* param_inf_kernel_2=new CModelSelectionParameters(
 			"kernel", linear_kernel);

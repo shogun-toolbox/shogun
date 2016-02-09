@@ -1,33 +1,33 @@
 /*
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its 
- * contributors may be used to endorse or promote products derived from this 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from this
  * software without specific prior written permission.
 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * Written (W) 2014 Abhijeet Kislay
  */
 #include <shogun/lib/config.h>
@@ -52,17 +52,17 @@ using namespace shogun;
 CFisherLDA::CFisherLDA (EFLDAMethod method, float64_t thresh):
 	CDimensionReductionPreprocessor()
 {
-	init();
+	initialize_parameters();
 	m_method=method;
 	m_threshold=thresh;
 }
 
-void CFisherLDA::init()
+void CFisherLDA::initialize_parameters()
 {
 	m_method=AUTO_FLDA;
 	m_threshold=0.01;
 	m_num_dim=0;
-	SG_ADD(&m_method, "FLDA_method","method for performing FLDA", 
+	SG_ADD(&m_method, "FLDA_method","method for performing FLDA",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_dim, "final_dimensions","dimensions to be retained",
 			MS_NOT_AVAILABLE);
@@ -77,25 +77,25 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
-bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensions)
+bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimensions)
 {
 	REQUIRE(features, "Features are not provided!\n")
 
 	REQUIRE(features->get_feature_class()==C_DENSE,
-			"LDA only works with dense features. you provided %s\n", 
+			"LDA only works with dense features. you provided %s\n",
 			features->get_name());
-	
+
 	REQUIRE(features->get_feature_type()==F_DREAL,
 			"LDA only works with real features.\n");
-	
+
 	REQUIRE(labels, "Labels for the given features are not specified!\n")
-	
+
 	REQUIRE(labels->get_label_type()==LT_MULTICLASS, "The labels should be of "
 			"the type MulticlassLabels! you provided %s\n", labels->get_name());
 
 	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)
 										->get_feature_matrix();
-	
+
 	SGVector<float64_t> labels_vector=((CMulticlassLabels*)labels)->get_labels();
 
 	int32_t num_vectors=feature_matrix.num_cols;
@@ -109,7 +109,7 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 	int32_t C=((CMulticlassLabels*)labels)->get_num_classes();
 
 	REQUIRE(C>1, "At least two classes are needed to perform LDA.\n")
-	
+
 	int32_t i=0;
 	int32_t j=0;
 
@@ -162,7 +162,7 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 			if (i==lvector[j])
 				fmatrix.col(j)-=mean_class[i];
 
-	if ((m_method==CANVAR_FLDA) || 
+	if ((m_method==CANVAR_FLDA) ||
 			(m_method==AUTO_FLDA && num_vectors<num_features))
 	{
 		// holds the  fmatrix for each class
@@ -193,7 +193,7 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 		MatrixXd Q;
 
 		if(num_features>num_vectors)
-		{	
+		{
 			j=0;
 			for (i=0;i<num_vectors;i++)
 				if (svd.singularValues()(i)>m_threshold)
@@ -202,9 +202,9 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 					break;
 			Q=svd.matrixU().leftCols(j);
 		}
-		else 
+		else
 			Q=svd.matrixU();
-	  
+
 		// Sb is the modified between scatter
 		Sb=(Q.transpose())*Sb*(Sb.transpose())*Q;
 		// Sw is the modified within scatter
@@ -224,7 +224,7 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 		m_transformation_matrix=SGMatrix<float64_t> (num_features, m_num_dim);
 		Map<MatrixXd> eigenVectors(m_transformation_matrix.matrix, num_features,
 									m_num_dim);
-		
+
 		eigenVectors=Q*(svd2.matrixU()).leftCols(m_num_dim);
 
 		m_eigenvalues_vector=SGVector<float64_t>(m_num_dim);
@@ -295,13 +295,13 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 {
 	REQUIRE(features->get_feature_class()==C_DENSE,
 			"LDA only works with dense features\n");
-	
+
 	REQUIRE(features->get_feature_type()==F_DREAL,
 			"LDA only works with real features\n");
-	
+
 	SGMatrix<float64_t> m=((CDenseFeatures<float64_t>*)
 							features)->get_feature_matrix();
-	
+
 	int32_t num_vectors=m.num_cols;
 	int32_t num_features=m.num_rows;
 
@@ -312,11 +312,11 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	Map<MatrixXd> feature_matrix (m.matrix, num_features, num_vectors);
-	
+
 	feature_matrix.block (0, 0, m_num_dim, num_vectors)=
 			transform_matrix.transpose()*feature_matrix;
 
-	SG_INFO("Form matrix of target dimension") 
+	SG_INFO("Form matrix of target dimension")
 	for (int32_t col=0; col<num_vectors; col++)
 	{
 		for (int32_t row=0; row<m_num_dim; row++)
@@ -329,7 +329,7 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 }
 
 SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vector)
-{	
+{
 	SGVector<float64_t> result = SGVector<float64_t>(m_num_dim);
 	Map<VectorXd> resultVec(result.vector, m_num_dim);
 	Map<VectorXd> inputVec(vector.vector, vector.vlen);
@@ -339,7 +339,7 @@ SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vect
 		m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
 
 	resultVec=transformMat.transpose()*inputVec;
-	return result; 
+	return result;
 }
 
 SGMatrix<float64_t> CFisherLDA::get_transformation_matrix()

@@ -34,7 +34,7 @@ enum ETerminalType
 	/** source terminal */
 	SOURCE = 0,
 	/** sink terminal */
-	SINK = 1 
+	SINK = 1
 };
 
 struct GCNode;
@@ -77,7 +77,7 @@ struct GCNode
 	/** the type of the tree that the node belongs to */
 	ETerminalType type_tree;
 	/** if tree_cap > 0 then tree_cap is residual capacity
-	 * of the edge SOURCE->node otherwise -tree_cap is 
+	 * of the edge SOURCE->node otherwise -tree_cap is
 	 * residual capacity of the edge node->SINK */
 	float64_t tree_cap;
 };
@@ -148,7 +148,7 @@ public:
 		return m_flow;
 	}
 
-	/** Build s-t graph 
+	/** Build s-t graph
 	 *
 	 * @param num_nodes number of nodes in the s-t graph (SOURCE and SINK nodes are not included)
 	 * @param num_edges number of edges in the s-t graph (the edges connecting to the SOURCE and SINK are not included)

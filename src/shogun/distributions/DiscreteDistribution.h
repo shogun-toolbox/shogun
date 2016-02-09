@@ -36,7 +36,7 @@
 namespace shogun
 {
 
-/** @brief This is the base interface class for all discrete distributions. 
+/** @brief This is the base interface class for all discrete distributions.
  */
 class CDiscreteDistribution : public CDistribution
 {

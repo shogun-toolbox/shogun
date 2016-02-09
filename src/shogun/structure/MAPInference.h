@@ -32,7 +32,8 @@ enum EMAPInferType
 	LOOPY_MAX_PROD = 1,
 	LP_RELAXATION = 2,
 	TRWS_MAX_PROD = 3,
-	GRAPH_CUT = 4
+	GRAPH_CUT = 4,
+	GEMPLP = 5
 };
 
 class CMAPInferImpl;
@@ -117,7 +118,7 @@ public:
 	 * @param assignment outputs of inference results
 	 */
 	virtual float64_t inference(SGVector<int32_t> assignment) = 0;
-	
+
 private:
 	/** register parameters */
 	void register_parameters();

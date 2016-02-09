@@ -1,17 +1,36 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (W) 2013 Roman Votyakov
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  *
  * Based on ideas from GAUSSIAN PROCESS REGRESSION AND CLASSIFICATION Toolbox
- * Copyright (C) 2005-2013 by Carl Edward Rasmussen & Hannes Nickisch under the
- * FreeBSD License
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-
 #include <shogun/machine/gp/EPInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
@@ -64,6 +83,19 @@ void CEPInferenceMethod::init()
 	m_tol=1e-4;
 }
 
+CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_EP)
+		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CEPInferenceMethod*)inference;
+}
+
 float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
@@ -98,18 +130,29 @@ SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 
 SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
 SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
+}
+
+void CEPInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		// update matrices to compute derivatives
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
 }
 
 void CEPInferenceMethod::update()
@@ -136,7 +179,7 @@ void CEPInferenceMethod::update()
 
 	// get and scale diagonal of the kernel matrix
 	SGVector<float64_t> ktrtr_diag=m_ktrtr.get_diagonal_vector();
-	ktrtr_diag.scale(CMath::sq(m_scale));
+	ktrtr_diag.scale(CMath::exp(m_log_scale*2.0));
 
 	// marginal likelihood for ttau = tnu = 0
 	float64_t nlZ0=-SGVector<float64_t>::sum(m_model->get_log_zeroth_moments(
@@ -159,7 +202,7 @@ void CEPInferenceMethod::update()
 		// copy data manually, since we don't have appropriate method
 		for (index_t i=0; i<m_ktrtr.num_rows; i++)
 			for (index_t j=0; j<m_ktrtr.num_cols; j++)
-				m_Sigma(i,j)=m_ktrtr(i,j)*CMath::sq(m_scale);
+				m_Sigma(i,j)=m_ktrtr(i,j)*CMath::exp(m_log_scale);
 
 		CREATE_SGVECTOR(m_mu, n, float64_t);
 		m_mu.zero();
@@ -256,8 +299,7 @@ void CEPInferenceMethod::update()
 	// update vector alpha
 	update_alpha();
 
-	// update matrices to compute derivatives
-	update_deriv();
+	m_gradient_update=false;
 
 	// update hash of the parameters
 	update_parameter_hash();
@@ -279,7 +321,7 @@ void CEPInferenceMethod::update_alpha()
 
 	// solve LL^T * v = tS^(1/2) * K * tnu
 	VectorXd eigen_v=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sttau.cwiseProduct(eigen_K*CMath::sq(m_scale)*eigen_tnu));
+			eigen_sttau.cwiseProduct(eigen_K*CMath::exp(m_log_scale*2.0)*eigen_tnu));
 	eigen_v=eigen_L.triangularView<Upper>().solve(eigen_v);
 
 	// compute alpha = (I - tS^(1/2) * B^(-1) * tS(1/2) * K) * tnu =
@@ -302,7 +344,7 @@ void CEPInferenceMethod::update_chol()
 	// compute upper triangular factor L^T of the Cholesky decomposion of the
 	// matrix: B = tS^(1/2) * K * tS^(1/2) + I
 	LLT<MatrixXd> eigen_chol((eigen_sttau*eigen_sttau.adjoint()).cwiseProduct(
-			eigen_K*CMath::sq(m_scale))+
+			eigen_K*CMath::exp(m_log_scale*2.0))+
 			MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
 
 	eigen_L=eigen_chol.matrixU();
@@ -322,13 +364,13 @@ void CEPInferenceMethod::update_approx_cov()
 
 	// compute V = L^(-1) * tS^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sttau.asDiagonal()*eigen_K*CMath::sq(m_scale));
+			eigen_sttau.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 
 	// compute covariance matrix of the posterior:
 	// Sigma = K - K * tS^(1/2) * (L * L^T)^(-1) * tS^(1/2) * K =
 	// K - (K * tS^(1/2)) * (L^T)^(-1) * L^(-1) * tS^(1/2) * K =
 	// K - (tS^(1/2) * K)^T * (L^(-1))^T * L^(-1) * tS^(1/2) * K = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
 }
 
 void CEPInferenceMethod::update_approx_mean()
@@ -424,7 +466,7 @@ void CEPInferenceMethod::update_deriv()
 SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -434,7 +476,8 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
 	SGVector<float64_t> result(1);
 
 	// compute derivative wrt kernel scale: dnlZ=-sum(F.*K*scale*2)/2
-	result[0]=-(eigen_F.cwiseProduct(eigen_K)*m_scale*2.0).sum()/2.0;
+	result[0]=-(eigen_F.cwiseProduct(eigen_K)).sum();
+	result[0]*=CMath::exp(m_log_scale*2.0);
 
 	return result;
 }
@@ -452,19 +495,10 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of the matrix Q
 	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
 
+	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -478,7 +512,8 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
 		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 
 		// compute derivative wrt kernel parameter: dnlZ=-sum(F.*dK*scale^2)/2.0
-		result[i]=-(eigen_F.cwiseProduct(eigen_dK)*CMath::sq(m_scale)).sum()/2.0;
+		result[i]=-(eigen_F.cwiseProduct(eigen_dK)).sum();
+		result[i]*=CMath::exp(m_log_scale*2.0)/2.0;
 	}
 
 	return result;

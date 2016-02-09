@@ -41,6 +41,7 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
+#ifdef HAVE_FDOPEN
 CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
 {
 	file=fdopen(fd, mode);
@@ -51,6 +52,7 @@ CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
 	if (name)
 		set_variable_name(name);
 }
+#endif
 
 CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 {

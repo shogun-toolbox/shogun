@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -47,8 +47,8 @@ namespace shogun
 {
 template<class C> class SGMatrix;
 
-/** @brief Class that models Student's T likelihood and 
- * uses numerical integration to approximate 
+/** @brief Class that models Student's T likelihood and
+ * uses numerical integration to approximate
  * the following variational expection of log likelihood
  * \f[
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
@@ -86,9 +86,9 @@ private:
 	void init();
 
 	/** scale parameter */
-	float64_t m_sigma;
+	float64_t m_log_sigma;
 	/** degrees of freedom */
-	float64_t m_df;
+	float64_t m_log_df;
 
 };
 }

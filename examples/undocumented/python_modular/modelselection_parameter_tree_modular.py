@@ -18,6 +18,7 @@ def modelselection_parameter_tree_modular (dummy):
     from modshogun import GaussianKernel
     from modshogun import DistantSegmentsKernel
     from modshogun import MinkowskiMetric
+    import math
 
     root=ModelSelectionParameters()
 
@@ -65,8 +66,8 @@ def modelselection_parameter_tree_modular (dummy):
 
     root.append_child(param_gaussian_kernel)
 
-    param_gaussian_kernel_width=ModelSelectionParameters('width')
-    param_gaussian_kernel_width.build_values(1, 2, R_EXP)
+    param_gaussian_kernel_width=ModelSelectionParameters('log_width')
+    param_gaussian_kernel_width.build_values(0.0, 0.5*math.log(2.0), R_LINEAR)
     param_gaussian_kernel.append_child(param_gaussian_kernel_width)
 
     ds_kernel=DistantSegmentsKernel()

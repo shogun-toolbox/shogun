@@ -10,9 +10,9 @@
 #ifndef _DIRECTORDISTANCE_H___
 #define _DIRECTORDISTANCE_H___
 
-#ifdef USE_SWIG_DIRECTORS
-
 #include <shogun/lib/config.h>
+
+#ifdef USE_SWIG_DIRECTORS
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>

@@ -56,19 +56,19 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t sum=0.0 ;
 	for (int32_t i=0; i<alen; i++)
 		sum+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
-	result += exp(-sum/width) ;
+	result += exp(-sum/get_width()) ;
 
 	for (int32_t shift = shift_step, s=1; shift<max_shift; shift+=shift_step, s++)
 	{
 		sum=0.0 ;
 		for (int32_t i=0; i<alen-shift; i++)
 			sum+=(avec[i+shift]-bvec[i])*(avec[i+shift]-bvec[i]);
-		result += exp(-sum/width)/(2*s) ;
+		result += exp(-sum/get_width())/(2*s) ;
 
 		sum=0.0 ;
 		for (int32_t i=0; i<alen-shift; i++)
 			sum+=(avec[i]-bvec[i+shift])*(avec[i]-bvec[i+shift]);
-		result += exp(-sum/width)/(2*s) ;
+		result += exp(-sum/get_width())/(2*s) ;
 	}
 
 	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);

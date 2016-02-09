@@ -111,11 +111,11 @@ public:
 	 * \sum_{i=1}^{64} w_if(x_i)
 	 * \f]
 	 *
-	 * where x_i and w_i - ith node and weight for the provided 
+	 * where x_i and w_i - ith node and weight for the provided
 	 * Gauss-Hermite formula respectively.
 	 *
 	 * @param f integrable function of one variable
-	 * @param x the provided array of nodes  
+	 * @param x the provided array of nodes
 	 * @param w the provided array of weights
 	 *
 	 * @return approximate value of the
@@ -131,7 +131,7 @@ public:
 	 * Adapted form Gaussian Process Machine Learning Toolbox
 	 * (file util/gauher.m)
 	 *
-	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param xgh nodes are saved in this pre-allocated array
 	 * @param wgh weights are saved in this pre-allocated array
 	 *
 	 */
@@ -143,7 +143,7 @@ public:
 	 * Adapted form Gaussian Process Machine Learning Toolbox
 	 * (file util/gauher.m)
 	 *
-	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param xgh nodes are saved in this pre-allocated array
 	 * @param wgh weights are saved in this pre-allocated array
 	 *
 	 */

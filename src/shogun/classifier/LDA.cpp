@@ -46,11 +46,11 @@ void CLDA::init()
 {
 	m_method=AUTO_LDA;
 	m_gamma=0;
-	SG_ADD((machine_int_t*) &m_method, "m_method", 
+	SG_ADD((machine_int_t*) &m_method, "m_method",
 		"Method used for LDA calculation", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_gamma, "m_gamma", 
+	SG_ADD((machine_int_t*) &m_gamma, "m_gamma",
 		"Regularization parameter", MS_NOT_AVAILABLE);
-} 
+}
 
 CLDA::~CLDA()
 {
@@ -91,7 +91,7 @@ bool CLDA::train_machine(CFeatures *data)
 	{
 		if (train_labels.vector[i]==-1)
 			classidx_neg[num_neg++]=i;
-		
+
 		else if(train_labels.vector[i]==+1)
 			classidx_pos[num_pos++]=i;
 	}
@@ -103,7 +103,7 @@ bool CLDA::train_machine(CFeatures *data)
 	mean_neg=VectorXd::Zero(num_feat);
 	VectorXd mean_pos(num_feat);
 	mean_pos=VectorXd::Zero(num_feat);
-	
+
 	//mean neg
 	for(i=0; i<num_neg; i++)
 		mean_neg+=fmatrix.col(classidx_neg[i]);
@@ -189,7 +189,7 @@ bool CLDA::train_machine(CFeatures *data)
 		//total mean
 		VectorXd mean_total=(num_pos*mean_pos+num_neg*mean_neg)/(float64_t)num_vec;
 
-		//between class matrix 
+		//between class matrix
 		MatrixXd Sb(num_feat,2);
 		Sb.col(0)=sqrt(num_pos)*(mean_pos-mean_total);
 		Sb.col(1)=sqrt(num_neg)*(mean_neg-mean_total);
@@ -197,10 +197,10 @@ bool CLDA::train_machine(CFeatures *data)
 		JacobiSVD<MatrixXd> svd(fmatrix1, ComputeThinU);
 
 		// basis to represent the solution
-		MatrixXd Q=svd.matrixU(); 
+		MatrixXd Q=svd.matrixU();
 		// modified between class scatter
 		Sb=Q.transpose()*(Sb*(Sb.transpose()))*Q;
-		
+
 		// modified within class scatter
 		Sw=Q.transpose()*Sw*Q;
 
@@ -222,7 +222,7 @@ bool CLDA::train_machine(CFeatures *data)
 		x=Q*(svd2.matrixU().col(0));
 		// get the bias
 		bias=(x.transpose()*mean_total);
-		bias=bias*(-1); 
+		bias=bias*(-1);
 	}
 	return true;
 }

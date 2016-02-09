@@ -51,6 +51,30 @@ SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 }
 
 template <class T>
+SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
+{
+	REQUIRE(vec.vector, "Vector not initialized!\n");
+	matrix=vec.vector;
+	num_rows=vec.vlen;
+	num_cols=1;
+}
+
+template <class T>
+SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
+: SGReferencedData(vec)
+{
+	REQUIRE(vec.vector, "Vector not initialized!\n");
+	REQUIRE(nrows>0, "Number of rows (%d) has to be a positive integer!\n", nrows);
+	REQUIRE(ncols>0, "Number of cols (%d) has to be a positive integer!\n", ncols);
+	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix (%d) must "
+			"be the same as the number of elements in the vector (%d)!\n",
+			nrows*ncols, vec.vlen);
+	matrix=vec.vector;
+	num_rows=nrows;
+	num_cols=ncols;
+}
+
+template <class T>
 SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 {
 	copy_data(orig);
@@ -59,13 +83,13 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 #ifdef HAVE_EIGEN3
 template <class T>
 SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
-: SGReferencedData(false), matrix(mat.data()), 
+: SGReferencedData(false), matrix(mat.data()),
 	num_rows(mat.rows()), num_cols(mat.cols())
 {
 
 }
 
-template <class T> 
+template <class T>
 SGMatrix<T>::operator EigenMatrixXtMap() const
 {
 	return EigenMatrixXtMap(matrix, num_rows, num_cols);

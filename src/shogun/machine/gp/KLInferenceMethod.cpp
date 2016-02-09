@@ -153,6 +153,19 @@ CKLInferenceMethod::~CKLInferenceMethod()
 {
 }
 
+void CKLInferenceMethod::compute_gradient()
+{
+	CInferenceMethod::compute_gradient();
+
+	if (!m_gradient_update)
+	{
+		update_approx_cov();
+		update_deriv();
+		m_gradient_update=true;
+		update_parameter_hash();
+	}
+}
+
 void CKLInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
@@ -161,8 +174,7 @@ void CKLInferenceMethod::update()
 	update_init();
 	update_alpha();
 	update_chol();
-	update_approx_cov();
-	update_deriv();
+	m_gradient_update=false;
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
@@ -204,7 +216,7 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 	eigen_K=eigen_K+m_noise_factor*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	Eigen::LDLT<Eigen::MatrixXd> ldlt;
-	ldlt.compute(eigen_K*CMath::sq(m_scale));
+	ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
 
 	float64_t attempt_count=0;
 	MatrixXd Kernel_D=ldlt.vectorD();
@@ -221,25 +233,24 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 		noise_factor*=m_exp_factor;
 		//updat the noise  eigen_K=eigen_K+noise_factor*(m_exp_factor^attempt_count)*Identity()
 		eigen_K=eigen_K+(noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
-		ldlt.compute(eigen_K*CMath::sq(m_scale));
+		ldlt.compute(eigen_K*CMath::exp(m_log_scale*2.0));
 		Kernel_D=ldlt.vectorD();
 	}
 
 	return ldlt;
 }
 
+
 SGVector<float64_t> CKLInferenceMethod::get_posterior_mean()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGVector<float64_t>(m_mu);
 }
 
 SGMatrix<float64_t> CKLInferenceMethod::get_posterior_covariance()
 {
-	if (parameter_hash_changed())
-		update();
+	compute_gradient();
 
 	return SGMatrix<float64_t>(m_Sigma);
 }
@@ -319,7 +330,7 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
-	
+
 	return get_negative_log_marginal_likelihood_helper();
 }
 
@@ -344,20 +355,10 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_mean(const TParameter
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
 
+	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -409,36 +410,26 @@ float64_t CKLInferenceMethod::lbfgs_optimization()
 
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_inference_method(const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	// compute derivative K wrt scale
-	MatrixXd eigen_dK=eigen_K*m_scale*2.0;
 
 	SGVector<float64_t> result(1);
 
-	result[0]=get_derivative_related_cov(eigen_dK);
+	result[0]=get_derivative_related_cov(m_ktrtr);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 
 	return result;
 }
 
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParameter* param)
 {
+	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -450,9 +441,8 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParamet
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
-
-		result[i]=get_derivative_related_cov(eigen_dK*CMath::sq(m_scale));
+		result[i]=get_derivative_related_cov(dK);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;

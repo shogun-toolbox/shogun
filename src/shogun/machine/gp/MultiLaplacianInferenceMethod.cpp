@@ -59,7 +59,7 @@ namespace shogun
 class CMultiPsiLine : public func_base
 {
 public:
-	float64_t scale;
+	float64_t log_scale;
 	MatrixXd K;
 	VectorXd dalpha;
 	VectorXd start_alpha;
@@ -83,7 +83,7 @@ public:
 		float64_t result=0;
 		for(index_t bl=0; bl<C; bl++)
 		{
-			eigen_f.block(bl*n,0,n,1)=K*alpha->block(bl*n,0,n,1)*CMath::sq(scale);
+			eigen_f.block(bl*n,0,n,1)=K*alpha->block(bl*n,0,n,1)*CMath::exp(log_scale*2.0);
 			result+=alpha->block(bl*n,0,n,1).dot(eigen_f.block(bl*n,0,n,1))/2.0;
 			eigen_f.block(bl*n,0,n,1)+=eigen_m;
 		}
@@ -158,6 +158,20 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_likelihoo
 	return SGVector<float64_t> ();
 }
 
+CMultiLaplacianInferenceMethod* CMultiLaplacianInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_LAPLACIAN_MULTIPLE)
+		SG_SERROR("Provided inference is not of type CMultiLaplacianInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CMultiLaplacianInferenceMethod*)inference;
+}
+
+
 void CMultiLaplacianInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K
@@ -174,8 +188,8 @@ void CMultiLaplacianInferenceMethod::update_approx_cov()
 	MatrixXd eigen_U(C*n,n);
 	for(index_t bl=0; bl<C; bl++)
 	{
-		eigen_U.block(bl*n,0,n,n)=eigen_K*CMath::sq(m_scale)*eigen_E.block(0,bl*n,n,n);
-		eigen_Sigma.block(bl*n,bl*n,n,n)=(MatrixXd::Identity(n,n)-eigen_U.block(bl*n,0,n,n))*(eigen_K*CMath::sq(m_scale));
+		eigen_U.block(bl*n,0,n,n)=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_E.block(0,bl*n,n,n);
+		eigen_Sigma.block(bl*n,bl*n,n,n)=(MatrixXd::Identity(n,n)-eigen_U.block(bl*n,0,n,n))*(eigen_K*CMath::exp(m_log_scale*2.0));
 	}
 	MatrixXd eigen_V=eigen_M.triangularView<Upper>().adjoint().solve(eigen_U.transpose());
 	eigen_Sigma+=eigen_V.transpose()*eigen_V;
@@ -246,7 +260,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 	{
 		Map<VectorXd> alpha(m_alpha.vector, m_alpha.vlen);
 		for(index_t bl=0; bl<C; bl++)
-			eigen_mu.block(bl*n,0,n,1)=eigen_ktrtr*CMath::sq(m_scale)*alpha.block(bl*n,0,n,1);
+			eigen_mu.block(bl*n,0,n,1)=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*alpha.block(bl*n,0,n,1);
 
 		//alpha'*(f-m)/2.0
 		Psi_New=alpha.dot(eigen_mu)/2.0;
@@ -291,7 +305,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		for(index_t bl=0; bl<C; bl++)
 		{
 			VectorXd eigen_sD=eigen_dpi.block(bl*n,0,n,1).cwiseSqrt();
-			LLT<MatrixXd> chol_tmp((eigen_sD*eigen_sD.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+			LLT<MatrixXd> chol_tmp((eigen_sD*eigen_sD.transpose()).cwiseProduct(eigen_ktrtr*CMath::exp(m_log_scale*2.0))+
 				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 			MatrixXd eigen_L_tmp=chol_tmp.matrixU();
 			MatrixXd eigen_E_bl=eigen_L_tmp.triangularView<Upper>().adjoint().solve(MatrixXd(eigen_sD.asDiagonal()));
@@ -319,7 +333,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 
 		Map<VectorXd> &eigen_c=eigen_W;
 		for(index_t bl=0; bl<C; bl++)
-			eigen_c.block(bl*n,0,n,1)=eigen_E.block(0,bl*n,n,n)*(eigen_ktrtr*CMath::sq(m_scale)*eigen_b.block(bl*n,0,n,1));
+			eigen_c.block(bl*n,0,n,1)=eigen_E.block(0,bl*n,n,n)*(eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_b.block(bl*n,0,n,1));
 
 		Map<MatrixXd> c_tmp(eigen_c.data(),n,C);
 
@@ -332,7 +346,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		// perform Brent's optimization
 		CMultiPsiLine func;
 
-		func.scale=m_scale;
+		func.log_scale=m_log_scale;
 		func.K=eigen_ktrtr;
 		func.dalpha=eigen_dalpha;
 		func.start_alpha=eigen_alpha;
@@ -348,6 +362,10 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 		m_nlz+=Psi_New;
 	}
 
+	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
+	{
+		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+	}
 }
 
 void CMultiLaplacianInferenceMethod::update_deriv()
@@ -385,7 +403,7 @@ float64_t CMultiLaplacianInferenceMethod::get_derivative_helper(SGMatrix<float64
 SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
-	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
 			"the nagative log marginal likelihood wrt %s.%s parameter\n",
 			get_name(), param->m_name)
 
@@ -393,13 +411,10 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference
 
 	SGVector<float64_t> result(1);
 
-	SGMatrix<float64_t> dK(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
-
 	// compute derivative K wrt scale
-	eigen_dK=eigen_K*m_scale*2.0;
 
-	result[0]=get_derivative_helper(dK);
+	result[0]=get_derivative_helper(m_ktrtr);
+	result[0]*=CMath::exp(m_log_scale*2.0)*2.0;
 
 	return result;
 }
@@ -410,19 +425,10 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
 	// create eigen representation of K, Z, dfhat, dlp and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
+	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -433,10 +439,8 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
-		eigen_dK=eigen_dK*CMath::sq(m_scale);
-
 		result[i]=get_derivative_helper(dK);
+		result[i]*=CMath::exp(m_log_scale*2.0);
 	}
 
 	return result;
@@ -451,19 +455,10 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
+	REQUIRE(param, "Param not set\n");
 	SGVector<float64_t> result;
-
-	if (param->m_datatype.m_ctype==CT_VECTOR ||
-			param->m_datatype.m_ctype==CT_SGVECTOR)
-	{
-		REQUIRE(param->m_datatype.m_length_y,
-				"Length of the parameter %s should not be NULL\n", param->m_name)
-		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
-	}
-	else
-	{
-		result=SGVector<float64_t>(1);
-	}
+	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
+	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
 	{
@@ -484,6 +479,25 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 	return result;
 }
+
+SGVector<float64_t> CMultiLaplacianInferenceMethod::get_posterior_mean()
+{
+	compute_gradient();
+
+	SGVector<float64_t> res(m_mu.vlen);
+	Map<VectorXd> eigen_res(res.vector, res.vlen);
+	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_mean_bl(mean.vector, mean.vlen);
+	VectorXd eigen_mean=eigen_mean_bl.replicate(C,1);
+
+	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
+	eigen_res=eigen_mu-eigen_mean;
+
+	return res;
+}
+
 
 }
 

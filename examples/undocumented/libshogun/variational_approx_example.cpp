@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * https://github.com/emtiyaz/VariationalApproxExample
  * and the reference paper is
  * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
@@ -51,7 +51,7 @@
 
 using namespace shogun;
 
-//init the variational Piecewise bound 
+//init the variational Piecewise bound
 SGMatrix<float64_t> init_piecewise_bound(const char * fname)
 {
 	SGMatrix<float64_t> bound;
@@ -94,7 +94,7 @@ SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample,
 
 	REQUIRE(num_sample % 2 == 0, "For this example we assume the num_sample is even");
 	/*
-	//X = [5*rand(N/2,D); -5*rand(N/2,D)]; 
+	//X = [5*rand(N/2,D); -5*rand(N/2,D)];
 	//The following code is used to generate synthetic data
 	SGMatrix<float64_t> X(num_sample,num_dim);
 	for(index_t i = 0; i < num_sample; i++)
@@ -171,7 +171,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 }
 
 //The following struct is used to pass information when using the build-in L-BFGS component
-struct Shared 
+struct Shared
 {
 	CLogitVGPiecewiseBoundLikelihood *lik;
 	SGVector<float64_t> y;
@@ -220,7 +220,7 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 	Eigen::Map<Eigen::VectorXd> eigen_m(obj_prt->m0.vector, obj_prt->m0.vlen);
 
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get fi at here
-	SGVector<float64_t> fi = obj_prt->lik->get_variational_expection(); 
+	SGVector<float64_t> fi = obj_prt->lik->get_variational_expection();
 
 	TParameter* mu_param = obj_prt->lik->m_parameters->get_parameter("mu");
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get gmi at here
@@ -242,9 +242,9 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 	Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient, dim);
 	//get the gradient based on the current variable
 	Eigen::Map<Eigen::VectorXd> eigen_gmi(gmi.vector, gmi.vlen);
-	//g = -g + gmi; 
+	//g = -g + gmi;
 	//g = -g;
-	eigen_gradient = eigen_g - eigen_gmi; 
+	eigen_gradient = eigen_g - eigen_gmi;
 
 	//f = -f;
 	return -f;
@@ -260,7 +260,7 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 
 	Shared obj;
 
-	//X = [5*rand(N/2,D); -5*rand(N/2,D)]; 
+	//X = [5*rand(N/2,D); -5*rand(N/2,D)];
 	obj.data = create_feature(x_file, num_sample, num_dim);
 
 	//if we read from file
@@ -300,7 +300,7 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 	//'TolX', 1e-4);
 	obj.lbfgs_param = inti_lbfgs_parameters();
 
-	//load('llp.mat'); 
+	//load('llp.mat');
 	obj.bound = init_piecewise_bound(bound_file);
 	obj.lik = new CLogitVGPiecewiseBoundLikelihood();
 	obj.lik->set_variational_bound(obj.bound);
@@ -372,7 +372,7 @@ void test_datasets()
 	}
 
 	fclose(pfile);
-	
+
 	for (index_t i = 4; i <= 6; i++)
 	{
 		snprintf(x_path_buffer, buff_size, "%s/X_dataset%d", data_path, i);

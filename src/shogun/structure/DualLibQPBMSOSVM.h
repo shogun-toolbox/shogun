@@ -211,7 +211,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 					"solution must match the model's dimension!\n");
 			m_w=W;
 		}
-		
+
 		/** set enableing/disabling storing training information
 		 *
 		 * @param store_train_info		Flag enabling/disabling storing training information,
@@ -221,7 +221,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		{
 			m_store_train_info=store_train_info;
 		}
-		
+
 		/** get classifier type
 		 *
 		 * @return classifier type CT_LIBQPSOSVM

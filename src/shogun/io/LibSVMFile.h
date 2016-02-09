@@ -189,7 +189,7 @@ public:
 			SGSparseVector<floatmax_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 			SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	//@}
-	
+
 	/** @name Sparse Matrix Access Functions
 	 *
 	 * Functions to access sparse matrices of one of the several base data types.

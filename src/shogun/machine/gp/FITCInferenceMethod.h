@@ -4,22 +4,24 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2015 Wu Lin
  * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
+ * Copyright (C) 2015 Wu Lin
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#ifndef CFITCINFERENCEMETHOD_H_
-#define CFITCINFERENCEMETHOD_H_
+#ifndef CFITCINFERENCEMETHOD_H
+#define CFITCINFERENCEMETHOD_H
 
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
 namespace shogun
 {
@@ -27,7 +29,7 @@ namespace shogun
 /** @brief The Fully Independent Conditional Training inference method class.
  *
  * This inference method computes the Cholesky and Alpha vectors approximately
- * with the help of latent variables. For more details, see "Sparse Gaussian
+ * with the help of inducing variables. For more details, see "Sparse Gaussian
  * Process using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani, NIPS 18, MIT
  * Press, 2005.
  *
@@ -36,8 +38,20 @@ namespace shogun
  *
  * NOTE: The Gaussian Likelihood Function must be used for this inference
  * method.
+ *
+ * Note that the number of inducing points (m) is usually far less than the number of input points (n).
+ * (the time complexity is computed based on the assumption m < n)
+ *
+ * Warning: the time complexity of method,
+ * CSingleFITCLaplacianBase::get_derivative_wrt_kernel(const TParameter* param),
+ * depends on the implementation of virtual kernel method,
+ * CKernel::get_parameter_gradient_diagonal(param, i).
+ * The default time complexity of the kernel method can be O(n^2)
+ *
+ * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
+ * CFITCInferenceMethod::get_posterior_covariance() is called
  */
-class CFITCInferenceMethod: public CInferenceMethod
+class CFITCInferenceMethod: public CSingleFITCLaplacianBase
 {
 public:
 	/** default constructor */
@@ -50,19 +64,13 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
-	 * @param latent_features features to use
+	 * @param inducing_features features to use
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* latent_features);
+			CFeatures* inducing_features);
 
 	virtual ~CFITCInferenceMethod();
-
-	/** return what type of inference we are
-	 *
-	 * @return inference type FITC
-	 */
-	virtual EInferenceType get_inference_type() const { return INF_FITC; }
 
 	/** returns the name of the inference method
 	 *
@@ -70,33 +78,18 @@ public:
 	 */
 	virtual const char* get_name() const { return "FITCInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type FITC_REGRESSION
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_FITC_REGRESSION; }
+
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
 	 * @return casted CFITCInferenceMethod object
 	 */
 	static CFITCInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
-
-	/** set latent features
-	 *
-	 * @param feat features to set
-	 */
-	virtual void set_latent_features(CFeatures* feat)
-	{
-		SG_REF(feat);
-		SG_UNREF(m_latent_features);
-		m_latent_features=feat;
-	}
-
-	/** get latent features
-	 *
-	 * @return features
-	 */
-	virtual CFeatures* get_latent_features()
-	{
-		SG_REF(m_latent_features);
-		return m_latent_features;
-	}
 
 	/** get negative log marginal likelihood
 	 *
@@ -111,30 +104,6 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood();
 
-	/** get alpha vector
-	 *
-	 * @return vector to compute posterior mean of Gaussian Process:
-	 *
-	 * \f[
-	 * \mu = K\alpha
-	 * \f]
-	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
-	 */
-	virtual SGVector<float64_t> get_alpha();
-
-	/** get Cholesky decomposition matrix
-	 *
-	 * @return Cholesky decomposition of matrix:
-	 *
-	 * \f[
-	 * L = Cholesky(sW*K*sW+I)
-	 * \f]
-	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
-	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
-	 */
-	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
@@ -148,6 +117,17 @@ public:
 	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
+
+	/**
+	 * @return whether combination of FITC inference method and given likelihood
+	 * function supports regression
+	 */
+	virtual bool supports_regression() const
+	{
+		check_members();
+		return m_model->supports_regression();
+	}
+
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -183,19 +163,8 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_covariance();
 
-	/**
-	 * @return whether combination of FITC inference method and given likelihood
-	 * function supports regression
-	 */
-	virtual bool supports_regression() const
-	{
-		check_members();
-		return m_model->supports_regression();
-	}
-
 	/** update all matrices */
 	virtual void update();
-
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -206,23 +175,10 @@ protected:
 	/** update cholesky Matrix.*/
 	virtual void update_chol();
 
-	/** update train kernel matrix */
-	virtual void update_train_kernel();
-
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
 	virtual void update_deriv();
-
-	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
-	 *
-	 * @param param parameter of CInferenceMethod class
-	 *
-	 * @return derivative of negative log marginal likelihood
-	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			const TParameter* param);
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -234,52 +190,14 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
 			const TParameter* param);
 
-	/** returns derivative of negative log marginal likelihood wrt kernel's
-	 * parameter
-	 *
-	 * @param param parameter of given kernel
-	 *
-	 * @return derivative of negative log marginal likelihood
-	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			const TParameter* param);
-
-	/** returns derivative of negative log marginal likelihood wrt mean
-	 * function's parameter
-	 *
-	 * @param param parameter of given mean function
-	 *
-	 * @return derivative of negative log marginal likelihood
-	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			const TParameter* param);
-
-private:
-	void init();
-
-private:
-	/** latent features for approximation */
-	CFeatures* m_latent_features;
-
-	/** noise of the latent variables */
-	float64_t m_ind_noise;
-
-	/** Cholesky of covariance of latent features */
+	/** update gradients */
+	virtual void compute_gradient();
+protected:
+	/** Cholesky of covariance of inducing features */
 	SGMatrix<float64_t> m_chol_uu;
 
-	/** Cholesky of covariance of latent features and training features */
+	/** Cholesky of covariance of inducing features and training features */
 	SGMatrix<float64_t> m_chol_utr;
-
-	/** covariance matrix of latent features */
-	SGMatrix<float64_t> m_kuu;
-
-	/** covariance matrix of latent features and training features */
-	SGMatrix<float64_t> m_ktru;
-
-	/** diagonal of training kernel matrix + noise - diagonal of the matrix
-	 * (m_chol_uu^{-1}*m_ktru)* (m_chol_uu^(-1)*m_ktru)' = V*V'
-	 */
-	SGVector<float64_t> m_dg;
 
 	/** labels adjusted for noise and means */
 	SGVector<float64_t> m_r;
@@ -287,14 +205,9 @@ private:
 	/** solves the equation V * r = m_chol_utr */
 	SGVector<float64_t> m_be;
 
-	SGVector<float64_t> m_al;
-
-	SGMatrix<float64_t> m_B;
-
-	SGVector<float64_t> m_w;
-
-	SGMatrix<float64_t> m_W;
+private:
+	void init();
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* CFITCINFERENCEMETHOD_H_ */
+#endif /* CFITCINFERENCEMETHOD_H */

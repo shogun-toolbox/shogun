@@ -1,33 +1,33 @@
 /*
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
- * 1. Redistributions of source code must retain the above copyright notice, 
+ * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its 
- * contributors may be used to endorse or promote products derived from this 
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from this
  * software without specific prior written permission.
 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * Written (W) 2014 Abhijeet Kislay
  */
 
@@ -48,8 +48,8 @@ namespace shogun
 	/** Matrix decomposition method for Fisher LDA */
 	enum EFLDAMethod
 	{
-		/** if N>D then ::CLASSIC_FLDA is chosen automatically else ::CANVAR_FLDA is chosen 
-		 * (D-dimensions N-number of vectors) 
+		/** if N>D then ::CLASSIC_FLDA is chosen automatically else ::CANVAR_FLDA is chosen
+		 * (D-dimensions N-number of vectors)
 		 */
 		AUTO_FLDA = 10,
 		/** Cannonical Variable based FLDA. */
@@ -61,7 +61,7 @@ namespace shogun
 	/** @brief Preprocessor FisherLDA attempts to model the difference between the classes
 	 * of data by performing linear discriminant analysis on input feature vectors/matrices.
 	 * When the init method in FisherLDA is called with proper feature matrix X(say N number
-	 * of vectors and D feature dimensions) supplied via apply_to_feature_matrix or 
+	 * of vectors and D feature dimensions) supplied via apply_to_feature_matrix or
 	 * apply_to_feature_vector methods, this creates a transformation whose outputs are the
 	 * reduced T-Dimensional & class-specific distribution (where T<= number of unique
 	 * classes-1). The transformation matrix is essentially a DxT matrix, the columns of
@@ -70,7 +70,7 @@ namespace shogun
 	 *
 	 * This class provides 3 method options to compute the transformation matrix :
 	 *
-	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the 
+	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the
 	 * between-class scatter and the within class scatter is maximized.
 	 * The between class matrix is :
 	 * \f$\sum_b = \sum_{i=1}^C{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}\f$
@@ -78,15 +78,15 @@ namespace shogun
 	 * \f$\sum_w = \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
 	 * This should be choosen when N>D
 	 *
-	 * <em>::CANVAR_FLDA</em> : This method performs Canonical Variates which 
-	 * generalises Fisher's method to projection of more than one dimension. 
+	 * <em>::CANVAR_FLDA</em> : This method performs Canonical Variates which
+	 * generalises Fisher's method to projection of more than one dimension.
 	 * This is equipped to handle the cases where the within class matrix
 	 * are non-invertible. Can be used for both cases(D>N or D<N). See the
 	 * implementation in Bayesian Reasoning and Machine Learning by David Barber
 	 * , Section 16.3
 	 *
 	 *
-	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on 
+	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on
 	 * whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses ::CLASSIC_FLDA)
 	 */
 class CFisherLDA: public CDimensionReductionPreprocessor
@@ -104,31 +104,31 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		/** destructor */
 		virtual ~CFisherLDA();
 
-		/** initialize preprocessor from features and corresponding labels
+		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
-		 * @param labels of the given features which will be used here to find 
+		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
 		 * @param dimensions number of dimensions to retain
 		 */
-		virtual bool init(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
+		virtual bool fit(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
 
 		/** cleanup */
 		virtual void cleanup();
 
 		/** apply preprocessor to feature matrix
-		 * @param features on which the learned tranformation has to be applied. 
+		 * @param features on which the learned tranformation has to be applied.
 		 * Sometimes it is also referred as projecting the given features.
 		 * @return processed feature matrix with reduced dimensions.
 		 */
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
- 
+
 		/** apply preprocessor to feature vector
-		 * @param features on which the learned transformation has to be applied. 
+		 * @param features on which the learned transformation has to be applied.
 		 * @return processed feature vector with reduced dimensions.
 		 */
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
-		/** @return get transformation matrix which contains the required number of eigenvectors 
+		/** @return get transformation matrix which contains the required number of eigenvectors
 		*/
 		SGMatrix<float64_t> get_transformation_matrix();
 
@@ -145,10 +145,13 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 
 		/** @return a type of preprocessor */
 		virtual EPreprocessorType get_type() const {return P_FISHERLDA;}
- 
+
+	private:
+
+		void initialize_parameters();
+
 	protected:
 
-		void init();
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;
@@ -162,7 +165,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		SGVector<float64_t> m_mean_vector;
 		/** eigenvalues vector */
 		SGVector<float64_t> m_eigenvalues_vector;
-}; 
+};
 }
 #endif //HAVE_EIGEN3
 #endif //ifndef

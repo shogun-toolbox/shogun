@@ -53,7 +53,7 @@ TEST(SGNDArrayTest,constructor)
 	d_3[2] = 2;
 	SGNDArray<float64_t> arr_3(d_3);
 	EXPECT_EQ(arr_3.len_array, 8);
-	EXPECT_EQ(arr_3.num_dims, 3); 
+	EXPECT_EQ(arr_3.num_dims, 3);
 }
 
 TEST(SGNDArrayTest,setget)
@@ -211,7 +211,7 @@ TEST(SGNDArrayTest,expand)
 	SGNDArray<float64_t> arr_s(dims_s);
 	for (int i=0; i < 4; i++)
 		arr_s[i] = i;
-	
+
 	SGVector<index_t> dims_l(3);
 	dims_l[0] = 2;
 	dims_l[1] = 2;
@@ -231,7 +231,7 @@ TEST(SGNDArrayTest,expand)
 
 	float64_t val = arr_l.get_value(index);
 	EXPECT_EQ(val, 0);
-	
+
 	index[0] = 0;
 	index[1] = 0;
 	index[2] = 1;

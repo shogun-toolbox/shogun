@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -51,8 +51,8 @@ namespace shogun
 {
 template<class C> class SGMatrix;
 
-/** @brief Class that models likelihood and 
- * uses numerical integration to approximate 
+/** @brief Class that models likelihood and
+ * uses numerical integration to approximate
  * the following variational expection of log likelihood
  * \f[
  * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
@@ -82,7 +82,7 @@ public:
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels* lab);
 
-	/** returns the expection of the logarithm of a logit distribution 
+	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using numerical integration
 	 *
 	 * For each sample i, using Gaussian-Hermite quadrature to
@@ -139,7 +139,7 @@ private:
 
 	/** whether Gaussian-Hermite quadrature points are are initialized or not */
 	bool m_is_init_GHQ;
-	
+
 	/** initialize private data members for this class */
 	void init();
 

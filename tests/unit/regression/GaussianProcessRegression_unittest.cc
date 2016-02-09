@@ -1,16 +1,41 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (W) 2015 Wu Lin
  * Written (W) 2013 Roman Votyakov
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
+#include <shogun/machine/gp/GaussianARDSparseKernel.h>
+#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <shogun/machine/gp/ConstMean.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -19,6 +44,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
+#include <shogun/machine/gp/SparseVGInferenceMethod.h>
 
 using namespace shogun;
 
@@ -464,4 +490,253 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	SG_UNREF(gpr);
 }
 
-#endif
+TEST(GaussianProcessRegression,sparse_vg_regression)
+{
+	index_t n=6;
+	index_t dim=2;
+	index_t m=3;
+	float64_t abs_tolerance,rel_tolerance=1e-6;
+
+	SGMatrix<float64_t> feat_train(dim, n);
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0,0)=-0.81263;
+	feat_train(0,1)=-0.99976;
+	feat_train(0,2)=1.17037;
+	feat_train(0,3)=1.51752;
+	feat_train(0,4)=1.57765;
+	feat_train(0,5)=3.89440;
+
+	feat_train(1,0)=0.5;
+	feat_train(1,1)=0.4576;
+	feat_train(1,2)=5.17637;
+	feat_train(1,3)=2.56752;
+	feat_train(1,4)=4.57765;
+	feat_train(1,5)=2.89440;
+
+	lat_feat_train(0,0)=1.00000;
+	lat_feat_train(0,1)=3.00000;
+	lat_feat_train(0,2)=4.00000;
+
+	lat_feat_train(1,0)=3.00000;
+	lat_feat_train(1,1)=2.00000;
+	lat_feat_train(1,2)=-5.00000;
+
+	lab_train[0]=0.46;
+	lab_train[1]=0.7;
+	lab_train[2]=-1.16;
+	lab_train[3]=1.5;
+	lab_train[4]=3.5;
+	lab_train[5]=-5.0;
+
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	float64_t ell=log(2.0);
+	CKernel* kernel=new CGaussianKernel(10,2.0*exp(ell*2.0));
+
+
+	float64_t mean_weight=0.0;
+	CConstMean* mean=new CConstMean(mean_weight);
+
+	float64_t sigma=0.5;
+	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+
+	// specify GP regression with FITC inference
+	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+		mean, labels_train, lik, inducing_features_train);
+
+	float64_t ind_noise=1e-6;
+	inf->set_inducing_noise(ind_noise);
+
+	float64_t scale=1.5;
+	inf->set_scale(scale);
+
+	inf->enable_optimizing_inducing_features(false);
+
+	int32_t k=4;
+	SGMatrix<float64_t> feat_test(dim, k);
+	feat_test(0,0)=0.81263;
+	feat_test(0,1)=-0.9976;
+	feat_test(0,2)=0.17037;
+	feat_test(0,3)=0.5172;
+
+	feat_test(1,0)=0.5;
+	feat_test(1,1)=0.456;
+	feat_test(1,2)=3.1767;
+	feat_test(1,3)=1.5652;
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+
+	// train model
+	gpr->train();
+	SG_REF(features_test);
+	SGVector<float64_t> mean_vector=gpr->get_mean_vector(features_test);
+	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
+	SG_UNREF(features_test);
+	// comparison of mean and variance with result from varsgpv package:
+	// http://www.aueb.gr/users/mtitsias/code/varsgp.tar.gz
+	//mustar =
+	//-0.246280335053918
+	//0.781735233521474
+	//2.841201927903070
+	//1.072110958530009
+	//varstar =
+	//1.970193540002217
+	//2.341819379690606
+	//0.670229188503544
+	//1.293072726669006
+	
+	abs_tolerance = CMath::get_abs_tolerance(-0.246280335053918, rel_tolerance);
+	EXPECT_NEAR(mean_vector[0],  -0.246280335053918,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.781735233521474, rel_tolerance);
+	EXPECT_NEAR(mean_vector[1],  0.781735233521474,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.841201927903070, rel_tolerance);
+	EXPECT_NEAR(mean_vector[2],  2.841201927903070,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.072110958530009, rel_tolerance);
+	EXPECT_NEAR(mean_vector[3],  1.072110958530009,  abs_tolerance);
+
+	abs_tolerance = CMath::get_abs_tolerance(1.970193540002217, rel_tolerance);
+	EXPECT_NEAR(var_vector[0],  1.970193540002217,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(2.341819379690606, rel_tolerance);
+	EXPECT_NEAR(var_vector[1],  2.341819379690606,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.670229188503544, rel_tolerance);
+	EXPECT_NEAR(var_vector[2],  0.670229188503544,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(1.293072726669006, rel_tolerance);
+	EXPECT_NEAR(var_vector[3],  1.293072726669006,  abs_tolerance);
+	
+	// clean up
+	SG_UNREF(gpr);
+}
+
+#ifdef HAVE_LINALG_LIB
+TEST(GaussianProcessRegression,fitc_regression)
+{
+	index_t n=6;
+	index_t dim=2;
+	index_t m=3;
+
+	SGMatrix<float64_t> feat_train(dim, n);
+	SGMatrix<float64_t> lat_feat_train(dim, m);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0,0)=-0.81263;
+	feat_train(0,1)=-0.99976;
+	feat_train(0,2)=1.17037;
+	feat_train(0,3)=-1.51752;
+	feat_train(0,4)=8.57765;
+	feat_train(0,5)=3.89440;
+
+	feat_train(1,0)=-0.5;
+	feat_train(1,1)=5.4576;
+	feat_train(1,2)=7.17637;
+	feat_train(1,3)=-2.56752;
+	feat_train(1,4)=4.57765;
+	feat_train(1,5)=2.89440;
+
+	lat_feat_train(0,0)=1.00000;
+	lat_feat_train(0,1)=23.00000;
+	lat_feat_train(0,2)=4.00000;
+
+	lat_feat_train(1,0)=3.00000;
+	lat_feat_train(1,1)=2.00000;
+	lat_feat_train(1,2)=-5.00000;
+
+	lab_train[0]=0.46015;
+	lab_train[1]=0.69979;
+	lab_train[2]=2.15589;
+	lab_train[3]=1.51672;
+	lab_train[4]=3.59764;
+	lab_train[5]=2.39475;
+
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	int32_t t_dim=2;
+	SGMatrix<float64_t> weights(dim,t_dim);
+	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
+	float64_t weight1=0.02;
+	float64_t weight2=-0.4;
+	float64_t weight3=0;
+	float64_t weight4=0.01;
+	weights(0,0)=weight1;
+	weights(1,0)=weight2;
+	weights(0,1)=weight3;
+	weights(1,1)=weight4;
+	kernel->set_matrix_weights(weights);
+
+	float64_t mean_weight=2.0;
+	CConstMean* mean=new CConstMean(mean_weight);
+
+	// Gaussian likelihood with sigma = 0.5
+	float64_t sigma=0.5;
+	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+
+	// specify GP regression with FITC inference
+	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+		mean, labels_train, lik, latent_features_train);
+
+	float64_t ind_noise=1e-6*CMath::sq(sigma);
+	inf->set_inducing_noise(ind_noise);
+
+	float64_t scale=4.0;
+	inf->set_scale(scale);
+
+	int32_t k=4;
+	SGMatrix<float64_t> feat_test(dim, k);
+	feat_test(0,0)=-0.81263;
+	feat_test(0,1)=5.4576;
+	feat_test(0,2)=-0.239;
+	feat_test(0,3)=2.45;
+
+	feat_test(1,0)=-0.5;
+	feat_test(1,1)=0.69979;
+	feat_test(1,2)=2.3546;
+	feat_test(1,3)=-0.46;
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+
+	// train model
+	gpr->train();
+
+	SG_REF(features_test);
+	SGVector<float64_t> mean_vector=gpr->get_mean_vector(features_test);
+	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
+	SG_UNREF(features_test);
+
+	// comparison of mean and variance with result from GPML 3.5 package:
+	//ymu =
+	//0.817143553262107
+	//1.001048686764744
+	//2.182234371254691
+	//0.814785544659520
+	//ys2 =
+	//3.937450814687706
+	//1.878118517080519
+	//0.697568637099934
+	//4.354657330167651
+
+	EXPECT_NEAR(mean_vector[0], 0.817143553262107, 1E-10);
+	EXPECT_NEAR(mean_vector[1], 1.001048686764744, 1E-10);
+	EXPECT_NEAR(mean_vector[2], 2.182234371254691, 1E-10);
+	EXPECT_NEAR(mean_vector[3], 0.814785544659520, 1E-10);
+
+	EXPECT_NEAR(var_vector[0], 3.937450814687706, 1E-10);
+	EXPECT_NEAR(var_vector[1], 1.878118517080519, 1E-10);
+	EXPECT_NEAR(var_vector[2], 0.697568637099934, 1E-10);
+	EXPECT_NEAR(var_vector[3], 4.354657330167651, 1E-10);
+
+	// clean up
+	SG_UNREF(gpr);
+}
+#endif /* HAVE_LINALG_LIB */
+
+#endif /* HAVE_EIGEN3 */

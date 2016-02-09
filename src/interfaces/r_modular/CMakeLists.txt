@@ -6,7 +6,7 @@ set_target_properties(r_modular PROPERTIES PREFIX "")
 
 ADD_CUSTOM_COMMAND(TARGET r_modular
 	POST_BUILD
-	COMMAND echo 'f="modshogun.R"\; fdata="modshogun.RData"\; source(f)\; save(list=ls(all=TRUE),file=fdata, compress=TRUE)\; q(save="no")' | ${R_EXECUTABLE} --silent --no-save
+	COMMAND echo 'wd="${CMAKE_CURRENT_BINARY_DIR}" \; setwd( wd ) \; f="modshogun.R" \; fdata="modshogun.RData" \; source( f ) \; save( list=ls( all=TRUE ) , file=fdata , compress=TRUE ) \; q( save="no" ) \;' | ${R_EXECUTABLE} --silent --no-save
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating modshogun.RData"
 )

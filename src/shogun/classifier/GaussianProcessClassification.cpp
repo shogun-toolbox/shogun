@@ -31,7 +31,7 @@
  * Code adapted from
  * Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * and 
+ * and
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
@@ -41,6 +41,7 @@
 
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
 
 using namespace shogun;
 
@@ -73,7 +74,14 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	// if regression data equals to NULL, then apply classification on training
 	// features
 	if (!data)
-		data=m_method->get_features();
+	{
+		if (m_method->get_inference_type()==INF_SPARSE)
+		{
+			SG_NOTIMPLEMENTED
+		}
+		else
+			data=m_method->get_features();
+	}
 	else
 		SG_REF(data);
 
@@ -88,7 +96,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	}
 	CMulticlassLabels *result=new CMulticlassLabels();
 	result->set_int_labels(lab);
-	
+
 	SG_UNREF(data);
 
 	return result;
@@ -108,7 +116,17 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 	// if regression data equals to NULL, then apply classification on training
 	// features
 	if (!data)
-		data=m_method->get_features();
+	{
+		if (m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+		{
+			CSingleFITCLaplacianInferenceMethod* fitc_method=
+				CSingleFITCLaplacianInferenceMethod::obtain_from_generic(m_method);
+			data=fitc_method->get_inducing_features();
+			SG_UNREF(fitc_method);
+		}
+		else
+			data=m_method->get_features();
+	}
 	else
 		SG_REF(data);
 
@@ -129,7 +147,18 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 	SG_UNREF(lik);
 
 	if (data)
-		m_method->set_features(data);
+	{
+		// set inducing features for FITC inference method
+		if (m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+		{
+			CSingleFITCLaplacianInferenceMethod* fitc_method=
+				CSingleFITCLaplacianInferenceMethod::obtain_from_generic(m_method);
+			fitc_method->set_inducing_features(data);
+			SG_UNREF(fitc_method);
+		}
+		else
+			m_method->set_features(data);
+	}
 
 	// perform inference
 	m_method->update();

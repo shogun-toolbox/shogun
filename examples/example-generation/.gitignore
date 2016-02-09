@@ -1,0 +1,7 @@
+generated-examples/java/*.java
+generated-examples/python/*.py
+generated-examples/r/*.R
+generated-examples/octave/*.m
+lextab.py
+parsetab.py
+parser.out

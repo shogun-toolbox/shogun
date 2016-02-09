@@ -43,7 +43,7 @@ CKMeans::CKMeans(int32_t k_, CDistance* d, EKMeansMethod f)
 
 CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp, EKMeansMethod f)
 : CDistanceMachine()
-{	
+{
 	init();
 	k=k_;
 	set_distance(d);
@@ -108,7 +108,7 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 	}
 }
 
-void CKMeans::set_initial_centers(SGVector<float64_t> weights_set, 
+void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 				SGVector<int32_t> ClList, int32_t XSize)
 {
 	ASSERT(mus_initial.matrix);
@@ -261,7 +261,7 @@ bool CKMeans::train_machine(CFeatures* data)
 		set_initial_centers(weights_set, ClList, XSize);
 	else
 		set_random_centers(weights_set, ClList, XSize);
-	
+
 	if (train_method==KMM_MINI_BATCH)
 	{
 		CKMeansMiniBatchImpl::minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
@@ -411,11 +411,11 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 	int32_t num=distance->get_num_vec_lhs();
 	SGVector<float64_t> dists=SGVector<float64_t>(num);
 	SGVector<int32_t> mu_index=SGVector<int32_t>(k);
-	
+
 	/* 1st center */
 	int32_t mu_1=CMath::random((int32_t) 0,num-1);
 	mu_index[0]=mu_1;
-	
+
 	/* choose a center - do k-1 times */
 	int32_t count=0;
 	while (++count<k)
@@ -429,9 +429,9 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 
 			while (cent_id<count)
 			{
-				float64_t dist_temp=distance->distance(mu_index[cent_id],point_idx); 
+				float64_t dist_temp=distance->distance(mu_index[cent_id],point_idx);
 				if (dists[point_idx]>dist_temp)
-					dists[point_idx]=dist_temp; 
+					dists[point_idx]=dist_temp;
 				cent_id++;
 			}
 

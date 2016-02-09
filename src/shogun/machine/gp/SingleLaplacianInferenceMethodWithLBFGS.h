@@ -49,17 +49,17 @@ namespace shogun
  * This inference method approximates the posterior likelihood function by using
  * Laplace's method. Here, we compute a Gaussian approximation to the posterior
  * via a Taylor expansion around the maximum of the posterior likelihood
- * function. We use the Limited-memory BFGS method to obtain the maximum of likelihood. 
- * Note that due to the Laplace approximation, the time complexity of the class still is O(n^3), 
- * where n is the number of training data points. 
+ * function. We use the Limited-memory BFGS method to obtain the maximum of likelihood.
+ * Note that due to the Laplace approximation, the time complexity of the class still is O(n^3),
+ * where n is the number of training data points.
  * However, in the optimization step we use L-BFGS method, which of the time complexity
- * is O(n*m) to replace the Newton method, which of the time complexity is O(n^3). 
+ * is O(n*m) to replace the Newton method, which of the time complexity is O(n^3).
  * Here L-BFGS only uses the last m (m<<n) function/gradient pairs to find the optimal pointer
  *
- * For more details, see Nocedal, Jorge, and Stephen J. Wright. 
- * "Numerical Optimization 2nd." (2006), Pages 177-180. 
+ * For more details, see Nocedal, Jorge, and Stephen J. Wright.
+ * "Numerical Optimization 2nd." (2006), Pages 177-180.
  *
- * This specific implementation was based on the idea 
+ * This specific implementation was based on the idea
  * from Murphy, Kevin P. "Machine learning: a probabilistic perspective." (2012), Pages 251-252.
  */
 class CSingleLaplacianInferenceMethodWithLBFGS: public CSingleLaplacianInferenceMethod
@@ -93,18 +93,18 @@ public:
 
 	/* set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
-	 * @param m The number of corrections to approximate the inverse hessian matrix. 
+	 * @param m The number of corrections to approximate the inverse hessian matrix.
 	 * Default value is 100.
-	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
+	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update.
 	 * Default value is 1000.
-	 * @param linesearch The line search algorithm. 
+	 * @param linesearch The line search algorithm.
 	 * Default value is using the backtracking with the strong Wolfe condition line search
-	 * @param max_iterations The maximum number of iterations for L-BFGS update. 
+	 * @param max_iterations The maximum number of iterations for L-BFGS update.
 	 * Default value is 1000.
 	 * @param delta Delta for convergence test based on the change of function value.
-	 * Default value is 0.  
+	 * Default value is 0.
 	 * @param past Distance for delta-based convergence test.
-	 * Default value is 0. 
+	 * Default value is 0.
 	 * @param epsilon Epsilon for convergence test based on the change of gradient.
 	 * Default value is 1e-5
 	 * @param min_step The minimum step of the line search.
@@ -121,7 +121,7 @@ public:
 	 * Default value is 1e-16.
 	 * @param orthantwise_c Coeefficient for the L1 norm of variables.
 	 * This parameter should be set to zero for standard minimization problems.
-	 * Setting this parameter to a positive value activates 
+	 * Setting this parameter to a positive value activates
 	 * Orthant-Wise Limited-memory Quasi-Newton (OWL-QN) method. Default value is 0.
 	 * @param orthantwise_start Start index for computing L1 norm of the variables.
 	 * This parameter is valid only for OWL-QN method. Default value is 0.
@@ -148,7 +148,7 @@ public:
 	/* wheter we use Newton method as rollbak if LBFGS optimizer fails
 	 *
 	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
-	 */ 
+	 */
 	virtual void set_newton_method(bool enable_newton_if_fail);
 protected:
 	/* update alpha using the LBFGS method*/

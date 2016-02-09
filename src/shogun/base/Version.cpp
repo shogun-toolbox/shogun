@@ -55,10 +55,10 @@ void Version::print_version()
 #endif
 
 #ifdef LINKFLAGS
-	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", 
+	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n",
 		CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS)
 #else
-	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: None )\n", 
+	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: None )\n",
 		CONFIGURE_OPTIONS, COMPFLAGS_CPP)
 #endif
 }

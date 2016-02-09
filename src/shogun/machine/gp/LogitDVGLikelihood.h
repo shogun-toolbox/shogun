@@ -46,7 +46,7 @@
 
 namespace shogun
 {
-/** @brief Class that models dual variational logit likelihood 
+/** @brief Class that models dual variational logit likelihood
  *
  * This likelihood model is described in the reference paper
  * Mohammad Emtiyaz Khan, Aleksandr Y. Aravkin, Michael P. Friedlander, Matthias Seeger
@@ -68,8 +68,8 @@ namespace shogun
  *
  * The local variational bound used here is
  * \f[
- * log(x) \leq t^{-1}x+log(t)-1 
- * \f], where t is a local variable and the inequality holds for every t>0. 
+ * log(x) \leq t^{-1}x+log(t)-1
+ * \f], where t is a local variable and the inequality holds for every t>0.
  * See Bernoulli-logit in Table 2 of the paper for detailed information
  */
 class CLogitDVGLikelihood : public CDualVariationalGaussianLikelihood

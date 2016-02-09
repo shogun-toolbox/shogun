@@ -35,7 +35,7 @@ CRationalApproximationIndividualJob::CRationalApproximationIndividualJob()
 CRationalApproximationIndividualJob::CRationalApproximationIndividualJob(
 	CJobResultAggregator* aggregator,
 	CLinearSolver<complex128_t, float64_t>* linear_solver,
-	CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >* linear_operator,
+	CLinearOperator<complex128_t>* linear_operator,
 	SGVector<float64_t> vector,
 	complex128_t weight)
 	: CIndependentJob(aggregator)

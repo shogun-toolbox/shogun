@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -98,7 +98,7 @@ SGVector<float64_t> CKLLowerTriangularInferenceMethod::get_diagonal_vector()
 
 void CKLLowerTriangularInferenceMethod::update_deriv()
 {
-	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
+	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
@@ -111,7 +111,7 @@ void CKLLowerTriangularInferenceMethod::update_init()
 	m_Kernel_LsD=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_Kernel_LsD.zero();
 	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
-	eigen_Kernel_LsD.triangularView<Lower>()=Kernel_L*Kernel_D.array().sqrt().matrix().asDiagonal(); 
+	eigen_Kernel_LsD.triangularView<Lower>()=Kernel_L*Kernel_D.array().sqrt().matrix().asDiagonal();
 	m_log_det_Kernel=2.0*eigen_Kernel_LsD.diagonal().array().abs().log().sum();
 
 	m_Kernel_P=SGVector<index_t>(m_ktrtr.num_rows);
@@ -150,8 +150,9 @@ MatrixXd CKLLowerTriangularInferenceMethod::solve_inverse(MatrixXd eigen_A)
 	return P.transpose()*tmp3;
 }
 
-float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(MatrixXd eigen_dK)
+float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);

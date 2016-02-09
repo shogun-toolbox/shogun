@@ -11,8 +11,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#ifndef _GAUSSIANKERNEL_H___
-#define _GAUSSIANKERNEL_H___
+#ifndef GAUSSIANKERNEL_H
+#define GAUSSIANKERNEL_H
 
 #include <shogun/lib/config.h>
 
@@ -106,13 +106,13 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @param w kernel width
 		 */
-		virtual void set_width(float64_t w)	{ width=w; }
+		virtual void set_width(float64_t w);
 
 		/** return the kernel's width
 		 *
 		 * @return kernel width
 		 */
-		virtual float64_t get_width() const	{ return width;	}
+		virtual float64_t get_width() const;
 
 		/** set the compact option
 		 *
@@ -155,6 +155,22 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual void load_serializable_post() throw (ShogunException);
 
+
+		/** compute the distance between features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed the distance
+		 *
+		 * Note that in GaussianKernel,
+		 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
+		 * \f[
+		 * distance({\bf x},{\bf y})= \frac{||{\bf x}-{\bf y}||^2}{\tau}
+		 * \f]
+		 */
+		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 	private:
 		/** helper function to compute quadratic terms in
 		 * (a-b)^2 (== a^2+b^2-2ab)
@@ -173,7 +189,7 @@ class CGaussianKernel: public CDotKernel
 
 	protected:
 		/** width */
-		float64_t width;
+		float64_t m_log_width;
 		/** squared left-hand side */
 		float64_t* sq_lhs;
 		/** squared right-hand side */

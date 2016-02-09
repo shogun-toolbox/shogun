@@ -1,12 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * Written (W) 2012 Jacob Walker
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  *
  * Code adapted from the GPML Toolbox:
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -60,7 +80,7 @@ public:
 	 *
 	 * @return scale parameter
 	 */
-	float64_t get_sigma() { return m_sigma; }
+	float64_t get_sigma() const { return CMath::exp(m_log_sigma); }
 
 	/** sets the scale parameter
 	 *
@@ -68,15 +88,15 @@ public:
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
-		m_sigma=sigma;
+		REQUIRE(sigma>0.0, "Scale parameter (%f) must be greater than zero\n", sigma);
+		m_log_sigma=CMath::log(sigma);
 	}
 
 	/** get degrees of freedom
 	 *
 	 * @return degrees of freedom
 	 */
-	float64_t get_degrees_freedom() { return m_df; }
+	float64_t get_degrees_freedom() const { return CMath::exp(m_log_df)+1; }
 
 	/** set degrees of freedom
 	 *
@@ -84,8 +104,8 @@ public:
 	 */
 	void set_degrees_freedom(float64_t df)
 	{
-		REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
-		m_df=df;
+		REQUIRE(df>1.0, "Number of degrees (%f) of freedom must be greater than one\n", df)
+		m_log_df=CMath::log(df-1);
 	}
 
 	/** helper method used to specialize a base class instance
@@ -264,10 +284,10 @@ private:
 	void init();
 
 	/** scale parameter */
-	float64_t m_sigma;
+	float64_t m_log_sigma;
 
 	/** degrees of freedom */
-	float64_t m_df;
+	float64_t m_log_df;
 };
 }
 #endif /* HAVE_EIGEN3 */

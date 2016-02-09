@@ -1,20 +1,39 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * Written (W) 2012 Jacob Walker
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #include <shogun/machine/gp/GaussianLikelihood.h>
 
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -27,15 +46,14 @@ CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 
 CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 {
-	REQUIRE(sigma>0.0, "Standard deviation must be greater than zero\n")
 	init();
-	m_sigma=sigma;
+	set_sigma(sigma);
 }
 
 void CGaussianLikelihood::init()
 {
-	m_sigma=1.0;
-	SG_ADD(&m_sigma, "sigma", "Observation noise", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	m_log_sigma=0.0;
+	SG_ADD(&m_log_sigma, "log_sigma", "Observation noise in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood()
@@ -66,7 +84,7 @@ SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	eigen_result=eigen_result.array()+CMath::sq(m_sigma);
+	eigen_result=eigen_result.array()+CMath::exp(m_log_sigma*2.0);
 
 	return result;
 }
@@ -91,8 +109,8 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 
 	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
 	eigen_result=eigen_y-eigen_f;
-	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2.0*CMath::sq(m_sigma))-
-		VectorXd::Ones(result.vlen)*log(2.0*CMath::PI*CMath::sq(m_sigma))/2.0;
+	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2.0*CMath::exp(m_log_sigma*2.0))-
+		VectorXd::Ones(result.vlen)*log(2.0*CMath::PI*CMath::exp(m_log_sigma*2.0))/2.0;
 
 	return result;
 }
@@ -121,9 +139,9 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 
 	// compute derivatives of log probability wrt f
 	if (i == 1)
-		eigen_result/=CMath::sq(m_sigma);
+		eigen_result/=CMath::exp(m_log_sigma*2.0);
 	else if (i == 2)
-		eigen_result=-VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
+		eigen_result=-VectorXd::Ones(result.vlen)/CMath::exp(m_log_sigma*2.0);
 	else if (i == 3)
 		eigen_result=VectorXd::Zero(result.vlen);
 
@@ -144,7 +162,7 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	if (strcmp(param->m_name, "sigma"))
+	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
 
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
@@ -154,7 +172,7 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	// dlp_dlogsigma
 	// lp_dsigma=(y-f).^2/sigma^2-1
 	eigen_result=eigen_y-eigen_f;
-	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::sq(m_sigma);
+	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::exp(m_log_sigma*2.0);
 	eigen_result-=VectorXd::Ones(result.vlen);
 
 	return result;
@@ -169,7 +187,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector\n")
 
-	if (strcmp(param->m_name, "sigma"))
+	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -183,7 +201,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	// compute derivative of (the first log_sigma derivative of log probability) wrt f:
 	// d2lp_dlogsigma_df == d2lp_df_dlogsigma
 	// dlp_dsigma=2*(f-y)/sigma^2
-	eigen_result=2.0*(eigen_f-eigen_y)/CMath::sq(m_sigma);
+	eigen_result=2.0*(eigen_f-eigen_y)/CMath::exp(m_log_sigma*2.0);
 
 	return result;
 }
@@ -197,7 +215,7 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector\n")
 
-	if (strcmp(param->m_name, "sigma"))
+	if (strcmp(param->m_name, "log_sigma"))
 		return SGVector<float64_t>();
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -208,7 +226,7 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	// compute derivative of (the derivative of the first log_sigma derivative of log probability) wrt f:
 	// d3lp_dlogsigma_df_df == d3lp_df_df_dlogsigma
 	// d2lp_dsigma=2/sigma^2
-	eigen_result=2.0*VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
+	eigen_result=2.0*VectorXd::Ones(result.vlen)/CMath::exp(m_log_sigma*2.0);
 
 	return result;
 }
@@ -248,7 +266,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	// compule lZ=-(y-mu).^2./(sn2+s2)/2-log(2*pi*(sn2+s2))/2
-	eigen_s2=eigen_s2.array()+CMath::sq(m_sigma);
+	eigen_s2=eigen_s2.array()+CMath::exp(m_log_sigma*2.0);
 	eigen_result=-(eigen_y-eigen_mu).array().square()/(2.0*eigen_s2.array())-
 		(2.0*CMath::PI*eigen_s2.array()).log()/2.0;
 
@@ -271,7 +289,7 @@ float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 
 	// compute 1st moment
-	float64_t Ex=mu[i]+s2[i]*(y[i]-mu[i])/(CMath::sq(m_sigma)+s2[i]);
+	float64_t Ex=mu[i]+s2[i]*(y[i]-mu[i])/(CMath::exp(m_log_sigma*2.0)+s2[i]);
 
 	return Ex;
 }
@@ -290,7 +308,7 @@ float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
 			"Labels must be type of CRegressionLabels\n")
 
 	// compute 2nd moment
-	float64_t Var=s2[i]-CMath::sq(s2[i])/(CMath::sq(m_sigma)+s2[i]);
+	float64_t Var=s2[i]-CMath::sq(s2[i])/(CMath::exp(m_log_sigma*2.0)+s2[i]);
 
 	return Var;
 }

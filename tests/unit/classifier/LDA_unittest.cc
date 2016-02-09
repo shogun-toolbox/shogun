@@ -152,7 +152,7 @@ TEST_F(LDATest, CheckProjection_FLD)
 }
 
 TEST_F(LDATest, CheckEigenvectors_SVD)
-{	
+{
 	// comparing against the eigenvectors of the CanonVar implementation
 	// in the brml toolbox, MATLAB.
 	float64_t epsilon=0.00000001;
@@ -162,7 +162,7 @@ TEST_F(LDATest, CheckEigenvectors_SVD)
 }
 
 TEST_F(LDATest, CheckProjection_SVD)
-{	 
+{
 	//comparing agianst the projections from the CanonVar implementation
 	//in the brml toolbox, MATLAB.
 	float64_t epsilon=0.00000001;

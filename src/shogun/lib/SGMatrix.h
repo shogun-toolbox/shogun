@@ -57,18 +57,52 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
 
-		/** Copy constructor */
-		SGMatrix(const SGMatrix &orig);
-
 #ifndef SWIG // SWIG should skip this part
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/** The container type for a given template argument */
+		template <typename ST> using container_type = SGMatrix<ST>;
+
+#endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
+
+		/**
+		 * Constructor for creating a SGMatrix from a SGVector with refcounting.
+		 * We do not copy the data here, just the pointer to data and the ref-
+		 * count object of the SGVector (i.e. vec and this share same data and
+		 * ref-count object).
+		 *
+		 * This constructor assumes that the vector is the column 0 in the matrix.
+		 *
+		 * @param vec The SGVector
+		 */
+		SGMatrix(SGVector<T> vec);
+
+		/**
+		 * Constructor for creating a SGMatrix from a SGVector with refcounting.
+		 * We do not copy the data here, just the pointer to data and the ref-
+		 * count object of the SGVector (i.e. vec and this share same data and
+		 * ref-count object).
+		 *
+		 * The number of elements in the matrix *MUST* be same as the number
+		 * of elements in the vector
+		 *
+		 * @param vec The SGVector
+		 * @param nrows number of rows in the matrix
+		 * @param ncols number of columns in the matrix
+		 */
+		SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols);
+
 #ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 matrix */
 		SGMatrix(EigenMatrixXt& mat);
 
 		/** Wraps an Eigen3 matrix around the data of this matrix */
 		operator EigenMatrixXtMap() const;
-#endif
-#endif
+#endif // HAVE_EIGEN3
+#endif // SWIG
+
+		/** Copy constructor */
+		SGMatrix(const SGMatrix &orig);
 
 		/** Empty destructor */
 		virtual ~SGMatrix();
@@ -141,6 +175,19 @@ template<class T> class SGMatrix : public SGReferencedData
 		inline SGMatrix<T> get()
 		{
 			return *this;
+		}
+
+		/** The data */
+		inline T* data() const
+		{
+			return matrix;
+		}
+
+		/** The size */
+		inline uint64_t size() const
+		{
+			const uint64_t c=num_cols;
+			return num_rows*c;
 		}
 
 		/** Check for pointer identity */

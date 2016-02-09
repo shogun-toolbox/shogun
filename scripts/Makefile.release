@@ -12,7 +12,7 @@
 # * To create a snapshot run
 #
 #       make -f scripts/Makefile.release tarball SNAPSHOT=yes
-# 
+#
 # * To sign/md5sum the created tarballs and copy them to the webpage
 #
 #       make -f scripts/Makefile.release update-webpage
@@ -95,7 +95,7 @@ distclean:
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	rm -rf $(DATADESTDIR) $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 
-update-webpage: 
+update-webpage:
 	ssh 7nn.de mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
 	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).md5sum \
 		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/data/

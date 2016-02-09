@@ -125,6 +125,13 @@ cpplint.py
 /tests/unit/*.hdf5
 /tests/unit/*.json
 /tests/unit/combined_kernel.weights
+Testing/
+examples/undocumented/python_modular/serialized_svm.bz2
+examples/undocumented/python_modular/tmp/blaah.asc
+examples/undocumented/python_modular/tmp/blaah.h5
+examples/undocumented/python_modular/tmp/blaah.json
+examples/undocumented/python_modular/tmp/blaah.xml
+examples/undocumented/python_modular/vw_cache.dat.cache
 
 # cmake
 /CMakeFiles/

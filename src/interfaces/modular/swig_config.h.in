@@ -1,0 +1,31 @@
+#ifndef __SHOGUN_SWIG_CONFIG_H__
+#define __SHOGUN_SWIG_CONFIG_H__
+
+%include <shogun/lib/config.h>
+
+#ifndef DARWIN
+#cmakedefine SWIGWORDSIZE64 1
+#endif /* DARWIN */
+
+#cmakedefine PYTHON3 1
+#cmakedefine HAVE_PYTHON 1
+#cmakedefine HAVE_OCTAVE 1
+
+#cmakedefine HAVE_JBLAS 1
+
+#cmakedefine USE_CHAR 1
+#cmakedefine USE_BOOL 1
+#cmakedefine USE_UINT8 1
+#cmakedefine USE_UINT16 1
+#cmakedefine USE_UINT32 1
+#cmakedefine USE_UINT64 1
+#cmakedefine USE_INT8 1
+#cmakedefine USE_INT16 1
+#cmakedefine USE_INT32 1
+#cmakedefine USE_INT64 1
+#cmakedefine USE_FLOAT32 1
+#cmakedefine USE_FLOAT64 1
+#cmakedefine USE_COMPLEX128 1
+#cmakedefine USE_FLOATMAX 1
+
+#endif /* __SHOGUN_SWIG_CONFIG_H__ */

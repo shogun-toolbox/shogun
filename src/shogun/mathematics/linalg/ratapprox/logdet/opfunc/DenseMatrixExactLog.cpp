@@ -38,8 +38,7 @@ CDenseMatrixExactLog::CDenseMatrixExactLog()
 CDenseMatrixExactLog::CDenseMatrixExactLog(
 	CDenseMatrixOperator<float64_t>* op,
 	CIndependentComputationEngine* engine)
-	: COperatorFunction<float64_t>(
-		(CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >*)op, engine, OF_LOG)
+	: COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, engine, OF_LOG)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }

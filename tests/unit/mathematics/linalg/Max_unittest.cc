@@ -30,7 +30,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LINALG_LIB
+#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -47,16 +47,43 @@
 
 using namespace shogun;
 
+TEST(MaxMatrix, native_backend)
+{
+	SGMatrix<float64_t> A(3,3);
+
+	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
+
+	for (int32_t i=0; i<9; i++)
+		A[i] = a[i];
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(8, linalg::max<linalg::Backend::NATIVE>(A), 1e-15);
+}
+
+TEST(MaxVector, native_backend)
+{
+	SGVector<float64_t> A(9);
+
+	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
+
+	for (int32_t i=0; i<9; i++)
+		A[i] = a[i];
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(8, linalg::max<linalg::Backend::NATIVE>(A), 1e-15);
+}
+
+#ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(MaxMatrix, eigen3_backend)
 {
 	SGMatrix<float64_t> A(3,3);
-	
+
 	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = a[i];
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(8, linalg::max<linalg::Backend::EIGEN3>(A), 1e-15);
 }
@@ -64,12 +91,12 @@ TEST(MaxMatrix, eigen3_backend)
 TEST(MaxVector, eigen3_backend)
 {
 	SGVector<float64_t> A(9);
-	
+
 	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = a[i];
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(8, linalg::max<linalg::Backend::EIGEN3>(A), 1e-15);
 }
@@ -79,12 +106,12 @@ TEST(MaxVector, eigen3_backend)
 TEST(MaxMatrix, viennacl_backend)
 {
 	CGPUMatrix<float64_t> A(3,3);
-	
+
 	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = a[i];
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(8, linalg::max<linalg::Backend::VIENNACL>(A), 1e-15);
 }
@@ -92,15 +119,15 @@ TEST(MaxMatrix, viennacl_backend)
 TEST(MaxVector, viennacl_backend)
 {
 	CGPUVector<float64_t> A(9);
-	
+
 	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = a[i];
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(8, linalg::max<linalg::Backend::VIENNACL>(A), 1e-15);
 }
 #endif // HAVE_VIENNACL
-
 #endif // HAVE_LINALG_LIB
+#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)

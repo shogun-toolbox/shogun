@@ -58,14 +58,14 @@ static void plane_rot(float64_t x0, float64_t x1,
 	}
 }
 
-static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore,
+static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore_mask,
 	int32_t &imax, float64_t& vmax)
 {
 	imax = -1;
 	vmax = -1;
 	for (uint32_t i=0; i < vec.size(); ++i)
 	{
-		if (ignore[i])
+		if (ignore_mask[i])
 			continue;
 
 		if (CMath::abs(vec[i]) > vmax)
@@ -164,10 +164,10 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	// first entry: all coefficients are zero
 	m_beta_path.push_back(beta);
 	m_beta_idx.push_back(0);
-	
+
 	//maximum allowed active variables at a time
 	int32_t max_active_allowed = CMath::min(n_vec-1, n_fea);
-	
+
 	//========================================
 	// main loop
 	//========================================

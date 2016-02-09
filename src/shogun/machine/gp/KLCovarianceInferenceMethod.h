@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -57,7 +57,7 @@ namespace shogun
  * Since lambda is always non-positive according to the paper,
  * this implementation uses log(-lambda) as representation, which assumes lambda is always negative.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -94,6 +94,19 @@ public:
 	 * @return name KLCovarianceInferenceMethod
 	 */
 	virtual const char* get_name() const { return "KLCovarianceInferenceMethod"; }
+
+	/** return what type of inference we are
+	 *
+	 * @return inference type KL_COVARIANCE
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_COVARIANCE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLCovarianceInferenceMethod object
+	 */
+	static CKLCovarianceInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
 
 	/** get alpha vector
 	 *
@@ -161,7 +174,7 @@ protected:
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
+	 * Note that
 	 * get_derivative_wrt_inference_method(const TParameter* param)
 	 * and
 	 * get_derivative_wrt_kernel(const TParameter* param)
@@ -169,7 +182,8 @@ protected:
 	 *
 	 * @param the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 private:
 	void init();
 

@@ -88,9 +88,9 @@ TEST(CombinedKernelTest,serialization)
 	CGaussianKernel* k1 = (CGaussianKernel*) combined_read->get_kernel(1);
 	CGaussianKernel* k2 = (CGaussianKernel*) combined_read->get_kernel(2);
 
-	EXPECT_EQ(k0->get_width(), 4);
-	EXPECT_EQ(k1->get_width(), 3);
-	EXPECT_EQ(k2->get_width(), 9);
+	EXPECT_NEAR(k0->get_width(), 4, 1e-9);
+	EXPECT_NEAR(k1->get_width(), 3, 1e-9);
+	EXPECT_NEAR(k2->get_width(), 9, 1e-9);
 
 	SG_UNREF(k0);
 	SG_UNREF(k1);
@@ -168,7 +168,7 @@ TEST(CombinedKernelTest,combination)
 		{
 			CGaussianKernel* c_subkernel =
 					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
-			EXPECT_EQ(c_subkernel->get_width(), combs2[i++][j]);
+			EXPECT_NEAR(c_subkernel->get_width(), combs2[i++][j], 1e-9);
 			SG_UNREF(c_subkernel);
 		}
 		++j;
@@ -207,7 +207,7 @@ TEST(CombinedKernelTest,combination)
 		{
 			CGaussianKernel* c_subkernel =
 					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
-			EXPECT_EQ(c_subkernel->get_width(), combs[i++][j]);
+			EXPECT_NEAR(c_subkernel->get_width(), combs[i++][j], 1e-9);
 			SG_UNREF(c_subkernel);
 		}
 		++j;

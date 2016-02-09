@@ -292,7 +292,7 @@ private:
 	 */
 	int32_t hash(const K& key)
 	{
-		return CHash::MurmurHash3((uint8_t*)(&key), sizeof(key), 0xDEADBEEF) % hash_size;
+		return get_hash_value(key) % hash_size;
 	}
 
 	/** is free? */
@@ -314,7 +314,6 @@ private:
 		else
 		{
 			CMapNode<K, T>* current=hash_array[index];
-
 			do // iterating all items in the list
 			{
 				if (current->key==key)
@@ -441,6 +440,15 @@ private:
 	}
 
 protected:
+	/** Get the hash of a given key
+	 * @param key a given key
+	 * @return hash of the key
+	 */
+	virtual uint32_t get_hash_value(const K& key)
+	{
+		return CHash::MurmurHash3((uint8_t*)(&key), sizeof(key), 0xDEADBEEF);
+	}
+
 	/** whether SG_MALLOC or just malloc etc shall be used */
 	bool use_sg_mallocs;
 

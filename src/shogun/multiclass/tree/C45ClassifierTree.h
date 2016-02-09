@@ -52,8 +52,8 @@ namespace shogun
  *      return a single node with that value; \n
  *
  *    If R is empty,\n
- *      return a single node with as value the most frequent\n 
- *      of the values of the categorical attribute in C;\n 
+ *      return a single node with as value the most frequent\n
+ *      of the values of the categorical attribute in C;\n
  *      [note that then there will be errors, that is, records that will be improperly classified]; \n
  *
  *    For each non-categorical attribute NC in R : \n
@@ -62,7 +62,7 @@ namespace shogun
  *
  *    Let D be the attribute with largest Gain(D,S) among attributes in R;\n
  *    Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;\n
- *    Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting respectively of records with value \f$d_j\f$ 
+ *    Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting respectively of records with value \f$d_j\f$
  * for attribute D; \n
  *
  *    Return a tree with root labeled D and arcs labeled \f$d_1, d_2, .., d_m\f$ going respectively to the trees \n
@@ -88,12 +88,12 @@ public:
 
 	/** classify data using C4.5 Tree
 	 * @param data data to be classified
-	 * @return MulticlassLabels corresponding to labels of various test vectors 
+	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** prune decision tree - uses reduced error pruning algorithm
-	 * 
+	 *
 	 * cf. http://en.wikipedia.org/wiki/Pruning_%28decision_trees%29#Reduced_error_pruning
 	 *
 	 * At each node, starting from leaf nodes up to the root node, this
@@ -103,8 +103,8 @@ public:
 	 * the root node. At each node, it prunes its children first and then itself.
 	 * As the algorithm goes down each level during recursion, it creates the new
 	 * set of features by pushing subset into subset stack. While retracting, it pops
-	 * these subsets to access previous state of feature matrix (see add_subset() and 
-	 * remove_subset() in Shogun documentation). 
+	 * these subsets to access previous state of feature matrix (see add_subset() and
+	 * remove_subset() in Shogun documentation).
 	 *
 	 * @param validation_data feature vectors from validation dataset
 	 * @param validation_labels multiclass labels from validation dataset
@@ -113,21 +113,21 @@ public:
 	void prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
 
 	/** certainty of classification done by apply_multiclass.
-	 * For each data point reaching a leaf node, it computes the ratio of weight of training data 
+	 * For each data point reaching a leaf node, it computes the ratio of weight of training data
 	 * with same predicted label that reached that leaf node over the total weight of all training data points
 	 * that reached the same leaf node
 	 *
-	 * @return Vector of certainty values associated with data classified in apply_multiclass 
+	 * @return Vector of certainty values associated with data classified in apply_multiclass
 	 */
 	SGVector<float64_t> get_certainty_vector() const;
 
 	/** set weights of data points
-	 * @param w vector of weights 
+	 * @param w vector of weights
 	 */
 	void set_weights(SGVector<float64_t> w);
 
 	/** get weights of data points
-	 * @return vector of weights 
+	 * @return vector of weights
 	 */
 	SGVector<float64_t> get_weights() const;
 
@@ -135,12 +135,12 @@ public:
 	void clear_weights();
 
 	/** set feature types of various features
-	 * @param ft bool vector true for nominal feature false for continuous feature type 
+	 * @param ft bool vector true for nominal feature false for continuous feature type
 	 */
 	void set_feature_types(SGVector<bool> ft);
 
 	/** set feature types of various features
-	 * @return bool vector - true for nominal feature false for continuous feature type 
+	 * @return bool vector - true for nominal feature false for continuous feature type
 	 */
 	SGVector<bool> get_feature_types() const;
 
@@ -148,7 +148,7 @@ public:
 	void clear_feature_types();
 
 protected:
-	
+
 	/** train machine - build C4.5 Tree from training data
 	 * @param data training data
 	 */
@@ -165,7 +165,7 @@ private:
 	 * @param level tree depth
 	 * @return pointer to the root of the C45 subtree
 	 */
-	node_t* C45train(CFeatures* data, SGVector<float64_t> weights, CMulticlassLabels* class_labels, 
+	node_t* C45train(CFeatures* data, SGVector<float64_t> weights, CMulticlassLabels* class_labels,
 							SGVector<int32_t> id_values, int level = 0);
 
 	/** recursive tree pruning method - called within prune_tree method
@@ -176,7 +176,7 @@ private:
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
 	void prune_tree_from_current_node(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon);
-	
+
 	/** informational gain attribute for selecting best feature at each node of C4.5 Tree
 	 *
 	 * @param attr_no index to the chosen feature in data matrix supplied
@@ -184,16 +184,16 @@ private:
 	 * @param weights weights of data points in data matrix
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
-	 */	
+	 */
 	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, SGVector<float64_t> weights,
-									 CMulticlassLabels* class_labels);	
-	
+									 CMulticlassLabels* class_labels);
+
 	/** computes entropy (aka randomness) in data
 	 *
 	 * @param labels labels of parameters chosen
-	 * @param weights weights associated with each of the labels 
+	 * @param weights weights associated with each of the labels
 	 * @return entropy
-	 */		
+	 */
 	float64_t entropy(CMulticlassLabels* labels, SGVector<float64_t> weights);
 
 	/** uses current subtree to classify data
@@ -220,7 +220,7 @@ private:
 	/** weights of samples in training set **/
 	SGVector<float64_t> m_weights;
 
-	/** percentage of certainty of labels predicted by decision tree 
+	/** percentage of certainty of labels predicted by decision tree
 	 * ie. weight of elements belonging to predicted class in a node/ total weight in a node
 	 */
 	SGVector<float64_t> m_certainty;
@@ -230,7 +230,7 @@ private:
 
 	/** flag storing whether weights of samples are specified using weights vector **/
 	bool m_weights_set;
-	
+
 };
 } /* namespace shogun */
 

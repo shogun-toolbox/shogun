@@ -87,6 +87,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "KLDualInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type KL_DUAL
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_KL_DUAL; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLDualInferenceMethod object
+	 */
+	static CKLDualInferenceMethod * obtain_from_generic(CInferenceMethod* inference);
+
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:
@@ -171,7 +184,7 @@ protected:
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
+	 * Note that
 	 * get_derivative_wrt_inference_method(const TParameter* param)
 	 * and
 	 * get_derivative_wrt_kernel(const TParameter* param)
@@ -181,7 +194,7 @@ protected:
 	 *
 	 * @return the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 
 	/** Using L-BFGS to estimate posterior parameters */
 	virtual float64_t lbfgs_optimization();
@@ -195,7 +208,7 @@ protected:
 	 * where S is the feasible set defined for \f$\lambda\f$, K comes from covariance function,
 	 * \f$mean_f\f$ comes from mean function, \f$\lambda\f$ is the dual parameter,
 	 * y are data labels, n is the number point,
-	 * \f$A_{\lambda}=K^{-1}+diag(\lambda)\f$, 
+	 * \f$A_{\lambda}=K^{-1}+diag(\lambda)\f$,
 	 * and \f$Fenchel_i{(\lambda)}=Fenchel_i{(\alpha,\lambda)}\f$ since \f$\alpha\f$ is implicitly defined by \f$\lambda\f$
 	 *
 	 * Note that S and \f$Fenchel_i{(\lambda)}\f$ are specified by the data modeling distribution,
@@ -209,7 +222,7 @@ protected:
 	  * \f[
 	  * 0.5*[2*K(\lambda-y)-diag(A_{\lambda}^{-1})]-mean_{f}+\sum_{i=1}^{n}{\nabla Fenchel_i{(\lambda)}}
 	  * \f]
-	  * where \f$A_{\lambda}=K^{-1}+diag(\lambda)\f$, 
+	  * where \f$A_{\lambda}=K^{-1}+diag(\lambda)\f$,
 	  * K comes from covariance function,
 	  * \f$mean_f\f$ comes from mean function,
 	  * \f$\lambda\f$ is the dual parameter,
@@ -228,7 +241,7 @@ private:
 	SGVector<float64_t> m_sW;
 
 	/** noise Matrix
-	 * Note that it is also the dual parameter, lambda 
+	 * Note that it is also the dual parameter, lambda
 	 */
 	SGVector<float64_t> m_W;
 

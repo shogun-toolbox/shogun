@@ -38,9 +38,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/OpenCV/OpenCVTypeName.h>
 
-namespace shogun 
+namespace shogun
 {
-/** @brief CV2SGFactory converts Shogun's SGMatrix and DenseFeatures into 
+/** @brief CV2SGFactory converts Shogun's SGMatrix and DenseFeatures into
  * OpenCV's cv::Mat format. The data is directly copied to the memory block
  * pointed by the cv::Mat.
  */
@@ -51,16 +51,16 @@ class SG2CVFactory
 		SG2CVFactory();
 		/* destructor */
 		~SG2CVFactory();
-		/* get cv::Mat from SGMatrix. 
+		/* get cv::Mat from SGMatrix.
 		 * @param SGMatrix which is to be converted
-		 * @param specify the OpenCV data type. i.e (CV_8U, CV_8S, CV_16U, 
+		 * @param specify the OpenCV data type. i.e (CV_8U, CV_8S, CV_16U,
 		 * CV_16S, CV_32S, CV_32F, CV_64F)
 		 * @return Mat object of the specified data type
 		 */
 		template <typename SG_T> static cv::Mat get_cvMat(SGMatrix<SG_T> sgMat,
 				int cv_type);
 		/* get cv::Mat from Densefeatures
-		 * @param DenseFeatures pointer 
+		 * @param DenseFeatures pointer
 		 * @param specify the OpenCV data type. i.e (CV_8U, CV_8S, CV_16U,
 		 * CV_16S, CV_32S, CV_32F, CV_64F)
 		 * @return Mat object of the specified data type
@@ -68,7 +68,7 @@ class SG2CVFactory
 		template <typename SG_T> static cv::Mat get_cvMat_from_features
 			(CDenseFeatures<SG_T>* sgDense, int cv_type);
 
-	private: 
+	private:
 		template <typename SG_T, typename CV_T> static cv::Mat get_cvMat
 			(SGMatrix<SG_T> sgMat);
 };
@@ -79,7 +79,7 @@ template <typename SG_T, typename CV_T> cv::Mat SG2CVFactory::get_cvMat
 	int num_rows=sgMat.num_rows;
 	int num_cols=sgMat.num_cols;
 	const int outType=OpenCVTypeName<CV_T>::get_opencv_type();
-	const int inType=OpenCVTypeName<SG_T>::get_opencv_type(); 
+	const int inType=OpenCVTypeName<SG_T>::get_opencv_type();
 	cv::Mat cvMat(num_cols, num_rows, inType);
 	memcpy((SG_T*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(SG_T));
 	cvMat.convertTo(cvMat,outType);

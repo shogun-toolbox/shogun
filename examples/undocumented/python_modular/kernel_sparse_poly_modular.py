@@ -17,8 +17,8 @@ def kernel_sparse_poly_modular (fm_train_real=traindat,fm_test_real=testdat,
 
 
 
-	kernel=PolyKernel(feats_train, feats_train, size_cache, degree,
-		inhomogene)
+	kernel=PolyKernel(feats_train, feats_train, size_cache,
+		inhomogene, degree)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

@@ -20,7 +20,7 @@
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
 #include <shogun/features/RandomKitchenSinksDotFeatures.h>
 #include <shogun/features/RandomFourierDotFeatures.h>
@@ -39,8 +39,8 @@
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/SNPFeatures.h>
 #include <shogun/features/WDFeatures.h>
-#include <shogun/features/HashedWDFeatures.h>
-#include <shogun/features/HashedWDFeaturesTransposed.h>
+#include <shogun/features/hashed/HashedWDFeatures.h>
+#include <shogun/features/hashed/HashedWDFeaturesTransposed.h>
 #include <shogun/features/PolyFeatures.h>
 #include <shogun/features/SparsePolyFeatures.h>
 #include <shogun/features/LBPPyrDotFeatures.h>

@@ -7,7 +7,7 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/lib/SGStringList.h>

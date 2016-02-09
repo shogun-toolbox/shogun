@@ -37,6 +37,7 @@ public:
      */
     CUAIFile(FILE* f, const char* name=NULL);
 
+#ifdef HAVE_FDOPEN
     /** constructor
      *
      * @param fd already opened file descriptor
@@ -44,6 +45,7 @@ public:
      * @param name variable name (e.g. "x" or "/path/to/x")
      */
     CUAIFile(int fd, const char* mode, const char* name=NULL);
+#endif
 
     /** constructor
      *
@@ -118,7 +120,7 @@ public:
                               SGVector<int32_t>*& factors_scope);
 
     /** Function to access factor table
-     * 
+     *
      * @param factors_table table of all the factors
      */
     virtual void get_factors_table(SGVector<float64_t>*& factors_table);

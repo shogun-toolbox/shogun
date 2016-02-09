@@ -36,7 +36,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     # import all necessary modules from Shogun (some of them require Eigen3)
     try:
         from modshogun import RealFeatures, BinaryLabels, GaussianKernel, \
-            LogitLikelihood, ProbitLikelihood, ZeroMean, LaplacianInferenceMethod, \
+            LogitLikelihood, ProbitLikelihood, ZeroMean, SingleLaplacianInferenceMethod, \
             EPInferenceMethod, GaussianProcessClassification
     except ImportError:
         print('Eigen3 needed for Gaussian Processes')
@@ -73,7 +73,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     # uncommenting/commenting the following lines:
 
     # specify Laplace approximation inference method
-    # inf = LaplacianInferenceMethod(kernel, train_features, mean, train_labels, lik)
+    # inf = SingleLaplacianInferenceMethod(kernel, train_features, mean, train_labels, lik)
 
     # specify EP approximation inference method
     inf = EPInferenceMethod(kernel, train_features, mean, train_labels, lik)

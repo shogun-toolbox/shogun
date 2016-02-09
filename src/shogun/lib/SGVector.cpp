@@ -107,27 +107,27 @@ SGVector<T>::~SGVector()
 }
 
 #ifdef HAVE_EIGEN3
-template <class T> 
+template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size())
 {
-	
+
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size())
 {
-	
+
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::operator EigenVectorXtMap() const
 {
 	return EigenVectorXtMap(vector, vlen);
 }
 
-template <class T> 
+template <class T>
 SGVector<T>::operator EigenRowVectorXtMap() const
 {
 	return EigenRowVectorXtMap(vector, vlen);
@@ -244,14 +244,14 @@ void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 template<class T>
 const T& SGVector<T>::get_element(index_t index)
 {
-	ASSERT(vector && (index>=0) && (index<vlen))
+	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
 	return vector[index];
 }
 
 template<class T>
 void SGVector<T>::set_element(const T& p_element, index_t index)
 {
-	ASSERT(vector && (index>=0) && (index<vlen))
+	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
 	vector[index]=p_element;
 }
 
@@ -269,8 +269,8 @@ void SGVector<T>::resize_vector(int32_t n)
 template<class T>
 SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
-	ASSERT(x.vector && vector)
-	ASSERT(x.vlen == vlen)
+	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
+	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
 	SGVector<T> result=clone();
 	result.add(x);
@@ -280,8 +280,8 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const SGVector<T> x)
 {
-	ASSERT(x.vector && vector)
-	ASSERT(x.vlen == vlen)
+	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
+	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x.vector[i];
@@ -290,8 +290,7 @@ void SGVector<T>::add(const SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const T x)
 {
-	ASSERT(vector)
-
+	REQUIRE(vector, "Addition possible for only non-null vectors.\n");
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x;
 }
@@ -304,7 +303,7 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 		for (int32_t i=0; i < x.num_feat_entries; i++)
 		{
 			index_t idx = x.features[i].feat_index;
-			ASSERT(idx < vlen)
+			REQUIRE(idx < vlen, "Feature index should be less than %d.\n", vlen);
 			vector[idx] += x.features[i].entry;
 		}
 	}
@@ -371,7 +370,7 @@ template <>
 void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%d%s", prefix, vector[i] ? 1 : 0, i==n-1? "" : ",")
@@ -382,7 +381,7 @@ template <>
 void SGVector<char>::display_vector(const char* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",")
@@ -393,7 +392,7 @@ template <>
 void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
@@ -404,7 +403,7 @@ template <>
 void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
@@ -415,7 +414,7 @@ template <>
 void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
@@ -426,7 +425,7 @@ template <>
 void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
@@ -437,7 +436,7 @@ template <>
 void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
@@ -448,7 +447,7 @@ template <>
 void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
@@ -460,7 +459,7 @@ template <>
 void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%lld%s", prefix, vector[i], i==n-1? "" : ",")
@@ -471,7 +470,7 @@ template <>
 void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%llu%s", prefix, vector[i], i==n-1? "" : ",")
@@ -482,7 +481,7 @@ template <>
 void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%g%s", prefix, vector[i], i==n-1? "" : ",")
@@ -493,7 +492,7 @@ template <>
 void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",")
@@ -504,7 +503,7 @@ template <>
 void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 	{
@@ -518,7 +517,7 @@ template <>
 void SGVector<complex128_t>::display_vector(const complex128_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
-	ASSERT(n>=0)
+	REQUIRE(n>=0, "Vector size can not be negative.\n");
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 	{
@@ -744,7 +743,7 @@ complex128_t SGVector<complex128_t>::qsq(complex128_t* x, int32_t len, float64_t
 template <class T>
 T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 {
-	ASSERT(q!=0)
+	REQUIRE(q!=0, "Q should be non-zero for calculating qnorm\n");
 	return CMath::pow((float64_t) qsq(x, len, q), 1.0/q);
 }
 
@@ -848,7 +847,7 @@ void SGVector<T>::scale(T alpha)
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	ASSERT(loader)
+	REQUIRE(loader, "Require a valid 'c FILE pointer'\n");
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -868,7 +867,7 @@ void SGVector<complex128_t>::load(CFile* loader)
 
 template<class T> void SGVector<T>::save(CFile* saver)
 {
-	ASSERT(saver)
+	REQUIRE(saver, "Requires a valid 'c FILE pointer'\n");
 
 	SG_SET_LOCALE_C;
 	saver->set_vector(vector, vlen);

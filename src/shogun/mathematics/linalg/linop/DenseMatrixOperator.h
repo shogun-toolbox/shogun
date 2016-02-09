@@ -91,7 +91,6 @@ public:
 			for (index_t j=0; j<m_operator.num_rows; ++j)
 				casted_m(j,i)=static_cast<Scalar>(m_operator(j,i));
 		}
-		SG_SDEBUG("DenseMatrixOperator::static_cast(): Creating casted operator!\n");
 
 		return new CDenseMatrixOperator<Scalar>(casted_m);
 	}

@@ -42,11 +42,11 @@ struct MultilabelParameter
 {
 	EGraphStructure graph_type;
 	EMAPInferType infer_type;
-	
+
 	int32_t sgd_num_iter;
 	float64_t sgd_lambda;
 
-	MultilabelParameter() : graph_type(FULL), infer_type(GRAPH_CUT), 
+	MultilabelParameter() : graph_type(FULL), infer_type(GRAPH_CUT),
 							sgd_num_iter(200), sgd_lambda(0.0001)
 	{}
 
@@ -87,7 +87,7 @@ void read_data(const char * fname, SGMatrix<int32_t>& labels, SGMatrix<float64_t
 
 		for (int32_t f = 0; f < v_feat.size(); f++)
 			feats(f, i) = v_feat[f];
-		
+
 		feats(dim_feat, i) = 1.0; // bias
 
 		for (int32_t l = 0; l < v_labels.size(); l++)
@@ -103,7 +103,7 @@ void read_data(const char * fname, SGMatrix<int32_t>& labels, SGMatrix<float64_t
 SGMatrix< int32_t > get_edges_tree()
 {
 	SGMatrix< int32_t > label_tree_index;
-	
+
 	// A tree structure is defined by a 2-d matrix where
 	// each row stores the indecies of a pair of connect factors
 	// Define label tree structure
@@ -119,12 +119,12 @@ SGMatrix< int32_t > get_edges_tree()
 	label_tree_index[7] = 4;
 	label_tree_index[8] = 5;
 	label_tree_index[9] = 5;
-	
+
 	return label_tree_index;
 }
 /** get full-connected graph */
 SGMatrix< int32_t > get_edges_full(const int32_t num_classes)
-{	
+{
 	// A full-connected graph is defined by a 2-d matrix where
 	// each row stores the indecies of a pair of connected nodes
 	int32_t num_rows =  num_classes*(num_classes - 1)/2;
@@ -141,7 +141,7 @@ SGMatrix< int32_t > get_edges_full(const int32_t num_classes)
 			mat[k++] = i;
 		}
 	}
-	
+
 	return mat;
 }
 
@@ -213,7 +213,7 @@ void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SG
 			CFactor * fac_t = new CFactor(v_ftp_t[t], var_index_t, data_t);
 			fg->add_factor(fac_t);
 		}
-		
+
 		// add factor graph instance
 		fg_feats->add_sample(fg);
 
@@ -246,7 +246,7 @@ void evaluate(CFactorGraphModel * model, int32_t num_samples, CStructuredLabels 
 	ave_error = acc_loss_sgd / static_cast<float64_t>(num_samples);
 }
 
-void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, 
+void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train,
 		SGMatrix<int32_t> labels_test, SGMatrix<float64_t> feats_test)
 {
 	int32_t num_sample_train  = labels_train.num_cols;
@@ -271,7 +271,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 		w_u.zero();
 		v_ftp_u.append_element(new CTableFactorType(tid, card_u, w_u));
 	}
-	
+
 	// define factor type: tree edge factor
 	// note that each edge is a new type
 	DynArray<CTableFactorType *> v_ftp_t;
@@ -365,18 +365,18 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 int main(int argc, char * argv[])
 {
 	init_shogun_with_defaults();
-		
+
 	// Training data
 	SGMatrix<int32_t> labels_train;
 	SGMatrix<float64_t> feats_train;
-	
+
 	// Testing data
 	SGMatrix<int32_t> labels_test;
 	SGMatrix<float64_t> feats_test;
 
 	// Train and test with real data
 	FILE * pfile = fopen(FNAME_TRAIN, "r");
-	
+
 	if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", FNAME_TRAIN);
@@ -386,7 +386,7 @@ int main(int argc, char * argv[])
 	fclose(pfile);
 
 	pfile = fopen(FNAME_TEST, "r");
-	
+
 	if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", FNAME_TEST);
@@ -395,13 +395,13 @@ int main(int argc, char * argv[])
 
 	fclose(pfile);
 
-	SG_SPRINT("Experiment with real dataset: \n");	
-	
+	SG_SPRINT("Experiment with real dataset: \n");
+
 	read_data(FNAME_TRAIN, labels_train, feats_train);
 	read_data(FNAME_TEST, labels_test, feats_test);
 
 	MultilabelParameter param;
-	
+
 	SG_SPRINT("\nExample 1: tree structure, max-product inference\n");
 	param = MultilabelParameter(TREE, TREE_MAX_PROD);
 	test(param, labels_train, feats_train, labels_test, feats_test);
@@ -413,7 +413,14 @@ int main(int argc, char * argv[])
 	SG_SPRINT("\nExample 2.2: full-connected graph, graph-cuts inference\n");
 	param = MultilabelParameter(FULL, GRAPH_CUT);
 	test(param, labels_train, feats_train, labels_test, feats_test);
-	
+
+	SG_SPRINT("\nExample 3.1: tree structure, GEMPLP inference\n");
+	param = MultilabelParameter(TREE, GEMPLP);
+	test(param, labels_train, feats_train, labels_test, feats_test);
+
+	SG_SPRINT("\nExample 3.2: full-connected graph, GEMPLP inference\n");
+	param = MultilabelParameter(FULL, GEMPLP);
+	test(param, labels_train, feats_train, labels_test, feats_test);
 	exit_shogun();
 
 	return 0;

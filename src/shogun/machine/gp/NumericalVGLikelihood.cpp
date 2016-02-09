@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  *
@@ -64,23 +64,23 @@ CNumericalVGLikelihood::~CNumericalVGLikelihood()
 
 void CNumericalVGLikelihood::init()
 {
-	SG_ADD(&m_log_lam, "log_lam", 
+	SG_ADD(&m_log_lam, "log_lam",
 		"The result of used for computing variational expection\n",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD(&m_xgh, "xgh", 
+	SG_ADD(&m_xgh, "xgh",
 		"Gaussian-Hermite quadrature base points (abscissas)\n",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD(&m_wgh, "wgh", 
+	SG_ADD(&m_wgh, "wgh",
 		"Gaussian-Hermite quadrature weight factors\n",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD(&m_GHQ_N, "GHQ_N", 
+	SG_ADD(&m_GHQ_N, "GHQ_N",
 		"The number of Gaussian-Hermite quadrature point\n",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD(&m_is_init_GHQ, "is_init_GHQ", 
+	SG_ADD(&m_is_init_GHQ, "is_init_GHQ",
 		"Whether Gaussian-Hermite quadrature points are initialized or not\n",
 		MS_NOT_AVAILABLE);
 	m_GHQ_N=20;
@@ -100,7 +100,7 @@ void CNumericalVGLikelihood::set_GHQ_number(index_t n)
 
 SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
 	const TParameter* param) const
-{	
+{
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
 	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	if (!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")))
@@ -120,7 +120,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
-		SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false); 
+		SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false);
 		SGVector<float64_t> lp=get_first_derivative(lab, tmp, param);
 		Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 		eigen_res+=eigen_lp*m_wgh[cidx];
@@ -132,7 +132,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 }
 
 SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
-{	
+{
 	SGVector<float64_t> res(m_lab.vlen);
 	res.zero();
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
@@ -147,7 +147,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
-		SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false); 
+		SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false);
 		SGVector<float64_t> lp=get_log_probability_f(lab, tmp);
 		Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 		eigen_res+=eigen_lp*m_wgh[cidx];
@@ -162,14 +162,14 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 		const TParameter* param) const
 {
 	//based on the likKL(v, lik, varargin) function in infKL.m
-	
+
 	//compute gradient using numerical integration
 	REQUIRE(param, "Param is required (param should not be NULL)\n");
 	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
-	//We take the derivative wrt to param. Only mu or sigma2 can be the param 
+	//We take the derivative wrt to param. Only mu or sigma2 can be the param
 	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
-		"Can't compute derivative of the variational expection ", 
-		"of log LogitLikelihood using numerical integration ", 
+		"Can't compute derivative of the variational expection ",
+		"of log LogitLikelihood using numerical integration ",
 		"wrt %s.%s parameter. The function only accepts mu and sigma2 as parameter\n",
 		get_name(), param->m_name);
 
@@ -180,7 +180,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	Map<VectorXd> eigen_v(m_s2.vector, m_s2.vlen);
 
 	CLabels* lab=NULL;
-	
+
 	if (supports_binary())
 		lab=new CBinaryLabels(m_lab);
 	else if (supports_regression())
@@ -193,7 +193,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 		//df  = df  + w(i)*(dlp);
 		for (index_t cidx=0; cidx<m_log_lam.num_cols; cidx++)
 		{
-			SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false); 
+			SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false);
 			SGVector<float64_t> dlp=get_log_probability_derivative_f(lab, tmp, 1);
 			Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
 			eigen_res+=eigen_dlp*m_wgh[cidx];
@@ -209,7 +209,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 
 		for (index_t cidx=0; cidx<m_log_lam.num_cols; cidx++)
 		{
-			SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false); 
+			SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false);
 			SGVector<float64_t> dlp=get_log_probability_derivative_f(lab, tmp, 1);
 			Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
 			eigen_res+=((m_wgh[cidx]*0.5*m_xgh[cidx])*eigen_dlp.array()/(eigen_sv.array()+EPS)).matrix();
@@ -235,7 +235,7 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 			REQUIRE(lab->get_label_type()==LT_BINARY,
 				"Labels must be type of CBinaryLabels\n");
 		}
-		else 
+		else
 		{
 			if (supports_regression())
 			{

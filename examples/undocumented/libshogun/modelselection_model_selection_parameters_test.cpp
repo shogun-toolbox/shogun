@@ -15,6 +15,7 @@
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -70,8 +71,8 @@ CModelSelectionParameters* build_complex_example_tree()
 	root->append_child(param_gaussian_kernel);
 
 	CModelSelectionParameters* param_gaussian_kernel_width=
-			new CModelSelectionParameters("width");
-	param_gaussian_kernel_width->build_values(1.0, 2.0, R_EXP);
+			new CModelSelectionParameters("log_width");
+	param_gaussian_kernel_width->build_values(0.0, 0.5*CMath::log(2.0), R_LINEAR);
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();

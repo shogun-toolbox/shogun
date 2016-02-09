@@ -47,19 +47,51 @@
 
 using namespace shogun;
 
+TEST(ScaleMatrix, native_backend)
+{
+	const float64_t alpha = 0.3;
+
+	SGMatrix<float64_t> A(9,9);
+	SGMatrix<float64_t> B(9,9);
+
+	for (int32_t i=0; i<9*9; i++)
+		A[i] = i;
+
+	linalg::scale<linalg::Backend::NATIVE>(A, B, alpha);
+
+	for (int32_t i=0; i<9*9; i++)
+		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
+}
+
+TEST(ScaleVector, native_backend)
+{
+	const float64_t alpha = 0.3;
+
+	SGVector<float64_t> A(9);
+	SGVector<float64_t> B(9);
+
+	for (int32_t i=0; i<9; i++)
+		A[i] = i;
+
+	linalg::scale<linalg::Backend::NATIVE>(A, B, alpha);
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
+}
+
 #ifdef HAVE_EIGEN3
 TEST(ScaleMatrix, eigen3_backend)
 {
 	const float64_t alpha = 0.3;
-	
+
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = i;
-	
+
 	linalg::scale<linalg::Backend::EIGEN3>(A, B, alpha);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
 }
@@ -67,15 +99,15 @@ TEST(ScaleMatrix, eigen3_backend)
 TEST(ScaleVector, eigen3_backend)
 {
 	const float64_t alpha = 0.3;
-	
+
 	SGVector<float64_t> A(9);
 	SGVector<float64_t> B(9);
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = i;
-	
+
 	linalg::scale<linalg::Backend::EIGEN3>(A, B, alpha);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
 }
@@ -85,15 +117,15 @@ TEST(ScaleVector, eigen3_backend)
 TEST(ScaleMatrix, viennacl_backend)
 {
 	const float64_t alpha = 0.3;
-	
+
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = i;
-	
+
 	linalg::scale<linalg::Backend::VIENNACL>(A, B, alpha);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
 }
@@ -101,15 +133,15 @@ TEST(ScaleMatrix, viennacl_backend)
 TEST(ScaleVector, viennacl_backend)
 {
 	const float64_t alpha = 0.3;
-	
+
 	CGPUVector<float64_t> A(9);
 	CGPUVector<float64_t> B(9);
-	
+
 	for (int32_t i=0; i<9; i++)
 		A[i] = i;
-	
+
 	linalg::scale<linalg::Backend::VIENNACL>(A, B, alpha);
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
 }

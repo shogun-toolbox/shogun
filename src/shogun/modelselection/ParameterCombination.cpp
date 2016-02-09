@@ -45,7 +45,7 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 		if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||
 			type.m_ptype==PT_FLOATMAX)
 		{
-			if ((type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR))
+			if (type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR)
 			{
 				Parameter* p=new Parameter();
 				p->add_vector((float64_t**)param->m_parameter, type.m_length_y,
@@ -54,6 +54,15 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 				m_child_nodes->append_element(new CParameterCombination(p));
 				m_parameters_length+=*(type.m_length_y);
 			}
+			else if (type.m_ctype==CT_SGMATRIX || type.m_ctype==CT_MATRIX)
+			{
+				Parameter* p=new Parameter();
+				p->add_matrix((float64_t**)param->m_parameter, type.m_length_y,
+					type.m_length_x, param->m_name);
+
+				m_child_nodes->append_element(new CParameterCombination(p));
+				m_parameters_length+=type.get_num_elements();
+			}
 			else if (type.m_ctype==CT_SCALAR)
 			{
 				Parameter* p=new Parameter();
@@ -61,6 +70,12 @@ CParameterCombination::CParameterCombination(CSGObject* obj)
 
 				m_child_nodes->append_element(new CParameterCombination(p));
 				m_parameters_length++;
+			}
+			else
+			{
+				SG_WARNING("Parameter %s.%s was not added to parameter combination, "
+					"since it isn't a type currently supported\n", obj->get_name(),
+					param->m_name);
 			}
 		}
 		else
@@ -308,6 +323,8 @@ void CParameterCombination::print_tree(int prefix_num) const
 		SG_SPRINT("%s", prefix)
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
+			EContainerType ctype = m_param->get_parameter(i)->m_datatype.m_ctype;
+
 			/* distinction between sgobject and values */
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
@@ -316,23 +333,17 @@ void CParameterCombination::print_tree(int prefix_num) const
 				SG_SPRINT("\"%s\":%s at %p ", param->m_name,
 						current_sgobject->get_name(), current_sgobject);
 			}
-
-		    else if (m_param->get_parameter(i)->m_datatype.m_ctype == CT_SGVECTOR)
-		    {
-				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
-			float64_t** param = (float64_t**)(m_param->
-					get_parameter(i)->m_parameter);
-			if (!m_param->get_parameter(i)->m_datatype.m_length_y)
+			else if (ctype==CT_SGVECTOR || ctype==CT_VECTOR || ctype==CT_SGMATRIX || ctype==CT_MATRIX)
 			{
-				SG_ERROR("Parameter vector %s has no length\n",
-						m_param->get_parameter(i)->m_name);
+				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
+				float64_t** param = (float64_t**)(m_param->
+						get_parameter(i)->m_parameter);
+
+				index_t length = m_param->get_parameter(i)->m_datatype.get_num_elements();
+
+				for (index_t j = 0; j < length; j++)
+					SG_SPRINT("%f ", (*param)[j])
 			}
-
-			index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
-
-			for (index_t j = 0; j < length; j++)
-				SG_SPRINT("%f ", (*param)[j])
-		    }
 
 			else
 			{
@@ -767,10 +778,11 @@ void CParameterCombination::build_parameter_values_map(
 			if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||
 					type.m_ptype==PT_FLOATMAX)
 			{
-				if ((type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR))
+				if (type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR ||
+					type.m_ctype==CT_SGMATRIX || type.m_ctype==CT_MATRIX)
 				{
 					SGVector<float64_t> value(*((float64_t **)param->m_parameter),
-							(*type.m_length_y));
+							type.get_num_elements(), false);
 					dict->add(param, value);
 				}
 				else if (type.m_ctype==CT_SCALAR)

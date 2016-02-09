@@ -29,7 +29,7 @@
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * 
+ *
  */
 #include <shogun/lib/config.h>
 
@@ -106,12 +106,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -221,18 +221,18 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
 
 	// comparison the result from GPML package with the minfunc function:
-	/*alpha = 
+	/*alpha =
 		-0.506457945471096
 		0.503267616409653
 		0.506035061915211
@@ -312,12 +312,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_pr
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -390,12 +390,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -409,17 +409,17 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison the result from GPML package with the minfunc function:
 	/*cov =
 		-0.034178423415816
 		0.108245557597861
-	*/ 
+	*/
 	abs_tolerance = CMath::get_abs_tolerance(-0.034178423415816, rel_tolerance);
 	EXPECT_NEAR(dnlZ_ell, -0.034178423415816, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.108245557597861, rel_tolerance);
@@ -487,12 +487,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihoo
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -577,12 +577,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_lik
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -692,12 +692,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -808,12 +808,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -899,12 +899,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_lo
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -979,12 +979,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -998,10 +998,10 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
 
-	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison the result from GPML package with the minfunc function:
@@ -1071,12 +1071,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1180,18 +1180,18 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
 
 	// comparison the result from GPML package with the minfunc function:
-	/*alpha = 
+	/*alpha =
 		0.112589537139413
 		0.030951587759558
 		0.265522614808735
@@ -1264,12 +1264,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_ga
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1339,12 +1339,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1358,21 +1358,21 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison the result from GPML package with the minfunc function:
-	/*cov = 
+	/*cov =
 		-0.851031385976160
 		-0.570516239076101]
 		lik =
 		0.007407293825117
-	*/ 
+	*/
 	abs_tolerance = CMath::get_abs_tolerance(0.007407293825117, rel_tolerance);
 	EXPECT_NEAR(dnlZ_lik, 0.007407293825117, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.851031385976160, rel_tolerance);
@@ -1437,12 +1437,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1532,7 +1532,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf 
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
 		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
@@ -1546,18 +1546,18 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
 
 	// comparison the result from GPML package with the minfunc function:
-	/*alpha = 
+	/*alpha =
 		0.124677478636837
 		-0.011322148653691
 		0.291185918072183
@@ -1616,7 +1616,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf 
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
 		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
@@ -1630,12 +1630,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1704,12 +1704,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	int past = 0;
 	float64_t epsilon = 1e-15;
 	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m, 
+	inf->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
-		delta, 
-		past, 
+		delta,
+		past,
 		epsilon,
 		enable_newton_if_fail
 		);
@@ -1723,12 +1723,12 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
-	TParameter* df_param=lik->m_gradient_parameters->get_parameter("df");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
+	TParameter* df_param=lik->m_gradient_parameters->get_parameter("log_df");
 
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
@@ -1740,7 +1740,7 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 		lik =
 		-0.649318379107740
 		-0.155672464565009
-	*/ 
+	*/
 	abs_tolerance = CMath::get_abs_tolerance(-0.649318379107740, rel_tolerance);
 	EXPECT_NEAR(dnlZ_df, -0.649318379107740, abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.155672464565009, rel_tolerance);

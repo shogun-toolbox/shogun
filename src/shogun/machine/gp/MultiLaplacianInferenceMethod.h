@@ -93,6 +93,20 @@ public:
 	 */
 	virtual const char* get_name() const { return "MultiLaplacianInferenceMethod"; }
 
+
+	/** return what type of inference we are
+	 *
+	 * @return inference type Laplacian
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_MULTIPLE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CMultiLaplacianInferenceMethod object
+	 */
+	static CMultiLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:
@@ -123,6 +137,19 @@ public:
 		return m_model->supports_multiclass();
 	}
 
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
+	 * \f]
+	 *
+	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_mean();
 protected:
 
 	/** check if members of object are valid for inference */
@@ -203,7 +230,7 @@ protected:
 	virtual float64_t get_derivative_helper(SGMatrix<float64_t> dK);
 
 	/** the helper used to compute gradient of GP for inference
-	 * 
+	 *
 	 * construct the \f$\pi$\f vector defined in the algorithm 3.3 of the GPML textbook
 	 * Noth that the vector is stored in m_W
 	 *

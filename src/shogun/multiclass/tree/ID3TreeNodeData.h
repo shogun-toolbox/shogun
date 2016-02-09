@@ -61,7 +61,7 @@ struct id3TreeNodeData
 	}
 
 	/** print data
-	 * @param data the data to be printed  
+	 * @param data the data to be printed
 	 */
 	static void print_data(const id3TreeNodeData &data)
 	{

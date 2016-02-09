@@ -10,7 +10,7 @@
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype, out="CTYPE*") shogun::SGVector<SGTYPE> %{int size_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE> %{CSHARPTYPE[]%}
+%typemap(imtype, out="IntPtr", inattributes="int size_$1, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE> %{CSHARPTYPE[]%}
 %typemap(cstype) shogun::SGVector<SGTYPE> %{CSHARPTYPE[]%}
 
 %typemap(in) shogun::SGVector<SGTYPE> {
@@ -90,7 +90,7 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 %define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype, out="CTYPE*") shogun::SGMatrix<SGTYPE> %{int rows_$1, int cols_$1, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[,]%}
+%typemap(imtype, out="IntPtr", inattributes="int rows_$1, int cols_$1, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[,]%}
 %typemap(cstype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[,]%}
 
 %typemap(in) shogun::SGMatrix<SGTYPE>

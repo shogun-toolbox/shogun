@@ -106,7 +106,18 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l, r)
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class()==r->get_feature_class())
+	if (l->support_compatible_class())
+	{
+		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			l->get_name(), r->get_name());
+	}
+	else
+	{
+		REQUIRE(l->get_feature_class()==r->get_feature_class(),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			l->get_name(), r->get_name())
+	}
 	ASSERT(l->get_feature_type()==r->get_feature_type())
 
 	//remove references to previous features
@@ -759,9 +770,11 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_JENSENSHANNON)
 		ENUM_CASE(K_DIRECTOR)
 		ENUM_CASE(K_PRODUCT)
-		ENUM_CASE(K_LINEARARD)
+		ENUM_CASE(K_EXPONENTIALARD)
 		ENUM_CASE(K_GAUSSIANARD)
+		ENUM_CASE(K_GAUSSIANARDSPARSE)
 		ENUM_CASE(K_STREAMING)
+		ENUM_CASE(K_PERIODIC)
 	}
 
 	switch (get_feature_class())
@@ -786,6 +799,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(C_MATRIX)
 		ENUM_CASE(C_FACTOR_GRAPH)
 		ENUM_CASE(C_INDEX)
+		ENUM_CASE(C_SUB_SAMPLES_DENSE)
 		ENUM_CASE(C_ANY)
 	}
 
@@ -1421,8 +1435,10 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	return SGMatrix<T>(result,m,n,true);
 }
 
+
 template SGMatrix<float64_t> CKernel::get_kernel_matrix<float64_t>();
 template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
 
 template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
 template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
+

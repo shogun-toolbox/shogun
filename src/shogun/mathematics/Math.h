@@ -147,7 +147,7 @@ class CMath : public CSGObject
 		/**@name min/max/abs functions.
 		*/
 		//@{
-		
+
 		/** Returns the smallest element amongst two input values
 		 * @param a first value
 		 * @param b second value
@@ -307,7 +307,7 @@ class CMath : public CSGObject
 
 		/**@name misc functions */
 		//@{
-		
+
 		/** Compares the value of two floats based on eps only
 		 * @param a first value to compare
 		 * @param b second value to compare
@@ -315,53 +315,53 @@ class CMath : public CSGObject
 		 * @return true if values are equal within eps accuracy, false if not.
 		 */
 		template <class T>
-			static inline bool fequals_abs(const T& a, const T& b, 
+			static inline bool fequals_abs(const T& a, const T& b,
 				const float64_t eps)
 			{
 				const T diff = CMath::abs<T>((a-b));
 				return (diff < eps);
 			}
-		
+
 		/** Compares the value of two floats (handles special cases, such as NaN, Inf etc.)
 		 * Note: returns true if a == b == NAN
 		 * Implementation inspired by http://floating-point-gui.de/errors/comparison/
 		 * @param a first value to compare
 		 * @param b second value to compare
 		 * @param eps threshold for values to be equal/different
-		 * @param tolerant allows linient check on float equality (within accuracy) 
+		 * @param tolerant allows linient check on float equality (within accuracy)
 		 * @return true if values are equal within eps accuracy, false if not.
 		 */
 		template <class T>
-			static inline bool fequals(const T& a, const T& b, 
+			static inline bool fequals(const T& a, const T& b,
 				const float64_t eps, bool tolerant=false)
 			{
 				const T absA = CMath::abs<T>(a);
 				const T absB = CMath::abs<T>(b);
 				const T diff = CMath::abs<T>((a-b));
 				T comp;
-				
+
 				// Handle this separately since NAN is unordered
 				if (CMath::is_nan((float64_t)a) && CMath::is_nan((float64_t)b))
 					return true;
-				
+
 				// Required for JSON Serialization Tests
 				if (tolerant)
 					return CMath::fequals_abs<T>(a, b, eps);
-				
+
 				// handles float32_t and float64_t separately
 				if (sizeof(T) == 4)
 					comp = CMath::F_MIN_NORM_VAL32;
-				
+
 				else
 					comp = CMath::F_MIN_NORM_VAL64;
-				
+
 				if (a==b)
 					return true;
-				
+
 				// both a and b are 0 and relative error is less meaningful
 				else if ( (a==0) || (b==0) || (diff < comp) )
 					return (diff<(eps * comp));
-				
+
 				// use max(relative error, diff) to handle large eps
 				else
 				{
@@ -373,10 +373,10 @@ class CMath : public CSGObject
 
 		/* Get the corresponding absolute tolerance for unit test given a relative tolerance
 		 *
-		 * Note that a unit test will be passed only when 
+		 * Note that a unit test will be passed only when
 		 * \f[
 		 * |v_\text{true} - v_\text{predict}| \leq tol_\text{relative} * |v_\text{true}|
-		 * \f] which is equivalent to 
+		 * \f] which is equivalent to
 		 * \f[
 		 * |v_\text{true} - v_\text{predict}| \leq tol_\text{absolute}
 		 * \f] where
@@ -390,10 +390,10 @@ class CMath : public CSGObject
 		 * @return the corresponding absolute tolerance
 		 */
 		static float64_t get_abs_tolerance(float64_t true_value, float64_t rel_tolerance);
-		
+
 		/** Rounds off the input value to it's nearest integer (as a floating-point value)
 		 * @param d input decimal value
-		 * @return rounded off value 
+		 * @return rounded off value
 		 */
 		static inline float64_t round(float64_t d)
 		{
@@ -936,7 +936,7 @@ class CMath : public CSGObject
 			return i;
 		}
 		//@}
-		
+
 		/** Computes area under the curve
 		 * @param xy
 		 * @param len length
@@ -1292,7 +1292,7 @@ class CMath : public CSGObject
 		 * and left to right
 		 * @param a matrix to be sorted
 		 * @param cols number of columns
-		 * @param sort_col 
+		 * @param sort_col
 		 */
 		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0);
 
@@ -1591,7 +1591,7 @@ class CMath : public CSGObject
 		/** Get sorted index.
 		 *
 		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
-		 * 
+		 *
 		 * @param vector vector to be sorted
 		 * @return sorted index for this vector
 		 */
@@ -1803,7 +1803,7 @@ class CMath : public CSGObject
 		 * @param output array to search
 		 * @param size size of array
 		 * @param elem element to search
-		 * @return -1 if not found 
+		 * @return -1 if not found
 		 */
 		template <class T>
 			static inline int32_t binary_search(T* output, int32_t size, T elem)
@@ -1824,7 +1824,7 @@ class CMath : public CSGObject
 
 		/** Finds an element in a sorted array of pointers via binary search
 		 * Every element is dereferenced once before being compared
-		 * @param array array of pointers to search in (assumed being sorted)
+		 * @param vector array of pointers to search in (assumed being sorted)
 		 * @param length length of array
 		 * @param elem pointer to element to search for
 		 * @return index of elem, -1 if not found
@@ -2060,13 +2060,13 @@ class CMath : public CSGObject
 				/* Largest and smallest possible float64_t */
 				static const float64_t MAX_REAL_NUMBER;
 				static const float64_t MIN_REAL_NUMBER;
-				
+
 				/* Floating point Limits, Normalized */
 				static const float32_t F_MAX_VAL32;
 				static const float32_t F_MIN_NORM_VAL32;
 				static const float64_t F_MAX_VAL64;
 				static const float64_t F_MIN_NORM_VAL64;
-				
+
 				/* Floating point limits, Denormalized */
 				static const float32_t F_MIN_VAL32;
 				static const float64_t F_MIN_VAL64;

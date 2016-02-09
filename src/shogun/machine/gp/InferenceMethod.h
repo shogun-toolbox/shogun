@@ -1,15 +1,36 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2013 Roman Votyakov
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (W) 2015 Wu Lin
  * Written (W) 2013-2014 Heiko Strathmann
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * Written (W) 2013 Roman Votyakov
+ * Written (W) 2012 Jacob Walker
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ *
  */
-
 #ifndef CINFERENCEMETHOD_H_
 #define CINFERENCEMETHOD_H_
 
@@ -33,10 +54,19 @@ enum EInferenceType
 {
 	INF_NONE=0,
 	INF_EXACT=10,
-	INF_FITC=20,
+	INF_SPARSE=20,
+	INF_FITC_REGRESSION=21,
+	INF_FITC_LAPLACIAN_SINGLE=22,
 	INF_LAPLACIAN=30,
+	INF_LAPLACIAN_SINGLE=31,
+	INF_LAPLACIAN_MULTIPLE=32,
 	INF_EP=40,
-	INF_KL=50
+	INF_KL=50,
+	INF_KL_DIAGONAL=51,
+	INF_KL_CHOLESKY=52,
+	INF_KL_COVARIANCE=53,
+	INF_KL_DUAL=54,
+	INF_KL_SPARSE_REGRESSION=55
 };
 
 /** @brief The Inference Method base class.
@@ -318,13 +348,13 @@ public:
 	 *
 	 * @return kernel scale
 	 */
-	virtual float64_t get_scale() const { return m_scale; }
+	virtual float64_t get_scale() const;
 
 	/** set kernel scale
 	 *
 	 * @param scale scale to be set
 	 */
-	virtual void set_scale(float64_t scale) { m_scale=scale; }
+	virtual void set_scale(float64_t scale);
 
 	/** whether combination of inference method and given likelihood function
 	 * supports regression
@@ -347,7 +377,7 @@ public:
 	 */
 	virtual bool supports_multiclass() const { return false; }
 
-	/** update all matrices */
+	/** update matrices except gradients */
 	virtual void update();
 
 	/** get the E matrix used for multi classification
@@ -420,6 +450,8 @@ protected:
 	 */
 	static void* get_derivative_helper(void* p);
 
+	/** update gradients */
+	virtual void compute_gradient();
 private:
 	void init();
 
@@ -446,13 +478,16 @@ protected:
 	SGMatrix<float64_t> m_L;
 
 	/** kernel scale */
-	float64_t m_scale;
+	float64_t m_log_scale;
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
 
 	/** the matrix used for multi classification*/
 	SGMatrix<float64_t> m_E;
+
+	/** Whether gradients are updated */
+	bool m_gradient_update;
 };
 }
 #endif /* HAVE_EIGEN3 */

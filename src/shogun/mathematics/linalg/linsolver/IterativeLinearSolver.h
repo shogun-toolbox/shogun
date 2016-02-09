@@ -12,7 +12,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
-#include <shogun/lib/SGVector.h> 
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -42,7 +42,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<SGVector<T>, SGVector<T> >* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
 	void set_iteration_limit(index_t iteration_limit)

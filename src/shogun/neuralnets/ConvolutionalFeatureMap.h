@@ -47,10 +47,10 @@ enum EConvMapActivationFunction
 {
 	/** Identity activation function: \f$ f(x) = x \f$ */
 	CMAF_IDENTITY = 0,
-	
-	/** Logistic activation function: \f$ f(x) = \frac{1}{1+exp(-x)} \f$ */ 
+
+	/** Logistic activation function: \f$ f(x) = \frac{1}{1+exp(-x)} \f$ */
 	CMAF_LOGISTIC = 1,
-	
+
 	/** Rectified linear activation function: \f$ f(x) = max(x,0) \f$ */
 	CMAF_RECTIFIED_LINEAR = 2
 };
@@ -64,7 +64,7 @@ class CDynamicObjectArray;
  */
 class CConvolutionalFeatureMap
 {
-public:	
+public:
 	/** Constuctor
 	 *
 	 * @param input_width Width of the input
@@ -85,10 +85,10 @@ public:
 			int32_t index=0,
 			EConvMapActivationFunction function = CMAF_IDENTITY,
 			ENLAutoencoderPosition autoencoder_position = NLAP_NONE);
-	
+
 	/** Computes the activations of the feature map
 	 *
-	 * @param parameters Vector of parameters for the map. length 
+	 * @param parameters Vector of parameters for the map. length
 	 * width*height+(2*radius_x+1)+(2*radius_y+1)
 	 * @param layers The layers array that forms the network in which the map
 	 * is being used
@@ -100,7 +100,7 @@ public:
 			CDynamicObjectArray* layers,
 			SGVector<int32_t> input_indices,
 			SGMatrix<float64_t> activations);
-	
+
 	/** Computes the gradients with respect to the parameters and the inputs to
 	 * the map
 	 *
@@ -119,7 +119,7 @@ public:
 			CDynamicObjectArray* layers,
 			SGVector<int32_t> input_indices,
 			SGVector<float64_t> parameter_gradients);
-	
+
 	/** Applies max pooling to the activations
 
 	 * @param activations Activations of the map
@@ -129,18 +129,18 @@ public:
 	 * @param max_indices Row indices of the max elements for each pooling region
 	 */
 	void pool_activations(SGMatrix<float64_t> activations,
-			int32_t pooling_width, 
+			int32_t pooling_width,
 			int32_t pooling_height,
 			SGMatrix<float64_t> pooled_activations,
 			SGMatrix<float64_t> max_indices);
-	
+
 protected:
 	/** Perfoms convolution
 	 *
 	 * @param inputs Inputs matrix. Each column in the matrix is treated as an
 	 * image in column major format
 	 * @param weights Convolution filter
-	 * @param outputs Output matrix 
+	 * @param outputs Output matrix
 	 * @param flip If true the weights are flipped, performing cross-correlation
 	 * instead of convolution
 	 * @param reset_output true the output is reset to zero before performing
@@ -148,14 +148,14 @@ protected:
 	 * @param inputs_row_offset Index of the row at which the input image starts
 	 * @param outputs_row_offset Index of the row at which the output image starts
 	 */
-	void convolve(SGMatrix<float64_t> inputs, 
-			SGMatrix<float64_t> weights, 
+	void convolve(SGMatrix<float64_t> inputs,
+			SGMatrix<float64_t> weights,
 			SGMatrix<float64_t> outputs,
 			bool flip,
 			bool reset_output,
 			int32_t inputs_row_offset,
  			int32_t outputs_row_offset);
-	
+
 	/** Computes the gradients of the error with respect to the weights, for a
 	 * particular input matrix
 	 *
@@ -165,60 +165,60 @@ protected:
 	 * @param inputs_row_offset Offset for accessing the rows of the inputs matrix
 	 * @param local_gradients_row_offset Offset for accessing the rows of the local gradients matrix
 	 */
-	void compute_weight_gradients(SGMatrix<float64_t> inputs, 
-			SGMatrix<float64_t> local_gradients, 
+	void compute_weight_gradients(SGMatrix<float64_t> inputs,
+			SGMatrix<float64_t> local_gradients,
 			SGMatrix<float64_t> weight_gradients,
 			int32_t inputs_row_offset,
  			int32_t local_gradients_row_offset);
-	
+
 protected:
 	/** Width of the input */
 	int32_t m_input_width;
-	
+
 	/** Height of the input */
 	int32_t m_input_height;
-	
+
 	/** Radius of the convolution filter on the x (width) axis */
 	int32_t m_radius_x;
-	
+
 	/** Radius of the convolution filter on the y (height) axis */
 	int32_t m_radius_y;
-	
+
 	/** Stride in the x direction */
 	int32_t m_stride_x;
-	
+
 	/** Stride in the y direcetion */
 	int32_t m_stride_y;
-	
+
 	/** Index of this feature map in its layer. This affects which
 	 * part of the activations/activation_gradients matrix that map will use
 	 */
 	int32_t m_index;
-	
+
 	/** The map's activation function */
 	EConvMapActivationFunction m_activation_function;
-	
+
 	/** Width of the convolution's output image */
 	int32_t m_output_width;
-	
+
 	/** Height of the convolution's output image */
 	int32_t m_output_height;
-	
+
 	/** Number of neurons in the input */
 	int32_t m_input_num_neurons;
-	
+
 	/** Number of neurons in the output */
 	int32_t m_output_num_neurons;
-	
+
 	/** Row offset for accessing the activations */
 	int32_t m_row_offset;
-	
+
 	/** Width of the convolution filter */
 	int32_t m_filter_width;
-	
+
 	/** Height of the convolution filter */
 	int32_t m_filter_height;
-	
+
 	/** For autoencoders, specifies the position of the layer in the autoencoder,
 	 * i.e an encoding layer or a decoding layer. Default value is NLAP_NONE
 	 */

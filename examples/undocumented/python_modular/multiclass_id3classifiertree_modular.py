@@ -16,7 +16,7 @@ test_data = array([[2.0, 2.0, 1.0, 3.0, 3.0],
 
 parameter_list = [[train_data, train_labels, test_data]]
 
-def multiclass_id3classifiertree_modular(train=train_data,labels=train_labels,test=test_data):	
+def multiclass_id3classifiertree_modular(train=train_data,labels=train_labels,test=test_data):
 	try:
 		from modshogun import RealFeatures, MulticlassLabels, ID3ClassifierTree
 	except ImportError:

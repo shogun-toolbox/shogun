@@ -12,53 +12,32 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
-template<class T> class SGVector;
 
 /** @brief Abstract template base class that represents a linear operator,
  *  e.g. a matrix
  */
-template<class RetType, class OperandType> class CLinearOperator : public CSGObject
+template<class T>
+class CLinearOperator : public CSGObject
 {
 public:
 	/** default constructor */
-	CLinearOperator()
-	: CSGObject()
-	{
-		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-	}
+	CLinearOperator();
 
 	/**
 	 * constructor
 	 *
 	 * @param dimension dimension of the vector on which the operator can be applied
 	 */
-	CLinearOperator(index_t dimension)
-	: CSGObject()
-	{
-		init();
-
-		m_dimension=dimension;
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-	}
+	CLinearOperator(index_t dimension);
 
 	/** destructor */
-	virtual ~CLinearOperator()
-	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
-	}
+	virtual ~CLinearOperator();
 
 	/** @return the dimension on which the linear operator can apply */
-	const index_t get_dimension() const
-	{
-		return m_dimension;
-	}
+	const index_t get_dimension() const;
 
 	/**
 	 * abstract method that applies the linear operator to Operand(eg. a vector)
@@ -66,29 +45,24 @@ public:
 	 * @param b the Operand to which the linear operator applies
 	 * @return the result(eg. a vector)
 	 */
-	virtual RetType apply(OperandType b) const = 0;
+	virtual SGVector<T> apply(SGVector<T> b) const=0;
 
 	/** @return object name */
 	virtual const char* get_name() const
 	{
 		return "LinearOperator";
 	}
+
 protected:
 	/** the dimension of vector on which the linear operator can apply */
 	index_t m_dimension;
 
 private:
 	/** initialize with default values and register params */
-	void init()
-	{
-		m_dimension=0;
-
-		SG_ADD(&m_dimension, "dimension",
-			"Dimension of the vector on which linear operator can apply",
-			MS_NOT_AVAILABLE);
-	}
+	void init();
 
 };
+
 }
 
 #endif // LINEAR_OPERATOR_H_

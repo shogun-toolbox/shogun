@@ -52,15 +52,15 @@ namespace linalg
 namespace implementation
 {
 
-/** Generic class which is specialized for different backends to perform 
- * elementwise multiplication 
+/** Generic class which is specialized for different backends to perform
+ * elementwise multiplication
  */
 template <enum Backend, class Matrix>
 struct elementwise_product
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
 	static void compute(Matrix A, Matrix B, Matrix C);
 };
@@ -68,20 +68,61 @@ struct elementwise_product
 #ifdef HAVE_EIGEN3
 
 /** Specialization of elementwise_product for the Eigen3 backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_product<Backend::EIGEN3, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
+	typedef SGMatrix<T> ReturnType;
+
+	/** Eigen3 matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
-	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
-	
-	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
+
+	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+	 *
+	 * This version returns the result in a newly created matrix. If elementwise-product
+	 * is desired that will work irrespective of the backend and the matrix type used,
+	 * then this method should be used.
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @return The result of the operation
+	 */
+	static ReturnType compute(SGMatrix<T> A, SGMatrix<T> B)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix A is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+
+		ReturnType retMatrix(A.num_rows, A.num_cols);
+		compute(A, B, retMatrix);
+
+		return retMatrix;
+	}
+
+	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+	 *
+	 * This version should be used for backend specific code requirements. For example,
+	 * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
+	 * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
+	 * desired, use the version that does not support preallocated result matrix but
+	 * returns the result in a newly created matrix instead.
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @param C Result of the operation
+	 */
 	static void compute(SGMatrix<T> A, SGMatrix<T> B, SGMatrix<T> C)
 	{
 		Eigen::Map<MatrixXt> A_eig = A;
 		Eigen::Map<MatrixXt> B_eig = B;
 		Eigen::Map<MatrixXt> C_eig = C;
-		
+
 		C_eig = A_eig.array() * B_eig.array();
 	}
 };
@@ -90,12 +131,52 @@ struct elementwise_product<Backend::EIGEN3, Matrix>
 #ifdef HAVE_VIENNACL
 
 /** Specialization of elementwise_product for the ViennaCL backend */
-template <> template <class Matrix>
+template <class Matrix>
 struct elementwise_product<Backend::VIENNACL, Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
-	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
+
+	/** Return type */
+	typedef CGPUMatrix<T> ReturnType;
+
+	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+	 *
+	 * This version returns the result in a newly created matrix. If elementwise-product
+	 * is desired that will work irrespective of the backend and the matrix type used,
+	 * then this method should be used.
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @return The result of the operation
+	 */
+	static ReturnType compute(CGPUMatrix<T> A, CGPUMatrix<T> B)
+	{
+		REQUIRE(A.matrix, "Matrix A is not initialized!\n");
+		REQUIRE(B.matrix, "Matrix A is not initialized!\n");
+
+		REQUIRE(A.num_rows == B.num_rows && A.num_cols == B.num_cols,
+				"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+				A.num_rows, A.num_cols, B.num_rows, B.num_cols);
+
+		ReturnType retMatrix(A.num_rows, A.num_cols);
+		compute(A, B, retMatrix);
+
+		return retMatrix;
+	}
+
+	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+	 *
+	 * This version should be used for backend specific code requirements. For example,
+	 * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
+	 * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
+	 * desired, use the version that does not support preallocated result matrix but
+	 * returns the result in a newly created matrix instead.
+	 *
+	 * @param A First matrix
+	 * @param B Second matrix
+	 * @param C Result of the operation
+	 */
 	static void compute(CGPUMatrix<T> A, CGPUMatrix<T> B, CGPUMatrix<T> C)
 	{
 		C.vcl_matrix() = viennacl::linalg::element_prod(A.vcl_matrix(), B.vcl_matrix());

@@ -26,6 +26,7 @@
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientCriterion.h>
 #include <shogun/modelselection/GradientModelSelection.h>
+#include <shogun/mathematics/Math.h>
 
 #include <gtest/gtest.h>
 
@@ -33,43 +34,42 @@ using namespace shogun;
 
 TEST(GradientModelSelection,select_model_exact_inference)
 {
-	// create some easy regression data: 1d noisy sine wave
 	index_t ntr=5;
 
 	SGMatrix<float64_t> X_train(1, ntr);
 	SGVector<float64_t> y_train(ntr);
 
 	X_train[0]=1.25107;
-	X_train[1]=2.16097;
-	X_train[2]=0.00034;
-	X_train[3]=0.90699;
-	X_train[4]=0.44026;
+	X_train[1]=-2.16097;
+	X_train[2]=-0.00034;
+	X_train[3]=4.90699;
+	X_train[4]=-2.44026;
 
-	y_train[0]=0.39635;
-	y_train[1]=0.00358;
-	y_train[2]=-1.18139;
-	y_train[3]=1.35533;
-	y_train[4]=-0.08232;
+	y_train[0]=-2.39635;
+	y_train[1]=-1.00358;
+	y_train[2]=-6.18139;
+	y_train[3]=5.35533;
+	y_train[4]=-3.08232;
 
 	// shogun representation of features and labels
 	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X_train);
 	CRegressionLabels* lab_train=new CRegressionLabels(y_train);
 
-	// choose Gaussian kernel with width=2*ell^2=0.02, where ell=0.1
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	// choose Gaussian kernel with width=2*ell^2, where ell=3
+	CGaussianKernel* kernel=new CGaussianKernel(10, 3*3*2.0);
 
 	// create zero mean
 	CZeroMean* mean=new CZeroMean();
 
-	// Gaussian likelihood with sigma=0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	// Gaussian likelihood with sigma
+	CGaussianLikelihood* lik=new CGaussianLikelihood(4.0);
 
 	// specify exact inference method
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, lab_train, lik);
 
 	// set kernel scale
-	inf->set_scale(1.8);
+	inf->set_scale(3);
 
 	// specify GP regression with exact inference
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
@@ -89,8 +89,12 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	best_comb->apply_to_machine(gpr);
 
 	// compare negative log marginal likelihood with result from GPML toolbox
+	// Note that the result is based on input (there are many local mode results)
+	//nlz= 1.334133e+01
+	//exp(hyp.lik) = 1.862122012902403
+	//exp(hyp.cov) = 2.024939917854716   3.778912324292096
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
-	EXPECT_NEAR(nlZ, 5.862416, 1E-6);
+	EXPECT_NEAR(nlZ, 13.34133, 1E-4);
 
 	// get hyperparameters
 	float64_t scale=inf->get_scale();
@@ -98,9 +102,9 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	float64_t sigma=lik->get_sigma();
 
 	// compare hyperparameters with result from GPML toolbox
-	EXPECT_NEAR(scale, 0.833180109059697, 1E-2);
-	EXPECT_NEAR(width, 0.190931901479123, 1E-2);
-	EXPECT_NEAR(sigma, 4.25456324418582e-04, 1E-2);
+	EXPECT_NEAR(scale, 3.778912324292096, 1E-3);
+	EXPECT_NEAR(CMath::sqrt(width/2.0), 2.024939917854716, 1E-3);
+	EXPECT_NEAR(sigma, 1.862122012902403, 1E-3);
 
 	// cleanup
 	SG_UNREF(grad_search);

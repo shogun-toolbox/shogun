@@ -31,7 +31,7 @@
  * Code adapted from
  * Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * and 
+ * and
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
@@ -42,7 +42,8 @@
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -78,13 +79,13 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 
 	CFeatures* feat;
 
-	// use latent features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC)
+	CSingleSparseInferenceBase* sparse_method=
+		dynamic_cast<CSingleSparseInferenceBase *>(m_method);
+	// use inducing features for sparse inference method
+	if (sparse_method)
 	{
-		CFITCInferenceMethod* fitc_method=
-			CFITCInferenceMethod::obtain_from_generic(m_method);
-		feat=fitc_method->get_latent_features();
-		SG_UNREF(fitc_method);
+		sparse_method->optimize_inducing_features();
+		feat=sparse_method->get_inducing_features();
 	}
 	else
 		feat=m_method->get_features();
@@ -138,13 +139,15 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	CFeatures* feat;
 
-	// use latent features for FITC inference method
-	if (m_method->get_inference_type()==INF_FITC)
+	bool is_sparse=false;
+	CSingleSparseInferenceBase* sparse_method=
+		dynamic_cast<CSingleSparseInferenceBase *>(m_method);
+	// use inducing features for sparse inference method
+	if (sparse_method)
 	{
-		CFITCInferenceMethod* fitc_method=
-			CFITCInferenceMethod::obtain_from_generic(m_method);
-		feat=fitc_method->get_latent_features();
-		SG_UNREF(fitc_method);
+		sparse_method->optimize_inducing_features();
+		feat=sparse_method->get_inducing_features();
+		is_sparse=true;
 	}
 	else
 		feat=m_method->get_features();
@@ -155,15 +158,14 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	CKernel* training_kernel=m_method->get_kernel();
 	CKernel* kernel=CKernel::obtain_from_generic(training_kernel->clone());
 	SG_UNREF(training_kernel);
-
 	kernel->init(data, data);
 
 	// get kernel matrix and create eigen representation of it
-	SGMatrix<float64_t> k_tsts=kernel->get_kernel_matrix();
-	Map<MatrixXd> eigen_Kss(k_tsts.matrix, k_tsts.num_rows, k_tsts.num_cols);
+	SGVector<float64_t> k_tsts=kernel->get_kernel_diagonal();
+	Map<VectorXd> eigen_Kss_diag(k_tsts.vector, k_tsts.vlen);
 
 	// compute Kss=Kss*scale^2
-	eigen_Kss*=CMath::sq(m_method->get_scale());
+	eigen_Kss_diag*=CMath::sq(m_method->get_scale());
 
 	// compute kernel matrix: K(feat, data)*scale^2
 	kernel->init(feat, data);
@@ -186,13 +188,13 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	SGVector<float64_t> alpha=m_method->get_alpha();
 	const index_t n=k_trts.num_rows;
-	const index_t m=k_tsts.num_cols;
+	const index_t m=k_tsts.vlen;
 	const index_t C=alpha.vlen/n;
 	// result variance vector
 	SGVector<float64_t> s2(m*C*C);
 	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
 
-	if (eigen_L.isUpperTriangular())
+	if (eigen_L.isUpperTriangular() && !is_sparse)
 	{
 		if (alpha.vlen==L.num_rows)
 		{
@@ -200,13 +202,12 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 			// get shogun of diagonal sigma vector and create eigen representation
 			SGVector<float64_t> sW=m_method->get_diagonal_vector();
 			Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-
 			// solve L' * V = sW * Ks and compute V.^2
 			MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
 				eigen_sW.asDiagonal()*eigen_Ks);
 			MatrixXd eigen_sV=eigen_V.cwiseProduct(eigen_V);
 
-			eigen_s2=eigen_Kss.diagonal()-eigen_sV.colwise().sum().adjoint();
+			eigen_s2=eigen_Kss_diag-eigen_sV.colwise().sum().adjoint();
 		}
 		else
 		{
@@ -234,7 +235,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 							eigen_s2[bl_j+(bl_i+idx_m*C)*C]=(bj.block(0,idx_m,n,1).array()*c_cav.block(0,idx_m,n,1).array()).sum();
 					}
 					for (index_t idx_m=0; idx_m<m; idx_m++)
-						eigen_s2[bl_i+(bl_i+idx_m*C)*C]+=eigen_Kss(idx_m,idx_m)-(eigen_Ks.block(0,idx_m,n,1).array()*bi.block(0,idx_m,n,1).array()).sum();
+						eigen_s2[bl_i+(bl_i+idx_m*C)*C]+=eigen_Kss_diag(idx_m)-(eigen_Ks.block(0,idx_m,n,1).array()*bi.block(0,idx_m,n,1).array()).sum();
 				}
 			}
 			else
@@ -248,7 +249,7 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	{
 		// M = Ks .* (L * Ks)
 		MatrixXd eigen_M=eigen_Ks.cwiseProduct(eigen_L*eigen_Ks);
-		eigen_s2=eigen_Kss.diagonal()+eigen_M.colwise().sum().adjoint();
+		eigen_s2=eigen_Kss_diag+eigen_M.colwise().sum().adjoint();
 	}
 
 	return s2;

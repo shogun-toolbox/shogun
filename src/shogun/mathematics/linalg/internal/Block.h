@@ -50,7 +50,7 @@ struct Block
 {
 	/** scalar type */
 	typedef typename Matrix::Scalar Scalar;
-	
+
 	/**
 	 * constructor
 	 *

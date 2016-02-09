@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -90,7 +90,7 @@ void CKLCovarianceInferenceMethod::init()
 SGVector<float64_t> CKLCovarianceInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
-	 * but also a vector corresponding to the diagonal part of W 
+	 * but also a vector corresponding to the diagonal part of W
 	 *
 	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
 	 * K is generated from cov function
@@ -114,11 +114,24 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
+CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
+		SG_SERROR("Provided inference is not of type CKLCovarianceInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLCovarianceInferenceMethod*)inference;
+}
+
 bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
-	
+
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	index_t len=m_alpha.vlen/2;
@@ -127,7 +140,7 @@ bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 
 	//construct s2
 	Map<VectorXd> eigen_log_neg_lambda(m_alpha.vector+len, len);
@@ -138,16 +151,16 @@ bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 	Map<VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
 	eigen_sW=eigen_W.array().sqrt().matrix();
 
-	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, m_scale);
+	m_L=CMatrixOperations::get_choleksy(m_W, m_sW, m_ktrtr, CMath::exp(m_log_scale));
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	
+
 	//solve L'*V=diag(sW)*K
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_K*CMath::exp(m_log_scale*2.0));
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	//Sigma=inv(inv(K)-2*diag(lambda))=K-K*diag(sW)*inv(L)'*inv(L)*diag(sW)*K
 	//v=abs(diag(Sigma))
-	eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+	eigen_s2=(eigen_K.diagonal().array()*CMath::exp(m_log_scale*2.0)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
 	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
@@ -187,14 +200,14 @@ void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<
 	// A=I-K*diag(sW)*inv(L)*inv(L')*diag(sW)
 	eigen_A=MatrixXd::Identity(len, len)-eigen_V.transpose()*eigen_U;
 
-	m_Sigma=CMatrixOperations::get_inverse(m_L, m_ktrtr, m_sW, m_V, m_scale);
+	m_Sigma=CMatrixOperations::get_inverse(m_L, m_ktrtr, m_sW, m_V, CMath::exp(m_log_scale));
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
 	Map<VectorXd> eigen_dnlz_log_neg_lambda(gradient.vector+len, len);
 
 	//dlZ_alpha  = K*(df-alpha);
-	eigen_dnlz_alpha=eigen_K*CMath::sq(m_scale)*(-eigen_df+eigen_alpha);
+	eigen_dnlz_alpha=eigen_K*CMath::exp(m_log_scale*2.0)*(-eigen_df+eigen_alpha);
 
 	//dlZ_lambda = 2*(Sigma.*Sigma)*dV +v -sum(Sigma.*A,2);   % => fast diag(V*VinvK')
 	//dlZ_log_neg_lambda = dlZ_lambda .* lambda;
@@ -226,14 +239,15 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	for(index_t idx=0; idx<eigen_t.rows(); idx++)
 		trace +=(eigen_t.col(idx).array().pow(2)).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+eigen_L.diagonal().array().log().sum();
 	result+=0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace);
 	return result;
 }
 
-float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
+float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
+	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
@@ -268,7 +282,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 		nlml_new=get_negative_log_marginal_likelihood_helper();
 
 		float64_t trace=0;
-		LLT<MatrixXd> llt((eigen_K*CMath::sq(m_scale))+
+		LLT<MatrixXd> llt((eigen_K*CMath::exp(m_log_scale*2.0))+
 			MatrixXd::Identity(eigen_K.rows(), eigen_K.cols()));
 		MatrixXd LL=llt.matrixU();
 		MatrixXd tt=LL.triangularView<Upper>().adjoint().solve(MatrixXd::Identity(LL.rows(),LL.cols()));
@@ -276,10 +290,10 @@ void CKLCovarianceInferenceMethod::update_alpha()
 		for(index_t idx=0; idx<tt.rows(); idx++)
 			trace+=(tt.col(idx).array().pow(2)).sum();
 
-		MatrixXd eigen_V=LL.triangularView<Upper>().adjoint().solve(eigen_K*CMath::sq(m_scale));
+		MatrixXd eigen_V=LL.triangularView<Upper>().adjoint().solve(eigen_K*CMath::exp(m_log_scale*2.0));
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
-		eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+		eigen_s2=(eigen_K.diagonal().array()*CMath::exp(m_log_scale*2.0)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 		SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 
 		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
@@ -330,7 +344,7 @@ SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
 
 void CKLCovarianceInferenceMethod::update_deriv()
 {
-	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
+	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }

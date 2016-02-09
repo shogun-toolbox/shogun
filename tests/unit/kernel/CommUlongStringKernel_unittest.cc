@@ -3,7 +3,7 @@
 #include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/SGStringList.h>
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <shogun/features/hashed/HashedDocDotFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

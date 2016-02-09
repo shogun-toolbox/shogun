@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -74,11 +74,23 @@ void CKLCholeskyInferenceMethod::init()
 		MS_NOT_AVAILABLE);
 }
 
+CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
+		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLCholeskyInferenceMethod*)inference;
+}
 
 SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
-	 * but also a vector corresponding to the lower triangular of C 
+	 * but also a vector corresponding to the lower triangular of C
 	 *
 	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
 	 * K is generated from cov function
@@ -111,7 +123,7 @@ bool CKLCholeskyInferenceMethod::lbfgs_precompute()
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 
 	update_C();
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
@@ -154,7 +166,7 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
 	//dnlZ_alpha  = -K*(df-alpha);
-	eigen_dnlz_alpha=eigen_K*CMath::sq(m_scale)*(-eigen_df+eigen_alpha);
+	eigen_dnlz_alpha=eigen_K*CMath::exp(m_log_scale*2.0)*(-eigen_df+eigen_alpha);
 
 	Map<VectorXd> eigen_dnlz_C_seq(gradient.vector+len, gradient.vlen-len);
 
@@ -205,7 +217,7 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	float64_t log_det=2.0*eigen_C.diagonal().array().abs().log().sum()-m_log_det_Kernel;
 	float64_t trace=(eigen_InvK_C.array()*eigen_C.array()).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace-log_det);
 	return result;
 }
@@ -295,7 +307,7 @@ void CKLCholeskyInferenceMethod::get_lower_triangular_vector(SGMatrix<float64_t>
 	index_t offset=0;
 	for (index_t i=0; i<len; i++)
 	{
-		eigen_result.block(offset, 0, len-i, 1)=eigen_square_matrix.block(i, i, len-i, 1); 
+		eigen_result.block(offset, 0, len-i, 1)=eigen_square_matrix.block(i, i, len-i, 1);
 		offset+=(len-i);
 	}
 }

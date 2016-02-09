@@ -52,7 +52,7 @@ float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
-	SGVector<float64_t> center2=noder->data.center;	
+	SGVector<float64_t> center2=noder->data.center;
 	for (int32_t i=0;i<center1.vlen;i++)
 		dist+=add_dim_dist(center1[i]-center2[i]);
 
@@ -64,7 +64,7 @@ float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
-	SGVector<float64_t> center2=noder->data.center;	
+	SGVector<float64_t> center2=noder->data.center;
 	for (int32_t i=0;i<center1.vlen;i++)
 		dist+=add_dim_dist(center1[i]-center2[i]);
 
@@ -114,6 +114,6 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 	node->data.center=center;
 	node->data.start_idx=start;
 	node->data.bbox_upper=upper_bounds;
-	node->data.bbox_lower=lower_bounds;	
+	node->data.bbox_lower=lower_bounds;
 	node->data.end_idx=end;
 }

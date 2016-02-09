@@ -1,17 +1,36 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2012 Jacob Walker
- * Copyright (C) 2013 Roman Votyakov
+ * Written (W) 2012 Jacob Walker
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  *
  * Adapted from the GPML toolbox, specifically likT.m
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 
 #ifdef HAVE_EIGEN3
@@ -249,20 +268,17 @@ CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df)
 		: CLikelihoodModel()
 {
-	REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
-	REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
-
 	init();
-	m_sigma=sigma;
-	m_df=df;
+	set_sigma(sigma);
+	set_degrees_freedom(df);
 }
 
 void CStudentsTLikelihood::init()
 {
-	m_sigma=1.0;
-	m_df=3.0;
-	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	m_log_sigma=0.0;
+	m_log_df=CMath::log(2.0);
+	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -292,12 +308,12 @@ SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
-
-	if (m_df<2.0)
+	float64_t df=get_degrees_freedom();
+	if (df<2.0)
 		eigen_result=CMath::INFTY*VectorXd::Ones(result.vlen);
 	else
 	{
-		eigen_result+=CMath::sq(m_sigma)*m_df/(m_df-2.0)*
+		eigen_result+=CMath::exp(m_log_sigma*2.0)*df/(df-2.0)*
 			VectorXd::Ones(result.vlen);
 	}
 
@@ -322,15 +338,16 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(const CLabels* l
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
+	float64_t df=get_degrees_freedom();
 	// compute lZ=log(gamma(df/2+1/2))-log(gamma(df/2))-log(df*pi*sigma^2)/2
-	VectorXd eigen_lZ=(CStatistics::lgamma(m_df/2.0+0.5)-
-		CStatistics::lgamma(m_df/2.0)-log(m_df*CMath::PI*CMath::sq(m_sigma))/2.0)*
+	VectorXd eigen_lZ=(CStatistics::lgamma(df/2.0+0.5)-
+		CStatistics::lgamma(df/2.0)-log(df*CMath::PI*CMath::exp(m_log_sigma*2.0))/2.0)*
 		VectorXd::Ones(r.vlen);
 
 	// compute log probability: lp=lZ-(df+1)*log(1+(y-f).^2./(df*sigma^2))/2
 	eigen_r=eigen_y-eigen_f;
-	eigen_r=eigen_r.cwiseProduct(eigen_r)/(m_df*CMath::sq(m_sigma));
-	eigen_r=eigen_lZ-(m_df+1)*
+	eigen_r=eigen_r.cwiseProduct(eigen_r)/(df*CMath::exp(m_log_sigma*2.0));
+	eigen_r=eigen_lZ-(df+1)*
 		(eigen_r+VectorXd::Ones(r.vlen)).array().log().matrix()/2.0;
 
 	return r;
@@ -358,32 +375,33 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	// compute r=y-f, r2=r.^2
 	eigen_r=eigen_y-eigen_f;
 	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
+	float64_t df=get_degrees_freedom();
 
 	// compute a=(y-f).^2+df*sigma^2
-	VectorXd a=eigen_r2+VectorXd::Ones(r.vlen)*m_df*CMath::sq(m_sigma);
+	VectorXd a=eigen_r2+VectorXd::Ones(r.vlen)*df*CMath::exp(m_log_sigma*2.0);
 
 	if (i==1)
 	{
 		// compute first derivative of log probability wrt f:
 		// dlp=(df+1)*(y-f)./a
-		eigen_r=(m_df+1)*eigen_r.cwiseQuotient(a);
+		eigen_r=(df+1)*eigen_r.cwiseQuotient(a);
 	}
 	else if (i==2)
 	{
 		// compute second derivative of log probability wrt f:
 		// d2lp=(df+1)*((y-f)^2-df*sigma^2)./a.^2
-		VectorXd b=eigen_r2-VectorXd::Ones(r.vlen)*m_df*CMath::sq(m_sigma);
+		VectorXd b=eigen_r2-VectorXd::Ones(r.vlen)*df*CMath::exp(m_log_sigma*2.0);
 
-		eigen_r=(m_df+1)*b.cwiseQuotient(a.cwiseProduct(a));
+		eigen_r=(df+1)*b.cwiseQuotient(a.cwiseProduct(a));
 	}
 	else if (i==3)
 	{
 		// compute third derivative of log probability wrt f:
 		// d3lp=(f+1)*2*(y-f).*((y-f)^2-3*f*sigma^2)./a.^3
-		VectorXd c=eigen_r2-VectorXd::Ones(r.vlen)*3*m_df*CMath::sq(m_sigma);
+		VectorXd c=eigen_r2-VectorXd::Ones(r.vlen)*3*df*CMath::exp(m_log_sigma*2.0);
 		VectorXd a2=a.cwiseProduct(a);
 
-		eigen_r=(m_df+1)*2*eigen_r.cwiseProduct(c).cwiseQuotient(
+		eigen_r=(df+1)*2*eigen_r.cwiseProduct(c).cwiseQuotient(
 			a2.cwiseProduct(a));
 	}
 
@@ -411,31 +429,32 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 	// compute r=y-f and r2=(y-f).^2
 	eigen_r=eigen_y-eigen_f;
 	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
+	float64_t df=get_degrees_freedom();
 
-	if (!strcmp(param->m_name, "df"))
+	if (!strcmp(param->m_name, "log_df"))
 	{
 		// compute derivative of log probability wrt df:
 		// lp_ddf=df*(dloggamma(df/2+1/2)-dloggamma(df/2))/2-1/2-
 		// df*log(1+r2/(df*sigma^2))/2 +(df/2+1/2)*r2./(df*sigma^2+r2)
-		eigen_r=(m_df*(CStatistics::dlgamma(m_df*0.5+0.5)-
-			CStatistics::dlgamma(m_df*0.5))*0.5-0.5)*VectorXd::Ones(r.vlen);
+		eigen_r=(df*(CStatistics::dlgamma(df*0.5+0.5)-
+			CStatistics::dlgamma(df*0.5))*0.5-0.5)*VectorXd::Ones(r.vlen);
 
-		eigen_r-=m_df*(VectorXd::Ones(r.vlen)+
-			eigen_r2/(m_df*CMath::sq(m_sigma))).array().log().matrix()/2.0;
+		eigen_r-=df*(VectorXd::Ones(r.vlen)+
+			eigen_r2/(df*CMath::exp(m_log_sigma*2.0))).array().log().matrix()/2.0;
 
-		eigen_r+=(m_df/2.0+0.5)*eigen_r2.cwiseQuotient(
-			eigen_r2+VectorXd::Ones(r.vlen)*(m_df*CMath::sq(m_sigma)));
+		eigen_r+=(df/2.0+0.5)*eigen_r2.cwiseQuotient(
+			eigen_r2+VectorXd::Ones(r.vlen)*(df*CMath::exp(m_log_sigma*2.0)));
 
-		eigen_r*=(1.0-1.0/m_df);
+		eigen_r*=(1.0-1.0/df);
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "sigma"))
+	else if (!strcmp(param->m_name, "log_sigma"))
 	{
 		// compute derivative of log probability wrt sigma:
 		// lp_dsigma=(df+1)*r2./a-1
-		eigen_r=(m_df+1)*eigen_r2.cwiseQuotient(eigen_r2+
-			VectorXd::Ones(r.vlen)*(m_df*CMath::sq(m_sigma)));
+		eigen_r=(df+1)*eigen_r2.cwiseQuotient(eigen_r2+
+			VectorXd::Ones(r.vlen)*(df*CMath::exp(m_log_sigma*2.0)));
 		eigen_r-=VectorXd::Ones(r.vlen);
 
 		return r;
@@ -465,26 +484,27 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 	// compute r=y-f and r2=(y-f).^2
 	eigen_r=eigen_y-eigen_f;
 	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
+	float64_t df=get_degrees_freedom();
 
 	// compute a=r+sigma^2*df and a2=a.^2
-	VectorXd a=eigen_r2+CMath::sq(m_sigma)*m_df*VectorXd::Ones(r.vlen);
+	VectorXd a=eigen_r2+CMath::exp(m_log_sigma*2.0)*df*VectorXd::Ones(r.vlen);
 	VectorXd a2=a.cwiseProduct(a);
 
-	if (!strcmp(param->m_name, "df"))
+	if (!strcmp(param->m_name, "log_df"))
 	{
 		// compute derivative of first derivative of log probability wrt df:
 		// dlp_ddf=df*r.*(a-sigma^2*(df+1))./a2
-		eigen_r=m_df*eigen_r.cwiseProduct(a-CMath::sq(m_sigma)*(m_df+1.0)*
+		eigen_r=df*eigen_r.cwiseProduct(a-CMath::exp(m_log_sigma*2.0)*(df+1.0)*
 			VectorXd::Ones(r.vlen)).cwiseQuotient(a2);
-		eigen_r*=(1.0-1.0/m_df);
+		eigen_r*=(1.0-1.0/df);
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "sigma"))
+	else if (!strcmp(param->m_name, "log_sigma"))
 	{
 		// compute derivative of first derivative of log probability wrt sigma:
 		// dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
-		eigen_r=-(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*
+		eigen_r=-(df+1.0)*2*df*CMath::exp(m_log_sigma*2.0)*
 			eigen_r.cwiseQuotient(a2);
 
 		return r;
@@ -514,30 +534,31 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 	// compute r=y-f and r2=(y-f).^2
 	eigen_r=eigen_y-eigen_f;
 	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
+	float64_t df=get_degrees_freedom();
 
 	// compute a=r+sigma^2*df and a3=a.^3
-	VectorXd a=eigen_r2+CMath::sq(m_sigma)*m_df*VectorXd::Ones(r.vlen);
+	VectorXd a=eigen_r2+CMath::exp(m_log_sigma*2.0)*df*VectorXd::Ones(r.vlen);
 	VectorXd a3=(a.cwiseProduct(a)).cwiseProduct(a);
 
-	if (!strcmp(param->m_name, "df"))
+	if (!strcmp(param->m_name, "log_df"))
 	{
 		// compute derivative of second derivative of log probability wrt df:
 		// d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
-		float64_t sigma2=CMath::sq(m_sigma);
+		float64_t sigma2=CMath::exp(m_log_sigma*2.0);
 
-		eigen_r=m_df*(eigen_r2.cwiseProduct(eigen_r2-3*sigma2*(1.0+m_df)*
-			VectorXd::Ones(r.vlen))+(m_df*CMath::sq(sigma2))*VectorXd::Ones(r.vlen));
+		eigen_r=df*(eigen_r2.cwiseProduct(eigen_r2-3*sigma2*(1.0+df)*
+			VectorXd::Ones(r.vlen))+(df*CMath::sq(sigma2))*VectorXd::Ones(r.vlen));
 		eigen_r=eigen_r.cwiseQuotient(a3);
 
-		eigen_r*=(1.0-1.0/m_df);
+		eigen_r*=(1.0-1.0/df);
 
 		return r;
 	}
-	else if (!strcmp(param->m_name, "sigma"))
+	else if (!strcmp(param->m_name, "log_sigma"))
 	{
 		// compute derivative of second derivative of log probability wrt sigma:
 		// d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3
-		eigen_r=(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*
+		eigen_r=(df+1.0)*2*df*CMath::exp(m_log_sigma*2.0)*
 			(a-4.0*eigen_r2).cwiseQuotient(a3);
 
 		return r;
@@ -578,8 +599,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	// create an object of Student's t pdf
 	CStudentsTPDF* g=new CStudentsTPDF();
 
-	g->set_nu(m_df);
-	g->set_sigma(m_sigma);
+	g->set_nu(get_degrees_freedom());
+	g->set_sigma(CMath::exp(m_log_sigma));
 
 	// create an object of product of Student's-t pdf and normal pdf
 	CProductFunction* h=new CProductFunction(f, g);
@@ -629,7 +650,7 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g=new CStudentsTPDF(m_sigma, m_df, y[i]);
+	CStudentsTPDF* g=new CStudentsTPDF(CMath::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
 	CProductFunction* h=new CProductFunction(f, g);
@@ -671,7 +692,7 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g=new CStudentsTPDF(m_sigma, m_df, y[i]);
+	CStudentsTPDF* g=new CStudentsTPDF(CMath::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
 	CProductFunction* h=new CProductFunction(f, g);

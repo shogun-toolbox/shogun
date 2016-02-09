@@ -112,9 +112,11 @@ enum EKernelType
 	K_JENSENSHANNON = 470,
 	K_DIRECTOR = 480,
 	K_PRODUCT = 490,
-	K_LINEARARD = 500,
+	K_EXPONENTIALARD = 500,
 	K_GAUSSIANARD = 510,
-	K_STREAMING = 520
+	K_GAUSSIANARDSPARSE = 511,
+	K_STREAMING = 520,
+	K_PERIODIC = 530
 };
 
 /** kernel property */
@@ -234,16 +236,14 @@ class CKernel : public CSGObject
 			REQUIRE(rhs, "CKernel::get_kernel_diagonal(): Right-handside "
 						"features missing!\n");
 
-			REQUIRE(lhs->get_num_vectors()==rhs->get_num_vectors(),
-					"CKernel::get_kernel_diagonal(): Left- and right-"
-					"handside features must be equal sized\n");
+			int32_t length=CMath::min(lhs->get_num_vectors(),rhs->get_num_vectors());
 
 			/* allocate space if necessary */
 			if (!preallocated.vector)
-				preallocated=SGVector<float64_t>(lhs->get_num_vectors());
+				preallocated=SGVector<float64_t>(length);
 			else
 			{
-				REQUIRE(preallocated.vlen==lhs->get_num_vectors(),
+				REQUIRE(preallocated.vlen==length,
 						"%s::get_kernel_diagonal(): Preallocated vector has"
 						" wrong size!\n", get_name());
 			}
@@ -852,6 +852,19 @@ class CKernel : public CSGObject
 		{
 			SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
 			return SGMatrix<float64_t>();
+		}
+
+		/** return diagonal part of derivative with respect to specified parameter
+		 *
+		 * @param param the parameter
+		 * @param index the index of the element if parameter is a vector
+		 *
+		 * @return diagonal part of gradient with respect to parameter
+		 */
+		virtual SGVector<float64_t> get_parameter_gradient_diagonal(
+				const TParameter* param, index_t index=-1)
+		{
+			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}
 
 		/** Obtains a kernel from a generic SGObject with error checking. Note

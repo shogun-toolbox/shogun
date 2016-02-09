@@ -51,37 +51,58 @@ TEST(MatrixProduct, eigen3_backend)
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::EIGEN3>(A, B, C);
-	
+
 	float64_t ref[] = {7.5, 9, 10.5, 21, 27, 33, 34.5, 45, 55.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
+
+#ifdef HAVE_VIENNACL
+TEST(MatrixProduct, GPUMatrix_eigen3_backend)
+{
+	CGPUMatrix<float64_t> A(3,3);
+	CGPUMatrix<float64_t> B(3,3);
+
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	CGPUMatrix<float64_t> C = linalg::matrix_product<linalg::Backend::EIGEN3>(A, B);
+
+	float64_t ref[] = {7.5, 9, 10.5, 21, 27, 33, 34.5, 45, 55.5};
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(ref[i], C[i], 1e-15);
+}
+#endif // HAVE_VIENNACL
 
 TEST(MatrixProduct, eigen3_backend_transpose_A)
 {
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::EIGEN3>(A, B, C, true);
-	
+
 	float64_t ref[] = {2.5, 7, 11.5, 7, 25, 43, 11.5, 43, 74.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -91,17 +112,17 @@ TEST(MatrixProduct, eigen3_backend_transpose_B)
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::EIGEN3>(A, B, C, false, true);
-	
+
 	float64_t ref[] = {22.5, 27, 31.5, 27, 33, 39, 31.5, 39, 46.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -111,17 +132,17 @@ TEST(MatrixProduct, eigen3_backend_transpose_A_transpose_B)
 	SGMatrix<float64_t> A(3,3);
 	SGMatrix<float64_t> B(3,3);
 	SGMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::EIGEN3>(A, B, C, true, true);
-	
+
 	float64_t ref[] = {7.5, 21, 34.5, 9, 27, 45, 10.5, 33, 55.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -134,17 +155,36 @@ TEST(MatrixProduct, viennacl_backend)
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
 	CGPUMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::VIENNACL>(A, B, C);
-	
+
 	float64_t ref[] = {7.5, 9, 10.5, 21, 27, 33, 34.5, 45, 55.5};
-	
+
+	for (int32_t i=0; i<9; i++)
+		EXPECT_NEAR(ref[i], C[i], 1e-15);
+}
+
+TEST(MatrixProduct, SGMatrix_viennacl_backend)
+{
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+
+	for (int32_t i=0; i<9; i++)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	SGMatrix<float64_t> C = linalg::matrix_product<linalg::Backend::VIENNACL>(A, B);
+
+	float64_t ref[] = {7.5, 9, 10.5, 21, 27, 33, 34.5, 45, 55.5};
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -154,17 +194,17 @@ TEST(MatrixProduct, viennacl_backend_transpose_A)
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
 	CGPUMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::VIENNACL>(A, B, C, true);
-	
+
 	float64_t ref[] = {2.5, 7, 11.5, 7, 25, 43, 11.5, 43, 74.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -174,17 +214,17 @@ TEST(MatrixProduct, viennacl_backend_transpose_B)
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
 	CGPUMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::VIENNACL>(A, B, C, false, true);
-	
+
 	float64_t ref[] = {22.5, 27, 31.5, 27, 33, 39, 31.5, 39, 46.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }
@@ -194,17 +234,17 @@ TEST(MatrixProduct, viennacl_backend_transpose_A_transpose_B)
 	CGPUMatrix<float64_t> A(3,3);
 	CGPUMatrix<float64_t> B(3,3);
 	CGPUMatrix<float64_t> C(3,3);
-	
+
 	for (int32_t i=0; i<9; i++)
 	{
 		A[i] = i;
 		B[i] = 0.5*i;
 	}
-	
+
 	linalg::matrix_product<linalg::Backend::VIENNACL>(A, B, C, true, true);
-	
+
 	float64_t ref[] = {7.5, 21, 34.5, 9, 27, 45, 10.5, 33, 55.5};
-	
+
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(ref[i], C[i], 1e-15);
 }

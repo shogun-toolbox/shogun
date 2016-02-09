@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
@@ -65,16 +65,29 @@ CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod(CKernel* kern
 }
 
 void CKLApproxDiagonalInferenceMethod::init()
-{	
+{
 	SG_ADD(&m_InvK, "invK",
 		"The K^{-1} matrix",
 		MS_NOT_AVAILABLE);
 }
 
+CKLApproxDiagonalInferenceMethod* CKLApproxDiagonalInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
+{
+	if (inference==NULL)
+		return NULL;
+
+	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
+		SG_SERROR("Provided inference is not of type CKLApproxDiagonalInferenceMethod!\n")
+
+	SG_REF(inference);
+	return (CKLApproxDiagonalInferenceMethod*)inference;
+}
+
 SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
-	 * but also a vector corresponding to the lower triangular of C 
+	 * but also a vector corresponding to the lower triangular of C
 	 *
 	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
 	 * K is generated from cov function
@@ -106,7 +119,7 @@ bool CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_K*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 
 	Map<VectorXd> eigen_log_v(m_alpha.vector+len, m_alpha.vlen-len);
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
@@ -143,7 +156,7 @@ void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVec
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
 	//dnlZ_alpha  = -K*(df-alpha);
-	eigen_dnlz_alpha=eigen_K*CMath::sq(m_scale)*(-eigen_df+eigen_alpha);
+	eigen_dnlz_alpha=eigen_K*CMath::exp(m_log_scale*2.0)*(-eigen_df+eigen_alpha);
 
 	Map<VectorXd> eigen_dnlz_log_v(gradient.vector+len, gradient.vlen-len);
 
@@ -169,7 +182,7 @@ float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood
 	float64_t log_det=eigen_log_v.array().sum()-m_log_det_Kernel;
 	float64_t trace=(eigen_s2.array()*eigen_InvK.diagonal().array()).sum();
 
-	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
+	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;
 	float64_t result=-a+0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace-log_det);
 
 	return result;

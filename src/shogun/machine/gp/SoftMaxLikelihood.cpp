@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Parijat Mazumdar, Wu Lin
+ * Written (w) 2014 Wu Lin
+ * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +60,7 @@ CSoftMaxLikelihood::~CSoftMaxLikelihood()
 void CSoftMaxLikelihood::init()
 {
 	m_num_samples=10000;
-	SG_ADD(&m_num_samples, "num_samples", 
+	SG_ADD(&m_num_samples, "num_samples",
 		"Number of samples to be generated",
 		MS_NOT_AVAILABLE);
 }
@@ -175,7 +176,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative2_f(SGMatr
 		VectorXd D=eigen_ret.block(i*eigen_f.cols(),0,eigen_f.cols(),eigen_f.cols())
 								.diagonal().array().sqrt();
 		eigen_ret.block(i*eigen_f.cols(),0,eigen_f.cols(),eigen_f.cols())-=
-								MatrixXd(D.asDiagonal());		
+								MatrixXd(D.asDiagonal());
 	}
 
 	return ret;
@@ -301,7 +302,7 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_log_probabilities(
-	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab) const
+	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
 {
 	return predictive_helper(mu, s2, lab, MC_Probability);
 }
@@ -322,7 +323,7 @@ SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector
 
 	SGVector<float64_t>est(mean.vlen);
 	Map<VectorXd> eigen_est(est.vector, est.vlen);
-	
+
 	//0 and 1 encoding
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	eigen_est=(mean_samples.array()*eigen_y.array())+(1-mean_samples.array())*(1-eigen_y.array());
@@ -335,7 +336,7 @@ SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_means(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
-	
+
 	return predictive_helper(mu, s2, lab, MC_Mean);
 }
 

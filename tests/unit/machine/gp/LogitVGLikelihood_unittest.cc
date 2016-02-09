@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -96,7 +96,7 @@ TEST(LogitVGLikelihood,get_variational_expection)
 	SGVector<float64_t> aa= lik->get_variational_expection();
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-12.37985798146909388606, rel_tolerance);
 	EXPECT_NEAR(aa[0],  -12.37985798146909388606,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.47875796595588515636, rel_tolerance);
@@ -175,7 +175,7 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-0.00643984624096141135, rel_tolerance);
 	EXPECT_NEAR(dv[0],  -0.00643984624096141135,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.11655165622477028919, rel_tolerance);
@@ -196,7 +196,7 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	EXPECT_NEAR(dv[8],  -0.00000000006545277067,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.00000000689624744111, rel_tolerance);
 	EXPECT_NEAR(dv[9],  -0.00000000689624744111,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(lab);
 	SG_UNREF(lik);
@@ -254,7 +254,7 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	SGVector<float64_t> dm = lik->get_variational_first_derivative(mu_param);
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(0.49998947191953668767, rel_tolerance);
 	EXPECT_NEAR(dm[0],  0.49998947191953668767,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(0.37867135854112776716, rel_tolerance);

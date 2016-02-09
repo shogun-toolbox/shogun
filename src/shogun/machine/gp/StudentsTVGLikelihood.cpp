@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -50,19 +50,19 @@ namespace shogun
 CStudentsTVGLikelihood::CStudentsTVGLikelihood()
 	: CNumericalVGLikelihood()
 {
-	m_sigma = 1.0;
-	m_df = 3.0;
+	m_log_sigma = 0.0;
+	m_log_df = CMath::log(2.0);
 	init();
 }
 
 CStudentsTVGLikelihood::CStudentsTVGLikelihood(float64_t sigma, float64_t df)
 	: CNumericalVGLikelihood()
 {
-	REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
-	REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
+	REQUIRE(sigma>0.0, "Scale parameter (%f) must be greater than zero\n", sigma);
+	REQUIRE(df>1.0, "Number of degrees of freedom (%f) must be greater than one\n", df);
 
-	m_sigma=sigma;
-	m_df=df;
+	m_log_sigma=CMath::log(sigma);
+	m_log_df=CMath::log(df-1.0);
 	init();
 }
 
@@ -72,14 +72,14 @@ CStudentsTVGLikelihood::~CStudentsTVGLikelihood()
 
 void CStudentsTVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CStudentsTLikelihood(m_sigma, m_df));
+	set_likelihood(new CStudentsTLikelihood(CMath::exp(m_log_sigma), CMath::exp(m_log_df)+1.0));
 }
 
 void CStudentsTVGLikelihood::init()
 {
 	init_likelihood();
-	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_df, "log_df", "Degrees of freedom in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_log_sigma, "log_sigma", "Scale parameter in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 } /* namespace shogun */

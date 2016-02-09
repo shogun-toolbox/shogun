@@ -199,7 +199,7 @@ template<class T> SGSparseMatrix<T> SGSparseMatrix<T>::get_transposed()
 
 	SG_FREE(hist);
 
-	int32_t* index=SG_CALLOC(int32_t, num_vectors);
+	int32_t* index=SG_CALLOC(int32_t, num_features);
 
 	// fill future feature vectors with content
 	for (int32_t v=0; v<num_vectors; v++)

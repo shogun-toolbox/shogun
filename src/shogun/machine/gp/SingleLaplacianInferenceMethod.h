@@ -65,6 +65,19 @@ public:
 	 */
 	virtual const char* get_name() const { return "SingleLaplacianInferenceMethod"; }
 
+	/** return what type of inference we are
+	 *
+	 * @return inference type Laplacian_Single
+	 */
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_SINGLE; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CSingleLaplacianInferenceMethod object
+	 */
+	static CSingleLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:
@@ -111,7 +124,26 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** update all matrices except gradients*/
+	virtual void update();
+
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
+	 * \f]
+	 *
+	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_mean();
 protected:
+
+	virtual void update_init();
+
 	/** update alpha matrix */
 	virtual void update_alpha();
 
@@ -165,7 +197,6 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
-
 private:
 	void init();
 
@@ -184,6 +215,8 @@ protected:
 	SGMatrix<float64_t> m_Z;
 
 	SGVector<float64_t> m_g;
+
+	float64_t m_Psi;
 };
 }
 #endif /* HAVE_EIGEN3 */

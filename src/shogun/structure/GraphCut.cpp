@@ -17,7 +17,7 @@ CGraphCut::CGraphCut()
 	: CMAPInferImpl()
 {
 	SG_UNSTABLE("CGraphCut::CGraphCut()", "\n");
-	
+
 	init();
 }
 
@@ -25,7 +25,7 @@ CGraphCut::CGraphCut(CFactorGraph* fg)
 	: CMAPInferImpl(fg)
 {
 	ASSERT(m_fg != NULL);
-	
+
 	init();
 }
 
@@ -43,7 +43,7 @@ CGraphCut::~CGraphCut()
 {
 	if (m_nodes!=NULL)
 		SG_FREE(m_nodes);
-	
+
 	if (m_edges!=NULL)
 		SG_FREE(m_edges);
 }
@@ -52,7 +52,7 @@ void CGraphCut::init()
 {
 	m_nodes = NULL;
 	m_edges = NULL;
-	m_edges_last = NULL;	
+	m_edges_last = NULL;
 	m_num_nodes = 0;
 	m_num_edges = 0;
 
@@ -88,9 +88,9 @@ void CGraphCut::init()
 	for (int32_t i = 0; i < facs->get_num_elements(); i++)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
-		
+
 		int32_t num_vars = fac->get_num_vars();
-		
+
 		SG_UNREF(fac);
 
 		if (num_vars > 3)
@@ -208,7 +208,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	m_map_energy = m_fg->evaluate_energy(assignment);
 	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
 	SG_DEBUG("minimized energy = %f\n", m_map_energy);
-	
+
 	return m_map_energy;
 }
 
@@ -477,7 +477,7 @@ void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t rev
 }
 
 void CGraphCut::set_active(GCNode* node_i)
-{	
+{
 	if (node_i->next == NULL)
 	{
 		// it's not in the list yet
@@ -1031,7 +1031,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 						ASSERT(node_i == m_active_last[r])
 					else
 						ASSERT(node_i == current_node)
-							
+
 					break;
 				}
 			}
@@ -1069,7 +1069,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 			if (node_i->type_tree == SOURCE)
 			{
 				ASSERT(node_i->tree_cap >= 0);
-				
+
 				for (edge = node_i->first; edge; edge = edge->next)
 				{
 					if (edge->residual_capacity > 0)
@@ -1081,7 +1081,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 			else
 			{
 				ASSERT(node_i->tree_cap <= 0);
-				
+
 				for (edge = node_i->first; edge; edge = edge->next)
 				{
 					if (edge->reverse->residual_capacity > 0)
@@ -1095,7 +1095,7 @@ void CGraphCut::test_consistency(GCNode* current_node)
 		if (node_i->parent && node_i->parent != ORPHAN_EDGE && node_i->parent != TERMINAL_EDGE)
 		{
 			ASSERT(node_i->timestamp <= node_i->parent->head->timestamp);
-			
+
 			if (node_i->timestamp == node_i->parent->head->timestamp)
 			{
 				ASSERT(node_i->dist_terminal > node_i->parent->head->dist_terminal);

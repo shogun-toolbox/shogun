@@ -176,7 +176,7 @@ TEST(KernelDensity,dual_tree_single_tree_equivalence)
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	SGMatrix<float64_t> test(5,20);
-	sg_rand->fill_array_oo(test.matrix,100);	
+	sg_rand->fill_array_oo(test.matrix,100);
 	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
 
 

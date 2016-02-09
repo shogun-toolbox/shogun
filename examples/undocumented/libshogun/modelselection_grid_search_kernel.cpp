@@ -21,6 +21,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
+#include <shogun/mathematics/Math.h>
 
 
 using namespace shogun;
@@ -51,8 +52,8 @@ CModelSelectionParameters* create_param_tree()
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
-			new CModelSelectionParameters("width");
-	gaussian_kernel_width->build_values(-1.0, 1.0, R_EXP, 1.0, 2.0);
+			new CModelSelectionParameters("log_width");
+	gaussian_kernel_width->build_values(-CMath::log(2.0), 0.0, R_LINEAR, 1.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
 

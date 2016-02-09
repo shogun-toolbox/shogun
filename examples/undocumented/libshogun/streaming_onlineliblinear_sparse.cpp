@@ -32,10 +32,14 @@ int main(int argc, char* argv[])
     char *train_file_name = (char*)"../data/train_sparsereal.light";
     char *test_file_name = (char*)"../data/test_sparsereal.light";
     char filename_tmp[] = "test_sparsereal.light.labels.XXXXXX";
-    char *test_labels_file_name = mktemp(filename_tmp);
+    int fd = mkstemp(filename_tmp);
+    ASSERT(fd != -1);
+    int retval = close(fd);
+    ASSERT(retval != -1);
+    char *test_labels_file_name = filename_tmp;
 
     if (argc > 4) {
-        int32_t idx = 1;        
+        int32_t idx = 1;
 
         C = atof(argv[idx++]);
         train_file_name = argv[idx++];
@@ -79,7 +83,7 @@ int main(int argc, char* argv[])
 
         uint64_t train_time_int = train_time.cur_time_diff();
         fprintf(stderr,
-            "*** total training time: %lum%lus (or %.1f sec), #dim = %d, ||w|| = %f\n",
+            "*** total training time: %llum%llus (or %.1f sec), #dim = %d, ||w|| = %f\n",
             train_time_int / 60, train_time_int % 60, train_time.cur_time_diff(),
             w_now.vlen, w_now_norm
         );
@@ -105,7 +109,7 @@ int main(int argc, char* argv[])
 
         test_time.stop();
         uint64_t test_time_int = test_time.cur_time_diff();
-        fprintf(stderr, "*** testing took %lum%lus (or %.1f sec)\n",
+        fprintf(stderr, "*** testing took %llum%llus (or %.1f sec)\n",
             test_time_int / 60, test_time_int % 60, test_time.cur_time_diff());
 
         SG_UNREF(test_features);

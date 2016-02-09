@@ -178,12 +178,12 @@ class CKMeans : public CDistanceMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "KMeans"; }
 
-		/** set the initial cluster centers 
+		/** set the initial cluster centers
 		 *
 		 * @param centers matrix with cluster centers (k colums, dim rows)
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
-		
+
 		/** set training method
 		 *
 		 *@param f minibatch if mini-batch KMeans
@@ -244,18 +244,18 @@ class CKMeans : public CDistanceMachine
 		virtual bool train_require_labels() const { return false; }
 
 		/** kmeans++ algorithm to initialize cluster centers
-		* 
+		*
 		* @return initial cluster centers: matrix (k columns, dim rows)
-		*/	
+		*/
 		SGMatrix<float64_t> kmeanspp();
 		void init();
 
 		/** algorithm to initialize random cluster centers
-		* 
+		*
 		* @return initial cluster centers: matrix (k columns, dim rows)
 		*/
 		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
-		void set_initial_centers(SGVector<float64_t> weights_set, 
+		void set_initial_centers(SGVector<float64_t> weights_set,
 					SGVector<int32_t> ClList, int32_t XSize);
 		void compute_cluster_variances();
 
@@ -277,10 +277,10 @@ class CKMeans : public CDistanceMachine
 
 		///initial centers supplied
 		SGMatrix<float64_t> mus_initial;
-		
+
 		///flag to check if kmeans++ has to be used
 		bool use_kmeanspp;
-	
+
 		///batch size for mini-batch KMeans
 		int32_t batch_size;
 

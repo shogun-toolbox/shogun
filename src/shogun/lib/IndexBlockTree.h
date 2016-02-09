@@ -45,6 +45,7 @@ public:
 	 */
 	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
 
+#ifndef SWIG
 	/** constructor from general precomputed indices
 	 * each node is represented with indices G[ind_t.min:ind_t.max]
 	 * and weight ind_t.weight
@@ -52,6 +53,7 @@ public:
 	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
 	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+#endif
 
 	/** constructor from basic precomputed indices
 	 * each node is represented with indices ind_t.min:ind_t.max

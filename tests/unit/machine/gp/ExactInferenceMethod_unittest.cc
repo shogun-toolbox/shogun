@@ -243,15 +243,11 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
-	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
-	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("log_width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("log_scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("log_sigma");
 
-	// in GPML package: dK(i,j)/dell = sf2 * exp(-(x(i) - x(j))^2/(2*ell^2)) *
-	// (x(i) - x(j))^2 / (ell^2), but in SHOGUN we compute: dK(i,j)/dw = sf2 *
-	// exp(-(x(i) - x(j))^2/w) * (x(i) - x(j))^2 / (w^2), so if w = 2 * ell^2,
-	// then dK(i,j)/dell = 4 * ell^2 * dK(i,j)/dw.
-	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_ell=(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 
@@ -312,7 +308,7 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	// 0.0032614946619217077480868
 	// -1.0762845465175703285609643
 	// 1.2348344945975837649854157
-	// -0.0750001215533616788500026 
+	// -0.0750001215533616788500026
 	SGVector<float64_t> mu=inf->get_posterior_mean();
 
 	EXPECT_NEAR(mu[0], 0.36138244503573730, 1E-15);
@@ -367,11 +363,11 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 
 	// comparison of posterior approximation covariance with result from GPML
 	// package
-	//0.0569394684731059849691626 0.0000000000000000000053289 0.0000000000000131879791500 0.0000136088380251857096650 -0.0000000002307207284608970 
-	//0.0000000000000000000053289 0.0569395017793594276911406 -0.0000000000000000000000000 -0.0000000000000000000000130 0.0000000000000000000000000 
-	//0.0000000000000131879791500 -0.0000000000000000000000000 0.0569395017611918560773709 -0.0000000000053885704468227 0.0000003178376535342790039 
-	//0.0000136088380251857249116 -0.0000000000000000000000130 -0.0000000000053885704468227 0.0569394684715077217807000 0.0000000942718277538447049 
-	//-0.0000000002307207284608972 0.0000000000000000000000000 0.0000003178376535342790568 0.0000000942718277538447182 0.0569395017595935928889084 
+	//0.0569394684731059849691626 0.0000000000000000000053289 0.0000000000000131879791500 0.0000136088380251857096650 -0.0000000002307207284608970
+	//0.0000000000000000000053289 0.0569395017793594276911406 -0.0000000000000000000000000 -0.0000000000000000000000130 0.0000000000000000000000000
+	//0.0000000000000131879791500 -0.0000000000000000000000000 0.0569395017611918560773709 -0.0000000000053885704468227 0.0000003178376535342790039
+	//0.0000136088380251857249116 -0.0000000000000000000000130 -0.0000000000053885704468227 0.0569394684715077217807000 0.0000000942718277538447049
+	//-0.0000000002307207284608972 0.0000000000000000000000000 0.0000003178376535342790568 0.0000000942718277538447182 0.0569395017595935928889084
 	SGMatrix<float64_t> Sigma=inf->get_posterior_covariance();
 
 	abs_tolerance = CMath::get_abs_tolerance(0.0569394684731059849691626, rel_tolerance);
@@ -491,7 +487,7 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	EXPECT_NEAR(mu[3],  0.3235837493820302168678893,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.9860387397670280495987072, rel_tolerance);
 	EXPECT_NEAR(mu[4],  -0.9860387397670280495987072,  abs_tolerance);
-	
+
 	// clean up
 	SG_UNREF(inf);
 }

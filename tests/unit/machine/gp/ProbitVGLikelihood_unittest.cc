@@ -27,7 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
- * Code adapted from 
+ * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
  * and the reference paper is
  * Nickisch, Hannes, and Carl Edward Rasmussen.
@@ -96,7 +96,7 @@ TEST(ProbitVGLikelihood,get_variational_expection)
 	SGVector<float64_t> aa= lik->get_variational_expection();
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-239.30797109313670034680, rel_tolerance);
 	EXPECT_NEAR(aa[0],  -239.30797109313670034680,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.37920561632878163616, rel_tolerance);
@@ -175,7 +175,7 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 
 	// comparison of the result with result from the Matlab code
-	
+
 	abs_tolerance = CMath::get_abs_tolerance(-0.24382341475056740210, rel_tolerance);
 	EXPECT_NEAR(dv[0],  -0.24382341475056740210,  abs_tolerance);
 	abs_tolerance = CMath::get_abs_tolerance(-0.25605621136752204636, rel_tolerance);

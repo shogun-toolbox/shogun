@@ -95,7 +95,7 @@ void CNeuralNetwork::disconnect_all()
 	m_adj_matrix.zero();
 }
 
-void CNeuralNetwork::initialize(float64_t sigma)
+void CNeuralNetwork::initialize_neural_network(float64_t sigma)
 {
 	for (int32_t j=0; j<m_num_layers; j++)
 	{
@@ -117,7 +117,7 @@ void CNeuralNetwork::initialize(float64_t sigma)
 				}
 			}
 
-			get_layer(j)->initialize(m_layers, input_indices);
+			get_layer(j)->initialize_neural_layer(m_layers, input_indices);
 		}
 	}
 
@@ -158,24 +158,30 @@ CNeuralNetwork::~CNeuralNetwork()
 CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
-	SGVector<float64_t> labels_vec(m_batch_size);
+	CBinaryLabels* labels = new CBinaryLabels(m_batch_size);
 
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
 		if (get_num_outputs()==1)
 		{
-			if (output_activations[i]>0.5) labels_vec[i] = 1;
-			else labels_vec[i] = -1;
+			if (output_activations[i]>0.5) labels->set_label(i, 1);
+			else labels->set_label(i, -1);
+
+			labels->set_value(output_activations[i], i);
 		}
 		else if (get_num_outputs()==2)
 		{
-			if (output_activations[2*i]>output_activations[2*i+1])
-				labels_vec[i] = 1;
-			else labels_vec[i] = -1;
+			float64_t v1 = output_activations[2*i];
+			float64_t v2 = output_activations[2*i+1];
+			if (v1>v2)
+				labels->set_label(i, 1);
+			else labels->set_label(i, -1);
+
+			labels->set_value(v2/(v1+v2), i);
 		}
 	}
 
-	return new CBinaryLabels(labels_vec);
+	return labels;
 }
 
 CRegressionLabels* CNeuralNetwork::apply_regression(CFeatures* data)
@@ -201,7 +207,16 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
 
-	return new CMulticlassLabels(labels_vec);
+	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
+
+	labels->allocate_confidences_for(get_num_outputs());
+	for (int32_t i=0; i<m_batch_size; i++)
+	{
+		labels->set_multiclass_confidences(i, SGVector<float64_t>(
+			output_activations.matrix, get_num_outputs(), i*get_num_outputs()));
+	}
+
+	return labels;
 }
 
 CDenseFeatures< float64_t >* CNeuralNetwork::transform(
@@ -249,7 +264,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	REQUIRE(gd_learning_rate>0,
 		"Gradient descent learning rate (%f) must be > 0\n", gd_learning_rate);
 	REQUIRE(gd_momentum>=0,
-		"Gradient descent momentum (%f) must be > 0\n", gd_momentum);
+		"Gradient descent momentum (%f) must be >= 0\n", gd_momentum);
 
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
@@ -293,6 +308,18 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 				m_params[k] += gd_momentum*param_updates[k];
 
 			float64_t e = compute_gradients(inputs_batch, targets_batch, gradients);
+
+
+			for (int32_t k=0; k<m_num_layers; k++)
+			{
+				SGVector<float64_t> layer_gradients = get_section(gradients, k);
+				if (layer_gradients.vlen > 0)
+				{
+					SG_INFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", k,get_layer(k)->get_name(),
+						CMath::max(layer_gradients.vector, layer_gradients.vlen),
+						SGVector<float64_t>::sum(layer_gradients.vector, layer_gradients.vlen)/layer_gradients.vlen);
+				}
+			}
 
 			// filter the errors
 			if (error==-1.0)
@@ -393,6 +420,19 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 		int n, int k, int ls)
 {
 	SG_SINFO("Epoch %i: Error = %f\n",k, fx);
+
+	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(instance);
+	SGVector<float64_t> gradients((float64_t*)g, network->get_num_parameters(), false);
+	for (int32_t i=0; i<network->m_num_layers; i++)
+	{
+		SGVector<float64_t> layer_gradients = network->get_section(gradients, i);
+		if (layer_gradients.vlen > 0)
+		{
+			SG_SINFO("Layer %i (%s), Max Gradient: %g, Mean Gradient: %g.\n", i, network->get_layer(i)->get_name(),
+				CMath::max(layer_gradients.vector, layer_gradients.vlen),
+				SGVector<float64_t>::sum(layer_gradients.vector, layer_gradients.vlen)/layer_gradients.vlen);
+		}
+	}
 	return 0;
 }
 

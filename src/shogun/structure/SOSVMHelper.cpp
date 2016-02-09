@@ -68,7 +68,7 @@ float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel
 
 		// hinge loss for point i
 		float64_t hinge_loss_i = result->score;
-		
+
 		if (hinge_loss_i < 0)
 			hinge_loss_i = 0;
 

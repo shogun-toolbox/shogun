@@ -17,7 +17,7 @@ using namespace shogun;
 
 namespace shogun
 {
-void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus,
 		SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers)
 {
 	CDenseFeatures<float64_t>* lhs=
@@ -118,7 +118,7 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 				if (weights_set[ClList_Pat]!=0.0)
 				{
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
-	
+
 					for (j=0; j<dimensions; j++)
 					{
 						mus.matrix[ClList_Pat*dimensions+j]-=

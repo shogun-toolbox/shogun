@@ -43,8 +43,8 @@ namespace shogun
 /** @brief The node of the tree structure forming a TreeMachine
  * The node contains pointer to its parent and pointers to its
  * 2 children: left child and right child. The node also
- * contains data which can be of any type and has to be 
- * specified using template specifier. 
+ * contains data which can be of any type and has to be
+ * specified using template specifier.
  */
 template <typename T>
 class CBinaryTreeMachineNode
@@ -63,7 +63,7 @@ public:
 	}
 
 	/** get name
-	 * @return class of the node 
+	 * @return class of the node
 	 */
 	virtual const char* get_name() const { return "BinaryTreeMachineNode"; }
 
@@ -123,7 +123,7 @@ public:
 
 	/** get right subtree
 	 *
-	 * @return right subtree of node 
+	 * @return right subtree of node
 	 */
 	CBinaryTreeMachineNode* right()
 	{
