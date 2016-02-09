@@ -1,4 +1,4 @@
-2015-03-17 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org >
+2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org >
 
 	* SHOGUN Release version 4.1.0 (libshogun 17.1, data 0.10, parameter 1)
 	* This is a new feature and cleanup release:
@@ -22,6 +22,7 @@
 		- Fix for building with full-hardening-(CXX|LD)FLAGS [Björn Esser].
 		- Patch SWIG to fix a problem with SWIG and Python >= 3.5 [Björn Esser].
 		- Add modshogun.rb: make sure narray is loaded before modshogun.so [Björn Esser].
+		- set working-dir properly when running R (#2654) [Björn Esser].
 	* Cleanup, efficiency updates, and API Changes:
 		- Added GPU based dot-products to linalg [Rahul De].
 		- Added scale methods to linalg [Rahul De].
