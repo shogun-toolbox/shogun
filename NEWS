@@ -4,13 +4,13 @@
 	* This is a new feature and cleanup release:
 	* Features:
 		- Added GEMPLP for approximate inference to the structured output framework [Jiaolong Xu].
-		- Effeciency improvements of the FITC framework for GP inference [Wu Lin].
+		- Effeciency improvements of the FITC framework for GP inference (FITC_Laplce, FITC, VarDTC) [Wu Lin].
 		- Added optimisation of inducing variables in sparse GP inference [Wu Lin].
-		- Added optimisation methods for GP inference (Newton, Cholesky, ...) [Wu Lin].
+		- Added optimisation methods for GP inference (Newton, Cholesky, LBFGS, ...) [Wu Lin].
 		- Added Automatic Relevance Determination (ARD) kernel functionality for variational GP inference [Wu Lin].
 		- Added BFGS based optimisation for GP inference [Wu Lin].
 		- Updated Notebook for variational GP inference [Wu Lin].
-		- New framework for stochastic optimisation (l1/2 loss, mirror descent, proximal gradients, adagrad) [Wu Lin].
+		- New framework for stochastic optimisation (l1/2 loss, mirror descent, proximal gradients, adagrad, SVRG, RMSProp, adadelta, ...) [Wu Lin].
 		- New Shogun meta-language for automatically generating code listings in all target languages [Esben Sörig].
 		- Added periodic kernel [Esben Sörig].
 		- Add gradient output functionality in Neural Nets [Sanuj Sharma].
