@@ -204,7 +204,7 @@ public:
 	 */
 	virtual bool save(CSerializableFile* file, const char* prefix="");
 
-	/* load from serializable file
+	/** load from serializable file
 	 * @param file source file
 	 * @param prefix prefix
 	 * */

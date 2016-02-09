@@ -47,6 +47,7 @@ public:
 	/** Parameter for GEMPLP */
 	struct Parameter
 	{
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		Parameter(const int32_t max_iter = 1000,
 		          const float64_t obj_del_thr = 0.0002,
 		          const float64_t int_gap_thr = 0.0002)
@@ -54,6 +55,7 @@ public:
 			  m_obj_del_thr(obj_del_thr),
 			  m_int_gap_thr(int_gap_thr)
 		{}
+#endif
 
 		/** maximum number of outer iterations*/
 		int32_t m_max_iter;
