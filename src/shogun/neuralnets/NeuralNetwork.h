@@ -53,15 +53,6 @@ enum ENNOptimizationMethod
 	NNOM_LBFGS=1
 };
 
-/** gradient descent updater optimization for neural networks */
-enum DescendUpdaterMethod
-{
-	GRAD_DESC=0,
-	ADA_DELTA=1,
-	ADA_GRAD=2,
-	RMS_PROP=3
-};
-
 /** @brief A generic multi-layer neural network
  *
  * A [Neural network](http://en.wikipedia.org/wiki/Artificial_neural_network)
@@ -341,8 +332,6 @@ protected:
 private:
 	void init();
 
-	void initialize_descend_updater();
-	
 	/** callback for l-bfgs */
 	static float64_t lbfgs_evaluate(void *userdata,
 			const float64_t *W,
@@ -369,9 +358,6 @@ private:
 public:
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod optimization_method;
-
-	/** Gradient Descend Updater method, default is GRAD_DESC */
-	DescendUpdaterMethod descend_updater_method;
 
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
@@ -458,18 +444,12 @@ public:
 	 */
 	float64_t gd_error_damping_coeff;
 
-	//@{
-	/** Used in Gradient Descend Updater optimization. 
-	 * DescendUpdater object is instantiated using enum DESCEND_UPDATER.
-	 * epsilon and decay_factor are data members for DescendUpdater object.
+	/** Used in Gradient Descent training for updating params.
+	 * Optimization method used is set by passing the exact object.
 	 *
-	 * default value of epsilon is 1e-6
-	 * default value of decay_factor is 0.9
+	 * default is GradientDescendUpdater
 	 */
 	DescendUpdater *descend_updater;
-	float64_t du_epsilon;
-	float64_t du_decay_factor;
-	//@}
 
 protected:
 	/** number of neurons in the input layer */
