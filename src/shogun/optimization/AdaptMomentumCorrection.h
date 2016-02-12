@@ -186,7 +186,7 @@ public:
 	 *
 	 * @param adapt_rate the rate is used to discount/raise the current descend direction (see get_corrected_descend_direction() )
 	 * @param rate_min minimum of the rate
-	 * @param rate_max minimum of the rate
+	 * @param rate_max maximum of the rate
 	 */
 	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=CMath::INFTY)
 	{
