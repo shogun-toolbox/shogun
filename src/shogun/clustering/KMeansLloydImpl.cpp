@@ -25,7 +25,8 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dimensions=lhs->get_num_features();
 
-	CFeatures* rhs_cache=distance->replace_rhs(mus);
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 
 	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
 	dists.zero();
@@ -71,6 +72,8 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 				}
 			}
 		}
+		rhs_mus->copy_feature_matrix(mus);
+
 		for (int32_t i=0; i<XSize; i++)
 		{
 			const int32_t ClList_i=ClList[i];
@@ -100,6 +103,7 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 			break;
 	}
 	distance->replace_rhs(rhs_cache);
+	delete rhs_mus;
 	SG_UNREF(lhs);
 }
 }
