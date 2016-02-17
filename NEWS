@@ -1,4 +1,9 @@
-2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org >
+2016-02-17 Björn Esser <me@besser82.io>
+	* SHOGUN Release version 4.2.0 (libshogun 17.2, data 0.11, parameter 1)
+	* Bugfixes:
+		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
+
+2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
 	* SHOGUN Release version 4.1.0 (libshogun 17.1, data 0.10, parameter 1)
 	* This is a new feature and cleanup release:
