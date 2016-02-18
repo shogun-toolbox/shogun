@@ -433,8 +433,8 @@ int32_t lbfgs(
             ret = ls;
 
             /* Roll back */
-        if (ls==LBFGSERR_INVALID_VALUE)
-            fx = cd.proc_evaluate(cd.instance, x, g, cd.n, step);
+            if (ls==LBFGSERR_INVALID_VALUE)
+                fx = cd.proc_evaluate(cd.instance, x, g, cd.n, step);
 
             goto lbfgs_exit;
         }
