@@ -5026,7 +5026,7 @@ bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
 
 			// only states of the cur_model can reach the
 			// first state
-			if (i<N)
+			if ((uint32_t)i<(uint32_t)N)
 				n_a[(N+num_states)*N+i]=get_q(i);
 
 			// the second state is only connected to states of
