@@ -1,7 +1,0 @@
--Add automatic links to Shogun class docs whenever we see CKNN, or CKNN::train
--Think about a way to uniformly add a set of references (wiki, bixtex, weblink), in a way that changing the layout can be done globally
-
-BUILD:
--Goal: Only have a *single* set of examples created from meta language. Remove old modular examples
--Process: Translate python modular examples to meta language one-by-one, adding a manual page with snippets each time
--Snippet tags should be hidden eventually. If the sphinx plugin does the parsing/translation of meta examples on its own, we can just remove any tag from the translated examples in the make process
