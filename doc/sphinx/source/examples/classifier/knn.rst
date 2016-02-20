@@ -1,8 +1,10 @@
-==================
-Nearest neighbours
-==================
+====================
+K Nearest neighbours
+====================
 
-Since Pythagoras, we know that :math:`a^2 + b^2 = c^2`. Use that for KNN. 
+KNN classifies data according to the majority of labels in the nearest neighbourhood, according to some underlying distance function :math:`d(x,x')`.
+
+For :math:`k=1`, the label for point :math:`x_i` is :math:`y_{k^*}`, where :math:`k^*=\argmin_n d(x_i, x_n)`.  
 
 -------
 Example
