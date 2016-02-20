@@ -1,16 +1,36 @@
-Welcome to Shogun documentation!
-=========================================
+The Shogun API cookbook
+=======================
 
-You may find something interesting here
+This is a collection of cookbook-style examples for using Shogun.
+Every example contains code listings in all of Shogun's supported target languages.
 
-Contents
-========
+Classifier
+==========
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   examples/**/*
+   examples/classifier/**
+  
+
+Regression
+==========
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/regression/**
+
+Kernels
+=======
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/kernel/**
 
 Indices and tables
 ==================
