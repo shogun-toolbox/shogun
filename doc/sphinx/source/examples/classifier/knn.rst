@@ -4,11 +4,11 @@ K Nearest neighbours
 
 KNN classifies data according to the majority of labels in the nearest neighbourhood, according to some underlying distance function :math:`d(x,x')`.
 
-For :math:`k=1`, the label for point :math:`x_i` is :math:`y_{k^*}`, where
+For :math:`k=1`, the label for a test point :math:`x^*` is predicted to be the same as for its closest training point :math:`x_{k}`, i.e. :math:`y_{k}`, where
 
 .. math::
 
-   k^*=\argmin_n d(x_i, x_n).  
+   k=\argmin_j d(x^*, x_j).  
    
 See Chapter 14 in :cite:`barber2012bayesian` for a detailed introduction.
 
