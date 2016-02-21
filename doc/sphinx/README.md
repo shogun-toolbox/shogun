@@ -51,3 +51,10 @@ python -m SimpleHTTPServer
 ```
 
 in that directory and then open your browser at ```localhost:8000```.
+
+
+## Python requirements
+
+ * [sphinx](http://www.sphinx-doc.org/)
+ * [sphinxcontrib-bibtex](https://sphinxcontrib-bibtex.readthedocs.org/)
+ * 
