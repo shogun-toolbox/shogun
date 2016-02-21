@@ -37,6 +37,6 @@ Then we run the KNN algorithm and apply it to test data.
 ----------
 References
 ----------
-`KNN on Wikipedia <https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm>`_
+:wiki:`K-nearest_neighbors_algorithm`
 
 .. bibliography:: ../../references.bib

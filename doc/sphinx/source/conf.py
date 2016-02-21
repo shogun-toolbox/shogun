@@ -289,6 +289,7 @@ texinfo_documents = [
 # options for external link plugin
 extlinks = {
 'sgissue': ('https://github.com/shogun-toolbox/shogun/issues/%s',        'issue '),
-'sgclass': ('http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1%s.html',        '')
+'sgclass': ('http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1%s.html',        ''),
+'wiki': ('https://en.wikipedia.org/wiki/%s',        'Wikipedia: ')
 
 }
