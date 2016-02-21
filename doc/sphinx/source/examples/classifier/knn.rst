@@ -12,6 +12,8 @@ For :math:`k=1`, the label for a test point :math:`x^*` is predicted to be the s
    
 See Chapter 14 in :cite:`barber2012bayesian` for a detailed introduction.
 
+See :sgissue:`2996` for known issues.
+
 -------
 Example
 -------
@@ -20,11 +22,11 @@ Load some training and test data.
 
 .. sgexample:: knn.sg:load_data
 
-In order to run KNN, we need to choose a distance, for example CEuclideanDistance, or other sub-classes of CDistance. The distance is initialized with the data we want to classify.
+In order to run :sgclass:`CKNN`, we need to choose a distance, for example :sgclass:`CEuclideanDistance`, or other sub-classes of :sgclass:`CDistance`. The distance is initialized with the data we want to classify.
 
 .. sgexample:: knn.sg:choose_distance
 
-Once we have chosen a distance, we create an instance of the CKNN classifier, passing it training data and labels.
+Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` classifier, passing it training data and labels.
 
 .. sgexample:: knn.sg:create_instance
 

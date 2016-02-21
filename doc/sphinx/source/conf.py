@@ -27,9 +27,17 @@ sys.path.insert(0, os.path.abspath('.'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    # we use pngmath because it allows for custom latex preambles
     'sphinx.ext.pngmath',
+    
+    # our own plugin that loads snippets from meta-language generated listings
     'sgexample',
+    
+    # bibtex citations support
     'sphinxcontrib.bibtex',
+    
+    # to create automatic links to Shogun class docs
+    'sphinx.ext.extlinks', 
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -208,7 +216,8 @@ latex_elements = {
 # 'preamble': '',
 }
 
-# only makes sense for png math
+# Custom latex operators only makes sense for png math
+# TODO: load those from a file
 pngmath_latex_preamble = r'\DeclareMathOperator*{\argmin}{arg\,min}' \
                        + r'\DeclareMathOperator*{\argmax}{arg\,max}'
 
@@ -276,3 +285,10 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+# options for external link plugin
+extlinks = {
+'sgissue': ('https://github.com/shogun-toolbox/shogun/issues/%s',        'issue '),
+'sgclass': ('http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1%s.html',        '')
+
+}
