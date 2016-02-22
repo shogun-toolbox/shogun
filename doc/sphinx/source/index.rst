@@ -5,7 +5,7 @@ This is a collection of cookbook-style examples for using Shogun.
 Every example contains code listings in all of Shogun's supported target languages.
 
 Classifier
-==========
+----------
 
 .. toctree::
    :maxdepth: 1
@@ -15,7 +15,7 @@ Classifier
   
 
 Regression
-==========
+----------
 
 .. toctree::
    :maxdepth: 1
@@ -24,7 +24,7 @@ Regression
    examples/regression/**
 
 Kernels
-=======
+-------
 
 .. toctree::
    :maxdepth: 1
