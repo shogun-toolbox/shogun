@@ -34,5 +34,5 @@ ENDMACRO()
 GENERATE_DOXYGEN_HTML(Doxyfile_en.in pages html insert_examples.py)
 GENERATE_DOXYGEN_HTML(Doxyfile_cn.in pages_cn html_cn insert_examples_cn.py)
 
-add_subdirectory(sphinx)
-add_custom_target(doc DEPENDS examples documented_examples shogun_sphinx_doc ${DOC_DEPENDENCIES})
+add_subdirectory(cookbook)
+add_custom_target(doc DEPENDS examples documented_examples shogun_cookbook ${DOC_DEPENDENCIES})

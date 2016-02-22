@@ -17,25 +17,25 @@ configure_file(
     "${BINARY_BUILD_DIR}/conf.py"
     @ONLY)
 
-add_custom_target(shogun_sphinx_doc_extensions
+add_custom_target(shogun_cookbook_sphinx_extensions
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/extensions"
     "${BINARY_BUILD_DIR}"
-    COMMENT "Copying Sphinx extensions to ${BINARY_BUILD_DIR}")
+    COMMENT "Copying cookbook Sphinx extensions to ${BINARY_BUILD_DIR}")
 
-add_custom_target(shogun_sphinx_doc_templates
+add_custom_target(shogun_cookbook_sphinx_templates
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/source/templates"
     "${BINARY_BUILD_DIR}/templates"
-    COMMENT "Copying Sphinx templates to ${BINARY_BUILD_DIR}")
+    COMMENT "Copying cookbook Sphinx templates to ${BINARY_BUILD_DIR}")
 
-add_custom_target(shogun_sphinx_doc_static
+add_custom_target(shogun_cookbook_sphinx_static
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/source/static"
     "${BINARY_BUILD_DIR}/static"
-    COMMENT "Copying Sphinx static overrides to ${BINARY_BUILD_DIR}")
+    COMMENT "Copying cookbook Sphinx static overrides to ${BINARY_BUILD_DIR}")
     
-add_custom_target(shogun_sphinx_doc_linkcheck
+add_custom_target(shogun_cookbook_sphinx_linkcheck
     ${SPHINX_EXECUTABLE}
     -q -b linkcheck
     -c "${BINARY_BUILD_DIR}"
@@ -43,11 +43,11 @@ add_custom_target(shogun_sphinx_doc_linkcheck
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
-    COMMENT "Sphinx validating external links"
-    DEPENDS shogun_sphinx_doc_extensions shogun_sphinx_doc_templates
-            shogun_sphinx_doc_static shogun_meta_examples)
+    COMMENT "Cookbook Sphinx validating external links"
+    DEPENDS shogun_cookbook_sphinx_extensions shogun_cookbook_sphinx_templates
+            shogun_cookbook_sphinx_static shogun_meta_examples)
 
-add_custom_target(shogun_sphinx_doc ALL
+add_custom_target(shogun_cookbook ALL
     ${SPHINX_EXECUTABLE}
     -q -b html
     -c "${BINARY_BUILD_DIR}"
@@ -55,7 +55,7 @@ add_custom_target(shogun_sphinx_doc ALL
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
-    COMMENT "Sphinx building HTML cookbook"
-    DEPENDS shogun_sphinx_doc_extensions shogun_sphinx_doc_templates
-            shogun_sphinx_doc_static shogun_meta_examples
-            shogun_sphinx_doc_linkcheck)
+    COMMENT "Cookbook Sphinx building HTML"
+    DEPENDS shogun_cookbook_sphinx_extensions shogun_cookbook_sphinx_templates
+            shogun_cookbook_sphinx_static shogun_meta_examples
+            shogun_cookbook_sphinx_linkcheck)
