@@ -17,25 +17,25 @@ configure_file(
     "${BINARY_BUILD_DIR}/conf.py"
     @ONLY)
 
-add_custom_target(shogun_cookbook_sphinx_extensions
+add_custom_target(cookbook_sphinx_extensions
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/extensions"
     "${BINARY_BUILD_DIR}"
     COMMENT "Copying cookbook Sphinx extensions to ${BINARY_BUILD_DIR}")
 
-add_custom_target(shogun_cookbook_sphinx_templates
+add_custom_target(cookbook_sphinx_templates
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/source/templates"
     "${BINARY_BUILD_DIR}/templates"
     COMMENT "Copying cookbook Sphinx templates to ${BINARY_BUILD_DIR}")
 
-add_custom_target(shogun_cookbook_sphinx_static
+add_custom_target(cookbook_sphinx_static
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/source/static"
     "${BINARY_BUILD_DIR}/static"
     COMMENT "Copying cookbook Sphinx static overrides to ${BINARY_BUILD_DIR}")
     
-add_custom_target(shogun_cookbook_sphinx_linkcheck
+add_custom_target(cookbook_sphinx_linkcheck
     ${SPHINX_EXECUTABLE}
     -q -b linkcheck
     -c "${BINARY_BUILD_DIR}"
@@ -44,10 +44,10 @@ add_custom_target(shogun_cookbook_sphinx_linkcheck
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx validating external links"
-    DEPENDS shogun_cookbook_sphinx_extensions shogun_cookbook_sphinx_templates
-            shogun_cookbook_sphinx_static shogun_meta_examples)
+    DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
+            cookbook_sphinx_static meta_examples)
 
-add_custom_target(shogun_cookbook ALL
+add_custom_target(cookbook ALL
     ${SPHINX_EXECUTABLE}
     -q -b html
     -c "${BINARY_BUILD_DIR}"
@@ -56,6 +56,6 @@ add_custom_target(shogun_cookbook ALL
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx building HTML"
-    DEPENDS shogun_cookbook_sphinx_extensions shogun_cookbook_sphinx_templates
-            shogun_cookbook_sphinx_static shogun_meta_examples
-            shogun_cookbook_sphinx_linkcheck)
+    DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
+            cookbook_sphinx_static meta_examples
+            cookbook_sphinx_linkcheck)

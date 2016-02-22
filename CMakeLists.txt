@@ -628,6 +628,8 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+OPTION(ENABLE_COOKBOOK "Build Shogun API cookbook" ON)
+
 FIND_PACKAGE(LpSolve)
 IF (LPSOLVE_FOUND)
 	SET(USE_LPSOLVE 1)
@@ -1119,10 +1121,8 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 ENDIF()
 
-IF(DOXYGEN_FOUND)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
-	ENDIF()
+IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
 ENDIF()
 
 include(ShogunPackaging)

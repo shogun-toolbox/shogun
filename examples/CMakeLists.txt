@@ -51,4 +51,4 @@ ENDIF()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/meta)
 
-add_custom_target(examples DEPENDS shogun_meta_examples)
+add_custom_target(examples DEPENDS meta_examples)

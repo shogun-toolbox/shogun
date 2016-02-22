@@ -15,7 +15,7 @@ ENDIF()
 # execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/typelist)
 
 # Run example generation script
-add_custom_target(shogun_meta_examples
+add_custom_target(meta_examples
     COMMAND ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py
     -i ${CMAKE_CURRENT_SOURCE_DIR}/src

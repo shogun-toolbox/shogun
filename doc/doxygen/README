@@ -1,5 +1,5 @@
-Build-Dependencies to Generate the Documentation
-================================================
+Build-Dependencies to Generate the API Documentation using Doxygen
+==================================================================
 
 The following packages (as in Debian GNU/Linux, your distribution/OS might
 differ) have to be installed to build the documentation successfully. Please
