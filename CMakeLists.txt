@@ -642,6 +642,13 @@ IF(NOT ENABLE_META_EXAMPLES)
     SET(ENABLE_COOKBOOK 0)
 ENDIF()
 
+find_package(Sphinx)
+IF(NOT SPHINX_FOUND)
+    message("-- Sphinx is required for building cookbook. Disabling.")
+    SET(ENABLE_COOKBOOK 0)
+ENDIF()
+
+
 FIND_PACKAGE(LpSolve)
 IF (LPSOLVE_FOUND)
 	SET(USE_LPSOLVE 1)

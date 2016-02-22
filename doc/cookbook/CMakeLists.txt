@@ -1,8 +1,6 @@
 #PROJECT(sphinxdoc)
 #cmake_minimum_required(VERSION 2.8.8)
 
-set(SPHINX_EXECUTABLE "sphinx-build")
-
 # configured documentation tools and intermediate build results
 set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
 
