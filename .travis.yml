@@ -61,9 +61,38 @@ matrix:
         - CC=clang
         - CXX=clang++
 before_install:
+<<<<<<< HEAD
   - docker pull vigsterkr/shogun-dev
   - echo $CC; echo $CXX
   - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" --name devenv -v $PWD:/opt/shogun vigsterkr/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+=======
+  - if [ -z $OSX ] ; then
+      sudo apt-add-repository -y ppa:kubuntu-ppa/backports ;
+      sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ;
+      sudo apt-add-repository -y ppa:yade-users/external ;
+      sudo apt-add-repository -y ppa:ondrej/php5 ;
+      sudo apt-add-repository -y ppa:robotics/ppa ;
+      sudo apt-add-repository -y ppa:swt-techie/swig ;
+      sudo apt-get update -qq ;
+    else
+      brew update ;
+    fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then
+      wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh ;
+      bash miniconda.sh -b -p $HOME/miniconda ;
+      export PATH=$HOME/miniconda/bin:$PATH ;
+      conda config --set always_yes yes --set changeps1 no ;
+      conda update conda ;
+    fi
+install:
+  - if [ -z $OSX ] ; then
+      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 python-ply sphinx-doc ccache $EXTRA_PACKAGES ;
+    else
+      brew install ccache eigen;
+    fi
+  - eval $CUSTOM_PKG
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv ; fi
+>>>>>>> attempt to install sphinx and ply to build meta examples and cookbook
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
