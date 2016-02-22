@@ -4,10 +4,9 @@
 # Add CMakeLists file for each turned on interface
 
 
-# Check if PLY is installed
-find_package(PLY)
+# Check if PLY is installed, warn if not. Check if pyparsing is installed otherwise. Throws error if not.
 IF(NOT PLY_FOUND)
-    message(WARNING "Python module PLY was not found. This may cause example generation to be very slow.")
+    message(WARNING "Python module PLY was not found. This may cause Shogun's meta example generation to be very slow.")
 ENDIF()
 
 # Disabled (temporary) as non-portable solution. This is replaced by allowing any [a-zA-Z_][a-zA-Z0-9_]* as shogun keyword

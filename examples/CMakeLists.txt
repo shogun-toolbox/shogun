@@ -49,6 +49,9 @@ IF (CmdLineStatic AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_st
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_static)
 ENDIF()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/meta)
-
-add_custom_target(examples DEPENDS meta_examples)
+IF(ENABLE_META_EXAMPLES)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/meta)
+    add_custom_target(examples DEPENDS meta_examples)
+ELSE()
+    add_custom_target(examples)
+ENDIF()
