@@ -10,7 +10,6 @@ ExternalProject_Add(
 	GoogleMock
 	URL http://googlemock.googlecode.com/files/gmock-1.7.0.zip
 	URL_MD5 073b984d8798ea1594f5e44d85b20d66
-    TIMEOUT 10
 	PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock
 	INSTALL_COMMAND ""
