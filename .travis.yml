@@ -61,7 +61,7 @@ matrix:
         - CC=clang
         - CXX=clang++
 before_install:
-  - docker pull vigsterkr/shogun-dev
+  - docker pull karlnapf/shogun-dev
   - echo $CC; echo $CXX
   - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" --name devenv -v $PWD:/opt/shogun vigsterkr/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
