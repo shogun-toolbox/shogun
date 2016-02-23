@@ -181,16 +181,34 @@ CSerializableJsonFile::write_scalar_wrapped(
 		push_object(json_object_new_int((int) *(uint64_t*) param));
 		break;
 	case PT_FLOAT32:
-		push_object(json_object_new_double(
-						(double) *(float32_t*) param));
+#if JSON_C_MINOR_VERSION >= 12
+		push_object(json_object_new_double_s(
+				(double) *(float32_t*) param,
+				std::to_string((double) *(float32_t*) param).c_str()
+		));
+#else
+		push_object(json_object_new_double((double) *(float32_t*) param));
+#endif
 		break;
 	case PT_FLOAT64:
-		push_object(json_object_new_double(
-						(double) *(float64_t*) param));
+#if JSON_C_MINOR_VERSION >= 12
+		push_object(json_object_new_double_s(
+				(double) *(float64_t*) param,
+				std::to_string((double) *(float64_t*) param).c_str()
+		));
+#else
+		push_object(json_object_new_double((double) *(float64_t*) param));
+#endif
 		break;
 	case PT_FLOATMAX:
-		push_object(json_object_new_double(
-						(double) *(floatmax_t*) param));
+#if JSON_C_MINOR_VERSION >= 12
+		push_object(json_object_new_double_s(
+				(double) *(floatmax_t*) param,
+				std::to_string((double) *(floatmax_t*) param).c_str()
+		));
+#else
+		push_object(json_object_new_double((double) *(floatmax_t*) param));
+#endif
 		break;
 	case PT_COMPLEX128:
 		SG_ERROR("Not supported for complex128_t for writing into JsonFile!");
