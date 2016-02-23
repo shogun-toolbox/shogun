@@ -20,14 +20,14 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-scipy \
     python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
-    oracle-java8-installer ruby ruby-dev python-ply sphinx-doc
+    oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip
 
 RUN pip install sphinxcontrib-bibtex
 
 RUN gem install narray
 RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig
-ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.18.tar.gz /tmp
-RUN cd /tmp;\
+ADD http://crd.lbl.gov/~dhbailey/mpdist/arprec-2.2.18.tar.gz /tmp/
+RUN cd /tmp/;\
     tar zxpf arprec-2.2.18.tar.gz;\
     cd arprec-2.2.18;\
     ./configure --enable-shared;\
