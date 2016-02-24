@@ -667,7 +667,6 @@ ENDIF()
 FIND_PACKAGE(PythonInterp REQUIRED)
 
 OPTION(ENABLE_META_EXAMPLES "Generate API examples from meta-examples" ON)
-include(FindPythonModule)
 find_package(PLY)
 find_package(PYPARSING)
 IF(NOT PLY_FOUND AND NOT PYPARSING_FOUND)
