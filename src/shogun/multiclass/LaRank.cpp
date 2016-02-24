@@ -897,12 +897,8 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	/*
 	 ** compute gradient and sort
 	 */
-	std::vector < outputgradient_t > outputgradients;
-
-	outputgradients.reserve (getNumOutputs ());
-
-	std::vector < outputgradient_t > outputscores;
-	outputscores.reserve (getNumOutputs ());
+	std::vector < outputgradient_t > outputgradients(getNumOutputs ());
+	std::vector < outputgradient_t > outputscores(getNumOutputs ());
 
 	for (outputhash_t::iterator it = outputs.begin (); it != outputs.end (); ++it)
 	{
