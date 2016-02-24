@@ -1,9 +1,17 @@
-FILE(GLOB R_EXAMPLES *.R)
-FOREACH(EXAMPLE ${R_EXAMPLES})
-	get_filename_component(EXAMPLE_NAME ${EXAMPLE} NAME_WE)
-	add_test(NAME generated_r_modular-${EXAMPLE_NAME}
+# add test case for each generated example
+# (not generated yet so have to fake filenames from META_EXAMPLES list)
+FOREACH(META_EXAMPLE ${META_EXAMPLES})
+    # assume a structure <target_language>/<category>/listing.sg
+	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
+	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
+	STRING(REGEX REPLACE "/" "-" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
+    STRING(REGEX REPLACE ".*/(.*)/.*.sg" "\\1" EXAMPLE_REL_DIR ${META_EXAMPLE})
+    
+    # run test in source dir, to have access to "data" folder
+    # run listing from binary dir though as it is generated there
+	add_test(NAME generated_r-${EXAMPLE_NAME_WITH_DIR}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${R_EXECUTABLE} --no-restore --no-save --no-readline --slave -f ${EXAMPLE})
+			COMMAND ${R_EXECUTABLE} --no-restore --no-save --no-readline --slave -f ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.R)
 ENDFOREACH()
 
 # For now, the generated examples are not installed in the R library
