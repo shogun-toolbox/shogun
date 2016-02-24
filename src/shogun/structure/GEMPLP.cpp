@@ -13,6 +13,7 @@
 #include <algorithm>
 
 using namespace shogun;
+using namespace std;
 
 CGEMPLP::CGEMPLP()
 	: CMAPInferImpl()
