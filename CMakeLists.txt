@@ -667,28 +667,35 @@ ENDIF()
 FIND_PACKAGE(PythonInterp REQUIRED)
 
 OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
-find_package(PLY)
-find_package(PYPARSING)
-IF(NOT PLY_FOUND AND NOT PYPARSING_FOUND)
-    message("-- Python module PYPARSING or PLY required for meta examples. Disabling.")
-    SET(BUILD_META_EXAMPLES 0)
+include(FindPythonModule)
+find_python_module(ply REQUIRED)
+IF(NOT PY_PLY)
+    find_python_module(pyparsing REQUIRED)
+    IF(NOT PY_PYPARSING)
+        message(FATAL_ERROR "Python modules pyparsing or ply required for meta examples.")
+    ELSE()
+        message(WARNING "Python module ply was not found. Falling back to pyparsing. This may cause meta example parsing to be very slow.")
+    ENDIF()
 ENDIF()
+
 IF(BUILD_META_EXAMPLES)
-    # allow meta examples without adding examples dir
+    # allow meta examples without adding examples dir itself
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
 ENDIF()
 
-OPTION(BUILD_COOKBOOK "Build Shogun API cookbook" ON)
-IF(NOT BUILD_META_EXAMPLES)
-    message("-- Meta examples are required for building cookbook. Disabling.")
-    SET(BUILD_COOKBOOK 0)
+OPTION(BUILD_COOKBOOK "Build Shogun API cookbook" OFF)
+IF(BUILD_COOKBOOK)
+    IF(NOT BUILD_META_EXAMPLES)
+        message(FATAL_ERROR
+                "Meta examples need to be enabled to build cookbook.")
+    ENDIF()
+    
+    find_package(Sphinx)
+    IF(NOT SPHINX_FOUND)
+        message(FATAL_ERROR "Sphinx is required to build cookbook.")
+    ENDIF()
 ENDIF()
 
-find_package(Sphinx)
-IF(NOT SPHINX_FOUND)
-    message("-- Sphinx is required for building cookbook. Disabling.")
-    SET(ENABLE_COOKBOOK 0)
-ENDIF()
 
 # JSON
 OPTION(BUNDLE_JSON "Bundle JSON" OFF)
