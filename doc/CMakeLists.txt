@@ -1,4 +1,4 @@
-IF(ENABLE_COOKBOOK)
+IF(BUILD_COOKBOOK)
     add_subdirectory(cookbook)
     LIST(APPEND DOC_DEPENDENCIES cookbook)
 ENDIF()

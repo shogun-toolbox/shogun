@@ -678,10 +678,10 @@ IF(BUILD_META_EXAMPLES)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
 ENDIF()
 
-OPTION(ENABLE_COOKBOOK "Build Shogun API cookbook" ON)
+OPTION(BUILD_COOKBOOK "Build Shogun API cookbook" ON)
 IF(NOT BUILD_META_EXAMPLES)
     message("-- Meta examples are required for building cookbook. Disabling.")
-    SET(ENABLE_COOKBOOK 0)
+    SET(BUILD_COOKBOOK 0)
 ENDIF()
 
 find_package(Sphinx)
