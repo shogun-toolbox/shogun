@@ -63,7 +63,7 @@ matrix:
 before_install:
   - docker pull karlnapf/shogun-dev
   - echo $CC; echo $CXX
-  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" --name devenv -v $PWD:/opt/shogun vigsterkr/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" --name devenv -v $PWD:/opt/shogun karlnapf/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
