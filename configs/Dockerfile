@@ -20,9 +20,8 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-scipy \
     python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
-    oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
-    python-pyparsing
-
+    oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip
+    
 RUN pip install sphinxcontrib-bibtex
 
 RUN gem install narray
