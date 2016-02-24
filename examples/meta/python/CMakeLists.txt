@@ -4,7 +4,7 @@ GET_PYTHON_ENV()
 # add test case for each generated python example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
-    # ".*/(.*/.*).sg"
+    # assume a structure python/<category>/listing.py
 	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
 	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
 	STRING(REGEX REPLACE "/" "-" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
