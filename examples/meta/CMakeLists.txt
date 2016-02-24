@@ -16,6 +16,9 @@ add_custom_target(meta_examples
     -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
     COMMENT "Generating examples from meta-language")
 
+# Collect all meta example listings and store in variable
+FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
+
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)
     # Python

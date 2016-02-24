@@ -304,11 +304,7 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
-IF(BUILD_EXAMPLES)
-    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
-        add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
-    ENDIF()
-ENDIF()
+# note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
 IF(COMPILE_MODULAR_INTERFACE)
@@ -684,10 +680,7 @@ IF(NOT PY_PLY)
     ENDIF()
 ENDIF()
 
-IF(BUILD_META_EXAMPLES)
-    # allow meta examples without adding examples dir itself
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
-ENDIF()
+# add meta example dir below after tests have been defined
 
 # cookbook and dependencies
 find_package(Sphinx)
@@ -1124,7 +1117,6 @@ IF(ENABLE_TESTING)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/integration)
 		ENDIF()
 
-
 		# add unit tests
 		IF (NOT TRAVIS_DISABLE_UNIT_TESTS)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
@@ -1145,8 +1137,14 @@ ENDIF()
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
 	    message("Tests require (disabled) examples, enabling.")
-		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
+    IF(ENABLE_TESTING OR BUILD_EXAMPLES)
+	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	ENDIF()
+	IF(BUILD_META_EXAMPLES)
+        # allow meta examples without adding examples dir itself
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
+    ENDIF()
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
