@@ -1,10 +1,18 @@
-FILE(GLOB OCTAVE_EXAMPLES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.m)
-
-FOREACH(EXAMPLE ${OCTAVE_EXAMPLES})
-	STRING(REGEX REPLACE "(.*).m" "\\1" EXAMPLE_NAME ${EXAMPLE})
-	add_test(NAME generated_octave_modular-${EXAMPLE_NAME}
+# add test case for each generated example
+# (not generated yet so have to fake filenames from META_EXAMPLES list)
+FOREACH(META_EXAMPLE ${META_EXAMPLES})
+    # assume a structure <target_language>/<category>/listing.sg
+	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
+	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
+	STRING(REGEX REPLACE "/" "-" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
+    STRING(REGEX REPLACE ".*/(.*)/.*.sg" "\\1" EXAMPLE_REL_DIR ${META_EXAMPLE})
+    
+    # run test in source dir, to have access to "data" folder
+    # run listing from binary dir though as it is generated there
+	add_test(NAME generated_octave-${EXAMPLE_NAME_WITH_DIR}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${OCTAVE_EXECUTABLE} ${EXAMPLE})
-	set_property(TEST generated_octave_modular-${EXAMPLE_NAME} PROPERTY
-		ENVIRONMENT "OCTAVE_PATH=${OCTAVE_MODULAR_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}/tools")
+			COMMAND ${OCTAVE_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.m)
+	set_property(TEST generated_octave-${EXAMPLE_NAME_WITH_DIR} PROPERTY
+				ENVIRONMENT "OCTAVE_PATH=${OCTAVE_MODULAR_BINARY_DIR}:${CMAKE_CURRENT_SOURCE_DIR}/tools")
+
 ENDFOREACH()
