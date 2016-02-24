@@ -304,6 +304,11 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
+IF(BUILD_EXAMPLES)
+    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
+        add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+    ENDIF()
+ENDIF()
 
 ################# DATATYPES #################
 IF(COMPILE_MODULAR_INTERFACE)
@@ -666,6 +671,7 @@ ENDIF()
 # detect PYTHON
 FIND_PACKAGE(PythonInterp REQUIRED)
 
+# Meta examples and dependencies
 OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 include(FindPythonModule)
 find_python_module(ply REQUIRED)
@@ -683,19 +689,11 @@ IF(BUILD_META_EXAMPLES)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
 ENDIF()
 
-OPTION(BUILD_COOKBOOK "Build Shogun API cookbook" OFF)
-IF(BUILD_COOKBOOK)
-    IF(NOT BUILD_META_EXAMPLES)
-        message(FATAL_ERROR
-                "Meta examples need to be enabled to build cookbook.")
-    ENDIF()
-    
-    find_package(Sphinx)
-    IF(NOT SPHINX_FOUND)
-        message(FATAL_ERROR "Sphinx is required to build cookbook.")
-    ENDIF()
+# cookbook and dependencies
+find_package(Sphinx)
+IF(BUILD_META_EXAMPLES AND SPHINX_FOUND)
+    SET(BUILD_COOKBOOK 1)
 ENDIF()
-
 
 # JSON
 OPTION(BUNDLE_JSON "Bundle JSON" OFF)
@@ -1145,7 +1143,8 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/src/shogun)
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
-	IF(BUILD_EXAMPLES OR ENABLE_TESTING)
+	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
+	    message("Tests require (disabled) examples, enabling.")
 		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 ENDIF()
