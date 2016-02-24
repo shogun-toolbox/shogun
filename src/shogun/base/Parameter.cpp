@@ -1820,7 +1820,7 @@ TParameter::print(const char* prefix)
 		&& *(CSGObject**) m_parameter != NULL) {
 		char* p = new_prefix(prefix, m_name);
 		(*(CSGObject**) m_parameter)->print_serializable(p);
-		delete p;
+		SG_FREE(p);
 	}
 }
 
@@ -2238,7 +2238,7 @@ TParameter::save_ptype(CSerializableFile* file, const void* param,
 			char* p = new_prefix(prefix, m_name);
 			bool result = (*(CSGObject**) param)
 				->save_serializable(file, p);
-			delete p;
+			SG_FREE(p);
 			if (!result) return false;
 		}
 		if (!file->write_sgserializable_end(
@@ -2270,7 +2270,7 @@ TParameter::load_ptype(CSerializableFile* file, void* param,
 			char* p = new_prefix(prefix, m_name);
 			bool result = (*(CSGObject**) param)
 				->load_serializable(file, p);
-			delete p;
+			SG_FREE(p);
 			if (!result) return false;
 		}
 		if (!file->read_sgserializable_end(
