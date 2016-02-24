@@ -628,27 +628,6 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-OPTION(ENABLE_META_EXAMPLES "Generate API examples from meta-examples" ON)
-find_package(PLY)
-find_package(PYPARSING)
-IF(NOT PLY_FOUND AND NOT PYPARSING_FOUND)
-    message("-- Python module PYPARSING or PLY required for meta examples. Disabling.")
-    SET(ENABLE_META_EXAMPLES 0)
-ENDIF()
-
-OPTION(ENABLE_COOKBOOK "Build Shogun API cookbook" ON)
-IF(NOT ENABLE_META_EXAMPLES)
-    message("-- Meta examples are required for building cookbook. Disabling.")
-    SET(ENABLE_COOKBOOK 0)
-ENDIF()
-
-find_package(Sphinx)
-IF(NOT SPHINX_FOUND)
-    message("-- Sphinx is required for building cookbook. Disabling.")
-    SET(ENABLE_COOKBOOK 0)
-ENDIF()
-
-
 FIND_PACKAGE(LpSolve)
 IF (LPSOLVE_FOUND)
 	SET(USE_LPSOLVE 1)
@@ -686,6 +665,27 @@ ENDIF()
 
 # detect PYTHON
 FIND_PACKAGE(PythonInterp REQUIRED)
+
+OPTION(ENABLE_META_EXAMPLES "Generate API examples from meta-examples" ON)
+include(FindPythonModule)
+find_package(PLY)
+find_package(PYPARSING)
+IF(NOT PLY_FOUND AND NOT PYPARSING_FOUND)
+    message("-- Python module PYPARSING or PLY required for meta examples. Disabling.")
+    SET(ENABLE_META_EXAMPLES 0)
+ENDIF()
+
+OPTION(ENABLE_COOKBOOK "Build Shogun API cookbook" ON)
+IF(NOT ENABLE_META_EXAMPLES)
+    message("-- Meta examples are required for building cookbook. Disabling.")
+    SET(ENABLE_COOKBOOK 0)
+ENDIF()
+
+find_package(Sphinx)
+IF(NOT SPHINX_FOUND)
+    message("-- Sphinx is required for building cookbook. Disabling.")
+    SET(ENABLE_COOKBOOK 0)
+ENDIF()
 
 # JSON
 OPTION(BUNDLE_JSON "Bundle JSON" OFF)
