@@ -21,7 +21,7 @@ matrix:
       python: "2.7_with_system_site_packages"
       language: python
       env:
-        - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DBUILD_COOKBOOK=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
