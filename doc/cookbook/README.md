@@ -41,8 +41,10 @@ We automatically upload the cookbook to our webserver in the [nightly build](htt
 This can be done as running
 
 ```
-make doc
+make cookbook
 ```
+
+which is also part of ```make doc```. Note that the meta examples need to be enabled an sphinx needs to be installed, otherwise the ```cookbook``` target is not available. See dependencies below.
 
 This generates a ```doc/cookbook/html``` folder in your build folder. To see the results, run
 
@@ -54,6 +56,9 @@ in that directory and then open your browser at ```localhost:8000```.
 
 
 ## Python requirements
-
+The cookbook is automatically built if these dependencies are met:
+ * ```cmake``` switch ```-DBUILD_META_EXAMPLES```
  * [sphinx](http://www.sphinx-doc.org/)
+ 
+In addition this python module needs to be installed to enable bibtex citations.
  * [sphinxcontrib-bibtex](https://sphinxcontrib-bibtex.readthedocs.org/)
