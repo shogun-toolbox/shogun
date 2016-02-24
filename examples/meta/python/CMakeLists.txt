@@ -1,10 +1,10 @@
 INCLUDE(PythonEnvironment)
 GET_PYTHON_ENV()
 
-# add test case for each generated python example
+# add test case for each generated example
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
-    # assume a structure python/<category>/listing.py
+    # assume a structure <target_language>/<category>/listing.sg
 	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
 	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
 	STRING(REGEX REPLACE "/" "-" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
@@ -12,10 +12,10 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
     
     # run test in source dir, to have access to "data" folder
     # run listing from binary dir though as it is generated there
-	add_test(NAME generated_python_modular-${EXAMPLE_NAME_WITH_DIR}
+	add_test(NAME generated_python-${EXAMPLE_NAME_WITH_DIR}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.py)
-	set_property(TEST generated_python_modular-${EXAMPLE_NAME_WITH_DIR} PROPERTY
+	set_property(TEST generated_python-${EXAMPLE_NAME_WITH_DIR} PROPERTY
 				ENVIRONMENT "${PYTHON_ENV_VARS}")
 
 ENDFOREACH()
