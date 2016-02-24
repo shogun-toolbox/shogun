@@ -70,4 +70,3 @@ script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; ctest --output-on-failure -j 2"
-
