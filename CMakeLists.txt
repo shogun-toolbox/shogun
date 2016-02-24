@@ -666,16 +666,20 @@ ENDIF()
 # detect PYTHON
 FIND_PACKAGE(PythonInterp REQUIRED)
 
-OPTION(ENABLE_META_EXAMPLES "Generate API examples from meta-examples" ON)
+OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 find_package(PLY)
 find_package(PYPARSING)
 IF(NOT PLY_FOUND AND NOT PYPARSING_FOUND)
     message("-- Python module PYPARSING or PLY required for meta examples. Disabling.")
-    SET(ENABLE_META_EXAMPLES 0)
+    SET(BUILD_META_EXAMPLES 0)
+ENDIF()
+IF(BUILD_META_EXAMPLES)
+    # allow meta examples without adding examples dir
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
 ENDIF()
 
 OPTION(ENABLE_COOKBOOK "Build Shogun API cookbook" ON)
-IF(NOT ENABLE_META_EXAMPLES)
+IF(NOT BUILD_META_EXAMPLES)
     message("-- Meta examples are required for building cookbook. Disabling.")
     SET(ENABLE_COOKBOOK 0)
 ENDIF()

@@ -49,8 +49,8 @@ IF (CmdLineStatic AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_st
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/cmdline_static)
 ENDIF()
 
-IF(ENABLE_META_EXAMPLES)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/meta)
+IF(BUILD_META_EXAMPLES)
+    # meta dir was added in root CMakeLists
     add_custom_target(examples DEPENDS meta_examples)
 ELSE()
     add_custom_target(examples)
