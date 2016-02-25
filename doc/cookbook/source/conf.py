@@ -28,16 +28,16 @@ sys.path.insert(0, os.path.abspath('.'))
 # ones.
 extensions = [
     # we use pngmath because it allows for custom latex preambles
-    'sphinx.ext.pngmath',
-    
+    'sphinx.ext.mathjax',
+
     # our own plugin that loads snippets from meta-language generated listings
     'sgexample',
-    
+
     # bibtex citations support
     'sphinxcontrib.bibtex',
-    
+
     # to create automatic links to Shogun class docs
-    'sphinx.ext.extlinks', 
+    'sphinx.ext.extlinks',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -215,11 +215,6 @@ latex_elements = {
 # Additional stuff for the LaTeX preamble.
 # 'preamble': '',
 }
-
-# Custom latex operators only makes sense for png math
-# TODO: load those from a file
-pngmath_latex_preamble = r'\DeclareMathOperator*{\argmin}{arg\,min}' \
-                       + r'\DeclareMathOperator*{\argmax}{arg\,max}'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
