@@ -18,8 +18,6 @@
 #include <shogun/transfer/multitask/Task.h>
 
 
-using namespace std;
-
 namespace shogun
 {
 /** @brief class Multitask Logistic Regression used

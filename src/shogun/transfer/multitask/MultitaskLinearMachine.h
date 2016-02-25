@@ -20,8 +20,6 @@
 #include <vector>
 #include <set>
 
-using namespace std;
-
 namespace shogun
 {
 /** @brief class MultitaskLinearMachine, a base class
@@ -146,7 +144,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 		SGVector<float64_t> m_tasks_c;
 
 		/** vector of sets of indices */
-		vector< set<index_t> > m_tasks_indices;
+		std::vector< std::set<index_t> > m_tasks_indices;
 
 };
 }

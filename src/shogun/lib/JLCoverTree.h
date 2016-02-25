@@ -8,7 +8,9 @@
 
 #include<math.h>
 #include<stdio.h>
+#ifndef NDEBUG
 #define NDEBUG
+#endif  // NDEBUG
 #include<assert.h>
 
 /* First written by John Langford jl@hunch.net
@@ -31,7 +33,6 @@
    : this prints out the contents of a P object.
 */
 
-using namespace std;
 using namespace shogun;
 
 /**

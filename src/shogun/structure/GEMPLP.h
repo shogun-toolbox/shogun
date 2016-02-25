@@ -21,8 +21,6 @@
 #include <vector>
 #include <set>
 
-using namespace std;
-
 namespace shogun
 {
 /** GEMPLP (Generalized Max-product LP Relaxation) inference for factor graph
@@ -137,17 +135,17 @@ public:
 	/** all factors in the graph*/
 	CDynamicObjectArray* m_factors;
 	/** all intersections */
-	vector<SGVector<int32_t> > m_all_intersections;
+	std::vector<SGVector<int32_t> > m_all_intersections;
 	/** the intersection indices (node indices) on each region */
-	vector<set<int32_t> > m_region_intersections;
+	std::vector<std::set<int32_t> > m_region_intersections;
 	/** the indices (orders in the region) of the intersections on each region */
-	vector<vector<SGVector<int32_t> > > m_region_inds_intersections;
+	std::vector<std::vector<SGVector<int32_t> > > m_region_inds_intersections;
 	/** store the sum of messages into intersections */
-	vector<SGNDArray<float64_t> > m_msgs_into_intersections;
+	std::vector<SGNDArray<float64_t> > m_msgs_into_intersections;
 	/** store the messages from region to intersection */
-	vector<vector<SGNDArray<float64_t> > > m_msgs_from_region;
+	std::vector<std::vector<SGNDArray<float64_t> > > m_msgs_from_region;
 	/** store the original (-) energy of the factors */
-	vector<SGNDArray<float64_t> > m_theta_region;
+	std::vector<SGNDArray<float64_t> > m_theta_region;
 };
 }
 #endif
