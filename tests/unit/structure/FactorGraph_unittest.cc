@@ -368,7 +368,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	vc[2] = 2;
 	CFactorGraph fg(vc);
 
-	SGSparseVectorEntry<float64_t>* sdata = new SGSparseVectorEntry<float64_t>[2];
+	SGSparseVectorEntry<float64_t>* sdata = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
 	sdata[0].feat_index = 0;
 	sdata[0].entry = 0.1;
 	sdata[1].feat_index = 1;
@@ -383,7 +383,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SG_REF(fac1);
 	fg.add_factor(fac1);
 
-	SGSparseVectorEntry<float64_t>* sdata1 = new SGSparseVectorEntry<float64_t>[2];
+	SGSparseVectorEntry<float64_t>* sdata1 = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
 	sdata1[0].feat_index = 0;
 	sdata1[0].entry = 0.3;
 	sdata1[1].feat_index = 1;
@@ -397,7 +397,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SG_REF(fac1a);
 	fg.add_factor(fac1a);
 
-	SGSparseVectorEntry<float64_t>* sdata2 = new SGSparseVectorEntry<float64_t>[2];
+	SGSparseVectorEntry<float64_t>* sdata2 = SG_MALLOC(SGSparseVectorEntry<float64_t>, 2);
 	sdata2[0].feat_index = 0;
 	sdata2[0].entry = 0.5;
 	sdata2[1].feat_index = 1;
