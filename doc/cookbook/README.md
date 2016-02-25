@@ -29,6 +29,7 @@ To add an entry, only two files are needed:
 
  * All external weblinks are automatically checked and warnings are given if corrupt, but please ensure you do not put in dead links.
  * If you want to add a BibTeX reference, add it to [references.bib](https://github.com/shogun-toolbox/shogun/blob/feature/sphinxdoc/doc/cookbook/source/references.bib). Please do only use properly formated entries.
+ * If you need a custom LaTeX operator, simply add it to [mathconf.js](https://github.com/shogun-toolbox/shogun/blob/feature/sphinxdoc/doc/cookbook/source/static/mathconf.js)
  * It is very easy to re-structure the main page, or to put in general overview pages (i.e. a general description of the Classification interface of Shogun). Feel free to do so.
  
 ### Where to start
