@@ -1,12 +1,5 @@
 {
     "Program": "using System;\n\npublic class classifier_knn_modular {\n    public static void Main() {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
-    "Dependencies": {
-        "AllDependencies": "$enumDependencies\n\n",
-        "EnumDependencies": "$enums",
-        "DependencyListElementClass": "$element",
-        "DependencyListElementEnum": "import static org.shogun.$type.$value;",
-        "DependencyListSeparator": "\n"
-    },
     "Statement": "        $statement;\n",
     "Comment": "        //$comment\n",
     "Init": {

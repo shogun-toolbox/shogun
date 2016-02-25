@@ -46,7 +46,7 @@ class SlowParser:
         stringLiteral = self.pp.QuotedString('"')
         boolLiteral = self.pp.Literal('True') ^ self.pp.Literal('False')
 
-        basicType = self.pp.Literal('int') ^ self.pp.Literal('bool') ^ self.pp.Literal('float') ^ self.pp.Literal('string') ^ self.pp.Literal('RealVector')
+        basicType = self.pp.Literal('int') ^ self.pp.Literal('bool') ^ self.pp.Literal('float') ^ self.pp.Literal('string')
         # Shogun types are retrieved from the type list
         objectType = self.shogunType()
         type = objectType ^ basicType
@@ -233,8 +233,7 @@ class FastParser:
         'int': 'BASICTYPE',
         'bool': 'BASICTYPE',
         'float':  'BASICTYPE',
-        'string': 'BASICTYPE',
-        'RealVector': 'BASICTYPE'
+        'string': 'BASICTYPE'
     }
 
     t_NUMERAL = "([1-9][0-9]*(\.[0-9]+)?)|0\.[0-9]+"
