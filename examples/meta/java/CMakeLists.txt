@@ -27,6 +27,6 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
 				-Djava.library.path=${JAVA_LIB_PATH} ${EXAMPLE_NAME})
 ENDFOREACH()
 
-add_custom_target(build_generated_java_examples ALL
+add_custom_target(build_java_meta_examples ALL
 				 DEPENDS ${JAVA_EXAMPLES}
 				 COMMENT "Compiled generated java examples")
