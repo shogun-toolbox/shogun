@@ -189,7 +189,8 @@ target_languages = (
         ('python', 'py'),
         ('octave', 'm'),
         ('r', 'R'),
-        ('java', 'java')
+        ('java', 'java'),
+        ('csharp', 'cs'),
         )
 
 generated_examples_path = None

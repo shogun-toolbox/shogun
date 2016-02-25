@@ -1,0 +1,60 @@
+{
+    "Program": "using System;\n\npublic class classifier_knn_modular {\n    public static void Main() {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
+    "Dependencies": {
+        "AllDependencies": "$enumDependencies\n\n",
+        "EnumDependencies": "$enums",
+        "DependencyListElementClass": "$element",
+        "DependencyListElementEnum": "import static org.shogun.$type.$value;",
+        "DependencyListSeparator": "\n"
+    },
+    "Statement": "        $statement;\n",
+    "Comment": "        //$comment\n",
+    "Init": {
+        "Construct": "$type $name = new $type($arguments)",
+        "Copy": "$type $name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type",
+        "bool": "bool",
+        "string": "String",
+        "BoolVector": "bool[]",
+        "CharVector": "char[]",
+        "ByteVector": "byte[]",
+        "WordVector": "ushort[]",
+        "ShortVector": "short[]",
+        "IntVector": "int[]",
+        "LongIntVector": "long[]",
+        "ULongIntVector": "ulongint[]",
+        "ShortRealVector": "float[]",
+        "RealVector": "double[]",
+        "LongRealVector": "double[]",
+        "ComplexVector": "???",
+        "BoolMatrix": "bool[,]",
+        "CharMatrix": "char[,]",
+        "ByteMatrix": "byte[,]",
+        "WordMatrix": "ushort[,]",
+        "ShortMatrix": "short[,]",
+        "IntMatrix": "int[,]",
+        "LongIntMatrix": "long[,]",
+        "ULongIntMatrix": "ulongint[,]",
+        "ShortRealMatrix": "float[,]",
+        "RealMatrix": "float[,]",
+        "LongRealMatrix": "double[,]",
+        "ComplexMatrix": "????"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "Console.Write($expr)",
+    "OutputDirectoryName": "csharp",
+    "FileExtension": ".cs"
+}

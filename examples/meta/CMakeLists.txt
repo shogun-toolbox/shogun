@@ -40,4 +40,9 @@ IF(ENABLE_TESTING)
     IF (RModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/r)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/r)
     ENDIF()
+    
+    # csharp
+    IF (CSharpModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/csharp)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/csharp)
+    ENDIF()
 ENDIF()
