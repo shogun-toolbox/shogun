@@ -191,6 +191,7 @@ target_languages = (
         ('r', 'R'),
         ('java', 'java'),
         ('csharp', 'cs'),
+        ('lua', 'lua')
         )
 
 generated_examples_path = None
