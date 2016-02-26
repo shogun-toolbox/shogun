@@ -17,9 +17,8 @@ KNN knn(3, distance, labels)
 
 #![train_and_apply]
 knn.train()
-Labels test_labels = knn.apply(feats_test)
-RealVector output = test_labels.get_values()
-print output
+#Labels test_labels = knn.apply(feats_test)
+#LongRealVector output = test_labels.get_values()
 #![train_and_apply]
 
 

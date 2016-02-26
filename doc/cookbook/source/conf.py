@@ -186,6 +186,7 @@ html_static_path = ['static']
 #html_file_suffix = None
 
 target_languages = (
+        ('cpp', 'cpp'),
         ('python', 'py'),
         ('octave', 'm'),
         ('r', 'R'),
