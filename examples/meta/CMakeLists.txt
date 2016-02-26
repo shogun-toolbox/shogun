@@ -19,6 +19,16 @@ add_custom_target(meta_examples
 # Collect all meta example listings and store in variable
 FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
 
+# run the Python generator tests
+IF(ENABLE_TESTING)
+    find_program(NOSETESTS_PATH nosetests)
+    if(NOSETESTS_PATH)
+	    add_test(NAME meta-examples-generator
+	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generator
+	    COMMAND nosetests)
+    endif()
+ENDIF()
+
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)
     # Python
