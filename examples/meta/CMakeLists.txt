@@ -57,7 +57,7 @@ IF(ENABLE_TESTING)
     ENDIF()
     
     # ruby
-    IF (CSharpModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
+    IF (RubyModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ruby)
     ENDIF()
 ENDIF()
