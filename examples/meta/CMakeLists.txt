@@ -21,13 +21,13 @@ FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
 
 # run the Python generator tests
 IF(ENABLE_TESTING)
-    find_program(NOSETESTS_PATH nosetests)
-    if(NOSETESTS_PATH)
+    find_program(NOSETESTS nosetests)
+    IF(NOSETESTS)
 	    add_test(NAME meta-examples-generator
 	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generator
-	    COMMAND nosetests)
-    endif()
-ENDIF()
+	    COMMAND ${NOSETESTS})
+    ENDIF(NOSETESTS)
+ENDIF(ENABLE_TESTING)
 
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)
