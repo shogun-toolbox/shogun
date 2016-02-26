@@ -1,0 +1,27 @@
+{
+    "Program": "require 'modshogun'\n\n$dependencies$program",
+    "Statement": "$statement\n",
+    "Comment": "#$comment\n",
+    "Init": {
+        "Construct": "$name = Modshogun::$type.new $arguments",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method $arguments",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "puts $expr",
+    "OutputDirectoryName": "ruby",
+    "FileExtension": ".rb"
+}

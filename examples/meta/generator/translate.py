@@ -286,7 +286,7 @@ def loadTargetDict(targetJsonPath):
 if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--target", nargs='?', help="Translation target. Possible values: python, java, r, octave, csharp. (default: python)")
+    parser.add_argument("-t", "--target", nargs='?', help="Translation target. Possible values: python, java, r, octave, csharp, ruby. (default: python)")
     parser.add_argument("path", nargs='?', help="Path to input file. If not specified input is read from stdin")
     args = parser.parse_args()
 
