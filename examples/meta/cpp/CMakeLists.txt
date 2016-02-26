@@ -27,7 +27,7 @@ ENDFOREACH()
 
 add_custom_target(build_cpp_meta_examples ALL
 				 DEPENDS ${CPP_EXAMPLES}
-				 COMMENT "Compiled generated java examples")
+				 COMMENT "Compiled generated cpp examples")
 
 #INSTALL(PROGRAMS ${INSTALL_EXAMPLES}
 #	DESTINATION share/shogun/examples/libshogun
