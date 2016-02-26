@@ -191,6 +191,7 @@ target_languages = (
         ('java', 'java'),
         ('ruby', 'rb'),
         ('r', 'R'),
+        ('lua', 'lua')
         ('csharp', 'cs'),
         ('cpp', 'cpp'),
         )

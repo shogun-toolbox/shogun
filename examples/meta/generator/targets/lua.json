@@ -1,0 +1,27 @@
+{
+    "Program": "require 'modshogun'\n\n$dependencies$program",
+    "Statement": "$statement\n",
+    "Comment": "--$comment\n",
+    "Init": {
+        "Construct": "$name = modshogun.$type($arguments)",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "'$literal'",
+        "BoolLiteral": {
+            "True": "True",
+            "False": "False"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object:$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "print($expr)",
+    "OutputDirectoryName": "lua",
+    "FileExtension": ".lua"
+}
