@@ -191,6 +191,7 @@ target_languages = (
         ('r', 'R'),
         ('java', 'java'),
         ('csharp', 'cs'),
+        ('ruby', 'rb'),
         )
 
 generated_examples_path = None
