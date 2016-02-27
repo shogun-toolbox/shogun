@@ -11,7 +11,7 @@
         "Default": "$type"
     },
     "Expr": {
-        "StringLiteral": "'$literal'",
+        "StringLiteral": "\"$literal\"",
         "BoolLiteral": {
             "True": "TRUE",
             "False": "FALSE"
