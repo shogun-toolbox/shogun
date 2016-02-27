@@ -22,7 +22,7 @@
         "ShortRealVector": "float[]",
         "RealVector": "double[]",
         "LongRealVector": "double[]",
-        "ComplexVector": "???",
+        "ComplexVector": "Complex[]",
         "BoolMatrix": "bool[,]",
         "CharMatrix": "char[,]",
         "ByteMatrix": "byte[,]",
@@ -34,7 +34,7 @@
         "ShortRealMatrix": "float[,]",
         "RealMatrix": "float[,]",
         "LongRealMatrix": "double[,]",
-        "ComplexMatrix": "????"
+        "ComplexMatrix": "Complex[,]"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
