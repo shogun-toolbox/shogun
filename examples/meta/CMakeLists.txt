@@ -68,6 +68,9 @@ IF(ENABLE_TESTING)
 
     # lua
     IF (LuaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lua)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lua)
+        # temporarily removed since lua modular currently
+        # does not support overloaded c++ methods
+        # see https://github.com/shogun-toolbox/shogun/issues/3018
+        #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lua)
     ENDIF()
 ENDIF()
