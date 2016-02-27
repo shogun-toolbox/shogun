@@ -1,13 +1,10 @@
 #![load_data]
 CSVFile f_feats_train("../data/fm_train_real.dat")
-RealFeatures feats_train()
-feats_train.load(f_feats_train)
+RealFeatures feats_train(f_feats_train)
 CSVFile f_feats_test("../data/fm_test_real.dat")
-RealFeatures feats_test()
-feats_test.load(f_feats_test)
+RealFeatures feats_test(f_feats_test)
 CSVFile f_labels_train("../data/label_train_multiclass.dat")
-MulticlassLabels labels()
-labels.load(f_labels_train)
+MulticlassLabels labels(f_labels_train)
 #![load_data]
 
 #![choose_distance]
