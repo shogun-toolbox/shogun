@@ -42,7 +42,7 @@
         "ShortRealMatrix": "SGMatrix<float32_t>",
         "RealMatrix": "SGMatrix<float64_t>",
         "LongRealMatrix": "SGMatrix<floatmax_t>",
-        "ComplexMatrixSGMatrix<complex128_t>
+        "ComplexMatrix": "SGMatrix<complex128_t>"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
