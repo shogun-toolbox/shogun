@@ -1,0 +1,3 @@
+require 'rubygems'
+require 'narray'
+require 'modshogun@EXT_LIB_SWIG_RUBY_MODULAR@'
