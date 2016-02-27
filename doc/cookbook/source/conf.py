@@ -188,11 +188,11 @@ html_static_path = ['static']
 target_languages = (
         ('python', 'py'),
         ('octave', 'm'),
-        ('r', 'R'),
         ('java', 'java'),
-        ('cpp', 'cpp'),
-        ('csharp', 'cs'),
         ('ruby', 'rb'),
+        ('r', 'R'),
+        ('csharp', 'cs'),
+        ('cpp', 'cpp'),
         )
 
 target_languages_tab_titles = {
@@ -200,9 +200,9 @@ target_languages_tab_titles = {
                 'octave': 'Octave',
                 'r': 'R',
                 'java': 'Java',
-                'cpp': 'C++',
                 'csharp': 'C#',
                 'ruby': 'Ruby',
+                'cpp': 'Native C++',
         }
 
 generated_examples_path = None
