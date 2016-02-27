@@ -2,7 +2,7 @@ import sys
 import json
 import os
 import argparse
-import imp
+import ply
 
 # The FastParser parses input using PLY
 class FastParser:
@@ -227,19 +227,7 @@ class FastParser:
 
 
 def parse(programString, filePath):
-    # Check if PLY is installed
-    try:
-        imp.find_module('ply')
-        plyFound = True
-    except ImportError:
-        plyFound = False
-
-    # Use the fast parser if PLY was found
-    parser = None
-    if plyFound:
-        parser = FastParser()
-    else:
-        parser = SlowParser()
+    parser = FastParser()
 
     # Parse input
     return parser.parse(programString, filePath)
