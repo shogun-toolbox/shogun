@@ -4,6 +4,7 @@ from string import Template
 from sets import Set
 import os.path
 import argparse
+import re
 
 class Translator:
     def __init__(self, targetDict):
@@ -15,7 +16,7 @@ class Translator:
 
         self.targetDict = targetDict
 
-    def translateProgram(self, program, programName=None):
+    def translateProgram(self, program, programName=None, tags={}):
         """ Translate program AST
         Args:
             program: object like [statementAST, statementAST, statementAST, ...]
@@ -24,6 +25,7 @@ class Translator:
         self.dependencies["AllClasses"] = Set()
         self.dependencies["ConstructedClasses"] = Set()
         self.dependencies["Enums"] = Set()
+        self.tags = tags
 
         targetProgram = ""
         for line in program:
@@ -93,11 +95,31 @@ class Translator:
         # separated dependencies
         csdependencies = ""
         for i, x in enumerate(dependencyList):
-            csdependencies += elementTemplate.substitute(element=x)
+            if '$include' in elementTemplate.template:
+                csdependencies += elementTemplate.substitute(element=x, include=self.getIncludePathForClass(x))
+            else:
+                csdependencies += elementTemplate.substitute(element=x)
+
             if i < len(dependencyList)-1:
                 csdependencies += seperator
 
         return csdependencies
+
+    def getIncludePathForClass(self, type_):
+        translatedType = self.translateType({"ObjectType": type_})
+        template_parameter_matcher = '\<[0-9a-zA-Z_]*\>'
+        variants = [
+                translatedType,
+                'C' + translatedType,
+                re.sub(template_parameter_matcher, '', translatedType),
+                'C' + re.sub(template_parameter_matcher, '', translatedType)
+                ]
+        for variant in variants:
+            if variant in self.tags:
+                return self.tags[variant]
+
+        raise Exception('Failed to obtain include path for %s' % (' or '.join(variants)))
+
 
     def seperatedEnumDependencies(self):
         if len(self.dependencies["Enums"]) == 0:
@@ -267,10 +289,10 @@ class Translator:
             elif "ArgumentList" in argumentList:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
-def translate(ast, targetDict):
+def translate(ast, targetDict, tags):
     translator = Translator(targetDict)
     programName = os.path.basename(ast["FilePath"]).split(".")[0]
-    return translator.translateProgram(ast["Program"], programName)
+    return translator.translateProgram(ast["Program"], programName, tags)
 
 def loadTargetDict(targetJsonPath):
     try:

@@ -1,11 +1,10 @@
 {
-    "Program": "#include <shogun/base/init.h>\n#include <shogun/io/SGIO.h>\n#include <shogun/base/some.h>\n#include <shogun/features/DenseFeatures.h>\n#include <shogun/labels/MulticlassLabels.h>\n#include <shogun/multiclass/KNN.h>\n#include <shogun/io/CSVFile.h>\n#include <shogun/distance/EuclideanDistance.h>\n\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\nexit_shogun();\nreturn 0;\n}\n",
+    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\nexit_shogun();\nreturn 0;\n}\n",
     "Dependencies": {
-        "AllDependencies": "$enumDependencies\n\n",
-        "EnumDependencies": "$enums",
-        "DependencyListElementClass": "$element",
-        "DependencyListElementEnum": "import static org.shogun.$type.$value;",
-        "DependencyListSeparator": "\n"
+        "AllClassDependencies": "$classlist",
+        "AllDependencies": "$allClassDependencies",
+        "DependencyListSeparator": "\n",
+        "DependencyListElementClass": "#include <$include>"
     },
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",

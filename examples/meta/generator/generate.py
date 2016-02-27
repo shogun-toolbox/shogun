@@ -15,7 +15,20 @@ def subfilesRelative(directory, filter_by):
             if filter_by(file):
                 yield os.path.relpath(dir_, inputDir), file
 
-def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
+def parseCtags(filename):
+    tags = {}
+    if not os.path.exists(filename):
+        raise Exception('Failed to found ctags file at %s' % (filename))
+    with open(filename) as file:
+        for line in file:
+            symbol, location = line.strip().split('\t')[:2]
+            # we assume sources are in src/
+            tags[symbol] = location.split('src/')[-1]
+    return tags
+
+def translateExamples(inputDir, outputDir, targetsDir, ctagsFile, includedTargets=None):
+
+    tags = parseCtags(ctagsFile)
     # Load all target dictionaries
     targets = []
     for target in os.listdir(targetsDir):
@@ -35,7 +48,7 @@ def translateExamples(inputDir, outputDir, targetsDir, includedTargets=None):
 
         # Translate ast to each target language
         for target in targets:
-            translation = translate(ast, targetDict=target)
+            translation = translate(ast, targetDict=target, tags=tags)
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
 
@@ -60,7 +73,8 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", help="path to output directory")
     parser.add_argument("-i", "--input", help="path to examples directory (input)")
     parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
-    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: python java r octave csharp ruby cpp lua). If not specified all targets are produced.")
+    parser.add_argument("-g", "--ctags", help="path to ctags file")
+    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: cpp python java r octave csharp ruby). If not specified all targets are produced.")
 
     args = parser.parse_args()
 
@@ -76,4 +90,6 @@ if __name__ == "__main__":
     if args.targetsfolder:
         targetsDir = args.targetsfolder
 
-    translateExamples(inputDir, outputDir, targetsDir, args.targets)
+    ctagsFile = args.ctags
+
+    translateExamples(inputDir, outputDir, targetsDir, ctagsFile, args.targets)

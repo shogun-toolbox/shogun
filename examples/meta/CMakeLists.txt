@@ -14,7 +14,9 @@ add_custom_target(meta_examples
     -i ${CMAKE_CURRENT_SOURCE_DIR}/src
     -o ${CMAKE_CURRENT_BINARY_DIR}
     -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
-    COMMENT "Generating examples from meta-language")
+    -g ${CTAGS_FILE}
+    COMMENT "Generating examples from meta-language"
+    DEPENDS ctags)
 
 # Collect all meta example listings and store in variable
 FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
