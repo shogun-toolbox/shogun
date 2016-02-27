@@ -40,7 +40,7 @@ class TestJavaTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST, "MyExample")
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n        RealFeatures feats_train = new RealFeatures(trainf);\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\nCSVFile trainf = new CSVFile(\"train.dat\");\nRealFeatures feats_train = new RealFeatures(trainf);\nCSVFile testf = new CSVFile(\"test.dat\");\n\n}\n}\n")
 
     def test_translateProgramWithNewlines(self):
         programAST = [
@@ -53,7 +53,7 @@ class TestJavaTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST, "MyExample")
 
-        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        CSVFile trainf = new CSVFile(\"train.dat\");\n\n        RealFeatures feats_train = new RealFeatures(trainf);\n\n        CSVFile testf = new CSVFile(\"test.dat\");\n\n    }\n}\n")
+        self.assertEqual(translation, u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\nCSVFile trainf = new CSVFile(\"train.dat\");\n\nRealFeatures feats_train = new RealFeatures(trainf);\n\nCSVFile testf = new CSVFile(\"test.dat\");\n\n}\n}\n")
 
     def test_translateInitCopy(self):
         initAST = [
@@ -100,7 +100,7 @@ class TestJavaTranslator(unittest.TestCase):
             ]
         }
         translation = self.translator.translateStatement(stmtAST)
-        self.assertEqual(translation, u"        knn_train = false;\n")
+        self.assertEqual(translation, u"knn_train = false;\n")
 
     def test_translateStatementExpr(self):
         stmtAST = {
@@ -113,7 +113,7 @@ class TestJavaTranslator(unittest.TestCase):
         }
 
         translation = self.translator.translateStatement(stmtAST)
-        self.assertEqual(translation, u"        knn.train();\n")
+        self.assertEqual(translation, u"knn.train();\n")
 
     def test_translateStatementNewLine(self):
         stmtAST = "\n"
@@ -127,7 +127,7 @@ class TestJavaTranslator(unittest.TestCase):
 
         translation = self.translator.translateStatement(stmtAST)
 
-        self.assertEqual(translation, u"        System.out.println(multiple_k);\n")
+        self.assertEqual(translation, u"System.out.println(multiple_k);\n")
 
     def test_translateType(self):
         typeAST = {
@@ -152,7 +152,7 @@ class TestJavaTranslator(unittest.TestCase):
         ]
         translation = self.translator.translateProgram(programAST, "MyExample")
 
-        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n        // This is a comment\n\n    }\n}\n"
+        trueTranslation = u"import org.shogun.*;\nimport org.jblas.*;\n\nclass MyExample {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n// This is a comment\n\n}\n}\n"
         self.assertEqual(translation, trueTranslation)
 
 

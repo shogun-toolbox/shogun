@@ -1,5 +1,5 @@
 {
-    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\n${dependencies}class $programName {\n    static {\n        System.loadLibrary(\"modshogun\");\n    }\n\n    public static void main(String argv[]) {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
+    "Program": "import org.shogun.*;\nimport org.jblas.*;\n\n${dependencies}class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
     "Dependencies": {
         "AllDependencies": "$enumDependencies\n\n",
         "EnumDependencies": "$enums",
@@ -7,8 +7,8 @@
         "DependencyListElementEnum": "import static org.shogun.$type.$value;",
         "DependencyListSeparator": "\n"
     },
-    "Statement": "        $statement;\n",
-    "Comment": "        //$comment\n",
+    "Statement": "$statement;\n",
+    "Comment": "//$comment\n",
     "Init": {
         "Construct": "$type $name = new $type($arguments)",
         "Copy": "$type $name = $expr"
