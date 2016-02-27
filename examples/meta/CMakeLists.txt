@@ -31,6 +31,11 @@ ENDIF(ENABLE_TESTING)
 
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)
+    # c++
+    IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+    ENDIF()
+
     # Python
     IF (PythonModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/python)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/python)

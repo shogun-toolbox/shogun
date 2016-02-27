@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", help="path to output directory")
     parser.add_argument("-i", "--input", help="path to examples directory (input)")
     parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
-    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: python java r octave csharp ruby). If not specified all targets are produced.")
+    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: cpp python java r octave csharp ruby). If not specified all targets are produced.")
 
     args = parser.parse_args()
 
