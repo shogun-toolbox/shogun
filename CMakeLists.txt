@@ -674,12 +674,7 @@ OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 include(FindPythonModule)
 find_python_module(ply REQUIRED)
 IF(NOT PY_PLY)
-    find_python_module(pyparsing REQUIRED)
-    IF(NOT PY_PYPARSING)
-        message(FATAL_ERROR "Python modules pyparsing or ply required for meta examples.")
-    ELSE()
-        message(WARNING "Python module ply was not found. Falling back to pyparsing. This may cause meta example parsing to be very slow.")
-    ENDIF()
+    message(FATAL_ERROR "Python module ply required for meta examples.")
 ENDIF()
 
 # add meta example dir below after tests have been defined
