@@ -204,6 +204,7 @@ target_languages_tab_titles = {
                 'csharp': 'C#',
                 'ruby': 'Ruby',
                 'cpp': 'Native C++',
+                'lua': 'Lua',
         }
 
 generated_examples_path = None
