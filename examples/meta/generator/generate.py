@@ -21,6 +21,7 @@ def parseCtags(filename):
         raise Exception('Failed to found ctags file at %s' % (filename))
     with open(filename) as file:
         for line in file:
+            # in ctags format it is TAG\tLOCATION\t..
             symbol, location = line.strip().split('\t')[:2]
             # we assume sources are in src/
             tags[symbol] = location.split('src/')[-1]
@@ -74,7 +75,17 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input", help="path to examples directory (input)")
     parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
     parser.add_argument("-g", "--ctags", help="path to ctags file")
-    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: cpp python java r octave csharp ruby). If not specified all targets are produced.")
+    available_targets = [
+            'cpp',
+            'python',
+            'java',
+            'r',
+            'octave',
+            'csharp',
+            'ruby',
+            'lua',
+            ]
+    parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: %s). If not specified all targets are produced." % (' '.join(available_targets)))
 
     args = parser.parse_args()
 
