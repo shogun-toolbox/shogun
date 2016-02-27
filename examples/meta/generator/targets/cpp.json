@@ -11,7 +11,7 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "auto $name = some<C$type>($arguments)",
-        "Copy": "$type $name = $expr"
+        "Copy": "auto $name = $expr"
     },
     "Assign": "$name = $expr",
     "Type": {
