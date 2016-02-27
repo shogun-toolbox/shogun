@@ -1,7 +1,7 @@
 {
-    "Program": "using System;\n\npublic class classifier_knn_modular {\n    public static void Main() {\n        modshogun.init_shogun_with_defaults();\n\n$program\n    }\n}\n",
-    "Statement": "        $statement;\n",
-    "Comment": "        //$comment\n",
+    "Program": "using System;\n\npublic class classifier_knn_modular {\npublic static void Main() {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
+    "Statement": "$statement;\n",
+    "Comment": "//$comment\n",
     "Init": {
         "Construct": "$type $name = new $type($arguments)",
         "Copy": "$type $name = $expr"
