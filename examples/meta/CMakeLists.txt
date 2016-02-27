@@ -65,4 +65,9 @@ IF(ENABLE_TESTING)
     IF (RubyModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ruby)
     ENDIF()
+
+    # lua
+    IF (LuaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lua)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lua)
+    ENDIF()
 ENDIF()

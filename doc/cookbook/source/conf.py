@@ -191,6 +191,7 @@ target_languages = (
         ('java', 'java'),
         ('ruby', 'rb'),
         ('r', 'R'),
+        ('lua', 'lua'),
         ('csharp', 'cs'),
         ('cpp', 'cpp'),
         )
@@ -203,6 +204,7 @@ target_languages_tab_titles = {
                 'csharp': 'C#',
                 'ruby': 'Ruby',
                 'cpp': 'Native C++',
+                'lua': 'Lua',
         }
 
 generated_examples_path = None
