@@ -115,6 +115,17 @@ if (BUILD_STATIC)
   set_target_properties(shogun-static PROPERTIES OUTPUT_NAME shogun)
 ENDIF()
 
+IF (CTAGS_FOUND)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tags
+        COMMAND ${CTAGS_EXECUTABLE} -f ${CMAKE_CURRENT_BINARY_DIR}/tags
+        # functions, classes, macroses, enumerations, enumerators, typedefs
+        --c++-kinds=fcdget
+        -R ${CMAKE_CURRENT_SOURCE_DIR})
+    ADD_CUSTOM_TARGET(ctags DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/tags)
+    SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/tags PROPERTIES
+        GENERATED 1)
+ENDIF()
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
 
 INSTALL(DIRECTORY ./

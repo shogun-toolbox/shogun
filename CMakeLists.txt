@@ -407,6 +407,8 @@ OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)
 
 OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
+FIND_PACKAGE(Ctags)
+
 ######################### LIBRARIES #########################
 
 #check for symbols
