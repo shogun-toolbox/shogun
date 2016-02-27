@@ -186,20 +186,32 @@ html_static_path = ['static']
 #html_file_suffix = None
 
 target_languages = (
-        ('cpp', 'cpp'),
         ('python', 'py'),
         ('octave', 'm'),
         ('r', 'R'),
         ('java', 'java'),
+        ('cpp', 'cpp'),
         ('csharp', 'cs'),
         ('ruby', 'rb'),
         )
+
+target_languages_tab_titles = {
+                'python': 'Python',
+                'octave': 'Octave',
+                'r': 'R',
+                'java': 'Java',
+                'cpp': 'C++',
+                'csharp': 'C#',
+                'ruby': 'Ruby',
+        }
 
 generated_examples_path = None
 
 html_context = {
         'target_languages': 
-        [x[0] for x in target_languages]
+        [x[0] for x in target_languages],
+        
+        'target_languages_tab_titles': target_languages_tab_titles
 }
 
 # Output file base name for HTML help builder.
