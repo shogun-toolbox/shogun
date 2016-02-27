@@ -15,9 +15,9 @@ class TestOctaveTranslator(unittest.TestCase):
         CSVFile testf("test.dat")
 
         Translates to:
-        trainf = CSVFile('train.dat');
+        trainf = CSVFile("train.dat");
         feats_train = RealFeatures(trainf);
-        testf = CSVFile('test.dat')
+        testf = CSVFile("test.dat")
         """
         programAST = [
             {"Statement": {"Init": [{"ObjectType": "CSVFile"}, {"Identifier": "trainf"},{"ArgumentList": {"Expr": {"StringLiteral": "train.dat"}}}]}},
@@ -27,7 +27,7 @@ class TestOctaveTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"modshogun\n\ntrainf = CSVFile('train.dat');\nfeats_train = RealFeatures(trainf);\ntestf = CSVFile('test.dat');\n")
+        self.assertEqual(translation, u"modshogun\n\ntrainf = CSVFile(\"train.dat\");\nfeats_train = RealFeatures(trainf);\ntestf = CSVFile(\"test.dat\");\n")
 
     def test_translateProgramWithNewlines(self):
         programAST = [
@@ -40,7 +40,7 @@ class TestOctaveTranslator(unittest.TestCase):
 
         translation = self.translator.translateProgram(programAST)
 
-        self.assertEqual(translation, u"modshogun\n\ntrainf = CSVFile('train.dat');\n\nfeats_train = RealFeatures(trainf);\n\ntestf = CSVFile('test.dat');\n")
+        self.assertEqual(translation, u"modshogun\n\ntrainf = CSVFile(\"train.dat\");\n\nfeats_train = RealFeatures(trainf);\n\ntestf = CSVFile(\"test.dat\");\n")
 
     def test_translateInitCopy(self):
         initAST = [
