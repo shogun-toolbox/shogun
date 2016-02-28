@@ -42,15 +42,14 @@ namespace shogun
 template<class ST> class SGVector;
 template<class ST> class SGMatrix;
 
-
 class CNumericList: public CList
 {
 public:
 	CNumericList();
 	virtual const char* get_name() const { return "CNumericList"; }
 
-	void append(SGVector<float64_t>);
-	void append(SGMatrix<float64_t>);
+	void append(SGVector<float64_t> value);
+	void append(SGMatrix<float64_t> value);
 };
 
 

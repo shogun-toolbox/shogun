@@ -30,8 +30,8 @@
  *
  * Written (W) 2016 Heiko Strathmann
  */
-#ifndef SGVECTOR_OBJECT_H__
-#define SGVECTOR_OBJECT_H__
+#ifndef SGOBJECT_WRAPPER_H__
+#define SGOBJECT_WRAPPER_H__
 
 #include <shogun/base/SGObject.h>
 
@@ -39,21 +39,19 @@
 namespace shogun
 {
 
-template<class ST> class SGVector;
-
-template<class T> class CSGVectorObject: public CSGObject
+template<class T> class CSGObjectWrapper: public CSGObject
 {
 public:
-	CSGVectorObject();
-	CSGVectorObject(SGVector<T> vec);
-	virtual const char* get_name() const { return "CSGVectorObject"; }
+	CSGObjectWrapper();
+	CSGObjectWrapper(T value);
+	virtual const char* get_name() const { return "CSGObjectWrapper"; }
 
 private:
 	void init();
 
 protected:
-	SGVector<T> m_vec;
+	T m_value;;
 
 };
 };
-#endif // SGVECTOR_OBJECT_H__
+#endif // SGOBJECT_WRAPPER_H__

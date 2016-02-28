@@ -31,10 +31,9 @@
  * Written (W) 2016 Heiko Strathmann
  */
 #include <shogun/lib/NumericList.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGVectorObject.h>
+#include <shogun/lib/SGObjectWrapper.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGMatrixObject.h>
+#include <shogun/lib/SGVector.h>
 
 
 using namespace shogun;
@@ -43,12 +42,13 @@ CNumericList::CNumericList() : CList(true)
 {
 }
 
-void CNumericList::append(SGVector<float64_t> vec)
+void CNumericList::append(SGVector<float64_t> value)
 {
-	this->append_element(new CSGVectorObject<float64_t>(vec));
+	this->append_element(new CSGObjectWrapper<SGVector<float64_t>>(value));
 }
 
-void CNumericList::append(SGMatrix<float64_t> mat)
+void CNumericList::append(SGMatrix<float64_t> value)
 {
-	this->append_element(new CSGMatrixObject<float64_t>(mat));
+	this->append_element(new CSGObjectWrapper<SGMatrix<float64_t>>(value));
 }
+

@@ -31,39 +31,38 @@
  * Written (W) 2016 Heiko Strathmann
  */
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/SGMatrixObject.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGObjectWrapper.h>
 
 using namespace shogun;
 
-template<class T> CSGMatrixObject<T>::CSGMatrixObject() : CSGObject()
+template<class T> CSGObjectWrapper<T>::CSGObjectWrapper() : CSGObject()
 {
 	init();
 }
 
-template<class T> CSGMatrixObject<T>::CSGMatrixObject(SGMatrix<T> mat) : CSGObject()
+template<class T> CSGObjectWrapper<T>::CSGObjectWrapper(T value) : CSGObject()
 {
-	m_mat = mat;
+	m_value = value;
 
 	init();
 }
 
-
-template<class T> void CSGMatrixObject<T>::init()
+template<class T> void CSGObjectWrapper<T>::init()
 {
-	SG_ADD(&m_mat, "Matrix", "Wrapped SGMatrix", MS_NOT_AVAILABLE);
+	SG_ADD(&m_value, "Value", "Wrapped value", MS_NOT_AVAILABLE);
 }
 
-template class CSGMatrixObject<bool>;
-template class CSGMatrixObject<char>;
-template class CSGMatrixObject<int8_t>;
-template class CSGMatrixObject<uint8_t>;
-template class CSGMatrixObject<int16_t>;
-template class CSGMatrixObject<uint16_t>;
-template class CSGMatrixObject<int32_t>;
-template class CSGMatrixObject<uint32_t>;
-template class CSGMatrixObject<int64_t>;
-template class CSGMatrixObject<uint64_t>;
-template class CSGMatrixObject<float32_t>;
-template class CSGMatrixObject<float64_t>;
-template class CSGMatrixObject<floatmax_t>;
+template class CSGObjectWrapper<SGVector<float64_t>>;
+template class CSGObjectWrapper<bool>;
+template class CSGObjectWrapper<char>;
+template class CSGObjectWrapper<int8_t>;
+template class CSGObjectWrapper<uint8_t>;
+template class CSGObjectWrapper<int16_t>;
+template class CSGObjectWrapper<uint16_t>;
+template class CSGObjectWrapper<int32_t>;
+template class CSGObjectWrapper<uint32_t>;
+template class CSGObjectWrapper<int64_t>;
+template class CSGObjectWrapper<uint64_t>;
+template class CSGObjectWrapper<float32_t>;
+template class CSGObjectWrapper<float64_t>;
+template class CSGObjectWrapper<floatmax_t>;
