@@ -21,4 +21,12 @@ Labels test_labels = knn.apply(feats_test)
 RealVector output = test_labels.get_values()
 #![train_and_apply]
 
+# create some matrix that can serve as a fake result
+RealMatrix mat = feats_train.get_feature_matrix()
 
+#119 is char for 'w'
+SerializableAsciiFile f("knn.txt", 119)
+NumericList l()
+l.append(output)
+l.append(mat)
+l.save_serializable(f)
