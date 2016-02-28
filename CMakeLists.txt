@@ -407,8 +407,6 @@ OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)
 
 OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
-FIND_PACKAGE(Ctags)
-
 ######################### LIBRARIES #########################
 
 #check for symbols
@@ -671,11 +669,18 @@ FIND_PACKAGE(PythonInterp REQUIRED)
 
 # Meta examples and dependencies
 OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
-include(FindPythonModule)
-find_python_module(ply REQUIRED)
-IF(NOT PY_PLY)
-    message(FATAL_ERROR "Python module ply required for meta examples.")
-ENDIF()
+IF(BUILD_META_EXAMPLES)
+    include(FindPythonModule)
+    find_python_module(ply REQUIRED)
+    IF(NOT PY_PLY)
+        message(FATAL_ERROR "Python module ply required for meta examples.")
+    ENDIF()
+
+    FIND_PACKAGE(Ctags)
+    IF(NOT CTAGS_FOUND)
+        message(FATAL_ERROR "Ctags required for meta examples.")
+    ENDIF()
+ENDIF(BUILD_META_EXAMPLES)
 
 # add meta example dir below after tests have been defined
 
