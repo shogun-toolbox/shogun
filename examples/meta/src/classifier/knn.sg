@@ -21,22 +21,19 @@ Labels test_labels = knn.apply(feats_test)
 RealVector output = test_labels.get_values()
 #![train_and_apply]
 
+
+####################################################
+# Integration testing: Store all numerical results.#
+####################################################
+
 # create some matrix that can serve as a fake result
 RealMatrix mat = feats_train.get_feature_matrix()
 
 #119 is char for 'w'
 SerializableAsciiFile f_results("knn_results.txt", 119)
-SerializableAsciiFile f_names("knn_names.txt", 119)
-
 DynamicObjectArray results()
-DynamicObjectArray result_names()
 
-results.append_element_wrapped(output)
-result_names.append_element_wrapped("output")
-
-results.append_element_wrapped(mat)
-result_names.append_element_wrapped("mat")
+results.append_element_wrapped(output, "output")
+results.append_element_wrapped(mat, "mat")
 
 results.save_serializable(f_results)
-result_names.save_serializable(f_names)
-

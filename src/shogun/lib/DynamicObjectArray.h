@@ -282,10 +282,13 @@ class CDynamicObjectArray : public CSGObject
 		 * which are wrapped through CSGObjectWrapper.
 		 *
 		 * @param data Data element to append, after being wrapped.
+		 * @param data_name Name of wrapped data element.
 		 */
-		template<class T> bool append_element_wrapped(T data)
+		template<class T> bool append_element_wrapped(T data,
+				const char* data_name="")
 		{
-			return this->append_element(new CSGObjectWrapper<T>(data));
+			return this->append_element(new CSGObjectWrapper<T>(data,
+					                                            data_name));
 		}
 
 		/** append array element to the end of array

@@ -37,6 +37,8 @@
 #define SGOBJECT_WRAPPER_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGString.h>
+#include <string.h>
 
 
 namespace shogun
@@ -47,27 +49,25 @@ template<class T> class CSGObjectWrapper: public CSGObject
 public:
 	CSGObjectWrapper()
 	{
-		init();
+		m_value = 0;
+		m_value_name = NULL;
+		SG_ADD(&m_value, "NULL", "Wrapped value", MS_NOT_AVAILABLE);
 	}
 
-	CSGObjectWrapper(T value)
+	CSGObjectWrapper(T value, const char* value_name="")
 	{
-		init();
 		m_value = value;
+		m_value_name = value_name;
+		SG_ADD(&m_value, m_value_name, "Wrapped value", MS_NOT_AVAILABLE);
 	}
 
 	virtual const char* get_name() const { return "CSGObjectWrapper"; }
 
 private:
-	void init()
-	{
-		m_value = 0;
-		SG_ADD(&m_value, "Value", "Wrapped value", MS_NOT_AVAILABLE);
-
-	}
 
 protected:
 	T m_value;
+	const char* m_value_name;
 
 };
 
