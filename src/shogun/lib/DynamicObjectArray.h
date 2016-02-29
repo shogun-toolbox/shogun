@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2016 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -17,6 +17,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/SGObjectWrapper.h>
 
 namespace shogun
 {
@@ -275,6 +276,16 @@ class CDynamicObjectArray : public CSGObject
 				SG_REF(e);
 
 			return success;
+		}
+
+		/** Works as ::append_element, but accepts non CSGObject input types,
+		 * which are wrapped through CSGObjectWrapper.
+		 *
+		 * @param data Data element to append, after being wrapped.
+		 */
+		template<class T> bool append_element_wrapped(T data)
+		{
+			return this->append_element(new CSGObjectWrapper<T>(data));
 		}
 
 		/** append array element to the end of array
