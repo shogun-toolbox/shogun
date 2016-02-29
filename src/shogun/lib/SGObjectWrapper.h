@@ -38,6 +38,8 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <string.h>
 
 
@@ -71,9 +73,7 @@ protected:
 
 };
 
-template class CSGObjectWrapper<SGVector<float64_t>>;
-
-
+// allow to wrap basic types
 template class CSGObjectWrapper<bool>;
 template class CSGObjectWrapper<char>;
 template class CSGObjectWrapper<int8_t>;
@@ -87,6 +87,36 @@ template class CSGObjectWrapper<uint64_t>;
 template class CSGObjectWrapper<float32_t>;
 template class CSGObjectWrapper<float64_t>;
 template class CSGObjectWrapper<floatmax_t>;
+
+// allow to wrap vectors
+template class CSGObjectWrapper<SGVector<bool>>;
+template class CSGObjectWrapper<SGVector<char>>;
+template class CSGObjectWrapper<SGVector<int8_t>>;
+template class CSGObjectWrapper<SGVector<uint8_t>>;
+template class CSGObjectWrapper<SGVector<int16_t>>;
+template class CSGObjectWrapper<SGVector<uint16_t>>;
+template class CSGObjectWrapper<SGVector<int32_t>>;
+template class CSGObjectWrapper<SGVector<uint32_t>>;
+template class CSGObjectWrapper<SGVector<int64_t>>;
+template class CSGObjectWrapper<SGVector<uint64_t>>;
+template class CSGObjectWrapper<SGVector<float32_t>>;
+template class CSGObjectWrapper<SGVector<float64_t>>;
+template class CSGObjectWrapper<SGVector<floatmax_t>>;
+
+// allow to wrap matrices
+template class CSGObjectWrapper<SGMatrix<bool>>;
+template class CSGObjectWrapper<SGMatrix<char>>;
+template class CSGObjectWrapper<SGMatrix<int8_t>>;
+template class CSGObjectWrapper<SGMatrix<uint8_t>>;
+template class CSGObjectWrapper<SGMatrix<int16_t>>;
+template class CSGObjectWrapper<SGMatrix<uint16_t>>;
+template class CSGObjectWrapper<SGMatrix<int32_t>>;
+template class CSGObjectWrapper<SGMatrix<uint32_t>>;
+template class CSGObjectWrapper<SGMatrix<int64_t>>;
+template class CSGObjectWrapper<SGMatrix<uint64_t>>;
+template class CSGObjectWrapper<SGMatrix<float32_t>>;
+template class CSGObjectWrapper<SGMatrix<float64_t>>;
+template class CSGObjectWrapper<SGMatrix<floatmax_t>>;
 
 };
 #endif // SGOBJECT_WRAPPER_H__
