@@ -1,24 +1,50 @@
 #![load_data]
-CSVFile f_feats_train("../data/fm_train_real.dat")
-RealFeatures feats_train(f_feats_train)
-CSVFile f_feats_test("../data/fm_test_real.dat")
-RealFeatures feats_test(f_feats_test)
-CSVFile f_labels_train("../data/label_train_multiclass.dat")
-MulticlassLabels labels(f_labels_train)
+CSVFile f_feats_train("../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("../data/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("../data/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../data/classifier_4class_2d_linear_labels_test.dat")
+
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+
 #![load_data]
 
 #![choose_distance]
-EuclideanDistance distance(feats_train, feats_test)
+EuclideanDistance distance(features_train, features_test)
 #![choose_distance]
 
 #![create_instance]
-KNN knn(3, distance, labels)
+KNN knn(3, distance, labels_train)
 #![create_instance]
 
 #![train_and_apply]
 knn.train()
-Labels test_labels = knn.apply(feats_test)
-RealVector output = test_labels.get_values()
+Labels labels_predict = knn.apply(features_test)
 #![train_and_apply]
 
 
+# integration testing variables
+MulticlassAccuracy eval()
+Real accuracy = eval.evaluate(labels_predict, labels_test)
+RealVector output = labels_test.get_values()
+RealMatrix mat = features_train.get_feature_matrix()
+
+
+
+
+####################################################
+# Integration testing: Store all numerical results.#
+####################################################
+
+#119 is char for 'w'
+SerializableAsciiFile f_results("knn_results.txt", 119)
+DynamicObjectArray results()
+
+results.append_element_wrapped(output, "output")
+results.append_element_wrapped(mat, "mat")
+results.append_element_wrapped(accuracy, "accuracy")
+
+
+results.save_serializable(f_results)
