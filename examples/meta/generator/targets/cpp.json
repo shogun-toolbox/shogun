@@ -1,5 +1,5 @@
 {
-    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\nexit_shogun();\nreturn 0;\n}\n",
+    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\n$testing\nexit_shogun();\nreturn 0;\n}\n",
     "Dependencies": {
         "AllClassDependencies": "$classlist",
         "AllDependencies": "$allClassDependencies",

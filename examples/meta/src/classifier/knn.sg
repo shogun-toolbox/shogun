@@ -30,21 +30,3 @@ MulticlassAccuracy eval()
 Real accuracy = eval.evaluate(labels_predict, labels_test)
 RealVector output = labels_test.get_values()
 RealMatrix mat = features_train.get_feature_matrix()
-
-
-
-
-####################################################
-# Integration testing: Store all numerical results.#
-####################################################
-
-#119 is char for 'w'
-SerializableAsciiFile f_results("knn_results.txt", 119)
-DynamicObjectArray results()
-
-results.append_element_wrapped(output, "output")
-results.append_element_wrapped(mat, "mat")
-results.append_element_wrapped(accuracy, "accuracy")
-
-
-results.save_serializable(f_results)

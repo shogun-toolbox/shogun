@@ -1,5 +1,5 @@
 {
-    "Program": "modshogun\n\n$program",
+    "Program": "modshogun\n\n$program\n$testing",
     "Statement": "$statement;\n",
     "Comment": "%$comment\n",
     "Init": {

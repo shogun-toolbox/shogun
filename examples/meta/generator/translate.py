@@ -16,7 +16,8 @@ class Translator:
 
         self.targetDict = targetDict
 
-    def translateProgram(self, program, programName=None, tags={}):
+    def translateProgram(self, program, programName=None,
+                         tags={}, storeVars=False):
         """ Translate program AST
         Args:
             program: object like [statementAST, statementAST, statementAST, ...]
@@ -26,6 +27,8 @@ class Translator:
         self.dependencies["ConstructedClasses"] = Set()
         self.dependencies["Enums"] = Set()
         self.tags = tags
+        self.storeVars = storeVars
+        self.varsToStore = []
 
         targetProgram = ""
         for line in program:
@@ -36,7 +39,54 @@ class Translator:
 
         programTemplate = Template(self.targetDict["Program"])
 
-        return programTemplate.substitute(program=targetProgram, dependencies=self.dependenciesString(), programName=programName)
+        testing = self.translateVarsStoring(programName)
+
+        return programTemplate.substitute(program=targetProgram,
+                                          testing=testing,
+                                          dependencies=self.dependenciesString(),
+                                          programName=programName)
+
+    def translateVarsStoring(self, programName):
+        result = ""
+        storage = "__sg_storage"
+        storageFile = "__sg_storage_file"
+
+        # TODO: handle directories
+        storageFilename = {"Expr": {"StringLiteral": "{}.txt".format(programName)}}
+        # 'w'
+        storageFilemode = {"Expr": {"NumberLiteral": "119"}}
+
+        storageInit = {"Init": [{"ObjectType": "DynamicObjectArray"},
+                                {"Identifier": storage},
+                                {"ArgumentList": []}]}
+        storageFileInit = {"Init": [{"ObjectType": "SerializableAsciiFile"},
+                                    {"Identifier": storageFile},
+                                    {"ArgumentList": [storageFilename, storageFilemode]}]}
+
+        result += self.translateStatement(storageInit)
+        result += self.translateStatement(storageFileInit)
+
+        for vartype, varname in self.varsToStore:
+            # avoid storing itself
+            if varname in (storage, storageFile):
+                continue
+
+            varnameExpr = {"Expr": {"StringLiteral": varname}}
+            varnameIdentifierExpr = {"Expr": {"Identifier": varname}}
+
+            methodCall = {"MethodCall": [{"Identifier": storage},
+                                         {"Identifier": "append_element_wrapped"},
+                                         [varnameIdentifierExpr, varnameExpr]]}
+            expression = {"Expr": methodCall}
+            result += self.translateStatement(expression)
+
+        storageSerialize = {"Expr": {"MethodCall": [{"Identifier": storage},
+                                                    {"Identifier": "save_serializable"},
+                                                    [{"Expr": {"Identifier": storageFile}}]]}}
+        result += self.translateStatement(storageSerialize)
+
+        return result
+
 
     def dependenciesString(self):
         """ Returns dependency import string
@@ -182,6 +232,11 @@ class Translator:
         """
         typeString = self.translateType(init[0])
         nameString = init[1]["Identifier"]
+
+        # store only matrices, vectors and scalars
+        if self.storeVars and init[0]["ObjectType"] in ("Real", "RealVector", "RealMatrix"):
+            self.varsToStore.append((typeString, nameString))
+
         initialisation = init[2]
 
         if initialisation.keys()[0] == "Expr":
@@ -289,10 +344,10 @@ class Translator:
             elif "ArgumentList" in argumentList:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
-def translate(ast, targetDict, tags):
+def translate(ast, targetDict, tags, storeVars):
     translator = Translator(targetDict)
     programName = os.path.basename(ast["FilePath"]).split(".")[0]
-    return translator.translateProgram(ast["Program"], programName, tags)
+    return translator.translateProgram(ast["Program"], programName, tags, storeVars)
 
 def loadTargetDict(targetJsonPath):
     try:

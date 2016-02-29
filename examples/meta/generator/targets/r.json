@@ -1,5 +1,5 @@
 {
-    "Program": "library(shogun)\n\n$program",
+    "Program": "library(shogun)\n\n$program\n$testing",
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {

@@ -15,6 +15,7 @@ add_custom_target(meta_examples
     -o ${CMAKE_CURRENT_BINARY_DIR}
     -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
     -g ${CTAGS_FILE}
+    --store-vars
     COMMENT "Generating examples from meta-language"
     DEPENDS ctags)
 

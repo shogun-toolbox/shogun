@@ -27,7 +27,8 @@ def parseCtags(filename):
             tags[symbol] = location.split('src/')[-1]
     return tags
 
-def translateExamples(inputDir, outputDir, targetsDir, ctagsFile, includedTargets=None):
+def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
+                      includedTargets=None, storeVars=False):
 
     tags = parseCtags(ctagsFile)
     # Load all target dictionaries
@@ -49,7 +50,8 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile, includedTarget
 
         # Translate ast to each target language
         for target in targets:
-            translation = translate(ast, targetDict=target, tags=tags)
+            translation = translate(ast, targetDict=target,
+                                    tags=tags, storeVars=storeVars)
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
 
@@ -75,6 +77,9 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input", help="path to examples directory (input)")
     parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
     parser.add_argument("-g", "--ctags", help="path to ctags file")
+    parser.add_argument("--store-vars",
+                        help="whether to store all variables for testing",
+                        action='store_true')
     available_targets = [
             'cpp',
             'python',
@@ -102,5 +107,8 @@ if __name__ == "__main__":
         targetsDir = args.targetsfolder
 
     ctagsFile = args.ctags
+    storeVars = True if args.store_vars else False
 
-    translateExamples(inputDir, outputDir, targetsDir, ctagsFile, args.targets)
+    translateExamples(inputDir=inputDir, outputDir=outputDir,
+            targetsDir=targetsDir, ctagsFile=ctagsFile,
+            includedTargets=args.targets, storeVars=storeVars)
