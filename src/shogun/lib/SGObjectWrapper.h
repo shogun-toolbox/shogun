@@ -42,16 +42,45 @@ namespace shogun
 template<class T> class CSGObjectWrapper: public CSGObject
 {
 public:
-	CSGObjectWrapper();
-	CSGObjectWrapper(T value);
+	CSGObjectWrapper()
+	{
+		init();
+	}
+
+	CSGObjectWrapper(T value)
+	{
+		m_value = value;
+
+		init();
+	}
+
 	virtual const char* get_name() const { return "CSGObjectWrapper"; }
 
 private:
-	void init();
+	void init()
+	{
+		SG_ADD(&m_value, "Value", "Wrapped value", MS_NOT_AVAILABLE);
+	}
 
 protected:
 	T m_value;;
 
 };
+
+template class CSGObjectWrapper<SGVector<float64_t>>;
+template class CSGObjectWrapper<bool>;
+template class CSGObjectWrapper<char>;
+template class CSGObjectWrapper<int8_t>;
+template class CSGObjectWrapper<uint8_t>;
+template class CSGObjectWrapper<int16_t>;
+template class CSGObjectWrapper<uint16_t>;
+template class CSGObjectWrapper<int32_t>;
+template class CSGObjectWrapper<uint32_t>;
+template class CSGObjectWrapper<int64_t>;
+template class CSGObjectWrapper<uint64_t>;
+template class CSGObjectWrapper<float32_t>;
+template class CSGObjectWrapper<float64_t>;
+template class CSGObjectWrapper<floatmax_t>;
+
 };
 #endif // SGOBJECT_WRAPPER_H__
