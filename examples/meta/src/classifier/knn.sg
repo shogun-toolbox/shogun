@@ -61,16 +61,8 @@ RealMatrix mat = feats_train.get_feature_matrix()
 
 #119 is char for 'w'
 SerializableAsciiFile f_results("knn_results.txt", 119)
-SerializableAsciiFile f_results2("knn_results2.txt", 119)
 
-SerializableAsciiFile f_names("knn_names.txt", 119)
-
-List results()
-DynamicObjectArray results2()
+DynamicObjectArray results()
 results.append_element_wrapped(output)
 results.append_element_wrapped(mat)
-results2.append_element_wrapped(output)
-results2.append_element_wrapped(mat)
 results.save_serializable(f_results)
-results2.save_serializable(f_results2)
-
