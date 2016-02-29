@@ -52,9 +52,8 @@ public:
 
 	CSGObjectWrapper(T value)
 	{
-		m_value = value;
-
 		init();
+		m_value = value;
 	}
 
 	virtual const char* get_name() const { return "CSGObjectWrapper"; }
