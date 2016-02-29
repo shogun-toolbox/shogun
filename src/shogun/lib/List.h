@@ -18,6 +18,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/SGObjectWrapper.h>
 
 namespace shogun
 {
@@ -321,6 +322,16 @@ class CList : public CSGObject
 				return NULL;
 		}
 		//@}
+
+		/** Works as ::append_element, but accepts non CSGObject input types,
+		 * which are wrapped through CSGObjectWrapper.
+		 *
+		 * @param data Data element to append, after being wrapped.
+		 */
+		template<class T> bool append_element_wrapped(T data)
+		{
+			return this->append_element(new CSGObjectWrapper<T>(data));
+		}
 
 		/** append element AFTER the current element and move to the newly
 		 * added element
