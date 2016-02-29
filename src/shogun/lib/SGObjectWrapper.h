@@ -46,9 +46,16 @@
 namespace shogun
 {
 
+/** @brief Simple wrapper class that allows to store any Shogun parameter
+ * (i.e. float64_t, SGMatrix, SGVector, etc) in a CSGObject, and therefore to
+ * make it serializable. Using a template argument that is not a Shogun
+ * parameter will cause a compile error when trying to register the passed
+ * value as a parameter.
+ */
 template<class T> class CSGObjectWrapper: public CSGObject
 {
 public:
+	/** Default constructor. Do not use. */
 	CSGObjectWrapper()
 	{
 		m_value = 0;
@@ -56,6 +63,10 @@ public:
 		SG_ADD(&m_value, "NULL", "Wrapped value", MS_NOT_AVAILABLE);
 	}
 
+	/** Constructor.
+	 * @param value Value to wrap as CSGObject.
+	 * @param value_name Name under which value is registered.
+	*/
 	CSGObjectWrapper(T value, const char* value_name="")
 	{
 		m_value = value;
@@ -63,14 +74,17 @@ public:
 		SG_ADD(&m_value, m_value_name, "Wrapped value", MS_NOT_AVAILABLE);
 	}
 
+	/** @return name of the CSGObject */
 	virtual const char* get_name() const { return "CSGObjectWrapper"; }
 
 private:
 
 protected:
+	/** Wrapped value. */
 	T m_value;
-	const char* m_value_name;
 
+	/** Name of wrapped value */
+	const char* m_value_name;
 };
 
 // allow to wrap basic types
