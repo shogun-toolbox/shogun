@@ -1,3 +1,38 @@
+## -*- coding: utf-8 -*-
+## vim: set fileencoding=utf-8
+##
+## Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are met:
+##
+##  1. Redistributions of source code must retain the above copyright notice,
+##     this list of conditions and the following disclaimer.
+##
+##  2. Redistributions in binary form must reproduce the above copyright
+##     notice, this list of conditions and the following disclaimer in the
+##     documentation and/or other materials provided with the distribution.
+##
+##  3. Neither the name of the copyright holder nor the names of its
+##     contributors may be used to endorse or promote products derived from
+##     this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+## IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+## ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+## LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+## CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+## SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+## INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+## CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+## POSSIBILITY OF SUCH DAMAGE.
+##
+## Authors: Heiko Strathmann
+##
+
 #![load_data]
 CSVFile f_feats_train("../data/fm_train_real.dat")
 RealFeatures feats_train(f_feats_train)
@@ -25,8 +60,17 @@ RealVector output = test_labels.get_values()
 RealMatrix mat = feats_train.get_feature_matrix()
 
 #119 is char for 'w'
-SerializableAsciiFile f("knn.txt", 119)
-NumericList l()
-l.append(output)
-l.append(mat)
-l.save_serializable(f)
+SerializableAsciiFile f_results("knn_results.txt", 119)
+SerializableAsciiFile f_results2("knn_results2.txt", 119)
+
+SerializableAsciiFile f_names("knn_names.txt", 119)
+
+List results()
+DynamicObjectArray results2()
+results.append_element_wrapped(output)
+results.append_element_wrapped(mat)
+results2.append_element_wrapped(output)
+results2.append_element_wrapped(mat)
+results.save_serializable(f_results)
+results2.save_serializable(f_results2)
+
