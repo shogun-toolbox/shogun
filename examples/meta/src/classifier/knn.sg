@@ -1,15 +1,15 @@
-#![load_data]
 CSVFile f_feats_train("../data/classifier_4class_2d_linear_features_train.dat")
 CSVFile f_feats_test("../data/classifier_4class_2d_linear_features_test.dat")
 CSVFile f_labels_train("../data/classifier_4class_2d_linear_labels_train.dat")
 CSVFile f_labels_test("../data/classifier_4class_2d_linear_labels_test.dat")
 
+#![create_features]
 RealFeatures features_train(f_feats_train)
 RealFeatures features_test(f_feats_test)
 MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
+#![create_features]
 
-#![load_data]
 
 #![choose_distance]
 EuclideanDistance distance(features_train, features_test)

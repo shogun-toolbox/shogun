@@ -18,9 +18,9 @@ See :sgissue:`2996` for known issues.
 Example
 -------
 
-Load some training and test data.
+Imagine we have files with training and test data. We create :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
 
-.. sgexample:: knn.sg:load_data
+.. sgexample:: knn.sg:create_features
 
 In order to run :sgclass:`CKNN`, we need to choose a distance, for example :sgclass:`CEuclideanDistance`, or other sub-classes of :sgclass:`CDistance`. The distance is initialized with the data we want to classify.
 
