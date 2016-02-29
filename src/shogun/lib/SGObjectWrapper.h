@@ -50,7 +50,7 @@ namespace shogun
  * (i.e. float64_t, SGMatrix, SGVector, etc) in a CSGObject, and therefore to
  * make it serializable. Using a template argument that is not a Shogun
  * parameter will cause a compile error when trying to register the passed
- * value as a parameter.
+ * value as a parameter in the constructors.
  */
 template<class T> class CSGObjectWrapper: public CSGObject
 {
