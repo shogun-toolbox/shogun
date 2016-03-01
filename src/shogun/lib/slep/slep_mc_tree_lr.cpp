@@ -9,7 +9,6 @@
  */
 
 #include <shogun/lib/slep/slep_mc_tree_lr.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/slep/tree/general_altra.h>
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
@@ -244,4 +243,3 @@ slep_result_t slep_mc_tree_lr(
 	return slep_result_t(r_w, r_c);
 };
 };
-#endif

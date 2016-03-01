@@ -86,9 +86,7 @@ APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
 APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
-#ifdef HAVE_EIGEN3
 APPLY_BINARY(CGaussianProcessClassification);
-#endif //HAVE_EIGEN3
 
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
@@ -99,9 +97,7 @@ APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 #endif
-#ifdef HAVE_EIGEN3
 APPLY_REGRESSION(CGaussianProcessRegression);
-#endif //HAVE_EIGEN3
 
 APPLY_STRUCTURED(CStructuredOutputMachine);
 APPLY_STRUCTURED(CLinearStructuredOutputMachine);

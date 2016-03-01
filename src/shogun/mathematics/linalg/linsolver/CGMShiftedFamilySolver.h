@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
 
 namespace shogun
@@ -78,5 +77,4 @@ public:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // CG_M_SHIFTED_FAMILY_SOLVER_H_

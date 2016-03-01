@@ -13,7 +13,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_COLPACK
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
 
@@ -127,6 +126,5 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // HAVE_COLPACK
 #endif // PROBING_SAMPLER_H_

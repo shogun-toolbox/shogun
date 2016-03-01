@@ -8,7 +8,6 @@
  */
 
 /* Remove C Prefix */
-#ifdef HAVE_EIGEN3
 %rename(MeanFunction) CMeanFunction;
 %rename(ZeroMean) CZeroMean;
 %rename(ConstMean) CConstMean;
@@ -55,12 +54,10 @@
 %rename(GaussianProcessClassification) CGaussianProcessClassification;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
 
-#endif //HAVE_EIGEN3
 
 /* These functions return new Objects */
 
 /* Include Class Headers to make them visible from within the target language */
-#ifdef HAVE_EIGEN3
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/machine/gp/LikelihoodModel.h>
 %include <shogun/machine/gp/ProbitLikelihood.h>
@@ -108,4 +105,3 @@
 %include <shogun/classifier/GaussianProcessClassification.h>
 %include <shogun/regression/GaussianProcessRegression.h>
 
-#endif //HAVE_EIGEN3

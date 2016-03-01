@@ -1,6 +1,5 @@
 #include <shogun/lib/SGMatrix.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/config.h>
 
@@ -17,4 +16,3 @@
  */
 float64_t amari_index(shogun::SGMatrix<float64_t> W, shogun::SGMatrix<float64_t> A, bool standardize);
 
-#endif //HAVE_EIGEN3

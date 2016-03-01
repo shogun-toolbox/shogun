@@ -30,7 +30,6 @@
  */
 #include <shogun/machine/gp/LogitLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Function.h>
 #include <shogun/mathematics/Integration.h>
@@ -503,4 +502,3 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 }
 }
 
-#endif /* HAVE_EIGEN3 */

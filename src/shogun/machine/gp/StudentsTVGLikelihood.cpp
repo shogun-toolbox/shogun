@@ -39,7 +39,6 @@
 
 #include <shogun/machine/gp/StudentsTVGLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 
 using namespace Eigen;
@@ -84,4 +83,3 @@ void CStudentsTVGLikelihood::init()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

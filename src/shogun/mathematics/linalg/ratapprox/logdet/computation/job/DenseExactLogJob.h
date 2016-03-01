@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/computation/job/IndependentJob.h>
 
 namespace shogun
@@ -71,5 +70,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // DENSE_EXACT_LOG_JOB_H_

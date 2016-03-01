@@ -30,7 +30,6 @@
  */
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -966,4 +965,3 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covarianc
 }
 
 }
-#endif /* HAVE_EIGEN3 */

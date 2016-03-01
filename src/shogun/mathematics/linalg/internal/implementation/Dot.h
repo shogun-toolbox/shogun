@@ -36,9 +36,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUVector.h>
@@ -120,7 +118,6 @@ struct dot<Backend::NATIVE, Vector>
 	}
 };
 
-#ifdef HAVE_EIGEN3
 /**
  * @brief Specialization of generic dot for the Eigen3 backend
  */
@@ -146,7 +143,6 @@ struct dot<Backend::EIGEN3, Vector>
 		return vec_a.dot(vec_b);
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

@@ -39,10 +39,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #include <viennacl/matrix.hpp>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
-
 #include <shogun/lib/SGMatrix.h>
 
 namespace shogun
@@ -93,7 +90,6 @@ CGPUMatrix<T>::CGPUMatrix(const SGMatrix< T >& cpu_mat) : matrix(new VCLMemoryAr
 		cpu_mat.matrix);
 }
 
-#ifdef HAVE_EIGEN3
 template <class T>
 CGPUMatrix<T>::CGPUMatrix(const EigenMatrixXt& cpu_mat)
 : matrix(new VCLMemoryArray())
@@ -120,7 +116,6 @@ CGPUMatrix<T>::operator EigenMatrixXt() const
 
 	return cpu_mat;
 }
-#endif
 
 template <class T>
 CGPUMatrix<T>::operator SGMatrix<T>() const

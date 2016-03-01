@@ -1,6 +1,5 @@
 #include "AmariIndex.h"
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -73,4 +72,3 @@ float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool sta
 	return 1.0 / (float)(2*k*(k-1)) * (row_error + col_error);
 
 }
-#endif //HAVE_EIGEN3

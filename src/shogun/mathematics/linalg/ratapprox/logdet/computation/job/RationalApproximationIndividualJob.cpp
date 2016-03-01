@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/computation/jobresult/VectorResult.h>
@@ -107,4 +106,3 @@ void CRationalApproximationIndividualJob::compute()
 }
 
 }
-#endif // HAVE_EIGEN3

@@ -10,7 +10,6 @@
 
 #include <shogun/metric/LMNNImpl.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/multiclass/KNN.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
@@ -545,4 +544,3 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 	return euclidean;
 }
 
-#endif /* HAVE_EIGEN3 */

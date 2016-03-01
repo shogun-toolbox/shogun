@@ -33,7 +33,6 @@
 
 #include <shogun/neuralnets/DeepBeliefNetwork.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
@@ -643,4 +642,3 @@ void CDeepBeliefNetwork::init()
 	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", MS_NOT_AVAILABLE);
 }
 
-#endif

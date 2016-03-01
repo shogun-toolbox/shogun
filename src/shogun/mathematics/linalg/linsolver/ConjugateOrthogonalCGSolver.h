@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 
 namespace shogun
@@ -64,5 +63,4 @@ public:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // CONJUGATE_ORTHOGONAL_CG_SOLVER_H_

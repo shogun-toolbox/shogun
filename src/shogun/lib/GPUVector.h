@@ -111,7 +111,6 @@ public:
 	/** Creates a gpu vector using data from an SGVector */
 	CGPUVector(const SGVector<T>& cpu_vec);
 
-#ifdef HAVE_EIGEN3
 	/** Creates a gpu vector using data from an Eigen3 column vector */
 	CGPUVector(const EigenVectorXt& cpu_vec);
 
@@ -124,7 +123,6 @@ public:
 	/** Converts the vector into an Eigen3 row vector */
 	operator EigenRowVectorXt() const;
 
-#endif // HAVE_EIGEN3
 
 	/** The data */
 	inline VCLVectorBase data()

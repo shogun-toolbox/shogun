@@ -70,7 +70,6 @@ template<class T> class SGVector : public SGReferencedData
 
 #endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
 
-#ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 column vector */
 		SGVector(EigenVectorXt& vec);
 
@@ -82,7 +81,6 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Wraps an Eigen3 row vector around the data of this matrix */
 		operator EigenRowVectorXtMap() const;
-#endif // HAVE_EIGEN3
 #endif // SWIG
 
 		/** Set vector to a constant

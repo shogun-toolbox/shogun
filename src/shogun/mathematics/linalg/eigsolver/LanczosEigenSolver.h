@@ -13,7 +13,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 
 namespace shogun
@@ -104,6 +103,5 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 #endif // LANCZOS_EIGEN_SOLVER_H_

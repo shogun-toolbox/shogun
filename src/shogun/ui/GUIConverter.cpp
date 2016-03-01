@@ -44,7 +44,6 @@ CGUIConverter::~CGUIConverter()
 
 bool CGUIConverter::create_locallylinearembedding(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLocallyLinearEmbedding();
 	((CLocallyLinearEmbedding*)m_converter)->set_k(k);
 #else
@@ -55,7 +54,6 @@ bool CGUIConverter::create_locallylinearembedding(int32_t k)
 
 bool CGUIConverter::create_neighborhoodpreservingembedding(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CNeighborhoodPreservingEmbedding();
 	((CNeighborhoodPreservingEmbedding*)m_converter)->set_k(k);
 #else
@@ -66,7 +64,6 @@ bool CGUIConverter::create_neighborhoodpreservingembedding(int32_t k)
 
 bool CGUIConverter::create_localtangentspacealignment(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLocalTangentSpaceAlignment();
 	((CLocalTangentSpaceAlignment*)m_converter)->set_k(k);
 #else
@@ -77,7 +74,6 @@ bool CGUIConverter::create_localtangentspacealignment(int32_t k)
 
 bool CGUIConverter::create_linearlocaltangentspacealignment(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLinearLocalTangentSpaceAlignment();
 	((CLinearLocalTangentSpaceAlignment*)m_converter)->set_k(k);
 #else
@@ -88,7 +84,6 @@ bool CGUIConverter::create_linearlocaltangentspacealignment(int32_t k)
 
 bool CGUIConverter::create_hessianlocallylinearembedding(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLocallyLinearEmbedding();
 	((CHessianLocallyLinearEmbedding*)m_converter)->set_k(k);
 #else
@@ -99,7 +94,6 @@ bool CGUIConverter::create_hessianlocallylinearembedding(int32_t k)
 
 bool CGUIConverter::create_laplacianeigenmaps(int32_t k, float64_t width)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLaplacianEigenmaps();
 	((CLaplacianEigenmaps*)m_converter)->set_k(k);
 	((CLaplacianEigenmaps*)m_converter)->set_tau(width);
@@ -111,7 +105,6 @@ bool CGUIConverter::create_laplacianeigenmaps(int32_t k, float64_t width)
 
 bool CGUIConverter::create_localitypreservingprojections(int32_t k, float64_t width)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CLocalityPreservingProjections();
 	((CLocalityPreservingProjections*)m_converter)->set_k(k);
 	((CLocalityPreservingProjections*)m_converter)->set_tau(width);
@@ -123,7 +116,6 @@ bool CGUIConverter::create_localitypreservingprojections(int32_t k, float64_t wi
 
 bool CGUIConverter::create_diffusionmaps(int32_t t, float64_t width)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CDiffusionMaps();
 	((CDiffusionMaps*)m_converter)->set_t(t);
 	((CDiffusionMaps*)m_converter)->set_kernel(new CGaussianKernel(100,width));
@@ -135,7 +127,6 @@ bool CGUIConverter::create_diffusionmaps(int32_t t, float64_t width)
 
 bool CGUIConverter::create_isomap(int32_t k)
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CIsomap();
 	((CIsomap*)m_converter)->set_k(k);
 #else
@@ -146,7 +137,6 @@ bool CGUIConverter::create_isomap(int32_t k)
 
 bool CGUIConverter::create_multidimensionalscaling()
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CMultidimensionalScaling();
 #else
 	SG_ERROR("Requires EIGEN3 to be enabled at compile time\n")
@@ -156,7 +146,6 @@ bool CGUIConverter::create_multidimensionalscaling()
 
 bool CGUIConverter::create_jade()
 {
-#ifdef HAVE_EIGEN3
 	m_converter = new CJade();
 #else
 	SG_ERROR("Requires EIGEN3 to be enabled at compile time\n")

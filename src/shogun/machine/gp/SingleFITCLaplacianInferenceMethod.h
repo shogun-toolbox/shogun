@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
@@ -425,5 +424,4 @@ protected:
 	bool m_Wneg;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSINGLEFITCLAPLACIANINFERENCEMETHOD_H */

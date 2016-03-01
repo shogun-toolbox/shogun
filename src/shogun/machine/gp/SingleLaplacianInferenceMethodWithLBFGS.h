@@ -35,7 +35,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
@@ -233,5 +232,4 @@ private:
 };
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */
 #endif /* CSINGLELAPLACIANINFERENCEMETHODWITHLBFGS_H_ */

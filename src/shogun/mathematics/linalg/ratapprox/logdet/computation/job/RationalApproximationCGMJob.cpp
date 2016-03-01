@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/mathematics/eigen3.h>
@@ -130,4 +129,3 @@ void CRationalApproximationCGMJob::compute()
 }
 
 }
-#endif // HAVE_EIGEN3

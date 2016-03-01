@@ -106,7 +106,6 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(ExponentialARDKernel) CExponentialARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 
-#ifdef HAVE_EIGEN3 
 %rename(GaussianARDSparseKernel) CGaussianARDSparseKernel;
 #endif
 
@@ -231,7 +230,6 @@ namespace shogun
 %include <shogun/kernel/ExponentialARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
 
-#ifdef HAVE_EIGEN3 
 %include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #endif
 

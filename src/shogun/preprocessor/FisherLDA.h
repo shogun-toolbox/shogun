@@ -36,7 +36,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/labels/Labels.h>
@@ -167,5 +166,4 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		SGVector<float64_t> m_eigenvalues_vector;
 };
 }
-#endif //HAVE_EIGEN3
 #endif //ifndef

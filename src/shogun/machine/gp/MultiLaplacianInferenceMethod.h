@@ -44,7 +44,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/LaplacianInferenceBase.h>
 
 namespace shogun
@@ -238,5 +237,4 @@ protected:
 	virtual void get_dpi_helper();
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CMULTILAPLACIANINFERENCEMETHOD_H_ */

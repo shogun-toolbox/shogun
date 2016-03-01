@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SparseInferenceBase.h>
 #include <shogun/lib/Lock.h>
@@ -235,6 +234,5 @@ private:
 	static double nlopt_function(unsigned n, const double* x, double* grad, void* func_data);
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSINGLESPARSEINFERENCEBASE_H */
 

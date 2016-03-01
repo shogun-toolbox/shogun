@@ -106,7 +106,6 @@ SGVector<T>::~SGVector()
 	unref();
 }
 
-#ifdef HAVE_EIGEN3
 template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size())
@@ -132,7 +131,6 @@ SGVector<T>::operator EigenRowVectorXtMap() const
 {
 	return EigenRowVectorXtMap(vector, vlen);
 }
-#endif
 
 template<class T>
 void SGVector<T>::zero()

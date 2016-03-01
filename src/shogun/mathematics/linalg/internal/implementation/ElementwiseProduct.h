@@ -34,9 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -65,7 +63,6 @@ struct elementwise_product
 	static void compute(Matrix A, Matrix B, Matrix C);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of elementwise_product for the Eigen3 backend */
 template <class Matrix>
@@ -126,7 +123,6 @@ struct elementwise_product<Backend::EIGEN3, Matrix>
 		C_eig = A_eig.array() * B_eig.array();
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

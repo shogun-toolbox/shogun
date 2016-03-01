@@ -9,7 +9,6 @@
  */
 
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
@@ -71,4 +70,3 @@ CDenseFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* 
 	return embedding;
 }
 
-#endif /* HAVE_EIGEN3 */

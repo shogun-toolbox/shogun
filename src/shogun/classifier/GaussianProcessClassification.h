@@ -40,7 +40,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/machine/Machine.h>
@@ -136,5 +135,4 @@ protected:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */

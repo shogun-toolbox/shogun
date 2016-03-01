@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGMatrix.h>
@@ -72,5 +71,4 @@ class CApproxJointDiagonalizer : public CSGObject
 
 };
 }
-#endif //HAVE_EIGEN3
 #endif //APPROXJOINTDIAGONALIZER_H_
