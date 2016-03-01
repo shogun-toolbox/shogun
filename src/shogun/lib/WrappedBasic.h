@@ -39,6 +39,20 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGString.h>
 
+namespace
+{
+    template <typename T>
+    T default_value()
+    {
+        return T();
+    }
+
+    template <>
+    char default_value()
+    {
+        return '0';
+    }
+}
 
 namespace shogun
 {
@@ -55,9 +69,7 @@ public:
 	/** Default constructor. Do not use. */
 	CWrappedBasic() : CSGObject()
 	{
-		// use my initials as standard value as XML cannot serialise (char)0
-		// QUIZ: Who am I?
-		m_value = 'H';
+		m_value = ::default_value<T>();
 		m_value_name = "Unnamed";
 		set_generic<T>();
 		register_params();
