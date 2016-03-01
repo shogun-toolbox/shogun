@@ -758,7 +758,6 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
 		break;
 	}
 
@@ -770,7 +769,6 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
 		break;
 	}
 
@@ -803,7 +801,6 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
 		break;
 	}
 
@@ -814,7 +811,6 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
 		break;
 	}
 
