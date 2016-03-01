@@ -1,5 +1,5 @@
 {
-    "Program": "require 'modshogun'\n\n$dependencies$program\n$testing",
+    "Program": "require 'modshogun'\n\n$dependencies$program$testing",
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {

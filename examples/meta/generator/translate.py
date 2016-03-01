@@ -15,6 +15,7 @@ class Translator:
         }
 
         self.targetDict = targetDict
+        self.storeVars = False
 
     def translateProgram(self, program, programName=None,
                          tags={}, storeVars=False):
@@ -39,7 +40,9 @@ class Translator:
 
         programTemplate = Template(self.targetDict["Program"])
 
-        testing = self.translateVarsStoring(programName)
+        testing = ""
+        if self.storeVars:
+            testing = self.translateVarsStoring(programName)
 
         return programTemplate.substitute(program=targetProgram,
                                           testing=testing,

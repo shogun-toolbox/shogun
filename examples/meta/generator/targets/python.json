@@ -1,5 +1,5 @@
 {
-    "Program": "$dependencies$program\n$testing",
+    "Program": "$dependencies$program$testing",
     "Dependencies": {
         "AllDependencies": "$constructedClassDependencies$enumDependencies\n",
         "ConstructedClassDependencies": "from modshogun import $classlist\n",

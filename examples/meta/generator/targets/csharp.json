@@ -1,5 +1,5 @@
 {
-    "Program": "using System;\n\npublic class classifier_knn_modular {\npublic static void Main() {\nmodshogun.init_shogun_with_defaults();\n\n$program\n$testing\n}\n}\n",
+    "Program": "using System;\n\npublic class classifier_knn_modular {\npublic static void Main() {\nmodshogun.init_shogun_with_defaults();\n\n$program$testing\n}\n}\n",
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
