@@ -55,7 +55,9 @@ public:
 	/** Default constructor. Do not use. */
 	CWrappedBasic() : CSGObject()
 	{
-		m_value = (T) 0;
+		// use my initials as standard value as XML cannot serialise (char)0
+		// QUIZ: Who am I?
+		m_value = 'H';
 		m_value_name = "Unnamed";
 		set_generic<T>();
 		register_params();
