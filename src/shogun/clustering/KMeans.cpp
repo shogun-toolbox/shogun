@@ -80,32 +80,30 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
-	for (int32_t i=0; i<XSize; i++)
+	for (int32_t i=0; i<k; i++)
 	{
-		const int32_t Cl=CMath::random(0, k-1);
-		weights_set[Cl]+=1.0;
-		ClList[i]=Cl;
+		do
+		{
+			const int32_t Cl=CMath::random(0, XSize-1);
 
-		int32_t vlen=0;
+		} while(ClList[Cl]=Cl);
+
+		ClList[Cl]=Cl;
+		weights_set+=1.0;
+
+    int32_t vlen=0;
 		bool vfree=false;
-		float64_t* vec=lhs->get_feature_vector(i, vlen, vfree);
+		float64_t* vec=lhs->get_feature_vector(Cl, vlen, vfree);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.matrix[Cl*dimensions+j] += vec[j];
+			mus.matrix[i*dimensions+j] += vec[j];
 
 		lhs->free_feature_vector(vec, i, vfree);
+
 	}
 
 	SG_UNREF(lhs);
 
-	for (int32_t i=0; i<k; i++)
-	{
-		if (weights_set[i]!=0.0)
-		{
-			for (int32_t j=0; j<dimensions; j++)
-				mus.matrix[i*dimensions+j] /= weights_set[i];
-		}
-	}
 }
 
 void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
@@ -476,4 +474,3 @@ void CKMeans::init()
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
 	SG_ADD(&R, "R", "Cluster radiuses", MS_NOT_AVAILABLE);
 }
-
