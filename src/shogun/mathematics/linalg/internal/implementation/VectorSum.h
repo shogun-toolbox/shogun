@@ -40,9 +40,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #include <numeric>
 
@@ -112,7 +110,6 @@ struct vector_sum<Backend::NATIVE, Vector>
 	}
 };
 
-#ifdef HAVE_EIGEN3
 /**
  * @brief Specialization of generic vector_sum for the Eigen3 backend
  */
@@ -136,7 +133,6 @@ struct vector_sum<Backend::EIGEN3, Vector>
 	}
 };
 
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

@@ -41,9 +41,7 @@
 
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
 
 namespace shogun
 {
@@ -89,7 +87,6 @@ CGPUVector<T>::CGPUVector(const SGVector<T>& cpu_vec) : vector(new VCLMemoryArra
 		cpu_vec.vector);
 }
 
-#ifdef HAVE_EIGEN3
 template <class T>
 CGPUVector<T>::CGPUVector(const EigenVectorXt& cpu_vec)
 : vector(new VCLMemoryArray())
@@ -139,7 +136,6 @@ CGPUVector<T>::operator EigenRowVectorXt() const
 
 	return cpu_vec;
 }
-#endif
 
 template <class T>
 CGPUVector<T>::operator SGVector<T>() const

@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linop/MatrixOperator.h>
 
 namespace shogun
@@ -112,5 +111,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // DENSE_MATRIX_OPERATOR_H_

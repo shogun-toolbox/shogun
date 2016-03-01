@@ -35,9 +35,7 @@
 #include <shogun/mathematics/Math.h>
 #include <string>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #include <shogun/mathematics/linalg/internal/implementation/operations/opencl_operation.h>
 
@@ -77,7 +75,6 @@ struct sin : public ocl_operation
 		return CMath::sin(val);
 	}
 
-#ifdef HAVE_EIGEN3
 	/** Eigen3 matrix type */
 	using MatrixXt = Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>;
 
@@ -107,7 +104,6 @@ struct sin : public ocl_operation
 	{
 		return v.array().template cast<double>().sin();
 	}
-#endif // HAVE_EIGEN3
 };
 
 /**

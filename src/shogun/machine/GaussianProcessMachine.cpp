@@ -37,7 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
@@ -255,4 +254,3 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	return s2;
 }
 
-#endif /* HAVE_EIGEN3 */

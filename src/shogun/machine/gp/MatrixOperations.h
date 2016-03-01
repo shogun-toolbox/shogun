@@ -38,7 +38,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
@@ -63,5 +62,4 @@ public:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _MATRIXOPERATIONS_H_ */

@@ -1,6 +1,5 @@
 #include <shogun/mathematics/ajd/QDiag.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/init.h>
 
@@ -173,4 +172,3 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 
 	return V;
 }
-#endif //HAVE_EIGEN3

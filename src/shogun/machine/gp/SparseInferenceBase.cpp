@@ -31,7 +31,6 @@
  */
 #include <shogun/machine/gp/SparseInferenceBase.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -173,4 +172,3 @@ void CSparseInferenceBase::update_train_kernel()
 	SG_UNREF(inducing_features);
 }
 
-#endif /* HAVE_EIGEN3 */

@@ -35,7 +35,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/features/DenseFeatures.h>
@@ -326,5 +325,4 @@ private:
 	void init();
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSPARSEINFERENCEBASE_H */

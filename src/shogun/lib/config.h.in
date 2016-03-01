@@ -20,7 +20,6 @@
 #cmakedefine HAVE_PROTOBUF 1
 
 #cmakedefine HAVE_ARPACK 1
-#cmakedefine HAVE_EIGEN3 1
 #cmakedefine HAVE_VIENNACL 1
 #cmakedefine HAVE_OPENCV 1
 #cmakedefine HAVE_CATLAS 1

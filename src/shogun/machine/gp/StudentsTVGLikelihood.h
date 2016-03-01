@@ -40,7 +40,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/NumericalVGLikelihood.h>
 
 namespace shogun
@@ -92,5 +91,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _STUDENTSTVGLIKELIHOOD_H_ */

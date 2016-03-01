@@ -529,7 +529,6 @@ public:
 	 */
 	static SigmoidParamters fit_sigmoid(SGVector<float64_t> scores);
 
-#ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
 	 *
 	 * If determinant of the input matrix is positive, it returns the logarithm of the value.
@@ -614,7 +613,6 @@ public:
 	 */
 	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
-#endif //HAVE_EIGEN3
 
 	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE1;

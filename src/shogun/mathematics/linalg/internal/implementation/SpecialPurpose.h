@@ -35,9 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -69,7 +67,6 @@ struct logistic
 	static void compute(Matrix A, Matrix result);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of logistic for the Eigen3 backend */
 template <class Matrix>
@@ -86,7 +83,6 @@ struct logistic<Backend::EIGEN3, Matrix>
 			result[i] = 1.0/(1+CMath::exp(-1*A[i]));
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 
@@ -129,7 +125,6 @@ struct multiply_by_logistic_derivative
 	static void compute(Matrix A, Matrix C);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of multiply_by_logistic_derivative for the Eigen3 backend */
 template <class Matrix>
@@ -146,7 +141,6 @@ struct multiply_by_logistic_derivative<Backend::EIGEN3, Matrix>
 			C[i] *= A[i] * (1.0-A[i]);
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 
@@ -190,7 +184,6 @@ struct rectified_linear
 	static void compute(Matrix A, Matrix result);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of rectified_linear for the Eigen3 backend */
 template <class Matrix>
@@ -207,7 +200,6 @@ struct rectified_linear<Backend::EIGEN3, Matrix>
 			result[i] = CMath::max((T)0, A[i]);
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 
@@ -250,7 +242,6 @@ struct multiply_by_rectified_linear_derivative
 	static void compute(Matrix A, Matrix C);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of multiply_by_rectified_linear_derivative for the Eigen3 backend */
 template <class Matrix>
@@ -268,7 +259,6 @@ struct multiply_by_rectified_linear_derivative<Backend::EIGEN3, Matrix>
 				C[i] = 0;
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 
@@ -314,7 +304,6 @@ struct softmax
 	static void compute(Matrix A);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of softmax for the Eigen3 backend */
 template <class Matrix>
@@ -347,7 +336,6 @@ struct softmax<Backend::EIGEN3, Matrix>
 		}
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 
@@ -434,7 +422,6 @@ struct cross_entropy
 	static T compute(Matrix P, Matrix Q);
 };
 
-#ifdef HAVE_EIGEN3
 /** Specialization of cross_entropy for the Eigen3 backend */
 template <class Matrix>
 struct cross_entropy<Backend::EIGEN3,Matrix>
@@ -456,7 +443,6 @@ struct cross_entropy<Backend::EIGEN3,Matrix>
 		return -1*(P_eig.array() * (Q_eig.array()+1e-30).log()).sum();
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /** Specialization of cross_entropy for the ViennaCL backend */
@@ -551,7 +537,6 @@ struct squared_error
 	static T compute(Matrix P, Matrix Q);
 };
 
-#ifdef HAVE_EIGEN3
 /** Specialization of squared_error for the Eigen3 backend */
 template <class Matrix>
 struct squared_error<Backend::EIGEN3,Matrix>
@@ -573,7 +558,6 @@ struct squared_error<Backend::EIGEN3,Matrix>
 		return 0.5 * (P_eig - Q_eig).array().square().sum();
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /** Specialization of squared_error for the ViennaCL backend */

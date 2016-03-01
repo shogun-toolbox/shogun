@@ -33,7 +33,6 @@
  */
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -396,4 +395,3 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-#endif /* HAVE_EIGEN3 */

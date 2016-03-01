@@ -32,7 +32,6 @@
 
 #include <shogun/machine/gp/KLInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
@@ -458,4 +457,3 @@ SGMatrix<float64_t> CKLInferenceMethod::get_cholesky()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

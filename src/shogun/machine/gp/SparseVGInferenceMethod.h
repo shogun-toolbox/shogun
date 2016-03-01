@@ -36,7 +36,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 
@@ -262,5 +261,4 @@ private:
 	void init();
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSPARSEVGINFERENCEMETHOD_H */

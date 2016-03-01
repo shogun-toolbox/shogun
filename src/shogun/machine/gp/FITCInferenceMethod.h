@@ -19,7 +19,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
@@ -209,5 +208,4 @@ private:
 	void init();
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CFITCINFERENCEMETHOD_H */

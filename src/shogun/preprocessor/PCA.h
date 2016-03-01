@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
@@ -228,5 +227,4 @@ class CPCA: public CDimensionReductionPreprocessor
 		float64_t m_eigenvalue_zero_tolerance;
 };
 }
-#endif // HAVE_EIGEN3
 #endif // PCA_H_

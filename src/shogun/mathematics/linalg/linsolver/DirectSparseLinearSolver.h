@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 
 namespace shogun
@@ -50,5 +49,4 @@ public:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // DIRECT_SPARSE_LINEAR_SOLVER_H_

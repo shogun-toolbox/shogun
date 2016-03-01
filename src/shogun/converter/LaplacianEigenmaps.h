@@ -11,7 +11,6 @@
 #ifndef LAPLACIANEIGENMAPS_H_
 #define LAPLACIANEIGENMAPS_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -96,5 +95,4 @@ protected:
 };
 }
 
-#endif /* HAVE_EIGEN3 */
 #endif /* LAPLACIANEIGENMAPS_H_ */

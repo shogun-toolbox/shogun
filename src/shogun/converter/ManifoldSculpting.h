@@ -11,7 +11,6 @@
 #ifndef MANIFOLDSCULPTING_H_
 #define MANIFOLDSCULPTING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 
@@ -101,5 +100,4 @@ private:
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */
 #endif /* MANIFOLDSCULPTING_H_ */

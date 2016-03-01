@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
 #include <shogun/mathematics/Math.h>
@@ -77,5 +76,4 @@ class CJediDiag : public CApproxJointDiagonalizer
 		virtual const char* get_name() const { return "JediDiag"; }
 };
 }
-#endif //HAVE_EIGEN3
 #endif //JEDIDIAG_H_

@@ -39,11 +39,9 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
-#endif
 
 CQuadraticTimeMMD::CQuadraticTimeMMD() : CKernelTwoSampleTest()
 {
@@ -754,31 +752,23 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	{
 	case MMD2_SPECTRUM:
 	{
-#ifdef HAVE_EIGEN3
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
-#else // HAVE_EIGEN3
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
-#endif // HAVE_EIGEN3
 		break;
 	}
 
 	case MMD2_SPECTRUM_DEPRECATED:
 	{
-#ifdef HAVE_EIGEN3
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum_DEPRECATED(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
-#else // HAVE_EIGEN3
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
-#endif // HAVE_EIGEN3
 		break;
 	}
 
@@ -806,29 +796,21 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	{
 	case MMD2_SPECTRUM:
 	{
-#ifdef HAVE_EIGEN3
 		/* get samples from null-distribution and compute threshold */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
-#else // HAVE_EIGEN3
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
-#endif // HAVE_EIGEN3
 		break;
 	}
 
 	case MMD2_SPECTRUM_DEPRECATED:
 	{
-#ifdef HAVE_EIGEN3
 		/* get samples from null-distribution and compute threshold */
 		SGVector<float64_t> null_samples=sample_null_spectrum_DEPRECATED(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
-#else // HAVE_EIGEN3
-		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
-#endif // HAVE_EIGEN3
 		break;
 	}
 
@@ -850,7 +832,6 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 }
 
 
-#ifdef HAVE_EIGEN3
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
@@ -1027,7 +1008,6 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum_DEPRECATED(
 
 	return null_samples;
 }
-#endif // HAVE_EIGEN3
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {

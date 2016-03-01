@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 #include <shogun/lib/Lock.h>
@@ -257,5 +256,4 @@ private:
 	void init();
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSINGLEFITCLAPLACIANBASE_H */

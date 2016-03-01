@@ -32,7 +32,6 @@
  */
 #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/eigen3.h>
@@ -303,4 +302,3 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 }
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */

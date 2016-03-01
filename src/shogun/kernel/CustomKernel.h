@@ -319,7 +319,6 @@ class CCustomKernel: public CKernel
 		}
 
 #ifdef HAVE_LINALG_LIB
-#ifdef HAVE_EIGEN3
 
 		/**
 		 * Overrides the sum_symmetric_block method of CKernel to compute the
@@ -440,7 +439,6 @@ class CCustomKernel: public CKernel
 				index_t block_begin_row, index_t block_begin_col,
 				index_t block_size_row, index_t block_size_col,
 				bool no_diag=false);
-#endif // HAVE_EIGEN3
 #endif // HAVE_LINALG_LIB
 
 		/** Adds a row subset of indices on top of the current subsets (possibly

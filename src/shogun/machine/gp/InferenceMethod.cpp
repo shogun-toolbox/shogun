@@ -32,7 +32,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
@@ -332,4 +331,3 @@ void CInferenceMethod::compute_gradient()
 	if (parameter_hash_changed())
 		update();
 }
-#endif /* HAVE_EIGEN3 */

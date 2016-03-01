@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/Parameter.h>
@@ -166,4 +165,3 @@ template class CDenseMatrixOperator<float64_t>;
 template class CDenseMatrixOperator<floatmax_t>;
 template class CDenseMatrixOperator<complex128_t>;
 }
-#endif // HAVE_EIGEN3

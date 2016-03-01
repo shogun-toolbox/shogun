@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
@@ -186,4 +185,3 @@ void CKLLowerTriangularInferenceMethod::update_chol()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
@@ -140,4 +139,3 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 }
 
 }
-#endif // HAVE_EIGEN3
