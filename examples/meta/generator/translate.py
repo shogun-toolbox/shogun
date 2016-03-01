@@ -55,8 +55,8 @@ class Translator:
         storageFilename = {"Expr": {"StringLiteral": "{}.txt".format(programName)}}
         # 'w'
         storageFilemode = {"Expr": {"NumberLiteral": "119"}}
-
-        storageInit = {"Init": [{"ObjectType": "DynamicObjectArray"},
+        storageComment = {"Comment": {"StringLiteral": "Serialize output for integration testing (automatically generated)"}}
+        storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
                                 {"Identifier": storage},
                                 {"ArgumentList": []}]}
         storageFileInit = {"Init": [{"ObjectType": "SerializableAsciiFile"},
@@ -75,7 +75,7 @@ class Translator:
             varnameIdentifierExpr = {"Expr": {"Identifier": varname}}
 
             methodCall = {"MethodCall": [{"Identifier": storage},
-                                         {"Identifier": "append_element_wrapped"},
+                                         {"Identifier": "append_wrapped"},
                                          [varnameIdentifierExpr, varnameExpr]]}
             expression = {"Expr": methodCall}
             result += self.translateStatement(expression)
