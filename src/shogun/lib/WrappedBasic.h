@@ -55,7 +55,7 @@ public:
 	/** Default constructor. Do not use. */
 	CWrappedBasic() : CSGObject()
 	{
-		m_value = 0;
+		m_value = (T) 0;
 		m_value_name = "Unnamed";
 		set_generic<T>();
 		register_params();
