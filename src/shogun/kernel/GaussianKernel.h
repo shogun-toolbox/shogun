@@ -35,15 +35,6 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  *
- * The compact version as given in Bart Hamers' thesis <i>Kernel Models for
- * Large Scale Applications</i> (Eq. 4.10) is computed as
- *
- * \f[
- * k({\bf x},{\bf x'})= max(0, (1-\frac{||{\bf x}-{\bf x'}||}{3\tau})^v)) *
- * exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
- * \f]
- *
- * where \f$\tau\f$ is the kernel width.
  */
 class CGaussianKernel: public CDotKernel
 {
