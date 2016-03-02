@@ -109,8 +109,6 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(GaussianARDSparseKernel) CGaussianARDSparseKernel;
 #endif
 
-#endif
-
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
 %rename(PeriodicKernel) CPeriodicKernel;
 
@@ -229,10 +227,7 @@ namespace shogun
 #ifdef HAVE_LINALG_LIB
 %include <shogun/kernel/ExponentialARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
-
 %include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
-
 #endif
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
 %include <shogun/kernel/PeriodicKernel.h>
