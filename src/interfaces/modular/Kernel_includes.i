@@ -78,9 +78,6 @@
 #ifdef HAVE_LINALG_LIB
 #include <shogun/kernel/ExponentialARDKernel.h>
 #include <shogun/kernel/GaussianARDKernel.h>
-
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
-
 #endif
 %}
