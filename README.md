@@ -22,10 +22,10 @@ Quick links to this file:
 
 Other links that may be useful:
 
-* See [INSTALL](doc/md/INSTALL.md) for first steps on installation and running SHOGUN.
-* See [README.developer](doc/md/README_developer.md) for the developer documentation.
-* See [README.data](doc/md/README_data.md) for how to download example data sets accompanying SHOGUN.
-* See [README.cmake](doc/md/README_cmake.md) for setting particular build options with SHOGUN and cmake.
+* See [INSTALL](https://github.com/shogun-toolbox/shogun/wiki/INSTALL) for first steps on installation and running SHOGUN.
+* See [README.developer](https://github.com/shogun-toolbox/shogun/wiki/README_developer) for the developer documentation.
+* See [README.data](https://github.com/shogun-toolbox/shogun/wiki/README_data) for how to download example data sets accompanying SHOGUN.
+* See [README.cmake](https://github.com/shogun-toolbox/shogun/wiki/README_cmake) for setting particular build options with SHOGUN and cmake.
 
 ## Introduction
 ---------------
