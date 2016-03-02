@@ -18,7 +18,7 @@ See :sgissue:`2996` for known issues.
 Example
 -------
 
-Imagine we have files with training and test data. We create :sgclass:`CDenseFeatures` (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
+Imagine we have files with training and test data. We create CDenseFeatures (here 64 bit floats aka RealFeatures) and :sgclass:`CMulticlassLabels` as
 
 .. sgexample:: knn.sg:create_features
 
