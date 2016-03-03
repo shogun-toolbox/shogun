@@ -54,7 +54,7 @@ class CWrappedObjectArray : public CDynamicObjectArray
 public:
 	CWrappedObjectArray(): CDynamicObjectArray() { }
 
-	/** Works as ::append_element, but accepts basic Shogun types,
+	/** Works as CDynamicObjectArray::append_element, but accepts basic Shogun types,
 	 * which are wrapped through CWrappedBasicObject.
 	 *
 	 * @param data Data element to append, after being wrapped.
@@ -65,7 +65,7 @@ public:
 		return this->append_element(new CWrappedBasic<T>(data, data_name));
 	}
 
-	/** Works as ::append_element, but accepts SGVector,
+	/** Works as CDynamicObjectArray::append_element, but accepts SGVector,
 	 * which are wrapped through CWrappedSGVectorObject.
 	 *
 	 * @param data Data element to append, after being wrapped.
@@ -77,7 +77,7 @@ public:
 				data_name));
 	}
 
-	/** Works as ::append_element, but accepts SGMatrix,
+	/** Works as CDynamicObjectArray::append_element, but accepts SGMatrix,
 	 * which are wrapped through CWrappedSGVectorObject.
 	 *
 	 * @param data Data element to append, after being wrapped.
