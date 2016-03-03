@@ -115,6 +115,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
 		const TParameter* param, index_t index=-1);
+#endif /* HAVE_LINALG_LIB */
 };
 }
 
