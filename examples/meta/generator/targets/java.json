@@ -17,6 +17,7 @@
     "Type": {
         "Default": "$type",
         "bool": "boolean",
+        "real": "double",
         "string": "String",
         "BoolVector": "DoubleMatrix",
         "CharVector": "DoubleMatrix",

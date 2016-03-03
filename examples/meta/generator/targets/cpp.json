@@ -18,6 +18,7 @@
         "Default": "$type",
         "bool": "bool",
         "string": "char*",
+        "real": "float64_t",
         "BoolVector": "SGVector<bool>",
         "CharVector": "SGVector<char>",
         "ByteVector": "SGVector<uint8_t>",

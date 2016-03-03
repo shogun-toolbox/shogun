@@ -11,6 +11,7 @@
         "Default": "$type",
         "bool": "bool",
         "string": "String",
+        "real": "double",
         "BoolVector": "bool[]",
         "CharVector": "char[]",
         "ByteVector": "byte[]",
