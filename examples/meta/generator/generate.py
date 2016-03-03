@@ -51,7 +51,9 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         # Translate ast to each target language
         for target in targets:
             translation = translate(ast, targetDict=target,
-                                    tags=tags, storeVars=storeVars)
+                                    tags=tags,
+                                    # TODO: enable storeVars for other targets
+                                    storeVars=storeVars if target['FileExtension']==".cpp" else False)
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
 
