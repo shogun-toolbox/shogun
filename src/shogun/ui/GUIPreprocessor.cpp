@@ -69,8 +69,6 @@ CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t thresho
 		SG_ERROR("Could not create preproc PCA, do_whitening %i threshold %e", do_whitening, threshold)
 
 	return preproc;
-	SG_ERROR("Could not create preproc PCA - eigen3 not available at compile time\n")
-	return NULL;
 }
 
 CPreprocessor* CGUIPreprocessor::create_generic(EPreprocessorType type)
