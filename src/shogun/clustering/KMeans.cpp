@@ -77,21 +77,20 @@ void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
 
 void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
 {
+	/*initialise the cluster centroids randomly among all data*/
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
+	SGVector<int32_t> Perm=SGVector<int32_t>(XSize);
+	SGVector<int32_t>::randperm(int32_t* Perm, int32_t XSize);
+
 	for (int32_t i=0; i<k; i++)
 	{
-		do
-		{
-			const int32_t Cl=CMath::random(0, XSize-1);
-
-		} while(ClList[Cl]=Cl);
-
+		const int32_t Cl=Perm[i];
+		weights_set[Cl]+=1.0;
 		ClList[Cl]=Cl;
-		weights_set+=1.0;
 
-    int32_t vlen=0;
+		int32_t vlen=0;
 		bool vfree=false;
 		float64_t* vec=lhs->get_feature_vector(Cl, vlen, vfree);
 
@@ -99,11 +98,9 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 			mus.matrix[i*dimensions+j] += vec[j];
 
 		lhs->free_feature_vector(vec, i, vfree);
-
 	}
 
 	SG_UNREF(lhs);
-
 }
 
 void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
