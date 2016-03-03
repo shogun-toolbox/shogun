@@ -82,8 +82,8 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
 	SGVector<int32_t> Perm=SGVector<int32_t>(XSize);
-	SGVector<int32_t>::range_fill_vector(int32_t* Perm, int32_t XSize, int32_t 0);
-	CMath::permute(SGVector<int32_t> Perm);
+	SGVector<int32_t>::range_fill_vector(Perm, XSize, 0);
+	CMath::permute(Perm);
 
 	for (int32_t i=0; i<k; i++)
 	{
