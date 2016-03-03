@@ -27,6 +27,6 @@ Labels labels_predict = knn.apply(features_test)
 
 # integration testing variables
 MulticlassAccuracy eval()
-Real accuracy = eval.evaluate(labels_predict, labels_test)
+real accuracy = eval.evaluate(labels_predict, labels_test)
 RealVector output = labels_test.get_values()
 RealMatrix mat = features_train.get_feature_matrix()
