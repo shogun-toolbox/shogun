@@ -71,6 +71,7 @@ public:
 private:
 	void initialize_sparse_kernel();
 
+#ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
