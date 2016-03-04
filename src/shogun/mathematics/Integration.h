@@ -26,7 +26,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>
@@ -241,5 +240,4 @@ private:
 	static float64_t evaluate_quadgh64(CFunction* f);
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _INTEGRATION_H_ */

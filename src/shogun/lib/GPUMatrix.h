@@ -119,13 +119,11 @@ public:
 	/** Converts the matrix into an SGMatrix */
 	operator SGMatrix<T>() const;
 
-#ifdef HAVE_EIGEN3
 	/** Creates a gpu matrix using data from an Eigen3 matrix */
 	CGPUMatrix(const EigenMatrixXt& cpu_mat);
 
 	/** Converts the matrix into an Eigen3 matrix */
 	operator EigenMatrixXt() const;
-#endif // HAVE_EIGEN3
 
 	/** The data */
 	inline VCLMatrixBase data()

@@ -10,7 +10,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/LinearMachine.h>
@@ -226,4 +225,3 @@ bool CLDA::train_machine(CFeatures *data)
 	}
 	return true;
 }
-#endif//HAVE_EIGEN3

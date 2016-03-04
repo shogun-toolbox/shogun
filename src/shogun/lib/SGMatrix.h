@@ -92,13 +92,11 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols);
 
-#ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 matrix */
 		SGMatrix(EigenMatrixXt& mat);
 
 		/** Wraps an Eigen3 matrix around the data of this matrix */
 		operator EigenMatrixXtMap() const;
-#endif // HAVE_EIGEN3
 #endif // SWIG
 
 		/** Copy constructor */

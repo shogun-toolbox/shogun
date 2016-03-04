@@ -13,7 +13,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/computation/aggregator/StoreVectorAggregator.h>
 
-#ifdef HAVE_EIGEN3
 
 namespace shogun
 {
@@ -78,5 +77,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // INDIVIDUAL_JOB_RESULT_AGGREGATOR_H_

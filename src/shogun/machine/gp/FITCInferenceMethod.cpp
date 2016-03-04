@@ -31,7 +31,6 @@
  */
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -429,4 +428,3 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	return result;
 }
 
-#endif /* HAVE_EIGEN3 */

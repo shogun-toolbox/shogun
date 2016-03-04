@@ -37,7 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LikelihoodModel.h>
 
@@ -290,5 +289,4 @@ private:
 	float64_t m_log_df;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSTUDENTSTLIKELIHOOD_H_ */

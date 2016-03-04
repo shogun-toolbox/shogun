@@ -37,7 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/mathematics/Math.h>
@@ -236,4 +235,3 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 	return p;
 }
 
-#endif /* HAVE_EIGEN3 */

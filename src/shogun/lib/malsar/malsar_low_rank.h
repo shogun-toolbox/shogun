@@ -11,7 +11,6 @@
 #ifndef  MALSAR_LOW_RANK_H_
 #define  MALSAR_LOW_RANK_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -31,5 +30,4 @@ malsar_result_t malsar_low_rank(
 		const malsar_options& options);
 
 };
-#endif
 #endif   /* ----- #ifndef MALSAR_LOW_RANK_H_  ----- */

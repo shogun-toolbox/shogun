@@ -35,9 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -101,7 +99,6 @@ struct scale<Backend::NATIVE, Matrix>
 	}
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of scale for the Eigen3 backend */
 template <class Matrix>
@@ -134,7 +131,6 @@ struct scale<Backend::EIGEN3, Matrix>
 		B_eig = alpha * A_eig;
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

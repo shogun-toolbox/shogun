@@ -32,7 +32,6 @@
 
 #include <shogun/machine/gp/LaplacianInferenceBase.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/brent.h>
@@ -130,4 +129,3 @@ SGMatrix<float64_t> CLaplacianInferenceBase::get_posterior_covariance()
 
 }
 
-#endif /* HAVE_EIGEN3 */

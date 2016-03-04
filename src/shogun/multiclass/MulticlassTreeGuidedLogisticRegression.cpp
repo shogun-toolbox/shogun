@@ -9,7 +9,6 @@
  */
 
 #include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -108,4 +107,3 @@ bool CMulticlassTreeGuidedLogisticRegression::train_machine(CFeatures* data)
 	}
 	return true;
 }
-#endif /* HAVE_EIGEN3 */

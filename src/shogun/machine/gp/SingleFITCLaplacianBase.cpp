@@ -36,7 +36,6 @@
 #include <shogun/features/DenseFeatures.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -285,4 +284,3 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_featur
 
 	return get_derivative_related_inducing_features(BdK, param);
 }
-#endif /* HAVE_EIGEN3 */

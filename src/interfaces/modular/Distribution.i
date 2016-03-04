@@ -24,9 +24,7 @@
 %rename(Gaussian) CGaussian;
 %rename(GMM) CGMM;
 %rename(KernelDensity) CKernelDensity;
-#ifdef HAVE_EIGEN3
 %rename(GaussianDistribution) CGaussianDistribution;
-#endif // HAVE_EIGEN3
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
@@ -37,7 +35,5 @@
 %include <shogun/distributions/Gaussian.h>
 %include <shogun/distributions/KernelDensity.h>
 %include <shogun/clustering/GMM.h>
-#ifdef HAVE_EIGEN3
 %include <shogun/distributions/classical/ProbabilityDistribution.h>
 %include <shogun/distributions/classical/GaussianDistribution.h>
-#endif // HAVE_EIGEN3

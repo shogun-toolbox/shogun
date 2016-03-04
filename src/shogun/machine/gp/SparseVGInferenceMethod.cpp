@@ -37,7 +37,6 @@
  */
 #include <shogun/machine/gp/SparseVGInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -433,4 +432,3 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
 	}
 	return result;
 }
-#endif /* HAVE_EIGEN3 */

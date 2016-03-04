@@ -49,7 +49,7 @@ CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
 {
 }
 
-#if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
+#ifdef HAVE_LINALG_LIB
 using namespace Eigen;
 
 CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)

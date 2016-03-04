@@ -5,6 +5,8 @@
 		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 		- Make Java and CSharp install-dir configurable [Björn Esser].
 		- Autogenerate modshogun.rb with correct module-suffix [Björn Esser].
+	* Cleanup, efficiency updates, and API Changes:
+	    - Make Eigen3 a hard requirement. Bundle if not found on system.
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 

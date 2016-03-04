@@ -36,9 +36,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/internal/opencl_util.h>
@@ -118,7 +116,6 @@ struct max<Backend::NATIVE, Matrix>
 	}
 };
 
-#ifdef HAVE_EIGEN3
 
 /**
  * @brief Specialization of max for the Eigen3 backend
@@ -159,7 +156,6 @@ struct max<Backend::EIGEN3,Matrix>
 		return v.maxCoeff();
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

@@ -40,7 +40,6 @@
 
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
@@ -466,4 +465,3 @@ void CKLDualInferenceMethod::update_approx_cov()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

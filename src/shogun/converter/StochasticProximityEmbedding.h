@@ -11,7 +11,6 @@
 #ifndef STOCHASTICPROXIMITYEMBEDDING_H_
 #define STOCHASTICPROXIMITYEMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -174,5 +173,4 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 } /* namespace shogun */
 
 
-#endif /* HAVE_EIGEN3 */
 #endif /* STOCHASTICPROXIMITYEMBEDDING_H_ */

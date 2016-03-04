@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
@@ -367,4 +366,3 @@ void CKLCovarianceInferenceMethod::update_approx_cov()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

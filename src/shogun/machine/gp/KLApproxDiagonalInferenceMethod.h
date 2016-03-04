@@ -43,7 +43,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
 
 namespace shogun
@@ -154,5 +153,4 @@ private:
 	SGMatrix<float64_t> m_InvK;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLAPPROXDIAGONALINFERENCEMETHOD_H_ */

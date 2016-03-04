@@ -30,7 +30,6 @@
  */
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
@@ -234,4 +233,3 @@ void CDualVariationalGaussianLikelihood::init()
 }
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */

@@ -1,6 +1,5 @@
 #include <shogun/mathematics/ajd/JediDiag.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/init.h>
 
@@ -269,4 +268,3 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		A[n*MS+i] = -rm21*col1 + rm11*col2;
 	}
 }
-#endif //HAVE_EIGEN3

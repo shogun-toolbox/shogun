@@ -288,7 +288,6 @@ public:
 		return S_QUADRATIC_TIME_MMD;
 	}
 
-#ifdef HAVE_EIGEN3
 	/** Returns a set of samples of an estimate of the null distribution
 	 * using the Eigen-spectrum of the centered kernel matrix of the merged
 	 * samples of p and q. May be used to compute p-value (easy).
@@ -362,7 +361,6 @@ public:
 	 */
 	SGVector<float64_t> sample_null_spectrum_DEPRECATED(index_t num_samples,
 			index_t num_eigenvalues);
-#endif // HAVE_EIGEN3
 
 	/** setter for number of samples to use in spectrum based p-value
 	 * computation.

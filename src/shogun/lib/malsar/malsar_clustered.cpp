@@ -9,7 +9,6 @@
  */
 
 #include <shogun/lib/malsar/malsar_clustered.h>
-#ifdef HAVE_EIGEN3
 #ifndef HAVE_CXX11
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -313,5 +312,4 @@ malsar_result_t malsar_clustered(
 	return malsar_result_t(tasks_w, tasks_c);
 };
 };
-#endif
 #endif

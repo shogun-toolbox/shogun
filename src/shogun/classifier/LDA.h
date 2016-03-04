@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -174,5 +173,4 @@ class CLDA : public CLinearMachine
 		ELDAMethod m_method;
 };
 }
-#endif//HAVE_EIGEN3
 #endif//ifndef

@@ -40,7 +40,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
@@ -159,5 +158,4 @@ private:
 	SGMatrix<float64_t> m_log_lam;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _NUMERICALVGLIKELIHOOD_H_ */

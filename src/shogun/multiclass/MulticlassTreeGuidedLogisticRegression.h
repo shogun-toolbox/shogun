@@ -11,7 +11,6 @@
 #ifndef MULTICLASSTREEGUIDEDLOGISTICREGRESSION_H_
 #define MULTICLASSTREEGUIDEDLOGISTICREGRESSION_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -133,5 +132,4 @@ protected:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif

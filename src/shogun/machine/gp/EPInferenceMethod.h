@@ -36,7 +36,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
 
@@ -348,5 +347,4 @@ private:
 	SGMatrix<float64_t> m_F;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _EPINFERENCEMETHOD_H_ */

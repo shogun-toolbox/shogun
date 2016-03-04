@@ -17,7 +17,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LaplacianInferenceBase.h>
 
@@ -219,5 +218,4 @@ protected:
 	float64_t m_Psi;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CSINGLELAPLACIANINFERENCEMETHOD_H_ */

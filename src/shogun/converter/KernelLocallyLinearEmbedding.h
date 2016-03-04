@@ -11,7 +11,6 @@
 #ifndef KERNELLOCALLYLINEAREMBEDDING_H_
 #define KERNELLOCALLYLINEAREMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/LocallyLinearEmbedding.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -70,5 +69,4 @@ public:
 };
 }
 
-#endif /* HAVE_EIGEN3 */
 #endif /* KERNELLOCALLYLINEAREMBEDDING_H_ */
