@@ -29,12 +29,9 @@ float64_t CGaussianCompactKernel::compute(int32_t idx_a, int32_t idx_b)
     power=(len_features%2==0) ? (len_features+1):len_features;
 
     float64_t result=distance(idx_a,idx_b);
-    float64_t result_multiplier=1-(sqrt(result))/3;
+    float64_t result_multiplier=1-(CMath::sqrt(result))/3;
+    result_multiplier = (result_multiplier<=0) ? 0
+                        : CMath::pow(result_multiplier, power);
 
-    if (result_multiplier<=0)
-        result_multiplier=0;
-    else
-        result_multiplier=pow(result_multiplier, power);
-
-    return result_multiplier*exp(-result);
+    return result_multiplier*CMath::exp(-result);
 }
