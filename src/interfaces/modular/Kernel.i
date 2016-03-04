@@ -59,6 +59,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(DistanceKernel) CDistanceKernel;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 %rename(GaussianKernel) CGaussianKernel;
+%rename(GaussianCompactKernel) CGaussianCompactKernel;
 %rename(DirectorKernel) CDirectorKernel;
 %rename(WaveletKernel) CWaveletKernel;
 %rename(GaussianShiftKernel) CGaussianShiftKernel;

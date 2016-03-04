@@ -117,25 +117,8 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	if (!m_compact)
-	{
-		float64_t result=distance(idx_a,idx_b);
-		return CMath::exp(-result);
-	}
-
-	int32_t len_features, power;
-	len_features=((CDotFeatures*) lhs)->get_dim_feature_space();
-	power=(len_features%2==0) ? (len_features+1):len_features;
-
-	float64_t result=distance(idx_a,idx_b);
-	float64_t result_multiplier=1-(sqrt(result))/3;
-
-	if (result_multiplier<=0)
-		result_multiplier=0;
-	else
-		result_multiplier=pow(result_multiplier, power);
-
-	return result_multiplier*exp(-result);
+    float64_t result=distance(idx_a,idx_b);
+    return CMath::exp(-result);
 }
 
 void CGaussianKernel::load_serializable_post() throw (ShogunException)
@@ -185,11 +168,9 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(
 void CGaussianKernel::init()
 {
 	set_width(1.0);
-	set_compact_enabled(false);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
-	SG_ADD(&m_compact, "compact", "Compact enabled option", MS_AVAILABLE);
 }
 
 float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b)

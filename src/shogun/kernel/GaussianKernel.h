@@ -35,15 +35,6 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  *
- * The compact version as given in Bart Hamers' thesis <i>Kernel Models for
- * Large Scale Applications</i> (Eq. 4.10) is computed as
- *
- * \f[
- * k({\bf x},{\bf x'})= max(0, (1-\frac{||{\bf x}-{\bf x'}||}{3\tau})^v)) *
- * exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
- * \f]
- *
- * where \f$\tau\f$ is the kernel width.
  */
 class CGaussianKernel: public CDotKernel
 {
@@ -114,18 +105,6 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual float64_t get_width() const;
 
-		/** set the compact option
-		 *
-		 * @param compact value of the compact option
-		 */
-		inline void set_compact_enabled(bool compact) {	m_compact=compact; }
-
-		/** return value of the compact option
-		 *
-		 * @return whether the compact option is enabled
-		 */
-		inline bool get_compact_enabled() { return m_compact; }
-
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
@@ -194,8 +173,6 @@ class CGaussianKernel: public CDotKernel
 		float64_t* sq_lhs;
 		/** squared right-hand side */
 		float64_t* sq_rhs;
-		/** whether compact output enabled */
-		bool m_compact;
 };
 }
 #endif /* _GAUSSIANKERNEL_H__ */
