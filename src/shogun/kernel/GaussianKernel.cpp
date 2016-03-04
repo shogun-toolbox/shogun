@@ -117,8 +117,8 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-  float64_t result=distance(idx_a,idx_b);
-  return CMath::exp(-result);
+    float64_t result=distance(idx_a,idx_b);
+    return CMath::exp(-result);
 }
 
 void CGaussianKernel::load_serializable_post() throw (ShogunException)
