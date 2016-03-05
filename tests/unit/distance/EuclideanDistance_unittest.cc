@@ -63,6 +63,28 @@ TEST(EuclideanDistance,distance)
 	SG_UNREF(euclidean); // the features are unref-ed here as well
 }
 
+TEST(EuclideanDistance, distance_precomputed_norms)
+{
+	CDenseFeatures<float64_t>* features_lhs=create_lhs();
+	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+
+	// put features into distance object to compute squared Euclidean distances
+	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
+	euclidean->set_disable_sqrt(true);
+	euclidean->precompute_lhs_squared_norms();
+	euclidean->precompute_rhs_squared_norms();	
+
+	// check distances computed one by one
+	EXPECT_EQ(euclidean->distance(0,0), 2);
+	EXPECT_EQ(euclidean->distance(0,1), 2);
+	EXPECT_EQ(euclidean->distance(1,0), 5);
+	EXPECT_EQ(euclidean->distance(1,1), 5);
+
+	// release memory
+	SG_UNREF(euclidean); // the features are unref-ed here as well
+}
+
+
 TEST(EuclideanDistance,get_distance_matrix)
 {
 	init_shogun_with_defaults();

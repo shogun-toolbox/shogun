@@ -37,6 +37,13 @@ namespace shogun
  * \f[\displaystyle
  *  d({\bf x},{\bf x'})= \sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2
  * \f]
+ * 
+ * Distance is computed as :  
+ * \sqrt{{\bf x}\cdot {\bf x} - 2{\bf x}\cdot {\bf x'} + {\bf x'}\cdot {\bf x'}}
+ *  
+ * Squared norms for left hand side and right hand side features can be precomputed.
+ * WARNING : Make sure to reset squared norms using reset_squared_norms() when features
+ * or feature matrix are changed.
  *
  * @see CMinkowskiMetric
  * @see <a href="http://en.wikipedia.org/wiki/Distance#Distance_in_Euclidean_space">
@@ -112,6 +119,26 @@ class CEuclideanDistance: public CRealDistance
 		 *  @return distance value or upper_bound
 		 */
 		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
+		
+		/**
+		 * Precompute squared norms from features of right hand side
+		 * WARNING : Make sure to reset squared norms using reset_squared_norms()
+		 * when features feature matrix are changed.
+		 */
+		virtual void precompute_rhs_squared_norms();
+
+		/**
+		 * Precompute squared norms from features of left hand side
+		 * WARNING : Make sure to reset squared norms using reset_squared_norms()
+		 * when features or feature matrix are changed.
+		 */
+		virtual void precompute_lhs_squared_norms();
+	
+		/**
+		 * Reset squared norms for features of both sides
+		 * squared norms should be reset whenever features or feature matrix are changed.
+		 */
+		virtual void reset_squared_norms();
 
 	protected:
 		/// compute kernel function for features a and b
@@ -125,6 +152,12 @@ class CEuclideanDistance: public CRealDistance
 	protected:
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
+
+		/** squared norms from features of right hand side */
+		SGVector<float64_t> m_rhs_squared_norms;
+
+		/** squared norms from features of left hand side */
+		SGVector<float64_t> m_lhs_squared_norms;
 };
 
 } // namespace shogun
