@@ -190,7 +190,7 @@ void CKMeans::compute_cluster_variances()
 				{
 					dist+=CMath::sq(
 							mus.operator()(l,i)
-									-mus.operator()(l,j);
+									-mus.operator()(l,j));
 				}
 
 				if (first_round)
