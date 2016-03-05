@@ -33,7 +33,7 @@
         "LongIntMatrix": "long[,]",
         "ULongIntMatrix": "ulongint[,]",
         "ShortRealMatrix": "float[,]",
-        "RealMatrix": "float[,]",
+        "RealMatrix": "double[,]",
         "LongRealMatrix": "double[,]",
         "ComplexMatrix": "Complex[,]"
     },
