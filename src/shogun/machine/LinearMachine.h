@@ -66,11 +66,24 @@ class CLinearMachine : public CMachine
 		/** default constructor */
 		CLinearMachine();
 
+		/** Constructor
+		 *
+		 * @param  compute_bias new m_compute_bias
+		 * Determines if bias_compution is considered or not
+		 */
+		CLinearMachine(bool compute_bias);
+
 		/** destructor */
 		virtual ~CLinearMachine();
 
 		/** copy constructor */
 		CLinearMachine(CLinearMachine* machine);
+
+		/** Train machine
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(CFeatures* data=NULL);
 
 		/** get w
 		 *
@@ -95,6 +108,19 @@ class CLinearMachine : public CMachine
 		 * @return bias
 		 */
 		virtual float64_t get_bias();
+
+		/** Set m_compute_bias
+		 *
+		 * Determines if bias compution is considered or not
+		 * @param  compute_bias new m_compute_bias
+		 */
+		virtual void set_compute_bias(bool compute_bias);
+
+		/** Get compute bias
+		 *
+		 * @return compute_bias
+		 */
+		virtual bool get_compute_bias();		
 
 		/** set features
 		 *
@@ -149,6 +175,12 @@ class CLinearMachine : public CMachine
 		 */
 		virtual void store_model_features();
 
+		/** Computes the added bias. The bias is computed 
+		 * as the mean error between the predictions and 
+		 * the true labels.
+		*/
+		void compute_bias(CFeatures* data);
+
 	private:
 
 		void init();
@@ -160,6 +192,8 @@ class CLinearMachine : public CMachine
 		float64_t bias;
 		/** features */
 		CDotFeatures* features;
+		/** If true, bias is computed in ::train method */
+		bool m_compute_bias;
 };
 }
 #endif
