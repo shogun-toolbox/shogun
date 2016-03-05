@@ -24,4 +24,4 @@ ENDFOREACH()
 
 add_custom_target(build_csharp_meta_examples ALL
 				 DEPENDS ${CSHARP_EXAMPLES}
-				 COMMENT "CSharp examples")
+				 COMMENT "Compiled generated C# examples")
