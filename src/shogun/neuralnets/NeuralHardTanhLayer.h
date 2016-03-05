@@ -43,14 +43,14 @@ namespace shogun
  * Activations are computed according to:
  * 	\f[ 
  * 	\begin{cases} 
- * 		max_val &\mbox{if } z > max_val \\ 
- * 		min_val &\mbox{if } z <  min_val \\
+ * 		max_act &\mbox{if } z > max_act \\ 
+ * 		min_act &\mbox{if } z <  min_act \\
  * 		z& \mbox{otherwise}  
  * 	\end{cases}
  * 	\f]
  * where z=W*x+b and W is the weight matrix, b is the bias vector, x is the input vector, 
- * and min_val, max_val are parameters.
- * Default value of min_val is -1.0 and max_val is 1.0.
+ * and min_act, max_act are parameters.
+ * Default value of min_act is -1.0 and max_act is 1.0.
  *
  * When used as an output layer, a squared error measure is used
  */
@@ -70,27 +70,27 @@ public:
 
 	/** Sets the lower bound of the activation value
 	 *
-	 * @param min_val new value of min_val
+	 * @param min_act new value of min_act
 	 */
-	virtual void set_min_val(float64_t min_val) { m_min_val=min_val; }
+	virtual void set_min_act(float64_t min_act) { m_min_act=min_act; }
 
 	/** Gets the lower bound of the activation value
 	 *
-	 * @return min_val
+	 * @return min_act
 	 */
-	virtual float64_t get_min_val() { return m_min_val; }
+	virtual float64_t get_min_act() { return m_min_act; }
 
 	/** Sets the upper bound of the activation value
 	 *
-	 * @param max_val new value of max_val
+	 * @param max_act new value of max_act
 	 */
-	virtual void set_max_val(float64_t max_val) { m_max_val=max_val; }
+	virtual void set_max_act(float64_t max_act) { m_max_act=max_act; }
 
 	/** Gets the upper bound of the activation value
 	 *
-	 * @return max_val
+	 * @return max_act
 	 */
-	virtual float64_t get_max_val() { return m_max_val; }
+	virtual float64_t get_max_act() { return m_max_act; }
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -103,16 +103,21 @@ public:
 	 *
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers);
+		CDynamicObjectArray* layers);	
 
 	virtual const char* get_name() const { return "NeuralHardTanhLayer"; }
 
+private:
+	void init();
+
 protected:
-	/** Parameter used to calculate max_val(min_val*(W*x+b),W*x+b).
-	 * Default value is -1.0 and 1.0 respectively.
+	/** Parameter used to set lower bound of activation value
 	 */
-	float64_t m_min_val;
-	float64_t m_max_val;
+	float64_t m_min_act;
+
+	/** Parameter used to set upper bound of activation value
+	 */
+	float64_t m_max_act;
 };
 
 }

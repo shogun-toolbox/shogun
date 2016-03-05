@@ -39,15 +39,13 @@ using namespace shogun;
 
 CNeuralHardTanhLayer::CNeuralHardTanhLayer() : CNeuralLinearLayer()
 {
-	m_min_val=-1.0;
-	m_max_val=1.0;
+	init();
 }
 
 CNeuralHardTanhLayer::CNeuralHardTanhLayer(int32_t num_neurons):
 CNeuralLinearLayer(num_neurons)
 {
-	m_min_val=-1.0;
-	m_max_val=1.0;
+	init();
 }
 
 void CNeuralHardTanhLayer::compute_activations(
@@ -59,7 +57,18 @@ void CNeuralHardTanhLayer::compute_activations(
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<len; i++)
 	{
-		m_activations[i] = m_activations[i] >= m_max_val ? m_max_val : 
-			CMath::max<float64_t>(m_activations[i],m_min_val);
+		m_activations[i] = m_activations[i] >= m_max_act ? m_max_act : 
+			CMath::max<float64_t>(m_activations[i],m_min_act);
 	}
+}
+
+void CNeuralHardTanhLayer::init()
+{
+	m_min_act = -1.0;
+	m_max_act = 1.0;
+
+	SG_ADD(&m_min_act, "min_act",
+			"Minimum Value", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_act, "max_act",
+			"Maximum Value", MS_NOT_AVAILABLE);	
 }

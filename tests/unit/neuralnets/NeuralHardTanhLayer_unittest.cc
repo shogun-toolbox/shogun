@@ -46,8 +46,8 @@ using namespace shogun;
 TEST(NeuralHardTanhLayer, compute_activations)
 {
 	CNeuralHardTanhLayer layer(9);
-	float64_t min_val = -1.0;
-	float64_t max_val = 1.0;
+	float64_t min_act = -1.0;
+	float64_t max_act = 1.0;
 	// initialize some random inputs
 	CMath::init_random(100);
 	SGMatrix<float64_t> x(12,3);
@@ -72,8 +72,8 @@ TEST(NeuralHardTanhLayer, compute_activations)
 
 	// compute the layer's activations
 	input->compute_activations(x);
-	layer.set_min_val(min_val);
-	layer.set_max_val(max_val);
+	layer.set_min_act(min_act);
+	layer.set_max_act(max_act);
 	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 
@@ -92,8 +92,8 @@ TEST(NeuralHardTanhLayer, compute_activations)
 			for (int32_t k=0; k<x.num_rows; k++)
 				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
 
-			A_ref(i,j) = A_ref(i,j) >= max_val ? max_val : 
-				CMath::max<float64_t>(A_ref(i,j),min_val);
+			A_ref(i,j) = A_ref(i,j) >= max_act ? max_act : 
+				CMath::max<float64_t>(A_ref(i,j),min_act);
 		}
 	}
 
