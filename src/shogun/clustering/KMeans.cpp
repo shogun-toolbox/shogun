@@ -77,28 +77,26 @@ void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
 
 void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
 {
-	/*initialise the cluster centroids randomly among all data*/
+	/* initialise the cluster centroids randomly among all data */
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
-	SGVector<int32_t> Perm=SGVector<int32_t>(XSize);
-	SGVector<int32_t>::range_fill_vector(Perm, XSize, 0);
-	CMath::permute(Perm);
+	SGVector<int32_t> random_inds=SGVector<int32_t>(XSize);
+	SGVector<int32_t>::range_fill_vector(random_inds, XSize, 0);
+	CMath::permute(random_inds);
 
 	for (int32_t i=0; i<k; i++)
 	{
-		const int32_t Cl=Perm[i];
+		const int32_t Cl=random_inds[i];
 		weights_set[Cl]+=1.0;
 		ClList[Cl]=Cl;
 
-		int32_t vlen=0;
-		bool vfree=false;
-		float64_t* vec=lhs->get_feature_vector(Cl, vlen, vfree);
+		SGVector<float64_t> vec=lhs->get_feature_vector(Cl);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.matrix[i*dimensions+j] += vec[j];
+			mus.operator()(j,i) += vec[j];
 
-		lhs->free_feature_vector(vec, i, vfree);
+		lhs->free_feature_vector(vec, Cl);
 	}
 
 	SG_UNREF(lhs);
@@ -148,14 +146,12 @@ void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 		const int32_t Cl = ClList[i];
 		weights_set[Cl]+=1.0;
 
-		int32_t vlen=0;
-		bool vfree=false;
-		float64_t* vec=lhs->get_feature_vector(i, vlen, vfree);
+		SGVector<float64_t> vec=lhs->get_feature_vector(i);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.matrix[Cl*dimensions+j] += vec[j];
+			mus.operator()(j,Cl) += vec[j];
 
-		lhs->free_feature_vector(vec, i, vfree);
+		lhs->free_feature_vector(vec, i);
 	}
 	SG_UNREF(lhs);
 	distance->replace_rhs(rhs_cache);
@@ -167,7 +163,7 @@ void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 		if (weights_set[i]!=0.0)
 		{
 			for (int32_t j=0; j<dimensions; j++)
-				mus.matrix[i*dimensions+j] /= weights_set[i];
+				mus.operator()(j,i) /= weights_set[i];
 		}
 	}
 
@@ -193,8 +189,8 @@ void CKMeans::compute_cluster_variances()
 				for (l=0; l<dimensions; l++)
 				{
 					dist+=CMath::sq(
-							mus.matrix[i*dimensions+l]
-									-mus.matrix[j*dimensions+l]);
+							mus.operator()(l,i)
+									-mus.operator()(l,j);
 				}
 
 				if (first_round)
