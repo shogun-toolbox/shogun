@@ -80,8 +80,8 @@ TEST(NeuralHardTanhLayer, compute_activations)
 	// manually compute the layer's activations
 	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
 
-	float64_t* biases = params.vector;
-	float64_t* weights = biases + layer.get_num_neurons();
+	SGVector<float64_t> biases = params;
+	SGVector<float64_t> weights(params.vector,params.vlen,layer.get_num_neurons());
 
 	for (int32_t i=0; i<A_ref.num_rows; i++)
 	{

@@ -39,6 +39,7 @@
 namespace shogun
 {
 /** @brief Neural layer with [hard tanh neurons]
+ * (http://ronan.collobert.com/pub/matos/2004_links_icml.pdf)
  *
  * Activations are computed according to:
  * 	\f[ 
@@ -48,7 +49,9 @@ namespace shogun
  * 		z& \mbox{otherwise}  
  * 	\end{cases}
  * 	\f]
- * where z=W*x+b and W is the weight matrix, b is the bias vector, x is the input vector, 
+ * where 
+ * \f[ z=W*x+b \f] 
+ * and W is the weight matrix, b is the bias vector, x is the input vector, 
  * and min_act, max_act are parameters.
  * Default value of min_act is -1.0 and max_act is 1.0.
  *
