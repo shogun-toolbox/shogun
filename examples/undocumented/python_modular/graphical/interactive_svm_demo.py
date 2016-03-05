@@ -11,14 +11,11 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import matplotlib
-from matplotlib import mpl
 from matplotlib.colorbar import make_axes, Colorbar
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from modshogun import *
-from modshogun import *
 from modshogun import *
 import util
 
@@ -132,7 +129,7 @@ class Form(QMainWindow):
         svm.set_epsilon(1e-2)
 
         x, y, z = util.compute_output_plot_isolines(svm, gk, train)
-        plt=self.axes.pcolor(x, y, z, shading='interp')
+        plt=self.axes.pcolor(x, y, z)
         CS=self.axes.contour(x, y, z, [-1,0,1], linewidths=1, colors='black', hold=True)
         #CS=self.axes.contour(x, y, z, linewidths=1, colors='black', hold=True)
         #CS=self.axes.contour(x, y, z, 5, linewidths=1, colors='black', hold=True)
@@ -142,7 +139,7 @@ class Form(QMainWindow):
         self.axes.set_ylim((-5,5))
 
         cmap = matplotlib.cm.jet
-        norm = mpl.colors.Normalize(numpy.min(z), numpy.max(z))
+        norm = matplotlib.colors.Normalize(numpy.min(z), numpy.max(z))
         print CS.get_clim()
         if not self.cax:
             self.cax, kw = make_axes(self.axes)
@@ -152,7 +149,7 @@ class Form(QMainWindow):
 # standalone colorbar.  There are many more kwargs, but the
 # following gives a basic continuous colorbar with ticks
 # and labels.
-        cb1 = mpl.colorbar.ColorbarBase(self.cax, cmap=cmap,
+        cb1 = matplotlib.colorbar.ColorbarBase(self.cax, cmap=cmap,
                                            norm=norm)
         self.canvas.draw()
 
