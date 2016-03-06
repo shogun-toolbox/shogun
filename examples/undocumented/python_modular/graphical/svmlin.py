@@ -1,7 +1,5 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,axis, connect
 from modshogun import *
-from modshogun import *
-from modshogun import *
 import util
 
 util.set_title('SVM Linear 1')
@@ -33,7 +31,7 @@ svmlight.train()
 x, y, z=util.compute_output_plot_isolines(svm, None, None, True, pos, neg)
 x, y, zlight=util.compute_output_plot_isolines(svmlight, lk, dense, False, pos, neg)
 
-c=pcolor(x, y, z, shading='interp')
+c=pcolor(x, y, z)
 contour(x, y, z, linewidths=1, colors='black', hold=True)
 colorbar(c)
 scatter(pos[0,:], pos[1,:],s=20, c='r')
@@ -43,7 +41,7 @@ connect('key_press_event', util.quit)
 
 figure()
 util.set_title('SVM Linear 2')
-c=pcolor(x, y, zlight, shading='interp')
+c=pcolor(x, y, zlight)
 contour(x, y, zlight, linewidths=1, colors='black', hold=True)
 colorbar(c)
 
@@ -53,4 +51,3 @@ axis('tight')
 connect('key_press_event', util.quit)
 
 show()
-
