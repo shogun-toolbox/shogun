@@ -304,6 +304,7 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
+OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 # note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
@@ -668,7 +669,6 @@ ENDIF()
 FIND_PACKAGE(PythonInterp REQUIRED)
 
 # Meta examples and dependencies
-OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 IF(BUILD_META_EXAMPLES)
     include(FindPythonModule)
     find_python_module(ply REQUIRED)
@@ -1138,7 +1138,7 @@ ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
-	    message("Tests require (disabled) examples, enabling.")
+	    message(STATUS "Tests require (disabled) examples, enabling.")
 	ENDIF()
     IF(ENABLE_TESTING OR BUILD_EXAMPLES)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)

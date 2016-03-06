@@ -12,7 +12,6 @@ find_program( CTAGS_EXECUTABLE
     NAMES ctags
     DOC "ctags executable"
 )
-mark_as_advanced( CTAGS_EXECUTABLE )
 
 if( CTAGS_EXECUTABLE )
     execute_process(COMMAND ${CTAGS_EXECUTABLE} --version
@@ -21,12 +20,24 @@ if( CTAGS_EXECUTABLE )
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    if( ctags_version MATCHES "^Exuberant Ctags [0-9]" )
-        string( REPLACE "Exuberant Ctags " "" CTAGS_VERSION_STRING "${ctags_version}" )
-        string( REGEX REPLACE ",.*$" "" CTAGS_VERSION_STRING ${CTAGS_VERSION_STRING} )
-    endif()
+    if (ctags_version STREQUAL "")
+        unset(CTAGS_EXECUTABLE CACHE)
+        MESSAGE(STATUS "The ctags found is not suitable for meta examples.")
+    else()
+        string(TOLOWER ${ctags_version} ctags_version)
+        if(NOT ctags_version MATCHES exuberant)
+            set(CTAGS_FLAVOR "GNU")
+        else()
+            set(CTAGS_FLAVOR "Exuberant")
+            string( REPLACE "Exuberant Ctags " "" CTAGS_VERSION_STRING "${ctags_version}" )
+            string( REGEX REPLACE ",.*$" "" CTAGS_VERSION_STRING ${CTAGS_VERSION_STRING} )
+        endif()
+        set(CTAGS_FLAVOR ${CTAGS_FLAVOR} CACHE STRING "Ctags executable flavour" FORCE)
+        message(STATUS "Ctags flavour: ${CTAGS_FLAVOR}")
 
-    unset( ctags_version )
+        unset( ctags_version )
+        mark_as_advanced( CTAGS_EXECUTABLE )
+    endif()
 endif()
 
 # Handle the QUIETLY and REQUIRED arguments and set CTAGS_FOUND to TRUE if

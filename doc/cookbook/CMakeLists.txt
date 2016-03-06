@@ -45,7 +45,7 @@ add_custom_target(cookbook_sphinx_linkcheck
     DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
             cookbook_sphinx_static meta_examples)
 
-add_custom_target(cookbook doc
+add_custom_target(cookbook
     ${SPHINX_EXECUTABLE}
     -q -b html
     -c "${BINARY_BUILD_DIR}"
