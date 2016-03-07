@@ -64,9 +64,9 @@ namespace linalg
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
-        typename Matrix::Scalar beta=1.0)
+		typename Matrix::Scalar beta=1.0)
 {
-    implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
+	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
 }
 
 /** Performs the operation \f$C = \alpha A + \beta B\f$.
@@ -84,23 +84,23 @@ void add(Matrix A, Matrix B, Matrix C, typename Matrix::Scalar alpha=1.0,
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 Matrix add(Matrix A, Matrix B, typename Matrix::Scalar alpha=1.0,
-        typename Matrix::Scalar beta=1.0)
+		typename Matrix::Scalar beta=1.0)
 {
-    return implementation::add<backend, Matrix>::compute(A, B, alpha, beta);
+	return implementation::add<backend, Matrix>::compute(A, B, alpha, beta);
 }
 
 /** Performs the operation B = alpha*A. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
 {
-    implementation::scale<backend, Matrix>::compute(A, B, alpha);
+	implementation::scale<backend, Matrix>::compute(A, B, alpha);
 }
 
 /** Performs the operation A = alpha*A. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void scale(Matrix A, typename Matrix::Scalar alpha)
 {
-    implementation::scale<backend, Matrix>::compute(A, A, alpha);
+	implementation::scale<backend, Matrix>::compute(A, A, alpha);
 }
 
 /** Range fill a vector or a matrix with start...start+len-1
@@ -110,7 +110,7 @@ void scale(Matrix A, typename Matrix::Scalar alpha)
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void range_fill(Matrix A, typename Matrix::Scalar start=0.0)
 {
-    implementation::range_fill<backend, Matrix>::compute(A, start);
+	implementation::range_fill<backend, Matrix>::compute(A, start);
 }
 
 /** Range fill a pointer array with start...start+len-1
@@ -121,8 +121,8 @@ void range_fill(Matrix A, typename Matrix::Scalar start=0.0)
 template <typename T>
 void range_fill(T* A, index_t len, T start=0.0)
 {
-    SGVector<T> V(A,len,false);
-    implementation::range_fill<Backend::NATIVE,SGVector<T> >::compute(V, start);
+	SGVector<T> V(A,len,false);
+	implementation::range_fill<Backend::NATIVE,SGVector<T> >::compute(V, start);
 }
 
 #ifdef HAVE_LINALG_LIB
@@ -141,7 +141,7 @@ void range_fill(T* A, index_t len, T start=0.0)
 template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
 void apply(Matrix A, Vector b, Vector x, bool transpose=false)
 {
-    implementation::apply<backend,Matrix,Vector>::compute(A, b, x, transpose);
+	implementation::apply<backend,Matrix,Vector>::compute(A, b, x, transpose);
 }
 
 /** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
@@ -157,7 +157,7 @@ void apply(Matrix A, Vector b, Vector x, bool transpose=false)
 template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
 Vector apply(Matrix A, Vector b, bool transpose=false)
 {
-    return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
+	return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
 }
 
 /** Performs matrix multiplication. This version should be used for backend specific
@@ -176,9 +176,9 @@ Vector apply(Matrix A, Vector b, bool transpose=false)
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void matrix_product(Matrix A, Matrix B, Matrix C,
-    bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
+	bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
 {
-    implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
+	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
 }
 
 /** Performs matrix multiplication. This version returns the result in a newly
@@ -193,17 +193,17 @@ void matrix_product(Matrix A, Matrix B, Matrix C,
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 typename implementation::matrix_product<backend,Matrix>::ReturnType matrix_product(Matrix A, Matrix B,
-    bool transpose_A=false, bool transpose_B=false)
+	bool transpose_A=false, bool transpose_B=false)
 {
-    return implementation::matrix_product<backend, Matrix>::compute(A, B, transpose_A, transpose_B);
+	return implementation::matrix_product<backend, Matrix>::compute(A, B, transpose_A, transpose_B);
 }
 
 /** Performs the operation C = alpha*A - beta*B. Works for both matrices and vectors */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void subtract(Matrix A, Matrix B, Matrix C,
-    typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
+	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
 {
-    implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
+	implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
 }
 
 /** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
@@ -221,7 +221,7 @@ void subtract(Matrix A, Matrix B, Matrix C,
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void elementwise_product(Matrix A, Matrix B, Matrix C)
 {
-    implementation::elementwise_product<backend, Matrix>::compute(A, B, C);
+	implementation::elementwise_product<backend, Matrix>::compute(A, B, C);
 }
 
 /** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
@@ -237,7 +237,7 @@ void elementwise_product(Matrix A, Matrix B, Matrix C)
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 typename implementation::elementwise_product<backend,Matrix>::ReturnType elementwise_product(Matrix A, Matrix B)
 {
-    return implementation::elementwise_product<backend,Matrix>::compute(A, B);
+	return implementation::elementwise_product<backend,Matrix>::compute(A, B);
 }
 
 /**
@@ -251,7 +251,7 @@ typename implementation::elementwise_product<backend,Matrix>::ReturnType element
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 typename implementation::elementwise_square<backend,Matrix>::ReturnType elementwise_square(Matrix m)
 {
-    return implementation::elementwise_square<backend,Matrix>::compute(m);
+	return implementation::elementwise_square<backend,Matrix>::compute(m);
 }
 
 /**
@@ -264,7 +264,7 @@ typename implementation::elementwise_square<backend,Matrix>::ReturnType elementw
 template <Backend backend=linalg_traits<Core>::backend,class Matrix, class ResultMatrix>
 void elementwise_square(Matrix m, ResultMatrix result)
 {
-    implementation::elementwise_square<backend,Matrix>::compute(m,result);
+	implementation::elementwise_square<backend,Matrix>::compute(m,result);
 }
 
 /** Computes the 2D convolution of X with W
@@ -285,9 +285,9 @@ void elementwise_square(Matrix m, ResultMatrix result)
  */
 template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void convolve(Matrix X, Matrix W, Matrix Y, bool flip = false,
-    bool overwrite=true, int32_t stride_x=1, int32_t stride_y=1)
+	bool overwrite=true, int32_t stride_x=1, int32_t stride_y=1)
 {
-    implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y);
+	implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y);
 }
 #endif // HAVE_LINALG_LIB
 
