@@ -52,14 +52,14 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct range_fill
 {
-    /**Scalar type */
-    typedef typename Matrix::Scalar T;
+	/**Scalar type */
+	typedef typename Matrix::Scalar T;
 
-    /**Range fill a vector or a matrix with start...start+len-1
-     * @param A - the matrix to be filled
-     * @param start - value to be assigned to first element of vector or matrix
-     */
-    static void compute(Matrix A, T start);
+	/**Range fill a vector or a matrix with start...start+len-1
+	 * @param A - the matrix to be filled
+	 * @param start - value to be assigned to first element of vector or matrix
+	 */
+	static void compute(Matrix A, T start);
 
 };
 
@@ -69,28 +69,28 @@ struct range_fill
 template <class Matrix>
 struct range_fill<Backend::NATIVE, Matrix>
 {
-    /** Scalar type */
-    typedef typename Matrix::Scalar T;
+	/** Scalar type */
+	typedef typename Matrix::Scalar T;
 
-    /** Range fill a matrix with start...start+len-1
-     * @param A - the matrix to be filled
-     * @param len - length of the matrix to be filled
-     * @param start - value to be assigned to first element of vector or matrix
-     */
-    static void compute(Matrix A, T start)
-    {
-        compute(A.data(), A.size(), start);
-    }
+	/** Range fill a matrix with start...start+len-1
+	 * @param A - the matrix to be filled
+	 * @param len - length of the matrix to be filled
+	 * @param start - value to be assigned to first element of vector or matrix
+	 */
+	static void compute(Matrix A, T start)
+	{
+		compute(A.data(), A.size(), start);
+	}
 
-    /**Range fill a vector or a matrix with start...start+len-1
-     * @param A - the matrix to be filled
-     * @param len - length of the matrix to be filled
-     * @param start - value to be assigned to first element of vector or matrix
-     */
-    static void compute(T* A, index_t len, T start)
-    {
-        std::iota(A, A+len, start);
-    }
+	/**Range fill a vector or a matrix with start...start+len-1
+	 * @param A - the matrix to be filled
+	 * @param len - length of the matrix to be filled
+	 * @param start - value to be assigned to first element of vector or matrix
+	 */
+	static void compute(T* A, index_t len, T start)
+	{
+		std::iota(A, A+len, start);
+	}
 
 };
 
