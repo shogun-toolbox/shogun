@@ -56,7 +56,6 @@ void CKernelTwoSampleTest::init()
 	m_kernel=NULL;
 }
 
-
 SGVector<float64_t> CKernelTwoSampleTest::sample_null()
 {
 	SG_DEBUG("entering!\n");

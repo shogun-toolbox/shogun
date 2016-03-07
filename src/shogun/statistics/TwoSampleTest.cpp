@@ -82,7 +82,6 @@ void CTwoSampleTest::init()
 	m_m=0;
 }
 
-
 SGVector<float64_t> CTwoSampleTest::sample_null()
 {
 	SG_DEBUG("entering!\n")
@@ -119,7 +118,6 @@ SGVector<float64_t> CTwoSampleTest::sample_null()
 	SG_DEBUG("leaving!\n")
 	return results;
 }
-
 
 float64_t CTwoSampleTest::compute_p_value(float64_t statistic)
 {

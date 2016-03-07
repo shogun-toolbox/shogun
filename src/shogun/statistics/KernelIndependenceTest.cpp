@@ -77,7 +77,6 @@ void CKernelIndependenceTest::init()
 	m_kernel_q=NULL;
 }
 
-
 SGVector<float64_t> CKernelIndependenceTest::sample_null()
 {
 	SG_DEBUG("entering!\n")
@@ -133,7 +132,6 @@ SGVector<float64_t> CKernelIndependenceTest::sample_null()
 	SG_DEBUG("leaving!\n")
 	return results;
 }
-
 
 void CKernelIndependenceTest::set_kernel_p(CKernel* kernel_p)
 {

@@ -70,8 +70,6 @@ void CIndependenceTest::init()
 	m_q=NULL;
 }
 
-
-
 SGVector<float64_t> CIndependenceTest::sample_null()
 {
 	SG_DEBUG("entering!\n")
@@ -87,7 +85,6 @@ SGVector<float64_t> CIndependenceTest::sample_null()
 	 *
 	 * subset for selecting samples from p. In this case we want to
 	 * shuffle only samples from p while keeping samples from q fixed */
-
 	SGVector<index_t> ind_permutation(m_p->get_num_vectors());
 #ifdef HAVE_LINALG_LIB
 	linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
@@ -111,7 +108,6 @@ SGVector<float64_t> CIndependenceTest::sample_null()
 	SG_DEBUG("leaving!\n")
 	return results;
 }
-
 
 void CIndependenceTest::set_p(CFeatures* p)
 {
