@@ -58,7 +58,7 @@ struct range_fill
     /**Range fill a vector or a matrix with start...start+len-1
      * @param A - the matrix to be filled
      * @param start - value to be assigned to first element of vector or matrix
-     */ 
+     */
     static void compute(Matrix A, T start);
 
 };
@@ -76,7 +76,7 @@ struct range_fill<Backend::NATIVE, Matrix>
      * @param A - the matrix to be filled
      * @param len - length of the matrix to be filled
      * @param start - value to be assigned to first element of vector or matrix
-     */ 
+     */
     static void compute(Matrix A, T start)
     {
         compute(A.data(), A.size(), start);
@@ -86,7 +86,7 @@ struct range_fill<Backend::NATIVE, Matrix>
      * @param A - the matrix to be filled
      * @param len - length of the matrix to be filled
      * @param start - value to be assigned to first element of vector or matrix
-     */ 
+     */
     static void compute(T* A, index_t len, T start)
     {
         std::iota(A, A+len, start);
