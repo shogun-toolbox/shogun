@@ -250,7 +250,6 @@ SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 	return monotonicity;
 }
 
-
 CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features)
 {

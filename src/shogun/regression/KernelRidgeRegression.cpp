@@ -49,7 +49,6 @@ void CKernelRidgeRegression::init()
 
 bool CKernelRidgeRegression::train_machine_pinv()
 {
-
 	// Get kernel matrix
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
 	int32_t n = kernel_matrix.num_cols;
@@ -83,7 +82,6 @@ bool CKernelRidgeRegression::train_machine_pinv()
 
 bool CKernelRidgeRegression::train_machine_gs()
 {
-
 	int32_t n = kernel->get_num_vec_rhs();
 	int32_t m = kernel->get_num_vec_lhs();
 	ASSERT(m>0 && n>0)
@@ -100,6 +98,8 @@ bool CKernelRidgeRegression::train_machine_gs()
 	m_svs=SGVector<index_t>(m_alpha.vlen);
 #ifdef HAVE_LINALG_LIB
 	linalg::range_fill<linalg::Backend::NATIVE>(m_svs);
+#else
+	m_svs.range_fill();
 #endif
 	if (get_alphas().vlen!=n)
 	{

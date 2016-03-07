@@ -45,7 +45,6 @@ void CDisjointSet::init()
 	m_num_elements = -1;
 }
 
-
 void CDisjointSet::make_sets()
 {
 
@@ -56,7 +55,6 @@ void CDisjointSet::make_sets()
 	m_parent.range_fill();
 #endif
 	m_rank.zero();
-
 }
 
 int32_t CDisjointSet::find_set(int32_t x)

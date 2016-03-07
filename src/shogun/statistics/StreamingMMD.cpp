@@ -221,7 +221,6 @@ SGVector<float64_t> CStreamingMMD::sample_null()
 	return samples;
 }
 
-
 CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 		index_t num_this_run)
 {
@@ -310,7 +309,6 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 	SG_DEBUG("leaving!\n");
 	return data;
 }
-
 
 void CStreamingMMD::set_p_and_q(CFeatures* p_and_q)
 {
