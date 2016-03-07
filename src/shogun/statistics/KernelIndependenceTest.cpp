@@ -35,176 +35,182 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/mathematics/Math.h>
 
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
- 
+ #endif
+
 using namespace shogun;
 
 CKernelIndependenceTest::CKernelIndependenceTest() :
-		CIndependenceTest()
+        CIndependenceTest()
 {
-	init();
+    init();
 }
 
 CKernelIndependenceTest::CKernelIndependenceTest(CKernel* kernel_p,
-		CKernel* kernel_q, CFeatures* p, CFeatures* q) :
-		CIndependenceTest(p, q)
+        CKernel* kernel_q, CFeatures* p, CFeatures* q) :
+        CIndependenceTest(p, q)
 {
-	init();
+    init();
 
-	m_kernel_p=kernel_p;
-	SG_REF(kernel_p);
+    m_kernel_p=kernel_p;
+    SG_REF(kernel_p);
 
-	m_kernel_q=kernel_q;
-	SG_REF(kernel_q);
+    m_kernel_q=kernel_q;
+    SG_REF(kernel_q);
 }
 
 CKernelIndependenceTest::~CKernelIndependenceTest()
 {
-	SG_UNREF(m_kernel_p);
-	SG_UNREF(m_kernel_q);
+    SG_UNREF(m_kernel_p);
+    SG_UNREF(m_kernel_q);
 }
 
 void CKernelIndependenceTest::init()
 {
-	SG_ADD((CSGObject**)&m_kernel_p, "kernel_p", "Kernel for samples from p",
-			MS_AVAILABLE);
-	SG_ADD((CSGObject**)&m_kernel_q, "kernel_q", "Kernel for samples from q",
-			MS_AVAILABLE);
+    SG_ADD((CSGObject**)&m_kernel_p, "kernel_p", "Kernel for samples from p",
+            MS_AVAILABLE);
+    SG_ADD((CSGObject**)&m_kernel_q, "kernel_q", "Kernel for samples from q",
+            MS_AVAILABLE);
 
-	m_kernel_p=NULL;
-	m_kernel_q=NULL;
+    m_kernel_p=NULL;
+    m_kernel_q=NULL;
 }
+
 
 SGVector<float64_t> CKernelIndependenceTest::sample_null()
 {
-	SG_DEBUG("entering!\n")
+    SG_DEBUG("entering!\n")
 
-	/* compute sample statistics for null distribution */
-	SGVector<float64_t> results;
+    /* compute sample statistics for null distribution */
+    SGVector<float64_t> results;
 
-	/* only do something if a custom kernel is used: use the power of pre-
-	 * computed kernel matrices
-	 */
-	if (m_kernel_p->get_kernel_type()==K_CUSTOM &&
-			m_kernel_q->get_kernel_type()==K_CUSTOM)
-	{
-		/* allocate memory */
-		results=SGVector<float64_t>(m_num_null_samples);
+    /* only do something if a custom kernel is used: use the power of pre-
+     * computed kernel matrices
+     */
+    if (m_kernel_p->get_kernel_type()==K_CUSTOM &&
+            m_kernel_q->get_kernel_type()==K_CUSTOM)
+    {
+        /* allocate memory */
+        results=SGVector<float64_t>(m_num_null_samples);
 
-		/* memory for index permutations */
-		SGVector<index_t> ind_permutation(m_p->get_num_vectors());
-		linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+        /* memory for index permutations */
+        SGVector<index_t> ind_permutation(m_p->get_num_vectors());
+#ifdef HAVE_LINALG_LIB
+        linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+#else
+        ind_permutation.range_fill();
+#endif
+        /* check if kernel is a custom kernel. In that case, changing features is
+         * not what we want but just subsetting the kernel itself */
+        CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
 
-		/* check if kernel is a custom kernel. In that case, changing features is
-		 * not what we want but just subsetting the kernel itself */
-		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
+        for (index_t i=0; i<m_num_null_samples; ++i)
+        {
+            /* idea: shuffle samples from p while keeping samples from q intact
+             * and compute statistic. This is done using subsets here. add to
+             * custom kernel since it has no features to subset. CustomKernel
+             * has not to be re-initialised after each subset setting */
+            CMath::permute(ind_permutation);
 
-		for (index_t i=0; i<m_num_null_samples; ++i)
-		{
-			/* idea: shuffle samples from p while keeping samples from q intact
-			 * and compute statistic. This is done using subsets here. add to
-			 * custom kernel since it has no features to subset. CustomKernel
-			 * has not to be re-initialised after each subset setting */
-			CMath::permute(ind_permutation);
+            custom_kernel_p->add_row_subset(ind_permutation);
+            custom_kernel_p->add_col_subset(ind_permutation);
 
-			custom_kernel_p->add_row_subset(ind_permutation);
-			custom_kernel_p->add_col_subset(ind_permutation);
+            /* compute statistic for this permutation of mixed samples */
+            results[i]=compute_statistic();
 
-			/* compute statistic for this permutation of mixed samples */
-			results[i]=compute_statistic();
+            /* remove subsets */
+            custom_kernel_p->remove_row_subset();
+            custom_kernel_p->remove_col_subset();
+        }
+    }
+    else
+    {
+        /* in this case, just use superclass method */
+        results=CIndependenceTest::sample_null();
+    }
 
-			/* remove subsets */
-			custom_kernel_p->remove_row_subset();
-			custom_kernel_p->remove_col_subset();
-		}
-	}
-	else
-	{
-		/* in this case, just use superclass method */
-		results=CIndependenceTest::sample_null();
-	}
-
-
-	SG_DEBUG("leaving!\n")
-	return results;
+    SG_DEBUG("leaving!\n")
+    return results;
 }
+
 
 void CKernelIndependenceTest::set_kernel_p(CKernel* kernel_p)
 {
-	/* ref before unref to avoid problems when instances are equal */
-	SG_REF(kernel_p);
-	SG_UNREF(m_kernel_p);
-	m_kernel_p=kernel_p;
+    /* ref before unref to avoid problems when instances are equal */
+    SG_REF(kernel_p);
+    SG_UNREF(m_kernel_p);
+    m_kernel_p=kernel_p;
 }
 
 void CKernelIndependenceTest::set_kernel_q(CKernel* kernel_q)
 {
-	/* ref before unref to avoid problems when instances are equal */
-	SG_REF(kernel_q);
-	SG_UNREF(m_kernel_q);
-	m_kernel_q=kernel_q;
+    /* ref before unref to avoid problems when instances are equal */
+    SG_REF(kernel_q);
+    SG_UNREF(m_kernel_q);
+    m_kernel_q=kernel_q;
 }
 
 CKernel* CKernelIndependenceTest::get_kernel_p()
 {
-	SG_REF(m_kernel_p);
-	return m_kernel_p;
+    SG_REF(m_kernel_p);
+    return m_kernel_p;
 }
 
 CKernel* CKernelIndependenceTest::get_kernel_q()
 {
-	SG_REF(m_kernel_q);
-	return m_kernel_q;
+    SG_REF(m_kernel_q);
+    return m_kernel_q;
 }
 
 SGMatrix<float64_t> CKernelIndependenceTest::get_kernel_matrix_K()
 {
-	SG_DEBUG("entering!\n");
+    SG_DEBUG("entering!\n");
 
-	SGMatrix<float64_t> K;
+    SGMatrix<float64_t> K;
 
-	/* distinguish between custom and normal kernels */
-	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised when a subset is added */
-		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
-		K=custom_kernel_p->get_kernel_matrix();
-	}
-	else
-	{
-		/* need to init the kernel if kernel is not precomputed - if subsets of
-		 * features are in the stack (for permutation), this will handle it */
-		m_kernel_p->init(m_p, m_p);
-		K=m_kernel_p->get_kernel_matrix();
-	}
+    /* distinguish between custom and normal kernels */
+    if (m_kernel_p->get_kernel_type()==K_CUSTOM)
+    {
+        /* custom kernels need to to be initialised when a subset is added */
+        CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
+        K=custom_kernel_p->get_kernel_matrix();
+    }
+    else
+    {
+        /* need to init the kernel if kernel is not precomputed - if subsets of
+         * features are in the stack (for permutation), this will handle it */
+        m_kernel_p->init(m_p, m_p);
+        K=m_kernel_p->get_kernel_matrix();
+    }
 
-	SG_DEBUG("leaving!\n");
+    SG_DEBUG("leaving!\n");
 
-	return K;
+    return K;
 }
 
 SGMatrix<float64_t> CKernelIndependenceTest::get_kernel_matrix_L()
 {
-	SG_DEBUG("entering!\n");
+    SG_DEBUG("entering!\n");
 
-	SGMatrix<float64_t> L;
+    SGMatrix<float64_t> L;
 
-	/* now second half of data for L */
-	if (m_kernel_q->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised - no subsets here */
-		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
-		L=custom_kernel_q->get_kernel_matrix();
-	}
-	else
-	{
-		/* need to init the kernel if kernel is not precomputed */
-		m_kernel_q->init(m_q, m_q);
-		L=m_kernel_q->get_kernel_matrix();
-	}
+    /* now second half of data for L */
+    if (m_kernel_q->get_kernel_type()==K_CUSTOM)
+    {
+        /* custom kernels need to to be initialised - no subsets here */
+        CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
+        L=custom_kernel_q->get_kernel_matrix();
+    }
+    else
+    {
+        /* need to init the kernel if kernel is not precomputed */
+        m_kernel_q->init(m_q, m_q);
+        L=m_kernel_q->get_kernel_matrix();
+    }
 
-	SG_DEBUG("leaving!\n");
+    SG_DEBUG("leaving!\n");
 
-	return L;
+    return L;
 }
 

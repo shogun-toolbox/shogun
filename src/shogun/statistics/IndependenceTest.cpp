@@ -32,103 +32,112 @@
 #include <shogun/statistics/IndependenceTest.h>
 #include <shogun/features/Features.h>
 
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
+#endif
 
 using namespace shogun;
 
 CIndependenceTest::CIndependenceTest() : CHypothesisTest()
 {
-	init();
+    init();
 }
 
 CIndependenceTest::CIndependenceTest(CFeatures* p, CFeatures* q)
-	: CHypothesisTest()
+    : CHypothesisTest()
 {
-	init();
+    init();
 
-	SG_REF(p);
-	SG_REF(q);
+    SG_REF(p);
+    SG_REF(q);
 
-	m_p=p;
-	m_q=q;
+    m_p=p;
+    m_q=q;
 }
 
 CIndependenceTest::~CIndependenceTest()
 {
-	SG_UNREF(m_p);
-	SG_UNREF(m_q);
+    SG_UNREF(m_p);
+    SG_UNREF(m_q);
 }
 
 void CIndependenceTest::init()
 {
-	SG_ADD((CSGObject**)&m_p, "p", "Samples from p", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_q, "q", "Samples from q", MS_NOT_AVAILABLE);
+    SG_ADD((CSGObject**)&m_p, "p", "Samples from p", MS_NOT_AVAILABLE);
+    SG_ADD((CSGObject**)&m_q, "q", "Samples from q", MS_NOT_AVAILABLE);
 
-	m_p=NULL;
-	m_q=NULL;
+    m_p=NULL;
+    m_q=NULL;
 }
+
+
 
 SGVector<float64_t> CIndependenceTest::sample_null()
 {
-	SG_DEBUG("entering!\n")
+    SG_DEBUG("entering!\n")
 
-	REQUIRE(m_p, "No features p!\n");
-	REQUIRE(m_q, "No features q!\n");
+    REQUIRE(m_p, "No features p!\n");
+    REQUIRE(m_q, "No features q!\n");
 
-	/* compute sample statistics for null distribution */
-	SGVector<float64_t> results(m_num_null_samples);
+    /* compute sample statistics for null distribution */
+    SGVector<float64_t> results(m_num_null_samples);
 
-	/* memory for index permutations. Adding of subset has to happen
-	 * inside the loop since it may be copied if there already is one set.
-	 *
-	 * subset for selecting samples from p. In this case we want to
-	 * shuffle only samples from p while keeping samples from q fixed */
-	SGVector<index_t> ind_permutation(m_p->get_num_vectors());
-	linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+    /* memory for index permutations. Adding of subset has to happen
+     * inside the loop since it may be copied if there already is one set.
+     *
+     * subset for selecting samples from p. In this case we want to
+     * shuffle only samples from p while keeping samples from q fixed */
 
-	for (index_t i=0; i<m_num_null_samples; ++i)
-	{
-		/* idea: shuffle samples from p while keeping samples from q fixed
-		 * and compute statistic. This is done using subsets here */
+    SGVector<index_t> ind_permutation(m_p->get_num_vectors());
+#ifdef HAVE_LINALG_LIB
+    linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+#else
+    ind_permutation.range_fill();
+#endif
+    for (index_t i=0; i<m_num_null_samples; ++i)
+    {
+        /* idea: shuffle samples from p while keeping samples from q fixed
+         * and compute statistic. This is done using subsets here */
 
-		/* create index permutation and add as subset to features from p */
-		CMath::permute(ind_permutation);
+        /* create index permutation and add as subset to features from p */
+        CMath::permute(ind_permutation);
 
-		/* compute statistic for this permutation of mixed samples */
-		m_p->add_subset(ind_permutation);
-		results[i]=compute_statistic();
-		m_p->remove_subset();
-	}
+        /* compute statistic for this permutation of mixed samples */
+        m_p->add_subset(ind_permutation);
+        results[i]=compute_statistic();
+        m_p->remove_subset();
+    }
 
-	SG_DEBUG("leaving!\n")
-	return results;
+    SG_DEBUG("leaving!\n")
+    return results;
 }
+
 
 void CIndependenceTest::set_p(CFeatures* p)
 {
-	/* ref before unref to avoid problems when instances are equal */
-	SG_REF(p);
-	SG_UNREF(m_p);
-	m_p=p;
+    /* ref before unref to avoid problems when instances are equal */
+    SG_REF(p);
+    SG_UNREF(m_p);
+    m_p=p;
 }
 
 void CIndependenceTest::set_q(CFeatures* q)
 {
-	/* ref before unref to avoid problems when instances are equal */
-	SG_REF(q);
-	SG_UNREF(m_q);
-	m_q=q;
+    /* ref before unref to avoid problems when instances are equal */
+    SG_REF(q);
+    SG_UNREF(m_q);
+    m_q=q;
 }
 
 CFeatures* CIndependenceTest::get_p()
 {
-	SG_REF(m_p);
-	return m_p;
+    SG_REF(m_p);
+    return m_p;
 }
 
 CFeatures* CIndependenceTest::get_q()
 {
-	SG_REF(m_q);
-	return m_q;
+    SG_REF(m_q);
+    return m_q;
 }
 

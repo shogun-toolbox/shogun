@@ -39,14 +39,14 @@
 using namespace shogun;
 
 TEST(RangeFillMatrix, native_backend)
-{	
+{
 	SGMatrix<index_t> m(2,2);
 
 	linalg::range_fill<linalg::Backend::NATIVE>(m);
 
 	for(int32_t i=0;i<4;i++)
 	{
-		EXPECT_EQ(m[i], i);	
+		EXPECT_EQ(m[i], i);
 	}
 }
 
@@ -60,10 +60,10 @@ TEST(RangeFillVector, native_backend)
 	EXPECT_EQ(v2.vlen, 4);
 	for(int32_t i=0;i<4;i++)
 	{
-		EXPECT_NEAR(v[i], i, 1e-9);	
-		EXPECT_NEAR(v2[i], i, 1e-9);	
-	}	
-	
+		EXPECT_NEAR(v[i], i, 1e-9);
+		EXPECT_NEAR(v2[i], i, 1e-9);
+	}
+
 }
 TEST(RangeFillArray, native_backend)
 {
@@ -72,9 +72,9 @@ TEST(RangeFillArray, native_backend)
 	linalg::range_fill(w,4,0.0);
 	for(int32_t i=0;i<4;i++)
 	{
-		EXPECT_NEAR(w[i], i, 1e-9);	
-	}	
-	
+		EXPECT_NEAR(w[i], i, 1e-9);
+	}
+
 }
 
 #endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)

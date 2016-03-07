@@ -13,8 +13,10 @@
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/Plif.h>
 
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
- 
+ #endif
+
 using namespace shogun;
 
 CTwoStateModel::CTwoStateModel() : CStateModel()
@@ -248,6 +250,7 @@ SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 	return monotonicity;
 }
 
+
 CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	int32_t num_features, int32_t num_noise_features)
 {
@@ -305,8 +308,11 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t >   d2(d1.vlen);
 	SGVector< int32_t >   lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
-
+#ifdef HAVE_LINALG_LIB
 	linalg::range_fill<linalg::Backend::NATIVE>(distort);
+#else
+	distort.range_fill();
+#endif
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
 		lf = ll;
