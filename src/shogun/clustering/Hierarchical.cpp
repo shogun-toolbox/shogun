@@ -37,7 +37,7 @@ CHierarchical::CHierarchical()
 {
 }
 
-CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
+CHierarchical::CHierarchical(int32_t merges_, distance::CDistance* d)
 : CDistanceMachine(), merges(merges_), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {

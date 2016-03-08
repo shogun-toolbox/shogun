@@ -44,6 +44,7 @@
 #include <shogun/features/Features.h>
 
 using namespace shogun;
+using namespace distance;
 
 CGUIDistance::CGUIDistance(CSGInterface* ui_)
 : CSGObject(), ui(ui_)
@@ -57,7 +58,7 @@ CGUIDistance::~CGUIDistance()
 	SG_UNREF(distance);
 }
 
-CDistance* CGUIDistance::get_distance()
+distance::CDistance* CGUIDistance::get_distance()
 {
 	return distance;
 }

@@ -16,7 +16,9 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/SparseFeatures.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief template class SparseDistance */
 template <class ST> class CSparseDistance : public CDistance

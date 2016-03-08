@@ -14,7 +14,7 @@
 #include <shogun/distance/ChebyshewMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CChebyshewMetric::CChebyshewMetric() : CDenseDistance<float64_t>()
 {

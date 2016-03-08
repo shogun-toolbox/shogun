@@ -14,7 +14,7 @@
 #include <shogun/distance/TanimotoDistance.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CTanimotoDistance::CTanimotoDistance()
 : CDenseDistance<float64_t>()

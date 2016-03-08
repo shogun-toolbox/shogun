@@ -22,11 +22,13 @@
 #include <shogun/features/Features.h>
 #include <shogun/lib/SGMatrix.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
-class CFile;
-class CMath;
-class CFeatures;
+class shogun::CFile;
+class shogun::CMath;
+class shogun::CFeatures;
 
 /** type of distance */
 enum EDistanceType
@@ -146,7 +148,7 @@ class CDistance : public CSGObject
 			int32_t i_start;
 
 			if (symmetric)
-				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+				i_start=(int32_t) shogun::CMath::floor(n-shogun::CMath::sqrt(shogun::CMath::sq((float64_t) n)-offs));
 			else
 				i_start=(int32_t) (offs/int64_t(n));
 
@@ -192,13 +194,13 @@ class CDistance : public CSGObject
 		 *
 		 * @return left-hand side features
 		 */
-		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; };
+		inline shogun::CFeatures* get_lhs() { SG_REF(lhs); return lhs; };
 
 		/** get right-hand side features used in distance matrix
 		 *
 		 * @return right-hand side features
 		 */
-		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
+		inline shogun::CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
 
 		/** replace right-hand side features used in distance matrix
 		 *
@@ -208,7 +210,7 @@ class CDistance : public CSGObject
 		 * @param rhs features of right-hand side
 		 * @return replaced right-hand side features
 		 */
-		CFeatures* replace_rhs(CFeatures* rhs);
+		shogun::CFeatures* replace_rhs(shogun::CFeatures* rhs);
 
 		/** replace left-hand side features used in distance matrix
 		 *
@@ -218,7 +220,7 @@ class CDistance : public CSGObject
 		 * @param lhs features of right-hand side
 		 * @return replaced left-hand side features
 		 */
-		CFeatures* replace_lhs(CFeatures* lhs);
+		shogun::CFeatures* replace_lhs(shogun::CFeatures* lhs);
 
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();

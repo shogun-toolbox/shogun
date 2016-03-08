@@ -28,7 +28,7 @@
 #include <pthread.h>
 #endif
 
-using namespace shogun;
+using namespace distance;
 
 /** distance thread parameters */
 template <class T> struct D_THREAD_PARAM

@@ -16,7 +16,9 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/distance/Distance.h>
 
+using namespace distance;
 
 namespace shogun
 {
@@ -47,7 +49,7 @@ class CDistanceMachine : public CMachine
 		 *
 		 * @return distance
 		 */
-		CDistance* get_distance() const;
+		distance::CDistance* get_distance() const;
 
 		/**
 		 * get distance functions for lhs feature vectors
@@ -127,7 +129,7 @@ class CDistanceMachine : public CMachine
 
 	protected:
 		/** the distance */
-		CDistance* distance;
+		distance::CDistance* distance;
 };
 }
 #endif

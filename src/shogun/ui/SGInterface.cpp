@@ -41,6 +41,7 @@
 #include <ctype.h>
 
 using namespace shogun;
+using namespace distance;
 
 CSGInterface* interface=NULL;
 CSyntaxHighLight hilight;
@@ -1211,13 +1212,13 @@ CSGInterface::CSGInterface(bool print_copyright)
 	{
 		version->print_version();
 		SG_PRINT("( seeding random number generator with %u (seed size %d))\n",
-				CMath::get_seed(), RNG_SEED_SIZE);
+				 shogun::CMath::get_seed(), RNG_SEED_SIZE);
 #ifdef USE_LOGCACHE
 		SG_PRINT("initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
-				CMath::get_log_range(),CMath::get_log_accuracy(),sizeof(float64_t),
-				CMath::get_log_range()*CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
+				shogun::CMath::get_log_range(),shogun::CMath::get_log_accuracy(),sizeof(float64_t),
+				shogun::CMath::get_log_range()*shogun::CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
 #else
-		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range())
+		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", shogun::CMath::get_log_range())
 #endif
 	}
 
@@ -1255,7 +1256,7 @@ void CSGInterface::reset()
 	echo=true;
 }
 
-void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
+void CSGInterface::translate_arg(shogun::CSGInterface* source, shogun::CSGInterface* target)
 {
 	switch (source->get_argument_type())
 	{
@@ -3327,7 +3328,7 @@ CKernel* CSGInterface::create_kernel()
 }
 
 
-CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>* orig_feat)
+shogun::CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>* orig_feat)
 {
 	CFeatures* feat=orig_feat;
 
@@ -3376,9 +3377,9 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 	return feat;
 }
 
-CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* orig_feat)
+shogun::CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* orig_feat)
 {
-	CFeatures* feat=orig_feat;
+	shogun::CFeatures* feat=orig_feat;
 
 	if (m_nrhs==6)
 	{

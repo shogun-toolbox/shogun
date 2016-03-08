@@ -18,7 +18,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief template class DenseDistance */
 template <class ST> class CDenseDistance : public CDistance

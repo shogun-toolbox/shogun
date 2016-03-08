@@ -14,7 +14,7 @@
 #include <shogun/distance/CanberraMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CCanberraMetric::CCanberraMetric()
 : CDenseDistance<float64_t>()

@@ -18,7 +18,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief class MahalanobisDistance
  *

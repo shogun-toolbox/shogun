@@ -16,7 +16,9 @@
 #include <shogun/distance/DenseDistance.h>
 #include <shogun/lib/common.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 /** @brief class RealDistance */
 class CRealDistance : public CDenseDistance<float64_t>

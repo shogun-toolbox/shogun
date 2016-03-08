@@ -18,10 +18,12 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
 
+using namespace distance;
+
 namespace shogun
 {
 
-class CDistance;
+class distance::CDistance;
 /** @brief InverseMultiQuadricKernel
 *
 * \f[
@@ -40,7 +42,7 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, CDistance* dist);
+	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, distance::CDistance* dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -48,7 +50,7 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist);
+	CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coef, distance::CDistance* dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
@@ -93,7 +95,7 @@ protected:
 
 	/** distance to be used
 	 */
-	CDistance* distance;
+	distance::CDistance* distance;
 
 	/** theta parameter of kernel - coefficient
 	 */

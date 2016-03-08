@@ -14,7 +14,7 @@
 #include <shogun/distance/ManhattanMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CManhattanMetric::CManhattanMetric()
 : CDenseDistance<float64_t>()

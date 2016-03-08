@@ -14,7 +14,7 @@
 #include <shogun/distance/GeodesicMetric.h>
 #include <shogun/features/Features.h>
 
-using namespace shogun;
+using namespace distance;
 
 CGeodesicMetric::CGeodesicMetric() : CDenseDistance<float64_t>()
 {

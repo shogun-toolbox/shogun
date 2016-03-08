@@ -23,6 +23,8 @@
 #include <shogun/ui/GUIStructure.h>
 #include <shogun/ui/GUIConverter.h>
 
+using namespace distance;
+
 namespace shogun
 {
 /** Interface datatypes that shogun supports. Note that some interfaces like e.g.

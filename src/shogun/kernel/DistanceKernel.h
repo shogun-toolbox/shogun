@@ -17,9 +17,11 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
 
+using namespace distance;
+
 namespace shogun
 {
-	class CDistance;
+	class distance::CDistance;
 
 /** @brief The Distance kernel takes a distance as input.
  *
@@ -41,7 +43,7 @@ class CDistanceKernel: public CKernel
 		 * @param width width
 		 * @param dist distance
 		 */
-		CDistanceKernel(int32_t cache, float64_t width, CDistance* dist);
+		CDistanceKernel(int32_t cache, float64_t width, distance::CDistance* dist);
 
 		/** constructor
 		 *
@@ -51,7 +53,7 @@ class CDistanceKernel: public CKernel
 		 * @param dist distance
 		 */
 		CDistanceKernel(
-			CFeatures *l, CFeatures *r, float64_t width, CDistance* dist);
+			CFeatures *l, CFeatures *r, float64_t width, distance::CDistance* dist);
 
 		virtual ~CDistanceKernel();
 
@@ -122,7 +124,7 @@ class CDistanceKernel: public CKernel
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 		/** distance */
-		CDistance* distance;
+		distance::CDistance* distance;
 		/** width */
 		float64_t width;
 };

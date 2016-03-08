@@ -20,7 +20,9 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 	class CDistance;
 

@@ -17,7 +17,9 @@
 #include <shogun/distance/DenseDistance.h>
 #include <shogun/features/DenseFeatures.h>
 
-namespace shogun
+using namespace shogun;
+
+namespace distance
 {
 	template <class T> class CDenseFeatures;
 
