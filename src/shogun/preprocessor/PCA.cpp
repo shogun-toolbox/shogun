@@ -12,7 +12,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
@@ -296,17 +295,18 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
 			feature_matrix = feature_matrix.colwise()-data_mean;
 
-			feature_matrix.block(0,0,num_dim,num_vectors) =
-					transform_matrix.transpose()*feature_matrix;
+			feature_matrix.block(0,0,num_vectors,num_dim) =
+					feature_matrix.transpose()*transform_matrix;			
 
 			SG_INFO("Form matrix of target dimension")
-			for (int32_t col=0; col<num_vectors; col++)
+
+			for (int32_t col=0; col<num_dim; col++)
 			{
-				for (int32_t row=0; row<num_dim; row++)
-					m.matrix[col*num_dim+row] = feature_matrix(row,col);
-			}
-			m.num_rows = num_dim;
-			m.num_cols = num_vectors;
+				for (int32_t row=0; row<num_vectors; row++)
+					m.matrix[col*num_vectors+row] = feature_matrix(row,col);
+			}			
+			m.num_rows = num_vectors;
+			m.num_cols = num_dim;			
 		}
 
 		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(m);
@@ -314,16 +314,16 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	}
 	else
 	{
-		SGMatrix<float64_t> ret(num_dim, num_vectors);
-		Map<MatrixXd> ret_matrix(ret.matrix, num_dim, num_vectors);
+		SGMatrix<float64_t> ret(num_vectors, num_dim);
+		Map<MatrixXd> ret_matrix(ret.matrix, num_vectors, num_dim);
 		if (m.matrix)
 		{
 			SG_INFO("Preprocessing feature matrix\n")
 			Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
 			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
 			feature_matrix = feature_matrix.colwise()-data_mean;
-
-			ret_matrix = transform_matrix.transpose()*feature_matrix;
+			
+			ret_matrix = feature_matrix.transpose()*transform_matrix;
 		}
 		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(ret);
 		return ret;
@@ -382,4 +382,3 @@ float64_t CPCA::get_eigenvalue_zero_tolerance() const
 	return m_eigenvalue_zero_tolerance;
 }
 
-#endif // HAVE_EIGEN3
