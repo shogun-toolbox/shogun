@@ -34,13 +34,16 @@ class CDistanceMachine;
  * k closest examples belong to. Formally, kNN is described as
  *
  * \f[
- *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
+ *		y_{x} = \arg \max_{l} \sum_{i=1}^{k} I[y_{i} = l],
  * \f]
+ * 
+ * where \f$y_{m}\f$ denotes the label of the \f$m^{th}\f$ example, and the
+ * indicator function \f$I[a = b]\f$ equals 1 if a = b and zero otherwise.
  *
  * This class provides a capability to do weighted classfication using:
  *
  * \f[
- *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
+ *		y_{x} = \arg \max_{l} \sum_{i=1}^{k} I[y_{i} = l] q^{i},
  * \f]
  *
  * where \f$|q|<1\f$.
