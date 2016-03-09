@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/computation/job/IndependentJob.h>
 
 namespace shogun
@@ -87,5 +86,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // RATIONAL_APPROXIMATION_CGM_JOB_H_

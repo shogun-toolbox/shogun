@@ -10,7 +10,6 @@
 
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
@@ -152,4 +151,3 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	return embedding;
 }
 
-#endif /* HAVE_EIGEN3 */

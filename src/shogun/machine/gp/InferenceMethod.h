@@ -36,7 +36,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
@@ -490,5 +489,4 @@ protected:
 	bool m_gradient_update;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CINFERENCEMETHOD_H_ */

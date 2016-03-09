@@ -35,7 +35,6 @@
 #define __RBM_H__
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
@@ -463,5 +462,4 @@ protected:
 };
 
 }
-#endif
 #endif

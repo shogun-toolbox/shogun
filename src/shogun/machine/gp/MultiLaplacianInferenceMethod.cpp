@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
@@ -501,4 +500,3 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_posterior_mean()
 
 }
 
-#endif /* HAVE_EIGEN3 */

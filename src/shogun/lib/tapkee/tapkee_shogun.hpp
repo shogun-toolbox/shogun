@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
@@ -82,5 +81,4 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
 }
 
-#endif
 #endif

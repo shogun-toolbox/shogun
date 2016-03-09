@@ -43,7 +43,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
@@ -335,5 +334,4 @@ private:
 	SGVector<float64_t> get_log_probability_derivative3_f(SGMatrix<float64_t> func) const;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _SOFTMAXLIKELIHOOD_H_ */

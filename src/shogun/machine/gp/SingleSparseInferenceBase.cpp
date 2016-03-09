@@ -36,7 +36,6 @@
 #include <shogun/features/DenseFeatures.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -327,4 +326,3 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 #endif
 }
 
-#endif /* HAVE_EIGEN3 */

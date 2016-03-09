@@ -3,10 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modshogun	import RealFeatures
-from modshogun	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM, DirectorStructuredModel
-from modshogun	import BMRM, PPBMRM, P3BMRM, ResultSet, RealVector
-from modshogun	import StructuredAccuracy
+from modshogun import RealFeatures
+from modshogun import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM, DirectorStructuredModel
+from modshogun import BMRM, PPBMRM, P3BMRM, ResultSet, RealVector
+from modshogun import StructuredAccuracy
 
 class MulticlassStructuredModel(DirectorStructuredModel):
 	def __init__(self,features,labels):
@@ -142,7 +142,7 @@ y = (X2[1,:]).reshape(cnt, cnt)
 z = Z.reshape(cnt, cnt)
 
 plt.subplot(223)
-plt.pcolor(x, y, z, shading='interp')
+plt.pcolor(x, y, z)
 plt.contour(x, y, z, linewidths=1, colors='black', hold=True)
 plt.plot(X[:,0], X[:,1], 'yo')
 plt.axis('tight')

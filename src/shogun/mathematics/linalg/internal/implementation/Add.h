@@ -36,9 +36,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -186,7 +184,6 @@ struct add<Backend::NATIVE, Matrix>
 	}
 };
 
-#ifdef HAVE_EIGEN3
 
 /**
  * @brief Partial specialization of add for the Eigen3 backend
@@ -281,7 +278,6 @@ struct add<Backend::EIGEN3, Matrix>
 		C_eig=alpha*A_eig+beta*B_eig;
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

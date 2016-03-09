@@ -39,7 +39,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
@@ -149,5 +148,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _LOGITDVGLIKELIHOOD_H_ */

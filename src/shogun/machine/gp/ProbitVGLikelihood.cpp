@@ -39,7 +39,6 @@
 
 #include <shogun/machine/gp/ProbitVGLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/ProbitLikelihood.h>
 
 using namespace Eigen;
@@ -69,4 +68,3 @@ void CProbitVGLikelihood::init()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

@@ -13,7 +13,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/multiclass/MCLDA.h>
 #include <shogun/machine/NativeMulticlassMachine.h>
@@ -423,4 +422,3 @@ bool CMCLDA::train_machine(CFeatures* data)
 	return true;
 }
 
-#endif /* HAVE_EIGEN3 */

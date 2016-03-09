@@ -9,7 +9,6 @@
 
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
-#ifdef HAVE_EIGEN3
 
 #define CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION shogun::CMath::random()
 #define CUSTOM_UNIFORM_RANDOM_FUNCTION shogun::CMath::random(static_cast<tapkee::ScalarType>(0),static_cast<tapkee::ScalarType>(1))
@@ -199,4 +198,3 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	return new CDenseFeatures<float64_t>(feature_matrix);
 }
 
-#endif

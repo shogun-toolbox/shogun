@@ -30,10 +30,8 @@
 #include <shogun/mathematics/lapack.h>
 #endif //HAVE_LAPACK
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 using namespace Eigen;
-#endif //HAVE_EIGEN3
 
 using namespace shogun;
 
@@ -2116,7 +2114,6 @@ float64_t CStatistics::dlgamma(float64_t x)
 	return result;
 }
 
-#ifdef HAVE_EIGEN3
 float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 {
 	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
@@ -2331,7 +2328,6 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	return S;
 }
 
-#endif //HAVE_EIGEN3
 
 CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
 {

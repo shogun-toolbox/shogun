@@ -82,5 +82,4 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 
 } // End of namespace tapkee_internal
 } // End of namespace tapkee
-
 #endif

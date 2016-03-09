@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/Time.h>
@@ -202,4 +201,3 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 }
 
 }
-#endif // HAVE_EIGEN3

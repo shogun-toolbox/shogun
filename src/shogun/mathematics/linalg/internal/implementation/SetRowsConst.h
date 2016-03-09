@@ -35,9 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -69,7 +67,6 @@ struct set_rows_const
 	static void compute(Matrix A, Vector v);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of set_rows_const for the Eigen3 backend */
 template <class Matrix, class Vector>
@@ -95,7 +92,6 @@ struct set_rows_const<Backend::EIGEN3, Matrix, Vector>
 		A_eig.colwise() = v_eig;
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

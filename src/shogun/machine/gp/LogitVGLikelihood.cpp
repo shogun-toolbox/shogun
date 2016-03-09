@@ -39,7 +39,6 @@
 
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/LogitLikelihood.h>
 
 using namespace Eigen;
@@ -69,4 +68,3 @@ void CLogitVGLikelihood::init()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

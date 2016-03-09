@@ -5,8 +5,6 @@ from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect,ax
 from numpy import concatenate
 from numpy.random import randn
 from modshogun import *
-from modshogun import *
-from modshogun import *
 import util
 
 util.set_title('Multiple SVMS')
@@ -40,7 +38,7 @@ for i in range(num_svms):
 	x, y, z=util.compute_output_plot_isolines(
 		currentSVM, kernelList[i], trainfeatList[i])
 	subplot(num_svms/2, 2, i+1)
-	pcolor(x, y, z, shading='interp')
+	pcolor(x, y, z)
 	contour(x, y, z, linewidths=1, colors='black', hold=True)
 	scatter(traindatList[i][0,:],traindatList[i][1,:], s=20, marker='o', c=trainlabsList[i], hold=True)
 	axis('tight')

@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
@@ -249,4 +248,3 @@ void CKLApproxDiagonalInferenceMethod::update_InvK_Sigma()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

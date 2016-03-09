@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/statistics/KernelIndependenceTest.h>
 
 namespace shogun
@@ -223,4 +222,3 @@ private:
 }
 
 #endif // NOCCO_H_
-#endif // HAVE_EIGEN3

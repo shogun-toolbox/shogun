@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/NumericalVGLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -286,4 +285,3 @@ void CNumericalVGLikelihood::precompute()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

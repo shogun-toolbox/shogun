@@ -16,7 +16,6 @@
 
 /* Log-det framework */
 
-#ifdef HAVE_EIGEN3
 /* Trace samplers */
 %rename(TraceSampler) CTraceSampler;
 %rename(NormalSampler) CNormalSampler;
@@ -125,7 +124,6 @@ namespace shogun
 %rename(LanczosEigenSolver) CLanczosEigenSolver;
 
 %rename(LogDetEstimator) CLogDetEstimator;
-#endif // HAVE_EIGEN3
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/mathematics/Math.h>

@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/machine/gp/InferenceMethod.h>
@@ -103,5 +102,4 @@ protected:
 	}
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _GAUSSIANPROCESSREGRESSION_H_ */

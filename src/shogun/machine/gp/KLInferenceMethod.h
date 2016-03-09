@@ -43,7 +43,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
@@ -486,5 +485,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLINFERENCEMETHOD_H_ */

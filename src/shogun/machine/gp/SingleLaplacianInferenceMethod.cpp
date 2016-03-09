@@ -15,7 +15,6 @@
 
 #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -604,4 +603,3 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
 
 }
 
-#endif /* HAVE_EIGEN3 */

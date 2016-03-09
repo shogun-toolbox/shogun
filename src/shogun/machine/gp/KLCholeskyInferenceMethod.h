@@ -43,7 +43,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
 
 namespace shogun
@@ -169,5 +168,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLCHOLESKYINFERENCEMETHOD_H_ */
