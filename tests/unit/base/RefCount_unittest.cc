@@ -17,7 +17,7 @@ void * stress_test_helper(void * args)
 {
 	RefCount * rc = (RefCount *) args;
 
-	for (index_t i = 0; i < 1000000; i++)
+	for (index_t i = 0; i < 10; i++)
 	{
 		rc->ref();
 		rc->ref();
@@ -35,14 +35,14 @@ TEST(RefCount, stress_test)
 	rc->ref();
 	EXPECT_EQ(rc->ref_count(), 1);
 
-	pthread_t * threads = new pthread_t[10];
+	pthread_t * threads = new pthread_t[5];
 
-	for (index_t i = 0; i < 10; i++)
+	for (index_t i = 0; i < 5; i++)
 	{
 		pthread_create(&threads[i], NULL, stress_test_helper, static_cast<void *>(rc));
 	}
 
-	for (index_t i = 0; i < 10; i++)
+	for (index_t i = 0; i < 5; i++)
 	{
 		pthread_join(threads[i], NULL);
 	}
