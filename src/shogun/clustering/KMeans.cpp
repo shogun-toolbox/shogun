@@ -80,6 +80,7 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 	/* initialise the cluster centroids randomly among all data */
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	REQUIRE(lhs!=NULL, "lhs Pointer should not be NULL");
 
 	SGVector<int32_t> random_inds=SGVector<int32_t>(XSize);
 	SGVector<int32_t>::range_fill_vector(random_inds, XSize, 0);
@@ -88,13 +89,13 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 	for (int32_t i=0; i<k; i++)
 	{
 		const int32_t Cl=random_inds[i];
-		weights_set[Cl]+=1.0;
+		weights_set[i]+=1.0;
 		ClList[Cl]=Cl;
 
 		SGVector<float64_t> vec=lhs->get_feature_vector(Cl);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.operator()(j,i) += vec[j];
+			mus(j,i) += vec[j];
 
 		lhs->free_feature_vector(vec, Cl);
 	}
@@ -149,7 +150,7 @@ void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 		SGVector<float64_t> vec=lhs->get_feature_vector(i);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.operator()(j,Cl) += vec[j];
+			mus(j,Cl) += vec[j];
 
 		lhs->free_feature_vector(vec, i);
 	}
@@ -163,7 +164,7 @@ void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 		if (weights_set[i]!=0.0)
 		{
 			for (int32_t j=0; j<dimensions; j++)
-				mus.operator()(j,i) /= weights_set[i];
+				mus(j,i) /= weights_set[i];
 		}
 	}
 
@@ -189,8 +190,8 @@ void CKMeans::compute_cluster_variances()
 				for (l=0; l<dimensions; l++)
 				{
 					dist+=CMath::sq(
-							mus.operator()(l,i)
-									-mus.operator()(l,j));
+							mus(l,i)
+									-mus(l,j));
 				}
 
 				if (first_round)
