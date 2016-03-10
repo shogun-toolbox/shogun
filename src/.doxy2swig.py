@@ -29,6 +29,7 @@ output will be written (the file will be clobbered).
 ######################################################################
 
 from xml.dom import minidom
+import sys
 import re
 import textwrap
 import sys
@@ -387,7 +388,10 @@ class Doxy2SWIG:
         o = my_open_write(fname)
         try:
             data = self.pieces if self.multi else self.clean_pieces(self.pieces)
-            o.write(str("".join(data).encode("UTF-8")))
+            if sys.version_info >= (3, 0):
+                o.write("".join(data))
+            else:
+                o.write(u"".join(data).encode('utf-8'))
         finally:
             o.close()
 
