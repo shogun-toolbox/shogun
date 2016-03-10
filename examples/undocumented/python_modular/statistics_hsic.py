@@ -10,7 +10,7 @@
 import numpy as np
 from math import pi
 
-parameter_list = [[250,3,3]]
+parameter_list = [[150,3,3]]
 
 def statistics_hsic (n, difference, angle):
 	from modshogun import RealFeatures

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-parameter_list=[[100, 250, 10, 2]]
+parameter_list=[[50, 125, 10, 2]]
 
 def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_noise_features):
 	from modshogun import RealMatrixFeatures, TwoStateModel, DualLibQPBMSOSVM, StructuredAccuracy
