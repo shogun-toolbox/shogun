@@ -45,10 +45,14 @@
 #ifndef SWIG // SWIG should skip this part
 namespace viennacl
 {
+#if VIENNACL_VERSION >= 10600
+	template <class, class, class> class matrix_base;
+#else
 	template <class, class, class, class> class matrix_base;
+#endif
 	template <class> class const_entry_proxy;
 	template <class> class entry_proxy;
-	class column_major;
+	struct column_major;
 
 	namespace backend
 	{
@@ -79,8 +83,11 @@ template <class> class SGMatrix;
  */
 template <class T> class CGPUMatrix
 {
-
+#if VIENNACL_VERSION >= 10600
+	typedef viennacl::matrix_base<T, std::size_t, std::ptrdiff_t> VCLMatrixBase;
+#else
 	typedef viennacl::matrix_base<T, viennacl::column_major, std::size_t, std::ptrdiff_t> VCLMatrixBase;
+#endif
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 
 	typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;

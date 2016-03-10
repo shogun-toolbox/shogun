@@ -21,6 +21,7 @@
 
 #cmakedefine HAVE_ARPACK 1
 #cmakedefine HAVE_VIENNACL 1
+#cmakedefine VIENNACL_VERSION @VIENNACL_VERSION@
 #cmakedefine HAVE_OPENCV 1
 #cmakedefine HAVE_CATLAS 1
 #cmakedefine HAVE_ATLAS 1

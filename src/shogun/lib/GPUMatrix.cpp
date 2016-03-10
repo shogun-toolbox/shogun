@@ -42,6 +42,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGMatrix.h>
 
+#include <type_traits>
+
 namespace shogun
 {
 
@@ -131,7 +133,11 @@ CGPUMatrix<T>::operator SGMatrix<T>() const
 template <class T>
 typename CGPUMatrix<T>::VCLMatrixBase CGPUMatrix<T>::vcl_matrix()
 {
-	return VCLMatrixBase(*matrix,num_rows, offset, 1, num_rows, num_cols, 0, 1, num_cols);
+#if VIENNACL_VERSION >= 10600
+	return VCLMatrixBase(*matrix, num_rows, offset, 1, num_rows, num_cols, 0, 1, num_cols, false);
+#else
+	return VCLMatrixBase(*matrix, num_rows, offset, 1, num_rows, num_cols, 0, 1, num_cols);
+#endif
 }
 
 template <class T>
@@ -185,14 +191,17 @@ void CGPUMatrix<T>::init()
 	offset = 0;
 }
 
+template<typename T> struct dummy {};
+template<typename T> class CGPUMatrix<dummy<T> > {};
+
 template class CGPUMatrix<char>;
 template class CGPUMatrix<uint8_t>;
 template class CGPUMatrix<int16_t>;
 template class CGPUMatrix<uint16_t>;
 template class CGPUMatrix<int32_t>;
 template class CGPUMatrix<uint32_t>;
-template class CGPUMatrix<int64_t>;
-template class CGPUMatrix<uint64_t>;
+template class CGPUMatrix<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
+template class CGPUMatrix<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
 template class CGPUMatrix<float32_t>;
 template class CGPUMatrix<float64_t>;
 }
