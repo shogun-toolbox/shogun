@@ -12,26 +12,37 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
-CLinearMachine::CLinearMachine()
-: CMachine(), bias(0), features(NULL)
+CLinearMachine::CLinearMachine(): CMachine()
 {
 	init();
 }
 
-CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(),
-	bias(0), features(NULL)
+CLinearMachine::CLinearMachine(bool compute_bias): CMachine()
 {
+	init();
+
+	m_compute_bias = compute_bias;
+}
+
+CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
+{
+	init();
+
 	set_w(machine->get_w().clone());
 	set_bias(machine->get_bias());
-
-	init();
 }
 
 void CLinearMachine::init()
 {
+	bias = 0;
+	features = NULL;
+	m_compute_bias = true;
+
 	SG_ADD(&w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &features, "features", "Feature object.",
@@ -103,6 +114,16 @@ float64_t CLinearMachine::get_bias()
 	return bias;
 }
 
+void CLinearMachine::set_compute_bias(bool compute_bias)
+{
+	m_compute_bias = compute_bias;
+}
+
+bool CLinearMachine::get_compute_bias()
+{
+	return m_compute_bias;
+}
+
 void CLinearMachine::set_features(CDotFeatures* feat)
 {
 	SG_REF(feat);
@@ -120,3 +141,51 @@ void CLinearMachine::store_model_features()
 {
 }
 
+void CLinearMachine::compute_bias(CFeatures* data)
+{
+    REQUIRE(m_labels,"No labels set\n");
+
+    if (!data)
+    	data=features;
+
+    REQUIRE(data,"No features provided and no featured previously set\n");
+
+    REQUIRE(m_labels->get_num_labels() == data->get_num_vectors(),
+    	"Number of training vectors (%d) does not match number of labels (%d)\n",
+    	m_labels->get_num_labels(), data->get_num_vectors());
+
+    SGVector<float64_t> outputs = apply_get_outputs(data);
+
+    int32_t num_vec=data->get_num_vectors();
+
+    Map<VectorXd> eigen_outputs(outputs,num_vec);
+    Map<VectorXd> eigen_labels(((CRegressionLabels*)m_labels)->get_labels(),num_vec);
+
+     set_bias((eigen_labels - eigen_outputs).mean()) ;
+}
+
+
+bool CLinearMachine::train(CFeatures* data)
+{
+    /* not allowed to train on locked data */
+    if (m_data_locked)
+    {
+    	SG_ERROR("train data_lock() was called, only train_locked() is"
+    		" possible. Call data_unlock if you want to call train()\n",
+    		get_name());
+    }
+
+    if (train_require_labels())
+    {
+    	REQUIRE(m_labels,"No labels given",this->get_name());
+
+    	m_labels->ensure_valid(get_name());
+    }
+
+    bool result = train_machine(data);
+
+    if(m_compute_bias)
+    	compute_bias(data);
+
+    return result;
+}
