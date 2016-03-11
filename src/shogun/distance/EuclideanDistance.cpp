@@ -11,7 +11,10 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclideanDistance.h>
+
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
+#endif
 
 using namespace shogun;
 
@@ -79,6 +82,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 
 void CEuclideanDistance::precompute_rhs_squared_norms()
 {
+#ifdef HAVE_LINALG_LIB
 	SGVector<float64_t>rhs_sq=SGVector<float64_t>(rhs->get_num_vectors());
 	
 	for(int32_t idx_i =0; idx_i<rhs->get_num_vectors(); idx_i++)
@@ -89,10 +93,13 @@ void CEuclideanDistance::precompute_rhs_squared_norms()
 	}
 
 	m_rhs_squared_norms=rhs_sq;
+#endif
+	
 }
 
 void CEuclideanDistance::precompute_lhs_squared_norms()
 {
+#ifdef HAVE_LINALG_LIB
 	SGVector<float64_t>lhs_sq=SGVector<float64_t>(lhs->get_num_vectors());
 
 	for(int32_t idx_i=0; idx_i<lhs->get_num_vectors(); idx_i++)
@@ -103,6 +110,7 @@ void CEuclideanDistance::precompute_lhs_squared_norms()
 	}
 
 	m_lhs_squared_norms=lhs_sq;
+#endif
 }
 
 void CEuclideanDistance::reset_squared_norms()
@@ -116,8 +124,8 @@ void CEuclideanDistance::init()
 	disable_sqrt=false;
 	reset_squared_norms();
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
-	m_parameters->add(&m_rhs_squared_norms, "m_rhs_squared_norms", "squared norms from features of right hand side");	
-	m_parameters->add(&m_lhs_squared_norms, "m_lhs_squared_norms", "squared norms from features of left hand side");	
+	m_parameters->add(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side");	
+	m_parameters->add(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side");	
 }
 
 float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
