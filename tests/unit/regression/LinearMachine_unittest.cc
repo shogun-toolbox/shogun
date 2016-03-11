@@ -30,7 +30,6 @@
  */
 #include <shogun/lib/config.h>
 
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
@@ -42,6 +41,8 @@
 
 using namespace shogun;
 using namespace Eigen;
+
+#ifdef HAVE_LAPACK
 
 TEST(LinearMachine,apply_train)
 {
@@ -117,3 +118,5 @@ TEST(LinearMachine,compute_bias)
 
 	EXPECT_LE(CMath::abs(output_bias - expected_bias), 10E-15);
 }
+
+#endif /* HAVE_LAPACK */
