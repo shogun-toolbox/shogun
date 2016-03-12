@@ -73,17 +73,16 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 			}
 		}
 		rhs_mus->copy_feature_matrix(mus);
+
 		for (int32_t i=0; i<XSize; i++)
 		{
-			/* ks=ceil(rand(1,XSize)*XSize) ; */
-			const int32_t Pat=CMath::random(0, XSize-1);
-			const int32_t ClList_Pat=ClList[Pat];
+			const int32_t ClList_i=ClList[i];
 			int32_t imini, j;
 			float64_t mini;
 
 			/* compute the distance of this point to all centers */
 			for(int32_t idx_k=0;idx_k<k;idx_k++)
-				dists[idx_k]=distance->distance(Pat,idx_k);
+				dists[idx_k]=distance->distance(i,idx_k);
 
 			/* [mini,imini]=min(dists(:,i)) ; */
 			imini=0 ; mini=dists[0];
@@ -94,49 +93,14 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 					imini=j;
 				}
 
-			if (imini!=ClList_Pat)
+			if (imini!=ClList_i)
 			{
 				changed++;
-
-				/* weights_set(imini) = weights_set(imini) + 1.0 ; */
-				weights_set[imini]+= 1.0;
-				/* weights_set(j)     = weights_set(j)     - 1.0 ; */
-				weights_set[ClList_Pat]-= 1.0;
-
-				vec=lhs->get_feature_vector(Pat, vlen, vfree);
-
-				for (j=0; j<dimensions; j++)
-				{
-					mus.matrix[imini*dimensions+j]-=
-						(vec[j]-mus.matrix[imini*dimensions+j]) / weights_set[imini];
-				}
-
-				lhs->free_feature_vector(vec, Pat, vfree);
-
-				/* mu_new = mu_old - (x - mu_old)/(n-1) */
-				/* if weights_set(j)~=0 */
-				if (weights_set[ClList_Pat]!=0.0)
-				{
-					vec=lhs->get_feature_vector(Pat, vlen, vfree);
-
-					for (j=0; j<dimensions; j++)
-					{
-						mus.matrix[ClList_Pat*dimensions+j]-=
-								(vec[j]-mus.matrix[ClList_Pat*dimensions+j]) / weights_set[ClList_Pat];
-					}
-					lhs->free_feature_vector(vec, Pat, vfree);
-				}
-				else
-				{
-					/*  mus(:,j)=zeros(dimensions,1) ; */
-					for (j=0; j<dimensions; j++)
-						mus.matrix[ClList_Pat*dimensions+j]=0;
-				}
-
-				/* ClList(i)= imini ; */
-				ClList[Pat] = imini;
+				ClList[i] = imini;
 			}
 		}
+		if (fixed_centers)
+			break;
 	}
 	distance->replace_rhs(rhs_cache);
 	delete rhs_mus;
