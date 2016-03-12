@@ -780,16 +780,15 @@ ELSE ()
 ENDIF ()
 
 # Linear algebra default global backend setups
-if( NOT LinAlgBackend )
-  set( LinAlgBackend EIGEN3 CACHE STRING
+if( NOT LINALG_DEFAULT_BACKEND )
+  set( LINALG_DEFAULT_BACKEND EIGEN3 CACHE STRING
        "Set global linear algebra backend library for all modules: EIGEN3, VIENNACL"
        FORCE )
 endif()
-
-IF (LinAlgBackend STREQUAL "EIGEN3")
+IF (LINALG_DEFAULT_BACKEND STREQUAL "EIGEN3")
 	SET(USE_EIGEN3 1)
 	MESSAGE("-- Eigen3 set as default global linear algebra backend library")
-ELSEIF (LinAlgBackend STREQUAL "VIENNACL")
+ELSEIF (LINALG_DEFAULT_BACKEND STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL 1)
@@ -802,16 +801,15 @@ ENDIF ()
 # Linear algebra default module specific backend setup
 
 # Core module
-if( NOT CoreLib )
-  set( CoreLib EIGEN3 CACHE STRING
+if( NOT LINALG_CORE_LIB )
+  set( LINALG_CORE_LIB EIGEN3 CACHE STRING
        "Set linear algebra backend library for core module: EIGEN3, VIENNACL"
        FORCE )
 endif()
-OPTION (CoreLib )
-IF (CoreLib STREQUAL "EIGEN3")
+IF (LINALG_CORE_LIB STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_CORE 1)
 	MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
-ELSEIF (CoreLib STREQUAL "VIENNACL")
+ELSEIF (LINALG_CORE_LIB STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_CORE 1)
@@ -822,15 +820,15 @@ ELSEIF (CoreLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Reduction module
-if( NOT ReduxLib )
-  set( ReduxLib EIGEN3 CACHE STRING
+if( NOT LINALG_REDUX_LIB )
+  set( LINALG_REDUX_LIB EIGEN3 CACHE STRING
        "Set linear algebra backend library for reduction module: EIGEN3, VIENNACL"
        FORCE )
 endif()
-IF (ReduxLib STREQUAL "EIGEN3")
+IF (LINALG_REDUX_LIB STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_REDUX 1)
 	MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
-ELSEIF (ReduxLib STREQUAL "VIENNACL")
+ELSEIF (LINALG_REDUX_LIB STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_REDUX 1)
@@ -841,15 +839,15 @@ ELSEIF (ReduxLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Linear solver module
-if( NOT LinSolverLib )
-  set( LinSolverLib EIGEN3 CACHE STRING
+if( NOT LINALG_LINEAR_SOLVER_LIB )
+  set( LINALG_SOLVER_LIB EIGEN3 CACHE STRING
        "Set linear algebra backend library for linear solver module: EIGEN3, VIENNACL"
        FORCE )
 endif()
-IF (LinSolverLib STREQUAL "EIGEN3")
+IF (LINALG_LINEAR_SOLVER_LIB STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_LINSLV 1)
 	MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
-ELSEIF (LinSolverLib STREQUAL "VIENNACL")
+ELSEIF (LINALG_LINEAR_SOLVER_LIB STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_LINSLV 1)
@@ -860,15 +858,15 @@ ELSEIF (LinSolverLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Eigen solver module
-if( NOT LinSolverLib )
-  set( LinSolverLib EIGEN3 CACHE STRING
+if( NOT LINALG_EIGENSOLVER_LIB )
+  set( LINALG_EIGENSOLVER_LIB EIGEN3 CACHE STRING
        "Set linear algebra backend library for eigen solver module: EIGEN3, VIENNACL"
        FORCE )
 endif()
-IF (EigenSolver STREQUAL "EIGEN3")
+IF (LINALG_EIGENSOLVER_LIB STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_EIGSLV 1)
 	MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
-ELSEIF (EigenSolver STREQUAL "VIENNACL")
+ELSEIF (LINALG_EIGENSOLVER_LIB STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_EIGSLV 1)
