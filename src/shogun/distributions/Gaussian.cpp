@@ -15,6 +15,7 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 
 using namespace shogun;
 
@@ -191,8 +192,9 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 			for (int32_t j=0; j<num_dim*num_dim; j++)
 				cov_sum[j]/=alpha_k_sum;
 
+			const CEigenSolver* ces;
 			float64_t* d0;
-			d0=SGMatrix<float64_t>::compute_eigenvectors(cov_sum, num_dim, num_dim);
+			d0=ces->compute_eigenvectors(cov_sum, num_dim, num_dim);
 
 			set_d(SGVector<float64_t>(d0, num_dim));
 			set_u(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
@@ -340,7 +342,8 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 			m_u=SGMatrix<float64_t>(cov.num_rows,cov.num_rows);
 			memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
 
-			m_d.vector=SGMatrix<float64_t>::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
+			const CEigenSolver* ces;
+			m_d.vector=ces->compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
 			m_d.vlen=cov.num_rows;
 			m_u.num_rows=cov.num_rows;
 			m_u.num_cols=cov.num_rows;

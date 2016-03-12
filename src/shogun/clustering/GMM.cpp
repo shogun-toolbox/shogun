@@ -19,6 +19,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/KNN.h>
+#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
 
 #include <vector>
 
@@ -404,7 +405,8 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		SGMatrix<float64_t> c2=components[2]->get_cov();
 		SGVector<float64_t>::add(c1.matrix, alpha1, c1.matrix, alpha2, c2.matrix, dim_n*dim_n);
 
-		components[1]->set_d(SGVector<float64_t>(SGMatrix<float64_t>::compute_eigenvectors(c1.matrix, dim_n, dim_n), dim_n));
+		const CEigenSolver* ces;
+		components[1]->set_d(SGVector<float64_t>(ces->compute_eigenvectors(c1.matrix, dim_n, dim_n), dim_n));
 		components[1]->set_u(c1);
 
 		float64_t new_d=0;
@@ -596,8 +598,9 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 				for (int32_t j=0; j<num_dim*num_dim; j++)
 					cov_sum[j]/=alpha_sum;
 
+				const CEigenSolver* ces;
 				float64_t* d0;
-				d0=SGMatrix<float64_t>::compute_eigenvectors(cov_sum, num_dim, num_dim);
+				d0=ces->compute_eigenvectors(cov_sum, num_dim, num_dim);
 				for (int32_t j=0; j<num_dim; j++)
 					d0[j]=CMath::max(min_cov, d0[j]);
 

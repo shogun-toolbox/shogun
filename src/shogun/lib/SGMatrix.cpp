@@ -887,56 +887,6 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 	SG_FREE(ipiv);
 }
 
-template <class T>
-SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
-{
-	if (matrix.num_rows!=matrix.num_cols)
-	{
-		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
-				" rows and columns are not equal!\n");
-	}
-
-	/* use reference counting for SGVector */
-	SGVector<float64_t> result(NULL, 0, true);
-	result.vlen=matrix.num_rows;
-	result.vector=compute_eigenvectors(matrix.matrix, matrix.num_rows,
-			matrix.num_rows);
-	return result;
-}
-
-template <class T>
-double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
-{
-	ASSERT(n == m)
-
-	char V='V';
-	char U='U';
-	int info;
-	int ord=n;
-	int lda=n;
-	double* eigenvalues=SG_CALLOC(float64_t, n+1);
-
-	// lapack sym matrix eigenvalues+vectors
-	wrap_dsyev(V, U,  ord, matrix, lda,
-			eigenvalues, &info);
-
-	if (info!=0)
-		SG_SERROR("DSYEV failed with code %d\n", info)
-
-	return eigenvalues;
-}
-
-template <class T>
-void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues, double*& eigenvectors,
-                                           int n, int il, int iu)
-{
-	eigenvalues = SG_MALLOC(double, n);
-	eigenvectors = SG_MALLOC(double, (iu-il+1)*n);
-	int status = 0;
-	wrap_dsyevr('V','U',n,matrix_,n,il,iu,eigenvalues,eigenvectors,&status);
-	ASSERT(status==0)
-}
-
 #endif //HAVE_LAPACK
 
 template <class T>
