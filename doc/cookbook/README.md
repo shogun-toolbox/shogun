@@ -27,6 +27,7 @@ To add an entry, only two files are needed (plus a test):
  * Keep the example *specific*. Only talk about the particular algorithm and its interface. General concepts (for example 'supervised learning') should go to overview pages.
  * Keep the example *local*. Only show code snippets that illustrate API usage, avoid showing the full listing.
  * Let the *code* speak for itself. Don't put useless statements that are clear from the code. Don't say things like "we call the `train` method", but rather "we train the model via". This way the `.rst` file is also invariant to API changes and we only need to update the `.sg` file.
+ * *Think* about which interface you want to show. I.e. when illustrating `KNN`, use `apply_multiclass` rather than just `apply`. The former gives `CMulticlassLabels` while the latter only gives `CLabels`, which is a problem in non-typesafe languages where we can't cast in a simple way.
  
 ## Some useful tips
 
