@@ -30,7 +30,7 @@ Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` cla
 
 .. sgexample:: knn.sg:create_instance
 
-Then we run the train KNN algorithm and apply it to test data, which gives :sgclass:`CMulticlassLabels`.
+Then we run the train KNN algorithm and apply it to test data, which here gives :sgclass:`CMulticlassLabels`.
 
 .. sgexample:: knn.sg:train_and_apply
 
