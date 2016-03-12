@@ -1,0 +1,38 @@
+CSVFile f_feats_train("../../data/regression_1d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_instance]
+Real tau = 0.001
+LinearRidgeRegression lrr(tau, features_train, labels_train)
+#![create_instance]
+
+#![train_and_apply]
+lrr.train()
+RegressionLabels labels_predict = lrr.apply_regression(features_test)
+Real bias = lrr.get_bias()
+#![train_and_apply]
+
+#[!disable_bias]
+lrr.set_compute_bias(False)
+#[!disable_bias]
+
+#[!set_bias_manually]
+lrr.set_bias(bias)
+#[!set_bias_manually]
+
+#![evaluate_error]
+MeanSquaredError eval()
+Real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()
