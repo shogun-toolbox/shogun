@@ -1,12 +1,15 @@
 2016-02-17 Björn Esser <me@besser82.io>
 
 	* SHOGUN Release version 4.2.0 (libshogun 17.2, data 0.11, parameter 1)
+	* Features:
+	    - Add new Shogun cookbook [Heiko Strathmann, Sergey Lisitsyn]
 	* Bugfixes:
 		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 		- Make Java and CSharp install-dir configurable [Björn Esser].
 		- Autogenerate modshogun.rb with correct module-suffix [Björn Esser].
 	* Cleanup, efficiency updates, and API Changes:
-	    - Make Eigen3 a hard requirement. Bundle if not found on system.
+	    - Make Eigen3 a hard requirement. Bundle if not found on system. [Heiko Strathmann]
+	    - Add meta examples to test build and integration test [Heiko Strathmann]
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
