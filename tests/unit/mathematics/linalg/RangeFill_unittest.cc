@@ -77,4 +77,5 @@ TEST(RangeFillArray, native_backend)
 
 }
 
+
 #endif // defined(HAVE_LINALG_LIB)
