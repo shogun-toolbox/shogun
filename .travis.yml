@@ -21,43 +21,43 @@ matrix:
       python: "2.7_with_system_site_packages"
       language: python
       env:
-        - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       language: ruby
       env:
-        - CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       language: java
       env:
-        - CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DCSharpModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DCSharpModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: gcc
       services: docker
       env:
-        - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
 before_install:

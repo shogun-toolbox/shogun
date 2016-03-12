@@ -1,0 +1,61 @@
+{
+    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program$testing\nexit_shogun();\nreturn 0;\n}\n",
+    "Dependencies": {
+        "AllClassDependencies": "$classlist",
+        "AllDependencies": "$allClassDependencies",
+        "DependencyListSeparator": "\n",
+        "DependencyListElementClass": "#include <$include>"
+    },
+    "Statement": "$statement;\n",
+    "Comment": "//$comment\n",
+    "Init": {
+        "Construct": "auto $name = some<C$type>($arguments)",
+        "Copy": "auto $name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "RealFeatures": "DenseFeatures<float64_t>",
+        "Default": "$type",
+        "bool": "bool",
+        "string": "char*",
+        "real": "float64_t",
+        "BoolVector": "SGVector<bool>",
+        "CharVector": "SGVector<char>",
+        "ByteVector": "SGVector<uint8_t>",
+        "WordVector": "SGVector<uint16_t>",
+        "ShortVector": "SGVector<int16_t>",
+        "IntVector": "SGVector<int32_t>",
+        "LongIntVector": "SGVector<int64_t>",
+        "ULongIntVector": "SGVector<uint64_t>",
+        "ShortRealVector": "SGVector<float32_t>",
+        "RealVector": "SGVector<float64_t>",
+        "LongRealVector": "SGVector<floatmax_t>",
+        "ComplexVector": "SGVector<complex128_t>",
+        "BoolMatrix": "SGMatrix<bool>",
+        "CharMatrix": "SGMatrix<char>",
+        "ByteMatrix": "SGMatrix<uint8_t>",
+        "WordMatrix": "SGMatrix<uint16_t>",
+        "ShortMatrix": "SGMatrix<int16_t>",
+        "IntMatrix": "SGMatrix<int32_t>",
+        "LongIntMatrix": "SGMatrix<int64_t>",
+        "ULongIntMatrix": "SGMatrix<uint64_t>",
+        "ShortRealMatrix": "SGMatrix<float32_t>",
+        "RealMatrix": "SGMatrix<float64_t>",
+        "LongRealMatrix": "SGMatrix<floatmax_t>",
+        "ComplexMatrix": "SGMatrix<complex128_t>"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object->$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "SG_SPRINT($expr)",
+    "OutputDirectoryName": "cpp",
+    "FileExtension": ".cpp"
+}

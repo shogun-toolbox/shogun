@@ -304,7 +304,8 @@ STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERS
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
-OPTION(GENERATE_EXAMPLES "Generate Meta-Language Examples" OFF)
+OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
+# note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
 IF(COMPILE_MODULAR_INTERFACE)
@@ -660,6 +661,28 @@ ENDIF()
 
 # detect PYTHON
 FIND_PACKAGE(PythonInterp REQUIRED)
+
+# Meta examples and dependencies
+IF(BUILD_META_EXAMPLES)
+    include(FindPythonModule)
+    find_python_module(ply REQUIRED)
+    IF(NOT PY_PLY)
+        message(FATAL_ERROR "Python module ply required for meta examples.")
+    ENDIF()
+
+    FIND_PACKAGE(Ctags)
+    IF(NOT CTAGS_FOUND)
+        message(FATAL_ERROR "Ctags required for meta examples.")
+    ENDIF()
+ENDIF(BUILD_META_EXAMPLES)
+
+# add meta example dir below after tests have been defined
+
+# cookbook and dependencies
+find_package(Sphinx)
+IF(BUILD_META_EXAMPLES AND SPHINX_FOUND)
+    SET(BUILD_COOKBOOK 1)
+ENDIF()
 
 # JSON
 OPTION(BUNDLE_JSON "Bundle JSON" OFF)
@@ -1052,6 +1075,7 @@ OPTION(ENABLE_TESTING "Enable testing" OFF)
 OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
 OPTION(TRAVIS_DISABLE_LIBSHOGUN_TESTS "Disable libshogun tests to speed up jobs on travis-ci" OFF)
 OPTION(INTEGRATION_TESTS_ENABLED "Enable integration testing (legacy)" OFF)
+OPTION(TRAVIS_DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up  jobs on travis-ci" OFF)
 
 IF(ENABLE_TESTING)
 	FIND_PACKAGE(Jinja2)
@@ -1060,16 +1084,17 @@ IF(ENABLE_TESTING)
 	ENDIF()
 
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
-		# add integration tests
-		if (INTEGRATION_TESTS_ENABLED)
+		if (INTEGRATION_TESTS_ENABLED AND EXISTS ${CMAKE_SOURCE_DIR}/tests/integration)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/integration)
 		ENDIF()
 
-
-		# add unit tests
-		IF (NOT TRAVIS_DISABLE_UNIT_TESTS)
+		IF (NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
 		ENDIF()
+		
+		IF(NOT TRAVIS_DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
+            add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
+        ENDIF()
 	ENDIF()
 ENDIF()
 
@@ -1084,21 +1109,20 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/src/shogun)
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
-	IF(BUILD_EXAMPLES OR ENABLE_TESTING)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	IF(ENABLE_TESTING AND NOT BUILD_EXAMPLES)
+	    message(STATUS "Tests require (disabled) examples, enabling.")
 	ENDIF()
-
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/example-generation)
-		IF(GENERATE_EXAMPLES)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/examples/example-generation)
-		ENDIF()
+    IF(ENABLE_TESTING OR BUILD_EXAMPLES)
+	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
+	IF(BUILD_META_EXAMPLES)
+        # allow meta examples without adding examples dir itself
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
+    ENDIF()
 ENDIF()
 
-IF(DOXYGEN_FOUND)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
-	ENDIF()
+IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
 ENDIF()
 
 include(ShogunPackaging)

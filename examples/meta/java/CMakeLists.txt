@@ -1,0 +1,29 @@
+SET(CLASSPATH "${JBLAS}:${SHOGUN_JAR}:${CMAKE_CURRENT_BINARY_DIR}")
+SET(JAVAOPTS "-Xmx1024m")
+SET(JAVA_LIB_PATH "${JAVA_MODULAR_BUILD_DIR}")
+
+# add test case for each generated example
+# (not generated yet so have to fake filenames from META_EXAMPLES list)
+FOREACH(META_EXAMPLE ${META_EXAMPLES})
+    # assume a structure <target_language>/<category>/listing.sg
+	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
+	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
+	STRING(REGEX REPLACE "/" "_" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
+    STRING(REGEX REPLACE ".*/(.*)/.*.sg" "\\1" EXAMPLE_REL_DIR ${META_EXAMPLE})
+
+	ADD_CUSTOM_COMMAND(OUTPUT compiled_java_${EXAMPLE_NAME_WITH_DIR}
+				  COMMAND ${Java_JAVAC_EXECUTABLE} -cp ${CLASSPATH}
+					-d ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.java
+				  DEPENDS java_modular)
+	LIST(APPEND GENERATED_JAVA_EXAMPLES compiled_java_${EXAMPLE_NAME_WITH_DIR})
+
+	add_test(NAME generated_java-${EXAMPLE_NAME_WITH_DIR}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}
+			COMMAND ${Java_JAVA_EXECUTABLE} ${JAVAOPTS}
+				-cp ${CLASSPATH}:${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}
+				-Djava.library.path=${JAVA_LIB_PATH} ${EXAMPLE_NAME})
+ENDFOREACH()
+
+add_custom_target(build_java_meta_examples ALL
+				 DEPENDS ${GENERATED_JAVA_EXAMPLES}
+				 COMMENT "Compiled generated java examples")

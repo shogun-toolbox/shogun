@@ -1,0 +1,54 @@
+{
+    "Program": "using System;\n\npublic class classifier_knn_modular {\npublic static void Main() {\nmodshogun.init_shogun_with_defaults();\n\n$program$testing\n}\n}\n",
+    "Statement": "$statement;\n",
+    "Comment": "//$comment\n",
+    "Init": {
+        "Construct": "$type $name = new $type($arguments)",
+        "Copy": "$type $name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type",
+        "bool": "bool",
+        "string": "String",
+        "real": "double",
+        "BoolVector": "bool[]",
+        "CharVector": "char[]",
+        "ByteVector": "byte[]",
+        "WordVector": "ushort[]",
+        "ShortVector": "short[]",
+        "IntVector": "int[]",
+        "LongIntVector": "long[]",
+        "ULongIntVector": "ulongint[]",
+        "ShortRealVector": "float[]",
+        "RealVector": "double[]",
+        "LongRealVector": "double[]",
+        "ComplexVector": "Complex[]",
+        "BoolMatrix": "bool[,]",
+        "CharMatrix": "char[,]",
+        "ByteMatrix": "byte[,]",
+        "WordMatrix": "ushort[,]",
+        "ShortMatrix": "short[,]",
+        "IntMatrix": "int[,]",
+        "LongIntMatrix": "long[,]",
+        "ULongIntMatrix": "ulongint[,]",
+        "ShortRealMatrix": "float[,]",
+        "RealMatrix": "double[,]",
+        "LongRealMatrix": "double[,]",
+        "ComplexMatrix": "Complex[,]"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "Console.Write($expr)",
+    "OutputDirectoryName": "csharp",
+    "FileExtension": ".cs"
+}

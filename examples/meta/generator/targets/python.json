@@ -1,0 +1,34 @@
+{
+    "Program": "$dependencies$program$testing",
+    "Dependencies": {
+        "AllDependencies": "$constructedClassDependencies$enumDependencies\n",
+        "ConstructedClassDependencies": "from modshogun import $classlist\n",
+        "EnumDependencies": "from modshogun import $enums\n",
+        "DependencyListElementEnum": "$value",
+        "DependencyListSeparator": ", "
+    },
+    "Statement": "$statement\n",
+    "Comment": "#$comment\n",
+    "Init": {
+        "Construct": "$name = $type($arguments)",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "Default": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "True",
+            "False": "False"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Print": "print $expr",
+    "OutputDirectoryName": "python",
+    "FileExtension": ".py"
+}
