@@ -30,7 +30,7 @@ Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` cla
 
 .. sgexample:: knn.sg:create_instance
 
-Then we run the train KNN algorithm, apply it to test data, and print the predictions.
+Then we run the train KNN algorithm, apply it to test data.
 
 .. sgexample:: knn.sg:train_and_apply
 
