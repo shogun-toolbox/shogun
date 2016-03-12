@@ -26,6 +26,7 @@ To add an entry, only two files are needed (plus a test):
  * Write proper English. Pay attention to grammar, spelling, and punctuation.
  * Keep the example *specific*. Only talk about the particular algorithm and its interface. General concepts (for example 'supervised learning') should go to overview pages.
  * Keep the example *local*. Only show code snippets that illustrate API usage, avoid showing the full listing.
+ * Let the *code* speak for itself. Don't put useless statements that are clear from the code. Don't say things like "we call the `train` method", but rather "we train the model via". This way the `.rst` file is also invariant to API changes and we only need to update the `.sg` file.
  
 ## Some useful tips
 
