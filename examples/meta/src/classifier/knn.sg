@@ -21,7 +21,7 @@ KNN knn(3, distance, labels_train)
 
 #![train_and_apply]
 knn.train()
-Labels labels_predict = knn.apply(features_test)
+MulticlassLabels labels_predict = knn.apply_multiclass(features_test)
 #![train_and_apply]
 
 # integration testing variables
