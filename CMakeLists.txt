@@ -773,18 +773,19 @@ ENDIF()
 
 # Check if supported linear algebra backend is found
 IF (HAVE_CXX0X OR HAVE_CXX11)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(HAVE_LINALG_LIB 1)
-		MESSAGE("-- Supported backend(s) for linear algebra FOUND and ENABLED")
-	ELSE ()
-		MESSAGE("-- Supported backend(s) for linear algebra NOT FOUND/NOT ENABLED")
-	ENDIF ()
+	SET(HAVE_LINALG_LIB 1)
+	MESSAGE("-- Linear algebra ENABLED")
 ELSE ()
 	MESSAGE ("-- Linear algebra uses c++11 features. Please use a supported compiler")
 ENDIF ()
 
 # Linear algebra default global backend setups
-OPTION (LinAlgBackend "Set global linear algebra backend library for all modules")
+if( NOT LinAlgBackend )
+  set( LinAlgBackend EIGEN3 CACHE STRING
+       "Set global linear algebra backend library for all modules: EIGEN3, VIENNACL"
+       FORCE )
+endif()
+
 IF (LinAlgBackend STREQUAL "EIGEN3")
 	SET(USE_EIGEN3 1)
 	MESSAGE("-- Eigen3 set as default global linear algebra backend library")
@@ -801,7 +802,12 @@ ENDIF ()
 # Linear algebra default module specific backend setup
 
 # Core module
-OPTION (CoreLib "Set linear algebra backend library for core module")
+if( NOT CoreLib )
+  set( CoreLib EIGEN3 CACHE STRING
+       "Set linear algebra backend library for core module: EIGEN3, VIENNACL"
+       FORCE )
+endif()
+OPTION (CoreLib )
 IF (CoreLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_CORE 1)
 	MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
@@ -816,7 +822,11 @@ ELSEIF (CoreLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Reduction module
-OPTION (ReduxLib "Set linear algebra backend library for reduction module")
+if( NOT ReduxLib )
+  set( ReduxLib EIGEN3 CACHE STRING
+       "Set linear algebra backend library for reduction module: EIGEN3, VIENNACL"
+       FORCE )
+endif()
 IF (ReduxLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_REDUX 1)
 	MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
@@ -831,7 +841,11 @@ ELSEIF (ReduxLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Linear solver module
-OPTION (LinSolverLib "Set linear algebra backend library for linear solver module")
+if( NOT LinSolverLib )
+  set( LinSolverLib EIGEN3 CACHE STRING
+       "Set linear algebra backend library for linear solver module: EIGEN3, VIENNACL"
+       FORCE )
+endif()
 IF (LinSolverLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_LINSLV 1)
 	MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
@@ -846,7 +860,11 @@ ELSEIF (LinSolverLib STREQUAL "VIENNACL")
 ENDIF ()
 
 # Eigen solver module
-OPTION (EigenSolver "Set linear algebra backend library for eigen solver module")
+if( NOT LinSolverLib )
+  set( LinSolverLib EIGEN3 CACHE STRING
+       "Set linear algebra backend library for eigen solver module: EIGEN3, VIENNACL"
+       FORCE )
+endif()
 IF (EigenSolver STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_EIGSLV 1)
 	MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
