@@ -30,7 +30,7 @@
 
 #include <shogun/lib/config.h>
 
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -77,4 +77,4 @@ TEST(RangeFillArray, native_backend)
 
 }
 
-#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#endif // defined(HAVE_LINALG_LIB)

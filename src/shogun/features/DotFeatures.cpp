@@ -350,7 +350,7 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 	float64_t* out= SG_MALLOC(float64_t, num);
 	float64_t* alphas= SG_MALLOC(float64_t, num);
 #ifdef HAVE_LINALG_LIB
-	llinalg::range_fill<linalg::Backend::NATIVE>(w, d, 17.0);
+	linalg::range_fill<linalg::Backend::NATIVE>(w, d, 17.0);
 	linalg::range_fill<linalg::Backend::NATIVE>(alphas, num, 1.2345);
 #else
 	SGVector<float64_t>::range_fill_vector(w, d, 17.0);
