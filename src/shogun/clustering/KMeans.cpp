@@ -80,7 +80,6 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 	/* initialise the cluster centroids randomly among all data */
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-	REQUIRE(lhs!=NULL, "lhs Pointer should not be NULL");
 
 	SGVector<int32_t> random_inds=SGVector<int32_t>(XSize);
 	SGVector<int32_t>::range_fill_vector(random_inds, XSize, 0);
@@ -189,9 +188,7 @@ void CKMeans::compute_cluster_variances()
 
 				for (l=0; l<dimensions; l++)
 				{
-					dist+=CMath::sq(
-							mus(l,i)
-									-mus(l,j));
+					dist+=CMath::sq(mus(l,i) - mus(l,j));
 				}
 
 				if (first_round)
