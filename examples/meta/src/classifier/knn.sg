@@ -10,9 +10,8 @@ MulticlassLabels labels_train(f_labels_train)
 MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
-
 #![choose_distance]
-EuclideanDistance distance(features_train, features_test)
+EuclideanDistance distance(features_train, features_train)
 #![choose_distance]
 
 #![create_instance]
@@ -24,5 +23,10 @@ knn.train()
 MulticlassLabels labels_predict = knn.apply_multiclass(features_test)
 #![train_and_apply]
 
-# integration testing variables
-RealVector output = labels_test.get_values()
+#![evaluate_accuracy]
+MulticlassAccuracy eval()
+Real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()
