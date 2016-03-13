@@ -1,6 +1,6 @@
 [submodule "data"]
 	path = data
-	url = git://github.com/shogun-toolbox/shogun-data.git
+	url = git://github.com/tbskm/shogun-data.git
 	branch = master
 [submodule "doc/tutorial"]
 	path = doc/tutorial
