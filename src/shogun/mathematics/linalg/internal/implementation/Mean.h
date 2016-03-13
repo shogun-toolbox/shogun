@@ -660,7 +660,8 @@ struct mean<Backend::VIENNACL,Matrix>
 	 */
 	static T compute(CGPUMatrix<T> mat, bool no_diag)
 	{
-		if (no_diag)
+		REQUIRE(mat.num_rows > 0, "Matrix can not be empty!\n");
+                if (no_diag)
                 {
                         REQUIRE(mat.num_rows != mat.num_cols, "Matrix is not square!\n");
                         return (sum<Backend::VIENNACL, CGPUMatrix<T> >
@@ -790,6 +791,7 @@ struct colwise_mean<Backend::VIENNACL,Matrix>
 	 */
 	static CGPUVector<T> compute(CGPUMatrix<T> m, bool no_diag)
 	{
+                REQUIRE(m.num_rows > 0, "Matrix can not be empty!\n");
                 CGPUVector<T> result(m.num_cols);
 		compute(m, result, no_diag);
 		return result;
@@ -914,6 +916,7 @@ struct rowwise_mean<Backend::VIENNACL,Matrix>
 	 */
 	static CGPUVector<T> compute(CGPUMatrix<T> m, bool no_diag)
 	{
+                REQUIRE(m.num_rows > 0, "Matrix can not be empty!\n");
                 CGPUVector<T> result(m.num_rows);
 		compute(m, result, no_diag);
 		return result;
