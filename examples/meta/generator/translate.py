@@ -236,7 +236,7 @@ class Translator:
         typeString = self.translateType(init[0])
         nameString = init[1]["Identifier"]
 
-        # store only matrices, vectors and scalars
+        # store only real valued matrices, vectors and scalars
         if self.storeVars and init[0]["ObjectType"] in ("Real", "RealVector", "RealMatrix"):
             self.varsToStore.append((typeString, nameString))
 
