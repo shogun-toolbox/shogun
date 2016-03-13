@@ -22,11 +22,11 @@ CLinearMachine::CLinearMachine(): CMachine()
 	init();
 }
 
-CLinearMachine::CLinearMachine(bool compute_bias): CMachine()
+CLinearMachine::CLinearMachine(bool comput_bias): CMachine()
 {
 	init();
 
-	m_compute_bias = compute_bias;
+	set_compute_bias(comput_bias);
 }
 
 CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
@@ -35,6 +35,7 @@ CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
 
 	set_w(machine->get_w().clone());
 	set_bias(machine->get_bias());
+	set_compute_bias(machine->get_compute_bias());
 }
 
 void CLinearMachine::init()
@@ -114,9 +115,9 @@ float64_t CLinearMachine::get_bias()
 	return bias;
 }
 
-void CLinearMachine::set_compute_bias(bool compute_bias)
+void CLinearMachine::set_compute_bias(bool comput_bias)
 {
-	m_compute_bias = compute_bias;
+	m_compute_bias = comput_bias;
 }
 
 bool CLinearMachine::get_compute_bias()
