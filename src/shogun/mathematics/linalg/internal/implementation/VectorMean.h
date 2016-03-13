@@ -33,7 +33,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalg/internal/VectorSum.h>
+#include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUVector.h>

@@ -91,7 +91,7 @@ typename Vector::Scalar vector_sum(Vector a)
  * @return the vector mean \f$\mean_i a_i\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend, class Vector>
-typename Vector::Scalar vector_sum(Vector a)
+typename Vector::Scalar vector_mean(Vector a)
 {
 	return implementation::vector_mean<backend,Vector>::compute(a);
 }

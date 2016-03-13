@@ -37,12 +37,12 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
-#include <shogun/mathematics/linalg/internal/Sum.h>
+#include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 
 #include <shogun/mathematics/eigen3.h>
 
 #ifdef HAVE_VIENNACL
-#include <shogun/mathematics/linalg/internal/Scale.h>
+#include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 #include <shogun/mathematics/linalg/internal/opencl_util.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/lib/GPUVector.h>
@@ -245,14 +245,14 @@ struct mean<Backend::EIGEN3,Matrix>
                 // remove the main diagonal elements if required
                 if (no_diag) 
                 {
-                    index_t len_major_diag = m.rows() < m.cols() ? m.rows() : m.cols();
+                    index_t len_major_diag = mat.rows() < mat.cols() ? mat.rows() : mat.cols();
                     return (sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag)
-                    / (mat.num_rows * mat.num_cols - len_major_diag);
+                    / (mat.num_rows * mat.num_cols - len_major_diag));
                 }
                 else
                 {
                     return (sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag)
-                    / (mat.num_rows * mat.num_cols);
+                    / (mat.num_rows * mat.num_cols));
                 }
 	}
 
@@ -272,12 +272,12 @@ struct mean<Backend::EIGEN3,Matrix>
                 {
                     index_t len_major_diag = b.m_row_size < b.m_col_size ? b.m_row_size : b.m_col_size;
                     return (sum<Backend::EIGEN3, Block<SGMatrix<T> > >::compute(b, no_diag)
-                    / (b.m_row_size * b.m_col_size - len_major_diag);
+                    / (b.m_row_size * b.m_col_size - len_major_diag));
                 }
                 else
                 {
                     return (sum<Backend::EIGEN3, Block<SGMatrix<T> > >::compute(b, no_diag)
-                    / (b.m_row_size * b.m_col_size);
+                    / (b.m_row_size * b.m_col_size));
                 }
 	}
 };
@@ -306,13 +306,13 @@ struct mean_symmetric<Backend::EIGEN3,Matrix>
                 // remove the main diagonal elements if required
                 if (no_diag) 
                 {
-                    return (sum_symmetricBackend::EIGEN3, SGMatrix<T> >
-                    ::compute(mat, no_diag) / (mat.num_rows * (mat.num_cols - 1));
+                    return (sum_symmetric<Backend::EIGEN3, SGMatrix<T> >
+                    ::compute(mat, no_diag) / (mat.num_rows * (mat.num_cols - 1)));
                 }
                 else
                 {
                     return (sum_symmetric<Backend::EIGEN3, SGMatrix<T> >
-                    ::compute(mat, no_diag) / (mat.num_rows * mat.num_cols);
+                    ::compute(mat, no_diag) / (mat.num_rows * mat.num_cols));
                 }
 	}
 
@@ -331,12 +331,12 @@ struct mean_symmetric<Backend::EIGEN3,Matrix>
                 if (no_diag) 
                 {
                     return (sum_symmetric<Backend::EIGEN3, Block<SGMatrix<T> > >
-                    ::compute(b, no_diag) / (b.m_row_size * (b.m_col_size - 1));
+                    ::compute(b, no_diag) / (b.m_row_size * (b.m_col_size - 1)));
                 }
                 else
                 {
                     return (sum_symmetric<Backend::EIGEN3, Block<SGMatrix<T> > >
-                    ::compute(b, no_diag) / (b.m_row_size * b.m_col_size);
+                    ::compute(b, no_diag) / (b.m_row_size * b.m_col_size));
                 }
 	}
 };
@@ -669,7 +669,7 @@ struct mean<Backend::VIENNACL,Matrix>
                 else
                 {
                         return (sum<Backend::VIENNACL, CGPUMatrix<T> >
-                            ::compute(amt, no_diag) / (mat.num_rows * mat.num_cols);
+                            ::compute(mat, no_diag) / (mat.num_rows * mat.num_cols));
                 }
 	}
 
@@ -818,7 +818,7 @@ struct colwise_mean<Backend::VIENNACL,Matrix>
 	 */
 	static void compute(CGPUMatrix<T> mat, CGPUVector<T> result, bool no_diag)
 	{
-                CGPUVector<T> sum_result(m.num_cols);
+                CGPUVector<T> sum_result(mat.num_cols);
                 sum_result = colwise_sum<Backend::VIENNACL, CGPUMatrix<T> >::compute(mat, no_diag);
                 if (no_diag) 
                 {
@@ -942,7 +942,7 @@ struct rowwise_mean<Backend::VIENNACL,Matrix>
 	 */
 	static void compute(CGPUMatrix<T> mat, CGPUVector<T> result, bool no_diag)
 	{
-                CGPUVector<T> sum_result(m.num_rows);
+                CGPUVector<T> sum_result(mat.num_rows);
                 sum_result = rowwise_sum<Backend::VIENNACL, CGPUMatrix<T> >::compute(mat, no_diag);
                 if (no_diag) 
                 {
@@ -953,7 +953,7 @@ struct rowwise_mean<Backend::VIENNACL,Matrix>
                 else
                 {
                         scale<Backend::VIENNACL, CGPUVector<T> >
-                            ::compute(sum_result, result, 1 / mat.num_cols;
+                            ::compute(sum_result, result, 1 / mat.num_cols);
                 }
 	}
 
