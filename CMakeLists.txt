@@ -773,14 +773,9 @@ ENDIF()
 
 # Check if supported linear algebra backend is found
 IF (HAVE_CXX0X OR HAVE_CXX11)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(HAVE_LINALG_LIB 1)
-		MESSAGE("-- Supported backend(s) for linear algebra FOUND and ENABLED")
-	ELSE ()
-		MESSAGE("-- Supported backend(s) for linear algebra NOT FOUND/NOT ENABLED")
-	ENDIF ()
+	SET(HAVE_LINALG_LIB 1)
 ELSE ()
-	MESSAGE ("-- Linear algebra uses c++11 features. Please use a supported compiler")
+	MESSAGE ("-- LINALG uses c++11 features. Please use a supported compiler")
 ENDIF ()
 
 # Linear algebra default global backend setups
