@@ -36,6 +36,8 @@
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
+#include <shogun/mathematics/linalg/internal/implementation/Mean.h>
+#include <shogun/mathematics/linalg/internal/implementation/VectorMean.h>
 
 namespace shogun
 {
@@ -80,6 +82,20 @@ typename Vector::Scalar vector_sum(Vector a)
 {
 	return implementation::vector_sum<backend,Vector>::compute(a);
 }
+
+/**
+ * Wrapper method for internal implementation of vector mean of values that works
+ * with generic dense vectors
+
+ * @param a vector whose mean has to be computed
+ * @return the vector mean \f$\mean_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_sum(Vector a)
+{
+	return implementation::vector_mean<backend,Vector>::compute(a);
+}
+
 
 #ifdef HAVE_LINALG_LIB
 
@@ -171,18 +187,92 @@ typename implementation::rowwise_sum<backend,Matrix>::ReturnType rowwise_sum(
 }
 
 /**
- * Wrapper method for internal implementation of matrix rowwise sum of values that works
+ * Wrapper method for internal implementation of matrix mean of values that works
  * with generic dense matrices
  *
- * @param m the matrix whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @param m the matrix whose mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the mean computed as \f$\mean_{i,j}m_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar mean(Matrix m, bool no_diag=false)
+{
+	return implementation::mean<backend,Matrix>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix mean of values that works
+ * with generic dense matrices
+ *
+ * @param m the matrix whose mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the mean computed as \f$\mean_{i,j}m_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename Matrix::Scalar mean_symmetric(Matrix m, bool no_diag=false)
+{
+	return implementation::mean_symmetric<backend,Matrix>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix-block mean of values that works
+ * with generic dense matrix blocks
+ *
+ * @param b the matrix-block whose mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the mean computed as \f$\mean_{i,j}b_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename Matrix::Scalar mean_symmetric(Block<Matrix> b, bool no_diag=false)
+{
+	return implementation::mean_symmetric<backend,Matrix>
+		::compute(b, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix colwise mean of values that works
+ * with generic dense matrices
+ *
+ * @param m the matrix whose colwise mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the colwise mean computed as \f$s_j=\mean_{i}m_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename implementation::colwise_mean<backend,Matrix>::ReturnType colwise_mean(
+	Matrix m, bool no_diag=false)
+{
+	return implementation::colwise_mean<backend,Matrix>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix colwise mean of values that works
+ * with generic dense matrices
+ *
+ * @param m the matrix whose colwise mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
  * @param result Pre-allocated vector for the result of the computation
  */
 template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vector>
-void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
+void colwise_mean(Matrix m, Vector result, bool no_diag=false)
 {
-	implementation::rowwise_sum<backend,Matrix>::compute(m, result, no_diag);
+	implementation::colwise_mean<backend,Matrix>::compute(m, result, no_diag);
 }
+
+/**
+ * Wrapper method for internal implementation of matrix rowwise mean of values that works
+ * with generic dense matrices
+ *
+ * @param m the matrix whose rowwise mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the rowwise mean computed as \f$s_i=\mean_{j}m_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename implementation::rowwise_mean<backend,Matrix>::ReturnType rowwise_mean(
+	Matrix m, bool no_diag=false)
+{
+	return implementation::rowwise_mean<backend,Matrix>::compute(m, no_diag);
+}
+
 
 #endif // HAVE_LINALG_LIB
 
