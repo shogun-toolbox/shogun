@@ -254,9 +254,7 @@ class CKMeans : public CDistanceMachine
 		*
 		* @return initial cluster centers: matrix (k columns, dim rows)
 		*/
-		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
-		void set_initial_centers(SGVector<float64_t> weights_set,
-					SGVector<int32_t> ClList, int32_t XSize);
+		void set_random_centers();
 		void compute_cluster_variances();
 
 	private:

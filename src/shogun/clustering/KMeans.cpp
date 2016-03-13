@@ -13,6 +13,7 @@
 #include "shogun/clustering/KMeansMiniBatchImpl.h"
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -21,8 +22,6 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
-
-#define MUSRECALC
 
 using namespace shogun;
 
@@ -67,113 +66,39 @@ CKMeans::~CKMeans()
 
 void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
 {
-	dimensions = ((CDenseFeatures<float64_t>*) distance->get_lhs())->get_num_features();
+ 	CDenseFeatures<float64_t>* lhs=((CDenseFeatures<float64_t>*) distance->get_lhs());
+	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
 			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
 	REQUIRE(centers.num_rows == dimensions,
 			"Expected %d dimensionional cluster centers, got %d", dimensions, centers.num_rows);
 	mus_initial = centers;
+	SG_UNREF(lhs);
 }
 
-void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
+void CKMeans::set_random_centers()
 {
+	mus.zero();
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-
-	for (int32_t i=0; i<XSize; i++)
-	{
-		const int32_t Cl=CMath::random(0, k-1);
-		weights_set[Cl]+=1.0;
-		ClList[i]=Cl;
-
-		int32_t vlen=0;
-		bool vfree=false;
-		float64_t* vec=lhs->get_feature_vector(i, vlen, vfree);
-
-		for (int32_t j=0; j<dimensions; j++)
-			mus.matrix[Cl*dimensions+j] += vec[j];
-
-		lhs->free_feature_vector(vec, i, vfree);
-	}
-
-	SG_UNREF(lhs);
+	int32_t lhs_size=lhs->get_num_vectors();
+	
+	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
+	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
+	CMath::permute(temp);
 
 	for (int32_t i=0; i<k; i++)
 	{
-		if (weights_set[i]!=0.0)
-		{
-			for (int32_t j=0; j<dimensions; j++)
-				mus.matrix[i*dimensions+j] /= weights_set[i];
-		}
-	}
-}
-
-void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
-				SGVector<int32_t> ClList, int32_t XSize)
-{
-	ASSERT(mus_initial.matrix);
-
-	/// set rhs to mus_start
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
-	rhs_mus->copy_feature_matrix(mus_initial);
-
-	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
-	dists.zero();
-
-	for(int32_t idx=0;idx<XSize;idx++)
-	{
-		for(int32_t m=0;m<k;m++)
-			dists[k*idx+m] = distance->distance(idx,m);
-	}
-
-	for (int32_t i=0; i<XSize; i++)
-	{
-		float64_t mini=dists[i*k];
-		int32_t Cl = 0, j;
-
-		for (j=1; j<k; j++)
-		{
-			if (dists[i*k+j]<mini)
-			{
-				Cl=j;
-				mini=dists[i*k+j];
-			}
-		}
-		ClList[i]=Cl;
-	}
-
-	/* Compute the sum of all points belonging to a cluster
-	 * and count the points */
-	CDenseFeatures<float64_t>* lhs=
-			(CDenseFeatures<float64_t>*)distance->get_lhs();
-	for (int32_t i=0; i<XSize; i++)
-	{
-		const int32_t Cl = ClList[i];
-		weights_set[Cl]+=1.0;
-
-		int32_t vlen=0;
-		bool vfree=false;
-		float64_t* vec=lhs->get_feature_vector(i, vlen, vfree);
+		const int32_t cluster_center_i=temp[i];
+		SGVector<float64_t> vec=lhs->get_feature_vector(cluster_center_i);
 
 		for (int32_t j=0; j<dimensions; j++)
-			mus.matrix[Cl*dimensions+j] += vec[j];
+			mus(j,i)=vec[j];
 
-		lhs->free_feature_vector(vec, i, vfree);
+		lhs->free_feature_vector(vec, cluster_center_i);
 	}
+
 	SG_UNREF(lhs);
-	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;
-
-		/* normalization to get the mean */
-	for (int32_t i=0; i<k; i++)
-	{
-		if (weights_set[i]!=0.0)
-		{
-			for (int32_t j=0; j<dimensions; j++)
-				mus.matrix[i*dimensions+j] /= weights_set[i];
-		}
-	}
 
 }
 
@@ -227,22 +152,24 @@ void CKMeans::compute_cluster_variances()
 
 bool CKMeans::train_machine(CFeatures* data)
 {
-	ASSERT(distance && distance->get_feature_type()==F_DREAL)
-
+	REQUIRE(distance, "Distance is not provided")
+	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)")
+	
 	if (data)
 		distance->init(data, data);
 
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
-	ASSERT(lhs);
-	int32_t XSize=lhs->get_num_vectors();
+	REQUIRE(lhs, "Lhs features of distance not provided");
+	int32_t lhs_size=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
-	const int32_t XDimk=dimensions*k;
+	const int32_t centers_size=dimensions*k;
 
-	ASSERT(XSize>0 && dimensions>0);
+	REQUIRE(lhs_size>0, "Lhs features should not be empty");
+	REQUIRE(dimensions>0, "Lhs features should have more than zero dimensions");
 
-	///if kmeans++ to be used
+	/* if kmeans++ to be used */
 	if (use_kmeanspp)
 		mus_initial=kmeanspp();
 
@@ -250,17 +177,13 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	mus=SGMatrix<float64_t>(dimensions, k);
 	/* cluster_centers=zeros(dimensions, k) ; */
-	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+	memset(mus.matrix, 0, sizeof(float64_t)*centers_size);
 
-	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
-	ClList.zero();
-	SGVector<float64_t> weights_set=SGVector<float64_t>(k);
-	weights_set.zero();
 
 	if (mus_initial.matrix)
-		set_initial_centers(weights_set, ClList, XSize);
+		mus = mus_initial;
 	else
-		set_random_centers(weights_set, ClList, XSize);
+		set_random_centers();
 
 	if (train_method==KMM_MINI_BATCH)
 	{
@@ -268,7 +191,7 @@ bool CKMeans::train_machine(CFeatures* data)
 	}
 	else
 	{
-		CKMeansLloydImpl::Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
+		CKMeansLloydImpl::Lloyd_KMeans(k, distance, max_iter, mus, fixed_centers);
 	}
 
 	compute_cluster_variances();

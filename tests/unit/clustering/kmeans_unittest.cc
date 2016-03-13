@@ -36,6 +36,7 @@ TEST(KMeans, manual_center_initialization_test)
 	initial_centers(1,1)=5;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
+	SG_REF(features);	
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
 
@@ -141,6 +142,7 @@ TEST(KMeans, minibatch_training_test)
 	initial_centers(1,0)=0;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
+	SG_REF(features);	
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(1, distance,initial_centers);
 
@@ -158,6 +160,120 @@ TEST(KMeans, minibatch_training_test)
 		SG_UNREF(learnt_centers);
 	}
 
+	SG_UNREF(clustering);
+	SG_UNREF(features);
+}
+
+TEST(KMeans, fixed_centers)
+{
+	/*create a rectangle with four points as (0,0) (0,10) (20,0) (20,10)*/
+	SGMatrix<float64_t> rect(2, 4);
+	rect(0,0)=0;
+	rect(1,0)=0;
+	rect(0,1)=0;
+	rect(1,1)=10;
+	rect(0,2)=20;
+	rect(1,2)=0;
+	rect(0,3)=20;
+	rect(1,3)=10;
+
+	/*choose local minima points (but not exact means) (0,4) (20,4) as initial centers */
+	SGMatrix<float64_t> initial_centers(2,2);
+	initial_centers(0,0)=0;
+	initial_centers(1,0)=4;
+	initial_centers(0,1)=20;
+	initial_centers(1,1)=4;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
+	SG_REF(features);	
+	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
+	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
+	clustering->set_fixed_centers(true);
+
+	clustering->train(features);
+	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
+
+	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);
+	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
+		
+	EXPECT_EQ(c(0,0), 0);
+	EXPECT_EQ(c(1,0), 5);
+	EXPECT_EQ(c(0,1), 20);
+	EXPECT_EQ(c(1,1), 5);
+	
+	SG_UNREF(clustering);
+	SG_UNREF(features);
+}
+
+TEST(KMeans, random_centers_init)
+{
+	/* Random centers should initialize with unique centers  */
+	SGMatrix<float64_t> rect(2, 3);
+	rect(0,0)=0;
+	rect(1,0)=0;
+	rect(0,1)=10;
+	rect(1,1)=10;
+	rect(0,2)=20;
+	rect(1,2)=20;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
+	SG_REF(features);	
+	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
+	CKMeans* clustering=new CKMeans(3, distance);
+
+	clustering->train(features);
+	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);
+	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
+		
+	EXPECT_NE(c(0,0),c(0,1));
+	EXPECT_NE(c(0,0),c(0,2));
+	EXPECT_NE(c(0,1),c(0,2));
+	
+	SG_UNREF(clustering);
+	SG_UNREF(features);
+}
+
+TEST(KMeans, random_centers_assign)
+{
+	/* Random centers initialization should correctly assign two very separate clusters  */
+	SGMatrix<float64_t> rect(2, 4);
+	rect(0,0)=0;
+	rect(1,0)=0;
+	rect(0,1)=0;
+	rect(1,1)=10;
+	rect(0,2)=20;
+	rect(1,2)=0;
+	rect(0,3)=20;
+	rect(1,3)=10;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
+	SG_REF(features);	
+	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
+	CKMeans* clustering=new CKMeans(2, distance);
+
+	clustering->train(features);
+	CDenseFeatures<float64_t>* learnt_centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);	
+	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
+	
+	SGVector<float64_t> count=SGVector<float64_t>(2);
+	count.zero();
+
+	if ((c(0,0)==0) && (c(1,0)==5))
+		count[0]++;
+	if ((c(0,1)==0) && (c(1,1)==5))
+		count[0]++;
+	if ((c(0,0)==20) && (c(1,0)==5))
+		count[1]++;
+	if ((c(0,1)==20) && (c(1,1)==5))
+		count[1]++;	
+
+	if (count[0] == 0)
+		EXPECT_EQ(count[1], 0);
+	if (count[0] == 1)
+		EXPECT_EQ(count[1], 1);
+	
 	SG_UNREF(clustering);
 	SG_UNREF(features);
 }
