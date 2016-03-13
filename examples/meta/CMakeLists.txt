@@ -42,7 +42,11 @@ IF(ENABLE_TESTING)
 
     # c++
     IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+        IF(HAVE_CXX0X OR HAVE_CXX11)
+            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+        ELSE()
+            MESSAGE(WARNING "Skipping C++ meta examples; requires a c++11 compatible compiler.")
+        ENDIF()
     ENDIF()
 
     # Python
