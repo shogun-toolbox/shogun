@@ -32,6 +32,10 @@
 #include <shogun/statistics/IndependenceTest.h>
 #include <shogun/features/Features.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CIndependenceTest::CIndependenceTest() : CHypothesisTest()
@@ -82,8 +86,11 @@ SGVector<float64_t> CIndependenceTest::sample_null()
 	 * subset for selecting samples from p. In this case we want to
 	 * shuffle only samples from p while keeping samples from q fixed */
 	SGVector<index_t> ind_permutation(m_p->get_num_vectors());
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+#else
 	ind_permutation.range_fill();
-
+#endif
 	for (index_t i=0; i<m_num_null_samples; ++i)
 	{
 		/* idea: shuffle samples from p while keeping samples from q fixed

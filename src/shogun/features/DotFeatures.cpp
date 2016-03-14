@@ -16,6 +16,10 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -345,10 +349,13 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 	float64_t* w= SG_MALLOC(float64_t, d);
 	float64_t* out= SG_MALLOC(float64_t, num);
 	float64_t* alphas= SG_MALLOC(float64_t, num);
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(w, d, 17.0);
+	linalg::range_fill<linalg::Backend::NATIVE>(alphas, num, 1.2345);
+#else
 	SGVector<float64_t>::range_fill_vector(w, d, 17.0);
 	SGVector<float64_t>::range_fill_vector(alphas, num, 1.2345);
-	//SGVector<float64_t>::fill_vector(w, d, 17.0);
-	//SGVector<float64_t>::fill_vector(alphas, num, 1.2345);
+#endif
 
 	CTime t;
 	float64_t start_cpu=t.get_runtime();
@@ -358,19 +365,19 @@ void CDotFeatures::benchmark_dense_dot_range(int32_t repeats)
 			dense_dot_range(out, 0, num, alphas, w, d, 23);
 
 #ifdef DEBUG_DOTFEATURES
-    CMath::display_vector(out, 40, "dense_dot_range");
+	CMath::display_vector(out, 40, "dense_dot_range");
 	float64_t* out2= SG_MALLOC(float64_t, num);
 
 	for (int32_t r=0; r<repeats; r++)
-    {
-        CMath::fill_vector(out2, num, 0.0);
-        for (int32_t i=0; i<num; i++)
-            out2[i]+=dense_dot(i, w, d)*alphas[i]+23;
-    }
-    CMath::display_vector(out2, 40, "dense_dot");
+	{
+		CMath::fill_vector(out2, num, 0.0);
+		for (int32_t i=0; i<num; i++)
+			out2[i]+=dense_dot(i, w, d)*alphas[i]+23;
+	}
+	CMath::display_vector(out2, 40, "dense_dot");
 	for (int32_t i=0; i<num; i++)
 		out2[i]-=out[i];
-    CMath::display_vector(out2, 40, "diff");
+	CMath::display_vector(out2, 40, "diff");
 #endif
 	SG_PRINT("Time to process %d x num=%d dense_dot_range ops: cputime %fs walltime %fs\n",
 			repeats, num, (t.get_runtime()-start_cpu)/repeats,
@@ -389,7 +396,7 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	memset(mean.vector, 0, sizeof(float64_t)*dim);
 
 	for (int i = 0; i < num; i++)
 		add_to_dense_vec(1, i, mean.vector, dim);
@@ -412,7 +419,7 @@ SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	memset(mean.vector, 0, sizeof(float64_t)*dim);
 
 	for (int i = 0; i < num_lhs; i++)
 		lhs->add_to_dense_vec(1, i, mean.vector, dim);

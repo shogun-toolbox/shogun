@@ -17,6 +17,10 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CKernelRidgeRegression::CKernelRidgeRegression()
@@ -59,8 +63,11 @@ bool CKernelRidgeRegression::train_machine_pinv()
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
 	m_svs=SGVector<index_t>(m_alpha.vlen);
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(m_svs);
+#else
 	m_svs.range_fill();
-
+#endif
 	if (get_alphas().vlen!=n)
 	{
 		SG_ERROR("Number of labels does not match number of kernel"
@@ -89,8 +96,11 @@ bool CKernelRidgeRegression::train_machine_gs()
 
 	// tell kernel machine that all alphas are needed as 'support vectors'
 	m_svs=SGVector<index_t>(m_alpha.vlen);
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(m_svs);
+#else
 	m_svs.range_fill();
-
+#endif
 	if (get_alphas().vlen!=n)
 	{
 		SG_ERROR("Number of labels does not match number of kernel"

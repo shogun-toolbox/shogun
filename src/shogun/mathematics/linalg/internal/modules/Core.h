@@ -39,6 +39,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 #include <shogun/mathematics/linalg/internal/implementation/Convolve.h>
+#include <shogun/mathematics/linalg/internal/implementation/RangeFill.h>
 
 namespace shogun
 {
@@ -100,6 +101,28 @@ template <Backend backend=linalg_traits<Core>::backend,class Matrix>
 void scale(Matrix A, typename Matrix::Scalar alpha)
 {
 	implementation::scale<backend, Matrix>::compute(A, A, alpha);
+}
+
+/** Range fill a vector or a matrix with start...start+len-1
+ * @param A - the matrix to be filled
+ * @param start - value to be assigned to first element of vector or matrix
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void range_fill(Matrix A, typename Matrix::Scalar start=0.0)
+{
+	implementation::range_fill<backend, Matrix>::compute(A, start);
+}
+
+/** Range fill a pointer array with start...start+len-1
+ * @param A - the array to be filled
+ * @param len - length of the array to be filled
+ * @param start - value to be assigned to first element of array
+ */
+template <typename T>
+void range_fill(T* A, index_t len, T start=0.0)
+{
+	SGVector<T> V(A,len,false);
+	implementation::range_fill<Backend::NATIVE,SGVector<T> >::compute(V, start);
 }
 
 #ifdef HAVE_LINALG_LIB

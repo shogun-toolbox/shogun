@@ -33,6 +33,10 @@
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+ #endif
+
 using namespace shogun;
 
 CTwoSampleTest::CTwoSampleTest() : CHypothesisTest()
@@ -90,7 +94,11 @@ SGVector<float64_t> CTwoSampleTest::sample_null()
 	/* memory for index permutations. Adding of subset has to happen
 	 * inside the loop since it may be copied if there already is one set */
 	SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(ind_permutation);
+#else
 	ind_permutation.range_fill();
+#endif
 
 	for (index_t i=0; i<m_num_null_samples; ++i)
 	{

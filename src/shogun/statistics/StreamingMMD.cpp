@@ -35,6 +35,10 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/List.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CStreamingMMD::CStreamingMMD() : CKernelTwoSampleTest()
@@ -269,13 +273,21 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 
 		/* permute */
 		SGVector<index_t> inds(merged->get_num_vectors());
+#ifdef HAVE_LINALG_LIB
+		linalg::range_fill<linalg::Backend::NATIVE>(inds);
+#else
 		inds.range_fill();
+#endif
 		CMath::permute(inds);
 		merged->add_subset(inds);
 
 		/* copy back */
 		SGVector<index_t> copy(num_this_run);
+#ifdef HAVE_LINALG_LIB
+		linalg::range_fill<linalg::Backend::NATIVE>(copy);
+#else
 		copy.range_fill();
+#endif
 		for (index_t i=0; i<2*num_blocks; ++i)
 		{
 			CFeatures* current=merged->copy_subset(copy);

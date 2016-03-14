@@ -11,6 +11,10 @@
 #include <shogun/structure/DisjointSet.h>
 #include <shogun/base/Parameter.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CDisjointSet::CDisjointSet()
@@ -43,9 +47,13 @@ void CDisjointSet::init()
 
 void CDisjointSet::make_sets()
 {
-	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
 
+	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill<linalg::Backend::NATIVE>(m_parent);
+#else
 	m_parent.range_fill();
+#endif
 	m_rank.zero();
 }
 
