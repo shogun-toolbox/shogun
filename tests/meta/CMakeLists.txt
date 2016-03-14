@@ -30,12 +30,16 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 
 	# cpp
 	# TODO implement other languages tests
-	add_test(NAME integration_meta_cpp-${NAME_WITH_DIR}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat cpp generated_results reference_results)
-	set_tests_properties(
-		integration_meta_cpp-${NAME_WITH_DIR}
-			PROPERTIES
-			DEPENDS generated_cpp-${NAME}
-	)
+	IF(HAVE_CXX0X OR HAVE_CXX11)
+	    add_test(NAME integration_meta_cpp-${NAME_WITH_DIR}
+		    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		    COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat cpp generated_results reference_results)
+	    set_tests_properties(
+		    integration_meta_cpp-${NAME_WITH_DIR}
+			    PROPERTIES
+			    DEPENDS generated_cpp-${NAME}
+	    )
+	ELSE()
+	    MESSAGE(WARNING "Skipping C++ meta integration tests; requires a c++11 compatible compiler.")
+	ENDIF()
 ENDFOREACH()
