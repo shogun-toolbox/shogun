@@ -227,6 +227,12 @@ class CKMeans : public CDistanceMachine
 		 */
 		void set_mbKMeans_params(int32_t b, int32_t t);
 
+        /** get the randomly initialized cluster centers
+        *
+        *@return random center matrix
+        */
+        SGMatrix<float64_t> get_random_centers(SGVector<float64_t> cluster_size, SGVector<int32_t> classes, int32_t XSize);
+
 	private:
 		/** train k-means
 		 *
@@ -254,7 +260,7 @@ class CKMeans : public CDistanceMachine
 		*
 		* @return initial cluster centers: matrix (k columns, dim rows)
 		*/
-		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
+        void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
 		void set_initial_centers(SGVector<float64_t> weights_set,
 					SGVector<int32_t> ClList, int32_t XSize);
 		void compute_cluster_variances();
@@ -295,4 +301,3 @@ class CKMeans : public CDistanceMachine
 };
 }
 #endif
-
