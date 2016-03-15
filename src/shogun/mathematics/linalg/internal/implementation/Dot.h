@@ -78,47 +78,6 @@ struct dot
 };
 
 /**
- * @brief Specialization of generic dot for the Native backend
- */
-template <class Vector>
-struct dot<Backend::NATIVE, Vector>
-{
-	/** Scalar type */
-	typedef typename Vector::Scalar T;
-
-	/**
-	 * Method that computes the dot product of SGVectors
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	static T compute(shogun::SGVector<T> a, shogun::SGVector<T> b)
-	{
-		REQUIRE(a.vlen == b.vlen, "Vectors should have same length!\n");
-		return compute(a.vector, b.vector, a.vlen);
-	}
-
-	/**
-	 * Method that computes the dot product of vectors passed as ptr
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @param len the length of the vectors
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	static T compute(T* a, T* b, index_t len)
-	{
-		T result=static_cast<T>(0);
-		for (index_t i=0; i<len; ++i)
-			result+=a[i]*b[i];
-		return result;
-	}
-};
-
-/**
  * @brief Specialization of generic dot for the Eigen3 backend
  */
 template <class Vector>

@@ -62,18 +62,6 @@ TEST(DotProduct, SGVector_default_backend)
 	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
-TEST(DotProduct, SGVector_explicit_native_backend)
-{
-	const index_t size=10;
-	SGVector<float64_t> a(size), b(size);
-	a.set_const(1.0);
-	b.set_const(2.0);
-
-	float64_t result=linalg::dot<linalg::Backend::NATIVE>(a, b);
-
-	EXPECT_NEAR(result, 20.0, 1E-15);
-}
-
 #ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(DotProduct, SGVector_explicit_eigen3_backend)
