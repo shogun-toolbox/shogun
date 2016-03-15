@@ -120,25 +120,25 @@ class CEuclideanDistance: public CRealDistance
 		 */
 		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
 		
-		/**
-		 * Precompute squared norms from features of right hand side
-		 * WARNING : Make sure to reset squared norms using reset_squared_norms()
-		 * when features feature matrix are changed.
-		 */
-		virtual void precompute_rhs_squared_norms();
-
-		/**
-		 * Precompute squared norms from features of left hand side
-		 * WARNING : Make sure to reset squared norms using reset_squared_norms()
+		/**  
+		 * Precomputation of squared norms for features of right hand side
+		 * WARNING : Make sure to reset computations using reset_precompute()
 		 * when features or feature matrix are changed.
 		 */
-		virtual void precompute_lhs_squared_norms();
-	
-		/**
-		 * Reset squared norms for features of both sides
-		 * squared norms should be reset whenever features or feature matrix are changed.
+		virtual void precompute_rhs();
+
+		/** 
+		 * Precomputation of squared norms for features of left hand side
+		 * WARNING : Make sure to reset computations using reset_precompute()
+		 * when features or feature matrix are changed.
 		 */
-		virtual void reset_squared_norms();
+		virtual void precompute_lhs();
+	
+		/** 
+		 * Reset squared norm precomputations for features of both sides
+		 * Should be used to reset whenever features or feature matrix are changed.
+		 */
+		virtual void reset_precompute();
 
 	protected:
 		/// compute kernel function for features a and b

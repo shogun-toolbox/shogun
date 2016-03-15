@@ -80,7 +80,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::sqrt(result);
 }
 
-void CEuclideanDistance::precompute_rhs_squared_norms()
+void CEuclideanDistance::precompute_rhs()
 {
 #ifdef HAVE_LINALG_LIB
 	SGVector<float64_t>rhs_sq=SGVector<float64_t>(rhs->get_num_vectors());
@@ -97,7 +97,7 @@ void CEuclideanDistance::precompute_rhs_squared_norms()
 	
 }
 
-void CEuclideanDistance::precompute_lhs_squared_norms()
+void CEuclideanDistance::precompute_lhs()
 {
 #ifdef HAVE_LINALG_LIB
 	SGVector<float64_t>lhs_sq=SGVector<float64_t>(lhs->get_num_vectors());
@@ -113,7 +113,7 @@ void CEuclideanDistance::precompute_lhs_squared_norms()
 #endif
 }
 
-void CEuclideanDistance::reset_squared_norms()
+void CEuclideanDistance::reset_precompute()
 {
 	m_lhs_squared_norms=SGVector<float64_t>();
 	m_rhs_squared_norms=SGVector<float64_t>();
@@ -122,7 +122,7 @@ void CEuclideanDistance::reset_squared_norms()
 void CEuclideanDistance::init()
 {
 	disable_sqrt=false;
-	reset_squared_norms();
+	reset_precompute();
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 	m_parameters->add(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side");	
 	m_parameters->add(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side");	
