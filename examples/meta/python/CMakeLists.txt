@@ -5,10 +5,10 @@ GET_PYTHON_ENV()
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
-	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
-	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
-	STRING(REGEX REPLACE "/" "_" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
-    STRING(REGEX REPLACE ".*/(.*)/.*.sg" "\\1" EXAMPLE_REL_DIR ${META_EXAMPLE})
+	get_filename_component(EXAMPLE_NAME ${META_EXAMPLE} NAME_WE)
+	get_filename_component(FULL_DIR ${META_EXAMPLE} DIRECTORY)
+	get_filename_component(EXAMPLE_REL_DIR ${FULL_DIR} NAME)
+	set(EXAMPLE_NAME_WITH_DIR "${EXAMPLE_REL_DIR}-${EXAMPLE_NAME}")
     
 	add_test(NAME generated_python-${EXAMPLE_NAME_WITH_DIR}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE_REL_DIR}

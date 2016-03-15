@@ -23,10 +23,10 @@ target_link_libraries(meta_example_integration_tester shogun ${SANITIZER_LIBRARY
 FILE(GLOB META_INTEGRATION_REFERENCES ${CMAKE_CURRENT_BINARY_DIR}/reference_results/*/*.dat)
 FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	# assume a structure <target_language>/<category>/result.dat
-	STRING(REGEX REPLACE ".*/(.*).dat" "\\1" NAME ${REFERENCE_FILE})
-	STRING(REGEX REPLACE ".*/(.*//.*).dat" "\\1" NAME_WITH_DIR ${REFERENCE_FILE})
-	STRING(REGEX REPLACE "//" "_" NAME_WITH_DIR ${NAME_WITH_DIR})
-	STRING(REGEX REPLACE ".*/(.*)//.*.dat" "\\1" REL_DIR ${REFERENCE_FILE})
+	get_filename_component(NAME ${REFERENCE_FILE} NAME_WE)
+	get_filename_component(FULL_DIR ${REFERENCE_FILE} DIRECTORY)
+	get_filename_component(REL_DIR ${FULL_DIR} NAME)
+	set(NAME_WITH_DIR "${REL_DIR}-${NAME}")
 
 	# cpp
 	# TODO implement other languages tests
