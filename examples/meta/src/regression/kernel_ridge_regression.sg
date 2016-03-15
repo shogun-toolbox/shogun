@@ -1,0 +1,38 @@
+CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_appropriate_kernel]
+Real width = 1
+GaussianKernel kernel(features_train, features_train, width)
+#![create_appropriate_kernel]
+
+#![create_instance]
+Real tau = 0.001
+KernelRidgeRegression krr(tau, kernel, labels_train)
+#![create_instance]
+
+#![train_and_apply]
+krr.train()
+RegressionLabels labels_predict = krr.apply_regression(features_test)
+#![train_and_apply]
+
+#![extract_alpha]
+RealVector alpha = krr.get_alphas()
+#![extract_alpha]
+
+#![evaluate_error]
+MeanSquaredError eval()
+Real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()
