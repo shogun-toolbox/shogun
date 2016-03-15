@@ -43,3 +43,4 @@ References
 :wiki:`K-nearest_neighbors_algorithm`
 
 .. bibliography:: ../../references.bib
+    :filter: docname in docnames
