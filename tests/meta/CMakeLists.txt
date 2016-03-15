@@ -18,10 +18,17 @@ ENDIF()
 # compile tester c++ binary
 ADD_EXECUTABLE(meta_example_integration_tester ${CMAKE_CURRENT_SOURCE_DIR}/tester.cpp)
 ADD_DEPENDENCIES(meta_example_integration_tester shogun)
-target_link_libraries(meta_example_integration_tester shogun ${SANITIZER_LIBRARY})
+TARGET_LINK_LIBRARIES(meta_example_integration_tester shogun ${SANITIZER_LIBRARY})
 IF(SANITIZER_FLAGS)
-	set_target_properties(meta_example_integration_tester PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+    SET_TARGET_PROPERTIES(meta_example_integration_tester PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()
+# Add tester to the dependencies of modular interfaces to make sure
+# nothing will infer with them being build single-threaded.
+IF(SWIG_SINGLE_THREADED)
+	FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+		ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} meta_example_integration_tester)
+	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+ENDIF(SWIG_SINGLE_THREADED)
 
 FILE(GLOB META_INTEGRATION_REFERENCES ${CMAKE_CURRENT_BINARY_DIR}/reference_results/*/*.dat)
 FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
