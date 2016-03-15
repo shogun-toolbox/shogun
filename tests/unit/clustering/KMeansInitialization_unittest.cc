@@ -36,6 +36,7 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <gtest/gtest.h>
+#include "shogun/clustering/KMeans.cpp"
 
 using namespace shogun;
 
@@ -55,19 +56,17 @@ TEST(KMeans, random_initialization_test)
     CKMeans* clustering=new CKMeans(2, distance);
 
     /* vector for storing cluster center of each point */
-    SGVector<int32_t> classes=SGVector<int32_t>(3);
-    classes.zero();
-    /* vector for size of each cluster */
-    SGVector<float64_t> cluster_size=SGVector<float64_t>(2);
-    cluster_size.zero();
+  	SGVector<int32_t> classes=SGVector<int32_t>(3);
+  	classes.zero();
+  	/* vector for size of each cluster */
+  	SGVector<float64_t> cluster_size=SGVector<float64_t>(2);
+  	cluster_size.zero();
 
-    clustering->set_random_centers(cluster_size, classes, 3);
+    SGMatrix<float64_t> centers_matrix=
+      clustering->get_random_centers(cluster_size, classes, 3);
 
-    CDenseFeatures<float64_t>* randomised_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-    SGMatrix<float64_t> randomised_centers_matrix=randomised_centers->get_feature_matrix();
-
-    EXPECT_FALSE((randomised_centers_matrix(0,0)==randomised_centers_matrix(0,1)) &&
-            (randomised_centers_matrix(1,0)==randomised_centers_matrix(1,1)));
+    EXPECT_FALSE(centers_matrix(0,0)==centers_matrix(0,1));
+    EXPECT_FALSE(centers_matrix(1,0)==centers_matrix(1,1));
 
     for(int32_t i=0; i<2; i++)
         EXPECT_TRUE(cluster_size[i]!=0);

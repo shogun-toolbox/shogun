@@ -98,8 +98,8 @@ void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32
 
 		lhs->free_feature_vector(vec, Cl);
 	}
-
 	SG_UNREF(lhs);
+
 }
 
 void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
@@ -367,6 +367,16 @@ SGMatrix<float64_t> CKMeans::get_cluster_centers()
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
 	SG_UNREF(lhs);
 	return centers;
+}
+
+SGMatrix<float64_t> CKMeans::get_random_centers(SGVector<float64_t> cluster_size, SGVector<int32_t> classes, int32_t XSize)
+{
+	CKMeans::set_random_centers(cluster_size, classes, XSize);
+	CDenseFeatures<float64_t>* randomised_centers=
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	SGMatrix<float64_t> randomised_centers_matrix=
+		randomised_centers->get_feature_matrix();
+	return randomised_centers_matrix;
 }
 
 int32_t CKMeans::get_dimensions()
