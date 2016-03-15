@@ -47,62 +47,6 @@
 
 using namespace shogun;
 
-TEST(AddMatrix, native_backend)
-{
-	const float64_t alpha = 0.3;
-	const float64_t beta = -1.5;
-
-	SGMatrix<float64_t> A(3,3);
-	SGMatrix<float64_t> B(3,3);
-	SGMatrix<float64_t> C(3,3);
-	SGMatrix<float64_t> D(3,3);
-
-	for (int32_t i=0; i<9; i++)
-	{
-		A[i] = i;
-		B[i] = 0.5*i;
-	}
-
-	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
-	linalg::add<linalg::Backend::NATIVE>(A, B, D);
-	SGMatrix<float64_t> E = linalg::add<linalg::Backend::NATIVE>(A, B);
-
-	for (int32_t i=0; i<9; i++)
-	{
-		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
-		EXPECT_NEAR(A[i]+B[i], D[i], 1e-15);
-		EXPECT_NEAR(A[i]+B[i], E[i], 1e-15);
-	}
-}
-
-TEST(AddVector, native_backend)
-{
-	const float64_t alpha = 0.3;
-	const float64_t beta = -1.5;
-
-	SGVector<float64_t> A(9);
-	SGVector<float64_t> B(9);
-	SGVector<float64_t> C(9);
-	SGVector<float64_t> D(9);
-
-	for (int32_t i=0; i<9; i++)
-	{
-		A[i] = i;
-		B[i] = 0.5*i;
-	}
-
-	linalg::add<linalg::Backend::NATIVE>(A, B, C, alpha, beta);
-	linalg::add<linalg::Backend::NATIVE>(A, B, D);
-	SGVector<float64_t> E = linalg::add<linalg::Backend::NATIVE>(A, B);
-
-	for (int32_t i=0; i<9; i++)
-	{
-		EXPECT_NEAR(alpha*A[i]+beta*B[i], C[i], 1e-15);
-		EXPECT_NEAR(A[i]+B[i], D[i], 1e-15);
-		EXPECT_NEAR(A[i]+B[i], E[i], 1e-15);
-	}
-}
-
 #ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(AddMatrix, eigen3_backend)
