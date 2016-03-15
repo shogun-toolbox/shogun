@@ -24,7 +24,7 @@ FILE(GLOB META_INTEGRATION_REFERENCES ${CMAKE_CURRENT_BINARY_DIR}/reference_resu
 FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	# assume a structure <target_language>/<category>/result.dat
 	get_filename_component(NAME ${REFERENCE_FILE} NAME_WE)
-	IF((${CMAKE_MAJOR_VERSION}<=2) AND (${CMAKE_MINOR_VERSION}<=8) AND (${CMAKE_PATCH_VERSION}<=11))
+	IF(${CMAKE_VERSION} VERSION_LESS 2.8.12)
 	    get_filename_component(FULL_DIR ${REFERENCE_FILE} PATH)
 	ELSE()
 	    # only supported from >2.8.11

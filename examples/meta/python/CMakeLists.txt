@@ -6,7 +6,7 @@ GET_PYTHON_ENV()
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
 	get_filename_component(EXAMPLE_NAME ${META_EXAMPLE} NAME_WE)
-	IF((${CMAKE_MAJOR_VERSION}<=2) AND (${CMAKE_MINOR_VERSION}<=8) AND (${CMAKE_PATCH_VERSION}<=11))
+	IF(${CMAKE_VERSION} VERSION_LESS 2.8.12)
 	    get_filename_component(FULL_DIR ${META_EXAMPLE} PATH)
 	ELSE()
 	    # only supported from >2.8.11
