@@ -120,6 +120,29 @@ class CDistance : public CSGObject
 			return distance(idx_a, idx_b);
 		}
 
+		/**  
+		 * Precomputation related to features of right hand side
+		 * WARNING : Make sure to reset computations using reset_precompute()
+		 * when features or feature matrix are changed.
+		 * This method is empty, should be overloaded in derived class.
+		 */
+		virtual void precompute_rhs(){}
+
+		/** 
+		 * Precomputation related to features of left hand side
+		 * WARNING : Make sure to reset computations using reset_precompute()
+		 * when features or feature matrix are changed.
+		 * This method is empty, should be overloaded in derived class.
+		 */
+		virtual void precompute_lhs(){}
+	
+		/** 
+		 * Reset precomputations for features of both sides
+		 * Should be used to reset whenever features or feature matrix are changed.
+		 * This method is empty, should be overloaded in derived class.
+		 */
+		virtual void reset_precompute(){}
+
 		/** get distance matrix
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)
