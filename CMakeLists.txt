@@ -667,7 +667,7 @@ IF(BUILD_META_EXAMPLES)
     include(FindPythonModule)
     find_python_module(ply REQUIRED)
     IF(NOT PY_PLY)
-        message(FATAL_ERROR "Python module ply required for meta examples.")
+        message(WARNING "Python module ply required for meta examples.")
     ENDIF()
 
     FIND_PACKAGE(Ctags)
