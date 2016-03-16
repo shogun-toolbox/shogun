@@ -1,10 +1,15 @@
 import json
 import sys
 from string import Template
-from sets import Set
 import os.path
 import argparse
 import re
+# import set in a python 2->3 safe way
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 
 class Translator:
     def __init__(self, targetDict):
