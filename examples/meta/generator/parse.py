@@ -221,9 +221,9 @@ class FastParser:
     # Error rule for syntax errors
     def p_error(self, p):
         if p:
-            print "Syntax error in input: " + str(p.value) + " on line " + str(p.lineno)
+            print("Syntax error in input: " + str(p.value) + " on line " + str(p.lineno))
         else:
-            print "Reached end of file without completing parse"
+            print("Reached end of file without completing parse")
 
 
 def parse(programString, filePath):
@@ -256,4 +256,4 @@ if __name__ == "__main__":
     # Parse input and print json output
     program = parse(programString, filePath)
 
-    print json.dumps(program, indent=indentWidth)
+    print(json.dumps(program, indent=indentWidth))

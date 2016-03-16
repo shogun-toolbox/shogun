@@ -358,9 +358,9 @@ def loadTargetDict(targetJsonPath):
             return json.load(jsonDictFile)
     except IOError, err:
         if err.errno == 2:
-            print "Target \"" + targetJsonPath + "\" does not exist"
+            print("Target \"" + targetJsonPath + "\" does not exist")
         else:
-            print err
+            print(err)
         raise Exception("Could not load target dictionary")
 
 if __name__ == "__main__":
@@ -384,4 +384,4 @@ if __name__ == "__main__":
     else:
         programObject = json.load(sys.stdin)
 
-    print translate(programObject, targetDict)
+    print(translate(programObject, targetDict))
