@@ -47,32 +47,6 @@
 
 using namespace shogun;
 
-TEST(MaxMatrix, native_backend)
-{
-	SGMatrix<float64_t> A(3,3);
-
-	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-
-	for (int32_t i=0; i<9; i++)
-		A[i] = a[i];
-
-	for (int32_t i=0; i<9; i++)
-		EXPECT_NEAR(8, linalg::max<linalg::Backend::NATIVE>(A), 1e-15);
-}
-
-TEST(MaxVector, native_backend)
-{
-	SGVector<float64_t> A(9);
-
-	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-
-	for (int32_t i=0; i<9; i++)
-		A[i] = a[i];
-
-	for (int32_t i=0; i<9; i++)
-		EXPECT_NEAR(8, linalg::max<linalg::Backend::NATIVE>(A), 1e-15);
-}
-
 #ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(MaxMatrix, eigen3_backend)
