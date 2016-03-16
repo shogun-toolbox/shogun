@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Soumyajit De
+ * Written (w) 2016 Pan Deng
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -141,9 +141,8 @@ struct vector_mean<Backend::VIENNACL, Vector>
 	 */
 	static T compute(CGPUVector<T> vec)
 	{
-		REQUIRE(vec.vlen > 0, "Vector can not be empty!\n");
-                return (vector_sum<Backend::VIENNACL, CGPUVector<T> >::compute(vec)
-                 / vec.vlen);
+		SG_SERROR("The operation VectorMean() on a vector is currently not supported\n");
+                return 0;
 	}
 };
 
