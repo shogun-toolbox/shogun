@@ -356,7 +356,7 @@ def loadTargetDict(targetJsonPath):
     try:
         with open(targetJsonPath, "r") as jsonDictFile:
             return json.load(jsonDictFile)
-    except IOError, err:
+    except IOError as err:
         if err.errno == 2:
             print("Target \"" + targetJsonPath + "\" does not exist")
         else:
