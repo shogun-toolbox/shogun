@@ -29,6 +29,10 @@ lrr.set_compute_bias(False)
 lrr.set_bias(bias)
 #[!set_bias_manually]
 
+#[!extract_w]
+RealVector weights = lrr.get_w()
+#[!extract_w]
+
 #![evaluate_error]
 MeanSquaredError eval()
 Real mse = eval.evaluate(labels_predict, labels_test)

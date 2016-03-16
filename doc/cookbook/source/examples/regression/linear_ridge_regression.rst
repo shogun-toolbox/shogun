@@ -37,6 +37,10 @@ Imagine, we know the bias term. We can set it as
 
 .. sgexample:: linear_ridge_regression.sg:set_bias_manually
 
+After training, we can extract :math:`{\bf w}`.
+
+.. sgexample:: linear_ridge_regression.sg:extract_w
+
 Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
 
 .. sgexample:: linear_ridge_regression.sg:evaluate_error
