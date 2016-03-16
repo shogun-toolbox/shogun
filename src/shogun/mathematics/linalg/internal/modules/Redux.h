@@ -36,6 +36,8 @@
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
+#include <shogun/mathematics/linalg/internal/implementation/Mean.h>
+#include <shogun/mathematics/linalg/internal/implementation/VectorMean.h>
 
 namespace shogun
 {
@@ -80,6 +82,20 @@ typename Vector::Scalar vector_sum(Vector a)
 {
 	return implementation::vector_sum<backend,Vector>::compute(a);
 }
+
+/**
+ * Wrapper method for internal implementation of vector mean of values that works
+ * with generic dense vectors
+
+ * @param a vector whose mean has to be computed
+ * @return the vector mean \f$\mean_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_mean(Vector a)
+{
+	return implementation::vector_mean<backend,Vector>::compute(a);
+}
+
 
 #ifdef HAVE_LINALG_LIB
 
@@ -168,20 +184,6 @@ typename implementation::rowwise_sum<backend,Matrix>::ReturnType rowwise_sum(
 	Matrix m, bool no_diag=false)
 {
 	return implementation::rowwise_sum<backend,Matrix>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix rowwise sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @param result Pre-allocated vector for the result of the computation
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vector>
-void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
-{
-	implementation::rowwise_sum<backend,Matrix>::compute(m, result, no_diag);
 }
 
 #endif // HAVE_LINALG_LIB
