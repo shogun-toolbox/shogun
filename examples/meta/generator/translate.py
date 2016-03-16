@@ -14,9 +14,9 @@ except NameError:
 class Translator:
     def __init__(self, targetDict):
         self.dependencies = {
-            "AllClasses":Set(),
-            "ConstructedClasses":Set(),
-            "Enums":Set()
+            "AllClasses":set(),
+            "ConstructedClasses":set(),
+            "Enums":set()
         }
 
         self.targetDict = targetDict
@@ -29,9 +29,9 @@ class Translator:
             program: object like [statementAST, statementAST, statementAST, ...]
         """
         # reset dependencies
-        self.dependencies["AllClasses"] = Set()
-        self.dependencies["ConstructedClasses"] = Set()
-        self.dependencies["Enums"] = Set()
+        self.dependencies["AllClasses"] = set()
+        self.dependencies["ConstructedClasses"] = set()
+        self.dependencies["Enums"] = set()
         self.tags = tags
         self.storeVars = storeVars
         self.varsToStore = []
