@@ -1,7 +1,7 @@
 # The Shogun cookbook
 
 This is the Shogun cookbook, an easy to maintain collection of API examples.
-We use [Sphinx](http://www.sphinx-doc.org/en/stable/) and our own [meta-examples](https://github.com/shogun-toolbox/shogun/wiki/Example_Generation) to generate html pages with code snippets in all target languages.
+We use [Sphinx](http://www.sphinx-doc.org/en/stable/) and our own [meta-examples](https://github.com/shogun-toolbox/shogun/wiki/Example_Generation) to generate html pages with code snippets in all target languages. The latest version runs [here](http://shogun.ml/cookbook/latest/).
 
 This is achieved by the following high-level steps:
 
