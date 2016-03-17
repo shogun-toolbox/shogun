@@ -211,8 +211,10 @@ class Translator:
         """
         if statement == "\n": # Newline handling
             return "\n"
-
-        type = statement.keys()[0]
+        
+        # python2/3 safe dictionary keys
+        type = list(statement.keys())[0]
+        
         translation = None
         if type == "Init":
             translation = self.translateInit(statement["Init"])
@@ -247,12 +249,12 @@ class Translator:
 
         initialisation = init[2]
 
-        if initialisation.keys()[0] == "Expr":
+        # python2/3 safe dictionary keys
+        if list(initialisation.keys())[0] == "Expr":
             template = Template(self.targetDict["Init"]["Copy"])
             exprString = self.translateExpr(initialisation["Expr"])
             return template.substitute(name=nameString, type=typeString, expr=exprString)
-
-        elif initialisation.keys()[0] == "ArgumentList":
+        elif list(initialisation.keys())[0] == "ArgumentList":
             self.dependencies["ConstructedClasses"].add(typeString)
             template = Template(self.targetDict["Init"]["Construct"])
             argsString = self.translateArgumentList(initialisation["ArgumentList"])
@@ -265,7 +267,9 @@ class Translator:
                   {"BoolLiteral": "False"}, {"StringLiteral": "train.dat"}, {"NumberLiteral": 4},
                   {"Identifier": "feats_test"}, etc.
         """
-        key = expr.keys()[0]
+        # python2/3 safe dictionary keys
+        key = list(expr.keys())[0]
+        
         if key == "MethodCall":
             template = Template(self.targetDict["Expr"]["MethodCall"])
             object = expr[key][0]["Identifier"]
@@ -316,7 +320,8 @@ class Translator:
             type: object like {"ObjectType": "IntMatrix"}, {"BasicType": "float"}, etc.
         """
         template = ""
-        typeKey = type.keys()[0]
+        # python2/3 safe dictionary keys
+        typeKey = list(type.keys())[0]
 
         # Store dependency
         if typeKey == "ObjectType":
