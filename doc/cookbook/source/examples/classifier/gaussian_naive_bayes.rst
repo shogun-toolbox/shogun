@@ -16,6 +16,8 @@ For each vector, the Gaussian Naive Bayes classifier chooses the class :math:`c`
 
   p(c)\prod_{i}p(x_{i}|c)
 
+See Chapter 10 in :cite:`barber2012bayesian` for a detailed introduction.
+
 -------
 Example
 -------
@@ -28,7 +30,7 @@ We create an instance of the :sgclass:`CGaussianNaiveBayes` classifier, passing 
 
 .. sgexample:: gaussiannaivebayes.sg:create_instance
 
-Then we run the train Gaussian Naive Bayes algorithm, apply it to the test data, and print the prediction.
+Then we run the train Gaussian Naive Bayes algorithm and apply it to the test data, which here gives `CMulticlassLabels`
 
 .. sgexample:: gaussiannaivebayes.sg:train_and_apply
 
