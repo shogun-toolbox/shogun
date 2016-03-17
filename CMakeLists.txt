@@ -664,10 +664,9 @@ FIND_PACKAGE(PythonInterp REQUIRED)
 
 # Meta examples and dependencies
 IF(BUILD_META_EXAMPLES)
-    include(FindPythonModule)
-    find_python_module(ply REQUIRED)
-    IF(NOT PY_PLY)
-        message(WARNING "Python module ply required for meta examples.")
+    FIND_PACKAGE(PLY REQUIRED)
+    IF(NOT PLY_FOUND)
+        message(FATAL_ERROR "Python module ply required for meta examples.")
     ENDIF()
 
     FIND_PACKAGE(Ctags)
