@@ -77,6 +77,12 @@ enum EDistanceType
  * In the means of Shogun toolbox the distance function is defined
  * on the 'space' of CFeatures.
  *
+ * Precomputations can be done for left hand side and right hand side features.
+ * This has to be implemented in overloaded methods for precompute_lhs() and 
+ * precompute_rhs() in derived classes.
+ * WARNING : Make sure to reset precomputations for features using reset_precompute() 
+ * when features or feature matrix are changed.
+ *
  */
 class CDistance : public CSGObject
 {
