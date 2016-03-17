@@ -69,14 +69,16 @@ TEST(EuclideanDistance, distance_precomputed_norms)
 
 	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
-	euclidean->precompute_lhs_squared_norms();
-	euclidean->precompute_rhs_squared_norms();	
+	euclidean->precompute_lhs();
+	euclidean->precompute_rhs();	
 
 	// check distances computed one by one
 	EXPECT_EQ(euclidean->distance(0,0), 2);
 	EXPECT_EQ(euclidean->distance(0,1), 2);
 	EXPECT_EQ(euclidean->distance(1,0), 5);
 	EXPECT_EQ(euclidean->distance(1,1), 5);
+
+	euclidean->reset_precompute();
 
 	SG_UNREF(euclidean); 
 }

@@ -46,17 +46,6 @@
 
 using namespace shogun;
 
-TEST(VectorSum, native_backend)
-{
-	const index_t size=10;
-	SGVector<float64_t> a(size);
-	a.set_const(2.0);
-
-	float64_t result=linalg::vector_sum<linalg::Backend::NATIVE>(a);
-
-	EXPECT_NEAR(result, 20.0, 1E-15);
-}
-
 #ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 TEST(VectorSum, SGVector_explicit_eigen3_backend)

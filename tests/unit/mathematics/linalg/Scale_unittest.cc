@@ -47,38 +47,6 @@
 
 using namespace shogun;
 
-TEST(ScaleMatrix, native_backend)
-{
-	const float64_t alpha = 0.3;
-
-	SGMatrix<float64_t> A(9,9);
-	SGMatrix<float64_t> B(9,9);
-
-	for (int32_t i=0; i<9*9; i++)
-		A[i] = i;
-
-	linalg::scale<linalg::Backend::NATIVE>(A, B, alpha);
-
-	for (int32_t i=0; i<9*9; i++)
-		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
-}
-
-TEST(ScaleVector, native_backend)
-{
-	const float64_t alpha = 0.3;
-
-	SGVector<float64_t> A(9);
-	SGVector<float64_t> B(9);
-
-	for (int32_t i=0; i<9; i++)
-		A[i] = i;
-
-	linalg::scale<linalg::Backend::NATIVE>(A, B, alpha);
-
-	for (int32_t i=0; i<9; i++)
-		EXPECT_NEAR(alpha*A[i], B[i], 1e-15);
-}
-
 #ifdef HAVE_EIGEN3
 TEST(ScaleMatrix, eigen3_backend)
 {

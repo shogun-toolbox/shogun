@@ -1,17 +1,22 @@
 import json
 import sys
 from string import Template
-from sets import Set
 import os.path
 import argparse
 import re
+# import set in a python 2->3 safe way
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 
 class Translator:
     def __init__(self, targetDict):
         self.dependencies = {
-            "AllClasses":Set(),
-            "ConstructedClasses":Set(),
-            "Enums":Set()
+            "AllClasses":set(),
+            "ConstructedClasses":set(),
+            "Enums":set()
         }
 
         self.targetDict = targetDict
@@ -24,9 +29,9 @@ class Translator:
             program: object like [statementAST, statementAST, statementAST, ...]
         """
         # reset dependencies
-        self.dependencies["AllClasses"] = Set()
-        self.dependencies["ConstructedClasses"] = Set()
-        self.dependencies["Enums"] = Set()
+        self.dependencies["AllClasses"] = set()
+        self.dependencies["ConstructedClasses"] = set()
+        self.dependencies["Enums"] = set()
         self.tags = tags
         self.storeVars = storeVars
         self.varsToStore = []
@@ -236,7 +241,7 @@ class Translator:
         typeString = self.translateType(init[0])
         nameString = init[1]["Identifier"]
 
-        # store only matrices, vectors and scalars
+        # store only real valued matrices, vectors and scalars
         if self.storeVars and init[0]["ObjectType"] in ("Real", "RealVector", "RealMatrix"):
             self.varsToStore.append((typeString, nameString))
 
@@ -356,11 +361,11 @@ def loadTargetDict(targetJsonPath):
     try:
         with open(targetJsonPath, "r") as jsonDictFile:
             return json.load(jsonDictFile)
-    except IOError, err:
+    except IOError as err:
         if err.errno == 2:
-            print "Target \"" + targetJsonPath + "\" does not exist"
+            print("Target \"" + targetJsonPath + "\" does not exist")
         else:
-            print err
+            print(err)
         raise Exception("Could not load target dictionary")
 
 if __name__ == "__main__":
@@ -384,4 +389,4 @@ if __name__ == "__main__":
     else:
         programObject = json.load(sys.stdin)
 
-    print translate(programObject, targetDict)
+    print(translate(programObject, targetDict))

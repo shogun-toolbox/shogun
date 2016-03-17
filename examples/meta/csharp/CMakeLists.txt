@@ -4,10 +4,15 @@ SET(CSHARP_FLAGS "/lib:${CSHARP_MODULAR_BUILD_DIR};/r:modshogun")
 # (not generated yet so have to fake filenames from META_EXAMPLES list)
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
-	STRING(REGEX REPLACE ".*/(.*).sg" "\\1" EXAMPLE_NAME ${META_EXAMPLE})
-	STRING(REGEX REPLACE ".*/(.*/.*).sg" "\\1" EXAMPLE_NAME_WITH_DIR ${META_EXAMPLE})
-	STRING(REGEX REPLACE "/" "_" EXAMPLE_NAME_WITH_DIR ${EXAMPLE_NAME_WITH_DIR})
-    STRING(REGEX REPLACE ".*/(.*)/.*.sg" "\\1" EXAMPLE_REL_DIR ${META_EXAMPLE})
+	get_filename_component(EXAMPLE_NAME ${META_EXAMPLE} NAME_WE)
+	IF(${CMAKE_VERSION} VERSION_LESS 2.8.12)
+	    get_filename_component(FULL_DIR ${META_EXAMPLE} PATH)
+	ELSE()
+	    # only supported from >2.8.11
+	    get_filename_component(FULL_DIR ${META_EXAMPLE} DIRECTORY)
+	ENDIF()
+	get_filename_component(EXAMPLE_REL_DIR ${FULL_DIR} NAME)
+	set(EXAMPLE_NAME_WITH_DIR "${EXAMPLE_REL_DIR}-${EXAMPLE_NAME}")
 
 	ADD_CUSTOM_COMMAND(OUTPUT compiled_csharp_${EXAMPLE_NAME_WITH_DIR}
 		COMMAND	${CSHARP_COMPILER} ${EXAMPLE_NAME}.cs ${CSHARP_FLAGS} -out:${EXAMPLE_NAME}.exe

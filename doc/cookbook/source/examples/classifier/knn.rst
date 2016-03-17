@@ -12,8 +12,6 @@ For :math:`k=1`, the label for a test point :math:`x^*` is predicted to be the s
    
 See Chapter 14 in :cite:`barber2012bayesian` for a detailed introduction.
 
-See :sgissue:`2996` for known issues.
-
 -------
 Example
 -------
@@ -26,7 +24,7 @@ In order to run :sgclass:`CKNN`, we need to choose a distance, for example :sgcl
 
 .. sgexample:: knn.sg:choose_distance
 
-Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` classifier, passing it training data and labels.
+Once we have chosen a distance, we create an instance of the :sgclass:`CKNN` classifier, passing it :math:`k`.
 
 .. sgexample:: knn.sg:create_instance
 
@@ -34,9 +32,15 @@ Then we run the train KNN algorithm and apply it to test data, which here gives 
 
 .. sgexample:: knn.sg:train_and_apply
 
+We can evaluate test performance via e.g. :sgclass:`CMulticlassAccuracy`.
+
+.. sgexample:: knn.sg:evaluate_accuracy
+
+
 ----------
 References
 ----------
 :wiki:`K-nearest_neighbors_algorithm`
 
 .. bibliography:: ../../references.bib
+    :filter: docname in docnames

@@ -10,8 +10,10 @@
     "Type": {
         "Default": "$type",
         "bool": "bool",
-        "string": "String",
-        "real": "double",
+        "String": "String",
+        "Int": "int",
+        "Float": "float",
+        "Real": "double",
         "BoolVector": "bool[]",
         "CharVector": "char[]",
         "ByteVector": "byte[]",

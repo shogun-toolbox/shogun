@@ -6,7 +6,7 @@
 
 using namespace shogun;
 
-TEST(LaRank,train)
+TEST(DISABLED_LaRank,train)
 {
 	index_t num_vec=10;
 	index_t num_feat=3;
