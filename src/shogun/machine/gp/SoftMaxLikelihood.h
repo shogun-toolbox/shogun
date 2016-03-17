@@ -287,7 +287,7 @@ private:
 
 	/**the Monte method sampler
 	 *
-	 * @oaram num_samples number of samples to be generated
+	 * @param num_samples number of samples to be generated
 	 * @param mu posterior mean of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
 	 * posterior marginal \f$p(f_*|X,y,x_*)\f$

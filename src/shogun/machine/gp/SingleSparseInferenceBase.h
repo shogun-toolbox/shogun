@@ -215,9 +215,10 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(const TParameter* param)=0;
 
+	/** whether the kernel supports to get the gradient wrt inducing points or not*/
 	bool m_fully_sparse;
 
-	/* a lock used to parallelly compute derivatives wrt hyperparameters */
+	/** a lock used to parallelly compute derivatives wrt hyperparameters */
 	CLock* m_lock;
 private:
 	/* init */
