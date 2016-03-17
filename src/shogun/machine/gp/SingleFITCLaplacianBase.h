@@ -236,10 +236,10 @@ protected:
 	 * */
 	SGVector<float64_t> m_t;
 
-	/* B is defined in infFITC.m and infFITC_Laplace.m */
+	/** B is defined in infFITC.m and infFITC_Laplace.m */
 	SGMatrix<float64_t> m_B;
 
-	/* w=B*al */
+	/** w=B*al */
 	SGVector<float64_t> m_w;
 
 	/** Rvdd=W
@@ -248,7 +248,7 @@ protected:
 	 */
 	SGMatrix<float64_t> m_Rvdd;
 
-	/* V defined in infFITC.m and infFITC_Laplace.m */
+	/** V defined in infFITC.m and infFITC_Laplace.m */
 	SGMatrix<float64_t> m_V;
 
 private:

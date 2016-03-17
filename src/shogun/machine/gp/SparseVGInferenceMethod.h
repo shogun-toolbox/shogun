@@ -238,23 +238,23 @@ protected:
 	/** update gradients */
 	virtual void compute_gradient();
 protected:
-	/* inv_Lm=inv(Lm) where Lm*Lm'=Kmm */
+	/** inv_Lm=inv(Lm) where Lm*Lm'=Kmm */
 	SGMatrix<float64_t> m_inv_Lm;
-	/* Knm*inv_Lm */
+	/** Knm*inv_Lm */
 	SGMatrix<float64_t> m_Knm_inv_Lm;
-	/* invLa=inv(La) where La*La'=sigma2*eye(m)+inv_Lm*Kmn*Knm*inv_Lm' */
+	/** invLa=inv(La) where La*La'=sigma2*eye(m)+inv_Lm*Kmn*Knm*inv_Lm' */
 	SGMatrix<float64_t> m_inv_La;
-	/* yy=(y-meanfun)'*(y-meanfun) */
+	/** yy=(y-meanfun)'*(y-meanfun) */
 	float64_t m_yy;
-	/* the term used to compute gradient wrt likelihood and marginal likelihood*/
+	/** the term used to compute gradient wrt likelihood and marginal likelihood*/
 	float64_t m_f3;
-	/* square of sigma from Gaussian likelihood*/
+	/** square of sigma from Gaussian likelihood*/
 	float64_t m_sigma2;
-	/* the trace term to compute marginal likelihood*/
+	/** the trace term to compute marginal likelihood*/
 	float64_t m_trk;
-	/* a matrix used to compute gradients wrt kernel (Kmm)*/
+	/** a matrix used to compute gradients wrt kernel (Kmm)*/
 	SGMatrix<float64_t> m_Tmm;
-	/* a matrix used to compute gradients wrt kernel (Knm)*/
+	/** a matrix used to compute gradients wrt kernel (Knm)*/
 	SGMatrix<float64_t> m_Tnm;
 private:
 	/** init */
