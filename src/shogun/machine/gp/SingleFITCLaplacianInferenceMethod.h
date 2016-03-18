@@ -289,7 +289,7 @@ protected:
 	virtual SGMatrix<float64_t> get_chol_inv(SGMatrix<float64_t> mtx);
 
 	/** efficiently compute the matrix-vector product
-	 * \f$\Sigma \times al$\f, where \f$\Sigma$\f is
+	 * \f$\Sigma \times al\f$, where \f$\Sigma\f$ is
 	 * the FITC equivalent covariance n-by-n matrix (prior) of f_n
 	 *
 	 * @param al input vector
@@ -299,7 +299,7 @@ protected:
 	virtual SGVector<float64_t> compute_mvmK(SGVector<float64_t> al);
 
 	/** efficiently compute the matrix-vector product
-	 * \f$ \inv{\inv{W}+\Sigma} \times x$\f, where \f$\Sigma$\f is
+	 * \f$ \inv{\inv{W}+\Sigma} \times x\f$, where \f$\Sigma\f$ is
 	 * the FITC equivalent covariance n-by-n matrix (prior) of f_n
 	 *
 	 * @param x input vector

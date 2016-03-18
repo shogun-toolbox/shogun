@@ -60,7 +60,7 @@ enum EMCSamplerType
 
 /** @brief Class that models Soft-Max likelihood.
  *
- * softmax_i(f)=\frac{\exp{f_i}}{\sum\exp{f_i}}
+ * \f$ \text{softmax}_i(f)=\frac{\exp{f_i}}{\sum\exp{f_i}} \f$
  *
  * Code adapted from
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
@@ -285,13 +285,13 @@ private:
 	SGVector<float64_t> predictive_helper(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels *lab, EMCSamplerType option) const;
 
-	/**the Monte method sampler
+	/** the Monte method sampler
 	 *
 	 * @param num_samples number of samples to be generated
-	 * @param mu posterior mean of a Gaussian distribution
+	 * @param mean posterior mean of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
 	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param s2 posterior variance of a Gaussian distribution
+	 * @param Sigma posterior variance of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
 	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param y labels based on 0 and 1 encoding \f$y_*\f$

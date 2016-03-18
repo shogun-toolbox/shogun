@@ -181,7 +181,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean,
 	 * \f$K\f$ is the prior covariance matrix,
-	 * and \f$meanf$\f is the mean prior fomr MeanFunction
+	 * and \f$meanf\f$ is the mean prior fomr MeanFunction
 	 *
 	 */
 	virtual SGVector<float64_t> get_alpha()=0;

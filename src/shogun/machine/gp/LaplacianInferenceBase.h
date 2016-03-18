@@ -89,7 +89,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean,
 	 * \f$K\f$ is the prior covariance matrix,
-	 * and \f$meanf$\f is the mean prior fomr MeanFunction
+	 * and \f$meanf\f$ is the mean prior fomr MeanFunction
 	 *
 	 */
 	virtual SGVector<float64_t> get_alpha();
@@ -98,23 +98,23 @@ public:
 	 *
 	 * @return Cholesky decomposition of matrix:
 	 *
-	 *
 	 * for binary and regression case
 	 * \f[
 	 * L = Cholesky(W^{\frac{1}{2}}*K*W^{\frac{1}{2}}+I)
 	 * \f]
-	 *
+
 	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
-	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+         * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+         *
+         * for multiclass case
+         * \f[
+         * M = Cholesky(\sum_\text{c}{E_\text{c})
+         * \f]
+         *
+         * where \f$E_\text{c}\f$ is the matrix defined in the algorithm 3.3 of the GPML textbook for class c
+         * Note the E matrix is used to store these \f$E_\text{c}\f$ matrices, where E=[E_1, E_2, ..., E_C],
+         * where C is the number of classes and C should be greater than 1.
 	 *
-	 * for multiclass case
-	 * \f[
-	 * M = Cholesky(\sum_\text{c}{E_\text{c})
-	 * \f]
-	 *
-	 * where \f$E_\text{c}\f$ is the matrix defined in the algorithm 3.3 of the GPML textbook for class c
-	 * Note the E matrix is used to store these \f$E_\text{c}\f$ matrices, where E=[E_1, E_2, ..., E_C],
-	 * where C is the number of classes and C should be greater than 1.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
