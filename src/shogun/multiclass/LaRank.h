@@ -378,6 +378,17 @@ namespace shogun
 			 * @return tau
 			 */
 			float64_t get_tau() { return tau; };
+                        /** set max iterations
+                         * @param max_iter
+                         * When given non-positive values,
+                         * no upper limit to iterations
+                         */
+                        void set_max_iteration(int32_t max_iter) 
+                            { max_iteration = max_iter; }
+                        /** get max iterations
+                         * @return max_iter
+                         */
+                        int32_t get_max_iteration() { return max_iteration; }
 
 		protected:
 			/** train machine */
@@ -485,6 +496,8 @@ namespace shogun
 
 			/// progess output
 			int32_t step;
+                        
+                        int32_t max_iteration;
 	};
 }
 #endif // LARANK_H
