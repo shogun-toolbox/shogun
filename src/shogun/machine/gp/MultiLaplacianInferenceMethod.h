@@ -120,7 +120,7 @@ public:
 	virtual float64_t get_negative_log_marginal_likelihood();
 
 	/** get diagonal vector
-	 * where the vector, \f$\pi$\f, defined in the algorithm 3.3 of the GPML textbook
+	 * where the vector, \f$\pi\f$, defined in the algorithm 3.3 of the GPML textbook
 	 *
 	 * @return the vector used for inference
 	 */
@@ -221,7 +221,7 @@ protected:
 
 	/** the helper method used to compute gradient of GP wrt hyperparameter
 	 *
-	 * @param raw gradient wrt hyperparameter
+	 * @param dK raw gradient wrt hyperparameter
 	 *
 	 * @return the gradient of GP wrt hyperparameter
 	 *

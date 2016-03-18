@@ -179,7 +179,7 @@ protected:
 	 * get_derivative_wrt_kernel(const TParameter* param)
 	 * will call this function
 	 *
-	 * @param the gradient wrt hyperparameter related to cov
+	 * @param dK the gradient wrt hyperparameter related to cov
 	 */
 
 	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);

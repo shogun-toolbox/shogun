@@ -60,7 +60,7 @@ public:
 	/* default constructor */
 	CSingleFITCLaplacianInferenceMethodWithLBFGS();
 
-	/* constructor
+	/** constructor
 	 *
 	 * @param kernel covariance function
 	 * @param features features to use in inference
@@ -86,7 +86,7 @@ public:
 	virtual const char* get_name() const
 	{return "SingleFITCLaplacianInferenceMethodWithLBFGS";}
 
-	/* set L-BFGS parameters
+	/** set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
 	 * @param m The number of corrections to approximate the inverse hessian matrix.
 	 * Default value is 100.
@@ -150,60 +150,60 @@ protected:
 	virtual void update_alpha();
 
 private:
-	/* a parameter used to compute function value and gradient for LBFGS update*/
+	/** a parameter used to compute function value and gradient for LBFGS update*/
 	SGVector<float64_t> * m_mean_f;
 
-	/* should we enable the original Newton method
+	/** should we enable the original Newton method
 	 * if the L-BFGS method fails
 	 * */
 	bool m_enable_newton_if_fail;
 
-	/* The number of corrections to approximate the inverse hessian matrix.*/
+	/** The number of corrections to approximate the inverse hessian matrix.*/
 	int m_m;
 
-	/* The maximum number of trials to do line search for each L-BFGS update.*/
+	/** The maximum number of trials to do line search for each L-BFGS update.*/
 	int m_max_linesearch;
 
-	/* The line search algorithm.*/
+	/** The line search algorithm.*/
 	int m_linesearch;
 
-	/* The maximum number of iterations for L-BFGS update.*/
+	/** The maximum number of iterations for L-BFGS update.*/
 	int m_max_iterations;
 
-	/* Delta for convergence test based on the change of function value.*/
+	/** Delta for convergence test based on the change of function value.*/
 	float64_t m_delta;
 
-	/* Distance for delta-based convergence test.*/
+	/** Distance for delta-based convergence test.*/
 	int m_past;
 
-	/* Epsilon for convergence test based on the change of gradient.*/
+	/** Epsilon for convergence test based on the change of gradient.*/
 	float64_t m_epsilon;
 
-	/* The minimum step of the line search.*/
+	/** The minimum step of the line search.*/
 	float64_t m_min_step;
 
-	/* The maximum step of the line search.*/
+	/** The maximum step of the line search.*/
 	float64_t m_max_step;
 
-	/* A parameter used in Armijo condition.*/
+	/** A parameter used in Armijo condition.*/
 	float64_t m_ftol;
 
-	/* A parameter used in curvature condition.*/
+	/** A parameter used in curvature condition.*/
 	float64_t m_wolfe;
 
-	/* A parameter used in Morethuente linesearch to control the accuracy.*/
+	/** A parameter used in Morethuente linesearch to control the accuracy.*/
 	float64_t m_gtol;
 
-	/* The machine precision for floating-point values.*/
+	/** The machine precision for floating-point values.*/
 	float64_t m_xtol;
 
-	/* Coeefficient for the L1 norm of variables.*/
+	/** Coeefficient for the L1 norm of variables.*/
 	float64_t m_orthantwise_c;
 
-	/* Start index for computing L1 norm of the variables.*/
+	/** Start index for computing L1 norm of the variables.*/
 	int m_orthantwise_start;
 
-	/* End index for computing L1 norm of the variables.*/
+	/** End index for computing L1 norm of the variables.*/
 	int m_orthantwise_end;
 
 	void init();
