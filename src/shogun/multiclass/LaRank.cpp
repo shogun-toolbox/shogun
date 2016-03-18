@@ -588,7 +588,7 @@ CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
-	batch_mode(true), step(0), max_iteration(-1)
+	batch_mode(true), step(0), max_iteration(1000)
 {
 }
 
@@ -597,7 +597,7 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
-	batch_mode(true), step(0), max_iteration(-1)
+	batch_mode(true), step(0), max_iteration(1000)
 {
 }
 
