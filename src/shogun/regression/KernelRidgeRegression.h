@@ -13,24 +13,12 @@
 #define _KERNELRIDGEREGRESSION_H__
 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_LAPACK
-
 #include <shogun/regression/Regression.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/machine/KernelMachine.h>
 
 namespace shogun
 {
-
-/** which training method to use for KRR */
-enum ETrainingType
-{
-	/// via pseudo inverse
-	PINV=1,
-	/// or gauss-seidel iterative method
-	GS=2
-};
 
 /** @brief Class KernelRidgeRegression implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.
@@ -76,9 +64,8 @@ class CKernelRidgeRegression : public CKernelMachine
 		 * @param tau regularization constant tau
 		 * @param k kernel
 		 * @param lab labels
-		 * @param m method to use for training PINV (pseudo inverse by default)
 		 */
-		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m=PINV);
+		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab);
 
 		/** default destructor */
 		virtual ~CKernelRidgeRegression() {}
@@ -122,7 +109,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		virtual const char* get_name() const { return "KernelRidgeRegression"; }
 
 	protected:
-		/** train regression
+		/** Train regression
 		 *
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based regressors are used and distance/kernels are
@@ -132,20 +119,16 @@ class CKernelRidgeRegression : public CKernelMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** Train regression using Cholesky decomposition.
+		 * Assumes that m_alpha is already allocated.
+		 *
+		 *
+		 * @return boolean to indicate success
+		 */
+		bool solve_krr_system();
+
 	private:
 		void init();
-
-		/** train regression using Gauss-Seidel iterative method
-		 *
-		 * @return whether training was successful
-		 */
-		bool train_machine_gs();
-
-		/** train regression using pinv
-		 *
-		 * @return whether training was successful
-		 */
-		bool train_machine_pinv();
 
 	private:
 		/** regularization parameter tau */
@@ -154,10 +137,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		/** epsilon constant */
 		float64_t m_epsilon;
 
-		/** training function */
-		ETrainingType m_train_func;
 };
 }
 
-#endif // HAVE_LAPACK
 #endif // _KERNELRIDGEREGRESSION_H__
