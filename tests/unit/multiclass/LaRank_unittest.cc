@@ -6,7 +6,7 @@
 
 using namespace shogun;
 
-TEST(DISABLED_LaRank,train)
+TEST(LaRank,train)
 {
 	index_t num_vec=10;
 	index_t num_feat=3;
@@ -83,4 +83,3 @@ TEST(DISABLED_LaRank,train)
 	SG_UNREF(output_test);
 	SG_UNREF(svm);
 }
-
