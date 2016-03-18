@@ -53,7 +53,7 @@ namespace shogun
  *
  * The mathematically definition (equation 19 in the paper) is as below
  * \f[
- * Fenchel_i(\alpha_i,\lambda_i) = max_{h_i,\rho_i}{\alpha_i h_i+\lambda_i \rho_i /2 - E_{q(f_i|h_i,\rho_i)}(-log(p(y_i|f_i)))}
+ * \text{Fenchel}_i(\alpha_i,\lambda_i) = \max_{h_i,\rho_i}{\alpha_i h_i+\lambda_i \rho_i /2 - E_{q(f_i|h_i,\rho_i)}(-log(p(y_i|f_i)))}
  * \f]
  * where \f$\alpha_i\f$,\f$\lambda_i\f$ are Lagrange multipliers with respective to constraints
  * \f$h_i=\mu_i\f$ and \f$\rho_i=\sigma_i^2\f$ respectively,
@@ -63,7 +63,7 @@ namespace shogun
  * In this setting, \f$\alpha\f$ and \f$\lambda\f$ are called dual parameters for \f$\mu\f$ and \f$\sigma^2\f$ respectively.
  *
  * Note that \f$p(y_i)\f$ is Logistic distribution and a local variational bound defined as below is used to approximate
- * -E_{q(f_i|h_i,\rho_i)}(-log(p(y_i|f_i)))
+ * \f$-\text{E}_{q(f_i|h_i,\rho_i)}(-\log(p(y_i|f_i)))\f$
  *
  * The local variational bound used here is
  * \f[

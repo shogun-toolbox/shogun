@@ -189,7 +189,7 @@ protected:
 	 * get_derivative_wrt_kernel(const TParameter* param)
 	 * will call this function
 	 *
-	 * @param the gradient related to cov
+	 * @param dK the gradient related to cov
 	 *
 	 * @return the gradient wrt hyperparameter related to cov
 	 */

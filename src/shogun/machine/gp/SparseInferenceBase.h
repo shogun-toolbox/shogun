@@ -288,7 +288,7 @@ protected:
 	 * where
 	 * \f$\lambda \ge 0\f$ is the inducing noise.
 	 *
-	 * In practice, we use the corrected matrix, \Sigma_{M'} in the following approximation.
+	 * In practice, we use the corrected matrix, \f$\Sigma_{M'}\f$ in the following approximation.
 	 *\f[
 	 *\Sigma_{Sparse}=\textbf{diag}(\Sigma_{N}-\Phi)+\Phi
 	 *\f]
