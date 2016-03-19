@@ -140,13 +140,13 @@ public:
 			int orthantwise_start = 0,
 			int orthantwise_end = 1);
 
-	/* wheter we use Newton method as rollbak if LBFGS optimizer fails
+	/** wheter we use Newton method as rollbak if LBFGS optimizer fails
 	 *
 	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
 	 */
 	virtual void set_newton_method(bool enable_newton_if_fail);
 protected:
-	/* update alpha using the LBFGS method*/
+	/** update alpha using the LBFGS method*/
 	virtual void update_alpha();
 
 private:

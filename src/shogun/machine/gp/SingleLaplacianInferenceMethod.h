@@ -141,6 +141,7 @@ public:
 	virtual SGVector<float64_t> get_posterior_mean();
 protected:
 
+	/** initialize the update  */
 	virtual void update_init();
 
 	/** update alpha matrix */
@@ -209,12 +210,14 @@ protected:
 	/** third derivative of log likelihood with respect to function location */
 	SGVector<float64_t> m_d3lp;
 
+	/** derivative of negative log (approximated) marginal likelihood wrt fhat */ 
 	SGVector<float64_t> m_dfhat;
 
 	SGMatrix<float64_t> m_Z;
 
 	SGVector<float64_t> m_g;
 
+	/** posterior log likelihood without constant terms */
 	float64_t m_Psi;
 };
 }
