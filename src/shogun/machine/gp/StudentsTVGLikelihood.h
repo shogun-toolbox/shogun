@@ -58,6 +58,11 @@ class CStudentsTVGLikelihood : public CNumericalVGLikelihood
 public:
 	CStudentsTVGLikelihood();
 
+        /** constructor
+         *
+         * @param sigma noise variance
+         * @param df degrees of freedom
+         */
 	CStudentsTVGLikelihood(float64_t sigma, float64_t df);
 
 	virtual ~CStudentsTVGLikelihood();

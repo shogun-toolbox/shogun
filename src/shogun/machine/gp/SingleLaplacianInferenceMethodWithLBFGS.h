@@ -67,7 +67,7 @@ public:
 	/* default constructor */
 	CSingleLaplacianInferenceMethodWithLBFGS();
 
-	/* constructor
+	/** constructor
 	 *
 	 * @param kernel covariance function
 	 * @param features features to use in inference
