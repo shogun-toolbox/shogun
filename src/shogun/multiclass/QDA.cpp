@@ -258,7 +258,6 @@ bool CQDA::train_machine(CFeatures* data)
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(class_nums[k]-1), col, m_dim);
-		rotations.transpose_matrix(k);
 
 		if (m_store_covs)
 		{
