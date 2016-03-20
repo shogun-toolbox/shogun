@@ -80,6 +80,26 @@ namespace shogun
 		return ptr;
 	}
 
+	/** Deleter for shared_ptr that unrefs the pointer.
+	 */
+	template <typename T>
+	void unref_deleter(T* ptr)
+	{
+		SG_UNREF(ptr);
+	}
+
+	/** Wraps given raw pointer into @ref Some.
+	 *
+	 * @param ptr raw pointer to some object
+	 * @return a shared pointer that holds given pointer
+	 */
+	template <typename T>
+	Some<T> adopt_pointer(T* ptr)
+	{
+		SG_REF(ptr);
+		return Some<T>(std::shared_ptr<T>(ptr, unref_deleter<T>));
+	}
+
 	/** Creates an instance of any class
 	 * that is wrapped with a shared pointer like
 	 * structure @ref Some
@@ -94,8 +114,7 @@ namespace shogun
 	Some<T> some(Args&&... args)
 	{
 		T* ptr = new T(args...);
-		SG_REF(ptr);
-		return std::shared_ptr<T>(ptr, [](T* p) { SG_UNREF(p); });
+		return adopt_pointer<T>(ptr);
 	}
 
 };
