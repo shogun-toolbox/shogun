@@ -43,7 +43,7 @@ namespace internal
 struct OneDistributionTest
 {
 	/** defines the number of feature objects required */
-	enum { num_feats = 1 };
+	static constexpr index_t num_feats = 1;
 };
 
 /**
@@ -52,7 +52,7 @@ struct OneDistributionTest
 struct TwoDistributionTest
 {
 	/** defines the number of feature objects required */
-	enum { num_feats = 2 };
+	static constexpr index_t num_feats = 2;
 };
 
 /**
@@ -61,7 +61,7 @@ struct TwoDistributionTest
 struct ThreeDistributionTest
 {
 	/** defines the number of feature objects required */
-	enum { num_feats = 3 };
+	static constexpr index_t num_feats = 3;
 };
 
 /**
@@ -70,7 +70,7 @@ struct ThreeDistributionTest
 struct GoodnessOfFitTest : OneDistributionTest
 {
 	/** defines the number of kernel objects required */
-	enum { num_kernels = 1 };
+	static constexpr index_t num_kernels = 1;
 };
 
 /**
@@ -79,7 +79,7 @@ struct GoodnessOfFitTest : OneDistributionTest
 struct TwoSampleTest : TwoDistributionTest
 {
 	/** defines the number of kernel objects required */
-	enum { num_kernels = 1 };
+	static constexpr index_t num_kernels = 1;
 };
 
 /**
@@ -88,7 +88,7 @@ struct TwoSampleTest : TwoDistributionTest
 struct IndependenceTest : TwoDistributionTest
 {
 	/** defines the number of kernel objects required */
-	enum { num_kernels = 2 };
+	static constexpr index_t num_kernels = 2;
 };
 
 }
