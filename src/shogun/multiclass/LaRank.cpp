@@ -588,7 +588,7 @@ CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
-	batch_mode(true), step(0)
+	batch_mode(true), step(0), max_iteration(1000)
 {
 }
 
@@ -597,7 +597,7 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
-	batch_mode(true), step(0)
+	batch_mode(true), step(0), max_iteration(1000)
 {
 }
 
@@ -635,7 +635,8 @@ bool CLaRank::train_machine(CFeatures* data)
 	float64_t gap = DBL_MAX;
 
 	SG_INFO("Training on %d examples\n", nb_train)
-	while (gap > get_C() && (!CSignal::cancel_computations()))      // stopping criteria
+	while (gap > get_C() && (!CSignal::cancel_computations()) &&
+            n_it < max_iteration)      // stopping criteria
 	{
 		float64_t tr_err = 0;
 		int32_t ind = step;
@@ -653,15 +654,22 @@ bool CLaRank::train_machine(CFeatures* data)
 			}
 		}
 
-		SG_DEBUG("End of iteration %d\n", n_it++)
+		SG_DEBUG("End of iteration %d\n", n_it)
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
 		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6)
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
+                n_it++;
 	}
 	SG_DONE()
+
+        if (n_it >= max_iteration && gap > get_C())
+        {
+            SG_WARNING("LaRank did not converge after %d iterations.\n",
+                       max_iteration)
+        }
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);
@@ -835,6 +843,15 @@ float64_t CLaRank::computeGap ()
 uint32_t CLaRank::getNumOutputs () const
 {
 	return outputs.size ();
+}
+
+// Set max number of iterations before training is stopped
+void CLaRank::set_max_iteration(int32_t max_iter)
+{
+    REQUIRE(max_iter > 0,
+            "Max iteration (given: %d) must be positive.\n",
+            max_iter);
+    max_iteration = max_iter; 
 }
 
 // Number of Support Vectors
