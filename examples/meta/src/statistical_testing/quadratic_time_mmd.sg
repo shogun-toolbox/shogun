@@ -1,0 +1,18 @@
+CSVFile f_features_p("../../data/two_sample_test_gaussian.dat")
+CSVFile f_features_q("../../data/two_sample_test_laplace.dat")
+
+RealFeatures features_p(f_features_p)
+RealFeatures features_q(f_features_q)
+
+GaussianKernel kernel()
+
+QuadraticTimeMMD mmd()
+mmd.set_kernel(kernel)
+mmd.set_p(features_p)
+mmd.set_q(features_q)
+
+Real statistic = mmd.compute_statistic()
+Real alpha = 0.05
+Real threshold = mmd.compute_threshold(alpha)
+Real p_value = mmd.compute_p_value(alpha)
+Real h0_rejected = mmd.perform_test(alpha)
