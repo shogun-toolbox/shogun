@@ -1,0 +1,40 @@
+CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+BinaryLabels labels_train(f_labels_train)
+BinaryLabels labels_test(f_labels_test)
+#![create_features]
+
+#![set_parameters]
+Real C = 1
+Real epsilon = 0.001
+#![set_parameters]
+
+#![create_instance]
+LibLinear svm(C, features_train, labels_train)
+svm.set_liblinear_solver_type(enum LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC)
+svm.set_epsilon(epsilon)
+#![create_instance]
+
+#![train_and_apply]
+svm.train()
+BinaryLabels labels_predict = svm.apply_binary(features_test)
+#![train_and_apply]
+
+#![extract_weights_bias]
+RealVector w = svm.get_w()
+Real b = svm.get_bias()
+#![extract_weights_bias]
+
+#![evaluate_accuracy]
+AccuracyMeasure eval()
+Real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()
