@@ -1,0 +1,23 @@
+#![create_features]
+GaussianBlobsDataGenerator features_p()
+GaussianBlobsDataGenerator features_q()
+#![create_features]
+
+#![create_instance]
+LinearTimeMMD mmd()
+GaussianKernel kernel()
+mmd.set_kernel(kernel)
+mmd.set_p(features_p)
+mmd.set_q(features_q)
+#![create_instance]
+
+#![estimate_mmd]
+Real statistic = mmd.compute_statistic()
+#![estimate_mmd]
+
+#![perform_test]
+Real alpha = 0.05
+Real threshold = mmd.compute_threshold(alpha)
+Real p_value = mmd.compute_p_value(alpha)
+Real h0_rejected = mmd.perform_test(alpha)
+#![perform_test]
