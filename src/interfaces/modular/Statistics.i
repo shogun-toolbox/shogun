@@ -9,43 +9,22 @@
 
 /* Remove C Prefix */
 %rename(HypothesisTest) CHypothesisTest;
+%rename(OneDistributionTest) COneDistributionTest;
+%rename(TwoDistributionTest) CTwoDistributionTest;
 %rename(IndependenceTest) CIndependenceTest;
 %rename(TwoSampleTest) CTwoSampleTest;
-%rename(KernelTwoSampleTest) CKernelTwoSampleTest;
-%rename(StreamingMMD) CStreamingMMD;
+%rename(MMD) CMMD;
 %rename(LinearTimeMMD) CLinearTimeMMD;
+%rename(BTestMMD) CBTestMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
-%rename(KernelIndependenceTest) CKernelIndependenceTest;
-%rename(HSIC) CHSIC;
-%rename(NOCCO) CNOCCO;
-%rename(KernelMeanMatching) CKernelMeanMatching;
-%rename(KernelSelection) CKernelSelection;
-%rename(MMDKernelSelection) CMMDKernelSelection;
-%rename(MMDKernelSelectionComb) CMMDKernelSelectionComb;
-%rename(MMDKernelSelectionMedian) CMMDKernelSelectionMedian;
-%rename(MMDKernelSelectionMax) CMMDKernelSelectionMax;
-%rename(MMDKernelSelectionOpt) CMMDKernelSelectionOpt;
-%rename(MMDKernelSelectionCombOpt) CMMDKernelSelectionCombOpt;
-%rename(MMDKernelSelectionCombMaxL2) CMMDKernelSelectionCombMaxL2;
-
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/statistics/HypothesisTest.h>
-%include <shogun/statistics/IndependenceTest.h>
-%include <shogun/statistics/TwoSampleTest.h>
-%include <shogun/statistics/KernelTwoSampleTest.h>
-%include <shogun/statistics/StreamingMMD.h>
-%include <shogun/statistics/LinearTimeMMD.h>
-%include <shogun/statistics/QuadraticTimeMMD.h>
-%include <shogun/statistics/KernelIndependenceTest.h>
-%include <shogun/statistics/HSIC.h>
-%include <shogun/statistics/NOCCO.h>
-%include <shogun/statistics/KernelMeanMatching.h>
-%include <shogun/statistics/KernelSelection.h>
-%include <shogun/statistics/MMDKernelSelection.h>
-%include <shogun/statistics/MMDKernelSelectionComb.h>
-%include <shogun/statistics/MMDKernelSelectionMedian.h>
-%include <shogun/statistics/MMDKernelSelectionMax.h>
-%include <shogun/statistics/MMDKernelSelectionOpt.h>
-%include <shogun/statistics/MMDKernelSelectionCombOpt.h>
-%include <shogun/statistics/MMDKernelSelectionCombMaxL2.h>
+%include <shogun/statistical_testing/HypothesisTest.h>
+%include <shogun/statistical_testing/OneDistributionTest.h>
+%include <shogun/statistical_testing/TwoDistributionTest.h>
+%include <shogun/statistical_testing/IndependenceTest.h>
+%include <shogun/statistical_testing/TwoSampleTest.h>
+%include <shogun/statistical_testing/MMD.h>
+%include <shogun/statistical_testing/LinearTimeMMD.h>
+%include <shogun/statistical_testing/BTestMMD.h>
+%include <shogun/statistical_testing/QuadraticTimeMMD.h>
