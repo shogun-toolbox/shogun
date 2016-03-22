@@ -17,10 +17,10 @@
  */
 
 #include <iostream> // TODO remove
-#include <shogun/hypothsistest/internals/DataManager.h>
-#include <shogun/hypothsistest/internals/NextSamples.h>
-#include <shogun/hypothsistest/internals/DataFetcher.h>
-#include <shogun/hypothsistest/internals/DataFetcherFactory.h>
+#include <shogun/hypothesistest/internals/DataManager.h>
+#include <shogun/hypothesistest/internals/NextSamples.h>
+#include <shogun/hypothesistest/internals/DataFetcher.h>
+#include <shogun/hypothesistest/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;

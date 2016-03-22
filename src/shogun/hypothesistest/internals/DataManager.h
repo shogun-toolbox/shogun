@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <memory>
-#include <shogun/hypothsistest/internals/InitPerFeature.h>
+#include <shogun/hypothesistest/internals/InitPerFeature.h>
 #include <shogun/lib/common.h>
 
 namespace shogun

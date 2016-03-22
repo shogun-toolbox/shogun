@@ -17,8 +17,8 @@
  */
 
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/hypothsistest/internals/ComputationManager.h>
-#include <shogun/hypothsistest/internals/mmd/UnbiasedFull.h>
+#include <shogun/hypothesistest/internals/ComputationManager.h>
+#include <shogun/hypothesistest/internals/mmd/UnbiasedFull.h>
 
 using namespace shogun;
 using namespace internal;
@@ -53,7 +53,7 @@ void ComputationManager::compute()
 		std::vector<float64_t> results;
 		if (gpu)
 		{
-			/ TODO results = operation.compute_using_gpu(kernel_matrices);
+			// TODO results = operation.compute_using_gpu(kernel_matrices);
 		}
 		else
 		{

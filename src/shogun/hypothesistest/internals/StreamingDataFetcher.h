@@ -18,8 +18,8 @@
 
 #include <memory>
 #include <shogun/lib/common.h>
-#include <shogun/hypothsistest/internals/DataFetcher.h>
-#include <shogun/hypothsistest/internals/BlockwiseDetails.h>
+#include <shogun/hypothesistest/internals/DataFetcher.h>
+#include <shogun/hypothesistest/internals/BlockwiseDetails.h>
 
 #ifndef STREMING_DATA_FETCHER_H__
 #define STREMING_DATA_FETCHER_H__

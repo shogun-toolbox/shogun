@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <shogun/features/Features.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/hypothsistest/internals/StreamingDataFetcher.h>
+#include <shogun/hypothesistest/internals/StreamingDataFetcher.h>
 
 
 using namespace shogun;

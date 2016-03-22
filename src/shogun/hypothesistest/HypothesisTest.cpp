@@ -19,10 +19,10 @@
 #include <algorithm>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/hypothsistest/experimental/HypothesisTest.h>
-#include <shogun/hypothsistest/experimental/internals/TestTypes.h>
-#include <shogun/hypothsistest/experimental/internals/DataManager.h>
-#include <shogun/hypothsistest/experimental/internals/KernelManager.h>
+#include <shogun/hypothesistest/HypothesisTest.h>
+#include <shogun/hypothesistest/internals/TestTypes.h>
+#include <shogun/hypothesistest/internals/DataManager.h>
+#include <shogun/hypothesistest/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;

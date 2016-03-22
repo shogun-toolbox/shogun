@@ -19,7 +19,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/hypothsistest/internals/mmd/UnbiasedFull.h>
+#include <shogun/hypothesistest/internals/mmd/UnbiasedFull.h>
 
 using namespace shogun;
 using namespace internal;

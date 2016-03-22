@@ -17,7 +17,7 @@
  */
 
 #include <shogun/kernel/Kernel.h>
-#include <shogun/hypothsistest/internals/InitPerKernel.h>
+#include <shogun/hypothesistest/internals/InitPerKernel.h>
 
 using namespace shogun;
 using namespace internal;

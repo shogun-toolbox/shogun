@@ -56,8 +56,7 @@ private:
 	std::queue<std::vector<float64_t>> resultq;
 };
 
-}
+} // namespace internal
 
-}
-
+} // namespace shogun
 #endif // COMPUTATION_MANAGER_H__

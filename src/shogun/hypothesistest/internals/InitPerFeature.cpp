@@ -17,9 +17,9 @@
  */
 
 #include <iostream> // TODO remove
-#include <shogun/hypothsistest/internals/InitPerFeature.h>
-#include <shogun/hypothsistest/internals/DataFetcher.h>
-#include <shogun/hypothsistest/internals/DataFetcherFactory.h>
+#include <shogun/hypothesistest/internals/InitPerFeature.h>
+#include <shogun/hypothesistest/internals/DataFetcher.h>
+#include <shogun/hypothesistest/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;

@@ -30,7 +30,7 @@
 
 #include <memory>
 #include <shogun/lib/common.h>
-#include <shogun/hypothsistest/internals/BlockwiseDetails.h>
+#include <shogun/hypothesistest/internals/BlockwiseDetails.h>
 
 #ifndef DATA_FETCHER_H__
 #define DATA_FETCHER_H__

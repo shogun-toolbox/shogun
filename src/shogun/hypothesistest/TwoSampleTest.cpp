@@ -13,25 +13,38 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <shogun/features/Features.h>
-#include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/hypothesistest/internals/DataFetcher.h>
-#include <shogun/hypothesistest/internals/StreamingDataFetcher.h>
-#include <shogun/hypothesistest/internals/DataFetcherFactory.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/hypothesistest/TwoSampleTest.h>
+#include <shogun/hypothesistest/internals/KernelManager.h>
+#include <shogun/hypothesistest/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 
-DataFetcher* DataFetcherFactory::get_instance(CFeatures* feats)
+CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest(TwoSampleTest::num_kernels)
 {
-	EFeatureClass fclass = feats->get_feature_class();
-	if (fclass == C_STREAMING_DENSE || fclass == C_STREAMING_SPARSE || fclass == C_STREAMING_STRING)
-	{
-		return new StreamingDataFetcher(static_cast<CStreamingFeatures*>(feats));
-	}
-	return new DataFetcher(feats);
 }
 
+CTwoSampleTest::~CTwoSampleTest()
+{
+}
+
+void CTwoSampleTest::set_kernel(CKernel* kernel)
+{
+	auto& km = get_kernel_manager();
+	km.kernel_at(0) = kernel;
+}
+
+CKernel* CTwoSampleTest::get_kernel() const
+{
+	const auto& km = get_kernel_manager();
+	return km.kernel_at(0);
+}
+
+const char* CTwoSampleTest::get_name() const
+{
+	return "TwoSampleTest";
+}

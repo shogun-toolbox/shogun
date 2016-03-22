@@ -13,44 +13,36 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KERNEL_MANAGER_H__
-#define KERNEL_MANAGER_H__
+#ifndef ONE_DISTRIBUTION_TEST_H_
+#define ONE_DISTRIBUTION_TEST_H_
 
-#include <vector>
-#include <memory>
 #include <shogun/lib/common.h>
-#include <shogun/hypothesistest/internals/InitPerKernel.h>
+#include <shogun/hypothesistest/HypothesisTest.h>
+#include <shogun/hypothesistest/internals/TestTypes.h>
 
 namespace shogun
 {
 
-class CKernel;
-class CCustomKernel;
-
-namespace internal
-{
-
-class KernelManager
+class COneDistributionTest : public CHypothesisTest
 {
 public:
-	KernelManager(index_t num_kernels);
-	~KernelManager();
+	COneDistributionTest(index_t num_kernels);
+	virtual ~COneDistributionTest();
 
-	InitPerKernel kernel_at(index_t i);
-	CKernel* kernel_at(index_t i) const;
+	void set_samples(CFeatures* samples);
+	CFeatures* get_samples() const;
 
-	void precompute_kernel_at(index_t i);
-	void restore_kernel_at(index_t i);
-private:
-	std::vector<std::shared_ptr<CKernel>> m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
+	void set_num_samples(index_t num_samples);
+	index_t get_num_samples() const;
+
+	virtual float64_t compute_statistic() = 0;
+	virtual SGVector<float64_t> sample_null() = 0;
+
+	virtual const char* get_name() const;
 };
 
 }
-
-}
-
-#endif // KERNEL_MANAGER_H__
+#endif // ONE_DISTRIBUTION_TEST_H_

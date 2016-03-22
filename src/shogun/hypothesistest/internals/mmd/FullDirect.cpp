@@ -20,7 +20,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/hypothsistest/internals/mmd/FullDirect.h>
+#include <shogun/hypothesistest/internals/mmd/FullDirect.h>
 
 using namespace shogun;
 using namespace internal;

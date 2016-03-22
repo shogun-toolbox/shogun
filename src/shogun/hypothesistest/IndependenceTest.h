@@ -13,44 +13,36 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KERNEL_MANAGER_H__
-#define KERNEL_MANAGER_H__
+#ifndef INDEPENDENCE_TEST_H_
+#define INDEPENDENCE_TEST_H_
 
-#include <vector>
-#include <memory>
-#include <shogun/lib/common.h>
-#include <shogun/hypothesistest/internals/InitPerKernel.h>
+#include <shogun/hypothesistest/TwoDistributionTest.h>
 
 namespace shogun
 {
 
 class CKernel;
-class CCustomKernel;
 
-namespace internal
-{
-
-class KernelManager
+class CIndependenceTest : public CTwoDistributionTest
 {
 public:
-	KernelManager(index_t num_kernels);
-	~KernelManager();
+	CIndependenceTest();
+	virtual ~CIndependenceTest();
 
-	InitPerKernel kernel_at(index_t i);
-	CKernel* kernel_at(index_t i) const;
+	void set_kernel_p(CKernel* kernel_p);
+	CKernel* get_kernel_p() const;
 
-	void precompute_kernel_at(index_t i);
-	void restore_kernel_at(index_t i);
-private:
-	std::vector<std::shared_ptr<CKernel>> m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
+	void set_kernel_q(CKernel* kernel_q);
+	CKernel* get_kernel_q() const;
+
+	virtual float64_t compute_statistic() = 0;
+	virtual SGVector<float64_t> sample_null() = 0;
+
+	virtual const char* get_name() const;
 };
 
 }
-
-}
-
-#endif // KERNEL_MANAGER_H__
+#endif // INDEPENDENCE_TEST_H_

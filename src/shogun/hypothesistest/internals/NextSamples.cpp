@@ -18,7 +18,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <shogun/hypothsistest/internals/NextSamples.h>
+#include <shogun/hypothesistest/internals/NextSamples.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;

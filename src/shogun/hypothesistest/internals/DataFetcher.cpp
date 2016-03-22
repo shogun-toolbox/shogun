@@ -18,7 +18,7 @@
 
 #include <algorithm>
 #include <shogun/features/Features.h>
-#include <shogun/hypothsistest/internals/DataFetcher.h>
+#include <shogun/hypothesistest/internals/DataFetcher.h>
 
 
 using namespace shogun;

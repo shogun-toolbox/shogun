@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/hypothsistest/internals/BlockwiseDetails.h>
+#include <shogun/hypothesistest/internals/BlockwiseDetails.h>
 
 using namespace shogun;
 using namespace internal;

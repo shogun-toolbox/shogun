@@ -19,10 +19,10 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/hypothsistest/internals/mmd/WithinBlockPermutation.h>
-#include <shogun/hypothsistest/internals/mmd/BiasedFull.h>
-#include <shogun/hypothsistest/internals/mmd/UnbiasedFull.h>
-#include <shogun/hypothsistest/internals/mmd/UnbiasedIncomplete.h>
+#include <shogun/hypothesistest/internals/mmd/WithinBlockPermutation.h>
+#include <shogun/hypothesistest/internals/mmd/BiasedFull.h>
+#include <shogun/hypothesistest/internals/mmd/UnbiasedFull.h>
+#include <shogun/hypothesistest/internals/mmd/UnbiasedIncomplete.h>
 
 using namespace shogun;
 using namespace internal;

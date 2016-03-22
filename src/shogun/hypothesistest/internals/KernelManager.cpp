@@ -21,7 +21,7 @@
 #include <iostream>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
-#include <shogun/hypothsistest/internals/KernelManager.h>
+#include <shogun/hypothesistest/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
