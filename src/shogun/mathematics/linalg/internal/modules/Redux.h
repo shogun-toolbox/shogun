@@ -36,6 +36,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
+#include <shogun/mathematics/linalg/internal/implementation/VectorMean.h>
 
 namespace shogun
 {
@@ -80,6 +81,20 @@ typename Vector::Scalar vector_sum(Vector a)
 {
 	return implementation::vector_sum<backend,Vector>::compute(a);
 }
+
+/**
+ * Wrapper method for internal implementation of vector mean of values that works
+ * with generic dense vectors
+
+ * @param a vector whose mean has to be computed
+ * @return the vector mean \f$\mean_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_mean(Vector a)
+{
+	return implementation::vector_mean<backend,Vector>::compute(a);
+}
+
 
 #ifdef HAVE_LINALG_LIB
 
