@@ -35,7 +35,7 @@
 
 #ifdef HAVE_EIGEN3
 using namespace shogun;
-class LDATest: public::testing::Test
+class DISABLED_LDATest: public::testing::Test
 {
 protected:
 
