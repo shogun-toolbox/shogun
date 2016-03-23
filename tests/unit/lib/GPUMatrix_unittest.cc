@@ -40,10 +40,7 @@
 #include <viennacl/matrix.hpp>
 #include <viennacl/linalg/prod.hpp>
 #include <gtest/gtest.h>
-
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
 
 #include <shogun/lib/SGMatrix.h>
 
@@ -172,8 +169,6 @@ TEST(GPUMatrix, from_sgmatrix)
 		EXPECT_EQ(sg_mat[i], gpu_mat[i]);
 }
 
-#ifdef HAVE_EIGEN3
-
 TEST(GPUMatrix, to_eigen3)
 {
 	const int nrows = 3;
@@ -203,8 +198,6 @@ TEST(GPUMatrix, from_eigen3)
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(eigen_mat(i), gpu_mat[i]);
 }
-
-#endif
 
 #endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

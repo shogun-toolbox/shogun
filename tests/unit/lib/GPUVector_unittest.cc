@@ -42,9 +42,7 @@
 #include <viennacl/linalg/inner_prod.hpp>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
 
 #include <shogun/lib/SGVector.h>
 
@@ -146,8 +144,6 @@ TEST(GPUVector, from_sgvector)
 		EXPECT_EQ(sg_vec[i], gpu_vec[i]);
 }
 
-#ifdef HAVE_EIGEN3
-
 TEST(GPUVector, to_eigen3_column_vector)
 {
 	const int n = 9;
@@ -203,8 +199,6 @@ TEST(GPUVector, from_eigen3_row_vector)
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(eigen_vec[i], gpu_vec[i]);
 }
-
-#endif
 
 #endif // HAVE_CXX11
 #endif // HAVE_VIENNACL

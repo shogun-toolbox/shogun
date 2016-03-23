@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
@@ -270,4 +269,3 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 	delete sp_struct1;
 	delete sp_struct2;
 }
-#endif // HAVE_EIGEN3

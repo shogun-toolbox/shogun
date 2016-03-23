@@ -30,8 +30,6 @@
  *
  */
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -209,6 +207,3 @@ TEST(GaussianDistribution,univariate_log_pdf)
 		CMath::log(0.088016331691075), 1e-3);
 }
 
-
-
-#endif // HAVE_EIGEN3

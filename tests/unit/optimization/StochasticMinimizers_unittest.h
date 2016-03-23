@@ -29,7 +29,7 @@
  *
  */
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+
 #ifndef STOCHASTICMINIMIZERS_UNITTEST_H
 #define STOCHASTICMINIMIZERS_UNITTEST_H
 #include <shogun/optimization/FirstOrderSAGCostFunction.h>
@@ -118,4 +118,3 @@ private:
 	void init();
 };
 #endif
-#endif /*  HAVE_EIGEN3 */

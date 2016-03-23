@@ -2049,7 +2049,6 @@ INCLUDE_FILE_PATTERNS  = *.h
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = HAVE_LAPACK \
-                         HAVE_EIGEN3 \
                          HAVE_NLOPT \
                          HAVE_ATLAS \
                          HAVE_PYTHON \

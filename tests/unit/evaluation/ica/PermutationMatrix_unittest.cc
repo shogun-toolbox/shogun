@@ -1,8 +1,6 @@
 #include <shogun/lib/common.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace shogun;
@@ -27,4 +25,3 @@ TEST(PermutationMatrix, is_not_perm)
 	EXPECT_FALSE(isperm);
 }
 
-#endif //HAVE_EIGEN3

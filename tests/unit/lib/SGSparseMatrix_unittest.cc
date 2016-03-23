@@ -20,10 +20,8 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 using namespace Eigen;
-#endif // HAVE_EIGEN3
 
 //function can generate both sparse and dense matrix accroding to sparse convention
 template<class MatrixType>
@@ -39,7 +37,6 @@ void GenerateMatrix(float64_t sparseLevel, int32_t m, int32_t n, int32_t randSee
 		}
 }
 
-#ifdef HAVE_EIGEN3
 TEST(SGSparseMatrix, multiply_float64_int32)
 {
 	const int32_t size=10;
@@ -120,7 +117,6 @@ TEST(SGSparseMatrix, multiply_complex128_float64)
 
 	EXPECT_NEAR(r.norm(), 22.80350850198275836078, 1E-16);
 }
-#endif // HAVE_EIGEN3
 
 TEST(SGSparseMatrix, access_by_index)
 {

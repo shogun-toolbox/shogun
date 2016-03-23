@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
@@ -460,4 +459,3 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 }
 #endif // HAVE_LAPACK
 #endif // HAVE_COLPACK
-#endif // HAVE_EIGEN3

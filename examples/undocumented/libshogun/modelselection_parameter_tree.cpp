@@ -185,7 +185,6 @@ CModelSelectionParameters* create_param_tree_3()
 	return root;
 }
 
-#ifdef HAVE_EIGEN3
 CModelSelectionParameters* create_param_tree_4a()
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
@@ -339,7 +338,6 @@ CModelSelectionParameters* create_param_tree_5()
 
 	return root;
 }
-#endif
 
 int main(int argc, char **argv)
 {
@@ -364,7 +362,6 @@ int main(int argc, char **argv)
 	test_tree(tree);
 	SG_UNREF(tree);
 
-#ifdef HAVE_EIGEN3
 	tree=create_param_tree_4a();
 	SG_REF(tree);
 	test_tree(tree);
@@ -379,7 +376,6 @@ int main(int argc, char **argv)
 	SG_REF(tree);
 	test_tree(tree);
 	SG_UNREF(tree);
-#endif
 
 	exit_shogun();
 

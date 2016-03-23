@@ -11,7 +11,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -152,4 +151,3 @@ TEST(InferenceMethod, compute_gradient)
 
 	SG_UNREF(inf);
 }
-#endif // HAVE_EIGEN3

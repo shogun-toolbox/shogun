@@ -36,9 +36,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -46,7 +44,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 TEST(MatrixElementwiseSquare, SGMatrix_eigen3_backend)
 {
 	const index_t m=2;
@@ -132,7 +129,6 @@ TEST(MatrixElementwiseSquare, Eigen3_block_eigen3_backend)
 			EXPECT_NEAR(sq(i,j), CMath::sq(mat(i,j)), 1E-15);
 	}
 }
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

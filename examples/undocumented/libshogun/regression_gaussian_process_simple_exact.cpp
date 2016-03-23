@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -71,9 +70,3 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-#else
-int main(int argc, char **argv)
-{
-	return 0;
-}
-#endif

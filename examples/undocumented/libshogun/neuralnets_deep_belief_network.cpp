@@ -32,7 +32,6 @@
  */
 
 #include <shogun/base/init.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
@@ -122,9 +121,3 @@ int main(int, char*[])
 	exit_shogun();
 	return 0;
 }
-#else
-int main(int, char*[])
-{
-	return 0;
-}
-#endif

@@ -9,8 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -409,5 +407,3 @@ TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
 	// clean up
 	SG_UNREF(inf);
 }
-
-#endif /* HAVE_EIGEN3 */

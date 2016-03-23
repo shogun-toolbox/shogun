@@ -8,7 +8,6 @@
  */
 
 #include <shogun/lib/common.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
@@ -72,4 +71,3 @@ TEST(RationalApproximationCGMJob, compute)
 	SG_UNREF(linear_operator);
 	SG_UNREF(linear_solver);
 }
-#endif //HAVE_EIGEN3

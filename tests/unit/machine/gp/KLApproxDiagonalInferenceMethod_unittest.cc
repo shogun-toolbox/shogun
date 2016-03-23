@@ -30,8 +30,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -1368,5 +1366,3 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_
 	SG_UNREF(inf);
 }
 
-
-#endif /* HAVE_EIGEN3 */

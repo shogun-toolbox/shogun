@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
@@ -382,4 +381,3 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	SG_UNREF(e);
 	SG_UNREF(op);
 }
-#endif // HAVE_EIGEN3
