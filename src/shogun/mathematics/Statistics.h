@@ -194,6 +194,28 @@ public:
 	static float64_t confidence_intervals_mean(SGVector<float64_t> values,
 			float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up);
 
+	/** Inverse of Normal distribution function
+	 *
+	 * Returns the argument, \f$x\f$, for which the area under the
+	 * Gaussian probability density function (integrated from
+	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
+	 *
+	 *
+	 * For small arguments \f$0 < y < \exp(-2)\f$, the method computes
+	 * \f$z = \sqrt{ -2.0  \log(y) }\f$;  then the approximation is
+	 * \f$x = z - \frac{log(z)}{z}  - \frac{1}{z} \frac{P(\frac{1}{z})}{ Q(\frac{1}{z}}\f$.
+	 * There are two rational functions \f$\frac{P}{Q}\f$, one for \f$0 < y < \exp(-32)\f$
+	 * and the other for \f$y\f$ up to \f$\exp(-2)\f$.  For larger arguments,
+	 * \f$w = y - 0.5\f$, and  \f$\frac{x}{\sqrt{2\pi}} = w + w^3 R(\frac{w^2)}{S(w^2)})\f$.
+	 *
+	 * @param y0 Output of normal CDF for which parameter is returned.
+	 * @param mean Mean of normal distribution.
+	 * @param std_dev Standard deviation of normal distribution.
+	 * @return Parameter that produces given output.
+	 */
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
+			float64_t std_dev=1);
+
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
 	{
@@ -238,6 +260,17 @@ public:
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
+	/** Functional inverse of Student's t distribution
+	 *
+	 * Given probability \f$p\f$, finds the argument \f$t\f$ such that
+	 * \f$\text{student\_t}(k,t)=p\f$
+	 *
+	 * @param k Degrees of freedom.
+	 * @param p Point to evaluate.
+	 * @return Value of pdf at given point.
+	 */
+	static float64_t inverse_student_t(int32_t k, float64_t p);
+
 	/** Normal distribution function
 	 *
 	 * Returns the area under the Gaussian probability density
@@ -252,7 +285,6 @@ public:
 	 * deviation. Computation is via the functions \f$\text{error\_function}\f$
 	 * and \f$\text{error\_function\_completement}\f$.
 	 *
-	 * NOTE: Temporarily removed. Throws runtime error
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
 
