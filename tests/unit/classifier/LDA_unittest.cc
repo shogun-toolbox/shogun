@@ -34,7 +34,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
-class DISABLED_LDATest: public::testing::Test
+class LDATest: public::testing::Test
 {
 protected:
 
