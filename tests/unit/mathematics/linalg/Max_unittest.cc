@@ -36,9 +36,7 @@
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -48,7 +46,6 @@
 using namespace shogun;
 
 #ifdef HAVE_LINALG_LIB
-#ifdef HAVE_EIGEN3
 TEST(MaxMatrix, eigen3_backend)
 {
 	SGMatrix<float64_t> A(3,3);
@@ -74,7 +71,6 @@ TEST(MaxVector, eigen3_backend)
 	for (int32_t i=0; i<9; i++)
 		EXPECT_NEAR(8, linalg::max<linalg::Backend::EIGEN3>(A), 1e-15);
 }
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 TEST(MaxMatrix, viennacl_backend)

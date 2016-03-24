@@ -30,8 +30,7 @@
  *
  * Written (W) 2014 Khaled Nasr
  */
-#ifdef HAVE_EIGEN3
-
+ 
 #include <shogun/neuralnets/RBM.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -183,5 +182,3 @@ TEST(RBM, pseudo_likelihood_binary)
 	// generated using scikit-learn
 	EXPECT_NEAR(-3.3698, pl, 0.02);
 }
-
-#endif

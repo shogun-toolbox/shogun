@@ -12,8 +12,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
-
 #ifdef HAVE_LAPACK
 TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 {
@@ -210,4 +208,3 @@ void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill)
 	}
 }
 
-#endif

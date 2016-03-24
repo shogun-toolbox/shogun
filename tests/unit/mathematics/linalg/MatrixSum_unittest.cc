@@ -35,9 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -46,7 +44,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 TEST(MatrixSum, SGMatrix_asymmetric_eigen3_backend_with_diag)
 {
 	const index_t m=2;
@@ -766,7 +763,6 @@ TEST(MatrixSum, Eigen3_Matrix_block_rowwise_eigen3_backend_with_diag)
 		EXPECT_NEAR(sum, s[i], 1E-15);
 	}
 }
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 TEST(MatrixSum, asymmetric_viennacl_backend_with_diag)

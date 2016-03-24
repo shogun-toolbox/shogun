@@ -6,8 +6,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
-
 #ifdef HAVE_LAPACK
 TEST(MultidimensionaScalingTest,distance_preserving)
 {
@@ -53,4 +51,3 @@ TEST(MultidimensionaScalingTest,distance_preserving)
 }
 #endif // HAVE_LAPACK
 
-#endif

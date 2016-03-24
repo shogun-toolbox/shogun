@@ -9,7 +9,7 @@
 
 #include <shogun/lib/config.h>
 
-#if defined HAVE_EIGEN3 && defined HAVE_NLOPT
+#if defined HAVE_NLOPT
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -179,4 +179,4 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	SG_UNREF(best_comb);
 }
 
-#endif /* defined HAVE_EIGEN3 && defined HAVE_NLOPT */
+#endif /* defined HAVE_NLOPT */

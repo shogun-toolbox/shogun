@@ -8,7 +8,6 @@
  */
 
 #include <shogun/lib/common.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Statistics.h>
@@ -46,5 +45,4 @@ TEST(NormalSampler, sample)
 }
 #endif // HAVE_LAPACK
 
-#endif // HAVE_EIGEN3
 

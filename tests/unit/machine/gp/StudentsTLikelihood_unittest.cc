@@ -9,8 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
@@ -496,4 +494,3 @@ TEST(StudentsTLikelihood,get_second_moments)
 	SG_UNREF(labels);
 }
 
-#endif /* HAVE_EIGEN3 */

@@ -30,7 +30,7 @@
  */
 
 #include "StochasticMinimizers_unittest.h"
-#ifdef HAVE_EIGEN3
+
 #include <shogun/optimization/L2Penalty.h>
 #include <shogun/optimization/SGDMinimizer.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
@@ -1286,4 +1286,3 @@ TEST(SMIDASMinimizer, test1)
 	delete mapping2;
 	delete bb;
 }
-#endif /* HAVE_EIGEN3 */

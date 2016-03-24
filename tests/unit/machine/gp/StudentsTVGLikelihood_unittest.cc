@@ -37,8 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/gp/StudentsTVGLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -292,4 +290,3 @@ TEST(StudentsTVGLikelihood,get_variational_first_derivative_wrt_mu)
 	SG_UNREF(lik);
 }
 
-#endif /* HAVE_EIGEN3 */

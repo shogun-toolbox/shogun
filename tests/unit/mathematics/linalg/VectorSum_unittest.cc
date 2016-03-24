@@ -36,9 +36,7 @@
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUVector.h>
@@ -47,7 +45,6 @@
 using namespace shogun;
 
 #ifdef HAVE_LINALG_LIB
-#ifdef HAVE_EIGEN3
 TEST(VectorSum, SGVector_explicit_eigen3_backend)
 {
 	const index_t size=10;
@@ -66,8 +63,6 @@ TEST(VectorSum, Eigen3_dynamic_explicit_eigen3_backend)
 
 	EXPECT_NEAR(linalg::vector_sum<linalg::Backend::EIGEN3>(a), 10.0, 1E-15);
 }
-
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

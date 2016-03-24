@@ -11,14 +11,12 @@
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#endif
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <pthread.h>
@@ -26,7 +24,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_same)
 {
 	CGaussianKernel* kernel=new CGaussianKernel();
@@ -50,7 +47,6 @@ TEST(SGObject,equals_NULL_parameter)
 	SG_UNREF(mmd);
 	SG_UNREF(mmd2);
 }
-#endif //HAVE_EIGEN3
 
 #ifdef USE_REFERENCE_COUNTING
 TEST(SGObject,DISABLED_ref_copy_constructor)
@@ -113,7 +109,6 @@ TEST(SGObject,equals_DynamicObjectArray_equal)
 	SG_UNREF(array2);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
@@ -310,4 +305,3 @@ TEST(SGObject,parameter_hash_changed)
 
 	SG_UNREF(inf);
 }
-#endif //HAVE_EIGEN3

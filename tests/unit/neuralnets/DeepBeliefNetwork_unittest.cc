@@ -37,8 +37,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
-
 using namespace shogun;
 
 TEST(DeepBeliefNetwork, convert_to_neural_network)
@@ -76,5 +74,3 @@ TEST(DeepBeliefNetwork, convert_to_neural_network)
 	SG_UNREF(f_transformed_dbn);
 	SG_UNREF(f_transformed_nn);
 }
-
-#endif

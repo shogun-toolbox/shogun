@@ -34,7 +34,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 
 using namespace shogun;
@@ -608,5 +607,3 @@ TEST(PCA, PCA_WHITEN_EVD)
 	SG_UNREF(pca);
 	SG_UNREF(features);
 }
-
-#endif //HAVE_EIGEN3

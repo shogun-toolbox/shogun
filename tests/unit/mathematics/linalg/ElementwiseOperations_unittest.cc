@@ -143,7 +143,6 @@ TEST(Elementwise_sin, SGVector_NATIVE_complex128_inplace)
 	}
 }
 
-#ifdef HAVE_EIGEN3
 TEST(Elementwise_sin, SGMatrix_EIGEN3)
 {
 	SGMatrix<float64_t> m(3,4);
@@ -183,7 +182,6 @@ TEST(Elementwise_sin, SGVector_EIGEN3_inplace)
 	for (auto i=0; i<v.size(); ++i)
 		EXPECT_NEAR(CMath::sin(v_copy[i]), v[i], 1E-15);
 }
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 TEST(Elementwise_sin, CGPUMatrix_VIENNACL)

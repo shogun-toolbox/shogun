@@ -3,7 +3,6 @@
 #include <shogun/features/DataGenerator.h>
 #include <shogun/multiclass/QDA.h>
 #include <gtest/gtest.h>
-#ifdef HAVE_EIGEN3
 
 #define NUM  50
 #define DIMS 2
@@ -40,4 +39,3 @@ TEST(QDA, train_and_apply)
 	SG_UNREF(qda);
 }
 #endif // HAVE_LAPACK
-#endif // HAVE_EIGEN3

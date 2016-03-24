@@ -31,7 +31,7 @@
 
 #include <shogun/lib/config.h>
 
-#if defined(HAVE_EIGEN3) && defined(HAVE_LINALG_LIB)
+#if defined(HAVE_LINALG_LIB)
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -470,4 +470,4 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(inf);
 }
 
-#endif /* HAVE_EIGEN3 && HAVE_LINALG_LIB */
+#endif /* HAVE_LINALG_LIB */

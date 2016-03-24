@@ -1,8 +1,6 @@
 #include <shogun/lib/common.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>
 
@@ -69,4 +67,3 @@ TEST(CQDiag, diagonalize)
 	EXPECT_EQ(isperm,true);
 }
 
-#endif //HAVE_EIGEN3

@@ -38,7 +38,6 @@
 
 // Eigen3 is required for working with this example
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/base/init.h>
 #include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
@@ -392,9 +391,3 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-#else /* HAVE_EIGEN3 */
-int main(int argc, char** argv)
-{
-	return 0;
-}
-#endif /* HAVE_EIGEN3 */

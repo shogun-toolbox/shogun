@@ -32,8 +32,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -1062,6 +1060,5 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
-#endif /* HAVE_LINALG_LIB */
 
-#endif /* HAVE_EIGEN3 */
+#endif /* HAVE_LINALG_LIB */

@@ -37,7 +37,6 @@
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -3704,5 +3703,3 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 
 #endif /* HAVE_LINALG_LIB */
 
-
-#endif /* HAVE_EIGEN3 */

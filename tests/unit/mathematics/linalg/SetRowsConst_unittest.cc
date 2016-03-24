@@ -36,9 +36,7 @@
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -47,7 +45,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 TEST(SetRowsConst, eigen3_backend)
 {
 	SGMatrix<float64_t> A(3,4);
@@ -62,7 +59,6 @@ TEST(SetRowsConst, eigen3_backend)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_EQ(A(i,j), v[i]);
 }
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 TEST(SetRowsConst, viennacl_backend)

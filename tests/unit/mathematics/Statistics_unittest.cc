@@ -11,7 +11,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
@@ -375,8 +374,6 @@ TEST(Statistics, lnormal_cdf)
 
 }
 
-#endif // HAVE_EIGEN3
-
 TEST(Statistics, chi2_cdf)
 {
 	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
@@ -401,7 +398,6 @@ TEST(Statistics, fdistribution_cdf)
 	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
 }
 
-#ifdef HAVE_EIGEN3
 // TEST 1
 TEST(Statistics, log_det_general_test_1)
 {
@@ -524,7 +520,6 @@ TEST(Statistics,log_det_general_test_4)
 	result = CStatistics::log_det_general(A);
 	EXPECT_EQ(result, CMath::INFTY);
 }
-#endif // HAVE_EIGEN3
 
 TEST(Statistics, vector_mean_test)
 {

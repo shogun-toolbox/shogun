@@ -2,8 +2,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/mathematics/eigen3.h>
 
 #include <shogun/converter/ica/UWedgeSep.h>
@@ -63,4 +61,3 @@ TEST(CUWedgeSep, blind_source_separation)
 	SG_UNREF(signals);
 }
 
-#endif //HAVE_EIGEN3
