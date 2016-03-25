@@ -25,6 +25,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
@@ -204,7 +205,7 @@ float64_t CStatistics::variance(SGVector<float64_t> values)
 	ASSERT(values.vlen>1)
 	ASSERT(values.vector)
 
-	float64_t mean=CStatistics::mean(values);
+	float64_t mean=linalg::mean(values);
 
 	float64_t sum_squared_diff=0;
 	for (index_t i=0; i<values.vlen; ++i)
@@ -347,7 +348,7 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 
 	/* values for calculating confidence interval */
 	float64_t std_dev=CStatistics::std_deviation(values);
-	float64_t mean=CStatistics::mean(values);
+	float64_t mean=linalg::mean(values);
 
 	/* compute confidence interval */
 	float64_t interval=t*std_dev/CMath::sqrt((float64_t)values.vlen);

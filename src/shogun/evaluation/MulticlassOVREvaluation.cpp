@@ -12,6 +12,7 @@
 #include <shogun/evaluation/PRCEvaluation.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -94,5 +95,5 @@ float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground
 			m_graph_results[c] = ((CPRCEvaluation*)m_binary_evaluation)->get_PRC();
 		}
 	}
-	return CStatistics::mean(m_last_results);
+	return linalg::mean(m_last_results);
 }

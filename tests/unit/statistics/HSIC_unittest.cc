@@ -147,11 +147,11 @@ TEST(HSIC, hsic_sample_null)
 	/* ensure that sampling null of hsic leads to same results as using
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
-	float64_t mean1=CStatistics::mean(hsic->sample_null());
+	float64_t mean1=CStatistics::linalg(hsic->sample_null());
 	float64_t var1=CStatistics::variance(hsic->sample_null());
 
 	CMath::init_random(1);
-	float64_t mean2=CStatistics::mean(
+	float64_t mean2=CStatistics::linalg(
 			hsic->CKernelIndependenceTest::sample_null());
 	float64_t var2=CStatistics::variance(hsic->sample_null());
 

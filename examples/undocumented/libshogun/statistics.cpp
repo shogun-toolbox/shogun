@@ -15,6 +15,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -37,7 +38,7 @@ void test_mean()
 	ASSERT(mean[3]==10);
 	ASSERT(mean[4]==13);
 
-	float64_t mean2=CStatistics::mean(mean);
+	float64_t mean2=linalg::mean(mean);
 	ASSERT(mean2==7);
 
 	mean=CStatistics::matrix_mean(X, false);
@@ -47,7 +48,7 @@ void test_mean()
 	ASSERT(mean[1]==7);
 	ASSERT(mean[2]==8);
 
-	mean2=CStatistics::mean(mean);
+	mean2=linalg::mean(mean);
 	ASSERT(mean2==7);
 }
 

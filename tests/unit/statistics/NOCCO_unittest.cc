@@ -167,11 +167,11 @@ TEST(NOCCO, sample_null)
 	/* ensure that sampling null of nocco leads to same results as using
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
-	float64_t mean1=CStatistics::mean(nocco->sample_null());
+	float64_t mean1=CStatistics::linalg(nocco->sample_null());
 	float64_t var1=CStatistics::variance(nocco->sample_null());
 
 	CMath::init_random(1);
-	float64_t mean2=CStatistics::mean(
+	float64_t mean2=CStatistics::linalg(
 			nocco->CKernelIndependenceTest::sample_null());
 	float64_t var2=CStatistics::variance(nocco->sample_null());
 

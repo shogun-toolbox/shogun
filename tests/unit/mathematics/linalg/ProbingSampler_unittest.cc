@@ -144,7 +144,7 @@ TEST(ProbingSampler, mean_variance)
 	for (index_t i=0; i<num_samples; ++i)
 	{
 		const SGVector<float64_t>& sample=trace_sampler->sample(i);
-		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);
+		EXPECT_NEAR(CStatistics::linalg(sample), 0.0, 0.1);
 		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
 	}
 

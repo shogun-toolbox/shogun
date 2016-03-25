@@ -530,12 +530,12 @@ TEST(Statistics, vector_mean_test)
 	for(int i=0; i<a.vlen; i++)
 		sum_a+=a[i];
 
-	EXPECT_EQ(sum_a/a.vlen, CStatistics::mean(a));
+	EXPECT_EQ(sum_a/a.vlen, linalg::mean(a));
 }
 
 TEST(Statistics, vector_mean_overflow_test)
 {
 	SGVector<float64_t> a(10);
 	a.set_const(std::numeric_limits<float64_t>::max());
-	EXPECT_EQ(std::numeric_limits<float64_t>::max(), CStatistics::mean(a));
+	EXPECT_EQ(std::numeric_limits<float64_t>::max(), linalg::mean(a));
 }

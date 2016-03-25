@@ -14,6 +14,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -109,8 +110,8 @@ void quadratic_time_mmd()
 	}
 	SG_UNREF(p_and_q);
 
-	SG_SPRINT("type I error: %f\n", CStatistics::mean(type_I_errors));
-	SG_SPRINT("type II error: %f\n", CStatistics::mean(type_II_errors));
+	SG_SPRINT("type I error: %f\n", linalg::mean(type_I_errors));
+	SG_SPRINT("type II error: %f\n", linalg::mean(type_II_errors));
 
 	/* clean up */
 	SG_UNREF(mmd);

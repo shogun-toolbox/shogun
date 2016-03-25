@@ -21,6 +21,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -108,8 +109,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 		typeIIerrors[i]=mmd->perform_test()>alpha;
 	}
 
-	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
-	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
+	SG_SPRINT("type I error: %f\n", linalg::mean(typeIerrors));
+	SG_SPRINT("type II error: %f\n", linalg::mean(typeIIerrors));
 
 
 	SG_UNREF(selection);
@@ -188,8 +189,8 @@ void kernel_choice_linear_time_mmd_opt_comb()
 		typeIIerrors[i]=mmd->perform_test()>alpha;
 	}
 
-	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
-	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
+	SG_SPRINT("type I error: %f\n", linalg::mean(typeIerrors));
+	SG_SPRINT("type II error: %f\n", linalg::mean(typeIIerrors));
 
 
 	SG_UNREF(selection);

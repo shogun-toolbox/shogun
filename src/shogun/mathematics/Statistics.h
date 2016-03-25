@@ -662,14 +662,6 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
-/// mean not implemented for complex128_t, returns 0.0 instead
-template <>
-	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
-	{
-		SG_SNOTIMPLEMENTED
-		return floatmax_t(0.0);
-	}
-
 }
 
 #endif /* __STATISTICS_H_ */

@@ -14,6 +14,7 @@
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/evaluation/MultilabelAccuracy.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -122,7 +123,7 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 		SG_UNREF(pred_seq);
 	}
 
-	return CStatistics::mean(accuracies);
+	return linalg::mean(accuracies);
 }
 
 float64_t CStructuredAccuracy::evaluate_sparse_multilabel(CStructuredLabels * predicted,
