@@ -15,6 +15,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

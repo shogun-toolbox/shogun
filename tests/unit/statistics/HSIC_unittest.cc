@@ -32,6 +32,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -147,11 +148,11 @@ TEST(HSIC, hsic_sample_null)
 	/* ensure that sampling null of hsic leads to same results as using
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
-	float64_t mean1=CStatistics::linalg(hsic->sample_null());
+	float64_t mean1=linalg::mean(hsic->sample_null());
 	float64_t var1=CStatistics::variance(hsic->sample_null());
 
 	CMath::init_random(1);
-	float64_t mean2=CStatistics::linalg(
+	float64_t mean2=linalg::mean(
 			hsic->CKernelIndependenceTest::sample_null());
 	float64_t var2=CStatistics::variance(hsic->sample_null());
 
