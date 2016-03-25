@@ -163,7 +163,6 @@ public:
 	static SGVector<float64_t> matrix_std_deviation(
 			SGMatrix<float64_t> values, bool col_wise=true);
 
-#ifdef HAVE_LAPACK
 	/** Computes the empirical estimate of the covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
 	 *
@@ -174,8 +173,6 @@ public:
 	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
 	 * returned.
 	 *
-	 * Needs SHOGUN to be compiled with LAPACK.
-	 *
 	 * @param observations data matrix organized as one variable per column
 	 * @param in_place optional, if set to true, observations matrix will be
 	 * centered, if false, a copy will be created an centered.
@@ -183,7 +180,6 @@ public:
 	 */
 	static SGMatrix<float64_t> covariance_matrix(
 			SGMatrix<float64_t> observations, bool in_place=false);
-#endif //HAVE_LAPACK
 
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
