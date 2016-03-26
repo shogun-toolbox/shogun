@@ -374,6 +374,28 @@ TEST(Statistics, lnormal_cdf)
 
 }
 
+TEST(Statistics, normal_cdf)
+{
+	// assert with value calculated via Octave normcdf() method
+	float64_t phi=CStatistics::normal_cdf(-2);
+	EXPECT_NEAR(phi, 0.0227501319481792190, 1e-15);
+
+	phi=CStatistics::normal_cdf(-3, 4);
+	EXPECT_NEAR(phi, 0.2266273523768682074, 1e-15);
+
+	phi=CStatistics::normal_cdf(-0.3);
+	EXPECT_NEAR(phi, 0.3820885778110473807, 1e-15);
+
+	phi=CStatistics::normal_cdf(0.7);
+	EXPECT_NEAR(phi, 0.7580363477769269664, 1e-15);
+
+	phi=CStatistics::normal_cdf(1);
+	EXPECT_NEAR(phi, 0.8413447460685429258, 1e-15);
+
+	phi=CStatistics::normal_cdf(2);
+	EXPECT_NEAR(phi, 0.9772498680518207914, 1e-15);
+}
+
 TEST(Statistics, chi2_cdf)
 {
 	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
