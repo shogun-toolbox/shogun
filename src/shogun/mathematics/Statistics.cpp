@@ -15,8 +15,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
-
+#include <cmath>
 #include <shogun/mathematics/eigen3.h>
+
 using namespace Eigen;
 
 using namespace shogun;
@@ -573,9 +574,7 @@ float64_t CStatistics::erfc8_weighted_sum(float64_t x)
 
 float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
-//	return 0.5*(error_function_complement(-x/std_dev/1.41421356237309514547));
+	return 0.5*(erfc(-x*M_SQRT1_2/std_dev));
 }
 
 float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
