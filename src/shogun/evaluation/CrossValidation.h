@@ -24,9 +24,6 @@ class CCrossValidationOutput;
 class CList;
 
 /** @brief type to encapsulate the results of an evaluation run.
- * May contain confidence interval (if conf_int_alpha!=0).
- * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
- * in the confidence interval.
  */
 class CCrossValidationResult : public CEvaluationResult
 {
@@ -34,21 +31,11 @@ class CCrossValidationResult : public CEvaluationResult
 		CCrossValidationResult()
 		{
 			SG_ADD(&mean, "mean", "Mean of results", MS_NOT_AVAILABLE);
-			SG_ADD(&has_conf_int, "has_conf_int", "Has confidence intervals?",
-					MS_NOT_AVAILABLE);
-			SG_ADD(&conf_int_low, "conf_int_low", "Lower confidence bound",
-					MS_NOT_AVAILABLE);
-			SG_ADD(&conf_int_up, "conf_int_up", "Upper confidence bound",
-						MS_NOT_AVAILABLE);
-
-			SG_ADD(&conf_int_alpha, "conf_int_alpha",
-					"Alpha of confidence interval", MS_NOT_AVAILABLE);
+			SG_ADD(&std_dev, "std_dev",
+					"Standard deviation of cross-validation folds", MS_NOT_AVAILABLE);
 
 			mean = 0;
-			has_conf_int = 0;
-			conf_int_low = 0;
-			conf_int_up = 0;
-			conf_int_alpha = 0;
+			std_dev = 0;
 		}
 
 		/** return what type of result we are.
@@ -88,39 +75,25 @@ class CCrossValidationResult : public CEvaluationResult
 		/** print result */
 		virtual void print_result()
 		{
-			if (has_conf_int)
-			{
-				SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low,
-						conf_int_up, conf_int_alpha, mean);
-			}
-			else
-				SG_SPRINT("%f\n", mean)
+			SG_SPRINT("%f+-%f\n", mean, std_dev);
 		}
 
 	public:
 		/** mean */
 		float64_t mean;
-		/** has conf int */
-		bool has_conf_int;
-		/** conf int low */
-		float64_t conf_int_low;
-		/** conf int up */
-		float64_t conf_int_up;
-		/** conf int alpha */
-		float64_t conf_int_alpha;
-
+		/** Standard deviation of cross-validation folds */
+		float64_t std_dev;
 };
 
 /** @brief base class for cross-validation evaluation.
- * Given a learning machine, a splitting strategy, an evaluation criterium,
- * features and correspnding labels, this provides an interface for
+ * Given a learning machine, a splitting strategy, an evaluation criterion,
+ * features and corresponding labels, this provides an interface for
  * cross-validation. Results may be retrieved using the evaluate method. A
  * number of repetitions may be specified for obtaining more accurate results.
- * The arithmetic mean of different runs is returned along with confidence
- * intervals, if a p-value is specified.
- * Default number of runs is one, confidence interval combutation is disabled.
+ * The arithmetic mean and standard deviation of different runs is returned.
+ * Default number of runs is one.
  *
- * This class calculates an evaluation criterium of every fold and then
+ * This class calculates an evaluation criterion of every fold and then
  * calculates the arithmetic mean of all folds. This is for example suitable
  * for the AUC or for Accuracy. However, for example F1-measure may not be
  * merged this way (result will be biased). To solve this, different sub-classes
@@ -171,9 +144,6 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);
 
-	/** setter for the number of runs to use for evaluation */
-	void set_conf_int_alpha(float64_t m_conf_int_alpha);
-
 	/** evaluate */
 	virtual CEvaluationResult* evaluate();
 
@@ -207,8 +177,6 @@ protected:
 
 	/** number of evaluation runs for one fold */
 	int32_t m_num_runs;
-	/** confidence interval alpha parameter */
-	float64_t m_conf_int_alpha;
 
 	/** xval output listeners */
 	CList* m_xval_outputs;

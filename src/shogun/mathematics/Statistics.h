@@ -49,19 +49,6 @@ public:
 	/** Calculates median of given values. The median is the value that one
 	 * gets when the input vector is sorted and then selects the middle value.
 	 *
-	 * QuickSelect method copyright:
-	 * This Quickselect routine is based on the algorithm described in
-	 * "Numerical recipes in C", Second Edition,
-	 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
-	 * This code by Nicolas Devillard - 1998. Public domain.
-	 *
-	 * Torben method copyright:
-	 * The following code is public domain.
-	 * Algorithm by Torben Mogensen, implementation by N. Devillard.
-	 * Public domain.
-	 *
-	 * Both methods adapted to SHOGUN by Heiko Strathmann.
-	 *
 	 * @param values vector of values
 	 * @param modify if false, array is modified while median is computed
 	 * (Using QuickSelect).
@@ -177,44 +164,32 @@ public:
 	static SGMatrix<float64_t> covariance_matrix(
 			SGMatrix<float64_t> observations, bool in_place=false);
 
-	/** Calculates the sample mean of a given set of samples and also computes
-	 * the confidence interval for the actual mean for a given p-value,
-	 * assuming that the actual variance and mean are unknown (These are
-	 * estimated by the samples). Based on Student's t-distribution.
-	 *
-	 * Only for normally distributed data
-	 *
-	 * @param values vector of values that are used for calculations
-	 * @param alpha actual mean lies in confidence interval with (1-alpha)*100%
-	 * @param conf_int_low lower confidence interval border is written here
-	 * @param conf_int_up upper confidence interval border is written here
-	 * @return sample mean
-	 *
-	 */
-	static float64_t confidence_intervals_mean(SGVector<float64_t> values,
-			float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up);
-
-	/** Inverse of Normal distribution function
+	/** Inverse of Normal cumulative distribution function
 	 *
 	 * Returns the argument, \f$x\f$, for which the area under the
 	 * Gaussian probability density function (integrated from
 	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
-	 *
-	 *
-	 * For small arguments \f$0 < y < \exp(-2)\f$, the method computes
-	 * \f$z = \sqrt{ -2.0  \log(y) }\f$;  then the approximation is
-	 * \f$x = z - \frac{log(z)}{z}  - \frac{1}{z} \frac{P(\frac{1}{z})}{ Q(\frac{1}{z}}\f$.
-	 * There are two rational functions \f$\frac{P}{Q}\f$, one for \f$0 < y < \exp(-32)\f$
-	 * and the other for \f$y\f$ up to \f$\exp(-2)\f$.  For larger arguments,
-	 * \f$w = y - 0.5\f$, and  \f$\frac{x}{\sqrt{2\pi}} = w + w^3 R(\frac{w^2)}{S(w^2)})\f$.
 	 *
 	 * @param y0 Output of normal CDF for which parameter is returned.
 	 * @param mean Mean of normal distribution.
 	 * @param std_dev Standard deviation of normal distribution.
 	 * @return Parameter that produces given output.
 	 */
-	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
-			float64_t std_dev=1);
+	static float64_t inverse_normal_cdf(float64_t y0);
+
+	/** Inverse of Normal cumulative distribution function.
+	 *
+	 * Same as ::inverse_normal_cdf with mean and standard deviation parameters.
+	 *
+	 * @param y0 Output of normal CDF for which parameter is returned.
+	 * @param mean Mean of normal distribution.
+	 * @param std_dev Standard deviation of normal distribution.
+	 * @return Parameter that produces given output.
+	 */
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean,
+			float64_t std_dev);
+
+	static float64_t rational_approximation(float64_t t);
 
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
@@ -332,7 +307,7 @@ public:
 	 * @return Value of integral
 	 *
 	 */
-	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
+//	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
 
 	/** Evaluates the CDF of the F-distribution with parameters
 	 * \f$d1,d2\f$ at \f$x\f$. Based on Wikipedia definition.
@@ -342,7 +317,7 @@ public:
 	 * @param d2 parameter 2
 	 * @return F-distribution CDF at \f$x\f$
 	 */
-	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
+//	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
 
 	/** Use to estimates erfc(x) valid for -100 < x < -8
 	 *
@@ -507,6 +482,7 @@ public:
 
 	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE2;
+
 
 };
 

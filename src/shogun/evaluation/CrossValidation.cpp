@@ -50,15 +50,12 @@ CCrossValidation::~CCrossValidation()
 void CCrossValidation::init()
 {
 	m_num_runs=1;
-	m_conf_int_alpha=0;
 
 	/* do reference counting for output objects */
 	m_xval_outputs=new CList(true);
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions",
 			MS_NOT_AVAILABLE);
-	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value "
-			"of confidence interval", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_xval_outputs, "m_xval_outputs", "List of output "
 			"classes for intermediade cross-validation results",
 			MS_NOT_AVAILABLE);
@@ -145,21 +142,8 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	/* construct evaluation result */
 	CCrossValidationResult* result = new CCrossValidationResult();
-	result->has_conf_int=m_conf_int_alpha != 0;
-	result->conf_int_alpha=m_conf_int_alpha;
-
-	if (result->has_conf_int)
-	{
-		result->conf_int_alpha=m_conf_int_alpha;
-		result->mean=CStatistics::confidence_intervals_mean(results,
-				result->conf_int_alpha, result->conf_int_low, result->conf_int_up);
-	}
-	else
-	{
-		result->mean=CStatistics::mean(results);
-		result->conf_int_low=0;
-		result->conf_int_up=0;
-	}
+	result->mean=CStatistics::mean(results);
+	result->std_dev=CStatistics::std_deviation(results);
 
 	/* unlock machine if it was locked in this method */
 	if (m_machine->is_data_locked() && m_do_unlock)
@@ -172,22 +156,6 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	SG_REF(result);
 	return result;
-}
-
-void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
-{
-	if (conf_int_alpha <0 || conf_int_alpha>= 1) {
-		SG_ERROR("%f is an illegal alpha-value for confidence interval of "
-		"cross-validation\n", conf_int_alpha);
-	}
-
-	if (m_num_runs==1)
-	{
-		SG_WARNING("Confidence interval for Cross-Validation only possible"
-				" when number of runs is >1, ignoring.\n");
-	}
-	else
-		m_conf_int_alpha=conf_int_alpha;
 }
 
 void CCrossValidation::set_num_runs(int32_t num_runs)
