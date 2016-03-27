@@ -661,6 +661,12 @@ float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
 	return inverse_incomplete_gamma_completed(a, 1-p)*b;
 }
 
+float64_t CStatistics::incomplete_gamma(float64_t a, float64_t x)
+{
+	SG_SERROR("NOT IMPLEMENTED");
+	return 0;
+}
+
 //float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
 //{
 //	SG_SERROR("NOT IMPLEMENTED");
