@@ -235,7 +235,7 @@ public:
 	 * Given \f$p\f$, the function finds \f$x\f$ such that
 	 *
 	 * \f[
-	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
+	 * \text{incomplete\_gamma\_lower}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
 	 * \f]
 	 *
 	 *
@@ -260,7 +260,7 @@ public:
 	 * The function is defined by
 	 *
 	 * \f[
-	 * \text{incomplete\_gamma\_completed}(a,x)=1-\text{incomplete\_gamma}(a,x) =
+	 * \text{incomplete\_gamma\_upper}(a,x)=1-\text{incomplete\_gamma\_lower}(a,x) =
 	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
 	 * \f]
 	 *
@@ -280,12 +280,14 @@ public:
 	 */
 	static float64_t gamma_incomplete_upper(float64_t a, float64_t x);
 
-	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
-	 * at \f$x\f$.
+	/** Evaluates the CDF of the gamma distribution with given shape
+	 * and rate parameters \f$\alpha, \beta\f$ at \f$x\f$.
+	 *
+	 * TODO math
 	 *
 	 * @param x position to evaluate
-	 * @param a shape parameter
-	 * @param b scale parameter
+	 * @param a Shape parameter
+	 * @param b Rate parameter
 	 * @return gamma CDF at \f$x\f$
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
