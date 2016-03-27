@@ -138,13 +138,13 @@ void test_hsic_sample_null()
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
 	float64_t mean1=linalg::mean(hsic->sample_null());
-	float64_t var1=CStatistics::variance(hsic->sample_null());
+	float64_t var1=linalg::variance(hsic->sample_null());
 	SG_SPRINT("mean1=%f, var1=%f\n", mean1, var1);
 
 	CMath::init_random(1);
 	float64_t mean2=linalg::mean(
 			hsic->CKernelIndependenceTest::sample_null());
-	float64_t var2=CStatistics::variance(hsic->sample_null());
+	float64_t var2=linalg::variance(hsic->sample_null());
 	SG_SPRINT("mean2=%f, var2=%f\n", mean2, var2);
 
 	/* assert than results are the same from bot sampling null impl. */

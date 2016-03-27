@@ -120,18 +120,6 @@ public:
 	 */
 	static float64_t std_deviation(SGVector<float64_t> values);
 
-	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
-	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
-	 *
-	 * Computes the mean for each row/col of matrix
-	 *
-	 * @param values vector of values
-	 * @param col_wise if true, every column vector will be used, row vectors
-	 * otherwise
-	 * @return mean of given values
-	 */
-	static SGVector<float64_t> matrix_mean(SGMatrix<float64_t> values,
-			bool col_wise=true);
 
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is

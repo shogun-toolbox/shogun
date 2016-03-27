@@ -37,6 +37,8 @@
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
 #include <shogun/mathematics/linalg/internal/implementation/MeanEigen3.h>
+#include <shogun/mathematics/linalg/internal/implementation/Variance.h>
+#include <shogun/mathematics/linalg/internal/implementation/StdDeviation.h>
 
 namespace shogun
 {
@@ -93,6 +95,103 @@ template <Backend backend=linalg_traits<Redux>::backend, class Vector>
 typename implementation::int2float<typename Vector::Scalar>::floatType mean(Vector a)
 {
 	return implementation::mean<backend,Vector>::compute(a);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix mean of values that works
+ * with generic matricies.  Computes averages elementwise
+ * @param a matrix whose mean has to be computed
+ * @return the vector mean \f$\mean_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar matrix_mean(Matrix m)
+{
+	return implementation::matrix_mean<backend,Matrix>::compute(m);
+}
+
+
+/**
+ * Wrapper method for internal implementation of matrix mean of values that works
+ * with generic matricies.  Computes averages row-wise and colum-wise
+ * @param a matrix whose mean has to be computed
+ * @return the vector mean \f$\mean_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename implementation::matrix_mean<backend, Matrix>::ReturnTypeVec matrix_mean(Matrix m, bool col_wise)
+{
+	return implementation::matrix_mean<backend,Matrix>::compute(m, col_wise);
+}
+
+/**
+ * Wrapper method for internal implementation of vector variance of values that works
+ * with generic dense vectors
+ * @param a vector whose variance has to be computed
+ * @return the vector variance \f$\variance_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar variance(Vector a)
+{
+	return implementation::variance<backend,Vector>::compute(a);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix variance of values that works
+ * with generic matricies.  Computes variance elementwise
+ * @param a matrix whose variance has to be computed
+ * @return the vector variance \f$\variance_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar matrix_variance(Matrix m)
+{
+	return implementation::matrix_variance<backend,Matrix>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix variance of values that works
+ * with generic matricies.  Computes variance row-wise and colum-wise
+ * @param a matrix whose variance has to be computed
+ * @return the vector variance \f$\variance_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename implementation::matrix_variance<backend, Matrix>::ReturnTypeVec matrix_variance(Matrix m, bool col_wise)
+{
+	return implementation::matrix_variance<backend,Matrix>::compute(m, col_wise);
+}
+
+/**
+ * Wrapper method for internal implementation of vector std_deviation of values that works
+ * with generic dense vectors
+ * @param a vector whose std_deviation has to be computed
+ * @return the vector std_deviation \f$\std_deviation_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar std_deviation(Vector a)
+{
+	return implementation::std_deviation<backend,Vector>::compute(a);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix std_deviation of values that works
+ * with generic matricies.  Computes std_deviation elementwise
+ * @param a matrix whose std_deviation has to be computed
+ * @return the vector std_deviation \f$\std_deviation_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar matrix_std_deviation(Matrix m)
+{
+	return implementation::matrix_std_deviation<backend,Matrix>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix std_deviation of values that works
+ * with generic matricies.  Computes std_deviation row-wise and colum-wise
+ * @param a matrix whose std_deviation has to be computed
+ * @return the vector std_deviation \f$\std_deviation_i a_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename implementation::matrix_std_deviation<backend, Matrix>::ReturnTypeVec matrix_std_deviation(Matrix m, bool col_wise)
+{
+	return implementation::matrix_std_deviation<backend,Matrix>::compute(m, col_wise);
 }
 
 /**

@@ -29,7 +29,7 @@ void test_mean()
 	}
 	X.display_matrix("X");
 
-	SGVector<float64_t> mean=CStatistics::matrix_mean(X, true);
+	SGVector<float64_t> mean=linalg::matrix_mean(X, true);
 	mean.display_vector("mean");
 	ASSERT(mean.vlen==5);
 	ASSERT(mean[0]==1);
@@ -41,7 +41,7 @@ void test_mean()
 	float64_t mean2=linalg::mean(mean);
 	ASSERT(mean2==7);
 
-	mean=CStatistics::matrix_mean(X, false);
+	mean=linalg::matrix_mean(X, false);
 	mean.display_vector("mean");
 	ASSERT(mean.vlen==3);
 	ASSERT(mean[0]==6);
@@ -84,7 +84,7 @@ void test_variance()
 	}
 	X.display_matrix("X");
 
-	SGVector<float64_t> var=CStatistics::matrix_variance(X, true);
+	SGVector<float64_t> var=linalg::matrix_variance(X, true);
 	var.display_vector("variance");
 	ASSERT(var.vlen==5);
 	ASSERT(var[0]==1);
@@ -93,17 +93,17 @@ void test_variance()
 	ASSERT(var[3]==1);
 	ASSERT(var[4]==1);
 
-	float64_t var2=CStatistics::variance(var);
+	float64_t var2=linalg::variance(var);
 	ASSERT(var2==0);
 
-	var=CStatistics::matrix_variance(X, false);
+	var=linalg::matrix_variance(X, false);
 	var.display_vector("variance");
 	ASSERT(var.vlen==3);
 	ASSERT(var[0]==22.5);
 	ASSERT(var[1]==22.5);
 	ASSERT(var[2]==22.5);
 
-	var2=CStatistics::variance(var);
+	var2=linalg::variance(var);
 	ASSERT(var2==0);
 }
 
@@ -120,8 +120,8 @@ void test_confidence_intervals()
 	SG_SPRINT("sample mean: %f. True mean lies in [%f,%f] with %f%%\n",
 			mean, low, up, 100*(1-error_prob));
 
-	SG_SPRINT("variance: %f\n", CStatistics::variance(data));
-	SG_SPRINT("deviation: %f\n", CStatistics::std_deviation(data));
+	SG_SPRINT("variance: %f\n", linalg::variance(data));
+	SG_SPRINT("deviation: %f\n", linalg::std_deviation(data));
 }
 
 void test_inverse_student_t()

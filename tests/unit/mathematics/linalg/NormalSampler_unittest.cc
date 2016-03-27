@@ -13,6 +13,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -34,7 +35,7 @@ TEST(NormalSampler, sample)
 			samples(i,j)=s[j];
 	}
 
-	SGVector<float64_t> mean=CStatistics::matrix_mean(samples);
+	SGVector<float64_t> mean=linalg::matrix_mean(samples, true);
 	Map<VectorXd> map_mean(mean.vector, mean.vlen);
 	EXPECT_NEAR((map_mean-VectorXd::Zero(dimension)).norm(), 0.0, 0.1);
 

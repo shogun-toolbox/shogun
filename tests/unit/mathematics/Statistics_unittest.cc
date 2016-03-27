@@ -144,7 +144,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
 
 	// calculate the sample mean and covariance
-	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGVector<float64_t> s_mean=linalg::matrix_mean(samples, true);
 #ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
@@ -184,7 +184,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 		true);
 
 	// calculate the sample mean and covariance
-	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGVector<float64_t> s_mean=linalg::matrix_mean(samples, true);
 #ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
@@ -249,7 +249,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
 
 	// calculate the sample mean and covariance
-	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGVector<float64_t> s_mean=linalg::matrix_mean(samples,true);
 #ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);

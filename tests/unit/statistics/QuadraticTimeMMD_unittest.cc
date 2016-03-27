@@ -677,7 +677,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	SGVector<float64_t> null_samples=mmd->sample_null();
 
 	float64_t mean=linalg::mean(null_samples);
-	float64_t var=CStatistics::variance(null_samples);
+	float64_t var=linalg::variance(null_samples);
 
 	//SG_SPRINT("mean %f, var %f\n", mean, var);
 
@@ -697,9 +697,9 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 
 	/* assert that results do not change */
 	//SG_SPRINT("mean %f, var %f\n", linalg::mean(null_samples),
-	//		CStatistics::variance(null_samples));
+	//		linalg::variance(null_samples));
 	EXPECT_LE(CMath::abs(mean-linalg::mean(null_samples)), 10E-8);
-	EXPECT_LE(CMath::abs(var-CStatistics::variance(null_samples)), 10E-8);
+	EXPECT_LE(CMath::abs(var-linalg::variance(null_samples)), 10E-8);
 
 	SG_UNREF(mmd);
 	SG_UNREF(features_p);
