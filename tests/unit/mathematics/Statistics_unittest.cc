@@ -460,6 +460,7 @@ TEST(Statistics, inverse_normal_cdf_with_mean_std_dev)
 
 TEST(Statistics, gamma_incomplete_lower)
 {
+	// tests against scipy.special.gammainc
 	float64_t result;
 	
 	result=CStatistics::gamma_incomplete_lower(1, 1);
@@ -501,11 +502,51 @@ TEST(Statistics, gamma_incomplete_lower)
 
 TEST(Statistics, gamma_incomplete_upper)
 {
-	EXPECT_NEAR(0, 1, 1e-15);
+	// tests against scipy.special.gammaincc
+	float64_t result;
+	
+	result=CStatistics::gamma_incomplete_upper(1, 1);
+	EXPECT_NEAR(result, 0.36787944117144233, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(2, 1);
+	EXPECT_NEAR(result, 0.73575888234288467, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 2);
+	EXPECT_NEAR(result, 0.1353352832366127, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(0.0000001, 1);
+	EXPECT_NEAR(result, 2.193839568430253e-08, 1e-14);
+	
+	result=CStatistics::gamma_incomplete_upper(0.001, 1);
+	EXPECT_NEAR(result, 0.00021960835758555317, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(5, 1);
+	EXPECT_NEAR(result, 0.99634015317265634, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(10, 1);
+	EXPECT_NEAR(result, 0.99999988857452171, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 0.0000001);
+	EXPECT_NEAR(result, 0.99999990000000505, 1e-9);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 0.001);
+	EXPECT_NEAR(result, 0.99900049983337502, 1e-12);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 5);
+	EXPECT_NEAR(result, 0.0067379469990854679, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 10);
+	EXPECT_NEAR(result, 4.5399929762484861e-05, 1e-14);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 20);
+	EXPECT_NEAR(result, 2.0611536224385566e-09, 1e-14);
 }
 
 TEST(Statistics, gamma_pdf)
 {
+	// tests against scipy.stats.gamma.pdf
+	// note that scipy.stats.gamma.pdf(2, a=2, scale=1./2) corresonds to
+	// CStatistics:.gamma_pdf(2,2,2)
 	float64_t result;
 	
 	// three basic cases to get order of parameters

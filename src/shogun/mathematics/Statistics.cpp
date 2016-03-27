@@ -571,12 +571,61 @@ float64_t CStatistics::gamma_incomplete_lower(float64_t s, float64_t z)
 	return CMath::exp(s * CMath::log(z) - z - CStatistics::lgamma(s + 1.) + CMath::log(sum));
 }
 
-float64_t CStatistics::gamma_incomplete_upper(float64_t s, float64_t x)
+float64_t CStatistics::lgamma_approx(float64_t z)
 {
-	REQUIRE(s>0, "Given s (%f) must be greater than 0.\n", s);
-	REQUIRE(x>=0, "Given x (%f) must be greater or equal to 0.\n", x);
+	float64_t x = 0;
+	x += 0.1659470187408462e-06 / (z+7);
+	x += 0.9934937113930748e-05 / (z+6);
+	x -= 0.1385710331296526     / (z+5);
+	x += 12.50734324009056      / (z+4);
+	x -= 176.6150291498386      / (z+3);
+	x += 771.3234287757674      / (z+2);
+	x -= 1259.139216722289      / (z+1);
+	x += 676.5203681218835      / z;
+	x += 0.9999999999995183;
+	return CMath::log(x) - 5.58106146679532777 - z + (z-0.5) * CMath::log(z+6.5);
+}
 
-	return CMath::exp(lgammal(s))*(1-CStatistics::gamma_pdf(x,s,1));
+float64_t CStatistics::gamma_incomplete_upper(float64_t s, float64_t z)
+{
+	REQUIRE(s>0, "Given exponent (%f) must be greater than 0.\n", s);
+	REQUIRE(z>=0, "Given integral bound (%f) must be greater or equal to 0.\n", z);
+
+	/* Taken inspiration from
+	 * https://github.com/lh3/samtools/blob/master/bcftools/kfunc.c
+	 * under MIT license
+	 * The code states:
+	 * The following computes regularized incomplete gamma functions.
+	 * Formulas are taken from Wiki, with additional input from Numerical
+	 * Recipes in C (for modified Lentz's algorithm) and AS245
+	 * (http://lib.stat.cmu.edu/apstat/245).
+	 */
+
+	int32_t j;
+	float64_t C, D, f;
+	f = 1. + z - s;
+	C = f;
+	D = 0.;
+	// Modified Lentz's algorithm for computing continued fraction
+	// See Numerical Recipes in C, 2nd edition, section 5.2
+	for (j = 1; j < 100; ++j)
+	{
+		float64_t a = j * (s - j), b = (j<<1) + 1 + z - s, d;
+		D = b + a * D;
+		// hard coded tiny numbers
+		if (D < 1e-290)
+			D = 1e-290;
+		C = b + a / C;
+		if (C < 1e-290)
+			C = 1e-290;
+		D = 1. / D;
+		d = C * D;
+		f *= d;
+		// hard coded epsilon
+		if (CMath::abs<float64_t>(d - 1.) < 1e-14)
+			break;
+	}
+	return CMath::exp(s * CMath::log(z) - z - CStatistics::lgamma_approx(s) - CMath::log(f));
 }
 
 float64_t CStatistics::gamma_pdf(float64_t x, float64_t a, float64_t b)

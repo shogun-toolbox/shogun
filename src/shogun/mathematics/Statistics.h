@@ -197,6 +197,9 @@ public:
 		return ::lgamma((double) x);
 	}
 
+	/** TODO */
+	static float64_t lgamma_approx(float64_t x);
+
 	/** @return natural logarithm of the gamma function of input for large
 	 * numbers */
 	static inline floatmax_t lgammal(floatmax_t x)
@@ -227,11 +230,15 @@ public:
 	 */
 	static float64_t gamma_pdf(float64_t x, float64_t a, float64_t b);
 
-	/** Compute the (incomplete) Gamma function.
+	/** Compute the (regularized incomplete) Gamma function.
 	 *
-	 * TODO
+	 * Formulas are taken from Wiki, with additional input from Numerical
+	 * Recipes in C (for modified Lentz's algorithm). Uses a series expansion.
 	 *
-	 * a>0, x>=0
+	 * TODO latex
+	 * http://www.johndcook.com/blog/gamma_python/
+	 *
+	 * Assumes a>0, x>=0
 	 *
 	 * @param a TODO
 	 * @param x TODO
@@ -239,6 +246,16 @@ public:
 	 */
 	static float64_t gamma_incomplete_lower(float64_t a, float64_t x);
 
+	/** Cumputes the (regularized upper) Gamma function.
+	 *
+	 * Modified Lentz's algorithm for computing continued fraction.
+	 * See Numerical Recipes in C, 2nd edition, section 5.2.
+	 *
+	 * TODO latex
+	 * http://www.johndcook.com/blog/gamma_python/
+	 *
+	 * Assumes a>0, x>=0
+	 */
 	static float64_t gamma_incomplete_upper(float64_t a, float64_t x);
 
 	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
