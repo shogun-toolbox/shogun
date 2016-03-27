@@ -617,27 +617,26 @@ TEST(Statistics, gamma_cdf)
 	// incomplete gamma is based on is tested thoroughly already
 	result=CStatistics::gamma_cdf(2, 1, 1);
 	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
+	
 	result=CStatistics::gamma_cdf(2, 2, 1);
 	EXPECT_NEAR(result, 0.59399415029016167, 1e-15);
+	
 	result=CStatistics::gamma_cdf(2, 1, 2);
 	EXPECT_NEAR(result, 0.98168436111126578, 1e-15);
 }
 
-TEST(Statistics, chi2_pdf)
-{
-	EXPECT_NEAR(0, 1, 1e-15);
-}
-
 TEST(Statistics, chi2_cdf)
 {
-	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
-	EXPECT_NEAR(chi2c, 0.03743423, 1e-7);
+	// tests against scipy.stats.chi2.cdf
+	// few tests since gamma_incomplete_lower is already thoroughly tested
+	float64_t chi2c=CStatistics::chi2_cdf(1, 1);
+	EXPECT_NEAR(chi2c, 0.68268949213708596, 1e-15);
 
 	chi2c=CStatistics::chi2_cdf(10.0, 5.0);
-	EXPECT_NEAR(chi2c, 0.92476475, 1e-7);
+	EXPECT_NEAR(chi2c, 0.92476475385348778, 1e-15);
 
 	chi2c=CStatistics::chi2_cdf(1.0, 15.0);
-	EXPECT_NEAR(chi2c, 0.00000025, 1e-7);
+	EXPECT_NEAR(chi2c, 2.5356443108232581e-07, 1e-15);
 }
 
 TEST(Statistics, fdistribution_cdf)
