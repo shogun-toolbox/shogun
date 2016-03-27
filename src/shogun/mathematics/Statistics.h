@@ -230,31 +230,53 @@ public:
 	 */
 	static float64_t gamma_pdf(float64_t x, float64_t a, float64_t b);
 
-	/** Compute the (regularized incomplete) Gamma function.
+	/** Compute the (lower) incomplete Gamma integral.
+	 *
+	 * Given \f$p\f$, the function finds \f$x\f$ such that
+	 *
+	 * \f[
+	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
+	 * \f]
+	 *
+	 *
+	 * In this implementation both arguments must be positive.
+	 * The integral is evaluated by either a power series or
+	 * continued fraction expansion, depending on the relative
+	 * values of \f$a\f$ and \f$x\f$.
 	 *
 	 * Formulas are taken from Wiki, with additional input from Numerical
-	 * Recipes in C (for modified Lentz's algorithm). Uses a series expansion.
+	 * Recipes in C (for modified Lentz's algorithm for series expansion)
 	 *
-	 * TODO latex
-	 * http://www.johndcook.com/blog/gamma_python/
+	 * Assumes \f$a>0\f$, \f$x\geq 0\f$
 	 *
-	 * Assumes a>0, x>=0
-	 *
-	 * @param a TODO
-	 * @param x TODO
-	 * @return TODO
+	 * @param a Exponent parameter
+	 * @param x Lower integral bound
+	 * @return Value of incomplete Gamma integral
 	 */
 	static float64_t gamma_incomplete_lower(float64_t a, float64_t x);
 
-	/** Cumputes the (regularized upper) Gamma function.
+	/** Complemented incomplete Gamma integral (upper incomplete Gamma function)
+	 *
+	 * The function is defined by
+	 *
+	 * \f[
+	 * \text{incomplete\_gamma\_completed}(a,x)=1-\text{incomplete\_gamma}(a,x) =
+	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
+	 * \f]
+	 *
+	 * In this implementation both arguments must be positive.
+	 * The integral is evaluated by either a power series or
+	 * continued fraction expansion, depending on the relative
+	 * values of \f$a\f$ and \f$x\f$.
 	 *
 	 * Modified Lentz's algorithm for computing continued fraction.
 	 * See Numerical Recipes in C, 2nd edition, section 5.2.
 	 *
-	 * TODO latex
-	 * http://www.johndcook.com/blog/gamma_python/
+	 * Assumes \f$a>0\f$, \f$x\geq 0\f$
 	 *
-	 * Assumes a>0, x>=0
+	 * @param a Exponent parameter
+	 * @param x Lower integral bound
+	 * @return Value of incomplete Gamma integral
 	 */
 	static float64_t gamma_incomplete_upper(float64_t a, float64_t x);
 
