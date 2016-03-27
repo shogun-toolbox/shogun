@@ -396,6 +396,72 @@ TEST(Statistics, normal_cdf)
 	EXPECT_NEAR(phi, 0.9772498680518207914, 1e-15);
 }
 
+TEST(Statistics, inverse_normal_cdf)
+{
+	// assert with value calculated via Mathematica
+	float64_t result;
+
+	result=CStatistics::inverse_normal_cdf(0.0000001);
+	EXPECT_NEAR(result, -5.199337582187471, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.00001);
+	EXPECT_NEAR(result, -4.264890793922602, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.001);
+	EXPECT_NEAR(result, -3.090232306167813, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.05);
+	EXPECT_NEAR(result, -1.6448536269514729, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.15);
+	EXPECT_NEAR(result, -1.0364333894937896, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.25);
+	EXPECT_NEAR(result, -0.6744897501960817, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.35);
+	EXPECT_NEAR(result, -0.38532046640756773, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.45);
+	EXPECT_NEAR(result, -0.12566134685507402, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.55);
+	EXPECT_NEAR(result, 0.12566134685507402, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.65);
+	EXPECT_NEAR(result, 0.6744897501960817, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.75);
+	EXPECT_NEAR(result, 1.0364333894937896, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.85);
+	EXPECT_NEAR(result, 0.38532046640756773, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.95);
+	EXPECT_NEAR(result, 0.6744897501960817, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.99);
+	EXPECT_NEAR(result, 1.0364333894937896, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.999);
+	EXPECT_NEAR(result, 1.6448536269514729, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.99999);
+	EXPECT_NEAR(result, 3.090232306167813, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.9999999);
+	EXPECT_NEAR(result, 4.264890793922602, 1e-15);
+}
+
+TEST(Statistics, inverse_normal_cdf_with_mean_std_dev)
+{
+	// assert with value calculated via Mathematica
+	float64_t result;
+
+	result=CStatistics::inverse_normal_cdf(0.2, 2, 2);
+	EXPECT_NEAR(result, -5.199337582187471, 1e-15);
+}
+
 TEST(Statistics, chi2_cdf)
 {
 	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);

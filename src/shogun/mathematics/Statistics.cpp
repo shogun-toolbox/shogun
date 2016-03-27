@@ -323,33 +323,6 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	return cov;
 }
 
-float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
-		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
-{
-	ASSERT(values.vlen>1)
-	ASSERT(values.vector)
-
-	/* using one sided student t distribution evaluation */
-	alpha=alpha/2;
-
-	/* degrees of freedom */
-	int32_t deg=values.vlen-1;
-
-	/* compute absolute value of t-value */
-	float64_t t=CMath::abs(inverse_student_t(deg, alpha));
-
-	/* values for calculating confidence interval */
-	float64_t std_dev=CStatistics::std_deviation(values);
-	float64_t mean=CStatistics::mean(values);
-
-	/* compute confidence interval */
-	float64_t interval=t*std_dev/CMath::sqrt((float64_t)values.vlen);
-	conf_int_low=mean-interval;
-	conf_int_up=mean+interval;
-
-	return mean;
-}
-
 SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
 		SGMatrix<float64_t> tables)
 {
@@ -530,34 +503,58 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	return result;
 }
 
+double rational_approximation(double t)
+{
+	// Abramowitz and Stegun formula 26.2.23.
+	// The absolute value of the error should be less than 4.5 e-4.
+	double c[] = { 2.515517, 0.802853, 0.010328 };
+	double d[] = { 1.432788, 0.189269, 0.001308 };
+	return t - ((c[2] * t + c[1]) * t + c[0]) / (((d[2] * t + d[1]) * t + d[0]) * t + 1.0);
+}
+
 float64_t CStatistics::inverse_normal_cdf(float64_t y, float64_t mean,
 		float64_t std_dev)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
-	//return inverse_normal_cdf(y0)*std_dev+mean;
+	return inverse_normal_cdf(y)*std_dev+mean;
 }
 
-float64_t CStatistics::inverse_student_t(int32_t k, float64_t p)
+float64_t CStatistics::inverse_normal_cdf(float64_t p)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
+	REQUIRE(p>0, "Input (%f); must be larger than 0", p);
+	REQUIRE(p<1, "Input (%f); must be less than 1", p);
+
+	/* inspired by http://www.johndcook.com/blog/normal_cdf_inverse
+	 * under the BSD license */
+	if (p < 0.5)
+	{
+		// F^-1(p) = - G^-1(p)
+		return -rational_approximation( sqrt(-2.0*log(p)) );
+	}
+	else
+	{
+		// F^-1(p) = G^-1(1-p)
+		return rational_approximation( sqrt(-2.0*log(1-p)) );
+	}
 }
+
+//float64_t CStatistics::inverse_student_t(int32_t k, float64_t p)
+//{
+//	SG_SERROR("NOT IMPLEMENTED");
+//	return 0;
+//}
 
 float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
 	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
 	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
-//	return incomplete_gamma(k/2.0,x/2.0);
+	return incomplete_gamma(k/2.0,x/2.0);
 }
 
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
 	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
 	/* definition of wikipedia: incomplete gamma devised by true gamma */
-//	return incomplete_gamma(a, x/b);
+	return incomplete_gamma(a, x/b);
 }
 
 float64_t CStatistics::lnormal_cdf(float64_t x)
@@ -659,23 +656,22 @@ float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
 		float64_t b)
 {
 	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
 	/* inverse of gamma(a,b) CDF is
 	 * inverse_incomplete_gamma_completed(a, 1. - p) * b */
-//	return inverse_incomplete_gamma_completed(a, 1-p)*b;
+	return inverse_incomplete_gamma_completed(a, 1-p)*b;
 }
 
-float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
-{
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
-}
+//float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
+//{
+//	SG_SERROR("NOT IMPLEMENTED");
+//	return 0;
+//}
 
-float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
-{
-	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
-	return incomplete_beta(d1/2.0,d2/2.0,d1*x/(d1*x+d2));
-}
+//float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
+//{
+//	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
+//	return incomplete_beta(d1/2.0,d2/2.0,d1*x/(d1*x+d2));
+//}
 
 float64_t CStatistics::dlgamma(float64_t x)
 {
