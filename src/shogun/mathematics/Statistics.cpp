@@ -562,14 +562,92 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 
 float64_t CStatistics::lnormal_cdf(float64_t x)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
+	/* Loosely based on logphi.m in
+	 * Gaussian Process Machine Learning Toolbox file logphi.m
+	 * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+	 * Under FreeBSD license
+	 */
+
+	const float64_t sqrt_of_2=1.41421356237309514547;
+	const float64_t log_of_2=0.69314718055994528623;
+	const float64_t sqrt_of_pi=1.77245385090551588192;
+
+	const index_t c_len=14;
+	static float64_t c_array[c_len]=
+	{
+		0.00048204,
+		-0.00142906,
+		0.0013200243174,
+		0.0009461589032,
+		-0.0045563339802,
+		0.00556964649138,
+		0.00125993961762116,
+		-0.01621575378835404,
+		0.02629651521057465,
+		-0.001829764677455021,
+		2.0*(1.0-CMath::PI/3.0),
+		(4.0-CMath::PI)/3.0,
+		1.0,
+		1.0
+	};
+
+	if (x*x<ERFC_CASE1)
+	{
+		float64_t f = 0.0;
+		float64_t lp0 = -x/(sqrt_of_2*sqrt_of_pi);
+		for (index_t i=0; i<c_len; i++)
+			f=lp0*(c_array[i]+f);
+		return -2.0*f-log_of_2;
+	}
+	else if (x<ERFC_CASE2)
+		return CMath::log(erfc8_weighted_sum(x))-log_of_2-x*x*0.5;
+
+	//id3 = ~id2 & ~id1; lp(id3) = log(erfc(-z(id3)/sqrt(2))/2);
+	return CMath::log(normal_cdf(x));
 }
 
 float64_t CStatistics::erfc8_weighted_sum(float64_t x)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	return 0;
+	/* This is based on index 5725 in Hart et al */
+
+	const float64_t sqrt_of_2=1.41421356237309514547;
+
+	static float64_t P[]=
+	{
+		0.5641895835477550741253201704,
+		1.275366644729965952479585264,
+		5.019049726784267463450058,
+		6.1602098531096305440906,
+		7.409740605964741794425,
+		2.97886562639399288862
+	};
+
+	static float64_t Q[]=
+	{
+		1.0,
+		2.260528520767326969591866945,
+		9.396034016235054150430579648,
+		12.0489519278551290360340491,
+		17.08144074746600431571095,
+		9.608965327192787870698,
+		3.3690752069827527677
+	};
+
+	float64_t num=0.0, den=0.0;
+
+	num = P[0];
+	for (index_t i=1; i<6; i++)
+	{
+		num=-x*num/sqrt_of_2+P[i];
+	}
+
+	den = Q[0];
+	for (index_t i=1; i<7; i++)
+	{
+		den=-x*den/sqrt_of_2+Q[i];
+	}
+
+	return num/den;
 }
 
 float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
