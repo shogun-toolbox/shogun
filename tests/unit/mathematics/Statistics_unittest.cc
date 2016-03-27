@@ -498,6 +498,13 @@ TEST(Statistics, gamma_incomplete_lower)
 	
 	result=CStatistics::gamma_incomplete_lower(1, 20);
 	EXPECT_NEAR(result, 0.99999999793884642, 1e-14);
+	
+	// special cases in the implementation
+	result=CStatistics::gamma_incomplete_lower(1, 0);
+	EXPECT_NEAR(result, 0, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 2);
+	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
 }
 
 TEST(Statistics, gamma_incomplete_upper)
@@ -540,6 +547,13 @@ TEST(Statistics, gamma_incomplete_upper)
 	
 	result=CStatistics::gamma_incomplete_upper(1, 20);
 	EXPECT_NEAR(result, 2.0611536224385566e-09, 1e-14);
+	
+	// special cases in the implementation
+	result=CStatistics::gamma_incomplete_upper(1, 0);
+	EXPECT_NEAR(result, 1, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_upper(1, 0.5);
+	EXPECT_NEAR(result, 0.60653065971263342, 1e-15);
 }
 
 TEST(Statistics, gamma_pdf)
@@ -594,7 +608,19 @@ TEST(Statistics, gamma_pdf)
 
 TEST(Statistics, gamma_cdf)
 {
-	EXPECT_NEAR(0, 1, 1e-15);
+	// tests against scipy.stats.gamma.cdf
+	// note that scipy.stats.gamma.cdf(2, a=2, scale=1./2) corresonds to
+	// CStatistics:.gamma_cdf(2,2,2)
+	float64_t result;
+	
+	// only three basic cases to get order of parameters
+	// incomplete gamma is based on is tested thoroughly already
+	result=CStatistics::gamma_cdf(2, 1, 1);
+	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
+	result=CStatistics::gamma_cdf(2, 2, 1);
+	EXPECT_NEAR(result, 0.59399415029016167, 1e-15);
+	result=CStatistics::gamma_cdf(2, 1, 2);
+	EXPECT_NEAR(result, 0.98168436111126578, 1e-15);
 }
 
 TEST(Statistics, chi2_pdf)

@@ -545,7 +545,6 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p)
 
 float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
-	SG_SERROR("NOT IMPLEMENTED");
 	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
 	return gamma_incomplete_lower(k/2.0,x/2.0);
 }
@@ -556,7 +555,7 @@ float64_t CStatistics::gamma_incomplete_lower(float64_t s, float64_t z)
 	REQUIRE(z>=0, "Given integral bound (%f) must be greater or equal to 0.\n", z);
 
 	/* save computation */
-	if (z<=0 || s<=0)
+	if (z==0)
 		return 0;
 
 	/* is more numerically stable */
@@ -594,7 +593,7 @@ float64_t CStatistics::gamma_incomplete_upper(float64_t s, float64_t z)
 	 */
 
 	/* save computation */
-	if (z<=0 || s<=0)
+	if (z==0)
 		return 1;
 
 	/* is more numerically stable */
@@ -646,9 +645,8 @@ float64_t CStatistics::gamma_pdf(float64_t x, float64_t a, float64_t b)
 
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	/* definition of wikipedia: incomplete gamma devised by true gamma */
-	return gamma_incomplete_lower(a, x/b);
+	/* definition from wikipedia */
+	return gamma_incomplete_lower(a, x*b);
 }
 
 float64_t CStatistics::lnormal_cdf(float64_t x)
