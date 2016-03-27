@@ -214,23 +214,32 @@ public:
 		return ::tgamma((double) x);
 	}
 
-	/** Incomplete gamma integral
+	/** Compute the probability density function of the gamma distribution,
+	 * parametrised as
 	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
+	 * TODO
 	 *
-	 * \f[
-	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
-	 * \f]
+	 * where x>=0 a,b>0.
 	 *
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
+	 * @param x Point to evaluate
+	 * @param a Shape parameter
+	 * @param b Scale parameter
 	 */
-	static float64_t incomplete_gamma(float64_t a, float64_t x);
+	static float64_t gamma_pdf(float64_t x, float64_t a, float64_t b);
+
+	/** Compute the (incomplete) Gamma function.
+	 *
+	 * TODO
+	 *
+	 * a>0, x>=0
+	 *
+	 * @param a TODO
+	 * @param x TODO
+	 * @return TODO
+	 */
+	static float64_t gamma_incomplete_lower(float64_t a, float64_t x);
+
+	static float64_t gamma_incomplete_upper(float64_t a, float64_t x);
 
 	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
 	 * at \f$x\f$.
@@ -335,7 +344,7 @@ public:
 	 * @param d2 parameter 2
 	 * @return F-distribution CDF at \f$x\f$
 	 */
-//	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
+	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
 
 	/** Use to estimates erfc(x) valid for -100 < x < -8
 	 *

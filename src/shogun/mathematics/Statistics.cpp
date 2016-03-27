@@ -503,7 +503,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	return result;
 }
 
-double rational_approximation(double t)
+float64_t CStatistics::rational_approximation(float64_t t)
 {
 	// Abramowitz and Stegun formula 26.2.23.
 	// The absolute value of the error should be less than 4.5 e-4.
@@ -547,14 +547,52 @@ float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
 	SG_SERROR("NOT IMPLEMENTED");
 	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
-	return incomplete_gamma(k/2.0,x/2.0);
+	return gamma_incomplete_lower(k/2.0,x/2.0);
+}
+
+float64_t CStatistics::gamma_incomplete_lower(float64_t s, float64_t z)
+{
+	REQUIRE(s>0, "Given exponent (%f) must be greater than 0.\n", s);
+	REQUIRE(z>=0, "Given integral bound (%f) must be greater or equal to 0.\n", z);
+
+	// use series expansion
+	// inspiration from
+	// https://github.com/lh3/samtools/blob/master/bcftools/kfunc.c
+	// under MIT license
+	float64_t sum, x;
+	int32_t k;
+	for (k = 1, sum = x = 1.; k < 100; ++k)
+	{
+		sum += (x *= z / (s + k));
+		// hard coded epsilon
+		if (x / sum < 1e-14)
+			break;
+	}
+	return CMath::exp(s * CMath::log(z) - z - CStatistics::lgamma(s + 1.) + CMath::log(sum));
+}
+
+float64_t CStatistics::gamma_incomplete_upper(float64_t s, float64_t x)
+{
+	REQUIRE(s>0, "Given s (%f) must be greater than 0.\n", s);
+	REQUIRE(x>=0, "Given x (%f) must be greater or equal to 0.\n", x);
+
+	return CMath::exp(lgammal(s))*(1-CStatistics::gamma_pdf(x,s,1));
+}
+
+float64_t CStatistics::gamma_pdf(float64_t x, float64_t a, float64_t b)
+{
+	REQUIRE(x>=0, "Given point (%f) must be greater or equal to 0.\n", x);
+	REQUIRE(a>0, "Shape parameter (%f) must be greater than 0.", a);
+	REQUIRE(b>0, "Scale parameter (%f) must be greater than 0.", b);
+
+	return CMath::exp(-x * b) * CMath::pow(x, a - 1.0) * CMath::pow(b, a) / CStatistics::tgamma(a);
 }
 
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
 	SG_SERROR("NOT IMPLEMENTED");
 	/* definition of wikipedia: incomplete gamma devised by true gamma */
-	return incomplete_gamma(a, x/b);
+	return gamma_incomplete_lower(a, x/b);
 }
 
 float64_t CStatistics::lnormal_cdf(float64_t x)
@@ -658,12 +696,7 @@ float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
 	SG_SERROR("NOT IMPLEMENTED");
 	/* inverse of gamma(a,b) CDF is
 	 * inverse_incomplete_gamma_completed(a, 1. - p) * b */
-	return inverse_incomplete_gamma_completed(a, 1-p)*b;
-}
-
-float64_t CStatistics::incomplete_gamma(float64_t a, float64_t x)
-{
-	SG_SERROR("NOT IMPLEMENTED");
+//	return inverse_incomplete_gamma_completed(a, 1-p)*b;
 	return 0;
 }
 
@@ -673,11 +706,12 @@ float64_t CStatistics::incomplete_gamma(float64_t a, float64_t x)
 //	return 0;
 //}
 
-//float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
-//{
-//	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
+float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
+{
+	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
 //	return incomplete_beta(d1/2.0,d2/2.0,d1*x/(d1*x+d2));
-//}
+	return 0;
+}
 
 float64_t CStatistics::dlgamma(float64_t x)
 {

@@ -455,11 +455,110 @@ TEST(Statistics, inverse_normal_cdf)
 
 TEST(Statistics, inverse_normal_cdf_with_mean_std_dev)
 {
-	// assert with value calculated via Mathematica
-	float64_t result;
+	EXPECT_NEAR(0, 1, 1e-15);
+}
 
-	result=CStatistics::inverse_normal_cdf(0.2, 2, 2);
-	EXPECT_NEAR(result, -5.199337582187471, 1e-15);
+TEST(Statistics, gamma_incomplete_lower)
+{
+	float64_t result;
+	
+	result=CStatistics::gamma_incomplete_lower(1, 1);
+	EXPECT_NEAR(result, 0.63212055882855778, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(2, 1);
+	EXPECT_NEAR(result, 0.26424111765711528, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 2);
+	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(0.0000001, 1);
+	EXPECT_NEAR(result, 0.99999997806160246, 1e-14);
+	
+	result=CStatistics::gamma_incomplete_lower(0.001, 1);
+	EXPECT_NEAR(result, 0.9997803916424145, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(5, 1);
+	EXPECT_NEAR(result, 0.0036598468273437131, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(10, 1);
+	EXPECT_NEAR(result, 1.1142547833872071e-07, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 0.0000001);
+	EXPECT_NEAR(result, 9.9999994999999991e-08, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 0.001);
+	EXPECT_NEAR(result, 0.00099950016662500823, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 5);
+	EXPECT_NEAR(result, 0.99326205300091452, 1e-15);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 10);
+	EXPECT_NEAR(result, 0.99995460007023751, 1e-14);
+	
+	result=CStatistics::gamma_incomplete_lower(1, 20);
+	EXPECT_NEAR(result, 0.99999999793884642, 1e-14);
+}
+
+TEST(Statistics, gamma_incomplete_upper)
+{
+	EXPECT_NEAR(0, 1, 1e-15);
+}
+
+TEST(Statistics, gamma_pdf)
+{
+	float64_t result;
+	
+	// three basic cases to get order of parameters
+	result=CStatistics::gamma_pdf(2, 1, 1);
+	EXPECT_NEAR(result, 0.1353352832366127, 1e-15);
+	result=CStatistics::gamma_pdf(2, 2, 1);
+	EXPECT_NEAR(result, 0.2706705664732254, 1e-15);
+	result=CStatistics::gamma_pdf(2, 1, 2);
+	EXPECT_NEAR(result, 0.036631277777468357, 1e-15);
+	
+	// testing x for a=b=1
+	result=CStatistics::gamma_pdf(0.0000001, 1, 1);
+	EXPECT_NEAR(result, 0.99999990000000505, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.00001, 1, 1);
+	EXPECT_NEAR(result, 0.99999000004999983, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.001, 1, 1);
+	EXPECT_NEAR(result, 0.99900049983337502, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.05, 1, 1);
+	EXPECT_NEAR(result, 0.95122942450071402, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.1, 1, 1);
+	EXPECT_NEAR(result, 0.90483741803595952, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.3, 1, 1);
+	EXPECT_NEAR(result, 0.74081822068171788, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.5, 1, 1);
+	EXPECT_NEAR(result, 0.60653065971263342, 1e-15);
+	
+	result=CStatistics::gamma_pdf(0.7, 1, 1);
+	EXPECT_NEAR(result, 0.49658530379140953, 1e-15);
+	
+	result=CStatistics::gamma_pdf(1., 1, 1);
+	EXPECT_NEAR(result, 0.36787944117144233, 1e-15);
+	
+	result=CStatistics::gamma_pdf(10., 1, 1);
+	EXPECT_NEAR(result, 4.5399929762484854e-05, 1e-15);
+	
+	result=CStatistics::gamma_pdf(100., 1, 1);
+	EXPECT_NEAR(result, 3.7200759760208361e-44, 1e-15);
+}
+
+TEST(Statistics, gamma_cdf)
+{
+	EXPECT_NEAR(0, 1, 1e-15);
+}
+
+TEST(Statistics, chi2_pdf)
+{
+	EXPECT_NEAR(0, 1, 1e-15);
 }
 
 TEST(Statistics, chi2_cdf)
