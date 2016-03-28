@@ -54,7 +54,10 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 		rhs_mus->copy_feature_matrix(mus);
 
 		distance->precompute_rhs();
-		
+
+#pragma omp parallel for firstprivate(lhs_size, dimensions, k) \
+		shared(mus, cluster_assignments, weights_set) \
+		reduction(+:changed) if (!fixed_centers)
 		/* Assigment step : Assign each point to nearest cluster */
 		for (int32_t i=0; i<lhs_size; i++)
 		{ 
@@ -77,7 +80,9 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 			if (min_cluster!=cluster_assignments_i)
 			{
 				changed++;
+#pragma omp atomic
 				weights_set[min_cluster]+= 1.0;
+#pragma omp atomic
 				weights_set[cluster_assignments_i]-= 1.0;
 
 				if(fixed_centers)
