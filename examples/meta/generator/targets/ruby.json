@@ -19,7 +19,7 @@
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
         "Identifier": "$identifier",
-        "Enum":"$value"
+        "Enum":"$type.$value"
     },
     "Print": "puts $expr",
     "OutputDirectoryName": "ruby",
