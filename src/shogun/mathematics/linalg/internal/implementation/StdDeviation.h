@@ -56,12 +56,13 @@ struct std_deviation
 	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
-
-	/**
-	 * Method that computes the std_deviation of the elements of a vector
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param a vector whose std_deviation is to be computed
-	 * @return the vector's std_deviation
+	 * @param a vector of values
+	 * @return standard deviation of given values
 	 */
 	static T compute(Vector a);
 };
@@ -76,11 +77,13 @@ struct std_deviation<Backend::EIGEN3, Vector>
 	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
-	/**
-	 * Method that computes the std_deviation of SGVectors using Eigen3
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param a vector whose std_deviation has to be computed
-	 * @return the vector's std_deviation
+	 * @param vec vector of values
+	 * @return standard deviation of given values
 	 */
 	static T compute(SGVector<T> vec)
 	{
@@ -105,23 +108,30 @@ struct matrix_std_deviation{
 	/** Vector return type */
 	typedef SGVector<T> ReturnTypeVec;
 
-	/**
-	 * Method that can compute an column-wise or row-wise std_deviation
-	 * for a matrix
+
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose std_deviation we want to compute
-	 * @param col_wise if true, we compute the column wise std_deviation -
-	 * otherwise, we compute the row-wise std_deviation
-	 * @return a vector containing the row-wise / col-wise std_deviation
+	 * Computes the standard deviation for each row/col of matrix
+	 *
+	 * @param m matrix of values
+	 * @param col_wise if true, every column vector will be used, row vectors
+	 * otherwise
+	 * @return standard deviation of given values
 	 */
 	static ReturnTypeVec compute(Matrix m, bool col_wise);
 
-	/**
-	 * Method that computes the element-wise std_deviation of a matrix
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose element-wise std_deviation we want to
-	 * compute
-	 * @return the element-wise std_deviation of m
+	 * Computes the standard deviation for each row/col of matrix
+	 *
+	 * @param m matrix of values
+	 * @return standard deviation of given values
 	 */
 	static T compute(Matrix m);
 };
@@ -139,14 +149,17 @@ struct matrix_std_deviation<Backend::EIGEN3, Matrix>{
 	/** Vector return type */
 	typedef SGVector<T> ReturnTypeVec;
 
-	/**
-	 * Method that can compute an column-wise or row-wise std_deviation
-	 * for a matrix
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose std_deviation we want to compute
-	 * @param col_wise if true, we compute the column wise std_deviation -
-	 * otherwise, we compute the row-wise std_deviation
-	 * @return a vector containing the row-wise / col-wise std_deviation
+	 * Computes the standard deviation for each row/col of matrix
+	 *
+	 * @param m matrix of values
+	 * @param col_wise if true, every column vector will be used, row vectors
+	 * otherwise
+	 * @return standard deviation of given values
 	 */
 	static ReturnTypeVec compute(SGMatrix<T> m, bool col_wise){
 
@@ -175,12 +188,15 @@ struct matrix_std_deviation<Backend::EIGEN3, Matrix>{
 		return std_deviation;
 	}
 
-	/**
-	 * Method that computes the element-wise std_deviation of a matrix
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose element-wise std_deviation we want to
-	 * compute
-	 * @return the element-wise std_deviation of m
+	 * Computes the standard deviation for each row/col of matrix
+	 *
+	 * @param m matrix of values
+	 * @return standard deviation of given values
 	 */
 	static T compute(SGMatrix<T> m){
 

@@ -59,12 +59,13 @@ struct variance
 	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
-
-	/**
-	 * Method that computes the variance of the elements of a vector
+	/** Calculates unbiased empirical variance estimator of given values. Given
+	 * \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param a vector whose variance is to be computed
-	 * @return the vector's variance
+	 * @param a vector of values
+	 * @return variance of given values
 	 */
 	static T compute(Vector a);
 };
@@ -79,11 +80,13 @@ struct variance<Backend::EIGEN3, Vector>
 	/** Scalar type */
 	typedef typename Vector::Scalar T;
 
-	/**
-	 * Method that computes the variance of SGVectors using Eigen3
+	/** Calculates unbiased empirical variance estimator of given values. Given
+	 * \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param a vector whose variance has to be computed
-	 * @return the vector's variance
+	 * @param a vector of values
+	 * @return variance of given values
 	 */
 	static T compute(SGVector<T> vec)
 	{
@@ -96,7 +99,7 @@ struct variance<Backend::EIGEN3, Vector>
 		for (index_t i=0; i<vec.vlen; ++i)
 			sum_squared_diff+=CMath::pow(vec.vector[i]-mean, 2);
 
-		return sum_squared_diff / vec.vlen;
+		return sum_squared_diff / (vec.vlen);
 	}
 };
 
@@ -114,14 +117,17 @@ struct matrix_variance{
 	/** Vector return type */
 	typedef SGVector<T> ReturnTypeVec;
 
-	/**
-	 * Method that can compute an column-wise or row-wise variance
-	 * for a matrix
+	/** Calculates unbiased empirical variance estimator of given values. Given
+	 * \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose variance we want to compute
-	 * @param col_wise if true, we compute the column wise variance -
-	 * otherwise, we compute the row-wise variance
-	 * @return a vector containing the row-wise / col-wise variance
+	 * Computes the variance for each row/col of matrix
+	 *
+	 * @param values vector of values
+	 * @param col_wise if true, every column vector will be used, row vectors
+	 * otherwise
+	 * @return variance of given values
 	 */
 	static ReturnTypeVec compute(Matrix m, bool col_wise);
 
@@ -148,14 +154,17 @@ struct matrix_variance<Backend::EIGEN3, Matrix>{
 	/** Vector return type */
 	typedef SGVector<T> ReturnTypeVec;
 
-	/**
-	 * Method that can compute an column-wise or row-wise variance
-	 * for a matrix
+	/** Calculates unbiased empirical variance estimator of given values. Given
+	 * \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
-	 * @param m the matrix whose variance we want to compute
-	 * @param col_wise if true, we compute the column wise variance -
-	 * otherwise, we compute the row-wise variance
-	 * @return a vector containing the row-wise / col-wise variance
+	 * Computes the variance for each row/col of matrix
+	 *
+	 * @param values vector of values
+	 * @param col_wise if true, every column vector will be used, row vectors
+	 * otherwise
+	 * @return variance of given values
 	 */
 	static ReturnTypeVec compute(SGMatrix<T> m, bool col_wise){
 
@@ -164,23 +173,27 @@ struct matrix_variance<Backend::EIGEN3, Matrix>{
 		ASSERT(m.matrix)
 
 		ReturnTypeVec variance;
-		ReturnTypeVec mean = matrix_mean<Backend::EIGEN3, Matrix>::compute(m, col_wise);;
 
 		if(col_wise){
 
 			variance = ReturnTypeVec(m.num_cols);
+			SGVector<T> tempVec(m.num_rows);
 
-			for (index_t i=0; i< m.num_cols; ++i)
-				variance[i] = implementation::variance<Backend::EIGEN3, Matrix>::compute(*m.get_column_vector(i))
-				/mean[i];
+			for (index_t i=0; i< m.num_cols; ++i){
+
+				for(index_t r = 0; r < m.num_rows; ++r){
+					tempVec[r] = m(r, i);
+				}
+
+				variance[i] = implementation::variance<Backend::EIGEN3, Matrix>::compute(tempVec);
+			}
 		}
 		else{
 
 			variance = ReturnTypeVec(m.num_rows);
 
 			for (index_t i=0; i< m.num_rows; ++i)
-				variance[i] = implementation::variance<Backend::EIGEN3, Matrix>::compute(m.get_row_vector(i))
-				/mean[i];
+				variance[i] = implementation::variance<Backend::EIGEN3, Matrix>::compute(m.get_row_vector(i));
 		}
 
 		return variance;

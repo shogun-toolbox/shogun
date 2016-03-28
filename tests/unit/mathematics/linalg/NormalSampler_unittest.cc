@@ -39,7 +39,7 @@ TEST(NormalSampler, sample)
 	Map<VectorXd> map_mean(mean.vector, mean.vlen);
 	EXPECT_NEAR((map_mean-VectorXd::Zero(dimension)).norm(), 0.0, 0.1);
 
-	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> cov=linalg::matrix_covariance(samples);
 	Map<MatrixXd> map_cov(cov.matrix, cov.num_rows, cov.num_cols);
 	EXPECT_NEAR((map_cov-MatrixXd::Identity(dimension, dimension)).norm(),
 		0.0, 0.1);

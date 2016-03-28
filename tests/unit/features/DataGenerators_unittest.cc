@@ -42,7 +42,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows,
 			samples.num_cols);
 #ifdef HAVE_LAPACK
-	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> cov=linalg::matrix_covariance(samples);
 #endif // HAVE_LAPACK
     //mean.display_vector("mean");
 	//cov.display_matrix("cov");
@@ -81,7 +81,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 	SGMatrix<float64_t>::transpose_matrix(samples2.matrix, samples2.num_rows,
 			samples2.num_cols);
 #ifdef HAVE_LAPACK
-	SGMatrix<float64_t> cov2=CStatistics::covariance_matrix(samples2);
+	SGMatrix<float64_t> cov2=linalg::matrix_covariance(samples2);
 #endif // HAVE_LAPACK
     //mean2.display_vector("mean2");
 	//cov2.display_matrix("cov2");

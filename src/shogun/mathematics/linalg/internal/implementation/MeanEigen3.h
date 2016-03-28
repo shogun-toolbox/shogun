@@ -125,8 +125,11 @@ struct mean<Backend::EIGEN3, Matrix>
 	{
 		REQUIRE(vec.vlen > 0, "Vector cannot be empty!\n");
 
-		return (vector_sum<Backend::EIGEN3, SGVector<T> >::compute(vec)
-			/ ReturnType(vec.vlen));
+		ReturnType result = 0;
+		for(int i = 0; i< vec.vlen; ++i)
+			result += (((ReturnType) vec[i]) / vec.vlen);
+
+		return result;
 	}
 }; 
 
@@ -187,7 +190,7 @@ struct matrix_mean<Backend::EIGEN3, Matrix>{
 	 * otherwise, we compute the row-wise mean
 	 * @return a vector containing the row-wise / col-wise mean
 	 */
-	static ReturnTypeVec  compute(SGMatrix<T> m, bool col_wise){
+	static ReturnTypeVec compute(SGMatrix<T> m, bool col_wise){
 
 		ASSERT(m.num_rows>0)
 		ASSERT(m.num_cols>0)

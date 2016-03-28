@@ -199,50 +199,6 @@ float64_t CStatistics::matrix_median(SGMatrix<float64_t> values,
 	return median(as_vector, modify, in_place);
 }
 
-
-float64_t CStatistics::variance(SGVector<float64_t> values)
-{
-	ASSERT(values.vlen>1)
-	ASSERT(values.vector)
-
-	float64_t mean=linalg::mean(values);
-
-	float64_t sum_squared_diff=0;
-	for (index_t i=0; i<values.vlen; ++i)
-		sum_squared_diff+=CMath::pow(values.vector[i]-mean, 2);
-
-	return sum_squared_diff/(values.vlen);
-}
-
-SGMatrix<float64_t> CStatistics::covariance_matrix(
-		SGMatrix<float64_t> observations, bool in_place)
-{
-	int32_t N = observations.num_rows;
-	int32_t D = observations.num_cols;
-
-	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n", N);
-	REQUIRE(D>0, "Number of dimensions (%d) must be at least 1.\n", D);
-
-	/* center observations, potentially in-place */
-	SGMatrix<float64_t> centered;
-	if (!in_place)
-	{
-		centered = observations.clone();
-	}
-	else
-		centered = observations;
-
-	Map<MatrixXd> eigen_centered(centered.matrix, N, D);
-	eigen_centered.rowwise() -= eigen_centered.colwise().mean();
-
-	/* compute and store 1/(N-1) * X.T * X */
-	SGMatrix<float64_t> cov(D, D);
-	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
-	eigen_cov = (eigen_centered.adjoint() * eigen_centered) / double(N - 1);
-
-	return cov;
-}
-
 float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
 {

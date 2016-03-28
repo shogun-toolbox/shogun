@@ -320,7 +320,7 @@ void test_covariance_matrix()
 		X.matrix[i]=i;
 
 	X.display_matrix("X");
-	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(X);
+	SGMatrix<float64_t> cov=linalg::matrix_covariance(X);
 	cov.display_matrix("cov");
 
 	/* all entries of this covariance matrix will be 0.5 */

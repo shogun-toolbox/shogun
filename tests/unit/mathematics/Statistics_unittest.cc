@@ -146,7 +146,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=linalg::matrix_mean(samples, true);
 #ifdef HAVE_LAPACK
-	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> s_cov=linalg::matrix_covariance(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 #endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
@@ -186,7 +186,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=linalg::matrix_mean(samples, true);
 #ifdef HAVE_LAPACK
-	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> s_cov=linalg::matrix_covariance(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 #endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
@@ -251,7 +251,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=linalg::matrix_mean(samples,true);
 #ifdef HAVE_LAPACK
-	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	SGMatrix<float64_t> s_cov=linalg::matrix_covariance(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 #endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
@@ -527,7 +527,7 @@ TEST(Statistics, vector_mean_test)
 	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
-	floatmax_t sum_a=0;
+	float64_t sum_a = 0;
 	for(int i=0; i<a.vlen; i++)
 		sum_a+=a[i];
 
@@ -539,4 +539,84 @@ TEST(Statistics, vector_mean_overflow_test)
 	SGVector<float64_t> a(10);
 	a.set_const(std::numeric_limits<float64_t>::max());
 	EXPECT_EQ(std::numeric_limits<float64_t>::max(), linalg::mean(a));
+}
+
+TEST(Statistics, variance_test)
+{
+	Eigen::VectorXd a(5);
+	a << 600, 470, 170, 430, 300;
+	EXPECT_EQ(linalg::variance(a), 21704);
+}
+
+TEST(Statistics, variance_and_std_deviation)
+{
+	SGMatrix<float64_t> A(5, 5);
+	A(0,0) = 35.000000;
+	A(0,1) = 1.000000;
+	A(0,2) = 6.000000;
+	A(0,3) = 26.000000;
+	A(0,4) = 19.000000;
+	A(1,0) = 3.000000;
+	A(1,1) = 32.000000;
+	A(1,2) = 7.000000;
+	A(1,3) = 21.000000;
+	A(1,4) = 23.000000;
+	A(2,0) = 31.000000;
+	A(2,1) = 9.000000;
+	A(2,2) = 2.000000;
+	A(2,3) = 22.000000;
+	A(2,4) = 27.000000;
+	A(3,0) = 8.000000;
+	A(3,1) = 28.000000;
+	A(3,2) = 33.000000;
+	A(3,3) = 17.000000;
+	A(3,4) = 10.000000;
+	A(4,0) = 30.000000;
+	A(4,1) = 5.000000;
+	A(4,2) = 34.000000;
+	A(4,3) = 12.000000;
+	A(4,4) = 14.000000;
+
+	//row-wise variance
+	SGVector<float64_t> result_col = linalg::matrix_variance(A, true);
+
+	EXPECT_NEAR(result_col[0], 173.84, 1E-2);
+	EXPECT_NEAR(result_col[1], 158, 1E-2);
+	EXPECT_NEAR(result_col[2], 197.84, 1E-2);
+	EXPECT_NEAR(result_col[3], 22.64, 1E-2);
+	EXPECT_NEAR(result_col[4], 37.04, 1E-2);
+
+	//col-wise variance
+	SGVector<float64_t> result_row = linalg::matrix_variance(A, false);
+
+	EXPECT_NEAR(result_row[0], 157.04, 1E-2);
+	EXPECT_NEAR(result_row[1], 114.56, 1E-2);
+	EXPECT_NEAR(result_row[2], 120.56, 1E-2);
+	EXPECT_NEAR(result_row[3], 96.56, 1E-2);
+	EXPECT_NEAR(result_row[4], 123.2, 1E-2);
+
+	//element-wise variance
+	EXPECT_NEAR(linalg::matrix_variance(A), 123.04, 1E-2);
+
+
+	//row-wise standard deviation
+	result_col = linalg::matrix_std_deviation(A, true);
+
+	EXPECT_NEAR(result_col[0], CMath::sqrt(173.84), 1E-2);
+	EXPECT_NEAR(result_col[1], CMath::sqrt(158.0), 1E-2);
+	EXPECT_NEAR(result_col[2], CMath::sqrt(197.84), 1E-2);
+	EXPECT_NEAR(result_col[3], CMath::sqrt(22.64), 1E-2);
+	EXPECT_NEAR(result_col[4], CMath::sqrt(37.04), 1E-2);
+
+	//row-wise standard deviation
+	result_row = linalg::matrix_std_deviation(A, false);
+
+	EXPECT_NEAR(result_row[0], CMath::sqrt(157.04), 1E-2);
+	EXPECT_NEAR(result_row[1], CMath::sqrt(114.56), 1E-2);
+	EXPECT_NEAR(result_row[2], CMath::sqrt(120.56), 1E-2);
+	EXPECT_NEAR(result_row[3], CMath::sqrt(96.56), 1E-2);
+	EXPECT_NEAR(result_row[4], CMath::sqrt(123.2), 1E-2);
+
+	//element-wise standard deviation
+	EXPECT_NEAR(linalg::matrix_std_deviation(A), CMath::sqrt(123.04), 1E-2);
 }

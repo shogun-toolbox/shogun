@@ -151,24 +151,6 @@ public:
 	static SGVector<float64_t> matrix_std_deviation(
 			SGMatrix<float64_t> values, bool col_wise=true);
 
-	/** Computes the empirical estimate of the covariance matrix of the given
-	 * data which is organized as num_cols variables with num_rows observations.
-	 *
-	 * Data is centered before matrix is computed. May be done in place.
-	 * In this case, the observation matrix is changed (centered).
-	 *
-	 * Given sample matrix \f$X\f$, first, column mean is removed to create
-	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
-	 * returned.
-	 *
-	 * @param observations data matrix organized as one variable per column
-	 * @param in_place optional, if set to true, observations matrix will be
-	 * centered, if false, a copy will be created an centered.
-	 * @return covariance matrix empirical estimate
-	 */
-	static SGMatrix<float64_t> covariance_matrix(
-			SGMatrix<float64_t> observations, bool in_place=false);
-
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
 	 * assuming that the actual variance and mean are unknown (These are
