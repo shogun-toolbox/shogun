@@ -48,7 +48,7 @@
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"$value"
+        "Enum":"$type.$value"
     },
     "Print": "Console.Write($expr)",
     "OutputDirectoryName": "csharp",

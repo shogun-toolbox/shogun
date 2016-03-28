@@ -302,7 +302,7 @@ class Translator:
             # Add enum to dependencies in case they need to be imported explicitly
             self.dependencies["Enums"].add((expr[key][0]["Identifier"], expr[key][1]["Identifier"]))
             template = Template(self.targetDict["Expr"]["Enum"])
-            return template.substitute(type=expr[key][0],value=expr[key][1]["Identifier"])
+            return template.substitute(type=expr[key][0]["Identifier"],value=expr[key][1]["Identifier"])
 
         raise Exception("Unknown expression type: " + key)
 
@@ -394,4 +394,4 @@ if __name__ == "__main__":
     else:
         programObject = json.load(sys.stdin)
 
-    print(translate(programObject, targetDict))
+    print(translate(programObject, targetDict, tags={}, storeVars=False))
