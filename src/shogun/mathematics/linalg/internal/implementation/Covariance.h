@@ -109,7 +109,7 @@ struct matrix_covariance<Backend::EIGEN3, Matrix>{
 		/* compute and store 1/(N-1) * X.T * X */
 		SGMatrix<float64_t> cov(D, D);
 		Map<MatrixXd> eigen_cov(cov.matrix, D, D);
-		eigen_cov = (eigen_centered.adjoint() * eigen_centered) / double(N - 1);
+		eigen_cov = (eigen_centered.adjoint() * eigen_centered) / double(N);
 
 		return cov;
 	}

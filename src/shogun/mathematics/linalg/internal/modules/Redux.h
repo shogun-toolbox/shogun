@@ -202,12 +202,14 @@ typename implementation::matrix_std_deviation<backend, Matrix>::ReturnTypeVec ma
  * Wrapper method for internal implementation of finding computing a
  * covariance matrix for a matrix that works with generic matricies.
  * @param a matrix whose covariance has to be computed
+ * @param in_place optional, if set to true, observations matrix will be
+ * centered, if false, a copy will be created an centered.
  * @return the vector covariance \f$\covariance_i a_i\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
-typename implementation::matrix_covariance<backend, Matrix>::ReturnType matrix_covariance(Matrix m)
+typename implementation::matrix_covariance<backend, Matrix>::ReturnType matrix_covariance(Matrix m, bool in_place = false)
 {
-	return implementation::matrix_covariance<backend,Matrix>::compute(m);
+	return implementation::matrix_covariance<backend,Matrix>::compute(m, in_place);
 }
 
 
