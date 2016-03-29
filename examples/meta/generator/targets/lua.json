@@ -19,7 +19,7 @@
         "NumberLiteral": "$number",
         "MethodCall": "$object:$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"$value"
+        "Enum":"modshogun.$value"
     },
     "Print": "print($expr)",
     "OutputDirectoryName": "lua",
