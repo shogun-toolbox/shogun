@@ -93,10 +93,19 @@ struct mean
 	typedef typename int2float<T>::floatType ReturnType;
 
 	/**
-	 * Method that computes the vector/matrix mean
+	 * Method that computes the vector mean
 	 *
-	 * @param a vector/matrix whose mean has to be computed
-	 * @return the vector/matrix mean \f$\mean_i a_i\f$
+	 * @param a vector whose mean has to be computed
+	 * @return the vector mean \f$\mean_i a_i\f$
+	 */
+	static ReturnType compute(Matrix a);
+
+	/**
+	 * Method that computes the matrix mean
+	 *
+	 * @param a matrix whose mean has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the mean (default - false) 
+	 * @return the matrix mean \f$\1/N^2\sum_{i,j=1}^N m_{i,j}\f$
 	 */
 	static ReturnType compute(Matrix a, bool no_diag=false);
 };
@@ -126,7 +135,36 @@ struct mean<Backend::EIGEN3, Matrix>
 		return (vector_sum<Backend::EIGEN3, SGVector<T> >::compute(vec)
 			/ ReturnType(vec.vlen));
 	}
-        
+
+	/**
+	 * Method that computes the mean of SGMatrix using Eigen3
+	 *
+	 * @param a matrix whose mean has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the mean (default - false) 
+	 * @return the matrix mean \f$\mu_{i,j}m_{i,j}\f$
+	 */
+        static ReturnType compute(SGMatrix<T> mat, bool no_diag=false)
+	{
+		REQUIRE(mat.num_rows > 0, "Matrix row number cannot be zero!\n");
+		if (no_diag) 
+		{
+			if (mat.num_rows > mat.num_cols)
+			{
+				return (sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag)
+					/ ReturnType(mat.num_rows * mat.num_cols - mat.num_cols));
+			}
+			else
+			{
+				return (sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag)
+					/ ReturnType(mat.num_rows * mat.num_cols - mat.num_rows));
+			}
+		}
+		else 
+		{
+			return (sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag)
+				/ ReturnType(mat.num_rows * mat.num_cols));
+		}
+	}     
 }; 
     
 }
