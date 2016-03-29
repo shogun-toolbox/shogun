@@ -84,7 +84,7 @@ void test()
 	CCrossValidation * cross=new CCrossValidation(cmachine, cfeatures, clabels,
 			splitting, eval_crit);
 	cross->set_num_runs(10);
-	cross->set_conf_int_alpha(0.05);
+//	cross->set_conf_int_alpha(0.05);
 
 	/* create peramters for model selection */
 	CModelSelectionParameters* root=build_param_tree(kernel);

@@ -93,7 +93,7 @@ void test_cross_validation()
 			splitting, eval_crit);
 
 	cross->set_num_runs(100);
-	cross->set_conf_int_alpha(0.05);
+//	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
 	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();

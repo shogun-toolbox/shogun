@@ -375,7 +375,7 @@ public:
 	 * @return Value of integral
 	 *
 	 */
-//	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
+	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
 
 	/** Evaluates the CDF of the F-distribution with parameters
 	 * \f$d1,d2\f$ at \f$x\f$. Based on Wikipedia definition.

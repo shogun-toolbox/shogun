@@ -93,7 +93,7 @@ void test_multiclass_mkl_cv()
 			eval_crit);
 	cross->set_autolock(false);
 	cross->set_num_runs(n_runs);
-	cross->set_conf_int_alpha(0.05);
+//	cross->set_conf_int_alpha(0.05);
 
 	/* perform x-val and print result */
 	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
