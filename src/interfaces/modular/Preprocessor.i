@@ -29,9 +29,9 @@
 %rename(SortWordString) CSortWordString;
 
 /* Feature selection framework */
-%rename(DependenceMaximization) CDependenceMaximization;
-%rename(KernelDependenceMaximization) CDependenceMaximization;
-%rename(BAHSIC) CBAHSIC;
+#%rename(DependenceMaximization) CDependenceMaximization;
+#%rename(KernelDependenceMaximization) CDependenceMaximization;
+#%rename(BAHSIC) CBAHSIC;
 
 %newobject shogun::CFeatureSelection::apply;
 %newobject shogun::CFeatureSelection::remove_feats;
@@ -147,5 +147,5 @@ namespace shogun
 %include <shogun/preprocessor/SortWordString.h>
 
 %include <shogun/preprocessor/DependenceMaximization.h>
-%include <shogun/preprocessor/KernelDependenceMaximization.h>
-%include <shogun/preprocessor/BAHSIC.h>
+#%include <shogun/preprocessor/KernelDependenceMaximization.h>
+#%include <shogun/preprocessor/BAHSIC.h>
