@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <iostream>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/features/Features.h>
@@ -35,15 +34,17 @@ NextSamples::~NextSamples()
 
 std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i)
 {
-//	std::cout << "NextSamples::acessing fetched sample at " << i << " using non-const access operator" << std::endl;
-	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
+	REQUIRE(i >= 0 && i < next_samples.size(),
+			"index (%d) must be between [0,%d]!\n",
+			i, next_samples.size() - 1);
 	return next_samples[i];
 }
 
 const std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i) const
 {
-//	std::cout << "NextSamples::acessing fetched sample at " << i << " using const access operator" << std::endl;
-	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
+	REQUIRE(i >= 0 && i < next_samples.size(),
+			"index (%d) must be between [0,%d]!\n",
+			i, next_samples.size() - 1);
 	return next_samples[i];
 }
 

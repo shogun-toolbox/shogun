@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <iostream> // TODO remove
 #include <shogun/statistical_testing/internals/InitPerFeature.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
 #include <shogun/statistical_testing/internals/DataFetcherFactory.h>
@@ -27,23 +26,19 @@ using namespace internal;
 
 InitPerFeature::InitPerFeature(std::unique_ptr<DataFetcher>& fetcher) : m_fetcher(fetcher)
 {
-	std::cout << "InitPerFeature::Constructor()" << std::endl;
 }
 
 InitPerFeature::~InitPerFeature()
 {
-	std::cout << "InitPerFeature::Destructor()" << std::endl;
 }
 
 InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 {
-	std::cout << "InitPerFeature::Assignment() : setting the fetcher" << std::endl;
 	m_fetcher = std::unique_ptr<DataFetcher>(DataFetcherFactory::get_instance(feats));
 	return *this;
 }
 
 InitPerFeature::operator const CFeatures*() const
 {
-	std::cout << "InitPerFeature::cast() : casting to feature type" << std::endl;
 	return m_fetcher->m_samples.get();
 }

@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 #include <memory>
-#include <iostream>
 #include <type_traits>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -212,8 +211,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 				}
 				catch (ShogunException e)
 				{
-					std::cerr << e.get_exception_string() << std::endl;
-					std::cerr << "Try using less number of blocks per burst" << std::endl;
+					SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
 				}
 			}
 

@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <memory>
-#include <iostream>
+#include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
@@ -28,6 +28,7 @@ using namespace internal;
 
 KernelManager::KernelManager(index_t num_kernels)
 {
+	SG_SDEBUG("Kernel manager instance initialized with %d kernels!\n", num_kernels);
 	m_kernels.resize(num_kernels);
 	m_precomputed_kernels.resize(num_kernels);
 	std::fill(m_kernels.begin(), m_kernels.end(), nullptr);
@@ -40,26 +41,36 @@ KernelManager::~KernelManager()
 
 InitPerKernel KernelManager::kernel_at(index_t i)
 {
-	std::cout << "KernelManager::kernel_at() : setting the kernel " << i << std::endl;
-	ASSERT(i <= m_kernels.size());
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(i<m_kernels.size(),
+			"Value of i (%d) should be between 0 and %d, inclusive!",
+			i, m_kernels.size()-1);
+	SG_SDEBUG("Leaving!\n");
 	return InitPerKernel(m_kernels[i]);
 }
 
 CKernel* KernelManager::kernel_at(index_t i) const
 {
-	std::cout << "KernelManager::kernel_at() : getting the kernel " << i << std::endl;
-	ASSERT(i <= m_kernels.size());
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(i<m_kernels.size(),
+			"Value of i (%d) should be between 0 and %d, inclusive!",
+			i, m_kernels.size()-1);
 	if (m_precomputed_kernels[i] == nullptr)
 	{
+		SG_SDEBUG("Leaving!\n");
 		return m_kernels[i].get();
 	}
+	SG_SDEBUG("Precomputed kernel exists!\n");
+	SG_SDEBUG("Leaving!\n");
 	return m_precomputed_kernels[i].get();
 }
 
 void KernelManager::precompute_kernel_at(index_t i)
 {
-	std::cout << "KernelManager::precompute_kernel_at() : precomputing the kernel " << i << std::endl;
-	ASSERT(i <= m_kernels.size());
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(i<m_kernels.size(),
+			"Value of i (%d) should be between 0 and %d, inclusive!",
+			i, m_kernels.size()-1);
 	auto kernel = m_kernels[i].get();
 	if (kernel->get_kernel_type() != K_CUSTOM)
 	{
@@ -68,11 +79,15 @@ void KernelManager::precompute_kernel_at(index_t i)
 		// the kernel matrix.
 		m_precomputed_kernels[i] = std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel));
 	}
+	SG_SDEBUG("Leaving!\n");
 }
 
 void KernelManager::restore_kernel_at(index_t i)
 {
-	std::cout << "KernelManager::precompute_kernel_at() : restoring the kernel " << i << std::endl;
-	ASSERT(i <= m_kernels.size());
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(i<m_kernels.size(),
+			"Value of i (%d) should be between 0 and %d, inclusive!",
+			i, m_kernels.size()-1);
 	m_precomputed_kernels[i] = nullptr;
+	SG_SDEBUG("Leaving!\n");
 }
