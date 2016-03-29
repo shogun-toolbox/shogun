@@ -135,7 +135,7 @@ void test()
 
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
-	cross->set_conf_int_alpha(0.01);
+//	cross->set_conf_int_alpha(0.01);
 	CEvaluationResult* result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result->print_result();

@@ -9,13 +9,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <cmath>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <cmath>
+#include <shogun/lib/external/cdflib.hpp>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
@@ -754,17 +755,43 @@ float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
 	return 0;
 }
 
-//float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
-//{
-//	SG_SERROR("NOT IMPLEMENTED");
-//	return 0;
-//}
+float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
+{
+	float64_t y=1-x;
+	float64_t result=0;
+	float64_t result2=0;
+	int error_code=0;
+	beta_inc(&a, &b, &x, &y, &result, &result2, &error_code);
+	if (error_code!=0)
+	{
+		switch (error_code)
+		{
+			case 1:
+				SG_SERROR("Params a (%f) or b (%f) cannot be negative!\n", a, b);
+				break;
+			case 2:
+			   	SG_SERROR("Params a and b cannot be 0!\n");
+				break;
+			case 3:
+			case 4:
+			case 5:
+				SG_SERROR("Param x (%f) should be between [0, 1]!\n", x);
+				break;
+			case 6:
+				SG_SERROR("Param x and a both cannot be 0!\n");
+				break;
+			case 7:
+				SG_SERROR("Param x cannot be 1 while b is 0!\n");
+				break;
+		};
+	}
+	return result;
+}
 
 float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
 {
 	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
-//	return incomplete_beta(d1/2.0,d2/2.0,d1*x/(d1*x+d2));
-	return 0;
+	return incomplete_beta(d1/2.0, d2/2.0, d1*x/(d1*x+d2));
 }
 
 float64_t CStatistics::dlgamma(float64_t x)
