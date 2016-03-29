@@ -35,7 +35,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
-
+#include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/neuralnets/DeepBeliefNetwork.h>
 
 using namespace shogun;
@@ -103,7 +103,7 @@ int main(int, char*[])
 	SGMatrix<float64_t> samples_matrix = samples->get_feature_matrix();
 
 	// compute the sample means
-	SGVector<float64_t> samples_means = CStatistics::matrix_mean(samples_matrix, false);
+	SGVector<float64_t> samples_means = linalg::matrix_mean(samples_matrix, false);
 
 	// compute the average difference between the sample means and the true means
 	float64_t avg_diff = 0;

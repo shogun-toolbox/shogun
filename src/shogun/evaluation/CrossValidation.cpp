@@ -16,6 +16,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/lib/List.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -156,7 +157,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 	}
 	else
 	{
-		result->mean=CStatistics::mean(results);
+		result->mean=linalg::mean(results);
 		result->conf_int_low=0;
 		result->conf_int_up=0;
 	}
@@ -396,7 +397,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean=CStatistics::mean(results);
+	float64_t mean=linalg::mean(results);
 
 	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
 	return mean;

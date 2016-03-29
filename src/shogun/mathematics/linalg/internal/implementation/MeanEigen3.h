@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2016 Pan Deng
+ * Written (w) 2016 Chris Goldsworthy
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,12 +124,113 @@ struct mean<Backend::EIGEN3, Matrix>
 	static ReturnType compute(SGVector<T> vec)
 	{
 		REQUIRE(vec.vlen > 0, "Vector cannot be empty!\n");
-		return (vector_sum<Backend::EIGEN3, SGVector<T> >::compute(vec)
-			/ ReturnType(vec.vlen));
+
+		ReturnType result = 0;
+		for(int i = 0; i< vec.vlen; ++i)
+			result += (((ReturnType) vec[i]) / vec.vlen);
+
+		return result;
 	}
-        
 }; 
-    
+
+/**
+ * @Brief A generic struct that contains two methods for computing the mean of
+ * a matrix.  There's one method for computing column-wise and row-wise means and one
+ * method for computing element-wise means
+ */
+template<enum Backend, typename Matrix>
+struct matrix_mean{
+
+	/** Generic scalar type */
+	typedef typename Matrix::Scalar T;
+
+	/** Vector return type */
+	typedef SGVector<T> ReturnTypeVec;
+
+	/**
+	 * Method that can compute an column-wise or row-wise mean
+	 * for a matrix
+	 *
+	 * @param m the matrix whose mean we want to compute
+	 * @param col_wise if true, we compute the column wise mean -
+	 * otherwise, we compute the row-wise mean
+	 * @return a vector containing the row-wise / col-wise mean
+	 */
+	static ReturnTypeVec compute(Matrix m, bool col_wise);
+
+	/**
+	 * Method that computes the element-wise mean of a matrix
+	 *
+	 * @param m the matrix whose element-wise mean we want to
+	 * compute
+	 * @return the element-wise mean of m
+	 */
+	static T compute(Matrix m);
+};
+
+/**
+ * @Brief A specialization of matrix_mean that uses SGMatrix and SGVector as it's types
+ * and uses Eigen3 as it's backend component
+ */
+template<typename Matrix>
+struct matrix_mean<Backend::EIGEN3, Matrix>{
+
+	/** Generic scalar type */
+	typedef typename Matrix::Scalar T;
+
+	/** Vector return type */
+	typedef SGVector<T> ReturnTypeVec;
+
+	/**
+	 * Method that can compute an column-wise or row-wise mean
+	 * for a matrix
+	 *
+	 * @param m the matrix whose mean we want to compute
+	 * @param col_wise if true, we compute the column wise mean -
+	 * otherwise, we compute the row-wise mean
+	 * @return a vector containing the row-wise / col-wise mean
+	 */
+	static ReturnTypeVec compute(SGMatrix<T> m, bool col_wise){
+
+		ASSERT(m.num_rows>0)
+		ASSERT(m.num_cols>0)
+		ASSERT(m.matrix)
+
+		ReturnTypeVec result;
+
+		if(col_wise){
+
+			result = colwise_sum<Backend::EIGEN3, Matrix>::compute(m, false);
+			for(int i = 0; i < m.num_cols; ++i)
+				result[i] /= m.num_rows;
+		}
+		else{
+
+			result = rowwise_sum<Backend::EIGEN3, Matrix>::compute(m, false);
+			for(int i = 0; i < m.num_rows; ++i)
+				result[i] /= m.num_cols;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Method that computes the element-wise mean of a matrix
+	 *
+	 * @param m the matrix whose element-wise mean we want to
+	 * compute
+	 * @return the element-wise mean of m
+	 */
+	static T compute(SGMatrix<T> m){
+
+		ASSERT(m.num_rows>0)
+		ASSERT(m.num_cols>0)
+		ASSERT(m.matrix)
+
+		return sum<Backend::EIGEN3, Matrix>::compute(m, false) / (m.num_rows * m.num_cols);
+	}
+};
+
 }
              
 }

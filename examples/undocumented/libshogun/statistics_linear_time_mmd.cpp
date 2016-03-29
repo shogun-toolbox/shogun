@@ -13,6 +13,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -74,8 +75,8 @@ void linear_time_mmd()
 		typeIIerrors[i]=mmd->perform_test()>alpha;
 	}
 
-	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
-	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
+	SG_SPRINT("type I error: %f\n", linalg::mean(typeIerrors));
+	SG_SPRINT("type II error: %f\n", linalg::mean(typeIIerrors));
 
 	SG_UNREF(mmd);
 }

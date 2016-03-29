@@ -25,6 +25,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
@@ -198,142 +199,6 @@ float64_t CStatistics::matrix_median(SGMatrix<float64_t> values,
 	return median(as_vector, modify, in_place);
 }
 
-
-float64_t CStatistics::variance(SGVector<float64_t> values)
-{
-	ASSERT(values.vlen>1)
-	ASSERT(values.vector)
-
-	float64_t mean=CStatistics::mean(values);
-
-	float64_t sum_squared_diff=0;
-	for (index_t i=0; i<values.vlen; ++i)
-		sum_squared_diff+=CMath::pow(values.vector[i]-mean, 2);
-
-	return sum_squared_diff/(values.vlen-1);
-}
-
-SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
-		bool col_wise)
-{
-	ASSERT(values.num_rows>0)
-	ASSERT(values.num_cols>0)
-	ASSERT(values.matrix)
-
-	SGVector<float64_t> result;
-
-	if (col_wise)
-	{
-		result=SGVector<float64_t>(values.num_cols);
-		for (index_t j=0; j<values.num_cols; ++j)
-		{
-			result[j]=0;
-			for (index_t i=0; i<values.num_rows; ++i)
-				result[j]+=values(i,j);
-
-			result[j]/=values.num_rows;
-		}
-	}
-	else
-	{
-		result=SGVector<float64_t>(values.num_rows);
-		for (index_t j=0; j<values.num_rows; ++j)
-		{
-			result[j]=0;
-			for (index_t i=0; i<values.num_cols; ++i)
-				result[j]+=values(j,i);
-
-			result[j]/=values.num_cols;
-		}
-	}
-
-	return result;
-}
-
-SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
-		bool col_wise)
-{
-	ASSERT(values.num_rows>0)
-	ASSERT(values.num_cols>0)
-	ASSERT(values.matrix)
-
-	/* first compute mean */
-	SGVector<float64_t> mean=CStatistics::matrix_mean(values, col_wise);
-
-	SGVector<float64_t> result;
-
-	if (col_wise)
-	{
-		result=SGVector<float64_t>(values.num_cols);
-		for (index_t j=0; j<values.num_cols; ++j)
-		{
-			result[j]=0;
-			for (index_t i=0; i<values.num_rows; ++i)
-				result[j]+=CMath::pow(values(i,j)-mean[j], 2);
-
-			result[j]/=(values.num_rows-1);
-		}
-	}
-	else
-	{
-		result=SGVector<float64_t>(values.num_rows);
-		for (index_t j=0; j<values.num_rows; ++j)
-		{
-			result[j]=0;
-			for (index_t i=0; i<values.num_cols; ++i)
-				result[j]+=CMath::pow(values(j,i)-mean[j], 2);
-
-			result[j]/=(values.num_cols-1);
-		}
-	}
-
-	return result;
-}
-
-float64_t CStatistics::std_deviation(SGVector<float64_t> values)
-{
-	return CMath::sqrt(variance(values));
-}
-
-SGVector<float64_t> CStatistics::matrix_std_deviation(
-		SGMatrix<float64_t> values, bool col_wise)
-{
-	SGVector<float64_t> var=CStatistics::matrix_variance(values, col_wise);
-	for (index_t i=0; i<var.vlen; ++i)
-		var[i]=CMath::sqrt(var[i]);
-
-	return var;
-}
-
-SGMatrix<float64_t> CStatistics::covariance_matrix(
-		SGMatrix<float64_t> observations, bool in_place)
-{
-	int32_t N = observations.num_rows;
-	int32_t D = observations.num_cols;
-
-	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n", N);
-	REQUIRE(D>0, "Number of dimensions (%d) must be at least 1.\n", D);
-
-	/* center observations, potentially in-place */
-	SGMatrix<float64_t> centered;
-	if (!in_place)
-	{
-		centered = observations.clone();
-	}
-	else
-		centered = observations;
-
-	Map<MatrixXd> eigen_centered(centered.matrix, N, D);
-	eigen_centered.rowwise() -= eigen_centered.colwise().mean();
-
-	/* compute and store 1/(N-1) * X.T * X */
-	SGMatrix<float64_t> cov(D, D);
-	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
-	eigen_cov = (eigen_centered.adjoint() * eigen_centered) / double(N - 1);
-
-	return cov;
-}
-
 float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
 {
@@ -350,8 +215,8 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	float64_t t=CMath::abs(inverse_student_t(deg, alpha));
 
 	/* values for calculating confidence interval */
-	float64_t std_dev=CStatistics::std_deviation(values);
-	float64_t mean=CStatistics::mean(values);
+	float64_t std_dev=linalg::std_deviation(values);
+	float64_t mean=linalg::mean(values);
 
 	/* compute confidence interval */
 	float64_t interval=t*std_dev/CMath::sqrt((float64_t)values.vlen);

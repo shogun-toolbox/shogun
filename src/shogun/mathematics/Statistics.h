@@ -120,18 +120,6 @@ public:
 	 */
 	static float64_t std_deviation(SGVector<float64_t> values);
 
-	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
-	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
-	 *
-	 * Computes the mean for each row/col of matrix
-	 *
-	 * @param values vector of values
-	 * @param col_wise if true, every column vector will be used, row vectors
-	 * otherwise
-	 * @return mean of given values
-	 */
-	static SGVector<float64_t> matrix_mean(SGMatrix<float64_t> values,
-			bool col_wise=true);
 
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is
@@ -162,24 +150,6 @@ public:
 	 */
 	static SGVector<float64_t> matrix_std_deviation(
 			SGMatrix<float64_t> values, bool col_wise=true);
-
-	/** Computes the empirical estimate of the covariance matrix of the given
-	 * data which is organized as num_cols variables with num_rows observations.
-	 *
-	 * Data is centered before matrix is computed. May be done in place.
-	 * In this case, the observation matrix is changed (centered).
-	 *
-	 * Given sample matrix \f$X\f$, first, column mean is removed to create
-	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
-	 * returned.
-	 *
-	 * @param observations data matrix organized as one variable per column
-	 * @param in_place optional, if set to true, observations matrix will be
-	 * centered, if false, a copy will be created an centered.
-	 * @return covariance matrix empirical estimate
-	 */
-	static SGMatrix<float64_t> covariance_matrix(
-			SGMatrix<float64_t> observations, bool in_place=false);
 
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
@@ -657,14 +627,6 @@ protected:
 	/** method to make ALGLIB integration easier */
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
-
-/// mean not implemented for complex128_t, returns 0.0 instead
-template <>
-	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
-	{
-		SG_SNOTIMPLEMENTED
-		return floatmax_t(0.0);
-	}
 
 }
 

@@ -34,6 +34,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -167,13 +168,13 @@ TEST(NOCCO, sample_null)
 	/* ensure that sampling null of nocco leads to same results as using
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
-	float64_t mean1=CStatistics::mean(nocco->sample_null());
-	float64_t var1=CStatistics::variance(nocco->sample_null());
+	float64_t mean1=linalg::mean(nocco->sample_null());
+	float64_t var1=linalg::variance(nocco->sample_null());
 
 	CMath::init_random(1);
-	float64_t mean2=CStatistics::mean(
+	float64_t mean2=linalg::mean(
 			nocco->CKernelIndependenceTest::sample_null());
-	float64_t var2=CStatistics::variance(nocco->sample_null());
+	float64_t var2=linalg::variance(nocco->sample_null());
 
 	/* assert than results are the same from bot sampling null impl. */
 	EXPECT_NEAR(mean1, mean2, 1E-8);
