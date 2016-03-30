@@ -82,5 +82,125 @@ TEST(MeanEigen3, Eigen3_dynamic_explicit_eigen3_backend_int)
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(a), 4.5, 1E-15);
 }
 
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_float)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_float)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_int32)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int32_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_int32)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int32_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_int64)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_int64)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
+}
+
+TEST(MeanEigen3, Eigen3_Matrix_asymmetric_eigen3_backend_with_diag)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
+}
+
+TEST(MeanEigen3, Eigen3_Matrix_asymmetric_eigen3_backend_no_diag)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+	{
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + i * j + j + 1;
+	}
+
+	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
+}
+
 #endif // HAVE_LINALG_LIB
 
