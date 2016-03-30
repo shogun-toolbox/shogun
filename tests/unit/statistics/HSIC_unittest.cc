@@ -112,6 +112,8 @@ TEST(HSIC, hsic_fixed)
 	SG_UNREF(hsic);
 }
 
+// disabled as I think previous inverse_gamma_cdf was faulty
+// now unit test fails. Needs to be investigated statistically
 TEST(DISABLED_HSIC, hsic_gamma)
 {
 	CFeatures* features_p=NULL;

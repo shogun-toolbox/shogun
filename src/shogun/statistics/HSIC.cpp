@@ -135,6 +135,8 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 	{
 		/* fit gamma and return inverse cdf at statistic */
 		SGVector<float64_t> params=fit_null_gamma();
+
+		// alpha, beta are shape and rate parameter
 		result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
 		break;
 	}
