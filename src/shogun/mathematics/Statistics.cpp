@@ -757,34 +757,21 @@ float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
 
 float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
 {
+	REQUIRE(x>=0, "x (%f) has to be greater or equal to 0.\n", x);
+	REQUIRE(x<=1, "x (%f) has to be smaller or equal to 1\n", x);
+	REQUIRE(a>=0, "a (%f) has to be greater or equal to 0.\n", a);
+	REQUIRE(b>=0, "b (%f) has to be greater or equal to 0.\n", b);
+	REQUIRE(a>0 || b>0, "Either a (%f) or b(%f) have to positive.\n", a, b);
+	REQUIRE(!(x==1 && b==0), "x (%f) cannot be 1 while b (%f) is 0.\n", x, b);
+
 	float64_t y=1-x;
 	float64_t result=0;
 	float64_t result2=0;
 	int error_code=0;
 	beta_inc(&a, &b, &x, &y, &result, &result2, &error_code);
 	if (error_code!=0)
-	{
-		switch (error_code)
-		{
-			case 1:
-				SG_SERROR("Params a (%f) or b (%f) cannot be negative!\n", a, b);
-				break;
-			case 2:
-			   	SG_SERROR("Params a and b cannot be 0!\n");
-				break;
-			case 3:
-			case 4:
-			case 5:
-				SG_SERROR("Param x (%f) should be between [0, 1]!\n", x);
-				break;
-			case 6:
-				SG_SERROR("Param x and a both cannot be 0!\n");
-				break;
-			case 7:
-				SG_SERROR("Param x cannot be 1 while b is 0!\n");
-				break;
-		};
-	}
+		SG_SERROR("Error %d while calling cdflib::beta_inc\n", error_code);
+
 	return result;
 }
 
