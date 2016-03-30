@@ -28,8 +28,8 @@ using namespace shogun;
 
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
-	ASSERT(values.vlen>1)
-	ASSERT(values.vector)
+	REQUIRE(values.vlen>1, "Number of observations (%d) needs to be at least 1.\n",
+			values.vlen);
 
 	float64_t mean=CStatistics::mean(values);
 
