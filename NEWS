@@ -10,6 +10,7 @@
 	* Cleanup, efficiency updates, and API Changes:
 	    - Make Eigen3 a hard requirement. Bundle if not found on system. [Heiko Strathmann]
 	    - Add meta examples to test build and integration test [Heiko Strathmann]
+	    - Drop ALGLIB (GPL) dependency in CStatistics and ship CDFLIB (public domain) instead [Heiko Strathmann]
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
