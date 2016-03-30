@@ -12,7 +12,7 @@ Classifier
    :glob:
 
    examples/classifier/**
-  
+
 
 Regression
 ----------
@@ -31,3 +31,12 @@ Kernels
    :glob:
 
    examples/kernel/**
+
+Gaussian Processes
+------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/gaussian_processes/**
