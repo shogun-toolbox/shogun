@@ -538,12 +538,6 @@ float64_t CStatistics::inverse_normal_cdf(float64_t p)
 	}
 }
 
-//float64_t CStatistics::inverse_student_t(int32_t k, float64_t p)
-//{
-//	SG_SERROR("NOT IMPLEMENTED");
-//	return 0;
-//}
-
 float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
 	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
@@ -745,14 +739,29 @@ float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 	return 0.5*(erfc(-x*M_SQRT1_2/std_dev));
 }
 
-float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
+float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 		float64_t b)
 {
-	SG_SERROR("NOT IMPLEMENTED");
-	/* inverse of gamma(a,b) CDF is
-	 * inverse_incomplete_gamma_completed(a, 1. - p) * b */
-//	return inverse_incomplete_gamma_completed(a, 1-p)*b;
-	return 0;
+	REQUIRE(p>=0, "p (%f) has to be greater or equal to 0.\n", p);
+	REQUIRE(x<=1, "p (%f) has to be smaller or equal to 1\n", p);
+	REQUIRE(a>=0, "a (%f) has to be greater or equal to 0.\n", a);
+	REQUIRE(b>=0, "b (%f) has to be greater or equal to 0.\n", b);
+
+	float64_t shape=a;
+	float64_t scale=b;
+	float64_t q = 1-p;
+	int which=2;
+	float64_t output_x=0;
+	float64_t output_bound;
+	int output_error_code=0;
+
+	// inverse gamma cdf case, see cdflib.cpp for details
+	cdfgam(&which, &p, &q, &output_x, &shape, &scale, &output_error_code, &output_bound);
+
+	if (output_error_code!=0)
+		SG_SERROR("Error %d while calling cdflib::beta_inc\n", output_error_code);
+
+	return output_x;
 }
 
 float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)

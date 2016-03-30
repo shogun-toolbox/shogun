@@ -625,6 +625,62 @@ TEST(Statistics, gamma_cdf)
 	EXPECT_NEAR(result, 0.98168436111126578, 1e-15);
 }
 
+TEST(Statistics, gamma_inverse_cdf)
+{
+	// tests against scipy.stats.gamma.ppf
+	// note that scipy.stats.gamma.ppf(2, a=2, scale=1./2) corresonds to
+	// CStatistics:.gamma_ppf(2,2,2)
+	float64_t result;
+
+	// corner cases	that work
+	result=CStatistics::gamma_inverse_cdf(0, 1, 1);
+	EXPECT_NEAR(result, 0.0, 1e-15);
+
+	// parameters order and basic scaling
+	result=CStatistics::gamma_inverse_cdf(0.5, 1, 1);
+	EXPECT_NEAR(result, 0.69314718055994529, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 2, 1);
+	EXPECT_NEAR(result, 1.6783469900166608, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 1, 2);
+	EXPECT_NEAR(result, 0.34657359027997264, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 2, 2);
+	EXPECT_NEAR(result, 0.83917349500833038, 1e-15);
+	
+	// tests around boundaries a=1, b=1
+	result=CStatistics::gamma_inverse_cdf(0.0000001, 1, 1);
+	EXPECT_NEAR(result, 1.0000000500000027e-07, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.00001, 1, 1);
+	EXPECT_NEAR(result, 1.0000050000333339e-05, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.001, 1, 1);
+	EXPECT_NEAR(result, 0.0010005003335835335, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.1, 1, 1);
+	EXPECT_NEAR(result, 0.10536051565782635, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.3, 1, 1);
+	EXPECT_NEAR(result, 0.35667494393873239, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.7, 1, 1);
+	EXPECT_NEAR(result, 1.2039728043259359, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.9, 1, 1);
+	EXPECT_NEAR(result, 2.3025850929940459, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.999, 1, 1);
+	EXPECT_NEAR(result, 6.9077552789821359, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.99999, 1, 1);
+	EXPECT_NEAR(result, 11.51292546497478, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.9999999, 1, 1);
+	EXPECT_NEAR(result, 16.11809565148468, 1e-14);
+}
+
 TEST(Statistics, chi2_cdf)
 {
 	// tests against scipy.stats.chi2.cdf

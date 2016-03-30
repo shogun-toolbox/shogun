@@ -301,18 +301,7 @@ public:
 	 * @param b Scale parameter
 	 * @return \f$x\f$ such that result equals \f$\text{gamma\_cdf}(x,a,b)\f$.
 	 */
-	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
-
-	/** Functional inverse of Student's t distribution
-	 *
-	 * Given probability \f$p\f$, finds the argument \f$t\f$ such that
-	 * \f$\text{student\_t}(k,t)=p\f$
-	 *
-	 * @param k Degrees of freedom.
-	 * @param p Point to evaluate.
-	 * @return Value of pdf at given point.
-	 */
-	static float64_t inverse_student_t(int32_t k, float64_t p);
+	static float64_t gamma_inverse_cdf(float64_t p, float64_t a, float64_t b);
 
 	/** Normal distribution function
 	 *
