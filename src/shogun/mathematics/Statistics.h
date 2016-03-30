@@ -6,6 +6,9 @@
  *
  * Written (W) 2011-2016 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ *
+ * Most cdf routines are wrappers for CDFLIB, part of the public domain NETLIB.
+ * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
  */
 
 #ifndef __STATISTICS_H_
