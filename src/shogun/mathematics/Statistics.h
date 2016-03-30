@@ -231,30 +231,6 @@ public:
 	 */
 	static float64_t chi2_cdf(float64_t x, float64_t k);
 
-	/** Incomplete beta integral
-	 *
-	 * Returns incomplete beta integral of the arguments, evaluated
-	 * from zero to \f$x\f$.  The function is defined as
-	 * \f[
-	 * \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\int_0^x t^{a-1} (1-t)^{b-1} dt.
-	 * \f]
-	 *
-	 * The domain of definition is \f$0 \leq x \leq 1\f$.
-	 * The integral from \f$x\f$ to \f$1\f$ may be obtained by the symmetry
-	 * relation
-	 *
-	 * \f[
-	 * 1-\text{incomplete\_beta}(a,b,x)=\text{incomplete\_beta}(b,a,1-x).
-	 * \f]
-	 *
-	 * @param a Shape parameter
-	 * @param b Shape parameter
-	 * @param x Evaluation position
-	 * @return Value of integral
-	 *
-	 */
-	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
-
 	/** Evaluates the CDF of the F-distribution with parameters
 	 * \f$d1,d2\f$ at \f$x\f$. Based on Wikipedia definition.
 	 *

@@ -134,9 +134,9 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 {
 	int32_t D = observations.num_rows;
 	int32_t N = observations.num_cols;
+	SG_SDEBUG("%d observations in %d dimensions\n", N, D)
 
-	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n",
-			N);
+	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n", N);
 	REQUIRE(D>0, "Number of dimensions (%d) must be at least 1.\n", D);
 
 	SGMatrix<float64_t> centered=in_place ? observations :
@@ -149,12 +149,14 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 		memcpy(centered.matrix, observations.matrix,
 				sizeof(float64_t)*num_elements);
 	}
+	SG_SDEBUG("Centering observations\n");
 	Map<MatrixXd> eigen_centered(centered.matrix, D, N);
 	eigen_centered.colwise() -= eigen_centered.rowwise().mean();
 
 	/* compute and store 1/(N-1) * X * X.T */
+	SG_SDEBUG("Computing squared differences\n");
 	SGMatrix<float64_t> cov(D, D);
-	Map<MatrixXd> eigen_cov(cov.matrix, D, N);
+	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
 	eigen_cov = (eigen_centered * eigen_centered.adjoint()) / double(N - 1);
 
 	return cov;
@@ -529,30 +531,25 @@ float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 	return output_x;
 }
 
-float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
-{
-	REQUIRE(x>=0, "x (%f) has to be greater or equal to 0.\n", x);
-	REQUIRE(x<=1, "x (%f) has to be smaller or equal to 1\n", x);
-	REQUIRE(a>=0, "a (%f) has to be greater or equal to 0.\n", a);
-	REQUIRE(b>=0, "b (%f) has to be greater or equal to 0.\n", b);
-	REQUIRE(a>0 || b>0, "Either a (%f) or b(%f) have to positive.\n", a, b);
-	REQUIRE(!(x==1 && b==0), "x (%f) cannot be 1 while b (%f) is 0.\n", x, b);
-
-	float64_t y=1-x;
-	float64_t result=0;
-	float64_t result2=0;
-	int error_code=0;
-	beta_inc(&a, &b, &x, &y, &result, &result2, &error_code);
-	if (error_code!=0)
-		SG_SERROR("Error %d while calling cdflib::beta_inc\n", error_code);
-
-	return result;
-}
-
 float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
 {
-	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
-	return incomplete_beta(d1/2.0, d2/2.0, d1*x/(d1*x+d2));
+	REQUIRE(x>=0, "x (%f) has to be greater or equal to 0.\n", x);
+	REQUIRE(d1>0, "d1 (%f) has to be positive.\n", d1);
+	REQUIRE(d2>0, "d2 (%f) has to be positive.\n", d2);
+
+	// fcdf case, see cdflib.cpp for details
+	int which=1;
+	float64_t output_p;
+	float64_t output_q;
+	float64_t output_bound;
+	int output_error_code;
+
+	cdff(&which, &output_p, &output_q, &x, &d1, &d2, &output_error_code, &output_bound);
+
+	if (output_error_code!=0)
+		SG_SERROR("Error %d while calling cdflib::cdff\n", output_error_code);
+
+	return output_p;
 }
 
 float64_t CStatistics::dlgamma(float64_t x)

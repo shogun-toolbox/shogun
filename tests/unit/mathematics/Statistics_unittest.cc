@@ -144,17 +144,14 @@ TEST(Statistics, sample_from_gaussian_dense1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
 	EXPECT_NEAR((s_c-c).norm(), 0.0, 1.0);
-#endif // HAVE_LAPACK
 	ASSERT_EQ(mu.rows(), s_mu.rows());
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
@@ -184,17 +181,14 @@ TEST(Statistics, sample_from_gaussian_dense2)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
 	EXPECT_NEAR((s_c-c.inverse()).norm(), 0.0, 5.0);
-#endif // HAVE_LAPACK
 	ASSERT_EQ(mu.rows(), s_mu.rows());
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
@@ -249,10 +243,9 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
 	// create a similar dense cov matrix as of the original one
@@ -265,9 +258,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	}
 
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
-#ifdef HAVE_LAPACK
 	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.5);
-#endif // HAVE_LAPACK
 
 	SG_FREE(vec);
 	SG_FREE(rest);
@@ -398,26 +389,26 @@ TEST(Statistics, normal_cdf)
 
 TEST(Statistics, inverse_normal_cdf)
 {
-	// assert with value calculated via Mathematica
+	// assert against scipy.stats.norm.ppf(0.99999,loc=0,scale=1)
 	float64_t result;
 
 	result=CStatistics::inverse_normal_cdf(0.0000001);
-	EXPECT_NEAR(result, -5.199337582187471, 1e-15);
+	EXPECT_NEAR(result, -5.1993375821928165, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.00001);
-	EXPECT_NEAR(result, -4.264890793922602, 1e-15);
+	EXPECT_NEAR(result, -4.2648907939228247, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.001);
-	EXPECT_NEAR(result, -3.090232306167813, 1e-15);
+	EXPECT_NEAR(result, -3.0902323061678132, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.05);
 	EXPECT_NEAR(result, -1.6448536269514729, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.15);
-	EXPECT_NEAR(result, -1.0364333894937896, 1e-15);
+	EXPECT_NEAR(result, -1.0364333894937898, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.25);
-	EXPECT_NEAR(result, -0.6744897501960817, 1e-15);
+	EXPECT_NEAR(result, -0.67448975019608171, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.35);
 	EXPECT_NEAR(result, -0.38532046640756773, 1e-15);
@@ -426,184 +417,67 @@ TEST(Statistics, inverse_normal_cdf)
 	EXPECT_NEAR(result, -0.12566134685507402, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.55);
-	EXPECT_NEAR(result, 0.12566134685507402, 1e-15);
+	EXPECT_NEAR(result, 0.12566134685507416, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.65);
-	EXPECT_NEAR(result, 0.6744897501960817, 1e-15);
-
-	result=CStatistics::inverse_normal_cdf(0.75);
-	EXPECT_NEAR(result, 1.0364333894937896, 1e-15);
-
-	result=CStatistics::inverse_normal_cdf(0.85);
 	EXPECT_NEAR(result, 0.38532046640756773, 1e-15);
 
+	result=CStatistics::inverse_normal_cdf(0.75);
+	EXPECT_NEAR(result, 0.67448975019608171, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.85);
+	EXPECT_NEAR(result, 1.0364333894937898, 1e-15);
+
 	result=CStatistics::inverse_normal_cdf(0.95);
-	EXPECT_NEAR(result, 0.6744897501960817, 1e-15);
+	EXPECT_NEAR(result, 1.6448536269514722, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.99);
-	EXPECT_NEAR(result, 1.0364333894937896, 1e-15);
+	EXPECT_NEAR(result, 2.3263478740408408, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.999);
-	EXPECT_NEAR(result, 1.6448536269514729, 1e-15);
+	EXPECT_NEAR(result, 3.0902323061678132, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.99999);
-	EXPECT_NEAR(result, 3.090232306167813, 1e-15);
+	EXPECT_NEAR(result, 4.2648907939238407, 1e-15);
 
 	result=CStatistics::inverse_normal_cdf(0.9999999);
-	EXPECT_NEAR(result, 4.264890793922602, 1e-15);
+	EXPECT_NEAR(result, 5.1993375822906609, 1e-15);
 }
 
 TEST(Statistics, inverse_normal_cdf_with_mean_std_dev)
 {
-	EXPECT_NEAR(0, 1, 1e-15);
-}
-
-TEST(Statistics, gamma_incomplete_lower)
-{
-	// tests against scipy.special.gammainc
+	// assert against scipy.stats.norm.ppf(0.99999,loc=1,scale=2)
 	float64_t result;
-
-	result=CStatistics::gamma_incomplete_lower(1, 1);
-	EXPECT_NEAR(result, 0.63212055882855778, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(2, 1);
-	EXPECT_NEAR(result, 0.26424111765711528, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 2);
-	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(0.0000001, 1);
-	EXPECT_NEAR(result, 0.99999997806160246, 1e-14);
-
-	result=CStatistics::gamma_incomplete_lower(0.001, 1);
-	EXPECT_NEAR(result, 0.9997803916424145, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(5, 1);
-	EXPECT_NEAR(result, 0.0036598468273437131, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(10, 1);
-	EXPECT_NEAR(result, 1.1142547833872071e-07, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 0.0000001);
-	EXPECT_NEAR(result, 9.9999994999999991e-08, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 0.001);
-	EXPECT_NEAR(result, 0.00099950016662500823, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 5);
-	EXPECT_NEAR(result, 0.99326205300091452, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 10);
-	EXPECT_NEAR(result, 0.99995460007023751, 1e-14);
-
-	result=CStatistics::gamma_incomplete_lower(1, 20);
-	EXPECT_NEAR(result, 0.99999999793884642, 1e-14);
-
-	// special cases in the implementation
-	result=CStatistics::gamma_incomplete_lower(1, 0);
-	EXPECT_NEAR(result, 0, 1e-15);
-
-	result=CStatistics::gamma_incomplete_lower(1, 2);
-	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
-}
-
-TEST(Statistics, gamma_incomplete_upper)
-{
-	// tests against scipy.special.gammaincc
-	float64_t result;
-
-	result=CStatistics::gamma_incomplete_upper(1, 1);
-	EXPECT_NEAR(result, 0.36787944117144233, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(2, 1);
-	EXPECT_NEAR(result, 0.73575888234288467, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(1, 2);
-	EXPECT_NEAR(result, 0.1353352832366127, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(0.0000001, 1);
-	EXPECT_NEAR(result, 2.193839568430253e-08, 1e-14);
-
-	result=CStatistics::gamma_incomplete_upper(0.001, 1);
-	EXPECT_NEAR(result, 0.00021960835758555317, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(5, 1);
-	EXPECT_NEAR(result, 0.99634015317265634, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(10, 1);
-	EXPECT_NEAR(result, 0.99999988857452171, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(1, 0.0000001);
-	EXPECT_NEAR(result, 0.99999990000000505, 1e-9);
-
-	result=CStatistics::gamma_incomplete_upper(1, 0.001);
-	EXPECT_NEAR(result, 0.99900049983337502, 1e-12);
-
-	result=CStatistics::gamma_incomplete_upper(1, 5);
-	EXPECT_NEAR(result, 0.0067379469990854679, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(1, 10);
-	EXPECT_NEAR(result, 4.5399929762484861e-05, 1e-14);
-
-	result=CStatistics::gamma_incomplete_upper(1, 20);
-	EXPECT_NEAR(result, 2.0611536224385566e-09, 1e-14);
-
-	// special cases in the implementation
-	result=CStatistics::gamma_incomplete_upper(1, 0);
-	EXPECT_NEAR(result, 1, 1e-15);
-
-	result=CStatistics::gamma_incomplete_upper(1, 0.5);
-	EXPECT_NEAR(result, 0.60653065971263342, 1e-15);
-}
-
-TEST(Statistics, gamma_pdf)
-{
-	// tests against scipy.stats.gamma.pdf
-	// note that scipy.stats.gamma.pdf(2, a=2, scale=1./2) corresonds to
-	// CStatistics:.gamma_pdf(2,2,2)
-	float64_t result;
-
-	// three basic cases to get order of parameters
-	result=CStatistics::gamma_pdf(2, 1, 1);
-	EXPECT_NEAR(result, 0.1353352832366127, 1e-15);
-	result=CStatistics::gamma_pdf(2, 2, 1);
-	EXPECT_NEAR(result, 0.2706705664732254, 1e-15);
-	result=CStatistics::gamma_pdf(2, 1, 2);
-	EXPECT_NEAR(result, 0.036631277777468357, 1e-15);
-
-	// testing x for a=b=1
-	result=CStatistics::gamma_pdf(0.0000001, 1, 1);
-	EXPECT_NEAR(result, 0.99999990000000505, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.00001, 1, 1);
-	EXPECT_NEAR(result, 0.99999000004999983, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.001, 1, 1);
-	EXPECT_NEAR(result, 0.99900049983337502, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.05, 1, 1);
-	EXPECT_NEAR(result, 0.95122942450071402, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.1, 1, 1);
-	EXPECT_NEAR(result, 0.90483741803595952, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.3, 1, 1);
-	EXPECT_NEAR(result, 0.74081822068171788, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.5, 1, 1);
-	EXPECT_NEAR(result, 0.60653065971263342, 1e-15);
-
-	result=CStatistics::gamma_pdf(0.7, 1, 1);
-	EXPECT_NEAR(result, 0.49658530379140953, 1e-15);
-
-	result=CStatistics::gamma_pdf(1., 1, 1);
-	EXPECT_NEAR(result, 0.36787944117144233, 1e-15);
-
-	result=CStatistics::gamma_pdf(10., 1, 1);
-	EXPECT_NEAR(result, 4.5399929762484854e-05, 1e-15);
-
-	result=CStatistics::gamma_pdf(100., 1, 1);
-	EXPECT_NEAR(result, 3.7200759760208361e-44, 1e-15);
+	
+	result=CStatistics::inverse_normal_cdf(0.0000001, 1, 2);
+	EXPECT_NEAR(result, -9.398675164385633, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.00001, 1, 2);
+	EXPECT_NEAR(result, -7.5297815878456493, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.001, 1, 2);
+	EXPECT_NEAR(result, -5.1804646123356264, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.1, 1, 2);
+	EXPECT_NEAR(result, -1.5631031310892007, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.3, 1, 2);
+	EXPECT_NEAR(result, -0.048801025416081778, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.5, 1, 2);
+	EXPECT_NEAR(result, 1, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.7, 1, 2);
+	EXPECT_NEAR(result, 2.0488010254160813, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.9, 1, 2);
+	EXPECT_NEAR(result, 3.5631031310892007, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.999, 1, 2);
+	EXPECT_NEAR(result, 7.1804646123356264, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.99999, 1, 2);
+	EXPECT_NEAR(result, 9.5297815878476815, 1e-14);
 }
 
 TEST(Statistics, gamma_cdf)
@@ -614,7 +488,6 @@ TEST(Statistics, gamma_cdf)
 	float64_t result;
 
 	// only three basic cases to get order of parameters
-	// incomplete gamma is based on is tested thoroughly already
 	result=CStatistics::gamma_cdf(2, 1, 1);
 	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
 
@@ -684,7 +557,6 @@ TEST(Statistics, gamma_inverse_cdf)
 TEST(Statistics, chi2_cdf)
 {
 	// tests against scipy.stats.chi2.cdf
-	// few tests since gamma_incomplete_lower is already thoroughly tested
 	float64_t chi2c=CStatistics::chi2_cdf(1, 1);
 	EXPECT_NEAR(chi2c, 0.68268949213708596, 1e-15);
 
@@ -735,7 +607,6 @@ TEST(Statistics, fdistribution_cdf)
 	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
 }
 
-// TEST 1
 TEST(Statistics, log_det_general_test_1)
 {
 	// create a small test matrix, symmetric positive definite
@@ -756,7 +627,6 @@ TEST(Statistics, log_det_general_test_1)
 
 }
 
-// TEST 2
 TEST(Statistics, log_det_general_test_2)
 {
 	// create a fixed symmetric positive definite matrix
