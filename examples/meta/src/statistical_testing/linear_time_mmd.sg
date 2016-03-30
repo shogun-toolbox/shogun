@@ -18,6 +18,6 @@ Real statistic = mmd.compute_statistic()
 #![perform_test]
 Real alpha = 0.05
 Real threshold = mmd.compute_threshold(alpha)
-Real p_value = mmd.compute_p_value(alpha)
+Real p_value = mmd.compute_p_value(statistic)
 Real h0_rejected = mmd.perform_test(alpha)
 #![perform_test]
