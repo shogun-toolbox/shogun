@@ -23,170 +23,6 @@ using namespace Eigen;
 
 using namespace shogun;
 
-float64_t CStatistics::median(SGVector<float64_t> values, bool modify,
-			bool in_place)
-{
-	float64_t result;
-	if (modify)
-	{
-		/* use QuickSelect method
-		 * This Quickselect routine is based on the algorithm described in
-		 * "Numerical recipes in C", Second Edition,
-		 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
-		 * This code by Nicolas Devillard - 1998. Public domain.
-		 * Adapted to SHOGUN by Heiko Strathmann
-		 */
-		int32_t low;
-		int32_t high;
-		int32_t median;
-		int32_t middle;
-		int32_t l;
-		int32_t h;
-
-		low=0;
-		high=values.vlen-1;
-		median=(low+high)/2;
-
-		while (true)
-		{
-			if (high<=low)
-			{
-				result=values[median];
-				break;
-			}
-
-			if (high==low+1)
-			{
-				if (values[low]>values[high])
-					CMath::CMath::swap(values[low], values[high]);
-				result=values[median];
-				break;
-			}
-
-			middle=(low+high)/2;
-			if (values[middle]>values[high])
-				CMath::swap(values[middle], values[high]);
-			if (values[low]>values[high])
-				CMath::swap(values[low], values[high]);
-			if (values[middle]>values[low])
-				CMath::swap(values[middle], values[low]);
-
-			CMath::swap(values[middle], values[low+1]);
-
-			l=low+1;
-			h=high;
-			for (;;)
-			{
-				do
-					l++;
-				while (values[low]>values[l]);
-				do
-					h--;
-				while (values[h]>values[low]);
-				if (h<l)
-					break;
-				CMath::swap(values[l], values[h]);
-			}
-
-			CMath::swap(values[low], values[h]);
-			if (h<=median)
-				low=l;
-			if (h>=median)
-				high=h-1;
-		}
-
-	}
-	else
-	{
-		if (in_place)
-		{
-			/* use Torben method
-			 * The following code is public domain.
-			 * Algorithm by Torben Mogensen, implementation by N. Devillard.
-			 * This code in public domain.
-			 * Adapted to SHOGUN by Heiko Strathmann
-			 */
-			int32_t i;
-			int32_t less;
-			int32_t greater;
-			int32_t equal;
-			float64_t min;
-			float64_t max;
-			float64_t guess;
-			float64_t maxltguess;
-			float64_t mingtguess;
-			min=max=values[0];
-			for (i=1; i<values.vlen; i++)
-			{
-				if (values[i]<min)
-					min=values[i];
-				if (values[i]>max)
-					max=values[i];
-			}
-			while (1)
-			{
-				guess=(min+max)/2;
-				less=0;
-				greater=0;
-				equal=0;
-				maxltguess=min;
-				mingtguess=max;
-				for (i=0; i<values.vlen; i++)
-				{
-					if (values[i]<guess)
-					{
-						less++;
-						if (values[i]>maxltguess)
-							maxltguess=values[i];
-					}
-					else if (values[i]>guess)
-					{
-						greater++;
-						if (values[i]<mingtguess)
-							mingtguess=values[i];
-					}
-					else
-						equal++;
-				}
-				if (less<=(values.vlen+1)/2&&greater<=(values.vlen+1)/2)
-					break;
-				else if (less>greater)
-					max=maxltguess;
-				else
-					min=mingtguess;
-			}
-
-			if (less>=(values.vlen+1)/2)
-				result=maxltguess;
-			else if (less+equal>=(values.vlen+1)/2)
-				result=guess;
-			else
-				result=mingtguess;
-		}
-		else
-		{
-			/* copy vector and do recursive call which modifies copy */
-			SGVector<float64_t> copy(values.vlen);
-			memcpy(copy.vector, values.vector, sizeof(float64_t)*values.vlen);
-			result=median(copy, true);
-		}
-	}
-
-	return result;
-}
-
-float64_t CStatistics::matrix_median(SGMatrix<float64_t> values,
-		bool modify, bool in_place)
-{
-	/* create a vector that uses the matrix data, dont do reference counting */
-	SGVector<float64_t> as_vector(values.matrix,
-			values.num_rows*values.num_cols, false);
-
-	/* return vector median method */
-	return median(as_vector, modify, in_place);
-}
-
-
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
 	ASSERT(values.vlen>1)
@@ -504,144 +340,74 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	return result;
 }
 
-float64_t CStatistics::rational_approximation(float64_t t)
+float64_t CStatistics::inverse_normal_cdf(float64_t p, float64_t mean,
+		float64_t std_deviation)
 {
-	// Abramowitz and Stegun formula 26.2.23.
-	// The absolute value of the error should be less than 4.5 e-4.
-	double c[] = { 2.515517, 0.802853, 0.010328 };
-	double d[] = { 1.432788, 0.189269, 0.001308 };
-	return t - ((c[2] * t + c[1]) * t + c[0]) / (((d[2] * t + d[1]) * t + d[0]) * t + 1.0);
-}
+	REQUIRE(p>=0, "p (%f); must be greater or equal to 0.\n", p);
+	REQUIRE(p<=1, "p (%f); must be greater or equal to 1.\n", p);
+	REQUIRE(std_deviation>0, "Standard deviation (%f); must be positive\n",
+			std_deviation);
 
-float64_t CStatistics::inverse_normal_cdf(float64_t y, float64_t mean,
-		float64_t std_dev)
-{
-	return inverse_normal_cdf(y)*std_dev+mean;
-}
+	// invserse normal cdf case, see cdflib.cpp for details
+	int which=2;
+	float64_t output_x;
+	float64_t q=1-p;
+	float64_t output_bound;
+	int output_status;
 
-float64_t CStatistics::inverse_normal_cdf(float64_t p)
-{
-	REQUIRE(p>0, "Input (%f); must be larger than 0", p);
-	REQUIRE(p<1, "Input (%f); must be less than 1", p);
+	cdfnor(&which, &p, &q, &output_x, &mean, &std_deviation, &output_status, &output_bound);
 
-	/* inspired by http://www.johndcook.com/blog/normal_cdf_inverse
-	 * under the BSD license */
-	if (p < 0.5)
-	{
-		// F^-1(p) = - G^-1(p)
-		return -rational_approximation( sqrt(-2.0*log(p)) );
-	}
-	else
-	{
-		// F^-1(p) = G^-1(1-p)
-		return rational_approximation( sqrt(-2.0*log(1-p)) );
-	}
+	if (output_status!=0)
+		SG_SERROR("Error %d while calling cdflib::cdfnor\n", output_status);
+
+	return output_x;
+
+	//void cdfnor ( int *which, double *p, double *q, double *x, double *mean,
+	// double *sd, int *status, double *bound )
 }
 
 float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
 {
-	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
-	return gamma_incomplete_lower(k/2.0,x/2.0);
-}
+	REQUIRE(x>=0, "x (%f) has to be greater or equal to 0.\n", x);
+	REQUIRE(k>0, "Degrees of freedom (%f) has to be positive.\n", k);
 
-float64_t CStatistics::gamma_incomplete_lower(float64_t s, float64_t z)
-{
-	REQUIRE(s>0, "Given exponent (%f) must be greater than 0.\n", s);
-	REQUIRE(z>=0, "Given integral bound (%f) must be greater or equal to 0.\n", z);
+	// chi2 cdf case, see cdflib.cpp for details
+	int which=1;
+	float64_t df=k;
+	float64_t output_q;
+	float64_t output_p;
+	float64_t output_bound;
+	int output_status;
 
-	/* save computation */
-	if (z==0)
-		return 0;
+	cdfchi(&which, &output_p, &output_q, &x, &df, &output_status, &output_bound);
 
-	/* is more numerically stable */
-	if (z>1 && z>s)
-		return 1-gamma_incomplete_upper(s, z);
+	if (output_status!=0)
+		SG_SERROR("Error %d while calling cdflib::cdfchi\n", output_status);
 
-	// use series expansion
-	// inspiration from
-	// https://github.com/lh3/samtools/blob/master/bcftools/kfunc.c
-	// under MIT license
-	float64_t sum, x;
-	int32_t k;
-	for (k = 1, sum = x = 1.; k < 100; ++k)
-	{
-		sum += (x *= z / (s + k));
-		// hard coded epsilon
-		if (x / sum < 1e-14)
-			break;
-	}
-	return CMath::exp(s * CMath::log(z) - z - CStatistics::lgamma(s + 1.) + CMath::log(sum));
-}
-
-float64_t CStatistics::gamma_incomplete_upper(float64_t s, float64_t z)
-{
-	REQUIRE(s>0, "Given exponent (%f) must be greater than 0.\n", s);
-	REQUIRE(z>=0, "Given integral bound (%f) must be greater or equal to 0.\n", z);
-	/* Taken inspiration from
-	 * https://github.com/lh3/samtools/blob/master/bcftools/kfunc.c
-	 * under MIT license
-	 * The code states:
-	 * The following computes regularized incomplete gamma functions.
-	 * Formulas are taken from Wiki, with additional input from Numerical
-	 * Recipes in C (for modified Lentz's algorithm) and AS245
-	 * (http://lib.stat.cmu.edu/apstat/245).
-	 */
-
-	/* save computation */
-	if (z==0)
-		return 1;
-
-	/* is more numerically stable */
-	if (z<1 || z<s)
-		return 1-gamma_incomplete_lower(s, z);
-
-	/* save computation from underflows */
-	float64_t ax=s*CMath::log(z)-z-lgamma(s);
-	if (ax < -709.78271289338399)
-		return 0;
-
-	int32_t j;
-	float64_t C, D, f;
-	f = 1. + z - s;
-
-	C = f;
-	D = 0.;
-	// Modified Lentz's algorithm for computing continued fraction
-	// See Numerical Recipes in C, 2nd edition, section 5.2
-	for (j = 1; j < 100; ++j)
-	{
-		float64_t a = j * (s - j), b = (j<<1) + 1 + z - s, d;
-		D = b + a * D;
-		// hard coded tiny numbers
-		if (D < 1e-290)
-			D = 1e-290;
-		C = b + a / C;
-		if (C < 1e-290)
-			C = 1e-290;
-		D = 1. / D;
-		d = C * D;
-		f *= d;
-		// hard coded epsilon
-		if (CMath::abs<float64_t>(d - 1.) < 1e-14)
-			break;
-	}
-	float64_t result = CMath::exp(s * CMath::log(z) - z - CStatistics::lgamma(s) - CMath::log(f));
-	return result;
-}
-
-float64_t CStatistics::gamma_pdf(float64_t x, float64_t a, float64_t b)
-{
-	REQUIRE(x>=0, "Given point (%f) must be greater or equal to 0.\n", x);
-	REQUIRE(a>0, "Shape parameter (%f) must be greater than 0.", a);
-	REQUIRE(b>0, "Scale parameter (%f) must be greater than 0.", b);
-
-	return CMath::exp(-x * b) * CMath::pow(x, a - 1.0) * CMath::pow(b, a) / CStatistics::tgamma(a);
+	return output_p;
 }
 
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
-	/* definition from wikipedia */
-	return gamma_incomplete_lower(a, x*b);
+	REQUIRE(x>=0, "x (%f) has to be greater or equal to 0.\n", x);
+	REQUIRE(a>=0, "a (%f) has to be greater or equal to 0.\n", a);
+	REQUIRE(b>=0, "b (%f) has to be greater or equal to 0.\n", b);
+
+	// inverse gamma cdf case, see cdflib.cpp for details
+	float64_t shape=a;
+	float64_t scale=b;
+	int which=1;
+	float64_t output_p;
+	float64_t output_q;
+	float64_t output_bound;
+	int output_error_code;
+
+	cdfgam(&which, &output_p, &output_q, &x, &shape, &scale, &output_error_code, &output_bound);
+
+	if (output_error_code!=0)
+		SG_SERROR("Error %d while calling cdflib::cdfgam\n", output_error_code);
+
+	return output_p;
 }
 
 float64_t CStatistics::lnormal_cdf(float64_t x)
@@ -743,7 +509,6 @@ float64_t CStatistics::gamma_inverse_cdf(float64_t p, float64_t a,
 		float64_t b)
 {
 	REQUIRE(p>=0, "p (%f) has to be greater or equal to 0.\n", p);
-	REQUIRE(x<=1, "p (%f) has to be smaller or equal to 1\n", p);
 	REQUIRE(a>=0, "a (%f) has to be greater or equal to 0.\n", a);
 	REQUIRE(b>=0, "b (%f) has to be greater or equal to 0.\n", b);
 

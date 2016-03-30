@@ -46,42 +46,6 @@ public:
 			return sum/vec.vlen;
 		}
 
-	/** Calculates median of given values. The median is the value that one
-	 * gets when the input vector is sorted and then selects the middle value.
-	 *
-	 * @param values vector of values
-	 * @param modify if false, array is modified while median is computed
-	 * (Using QuickSelect).
-	 * If true, median is computed without modifications, which is slower.
-	 * There are two methods to choose from.
-	 * @param in_place if set false, the vector is copied and then computed
-	 * using QuickSelect. If set true, median is computed in-place using
-	 * Torben method.
-	 * @return median of given values
-	 */
-	static float64_t median(SGVector<float64_t> values, bool modify=false,
-			bool in_place=false);
-
-	/** Calculates median of given values. Matrix is seen as a long vector for
-	 * this. The median is the value that one
-	 * gets when the input vector is sorted and then selects the middle value.
-	 *
-	 * This method is just a wrapper for median(). See this method for license
-	 * of QuickSelect and Torben.
-	 *
-	 * @param values vector of values
-	 * @param modify if false, array is modified while median is computed
-	 * (Using QuickSelect).
-	 * If true, median is computed without modifications, which is slower.
-	 * There are two methods to choose from.
-	 * @param in_place if set false, the vector is copied and then computed
-	 * using QuickSelect. If set true, median is computed in-place using
-	 * Torben method.
-	 * @return median of given values
-	 */
-	static float64_t matrix_median(SGMatrix<float64_t> values,
-			bool modify=false, bool in_place=false);
-
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is
 	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
@@ -171,25 +135,13 @@ public:
 	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
 	 *
 	 * @param y0 Output of normal CDF for which parameter is returned.
-	 * @param mean Mean of normal distribution.
-	 * @param std_dev Standard deviation of normal distribution.
+	 * @param mean Mean of normal distribution. Default value is 0.
+	 * @param std_dev Standard deviation of normal distribution. Default
+	 * value is 1.
 	 * @return Parameter that produces given output.
 	 */
-	static float64_t inverse_normal_cdf(float64_t y0);
-
-	/** Inverse of Normal cumulative distribution function.
-	 *
-	 * Same as ::inverse_normal_cdf with mean and standard deviation parameters.
-	 *
-	 * @param y0 Output of normal CDF for which parameter is returned.
-	 * @param mean Mean of normal distribution.
-	 * @param std_dev Standard deviation of normal distribution.
-	 * @return Parameter that produces given output.
-	 */
-	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean,
-			float64_t std_dev);
-
-	static float64_t rational_approximation(float64_t t);
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
+			float64_t std_dev=1);
 
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
@@ -216,69 +168,6 @@ public:
 	{
 		return ::tgamma((double) x);
 	}
-
-	/** Compute the probability density function of the gamma distribution,
-	 * parametrised as
-	 *
-	 * TODO
-	 *
-	 * where x>=0 a,b>0.
-	 *
-	 * @param x Point to evaluate
-	 * @param a Shape parameter
-	 * @param b Scale parameter
-	 */
-	static float64_t gamma_pdf(float64_t x, float64_t a, float64_t b);
-
-	/** Compute the (lower) incomplete Gamma integral.
-	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f[
-	 * \text{incomplete\_gamma\_lower}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
-	 * \f]
-	 *
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Formulas are taken from Wiki, with additional input from Numerical
-	 * Recipes in C (for modified Lentz's algorithm for series expansion)
-	 *
-	 * Assumes \f$a>0\f$, \f$x\geq 0\f$
-	 *
-	 * @param a Exponent parameter
-	 * @param x Lower integral bound
-	 * @return Value of incomplete Gamma integral
-	 */
-	static float64_t gamma_incomplete_lower(float64_t a, float64_t x);
-
-	/** Complemented incomplete Gamma integral (upper incomplete Gamma function)
-	 *
-	 * The function is defined by
-	 *
-	 * \f[
-	 * \text{incomplete\_gamma\_upper}(a,x)=1-\text{incomplete\_gamma\_lower}(a,x) =
-	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
-	 * \f]
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Modified Lentz's algorithm for computing continued fraction.
-	 * See Numerical Recipes in C, 2nd edition, section 5.2.
-	 *
-	 * Assumes \f$a>0\f$, \f$x\geq 0\f$
-	 *
-	 * @param a Exponent parameter
-	 * @param x Lower integral bound
-	 * @return Value of incomplete Gamma integral
-	 */
-	static float64_t gamma_incomplete_upper(float64_t a, float64_t x);
 
 	/** Evaluates the CDF of the gamma distribution with given shape
 	 * and rate parameters \f$\alpha, \beta\f$ at \f$x\f$.
