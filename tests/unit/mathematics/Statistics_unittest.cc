@@ -567,34 +567,6 @@ TEST(Statistics, chi2_cdf)
 	EXPECT_NEAR(chi2c, 2.5356443108232581e-07, 1e-15);
 }
 
-TEST(Statistics, incomplete_beta)
-{
-	// assert with values computed by betainc routine of octave
-	float64_t betainc=CStatistics::incomplete_beta(2.0, 3.0, 0.5);
-	EXPECT_NEAR(betainc, 0.68749999999999988898, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(20.0, 30.0, 0.5);
-	EXPECT_NEAR(betainc, 0.92379611401926087222, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.1);
-	EXPECT_NEAR(betainc, 0.20483276469913344608, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.01);
-	EXPECT_NEAR(betainc, 0.06376856085851985434, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.001);
-	EXPECT_NEAR(betainc, 0.02013504163337747829, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.9);
-	EXPECT_NEAR(betainc, 0.79516723530086652616, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.99);
-	EXPECT_NEAR(betainc, 0.93623143914148010403, 1e-15);
-
-	betainc=CStatistics::incomplete_beta(0.5, 0.5, 0.999);
-	EXPECT_NEAR(betainc, 0.97986495836662246273, 1e-15);
-}
-
 TEST(Statistics, fdistribution_cdf)
 {
 	float64_t fdcdf=CStatistics::fdistribution_cdf(0.5, 3.0, 5.0);
