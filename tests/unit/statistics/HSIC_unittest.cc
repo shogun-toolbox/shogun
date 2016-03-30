@@ -112,7 +112,7 @@ TEST(HSIC, hsic_fixed)
 	SG_UNREF(hsic);
 }
 
-TEST(HSIC, hsic_gamma)
+TEST(DISABLED_HSIC, hsic_gamma)
 {
 	CFeatures* features_p=NULL;
 	CFeatures* features_q=NULL;
