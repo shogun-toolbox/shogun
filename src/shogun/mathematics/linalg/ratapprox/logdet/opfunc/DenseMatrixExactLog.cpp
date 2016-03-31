@@ -11,7 +11,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
+#if EIGEN_VERSION_AT_LEAST(3,1,0) && (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION == 2 && EIGEN_MINOR_VERSION < 6 )
 #include <unsupported/Eigen/MatrixFunctions>
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
@@ -47,7 +47,7 @@ CDenseMatrixExactLog::~CDenseMatrixExactLog()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
+#if EIGEN_VERSION_AT_LEAST(3,1,0) && (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION == 2 && EIGEN_MINOR_VERSION < 6 )
 void CDenseMatrixExactLog::precompute()
 {
 	SG_DEBUG("Entering...\n");
