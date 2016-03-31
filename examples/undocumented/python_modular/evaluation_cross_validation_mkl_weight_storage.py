@@ -31,7 +31,6 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from modshogun import RealFeatures, CombinedFeatures
     from modshogun import GaussianKernel, CombinedKernel
     from modshogun import LibSVM, MKLClassification
-    from modshogun import Statistics
 
     # training data, combined features all on same data
     features=RealFeatures(traindat)
@@ -78,16 +77,6 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     weights=mkl_storage.get_mkl_weights()
     #print "mkl weights during cross--validation"
     #print weights
-
-    #print "mean per kernel"
-    #print Statistics.matrix_mean(weights, False)
-
-    #print "variance per kernel"
-    #print Statistics.matrix_variance(weights, False)
-
-    #print "std-dev per kernel"
-    #print Statistics.matrix_std_deviation(weights, False)
-
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')
