@@ -24,6 +24,7 @@
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
 %rename(SingleFITCLaplacianInferenceMethod) CSingleFITCLaplacianInferenceMethod;
 %rename(SingleFITCLaplacianInferenceMethodWithLBFGS) CSingleFITCLaplacianInferenceMethodWithLBFGS;
+%rename(SparseVGInferenceMethodS) CSparseVGInferenceMethod;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
 %rename(LikelihoodModel) CLikelihoodModel;
@@ -92,6 +93,7 @@
 %include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
 %include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
+%include <shogun/machine/gp/SparseVGInferenceMethod.h>
 %include <shogun/machine/gp/EPInferenceMethod.h>
 
 %include <shogun/machine/gp/KLInferenceMethod.h>
