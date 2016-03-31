@@ -24,7 +24,7 @@
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
 %rename(SingleFITCLaplacianInferenceMethod) CSingleFITCLaplacianInferenceMethod;
 %rename(SingleFITCLaplacianInferenceMethodWithLBFGS) CSingleFITCLaplacianInferenceMethodWithLBFGS;
-%rename(SparseVGInferenceMethodS) CSparseVGInferenceMethod;
+%rename(SparseVGInferenceMethod) CSparseVGInferenceMethod;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
 %rename(LikelihoodModel) CLikelihoodModel;
