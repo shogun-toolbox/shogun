@@ -35,7 +35,7 @@ public:
 	virtual ~CQuadraticTimeMMD();
 
 	virtual SGVector<float64_t> sample_null() override;
-	void set_num_eigenvalues(index_t num_eigenvalues);
+	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
 
 	virtual float64_t compute_p_value(float64_t statistic) override;
 	virtual float64_t compute_threshold(float64_t alpha) override;
@@ -48,7 +48,7 @@ private:
 	virtual const operation get_direct_estimation_method() const override;
 	virtual const float64_t normalize_statistic(float64_t statistic) const override;
 	virtual const float64_t normalize_variance(float64_t variance) const override;
-	SGVector<float64_t> fit_null_gamma();
+	SGVector<float64_t> gamma_fit_null();
 };
 
 }

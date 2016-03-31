@@ -69,7 +69,7 @@ const float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance) const
 	return variance;
 }
 
-void CQuadraticTimeMMD::set_num_eigenvalues(index_t num_eigenvalues)
+void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)
 {
 	self->num_eigenvalues = num_eigenvalues;
 }
@@ -82,7 +82,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		case ENullApproximationMethod::MMD2_GAMMA:
 		{
 			/* fit gamma and return cdf at statistic */
-			SGVector<float64_t> params = fit_null_gamma();
+			SGVector<float64_t> params = gamma_fit_null();
 			result = CStatistics::gamma_cdf(statistic, params[0], params[1]);
 			break;
 		}
@@ -101,7 +101,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		case ENullApproximationMethod::MMD2_GAMMA:
 		{
 			/* fit gamma and return inverse cdf at alpha */
-			SGVector<float64_t> params = fit_null_gamma();
+			SGVector<float64_t> params = gamma_fit_null();
 			result = CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
 			break;
 		}
@@ -122,12 +122,15 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 
 		if (self->num_eigenvalues > m + n - 1)
 		{
-			SG_ERROR("Number of Eigenvalues too large\n");
+			SG_ERROR("Number of Eigenvalues (%d) for spectrum approximation"
+					" must be smaller than %d\n", self->num_eigenvalues,
+					m + n - 1);
 		}
 
 		if (self->num_eigenvalues < 1)
 		{
-			SG_ERROR("Number of Eigenvalues too small\n");
+			SG_ERROR("Number of Eigenvalues (%d) must be positive.\n",
+					self->num_eigenvalues);
 		}
 
 		dm.start();
@@ -196,13 +199,14 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	}
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
+SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
 {
 	DataManager& dm = get_data_manager();
 	index_t m = dm.num_samples_at(0);
 	index_t n = dm.num_samples_at(1);
 
-	REQUIRE(m == n, "Only possible with equal number of samples from both distribution!\n")
+	REQUIRE(m == n, "Number of samples from p (%d) and q (%d) must be equal.\n",
+			n, m)
 
 	/* evtl. warn user not to use wrong statistic type */
 	if (get_statistic_type() != EStatisticType::BIASED_FULL)
