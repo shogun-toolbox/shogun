@@ -9,6 +9,8 @@ GaussianKernel kernel()
 mmd.set_kernel(kernel)
 mmd.set_p(features_p)
 mmd.set_q(features_q)
+mmd.set_num_samples_p(100)
+mmd.set_num_samples_q(100)
 #![create_instance]
 
 #![estimate_mmd]
