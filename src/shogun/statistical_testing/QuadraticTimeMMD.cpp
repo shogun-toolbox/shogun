@@ -251,6 +251,8 @@ SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
 		/* compute variance under H0 of MMD, which is
 		 * varMMD = 2/m/(m-1) * 1/m/(m-1) * sum(sum( (K + L - KL - KL').^2 ));
 		 * in MATLAB, so sum up all elements */
+
+		// TODO parallelise or use linalg and precomputed kernel matrix
 		float64_t var_mmd=0;
 		for (index_t i=0; i<m; ++i)
 		{
