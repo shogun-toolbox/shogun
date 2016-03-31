@@ -51,18 +51,26 @@ enum class ENullApproximationMethod
 	MMD2_GAMMA
 };
 
+enum class EKernelSelectionMethod
+{
+	MEDIAN_HEURISRIC,
+	MAXIMIZE_MMD,
+	MAXIMIZE_POWER
+};
+
 class CMMD : public CTwoSampleTest
 {
 	using operation = std::function<float64_t(SGMatrix<float64_t>)>;
 public:
 	CMMD();
 	virtual ~CMMD();
-
+/*
+	void add_kernel(CKernel *kernel);
+	void select_kernel(EKernelSelectionMethod kmethod);
+	CKernel* get_kernel() const;
+*/
 	virtual float64_t compute_statistic() override;
-	SGVector<float64_t> compute_statistic(bool multiple_kernels);
-
 	float64_t compute_variance();
-	SGVector<float64_t> compute_variance(bool multiple_kernels);
 
 	void set_statistic_type(EStatisticType stype);
 	const EStatisticType get_statistic_type() const;
@@ -70,14 +78,13 @@ public:
 	void set_variance_estimation_method(EVarianceEstimationMethod vmethod);
 	const EVarianceEstimationMethod get_variance_estimation_method() const;
 
-	void set_simulate_null(bool simulate_null);
 	void set_num_null_samples(index_t null_samples);
 	const index_t get_num_null_samples() const;
 
-	virtual SGVector<float64_t> sample_null() override;
-
 	void set_null_approximation_method(ENullApproximationMethod nmethod);
 	const ENullApproximationMethod get_null_approximation_method() const;
+
+	virtual SGVector<float64_t> sample_null() override;
 
 	void use_gpu(bool gpu);
 
