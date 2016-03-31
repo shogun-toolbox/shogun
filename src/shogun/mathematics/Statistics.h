@@ -114,48 +114,26 @@ public:
 	static SGVector<float64_t> matrix_std_deviation(
 			SGMatrix<float64_t> values, bool col_wise=true);
 
-	/** Computes the empirical estimate of the covariance matrix of the given
+	/** Computes the empirical estimate of the DxD covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
 	 * Normalizes by N-1 for N observations
 	 *
 	 * Data is centered before matrix is computed. May be done in place.
 	 * In this case, the observation matrix is changed (centered).
 	 *
-	 * Given sample matrix \f$X\f$, first, column mean is removed to create
-	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
-	 * returned.
-	 *
-	 * @param observations data matrix organized as one variable per column
-	 * @param in_place optional, if set to true, observations matrix will be
+	 * @param observations Data matrix
+	 * @param in_place Optional, if set to true, observations matrix will be
 	 * centered, if false, a copy will be created an centered.
-	 * @return covariance matrix empirical estimate
+	 * @return DxD covariance matrix
 	 */
 	static SGMatrix<float64_t> covariance_matrix(
 			SGMatrix<float64_t> observations, bool in_place=false);
-
-	/** Inverse of Normal cumulative distribution function
-	 *
-	 * Returns the argument, \f$x\f$, for which the area under the
-	 * Gaussian probability density function (integrated from
-	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
-	 *
-	 * @param y0 Output of normal CDF for which parameter is returned.
-	 * @param mean Mean of normal distribution. Default value is 0.
-	 * @param std_dev Standard deviation of normal distribution. Default
-	 * value is 1.
-	 * @return Parameter that produces given output.
-	 */
-	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
-			float64_t std_dev=1);
 
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
 	{
 		return ::lgamma((double) x);
 	}
-
-	/** TODO */
-	static float64_t lgamma_approx(float64_t x);
 
 	/** @return natural logarithm of the gamma function of input for large
 	 * numbers */
@@ -174,45 +152,66 @@ public:
 		return ::tgamma((double) x);
 	}
 
-	/** Evaluates the CDF of the gamma distribution with given shape
+	/** Evaluates the CDF of the gamma distribution, parametrized with shape
 	 * and rate parameters \f$\alpha, \beta\f$ at \f$x\f$.
 	 *
-	 * TODO math
+	 * \f[
+	 * \frac{\beta^\alpha}{\Gamma(\alpha)}\int _{-\infty}^x x^{\alpha-1}\exp(-t \beta)dt
+	 * \f]
 	 *
-	 * @param x position to evaluate
-	 * @param a Shape parameter
-	 * @param b Rate parameter
-	 * @return gamma CDF at \f$x\f$
+	 * @param x Argument \f$x\f$ to evaluate.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Gamma CDF at \f$x\f$
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
 
-	/** Evaluates the inverse CDF of the gamma distribution with given
-	 * parameters \f$a\f$, \f$b\f$ at \f$x\f$, such that result equals
-	 * \f$\text{gamma\_cdf}(x,a,b)\f$.
+	/** Inverse of Gamma cumulative distribution function, parametrized with shape
+	 * and rate parameters \f$\alpha, \beta\f$, given by
 	 *
-	 * @param p Position to evaluate
-	 * @param a Shape parameter
-	 * @param b Scale parameter
-	 * @return \f$x\f$ such that result equals \f$\text{gamma\_cdf}(x,a,b)\f$.
+	 * \f[
+	 * \frac{\beta^\alpha}{\Gamma(\alpha)}\int _{-\infty}^x x^{\alpha-1}\exp(-t \beta)dt
+	 * \f]
+	 *
+	 * Returns the argument \f$x\f$ for which the CDF is equal to \f$y\f$.
+	 *
+	 * @param y CDF value \f$y\f$.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Argument \f$x\f$ that produces \f$y\f$.
 	 */
 	static float64_t gamma_inverse_cdf(float64_t p, float64_t a, float64_t b);
 
-	/** Normal distribution function
-	 *
-	 * Returns the area under the Gaussian probability density
-	 * function, integrated from minus infinity to \f$x\f$:
+	/** Evaluates the CDF of the Normal distribution, with mean \f$\mu\f$ and
+	 * standard deviation \f$\sigma\f$, given by
 	 *
 	 * \f[
-	 * \text{normal\_cdf}(x)=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^x
-	 * \exp \left( -\frac{t^2}{2} \right) dt = \frac{1+\text{error\_function}(z) }{2}
+	 * y=\frac{1}{\sigma \sqrt {2\pi }} \int_{-\infty}^x \exp\left(-\frac{(t-\mu)^2}{2\sigma^2}\right)dt
 	 * \f]
 	 *
-	 * where \f$ z = \frac{x}{\sqrt{2} \sigma}\f$ and \f$ \sigma \f$ is the standard
-	 * deviation. Computation is via the functions \f$\text{error\_function}\f$
-	 * and \f$\text{error\_function\_completement}\f$.
-	 *
+	 * @param x Argument \f$x\f$ to evaluate.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Gamma CDF at \f$x\f$
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
+
+	/** Inverse of Normal cumulative distribution function with mean \f$\mu\f$ and
+	 * standard deviation \f$\sigma\f$, given by
+	 *
+	 * \f[
+	 * y=\frac{1}{\sigma \sqrt {2\pi }} \int_{-\infty}^x \exp\left(-\frac{(t-\mu)^2}{2\sigma^2}\right)dt
+	 * \f]
+	 *
+	 * Returns the argument \f$x\f$ for which CDF is equal to \f$y\f$.
+	 *
+	 * @param y CDF value \f$y\f$.
+	 * @param mean Mean \f$\mu\f$. Default value is 0.
+	 * @param std_dev Standard deviation \f$\sigma\f$. Default value is 1.
+	 * @return Argument \f$x\f$ that produces \f$y\f$.
+	 */
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
+			float64_t std_dev=1);
 
 	/** Returns logarithm of the cumulative distribution function
 	 * (CDF) of Gaussian distribution \f$N(0, 1)\f$:
