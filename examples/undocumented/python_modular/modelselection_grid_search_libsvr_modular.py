@@ -64,13 +64,8 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
 
-#	 (optional) repeat x-val (set larger to get better estimates, at least two
-    # for confidence intervals)
+#	 (optional) repeat x-val (set larger to get better estimates)
     cross_validation.set_num_runs(2)
-
-    # (optional) request 95% confidence intervals for results (not actually
-    # needed for this toy example)
-    cross_validation.set_conf_int_alpha(0.05)
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list

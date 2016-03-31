@@ -88,8 +88,6 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     best_parameters.apply_to_machine(predictor)
     result=cross_validation.evaluate()
     #print "mean:", result.mean
-    #if result.has_conf_int:
-    #    print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
 
 # creates all the parameters to optimize
 def create_param_tree():
