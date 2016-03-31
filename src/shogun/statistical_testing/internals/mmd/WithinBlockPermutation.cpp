@@ -17,8 +17,10 @@
  */
 
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
@@ -42,12 +44,14 @@ typename T::return_type WithinBlockPermutation<T>::operator()(SGMatrix<float64_t
 
 	Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> perm(km.num_rows);
 	perm.setIdentity();
-	std::random_shuffle(perm.indices().data(), perm.indices().data() + perm.indices().size());
+	SGVector<int> inds(perm.indices().data(), perm.indices().size(), false);
+	CMath::permute(inds);
 
-	map = perm.transpose() * map * perm;
+	Eigen::MatrixXd permuted = perm.transpose() * map * perm;
+	SGMatrix<float64_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 
 	T statistic(n_x);
-	return statistic(km);
+	return statistic(permuted_km);
 }
 
 template class WithinBlockPermutation<BiasedFull>;
