@@ -19,8 +19,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 
-#ifndef SWIG // No need to expose CStatistics from SWIG
-
 namespace shogun
 {
 template<class T> class SGMatrix;
@@ -421,7 +419,5 @@ template <>
 	}
 
 }
-
-#endif // SWIG
 
 #endif /* __STATISTICS_H_ */
