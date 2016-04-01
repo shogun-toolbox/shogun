@@ -7,11 +7,9 @@ RealFeatures features_q(f_features_q)
 #![create_features]
 
 #![create_instance]
-QuadraticTimeMMD mmd()
+QuadraticTimeMMD mmd(features_p, features_q)
 GaussianKernel kernel()
 mmd.set_kernel(kernel)
-mmd.set_p(features_p)
-mmd.set_q(features_q)
 Real alpha = 0.05
 #![create_instance]
 
@@ -36,6 +34,7 @@ Real h0_rejected_permutation = mmd.perform_test(alpha)
 #![perform_test_spectrum]
 mmd.set_null_approximation_method(enum ENullApproximationMethod.MMD2_SPECTRUM)
 mmd.set_num_null_samples(200)
+mmd.spectrum_set_num_eigenvalues(5)
 Real threshold_spectrum = mmd.compute_threshold(alpha)
 Real p_value_spectrum = mmd.compute_p_value(statistic_biased)
 Real h0_rejected_spectrum = mmd.perform_test(alpha)

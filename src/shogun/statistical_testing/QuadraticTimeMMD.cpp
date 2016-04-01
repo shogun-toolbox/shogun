@@ -46,6 +46,14 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
 	self = std::unique_ptr<Self>(new Self());
 }
 
+CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p,
+		CFeatures* samples_from_q) : CMMD()
+{
+	self = std::unique_ptr<Self>(new Self());
+	set_p(samples_from_p);
+	set_q(samples_from_p);
+}
+
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
 {
 }

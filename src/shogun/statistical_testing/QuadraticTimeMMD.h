@@ -32,6 +32,8 @@ class CQuadraticTimeMMD : public CMMD
 	using operation = std::function<float64_t(SGMatrix<float64_t>)>;
 public:
 	CQuadraticTimeMMD();
+	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
+
 	virtual ~CQuadraticTimeMMD();
 
 	virtual SGVector<float64_t> sample_null() override;
