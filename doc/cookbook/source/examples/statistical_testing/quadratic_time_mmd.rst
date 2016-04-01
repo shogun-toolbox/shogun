@@ -2,11 +2,7 @@
 Quadratic Time MMD
 ==================
 
-The Quadratic time MMD implements a nonparametric statistical hypothesis test to reject the null hypothesis that to distributions :math:`p` and :math:`q`, only observed via :math:`n` and :math:`m` samples respectively, are the same:
-
-.. math::
-
-  H_0:p=q.
+The quadratic time MMD implements a nonparametric statistical hypothesis test to reject the null hypothesis that to distributions :math:`p` and :math:`q`, only observed via :math:`n` and :math:`m` samples respectively, are the same, i.e. :math:`H_0:p=q`.
 
 The (biased) test statistic is given by
 
@@ -37,7 +33,7 @@ Biased statistic
 
 .. sgexample:: quadratic_time_mmd.sg:estimate_mmd_biased
 
-There are multiple ways to perform the actual hypothesis test. The permutation version simulates from :math:`H_0` via repeatedly permuting the samples from :math:`p` and :math:`q`:
+There are multiple ways to perform the actual hypothesis test, see :sgclass:`CQuadraticTimeMMD` for details. The permutation version simulates from :math:`H_0` via repeatedly permuting the samples from :math:`p` and :math:`q`:
 
 .. sgexample:: quadratic_time_mmd.sg:perform_test_permutation
 

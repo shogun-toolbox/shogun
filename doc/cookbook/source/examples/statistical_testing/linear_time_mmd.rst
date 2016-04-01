@@ -2,12 +2,13 @@
 Linear Time MMD
 ===============
 
-The unbiased statistic is given by
+The linear time MMD implements a nonparametric statistical hypothesis test to reject the null hypothesis that to distributions :math:`p` and :math:`q`, each only observed via :math:`n` samples, are the same, i.e. :math:`H_0:p=q`.
+
+The (unbiased) statistic is given by
 
 .. math::
 
   \frac{2}{n}\sum_{i=1}^n k(x_{2i},x_{2i}) + k(x_{2i+1}, x_{2i+1}) - 2k(x_{2i},x_{2i+1}).
-  
 
 See :cite:`gretton2012kernel` for a detailed introduction.
 
