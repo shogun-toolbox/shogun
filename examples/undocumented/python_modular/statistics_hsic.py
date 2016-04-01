@@ -48,7 +48,7 @@ def statistics_hsic (n, difference, angle):
 	dist=EuclideanDistance(features_x, features_x)
 	distances=dist.get_distance_matrix()
 	features_x.remove_subset()
-	median_distance=Statistics.matrix_median(distances, True)
+	median_distance=np.median(distances)
 	sigma_x=median_distance**2
 	features_y.add_subset(subset)
 	dist=EuclideanDistance(features_y, features_y)
