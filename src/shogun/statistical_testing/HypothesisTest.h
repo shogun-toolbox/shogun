@@ -47,9 +47,6 @@ public:
 	virtual float64_t compute_p_value(float64_t statistic);
 	virtual float64_t compute_threshold(float64_t alpha);
 
-	float64_t perform_test();
-	bool perform_test(float64_t alpha);
-
 	virtual SGVector<float64_t> sample_null() = 0;
 
 	virtual const char* get_name() const;

@@ -85,17 +85,6 @@ float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 	return values[index_t(CMath::floor(values.vlen * (1 - alpha)))];
 }
 
-float64_t CHypothesisTest::perform_test()
-{
-	return compute_p_value(compute_statistic());
-}
-
-bool CHypothesisTest::perform_test(float64_t alpha)
-{
-	float64_t p_value = perform_test();
-	return p_value < alpha;
-}
-
 const char* CHypothesisTest::get_name() const
 {
 	return "HypothesisTest";

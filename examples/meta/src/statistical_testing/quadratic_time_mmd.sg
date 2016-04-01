@@ -28,7 +28,6 @@ mmd.set_null_approximation_method(enum ENullApproximationMethod.PERMUTATION)
 mmd.set_num_null_samples(200)
 Real threshold_permutation = mmd.compute_threshold(alpha)
 Real p_value_permutation = mmd.compute_p_value(statistic_biased)
-Real h0_rejected_permutation = mmd.perform_test(alpha)
 #![perform_test_permutation]
 
 #![perform_test_spectrum]
@@ -37,12 +36,10 @@ mmd.set_num_null_samples(200)
 mmd.spectrum_set_num_eigenvalues(5)
 Real threshold_spectrum = mmd.compute_threshold(alpha)
 Real p_value_spectrum = mmd.compute_p_value(statistic_biased)
-Real h0_rejected_spectrum = mmd.perform_test(alpha)
 #![perform_test_spectrum]
 
 #![perform_test_gamma]
 mmd.set_null_approximation_method(enum ENullApproximationMethod.MMD2_GAMMA)
 Real threshold_gamma = mmd.compute_threshold(alpha)
 Real p_value_gamma = mmd.compute_p_value(statistic_biased)
-Real h0_rejected_gamma = mmd.perform_test(alpha)
 #![perform_test_gamma]
