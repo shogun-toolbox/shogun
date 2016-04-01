@@ -95,6 +95,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 			break;
 		}
 		default:
+			// handles sampled null distributions
 			result = CHypothesisTest::compute_p_value(statistic);
 		break;
 	}
@@ -114,6 +115,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 			break;
 		}
 		default:
+			// handles samples null distributions
 			result = CHypothesisTest::compute_threshold(alpha);
 		break;
 	}
@@ -174,8 +176,6 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 			index_t max_num_eigenvalues = eigen_solver.eigenvalues().rows();
 
 			/* finally, sample from null distribution */
-
-#pragma omp parallel for
 			for (auto i = 0; i < null_samples.vlen; ++i)
 			{
 				float64_t null_sample = 0;
