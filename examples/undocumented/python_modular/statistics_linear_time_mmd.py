@@ -44,8 +44,8 @@ def statistics_linear_time_mmd (n,dim,difference):
 	dist=EuclideanDistance(features, features)
 	distances=dist.get_distance_matrix()
 
-	# compute median and determine kernel width (using shogun)
-	median_distance=Statistics.matrix_median(distances, True)
+	# compute median and determine kernel width
+	median_distance=np.median(distances)
 	sigma=median_distance**2
 	#print "median distance for Gaussian kernel:", sigma
 	kernel=GaussianKernel(10,sigma)

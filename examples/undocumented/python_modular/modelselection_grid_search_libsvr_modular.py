@@ -106,8 +106,6 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     best_parameters.apply_to_machine(predictor)
     result=cross_validation.evaluate()
     #print "mean:", result.mean
-    #if result.has_conf_int:
-    #    print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchLibSVR')
