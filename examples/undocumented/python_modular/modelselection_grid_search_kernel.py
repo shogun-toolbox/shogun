@@ -128,6 +128,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 
 	# larger number of runs to have less variance
 	cross.set_num_runs(10)
+	result=cross.evaluate()
 	casted=CrossValidationResult.obtain_from_generic(result);
 	#print "result mean:", casted.mean
 
