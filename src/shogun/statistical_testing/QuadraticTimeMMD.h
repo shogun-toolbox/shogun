@@ -51,6 +51,7 @@ private:
 	virtual const float64_t normalize_statistic(float64_t statistic) const override;
 	virtual const float64_t normalize_variance(float64_t variance) const override;
 	SGVector<float64_t> gamma_fit_null();
+	SGVector<float64_t> spectrum_sample_null();
 };
 
 }
