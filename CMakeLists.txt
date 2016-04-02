@@ -21,6 +21,8 @@ include(ShogunUtils)
 
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
+add_definitions(-DEIGEN_VERSION_MINIMUM="${EIGEN_VERSION_MINIMUM}")
+
 SET(VIENNACL_VERSION_MINIMUM 1.5.0)
 
 # Store system's or distribution's C[XX]FLAGS.
@@ -566,6 +568,9 @@ IF(NOT EIGEN3_FOUND)
 	include(external/Eigen3)
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ELSE()
+	IF("${EIGEN3_VERSION}" VERSION_GREATER "${EIGEN_VERSION_MINIMUM}" AND "${EIGEN3_VERSION}" VERSION_LESS "3.2.6")
+	        add_definitions(-DEIGEN_VERSION_DEPENDABLE=1)
+	ENDIF()
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ENDIF()
 

@@ -11,9 +11,9 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0) && (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION == 2 && EIGEN_MINOR_VERSION < 6 )
+#if EIGEN_VERSION_DEPENDABLE
 #include <unsupported/Eigen/MatrixFunctions>
-#endif // EIGEN_VERSION_AT_LEAST(3,1,0)
+#endif // EIGEN_VERSION_DEPENDABLE
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -47,7 +47,7 @@ CDenseMatrixExactLog::~CDenseMatrixExactLog()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0) && (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION == 2 && EIGEN_MINOR_VERSION < 6 )
+#if EIGEN_VERSION_DEPENDABLE
 void CDenseMatrixExactLog::precompute()
 {
 	SG_DEBUG("Entering...\n");
@@ -75,9 +75,9 @@ void CDenseMatrixExactLog::precompute()
 #else
 void CDenseMatrixExactLog::precompute()
 {
-	SG_WARNING("Eigen3.1.0 or later required!\n")
+	SG_WARNING("Eigen " EIGEN_VERSION_MINIMUM " or later required!\n")
 }
-#endif // EIGEN_VERSION_AT_LEAST(3,1,0)
+#endif // EIGEN_VERSION_DEPENDABLE
 
 CJobResultAggregator* CDenseMatrixExactLog::submit_jobs(SGVector<float64_t>
 	sample)
