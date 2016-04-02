@@ -17,6 +17,7 @@ using namespace shogun;
 
 void test()
 {
+	/*
 	SGVector<float64_t> data(10);
 	SGVector<float64_t>::range_fill_vector(data.vector, data.vlen, 1.0);
 
@@ -26,6 +27,7 @@ void test()
 
 	SG_SPRINT("sample mean: %f. True mean lies in [%f,%f] with %f%%\n",
 			mean, low, up, 100*(1-error_prob));
+	*/
 }
 
 int main(int argc, char **argv)

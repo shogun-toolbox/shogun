@@ -193,7 +193,8 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 	}
 
 	/* now we have distance matrix, compute median, allow to modify matrix */
-	float64_t median_distance=CStatistics::median(dist_vec, true);
+	CMath::qsort<float64_t>(dist_vec.vector, dist_vec.vlen);
+	float64_t median_distance=dist_vec[dist_vec.vlen/2];
 	SG_DEBUG("median_distance: %f\n", median_distance);
 
 	/* shogun has no square and factor two in its kernel width, MATLAB does

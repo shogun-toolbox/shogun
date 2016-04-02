@@ -84,7 +84,9 @@ void check_similarity_of_sets(const std::set<index_t>& first_set, const std::set
  */
 void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill);
 
-TEST(IsomapTest,neighbors_preserving)
+
+// Disabled as randomly fails on travis
+TEST(DISABLED_IsomapTest,neighbors_preserving)
 {
 	const index_t n_samples = 30;
 	const index_t n_dimensions = 3;

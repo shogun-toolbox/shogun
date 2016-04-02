@@ -18,7 +18,6 @@
 using namespace shogun;
 using namespace Eigen;
 
-#ifdef HAVE_LAPACK
 TEST(NormalSampler, sample)
 {
 	const index_t dimension=2;
@@ -37,12 +36,11 @@ TEST(NormalSampler, sample)
 	SGVector<float64_t> mean=CStatistics::matrix_mean(samples);
 	Map<VectorXd> map_mean(mean.vector, mean.vlen);
 	EXPECT_NEAR((map_mean-VectorXd::Zero(dimension)).norm(), 0.0, 0.1);
-
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> map_cov(cov.matrix, cov.num_rows, cov.num_cols);
 	EXPECT_NEAR((map_cov-MatrixXd::Identity(dimension, dimension)).norm(),
 		0.0, 0.1);
 }
-#endif // HAVE_LAPACK
 
 

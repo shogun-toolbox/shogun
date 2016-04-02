@@ -4,13 +4,11 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2016 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
- * ALGLIB Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier under GPL2+
- * http://www.alglib.net/
- * See method comments which functions are taken from ALGLIB (with adjustments
- * for shogun)
+ * Most cdf routines are wrappers for CDFLIB, part of the public domain NETLIB.
+ * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
  */
 
 #ifndef __STATISTICS_H_
@@ -50,55 +48,6 @@ public:
 
 			return sum/vec.vlen;
 		}
-
-	/** Calculates median of given values. The median is the value that one
-	 * gets when the input vector is sorted and then selects the middle value.
-	 *
-	 * QuickSelect method copyright:
-	 * This Quickselect routine is based on the algorithm described in
-	 * "Numerical recipes in C", Second Edition,
-	 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
-	 * This code by Nicolas Devillard - 1998. Public domain.
-	 *
-	 * Torben method copyright:
-	 * The following code is public domain.
-	 * Algorithm by Torben Mogensen, implementation by N. Devillard.
-	 * Public domain.
-	 *
-	 * Both methods adapted to SHOGUN by Heiko Strathmann.
-	 *
-	 * @param values vector of values
-	 * @param modify if false, array is modified while median is computed
-	 * (Using QuickSelect).
-	 * If true, median is computed without modifications, which is slower.
-	 * There are two methods to choose from.
-	 * @param in_place if set false, the vector is copied and then computed
-	 * using QuickSelect. If set true, median is computed in-place using
-	 * Torben method.
-	 * @return median of given values
-	 */
-	static float64_t median(SGVector<float64_t> values, bool modify=false,
-			bool in_place=false);
-
-	/** Calculates median of given values. Matrix is seen as a long vector for
-	 * this. The median is the value that one
-	 * gets when the input vector is sorted and then selects the middle value.
-	 *
-	 * This method is just a wrapper for median(). See this method for license
-	 * of QuickSelect and Torben.
-	 *
-	 * @param values vector of values
-	 * @param modify if false, array is modified while median is computed
-	 * (Using QuickSelect).
-	 * If true, median is computed without modifications, which is slower.
-	 * There are two methods to choose from.
-	 * @param in_place if set false, the vector is copied and then computed
-	 * using QuickSelect. If set true, median is computed in-place using
-	 * Torben method.
-	 * @return median of given values
-	 */
-	static float64_t matrix_median(SGMatrix<float64_t> values,
-			bool modify=false, bool in_place=false);
 
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is
@@ -163,109 +112,20 @@ public:
 	static SGVector<float64_t> matrix_std_deviation(
 			SGMatrix<float64_t> values, bool col_wise=true);
 
-	/** Computes the empirical estimate of the covariance matrix of the given
+	/** Computes the empirical estimate of the DxD covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
+	 * Normalizes by N-1 for N observations
 	 *
 	 * Data is centered before matrix is computed. May be done in place.
 	 * In this case, the observation matrix is changed (centered).
 	 *
-	 * Given sample matrix \f$X\f$, first, column mean is removed to create
-	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
-	 * returned.
-	 *
-	 * @param observations data matrix organized as one variable per column
-	 * @param in_place optional, if set to true, observations matrix will be
+	 * @param observations Data matrix
+	 * @param in_place Optional, if set to true, observations matrix will be
 	 * centered, if false, a copy will be created an centered.
-	 * @return covariance matrix empirical estimate
+	 * @return DxD covariance matrix
 	 */
 	static SGMatrix<float64_t> covariance_matrix(
 			SGMatrix<float64_t> observations, bool in_place=false);
-
-	/** Calculates the sample mean of a given set of samples and also computes
-	 * the confidence interval for the actual mean for a given p-value,
-	 * assuming that the actual variance and mean are unknown (These are
-	 * estimated by the samples). Based on Student's t-distribution.
-	 *
-	 * Only for normally distributed data
-	 *
-	 * @param values vector of values that are used for calculations
-	 * @param alpha actual mean lies in confidence interval with (1-alpha)*100%
-	 * @param conf_int_low lower confidence interval border is written here
-	 * @param conf_int_up upper confidence interval border is written here
-	 * @return sample mean
-	 *
-	 */
-	static float64_t confidence_intervals_mean(SGVector<float64_t> values,
-			float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up);
-
-	/** Functional inverse of Student's t distribution
-	 *
-	 * Given probability \f$p\f$, finds the argument \f$t\f$ such that
-	 * \f$\text{student\_t}(k,t)=p\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_student_t(int32_t k, float64_t p);
-
-	/** Inverse of incomplete beta integral
-	 *
-	 * Given \f$y\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f$\text{inverse\_incomplete\_beta}( a, b, x ) = y .\f$
-	 *
-	 * The routine performs interval halving or Newton iterations to find the
-	 * root of \f$\text{inverse\_incomplete\_beta}( a, b, x )-y=0.\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_incomplete_beta(float64_t a, float64_t b,
-			float64_t y);
-
-	/** Incomplete beta integral
-	 *
-	 * Returns incomplete beta integral of the arguments, evaluated
-	 * from zero to \f$x\f$.  The function is defined as
-	 * \f[
-	 * \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\int_0^x t^{a-1} (1-t)^{b-1} dt.
-	 * \f]
-	 *
-	 * The domain of definition is \f$0 \leq x \leq 1\f$.  In this
-	 * implementation \f$a\f$ and \f$b\f$ are restricted to positive values.
-	 * The integral from \f$x\f$ to \f$1\f$ may be obtained by the symmetry
-	 * relation
-	 *
-	 * \f[
-	 * 1-\text{incomplete\_beta}(a,b,x)=\text{incomplete\_beta}(b,a,1-x).
-	 * \f]
-	 *
-	 * The integral is evaluated by a continued fraction expansion
-	 * or, when \f$b\cdot x\f$ is small, by a power series.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
-
-	/** Inverse of Normal distribution function
-	 *
-	 * Returns the argument, \f$x\f$, for which the area under the
-	 * Gaussian probability density function (integrated from
-	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
-	 *
-	 *
-	 * For small arguments \f$0 < y < \exp(-2)\f$, the program computes
-	 * \f$z = \sqrt{ -2.0  \log(y) }\f$;  then the approximation is
-	 * \f$x = z - \frac{log(z)}{z}  - \frac{1}{z} \frac{P(\frac{1}{z})}{ Q(\frac{1}{z}}\f$.
-	 * There are two rational functions \f$\frac{P}{Q}\f$, one for \f$0 < y < \exp(-32)\f$
-	 * and the other for \f$y\f$ up to \f$\exp(-2)\f$.  For larger arguments,
-	 * \f$w = y - 0.5\f$, and  \f$\frac{x}{\sqrt{2\pi}} = w + w^3 R(\frac{w^2)}{S(w^2)})\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_normal_cdf(float64_t y0);
-
-	/** same as other version, but with custom mean and variance */
-	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean,
-				float64_t std_dev);
 
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
@@ -290,100 +150,68 @@ public:
 		return ::tgamma((double) x);
 	}
 
-	/** Incomplete gamma integral
-	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f[
-	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
-	 * \f]
-	 *
-	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_gamma(float64_t a, float64_t x);
-
-	/** Complemented incomplete gamma integral
-	 *
-	 * The function is defined by
+	/** Evaluates the CDF of the gamma distribution, parametrized with shape
+	 * and rate parameters \f$\alpha, \beta\f$ at \f$x\f$.
 	 *
 	 * \f[
-	 * \text{incomplete\_gamma\_completed}(a,x)=1-\text{incomplete\_gamma}(a,x) =
-	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
+	 * \frac{\beta^\alpha}{\Gamma(\alpha)}\int _{-\infty}^x x^{\alpha-1}\exp(-t \beta)dt
 	 * \f]
 	 *
-	 * In this implementation both arguments must be positive.
-	 * The integral is evaluated by either a power series or
-	 * continued fraction expansion, depending on the relative
-	 * values of \f$a\f$ and \f$x\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t incomplete_gamma_completed(float64_t a, float64_t x);
-
-	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
-	 * at \f$x\f$. Based on Wikipedia definition and ALGLIB routines.
-	 *
-	 * @param x position to evaluate
-	 * @param a shape parameter
-	 * @param b scale parameter
-	 * @return gamma CDF at \f$x\f$
+	 * @param x Argument \f$x\f$ to evaluate.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Gamma CDF at \f$x\f$
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
 
-	/** Evaluates the inverse CDF of the gamma distribution with given
-	 * parameters \f$a\f$, \f$b\f$ at \f$x\f$, such that result equals
-	 * \f$\text{gamma\_cdf}(x,a,b)\f$.
-	 *
-	 * @param p position to evaluate
-	 * @param a shape parameter
-	 * @param b scale parameter
-	 * @return \f$x\f$ such that result equals \f$\text{gamma\_cdf}(x,a,b)\f$.
-	 */
-	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
-
-	/** Inverse of complemented incomplete gamma integral
-	 *
-	 * Given \f$p\f$, the function finds \f$x\f$ such that
-	 *
-	 * \f$\text{inverse\_incomplete\_gamma\_completed}( a, x ) = p.\f$
-	 *
-	 * Starting with the approximate value \f$ x=a t^3\f$, where
-	 * \f$ t = 1 - d - \text{ndtri}(p) \sqrt{d} \f$ and \f$ d = \frac{1}{9}a \f$
-	 *
-	 * The routine performs up to 10 Newton iterations to find the
-	 * root of \f$ \text{inverse\_incomplete\_gamma\_completed}( a, x )-p=0\f$
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t inverse_incomplete_gamma_completed(float64_t a,
-			float64_t y0);
-
-	/** Normal distribution function
-	 *
-	 * Returns the area under the Gaussian probability density
-	 * function, integrated from minus infinity to \f$x\f$:
+	/** Inverse of Gamma cumulative distribution function, parametrized with shape
+	 * and rate parameters \f$\alpha, \beta\f$, given by
 	 *
 	 * \f[
-	 * \text{normal\_cdf}(x)=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^x
-	 * \exp \left( -\frac{t^2}{2} \right) dt = \frac{1+\text{error\_function}(z) }{2}
+	 * \frac{\beta^\alpha}{\Gamma(\alpha)}\int _{-\infty}^x x^{\alpha-1}\exp(-t \beta)dt
 	 * \f]
 	 *
-	 * where \f$ z = \frac{x}{\sqrt{2} \sigma}\f$ and \f$ \sigma \f$ is the standard
-	 * deviation. Computation is via the functions \f$\text{error\_function}\f$
-	 * and \f$\text{error\_function\_completement}\f$.
+	 * Returns the argument \f$x\f$ for which the CDF is equal to \f$y\f$.
 	 *
-	 * Taken from ALGLIB under gpl2+
-	 * Custom variance added by Heiko Strathmann
+	 * @param y CDF value \f$y\f$.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Argument \f$x\f$ that produces \f$y\f$.
+	 */
+	static float64_t gamma_inverse_cdf(float64_t p, float64_t a, float64_t b);
+
+	/** Evaluates the CDF of the Normal distribution, with mean \f$\mu\f$ and
+	 * standard deviation \f$\sigma\f$, given by
+	 *
+	 * \f[
+	 * y=\frac{1}{\sigma \sqrt {2\pi }} \int_{-\infty}^x \exp\left(-\frac{(t-\mu)^2}{2\sigma^2}\right)dt
+	 * \f]
+	 *
+	 * @param x Argument \f$x\f$ to evaluate.
+	 * @param a Shape parameter \f$\alpha\f$
+	 * @param b Rate parameter \f$\beta\f$
+	 * @return Gamma CDF at \f$x\f$
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
 
-	/** returns logarithm of the cumulative distribution function
+	/** Inverse of Normal cumulative distribution function with mean \f$\mu\f$ and
+	 * standard deviation \f$\sigma\f$, given by
+	 *
+	 * \f[
+	 * y=\frac{1}{\sigma \sqrt {2\pi }} \int_{-\infty}^x \exp\left(-\frac{(t-\mu)^2}{2\sigma^2}\right)dt
+	 * \f]
+	 *
+	 * Returns the argument \f$x\f$ for which CDF is equal to \f$y\f$.
+	 *
+	 * @param y CDF value \f$y\f$.
+	 * @param mean Mean \f$\mu\f$. Default value is 0.
+	 * @param std_dev Standard deviation \f$\sigma\f$. Default value is 1.
+	 * @return Argument \f$x\f$ that produces \f$y\f$.
+	 */
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean=0,
+			float64_t std_dev=1);
+
+	/** Returns logarithm of the cumulative distribution function
 	 * (CDF) of Gaussian distribution \f$N(0, 1)\f$:
 	 *
 	 * \f[
@@ -391,17 +219,13 @@ public:
 	 * \frac{1}{2}\text{error\_function}(\frac{x}{\sqrt{2}})\right)
 	 * \f]
 	 *
-	 * This method uses asymptotic expansion for \f$x<-10.0\f$,
-	 * otherwise it returns \f$log(\text{normal\_cdf}(x))\f$.
-	 *
-	 * @param x real value
-	 *
+	 * @param x Evaluate CDF here
 	 * @return \f$log(\text{normal\_cdf}(x))\f$
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
 	/** Evaluates the CDF of the chi square distribution with
-	 * parameter k at \f$x\f$. Based on Wikipedia definition.
+	 * parameter k at \f$x\f$.
 	 *
 	 * @param x position to evaluate
 	 * @param k parameter
@@ -425,39 +249,6 @@ public:
 	 * @return weighted sum
 	 */
 	static float64_t erfc8_weighted_sum(float64_t x);
-
-	/** Error function
-	 *
-	 * The integral is
-	 *
-	 * \f[
-	 * \text{error\_function}(x)=
-	 * \frac{2}{\sqrt{pi}}\int_0^x \exp (-t^2) dt
-	 * \f]
-	 *
-	 * For \f$0 \leq |x| < 1, \text{error\_function}(x) = x \frac{P4(x^2)}{Q5(x^2)}\f$
-	 * otherwise
-	 * \f$\text{error\_function}(x) = 1 - \text{error\_function\_complement}(x)\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t error_function(float64_t x);
-
-	/** Complementary error function
-	 *
-	 * \f[
-	 * 1 - \text{error\_function}(x) =
-	 * \text{error\_function\_complement}(x)=
-	 * \frac{2}{\sqrt{\pi}}\int_x^\infty \exp\left(-t^2 \right)dt
-	 * \f]
-	 *
-	 * For small \f$x\f$, \f$\text{error\_function\_complement}(x) =
-	 *  1 - \text{error\_function}(x)\f$; otherwise rational
-	 * approximations are computed.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t error_function_complement(float64_t x);
 
 	/** @return mutual information of \f$p\f$ which is given in logspace
 	 * where \f$p,q\f$ are given in logspace */
@@ -616,46 +407,7 @@ public:
 	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE2;
 
-protected:
-	/** Power series for incomplete beta integral.
-	 * Use when \f$bx\f$ is small and \f$x\f$ not too close to \f$1\f$.
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetaps(float64_t a, float64_t b,
-			float64_t x, float64_t maxgam);
 
-	/** Continued fraction expansion #1 for incomplete beta integral
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetafe(float64_t a, float64_t b,
-			float64_t x, float64_t big, float64_t biginv);
-
-	/** Continued fraction expansion #2 for incomplete beta integral
-	 *
-	 * Taken from ALGLIB under gpl2+
-	 */
-	static float64_t ibetaf_incompletebetafe2(float64_t a, float64_t b,
-			float64_t x, float64_t big, float64_t biginv);
-
-	/** method to make ALGLIB integration easier */
-	static inline bool equal(float64_t a, float64_t b) { return a==b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool not_equal(float64_t a, float64_t b) { return a!=b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool less(float64_t a, float64_t b) { return a<b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool less_equal(float64_t a, float64_t b) { return a<=b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool greater(float64_t a, float64_t b) { return a>b; }
-
-	/** method to make ALGLIB integration easier */
-	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
 /// mean not implemented for complex128_t, returns 0.0 instead

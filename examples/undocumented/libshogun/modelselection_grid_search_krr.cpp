@@ -113,7 +113,7 @@ void test_cross_validation()
 			splitting, eval_crit);
 
 	cross->set_num_runs(3);
-	cross->set_conf_int_alpha(0.05);
+//	cross->set_conf_int_alpha(0.05);
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
@@ -138,7 +138,7 @@ void test_cross_validation()
 
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
-	cross->set_conf_int_alpha(0.01);
+//	cross->set_conf_int_alpha(0.01);
 	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)

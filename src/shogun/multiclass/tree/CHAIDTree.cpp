@@ -856,7 +856,13 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 			int32_t r=0;
 			int32_t c=0;
 			float64_t x2=pchi2_statistic(feat,labels,weights,r,c);
-			return 1-CStatistics::chi2_cdf(x2,(r-1)*(c-1));
+
+			// chi2 is not defined for second argument to be 0
+			// (which might happen here if x2 is 0)
+			if (x2 == 0)
+				return 1;
+			else
+				return 1-CStatistics::chi2_cdf(x2,(r-1)*(c-1));
 		}
 		case 1:
 		{

@@ -144,17 +144,14 @@ TEST(Statistics, sample_from_gaussian_dense1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
 	EXPECT_NEAR((s_c-c).norm(), 0.0, 1.0);
-#endif // HAVE_LAPACK
 	ASSERT_EQ(mu.rows(), s_mu.rows());
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
@@ -184,17 +181,14 @@ TEST(Statistics, sample_from_gaussian_dense2)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
 	EXPECT_NEAR((s_c-c.inverse()).norm(), 0.0, 5.0);
-#endif // HAVE_LAPACK
 	ASSERT_EQ(mu.rows(), s_mu.rows());
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
@@ -249,10 +243,9 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
-#ifdef HAVE_LAPACK
+	SGMatrix<float64_t>::transpose_matrix(samples.matrix, samples.num_rows, samples.num_cols); // TODO: refactor sample_from_gaussian to return column vectors!
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
-#endif // HAVE_LAPACK
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
 	// create a similar dense cov matrix as of the original one
@@ -265,9 +258,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	}
 
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
-#ifdef HAVE_LAPACK
 	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.5);
-#endif // HAVE_LAPACK
 
 	SG_FREE(vec);
 	SG_FREE(rest);
@@ -374,16 +365,206 @@ TEST(Statistics, lnormal_cdf)
 
 }
 
+TEST(Statistics, normal_cdf)
+{
+	// assert with value calculated via Octave normcdf() method
+	float64_t phi=CStatistics::normal_cdf(-2);
+	EXPECT_NEAR(phi, 0.0227501319481792190, 1e-15);
+
+	phi=CStatistics::normal_cdf(-3, 4);
+	EXPECT_NEAR(phi, 0.2266273523768682074, 1e-15);
+
+	phi=CStatistics::normal_cdf(-0.3);
+	EXPECT_NEAR(phi, 0.3820885778110473807, 1e-15);
+
+	phi=CStatistics::normal_cdf(0.7);
+	EXPECT_NEAR(phi, 0.7580363477769269664, 1e-15);
+
+	phi=CStatistics::normal_cdf(1);
+	EXPECT_NEAR(phi, 0.8413447460685429258, 1e-15);
+
+	phi=CStatistics::normal_cdf(2);
+	EXPECT_NEAR(phi, 0.9772498680518207914, 1e-15);
+}
+
+TEST(Statistics, inverse_normal_cdf)
+{
+	// assert against scipy.stats.norm.ppf(0.99999,loc=0,scale=1)
+	float64_t result;
+
+	result=CStatistics::inverse_normal_cdf(0.0000001);
+	EXPECT_NEAR(result, -5.1993375821928165, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.00001);
+	EXPECT_NEAR(result, -4.2648907939228247, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.001);
+	EXPECT_NEAR(result, -3.0902323061678132, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.05);
+	EXPECT_NEAR(result, -1.6448536269514729, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.15);
+	EXPECT_NEAR(result, -1.0364333894937898, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.25);
+	EXPECT_NEAR(result, -0.67448975019608171, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.35);
+	EXPECT_NEAR(result, -0.38532046640756773, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.45);
+	EXPECT_NEAR(result, -0.12566134685507402, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.55);
+	EXPECT_NEAR(result, 0.12566134685507416, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.65);
+	EXPECT_NEAR(result, 0.38532046640756773, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.75);
+	EXPECT_NEAR(result, 0.67448975019608171, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.85);
+	EXPECT_NEAR(result, 1.0364333894937898, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.95);
+	EXPECT_NEAR(result, 1.6448536269514722, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.99);
+	EXPECT_NEAR(result, 2.3263478740408408, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.999);
+	EXPECT_NEAR(result, 3.0902323061678132, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.99999);
+	EXPECT_NEAR(result, 4.2648907939238407, 1e-15);
+
+	result=CStatistics::inverse_normal_cdf(0.9999999);
+	EXPECT_NEAR(result, 5.1993375822906609, 1e-15);
+}
+
+TEST(Statistics, inverse_normal_cdf_with_mean_std_dev)
+{
+	// assert against scipy.stats.norm.ppf(0.99999,loc=1,scale=2)
+	float64_t result;
+	
+	result=CStatistics::inverse_normal_cdf(0.0000001, 1, 2);
+	EXPECT_NEAR(result, -9.398675164385633, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.00001, 1, 2);
+	EXPECT_NEAR(result, -7.5297815878456493, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.001, 1, 2);
+	EXPECT_NEAR(result, -5.1804646123356264, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.1, 1, 2);
+	EXPECT_NEAR(result, -1.5631031310892007, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.3, 1, 2);
+	EXPECT_NEAR(result, -0.048801025416081778, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.5, 1, 2);
+	EXPECT_NEAR(result, 1, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.7, 1, 2);
+	EXPECT_NEAR(result, 2.0488010254160813, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.9, 1, 2);
+	EXPECT_NEAR(result, 3.5631031310892007, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.999, 1, 2);
+	EXPECT_NEAR(result, 7.1804646123356264, 1e-14);
+	
+	result=CStatistics::inverse_normal_cdf(0.99999, 1, 2);
+	EXPECT_NEAR(result, 9.5297815878476815, 1e-14);
+}
+
+TEST(Statistics, gamma_cdf)
+{
+	// tests against scipy.stats.gamma.cdf
+	// note that scipy.stats.gamma.cdf(2, a=2, scale=1./2) corresonds to
+	// CStatistics:.gamma_cdf(2,2,2)
+	float64_t result;
+
+	// only three basic cases to get order of parameters
+	result=CStatistics::gamma_cdf(2, 1, 1);
+	EXPECT_NEAR(result, 0.8646647167633873, 1e-15);
+
+	result=CStatistics::gamma_cdf(2, 2, 1);
+	EXPECT_NEAR(result, 0.59399415029016167, 1e-15);
+
+	result=CStatistics::gamma_cdf(2, 1, 2);
+	EXPECT_NEAR(result, 0.98168436111126578, 1e-15);
+}
+
+TEST(Statistics, gamma_inverse_cdf)
+{
+	// tests against scipy.stats.gamma.ppf
+	// note that scipy.stats.gamma.ppf(2, a=2, scale=1./2) corresonds to
+	// CStatistics:.gamma_ppf(2,2,2)
+	float64_t result;
+
+	// corner cases	that work
+	result=CStatistics::gamma_inverse_cdf(0, 1, 1);
+	EXPECT_NEAR(result, 0.0, 1e-15);
+
+	// parameters order and basic scaling
+	result=CStatistics::gamma_inverse_cdf(0.5, 1, 1);
+	EXPECT_NEAR(result, 0.69314718055994529, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 2, 1);
+	EXPECT_NEAR(result, 1.6783469900166608, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 1, 2);
+	EXPECT_NEAR(result, 0.34657359027997264, 1e-15);
+	
+	result=CStatistics::gamma_inverse_cdf(0.5, 2, 2);
+	EXPECT_NEAR(result, 0.83917349500833038, 1e-15);
+	
+	// tests around boundaries a=1, b=1
+	result=CStatistics::gamma_inverse_cdf(0.0000001, 1, 1);
+	EXPECT_NEAR(result, 1.0000000500000027e-07, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.00001, 1, 1);
+	EXPECT_NEAR(result, 1.0000050000333339e-05, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.001, 1, 1);
+	EXPECT_NEAR(result, 0.0010005003335835335, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.1, 1, 1);
+	EXPECT_NEAR(result, 0.10536051565782635, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.3, 1, 1);
+	EXPECT_NEAR(result, 0.35667494393873239, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.7, 1, 1);
+	EXPECT_NEAR(result, 1.2039728043259359, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.9, 1, 1);
+	EXPECT_NEAR(result, 2.3025850929940459, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.999, 1, 1);
+	EXPECT_NEAR(result, 6.9077552789821359, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.99999, 1, 1);
+	EXPECT_NEAR(result, 11.51292546497478, 1e-15);
+
+	result=CStatistics::gamma_inverse_cdf(0.9999999, 1, 1);
+	EXPECT_NEAR(result, 16.11809565148468, 1e-14);
+}
+
 TEST(Statistics, chi2_cdf)
 {
-	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
-	EXPECT_NEAR(chi2c, 0.03743423, 1e-7);
+	// tests against scipy.stats.chi2.cdf
+	float64_t chi2c=CStatistics::chi2_cdf(1, 1);
+	EXPECT_NEAR(chi2c, 0.68268949213708596, 1e-15);
 
 	chi2c=CStatistics::chi2_cdf(10.0, 5.0);
-	EXPECT_NEAR(chi2c, 0.92476475, 1e-7);
+	EXPECT_NEAR(chi2c, 0.92476475385348778, 1e-15);
 
 	chi2c=CStatistics::chi2_cdf(1.0, 15.0);
-	EXPECT_NEAR(chi2c, 0.00000025, 1e-7);
+	EXPECT_NEAR(chi2c, 2.5356443108232581e-07, 1e-15);
 }
 
 TEST(Statistics, fdistribution_cdf)
@@ -398,7 +579,6 @@ TEST(Statistics, fdistribution_cdf)
 	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
 }
 
-// TEST 1
 TEST(Statistics, log_det_general_test_1)
 {
 	// create a small test matrix, symmetric positive definite
@@ -419,7 +599,6 @@ TEST(Statistics, log_det_general_test_1)
 
 }
 
-// TEST 2
 TEST(Statistics, log_det_general_test_2)
 {
 	// create a fixed symmetric positive definite matrix

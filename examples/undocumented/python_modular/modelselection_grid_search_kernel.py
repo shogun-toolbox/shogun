@@ -126,9 +126,8 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 
 	best_combination.apply_to_machine(classifier)
 
-	# larger number of runs to have tighter confidence intervals
+	# larger number of runs to have less variance
 	cross.set_num_runs(10)
-	cross.set_conf_int_alpha(0.01)
 	result=cross.evaluate()
 	casted=CrossValidationResult.obtain_from_generic(result);
 	#print "result mean:", casted.mean
