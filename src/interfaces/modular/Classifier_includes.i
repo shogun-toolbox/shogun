@@ -23,10 +23,14 @@
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/machine/KernelMachine.h>
+#ifdef USE_GPL_SHOGUN
  #include <shogun/classifier/svm/SVMOcas.h>
+#endif //USE_GPL_SHOGUN
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/SGDQN.h>
+#ifdef USE_GPL_SHOGUN
  #include <shogun/classifier/svm/WDSVMOcas.h>
+#endif //USE_GPL_SHOGUN
  #include <shogun/classifier/PluginEstimate.h>
  #include <shogun/classifier/mkl/MKL.h>
  #include <shogun/classifier/mkl/MKLClassification.h>

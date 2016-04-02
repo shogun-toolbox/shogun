@@ -52,10 +52,14 @@
 %rename(SVM) CSVM;
 #endif
 %rename(SVMLin) CSVMLin;
+#ifdef USE_GPL_SHOGUN
 %rename(SVMOcas) CSVMOcas;
+#endif //USE_GPL_SHOGUN
 %rename(SVMSGD) CSVMSGD;
 %rename(SGDQN) CSGDQN;
+#ifdef USE_GPL_SHOGUN
 %rename(WDSVMOcas) CWDSVMOcas;
+#endif //USE_GPL_SHOGUN
 %rename(PluginEstimate) CPluginEstimate;
 %rename(MKL) CMKL;
 %rename(MKLClassification) CMKLClassification;
@@ -108,10 +112,14 @@
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
 %include <shogun/classifier/svm/SVMLin.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/SVMOcas.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/SGDQN.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/WDSVMOcas.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/classifier/PluginEstimate.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>
