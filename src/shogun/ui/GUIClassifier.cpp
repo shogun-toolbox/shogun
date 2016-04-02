@@ -335,6 +335,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMLin*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVMLin object\n")
 	}
+#ifdef USE_GPL_SHOGUN
 	else if (strncmp(name,"WDSVMOCAS", strlen("WDSVMOCAS"))==0)
 	{
 		SG_UNREF(classifier);
@@ -358,6 +359,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVM Ocas(OCAS) object\n")
 	}
+#endif //USE_GPL_SHOGUN
 	else if (strcmp(name,"SVMSGD")==0)
 	{
 		SG_UNREF(classifier);
@@ -365,6 +367,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMSGD*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVM SGD object\n")
 	}
+#ifdef USE_GPL_SHOGUN
 	else if (strcmp(name,"SVMBMRM")==0 || (strcmp(name,"SVMPERF")==0))
 	{
 		SG_UNREF(classifier);
@@ -376,6 +379,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVM Ocas(BMRM/PERF) object\n")
 	}
+#endif
 	else if (strcmp(name,"MKL_CLASSIFICATION")==0)
 	{
 		SG_UNREF(classifier);
@@ -747,15 +751,16 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 		SG_ERROR("LDA requires train features of class SIMPLE type REAL.\n")
 		((CLDA*) classifier)->set_gamma(gamma);
 	}
-
-	if (ctype==CT_SVMOCAS)
+	if (ctype==CT_SVMLIN)
+		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
+#ifdef USE_GPL_SHOGUN
+	else if (ctype==CT_SVMOCAS)
 		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+#endif
 #ifdef HAVE_LAPACK
 	else if (ctype==CT_LIBLINEAR)
 		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
 #endif
-	else if (ctype==CT_SVMLIN)
-		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 	else if (ctype==CT_SVMSGD)
 		((CSVMSGD*) classifier)->set_C(svm_C1, svm_C2);
 	else if (ctype==CT_LPM || ctype==CT_LPBOOST)
@@ -772,6 +777,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	return result;
 }
 
+#ifdef USE_GPL_SHOGUN
 bool CGUIClassifier::train_wdocas()
 {
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
@@ -795,6 +801,7 @@ bool CGUIClassifier::train_wdocas()
 
 	return result;
 }
+#endif //USE_GPL_SHOGUN
 
 bool CGUIClassifier::load(char* filename, char* type)
 {
@@ -1127,8 +1134,10 @@ CLabels* CGUIClassifier::classify()
 		case CT_LPBOOST:
 		case CT_LIBLINEAR:
 			return classify_linear();
+#ifdef USE_GPL_SHOGUN
 		case CT_WDSVMOCAS:
 			return classify_byte_linear();
+#endif
 		default:
 			SG_ERROR("unknown classifier type\n")
 			break;
@@ -1423,6 +1432,7 @@ CLabels* CGUIClassifier::classify_linear()
 	return classifier->apply();
 }
 
+#ifdef USE_GPL_SHOGUN
 CLabels* CGUIClassifier::classify_byte_linear()
 {
 	CFeatures* testfeatures=ui->ui_features->get_test_features();
@@ -1448,6 +1458,7 @@ CLabels* CGUIClassifier::classify_byte_linear()
 	SG_INFO("starting linear classifier testing\n")
 	return classifier->apply();
 }
+#endif //USE_GPL_SHOGUN
 
 bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 {

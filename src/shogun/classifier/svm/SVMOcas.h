@@ -9,6 +9,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef _SVMOCAS_H___
 #define _SVMOCAS_H___
 
@@ -234,3 +236,5 @@ class CSVMOcas : public CLinearMachine
 };
 }
 #endif
+
+#endif //USE_GPL_SHOGUN

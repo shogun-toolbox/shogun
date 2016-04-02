@@ -9,6 +9,8 @@
  * Copyright (C) 2009-2012 Vojtech Franc and Soeren Sonnenburg
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/multiclass/MulticlassOCAS.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
@@ -265,3 +267,5 @@ int CMulticlassOCAS::msvm_sort_data(float64_t* vals, float64_t* data, uint32_t s
 void CMulticlassOCAS::msvm_print(ocas_return_value_T value)
 {
 }
+
+#endif //USE_GPL_SHOGUN

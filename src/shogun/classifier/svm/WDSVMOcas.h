@@ -9,6 +9,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef _WDSVMOCAS_H___
 #define _WDSVMOCAS_H___
 
@@ -373,3 +375,5 @@ class CWDSVMOcas : public CMachine
 };
 }
 #endif
+
+#endif //USE_GPL_SHOGUN

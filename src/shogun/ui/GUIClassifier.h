@@ -219,8 +219,10 @@ class CGUIClassifier : public CSGObject
 		bool train_linear(float64_t gamma=0);
 		/** train sparse linear classifier */
 		bool train_sparse_linear();
+#ifdef USE_GPL_SHOGUN
 		/** train WD OCAS */
 		bool train_wdocas();
+#endif //USE_GPL_SHOGUN
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIClassifier"; }

@@ -5004,8 +5004,10 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_LIBLINEAR:
 			return ui_classifier->train_linear();
 
+#ifdef USE_GPL_SHOGUN
 		case CT_WDSVMOCAS:
 			return ui_classifier->train_wdocas();
+#endif
 
 		default:
 			SG_ERROR("Unknown classifier type %d.\n", type)
