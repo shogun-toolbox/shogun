@@ -3,6 +3,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
+#ifdef USE_GPL_SHOGUN
+
 using namespace shogun;
 
 #ifdef HAVE_LAPACK
@@ -52,3 +54,4 @@ TEST(MulticlassOCASTest,train)
   SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK
+#endif //USE_GPL_SHOGUN
