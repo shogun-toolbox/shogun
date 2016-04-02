@@ -7,6 +7,10 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 
 % svm ocas
 disp('SVMOcas')
+if (exist(SVMOcas) == 0)
+	disp('SVMOcas not available')
+	exit()
+endif
 
 realfeat=RealFeatures(fm_train_real);
 feats_train=SparseRealFeatures();
