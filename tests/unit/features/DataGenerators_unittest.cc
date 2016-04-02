@@ -20,7 +20,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example1)
 	float64_t distance=3;
 	float64_t epsilon=2;
 	float64_t angle=CMath::PI/4;
-	index_t num_samples=10000;
+	index_t num_samples=50000;
 
 	CGaussianBlobsDataGenerator* gen=new CGaussianBlobsDataGenerator(num_blobs,
 			distance, epsilon, angle);
@@ -50,8 +50,8 @@ TEST(GaussianBlobsDataGenerator,get_next_example1)
 	EXPECT_NEAR(cov(1,1), 1.5, accuracy);
 	
 	/* mean is supposed to do [0, 0] */
-	EXPECT_LE(CMath::abs(mean[0]-0), 0.1);
-	EXPECT_LE(CMath::abs(mean[1]-0), 0.1);
+	EXPECT_LE(CMath::abs(mean[0]-0), accuracy);
+	EXPECT_LE(CMath::abs(mean[1]-0), accuracy);
 	
 	SG_UNREF(gen);
 }
