@@ -41,7 +41,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example1)
 	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(samples);
 
     /* rougly ensures right results, if test fails, set a bit larger */
-    float64_t accuracy=1e-1;
+    float64_t accuracy=2e-1;
 
 	/* matrix is expected to look like [1.5, 0.5; 0.5, 1.5] */
 	EXPECT_NEAR(cov(0,0), 1.5, accuracy);
@@ -84,7 +84,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example2)
 	SGMatrix<float64_t> cov2=CStatistics::covariance_matrix(samples2);
 
     /* rougly ensures right results, if test fails, set a bit larger */
-    float64_t accuracy=1e-1;
+    float64_t accuracy=2e-1;
 
 	/* matrix is expected to look like [7.55, 0.55; 0.55, 7.55] */
 	EXPECT_NEAR(cov2(0,0), 7.55, accuracy);
