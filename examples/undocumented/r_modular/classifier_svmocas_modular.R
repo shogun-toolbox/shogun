@@ -6,7 +6,7 @@ label_train_twoclass <- as.double(read.table('../data/label_train_twoclass.dat')
 
 # svm ocas
 print('SVMOcas')
-if exists(SVMOcas)==FALSE {
+if exists('SVMOcas')==FALSE {
 	print('SVMOcas not available')
 	quit()
 }
