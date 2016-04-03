@@ -60,6 +60,7 @@ void StreamingDataFetcher::start()
 	{
 		m_samples->start_parser();
 		parser_running = true;
+		// TODO check if resetting the stream is required
 	}
 }
 

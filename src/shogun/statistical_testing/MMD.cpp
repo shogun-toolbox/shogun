@@ -49,6 +49,9 @@ struct CMMD::Self
 	void create_statistic_job(index_t Bx);
 	void create_variance_job();
 
+	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&);
+	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*);
+
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	SGVector<float64_t> sample_null();
 
@@ -115,6 +118,47 @@ void CMMD::Self::create_variance_job()
 	};
 }
 
+void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_ptr<CFeatures>>& blocks)
+{
+	blocks.resize(next_burst.num_blocks());
+
+#pragma omp parallel for
+	for (size_t i = 0; i < blocks.size(); ++i)
+	{
+		auto block_p = next_burst[0][i];
+		auto block_q = next_burst[1][i];
+
+		auto block_p_q = block_p->create_merged_copy(block_q.get());
+		SG_REF(block_p_q);
+
+		block_p = nullptr;
+		block_q = nullptr;
+
+		blocks[i] = std::shared_ptr<CFeatures>(block_p_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
+	}
+}
+
+void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel)
+{
+	cm.num_data(blocks.size());
+
+#pragma omp parallel for
+	for (size_t i = 0; i < blocks.size(); ++i)
+	{
+		try
+		{
+			auto kernel_clone = std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
+			kernel_clone->init(blocks[i].get(), blocks[i].get());
+			cm.data(i) = std::unique_ptr<CCustomKernel>(new CCustomKernel(kernel_clone.get()))->get_kernel_matrix();
+			kernel_clone->remove_lhs_and_rhs();
+		}
+		catch (ShogunException e)
+		{
+			SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
+		}
+	}
+}
+
 std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 {
 	DataManager& dm = owner.get_data_manager();
@@ -139,39 +183,8 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	while (!next_burst.empty())
 	{
-		cm.num_data(next_burst.num_blocks());
-		blocks.resize(next_burst.num_blocks());
-
-#pragma omp parallel for
-		for (size_t i = 0; i < blocks.size(); ++i)
-		{
-			auto block_p = next_burst[0][i];
-			auto block_q = next_burst[1][i];
-
-			auto block_p_q = block_p->create_merged_copy(block_q.get());
-			SG_REF(block_p_q);
-
-			block_p = nullptr;
-			block_q = nullptr;
-
-			blocks[i] = std::shared_ptr<CFeatures>(block_p_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
-		}
-
-#pragma omp parallel for
-		for (size_t i = 0; i < blocks.size(); ++i)
-		{
-			try
-			{
-				auto kernel_clone = std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
-				kernel_clone->init(blocks[i].get(), blocks[i].get());
-				cm.data(i) = std::unique_ptr<CCustomKernel>(new CCustomKernel(kernel_clone.get()))->get_kernel_matrix();
-				kernel_clone->remove_lhs_and_rhs();
-			}
-			catch (ShogunException e)
-			{
-				SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
-			}
-		}
+		merge_samples(next_burst, blocks);
+		compute_kernel(cm, blocks, kernel);
 
 		// enqueue statistic and variance computation jobs on the computed kernel matrices
 		cm.enqueue_job(statistic_job);
@@ -254,39 +267,8 @@ SGVector<float64_t> CMMD::Self::sample_null()
 
 	while (!next_burst.empty())
 	{
-		cm.num_data(next_burst.num_blocks());
-		blocks.resize(next_burst.num_blocks());
-
-#pragma omp parallel for
-		for (size_t i = 0; i < blocks.size(); ++i)
-		{
-			auto block_p = next_burst[0][i];
-			auto block_q = next_burst[1][i];
-
-			auto block_p_q = block_p->create_merged_copy(block_q.get());
-			SG_REF(block_p_q);
-
-			block_p = nullptr;
-			block_q = nullptr;
-
-			blocks[i] = std::shared_ptr<CFeatures>(block_p_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
-		}
-
-#pragma omp parallel for
-		for (size_t i = 0; i < blocks.size(); ++i)
-		{
-			try
-			{
-				auto kernel_clone = std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
-				kernel_clone->init(blocks[i].get(), blocks[i].get());
-				cm.data(i) = std::unique_ptr<CCustomKernel>(new CCustomKernel(kernel_clone.get()))->get_kernel_matrix();
-				kernel_clone->remove_lhs_and_rhs();
-			}
-			catch (ShogunException e)
-			{
-				SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
-			}
-		}
+		merge_samples(next_burst, blocks);
+		compute_kernel(cm, blocks, kernel);
 
 		cm.enqueue_job(permutation_job);
 
