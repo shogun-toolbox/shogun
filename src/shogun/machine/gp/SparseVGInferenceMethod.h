@@ -34,6 +34,8 @@
 #ifndef CSPARSEVGINFERENCEMETHOD_H
 #define CSPARSEVGINFERENCEMETHOD_H
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 
@@ -262,3 +264,5 @@ private:
 };
 }
 #endif /* CSPARSEVGINFERENCEMETHOD_H */
+
+#endif //USE_GPL_SHOGUN

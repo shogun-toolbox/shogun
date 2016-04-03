@@ -35,6 +35,8 @@
  * International Conference on Artificial Intelligence and Statistics. 2009.
  *
  */
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/machine/gp/SparseVGInferenceMethod.h>
 
 
@@ -432,3 +434,4 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
 	}
 	return result;
 }
+#endif //USE_GPL_SHOGUN

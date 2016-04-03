@@ -29,6 +29,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
 
@@ -428,3 +430,4 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	return result;
 }
 
+#endif //USE_GPL_SHOGUN

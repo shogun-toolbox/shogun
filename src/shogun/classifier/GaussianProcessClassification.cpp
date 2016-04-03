@@ -35,6 +35,8 @@
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 
@@ -235,3 +237,4 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 	return p;
 }
 
+#endif //USE_GPL_SHOGUN

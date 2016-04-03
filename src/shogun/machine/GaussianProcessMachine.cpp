@@ -35,6 +35,8 @@
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 
@@ -254,3 +256,4 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	return s2;
 }
 
+#endif //USE_GPL_SHOGUN
