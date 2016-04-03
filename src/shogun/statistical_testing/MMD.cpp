@@ -51,6 +51,7 @@ struct CMMD::Self
 
 	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&) const;
 	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*) const;
+	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	SGVector<float64_t> sample_null();
@@ -118,6 +119,8 @@ void CMMD::Self::create_variance_job()
 	};
 }
 
+#define get_block_p(i) next_burst[0][i]
+#define get_block_q(i) next_burst[1][i]
 void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_ptr<CFeatures>>& blocks) const
 {
 	blocks.resize(next_burst.num_blocks());
@@ -125,18 +128,20 @@ void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_
 #pragma omp parallel for
 	for (size_t i = 0; i < blocks.size(); ++i)
 	{
-		auto block_p = next_burst[0][i];
-		auto block_q = next_burst[1][i];
+		auto block_p = get_block_p(i);
+		auto block_q = get_block_q(i);
 
-		auto block_p_q = block_p->create_merged_copy(block_q.get());
-		SG_REF(block_p_q);
+		auto block_p_and_q = block_p->create_merged_copy(block_q.get());
+		SG_REF(block_p_and_q);
 
 		block_p = nullptr;
 		block_q = nullptr;
 
-		blocks[i] = std::shared_ptr<CFeatures>(block_p_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
+		blocks[i] = std::shared_ptr<CFeatures>(block_p_and_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
 	}
 }
+#undef get_block_p
+#undef get_block_q
 
 void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel) const
 {
@@ -156,6 +161,18 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_
 		{
 			SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
 		}
+	}
+}
+
+void CMMD::Self::compute_jobs(ComputationManager& cm) const
+{
+	if (use_gpu_for_computation)
+	{
+		cm.use_gpu().compute();
+	}
+	else
+	{
+		cm.use_cpu().compute();
 	}
 }
 
@@ -189,15 +206,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
-
-		if (use_gpu_for_computation)
-		{
-			cm.use_gpu().compute();
-		}
-		else
-		{
-			cm.use_cpu().compute();
-		}
+		compute_jobs(cm);
 
 		auto mmds = cm.next_result();
 		auto vars = cm.next_result();
@@ -275,17 +284,8 @@ SGVector<float64_t> CMMD::Self::sample_null()
 
 		for (auto j = 0; j < num_null_samples; ++j)
 		{
-			if (use_gpu_for_computation)
-			{
-				cm.use_gpu().compute();
-			}
-			else
-			{
-				cm.use_cpu().compute();
-			}
-
+			compute_jobs(cm);
 			auto mmds = cm.next_result();
-
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = mmds[i] - statistic[j];
