@@ -31,6 +31,8 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
+#ifdef USE_GPL_SHOGUN
+ 
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LINALG_LIB
@@ -3703,3 +3705,5 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 
 #endif /* HAVE_LINALG_LIB */
 
+
+#endif //USE_GPL_SHOGUN

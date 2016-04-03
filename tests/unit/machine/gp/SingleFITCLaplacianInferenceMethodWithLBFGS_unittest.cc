@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+ 
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
 
@@ -450,3 +452,4 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 }
 
 #endif /* HAVE_LINALG_LIB */
+#endif //USE_GPL_SHOGUN

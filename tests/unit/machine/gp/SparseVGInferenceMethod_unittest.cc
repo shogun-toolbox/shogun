@@ -29,6 +29,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -331,3 +333,5 @@ TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_fea
 	SG_UNREF(inf);
 }
 #endif /* HAVE_LINALG_LIB */
+
+#endif //USE_GPL_SHOGUN

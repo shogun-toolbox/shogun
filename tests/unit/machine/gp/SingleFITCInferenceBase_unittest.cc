@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
 
@@ -210,3 +211,5 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	SG_UNREF(inf);
 }
 #endif /* HAVE_LINALG_LIB */
+
+#endif //USE_GPL_SHOGUN

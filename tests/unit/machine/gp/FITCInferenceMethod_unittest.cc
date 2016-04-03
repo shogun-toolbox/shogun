@@ -30,6 +30,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -1062,3 +1064,5 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 }
 
 #endif /* HAVE_LINALG_LIB */
+
+#endif //USE_GPL_SHOGUN

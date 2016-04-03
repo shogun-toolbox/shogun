@@ -29,6 +29,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 #if defined(HAVE_LINALG_LIB)
@@ -471,3 +473,4 @@ TEST(SingleFITCLaplacianInferenceMethod,get_marginal_likelihood_derivatives)
 }
 
 #endif /* HAVE_LINALG_LIB */
+#endif //USE_GPL_SHOGUN
