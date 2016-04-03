@@ -22,6 +22,11 @@ add_custom_target(meta_examples
 # Collect all meta example listings and store in variable
 FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
 
+# temporary hack to exclude certain meta examples that have dependencies
+IF(NOT HAVE_NLOPT)
+	LIST(REMOVE_ITEM META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/gaussian_processes/gaussian_process_regression.sg)
+ENDIF()
+
 # run the Python generator tests
 IF(ENABLE_TESTING)
     find_program(NOSETESTS nosetests)
