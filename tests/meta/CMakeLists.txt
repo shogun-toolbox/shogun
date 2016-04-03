@@ -43,6 +43,16 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	get_filename_component(REL_DIR ${FULL_DIR} NAME)
 	set(NAME_WITH_DIR "${REL_DIR}-${NAME}")
 
+	# get list of meta examples that can be built and skip test if if cannot
+	INCLUDE(FindMetaExamples)
+	find_meta_examples()
+
+	list(FIND META_EXAMPLES ${CMAKE_SOURCE_DIR}/examples/meta/src/${REL_DIR}/${NAME}.sg LISTING_INDEX)
+	IF(${LISTING_INDEX} EQUAL -1)
+		MESSAGE(WARNING "Skipping integration test for meta example ${REL_DIR}/${NAME}.sg")
+		CONTINUE()
+	ENDIF()
+
 	# cpp
 	# TODO implement other languages tests
 	IF(HAVE_CXX0X OR HAVE_CXX11)

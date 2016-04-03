@@ -3,7 +3,6 @@
 #include <shogun/lib/WrappedObjectArray.h>
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 using namespace shogun;
@@ -28,14 +27,6 @@ int main(int argc, const char *argv[])
     string fname_full_reference = os.str();
     
     init_shogun_with_defaults();
-
-    // warn, but not fail, if generated file is not available
-    ifstream file(fname_full_generated);
-	if (!file)
-	{
-		SG_SWARNING("Skipping test for %s\n", fname_full_generated.c_str());
-		return 0;
-	}
 
     CSerializableAsciiFile* f = new CSerializableAsciiFile(fname_full_generated.c_str(), 'r');
     CSerializableAsciiFile* f_ref = new CSerializableAsciiFile(fname_full_reference.c_str(), 'r');

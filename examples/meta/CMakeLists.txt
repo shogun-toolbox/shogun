@@ -19,13 +19,9 @@ add_custom_target(meta_examples
     COMMENT "Generating examples from meta-language"
     DEPENDS ctags)
 
-# Collect all meta example listings and store in variable
-FILE(GLOB_RECURSE META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.sg)
-
-# temporary hack to exclude certain meta examples that have dependencies
-IF(NOT HAVE_NLOPT)
-	LIST(REMOVE_ITEM META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/gaussian_processes/gaussian_process_regression.sg)
-ENDIF()
+# get list of meta examples that can be built
+INCLUDE(FindMetaExamples)
+find_meta_examples()
 
 # run the Python generator tests
 IF(ENABLE_TESTING)
