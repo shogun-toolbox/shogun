@@ -29,6 +29,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef NLOPTMINIMIZER_H
 #define NLOPTMINIMIZER_H
 #include <shogun/optimization/FirstOrderMinimizer.h>
@@ -133,3 +135,5 @@ private:
 
 }
 #endif /* NLOPTMINIMIZER_H */
+
+#endif //USE_GPL_SHOGUN

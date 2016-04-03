@@ -20,7 +20,9 @@
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
 %rename(RandomSearchModelSelection) CRandomSearchModelSelection;
+#ifdef USE_GPL_SHOGUN
 %rename(GradientModelSelection) CGradientModelSelection;
+#endif //USE_GPL_SHOGUN
 %rename(ModelSelectionBase) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 %rename(ParameterCombination) CParameterCombination;
@@ -30,4 +32,6 @@
 %include <shogun/modelselection/RandomSearchModelSelection.h>
 %include <shogun/modelselection/ParameterCombination.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/modelselection/GradientModelSelection.h>
+#endif //USE_GPL_SHOGUN

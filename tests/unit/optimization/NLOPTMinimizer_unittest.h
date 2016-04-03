@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+ #ifdef USE_GPL_SHOGUN
+ 
 #include <shogun/lib/config.h>
 #ifdef HAVE_NLOPT
 #ifndef NLOPTMINIMIZER_UNITTEST_H
@@ -81,3 +83,4 @@ private:
 
 #endif /*  NLOPTMINIMIZER_UNITTEST_H */
 #endif /*  HAVE_NLOPT */
+#endif //USE_GPL_SHOGUN

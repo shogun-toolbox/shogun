@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef CGRADIENTMODELSELECTION_H_
 #define CGRADIENTMODELSELECTION_H_
 
@@ -103,3 +105,5 @@ protected:
 }
 #endif /* HAVE_NLOPT */
 #endif /* CGRADIENTMODELSELECTION_H_ */
+
+#endif //USE_GPL_SHOGUN
