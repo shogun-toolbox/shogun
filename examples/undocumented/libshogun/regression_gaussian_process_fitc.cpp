@@ -7,6 +7,8 @@
  * Written (W) 2012 Jacob Walker
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 // temporally disabled, since API was changed
@@ -222,3 +224,5 @@ int main(int argc, char **argv)
 	return 0;
 }
 #endif
+
+#endif //USE_GPL_SHOGUN
