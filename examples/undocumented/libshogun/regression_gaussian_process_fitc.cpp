@@ -225,4 +225,9 @@ int main(int argc, char **argv)
 }
 #endif
 
+#else //USE_GPL_SHOGUN
+int main(int argc, char** argv)
+{
+	return 0;
+}
 #endif //USE_GPL_SHOGUN

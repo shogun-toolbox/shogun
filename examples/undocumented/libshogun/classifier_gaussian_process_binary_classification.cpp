@@ -119,5 +119,9 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-
+#else //USE_GPL_SHOGUN
+int main(int argc, char** argv)
+{
+	return 0;
+}
 #endif //USE_GPL_SHOGUN
