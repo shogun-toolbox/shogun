@@ -45,9 +45,10 @@ struct CMMD::Self
 {
 	Self(CMMD& cmmd);
 
-	void create_computation_jobs(index_t Bx);
-	void create_statistic_job(index_t Bx);
+	void create_statistic_job();
 	void create_variance_job();
+
+	void create_computation_jobs();
 
 	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&) const;
 	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*) const;
@@ -79,14 +80,16 @@ CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 {
 }
 
-void CMMD::Self::create_computation_jobs(index_t Bx)
+void CMMD::Self::create_computation_jobs()
 {
-	create_statistic_job(Bx);
+	create_statistic_job();
 	create_variance_job();
 }
 
-void CMMD::Self::create_statistic_job(index_t Bx)
+void CMMD::Self::create_statistic_job()
 {
+	const DataManager& dm = owner.get_data_manager();
+	auto Bx = dm.blocksize_at(0);
 	switch (statistic_type)
 	{
 		case EStatisticType::UNBIASED_FULL:
@@ -178,29 +181,26 @@ void CMMD::Self::compute_jobs(ComputationManager& cm) const
 
 std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 {
-	DataManager& dm = owner.get_data_manager();
 	const KernelManager& km = owner.get_kernel_manager();
+	auto kernel = km.kernel_at(0);
+	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	float64_t statistic = 0;
 	float64_t permuted_samples_statistic = 0;
 	float64_t variance = 0;
+	index_t term_counter = 1;
 
-	auto kernel = km.kernel_at(0);
-	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
-
-	index_t term_counters = 1;
-
-	dm.start();
-	auto next_burst = dm.next();
-
-	create_computation_jobs(owner.get_data_manager().blocksize_at(0));
-
+	DataManager& dm = owner.get_data_manager();
 	ComputationManager cm;
-	// enqueue statistic and variance computation jobs on the computed kernel matrices
+
+	create_computation_jobs();
 	cm.enqueue_job(statistic_job);
 	cm.enqueue_job(variance_job);
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
+
+	dm.start();
+	auto next_burst = dm.next();
 
 	while (!next_burst.empty())
 	{
@@ -214,7 +214,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 		for (size_t i = 0; i < mmds.size(); ++i)
 		{
 			auto delta = mmds[i] - statistic;
-			statistic += delta / term_counters;
+			statistic += delta / term_counter;
 		}
 
 		if (variance_estimation_method == EVarianceEstimationMethod::DIRECT)
@@ -222,7 +222,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = vars[i] - variance;
-				variance += delta / term_counters;
+				variance += delta / term_counter;
 			}
 		}
 		else
@@ -230,12 +230,12 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = vars[i] - permuted_samples_statistic;
-				permuted_samples_statistic += delta / term_counters;
+				permuted_samples_statistic += delta / term_counter;
 				variance += delta * (vars[i] - permuted_samples_statistic);
 			}
 		}
-		term_counters++;
 
+		term_counter++;
 		next_burst = dm.next();
 	}
 
@@ -255,27 +255,25 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 SGVector<float64_t> CMMD::Self::sample_null()
 {
-	DataManager& dm = owner.get_data_manager();
 	const KernelManager& km = owner.get_kernel_manager();
-
-	SGVector<float64_t> statistic(num_null_samples);
-	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
-
 	auto kernel = km.kernel_at(0);
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
-	std::vector<index_t> term_counters(num_null_samples);
-	std::fill(term_counters.data(), term_counters.data() + term_counters.size(), 1);
+	SGVector<float64_t> statistic(num_null_samples);
+	index_t term_counter = 1;
 
-	dm.start();
-	auto next_burst = dm.next();
+	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
 
-	create_statistic_job(owner.get_data_manager().blocksize_at(0));
-
+	DataManager& dm = owner.get_data_manager();
 	ComputationManager cm;
+
+	create_statistic_job();
 	cm.enqueue_job(permutation_job);
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
+
+	dm.start();
+	auto next_burst = dm.next();
 
 	while (!next_burst.empty())
 	{
@@ -289,12 +287,11 @@ SGVector<float64_t> CMMD::Self::sample_null()
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = mmds[i] - statistic[j];
-				statistic[j] += delta / term_counters[j];
+				statistic[j] += delta / term_counter;
 			}
-
-			term_counters[j]++;
 		}
 
+		term_counter++;
 		next_burst = dm.next();
 	}
 
