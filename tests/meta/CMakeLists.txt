@@ -48,23 +48,24 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	find_meta_examples()
 
 	list(FIND META_EXAMPLES ${CMAKE_SOURCE_DIR}/examples/meta/src/${REL_DIR}/${NAME}.sg LISTING_INDEX)
+	# continue keyword is not available in older cmake versions (not documented!!!)
+	# so use if-then-else
 	IF(${LISTING_INDEX} EQUAL -1)
 		MESSAGE(WARNING "Skipping integration test for meta example ${REL_DIR}/${NAME}.sg")
-		CONTINUE()
-	ENDIF()
-
-	# cpp
-	# TODO implement other languages tests
-	IF(HAVE_CXX0X OR HAVE_CXX11)
-	    add_test(NAME integration_meta_cpp-${NAME_WITH_DIR}
-		    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		    COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat cpp generated_results reference_results)
-	    set_tests_properties(
-		    integration_meta_cpp-${NAME_WITH_DIR}
-			    PROPERTIES
-			    DEPENDS generated_cpp-${NAME}
-	    )
 	ELSE()
-	    MESSAGE(WARNING "Skipping C++ meta integration tests; requires a c++11 compatible compiler.")
+		# cpp
+		# TODO implement other languages tests
+		IF(HAVE_CXX0X OR HAVE_CXX11)
+			add_test(NAME integration_meta_cpp-${NAME_WITH_DIR}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat cpp generated_results reference_results)
+			set_tests_properties(
+				integration_meta_cpp-${NAME_WITH_DIR}
+					PROPERTIES
+					DEPENDS generated_cpp-${NAME}
+			)
+		ELSE()
+			MESSAGE(WARNING "Skipping C++ meta integration tests; requires a c++11 compatible compiler.")
+		ENDIF()
 	ENDIF()
 ENDFOREACH()
