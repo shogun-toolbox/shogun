@@ -7,6 +7,8 @@
  * Written (W) 2012 Jacob Walker
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 #if defined(HAVE_NLOPT)
 #include <shogun/base/init.h>
@@ -310,3 +312,10 @@ int main(int argc, char **argv)
 	return 0;
 }
 #endif
+
+#else //USE_GPL_SHOGUN
+int main(int argc, char **argv)
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN
