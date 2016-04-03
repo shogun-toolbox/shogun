@@ -7,6 +7,8 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 #include <shogun/labels/RegressionLabels.h>
@@ -70,3 +72,10 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
+
+#else //USE_GPL_SHOGUN
+int main(int argc, char** argv)
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN
