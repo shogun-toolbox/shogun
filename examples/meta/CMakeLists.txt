@@ -23,11 +23,6 @@ add_custom_target(meta_examples
 INCLUDE(FindMetaExamples)
 find_meta_examples()
 
-# temporary hack to exclude certain meta examples that have dependencies
-IF(NOT USE_GPL_SHOGUN)
-	LIST(REMOVE_ITEM META_EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/src/gaussian_processes/gaussian_process_regression.sg)
-ENDIF()
-
 # run the Python generator tests
 IF(ENABLE_TESTING)
     find_program(NOSETESTS nosetests)
