@@ -45,7 +45,7 @@ float64_t UnbiasedIncomplete::operator()(SGMatrix<float64_t> km)
 	Block& b_xy = map.block(n, 0, n, n);
 	auto term_3 = b_xy.sum() - b_xy.diagonal().sum();
 
-	auto statistic = term_1/n/(n-1) + term_2/n/(n-1) - 2*term_3/n/n;
+	auto statistic = term_1/n/(n-1) + term_2/n/(n-1) - 2*term_3/n/(n-1);
 
 	return statistic;
 

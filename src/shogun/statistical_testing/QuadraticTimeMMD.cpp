@@ -442,7 +442,7 @@ SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
 	SGMatrix<float64_t> precomputed_km=self->get_kernel_matrix();
-	SGMatrix<float64_t> K(precomputed_km.matrix, precomputed_km.num_rows, precomputed_km.num_cols);
+	SGMatrix<float64_t> K(precomputed_km.num_rows, precomputed_km.num_cols);
 	std::copy(precomputed_km.matrix, precomputed_km.matrix+precomputed_km.num_rows*precomputed_km.num_cols, K.matrix);
 
 	/* center matrix K=H*K*H */
