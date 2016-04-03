@@ -188,7 +188,8 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	float64_t statistic = 0;
 	float64_t permuted_samples_statistic = 0;
 	float64_t variance = 0;
-	index_t term_counter = 1;
+	index_t statistic_term_counter = 1;
+	index_t variance_term_counter = 1;
 
 	DataManager& dm = owner.get_data_manager();
 	ComputationManager cm;
@@ -214,7 +215,8 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 		for (size_t i = 0; i < mmds.size(); ++i)
 		{
 			auto delta = mmds[i] - statistic;
-			statistic += delta / term_counter;
+			statistic += delta / statistic_term_counter;
+			statistic_term_counter++;
 		}
 
 		if (variance_estimation_method == EVarianceEstimationMethod::DIRECT)
@@ -222,20 +224,20 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = vars[i] - variance;
-				variance += delta / term_counter;
+				variance += delta / variance_term_counter;
+				variance_term_counter++;
 			}
 		}
 		else
 		{
-			for (size_t i = 0; i < mmds.size(); ++i)
+			for (size_t i = 0; i < vars.size(); ++i)
 			{
 				auto delta = vars[i] - permuted_samples_statistic;
-				permuted_samples_statistic += delta / term_counter;
+				permuted_samples_statistic += delta / variance_term_counter;
 				variance += delta * (vars[i] - permuted_samples_statistic);
+				variance_term_counter++;
 			}
 		}
-
-		term_counter++;
 		next_burst = dm.next();
 	}
 
@@ -260,9 +262,10 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
-	index_t term_counter = 1;
+	std::vector<index_t> term_counters(num_null_samples);
 
 	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
+	std::fill(term_counters.data(), term_counters.data() + term_counters.size(), 1);
 
 	DataManager& dm = owner.get_data_manager();
 	ComputationManager cm;
@@ -287,11 +290,10 @@ SGVector<float64_t> CMMD::Self::sample_null()
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = mmds[i] - statistic[j];
-				statistic[j] += delta / term_counter;
+				statistic[j] += delta / term_counters[j];
+				term_counters[j]++;
 			}
 		}
-
-		term_counter++;
 		next_burst = dm.next();
 	}
 
