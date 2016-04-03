@@ -41,7 +41,7 @@
 using namespace shogun;
 using namespace internal;
 
-TEST(DataManager, whole_data_one_distribution_normal_feats)
+TEST(DataManager, full_data_one_distribution_normal_feats)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -71,7 +71,7 @@ TEST(DataManager, whole_data_one_distribution_normal_feats)
 	mgr.end();
 }
 
-TEST(DataManager, whole_data_one_distribution_streaming_feats)
+TEST(DataManager, full_data_one_distribution_streaming_feats)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -104,7 +104,7 @@ TEST(DataManager, whole_data_one_distribution_streaming_feats)
 	mgr.end();
 }
 
-TEST(DataManager, whole_data_two_distributions_normal_feats)
+TEST(DataManager, full_data_two_distributions_normal_feats)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -142,7 +142,7 @@ TEST(DataManager, whole_data_two_distributions_normal_feats)
 	ASSERT_TRUE(next_burst.empty());
 }
 
-TEST(DataManager, whole_data_two_distributions_streaming_feats)
+TEST(DataManager, full_data_two_distributions_streaming_feats)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
