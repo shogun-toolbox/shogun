@@ -53,7 +53,7 @@ public:
 private:
 	bool gpu;
 	std::vector<SGMatrix<float64_t>> kernel_matrices;
-	std::queue<std::function<float64_t(SGMatrix<float64_t>)>> jobq;
+	std::vector<std::function<float64_t(SGMatrix<float64_t>)>> jobq;
 	std::queue<std::vector<float64_t>> resultq;
 };
 

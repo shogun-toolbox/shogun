@@ -43,13 +43,14 @@ SGMatrix<float64_t>& ComputationManager::data(index_t i)
 
 void ComputationManager::enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job)
 {
-	jobq.push(job);
+	jobq.push_back(job);
 }
 
 void ComputationManager::compute()
 {
-	while (!jobq.empty())
+	for(auto job = jobq.begin(); job != jobq.end(); ++job)
 	{
+		const auto& operation = *job;
 		std::vector<float64_t> results;
 		if (gpu)
 		{
@@ -61,7 +62,6 @@ void ComputationManager::compute()
 #pragma omp parallel for
 			for (size_t i = 0; i < kernel_matrices.size(); ++i)
 			{
-				const auto& operation = jobq.front();
 				results[i] = operation(kernel_matrices[i]);
 			}
 		}
@@ -71,10 +71,7 @@ void ComputationManager::compute()
 
 void ComputationManager::done()
 {
-	while (!jobq.empty())
-	{
-		jobq.pop();
-	}
+	jobq.resize(0);
 }
 
 std::vector<float64_t> ComputationManager::next_result()

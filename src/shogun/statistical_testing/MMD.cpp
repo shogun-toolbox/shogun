@@ -47,7 +47,6 @@ struct CMMD::Self
 
 	void create_statistic_job();
 	void create_variance_job();
-
 	void create_computation_jobs();
 
 	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&) const;
@@ -59,7 +58,7 @@ struct CMMD::Self
 
 	CMMD& owner;
 
-	bool use_gpu_for_computation;
+	bool use_gpu;
 	index_t num_null_samples;
 
 	EStatisticType statistic_type;
@@ -72,7 +71,7 @@ struct CMMD::Self
 };
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
-	use_gpu_for_computation(false), num_null_samples(250),
+	use_gpu(false), num_null_samples(250),
 	statistic_type(EStatisticType::UNBIASED_FULL),
 	variance_estimation_method(EVarianceEstimationMethod::DIRECT),
 	null_approximation_method(ENullApproximationMethod::PERMUTATION),
@@ -169,7 +168,7 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_
 
 void CMMD::Self::compute_jobs(ComputationManager& cm) const
 {
-	if (use_gpu_for_computation)
+	if (use_gpu)
 	{
 		cm.use_gpu().compute();
 	}
@@ -345,7 +344,12 @@ const index_t CMMD::get_num_null_samples() const
 
 void CMMD::use_gpu(bool gpu)
 {
-	self->use_gpu_for_computation = gpu;
+	self->use_gpu = gpu;
+}
+
+bool CMMD::use_gpu() const
+{
+	return self->use_gpu;
 }
 
 void CMMD::set_statistic_type(EStatisticType stype)

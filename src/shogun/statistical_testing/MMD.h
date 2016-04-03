@@ -70,7 +70,7 @@ public:
 	CKernel* get_kernel() const;
 */
 	virtual float64_t compute_statistic() override;
-	float64_t compute_variance();
+	virtual float64_t compute_variance();
 
 	void set_statistic_type(EStatisticType stype);
 	const EStatisticType get_statistic_type() const;
@@ -93,6 +93,7 @@ protected:
 	virtual const operation get_direct_estimation_method() const = 0;
 	virtual const float64_t normalize_statistic(float64_t statistic) const = 0;
 	virtual const float64_t normalize_variance(float64_t variance) const = 0;
+	bool use_gpu() const;
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
