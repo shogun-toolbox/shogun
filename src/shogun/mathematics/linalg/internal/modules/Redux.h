@@ -37,6 +37,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
 #include <shogun/mathematics/linalg/internal/implementation/MeanEigen3.h>
+#include <shogun/mathematics/linalg/internal/implementation/Cholesky.h>
 
 namespace shogun
 {
@@ -201,7 +202,7 @@ typename implementation::int2float<typename Vector::Scalar>::floatType mean(Vect
  * with generic dense vectors
  *
  * @param a matrix whose mean has to be computed
- * @param no_diag if true, diagonal entries are excluded from the mean (default - false) 
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
  * @return the matrix mean \f$\1/N^2 \sum_{i,j=1}^N m_{i,j}\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
@@ -209,6 +210,18 @@ typename implementation::int2float<typename Matrix::Scalar>
 			::floatType mean(Matrix m, bool no_diag)
 {
 	return implementation::mean<backend,Matrix>::compute(m, no_diag);
+}
+
+/**Wrapper method for internal implementation of cholesky decomposition of a Hermitian positive definite matrix
+*
+* @param A - the matrix whose cholesky decomposition is to be computed
+* @param lower - (bool): whether to compute the upper or lower triangular Cholesky factorization (default:lower)
+* @return the upper or lower triangular Cholesky factorization \f$A = L L^{*}\f$ or \f$A = U^{*} U\f$
+*/
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename implementation::cholesky<backend,Matrix>::ReturnType cholesky(Matrix m, bool lower=true)
+{
+	return implementation::cholesky<backend,Matrix>::compute(m, lower);
 }
 
 #endif // HAVE_LINALG_LIB
