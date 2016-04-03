@@ -49,8 +49,8 @@ struct CMMD::Self
 	void create_statistic_job(index_t Bx);
 	void create_variance_job();
 
-	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&);
-	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*);
+	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&) const;
+	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	SGVector<float64_t> sample_null();
@@ -118,7 +118,7 @@ void CMMD::Self::create_variance_job()
 	};
 }
 
-void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_ptr<CFeatures>>& blocks)
+void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_ptr<CFeatures>>& blocks) const
 {
 	blocks.resize(next_burst.num_blocks());
 
@@ -138,7 +138,7 @@ void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_
 	}
 }
 
-void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel)
+void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel) const
 {
 	cm.num_data(blocks.size());
 
@@ -173,11 +173,15 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	index_t term_counters = 1;
 
-	ComputationManager cm;
 	dm.start();
 	auto next_burst = dm.next();
 
 	create_computation_jobs(owner.get_data_manager().blocksize_at(0));
+
+	ComputationManager cm;
+	// enqueue statistic and variance computation jobs on the computed kernel matrices
+	cm.enqueue_job(statistic_job);
+	cm.enqueue_job(variance_job);
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
@@ -185,10 +189,6 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
-
-		// enqueue statistic and variance computation jobs on the computed kernel matrices
-		cm.enqueue_job(statistic_job);
-		cm.enqueue_job(variance_job);
 
 		if (use_gpu_for_computation)
 		{
@@ -231,6 +231,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	}
 
 	dm.end();
+	cm.done();
 
 	// normalize statistic and variance
 	statistic = owner.normalize_statistic(statistic);
@@ -257,11 +258,13 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	std::vector<index_t> term_counters(num_null_samples);
 	std::fill(term_counters.data(), term_counters.data() + term_counters.size(), 1);
 
-	ComputationManager cm;
 	dm.start();
 	auto next_burst = dm.next();
 
 	create_statistic_job(owner.get_data_manager().blocksize_at(0));
+
+	ComputationManager cm;
+	cm.enqueue_job(permutation_job);
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
@@ -269,8 +272,6 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
-
-		cm.enqueue_job(permutation_job);
 
 		for (auto j = 0; j < num_null_samples; ++j)
 		{
@@ -298,6 +299,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	}
 
 	dm.end();
+	cm.done();
 
 	// normalize statistic
 	std::for_each(statistic.vector, statistic.vector + statistic.vlen, [this](float64_t& value)

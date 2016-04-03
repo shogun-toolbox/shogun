@@ -42,6 +42,7 @@ public:
 	SGMatrix<float64_t>& data(index_t i);
 
 	void enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job);
+	void done();
 
 	void compute();
 

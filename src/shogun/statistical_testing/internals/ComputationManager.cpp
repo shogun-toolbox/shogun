@@ -59,13 +59,20 @@ void ComputationManager::compute()
 		{
 			results.resize(kernel_matrices.size());
 #pragma omp parallel for
-			for (auto i = 0; i < kernel_matrices.size(); ++i)
+			for (size_t i = 0; i < kernel_matrices.size(); ++i)
 			{
 				const auto& operation = jobq.front();
 				results[i] = operation(kernel_matrices[i]);
 			}
 		}
 		resultq.push(results);
+	}
+}
+
+void ComputationManager::done()
+{
+	while (!jobq.empty())
+	{
 		jobq.pop();
 	}
 }
