@@ -29,6 +29,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 
 #ifdef HAVE_NLOPT
@@ -326,3 +328,4 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 #endif
 }
 
+#endif //USE_GPL_SHOGUN
