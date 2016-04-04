@@ -68,6 +68,8 @@
  ***                                                                        ***
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  ******************************************************************************/
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -317,3 +319,4 @@ sKernel::~sKernel()
 /******************************************************************************/
 /*** End of gpdt.cpp file                                                   ***/
 /******************************************************************************/
+#endif //USE_GPL_SHOGUN

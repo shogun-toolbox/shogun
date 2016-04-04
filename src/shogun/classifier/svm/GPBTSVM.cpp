@@ -8,6 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/lib/external/gpdt.h>
 #include <shogun/lib/external/gpdtsolve.h>
@@ -130,3 +132,4 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 
 	return true;
 }
+#endif //USE_GPL_SHOGUN

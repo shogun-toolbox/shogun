@@ -44,7 +44,9 @@
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/multiclass/LaRank.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/classifier/svm/GPBTSVM.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/classifier/svm/LibSVMOneClass.h>
 #include <shogun/multiclass/MulticlassLibSVM.h>
 
@@ -195,12 +197,14 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_INFO("created SVRLight object\n")
 	}
 #endif //USE_SVMLIGHT
+#ifdef USE_GPL_SHOGUN
 	else if (strcmp(name,"GPBTSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CGPBTSVM();
 		SG_INFO("created GPBT-SVM object\n")
 	}
+#endif //USE_GPL_SHOGUN
 	else if (strcmp(name,"MPDSVM")==0)
 	{
 		SG_UNREF(classifier);
@@ -1605,12 +1609,14 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_INFO("created SVRLight object\n")
 	}
 #endif //USE_SVMLIGHT
+#ifdef USE_GPL_SHOGUN
 	else if (strcmp(name,"GPBTSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CGPBTSVM();
 		SG_INFO("created GPBT-SVM object\n")
 	}
+#endif //USE_GPL_SHOGUN
 	else if (strcmp(name,"MPDSVM")==0)
 	{
 		SG_UNREF(constraint_generator);

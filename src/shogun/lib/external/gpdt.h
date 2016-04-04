@@ -67,6 +67,8 @@
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/kernel/Kernel.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -198,3 +200,4 @@ void SplitNum   (int32_t n, int32_t *nloc, int32_t *noff);
 /******************************************************************************/
 /*** End of gpdt.h file                                                     ***/
 /******************************************************************************/
+#endif //USE_GPL_SHOGUN

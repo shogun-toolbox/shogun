@@ -12,6 +12,7 @@
 #define _GPBTSVM_H___
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>
@@ -60,4 +61,5 @@ class CGPBTSVM : public CSVM
 		struct svm_model* model;
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif
