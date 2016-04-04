@@ -10,6 +10,8 @@
 #ifndef COVERTREE_H_
 #define COVERTREE_H_
 
+#ifdef USE_GPL_SHOGUN
+
 /* Tapkee includes */
 #include <shogun/lib/tapkee/neighbors/covertree_point.hpp>
 /* End of Tapkee includes */
@@ -863,4 +865,5 @@ void unequal_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 
 }
 }
+#endif //USE_GPL_SHOGUN
 #endif
