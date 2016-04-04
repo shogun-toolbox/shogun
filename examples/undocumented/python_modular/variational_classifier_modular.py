@@ -36,6 +36,12 @@ traindat = '%s/fm_train_real.dat'%path
 testdat = '%s/fm_test_real.dat'%path
 label_binary_traindat = '%s/label_train_twoclass.dat'%path
 
+try:
+	from modshogun import GaussianProcessClassification
+except ImportError:
+	print("GaussianProcessClassification is not available")
+	exit(0)
+
 from modshogun import *
 parameter_list=[
 	[KLCholeskyInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
