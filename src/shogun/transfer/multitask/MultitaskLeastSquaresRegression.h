@@ -11,6 +11,8 @@
 #define  MULTITASKLSREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
 
@@ -121,4 +123,5 @@ class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif

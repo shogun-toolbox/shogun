@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  OVERLAPPING_SLEP
 #define  OVERLAPPING_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 
@@ -223,4 +225,5 @@ void overlapping(double *x, double *gap, double *penalty2,
 		double *v, int p, int g, double lambda1, double lambda2,
 		double *w, double *G, double *Y, int maxIter, int flag, double tol);
 
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef OVERLAPPING_SLEP  ----- */

@@ -11,6 +11,7 @@
 #define SPINVCOV_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
@@ -124,4 +125,5 @@ protected:
 };
 
 }
+#endif //USE_GPL_SHOGUN
 #endif

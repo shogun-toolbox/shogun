@@ -7,10 +7,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #ifndef  MULTITASKTRACELOGISTICREGRESSION_H_
 #define  MULTITASKTRACELOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
@@ -83,4 +85,6 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif
+

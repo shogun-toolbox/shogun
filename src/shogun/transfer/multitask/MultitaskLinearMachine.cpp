@@ -7,6 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
@@ -244,3 +246,4 @@ SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
 
 
 }
+#endif //USE_GPL_SHOGUN

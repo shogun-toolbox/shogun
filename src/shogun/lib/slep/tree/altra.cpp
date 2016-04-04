@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/mathematics/Math.h>
 #include <stdlib.h>
@@ -396,3 +398,5 @@ double findLambdaMax_mt(double *V, int n, int k, double *ind, int nodes)
 	free(v);
 	return lambdaMax;
 }
+
+#endif //USE_GPL_SHOGUN

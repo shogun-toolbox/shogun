@@ -11,8 +11,12 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_leastsquares_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
-
-	from modshogun import RegressionLabels, RealFeatures, Task, TaskGroup, MultitaskLeastSquaresRegression
+	from modshogun import RegressionLabels, RealFeatures, Task, TaskGroup
+	try:
+		from modshogun import MultitaskLeastSquaresRegression
+	except ImportError:
+		print("MultitaskLeastSquaresRegression not available")
+		exit(0)
 
 	features = RealFeatures(traindat)
 	labels = RegressionLabels(label_train)

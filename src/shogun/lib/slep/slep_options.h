@@ -11,9 +11,11 @@
 #ifndef  SLEP_OPTIONS_H_
 #define  SLEP_OPTIONS_H_
 
+
 #define IGNORE_IN_CLASSLIST
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <shogun/lib/SGMatrix.h>
@@ -97,4 +99,6 @@ IGNORE_IN_CLASSLIST struct slep_options
 };
 #endif
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef SLEP_OPTIONS_H_  ----- */
+

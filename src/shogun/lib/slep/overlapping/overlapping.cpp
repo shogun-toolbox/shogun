@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/overlapping/overlapping.h>
 #include <shogun/mathematics/Math.h>
 #include <stdlib.h>
@@ -1237,3 +1239,4 @@ void overlapping(double *x, double *gap, double *penalty2,
 
 
 }
+#endif //USE_GPL_SHOGUN

@@ -7,6 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #include <shogun/lib/malsar/malsar_options.h>
@@ -128,3 +130,5 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 }
 
 }
+
+#endif //USE_GPL_SHOGUN

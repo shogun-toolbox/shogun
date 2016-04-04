@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  EP1R_SLEP
 #define  EP1R_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -64,5 +66,6 @@ void ep1R(double * x, double *t, double * u, double * v, int n)
 
 	}
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EP1R_SLEP  ----- */
 

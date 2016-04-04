@@ -7,9 +7,11 @@
  * Copyright (W) 2012 Sergey Lisitsyn
  */
 
+
 #ifndef SLEP_MC_PLAIN_LR_H_
 #define SLEP_MC_PLAIN_LR_H_
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/slep/slep_options.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -32,4 +34,6 @@ slep_result_t slep_mc_plain_lr(
 		const slep_options& options);
 
 };
+#endif //USE_GPL_SHOGUN
 #endif /* SLEP_MC_PLAIN_LR_H_ */
+

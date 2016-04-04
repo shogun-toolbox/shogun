@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef EPPMATRIXQ1_SLEP
 #define EPPMATRIXQ1_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/slep/q1/epph.h> /* This is the head file that contains the implementation of the used functions*/
 
@@ -48,5 +50,6 @@
  
  */
 void eppMatrix(double *X, double * V, int k, int n, double rho, double p);
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EPPMATRIXQ1_SLEP  ----- */
 

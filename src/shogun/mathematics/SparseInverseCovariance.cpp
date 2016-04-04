@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/mathematics/SparseInverseCovariance.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
@@ -55,3 +57,4 @@ SGMatrix<float64_t> CSparseInverseCovariance::estimate(SGMatrix<float64_t> S, fl
 	SG_FREE(W);
 	return SGMatrix<float64_t>(Theta,n,n);
 }
+#endif //USE_GPL_SHOGUN

@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef  EPSP_SLEP
 #define  EPSP_SLEP
 
@@ -300,3 +302,4 @@ int n, double z, double lambda0)
 }
 #endif   /* ----- #ifndef EPSP_SLEP  ----- */
 
+#endif //USE_GPL_SHOGUN
