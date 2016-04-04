@@ -9,17 +9,19 @@
  */
 
 %rename(EmbeddingConverter) CEmbeddingConverter;
-%rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
+#ifdef USE_GPL_SHOGUN
 %rename(NeighborhoodPreservingEmbedding) CNeighborhoodPreservingEmbedding;
 %rename(LocalTangentSpaceAlignment) CLocalTangentSpaceAlignment;
 %rename(LinearLocalTangentSpaceAlignment) CLinearLocalTangentSpaceAlignment;
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
+%rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
-%rename(DiffusionMaps) CDiffusionMaps;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
 %rename(LocalityPreservingProjections) CLocalityPreservingProjections;
-%rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(Isomap) CIsomap;
+#endif //USE_GPL_SHOGUN
+%rename(DiffusionMaps) CDiffusionMaps;
+%rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
 %rename(FactorAnalysis) CFactorAnalysis;
 %rename(TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
@@ -39,17 +41,19 @@
 
 %include <shogun/converter/Converter.h>
 %include <shogun/converter/EmbeddingConverter.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/converter/LocallyLinearEmbedding.h>
 %include <shogun/converter/NeighborhoodPreservingEmbedding.h>
 %include <shogun/converter/LocalTangentSpaceAlignment.h>
 %include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
 %include <shogun/converter/HessianLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocallyLinearEmbedding.h>
+%include <shogun/converter/LocalityPreservingProjections.h>
+%include <shogun/converter/Isomap.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/converter/DiffusionMaps.h>
 %include <shogun/converter/LaplacianEigenmaps.h>
-%include <shogun/converter/LocalityPreservingProjections.h>
 %include <shogun/converter/MultidimensionalScaling.h>
-%include <shogun/converter/Isomap.h>
 %include <shogun/converter/StochasticProximityEmbedding.h>
 %include <shogun/converter/FactorAnalysis.h>
 %include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
