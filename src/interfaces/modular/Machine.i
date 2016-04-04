@@ -86,7 +86,9 @@ APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
 APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
+#ifdef USE_GPL_SHOGUN
 APPLY_BINARY(CGaussianProcessClassification);
+#endif //USE_GPL_SHOGUN
 
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
@@ -97,7 +99,9 @@ APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 #endif
+#ifdef USE_GPL_SHOGUN
 APPLY_REGRESSION(CGaussianProcessRegression);
+#endif //USE_GPL_SHOGUN
 
 APPLY_STRUCTURED(CStructuredOutputMachine);
 APPLY_STRUCTURED(CLinearStructuredOutputMachine);
@@ -106,8 +110,9 @@ APPLY_STRUCTURED(CKernelStructuredOutputMachine);
 APPLY_STRUCTURED(CPrimalMosekSOSVM);
 #endif
 APPLY_STRUCTURED(CDualLibQPBMSOSVM);
-
+#ifdef USE_GPL_SHOGUN
 APPLY_LATENT(CLatentSVM);
+#endif //USE_GPL_SHOGUN
 }
 
 %rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
@@ -117,7 +122,9 @@ APPLY_LATENT(CLatentSVM);
 %rename(apply_generic) CCDistanceMachineMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelMachine::apply(CFeatures* data=NULL);
+#ifdef USE_GPL_SHOGUN
 %rename(apply_generic) CWDSVMOcas::apply(CFeatures* data=NULL);
+#endif //USE_GPL_SHOGUN
 %rename(apply_generic) CPluginEstimate::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
