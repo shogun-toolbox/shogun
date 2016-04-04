@@ -34,9 +34,9 @@
 #ifndef CSPARSEVGINFERENCEMETHOD_H
 #define CSPARSEVGINFERENCEMETHOD_H
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
@@ -263,6 +263,6 @@ private:
 	void init();
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif /* CSPARSEVGINFERENCEMETHOD_H */
 
-#endif //USE_GPL_SHOGUN

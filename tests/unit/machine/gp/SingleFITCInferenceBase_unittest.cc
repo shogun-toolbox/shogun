@@ -28,9 +28,9 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #if defined(HAVE_LINALG_LIB)
 

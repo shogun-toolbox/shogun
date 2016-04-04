@@ -30,9 +30,9 @@
  *
  */
 
-#ifdef USE_GPL_SHOGUN
  
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>

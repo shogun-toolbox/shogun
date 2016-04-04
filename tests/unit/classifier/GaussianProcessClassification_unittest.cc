@@ -31,9 +31,9 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-#ifdef USE_GPL_SHOGUN
  
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #ifdef HAVE_LINALG_LIB
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>

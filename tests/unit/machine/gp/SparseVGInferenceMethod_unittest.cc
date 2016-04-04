@@ -29,9 +29,9 @@
  *
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
