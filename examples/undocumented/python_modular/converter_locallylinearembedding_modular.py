@@ -4,7 +4,12 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_locallylinearembedding_modular (data_fname,k):
 	try:
-		from modshogun import RealFeatures, LocallyLinearEmbedding, CSVFile
+		from modshogun import RealFeatures, CSVFile
+		try:
+			from modshogun import LocallyLinearEmbedding
+		except ImportError:
+			print("LocallyLinearEmbedding not available")
+			exit(0)
 
 		features = RealFeatures(CSVFile(data_fname))
 

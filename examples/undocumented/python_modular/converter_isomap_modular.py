@@ -4,8 +4,13 @@ parameter_list = [[data]]
 
 def converter_isomap_modular (data_fname):
 	try:
-		from modshogun import RealFeatures, Isomap, CSVFile
-
+		from modshogun import RealFeatures, CSVFile
+		try:
+			from modshogun import Isomap
+		except ImportError:
+			print("Isomap not available")
+			exit(0)
+			
 		features = RealFeatures(CSVFile(data))
 
 		converter = Isomap()
