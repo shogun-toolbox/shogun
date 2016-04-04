@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
@@ -225,3 +227,5 @@ malsar_result_t malsar_joint_feature_learning(
 	return malsar_result_t(tasks_w, tasks_c);
 };
 };
+
+#endif //USE_GPL_SHOGUN

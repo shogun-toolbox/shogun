@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/malsar/malsar_clustered.h>
 #ifndef HAVE_CXX11
 #include <shogun/mathematics/Math.h>
@@ -313,3 +315,4 @@ malsar_result_t malsar_clustered(
 };
 };
 #endif
+#endif //USE_GPL_SHOGUN
