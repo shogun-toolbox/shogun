@@ -361,7 +361,7 @@ OPTION(OctaveStatic "Octave Static" OFF)
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
 
 # Allow to hide non-bsd compatible codes
-OPTION(USE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" OFF)
+OPTION(USE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
 
 # SVMLight
 OPTION(USE_SVMLIGHT "SVMLight" OFF)
