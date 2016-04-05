@@ -364,7 +364,10 @@ OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
 OPTION(USE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" OFF)
 
 # SVMLight
-OPTION(USE_SVMLIGHT "SVMLight" ON)
+OPTION(USE_SVMLIGHT "SVMLight" OFF)
+IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
+	MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included")
+ENDIF()
 SET(SVMLightWarning "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 SET(SVMLightWarning "${SVMLightWarning}\nWARNING: SHOGUN is built using SVMlight which was written")
 SET(SVMLightWarning "${SVMLightWarning}\nby Thorsten Joachims and uses a different non GPL compatible license.")
