@@ -12,9 +12,9 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/regression/GaussianProcessRegression.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/io/SGIO.h>
