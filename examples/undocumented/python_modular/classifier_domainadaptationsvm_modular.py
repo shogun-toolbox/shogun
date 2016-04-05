@@ -3,7 +3,13 @@ import numpy
 
 from modshogun import StringCharFeatures, BinaryLabels, DNA
 from modshogun import WeightedDegreeStringKernel
-from modshogun import DomainAdaptationSVM, MSG_DEBUG
+from modshogun import MSG_DEBUG
+try:
+	from modshogun import DomainAdaptationSVM
+except ImportError:
+	print("DomainAdaptationSVM not available")
+	exit(0)
+
 try:
 	from modshogun import SVMLight
 except ImportError:
