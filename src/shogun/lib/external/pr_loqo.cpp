@@ -13,6 +13,9 @@
  * Copyright (C) 1997-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/lapack.h>
@@ -676,3 +679,4 @@ exit_optimizer:
   return status;
 }
 }
+#endif //USE_GPL_SHOGUN
