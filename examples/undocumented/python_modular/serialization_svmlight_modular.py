@@ -5,7 +5,11 @@ def serialization_svmlight_modular (num, dist, width, C):
     from modshogun import MSG_DEBUG
     from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
     from modshogun import WeightedDegreeStringKernel, GaussianKernel
-    from modshogun import SVMLight
+	try:
+		from modshogun import SVMLight
+	except ImportError:
+		print("SVMLight not available")
+		exit(0)
     from numpy import concatenate, ones
     from numpy.random import randn, seed
 

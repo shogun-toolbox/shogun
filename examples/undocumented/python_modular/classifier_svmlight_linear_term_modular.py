@@ -32,7 +32,11 @@ def classifier_svmlight_linear_term_modular (fm_train_dna=traindna,fm_test_dna=t
 
     from modshogun import StringCharFeatures, BinaryLabels, DNA
     from modshogun import WeightedDegreeStringKernel
-    from modshogun import SVMLight
+    try:
+    	from modshogun import SVMLight
+    except ImportError:
+    	print("SVMLight is not available")
+    	exit(0)
 
     feats_train=StringCharFeatures(DNA)
     feats_train.set_features(fm_train_dna)

@@ -3,7 +3,12 @@ import numpy
 
 from modshogun import StringCharFeatures, BinaryLabels, DNA
 from modshogun import WeightedDegreeStringKernel
-from modshogun import SVMLight, DomainAdaptationSVM, MSG_DEBUG
+from modshogun import DomainAdaptationSVM, MSG_DEBUG
+try:
+	from modshogun import SVMLight
+except ImportError:
+	print("SVMLight not available")
+	exit(0)
 
 traindna = ['CGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCGTAGTCGTA',
