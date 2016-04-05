@@ -7,6 +7,9 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/statistics/MMDKernelSelectionComb.h>
 #include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -165,3 +168,4 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	return weights;
 }
+#endif //USE_GPL_SHOGUN

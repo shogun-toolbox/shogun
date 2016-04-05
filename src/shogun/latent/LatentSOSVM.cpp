@@ -9,6 +9,7 @@
  */
 
 #include <shogun/latent/LatentSOSVM.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 
 using namespace shogun;
@@ -68,3 +69,4 @@ void CLatentSOSVM::register_parameters()
 	m_parameters->add((CSGObject**)&m_so_solver, "so_solver", "Structured Output Solver.");
 }
 
+#endif //USE_GPL_SHOGUN

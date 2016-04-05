@@ -15,6 +15,7 @@
 #define libppbm_h
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/structure/libbmrm.h>
@@ -53,5 +54,5 @@ namespace shogun
 			);
 
 }
-
+#endif //USE_GPL_SHOGUN
 #endif /* libppbm_h */

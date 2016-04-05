@@ -3,7 +3,12 @@
 parameter_list=[[50, 125, 10, 2]]
 
 def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_noise_features):
-	from modshogun import RealMatrixFeatures, TwoStateModel, DualLibQPBMSOSVM, StructuredAccuracy
+	from modshogun import RealMatrixFeatures, TwoStateModel, StructuredAccuracy
+	try:
+		from modshogun import DualLibQPBMSOSVM
+	except ImportError:
+		print("DualLibQPBMSOSVM not available")
+		exit(0)
 
 	model = TwoStateModel.simulate_data(num_examples, example_length, num_features, num_noise_features)
 	sosvm = DualLibQPBMSOSVM(model, model.get_labels(), 5000.0)

@@ -12,6 +12,7 @@
 #define __LATENTSOSVM_H__
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/LinearLatentMachine.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
@@ -71,6 +72,6 @@ namespace shogun
 			CLinearStructuredOutputMachine* m_so_solver;
 	};
 }
-
+#endif //USE_GPL_SHOGUN
 #endif /* __LATENTSOSVM_H__ */
 

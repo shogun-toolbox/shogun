@@ -12,6 +12,7 @@
 #define _DUALLIBQPBMSOSVM__H__
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/features/DotFeatures.h>
@@ -282,4 +283,5 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 } /* namespace shogun */
 
+#endif //USE_GPL_SHOGUN
 #endif /* _DUALLIBQPBMSOSVM__H__ */

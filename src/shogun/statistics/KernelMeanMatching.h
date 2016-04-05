@@ -11,6 +11,7 @@
 #define KERNELMEANMATCHING_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
@@ -58,4 +59,5 @@ protected:
 };
 
 }
+#endif //USE_GPL_SHOGUN
 #endif

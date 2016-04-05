@@ -11,6 +11,7 @@
 #define __MMDKERNELSELECTIONCOMBOPT_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/statistics/MMDKernelSelectionComb.h>
 
@@ -90,5 +91,5 @@ protected:
 };
 
 }
-
+#endif //USE_GPL_SHOGUN
 #endif /* __MMDKERNELSELECTIONCOMBOPT_H_ */

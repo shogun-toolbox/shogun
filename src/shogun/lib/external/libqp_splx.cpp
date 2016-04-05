@@ -68,6 +68,9 @@
  * Version 3, 29 June 2007
  *-------------------------------------------------------------------- */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -407,4 +410,4 @@ cleanup:
   return( state ); 
 }
 }
-
+#endif //USE_GPL_SHOGUN

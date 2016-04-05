@@ -97,7 +97,12 @@ parameter_list = [[samples,labels,w_all,ftype_all]]
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
 	from modshogun import SOSVMHelper, LabelsFactory
 	from modshogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
-	from modshogun import DualLibQPBMSOSVM, StochasticSOSVM, FWSOSVM
+	from modshogun import StochasticSOSVM, FWSOSVM
+	try:
+		from modshogun import DualLibQPBMSOSVM
+	except ImportError:
+		print("DualLibQPBMSOSVM not available")
+		exit(0)
 
 	# create model
 	model = FactorGraphModel(tr_samples, tr_labels, TREE_MAX_PROD, False)

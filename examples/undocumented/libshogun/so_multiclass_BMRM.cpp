@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DenseFeatures.h>
@@ -255,3 +257,9 @@ int main(int argc, char * argv[])
 
 	return 0;
 }
+#else //USE_GPL_SHOGUN
+int main(int argc, char * argv[])
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

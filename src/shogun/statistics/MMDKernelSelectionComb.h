@@ -12,6 +12,8 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/statistics/MMDKernelSelection.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/external/libqp.h>
@@ -92,4 +94,5 @@ private:
 
 }
 
+#endif //USE_GPL_SHOGUN
 #endif /* __MMDKERNELSELECTIONCOMB_H_ */
