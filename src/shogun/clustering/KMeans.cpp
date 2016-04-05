@@ -23,6 +23,10 @@
 #include <pthread.h>
 #endif
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace shogun;
 
 CKMeans::CKMeans()
@@ -171,7 +175,11 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)
+	{
+#ifdef HAVE_LINALG_LIB
 		mus_initial=kmeanspp();
+#endif
+	}
 
 	R=SGVector<float64_t>(k);
 
@@ -331,57 +339,84 @@ void CKMeans::store_model_features()
 
 SGMatrix<float64_t> CKMeans::kmeanspp()
 {
-	int32_t num=distance->get_num_vec_lhs();
-	SGVector<float64_t> dists=SGVector<float64_t>(num);
-	SGVector<int32_t> mu_index=SGVector<int32_t>(k);
+	int32_t lhs_size;
+	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	lhs_size=lhs->get_num_vectors();
+	
+	SGMatrix<float64_t> centers=SGMatrix<float64_t>(dimensions, k);
+	centers.zero();
+	SGVector<float64_t> min_dist=SGVector<float64_t>(lhs_size);
+	min_dist.zero();
 
-	/* 1st center */
-	int32_t mu_1=CMath::random((int32_t) 0,num-1);
-	mu_index[0]=mu_1;
+	/* First center is chosen at random */
+	int32_t mu=CMath::random((int32_t) 0, lhs_size-1);
+	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);	
+	for(int32_t j=0; j<dimensions; j++)
+		centers(j, 0)=mu_first[j];
 
-	/* choose a center - do k-1 times */
-	int32_t count=0;
-	while (++count<k)
-	{
-		float64_t sum=0.0;
-		/* for each data point find distance to nearest already chosen center */
-		for (int32_t point_idx=0;point_idx<num;point_idx++)
+	distance->precompute_lhs();
+	distance->precompute_rhs();
+#pragma omp parallel for shared(min_dist)
+	for(int32_t i=0; i<lhs_size; i++)
+		min_dist[i]=CMath::sq(distance->distance(i, mu));
+	float64_t sum=linalg::vector_sum(min_dist);
+
+	int32_t n_rands=2 + int32_t(CMath::log(k));
+
+	/* Choose centers with weighted probability */
+	for(int32_t i=1; i<k; i++)
+	{	
+		int32_t best_center=0;		
+		float64_t best_sum=-1.0;
+		SGVector<float64_t> best_min_dist=SGVector<float64_t>(lhs_size);
+
+		/* local tries for best center */
+		for(int32_t trial=0; trial<n_rands; trial++)
 		{
-			dists[point_idx]=distance->distance(mu_index[0],point_idx);
-			int32_t cent_id=1;
-
-			while (cent_id<count)
+			float64_t temp_sum=0.0;		
+			float64_t temp_dist=0.0;
+			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);		
+			int32_t new_center=0;		
+			float64_t prob=CMath::random(0.0, 1.0);
+			prob=prob*sum;
+		
+			for(int32_t j=0; j<lhs_size; j++)
 			{
-				float64_t dist_temp=distance->distance(mu_index[cent_id],point_idx);
-				if (dists[point_idx]>dist_temp)
-					dists[point_idx]=dist_temp;
-				cent_id++;
+				temp_sum+=min_dist[j];
+				if (prob <= temp_sum)
+				{
+					new_center=j;
+					break;
+				}
 			}
 
-			dists[point_idx]*=dists[point_idx];
-			sum+=dists[point_idx];
+#pragma omp parallel for firstprivate(lhs_size) \
+			shared(temp_min_dist)		
+			for(int32_t j=0; j<lhs_size; j++)
+			{
+				temp_dist=CMath::sq(distance->distance(j, new_center));
+				temp_min_dist[j]=CMath::min(temp_dist, min_dist[j]);
+			}
+
+			temp_sum=linalg::vector_sum(temp_min_dist);
+			if ((temp_sum<best_sum) || (best_sum<0))
+			{
+				best_sum=temp_sum;
+				best_min_dist=temp_min_dist;
+				best_center=new_center;
+			}
 		}
-
-		/*random choosing - points weighted by square of distance from nearset center*/
-		int32_t mu_next=0;
-		float64_t chosen=CMath::random(0.0,sum);
-		while ((chosen-=dists[mu_next])>0)
-			mu_next++;
-
-		mu_index[count]=mu_next;
+		
+		SGVector<float64_t> vec=lhs->get_feature_vector(best_center);
+		for(int32_t j=0; j<dimensions; j++)
+			centers(j, i)=vec[j];
+		sum=best_sum;
+		min_dist=best_min_dist;
 	}
 
-	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
-	int32_t dim=lhs->get_num_features();
-	SGMatrix<float64_t> mat=SGMatrix<float64_t>(dim,k);
-	for (int32_t c_m=0;c_m<k;c_m++)
-	{
-		SGVector<float64_t> feature=lhs->get_feature_vector(c_m);
-		for (int32_t r_m=0;r_m<dim;r_m++)
-			mat(r_m,c_m)=feature[r_m];
-	}
+	distance->reset_precompute();
 	SG_UNREF(lhs);
-	return mat;
+	return centers;
 }
 
 void CKMeans::init()
