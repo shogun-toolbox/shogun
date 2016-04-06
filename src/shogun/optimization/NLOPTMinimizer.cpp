@@ -28,6 +28,9 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 #include <algorithm>
 #include <shogun/optimization/NLOPTMinimizer.h>
@@ -167,3 +170,5 @@ void NLOPTMinimizer::init_minimization()
 	REQUIRE(m_target_variable.vlen>0,"Target variable from cost function must not empty!\n");
 }
 #endif
+
+#endif //USE_GPL_SHOGUN

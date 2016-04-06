@@ -71,12 +71,14 @@ CSyntaxHighLight hilight;
 CSGInterfaceMethod sg_methods[]=
 {
 	{ "Features", NULL, NULL, NULL },
+#ifdef USE_GPL_SHOGUN
 	{
 		N_PR_LOQO,
 		(&CSGInterface::cmd_pr_loqo),
 		USAGE_IO(N_PR_LOQO,
 			"'Var1', Var1, 'Var2', Var2", "results")
 	},
+#endif //USE_GPL_SHOGUN
 	{
 		N_LOAD_FEATURES,
 		(&CSGInterface::cmd_load_features),
@@ -5004,8 +5006,10 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_LIBLINEAR:
 			return ui_classifier->train_linear();
 
+#ifdef USE_GPL_SHOGUN
 		case CT_WDSVMOCAS:
 			return ui_classifier->train_wdocas();
+#endif
 
 		default:
 			SG_ERROR("Unknown classifier type %d.\n", type)
@@ -7719,6 +7723,7 @@ bool CSGInterface::cmd_run_r()
 	return false;
 }
 
+#ifdef USE_GPL_SHOGUN
 bool CSGInterface::cmd_pr_loqo()
 {
 	if (m_nrhs!=7 || !create_return_values(2))
@@ -7779,6 +7784,7 @@ bool CSGInterface::cmd_pr_loqo()
 	SG_FREE(y);
 	return true;
 }
+#endif //USE_GPL_SHOGUN
 
 void CSGInterface::print_prompt()
 {

@@ -9,7 +9,7 @@
  */
 
 #include <shogun/lib/config.h>
-
+#ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
@@ -61,3 +61,9 @@ int main()
 
 	return 0;
 }
+#else //USE_GPL_SHOGUN
+int main(int argc, char** argv)
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

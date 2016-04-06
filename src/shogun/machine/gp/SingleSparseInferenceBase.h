@@ -29,10 +29,12 @@
  *
  */
 
+
 #ifndef CSINGLESPARSEINFERENCEBASE_H
 #define CSINGLESPARSEINFERENCEBASE_H
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/SparseInferenceBase.h>
@@ -235,5 +237,6 @@ private:
 	static double nlopt_function(unsigned n, const double* x, double* grad, void* func_data);
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif /* CSINGLESPARSEINFERENCEBASE_H */
 

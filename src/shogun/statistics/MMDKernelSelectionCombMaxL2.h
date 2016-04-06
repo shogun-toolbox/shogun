@@ -11,6 +11,7 @@
 #define __MMDKERNELSELECTIONCOMBMAXL2_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/statistics/MMDKernelSelection.h>
 #include <shogun/statistics/MMDKernelSelectionComb.h>
 
@@ -76,5 +77,5 @@ public:
 };
 
 }
-
+#endif //USE_GPL_SHOGUN
 #endif /* __MMDKERNELSELECTIONCOMBMAXL2_H_ */

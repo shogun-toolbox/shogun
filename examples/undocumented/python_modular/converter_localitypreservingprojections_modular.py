@@ -4,7 +4,12 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_localitypreservingprojections_modular (data_fname,k):
 	try:
-		from modshogun import RealFeatures, LocalityPreservingProjections, CSVFile
+		from modshogun import RealFeatures, CSVFile
+		try:
+			from modshogun import LocalityPreservingProjections
+		except ImportError:
+			print("LocalityPreservingProjections not available")
+			exit(0)
 
 		features = RealFeatures(CSVFile(data_fname))
 		converter = LocalityPreservingProjections()

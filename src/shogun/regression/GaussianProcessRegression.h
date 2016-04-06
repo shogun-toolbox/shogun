@@ -12,7 +12,9 @@
 #ifndef _GAUSSIANPROCESSREGRESSION_H_
 #define _GAUSSIANPROCESSREGRESSION_H_
 
+
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/GaussianProcessMachine.h>
@@ -102,4 +104,6 @@ protected:
 	}
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif /* _GAUSSIANPROCESSREGRESSION_H_ */
+

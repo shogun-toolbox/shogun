@@ -29,7 +29,9 @@
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
 %rename(GNPPSVM) CGNPPSVM;
+#ifdef USE_GPL_SHOGUN
 %rename(GPBTSVM) CGPBTSVM;
+#endif //USE_GPL_SHOGUN
 %rename(LDA) CLDA;
 %rename(LibLinear) CLibLinear;
 %rename(LibSVM) CLibSVM;
@@ -52,10 +54,14 @@
 %rename(SVM) CSVM;
 #endif
 %rename(SVMLin) CSVMLin;
+#ifdef USE_GPL_SHOGUN
 %rename(SVMOcas) CSVMOcas;
+#endif //USE_GPL_SHOGUN
 %rename(SVMSGD) CSVMSGD;
 %rename(SGDQN) CSGDQN;
+#ifdef USE_GPL_SHOGUN
 %rename(WDSVMOcas) CWDSVMOcas;
+#endif //USE_GPL_SHOGUN
 %rename(PluginEstimate) CPluginEstimate;
 %rename(MKL) CMKL;
 %rename(MKLClassification) CMKLClassification;
@@ -81,7 +87,9 @@
 %include <shogun/machine/LinearMachine.h>
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/GPBTSVM.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
 %include <shogun/classifier/svm/LibSVM.h>
@@ -108,10 +116,14 @@
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
 %include <shogun/classifier/svm/SVMLin.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/SVMOcas.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/SGDQN.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/svm/WDSVMOcas.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/classifier/PluginEstimate.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>

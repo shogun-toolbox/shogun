@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/flsa/sfa.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -1886,3 +1888,5 @@ int sfa_one(double *x,     double *gap, int * activeS,
 	*activeS=numS;
 	return(iterStep);
 }
+
+#endif //USE_GPL_SHOGUN

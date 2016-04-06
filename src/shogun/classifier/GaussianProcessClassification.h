@@ -38,7 +38,9 @@
 #ifndef _GAUSSIANPROCESSCLASSIFICATION_H_
 #define _GAUSSIANPROCESSCLASSIFICATION_H_
 
+
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/GaussianProcessMachine.h>
@@ -135,4 +137,6 @@ protected:
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */
+

@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
@@ -107,3 +109,4 @@ bool CMulticlassTreeGuidedLogisticRegression::train_machine(CFeatures* data)
 	}
 	return true;
 }
+#endif //USE_GPL_SHOGUN

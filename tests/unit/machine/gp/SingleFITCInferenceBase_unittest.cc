@@ -30,6 +30,7 @@
  */
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #if defined(HAVE_LINALG_LIB)
 
@@ -210,3 +211,5 @@ TEST(SingleFITCInferenceBase,set_kernel)
 	SG_UNREF(inf);
 }
 #endif /* HAVE_LINALG_LIB */
+
+#endif //USE_GPL_SHOGUN

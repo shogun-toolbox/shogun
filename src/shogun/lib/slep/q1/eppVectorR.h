@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  EPPVECTORR_SLEP
 #define  EPPVECTORR_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -66,4 +68,5 @@ void eppVectorR(double *x, double * t, double * u, double * v, double * ind, int
               
 	}    
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EPPVECTORR_SLEP  ----- */

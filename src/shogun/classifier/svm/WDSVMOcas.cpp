@@ -9,6 +9,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>
@@ -639,3 +641,5 @@ void CWDSVMOcas::compute_W(
 	o->bias = bias;
 	o->old_bias = old_bias;
 }
+
+#endif //USE_GPL_SHOGUN

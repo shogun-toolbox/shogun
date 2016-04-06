@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#ifdef USE_GPL_SHOGUN
+ 
 #include "NLOPTMinimizer_unittest.h"
 #ifdef HAVE_NLOPT
 #include <gtest/gtest.h>
@@ -322,3 +324,4 @@ TEST(NLOPTMinimizer,test2)
 	delete opt;
 }
 #endif /*  #ifdef HAVE_NLOPT */
+#endif //USE_GPL_SHOGUN

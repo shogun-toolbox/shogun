@@ -7,6 +7,8 @@
  * Written (W) 2014 Jiaolong Xu
  * Copyright (C) 2014 Jiaolong Xu
  */
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
@@ -425,3 +427,9 @@ int main(int argc, char * argv[])
 
 	return 0;
 }
+#else //USE_GPL_SHOGUN
+int main(int argc, char * argv[])
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

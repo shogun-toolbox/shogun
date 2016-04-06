@@ -7,6 +7,8 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/MMDKernelSelectionCombOpt.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
@@ -102,3 +104,4 @@ TEST(MMDKernelSelectionCombOpt, select_kernel)
 	SG_UNREF(selection);
 	SG_UNREF(result);
 }
+#endif //USE_GPL_SHOGUN

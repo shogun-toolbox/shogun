@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <typeinfo>
 
 #include <shogun/classifier/svm/SVMOcas.h>
@@ -76,4 +78,6 @@ float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
 
 	return svm.compute_primal_objective();
 }
+
+#endif //USE_GPL_SHOGUN
 

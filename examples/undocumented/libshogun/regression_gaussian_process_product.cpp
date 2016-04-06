@@ -7,7 +7,9 @@
  * Written (W) 2012 Jacob Walker
  */
 
+
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #if defined(HAVE_NLOPT)
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -310,3 +312,10 @@ int main(int argc, char **argv)
 	return 0;
 }
 #endif
+
+#else //USE_GPL_SHOGUN
+int main(int argc, char **argv)
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

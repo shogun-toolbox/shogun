@@ -8,6 +8,8 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/slep_mc_plain_lr.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -229,3 +231,5 @@ slep_result_t slep_mc_plain_lr(
 	return slep_result_t(r_w, r_c);
 };
 };
+
+#endif //USE_GPL_SHOGUN

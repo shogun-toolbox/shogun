@@ -7,6 +7,8 @@
  * Written (W) 2013 Roman Votyakov
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
 
 #if defined HAVE_NLOPT
@@ -180,3 +182,4 @@ TEST(GradientModelSelection,select_model_ep_inference)
 }
 
 #endif /* defined HAVE_NLOPT */
+#endif //USE_GPL_SHOGUN

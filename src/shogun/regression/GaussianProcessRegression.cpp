@@ -12,7 +12,9 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
+
 #include <shogun/regression/GaussianProcessRegression.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/io/SGIO.h>
@@ -152,3 +154,4 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 	return s2;
 }
 
+#endif //USE_GPL_SHOGUN

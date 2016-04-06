@@ -8,7 +8,12 @@ def mkl_regression_modular(n=100,n_test=100, \
 
 	from modshogun import RegressionLabels, RealFeatures
 	from modshogun import GaussianKernel, PolyKernel, CombinedKernel
-	from modshogun import MKLRegression, SVRLight
+	from modshogun import MKLRegression
+	try:
+		from modshogun import SVRLight
+	except ImportError:
+		print("SVRLight is not available")
+		exit(0)
 
 	# reproducible results
 	random.seed(seed)

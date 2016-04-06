@@ -10,8 +10,10 @@
 #include <shogun/base/init.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/statistics/MMDKernelSelectionCombOpt.h>
 #include <shogun/statistics/MMDKernelSelectionCombMaxL2.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/statistics/MMDKernelSelectionOpt.h>
 #include <shogun/statistics/MMDKernelSelectionMax.h>
 #include <shogun/statistics/MMDKernelSelectionMedian.h>
@@ -117,6 +119,7 @@ void kernel_choice_linear_time_mmd_opt_single()
 
 void kernel_choice_linear_time_mmd_opt_comb()
 {
+#ifdef USE_GPL_SHOGUN
 	/* Note that the linear time mmd is designed for large datasets. Results on
 	 * this small number will be bad (unstable, type I error wrong) */
 	index_t m=1000;
@@ -193,6 +196,7 @@ void kernel_choice_linear_time_mmd_opt_comb()
 
 
 	SG_UNREF(selection);
+#endif //USE_GPL_SHOGUN
 }
 
 int main(int argc, char** argv)

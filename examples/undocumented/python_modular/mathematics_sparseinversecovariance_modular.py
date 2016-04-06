@@ -7,7 +7,12 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data,0.0],[data,1.0]]
 
 def mathematics_sparseinversecovariance_modular (data,lc):
-	from modshogun import SparseInverseCovariance
+	try:
+		from modshogun import SparseInverseCovariance
+	except ImportError:
+		print("SparseInverseCovariance not available")
+		exit(0)
+	
 	from numpy import dot
 
 	sic = SparseInverseCovariance()

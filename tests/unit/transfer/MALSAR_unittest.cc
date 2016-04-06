@@ -1,3 +1,5 @@
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/features/DataGenerator.h>
 #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
 #include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
@@ -101,4 +103,4 @@ TEST(MalsarTraceTest, train)
 	SG_UNREF(data.first.second);
 }
 #endif // HAVE_LAPACK
-
+#endif //USE_GPL_SHOGUN

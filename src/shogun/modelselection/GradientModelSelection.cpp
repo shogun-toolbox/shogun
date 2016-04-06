@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/modelselection/GradientModelSelection.h>
 
 #ifdef HAVE_NLOPT
@@ -303,3 +305,5 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 }
 
 #endif /* HAVE_NLOPT */
+
+#endif //USE_GPL_SHOGUN

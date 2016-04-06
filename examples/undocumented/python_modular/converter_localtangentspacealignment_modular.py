@@ -4,8 +4,13 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_localtangentspacealignment_modular (data_fname,k):
 	try:
-		from modshogun import RealFeatures, LocalTangentSpaceAlignment, CSVFile
-
+		from modshogun import RealFeatures, CSVFile
+		try:
+			from modshogun import LocalTangentSpaceAlignment
+		except ImportError:
+			print("LocalTangentSpaceAlignment not available")
+			exit(0)
+			
 		features = RealFeatures(CSVFile(data_fname))
 
 		converter = LocalTangentSpaceAlignment()

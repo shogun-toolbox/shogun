@@ -11,7 +11,9 @@
 #ifndef  SLEP_MT_LOGISTIC_H_
 #define  SLEP_MT_LOGISTIC_H_
 
+
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/slep/slep_options.h>
 #include <shogun/features/DotFeatures.h>
@@ -40,5 +42,6 @@ slep_result_t slep_solver(
 		const slep_options& options);
 
 };
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef SLEP_LOGISTIC_H_  ----- */
 

@@ -7,6 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/classifier/FeatureBlockLogisticRegression.h>
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
@@ -259,3 +261,4 @@ SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures
 }
 
 }
+#endif //USE_GPL_SHOGUN

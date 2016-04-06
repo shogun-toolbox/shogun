@@ -12,6 +12,7 @@
  *--------------------------------------------------------------------- */
 
 #include <shogun/structure/libppbm.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/libqp.h>
  #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
@@ -675,3 +676,4 @@ cleanup:
 	return(ppbmrm);
 }
 }
+#endif //USE_GPL_SHOGUN

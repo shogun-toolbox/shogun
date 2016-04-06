@@ -7,10 +7,12 @@
  * Copyright (C) 2014 Sergey Lisitsyn
  */
 
+
 #ifndef  MULTITASKL12LOGISTICREGRESSION_H_
 #define  MULTITASKL12LOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/base/unique.h>
 
@@ -103,4 +105,6 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif
+

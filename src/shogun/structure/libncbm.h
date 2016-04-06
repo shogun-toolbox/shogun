@@ -12,6 +12,7 @@
 #define libncbm_h
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/structure/libbmrm.h>
@@ -39,4 +40,5 @@ namespace shogun
 			bool             verbose = false
 			);
 }
+#endif //USE_GPL_SHOGUN
 #endif /* libncbm_h */

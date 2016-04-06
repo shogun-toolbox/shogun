@@ -29,6 +29,8 @@
  *
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
 #ifdef HAVE_NLOPT
@@ -284,3 +286,5 @@ SGVector<float64_t> CSingleFITCLaplacianBase::get_derivative_wrt_inducing_featur
 
 	return get_derivative_related_inducing_features(BdK, param);
 }
+
+#endif //USE_GPL_SHOGUN

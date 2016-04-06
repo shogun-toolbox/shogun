@@ -11,8 +11,9 @@
 #ifndef __LATENTSVM_H__
 #define __LATENTSVM_H__
 
-#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearLatentMachine.h>
 
@@ -77,4 +78,6 @@ namespace shogun
 }
 
 #endif /* __LATENTSVM_H__ */
+
+#endif //USE_GPL_SHOGUN
 

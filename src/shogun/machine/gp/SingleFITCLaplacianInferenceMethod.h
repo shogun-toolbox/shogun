@@ -32,7 +32,9 @@
 #ifndef CSINGLEFITCLAPLACIANINFERENCEMETHOD_H
 #define CSINGLEFITCLAPLACIANINFERENCEMETHOD_H
 
+
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
@@ -424,4 +426,6 @@ protected:
 	bool m_Wneg;
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif /* CSINGLEFITCLAPLACIANINFERENCEMETHOD_H */
+

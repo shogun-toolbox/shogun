@@ -30,6 +30,9 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
+
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
 
 #include <shogun/mathematics/Math.h>
@@ -316,3 +319,5 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 }
 
 } /* namespace shogun */
+
+#endif //USE_GPL_SHOGUN

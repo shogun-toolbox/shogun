@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/libncbm.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 
@@ -774,3 +775,4 @@ BmrmStatistics svm_ncbm_solver(
 }
 
 } /* namespace shogun */
+#endif //USE_GPL_SHOGUN

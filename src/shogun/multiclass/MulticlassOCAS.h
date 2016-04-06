@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef _MULTICLASSOCAS_H___
 #define _MULTICLASSOCAS_H___
 
@@ -159,4 +161,6 @@ protected:
 		int32_t m_buf_size;
 };
 }
+#endif
+
 #endif

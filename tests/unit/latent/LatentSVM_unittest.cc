@@ -2,6 +2,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/latent/LatentSVM.h>
 
+#ifdef USE_GPL_SHOGUN
+
 using namespace shogun;
 using ::testing::Return;
 using ::testing::NiceMock;
@@ -108,3 +110,5 @@ TEST(LatentSVM, apply)
 	SG_UNREF(dense_feats);
 }
 #endif
+
+#endif //USE_GPL_SHOGUN

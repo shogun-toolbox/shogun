@@ -11,6 +11,7 @@
 #ifndef MULTICLASSTREEGUIDEDLOGISTICREGRESSION_H_
 #define MULTICLASSTREEGUIDEDLOGISTICREGRESSION_H_
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -132,4 +133,5 @@ protected:
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif

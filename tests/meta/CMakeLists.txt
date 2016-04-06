@@ -30,6 +30,10 @@ IF(SWIG_SINGLE_THREADED)
 	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
 ENDIF(SWIG_SINGLE_THREADED)
 
+# get list of meta examples that can be built and skip test if if cannot
+INCLUDE(FindMetaExamples)
+find_meta_examples()
+
 FILE(GLOB META_INTEGRATION_REFERENCES ${CMAKE_CURRENT_BINARY_DIR}/reference_results/*/*.dat)
 FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	# assume a structure <target_language>/<category>/result.dat
@@ -42,10 +46,6 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	ENDIF()
 	get_filename_component(REL_DIR ${FULL_DIR} NAME)
 	set(NAME_WITH_DIR "${REL_DIR}-${NAME}")
-
-	# get list of meta examples that can be built and skip test if if cannot
-	INCLUDE(FindMetaExamples)
-	find_meta_examples()
 
 	list(FIND META_EXAMPLES ${CMAKE_SOURCE_DIR}/examples/meta/src/${REL_DIR}/${NAME}.sg LISTING_INDEX)
 	# continue keyword is not available in older cmake versions (not documented!!!)

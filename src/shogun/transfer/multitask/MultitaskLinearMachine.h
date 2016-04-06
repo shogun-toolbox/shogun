@@ -11,6 +11,7 @@
 #define  MULTITASKMACHINE_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/transfer/multitask/TaskGroup.h>
@@ -148,4 +149,5 @@ class CMultitaskLinearMachine : public CLinearMachine
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif

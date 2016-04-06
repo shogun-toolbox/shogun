@@ -7,6 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef  MULTITASKLOGISTICREGRESSION_H_
 #define  MULTITASKLOGISTICREGRESSION_H_
 
@@ -126,3 +128,5 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 };
 }
 #endif
+
+#endif //USE_GPL_SHOGUN

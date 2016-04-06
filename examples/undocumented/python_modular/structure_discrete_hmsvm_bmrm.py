@@ -10,7 +10,12 @@ parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	from modshogun import RealMatrixFeatures, SequenceLabels, HMSVMModel, Sequence, TwoStateModel
-	from modshogun import StructuredAccuracy, DualLibQPBMSOSVM, SMT_TWO_STATE
+	from modshogun import StructuredAccuracy, SMT_TWO_STATE
+	try:
+		from modshogun import DualLibQPBMSOSVM
+	except ImportError:
+		print("DualLibQPBMSOSVM not available")
+		exit(0)
 
 	labels_array = m_data_dict['label'][0]
 

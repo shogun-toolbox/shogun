@@ -9,6 +9,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
@@ -363,3 +365,4 @@ float64_t CSVMOcas::compute_primal_objective() const
 	return primal_objective;
 }
 
+#endif //USE_GPL_SHOGUN

@@ -5,6 +5,13 @@ from modshogun import MKLClassification
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
+#only run example if SVMLight is included as LibSVM solver crashes in MKLClassification
+try:
+	from modshogun import SVMLight
+except ImportError:
+	print("SVMLight not available")
+	exit(0)
+
 traindat = lm.load_numbers('../data/fm_train_real.dat')
 testdat = lm.load_numbers('../data/fm_test_real.dat')
 label_traindat = lm.load_labels('../data/label_train_twoclass.dat')

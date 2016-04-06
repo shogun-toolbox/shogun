@@ -11,6 +11,7 @@
 #ifndef  MALSAR_JOINT_FEATURE_LEARNING_H_
 #define  MALSAR_JOINT_FEATURE_LEARNING_H_
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -31,5 +32,6 @@ malsar_result_t malsar_joint_feature_learning(
 		const malsar_options& options);
 
 };
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef MALSAR_JOINT_FEATURE_LEARNING_H_  ----- */
 

@@ -38,6 +38,12 @@ label_multi_traindat = '%s/label_train_multiclass.dat'%path
 
 from modshogun import *
 
+try:
+	from modshogun import GaussianProcessClassification
+except ImportError:
+	print("GaussianProcessClassification is not available")
+	exit(0)
+
 parameter_list=[
     [MultiLaplacianInferenceMethod,traindat,testdat,label_multi_traindat,0,0],
 ]

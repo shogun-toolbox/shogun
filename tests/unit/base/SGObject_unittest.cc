@@ -139,6 +139,7 @@ TEST(SGObject,equals_DynamicObjectArray_different)
 	SG_UNREF(array2);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,equals_complex_equal)
 {
 	/* create some easy regression data: 1d noisy sine wave */
@@ -216,7 +217,9 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(gpr);
 	SG_UNREF(gpr_copy);
 }
+#endif //USE_GPL_SHOGUN
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,update_parameter_hash)
 {
 	index_t n=3;
@@ -261,7 +264,9 @@ TEST(SGObject,update_parameter_hash)
 
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,parameter_hash_changed)
 {
 	index_t n=3;
@@ -305,3 +310,4 @@ TEST(SGObject,parameter_hash_changed)
 
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN

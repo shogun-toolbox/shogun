@@ -6,6 +6,10 @@ label_train_twoclass <- as.double(read.table('../data/label_train_twoclass.dat')
 
 # svm ocas
 print('SVMOcas')
+if (exists('SVMOcas')==FALSE) {
+	print('SVMOcas not available')
+	quit()
+}
 
 realfeat <- RealFeatures()
 dump <- realfeat$set_feature_matrix(fm_train_real)

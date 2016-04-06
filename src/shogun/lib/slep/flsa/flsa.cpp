@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/flsa/flsa.h>
 #include <shogun/lib/slep/flsa/sfa.h>
 #include <stdlib.h>
@@ -246,3 +248,4 @@ void flsa(double *x, double *z, double *infor,
 	}
 }
 
+#endif //USE_GPL_SHOGUN

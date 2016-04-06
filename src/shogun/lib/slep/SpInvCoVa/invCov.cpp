@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
 #include <shogun/mathematics/Math.h>
 
@@ -226,3 +228,4 @@ void invCov(double *Theta, double *W, double *S, double lambda, double sum_S, in
 	/*return (iter_step);*/
 }
 
+#endif //USE_GPL_SHOGUN

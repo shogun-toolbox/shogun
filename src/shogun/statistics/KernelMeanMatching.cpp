@@ -7,6 +7,9 @@
  * Copyright (W) 2012 Sergey Lisitsyn
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/statistics/KernelMeanMatching.h>
 #include <shogun/lib/external/libqp.h>
 
@@ -103,3 +106,4 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 }
 
 }
+#endif //USE_GPL_SHOGUN

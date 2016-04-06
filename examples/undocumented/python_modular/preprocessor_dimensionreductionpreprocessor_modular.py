@@ -9,7 +9,11 @@ parameter_list = [[data, 20], [data, 30]]
 def preprocessor_dimensionreductionpreprocessor_modular (data, k):
 	from modshogun import RealFeatures
 	from modshogun import DimensionReductionPreprocessor
-	from modshogun import LocallyLinearEmbedding
+	try:
+		from modshogun import LocallyLinearEmbedding
+	except ImportError:
+		print("LocallyLinearEmbedding not available")
+		exit(0)
 
 	features = RealFeatures(data)
 

@@ -13,6 +13,8 @@
  * Copyright (C) 1997-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_GPL_SHOGUN
+
 namespace shogun
 {
 /* verbosity levels */
@@ -79,3 +81,4 @@ int32_t pr_loqo(
 	float64_t dual[], int32_t verb, float64_t sigfig_max, int32_t counter_max,
 	float64_t margin, float64_t bound, int32_t restart);
 }
+#endif //USE_GPL_SHOGUN
