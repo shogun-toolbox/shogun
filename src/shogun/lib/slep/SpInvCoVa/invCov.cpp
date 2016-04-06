@@ -14,9 +14,9 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Math.h>
 
 #include <stdlib.h>

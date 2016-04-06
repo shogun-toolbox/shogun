@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/classifier/svm/GPBTSVM.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/gpdt.h>
 #include <shogun/lib/external/gpdtsolve.h>
 #include <shogun/io/SGIO.h>

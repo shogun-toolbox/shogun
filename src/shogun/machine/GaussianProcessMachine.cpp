@@ -35,9 +35,9 @@
  * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/GaussianProcessMachine.h>

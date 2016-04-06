@@ -7,9 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_low_rank.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/IndexBlockGroup.h>

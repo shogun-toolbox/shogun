@@ -31,9 +31,9 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>

@@ -8,9 +8,9 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
+#include <shogun/lib/slep/slep_mc_plain_lr.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/lib/slep/slep_mc_plain_lr.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>

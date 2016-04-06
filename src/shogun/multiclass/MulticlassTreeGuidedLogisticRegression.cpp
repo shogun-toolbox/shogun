@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/MulticlassLabels.h>

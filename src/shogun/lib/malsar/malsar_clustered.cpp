@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
+#include <shogun/lib/malsar/malsar_clustered.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/lib/malsar/malsar_clustered.h>
 #ifndef HAVE_CXX11
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>

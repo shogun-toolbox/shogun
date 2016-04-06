@@ -12,6 +12,7 @@
  *  Implementation of SVM-Ocas solver.
  *-------------------------------------------------------------------- */
 
+#include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>

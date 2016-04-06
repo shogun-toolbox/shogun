@@ -7,9 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>

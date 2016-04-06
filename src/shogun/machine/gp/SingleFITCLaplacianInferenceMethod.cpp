@@ -28,9 +28,9 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>

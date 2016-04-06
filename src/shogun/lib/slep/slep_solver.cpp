@@ -8,9 +8,9 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/slep/slep_solver.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/lib/slep/q1/eppVector.h>

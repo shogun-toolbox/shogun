@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>

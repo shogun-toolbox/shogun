@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/mathematics/SparseInverseCovariance.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
 

@@ -14,9 +14,9 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+#include <shogun/lib/slep/flsa/sfa.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/lib/slep/flsa/sfa.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

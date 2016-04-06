@@ -14,9 +14,9 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#include <shogun/lib/slep/tree/general_altra.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/lib/slep/tree/general_altra.h>
 #include <shogun/mathematics/Math.h>
 #include <stdlib.h>
 #include <string.h>

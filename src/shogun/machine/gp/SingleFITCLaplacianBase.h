@@ -32,9 +32,9 @@
 #ifndef CSINGLEFITCLAPLACIANBASE_H
 #define CSINGLEFITCLAPLACIANBASE_H
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>

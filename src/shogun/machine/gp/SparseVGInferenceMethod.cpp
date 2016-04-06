@@ -35,9 +35,9 @@
  * International Conference on Artificial Intelligence and Statistics. 2009.
  *
  */
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/gp/SparseVGInferenceMethod.h>
+#ifdef USE_GPL_SHOGUN
 
 
 #include <shogun/machine/gp/GaussianLikelihood.h>

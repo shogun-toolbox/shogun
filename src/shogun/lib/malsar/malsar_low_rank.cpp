@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_low_rank.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <iostream>

@@ -8,12 +8,12 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
+#include <shogun/latent/LatentSVM.h>
 #ifdef USE_GPL_SHOGUN
 
 #include <typeinfo>
 
 #include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/latent/LatentSVM.h>
 #include <shogun/latent/LatentModel.h>
 
 using namespace shogun;

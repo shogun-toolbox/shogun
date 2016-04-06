@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/multiclass/MulticlassLogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>

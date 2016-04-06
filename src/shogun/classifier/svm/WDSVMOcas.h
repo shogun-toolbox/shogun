@@ -9,12 +9,12 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #ifndef _WDSVMOCAS_H___
 #define _WDSVMOCAS_H___
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>

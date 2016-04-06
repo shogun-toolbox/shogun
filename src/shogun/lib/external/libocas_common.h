@@ -1,7 +1,8 @@
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 
-#ifdef USE_GPL_SHOGUN
 
 namespace shogun
 {

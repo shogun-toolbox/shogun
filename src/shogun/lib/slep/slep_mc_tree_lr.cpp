@@ -8,9 +8,9 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
+#include <shogun/lib/slep/slep_mc_tree_lr.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/lib/slep/slep_mc_tree_lr.h>
 #include <shogun/lib/slep/tree/general_altra.h>
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>

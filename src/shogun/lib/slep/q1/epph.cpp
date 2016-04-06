@@ -14,13 +14,13 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#include <shogun/lib/slep/q1/epph.h>
 #ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <shogun/lib/slep/q1/epph.h>
 
 #define delta 1e-8
 

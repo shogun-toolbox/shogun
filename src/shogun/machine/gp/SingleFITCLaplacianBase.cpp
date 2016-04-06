@@ -29,9 +29,9 @@
  *
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+#ifdef USE_GPL_SHOGUN
 
 #ifdef HAVE_NLOPT
 #include <nlopt.h>

@@ -7,9 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+#include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
 
-#include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 #include <shogun/lib/malsar/malsar_clustered.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>

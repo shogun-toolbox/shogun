@@ -9,6 +9,7 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/classifier/svm/WDSVMOcas.h>
 #ifdef USE_GPL_SHOGUN
 
 #include <shogun/labels/Labels.h>
@@ -18,7 +19,6 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/external/libocas.h>
-#include <shogun/classifier/svm/WDSVMOcas.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/labels/Labels.h>
