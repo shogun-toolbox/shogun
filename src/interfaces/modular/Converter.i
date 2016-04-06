@@ -17,10 +17,10 @@
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
-%rename(LocalityPreservingProjections) CLocalityPreservingProjections;
-%rename(Isomap) CIsomap;
 %rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
 #endif //USE_GPL_SHOGUN
+%rename(LocalityPreservingProjections) CLocalityPreservingProjections;
+%rename(Isomap) CIsomap;
 %rename(DiffusionMaps) CDiffusionMaps;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(FactorAnalysis) CFactorAnalysis;
@@ -48,10 +48,10 @@
 %include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
 %include <shogun/converter/HessianLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocallyLinearEmbedding.h>
-%include <shogun/converter/LocalityPreservingProjections.h>
-%include <shogun/converter/Isomap.h>
 %include <shogun/converter/StochasticProximityEmbedding.h>
 #endif //USE_GPL_SHOGUN
+%include <shogun/converter/LocalityPreservingProjections.h>
+%include <shogun/converter/Isomap.h>
 %include <shogun/converter/DiffusionMaps.h>
 %include <shogun/converter/LaplacianEigenmaps.h>
 %include <shogun/converter/MultidimensionalScaling.h>

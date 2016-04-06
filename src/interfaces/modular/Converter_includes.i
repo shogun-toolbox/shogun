@@ -8,10 +8,10 @@
 #include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
 #include <shogun/converter/HessianLocallyLinearEmbedding.h>
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
-#include <shogun/converter/LocalityPreservingProjections.h>
-#include <shogun/converter/Isomap.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #endif //USE_GPL_SHOGUN
+#include <shogun/converter/LocalityPreservingProjections.h>
+#include <shogun/converter/Isomap.h>
 #include <shogun/converter/DiffusionMaps.h>
 #include <shogun/converter/LaplacianEigenmaps.h>
 #include <shogun/converter/MultidimensionalScaling.h>
