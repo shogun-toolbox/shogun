@@ -9,9 +9,9 @@
  * Copyright (C) 2009-2012 Vojtech Franc and Soeren Sonnenburg
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/multiclass/MulticlassOCAS.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/MulticlassLabels.h>

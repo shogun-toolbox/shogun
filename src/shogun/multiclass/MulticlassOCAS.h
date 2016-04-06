@@ -8,12 +8,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #ifndef _MULTICLASSOCAS_H___
 #define _MULTICLASSOCAS_H___
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
