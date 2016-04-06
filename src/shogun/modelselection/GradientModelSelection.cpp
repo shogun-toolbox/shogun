@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/modelselection/GradientModelSelection.h>
+#ifdef USE_GPL_SHOGUN
 
 #ifdef HAVE_NLOPT
 
