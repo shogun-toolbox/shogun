@@ -112,6 +112,7 @@
 
 #cmakedefine USE_SVMLIGHT 1
 #cmakedefine USE_MOSEK 1
+#cmakedefine USE_GPL_SHOGUN 1
 
 #cmakedefine USE_GLPK 1
 #cmakedefine USE_LZO 1
