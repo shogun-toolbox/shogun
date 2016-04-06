@@ -13,6 +13,7 @@
  * Copyright (C) 1997-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/lib/config.h>
 #ifdef USE_GPL_SHOGUN
 
 namespace shogun
