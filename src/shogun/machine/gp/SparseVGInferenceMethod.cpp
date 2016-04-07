@@ -37,9 +37,6 @@
  */
 
 #include <shogun/machine/gp/SparseVGInferenceMethod.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -434,4 +431,3 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
 	}
 	return result;
 }
-#endif //USE_GPL_SHOGUN

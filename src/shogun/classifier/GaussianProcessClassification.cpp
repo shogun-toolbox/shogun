@@ -37,9 +37,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
@@ -236,5 +233,3 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 
 	return p;
 }
-
-#endif //USE_GPL_SHOGUN

@@ -32,11 +32,11 @@
 
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 #ifdef USE_GPL_SHOGUN
-
 #ifdef HAVE_NLOPT
 #include <nlopt.h>
 #include <shogun/features/DenseFeatures.h>
-#endif
+#endif //HAVE_NLOPT
+#endif //USE_GPL_SHOGUN
 
 
 #include <shogun/mathematics/Math.h>
@@ -262,6 +262,7 @@ void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_opt
 
 void CSingleSparseInferenceBase::optimize_inducing_features()
 {
+#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 	if (!m_opt_inducing_features)
 		return;
@@ -325,7 +326,8 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 	nlopt_destroy(opt);
 #else
 	SG_PRINT("For this functionality we require NLOPT library\n");
-#endif
-}
-
+#endif //HAVE_NLOPT
+#else 
+	SG_PRINT("For this functionality we require NLOPT (GPL License) library\n");
 #endif //USE_GPL_SHOGUN
+}

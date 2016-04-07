@@ -32,8 +32,6 @@
 
  
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
@@ -739,5 +737,3 @@ TEST(GaussianProcessRegression,fitc_regression)
 	SG_UNREF(gpr);
 }
 #endif /* HAVE_LINALG_LIB */
-
-#endif //USE_GPL_SHOGUN

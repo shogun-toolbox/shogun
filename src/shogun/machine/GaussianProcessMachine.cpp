@@ -37,9 +37,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
@@ -255,5 +252,3 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	return s2;
 }
-
-#endif //USE_GPL_SHOGUN

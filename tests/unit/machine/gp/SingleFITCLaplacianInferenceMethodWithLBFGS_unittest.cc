@@ -31,8 +31,6 @@
  
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
 #if defined(HAVE_LINALG_LIB)
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -452,4 +450,3 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 }
 
 #endif /* HAVE_LINALG_LIB */
-#endif //USE_GPL_SHOGUN

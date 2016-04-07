@@ -34,9 +34,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 #include <shogun/lib/Lock.h>
 
@@ -259,5 +256,3 @@ private:
 };
 }
 #endif /* CSINGLEFITCLAPLACIANBASE_H */
-
-#endif

@@ -14,9 +14,6 @@
 
 
 #include <shogun/regression/GaussianProcessRegression.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/io/SGIO.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
@@ -153,5 +150,3 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 
 	return s2;
 }
-
-#endif //USE_GPL_SHOGUN

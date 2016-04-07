@@ -19,9 +19,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
 namespace shogun
@@ -210,6 +207,4 @@ private:
 	void init();
 };
 }
-#endif //USE_GPL_SHOGUN
 #endif /* CFITCINFERENCEMETHOD_H */
-

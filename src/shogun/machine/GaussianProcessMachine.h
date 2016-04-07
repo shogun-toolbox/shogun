@@ -38,8 +38,6 @@
 #ifndef _GAUSSIANPROCESSMACHINE_H_
 #define _GAUSSIANPROCESSMACHINE_H_
 
-#ifdef USE_GPL_SHOGUN
-
 #include <shogun/lib/config.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/gp/InferenceMethod.h>
@@ -146,4 +144,3 @@ protected:
 };
 }
 #endif /* _GAUSSIANPROCESSMACHINE_H_ */
-#endif //USE_GPL_SHOGUN

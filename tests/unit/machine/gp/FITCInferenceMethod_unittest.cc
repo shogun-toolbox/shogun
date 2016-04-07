@@ -32,8 +32,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -656,7 +654,6 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	SG_UNREF(inf);
 }
 #ifdef HAVE_LINALG_LIB
-//bug
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 {
 	index_t n=6;
@@ -1064,5 +1061,3 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 }
 
 #endif /* HAVE_LINALG_LIB */
-
-#endif //USE_GPL_SHOGUN

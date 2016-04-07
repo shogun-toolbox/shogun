@@ -33,8 +33,6 @@
 
 
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
-#ifdef USE_GPL_SHOGUN
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/eigen3.h>
@@ -319,5 +317,3 @@ void CSingleFITCLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 }
 
 } /* namespace shogun */
-
-#endif //USE_GPL_SHOGUN
