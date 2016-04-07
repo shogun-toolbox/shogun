@@ -6,7 +6,7 @@ function(find_meta_examples)
 		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/gaussian_processes/gaussian_process_regression.sg)
 	ENDIF()
 	
-	IF(USE_GPL_SHOGUN)
+	IF(NOT USE_GPL_SHOGUN)
 		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/gaussian_processes/gaussian_process_regression.sg)
 	ENDIF()
 
