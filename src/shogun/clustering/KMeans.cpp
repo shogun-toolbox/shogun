@@ -18,6 +18,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
+#include <shogun/mathematics/eigen3.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -28,6 +29,7 @@
 #endif
 
 using namespace shogun;
+using namespace Eigen;
 
 CKMeans::CKMeans()
 : CDistanceMachine()
@@ -359,8 +361,12 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 #pragma omp parallel for shared(min_dist)
 	for(int32_t i=0; i<lhs_size; i++)
 		min_dist[i]=CMath::sq(distance->distance(i, mu));
+#ifdef HAVE_LINALG
 	float64_t sum=linalg::vector_sum(min_dist);
-
+#else //HAVE_LINALG
+	Map<VectorXd> eigen_min_dist(min_dist.vector, min_dist.vlen);
+	float64_t sum=eigen_min_dist.sum();
+#endif //HAVE_LINALG
 	int32_t n_rands=2 + int32_t(CMath::log(k));
 
 	/* Choose centers with weighted probability */
@@ -398,7 +404,12 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 				temp_min_dist[j]=CMath::min(temp_dist, min_dist[j]);
 			}
 
+#ifdef HAVE_LINALG
 			temp_sum=linalg::vector_sum(temp_min_dist);
+#else //HAVE_LINALG
+			Map<VectorXd> eigen_temp_sum(temp_min_dist.vector, temp_min_dist.vlen);
+			temp_sum=eigen_temp_sum.sum();
+#endif //HAVE_LINALG
 			if ((temp_sum<best_sum) || (best_sum<0))
 			{
 				best_sum=temp_sum;
