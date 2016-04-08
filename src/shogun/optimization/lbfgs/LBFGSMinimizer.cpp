@@ -31,6 +31,7 @@
 #include <shogun/lib/config.h>
 #include <algorithm>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+#include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
 using namespace shogun;
 
@@ -47,6 +48,12 @@ LBFGSMinimizer::~LBFGSMinimizer()
 LBFGSMinimizer::LBFGSMinimizer(FirstOrderCostFunction *fun)
 	:FirstOrderMinimizer(fun)
 {
+	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
+		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
+	if(m_fun && bound_constraints_fun)
+	{
+		SG_SWARNING("The minimizer does not support constrained minimization. All constraints will be ignored.\n")
+	}
 	init();
 }
 
