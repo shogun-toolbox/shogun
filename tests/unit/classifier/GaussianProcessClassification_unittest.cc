@@ -33,8 +33,6 @@
  */
  
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
 #ifdef HAVE_LINALG_LIB
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #endif
@@ -3704,6 +3702,3 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 }
 
 #endif /* HAVE_LINALG_LIB */
-
-
-#endif //USE_GPL_SHOGUN

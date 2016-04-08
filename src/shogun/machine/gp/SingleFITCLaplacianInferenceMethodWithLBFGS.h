@@ -35,9 +35,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 
@@ -230,6 +227,4 @@ private:
 };
 
 } /* namespace shogun */
-#endif //USE_GPL_SHOGUN
 #endif /* CSINGLEFITCLAPLACIANINFERENCEMETHODWITHLBFGS_H */
-

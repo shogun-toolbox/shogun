@@ -36,9 +36,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 
 namespace shogun
@@ -263,6 +260,4 @@ private:
 	void init();
 };
 }
-#endif //USE_GPL_SHOGUN
 #endif /* CSPARSEVGINFERENCEMETHOD_H */
-

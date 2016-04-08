@@ -14,9 +14,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/features/Features.h>
@@ -104,6 +101,4 @@ protected:
 	}
 };
 }
-#endif //USE_GPL_SHOGUN
 #endif /* _GAUSSIANPROCESSREGRESSION_H_ */
-

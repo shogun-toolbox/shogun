@@ -34,9 +34,6 @@
 
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
 
 namespace shogun
@@ -426,6 +423,4 @@ protected:
 	bool m_Wneg;
 };
 }
-#endif //USE_GPL_SHOGUN
 #endif /* CSINGLEFITCLAPLACIANINFERENCEMETHOD_H */
-

@@ -31,9 +31,6 @@
  */
 
 #include <shogun/machine/gp/FITCInferenceMethod.h>
-#ifdef USE_GPL_SHOGUN
-
-
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -429,5 +426,3 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 
 	return result;
 }
-
-#endif //USE_GPL_SHOGUN

@@ -323,5 +323,5 @@ TEST(NLOPTMinimizer,test2)
 	delete b;
 	delete opt;
 }
-#endif /*  #ifdef HAVE_NLOPT */
+#endif /* HAVE_NLOPT */
 #endif //USE_GPL_SHOGUN
