@@ -17,12 +17,12 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapack-dev cmake \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
-    liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-scipy \
+    liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
     python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
     exuberant-ctags
-    
+
 RUN pip install sphinxcontrib-bibtex
 
 RUN gem install narray
