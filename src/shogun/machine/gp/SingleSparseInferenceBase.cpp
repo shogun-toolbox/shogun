@@ -316,6 +316,20 @@ double CSingleSparseInferenceBase::nlopt_function(unsigned n, const double* x, d
 void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
 {
 	m_opt_inducing_features=is_optmization;
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
+	if (m_opt_inducing_features)
+	{
+		check_fully_sparse();
+		REQUIRE(m_fully_sparse,"Please use a kernel which has the functionality about optimizing inducing features\n");
+	}
+#else
+	SG_WARNING("For this functionality we require NLOPT library\n");
+#endif //HAVE_NLOPT
+#else 
+	SG_WARNING("For this functionality we require NLOPT (GPL License) library\n");
+#endif //USE_GPL_SHOGUN
+
 }
 
 void CSingleSparseInferenceBase::optimize_inducing_features()
@@ -324,9 +338,6 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 #ifdef HAVE_NLOPT
 	if (!m_opt_inducing_features)
 		return;
-
-	check_fully_sparse();
-	REQUIRE(m_fully_sparse,"Please use a kernel which supports to optimize inducing features\n");
 
 	CSingleSparseInferenceCostFunction *cost_fun=new CSingleSparseInferenceCostFunction();
 	SG_REF(this);
@@ -338,11 +349,7 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 
 	delete cost_fun;
 	delete opt;
-#else
-	SG_PRINT("For this functionality we require NLOPT library\n");
 #endif //HAVE_NLOPT
-#else 
-	SG_PRINT("For this functionality we require NLOPT (GPL License) library\n");
 #endif //USE_GPL_SHOGUN
 }
 
