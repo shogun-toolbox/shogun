@@ -56,4 +56,5 @@ add_custom_target(cookbook
     COMMENT "Cookbook Sphinx building HTML"
     DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
             cookbook_sphinx_static meta_examples
-            cookbook_sphinx_linkcheck)
+            #cookbook_sphinx_linkcheck
+            )
