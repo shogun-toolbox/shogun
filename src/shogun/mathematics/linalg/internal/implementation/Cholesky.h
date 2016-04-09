@@ -56,6 +56,9 @@ struct cholesky
 	/**Scalar type */
 	typedef typename Matrix::Scalar T;
 
+	/** Return type */
+	typedef SGMatrix<T> ReturnType;
+
 	/**Compute the cholesky decomposition \f$A = L L^{*}\f$ or \f$A = U^{*} U\f$ of a Hermitian positive definite matrix
 	 * @param A - the matrix whose cholesky decomposition is to be computed
 	 * @param lower - whether to compute the upper or lower triangular Cholesky factorization (default:lower)
