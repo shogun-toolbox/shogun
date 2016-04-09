@@ -21,7 +21,7 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
 
 if(NOT _PLY_SEARCH_SUCCESS MATCHES 0)
 	if(PLY_FIND_REQUIRED)
-		message(FATAL_ERROR
+		message(WARNING
 		"ply import failure:\n${_NUMPY_ERROR_VALUE}")
 	endif()
 	set(PLY_FOUND FALSE)
