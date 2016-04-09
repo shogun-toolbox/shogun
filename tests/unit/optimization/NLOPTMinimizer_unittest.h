@@ -35,7 +35,6 @@
 #ifndef NLOPTMINIMIZER_UNITTEST_H
 #define NLOPTMINIMIZER_UNITTEST_H
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
-#include <shogun/optimization/NLOPTMinimizer.h>
 using namespace shogun;
 class CPiecewiseQuadraticObject2;
 

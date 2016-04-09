@@ -35,6 +35,7 @@
 #include <gtest/gtest.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
+#include <shogun/optimization/NLOPTMinimizer.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
 	:CSGObject()
 {

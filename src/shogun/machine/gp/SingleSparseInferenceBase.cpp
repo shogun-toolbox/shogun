@@ -29,22 +29,80 @@
  *
  */
 
-
 #include <shogun/machine/gp/SingleSparseInferenceBase.h>
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-#include <nlopt.h>
+#include <shogun/optimization/NLOPTMinimizer.h>
 #include <shogun/features/DenseFeatures.h>
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
 
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
 using namespace shogun;
 using namespace Eigen;
+
+namespace shogun
+{
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/** Wrapper cost function used for the NLOPT minimizer */
+class CSingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
+{
+public:
+        CSingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
+        virtual ~CSingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
+        void set_target(CSingleSparseInferenceBase *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+			REQUIRE(m_obj,"Object not set\n");
+			m_obj->check_fully_sparse();
+			REQUIRE(m_obj->m_fully_sparse,"Can not compute gradient\n");
+		}
+	}
+        virtual float64_t get_cost()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		double nlz=m_obj->get_negative_log_marginal_likelihood();
+		return nlz;
+	}
+        virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		SGMatrix<float64_t>& lat_m=m_obj->m_inducing_features;
+		SGVector<double> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
+		return x;
+	}
+        virtual SGVector<float64_t> get_gradient()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_obj->compute_gradient();
+		TParameter* param=m_obj->m_gradient_parameters->get_parameter("inducing_features");
+		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(param);
+		return derivatives;
+	}
+        virtual SGVector<float64_t> get_lower_bound()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->m_lower_bound;
+	}
+        virtual SGVector<float64_t> get_upper_bound()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->m_upper_bound;
+	}
+private:
+        void init() { m_obj=NULL; }
+        CSingleSparseInferenceBase *m_obj;
+};
+#endif //DOXYGEN_SHOULD_SKIP_THIS
 
 CSingleSparseInferenceBase::CSingleSparseInferenceBase() : CSparseInferenceBase()
 {
@@ -258,6 +316,20 @@ double CSingleSparseInferenceBase::nlopt_function(unsigned n, const double* x, d
 void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
 {
 	m_opt_inducing_features=is_optmization;
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
+	if (m_opt_inducing_features)
+	{
+		check_fully_sparse();
+		REQUIRE(m_fully_sparse,"Please use a kernel which has the functionality about optimizing inducing features\n");
+	}
+#else
+	SG_WARNING("For this functionality we require NLOPT library\n");
+#endif //HAVE_NLOPT
+#else 
+	SG_WARNING("For this functionality we require NLOPT (GPL License) library\n");
+#endif //USE_GPL_SHOGUN
+
 }
 
 void CSingleSparseInferenceBase::optimize_inducing_features()
@@ -267,67 +339,18 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 	if (!m_opt_inducing_features)
 		return;
 
-	check_fully_sparse();
-	REQUIRE(m_fully_sparse,"Please use a kernel which supports to optimize inducing features\n");
+	CSingleSparseInferenceCostFunction *cost_fun=new CSingleSparseInferenceCostFunction();
+	SG_REF(this);
+	cost_fun->set_target(this);
+    
+	NLOPTMinimizer* opt=new NLOPTMinimizer(cost_fun);
+	opt->set_nlopt_parameters(NLOPT_LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
+	opt->minimize();
 
-	//features by samples
-	SGMatrix<float64_t>& lat_m=m_inducing_features;
-	SGVector<double> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
-
-	// create nlopt object and choose LBFGS
-	// optimization algorithm
-	nlopt_opt opt=nlopt_create(NLOPT_LD_LBFGS, lat_m.num_rows*lat_m.num_cols);
-
-	if (m_lower_bound.vlen>0)
-	{
-		if(m_lower_bound.vlen==1)
-			nlopt_set_lower_bounds1(opt, m_lower_bound[0]);
-		else
-		{
-			SGVector<double> lower_bound(lat_m.num_rows*lat_m.num_cols);
-			for(index_t j=0; j<lat_m.num_cols; j++)
-				std::copy(m_lower_bound.vector, m_lower_bound.vector+m_lower_bound.vlen,
-					lower_bound.vector+j*lat_m.num_rows);
-			// set lower bound
-			nlopt_set_lower_bounds(opt, lower_bound.vector);
-		}
-	}
-	if (m_upper_bound.vlen>0)
-	{
-		if(m_upper_bound.vlen==1)
-			nlopt_set_upper_bounds1(opt, m_upper_bound[0]);
-		else
-		{
-			SGVector<double> upper_bound(lat_m.num_rows*lat_m.num_cols);
-			for(index_t j=0; j<lat_m.num_cols; j++)
-				std::copy(m_upper_bound.vector, m_upper_bound.vector+m_upper_bound.vlen,
-					upper_bound.vector+j*lat_m.num_rows);
-			// set upper bound
-			nlopt_set_upper_bounds(opt, upper_bound.vector);
-		}
-	}
-
-	// set maximum number of evaluations
-	nlopt_set_maxeval(opt, m_max_ind_iterations);
-	// set absolute argument tolearance
-	nlopt_set_xtol_abs1(opt, m_ind_tolerance);
-	nlopt_set_ftol_abs(opt, m_ind_tolerance);
-
-	nlopt_set_min_objective(opt, CSingleSparseInferenceBase::nlopt_function, this);
-
-	// the minimum objective value, upon return
-	double minf;
-
-	// optimize our function
-	nlopt_result result=nlopt_optimize(opt, x.vector, &minf);
-	REQUIRE(result>0, "NLopt failed while optimizing objective function!\n");
-
-	// clean up
-	nlopt_destroy(opt);
-#else
-	SG_PRINT("For this functionality we require NLOPT library\n");
+	delete cost_fun;
+	delete opt;
 #endif //HAVE_NLOPT
-#else 
-	SG_PRINT("For this functionality we require NLOPT (GPL License) library\n");
 #endif //USE_GPL_SHOGUN
+}
+
 }

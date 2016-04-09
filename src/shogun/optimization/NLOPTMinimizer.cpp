@@ -29,14 +29,12 @@
  *
  */
 
-#ifdef USE_GPL_SHOGUN
-
 #include <shogun/lib/config.h>
 #include <algorithm>
 #include <shogun/optimization/NLOPTMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 using namespace shogun;
-
+#ifdef USE_GPL_SHOGUN
 NLOPTMinimizer::NLOPTMinimizer()
 	:FirstOrderMinimizer()
 {
@@ -82,7 +80,7 @@ float64_t NLOPTMinimizer::minimize()
 		{
 			nlopt_set_lower_bounds1(opt, bound[0]);
 		}
-		else
+		else if (bound.vlen>1)
 		{
 			REQUIRE(bound.vlen==m_target_variable.vlen,
 				"The length of target variable (%d) and the length of lower bound (%d) do not match\n",
@@ -95,7 +93,7 @@ float64_t NLOPTMinimizer::minimize()
 		{
 			nlopt_set_upper_bounds1(opt, bound[0]);
 		}
-		else
+		else if (bound.vlen>1)
 		{
 			REQUIRE(bound.vlen==m_target_variable.vlen,
 			"The length of target variable (%d) and the length of upper bound (%d) do not match\n",

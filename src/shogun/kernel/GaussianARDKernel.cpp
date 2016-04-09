@@ -103,7 +103,6 @@ void CGaussianARDKernel::precompute_squared()
 {
 	if (!lhs || !rhs)
 		return;
-	SG_SPRINT("called\n");
 	m_sq_lhs=precompute_squared_helper((CDotFeatures*) lhs);
 
 	if (lhs==rhs)
