@@ -93,18 +93,16 @@ void CQuadraticTimeMMD::Self::create_statistic_job()
 	{
 		case EStatisticType::UNBIASED_FULL:
 			statistic_job=mmd::UnbiasedFull(Nx);
-			permutation_job=mmd::WithinBlockPermutation<mmd::UnbiasedFull>(Nx);
 			break;
 		case EStatisticType::UNBIASED_INCOMPLETE:
 			statistic_job=mmd::UnbiasedIncomplete(Nx);
-			permutation_job=mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(Nx);
 			break;
 		case EStatisticType::BIASED_FULL:
 			statistic_job=mmd::BiasedFull(Nx);
-			permutation_job=mmd::WithinBlockPermutation<mmd::BiasedFull>(Nx);
 			break;
 		default : break;
 	};
+	permutation_job = mmd::WithinBlockPermutation(Nx, owner.get_statistic_type());
 	SG_SDEBUG("Leaving\n");
 }
 

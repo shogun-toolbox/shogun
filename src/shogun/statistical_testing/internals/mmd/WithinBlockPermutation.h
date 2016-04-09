@@ -26,6 +26,7 @@ namespace shogun
 
 template <typename T> class SGMatrix;
 template <typename T> class CGPUMatrix;
+enum class EStatisticType;
 
 namespace internal
 {
@@ -33,14 +34,15 @@ namespace internal
 namespace mmd
 {
 
-template <class Statistic>
 struct WithinBlockPermutation
 {
-	using return_type = typename Statistic::return_type;
-	WithinBlockPermutation(index_t n);
+	using return_type = float64_t;
+	WithinBlockPermutation(index_t, EStatisticType);
 	return_type operator()(SGMatrix<float64_t> kernel_matrix);
 //	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
-	index_t n_x;
+	const index_t n_x;
+	const EStatisticType stype;
+	std::vector<index_t> inds;
 };
 
 }

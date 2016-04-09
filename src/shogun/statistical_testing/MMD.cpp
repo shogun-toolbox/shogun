@@ -93,18 +93,16 @@ void CMMD::Self::create_statistic_job()
 	{
 		case EStatisticType::UNBIASED_FULL:
 			statistic_job = mmd::UnbiasedFull(Bx);
-			permutation_job = mmd::WithinBlockPermutation<mmd::UnbiasedFull>(Bx);
 			break;
 		case EStatisticType::UNBIASED_INCOMPLETE:
 			statistic_job = mmd::UnbiasedIncomplete(Bx);
-			permutation_job = mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(Bx);
 			break;
 		case EStatisticType::BIASED_FULL:
 			statistic_job = mmd::BiasedFull(Bx);
-			permutation_job = mmd::WithinBlockPermutation<mmd::BiasedFull>(Bx);
 			break;
 		default : break;
 	};
+	permutation_job = mmd::WithinBlockPermutation(Bx, statistic_type);
 }
 
 void CMMD::Self::create_variance_job()

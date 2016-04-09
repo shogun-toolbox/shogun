@@ -238,7 +238,7 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 	EXPECT_NEAR(statistic, 0.54418915736201567, 1E-8);
 }
 
-TEST(QuadraticTimeMMD,compute_variance_null)
+TEST(QuadraticTimeMMD, compute_variance_null)
 {
 	index_t m=8;
 	index_t d=3;
@@ -289,7 +289,7 @@ TEST(QuadraticTimeMMD,compute_variance_null)
 	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
 }
 
-TEST(QuadraticTimeMMD, perform_test_permutation)
+TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 {
 	const index_t m=20;
 	const index_t n=30;
@@ -317,24 +317,92 @@ TEST(QuadraticTimeMMD, perform_test_permutation)
 	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
 	mmd->set_kernel(kernel);
 
-	index_t num_null_samples=250;
+	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
 	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
-
-	// biased case
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
 	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
+}
 
-	// unbiased case
+TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
+{
+	const index_t m=20;
+	const index_t n=30;
+	const index_t dim=3;
+
+	// use fixed seed
+	sg_rand->set_seed(12345);
+
+	float64_t difference=0.5;
+
+	// streaming data generator for mean shift distributions
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	// stream some data from generator
+	CFeatures* feat_p=gen_p->get_streamed_features(m);
+	CFeatures* feat_q=gen_q->get_streamed_features(n);
+
+	// shoguns kernel width is different
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	// create MMD instance, convienience constructor
+	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	mmd->set_kernel(kernel);
+
+	index_t num_null_samples=10;
+	mmd->set_num_null_samples(num_null_samples);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
 	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
-	p_value=mmd->compute_p_value(mmd->compute_statistic());
+	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
+	EXPECT_NEAR(p_value, 0.0, 1E-10);
+}
+
+TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
+{
+	const index_t m=20;
+	const index_t n=20;
+	const index_t dim=3;
+
+	// use fixed seed
+	sg_rand->set_seed(12345);
+
+	float64_t difference=0.5;
+
+	// streaming data generator for mean shift distributions
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	// stream some data from generator
+	CFeatures* feat_p=gen_p->get_streamed_features(m);
+	CFeatures* feat_q=gen_q->get_streamed_features(n);
+
+	// shoguns kernel width is different
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	// create MMD instance, convienience constructor
+	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	mmd->set_kernel(kernel);
+
+	index_t num_null_samples=10;
+	mmd->set_num_null_samples(num_null_samples);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
+
+	// compute p-value using permutation for null distribution and
+	// assert against local machine computed result
+	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
+	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
 
@@ -366,7 +434,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
 	mmd->set_kernel(kernel);
 
-	index_t num_null_samples=250;
+	index_t num_null_samples=10;
 	index_t num_eigenvalues=10;
 	mmd->set_num_null_samples(num_null_samples);
 	mmd->set_null_approximation_method(ENullApproximationMethod::MMD2_SPECTRUM);
@@ -386,5 +454,5 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	// assert against local machine computed result
 	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_spectrum, 0.004, 1E-10);
+	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
 }
