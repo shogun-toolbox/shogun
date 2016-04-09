@@ -39,14 +39,14 @@
 
 namespace shogun
 {
-class CSingleSparseInferenceCostFunction;
+class SingleSparseInferenceCostFunction;
 
 /** @brief The sparse inference base class
  * for classification and regression for 1-D labels (1D regression and binary classification)
  */
 class CSingleSparseInferenceBase: public CSparseInferenceBase
 {
-friend class CSingleSparseInferenceCostFunction;
+friend class SingleSparseInferenceCostFunction;
 
 public:
 	/** default constructor */
