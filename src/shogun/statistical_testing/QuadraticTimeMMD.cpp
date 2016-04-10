@@ -89,6 +89,7 @@ void CQuadraticTimeMMD::Self::create_statistic_job()
 	SG_SDEBUG("Entering\n");
 	const DataManager& dm=owner.get_data_manager();
 	auto Nx=dm.num_samples_at(0);
+	auto Ny=dm.num_samples_at(1);
 	switch (owner.get_statistic_type())
 	{
 		case EStatisticType::UNBIASED_FULL:
@@ -102,7 +103,7 @@ void CQuadraticTimeMMD::Self::create_statistic_job()
 			break;
 		default : break;
 	};
-	permutation_job = mmd::WithinBlockPermutation(Nx, owner.get_statistic_type());
+	permutation_job = mmd::WithinBlockPermutation(Nx, Ny, owner.get_statistic_type());
 	SG_SDEBUG("Leaving\n");
 }
 

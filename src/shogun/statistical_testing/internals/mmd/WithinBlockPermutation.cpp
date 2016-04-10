@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
+#include <unordered_map>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
@@ -32,84 +33,89 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-WithinBlockPermutation::WithinBlockPermutation(index_t n, EStatisticType type)
-: n_x(n), stype(type)
+WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisticType type)
+: n_x(nx), n_y(ny), stype(type), terms()
 {
+	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
+	std::fill(&terms.term[0], &terms.term[2]+1, 0);
+	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
+}
+
+void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
+{
+	if (i<n_x && j<n_x)
+	{
+		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 1!\n", i, j, val);
+		terms.term[0]+=val;
+		if (i==j)
+			terms.diag[0]+=val;
+	}
+	else if (i>=n_x && j>=n_x)
+	{
+		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 2!\n", i, j, val);
+		terms.term[1]+=val;
+		if (i==j)
+			terms.diag[1]+=val;
+	}
+	else if (i>=n_x && j<n_x)
+	{
+		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 3!\n", i, j, val);
+		terms.term[2]+=val;
+		if (i-n_x==j)
+			terms.diag[2]+=val;
+	}
 }
 
 float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 {
 	SG_SDEBUG("Entering!\n");
-	inds.resize(km.num_rows);
-	std::iota(inds.data(), inds.data()+inds.size(), 0);
-	SGVector<index_t> permuted_inds(inds.data(), inds.size(), false);
+	SGVector<index_t> permuted_inds(n_x+n_y);
+	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
 	CMath::permute(permuted_inds);
 
-	const index_t n_y=km.num_rows-n_x;
-	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
+	std::unordered_map<index_t, index_t> inds;
+	for (int i=0; i<permuted_inds.vlen; ++i)
+		inds.insert(std::make_pair(permuted_inds[i], i));
 
-	auto term_1=0.0;
-	for (auto i=0; i<n_x; ++i)
+	std::fill(&terms.term[0], &terms.term[2]+1, 0);
+	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
+
+	for (auto j=0; j<n_x+n_y; ++j)
 	{
-		for (auto j=0; j<n_x; ++j)
-		{
-			if (i>j)
-				term_1+=km(permuted_inds[i], permuted_inds[j]);
-		}
+		for (auto i=0; i<n_x+n_y; ++i)
+			add_term(km(i, j), inds.find(i)->second, inds.find(j)->second);
 	}
-	term_1*=2;
-	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", term_1);
-	if (stype==EStatisticType::BIASED_FULL)
+
+	SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", terms.term[0]);
+	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[1]);
+	if (stype!=EStatisticType::BIASED_FULL)
 	{
-		for (auto i=0; i<n_x; ++i)
-			term_1+=km(permuted_inds[i], permuted_inds[i]);
-		SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", term_1);
-		term_1/=n_x*n_x;
+		terms.term[0]-=terms.diag[0];
+		terms.term[1]-=terms.diag[1];
+		SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[0]);
+		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[1]);
+		terms.term[0]/=n_x*(n_x-1);
+		terms.term[1]/=n_y*(n_y-1);
 	}
 	else
-		term_1/=n_x*(n_x-1);
-	SG_SDEBUG("term_1 (normalized) = %f!\n", term_1);
+	{
+		terms.term[0]/=n_x*n_x;
+		terms.term[1]/=n_y*n_y;
+	}
+	SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[0]);
+	SG_SDEBUG("term_2 (normalized) = %f!\n", terms.term[1]);
 
-	auto term_2=0.0;
-	for (auto i=n_x; i<n_x+n_y; ++i)
-	{
-		for (auto j=n_x; j<n_x+n_y; ++j)
-		{
-			if (i>j)
-				term_2+=km(permuted_inds[i], permuted_inds[j]);
-		}
-	}
-	term_2*=2.0;
-	SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", term_2);
-	if (stype==EStatisticType::BIASED_FULL)
-	{
-		for (auto i=n_x; i<n_x+n_y; ++i)
-			term_2+=km(permuted_inds[i], permuted_inds[i]);
-		SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", term_2);
-		term_2/=n_y*n_y;
-	}
-	else
-		term_2/=n_y*(n_y-1);
-	SG_SDEBUG("term_2 (normalized) = %f!\n", term_2);
-
-	auto term_3=0.0;
-	for (auto i=n_x; i<n_x+n_y; ++i)
-	{
-		for (auto j=0; j<n_x; ++j)
-			term_3+=km(permuted_inds[i], permuted_inds[j]);
-	}
-	SG_SDEBUG("term_3 sum (with diagonal) = %f!\n", term_3);
+	SG_SDEBUG("term_3 sum (with diagonal) = %f!\n", terms.term[2]);
 	if (stype==EStatisticType::UNBIASED_INCOMPLETE)
 	{
-		for (auto i=0; i<n_x; ++i)
-			term_3-=km(permuted_inds[i+n_x], permuted_inds[i]);
-		SG_SDEBUG("term_3 sum (without diagonal) = %f!\n", term_3);
-		term_3/=n_x*(n_x-1);
+		terms.term[2]-=terms.diag[2];
+		SG_SDEBUG("term_3 sum (without diagonal) = %f!\n", terms.term[2]);
+		terms.term[2]/=n_x*(n_x-1);
 	}
 	else
-		term_3/=n_x*n_y;
-	SG_SDEBUG("term_3 (normalized) = %f!\n", term_3);
+		terms.term[2]/=n_x*n_y;
+	SG_SDEBUG("term_3 (normalized) = %f!\n", terms.term[2]);
 
 	SG_SDEBUG("Leaving!\n");
-	return term_1+term_2-2*term_3;
+	return terms.term[0]+terms.term[1]-2*terms.term[2];
 }

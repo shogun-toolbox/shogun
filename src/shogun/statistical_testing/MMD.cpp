@@ -89,6 +89,7 @@ void CMMD::Self::create_statistic_job()
 {
 	const DataManager& dm = owner.get_data_manager();
 	auto Bx = dm.blocksize_at(0);
+	auto By = dm.blocksize_at(1);
 	switch (statistic_type)
 	{
 		case EStatisticType::UNBIASED_FULL:
@@ -102,7 +103,7 @@ void CMMD::Self::create_statistic_job()
 			break;
 		default : break;
 	};
-	permutation_job = mmd::WithinBlockPermutation(Bx, statistic_type);
+	permutation_job = mmd::WithinBlockPermutation(Bx, By, statistic_type);
 }
 
 void CMMD::Self::create_variance_job()

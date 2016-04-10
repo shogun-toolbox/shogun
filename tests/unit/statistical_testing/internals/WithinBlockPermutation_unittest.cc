@@ -51,16 +51,25 @@ using namespace Eigen;
 TEST(WithinBlockPermutation, biased_full)
 {
 	const index_t dim=2;
-	const index_t n=6;
-	const index_t m=4;
+	const index_t n=13;
+	const index_t m=7;
 
 	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
 
-	SGMatrix<float64_t> data(dim, n+m);
-	std::iota(data.matrix, data.matrix+dim*(n+m), 1);
+	SGMatrix<float64_t> data_p(dim, n);
+	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
+	std::for_each(data_p.matrix, data_p.matrix+dim*n, [&n](float64_t& val) { val/=n; });
 
-	auto feats=new CDenseFeatures<float64_t>(data);
+	SGMatrix<float64_t> data_q(dim, m);
+	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
+	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
+
+	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats=feats_p->create_merged_copy(feats_q);
 	SG_REF(feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	auto kernel=some<CGaussianKernel>();
 	kernel->set_width(2.0);
@@ -69,7 +78,7 @@ TEST(WithinBlockPermutation, biased_full)
 	auto mat=kernel->get_kernel_matrix();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, EStatisticType::BIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::BIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -101,22 +110,31 @@ TEST(WithinBlockPermutation, biased_full)
 	EXPECT_NEAR(result_1, result_2, 1E-15);
 	EXPECT_NEAR(result_1, result_3, 1E-15);
 
-	kernel->remove_lhs_and_rhs();
+	SG_UNREF(feats);
 }
 
 TEST(WithinBlockPermutation, unbiased_full)
 {
 	const index_t dim=2;
-	const index_t n=3;
-	const index_t m=4;
+	const index_t n=13;
+	const index_t m=7;
 
 	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
 
-	SGMatrix<float64_t> data(dim, n+m);
-	std::iota(data.matrix, data.matrix+dim*(n+m), 1);
+	SGMatrix<float64_t> data_p(dim, n);
+	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
+	std::for_each(data_p.matrix, data_p.matrix+dim*n, [&n](float64_t& val) { val/=n; });
 
-	auto feats=new CDenseFeatures<float64_t>(data);
+	SGMatrix<float64_t> data_q(dim, m);
+	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
+	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
+
+	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats=feats_p->create_merged_copy(feats_q);
 	SG_REF(feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	auto kernel=some<CGaussianKernel>();
 	kernel->set_width(2.0);
@@ -125,7 +143,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	auto mat=kernel->get_kernel_matrix();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, EStatisticType::UNBIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::UNBIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -157,22 +175,30 @@ TEST(WithinBlockPermutation, unbiased_full)
 	EXPECT_NEAR(result_1, result_2, 1E-15);
 	EXPECT_NEAR(result_1, result_3, 1E-15);
 
-	kernel->remove_lhs_and_rhs();
+	SG_UNREF(feats);
 }
 
 TEST(WithinBlockPermutation, unbiased_incomplete)
 {
 	const index_t dim=2;
-	const index_t n=5;
-	const index_t m=5;
+	const index_t n=10;
 
 	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
 
-	SGMatrix<float64_t> data(dim, n+m);
-	std::iota(data.matrix, data.matrix+dim*(n+m), 1);
+	SGMatrix<float64_t> data_p(dim, n);
+	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
+	std::for_each(data_p.matrix, data_p.matrix+dim*n, [&n](float64_t& val) { val/=n; });
 
-	auto feats=new CDenseFeatures<float64_t>(data);
+	SGMatrix<float64_t> data_q(dim, n);
+	std::iota(data_q.matrix, data_q.matrix+dim*n, n+1);
+	std::for_each(data_q.matrix, data_q.matrix+dim*n, [&n](float64_t& val) { val/=2*n; });
+
+	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats=feats_p->create_merged_copy(feats_q);
 	SG_REF(feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	auto kernel=some<CGaussianKernel>();
 	kernel->set_width(2.0);
@@ -181,7 +207,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, EStatisticType::UNBIASED_INCOMPLETE);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, EStatisticType::UNBIASED_INCOMPLETE);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -213,5 +239,5 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	EXPECT_NEAR(result_1, result_2, 1E-15);
 	EXPECT_NEAR(result_1, result_3, 1E-15);
 
-	kernel->remove_lhs_and_rhs();
+	SG_UNREF(feats);
 }

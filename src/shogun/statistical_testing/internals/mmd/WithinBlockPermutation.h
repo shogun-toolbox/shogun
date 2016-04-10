@@ -34,15 +34,24 @@ namespace internal
 namespace mmd
 {
 
-struct WithinBlockPermutation
+class WithinBlockPermutation
 {
 	using return_type = float64_t;
-	WithinBlockPermutation(index_t, EStatisticType);
+public:
+	WithinBlockPermutation(index_t, index_t, EStatisticType);
 	return_type operator()(SGMatrix<float64_t> kernel_matrix);
 //	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
+private:
 	const index_t n_x;
+	const index_t n_y;
 	const EStatisticType stype;
-	std::vector<index_t> inds;
+	void add_term(float64_t, index_t, index_t);
+	struct terms_t
+	{
+		float64_t term[3];
+		float64_t diag[3];
+	};
+	terms_t terms;
 };
 
 }
