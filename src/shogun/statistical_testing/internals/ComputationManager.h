@@ -20,7 +20,6 @@
 #define COMPUTATION_MANAGER_H__
 
 #include <vector>
-#include <queue>
 #include <functional>
 #include <shogun/lib/common.h>
 
@@ -42,19 +41,18 @@ public:
 	SGMatrix<float64_t>& data(index_t i);
 
 	void enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job);
+	void compute_data_parallel_jobs();
+	void compute_task_parallel_jobs();
 	void done();
-
-	void compute();
-
-	std::vector<float64_t> next_result();
+	std::vector<float64_t>& result(index_t i);
 
 	ComputationManager& use_cpu();
 	ComputationManager& use_gpu();
 private:
 	bool gpu;
-	std::vector<SGMatrix<float64_t>> kernel_matrices;
-	std::vector<std::function<float64_t(SGMatrix<float64_t>)>> jobq;
-	std::queue<std::vector<float64_t>> resultq;
+	std::vector<SGMatrix<float64_t>> data_array;
+	std::vector<std::function<float64_t(SGMatrix<float64_t>)>> job_array;
+	std::vector<std::vector<float64_t>> result_array;
 };
 
 } // namespace internal

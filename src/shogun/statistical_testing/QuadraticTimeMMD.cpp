@@ -127,9 +127,9 @@ void CQuadraticTimeMMD::Self::compute_jobs(ComputationManager& cm) const
 {
 	SG_SDEBUG("Entering\n");
 	if (owner.use_gpu())
-		cm.use_gpu().compute();
+		cm.use_gpu().compute_task_parallel_jobs();
 	else
-		cm.use_cpu().compute();
+		cm.use_cpu().compute_task_parallel_jobs();
 	SG_SDEBUG("Leaving\n");
 }
 
@@ -188,8 +188,8 @@ std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_varia
 	cm.data(0)=kernel_matrix;
 
 	compute_jobs(cm);
-	auto mmd=cm.next_result();
-	auto var=cm.next_result();
+	auto mmd=cm.result(0);
+	auto var=cm.result(1);
 	float64_t statistic=mmd[0];
 	float64_t variance=var[0];
 	cm.done();
@@ -211,14 +211,17 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 
 	ComputationManager cm;
 	create_computation_jobs();
-	cm.enqueue_job(permutation_job);
 	cm.num_data(1);
 	cm.data(0)=kernel_matrix;
 
 	for (auto i=0; i<null_samples.vlen; ++i)
+		cm.enqueue_job(permutation_job);
+
+	compute_jobs(cm);
+
+	for (auto i=0; i<null_samples.vlen; ++i)
 	{
-		compute_jobs(cm);
-		auto mmd=cm.next_result();
+		auto mmd=cm.result(i);
 		float64_t statistic=mmd[0];
 		null_samples[i]=owner.normalize_statistic(statistic);
 	}

@@ -169,11 +169,11 @@ void CMMD::Self::compute_jobs(ComputationManager& cm) const
 {
 	if (use_gpu)
 	{
-		cm.use_gpu().compute();
+		cm.use_gpu().compute_data_parallel_jobs();
 	}
 	else
 	{
-		cm.use_cpu().compute();
+		cm.use_cpu().compute_data_parallel_jobs();
 	}
 }
 
@@ -207,8 +207,8 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 		compute_kernel(cm, blocks, kernel);
 		compute_jobs(cm);
 
-		auto mmds = cm.next_result();
-		auto vars = cm.next_result();
+		auto mmds = cm.result(0);
+		auto vars = cm.result(1);
 
 		for (size_t i = 0; i < mmds.size(); ++i)
 		{
@@ -284,7 +284,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 		for (auto j = 0; j < num_null_samples; ++j)
 		{
 			compute_jobs(cm);
-			auto mmds = cm.next_result();
+			auto mmds = cm.result(0);
 			for (size_t i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = mmds[i] - statistic[j];

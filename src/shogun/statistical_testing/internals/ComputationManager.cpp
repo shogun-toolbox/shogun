@@ -33,66 +33,80 @@ ComputationManager::~ComputationManager()
 
 void ComputationManager::num_data(index_t n)
 {
-	kernel_matrices.resize(n);
+	data_array.resize(n);
 }
 
 SGMatrix<float64_t>& ComputationManager::data(index_t i)
 {
-	return kernel_matrices[i];
+	return data_array[i];
 }
 
 void ComputationManager::enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job)
 {
-	jobq.push_back(job);
+	job_array.push_back(job);
 }
 
-void ComputationManager::compute()
+void ComputationManager::compute_data_parallel_jobs()
 {
-	for(auto job = jobq.begin(); job != jobq.end(); ++job)
+	result_array.resize(job_array.size());
+	for(size_t j=0; j<job_array.size(); ++j)
 	{
-		const auto& operation = *job;
-		std::vector<float64_t> results;
+		const auto& compute_job=job_array[j];
+		std::vector<float64_t> current_job_results(data_array.size());
 		if (gpu)
 		{
-			// TODO results = operation.compute_using_gpu(kernel_matrices);
+			// TODO current_job_results = compute_job.compute_using_gpu(data_array);
 		}
 		else
 		{
-			results.resize(kernel_matrices.size());
 #pragma omp parallel for
-			for (size_t i = 0; i < kernel_matrices.size(); ++i)
-			{
-				results[i] = operation(kernel_matrices[i]);
-			}
+			for (size_t i=0; i<data_array.size(); ++i)
+				current_job_results[i]=compute_job(data_array[i]);
 		}
-		resultq.push(results);
+		result_array[j]=current_job_results;
+	}
+}
+
+void ComputationManager::compute_task_parallel_jobs()
+{
+	result_array.resize(job_array.size());
+#pragma omp parallel for
+	for(size_t j=0; j<job_array.size(); ++j)
+	{
+		const auto& compute_job=job_array[j];
+		std::vector<float64_t> current_job_results(data_array.size());
+		if (gpu)
+		{
+			// TODO current_job_results = compute_job.compute_using_gpu(data_array);
+		}
+		else
+		{
+			for (size_t i=0; i<data_array.size(); ++i)
+				current_job_results[i]=compute_job(data_array[i]);
+		}
+		result_array[j]=current_job_results;
 	}
 }
 
 void ComputationManager::done()
 {
-	jobq.resize(0);
+	job_array.resize(0);
+	result_array.resize(0);
 }
 
-std::vector<float64_t> ComputationManager::next_result()
+std::vector<float64_t>& ComputationManager::result(index_t i)
 {
-	std::vector<float64_t> result;
-	if (!resultq.empty())
-	{
-		result = resultq.front();
-		resultq.pop();
-	}
-	return result;
+	return result_array[i];
 }
 
 ComputationManager& ComputationManager::use_gpu()
 {
-	gpu = true;
+	gpu=true;
 	return *this;
 }
 
 ComputationManager& ComputationManager::use_cpu()
 {
-	gpu = false;
+	gpu=false;
 	return *this;
 }
