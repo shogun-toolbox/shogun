@@ -49,7 +49,7 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** Wrapper cost function used for the NLOPT minimizer */
+/** Wrapped cost function used for the NLOPT minimizer */
 class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
 {
 public:
@@ -70,14 +70,14 @@ public:
         virtual float64_t get_cost()
 	{
 		REQUIRE(m_obj,"Object not set\n");
-		double nlz=m_obj->get_negative_log_marginal_likelihood();
+		float64_t nlz=m_obj->get_negative_log_marginal_likelihood();
 		return nlz;
 	}
         virtual SGVector<float64_t> obtain_variable_reference()
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		SGMatrix<float64_t>& lat_m=m_obj->m_inducing_features;
-		SGVector<double> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
+		SGVector<float64_t> x(lat_m.matrix,lat_m.num_rows*lat_m.num_cols,false);
 		return x;
 	}
         virtual SGVector<float64_t> get_gradient()
@@ -297,22 +297,6 @@ void CSingleSparseInferenceBase::set_tolearance_for_inducing_features(float64_t 
 	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
-double CSingleSparseInferenceBase::nlopt_function(unsigned n, const double* x, double* grad, void* func_data)
-{
-	CSingleSparseInferenceBase* object=static_cast<CSingleSparseInferenceBase *>(func_data);
-	REQUIRE(object,"func_data must be SingleSparseInferenceBase pointer\n");
-
-	double nlz=object->get_negative_log_marginal_likelihood();
-	object->compute_gradient();
-
-	TParameter* param=object->m_gradient_parameters->get_parameter("inducing_features");
-	SGVector<float64_t> derivatives=object->get_derivative_wrt_inducing_features(param);
-
-	std::copy(derivatives.vector,derivatives.vector+n,grad);
-
-	return nlz;
-}
-
 void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
 {
 	m_opt_inducing_features=is_optmization;

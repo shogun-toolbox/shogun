@@ -165,7 +165,7 @@ protected:
 	int m_max_linesearch;
 
 	/** The line search algorithm.*/
-	int m_linesearch;
+	ELBFGSLineSearch m_linesearch;
 
 	/** The maximum number of iterations for L-BFGS update.*/
 	int m_max_iterations;

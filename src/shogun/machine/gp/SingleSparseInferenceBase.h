@@ -225,16 +225,6 @@ protected:
 private:
 	/* init */
 	void init();
-
-	/** helper function is passed to the nlopt API
-	 *
-	 * @param n the length of the variables to be optimized (minimized)
-	 * @param x pointer of the variables
-	 * @param grad pointer of gradients of current x to be stored
-	 * @param func_data pointer of extra information used in opitmization
-	 * @return negative marginal log likelihood (minimized function value)
-	 * */
-	static double nlopt_function(unsigned n, const double* x, double* grad, void* func_data);
 };
 }
 #endif /* CSINGLESPARSEINFERENCEBASE_H */
