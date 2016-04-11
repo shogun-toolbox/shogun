@@ -43,23 +43,23 @@ WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisti
 
 void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
 {
-	if (i<n_x && j<n_x)
+	if (i<n_x && j<n_x && i<=j)
 	{
-		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 1!\n", i, j, val);
+		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_0!\n", i, j, val);
 		terms.term[0]+=val;
 		if (i==j)
 			terms.diag[0]+=val;
 	}
-	else if (i>=n_x && j>=n_x)
+	else if (i>=n_x && j>=n_x && i<=j)
 	{
-		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 2!\n", i, j, val);
+		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_1!\n", i, j, val);
 		terms.term[1]+=val;
 		if (i==j)
 			terms.diag[1]+=val;
 	}
 	else if (i>=n_x && j<n_x)
 	{
-		SG_SDEBUG("Adding KernelMatrix(%d,%d)=%f to term 3!\n", i, j, val);
+		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_2!\n", i, j, val);
 		terms.term[2]+=val;
 		if (i-n_x==j)
 			terms.diag[2]+=val;
@@ -86,35 +86,37 @@ float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 			add_term(km(i, j), inds.find(i)->second, inds.find(j)->second);
 	}
 
-	SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", terms.term[0]);
-	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[1]);
+	terms.term[0]=2*(terms.term[0]-terms.diag[0]);
+	terms.term[1]=2*(terms.term[1]-terms.diag[1]);
+	SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", terms.term[0]);
+	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[1]);
 	if (stype!=EStatisticType::BIASED_FULL)
 	{
-		terms.term[0]-=terms.diag[0];
-		terms.term[1]-=terms.diag[1];
-		SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[0]);
-		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[1]);
 		terms.term[0]/=n_x*(n_x-1);
 		terms.term[1]/=n_y*(n_y-1);
 	}
 	else
 	{
+		terms.term[0]+=terms.diag[0];
+		terms.term[1]+=terms.diag[1];
+		SG_SDEBUG("term_0 sum (with diagonal) = %f!\n", terms.term[0]);
+		SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", terms.term[1]);
 		terms.term[0]/=n_x*n_x;
 		terms.term[1]/=n_y*n_y;
 	}
-	SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[0]);
-	SG_SDEBUG("term_2 (normalized) = %f!\n", terms.term[1]);
+	SG_SDEBUG("term_0 (normalized) = %f!\n", terms.term[0]);
+	SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[1]);
 
-	SG_SDEBUG("term_3 sum (with diagonal) = %f!\n", terms.term[2]);
+	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[2]);
 	if (stype==EStatisticType::UNBIASED_INCOMPLETE)
 	{
 		terms.term[2]-=terms.diag[2];
-		SG_SDEBUG("term_3 sum (without diagonal) = %f!\n", terms.term[2]);
+		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[2]);
 		terms.term[2]/=n_x*(n_x-1);
 	}
 	else
 		terms.term[2]/=n_x*n_y;
-	SG_SDEBUG("term_3 (normalized) = %f!\n", terms.term[2]);
+	SG_SDEBUG("term_2 (normalized) = %f!\n", terms.term[2]);
 
 	SG_SDEBUG("Leaving!\n");
 	return terms.term[0]+terms.term[1]-2*terms.term[2];
