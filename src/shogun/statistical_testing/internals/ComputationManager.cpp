@@ -48,43 +48,61 @@ void ComputationManager::enqueue_job(std::function<float64_t(SGMatrix<float64_t>
 
 void ComputationManager::compute_data_parallel_jobs()
 {
+	// this is used when there are more number of data blocks to be processed
+	// than there are jobs
 	result_array.resize(job_array.size());
-	for(size_t j=0; j<job_array.size(); ++j)
+	for (size_t j=0; j<job_array.size(); ++j)
+		result_array[j].resize(data_array.size());
+
+	if (gpu)
 	{
-		const auto& compute_job=job_array[j];
-		std::vector<float64_t> current_job_results(data_array.size());
-		if (gpu)
-		{
-			// TODO current_job_results = compute_job.compute_using_gpu(data_array);
-		}
-		else
-		{
+		// TODO current_job_results = compute_job.compute_using_gpu(data_array);
+	}
+	else
+	{
 #pragma omp parallel for
-			for (size_t i=0; i<data_array.size(); ++i)
-				current_job_results[i]=compute_job(data_array[i]);
+		for (size_t i=0; i<data_array.size(); ++i)
+		{
+			// using a temporary vector to hold the result, because it is
+			// cache friendly, since the original result matrix would lead
+			// to several cache misses, specially because the data is also
+			// being used here
+			std::vector<float64_t> current_data_results(job_array.size());
+			for (size_t j=0; j<job_array.size(); ++j)
+			{
+				const auto& compute_job=job_array[j];
+				current_data_results[j]=compute_job(data_array[i]);
+			}
+			// data is no more required, less cache miss when we just have to
+			// store the results
+			for (size_t j=0; j<current_data_results.size(); ++j)
+				result_array[j][i]=current_data_results[j];
 		}
-		result_array[j]=current_job_results;
 	}
 }
 
 void ComputationManager::compute_task_parallel_jobs()
 {
+	// this is used when there are more number of jobs to be processed
+	// than there are data blocks
 	result_array.resize(job_array.size());
-#pragma omp parallel for
-	for(size_t j=0; j<job_array.size(); ++j)
+	for (size_t j=0; j<job_array.size(); ++j)
+		result_array[j].resize(data_array.size());
+
+	if (gpu)
 	{
-		const auto& compute_job=job_array[j];
-		std::vector<float64_t> current_job_results(data_array.size());
-		if (gpu)
+		// TODO current_job_results = compute_job.compute_using_gpu(data_array);
+	}
+	else
+	{
+#pragma omp parallel for
+		for (size_t j=0; j<job_array.size(); ++j)
 		{
-			// TODO current_job_results = compute_job.compute_using_gpu(data_array);
-		}
-		else
-		{
+			const auto& compute_job=job_array[j];
+			// result_array[j][i] is contiguous, cache miss is minimized
 			for (size_t i=0; i<data_array.size(); ++i)
-				current_job_results[i]=compute_job(data_array[i]);
+				result_array[j][i]=compute_job(data_array[i]);
 		}
-		result_array[j]=current_job_results;
 	}
 }
 
