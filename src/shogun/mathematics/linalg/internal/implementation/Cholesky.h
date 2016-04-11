@@ -64,7 +64,7 @@ struct cholesky
 	 * @param lower - whether to compute the upper or lower triangular Cholesky factorization (default:lower)
 	 * @return the upper or lower triangular Cholesky factorization
 	 */
-	static SGMatrix<T> compute(Matrix A, bool lower);
+	static ReturnType compute(Matrix A, bool lower);
 
 };
 
@@ -88,12 +88,12 @@ struct cholesky<Backend::EIGEN3, Matrix>
 	 * @param lower - whether to compute the upper or lower triangular Cholesky factorization (default:lower)
 	 * @return the upper or lower triangular Cholesky factorization
 	 */
-	static SGMatrix<T> compute(SGMatrix<T> A, bool lower)
+	static ReturnType compute(SGMatrix<T> A, bool lower)
 	{
 		//creating eigen3 dense matrices
 		Eigen::Map<MatrixXt> map_A(A.matrix, A.num_rows, A.num_cols);
 
-		SGMatrix<T> cho(A.num_rows,A.num_cols);
+		ReturnType cho(A.num_rows,A.num_cols);
 		cho.set_const(0.0);
 		Eigen::Map<MatrixXt> map_cho(cho.matrix, cho.num_rows, cho.num_cols);
 
