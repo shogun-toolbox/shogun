@@ -34,11 +34,63 @@
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/optimization/FirstOrderCostFunction.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+
 
 using namespace Eigen;
 
 namespace shogun
 {
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+class KLInferenceMethodCostFunction: public FirstOrderCostFunction
+{
+public:
+        KLInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+        virtual ~KLInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+        void set_target(CKLInferenceMethod *obj)
+        {
+                if(obj!=m_obj)
+                {
+                        SG_REF(obj);
+                        SG_UNREF(m_obj);
+                        m_obj=obj;
+                }
+        }
+        virtual float64_t get_cost()
+        {
+                REQUIRE(m_obj,"Object not set\n");
+                bool status = m_obj->lbfgs_precompute();
+                if (!status)
+                        return CMath::NOT_A_NUMBER;
+                float64_t nlml=m_obj->get_nlml_wrt_parameters();
+                return nlml;
+        
+        }
+        virtual SGVector<float64_t> obtain_variable_reference()
+        {
+                REQUIRE(m_obj,"Object not set\n");
+                m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
+                return m_obj->m_alpha;
+        }
+        virtual SGVector<float64_t> get_gradient()
+        {
+                REQUIRE(m_obj,"Object not set\n");
+                SGVector<float64_t> derivatives(m_derivatives.vector, m_derivatives.vlen, false);
+                m_obj->get_gradient_of_nlml_wrt_parameters(derivatives);
+                return derivatives;
+        }
+private:
+        SGVector<float64_t> m_derivatives;
+        void init()
+        {
+                m_obj=NULL;
+                m_derivatives = SGVector<float64_t>();
+        }
+        CKLInferenceMethod *m_obj;
+};
+#endif //DOXYGEN_SHOULD_SKIP_THIS
 
 CKLInferenceMethod::CKLInferenceMethod() : CInferenceMethod()
 {
@@ -254,27 +306,6 @@ SGMatrix<float64_t> CKLInferenceMethod::get_posterior_covariance()
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
-	float64_t *gradient, const int dim, const float64_t step)
-{
-	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CKLInferenceMethod * obj_prt
-		= static_cast<CKLInferenceMethod *>(obj);
-
-	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
-
-	bool status = obj_prt->lbfgs_precompute();
-	if (!status)
-		return CMath::NOT_A_NUMBER;
-
-	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
-
-	SGVector<float64_t> sg_gradient(gradient, dim, false);
-	obj_prt->get_gradient_of_nlml_wrt_parameters(sg_gradient);
-
-	return nlml;
-}
-
 CVariationalGaussianLikelihood* CKLInferenceMethod::get_variational_likelihood() const
 {
 	check_variational_likelihood(m_model);
@@ -380,29 +411,39 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_mean(const TParameter
 
 float64_t CKLInferenceMethod::lbfgs_optimization()
 {
-	lbfgs_parameter_t lbfgs_param;
-	lbfgs_param.m = m_m;
-	lbfgs_param.max_linesearch = m_max_linesearch;
-	lbfgs_param.linesearch = m_linesearch;
-	lbfgs_param.max_iterations = m_max_iterations;
-	lbfgs_param.delta = m_delta;
-	lbfgs_param.past = m_past;
-	lbfgs_param.epsilon = m_epsilon;
-	lbfgs_param.min_step = m_min_step;
-	lbfgs_param.max_step = m_max_step;
-	lbfgs_param.ftol = m_ftol;
-	lbfgs_param.wolfe = m_wolfe;
-	lbfgs_param.gtol = m_gtol;
-	lbfgs_param.xtol = m_xtol;
-	lbfgs_param.orthantwise_c = m_orthantwise_c;
-	lbfgs_param.orthantwise_start = m_orthantwise_start;
-	lbfgs_param.orthantwise_end = m_orthantwise_end;
+        KLInferenceMethodCostFunction *cost_fun=new KLInferenceMethodCostFunction();
+        SG_REF(this);
+        cost_fun->set_target(this);
 
-	float64_t nlml_opt=0;
-	void * obj_prt = static_cast<void *>(this);
-	lbfgs(m_alpha.vlen, m_alpha.vector, &nlml_opt,
-		CKLInferenceMethod::evaluate,
-		NULL, obj_prt, &lbfgs_param);
+        LBFGSMinimizer* opt=new LBFGSMinimizer(cost_fun);
+        ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+        switch(m_linesearch)
+        {
+        case (LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE):
+                linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+                break;
+        case (LBFGS_LINESEARCH_MORETHUENTE):
+                linesearch=ELBFGSLineSearch::MORETHUENTE;
+                break;
+        case (LBFGS_LINESEARCH_BACKTRACKING_ARMIJO):
+                linesearch=ELBFGSLineSearch::BACKTRACKING_ARMIJO;
+                break;
+        case (LBFGS_LINESEARCH_BACKTRACKING_WOLFE):
+                linesearch=ELBFGSLineSearch::BACKTRACKING_WOLFE;
+                break;
+        default :
+                SG_ERROR("Unsupported line search algorithm\n");
+        };
+    
+        opt->set_lbfgs_parameters(m_m, m_max_linesearch, linesearch,
+                m_max_iterations, m_delta, m_past, m_epsilon,
+                m_min_step, m_max_step, m_ftol, m_wolfe, m_gtol,
+                m_xtol, m_orthantwise_c, m_orthantwise_start,
+                m_orthantwise_end);
+        float64_t nlml_opt = opt->minimize();
+
+        delete cost_fun;
+        delete opt;
 
 	return nlml_opt;
 }

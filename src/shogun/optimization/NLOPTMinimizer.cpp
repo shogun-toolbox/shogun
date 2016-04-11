@@ -148,6 +148,8 @@ double NLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, doub
 	NLOPTMinimizer* obj_prt=static_cast<NLOPTMinimizer *>(func_data);
 	REQUIRE(obj_prt, "The instance object passed to NLopt optimizer should not be NULL\n");
 
+	double cost=obj_prt->m_fun->get_cost();
+
 	//get the gradient wrt variable_new
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 
@@ -156,8 +158,6 @@ double NLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, doub
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
-
-	double cost=obj_prt->m_fun->get_cost();
 	return cost;
 }
 

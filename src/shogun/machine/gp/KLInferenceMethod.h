@@ -57,6 +57,7 @@ namespace Eigen
 
 namespace shogun
 {
+class KLInferenceMethodCostFunction;
 
 /** @brief The KL approximation inference method class.
  *
@@ -76,6 +77,7 @@ namespace shogun
  */
 class CKLInferenceMethod: public CInferenceMethod
 {
+friend class KLInferenceMethodCostFunction;
 public:
 	/** default constructor */
 	CKLInferenceMethod();
@@ -473,16 +475,6 @@ protected:
 
 private:
 	void init();
-
-	/** helper function is passed to the LBFGS API
-	 * Note that this function should be static
-	 * */
-	static float64_t evaluate(void *obj,
-			const float64_t *parameters,
-			float64_t *gradient,
-			const int dim,
-			const float64_t step);
-
 };
 }
 #endif /* _KLINFERENCEMETHOD_H_ */
