@@ -32,7 +32,6 @@
 #include "LBFGSMinimizer_unittest.h"
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Map.h>
-
 LBFGSTestCostFunction::LBFGSTestCostFunction()
 	:FirstOrderCostFunction()
 {

@@ -50,11 +50,11 @@ namespace shogun
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** Wrapper cost function used for the NLOPT minimizer */
-class CSingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
+class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFunction
 {
 public:
-        CSingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
-        virtual ~CSingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
+        SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
+        virtual ~SingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
         void set_target(CSingleSparseInferenceBase *obj)
 	{
 		if(obj!=m_obj)
@@ -339,7 +339,7 @@ void CSingleSparseInferenceBase::optimize_inducing_features()
 	if (!m_opt_inducing_features)
 		return;
 
-	CSingleSparseInferenceCostFunction *cost_fun=new CSingleSparseInferenceCostFunction();
+	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
 	SG_REF(this);
 	cost_fun->set_target(this);
     
