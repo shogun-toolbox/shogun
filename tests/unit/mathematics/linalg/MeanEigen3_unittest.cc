@@ -89,10 +89,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_float)
 	SGMatrix<float64_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
 }
@@ -104,10 +102,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_float)
 	SGMatrix<float64_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
 }
@@ -119,10 +115,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_int32)
 	SGMatrix<int32_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
 }
@@ -134,10 +128,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_int32)
 	SGMatrix<int32_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
 }
@@ -149,10 +141,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_with_diag_int64)
 	SGMatrix<int64_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
 }
@@ -164,10 +154,8 @@ TEST(MeanEigen3, SGMatrix_asymmetric_eigen3_backend_no_diag_int64)
 	SGMatrix<int64_t> mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
 }
@@ -179,10 +167,8 @@ TEST(MeanEigen3, Eigen3_Matrix_asymmetric_eigen3_backend_with_diag)
 	Eigen::MatrixXd mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, false), 7.5, 1E-15);
 }
@@ -194,12 +180,108 @@ TEST(MeanEigen3, Eigen3_Matrix_asymmetric_eigen3_backend_no_diag)
 	Eigen::MatrixXd mat(m, n);
 
 	for (index_t i = 0; i < m; ++i)
-	{
 		for (index_t j = 0; j < n; ++j)
 			mat(i, j) = i * 10 + i * j + j + 1;
-	}
 
 	EXPECT_NEAR(linalg::mean<linalg::Backend::EIGEN3>(mat, true), 7.75, 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat);
+
+	EXPECT_NEAR(5/3.0, s[0], 1E-15);
+	EXPECT_NEAR(35/3.0, s[1], 1E-15);
+}
+
+TEST(MeanEigen3, Eigen3_Matrix_asymmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat);
+
+	EXPECT_NEAR(5/3.0, s[0], 1E-15);
+	EXPECT_NEAR(35/3.0, s[1], 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_rowwise_eigen3_backend_no_diag_col_more_than_row)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	SGMatrix<int64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat, true);
+
+	EXPECT_NEAR(2.5, s[0], 1E-15);
+	EXPECT_NEAR(12, s[1], 1E-15);
+}
+
+TEST(MeanEigen3, Eigen3_Matrix_symmetric_rowwise_eigen3_backend_no_diag_col_more_than_row)
+{
+	const index_t m = 2;
+	const index_t n = 3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat, true);
+
+	EXPECT_NEAR(2.5, s[0], 1E-15);
+	EXPECT_NEAR(12, s[1], 1E-15);
+}
+
+TEST(MeanEigen3, SGMatrix_asymmetric_rowwise_eigen3_backend_no_diag_row_more_than_col)
+{
+	const index_t m = 3;
+	const index_t n = 2;
+	SGMatrix<int64_t> mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat, true);
+
+	EXPECT_NEAR(1, s[0], 1E-15);
+	EXPECT_NEAR(10, s[1], 1E-15);
+	EXPECT_NEAR(20.5, s[2], 1E-15);
+}
+
+TEST(MeanEigen3, Eigen3_Matrix_asymmetric_rowwise_eigen3_backend_no_diag_row_more_than_col)
+{
+	const index_t m = 3;
+	const index_t n = 2;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i = 0; i < m; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j) = i * 10 + j * j;
+
+	auto s = linalg::rowwise_mean<linalg::Backend::EIGEN3>(mat, true);
+
+	EXPECT_NEAR(1, s[0], 1E-15);
+	EXPECT_NEAR(10, s[1], 1E-15);
+	EXPECT_NEAR(20.5, s[2], 1E-15);
 }
 
 #endif // HAVE_LINALG_LIB
