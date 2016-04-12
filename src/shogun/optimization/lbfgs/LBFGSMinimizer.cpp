@@ -150,6 +150,8 @@ float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
+	float64_t cost=obj_prt->m_fun->get_cost();
+
 	//get the gradient wrt variable_new
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 	REQUIRE(grad.vlen==dim,
@@ -157,7 +159,5 @@ float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
-
-	float64_t cost=obj_prt->m_fun->get_cost();
 	return cost;
 }
