@@ -40,7 +40,7 @@
 using namespace shogun;
 using namespace Eigen;
 
-TEST(LLTLinearSolver, compute_cholesky_lower)
+TEST(LLTLinearSolver, compute_cholesky_lower_eigen3)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
@@ -51,7 +51,7 @@ TEST(LLTLinearSolver, compute_cholesky_lower)
 	m(1,1)=2.5;
 
 	//lower triangular cholesky decomposition
-	SGMatrix<float64_t> L=linalg::cholesky(m);
+	SGMatrix<float64_t> L=linalg::cholesky<linalg::Backend::EIGEN3>(m);
 
 	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
 	Map<MatrixXd> map_L(L.matrix,L.num_rows,L.num_cols);
@@ -59,7 +59,7 @@ TEST(LLTLinearSolver, compute_cholesky_lower)
 		0.0, 1E-15);
 }
 
-TEST(LLTLinearSolver, compute_cholesky_upper)
+TEST(LLTLinearSolver, compute_cholesky_upper_eigen3)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
@@ -70,13 +70,12 @@ TEST(LLTLinearSolver, compute_cholesky_upper)
 	m(1,1)=2.5;
 
 	//upper triangular cholesky decomposition
-	SGMatrix<float64_t> U=linalg::cholesky(m,false);
+	SGMatrix<float64_t> U=linalg::cholesky<linalg::Backend::EIGEN3>(m,false);
 
 	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
 	Map<MatrixXd> map_U(U.matrix,U.num_rows,U.num_cols);
 	EXPECT_NEAR((map_A-map_U.transpose()*map_U).norm(),
 		0.0, 1E-15);
 }
-
 
 #endif // defined(HAVE_LINALG_LIB)
