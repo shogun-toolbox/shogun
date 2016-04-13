@@ -189,7 +189,7 @@ void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
  * Wrapper method for internal implementation of vector mean of values that works
  * with generic dense vectors
  * @param a vector whose mean has to be computed
- * @return the vector mean \f$\mean_i a_i\f$
+ * @return the vector mean \f$\bar a_i\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend, class Vector>
 typename implementation::int2float<typename Vector::Scalar>::floatType mean(Vector a)
@@ -206,10 +206,25 @@ typename implementation::int2float<typename Vector::Scalar>::floatType mean(Vect
  * @return the matrix mean \f$\1/N^2 \sum_{i,j=1}^N m_{i,j}\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
-typename implementation::int2float<typename Matrix::Scalar>
-			::floatType mean(Matrix m, bool no_diag)
+typename implementation::int2float<typename Matrix::Scalar>::floatType mean(
+        Matrix m, bool no_diag)
 {
 	return implementation::mean<backend,Matrix>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix rowwise mean of values 
+ * that works with generic dense matrices
+ *
+ * @param m the matrix whose rowwise mean has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the mean (default - false)
+ * @return the rowwise mean computed as \f$\1/N \sum_{j=1}^N m_{i,j}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+SGVector<typename implementation::rowwise_mean<backend,Matrix>::ReturnDataType> 
+	rowwise_mean(Matrix m, bool no_diag=false)
+{
+	return implementation::rowwise_mean<backend,Matrix>::compute(m, no_diag);
 }
 
 /**Wrapper method for internal implementation of cholesky decomposition of a Hermitian positive definite matrix

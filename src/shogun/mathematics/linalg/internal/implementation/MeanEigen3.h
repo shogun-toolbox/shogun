@@ -79,9 +79,7 @@ struct int2float<int64_t>
 };
  
 /**
- * @brief Generic class mean which provides a static compute method. This class
- * is specialized for different types of vectors and matrices, providing a mean
- * to deal with various vectors and matrices directly.
+ * @brief Generic class mean which provides a static compute method. 
  */
 template <enum Backend, class Matrix>
 struct mean
@@ -96,7 +94,7 @@ struct mean
 	 * Method that computes the vector mean
 	 *
 	 * @param a vector whose mean has to be computed
-	 * @return the vector mean \f$\mean_i a_i\f$
+	 * @return the vector mean \f$\bar a_i\f$
 	 */
 	static ReturnType compute(Matrix a);
 
@@ -108,6 +106,37 @@ struct mean
 	 * @return the matrix mean \f$\1/N^2\sum_{i,j=1}^N m_{i,j}\f$
 	 */
 	static ReturnType compute(Matrix a, bool no_diag=false);
+};
+
+/**
+ * @brief Generic class rowwise_mean which provides a static compute method.
+ */
+template <enum Backend, class Matrix>
+struct rowwise_mean
+{
+	/** Scalar type */
+	typedef typename Matrix::Scalar T;
+
+	/** int2float type */
+	typedef typename int2float<T>::floatType ReturnDataType;
+
+	/**
+	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
+	 */
+	static SGVector<ReturnDataType> compute(SGMatrix<T> m, bool no_diag);
+
+	/**
+	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<ReturnDataType> result, bool no_diag);
 };
 
 /**
@@ -127,7 +156,7 @@ struct mean<Backend::EIGEN3, Matrix>
 	 * Method that computes the mean of SGVectors using Eigen3
 	 *
 	 * @param a vector whose mean has to be computed
-	 * @return the vector mean \f$\mean_i a_i\f$
+	 * @return the vector mean \f\bar a_i\f$
 	 */
 	static ReturnType compute(SGVector<T> vec)
 	{
@@ -141,7 +170,7 @@ struct mean<Backend::EIGEN3, Matrix>
 	 *
 	 * @param a matrix whose mean has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the mean (default - false) 
-	 * @return the matrix mean \f$\mu_{i,j}m_{i,j}\f$
+	 * @return the matrix mean \f$\1/N^2 \sum_{i,j=1}^N m_{i,j}\f$
 	 */
         static ReturnType compute(SGMatrix<T> mat, bool no_diag=false)
 	{
@@ -166,6 +195,69 @@ struct mean<Backend::EIGEN3, Matrix>
 		}
 	}     
 }; 
+
+
+/**
+ * @brief Specialization of generic mean which works with SGMatrix  
+ * and uses Eigen3 as backend for computing rowwise mean.
+ */
+template <class Matrix>
+struct rowwise_mean<Backend::EIGEN3, Matrix>
+{
+	/** Scalar type */
+	typedef typename Matrix::Scalar T;
+
+	/** int2float type */
+	typedef typename int2float<T>::floatType ReturnDataType;
+
+	/** Eigen matrix type */
+	typedef Eigen::Matrix<T,Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
+
+	/**
+	 * Method that computes the rowwise mean of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise mean has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the mean
+	 * @return the rowwise mean computed as \f$\1/N \sum_{j=1}^N m_{i,j}\f$
+	 */
+	static SGVector<ReturnDataType> compute(SGMatrix<T> m, bool no_diag)
+	{
+		SGVector<ReturnDataType> result(m.num_rows);
+		compute(m, result, no_diag);
+		return result;
+	}
+
+	/**
+	 * Method that computes the rowwise mean of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise mean has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the mean
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<ReturnDataType> result, bool no_diag)
+	{
+		REQUIRE(mat.num_cols > 0, "Matrix column number cannot be zero!\n");
+
+		Eigen::Map<MatrixXt> m = mat;
+		SGVector<T> temp(m.rows());
+		temp = rowwise_sum<Backend::EIGEN3, SGMatrix<T> >::compute(mat, no_diag);
+
+		if (!no_diag)
+			for (index_t i = 0; i < m.rows(); ++i)
+				result[i] = temp[i] / ReturnDataType(m.cols()); 
+		else if (m.rows() <= m.cols())
+			for (index_t i = 0; i < m.rows(); ++i)
+				result[i] = temp[i] / ReturnDataType(m.cols() - 1); 
+		else
+		{
+			for (index_t i = 0; i < m.cols(); ++i) 
+				result[i] = temp[i] / ReturnDataType(m.cols() - 1);
+			for (index_t i = m.cols(); i < m.rows(); ++i)
+				result[i] = temp[i] / ReturnDataType(m.cols());
+		}       
+	}
+
+};
     
 }
              
