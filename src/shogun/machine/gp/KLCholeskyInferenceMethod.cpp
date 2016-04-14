@@ -113,7 +113,7 @@ CKLCholeskyInferenceMethod::~CKLCholeskyInferenceMethod()
 {
 }
 
-bool CKLCholeskyInferenceMethod::lbfgs_precompute()
+bool CKLCholeskyInferenceMethod::precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -273,7 +273,7 @@ void CKLCholeskyInferenceMethod::update_alpha()
 		m_s2=SGVector<float64_t>(len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 }
 
 void CKLCholeskyInferenceMethod::update_C()

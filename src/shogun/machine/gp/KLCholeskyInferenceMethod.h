@@ -131,7 +131,7 @@ protected:
 	 */
 	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
 
-	/** pre-compute the information for lbfgs optimization.
+	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
 	 * get_negative_log_marginal_likelihood_wrt_parameters()
 	 * and/or
@@ -140,7 +140,7 @@ protected:
 	 * @return true if precomputed parameters are valid
 	 *
 	 */
-	virtual bool lbfgs_precompute();
+	virtual bool precompute();
 
 	/** compute posterior Sigma matrix*/
 	virtual void update_Sigma();

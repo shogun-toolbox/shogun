@@ -462,6 +462,7 @@ private:
 	void init();
 
 protected:
+	/** minimizer */
 	Minimizer* m_minimizer;
 
 	/** covariance function */

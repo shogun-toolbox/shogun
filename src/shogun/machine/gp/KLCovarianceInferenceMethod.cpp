@@ -126,7 +126,7 @@ CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
 	return (CKLCovarianceInferenceMethod*)inference;
 }
 
-bool CKLCovarianceInferenceMethod::lbfgs_precompute()
+bool CKLCovarianceInferenceMethod::precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -330,7 +330,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 		m_A=SGMatrix<float64_t>(len, len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 }
 
 SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
