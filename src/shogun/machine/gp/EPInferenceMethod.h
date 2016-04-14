@@ -245,6 +245,11 @@ public:
 	/** update all matrices Expect gradients*/
 	virtual void update();
 
+	/** Set a minimizer
+	 *
+	 * @param minimizer minimizer used in inference method
+	 */
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 	/** update gradients */
 	virtual void compute_gradient();

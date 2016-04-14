@@ -187,7 +187,11 @@ public:
 	/** update matrices except gradients*/
 	virtual void update();
 
-
+        /** Set a minimizer
+         *
+         * @param minimizer minimizer used in inference method
+         */
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;

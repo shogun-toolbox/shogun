@@ -431,3 +431,9 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
 	}
 	return result;
 }
+
+void CSparseVGInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+}
+

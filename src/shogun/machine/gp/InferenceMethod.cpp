@@ -95,6 +95,7 @@ CInferenceMethod::~CInferenceMethod()
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
 	SG_UNREF(m_mean);
+	delete m_minimizer;
 }
 
 void CInferenceMethod::init()
@@ -116,10 +117,21 @@ void CInferenceMethod::init()
 	m_mean=NULL;
 	m_log_scale=0.0;
 	m_gradient_update=false;
+	m_minimizer=NULL;
 
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
 	SG_ADD(&m_E, "E", "the matrix used for multi classification", MS_NOT_AVAILABLE);
+}
+
+void CInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	REQUIRE(minimizer, "Minimizer must set\n");
+	if(minimizer!=m_minimizer)
+	{
+		delete m_minimizer;
+		m_minimizer=minimizer;
+	}
 }
 
 float64_t CInferenceMethod::get_marginal_likelihood_estimate(

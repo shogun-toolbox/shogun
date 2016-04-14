@@ -44,6 +44,7 @@
 #include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
+#include <shogun/optimization/Minimizer.h>
 
 namespace shogun
 {
@@ -386,6 +387,11 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_multiclass_E();
 
+	/** Set a minimizer
+	 *
+	 * @param minimizer minimizer used in inference method
+	 */
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -451,10 +457,13 @@ protected:
 
 	/** update gradients */
 	virtual void compute_gradient();
+
 private:
 	void init();
 
 protected:
+	Minimizer* m_minimizer;
+
 	/** covariance function */
 	CKernel* m_kernel;
 
