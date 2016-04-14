@@ -56,6 +56,11 @@ CExactInferenceMethod::~CExactInferenceMethod()
 {
 }
 
+void CExactInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+}
+
 void CExactInferenceMethod::compute_gradient()
 {
 	CInferenceMethod::compute_gradient();

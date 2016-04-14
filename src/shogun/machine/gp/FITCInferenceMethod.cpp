@@ -131,7 +131,7 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	//time complexity of the following operations is O(m*n)
 
 	// create eigen representations of chol_utr, dg, r, be
-    Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
+	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 			m_chol_utr.num_cols);
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
@@ -168,7 +168,7 @@ void CFITCInferenceMethod::update_chol()
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // inducing features Luu (m_chol_uu and eigen_chol_uu)
+	// inducing features Luu (m_chol_uu and eigen_chol_uu)
 	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
@@ -199,7 +199,7 @@ void CFITCInferenceMethod::update_chol()
 			V.adjoint()+MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // training features Luu (m_chol_utr and eigen_chol_utr)
+	// training features Luu (m_chol_utr and eigen_chol_utr)
 	m_chol_utr=SGMatrix<float64_t>(Lu.rows(), Lu.cols());
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 		m_chol_utr.num_cols);
@@ -246,7 +246,7 @@ void CFITCInferenceMethod::update_chol()
 void CFITCInferenceMethod::update_alpha()
 {
 	//time complexity O(m^2) since triangular.solve is O(m^2)
-    Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
+	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 		m_chol_utr.num_cols);
@@ -425,4 +425,9 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 		eigen_t).sum()-eigen_W.cwiseProduct(eigen_W).sum()-eigen_al.dot(eigen_al));
 
 	return result;
+}
+
+void CFITCInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }
