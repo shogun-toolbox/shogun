@@ -39,8 +39,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <numeric>
 
-#include <iostream>
-
 namespace shogun
 {
 
