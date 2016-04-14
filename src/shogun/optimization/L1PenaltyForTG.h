@@ -33,8 +33,6 @@
 #define L1PENALTYFORTG_H
 #include <shogun/optimization/L1Penalty.h>
 #include <shogun/lib/config.h>
-
-#include <iostream>
 namespace shogun
 {
 /** @brief The is the base class for L1 penalty/regularization within the FirstOrderMinimizer framework.

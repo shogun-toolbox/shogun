@@ -34,6 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
 #include <shogun/optimization/MinimizerContext.h>
+#include <shogun/optimization/Minimizer.h>
 #include <shogun/optimization/Penalty.h>
 namespace shogun
 {
@@ -51,11 +52,11 @@ namespace shogun
  * a context object to restore mutable variables if deserialization is actived (eg, CMinimizerContext )
  *
  */
-class FirstOrderMinimizer
+class FirstOrderMinimizer: public Minimizer
 {
 public: 
 	/** Default constructor */
-	FirstOrderMinimizer()
+	FirstOrderMinimizer():Minimizer()
 	{
 		init();
 	}
@@ -73,12 +74,6 @@ public:
 	virtual ~FirstOrderMinimizer()
 	{}
 
-	/** Do minimization and get the optimal value 
-	 * 
-	 * @return optimal value
-	 */
-	virtual float64_t minimize()=0;
-
 	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
@@ -93,6 +88,14 @@ public:
 	{
 		REQUIRE(fun,"The cost function must be not NULL\n");
 		m_fun=fun;
+	}
+
+	/** Unset cost function used in the minimizer
+	 *
+	 */
+	virtual void unset_cost_function()
+	{
+		m_fun=NULL;
 	}
 
 	/** Return a context object which stores mutable variables
