@@ -90,6 +90,9 @@ public:
 		m_fun=fun;
 	}
 
+	/** Unset cost function used in the minimizer
+	 *
+	 */
 	virtual void unset_cost_function()
 	{
 		m_fun=NULL;
