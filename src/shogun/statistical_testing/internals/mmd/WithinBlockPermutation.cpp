@@ -16,12 +16,9 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <unordered_map>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/GPUMatrix.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
@@ -37,6 +34,8 @@ WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisti
 : n_x(nx), n_y(ny), stype(type), terms()
 {
 	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
+	permuted_inds=SGVector<index_t>(n_x+n_y);
+	permuted_to_actual_inds.reserve(permuted_inds.vlen);
 	std::fill(&terms.term[0], &terms.term[2]+1, 0);
 	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
 }
@@ -69,13 +68,12 @@ void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
 float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 {
 	SG_SDEBUG("Entering!\n");
-	SGVector<index_t> permuted_inds(n_x+n_y);
+
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
 	CMath::permute(permuted_inds);
-
-	std::unordered_map<index_t, index_t> inds;
+	permuted_to_actual_inds.clear();
 	for (int i=0; i<permuted_inds.vlen; ++i)
-		inds.insert(std::make_pair(permuted_inds[i], i));
+		permuted_to_actual_inds.insert(std::make_pair(permuted_inds[i], i));
 
 	std::fill(&terms.term[0], &terms.term[2]+1, 0);
 	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
@@ -83,7 +81,7 @@ float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 	for (auto j=0; j<n_x+n_y; ++j)
 	{
 		for (auto i=0; i<n_x+n_y; ++i)
-			add_term(km(i, j), inds.find(i)->second, inds.find(j)->second);
+			add_term(km(i, j), permuted_to_actual_inds.find(i)->second, permuted_to_actual_inds.find(j)->second);
 	}
 
 	terms.term[0]=2*(terms.term[0]-terms.diag[0]);

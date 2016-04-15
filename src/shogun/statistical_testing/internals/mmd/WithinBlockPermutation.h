@@ -19,7 +19,9 @@
 #ifndef WITHIN_BLOCK_PERMUTATION_H_
 #define WITHIN_BLOCK_PERMUTATION_H_
 
+#include <unordered_map>
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -42,10 +44,13 @@ public:
 	return_type operator()(SGMatrix<float64_t> kernel_matrix);
 //	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
 private:
+	void add_term(float64_t, index_t, index_t);
+
 	const index_t n_x;
 	const index_t n_y;
 	const EStatisticType stype;
-	void add_term(float64_t, index_t, index_t);
+	SGVector<index_t> permuted_inds;
+	std::unordered_map<index_t, index_t> permuted_to_actual_inds;
 	struct terms_t
 	{
 		float64_t term[3];
