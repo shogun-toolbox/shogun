@@ -42,8 +42,6 @@
 
 namespace shogun
 {
-class KLDualInferenceMethodCostFunction;
-
 /** @brief The dual KL approximation inference method class.
  *
  * This inference process is described in the reference paper
@@ -135,7 +133,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 
 	/** compute the gradient wrt variational parameters

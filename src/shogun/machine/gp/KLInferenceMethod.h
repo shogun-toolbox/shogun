@@ -56,8 +56,6 @@ namespace Eigen
 
 namespace shogun
 {
-class KLInferenceMethodCostFunction;
-
 /** @brief The KL approximation inference method class.
  *
  * This inference method approximates the posterior likelihood function by using
