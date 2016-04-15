@@ -85,6 +85,7 @@ SGVector<float64_t> WithinBlockPermutationBatch::operator()(SGMatrix<float64_t> 
 	}
 
 	SGVector<float64_t> result(num_null_samples);
+#pragma omp parallel for
 	for (auto k=0; k<num_null_samples; ++k)
 	{
 		terms_t& t=terms[k];
