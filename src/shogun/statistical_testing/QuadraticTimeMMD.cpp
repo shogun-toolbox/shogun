@@ -44,10 +44,11 @@
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
-#include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
+#include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
 
 using namespace shogun;
 using namespace internal;
+using namespace mmd;
 
 struct CQuadraticTimeMMD::Self
 {
@@ -67,12 +68,11 @@ struct CQuadraticTimeMMD::Self
 	index_t num_eigenvalues;
 
 	std::function<float64_t(SGMatrix<float64_t>)> statistic_job;
-	std::function<float64_t(SGMatrix<float64_t>)> permutation_job;
 	std::function<float64_t(SGMatrix<float64_t>)> variance_job;
 };
 
 CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),
-	statistic_job(nullptr), permutation_job(nullptr), variance_job(nullptr)
+	statistic_job(nullptr), variance_job(nullptr)
 {
 }
 
@@ -89,21 +89,19 @@ void CQuadraticTimeMMD::Self::create_statistic_job()
 	SG_SDEBUG("Entering\n");
 	const DataManager& dm=owner.get_data_manager();
 	auto Nx=dm.num_samples_at(0);
-	auto Ny=dm.num_samples_at(1);
 	switch (owner.get_statistic_type())
 	{
 		case EStatisticType::UNBIASED_FULL:
-			statistic_job=mmd::UnbiasedFull(Nx);
+			statistic_job=UnbiasedFull(Nx);
 			break;
 		case EStatisticType::UNBIASED_INCOMPLETE:
-			statistic_job=mmd::UnbiasedIncomplete(Nx);
+			statistic_job=UnbiasedIncomplete(Nx);
 			break;
 		case EStatisticType::BIASED_FULL:
-			statistic_job=mmd::BiasedFull(Nx);
+			statistic_job=BiasedFull(Nx);
 			break;
 		default : break;
 	};
-	permutation_job = mmd::WithinBlockPermutation(Nx, Ny, owner.get_statistic_type());
 	SG_SDEBUG("Leaving\n");
 }
 
@@ -207,27 +205,18 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 {
 	SG_SDEBUG("Entering\n");
 	SGMatrix<float64_t> kernel_matrix=get_kernel_matrix();
-	SGVector<float64_t> null_samples(owner.get_num_null_samples());
 
-	ComputationManager cm;
-	create_computation_jobs();
-	cm.num_data(1);
-	cm.data(0)=kernel_matrix;
+	const DataManager& dm=owner.get_data_manager();
+	auto Nx=dm.num_samples_at(0);
+	auto Ny=dm.num_samples_at(1);
 
-	for (auto i=0; i<null_samples.vlen; ++i)
-		cm.enqueue_job(permutation_job);
-
-	compute_jobs(cm);
-
-	for (auto i=0; i<null_samples.vlen; ++i)
-	{
-		auto mmd=cm.result(i);
-		float64_t statistic=mmd[0];
-		null_samples[i]=owner.normalize_statistic(statistic);
-	}
-	cm.done();
-
+	WithinBlockPermutationBatch compute(Nx, Ny, owner.get_num_null_samples(), owner.get_statistic_type());
 	SG_SDEBUG("Leaving\n");
+	SGVector<float64_t> null_samples=compute(kernel_matrix);
+	std::for_each(null_samples.vector, null_samples.vector+null_samples.vlen, [this](float64_t& statistic)
+	{
+		statistic=owner.normalize_statistic(statistic);
+	});
 	return null_samples;
 }
 
@@ -250,7 +239,7 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 
 const std::function<float64_t(SGMatrix<float64_t>)> CQuadraticTimeMMD::get_direct_estimation_method() const
 {
-	return mmd::FullDirect();
+	return FullDirect();
 }
 
 const float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
