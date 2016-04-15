@@ -35,9 +35,7 @@ WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisti
 {
 	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
 	permuted_inds=SGVector<index_t>(n_x+n_y);
-	permuted_to_actual_inds.reserve(permuted_inds.vlen);
-	std::fill(&terms.term[0], &terms.term[2]+1, 0);
-	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
+	inverted_permuted_inds=SGVector<index_t>(permuted_inds.vlen);
 }
 
 void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
@@ -71,9 +69,8 @@ float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 
 	std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
 	CMath::permute(permuted_inds);
-	permuted_to_actual_inds.clear();
 	for (int i=0; i<permuted_inds.vlen; ++i)
-		permuted_to_actual_inds.insert(std::make_pair(permuted_inds[i], i));
+		inverted_permuted_inds[permuted_inds[i]]=i;
 
 	std::fill(&terms.term[0], &terms.term[2]+1, 0);
 	std::fill(&terms.diag[0], &terms.diag[2]+1, 0);
@@ -81,7 +78,7 @@ float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
 	for (auto j=0; j<n_x+n_y; ++j)
 	{
 		for (auto i=0; i<n_x+n_y; ++i)
-			add_term(km(i, j), permuted_to_actual_inds.find(i)->second, permuted_to_actual_inds.find(j)->second);
+			add_term(km(i, j), inverted_permuted_inds[i], inverted_permuted_inds[j]);
 	}
 
 	terms.term[0]=2*(terms.term[0]-terms.diag[0]);

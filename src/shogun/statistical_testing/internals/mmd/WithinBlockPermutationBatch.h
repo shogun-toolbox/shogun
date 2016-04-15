@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#ifndef WITHIN_BLOCK_PERMUTATION_H_
-#define WITHIN_BLOCK_PERMUTATION_H_
+#ifndef WITHIN_BLOCK_PERMUTATION_BATCH_H_
+#define WITHIN_BLOCK_PERMUTATION_BATCH_H_
 
+#include <vector>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 
@@ -35,27 +36,29 @@ namespace internal
 namespace mmd
 {
 
-class WithinBlockPermutation
+class WithinBlockPermutationBatch
 {
-	using return_type = float64_t;
+	using return_type = SGVector<float64_t>;
 public:
-	WithinBlockPermutation(index_t, index_t, EStatisticType);
+	WithinBlockPermutationBatch(index_t, index_t, index_t, EStatisticType);
 	return_type operator()(SGMatrix<float64_t> kernel_matrix);
 //	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
 private:
-	void add_term(float64_t, index_t, index_t);
+	struct terms_t;
+	void add_term(terms_t&, float64_t, index_t, index_t);
 
 	const index_t n_x;
 	const index_t n_y;
+	const index_t num_null_samples;
 	const EStatisticType stype;
 	SGVector<index_t> permuted_inds;
-	SGVector<index_t> inverted_permuted_inds;
+	std::vector<std::vector<index_t>> inverted_permuted_inds;
 	struct terms_t
 	{
 		float64_t term[3];
 		float64_t diag[3];
 	};
-	terms_t terms;
+	std::vector<terms_t> terms;
 };
 
 }
@@ -64,4 +67,4 @@ private:
 
 }
 
-#endif // WITHIN_BLOCK_PERMUTATION_H_
+#endif // WITHIN_BLOCK_PERMUTATION_BATCH_H_
