@@ -88,10 +88,10 @@ KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual SGVector<float64_t> get_gradient()
 	{
 		REQUIRE(m_obj,"Object not set\n");
-		//SGVector<float64_t> derivatives(m_derivatives.vector, m_derivatives.vlen, false);
 		m_obj->get_gradient_of_dual_objective_wrt_parameters(m_derivatives);
 		return m_derivatives;
 	}
+
 private:
 	SGVector<float64_t> m_derivatives;
 	void init()
@@ -149,6 +149,17 @@ public:
 				error_code);
 		}
 		return cost;
+	}
+
+protected:
+	/** Init before minimization */
+	virtual void init_minimization()
+	{
+		REQUIRE((m_linesearch == ELBFGSLineSearch::BACKTRACKING_ARMIJO) ||
+			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_WOLFE) ||
+			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE),
+			"The provided line search method is not supported. Please use backtracking line search methods\n");
+		LBFGSMinimizer::init_minimization();
 	}
 
 private:
