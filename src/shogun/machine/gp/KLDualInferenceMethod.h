@@ -37,7 +37,7 @@
 #define _KLDUALINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
-
+#include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/machine/gp/KLInferenceMethod.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 
@@ -129,7 +129,111 @@ public:
 	 * @param mod model to set
 	 */
 	void set_model(CLikelihoodModel* mod);
+
+
+	/** set L-BFGS parameters
+	 * For details please see shogun/optimization/lbfgs/lbfgs.h
+	 * @param m The number of corrections to approximate the inverse hessian matrix.
+	 * Default value is 100.
+	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update.
+	 * Default value is 1000.
+	 * @param linesearch The line search algorithm.
+	 * Default value is using the backtracking with the strong Wolfe condition line search
+	 * @param max_iterations The maximum number of iterations for L-BFGS update.
+	 * Default value is 1000.
+	 * @param delta Delta for convergence test based on the change of function value.
+	 * Default value is 0.
+	 * @param past Distance for delta-based convergence test.
+	 * Default value is 0.
+	 * @param epsilon Epsilon for convergence test based on the change of gradient.
+	 * Default value is 1e-5
+	 * @param min_step The minimum step of the line search.
+	 * The default value is 1e-20
+	 * @param max_step The maximum step of the line search.
+	 * The default value is 1e+20
+	 * @param ftol A parameter used in Armijo condition.
+	 * Default value is 1e-4
+	 * @param wolfe A parameter used in curvature condition.
+	 * Default value is 0.9
+	 * @param gtol A parameter used in Morethuente linesearch to control the accuracy.
+	 * Default value is 0.9
+	 * @param xtol The machine precision for floating-point values.
+	 * Default value is 1e-16.
+	 * @param orthantwise_c Coeefficient for the L1 norm of variables.
+	 * This parameter should be set to zero for standard minimization problems.
+	 * Setting this parameter to a positive value activates
+	 * Orthant-Wise Limited-memory Quasi-Newton (OWL-QN) method. Default value is 0.
+	 * @param orthantwise_start Start index for computing L1 norm of the variables.
+	 * This parameter is valid only for OWL-QN method. Default value is 0.
+	 * @param orthantwise_end End index for computing L1 norm of the variables.
+	 * Default value is 1.
+	 */
+	virtual void set_lbfgs_parameters(int m = 100,
+		int max_linesearch = 1000,
+		int linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE,
+		int max_iterations = 1000,
+		float64_t delta = 0.0,
+		int past = 0,
+		float64_t epsilon = 1e-5,
+		float64_t min_step = 1e-20,
+		float64_t max_step = 1e+20,
+		float64_t ftol = 1e-4,
+		float64_t wolfe = 0.9,
+		float64_t gtol = 0.9,
+		float64_t xtol = 1e-16,
+		float64_t orthantwise_c = 0.0,
+		int orthantwise_start = 0,
+		int orthantwise_end = 1);
+
 protected:
+
+	/** The number of corrections to approximate the inverse hessian matrix.*/
+	int m_m;
+
+	/** The maximum number of trials to do line search for each L-BFGS update.*/
+	int m_max_linesearch;
+
+	/** The line search algorithm.*/
+	int m_linesearch;
+
+	/** The maximum number of iterations for L-BFGS update.*/
+	int m_max_iterations;
+
+	/** Delta for convergence test based on the change of function value.*/
+	float64_t m_delta;
+
+	/** Distance for delta-based convergence test.*/
+	int m_past;
+
+	/** Epsilon for convergence test based on the change of gradient.*/
+	float64_t m_epsilon;
+
+	/** The minimum step of the line search.*/
+	float64_t m_min_step;
+
+	/** The maximum step of the line search.*/
+	float64_t m_max_step;
+
+	/** A parameter used in Armijo condition.*/
+	float64_t m_ftol;
+
+	/** A parameter used in curvature condition.*/
+	float64_t m_wolfe;
+
+	/** A parameter used in Morethuente linesearch to control the accuracy.*/
+	float64_t m_gtol;
+
+	/** The machine precision for floating-point values.*/
+	float64_t m_xtol;
+
+	/** Coeefficient for the L1 norm of variables.*/
+	float64_t m_orthantwise_c;
+
+	/** Start index for computing L1 norm of the variables.*/
+	int m_orthantwise_start;
+
+	/** End index for computing L1 norm of the variables.*/
+	int m_orthantwise_end;
 
 	/** compute the gradient wrt variational parameters
 	 * given the current variational parameters (mu and s2)
@@ -171,7 +275,7 @@ protected:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood_helper();
 
-	/** pre-compute the information for lbfgs optimization.
+	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
 	 * get_negative_log_marginal_likelihood_wrt_parameters()
 	 * and/or
@@ -179,7 +283,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool lbfgs_precompute();
+	virtual bool precompute();
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -196,7 +300,7 @@ protected:
 	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 
 	/** Using L-BFGS to estimate posterior parameters */
-	virtual float64_t lbfgs_optimization();
+	virtual float64_t optimization();
 
 	/** compute the objective value for LBFGS optimizer
 	 *

@@ -111,6 +111,7 @@ CDualVariationalGaussianLikelihood* CKLDualInferenceMethod::get_dual_variational
 
 void CKLDualInferenceMethod::init()
 {
+	set_lbfgs_parameters();
 	SG_ADD(&m_W, "W",
 		"noise matrix W",
 		MS_NOT_AVAILABLE);
@@ -126,10 +127,96 @@ void CKLDualInferenceMethod::init()
 	SG_ADD(&m_is_dual_valid, "is_dual_valid",
 		"whether the lambda (m_W) is valid or not",
 		MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_m, "m",
+		"The number of corrections to approximate the inverse Hessian matrix",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_linesearch, "max_linesearch",
+		"The maximum number of trials to do line search for each L-BFGS update",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_linesearch, "linesearch",
+		"The line search algorithm",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iterations, "max_iterations",
+		"The maximum number of iterations for L-BFGS update",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_delta, "delta",
+		"Delta for convergence test based on the change of function value",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_past, "past",
+		"Distance for delta-based convergence test",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "epsilon",
+		"Epsilon for convergence test based on the change of gradient",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_min_step, "min_step",
+		"The minimum step of the line search",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_step, "max_step",
+		"The maximum step of the line search",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_ftol, "ftol",
+		"A parameter used in Armijo condition",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_wolfe, "wolfe",
+		"A parameter used in curvature condition",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_gtol, "gtol",
+		"A parameter used in Morethuente linesearch to control the accuracy",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_xtol, "xtol",
+		"The machine precision for floating-point values",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_c, "orthantwise_c",
+		"Coeefficient for the L1 norm of variables",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_start, "orthantwise_start",
+		"Start index for computing L1 norm of the variables",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_end, "orthantwise_end",
+		"End index for computing L1 norm of the variables",
+		MS_NOT_AVAILABLE);
+
 	m_is_dual_valid=false;
 }
 
-bool CKLDualInferenceMethod::lbfgs_precompute()
+void CKLDualInferenceMethod::set_lbfgs_parameters(
+	int m,
+	int max_linesearch,
+	int linesearch,
+	int max_iterations,
+	float64_t delta,
+	int past,
+	float64_t epsilon,
+	float64_t min_step,
+	float64_t max_step,
+	float64_t ftol,
+	float64_t wolfe,
+	float64_t gtol,
+	float64_t xtol,
+	float64_t orthantwise_c,
+	int orthantwise_start,
+	int orthantwise_end)
+{
+	m_m = m;
+	m_max_linesearch = max_linesearch;
+	m_linesearch = linesearch;
+	m_max_iterations = max_iterations;
+	m_delta = delta;
+	m_past = past;
+	m_epsilon = epsilon;
+	m_min_step = min_step;
+	m_max_step = max_step;
+	m_ftol = ftol;
+	m_wolfe = wolfe;
+	m_gtol = gtol;
+	m_xtol = xtol;
+	m_orthantwise_c = orthantwise_c;
+	m_orthantwise_start = orthantwise_start;
+	m_orthantwise_end = orthantwise_end;
+}
+
+bool CKLDualInferenceMethod::precompute()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
@@ -356,7 +443,7 @@ void CKLDualInferenceMethod::update_alpha()
 		m_V=SGMatrix<float64_t>(len, len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 	m_dv=lik->get_variational_first_derivative(s2_param);
@@ -392,7 +479,7 @@ float64_t CKLDualInferenceMethod::evaluate(void *obj, const float64_t *parameter
 
 	ASSERT(obj_prt != NULL);
 
-	bool status=obj_prt->lbfgs_precompute();
+	bool status=obj_prt->precompute();
 	if (status)
 	{
 		float64_t nlml=obj_prt->get_dual_objective_wrt_parameters();
@@ -406,7 +493,7 @@ float64_t CKLDualInferenceMethod::evaluate(void *obj, const float64_t *parameter
 	return CMath::NOT_A_NUMBER;
 }
 
-float64_t CKLDualInferenceMethod::lbfgs_optimization()
+float64_t CKLDualInferenceMethod::optimization()
 {
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_param.m = m_m;

@@ -61,7 +61,7 @@ public:
         virtual float64_t get_cost()
         {
                 REQUIRE(m_obj,"Object not set\n");
-                bool status = m_obj->lbfgs_precompute();
+                bool status = m_obj->precompute();
                 if (!status)
                         return CMath::NOT_A_NUMBER;
                 float64_t nlml=m_obj->get_nlml_wrt_parameters();
@@ -77,9 +77,10 @@ public:
         virtual SGVector<float64_t> get_gradient()
         {
                 REQUIRE(m_obj,"Object not set\n");
-                SGVector<float64_t> derivatives(m_derivatives.vector, m_derivatives.vlen, false);
-                m_obj->get_gradient_of_nlml_wrt_parameters(derivatives);
-                return derivatives;
+                //SGVector<float64_t> derivatives(m_derivatives.vector, m_derivatives.vlen, false);
+                //m_obj->get_gradient_of_nlml_wrt_parameters(derivatives);
+		m_obj->get_gradient_of_nlml_wrt_parameters(m_derivatives);
+                return m_derivatives;
         }
 private:
         SGVector<float64_t> m_derivatives;
@@ -140,55 +141,6 @@ void CKLInferenceMethod::init()
 		"The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not",
 		MS_NOT_AVAILABLE);
 
-	set_lbfgs_parameters();
-	SG_ADD(&m_m, "m",
-		"The number of corrections to approximate the inverse Hessian matrix",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_linesearch, "max_linesearch",
-		"The maximum number of trials to do line search for each L-BFGS update",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_linesearch, "linesearch",
-		"The line search algorithm",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iterations, "max_iterations",
-		"The maximum number of iterations for L-BFGS update",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_delta, "delta",
-		"Delta for convergence test based on the change of function value",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_past, "past",
-		"Distance for delta-based convergence test",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_epsilon, "epsilon",
-		"Epsilon for convergence test based on the change of gradient",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_min_step, "min_step",
-		"The minimum step of the line search",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_step, "max_step",
-		"The maximum step of the line search",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_ftol, "ftol",
-		"A parameter used in Armijo condition",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_wolfe, "wolfe",
-		"A parameter used in curvature condition",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_gtol, "gtol",
-		"A parameter used in Morethuente linesearch to control the accuracy",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_xtol, "xtol",
-		"The machine precision for floating-point values",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_c, "orthantwise_c",
-		"Coeefficient for the L1 norm of variables",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_start, "orthantwise_start",
-		"Start index for computing L1 norm of the variables",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_orthantwise_end, "orthantwise_end",
-		"End index for computing L1 norm of the variables",
-		MS_NOT_AVAILABLE);
 	SG_ADD(&m_s2, "s2",
 		"Variational parameter sigma2",
 		MS_NOT_AVAILABLE);
@@ -198,6 +150,8 @@ void CKLInferenceMethod::init()
 	SG_ADD(&m_Sigma, "Sigma",
 		"Posterior covariance matrix Sigma",
 		MS_NOT_AVAILABLE);
+
+        m_minimizer=new LBFGSMinimizer();
 }
 
 CKLInferenceMethod::~CKLInferenceMethod()
@@ -320,42 +274,6 @@ float64_t CKLInferenceMethod::get_nlml_wrt_parameters()
 	return get_negative_log_marginal_likelihood_helper();
 }
 
-void CKLInferenceMethod::set_lbfgs_parameters(
-		int m,
-		int max_linesearch,
-		int linesearch,
-		int max_iterations,
-		float64_t delta,
-		int past,
-		float64_t epsilon,
-		float64_t min_step,
-		float64_t max_step,
-		float64_t ftol,
-		float64_t wolfe,
-		float64_t gtol,
-		float64_t xtol,
-		float64_t orthantwise_c,
-		int orthantwise_start,
-		int orthantwise_end)
-{
-	m_m = m;
-	m_max_linesearch = max_linesearch;
-	m_linesearch = linesearch;
-	m_max_iterations = max_iterations;
-	m_delta = delta;
-	m_past = past;
-	m_epsilon = epsilon;
-	m_min_step = min_step;
-	m_max_step = max_step;
-	m_ftol = ftol;
-	m_wolfe = wolfe;
-	m_gtol = gtol;
-	m_xtol = xtol;
-	m_orthantwise_c = orthantwise_c;
-	m_orthantwise_start = orthantwise_start;
-	m_orthantwise_end = orthantwise_end;
-}
-
 float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
@@ -409,44 +327,36 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_mean(const TParameter
 	return result;
 }
 
-float64_t CKLInferenceMethod::lbfgs_optimization()
+float64_t CKLInferenceMethod::optimization()
 {
         KLInferenceMethodCostFunction *cost_fun=new KLInferenceMethodCostFunction();
         SG_REF(this);
         cost_fun->set_target(this);
 
-        LBFGSMinimizer* opt=new LBFGSMinimizer(cost_fun);
-        ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
-        switch(m_linesearch)
-        {
-        case (LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE):
-                linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
-                break;
-        case (LBFGS_LINESEARCH_MORETHUENTE):
-                linesearch=ELBFGSLineSearch::MORETHUENTE;
-                break;
-        case (LBFGS_LINESEARCH_BACKTRACKING_ARMIJO):
-                linesearch=ELBFGSLineSearch::BACKTRACKING_ARMIJO;
-                break;
-        case (LBFGS_LINESEARCH_BACKTRACKING_WOLFE):
-                linesearch=ELBFGSLineSearch::BACKTRACKING_WOLFE;
-                break;
-        default :
-                SG_ERROR("Unsupported line search algorithm\n");
-        };
-    
-        opt->set_lbfgs_parameters(m_m, m_max_linesearch, linesearch,
-                m_max_iterations, m_delta, m_past, m_epsilon,
-                m_min_step, m_max_step, m_ftol, m_wolfe, m_gtol,
-                m_xtol, m_orthantwise_c, m_orthantwise_start,
-                m_orthantwise_end);
+	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+
+	REQUIRE(opt, "FirstOrderMinimizer is required\n")
+	opt->set_cost_function(cost_fun);
+
         float64_t nlml_opt = opt->minimize();
+	opt->unset_cost_function();
 
         delete cost_fun;
-        delete opt;
-
 	return nlml_opt;
 }
+
+void CKLInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	REQUIRE(minimizer, "Minimizer must set\n");
+	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+	REQUIRE(opt, "FirstOrderMinimizer is required\n")
+	if(minimizer!=m_minimizer)
+	{
+		delete m_minimizer;
+		m_minimizer=minimizer;
+	}
+}
+
 
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_inference_method(const TParameter* param)
 {
