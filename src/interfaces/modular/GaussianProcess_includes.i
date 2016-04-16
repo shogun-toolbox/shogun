@@ -45,8 +45,4 @@
  #include <shogun/machine/GaussianProcessMachine.h>
  #include <shogun/classifier/GaussianProcessClassification.h>
  #include <shogun/regression/GaussianProcessRegression.h>
-
- #include <shogun/optimization/Minimizer.h>
- #include <shogun/optimization/FirstOrderMinimizer.h>
- #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 %}
