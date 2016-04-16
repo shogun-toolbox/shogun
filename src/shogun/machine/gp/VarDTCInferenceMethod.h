@@ -31,12 +31,12 @@
  * http://www.aueb.gr/users/mtitsias/code/varsgp.tar.gz
  */
 
-#ifndef CSPARSEVGINFERENCEMETHOD_H
-#define CSPARSEVGINFERENCEMETHOD_H
+#ifndef CVARDTCINFERENCEMETHOD_H
+#define CVARDTCINFERENCEMETHOD_H
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SingleSparseInferenceBase.h>
+#include <shogun/machine/gp/SingleSparseInference.h>
 
 namespace shogun
 {
@@ -49,11 +49,11 @@ namespace shogun
  * method.
  *
  */
-class CSparseVGInferenceMethod: public CSingleSparseInferenceBase
+class CVarDTCInferenceMethod: public CSingleSparseInference
 {
 public:
 	/** default constructor */
-	CSparseVGInferenceMethod();
+	CVarDTCInferenceMethod();
 
 	/** constructor
 	 *
@@ -64,17 +64,17 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSparseVGInferenceMethod(CKernel* kernel, CFeatures* features,
+	CVarDTCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CSparseVGInferenceMethod();
+	virtual ~CVarDTCInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SparseVG
+	 * @return name VarDTC
 	 */
-	virtual const char* get_name() const { return "SparseVGInferenceMethod"; }
+	virtual const char* get_name() const { return "VarDTCInferenceMethod"; }
 
 	/** return what type of inference we are
 	 *
@@ -85,9 +85,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSparseVGInferenceMethod object
+	 * @return casted CVarDTCInferenceMethod object
 	 */
-	static CSparseVGInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CVarDTCInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -267,4 +267,4 @@ private:
 	void init();
 };
 }
-#endif /* CSPARSEVGINFERENCEMETHOD_H */
+#endif /* CVARDTCINFERENCEMETHOD_H */

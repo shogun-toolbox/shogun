@@ -19,7 +19,7 @@
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+#include <shogun/machine/gp/SingleFITCLaplace.h>
 
 namespace shogun
 {
@@ -41,7 +41,7 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCLaplacianBase::get_derivative_wrt_kernel(const TParameter* param),
+ * CSingleFITCLaplace::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
@@ -49,7 +49,7 @@ namespace shogun
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
  * CFITCInferenceMethod::get_posterior_covariance() is called
  */
-class CFITCInferenceMethod: public CSingleFITCLaplacianBase
+class CFITCInferenceMethod: public CSingleFITCLaplace
 {
 public:
 	/** default constructor */
@@ -87,7 +87,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CFITCInferenceMethod object
 	 */
-	static CFITCInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CFITCInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get negative log marginal likelihood
 	 *

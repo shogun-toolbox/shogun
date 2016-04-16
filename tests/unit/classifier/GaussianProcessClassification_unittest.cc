@@ -45,18 +45,18 @@
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
-#include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
@@ -130,8 +130,8 @@ TEST(GaussianProcessClassification,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
@@ -235,8 +235,8 @@ TEST(GaussianProcessClassification,get_variance_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -340,8 +340,8 @@ TEST(GaussianProcessClassification,get_probabilities)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -498,7 +498,7 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 	SG_UNREF(prediction);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -565,9 +565,9 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf
-	= new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+	= new CSingleLaplaceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -680,7 +680,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -747,9 +747,9 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf
-		= new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+		= new CSingleLaplaceInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -862,7 +862,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilities)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -929,8 +929,8 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train, mean, labels_train, likelihood);
 
 	int m = 100;
@@ -2021,7 +2021,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLDiagonal,get_mean_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2088,8 +2088,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -2185,7 +2185,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLDiagonal, get_variance_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2252,8 +2252,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -2348,7 +2348,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLDiagonal, get_probabilities)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2415,8 +2415,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -3000,7 +3000,7 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace,get_mean_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3080,7 +3080,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
@@ -3144,7 +3144,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace,get_variance_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3224,7 +3224,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
@@ -3289,7 +3289,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
+TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
 {
 	index_t n=5;
 
@@ -3336,7 +3336,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(5.114014937226176);
@@ -3360,7 +3360,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 
 
 #ifdef HAVE_LINALG_LIB
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3427,7 +3427,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -3474,7 +3474,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3541,7 +3541,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -3587,7 +3587,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3654,7 +3654,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;

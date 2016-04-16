@@ -29,7 +29,7 @@
  *
  */
 
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -60,7 +60,7 @@ public:
 	SGVector<float64_t>* m;
 	CLikelihoodModel* lik;
 	CLabels* lab;
-	CSingleFITCLaplacianInferenceMethod *inf;
+	CSingleFITCLaplaceInferenceMethod *inf;
 
 	virtual double operator() (double x)
 	{
@@ -90,12 +90,12 @@ public:
 	}
 };
 
-class SingleFITCLaplacianNewtonOptimizer: public Minimizer
+class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	SingleFITCLaplacianNewtonOptimizer() :Minimizer() {  init(); }
-	virtual ~SingleFITCLaplacianNewtonOptimizer() { SG_UNREF(m_obj); }
-	void set_target(CSingleFITCLaplacianInferenceMethod *obj)
+	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	virtual ~SingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
 		{
@@ -240,7 +240,7 @@ private:
 		m_opt_max=10;
 	}
 
-	CSingleFITCLaplacianInferenceMethod *m_obj;
+	CSingleFITCLaplaceInferenceMethod *m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
@@ -255,12 +255,12 @@ private:
 	float64_t m_opt_max;
 };
 
-class SingleFITCLaplacianInferenceMethodCostFunction: public FirstOrderCostFunction
+class SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public:
-	SingleFITCLaplacianInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleFITCLaplacianInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CSingleFITCLaplacianInferenceMethod *obj)
+	SingleFITCLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~SingleFITCLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
 		{
@@ -294,24 +294,24 @@ private:
 	}
 
 	SGVector<float64_t> m_derivatives;
-	CSingleFITCLaplacianInferenceMethod *m_obj;
+	CSingleFITCLaplaceInferenceMethod *m_obj;
 };
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CSingleFITCLaplacianInferenceMethod::CSingleFITCLaplacianInferenceMethod() : CSingleFITCLaplacianBase()
+CSingleFITCLaplaceInferenceMethod::CSingleFITCLaplaceInferenceMethod() : CSingleFITCLaplace()
 {
 	init();
 }
 
-CSingleFITCLaplacianInferenceMethod::CSingleFITCLaplacianInferenceMethod(CKernel* kern, CFeatures* feat,
+CSingleFITCLaplaceInferenceMethod::CSingleFITCLaplaceInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCLaplacianBase(kern, feat, m, lab, mod, lat)
+		: CSingleFITCLaplace(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
 
-void CSingleFITCLaplacianInferenceMethod::init()
+void CSingleFITCLaplaceInferenceMethod::init()
 {
 	m_Psi=0;
 	m_Wneg=false;
@@ -329,12 +329,12 @@ void CSingleFITCLaplacianInferenceMethod::init()
 	SG_ADD(&m_Psi, "Psi", "the negative log likelihood without constant terms used in Newton's method", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements", MS_NOT_AVAILABLE);
 
-	m_minimizer=new SingleFITCLaplacianNewtonOptimizer();
+	m_minimizer=new SingleFITCLaplaceNewtonOptimizer();
 }
 
-void CSingleFITCLaplacianInferenceMethod::compute_gradient()
+void CSingleFITCLaplaceInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -345,11 +345,11 @@ void CSingleFITCLaplacianInferenceMethod::compute_gradient()
 	}
 }
 
-void CSingleFITCLaplacianInferenceMethod::update()
+void CSingleFITCLaplaceInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_init();
 	update_alpha();
 	update_chol();
@@ -359,7 +359,7 @@ void CSingleFITCLaplacianInferenceMethod::update()
 	SG_DEBUG("leaving\n");
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -367,11 +367,11 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-CSingleFITCLaplacianInferenceMethod::~CSingleFITCLaplacianInferenceMethod()
+CSingleFITCLaplaceInferenceMethod::~CSingleFITCLaplaceInferenceMethod()
 {
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::compute_mvmZ(SGVector<float64_t> x)
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::compute_mvmZ(SGVector<float64_t> x)
 {
 	//time complexity O(m*n)
 	Map<MatrixXd> eigen_Rvdd(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
@@ -386,7 +386,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::compute_mvmZ(SGVector<f
 	return res;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::compute_mvmK(SGVector<float64_t> al)
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::compute_mvmK(SGVector<float64_t> al)
 {
 	//time complexity O(m*n)
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
@@ -401,19 +401,19 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::compute_mvmK(SGVector<f
 	return res;
 }
 
-CSingleFITCLaplacianInferenceMethod* CSingleFITCLaplacianInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+CSingleFITCLaplaceInferenceMethod* CSingleFITCLaplaceInferenceMethod::obtain_from_generic(
+		CInference* inference)
 {
 	REQUIRE(inference!=NULL, "Inference should be not NULL");
 
-	if (inference->get_inference_type()!=INF_FITC_LAPLACIAN_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleFITCLaplacianInferenceMethod!\n")
+	if (inference->get_inference_type()!=INF_FITC_LAPLACE_SINGLE)
+		SG_SERROR("Provided inference is not of type CSingleFITCLaplaceInferenceMethod!\n")
 
 	SG_REF(inference);
-	return (CSingleFITCLaplacianInferenceMethod*)inference;
+	return (CSingleFITCLaplaceInferenceMethod*)inference;
 }
 
-SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_chol_inv(SGMatrix<float64_t> mtx)
+SGMatrix<float64_t> CSingleFITCLaplaceInferenceMethod::get_chol_inv(SGMatrix<float64_t> mtx)
 {
 	//time complexity O(m^3), where mtx is a m-by-m matrix
 	REQUIRE(mtx.num_rows==mtx.num_cols, "Matrix must be square\n");
@@ -430,7 +430,7 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_chol_inv(SGMatrix<f
 	return res;
 }
 
-float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t CSingleFITCLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -466,11 +466,11 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_negative_log_marginal_likelih
 	return result;
 }
 
-void CSingleFITCLaplacianInferenceMethod::update_approx_cov()
+void CSingleFITCLaplaceInferenceMethod::update_approx_cov()
 {
 }
 
-void CSingleFITCLaplacianInferenceMethod::update_init()
+void CSingleFITCLaplaceInferenceMethod::update_init()
 {
 	//time complexity O(m^2*n)
 	//m-by-m matrix
@@ -545,10 +545,10 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 	m_Psi=Psi_New;
 }
 
-void CSingleFITCLaplacianInferenceMethod::update_alpha()
+void CSingleFITCLaplaceInferenceMethod::update_alpha()
 {
 
-	SingleFITCLaplacianNewtonOptimizer *opt=dynamic_cast<SingleFITCLaplacianNewtonOptimizer*>(m_minimizer);
+	SingleFITCLaplaceNewtonOptimizer *opt=dynamic_cast<SingleFITCLaplaceNewtonOptimizer*>(m_minimizer);
 	if (opt)
 	{
 		SG_REF(this);
@@ -560,7 +560,7 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
 
-		SingleFITCLaplacianInferenceMethodCostFunction *cost_fun=new SingleFITCLaplacianInferenceMethodCostFunction();
+		SingleFITCLaplaceInferenceMethodCostFunction *cost_fun=new SingleFITCLaplaceInferenceMethodCostFunction();
 		SG_REF(this);
 		cost_fun->set_target(this);
 		minimizer->set_cost_function(cost_fun);
@@ -588,7 +588,7 @@ void CSingleFITCLaplacianInferenceMethod::update_alpha()
 	eigen_post_alpha=eigen_R0.transpose()*(eigen_V*eigen_al);
 }
 
-void CSingleFITCLaplacianInferenceMethod::update_chol()
+void CSingleFITCLaplaceInferenceMethod::update_chol()
 {
 	//time complexity O(m^2*n)
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
@@ -685,7 +685,7 @@ void CSingleFITCLaplacianInferenceMethod::update_chol()
 		 ).array().pow(2).colwise().sum().transpose())/2;
 }
 
-void CSingleFITCLaplacianInferenceMethod::update_deriv()
+void CSingleFITCLaplaceInferenceMethod::update_deriv()
 {
 	//time complexity O(m^2*n)
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
@@ -717,7 +717,7 @@ void CSingleFITCLaplacianInferenceMethod::update_deriv()
 	eigen_dfhat=eigen_g.cwiseProduct(eigen_d3lp);
 }
 
-float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
 {
 	//time complexity O(m^2*n)
@@ -743,7 +743,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVect
 	eigen_v=eigen_ddiagKi-eigen_dA.cwiseProduct(eigen_R0tV).colwise().sum().transpose();
 
 	//explicit term
-	float64_t result=CSingleFITCLaplacianBase::get_derivative_related_cov(ddiagKi, dKuui, dKui, v, dA);
+	float64_t result=CSingleFITCLaplace::get_derivative_related_cov(ddiagKi, dKuui, dKui, v, dA);
 
 	//implicit term
 	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
@@ -761,7 +761,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_cov(SGVect
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_inference_method(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -784,7 +784,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 			len=dim*num_samples;
 		}
 		else if (!m_fully_sparse)
-			return CSingleFITCLaplacianBase::get_derivative_wrt_inference_method(param);
+			return CSingleFITCLaplace::get_derivative_wrt_inference_method(param);
 		else
 			return get_derivative_wrt_inducing_features(param);
 	}
@@ -820,7 +820,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_infe
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	SGVector<float64_t> result(1);
@@ -855,7 +855,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_like
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kernel(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -900,11 +900,11 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_kern
 	return result;
 }
 
-float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_mean(SGVector<float64_t> dmu)
+float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_related_mean(SGVector<float64_t> dmu)
 {
 	//time complexity O(m*n)
 	//explicit term
-	float64_t result=CSingleFITCLaplacianBase::get_derivative_related_mean(dmu);
+	float64_t result=CSingleFITCLaplace::get_derivative_related_mean(dmu);
 
 	//implicit term
 	//Zdm = mvmZ(dm,RVdd,t);
@@ -915,7 +915,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_related_mean(SGVec
 	return result;
 }
 
-float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_implicit_term_helper(SGVector<float64_t> d)
+float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_implicit_term_helper(SGVector<float64_t> d)
 {
 	//time complexity O(m*n)
 	Map<VectorXd> eigen_d(d.vector, d.vlen);
@@ -925,7 +925,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_derivative_implicit_term_help
 	return eigen_dfhat.dot(eigen_d-eigen_tmp);
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	//time complexity O(m*n)
@@ -947,7 +947,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_mean
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::derivative_helper_when_Wneg(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::derivative_helper_when_Wneg(
 	SGVector<float64_t> res, const TParameter *param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -957,7 +957,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::derivative_helper_when_
 	return res;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_inducing_features(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducing_features(
 	const TParameter* param)
 {
 	//time complexity depends on the implementation of the provided kernel
@@ -1004,12 +1004,12 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 	return get_derivative_related_inducing_features(BdK, param);
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_inducing_noise(
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
 	//time complexity O(m^2*n)
 	//explicit term
-	SGVector<float64_t> result=CSingleFITCLaplacianBase::get_derivative_wrt_inducing_noise(param);
+	SGVector<float64_t> result=CSingleFITCLaplace::get_derivative_wrt_inducing_noise(param);
 
 	//implicit term
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
@@ -1033,7 +1033,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_derivative_wrt_indu
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
+SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 
@@ -1058,7 +1058,7 @@ SGVector<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_mean()
 	return res;
 }
 
-SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covariance()
+SGMatrix<float64_t> CSingleFITCLaplaceInferenceMethod::get_posterior_covariance()
 {
 	compute_gradient();
 	//time complexity of the following operations is O(m*n^2)
@@ -1098,7 +1098,7 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covarianc
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-float64_t CSingleFITCLaplacianInferenceMethod::get_psi_wrt_alpha()
+float64_t CSingleFITCLaplaceInferenceMethod::get_psi_wrt_alpha()
 {
 	//time complexity O(m*n)
 	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);
@@ -1117,7 +1117,7 @@ float64_t CSingleFITCLaplacianInferenceMethod::get_psi_wrt_alpha()
 	return psi;
 }
 
-void CSingleFITCLaplacianInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
+void CSingleFITCLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
 	//time complexity O(m*n)
 	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);

@@ -30,11 +30,11 @@
  */
 
 
-#ifndef CSINGLESPARSEINFERENCEBASE_H
-#define CSINGLESPARSEINFERENCEBASE_H
+#ifndef CSINGLESPARSEINFERENCE_H
+#define CSINGLESPARSEINFERENCE_H
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SparseInferenceBase.h>
+#include <shogun/machine/gp/SparseInference.h>
 #include <shogun/lib/Lock.h>
 
 namespace shogun
@@ -44,13 +44,13 @@ class SingleSparseInferenceCostFunction;
 /** @brief The sparse inference base class
  * for classification and regression for 1-D labels (1D regression and binary classification)
  */
-class CSingleSparseInferenceBase: public CSparseInferenceBase
+class CSingleSparseInference: public CSparseInference
 {
 friend class SingleSparseInferenceCostFunction;
 
 public:
 	/** default constructor */
-	CSingleSparseInferenceBase();
+	CSingleSparseInference();
 
 	/** constructor
 	 *
@@ -61,17 +61,17 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleSparseInferenceBase(CKernel* kernel, CFeatures* features,
+	CSingleSparseInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CSingleSparseInferenceBase();
+	virtual ~CSingleSparseInference();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SingleSparseInferenceBase
+	 * @return name SingleSparseInference
 	 */
-	virtual const char* get_name() const { return "SingleSparseInferenceBase"; }
+	virtual const char* get_name() const { return "SingleSparseInference"; }
 
 	/** set kernel
 	 *
@@ -154,9 +154,9 @@ protected:
 
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -227,4 +227,4 @@ private:
 	void init();
 };
 }
-#endif /* CSINGLESPARSEINFERENCEBASE_H */
+#endif /* CSINGLESPARSEINFERENCE_H */

@@ -14,7 +14,7 @@
  * This code specifically adapted from infLaplace.m
  */
 
-#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
@@ -69,12 +69,12 @@ public:
 	}
 };
 
-class SingleLaplacianNewtonOptimizer: public Minimizer
+class SingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	SingleLaplacianNewtonOptimizer() :Minimizer() {  init(); }
-	virtual ~SingleLaplacianNewtonOptimizer() { SG_UNREF(m_obj); }
-	void set_target(CSingleLaplacianInferenceMethod *obj)
+	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	virtual ~SingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	void set_target(CSingleLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
 		{
@@ -180,25 +180,25 @@ public:
 	 *
 	 * @param max maximum for Brent's minimization method
 	 */
-		virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
+	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
-		/** set tolerance for Brent's minimization method
-		 *
-		 * @param tol tolerance for Brent's minimization method
-		 */
-			virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+	/** set tolerance for Brent's minimization method
+	 *
+	 * @param tol tolerance for Brent's minimization method
+	 */
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
-			/** set max Newton iterations
-			 *
-			 * @param iter max Newton iterations
-			 */
-				virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
+	/** set max Newton iterations
+	 *
+	 * @param iter max Newton iterations
+	 */
+	virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
 
-			/** set tolerance for newton iterations
-			 *
-			 * @param tol tolerance for newton iterations to set
-			 */
-				virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
+	/** set tolerance for newton iterations
+	 *
+	 * @param tol tolerance for newton iterations to set
+	 */
+	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
 private:
 				void init()
@@ -210,7 +210,7 @@ private:
 		m_opt_max=10;
 	}
 
-	CSingleLaplacianInferenceMethod *m_obj;
+	CSingleLaplaceInferenceMethod *m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
@@ -225,12 +225,12 @@ private:
 	float64_t m_opt_max;
 };
 
-class SingleLaplacianInferenceMethodCostFunction: public FirstOrderCostFunction
+class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public: 
-	SingleLaplacianInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplacianInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CSingleLaplacianInferenceMethod *obj)
+	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CSingleLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
 		{
@@ -264,33 +264,33 @@ private:
 	}
 
 	SGVector<float64_t> m_derivatives;
-	CSingleLaplacianInferenceMethod *m_obj;
+	CSingleLaplaceInferenceMethod *m_obj;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CSingleLaplacianInferenceMethod::CSingleLaplacianInferenceMethod() : CLaplacianInferenceBase()
+CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod() : CLaplaceInference()
 {
 	init();
 }
 
-CSingleLaplacianInferenceMethod::CSingleLaplacianInferenceMethod(CKernel* kern,
+CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CLaplacianInferenceBase(kern, feat, m, lab, mod)
+		: CLaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CSingleLaplacianInferenceMethod::init()
+void CSingleLaplaceInferenceMethod::init()
 {
 	m_Psi=0;
 	SG_ADD(&m_Psi, "Psi", "posterior log likelihood without constant terms", MS_NOT_AVAILABLE);
 	SG_ADD(&m_sW, "sW", "square root of W", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
-	m_minimizer = new SingleLaplacianNewtonOptimizer();
+	m_minimizer = new SingleLaplaceNewtonOptimizer();
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -298,24 +298,24 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-CSingleLaplacianInferenceMethod* CSingleLaplacianInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+CSingleLaplaceInferenceMethod* CSingleLaplaceInferenceMethod::obtain_from_generic(
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
 
-	if (inference->get_inference_type()!=INF_LAPLACIAN_SINGLE)
-		SG_SERROR("Provided inference is not of type CSingleLaplacianInferenceMethod\n")
+	if (inference->get_inference_type()!=INF_LAPLACE_SINGLE)
+		SG_SERROR("Provided inference is not of type CSingleLaplaceInferenceMethod\n")
 
 	SG_REF(inference);
-	return (CSingleLaplacianInferenceMethod*)inference;
+	return (CSingleLaplaceInferenceMethod*)inference;
 }
 
-CSingleLaplacianInferenceMethod::~CSingleLaplacianInferenceMethod()
+CSingleLaplaceInferenceMethod::~CSingleLaplaceInferenceMethod()
 {
 }
 
-float64_t CSingleLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t CSingleLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -356,7 +356,7 @@ float64_t CSingleLaplacianInferenceMethod::get_negative_log_marginal_likelihood(
 	return result;
 }
 
-void CSingleLaplacianInferenceMethod::update_approx_cov()
+void CSingleLaplaceInferenceMethod::update_approx_cov()
 {
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -376,7 +376,7 @@ void CSingleLaplacianInferenceMethod::update_approx_cov()
 	eigen_Sigma=eigen_K*CMath::exp(m_log_scale*2.0)-eigen_V.adjoint()*eigen_V;
 }
 
-void CSingleLaplacianInferenceMethod::update_chol()
+void CSingleLaplaceInferenceMethod::update_chol()
 {
 	// get log probability derivatives
 	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
@@ -428,11 +428,11 @@ void CSingleLaplacianInferenceMethod::update_chol()
 	}
 }
 
-void CSingleLaplacianInferenceMethod::update()
+void CSingleLaplaceInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_init();
 	update_alpha();
 	update_chol();
@@ -443,7 +443,7 @@ void CSingleLaplacianInferenceMethod::update()
 }
 
 
-void CSingleLaplacianInferenceMethod::update_init()
+void CSingleLaplaceInferenceMethod::update_init()
 {
 	float64_t Psi_New;
 	float64_t Psi_Def;
@@ -494,10 +494,10 @@ void CSingleLaplacianInferenceMethod::update_init()
 }
 
 
-void CSingleLaplacianInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	if (!dynamic_cast<SingleLaplacianNewtonOptimizer*>(minimizer))
+	if (!dynamic_cast<SingleLaplaceNewtonOptimizer*>(minimizer))
 	{
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
@@ -509,9 +509,9 @@ void CSingleLaplacianInferenceMethod::register_minimizer(Minimizer* minimizer)
 	}
 }
 
-void CSingleLaplacianInferenceMethod::update_alpha()
+void CSingleLaplaceInferenceMethod::update_alpha()
 {
-	SingleLaplacianNewtonOptimizer *opt=dynamic_cast<SingleLaplacianNewtonOptimizer*>(m_minimizer);
+	SingleLaplaceNewtonOptimizer *opt=dynamic_cast<SingleLaplaceNewtonOptimizer*>(m_minimizer);
 	if (opt)
 	{
 		SG_REF(this);
@@ -523,7 +523,7 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
 
-		SingleLaplacianInferenceMethodCostFunction *cost_fun=new SingleLaplacianInferenceMethodCostFunction();
+		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
 		SG_REF(this);
 		cost_fun->set_target(this);
 		minimizer->set_cost_function(cost_fun);
@@ -545,7 +545,7 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 	eigen_mu=eigen_ktrtr*CMath::exp(m_log_scale*2.0)*eigen_alpha+eigen_mean;
 }
 
-void CSingleLaplacianInferenceMethod::update_deriv()
+void CSingleLaplaceInferenceMethod::update_deriv()
 {
 	// create eigen representation of W, sW, dlp, d3lp, K, alpha and L
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
@@ -601,7 +601,7 @@ void CSingleLaplacianInferenceMethod::update_deriv()
 	eigen_dfhat=eigen_g.cwiseProduct(eigen_d3lp);
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_inference_method(
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
@@ -632,7 +632,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_inferenc
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, g and dfhat
@@ -666,7 +666,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_likeliho
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_kernel(
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
@@ -708,7 +708,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_kernel(
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
@@ -741,7 +741,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
+SGVector<float64_t> CSingleLaplaceInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 
@@ -757,7 +757,7 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
 }
 
 
-float64_t CSingleLaplacianInferenceMethod::get_psi_wrt_alpha()
+float64_t CSingleLaplaceInferenceMethod::get_psi_wrt_alpha()
 {
 	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	SGVector<float64_t> f(m_alpha.vlen);
@@ -777,7 +777,7 @@ float64_t CSingleLaplacianInferenceMethod::get_psi_wrt_alpha()
 	return psi;
 }
 
-void CSingleLaplacianInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
+void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",

@@ -43,7 +43,7 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLInference.h>
 
 namespace shogun
 {
@@ -69,7 +69,7 @@ namespace shogun
  * https://gist.github.com/yorkerlin/b64a015491833562d11a
  *
  */
-class CKLCovarianceInferenceMethod: public CKLInferenceMethod
+class CKLCovarianceInferenceMethod: public CKLInference
 {
 public:
 	/** default constructor */
@@ -105,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCovarianceInferenceMethod object
 	 */
-	static CKLCovarianceInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CKLCovarianceInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *

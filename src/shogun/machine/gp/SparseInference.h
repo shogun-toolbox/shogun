@@ -30,13 +30,13 @@
  *
  */
 
-#ifndef CSPARSEINFERENCEBASE_H
-#define CSPARSEINFERENCEBASE_H
+#ifndef CSPARSEINFERENCE_H
+#define CSPARSEINFERENCE_H
 
 #include <shogun/lib/config.h>
 
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 #include <shogun/features/DenseFeatures.h>
 
 namespace shogun
@@ -68,11 +68,11 @@ namespace shogun
  * the (approximated) negative log marginal likelihood are computed based on \f$\Sigma_{Sparse}\f$.
  *
  */
-class CSparseInferenceBase: public CInferenceMethod
+class CSparseInference: public CInference
 {
 public:
 	/** default constructor */
-	CSparseInferenceBase();
+	CSparseInference();
 
 	/** constructor
 	 *
@@ -83,11 +83,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSparseInferenceBase(CKernel* kernel, CFeatures* features,
+	CSparseInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CSparseInferenceBase();
+	virtual ~CSparseInference();
 
 	/** return what type of inference we are
 	 *
@@ -235,9 +235,9 @@ protected:
 	virtual void update_train_kernel();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -277,7 +277,7 @@ protected:
 	/** returns derivative of negative log marginal likelihood wrt
 	 * inducing noise (noise from inducing features) parameter
 	 *
-	 * @param param parameter of given  SparseInferenceBase class
+	 * @param param parameter of given  SparseInference class
 	 *
 	 * In order to enforce symmetrc positive definiteness of the kernel matrix on inducing points,
 	 * \f$\Sigma_{M}\f$, the following ridge trick is used since the matrix is learned from data.
@@ -325,4 +325,4 @@ private:
 	void init();
 };
 }
-#endif /* CSPARSEINFERENCEBASE_H */
+#endif /* CSPARSEINFERENCE_H */

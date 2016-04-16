@@ -12,13 +12,13 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#ifndef CSINGLELAPLACIANINFERENCEMETHOD_H_
-#define CSINGLELAPLACIANINFERENCEMETHOD_H_
+#ifndef CSINGLELAPLACEINFERENCEMETHOD_H_
+#define CSINGLELAPLACEINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
 
 
-#include <shogun/machine/gp/LaplacianInferenceBase.h>
+#include <shogun/machine/gp/LaplaceInference.h>
 
 namespace shogun
 {
@@ -38,13 +38,13 @@ namespace shogun
  * This specific implementation was adapted from the infLaplace.m file in the
  * GPML toolbox.
  */
-class CSingleLaplacianInferenceMethod: public CLaplacianInferenceBase
+class CSingleLaplaceInferenceMethod: public CLaplaceInference
 {
-friend class SingleLaplacianNewtonOptimizer; 
-friend class SingleLaplacianInferenceMethodCostFunction;
+friend class SingleLaplaceNewtonOptimizer; 
+friend class SingleLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CSingleLaplacianInferenceMethod();
+	CSingleLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -54,29 +54,29 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CSingleLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
+	CSingleLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CSingleLaplacianInferenceMethod();
+	virtual ~CSingleLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SingleLaplacian
+	 * @return name SingleLaplace
 	 */
-	virtual const char* get_name() const { return "SingleLaplacianInferenceMethod"; }
+	virtual const char* get_name() const { return "SingleLaplaceInferenceMethod"; }
 
 	/** return what type of inference we are
 	 *
-	 * @return inference type Laplacian_Single
+	 * @return inference type Laplace_Single
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_SINGLE; }
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_SINGLE; }
 
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSingleLaplacianInferenceMethod object
+	 * @return casted CSingleLaplaceInferenceMethod object
 	 */
-	static CSingleLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CSingleLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -162,9 +162,9 @@ protected:
 	virtual void update_deriv();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -232,4 +232,4 @@ protected:
 	float64_t m_Psi;
 };
 }
-#endif /* CSINGLELAPLACIANINFERENCEMETHOD_H_ */
+#endif /* CSINGLELAPLACEINFERENCEMETHOD_H_ */

@@ -62,7 +62,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessClassification(CInferenceMethod* method);
+	CGaussianProcessClassification(CInference* method);
 
 	virtual ~CGaussianProcessClassification();
 

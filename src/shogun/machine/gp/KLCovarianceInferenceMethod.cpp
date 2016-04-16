@@ -51,14 +51,14 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInferenceMethod()
+CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInference()
 {
 	init();
 }
 
 CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
@@ -114,7 +114,7 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 }
 
 CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;

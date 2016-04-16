@@ -43,7 +43,7 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+#include <shogun/machine/gp/KLLowerTriangularInference.h>
 
 namespace shogun
 {
@@ -69,7 +69,7 @@ namespace shogun
  * Note that "Cholesky" means Cholesky represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLCholeskyInferenceMethod: public CKLLowerTriangularInferenceMethod
+class CKLCholeskyInferenceMethod: public CKLLowerTriangularInference
 {
 public:
 	/** default constructor */
@@ -105,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCholeskyInferenceMethod object
 	 */
-	static CKLCholeskyInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CKLCholeskyInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *

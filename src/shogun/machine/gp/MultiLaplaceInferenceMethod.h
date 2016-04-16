@@ -39,12 +39,12 @@
  *
  */
 
-#ifndef CMULTILAPLACIANINFERENCEMETHOD_H_
-#define CMULTILAPLACIANINFERENCEMETHOD_H_
+#ifndef CMULTILAPLACEINFERENCEMETHOD_H_
+#define CMULTILAPLACEINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/LaplacianInferenceBase.h>
+#include <shogun/machine/gp/LaplaceInference.h>
 
 namespace shogun
 {
@@ -66,11 +66,11 @@ namespace shogun
  *
  * The reference pseudo code is the algorithm 3.3 of the GPML textbook
  */
-class CMultiLaplacianInferenceMethod: public CLaplacianInferenceBase
+class CMultiLaplaceInferenceMethod: public CLaplaceInference
 {
 public:
 	/** default constructor */
-	CMultiLaplacianInferenceMethod();
+	CMultiLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -80,31 +80,31 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CMultiLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
+	CMultiLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CMultiLaplacianInferenceMethod();
+	virtual ~CMultiLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name MultiLaplacian
+	 * @return name MultiLaplace
 	 *
 	 */
-	virtual const char* get_name() const { return "MultiLaplacianInferenceMethod"; }
+	virtual const char* get_name() const { return "MultiLaplaceInferenceMethod"; }
 
 
 	/** return what type of inference we are
 	 *
-	 * @return inference type Laplacian
+	 * @return inference type Laplace
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN_MULTIPLE; }
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_MULTIPLE; }
 
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CMultiLaplacianInferenceMethod object
+	 * @return casted CMultiLaplaceInferenceMethod object
 	 */
-	static CMultiLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CMultiLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -218,9 +218,9 @@ protected:
 	virtual void update_deriv();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -298,4 +298,4 @@ protected:
 	float64_t m_opt_max;
 };
 }
-#endif /* CMULTILAPLACIANINFERENCEMETHOD_H_ */
+#endif /*  CMULTILAPLACEINFERENCEMETHOD_H_ */

@@ -31,8 +31,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifndef CINFERENCEMETHOD_H_
-#define CINFERENCEMETHOD_H_
+#ifndef CINFERENCE_H_
+#define CINFERENCE_H_
 
 #include <shogun/lib/config.h>
 
@@ -56,10 +56,10 @@ enum EInferenceType
 	INF_EXACT=10,
 	INF_SPARSE=20,
 	INF_FITC_REGRESSION=21,
-	INF_FITC_LAPLACIAN_SINGLE=22,
-	INF_LAPLACIAN=30,
-	INF_LAPLACIAN_SINGLE=31,
-	INF_LAPLACIAN_MULTIPLE=32,
+	INF_FITC_LAPLACE_SINGLE=22,
+	INF_LAPLACE=30,
+	INF_LAPLACE_SINGLE=31,
+	INF_LAPLACE_MULTIPLE=32,
 	INF_EP=40,
 	INF_KL=50,
 	INF_KL_DIAGONAL=51,
@@ -76,13 +76,13 @@ enum EInferenceType
  *
  * It is possible to sample the (true) log-marginal likelihood on the base of
  * any implemented approximation. See
- * CInferenceMethod::get_marginal_likelihood_estimate.
+ * CInference::get_marginal_likelihood_estimate.
  */
-class CInferenceMethod : public CDifferentiableFunction
+class CInference : public CDifferentiableFunction
 {
 public:
 	/** default constructor */
-	CInferenceMethod();
+	CInference();
 
 	/** constructor
 	 *
@@ -92,12 +92,12 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CInferenceMethod(CKernel* kernel, CFeatures* features,
+	CInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CInferenceMethod();
+	virtual ~CInference();
 
-	/** return what type of inference we are, e.g. exact, FITC, Laplacian, etc.
+	/** return what type of inference we are, e.g. exact, FITC, Laplace, etc.
 	 *
 	 * @return inference type
 	 */
@@ -126,7 +126,7 @@ public:
 	 *
 	 * This is done via a Gaussian approximation to the posterior
 	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
-	 * underlying CInferenceMethod instance (if implemented, otherwise error),
+	 * underlying CInference instance (if implemented, otherwise error),
 	 * and then using an importance sample estimator
 	 *
 	 * \f[
@@ -411,9 +411,9 @@ protected:
 	virtual void update_train_kernel();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -499,4 +499,4 @@ protected:
 	bool m_gradient_update;
 };
 }
-#endif /* CINFERENCEMETHOD_H_ */
+#endif /* CINFERENCE_H_ */

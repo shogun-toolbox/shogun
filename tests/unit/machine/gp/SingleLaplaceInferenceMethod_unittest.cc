@@ -13,7 +13,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
@@ -23,7 +23,7 @@
 
 using namespace shogun;
 
-TEST(SingleLaplacianInferenceMethod,get_cholesky_gaussian_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_cholesky_gaussian_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -55,8 +55,8 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_gaussian_likelihood)
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -102,7 +102,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_gaussian_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_cholesky_t_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_cholesky_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -134,8 +134,8 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_t_likelihood)
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -181,7 +181,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_cholesky_logit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_cholesky_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -219,8 +219,8 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_logit_likelihood)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -266,7 +266,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_cholesky_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_cholesky_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -303,8 +303,8 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -350,7 +350,7 @@ TEST(SingleLaplacianInferenceMethod,get_cholesky_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_alpha_gaussian_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_alpha_gaussian_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -382,8 +382,8 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_gaussian_likelihood)
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -405,7 +405,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_gaussian_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_alpha_t_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_alpha_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -437,8 +437,8 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_t_likelihood)
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -460,7 +460,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_alpha_logit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_alpha_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -498,8 +498,8 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_logit_likelihood)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -521,7 +521,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_alpha_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_alpha_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -558,8 +558,8 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -581,7 +581,7 @@ TEST(SingleLaplacianInferenceMethod,get_alpha_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_gaussian_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -613,8 +613,8 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_li
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -629,7 +629,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_li
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -661,8 +661,8 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihoo
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -677,7 +677,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihoo
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -715,8 +715,8 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likel
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -731,7 +731,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likel
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -768,8 +768,8 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_probit_like
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -784,7 +784,7 @@ TEST(SingleLaplacianInferenceMethod,get_negative_marginal_likelihood_probit_like
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -818,8 +818,8 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian
 	// Gaussian likelihood with sigma = 0.25
 	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
 
-	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP regression with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
@@ -855,7 +855,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 {
 	// create some easy regression data: 1d noisy sine wave
 	index_t ntr=5;
@@ -889,7 +889,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likeli
 	CStudentsTLikelihood* lik=new CStudentsTLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
@@ -930,7 +930,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likeli
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -968,8 +968,8 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
@@ -1001,7 +1001,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood2)
+TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood2)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -1039,8 +1039,8 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	inf->set_scale(3.0);
@@ -1073,7 +1073,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_li
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1110,8 +1110,8 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_l
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
@@ -1143,7 +1143,7 @@ TEST(SingleLaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_l
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_posterior_mean_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_posterior_mean_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1180,8 +1180,8 @@ TEST(SingleLaplacianInferenceMethod,get_posterior_mean_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// comparison of the mode with result from GPML package
@@ -1196,7 +1196,7 @@ TEST(SingleLaplacianInferenceMethod,get_posterior_mean_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SingleLaplacianInferenceMethod,get_posterior_covariance_probit_likelihood)
+TEST(SingleLaplaceInferenceMethod,get_posterior_covariance_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1233,8 +1233,8 @@ TEST(SingleLaplacianInferenceMethod,get_posterior_covariance_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	SGMatrix<float64_t> approx_cov=inf->get_posterior_covariance();

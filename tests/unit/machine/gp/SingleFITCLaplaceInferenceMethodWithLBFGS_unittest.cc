@@ -38,7 +38,7 @@
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -46,7 +46,7 @@
 
 using namespace shogun;
 
-TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
+TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -112,7 +112,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
@@ -156,7 +156,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 	SG_UNREF(inf);
 }
 
-TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
+TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -222,7 +222,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
@@ -252,7 +252,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 }
 
 
-TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likelihood)
+TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelihood)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -311,7 +311,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
@@ -335,7 +335,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	SG_UNREF(inf);
 }
 
-TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives)
+TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -394,7 +394,7 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	LBFGSMinimizer* opt=new LBFGSMinimizer();

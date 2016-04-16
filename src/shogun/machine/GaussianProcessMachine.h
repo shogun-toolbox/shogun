@@ -40,7 +40,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/machine/Machine.h>
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 
 
 namespace shogun
@@ -67,7 +67,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessMachine(CInferenceMethod* method);
+	CGaussianProcessMachine(CInference* method);
 
 	virtual ~CGaussianProcessMachine();
 
@@ -101,7 +101,7 @@ public:
 	 *
 	 * @return inference method, which is used by Gaussian process machine
 	 */
-	CInferenceMethod* get_inference_method() const
+	CInference* get_inference_method() const
 	{
 		SG_REF(m_method);
 		return m_method;
@@ -111,7 +111,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	void set_inference_method(CInferenceMethod* method)
+	void set_inference_method(CInference* method)
 	{
 		SG_REF(method);
 		SG_UNREF(m_method);
@@ -140,7 +140,7 @@ private:
 
 protected:
 	/** inference method */
-	CInferenceMethod* m_method;
+	CInference* m_method;
 };
 }
 #endif /* _GAUSSIANPROCESSMACHINE_H_ */

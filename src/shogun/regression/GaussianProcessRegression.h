@@ -15,14 +15,14 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/machine/GaussianProcessMachine.h>
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 
 namespace shogun
 {
 
-class CInferenceMethod;
+class CInference;
 class CFeatures;
 class CLabels;
 
@@ -42,7 +42,7 @@ public:
 	 *
 	 * @param method chosen inference method
 	 */
-	CGaussianProcessRegression(CInferenceMethod* method);
+	CGaussianProcessRegression(CInference* method);
 
 	virtual ~CGaussianProcessRegression();
 

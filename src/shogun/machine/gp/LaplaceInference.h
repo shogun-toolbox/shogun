@@ -29,13 +29,13 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifndef CLAPLACIANINFERENCEBASE_H_
-#define CLAPLACIANINFERENCEBASE_H_
+#ifndef CLAPLACEINFERENCE_H_
+#define CLAPLACEINFERENCE_H_
 
 #include <shogun/lib/config.h>
 
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 
 namespace shogun
 {
@@ -48,11 +48,11 @@ namespace shogun
  * function.
  *
  */
-class CLaplacianInferenceBase: public CInferenceMethod
+class CLaplaceInference: public CInference
 {
 public:
 	/** default constructor */
-	CLaplacianInferenceBase();
+	CLaplaceInference();
 
 	/** constructor
 	 *
@@ -62,22 +62,22 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CLaplacianInferenceBase(CKernel* kernel, CFeatures* features,
+	CLaplaceInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CLaplacianInferenceBase();
+	virtual ~CLaplaceInference();
 
 	/** return what type of inference we are
 	 *
-	 * @return inference type Laplacian
+	 * @return inference type Laplace
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN; }
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACE; }
 
 	/** returns the name of the inference method
 	 *
-	 * @return name Laplacian
+	 * @return name Laplace
 	 */
-	virtual const char* get_name() const { return "LaplacianInferenceBase"; }
+	virtual const char* get_name() const { return "LaplaceInference"; }
 
 	/** get alpha vector
 	 *
@@ -157,4 +157,4 @@ protected:
 	SGMatrix<float64_t> m_Sigma;
 };
 }
-#endif /* CLAPLACIANINFERENCEBASE_H_ */
+#endif /* CLAPLACEINFERENCE_H_ */

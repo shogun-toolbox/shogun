@@ -39,7 +39,7 @@
  * This code specifically adapted from function in approxKL.m and infKL.m
  */
 
-#include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+#include <shogun/machine/gp/KLLowerTriangularInference.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
@@ -50,19 +50,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLLowerTriangularInferenceMethod::CKLLowerTriangularInferenceMethod() : CKLInferenceMethod()
+CKLLowerTriangularInference::CKLLowerTriangularInference() : CKLInference()
 {
 	init();
 }
 
-CKLLowerTriangularInferenceMethod::CKLLowerTriangularInferenceMethod(CKernel* kern,
+CKLLowerTriangularInference::CKLLowerTriangularInference(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLLowerTriangularInferenceMethod::init()
+void CKLLowerTriangularInference::init()
 {
 	SG_ADD(&m_InvK_Sigma, "invk_Sigma",
 		"K^{-1}Sigma'",
@@ -83,11 +83,11 @@ void CKLLowerTriangularInferenceMethod::init()
 	m_log_det_Kernel=0;
 }
 
-CKLLowerTriangularInferenceMethod::~CKLLowerTriangularInferenceMethod()
+CKLLowerTriangularInference::~CKLLowerTriangularInference()
 {
 }
 
-SGVector<float64_t> CKLLowerTriangularInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CKLLowerTriangularInference::get_diagonal_vector()
 {
 	/** The diagonal vector W is NOT used in this KL method
 	 * Therefore, return empty vector
@@ -95,14 +95,14 @@ SGVector<float64_t> CKLLowerTriangularInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>();
 }
 
-void CKLLowerTriangularInferenceMethod::update_deriv()
+void CKLLowerTriangularInference::update_deriv()
 {
 	/** get_derivative_related_cov() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLLowerTriangularInferenceMethod::update_init()
+void CKLLowerTriangularInference::update_init()
 {
 	Eigen::LDLT<Eigen::MatrixXd> ldlt=update_init_helper();
 	MatrixXd Kernel_D=ldlt.vectorD();
@@ -122,7 +122,7 @@ void CKLLowerTriangularInferenceMethod::update_init()
 	m_mean_vec=m_mean->get_mean_vector(m_features);
 }
 
-MatrixXd CKLLowerTriangularInferenceMethod::solve_inverse(MatrixXd eigen_A)
+MatrixXd CKLLowerTriangularInference::solve_inverse(MatrixXd eigen_A)
 {
 	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
 	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
@@ -149,7 +149,7 @@ MatrixXd CKLLowerTriangularInferenceMethod::solve_inverse(MatrixXd eigen_A)
 	return P.transpose()*tmp3;
 }
 
-float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(SGMatrix<float64_t> dK)
+float64_t CKLLowerTriangularInference::get_derivative_related_cov(SGMatrix<float64_t> dK)
 {
 	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
@@ -163,14 +163,14 @@ float64_t CKLLowerTriangularInferenceMethod::get_derivative_related_cov(SGMatrix
 	return 0.5*(tmp3.array()*eigen_dK.array()).sum();
 }
 
-void CKLLowerTriangularInferenceMethod::update_approx_cov()
+void CKLLowerTriangularInference::update_approx_cov()
 {
 	/** update_Sigma() does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLLowerTriangularInferenceMethod::update_chol()
+void CKLLowerTriangularInference::update_chol()
 {
 	update_Sigma();
 	update_InvK_Sigma();

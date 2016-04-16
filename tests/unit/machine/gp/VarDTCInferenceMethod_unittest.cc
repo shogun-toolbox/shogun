@@ -34,7 +34,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/SparseVGInferenceMethod.h>
+#include <shogun/machine/gp/VarDTCInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
@@ -45,7 +45,7 @@
 using namespace shogun;
 
 
-TEST(SparseVGInferenceMethod,get_negative_log_marginal_likelihood)
+TEST(VarDTCInferenceMethod,get_negative_log_marginal_likelihood)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -99,7 +99,7 @@ TEST(SparseVGInferenceMethod,get_negative_log_marginal_likelihood)
 	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
 
 	// specify GP regression with FITC inference
-	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -122,7 +122,7 @@ TEST(SparseVGInferenceMethod,get_negative_log_marginal_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivatives)
+TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -176,7 +176,7 @@ TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivatives)
 	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
 
 	// specify GP regression with FITC inference
-	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -224,7 +224,7 @@ TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivatives)
 }
 
 #ifdef HAVE_LINALG_LIB
-TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_features)
+TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_features)
 {
 	float64_t rel_tolerance=1e-5;
 	float64_t abs_tolerance;
@@ -280,7 +280,7 @@ TEST(SparseVGInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_fea
 	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
 
 	// specify GP regression with FITC inference
-	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;

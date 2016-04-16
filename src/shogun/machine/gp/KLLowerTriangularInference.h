@@ -38,22 +38,20 @@
  *
  */
 
-#ifndef _KLAPPROXDIAGONALINFERENCEMETHOD_H_
-#define _KLAPPROXDIAGONALINFERENCEMETHOD_H_
+#ifndef _KLLOWERTRIANGULARINFERENCE_H_
+#define _KLLOWERTRIANGULARINFERENCE_H_
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+#include <shogun/machine/gp/KLInference.h>
 
 namespace shogun
 {
 
 /** @brief The KL approximation inference method class.
  *
- * The class is implemented based on the KL method in the Challis's paper
- * which uses 1-band (diagonal) represention.
- * Note that in order to do variational inference, each diagonal element should be positive.
- * This implementation updates the diagonal elements in log domain.
+ * The class is implemented based on the KL method in the Challis's paper,
+ * which uses lower triangular represention.
  *
  * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
@@ -64,17 +62,14 @@ namespace shogun
  * "Concave Gaussian variational approximations for inference in large-scale Bayesian linear models."
  * International conference on Artificial Intelligence and Statistics. 2011.
  *
- * The adapted Matlab code can be found at
- * https://gist.github.com/yorkerlin/d8acb388d03c6976728e
- *
- * Note that "ApproxDiagonal" means a variational diagonal co-variance matrix
- * is used in inference.
+ * Note that "lowerTriangular" means lowerTriangular represention of the variational co-variance matrix
+ * is explicitly used in inference
  */
-class CKLApproxDiagonalInferenceMethod: public CKLLowerTriangularInferenceMethod
+class CKLLowerTriangularInference: public CKLInference
 {
 public:
 	/** default constructor */
-	CKLApproxDiagonalInferenceMethod();
+	CKLLowerTriangularInference();
 
 	/** constructor
 	 *
@@ -84,73 +79,87 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLApproxDiagonalInferenceMethod(CKernel* kernel, CFeatures* features,
+	CKLLowerTriangularInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CKLApproxDiagonalInferenceMethod();
+	virtual ~CKLLowerTriangularInference();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name KLApproxDiagonalInferenceMethod
+	 * @return name KLLowerTriangularInference
 	 */
-	virtual const char* get_name() const { return "KLApproxDiagonalInferenceMethod"; }
+	virtual const char* get_name() const { return "KLLowerTriangularInference"; }
 
-	/** return what type of inference we are
+	/** get diagonal vector
 	 *
-	 * @return inference type FITC
-	 */
-	virtual EInferenceType get_inference_type() const { return INF_KL_DIAGONAL; }
-
-	/** helper method used to specialize a base class instance
+	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
-	 * @param inference inference method
-	 * @return casted CKLApproxDiagonalInferenceMethod object
+	 * Note that this vector is not avaliable for the KL method
 	 */
-	static CKLApproxDiagonalInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
-
-	/** get alpha vector
-	 *
-	 * @return vector to compute posterior mean of Gaussian Process:
-	 */
-	virtual SGVector<float64_t> get_alpha();
+	virtual SGVector<float64_t> get_diagonal_vector();
 
 protected:
-	/** update alpha vector */
-	virtual void update_alpha();
+	/** update cholesky matrix */
+	virtual void update_chol();
 
-	/** the helper function to compute
-	 * the negative log marginal likelihood
-	 *
-	 * @return negative log marginal likelihood
+	/** update matrices which are required to compute negative log marginal
+	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood_helper();
+	virtual void update_deriv();
 
-	/** compute the gradient wrt variational parameters
-	 * given the current variational parameters (mu and s2)
+	/** compute matrices which are required to compute negative log marginal
+	 * likelihood derivatives wrt  hyperparameter in cov function
+	 * Note that
+	 * get_derivative_wrt_inference_method(const TParameter* param)
+	 * and
+	 * get_derivative_wrt_kernel(const TParameter* param)
+	 * will call this function
 	 *
-	 * @return gradient of negative log marginal likelihood
+	 * @param dK the gradient wrt hyperparameter related to cov
 	 */
-	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
 
-	/** pre-compute the information for optimization.
-	 * This function needs to be called before calling
-	 * get_negative_log_marginal_likelihood_wrt_parameters()
-	 * and/or
-	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
+
+	/** update covariance matrix of the approximation to the posterior */
+	virtual void update_approx_cov();
+
+	/** The K^{-1}Sigma matrix */
+	SGMatrix<float64_t> m_InvK_Sigma;
+
+	/** The mean vector generated from mean function */
+	SGVector<float64_t> m_mean_vec;
+
+	/** The Log-determinant of Kernel */
+	float64_t m_log_det_Kernel;
+
+	/**The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale) */
+	SGMatrix<float64_t> m_Kernel_LsD;
+
+	/**The permutation sequence of P, where P are defined in LDLT factorization on Kernel*sq(m_scale) */
+	SGVector<index_t> m_Kernel_P;
+
+	/** compute the inv(corrected_Kernel*sq(m_scale))*A
 	 *
-	 * @return true if precomputed parameters are valid
+	 * @param A input matrix
+	 *
+	 * @return inv(corrected_Kernel*sq(m_scale))*A:
 	 */
-	virtual bool precompute();
+	Eigen::MatrixXd solve_inverse(Eigen::MatrixXd A);
+
+	/** correct the kernel matrix and factorizated the corrected Kernel matrix
+	 * for update
+	 */
+	virtual void update_init();
 
 	/** compute posterior Sigma matrix*/
-	virtual void update_Sigma();
+	virtual void update_Sigma()=0;
 
 	/** compute inv(corrected_Kernel)*Sigma matrix */
-	virtual void update_InvK_Sigma();
+	virtual void update_InvK_Sigma()=0;
+
 private:
 	void init();
 
-	SGMatrix<float64_t> m_InvK;
 };
 }
-#endif /* _KLAPPROXDIAGONALINFERENCEMETHOD_H_ */
+#endif /* _KLLOWERTRIANGULARINFERENCE_H_ */

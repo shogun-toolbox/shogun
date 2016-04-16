@@ -39,7 +39,7 @@
  * The reference pseudo code is the algorithm 3.3 of the GPML textbook
  */
 
-#include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -98,19 +98,19 @@ public:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CMultiLaplacianInferenceMethod::CMultiLaplacianInferenceMethod() : CLaplacianInferenceBase()
+CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod() : CLaplaceInference()
 {
 	init();
 }
 
-CMultiLaplacianInferenceMethod::CMultiLaplacianInferenceMethod(CKernel* kern,
+CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CLaplacianInferenceBase(kern, feat, m, lab, mod)
+		: CLaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CMultiLaplacianInferenceMethod::init()
+void CMultiLaplaceInferenceMethod::init()
 {
 	m_iter=20;
 	m_tolerance=1e-6;
@@ -127,13 +127,13 @@ void CMultiLaplacianInferenceMethod::init()
 	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
 }
 
-CMultiLaplacianInferenceMethod::~CMultiLaplacianInferenceMethod()
+CMultiLaplaceInferenceMethod::~CMultiLaplaceInferenceMethod()
 {
 }
 
-void CMultiLaplacianInferenceMethod::check_members() const
+void CMultiLaplaceInferenceMethod::check_members() const
 {
-	CInferenceMethod::check_members();
+	CInference::check_members();
 
 	REQUIRE(m_labels->get_label_type()==LT_MULTICLASS,
 		"Labels must be type of CMulticlassLabels\n");
@@ -141,7 +141,7 @@ void CMultiLaplacianInferenceMethod::check_members() const
 		"likelihood model should support multi-classification\n");
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -151,7 +151,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_W);
 }
 
-float64_t CMultiLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t CMultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -159,7 +159,7 @@ float64_t CMultiLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 	return m_nlz;
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	//SoftMax likelihood does not have this kind of derivative
@@ -167,21 +167,21 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_likelihoo
 	return SGVector<float64_t> ();
 }
 
-CMultiLaplacianInferenceMethod* CMultiLaplacianInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
 
-	if (inference->get_inference_type()!=INF_LAPLACIAN_MULTIPLE)
-		SG_SERROR("Provided inference is not of type CMultiLaplacianInferenceMethod!\n")
+	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
+		SG_SERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
 
 	SG_REF(inference);
-	return (CMultiLaplacianInferenceMethod*)inference;
+	return (CMultiLaplaceInferenceMethod*)inference;
 }
 
 
-void CMultiLaplacianInferenceMethod::update_approx_cov()
+void CMultiLaplaceInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
@@ -204,11 +204,11 @@ void CMultiLaplacianInferenceMethod::update_approx_cov()
 	eigen_Sigma+=eigen_V.transpose()*eigen_V;
 }
 
-void CMultiLaplacianInferenceMethod::update_chol()
+void CMultiLaplaceInferenceMethod::update_chol()
 {
 }
 
-void CMultiLaplacianInferenceMethod::get_dpi_helper()
+void CMultiLaplaceInferenceMethod::get_dpi_helper()
 {
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
@@ -229,7 +229,7 @@ void CMultiLaplacianInferenceMethod::get_dpi_helper()
 	//eigen_dpi_matrix=eigen_dpi_matrix.array().colwise()/tmp_for_dpi.array();
 }
 
-void CMultiLaplacianInferenceMethod::update_alpha()
+void CMultiLaplaceInferenceMethod::update_alpha()
 {
 	float64_t Psi_Old = CMath::INFTY;
 	float64_t Psi_New;
@@ -377,7 +377,7 @@ void CMultiLaplacianInferenceMethod::update_alpha()
 	}
 }
 
-void CMultiLaplacianInferenceMethod::update_deriv()
+void CMultiLaplaceInferenceMethod::update_deriv()
 {
 	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
@@ -388,7 +388,7 @@ void CMultiLaplacianInferenceMethod::update_deriv()
 	eigen_U=eigen_M.triangularView<Upper>().adjoint().solve(eigen_E);
 }
 
-float64_t CMultiLaplacianInferenceMethod::get_derivative_helper(SGMatrix<float64_t> dK)
+float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t> dK)
 {
 	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	//currently only explicit term is computed
@@ -409,7 +409,7 @@ float64_t CMultiLaplacianInferenceMethod::get_derivative_helper(SGMatrix<float64
 	return result/2.0;
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference_method(
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
@@ -428,7 +428,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_inference
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
@@ -455,7 +455,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_kernel(
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
@@ -489,7 +489,7 @@ SGVector<float64_t> CMultiLaplacianInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplacianInferenceMethod::get_posterior_mean()
+SGVector<float64_t> CMultiLaplaceInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 

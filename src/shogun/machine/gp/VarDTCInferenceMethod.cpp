@@ -36,7 +36,7 @@
  *
  */
 
-#include <shogun/machine/gp/SparseVGInferenceMethod.h>
+#include <shogun/machine/gp/VarDTCInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -45,19 +45,19 @@
 using namespace shogun;
 using namespace Eigen;
 
-CSparseVGInferenceMethod::CSparseVGInferenceMethod() : CSingleSparseInferenceBase()
+CVarDTCInferenceMethod::CVarDTCInferenceMethod() : CSingleSparseInference()
 {
 	init();
 }
 
-CSparseVGInferenceMethod::CSparseVGInferenceMethod(CKernel* kern, CFeatures* feat,
+CVarDTCInferenceMethod::CVarDTCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleSparseInferenceBase(kern, feat, m, lab, mod, lat)
+		: CSingleSparseInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
 
-void CSparseVGInferenceMethod::init()
+void CVarDTCInferenceMethod::init()
 {
 	m_yy=0.0;
 	m_f3=0.0;
@@ -80,13 +80,13 @@ void CSparseVGInferenceMethod::init()
 	SG_ADD(&m_Knm_inv_Lm, "Knm_Inv_Lm", "Knm_Inv_Lm", MS_NOT_AVAILABLE);
 }
 
-CSparseVGInferenceMethod::~CSparseVGInferenceMethod()
+CVarDTCInferenceMethod::~CVarDTCInferenceMethod()
 {
 }
 
-void CSparseVGInferenceMethod::compute_gradient()
+void CVarDTCInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -96,11 +96,11 @@ void CSparseVGInferenceMethod::compute_gradient()
 	}
 }
 
-void CSparseVGInferenceMethod::update()
+void CVarDTCInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_chol();
 	update_alpha();
 	m_gradient_update=false;
@@ -109,37 +109,37 @@ void CSparseVGInferenceMethod::update()
 	SG_DEBUG("leaving\n");
 }
 
-CSparseVGInferenceMethod* CSparseVGInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+CVarDTCInferenceMethod* CVarDTCInferenceMethod::obtain_from_generic(
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_SPARSE_REGRESSION)
-		SG_SERROR("Provided inference is not of type CSparseVGInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type CVarDTCInferenceMethod!\n")
 
 	SG_REF(inference);
-	return (CSparseVGInferenceMethod*)inference;
+	return (CVarDTCInferenceMethod*)inference;
 }
 
-void CSparseVGInferenceMethod::check_members() const
+void CVarDTCInferenceMethod::check_members() const
 {
-	CSingleSparseInferenceBase::check_members();
+	CSingleSparseInference::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
-			"SparseVG inference method can only use Gaussian likelihood function\n")
+			"VarDTC inference method can only use Gaussian likelihood function\n")
 	REQUIRE(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
 			"of CRegressionLabels\n")
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CVarDTCInferenceMethod::get_diagonal_vector()
 {
 	SG_NOTIMPLEMENTED
 	//the inference method does not need to use this 
 	return SGVector<float64_t>();
 }
 
-float64_t CSparseVGInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t CVarDTCInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -164,7 +164,7 @@ float64_t CSparseVGInferenceMethod::get_negative_log_marginal_likelihood()
 	return neg_f012+neg_f3+neg_trk;
 }
 
-void CSparseVGInferenceMethod::update_chol()
+void CVarDTCInferenceMethod::update_chol()
 {
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -219,7 +219,7 @@ void CSparseVGInferenceMethod::update_chol()
 		-eigen_C.diagonal().array().sum());
 }
 
-void CSparseVGInferenceMethod::update_alpha()
+void CVarDTCInferenceMethod::update_alpha()
 {
 	Map<MatrixXd> eigen_Knm_inv_Lm(m_Knm_inv_Lm.matrix, m_Knm_inv_Lm.num_rows, m_Knm_inv_Lm.num_cols);
 	Map<MatrixXd> eigen_inv_La(m_inv_La.matrix, m_inv_La.num_rows, m_inv_La.num_cols);
@@ -245,7 +245,7 @@ void CSparseVGInferenceMethod::update_alpha()
 	m_f3=0.5*eigen_y_Knm_inv_Lm_inv_La_transpose.dot(eigen_y_Knm_inv_Lm_inv_La_transpose)/m_sigma2;
 }
 
-void CSparseVGInferenceMethod::update_deriv()
+void CVarDTCInferenceMethod::update_deriv()
 {
 	Map<MatrixXd> eigen_inv_La(m_inv_La.matrix, m_inv_La.num_rows, m_inv_La.num_cols);
 	Map<MatrixXd> eigen_inv_Lm(m_inv_Lm.matrix, m_inv_Lm.num_rows, m_inv_Lm.num_cols);
@@ -289,21 +289,21 @@ void CSparseVGInferenceMethod::update_deriv()
 	eigen_Tnm += (eigen_y-eigen_m)*eigen_alpha.transpose();
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_posterior_mean()
+SGVector<float64_t> CVarDTCInferenceMethod::get_posterior_mean()
 {
 	SG_NOTIMPLEMENTED
 	//TODO: implement this method once I get time
 	return SGVector<float64_t>();
 }
 
-SGMatrix<float64_t> CSparseVGInferenceMethod::get_posterior_covariance()
+SGMatrix<float64_t> CVarDTCInferenceMethod::get_posterior_covariance()
 {
 	SG_NOTIMPLEMENTED
 	//TODO: implement this method once I get time
 	return SGMatrix<float64_t>();
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_sigma"), "Can't compute derivative of "
@@ -328,7 +328,7 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_likelihood_mode
 	return dlik;
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_inducing_features(
+SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_features(
 	const TParameter* param)
 {
 	//[DXu DXunm] = kernelSparseGradInd(model, Tmm, Tnm);
@@ -372,7 +372,7 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_inducing_featur
 	return deriv_lat;
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_inducing_noise(
+SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -386,7 +386,7 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_inducing_noise(
 	return result;
 }
 
-float64_t CSparseVGInferenceMethod::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+float64_t CVarDTCInferenceMethod::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
 {
 	Map<VectorXd> eigen_ddiagKi(ddiagKi.vector, ddiagKi.vlen);
@@ -404,7 +404,7 @@ float64_t CSparseVGInferenceMethod::get_derivative_related_cov(SGVector<float64_
 	return dkern;
 }
 
-SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> CVarDTCInferenceMethod::get_derivative_wrt_mean(
 	const TParameter* param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -432,7 +432,7 @@ SGVector<float64_t> CSparseVGInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-void CSparseVGInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CVarDTCInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
 	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }
