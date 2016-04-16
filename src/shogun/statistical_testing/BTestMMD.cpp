@@ -44,7 +44,7 @@ void CBTestMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
-const std::function<float64_t(SGMatrix<float64_t>)> CBTestMMD::get_direct_estimation_method() const
+const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estimation_method() const
 {
 	return mmd::WithinBlockDirect();
 }

@@ -83,7 +83,7 @@ TEST(QuadraticTimeMMD, biased)
 
 	// assert matlab result
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.17882546486779649, 1E-6);
+	EXPECT_NEAR(statistic, 0.17882546486779649, 1E-5);
 }
 
 TEST(QuadraticTimeMMD, unbiased)
@@ -126,7 +126,7 @@ TEST(QuadraticTimeMMD, unbiased)
 
 	// assert matlab result
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.13440094336133723, 1E-6);
+	EXPECT_NEAR(statistic, 0.13440094336133723, 1E-5);
 }
 
 TEST(QuadraticTimeMMD, incomplete)
@@ -169,7 +169,7 @@ TEST(QuadraticTimeMMD, incomplete)
 
 	// assert local machine computed result
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.16743977201175841, 1E-6);
+	EXPECT_NEAR(statistic, 0.16743977201175841, 1E-5);
 }
 
 TEST(QuadraticTimeMMD, unbiased_different_num_samples)
@@ -202,7 +202,7 @@ TEST(QuadraticTimeMMD, unbiased_different_num_samples)
 	// assert python result at
 	// https://github.com/lambday/shogun-hypothesis-testing/blob/master/mmd.py
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, -0.037500338130199401, 1E-8);
+	EXPECT_NEAR(statistic, -0.037500338130199401, 1E-5);
 }
 
 TEST(QuadraticTimeMMD, biased_different_num_samples)
@@ -235,7 +235,7 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 	// assert python result at
 	// https://github.com/lambday/shogun-hypothesis-testing/blob/master/mmd.py
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.54418915736201567, 1E-8);
+	EXPECT_NEAR(statistic, 0.54418915736201567, 1E-5);
 }
 
 TEST(QuadraticTimeMMD, compute_variance_null)

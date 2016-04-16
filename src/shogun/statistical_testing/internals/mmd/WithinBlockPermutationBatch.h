@@ -38,14 +38,15 @@ namespace mmd
 
 class WithinBlockPermutationBatch
 {
-	using return_type = SGVector<float64_t>;
+	using value_type=float32_t;
+	using return_type=SGVector<value_type>;
 public:
 	WithinBlockPermutationBatch(index_t, index_t, index_t, EStatisticType);
-	return_type operator()(SGMatrix<float64_t> kernel_matrix);
-//	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
+	return_type operator()(SGMatrix<value_type> kernel_matrix);
+//	return_type operator()(CGPUMatrix<value_type> kernel_matrix);
 private:
 	struct terms_t;
-	void add_term(terms_t&, float64_t, index_t, index_t);
+	void add_term(terms_t&, float32_t, index_t, index_t);
 
 	const index_t n_x;
 	const index_t n_y;

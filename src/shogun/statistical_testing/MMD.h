@@ -60,7 +60,7 @@ enum class EKernelSelectionMethod
 
 class CMMD : public CTwoSampleTest
 {
-	using operation = std::function<float64_t(SGMatrix<float64_t>)>;
+	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 public:
 	CMMD();
 	virtual ~CMMD();

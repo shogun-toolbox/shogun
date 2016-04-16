@@ -29,24 +29,22 @@ UnbiasedIncomplete::UnbiasedIncomplete(index_t _n) : n(_n)
 {
 }
 
-float64_t UnbiasedIncomplete::operator()(SGMatrix<float64_t> km)
+float32_t UnbiasedIncomplete::operator()(SGMatrix<float32_t> km)
 {
-	using MatrixXt = const Eigen::MatrixXd;
-	using Block = const Eigen::Block<Eigen::Map<MatrixXt>>;
+	using MatrixXt=const Eigen::MatrixXf;
+	using Block=const Eigen::Block<Eigen::Map<MatrixXt>>;
 
 	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
 
-	Block& b_x = map.block(0, 0, n, n);
-	auto term_1 = b_x.sum() - b_x.diagonal().sum();
+	Block& b_x=map.block(0, 0, n, n);
+	auto term_1=b_x.sum()-b_x.diagonal().sum();
 
-	Block& b_y = map.block(n, n, n, n);
-	auto term_2 = b_y.sum() - b_y.diagonal().sum();
+	Block& b_y=map.block(n, n, n, n);
+	auto term_2=b_y.sum()-b_y.diagonal().sum();
 
-	Block& b_xy = map.block(n, 0, n, n);
-	auto term_3 = b_xy.sum() - b_xy.diagonal().sum();
+	Block& b_xy=map.block(n, 0, n, n);
+	auto term_3=b_xy.sum()-b_xy.diagonal().sum();
 
-	auto statistic = term_1/n/(n-1) + term_2/n/(n-1) - 2*term_3/n/(n-1);
-
+	auto statistic=term_1/n/(n-1)+term_2/n/(n-1)-2*term_3/n/(n-1);
 	return statistic;
-
 }

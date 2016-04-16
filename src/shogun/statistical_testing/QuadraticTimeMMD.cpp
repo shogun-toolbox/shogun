@@ -54,7 +54,7 @@ struct CQuadraticTimeMMD::Self
 {
 	Self(CQuadraticTimeMMD&);
 
-	SGMatrix<float64_t> get_kernel_matrix();
+	SGMatrix<float32_t> get_kernel_matrix();
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	SGVector<float64_t> sample_null();
 
@@ -67,8 +67,8 @@ struct CQuadraticTimeMMD::Self
 	CQuadraticTimeMMD& owner;
 	index_t num_eigenvalues;
 
-	std::function<float64_t(SGMatrix<float64_t>)> statistic_job;
-	std::function<float64_t(SGMatrix<float64_t>)> variance_job;
+	std::function<float32_t(SGMatrix<float32_t>)> statistic_job;
+	std::function<float32_t(SGMatrix<float32_t>)> variance_job;
 };
 
 CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),
@@ -131,20 +131,22 @@ void CQuadraticTimeMMD::Self::compute_jobs(ComputationManager& cm) const
 	SG_SDEBUG("Leaving\n");
 }
 
-SGMatrix<float64_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
+SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 {
 	SG_SDEBUG("Entering\n");
 	const KernelManager& km=owner.get_kernel_manager();
 	auto kernel=km.kernel_at(0);
 	REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
 
-	SGMatrix<float64_t> kernel_matrix;
+	SGMatrix<float32_t> kernel_matrix;
 
 	// check if precomputed kernel is given, no need to do anything in that case
 	// otherwise, init kernel with data and precompute kernel matrix
 	if (kernel->get_kernel_type()==K_CUSTOM)
 	{
-		kernel_matrix=kernel->get_kernel_matrix();
+		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(kernel);
+		ASSERT(precomputed_kernel!=nullptr);
+		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
 	}
 	else
 	{
@@ -152,20 +154,20 @@ SGMatrix<float64_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 		CFeatures *samples_p=dm.samples_at(0);
 		CFeatures *samples_q=dm.samples_at(1);
 		auto samples_p_and_q=samples_p->create_merged_copy(samples_q);
-		SG_REF(samples_p_and_q);
-
+		kernel->init(samples_p_and_q, samples_p_and_q);
 		try
 		{
-			kernel->init(samples_p_and_q, samples_p_and_q);
 			owner.get_kernel_manager().precompute_kernel_at(0);
-			kernel_matrix=km.kernel_at(0)->get_kernel_matrix();
-			kernel->remove_lhs_and_rhs();
 		}
 		catch (ShogunException e)
 		{
 			SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n",
 				e.get_exception_string());
 		}
+		kernel->remove_lhs_and_rhs();
+		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(km.kernel_at(0));
+		ASSERT(precomputed_kernel!=nullptr);
+		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
 	}
 
 	SG_SDEBUG("Leaving\n");
@@ -175,7 +177,7 @@ SGMatrix<float64_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_variance()
 {
 	SG_SDEBUG("Entering\n");
-	SGMatrix<float64_t> kernel_matrix=get_kernel_matrix();
+	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
 
 	ComputationManager cm;
 	create_computation_jobs();
@@ -204,7 +206,7 @@ std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_varia
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 {
 	SG_SDEBUG("Entering\n");
-	SGMatrix<float64_t> kernel_matrix=get_kernel_matrix();
+	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
 
 	const DataManager& dm=owner.get_data_manager();
 	auto Nx=dm.num_samples_at(0);
@@ -212,11 +214,12 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 
 	WithinBlockPermutationBatch compute(Nx, Ny, owner.get_num_null_samples(), owner.get_statistic_type());
 	SG_SDEBUG("Leaving\n");
-	SGVector<float64_t> null_samples=compute(kernel_matrix);
-	std::for_each(null_samples.vector, null_samples.vector+null_samples.vlen, [this](float64_t& statistic)
+	SGVector<float32_t> result=compute(kernel_matrix);
+	SGVector<float64_t> null_samples(result.vlen);
+	for (auto i=0; i<result.vlen; ++i)
 	{
-		statistic=owner.normalize_statistic(statistic);
-	});
+		null_samples[i]=owner.normalize_statistic(result[i]);
+	}
 	return null_samples;
 }
 
@@ -237,7 +240,7 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 	get_kernel_manager().restore_kernel_at(0);
 }
 
-const std::function<float64_t(SGMatrix<float64_t>)> CQuadraticTimeMMD::get_direct_estimation_method() const
+const std::function<float32_t(SGMatrix<float32_t>)> CQuadraticTimeMMD::get_direct_estimation_method() const
 {
 	return FullDirect();
 }
@@ -356,7 +359,7 @@ SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
-	SGMatrix<float64_t> kernel_matrix=self->get_kernel_matrix();
+	SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD =2/m * ( 1  - 1/m*sum(diag(KL))  );
@@ -432,16 +435,16 @@ SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
-	SGMatrix<float64_t> precomputed_km=self->get_kernel_matrix();
-	SGMatrix<float64_t> K(precomputed_km.num_rows, precomputed_km.num_cols);
+	SGMatrix<float32_t> precomputed_km=self->get_kernel_matrix();
+	SGMatrix<float32_t> K(precomputed_km.num_rows, precomputed_km.num_cols);
 	std::copy(precomputed_km.matrix, precomputed_km.matrix+precomputed_km.num_rows*precomputed_km.num_cols, K.matrix);
 
 	/* center matrix K=H*K*H */
 	K.center();
 
 	/* compute eigenvalues and select num_eigenvalues largest ones */
-	Eigen::Map<Eigen::MatrixXd> c_kernel_matrix(K.matrix, K.num_rows, K.num_cols);
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigen_solver(c_kernel_matrix);
+	Eigen::Map<Eigen::MatrixXf> c_kernel_matrix(K.matrix, K.num_rows, K.num_cols);
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> eigen_solver(c_kernel_matrix);
 	REQUIRE(eigen_solver.info()==Eigen::Success, "Eigendecomposition failed!\n");
 	index_t max_num_eigenvalues=eigen_solver.eigenvalues().rows();
 

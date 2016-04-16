@@ -65,9 +65,9 @@ struct CMMD::Self
 	EVarianceEstimationMethod variance_estimation_method;
 	ENullApproximationMethod null_approximation_method;
 
-	std::function<float64_t(SGMatrix<float64_t>)> statistic_job;
-	std::function<float64_t(SGMatrix<float64_t>)> permutation_job;
-	std::function<float64_t(SGMatrix<float64_t>)> variance_job;
+	std::function<float32_t(SGMatrix<float32_t>)> statistic_job;
+	std::function<float32_t(SGMatrix<float32_t>)> permutation_job;
+	std::function<float32_t(SGMatrix<float32_t>)> variance_job;
 };
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
@@ -87,23 +87,23 @@ void CMMD::Self::create_computation_jobs()
 
 void CMMD::Self::create_statistic_job()
 {
-	const DataManager& dm = owner.get_data_manager();
-	auto Bx = dm.blocksize_at(0);
-	auto By = dm.blocksize_at(1);
+	const DataManager& dm=owner.get_data_manager();
+	auto Bx=dm.blocksize_at(0);
+	auto By=dm.blocksize_at(1);
 	switch (statistic_type)
 	{
 		case EStatisticType::UNBIASED_FULL:
-			statistic_job = mmd::UnbiasedFull(Bx);
+			statistic_job=mmd::UnbiasedFull(Bx);
 			break;
 		case EStatisticType::UNBIASED_INCOMPLETE:
-			statistic_job = mmd::UnbiasedIncomplete(Bx);
+			statistic_job=mmd::UnbiasedIncomplete(Bx);
 			break;
 		case EStatisticType::BIASED_FULL:
-			statistic_job = mmd::BiasedFull(Bx);
+			statistic_job=mmd::BiasedFull(Bx);
 			break;
 		default : break;
 	};
-	permutation_job = mmd::WithinBlockPermutation(Bx, By, statistic_type);
+	permutation_job=mmd::WithinBlockPermutation(Bx, By, statistic_type);
 }
 
 void CMMD::Self::create_variance_job()
@@ -111,10 +111,10 @@ void CMMD::Self::create_variance_job()
 	switch (variance_estimation_method)
 	{
 		case EVarianceEstimationMethod::DIRECT:
-			variance_job = owner.get_direct_estimation_method();
+			variance_job=owner.get_direct_estimation_method();
 			break;
 		case EVarianceEstimationMethod::PERMUTATION:
-			variance_job = permutation_job;
+			variance_job=permutation_job;
 			break;
 		default : break;
 	};
@@ -129,16 +129,16 @@ void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_
 #pragma omp parallel for
 	for (size_t i = 0; i < blocks.size(); ++i)
 	{
-		auto block_p = get_block_p(i);
-		auto block_q = get_block_q(i);
+		auto block_p=get_block_p(i);
+		auto block_q=get_block_q(i);
 
-		auto block_p_and_q = block_p->create_merged_copy(block_q.get());
+		auto block_p_and_q=block_p->create_merged_copy(block_q.get());
 		SG_REF(block_p_and_q);
 
-		block_p = nullptr;
-		block_q = nullptr;
+		block_p=nullptr;
+		block_q=nullptr;
 
-		blocks[i] = std::shared_ptr<CFeatures>(block_p_and_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
+		blocks[i]=std::shared_ptr<CFeatures>(block_p_and_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
 	}
 }
 #undef get_block_p
@@ -146,16 +146,16 @@ void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_
 
 void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel) const
 {
+	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom for streaming test!\n");
 	cm.num_data(blocks.size());
-
 #pragma omp parallel for
-	for (size_t i = 0; i < blocks.size(); ++i)
+	for (size_t i=0; i<blocks.size(); ++i)
 	{
 		try
 		{
-			auto kernel_clone = std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
+			auto kernel_clone=std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
 			kernel_clone->init(blocks[i].get(), blocks[i].get());
-			cm.data(i) = std::unique_ptr<CCustomKernel>(new CCustomKernel(kernel_clone.get()))->get_kernel_matrix();
+			cm.data(i)=kernel_clone->get_kernel_matrix<float32_t>();
 			kernel_clone->remove_lhs_and_rhs();
 		}
 		catch (ShogunException e)
@@ -168,28 +168,24 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_
 void CMMD::Self::compute_jobs(ComputationManager& cm) const
 {
 	if (use_gpu)
-	{
 		cm.use_gpu().compute_data_parallel_jobs();
-	}
 	else
-	{
 		cm.use_cpu().compute_data_parallel_jobs();
-	}
 }
 
 std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 {
-	const KernelManager& km = owner.get_kernel_manager();
-	auto kernel = km.kernel_at(0);
+	const KernelManager& km=owner.get_kernel_manager();
+	auto kernel=km.kernel_at(0);
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
-	float64_t statistic = 0;
-	float64_t permuted_samples_statistic = 0;
-	float64_t variance = 0;
-	index_t statistic_term_counter = 1;
-	index_t variance_term_counter = 1;
+	float64_t statistic=0;
+	float64_t permuted_samples_statistic=0;
+	float64_t variance=0;
+	index_t statistic_term_counter=1;
+	index_t variance_term_counter=1;
 
-	DataManager& dm = owner.get_data_manager();
+	DataManager& dm=owner.get_data_manager();
 	ComputationManager cm;
 
 	create_computation_jobs();
@@ -199,7 +195,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
 	dm.start();
-	auto next_burst = dm.next();
+	auto next_burst=dm.next();
 
 	while (!next_burst.empty())
 	{
@@ -207,65 +203,62 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 		compute_kernel(cm, blocks, kernel);
 		compute_jobs(cm);
 
-		auto mmds = cm.result(0);
-		auto vars = cm.result(1);
+		auto mmds=cm.result(0);
+		auto vars=cm.result(1);
 
-		for (size_t i = 0; i < mmds.size(); ++i)
+		for (size_t i=0; i<mmds.size(); ++i)
 		{
-			auto delta = mmds[i] - statistic;
-			statistic += delta / statistic_term_counter;
+			auto delta=mmds[i]-statistic;
+			statistic+=delta/statistic_term_counter;
 			statistic_term_counter++;
 		}
 
-		if (variance_estimation_method == EVarianceEstimationMethod::DIRECT)
+		if (variance_estimation_method==EVarianceEstimationMethod::DIRECT)
 		{
-			for (size_t i = 0; i < mmds.size(); ++i)
+			for (size_t i=0; i<mmds.size(); ++i)
 			{
-				auto delta = vars[i] - variance;
-				variance += delta / variance_term_counter;
+				auto delta=vars[i]-variance;
+				variance+=delta/variance_term_counter;
 				variance_term_counter++;
 			}
 		}
 		else
 		{
-			for (size_t i = 0; i < vars.size(); ++i)
+			for (size_t i=0; i<vars.size(); ++i)
 			{
-				auto delta = vars[i] - permuted_samples_statistic;
-				permuted_samples_statistic += delta / variance_term_counter;
-				variance += delta * (vars[i] - permuted_samples_statistic);
+				auto delta=vars[i]-permuted_samples_statistic;
+				permuted_samples_statistic+=delta/variance_term_counter;
+				variance+=delta*(vars[i]-permuted_samples_statistic);
 				variance_term_counter++;
 			}
 		}
-		next_burst = dm.next();
+		next_burst=dm.next();
 	}
 
 	dm.end();
 	cm.done();
 
 	// normalize statistic and variance
-	statistic = owner.normalize_statistic(statistic);
-
-	if (variance_estimation_method == EVarianceEstimationMethod::PERMUTATION)
-	{
-		variance = owner.normalize_variance(variance);
-	}
+	statistic=owner.normalize_statistic(statistic);
+	if (variance_estimation_method==EVarianceEstimationMethod::PERMUTATION)
+		variance=owner.normalize_variance(variance);
 
 	return std::make_pair(statistic, variance);
 }
 
 SGVector<float64_t> CMMD::Self::sample_null()
 {
-	const KernelManager& km = owner.get_kernel_manager();
-	auto kernel = km.kernel_at(0);
+	const KernelManager& km=owner.get_kernel_manager();
+	auto kernel=km.kernel_at(0);
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
 	std::vector<index_t> term_counters(num_null_samples);
 
-	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
-	std::fill(term_counters.data(), term_counters.data() + term_counters.size(), 1);
+	std::fill(statistic.vector, statistic.vector+statistic.vlen, 0);
+	std::fill(term_counters.data(), term_counters.data()+term_counters.size(), 1);
 
-	DataManager& dm = owner.get_data_manager();
+	DataManager& dm=owner.get_data_manager();
 	ComputationManager cm;
 
 	create_statistic_job();
@@ -274,25 +267,25 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
 	dm.start();
-	auto next_burst = dm.next();
+	auto next_burst=dm.next();
 
 	while (!next_burst.empty())
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
 
-		for (auto j = 0; j < num_null_samples; ++j)
+		for (auto j=0; j<num_null_samples; ++j)
 		{
 			compute_jobs(cm);
-			auto mmds = cm.result(0);
-			for (size_t i = 0; i < mmds.size(); ++i)
+			auto mmds=cm.result(0);
+			for (size_t i=0; i<mmds.size(); ++i)
 			{
-				auto delta = mmds[i] - statistic[j];
-				statistic[j] += delta / term_counters[j];
+				auto delta=mmds[i]-statistic[j];
+				statistic[j]+=delta/term_counters[j];
 				term_counters[j]++;
 			}
 		}
-		next_burst = dm.next();
+		next_burst=dm.next();
 	}
 
 	dm.end();
@@ -301,7 +294,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	// normalize statistic
 	std::for_each(statistic.vector, statistic.vector + statistic.vlen, [this](float64_t& value)
 	{
-		value = owner.normalize_statistic(value);
+		value=owner.normalize_statistic(value);
 	});
 
 	return statistic;
@@ -309,7 +302,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 
 CMMD::CMMD() : CTwoSampleTest()
 {
-	self = std::unique_ptr<Self>(new Self(*this));
+	self=std::unique_ptr<Self>(new Self(*this));
 }
 
 CMMD::~CMMD()
@@ -333,7 +326,7 @@ SGVector<float64_t> CMMD::sample_null()
 
 void CMMD::set_num_null_samples(index_t null_samples)
 {
-	self->num_null_samples = null_samples;
+	self->num_null_samples=null_samples;
 }
 
 const index_t CMMD::get_num_null_samples() const
@@ -343,7 +336,7 @@ const index_t CMMD::get_num_null_samples() const
 
 void CMMD::use_gpu(bool gpu)
 {
-	self->use_gpu = gpu;
+	self->use_gpu=gpu;
 }
 
 bool CMMD::use_gpu() const
@@ -353,7 +346,7 @@ bool CMMD::use_gpu() const
 
 void CMMD::set_statistic_type(EStatisticType stype)
 {
-	self->statistic_type = stype;
+	self->statistic_type=stype;
 }
 
 const EStatisticType CMMD::get_statistic_type() const
@@ -368,7 +361,7 @@ void CMMD::set_variance_estimation_method(EVarianceEstimationMethod vmethod)
 	{
 		std::cerr << "cannot use permutation method for quadratic time MMD" << std::endl;
 	}*/
-	self->variance_estimation_method = vmethod;
+	self->variance_estimation_method=vmethod;
 }
 
 const EVarianceEstimationMethod CMMD::get_variance_estimation_method() const
@@ -388,7 +381,7 @@ void CMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
 	{
 		std::cerr << "cannot use spectrum/gamma method for B-test/linear time MMD" << std::endl;
 	}*/
-	self->null_approximation_method = nmethod;
+	self->null_approximation_method=nmethod;
 }
 
 const ENullApproximationMethod CMMD::get_null_approximation_method() const

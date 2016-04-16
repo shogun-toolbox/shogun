@@ -38,7 +38,7 @@ WithinBlockPermutation::WithinBlockPermutation(index_t nx, index_t ny, EStatisti
 	inverted_permuted_inds=SGVector<index_t>(permuted_inds.vlen);
 }
 
-void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
+void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 {
 	if (i<n_x && j<n_x && i<=j)
 	{
@@ -63,7 +63,7 @@ void WithinBlockPermutation::add_term(float64_t val, index_t i, index_t j)
 	}
 }
 
-float64_t WithinBlockPermutation::operator()(SGMatrix<float64_t> km)
+float32_t WithinBlockPermutation::operator()(SGMatrix<float32_t> km)
 {
 	SG_SDEBUG("Entering!\n");
 

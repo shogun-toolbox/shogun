@@ -37,13 +37,13 @@ namespace mmd
 
 class WithinBlockPermutation
 {
-	using return_type = float64_t;
+	using return_type=float32_t;
 public:
 	WithinBlockPermutation(index_t, index_t, EStatisticType);
-	return_type operator()(SGMatrix<float64_t> kernel_matrix);
-//	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
+	return_type operator()(SGMatrix<return_type> kernel_matrix);
+//	return_type operator()(CGPUMatrix<return_type> kernel_matrix);
 private:
-	void add_term(float64_t, index_t, index_t);
+	void add_term(float32_t, index_t, index_t);
 
 	const index_t n_x;
 	const index_t n_y;
@@ -52,8 +52,8 @@ private:
 	SGVector<index_t> inverted_permuted_inds;
 	struct terms_t
 	{
-		float64_t term[3];
-		float64_t diag[3];
+		float32_t term[3];
+		float32_t diag[3];
 	};
 	terms_t terms;
 };

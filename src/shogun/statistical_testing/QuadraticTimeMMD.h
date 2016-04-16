@@ -43,7 +43,7 @@ template <typename> class SGVector;
 
 class CQuadraticTimeMMD : public CMMD
 {
-	using operation = std::function<float64_t(SGMatrix<float64_t>)>;
+	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 public:
 	CQuadraticTimeMMD();
 	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);

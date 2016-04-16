@@ -55,7 +55,7 @@ TEST(WithinBlockPermutationBatch, biased_full)
 	const index_t m=7;
 	const index_t num_null_samples=5;
 
-	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
+	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -76,19 +76,19 @@ TEST(WithinBlockPermutationBatch, biased_full)
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
-	auto mat=kernel->get_kernel_matrix();
+	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
 	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::BIASED_FULL);
 	sg_rand->set_seed(12345);
-	SGVector<float64_t> result_1=batch(mat);
+	SGVector<float32_t> result_1=batch(mat);
 
 	operation compute=shogun::internal::mmd::BiasedFull(n);
 
 	// compute a row-column permuted temporary matrix first
 	// then compute a biased-full statistic on this matrix
-	Map<MatrixXd> map(mat.matrix, mat.num_rows, mat.num_cols);
-	SGVector<float64_t> result_2(num_null_samples);
+	Map<MatrixXf> map(mat.matrix, mat.num_rows, mat.num_cols);
+	SGVector<float32_t> result_2(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -96,15 +96,15 @@ TEST(WithinBlockPermutationBatch, biased_full)
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 		CMath::permute(perminds);
-		MatrixXd permuted = perm.transpose()*map*perm;
-		SGMatrix<float64_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
+		MatrixXf permuted = perm.transpose()*map*perm;
+		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute(permuted_km);
 	}
 
 	// shuffle the features first, recompute the kernel matrix using
 	// shuffled samples, then compute a biased-full statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
-	SGVector<float64_t> result_3(num_null_samples);
+	SGVector<float32_t> result_3(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -112,15 +112,15 @@ TEST(WithinBlockPermutationBatch, biased_full)
 		CMath::permute(inds);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
-		mat=kernel->get_kernel_matrix();
+		mat=kernel->get_kernel_matrix<float32_t>();
 		result_3[i]=compute(mat);
 		feats->remove_subset();
 	}
 
 	for (auto i=0; i<num_null_samples; ++i)
 	{
-		EXPECT_NEAR(result_1[i], result_2[i], 1E-14);
-		EXPECT_NEAR(result_1[i], result_3[i], 1E-14);
+		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
+		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
 	SG_UNREF(feats);
@@ -133,7 +133,7 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 	const index_t m=7;
 	const index_t num_null_samples=5;
 
-	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
+	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -154,19 +154,19 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
-	auto mat=kernel->get_kernel_matrix();
+	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
     shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::UNBIASED_FULL);
 	sg_rand->set_seed(12345);
-	SGVector<float64_t> result_1=batch(mat);
+	SGVector<float32_t> result_1=batch(mat);
 
 	operation compute=shogun::internal::mmd::UnbiasedFull(n);
 
 	// compute a row-column permuted temporary matrix first
 	// then compute unbiased-full statistic on this matrix
-	Map<MatrixXd> map(mat.matrix, mat.num_rows, mat.num_cols);
-	SGVector<float64_t> result_2(num_null_samples);
+	Map<MatrixXf> map(mat.matrix, mat.num_rows, mat.num_cols);
+	SGVector<float32_t> result_2(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -174,15 +174,15 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 		CMath::permute(perminds);
-		MatrixXd permuted = perm.transpose()*map*perm;
-		SGMatrix<float64_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
+		MatrixXf permuted = perm.transpose()*map*perm;
+		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute(permuted_km);
 	}
 
 	// shuffle the features first, recompute the kernel matrix using
 	// shuffled samples, then compute unbiased-full statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
-	SGVector<float64_t> result_3(num_null_samples);
+	SGVector<float32_t> result_3(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -190,15 +190,15 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 		CMath::permute(inds);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
-		mat=kernel->get_kernel_matrix();
+		mat=kernel->get_kernel_matrix<float32_t>();
 		result_3[i]=compute(mat);
 		feats->remove_subset();
 	}
 
 	for (auto i=0; i<num_null_samples; ++i)
 	{
-		EXPECT_NEAR(result_1[i], result_2[i], 1E-14);
-		EXPECT_NEAR(result_1[i], result_3[i], 1E-14);
+		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
+		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
 	SG_UNREF(feats);
@@ -210,7 +210,7 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 	const index_t n=10;
 	const index_t num_null_samples=5;
 
-	using operation=std::function<float64_t(SGMatrix<float64_t>)>;
+	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -231,19 +231,19 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
-	auto mat=kernel->get_kernel_matrix();
+	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
 	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, n, num_null_samples, EStatisticType::UNBIASED_INCOMPLETE);
 	sg_rand->set_seed(12345);
-	SGVector<float64_t> result_1=batch(mat);
+	SGVector<float32_t> result_1=batch(mat);
 
 	operation compute=shogun::internal::mmd::UnbiasedIncomplete(n);
 
 	// compute a row-column permuted temporary matrix first
 	// then compute unbiased-incomplete statistic on this matrix
-	Map<MatrixXd> map(mat.matrix, mat.num_rows, mat.num_cols);
-	SGVector<float64_t> result_2(num_null_samples);
+	Map<MatrixXf> map(mat.matrix, mat.num_rows, mat.num_cols);
+	SGVector<float32_t> result_2(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -251,15 +251,15 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 		CMath::permute(perminds);
-		MatrixXd permuted = perm.transpose()*map*perm;
-		SGMatrix<float64_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
+		MatrixXf permuted = perm.transpose()*map*perm;
+		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute(permuted_km);
 	}
 
 	// shuffle the features first, recompute the kernel matrix using
 	// shuffled samples, then compute uniased-incomplete statistic on this matrix
 	SGVector<index_t> inds(mat.num_rows);
-	SGVector<float64_t> result_3(num_null_samples);
+	SGVector<float32_t> result_3(num_null_samples);
 	sg_rand->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
@@ -267,15 +267,15 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 		CMath::permute(inds);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
-		mat=kernel->get_kernel_matrix();
+		mat=kernel->get_kernel_matrix<float32_t>();
 		result_3[i]=compute(mat);
 		feats->remove_subset();
 	}
 
 	for (auto i=0; i<num_null_samples; ++i)
 	{
-		EXPECT_NEAR(result_1[i], result_2[i], 1E-14);
-		EXPECT_NEAR(result_1[i], result_3[i], 1E-14);
+		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
+		EXPECT_NEAR(result_1[i], result_3[i], 1E-6);
 	}
 
 	SG_UNREF(feats);

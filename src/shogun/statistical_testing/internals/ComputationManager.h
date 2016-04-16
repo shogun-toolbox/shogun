@@ -38,21 +38,21 @@ public:
 	~ComputationManager();
 
 	void num_data(index_t n);
-	SGMatrix<float64_t>& data(index_t i);
+	SGMatrix<float32_t>& data(index_t i);
 
-	void enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job);
+	void enqueue_job(std::function<float32_t(SGMatrix<float32_t>)> job);
 	void compute_data_parallel_jobs();
 	void compute_task_parallel_jobs();
 	void done();
-	std::vector<float64_t>& result(index_t i);
+	std::vector<float32_t>& result(index_t i);
 
 	ComputationManager& use_cpu();
 	ComputationManager& use_gpu();
 private:
 	bool gpu;
-	std::vector<SGMatrix<float64_t>> data_array;
-	std::vector<std::function<float64_t(SGMatrix<float64_t>)>> job_array;
-	std::vector<std::vector<float64_t>> result_array;
+	std::vector<SGMatrix<float32_t>> data_array;
+	std::vector<std::function<float32_t(SGMatrix<float32_t>)>> job_array;
+	std::vector<std::vector<float32_t>> result_array;
 };
 
 } // namespace internal

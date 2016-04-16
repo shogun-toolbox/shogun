@@ -36,12 +36,12 @@ void ComputationManager::num_data(index_t n)
 	data_array.resize(n);
 }
 
-SGMatrix<float64_t>& ComputationManager::data(index_t i)
+SGMatrix<float32_t>& ComputationManager::data(index_t i)
 {
 	return data_array[i];
 }
 
-void ComputationManager::enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job)
+void ComputationManager::enqueue_job(std::function<float32_t(SGMatrix<float32_t>)> job)
 {
 	job_array.push_back(job);
 }
@@ -67,7 +67,7 @@ void ComputationManager::compute_data_parallel_jobs()
 			// cache friendly, since the original result matrix would lead
 			// to several cache misses, specially because the data is also
 			// being used here
-			std::vector<float64_t> current_data_results(job_array.size());
+			std::vector<float32_t> current_data_results(job_array.size());
 			for (size_t j=0; j<job_array.size(); ++j)
 			{
 				const auto& compute_job=job_array[j];
@@ -112,7 +112,7 @@ void ComputationManager::done()
 	result_array.resize(0);
 }
 
-std::vector<float64_t>& ComputationManager::result(index_t i)
+std::vector<float32_t>& ComputationManager::result(index_t i)
 {
 	return result_array[i];
 }

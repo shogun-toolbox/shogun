@@ -26,22 +26,20 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-float64_t WithinBlockDirect::operator()(SGMatrix<float64_t> km)
+float32_t WithinBlockDirect::operator()(SGMatrix<float32_t> km)
 {
-	Eigen::Map<Eigen::MatrixXd> map(km.matrix, km.num_rows, km.num_cols);
-	index_t B = km.num_rows;
+	Eigen::Map<Eigen::MatrixXf> map(km.matrix, km.num_rows, km.num_cols);
+	index_t B=km.num_rows;
 
-	Eigen::VectorXd diag = map.diagonal();
+	Eigen::VectorXf diag=map.diagonal();
 	map.diagonal().setZero();
 
-	auto term_1 = map.array().square().sum();
-	auto term_2 = CMath::sq(map.array().sum());
-	auto term_3 = (map * map).array().sum();
+	auto term_1=map.array().square().sum();
+	auto term_2=CMath::sq(map.array().sum());
+	auto term_3=(map*map).array().sum();
 
-	map.diagonal() = diag;
+	map.diagonal()=diag;
 
-	auto variance_estimate = 2*(term_1 + term_2/(B-1)/(B-2) - 2*term_3/(B-2))/B/(B-3);
-
+	auto variance_estimate=2*(term_1+term_2/(B-1)/(B-2)-2*term_3/(B-2))/B/(B-3);
 	return variance_estimate;
-
 }

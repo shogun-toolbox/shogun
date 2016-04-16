@@ -33,8 +33,8 @@ using namespace mmd;
 
 struct WithinBlockPermutationBatch::terms_t
 {
-	std::array<float64_t, 3> term{};
-	std::array<float64_t, 3> diag{};
+	std::array<float32_t, 3> term{};
+	std::array<float32_t, 3> diag{};
 };
 
 WithinBlockPermutationBatch::WithinBlockPermutationBatch(index_t nx, index_t ny, index_t N, EStatisticType type)
@@ -48,7 +48,7 @@ WithinBlockPermutationBatch::WithinBlockPermutationBatch(index_t nx, index_t ny,
 		inverted_permuted_inds[i].resize(permuted_inds.vlen);
 }
 
-void WithinBlockPermutationBatch::add_term(terms_t& t, float64_t val, index_t i, index_t j)
+void WithinBlockPermutationBatch::add_term(terms_t& t, float32_t val, index_t i, index_t j)
 {
 	if (i<n_x && j<n_x && i<=j)
 	{
@@ -73,7 +73,7 @@ void WithinBlockPermutationBatch::add_term(terms_t& t, float64_t val, index_t i,
 	}
 }
 
-SGVector<float64_t> WithinBlockPermutationBatch::operator()(SGMatrix<float64_t> km)
+SGVector<float32_t> WithinBlockPermutationBatch::operator()(SGMatrix<float32_t> km)
 {
 	SG_SDEBUG("Entering!\n");
 
@@ -85,7 +85,7 @@ SGVector<float64_t> WithinBlockPermutationBatch::operator()(SGMatrix<float64_t> 
 			inverted_permuted_inds[k][permuted_inds[i]]=i;
 	}
 
-	SGVector<float64_t> result(num_null_samples);
+	SGVector<float32_t> result(num_null_samples);
 #pragma omp parallel for
 	for (auto k=0; k<num_null_samples; ++k)
 	{

@@ -29,16 +29,16 @@ BiasedFull::BiasedFull(index_t n) : n_x(n)
 {
 }
 
-float64_t BiasedFull::operator()(SGMatrix<float64_t> km)
+float32_t BiasedFull::operator()(SGMatrix<float32_t> km)
 {
-	Eigen::Map<const Eigen::MatrixXd> map(km.matrix, km.num_rows, km.num_cols);
-	index_t n_y = km.num_rows - n_x;
+	Eigen::Map<const Eigen::MatrixXf> map(km.matrix, km.num_rows, km.num_cols);
+	index_t n_y=km.num_rows-n_x;
 
-	auto term_1 = map.block(0, 0, n_x, n_x).sum();
-	auto term_2 = map.block(n_x, n_x, n_y, n_y).sum();
-	auto term_3 = map.block(n_x, 0, n_y, n_x).sum();
+	auto term_1=map.block(0, 0, n_x, n_x).sum();
+	auto term_2=map.block(n_x, n_x, n_y, n_y).sum();
+	auto term_3=map.block(n_x, 0, n_y, n_x).sum();
 
-	auto statistic = term_1/n_x/n_x + term_2/n_y/n_y - 2*term_3/n_x/n_y;
+	auto statistic=term_1/n_x/n_x+term_2/n_y/n_y-2*term_3/n_x/n_y;
 
 	return statistic;
 

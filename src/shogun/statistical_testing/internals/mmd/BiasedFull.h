@@ -35,11 +35,11 @@ namespace mmd
 
 struct BiasedFull
 {
-	using return_type = float64_t;
+	using return_type=float32_t;
 	BiasedFull(index_t n);
 
-	return_type operator()(SGMatrix<float64_t> kernel_matrix);
-//	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
+	return_type operator()(SGMatrix<return_type> kernel_matrix);
+//	return_type operator()(CGPUMatrix<return_type> kernel_matrix);
 
 	index_t n_x;
 };
