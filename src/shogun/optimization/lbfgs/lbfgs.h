@@ -30,10 +30,10 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
+#include <shogun/optimization/lbfgs/lbfgscommon.h>
 
 namespace shogun
 {
-
 /**
  * \addtogroup liblbfgs_api libLBFGS API
  * @{
@@ -123,14 +123,16 @@ enum {
     LBFGSERR_INVALID_VALUE
 };
 
+
+
 /**
  * Line search algorithms.
  */
 enum {
     /** The default algorithm (MoreThuente method). */
-    LBFGS_LINESEARCH_DEFAULT = 0,
+    LBFGS_LINESEARCH_DEFAULT = ELBFGSLineSearch::MORETHUENTE,
     /** MoreThuente method proposd by More and Thuente. */
-    LBFGS_LINESEARCH_MORETHUENTE = 0,
+    LBFGS_LINESEARCH_MORETHUENTE = ELBFGSLineSearch::MORETHUENTE,
     /**
      * Backtracking method with the Armijo condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -140,9 +142,9 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_ARMIJO = 1,
+    LBFGS_LINESEARCH_BACKTRACKING_ARMIJO = ELBFGSLineSearch::BACKTRACKING_ARMIJO,
     /** The backtracking method with the defualt (regular Wolfe) condition. */
-    LBFGS_LINESEARCH_BACKTRACKING = 2,
+    LBFGS_LINESEARCH_BACKTRACKING = ELBFGSLineSearch::BACKTRACKING_WOLFE,
     /**
      * Backtracking method with regular Wolfe condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -153,7 +155,7 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_WOLFE = 2,
+    LBFGS_LINESEARCH_BACKTRACKING_WOLFE = ELBFGSLineSearch::BACKTRACKING_WOLFE,
     /**
      * Backtracking method with strong Wolfe condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -164,7 +166,7 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE = 3,
+    LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE = ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE
 };
 
 /**

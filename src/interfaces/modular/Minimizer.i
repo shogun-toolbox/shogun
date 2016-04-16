@@ -37,4 +37,5 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/optimization/Minimizer.h>
 %include <shogun/optimization/FirstOrderMinimizer.h>
+%include <shogun/optimization/lbfgs/lbfgscommon.h>
 %include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
