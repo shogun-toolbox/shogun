@@ -198,7 +198,7 @@ int main()
 	SGVector<float64_t> testimage_sgvec(temp2.get_column_vector(0),
 			temp2.num_cols, false);
 	mean.scale_vector(-1, mean.vector, mean.vlen);
-	testimage_sgvec.add(mean);
+	add<linalg::Backend::NATIVE>(testimage_sgvec, mean, testimage_sgvec);
 
 	// now we must project it into the PCA subspace. This is done by performing
 	// the Dot product between testimage and the WFINAL.

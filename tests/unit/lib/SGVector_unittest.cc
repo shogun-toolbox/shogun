@@ -1,12 +1,15 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 #include <shogun/mathematics/eigen3.h>
 
 
 using namespace shogun;
+using namespace linalg;
+
 
 TEST(SGVectorTest,ctor)
 {
@@ -72,7 +75,7 @@ TEST(SGVectorTest,add)
 	float64_t* b_clone = SGVector<float64_t>::clone_vector(b.vector, b.vlen);
 	SGVector<float64_t> c(b_clone, 10);
 
-	c.add(a);
+	add<linalg::Backend::NATIVE>(c, a, c);
 	for (int i=0; i < c.vlen; ++i)
 		EXPECT_EQ(c[i], a[i]+b[i]);
 
@@ -180,7 +183,7 @@ TEST(SGVectorTest,complex128_tests)
 	for (index_t i=0; i<res.vlen; ++i)
 		EXPECT_EQ(res[i], i);
 
-	a.scale(complex128_t(1.0));
+	scale<linalg::Backend::NATIVE>(a, complex128_t(1.0));
 	for (index_t i=0; i<a.vlen; ++i)
 	{
 		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);

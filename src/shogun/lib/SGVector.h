@@ -284,11 +284,7 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<T> operator+ (SGVector<T> x);
 
 		/** Inplace addition operator */
-		SGVector<T> operator+= (SGVector<T> x)
-		{
-			add(x);
-			return *this;
-		}
+		SGVector<T> operator+= (SGVector<T> x);
 
 		/** Inplace addition operator for sparse vector */
 		SGVector<T> operator+= (SGSparseVector<T>& x)
@@ -426,9 +422,6 @@ template<class T> class SGVector : public SGReferencedData
 			idx.vlen = k;
 			return idx;
 		}
-
-		/// Scale vector inplace
-		void scale(T alpha);
 
 		/** Load vector from file
 		 *

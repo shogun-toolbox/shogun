@@ -167,7 +167,7 @@ int main()
     mean.scale_vector(-1, mean.vector, mean.vlen);
 
 
-    testimage_sgvec.add(mean);
+    add<linalg::Backend::NATIVE>(testimage_sgvec, mean, testimage_sgvec);
 
 
 

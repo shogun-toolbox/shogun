@@ -10,9 +10,12 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/mathematics/linalg/linalg.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
+using namespace linalg;
+
 
 TEST(GaussianBlobsDataGenerator,get_next_example1)
 {
@@ -114,12 +117,13 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		gen->get_next_example();
-		avg.add(gen->get_vector());
+		add<linalg::Backend::NATIVE>(avg, gen->get_vector(), avg);
 		gen->release_example();
 	}
 
 	/* average */
-	avg.scale(1.0/num_runs);
+	scale<linalg::Backend::NATIVE>(avg, 1.0/num_runs);
+
 	//avg.display_vector("mean_shift");
 
 	/* roughly assert correct model parameters */
