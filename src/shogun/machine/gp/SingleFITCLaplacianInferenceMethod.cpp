@@ -36,6 +36,7 @@
 #include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/optimization/FirstOrderMinimizer.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -89,6 +90,213 @@ public:
 	}
 };
 
+class SingleFITCLaplacianNewtonOptimizer: public Minimizer
+{
+public:
+	SingleFITCLaplacianNewtonOptimizer() :Minimizer() {  init(); }
+	virtual ~SingleFITCLaplacianNewtonOptimizer() { SG_UNREF(m_obj); }
+	void set_target(CSingleFITCLaplacianInferenceMethod *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+	virtual float64_t minimize()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		//time complexity O(m^2*n)
+		Map<MatrixXd> eigen_kuu((m_obj->m_kuu).matrix, (m_obj->m_kuu).num_rows, (m_obj->m_kuu).num_cols);
+		Map<MatrixXd> eigen_V((m_obj->m_V).matrix, (m_obj->m_V).num_rows, (m_obj->m_V).num_cols);
+		Map<VectorXd> eigen_dg((m_obj->m_dg).vector, (m_obj->m_dg).vlen);
+		Map<MatrixXd> eigen_R0((m_obj->m_chol_R0).matrix, (m_obj->m_chol_R0).num_rows, (m_obj->m_chol_R0).num_cols);
+		Map<VectorXd> eigen_mu(m_obj->m_mu, (m_obj->m_mu).vlen);
+
+		SGVector<float64_t> mean=m_obj->m_mean->get_mean_vector(m_obj->m_features);
+		Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+
+		float64_t Psi_Old=CMath::INFTY;
+		float64_t Psi_New=m_obj->m_Psi;
+
+		// compute W = -d2lp
+		m_obj->m_W=m_obj->m_model->get_log_probability_derivative_f(m_obj->m_labels, m_obj->m_mu, 2);
+		m_obj->m_W.scale(-1.0);
+
+		//n-by-1 vector
+		Map<VectorXd> eigen_al((m_obj->m_al).vector, (m_obj->m_al).vlen);
+
+		// get first derivative of log probability function
+		m_obj->m_dlp=m_obj->m_model->get_log_probability_derivative_f(m_obj->m_labels, m_obj->m_mu, 1);
+
+		index_t iter=0;
+
+		m_obj->m_Wneg=false;
+		while (Psi_Old-Psi_New>m_tolerance && iter<m_iter)
+		{
+			//time complexity O(m^2*n)
+			Map<VectorXd> eigen_W((m_obj->m_W).vector, (m_obj->m_W).vlen);
+			Map<VectorXd> eigen_dlp((m_obj->m_dlp).vector, (m_obj->m_dlp).vlen);
+
+			Psi_Old = Psi_New;
+			iter++;
+
+			if (eigen_W.minCoeff() < 0)
+			{
+				// Suggested by Vanhatalo et. al.,
+				// Gaussian Process Regression with Student's t likelihood, NIPS 2009
+				// Quoted from infFITC_Laplace.m
+				float64_t df;
+
+				if (m_obj->m_model->get_model_type()==LT_STUDENTST)
+				{
+					CStudentsTLikelihood* lik=CStudentsTLikelihood::obtain_from_generic(m_obj->m_model);
+					df=lik->get_degrees_freedom();
+					SG_UNREF(lik);
+				}
+				else
+					df=1;
+				eigen_W+=(2.0/(df+1))*eigen_dlp.cwiseProduct(eigen_dlp);
+			}
+
+			//b = W.*(f-m) + dlp;
+			VectorXd b=eigen_W.cwiseProduct(eigen_mu-eigen_mean)+eigen_dlp;
+
+			//dd = 1./(1+W.*d0);
+			VectorXd dd=MatrixXd::Ones(b.rows(),1).cwiseQuotient(eigen_W.cwiseProduct(eigen_dg)+MatrixXd::Ones(b.rows(),1));
+
+			VectorXd eigen_t=eigen_W.cwiseProduct(dd);
+			//m-by-m matrix
+			SGMatrix<float64_t> tmp( (m_obj->m_V).num_rows, (m_obj->m_V).num_rows);
+			Map<MatrixXd> eigen_tmp(tmp.matrix, tmp.num_rows, tmp.num_cols);
+			//eye(nu)+(V.*repmat((W.*dd)',nu,1))*V'
+			eigen_tmp=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(tmp.num_rows,tmp.num_rows);
+			tmp=m_obj->get_chol_inv(tmp);
+			//chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')
+			Map<MatrixXd> eigen_tmp2(tmp.matrix, tmp.num_rows, tmp.num_cols);
+			//RV = chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')*V;
+			// m-by-n matrix
+			MatrixXd eigen_RV=eigen_tmp2*eigen_V;
+			//dalpha = dd.*b - (W.*dd).*(RV'*(RV*(dd.*b))) - alpha; % Newt dir + line search
+			VectorXd dalpha=dd.cwiseProduct(b)-eigen_t.cwiseProduct(eigen_RV.transpose()*(eigen_RV*(dd.cwiseProduct(b))))-eigen_al;
+
+			//perform Brent's optimization
+			CFITCPsiLine func;
+
+			func.log_scale=m_obj->m_log_scale;
+			func.dalpha=dalpha;
+			func.start_alpha=eigen_al;
+			func.alpha=&(m_obj->m_al);
+			func.dlp=&(m_obj->m_dlp);
+			func.f=&(m_obj->m_mu);
+			func.m=&mean;
+			func.W=&(m_obj->m_W);
+			func.lik=m_obj->m_model;
+			func.lab=m_obj->m_labels;
+			func.inf=m_obj;
+
+			float64_t x;
+			Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
+		}
+
+		if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
+		{
+			SG_SWARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
+		}
+		return Psi_New;
+	}
+
+	/** set maximum for Brent's minimization method
+	 *
+	 * @param max maximum for Brent's minimization method
+	 */
+	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
+
+	/** set tolerance for Brent's minimization method
+	 *
+	 * @param tol tolerance for Brent's minimization method
+	 */
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+
+	/** set max Newton iterations
+	 *
+	 * @param iter max Newton iterations
+	 */
+	virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
+
+	/** set tolerance for newton iterations
+	 *
+	 * @param tol tolerance for newton iterations to set
+	 */
+	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
+private:
+	void init()
+	{
+		m_obj=NULL;
+		m_iter=20;
+		m_tolerance=1e-6;
+		m_opt_tolerance=1e-10;
+		m_opt_max=10;
+	}
+
+	CSingleFITCLaplacianInferenceMethod *m_obj;
+
+	/** amount of tolerance for Newton's iterations */
+	float64_t m_tolerance;
+
+	/** max Newton's iterations */
+	index_t m_iter;
+
+	/** amount of tolerance for Brent's minimization method */
+	float64_t m_opt_tolerance;
+
+	/** max iterations for Brent's minimization method */
+	float64_t m_opt_max;
+};
+
+class SingleFITCLaplacianInferenceMethodCostFunction: public FirstOrderCostFunction
+{
+public:
+	SingleFITCLaplacianInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~SingleFITCLaplacianInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CSingleFITCLaplacianInferenceMethod *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+	virtual float64_t get_cost()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->get_psi_wrt_alpha();
+	}
+	virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_derivatives = SGVector<float64_t>((m_obj->m_al).vlen);
+		return m_obj->m_al;
+	}
+	virtual SGVector<float64_t> get_gradient()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_obj->get_gradient_wrt_alpha(m_derivatives);
+		return m_derivatives;
+	}
+private:
+	void init()
+	{
+		m_obj=NULL;
+		m_derivatives = SGVector<float64_t>();
+	}
+
+	SGVector<float64_t> m_derivatives;
+	CSingleFITCLaplacianInferenceMethod *m_obj;
+};
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CSingleFITCLaplacianInferenceMethod::CSingleFITCLaplacianInferenceMethod() : CSingleFITCLaplacianBase()
@@ -105,19 +313,12 @@ CSingleFITCLaplacianInferenceMethod::CSingleFITCLaplacianInferenceMethod(CKernel
 
 void CSingleFITCLaplacianInferenceMethod::init()
 {
-	m_iter=20;
-	m_tolerance=1e-6;
-	m_opt_tolerance=1e-10;
-	m_opt_max=10;
 	m_Psi=0;
 	m_Wneg=false;
 
 	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_W, "W", "the noise matrix", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_iter, "iter", "max Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
+
 	SG_ADD(&m_sW, "sW", "square root of W", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
@@ -127,6 +328,8 @@ void CSingleFITCLaplacianInferenceMethod::init()
 	SG_ADD(&m_dg, "dg", "variable d0 defined in infFITC_Laplace.m", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Psi, "Psi", "the negative log likelihood without constant terms used in Newton's method", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements", MS_NOT_AVAILABLE);
+
+	m_minimizer=new SingleFITCLaplacianNewtonOptimizer();
 }
 
 void CSingleFITCLaplacianInferenceMethod::compute_gradient()
@@ -296,11 +499,11 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 	eigen_dg=eigen_ktrtr_diag*CMath::exp(m_log_scale*2.0)-(eigen_V.cwiseProduct(eigen_V)).colwise().sum().adjoint();
 
 	// get mean vector and create eigen representation of it
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
+	m_mean_f=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
 
 	// create shogun and eigen representation of function vector
-	m_mu=SGVector<float64_t>(mean.vlen);
+	m_mu=SGVector<float64_t>(m_mean_f.vlen);
 	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
 
 	float64_t Psi_New;
@@ -329,7 +532,7 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 		Psi_New=eigen_alpha.dot(eigen_tmp)/2.0-
 			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
 
-		Psi_Def=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, mean));
+		Psi_Def=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mean_f));
 
 		// if default is better, then use it
 		if (Psi_Def < Psi_New)
@@ -344,103 +547,34 @@ void CSingleFITCLaplacianInferenceMethod::update_init()
 
 void CSingleFITCLaplacianInferenceMethod::update_alpha()
 {
-	//time complexity O(m^2*n)
-	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
+
+	SingleFITCLaplacianNewtonOptimizer *opt=dynamic_cast<SingleFITCLaplacianNewtonOptimizer*>(m_minimizer);
+	if (opt)
+	{
+		SG_REF(this);
+		opt->set_target(this);
+		opt->minimize();
+	}
+	else
+	{
+		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+		REQUIRE(minimizer, "The provided minimizer is not supported\n");
+
+		SingleFITCLaplacianInferenceMethodCostFunction *cost_fun=new SingleFITCLaplacianInferenceMethodCostFunction();
+		SG_REF(this);
+		cost_fun->set_target(this);
+		minimizer->set_cost_function(cost_fun);
+		minimizer->minimize();
+		minimizer->unset_cost_function();
+		delete cost_fun;
+	}
+
+	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
 	Map<MatrixXd> eigen_V(m_V.matrix, m_V.num_rows, m_V.num_cols);
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 	Map<MatrixXd> eigen_R0(m_chol_R0.matrix, m_chol_R0.num_rows, m_chol_R0.num_cols);
 	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
-
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
-	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
-
-	float64_t Psi_Old=CMath::INFTY;
-	float64_t Psi_New=m_Psi;
-
-	// compute W = -d2lp
-	m_W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-	m_W.scale(-1.0);
-
-	//n-by-1 vector
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
 
-	// get first derivative of log probability function
-	m_dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
-
-	index_t iter=0;
-
-	m_Wneg=false;
-	while (Psi_Old-Psi_New>m_tolerance && iter<m_iter)
-	{
-		//time complexity O(m^2*n)
-		Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
-		Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
-
-		Psi_Old = Psi_New;
-		iter++;
-
-		if (eigen_W.minCoeff() < 0)
-		{
-			// Suggested by Vanhatalo et. al.,
-			// Gaussian Process Regression with Student's t likelihood, NIPS 2009
-			// Quoted from infFITC_Laplace.m
-			float64_t df;
-
-			if (m_model->get_model_type()==LT_STUDENTST)
-			{
-				CStudentsTLikelihood* lik=CStudentsTLikelihood::obtain_from_generic(m_model);
-				df=lik->get_degrees_freedom();
-				SG_UNREF(lik);
-			}
-			else
-				df=1;
-			eigen_W+=(2.0/(df+1))*eigen_dlp.cwiseProduct(eigen_dlp);
-		}
-
-		//b = W.*(f-m) + dlp;
-		VectorXd b=eigen_W.cwiseProduct(eigen_mu-eigen_mean)+eigen_dlp;
-
-		//dd = 1./(1+W.*d0);
-		VectorXd dd=MatrixXd::Ones(b.rows(),1).cwiseQuotient(eigen_W.cwiseProduct(eigen_dg)+MatrixXd::Ones(b.rows(),1));
-
-		VectorXd eigen_t=eigen_W.cwiseProduct(dd);
-		//m-by-m matrix
-		SGMatrix<float64_t> tmp(m_V.num_rows, m_V.num_rows);
-		Map<MatrixXd> eigen_tmp(tmp.matrix, tmp.num_rows, tmp.num_cols);
-		//eye(nu)+(V.*repmat((W.*dd)',nu,1))*V'
-		eigen_tmp=eigen_V*eigen_t.asDiagonal()*eigen_V.transpose()+MatrixXd::Identity(tmp.num_rows,tmp.num_rows);
-		tmp=get_chol_inv(tmp);
-		//chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')
-		Map<MatrixXd> eigen_tmp2(tmp.matrix, tmp.num_rows, tmp.num_cols);
-		//RV = chol_inv(eye(nu)+(V.*repmat((W.*dd)',nu,1))*V')*V;
-		// m-by-n matrix
-		MatrixXd eigen_RV=eigen_tmp2*eigen_V;
-		//dalpha = dd.*b - (W.*dd).*(RV'*(RV*(dd.*b))) - alpha; % Newt dir + line search
-		VectorXd dalpha=dd.cwiseProduct(b)-eigen_t.cwiseProduct(eigen_RV.transpose()*(eigen_RV*(dd.cwiseProduct(b))))-eigen_al;
-
-		//perform Brent's optimization
-		CFITCPsiLine func;
-
-		func.log_scale=m_log_scale;
-		func.dalpha=dalpha;
-		func.start_alpha=eigen_al;
-		func.alpha=&m_al;
-		func.dlp=&m_dlp;
-		func.f=&m_mu;
-		func.m=&mean;
-		func.W=&m_W;
-		func.lik=m_model;
-		func.lab=m_labels;
-		func.inf=this;
-
-		float64_t x;
-		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
-	}
-
-	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)
-	{
-		SG_WARNING("Max iterations (%d) reached, but convergence level (%f) is not yet below tolerance (%f)\n", m_iter, Psi_Old-Psi_New, m_tolerance);
-	}
 
 	// compute f = K * alpha + m
 	SGVector<float64_t> tmp=compute_mvmK(m_al);
@@ -962,6 +1096,56 @@ SGMatrix<float64_t> CSingleFITCLaplacianInferenceMethod::get_posterior_covarianc
 	*/
 
 	return SGMatrix<float64_t>(m_Sigma);
+}
+
+float64_t CSingleFITCLaplacianInferenceMethod::get_psi_wrt_alpha()
+{
+	//time complexity O(m*n)
+	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);
+	SGVector<float64_t> f(m_al.vlen);
+	Map<VectorXd> eigen_f(f.vector, f.vlen);
+	Map<VectorXd> eigen_mean_f(m_mean_f.vector,m_mean_f.vlen);
+	/* f = K * alpha + mean_f given alpha*/
+	SGVector<float64_t> tmp=compute_mvmK(m_al);
+	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+	eigen_f=eigen_tmp+eigen_mean_f;
+
+	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
+	float64_t psi=eigen_alpha.dot(eigen_tmp) * 0.5;
+	psi-=SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
+
+	return psi;
+}
+
+void CSingleFITCLaplacianInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
+{
+	//time complexity O(m*n)
+	Map<VectorXd> eigen_alpha(m_al, m_al.vlen);
+	Map<VectorXd> eigen_gradient(gradient.vector, gradient.vlen);
+	SGVector<float64_t> f(m_al.vlen);
+	Map<VectorXd> eigen_f(f.vector, f.vlen);
+	Map<MatrixXd> kernel(m_ktrtr.matrix,
+		m_ktrtr.num_rows,
+		m_ktrtr.num_cols);
+	Map<VectorXd> eigen_mean_f(m_mean_f.vector, m_mean_f.vlen);
+
+	/* f = K * alpha + mean_f given alpha*/
+	SGVector<float64_t> tmp=compute_mvmK(m_al);
+	Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+	eigen_f=eigen_tmp+eigen_mean_f;
+
+	SGVector<float64_t> dlp_f =
+		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+
+	Map<VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
+
+	/* g_alpha = K * (alpha - dlp_f)*/
+	SGVector<float64_t> tmp2(m_al.vlen);
+	Map<VectorXd> eigen_tmp2(tmp2.vector, tmp2.vlen);
+	eigen_tmp2=eigen_alpha-eigen_dlp_f;
+	tmp2=compute_mvmK(tmp2);
+	Map<VectorXd> eigen_tmp3(tmp2.vector, tmp2.vlen);
+	eigen_gradient=eigen_tmp3;
 }
 
 }

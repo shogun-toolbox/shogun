@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2016 Wu Lin 
  * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
@@ -71,17 +72,17 @@ public:
 class SingleLaplacianNewtonOptimizer: public Minimizer
 {
 public:
-        SingleLaplacianNewtonOptimizer() :Minimizer() {  init(); }
-        virtual ~SingleLaplacianNewtonOptimizer() { SG_UNREF(m_obj); }
-        void set_target(CSingleLaplacianInferenceMethod *obj)
-        {
-                if(obj!=m_obj)
-                {
-                        SG_REF(obj);
-                        SG_UNREF(m_obj);
-                        m_obj=obj;
-                }
-        }
+	SingleLaplacianNewtonOptimizer() :Minimizer() {  init(); }
+	virtual ~SingleLaplacianNewtonOptimizer() { SG_UNREF(m_obj); }
+	void set_target(CSingleLaplacianInferenceMethod *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
 	virtual float64_t minimize()
 	{
 		REQUIRE(m_obj,"Object not set\n");
@@ -175,32 +176,32 @@ public:
 		return Psi_New;
 	}
 
-        /** set maximum for Brent's minimization method
-         *
-         * @param max maximum for Brent's minimization method
-         */
-        virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
+	/** set maximum for Brent's minimization method
+	 *
+	 * @param max maximum for Brent's minimization method
+	 */
+		virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
-        /** set tolerance for Brent's minimization method
-         *
-         * @param tol tolerance for Brent's minimization method
-         */
-        virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+		/** set tolerance for Brent's minimization method
+		 *
+		 * @param tol tolerance for Brent's minimization method
+		 */
+			virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
-        /** set max Newton iterations
-         *
-         * @param iter max Newton iterations
-         */
-        virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
+			/** set max Newton iterations
+			 *
+			 * @param iter max Newton iterations
+			 */
+				virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
 
-        /** set tolerance for newton iterations
-         *
-         * @param tol tolerance for newton iterations to set
-         */
-        virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
+			/** set tolerance for newton iterations
+			 *
+			 * @param tol tolerance for newton iterations to set
+			 */
+				virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
 private:
-	void init()
+				void init()
 	{
 		m_obj=NULL;
 		m_iter=20;
@@ -211,59 +212,59 @@ private:
 
 	CSingleLaplacianInferenceMethod *m_obj;
 
-        /** amount of tolerance for Newton's iterations */
-        float64_t m_tolerance;
+	/** amount of tolerance for Newton's iterations */
+	float64_t m_tolerance;
 
-        /** max Newton's iterations */
-        index_t m_iter;
+	/** max Newton's iterations */
+	index_t m_iter;
 
-        /** amount of tolerance for Brent's minimization method */
-        float64_t m_opt_tolerance;
+	/** amount of tolerance for Brent's minimization method */
+	float64_t m_opt_tolerance;
 
-        /** max iterations for Brent's minimization method */
-        float64_t m_opt_max;
+	/** max iterations for Brent's minimization method */
+	float64_t m_opt_max;
 };
 
 class SingleLaplacianInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public: 
-        SingleLaplacianInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~SingleLaplacianInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-        void set_target(CSingleLaplacianInferenceMethod *obj)
-        {
-                if(obj!=m_obj)
-                {
-                        SG_REF(obj);
-                        SG_UNREF(m_obj);
-                        m_obj=obj;
-                }
-        }
-        virtual float64_t get_cost()
-        {
-                REQUIRE(m_obj,"Object not set\n");
-                return m_obj->get_psi_wrt_alpha();
-        }
-        virtual SGVector<float64_t> obtain_variable_reference()
-        {
-                REQUIRE(m_obj,"Object not set\n");
-                m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
-                return m_obj->m_alpha;
-        }
-        virtual SGVector<float64_t> get_gradient()
-        {
-                REQUIRE(m_obj,"Object not set\n");
-                m_obj->get_gradient_wrt_alpha(m_derivatives);
-                return m_derivatives;
-        }
+	SingleLaplacianInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~SingleLaplacianInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CSingleLaplacianInferenceMethod *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+	virtual float64_t get_cost()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->get_psi_wrt_alpha();
+	}
+	virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
+		return m_obj->m_alpha;
+	}
+	virtual SGVector<float64_t> get_gradient()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_obj->get_gradient_wrt_alpha(m_derivatives);
+		return m_derivatives;
+	}
 private:
-        void init()
-        {
-                m_obj=NULL;
-                m_derivatives = SGVector<float64_t>();
-        }
+	void init()
+	{
+		m_obj=NULL;
+		m_derivatives = SGVector<float64_t>();
+	}
 
-        SGVector<float64_t> m_derivatives;
-        CSingleLaplacianInferenceMethod *m_obj;
+	SGVector<float64_t> m_derivatives;
+	CSingleLaplacianInferenceMethod *m_obj;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -447,7 +448,7 @@ void CSingleLaplacianInferenceMethod::update_init()
 	float64_t Psi_New;
 	float64_t Psi_Def;
 	// get mean vector and create eigen representation of it
-        m_mean_f = m_mean->get_mean_vector(m_features);
+	m_mean_f = m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
 
 	// create eigen representation of kernel matrix
@@ -495,17 +496,17 @@ void CSingleLaplacianInferenceMethod::update_init()
 
 void CSingleLaplacianInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
-        REQUIRE(minimizer, "Minimizer must set\n");
+	REQUIRE(minimizer, "Minimizer must set\n");
 	if (!dynamic_cast<SingleLaplacianNewtonOptimizer*>(minimizer))
 	{
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
 	}
-        if(minimizer!=m_minimizer)
-        {
-                delete m_minimizer;
-                m_minimizer=minimizer;
-        }
+	if(minimizer!=m_minimizer)
+	{
+		delete m_minimizer;
+		m_minimizer=minimizer;
+	}
 }
 
 void CSingleLaplacianInferenceMethod::update_alpha()
@@ -531,7 +532,7 @@ void CSingleLaplacianInferenceMethod::update_alpha()
 		delete cost_fun;
 	}
 	// get mean vector and create eigen representation of it
-        Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
+	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);
 
 	// create eigen representation of kernel matrix
 	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -758,50 +759,50 @@ SGVector<float64_t> CSingleLaplacianInferenceMethod::get_posterior_mean()
 
 float64_t CSingleLaplacianInferenceMethod::get_psi_wrt_alpha()
 {
-        Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-        SGVector<float64_t> f(m_alpha.vlen);
-        Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
-        Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
-                m_ktrtr.num_rows,
-                m_ktrtr.num_cols);
-        Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f.vector,
-                m_mean_f.vlen);
-        /* f = K * alpha + mean_f given alpha*/
-        eigen_f
-                = kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
+	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	SGVector<float64_t> f(m_alpha.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
+	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
+		m_ktrtr.num_rows,
+		m_ktrtr.num_cols);
+	Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f.vector,
+		m_mean_f.vlen);
+	/* f = K * alpha + mean_f given alpha*/
+	eigen_f
+		= kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
 
-        /* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
-        float64_t psi = eigen_alpha.dot(eigen_f - eigen_mean_f) * 0.5;
-        psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
-        return psi;
+	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
+	float64_t psi = eigen_alpha.dot(eigen_f - eigen_mean_f) * 0.5;
+	psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
+	return psi;
 }
 
 void CSingleLaplacianInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> gradient)
 {
-        REQUIRE(gradient.vlen==m_alpha.vlen,
-                "The length of gradients (%d) should the same as the length of parameters (%d)\n",
-                gradient.vlen, m_alpha.vlen);
+	REQUIRE(gradient.vlen==m_alpha.vlen,
+		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
+		gradient.vlen, m_alpha.vlen);
 
-        Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-        Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient.vector, gradient.vlen);
-        SGVector<float64_t> f(m_alpha.vlen);
-        Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
-        Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
-                m_ktrtr.num_rows,
-                m_ktrtr.num_cols);
-        Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f.vector,
-                m_mean_f.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient.vector, gradient.vlen);
+	SGVector<float64_t> f(m_alpha.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
+	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
+		m_ktrtr.num_rows,
+		m_ktrtr.num_cols);
+	Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f.vector,
+		m_mean_f.vlen);
 
-        /* f = K * alpha + mean_f given alpha*/
-        eigen_f = kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
+	/* f = K * alpha + mean_f given alpha*/
+	eigen_f = kernel * ((eigen_alpha) * CMath::exp(m_log_scale*2.0)) + eigen_mean_f;
 
-        SGVector<float64_t> dlp_f =
-                m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+	SGVector<float64_t> dlp_f =
+		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
 
-        Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
-        /* g_alpha = K * (alpha - dlp_f)*/
-        eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::exp(m_log_scale*2.0));
+	/* g_alpha = K * (alpha - dlp_f)*/
+	eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::exp(m_log_scale*2.0));
 }
 
 
