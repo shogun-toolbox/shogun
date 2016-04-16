@@ -38,7 +38,8 @@
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
@@ -111,8 +112,12 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_cholesky)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplacianInferenceMethodWithLBFGS* inf=new CSingleFITCLaplacianInferenceMethodWithLBFGS(kernel, features_train,
+	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
+
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	inf->register_minimizer(opt);
+
 
 	float64_t ind_noise=1e-6;
 	inf->set_inducing_noise(ind_noise);
@@ -217,8 +222,11 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_alpha)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplacianInferenceMethodWithLBFGS* inf=new CSingleFITCLaplacianInferenceMethodWithLBFGS(kernel, features_train,
+	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
+
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
 	inf->set_inducing_noise(ind_noise);
@@ -303,8 +311,11 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_negative_log_marginal_likel
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethodWithLBFGS* inf=new CSingleFITCLaplacianInferenceMethodWithLBFGS(kernel, features_train,
+	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
+
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
 	inf->set_inducing_noise(ind_noise);
@@ -383,8 +394,11 @@ TEST(SingleFITCLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivat
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethodWithLBFGS* inf=new CSingleFITCLaplacianInferenceMethodWithLBFGS(kernel, features_train,
+	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
+
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
 	inf->set_inducing_noise(ind_noise);
