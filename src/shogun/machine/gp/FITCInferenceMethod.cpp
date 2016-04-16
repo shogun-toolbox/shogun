@@ -39,14 +39,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCLaplace()
+CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCInference()
 {
 	init();
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCLaplace(kern, feat, m, lab, mod, lat)
+		: CSingleFITCInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
@@ -98,7 +98,7 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 
 void CFITCInferenceMethod::check_members() const
 {
-	CSingleFITCLaplace::check_members();
+	CSingleFITCInference::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 			"FITC inference method can only use Gaussian likelihood function\n")
