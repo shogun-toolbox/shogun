@@ -29,7 +29,7 @@
  *
  */
 
-#include <shogun/machine/gp/SingleSparseInferenceBase.h>
+#include <shogun/machine/gp/SingleSparseInference.h>
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <shogun/optimization/NLOPTMinimizer.h>
@@ -55,7 +55,7 @@ class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFu
 public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
         virtual ~SingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
-        void set_target(CSingleSparseInferenceBase *obj)
+        void set_target(CSingleSparseInference *obj)
 	{
 		if(obj!=m_obj)
 		{
@@ -100,24 +100,24 @@ public:
 	}
 private:
         void init() { m_obj=NULL; }
-        CSingleSparseInferenceBase *m_obj;
+        CSingleSparseInference *m_obj;
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
-CSingleSparseInferenceBase::CSingleSparseInferenceBase() : CSparseInferenceBase()
+CSingleSparseInference::CSingleSparseInference() : CSparseInference()
 {
 	init();
 }
 
-CSingleSparseInferenceBase::CSingleSparseInferenceBase(CKernel* kern, CFeatures* feat,
+CSingleSparseInference::CSingleSparseInference(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSparseInferenceBase(kern, feat, m, lab, mod, lat)
+		: CSparseInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 	check_fully_sparse();
 }
 
-void CSingleSparseInferenceBase::init()
+void CSingleSparseInference::init()
 {
 	m_fully_sparse=false;
 	SG_ADD(&m_fully_sparse, "fully_Sparse",
@@ -141,18 +141,18 @@ void CSingleSparseInferenceBase::init()
 	m_upper_bound=SGVector<float64_t>();
 }
 
-void CSingleSparseInferenceBase::set_kernel(CKernel* kern)
+void CSingleSparseInference::set_kernel(CKernel* kern)
 {
-	CInferenceMethod::set_kernel(kern);
+	CInference::set_kernel(kern);
 	check_fully_sparse();
 }
 
-CSingleSparseInferenceBase::~CSingleSparseInferenceBase()
+CSingleSparseInference::~CSingleSparseInference()
 {
 	delete m_lock;
 }
 
-void CSingleSparseInferenceBase::check_fully_sparse()
+void CSingleSparseInference::check_fully_sparse()
 {
 	REQUIRE(m_kernel, "Kernel must be set first\n")
 	if (strstr(m_kernel->get_name(), "SparseKernel")!=NULL)
@@ -164,7 +164,7 @@ void CSingleSparseInferenceBase::check_fully_sparse()
 	}
 }
 
-SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_inference_method(
+SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	// the time complexity O(m^2*n) if the TO DO is done
@@ -216,7 +216,7 @@ SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_inference_met
 	return result;
 }
 
-SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
+SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_kernel(
 	const TParameter* param)
 {
 	REQUIRE(param, "Param not set\n");
@@ -258,7 +258,7 @@ SGVector<float64_t> CSingleSparseInferenceBase::get_derivative_wrt_kernel(
 	return result;
 }
 
-void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound, const char* name)
+void CSingleSparseInference::check_bound(SGVector<float64_t> bound, const char* name)
 {
 	if (bound.vlen>1)
 	{
@@ -275,29 +275,29 @@ void CSingleSparseInferenceBase::check_bound(SGVector<float64_t> bound, const ch
 	}
 }
 
-void CSingleSparseInferenceBase::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
+void CSingleSparseInference::set_lower_bound_of_inducing_features(SGVector<float64_t> bound)
 {
 	check_bound(bound,"lower");
 	m_lower_bound=bound;
 }
-void CSingleSparseInferenceBase::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
+void CSingleSparseInference::set_upper_bound_of_inducing_features(SGVector<float64_t> bound)
 {
 	check_bound(bound, "upper");
 	m_upper_bound=bound;
 }
 
-void CSingleSparseInferenceBase::set_max_iterations_for_inducing_features(int32_t it)
+void CSingleSparseInference::set_max_iterations_for_inducing_features(int32_t it)
 {
 	REQUIRE(it>0, "Iteration (%d) must be positive\n",it);
 	m_max_ind_iterations=it;
 }
-void CSingleSparseInferenceBase::set_tolearance_for_inducing_features(float64_t tol)
+void CSingleSparseInference::set_tolearance_for_inducing_features(float64_t tol)
 {
 
 	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
-void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_optmization)
+void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization)
 {
 	m_opt_inducing_features=is_optmization;
 #ifdef USE_GPL_SHOGUN
@@ -316,7 +316,7 @@ void CSingleSparseInferenceBase::enable_optimizing_inducing_features(bool is_opt
 
 }
 
-void CSingleSparseInferenceBase::optimize_inducing_features()
+void CSingleSparseInference::optimize_inducing_features()
 {
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT

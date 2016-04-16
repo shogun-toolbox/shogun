@@ -24,7 +24,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 {
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* method)
+CGaussianProcessRegression::CGaussianProcessRegression(CInference* method)
 		: CGaussianProcessMachine(method)
 {
 	// set labels

@@ -39,14 +39,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCLaplacianBase()
+CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCLaplace()
 {
 	init();
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCLaplacianBase(kern, feat, m, lab, mod, lat)
+		: CSingleFITCLaplace(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
@@ -60,7 +60,7 @@ CFITCInferenceMethod::~CFITCInferenceMethod()
 }
 void CFITCInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -74,7 +74,7 @@ void CFITCInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_chol();
 	update_alpha();
 	m_gradient_update=false;
@@ -84,7 +84,7 @@ void CFITCInferenceMethod::update()
 }
 
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -98,7 +98,7 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 
 void CFITCInferenceMethod::check_members() const
 {
-	CSingleFITCLaplacianBase::check_members();
+	CSingleFITCLaplace::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 			"FITC inference method can only use Gaussian likelihood function\n")

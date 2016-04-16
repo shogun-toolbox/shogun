@@ -38,12 +38,12 @@
  *
  */
 
-#ifndef _KLINFERENCEMETHOD_H_
-#define _KLINFERENCEMETHOD_H_
+#ifndef _KLINFERENCE_H_
+#define _KLINFERENCE_H_
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 namespace Eigen
@@ -72,12 +72,12 @@ namespace shogun
  * "Approximations for Binary Gaussian Process Classification."
  * Journal of Machine Learning Research 9.10 (2008).
  */
-class CKLInferenceMethod: public CInferenceMethod
+class CKLInference: public CInference
 {
-friend class KLInferenceMethodCostFunction;
+friend class KLInferenceCostFunction;
 public:
 	/** default constructor */
-	CKLInferenceMethod();
+	CKLInference();
 
 	/** constructor
 	 *
@@ -87,10 +87,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLInferenceMethod(CKernel* kernel, CFeatures* features,
+	CKLInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CKLInferenceMethod();
+	virtual ~CKLInference();
 
 	/** return what type of inference we are
 	 */
@@ -98,9 +98,9 @@ public:
 
 	/** returns the name of the inference method
 	 *
-	 * @return name KLInferenceMethod
+	 * @return name KLInference
 	 */
-	virtual const char* get_name() const { return "KLInferenceMethod"; }
+	virtual const char* get_name() const { return "KLInference"; }
 
 	/** get negative log marginal likelihood
 	 *
@@ -291,9 +291,9 @@ protected:
 	virtual float64_t optimization();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -377,4 +377,4 @@ private:
 	void init();
 };
 }
-#endif /* _KLINFERENCEMETHOD_H_ */
+#endif /* _KLINFERENCE_H_ */

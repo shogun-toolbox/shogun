@@ -22,23 +22,23 @@
  #include <shogun/machine/gp/ZeroMean.h>
  #include <shogun/machine/gp/ConstMean.h>
 
- #include <shogun/machine/gp/InferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceBase.h>
- #include <shogun/machine/gp/SparseInferenceBase.h>
- #include <shogun/machine/gp/SingleFITCLaplacianBase.h>
- #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
- #include <shogun/machine/gp/SingleSparseInferenceBase.h>
- #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/Inference.h>
+ #include <shogun/machine/gp/LaplaceInference.h>
+ #include <shogun/machine/gp/SparseInference.h>
+ #include <shogun/machine/gp/SingleFITCLaplace.h>
+ #include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
+ #include <shogun/machine/gp/SingleSparseInference.h>
+ #include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
- #include <shogun/machine/gp/SparseVGInferenceMethod.h>
- #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/VarDTCInferenceMethod.h>
+ #include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
  #include <shogun/machine/gp/EPInferenceMethod.h>
 
- #include <shogun/machine/gp/KLInferenceMethod.h>
- #include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+ #include <shogun/machine/gp/KLInference.h>
+ #include <shogun/machine/gp/KLLowerTriangularInference.h>
  #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
- #include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+ #include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
  #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
  #include <shogun/machine/gp/KLDualInferenceMethod.h>
 

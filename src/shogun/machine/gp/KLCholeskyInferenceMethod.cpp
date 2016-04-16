@@ -51,14 +51,14 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInferenceMethod()
+CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInference()
 {
 	init();
 }
 
 CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLLowerTriangularInferenceMethod(kern, feat, m, lab, mod)
+		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
 }
@@ -74,7 +74,7 @@ void CKLCholeskyInferenceMethod::init()
 }
 
 CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;

@@ -66,7 +66,7 @@ CEPInferenceMethod::CEPInferenceMethod()
 
 CEPInferenceMethod::CEPInferenceMethod(CKernel* kernel, CFeatures* features,
 		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
-		: CInferenceMethod(kernel, features, mean, labels, model)
+		: CInference(kernel, features, mean, labels, model)
 {
 	init();
 }
@@ -88,7 +88,7 @@ void CEPInferenceMethod::init()
 }
 
 CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -148,7 +148,7 @@ SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 
 void CEPInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -164,7 +164,7 @@ void CEPInferenceMethod::update()
 	SG_DEBUG("entering\n");
 
 	// update kernel and feature matrix
-	CInferenceMethod::update();
+	CInference::update();
 
 	// get number of labels (trainig examples)
 	index_t n=m_labels->get_num_labels();

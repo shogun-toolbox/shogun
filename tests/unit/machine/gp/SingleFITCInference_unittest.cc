@@ -43,7 +43,7 @@
 
 using namespace shogun;
 
-TEST(SingleFITCInferenceBase,set_kernel)
+TEST(SingleFITCInference,set_kernel)
 {
 	// create some easy regression data with inducing features:
 	// y approximately equals to x^sin(x)

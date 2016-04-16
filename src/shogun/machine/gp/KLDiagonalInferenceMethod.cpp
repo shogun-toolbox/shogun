@@ -39,7 +39,7 @@
  * This code specifically adapted from function in approxKL.m and infKL.m
  */
 
-#include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
@@ -51,39 +51,39 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod() : CKLLowerTriangularInferenceMethod()
+CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod() : CKLLowerTriangularInference()
 {
 	init();
 }
 
-CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod(CKernel* kern,
+CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLLowerTriangularInferenceMethod(kern, feat, m, lab, mod)
+		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLApproxDiagonalInferenceMethod::init()
+void CKLDiagonalInferenceMethod::init()
 {
 	SG_ADD(&m_InvK, "invK",
 		"The K^{-1} matrix",
 		MS_NOT_AVAILABLE);
 }
 
-CKLApproxDiagonalInferenceMethod* CKLApproxDiagonalInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		SG_SERROR("Provided inference is not of type CKLApproxDiagonalInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
 
 	SG_REF(inference);
-	return (CKLApproxDiagonalInferenceMethod*)inference;
+	return (CKLDiagonalInferenceMethod*)inference;
 }
 
-SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_alpha()
+SGVector<float64_t> CKLDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
 	 * but also a vector corresponding to the lower triangular of C
@@ -105,11 +105,11 @@ SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_alpha()
 	return result;
 }
 
-CKLApproxDiagonalInferenceMethod::~CKLApproxDiagonalInferenceMethod()
+CKLDiagonalInferenceMethod::~CKLDiagonalInferenceMethod()
 {
 }
 
-bool CKLApproxDiagonalInferenceMethod::precompute()
+bool CKLDiagonalInferenceMethod::precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -130,7 +130,7 @@ bool CKLApproxDiagonalInferenceMethod::precompute()
 	return status;
 }
 
-void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+void CKLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
@@ -165,7 +165,7 @@ void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVec
 
 }
 
-float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helper()
+float64_t CKLDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -187,7 +187,7 @@ float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood
 	return result;
 }
 
-void CKLApproxDiagonalInferenceMethod::update_alpha()
+void CKLDiagonalInferenceMethod::update_alpha()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_InvK=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -230,7 +230,7 @@ void CKLApproxDiagonalInferenceMethod::update_alpha()
 	nlml_new=optimization();
 }
 
-void CKLApproxDiagonalInferenceMethod::update_Sigma()
+void CKLDiagonalInferenceMethod::update_Sigma()
 {
 	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -238,7 +238,7 @@ void CKLApproxDiagonalInferenceMethod::update_Sigma()
 	eigen_Sigma=eigen_s2.asDiagonal();
 }
 
-void CKLApproxDiagonalInferenceMethod::update_InvK_Sigma()
+void CKLDiagonalInferenceMethod::update_InvK_Sigma()
 {
 	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);

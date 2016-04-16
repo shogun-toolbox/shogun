@@ -45,7 +45,7 @@ except ImportError:
 	exit(0)
 
 parameter_list=[
-    [MultiLaplacianInferenceMethod,traindat,testdat,label_multi_traindat,0,0],
+    [MultiLaplaceInferenceMethod,traindat,testdat,label_multi_traindat,0,0],
 ]
 
 

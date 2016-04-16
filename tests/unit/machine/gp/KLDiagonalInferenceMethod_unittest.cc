@@ -36,7 +36,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/ProbitVGLikelihood.h>
 #include <shogun/machine/gp/StudentsTVGLikelihood.h>
@@ -45,7 +45,7 @@
 
 using namespace shogun;
 
-TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
+TEST(KLDiagonalInferenceMethod,get_cholesky_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -78,7 +78,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
 	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
 
 	// specify GP regression with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -157,7 +157,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -196,7 +196,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -277,7 +277,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -316,7 +316,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -394,7 +394,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -427,7 +427,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
 
 	// specify GP regression with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -461,7 +461,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -494,7 +494,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
 
 	// specify GP regression with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -571,7 +571,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -610,7 +610,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -643,7 +643,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -682,7 +682,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -760,7 +760,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -800,7 +800,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -834,7 +834,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -873,7 +873,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -952,7 +952,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
+TEST(KLDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 {
 	// create some easy regression data:
 	// y approximately equals to 1/5*sin(10*x) + sqrt(x)
@@ -985,7 +985,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likeliho
 	CStudentsTVGLikelihood* likelihood=new CStudentsTVGLikelihood(1, 3);
 
 	// specify GP regression with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1005,7 +1005,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likeliho
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -1044,7 +1044,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_like
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1064,7 +1064,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_like
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1103,7 +1103,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_lik
 	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1123,7 +1123,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_lik
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
+TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 {
 	// create some easy regression data: 1d noisy sine wave
 	index_t ntr=5;
@@ -1157,7 +1157,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likel
 	CStudentsTVGLikelihood* lik=new CStudentsTVGLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
@@ -1208,7 +1208,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likel
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 {
 	// create some easy classification data:
 	// y=sign(sqrt(x1.^2+x2.^2)-1)
@@ -1247,7 +1247,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_l
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
@@ -1287,7 +1287,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_l
 	SG_UNREF(inf);
 }
 
-TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
+TEST(KLDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1326,7 +1326,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_
 	CProbitVGLikelihood* likelihood=new CProbitVGLikelihood();
 
 	// specify GP classification with KL inference
-	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf=new CKLDiagonalInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary

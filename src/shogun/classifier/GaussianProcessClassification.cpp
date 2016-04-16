@@ -39,7 +39,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 
 using namespace shogun;
 
@@ -49,7 +49,7 @@ CGaussianProcessClassification::CGaussianProcessClassification()
 }
 
 CGaussianProcessClassification::CGaussianProcessClassification(
-		CInferenceMethod* method) : CGaussianProcessMachine(method)
+		CInference* method) : CGaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -115,10 +115,10 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 	// features
 	if (!data)
 	{
-		if (m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
 		{
-			CSingleFITCLaplacianInferenceMethod* fitc_method=
-				CSingleFITCLaplacianInferenceMethod::obtain_from_generic(m_method);
+			CSingleFITCLaplaceInferenceMethod* fitc_method=
+				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
 			data=fitc_method->get_inducing_features();
 			SG_UNREF(fitc_method);
 		}
@@ -147,10 +147,10 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 	if (data)
 	{
 		// set inducing features for FITC inference method
-		if (m_method->get_inference_type()==INF_FITC_LAPLACIAN_SINGLE)
+		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
 		{
-			CSingleFITCLaplacianInferenceMethod* fitc_method=
-				CSingleFITCLaplacianInferenceMethod::obtain_from_generic(m_method);
+			CSingleFITCLaplaceInferenceMethod* fitc_method=
+				CSingleFITCLaplaceInferenceMethod::obtain_from_generic(m_method);
 			fitc_method->set_inducing_features(data);
 			SG_UNREF(fitc_method);
 		}

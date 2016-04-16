@@ -220,20 +220,20 @@ private:
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
-CKLDualInferenceMethod::CKLDualInferenceMethod() : CKLInferenceMethod()
+CKLDualInferenceMethod::CKLDualInferenceMethod() : CKLInference()
 {
 	init();
 }
 
 CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
 CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -270,7 +270,7 @@ void CKLDualInferenceMethod::check_dual_inference(CLikelihoodModel* mod) const
 void CKLDualInferenceMethod::set_model(CLikelihoodModel* mod)
 {
 	check_dual_inference(mod);
-	CKLInferenceMethod::set_model(mod);
+	CKLInference::set_model(mod);
 }
 
 CDualVariationalGaussianLikelihood* CKLDualInferenceMethod::get_dual_variational_likelihood() const
@@ -284,7 +284,7 @@ void CKLDualInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
 	KLDualInferenceMethodMinimizer* opt=dynamic_cast<KLDualInferenceMethodMinimizer*>(minimizer);
 	REQUIRE(opt,"The minimizer must be an instance of KLDualInferenceMethodMinimizer\n"); 
-	CInferenceMethod::register_minimizer(minimizer);
+	CInference::register_minimizer(minimizer);
 }
 
 

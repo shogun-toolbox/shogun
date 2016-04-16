@@ -37,7 +37,7 @@
 #define _KLDUALINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLInference.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 
 namespace shogun
@@ -59,7 +59,7 @@ namespace shogun
  *
  * For detailed information, please refer to the paper.
  */
-class CKLDualInferenceMethod: public CKLInferenceMethod
+class CKLDualInferenceMethod: public CKLInference
 {
 friend class KLDualInferenceMethodCostFunction;
 public:
@@ -96,7 +96,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLDualInferenceMethod object
 	 */
-	static CKLDualInferenceMethod * obtain_from_generic(CInferenceMethod* inference);
+	static CKLDualInferenceMethod * obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *

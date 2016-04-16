@@ -33,7 +33,7 @@
 #include <shogun/lib/config.h>
 
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
@@ -44,7 +44,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct GRADIENT_THREAD_PARAM
 {
-	CInferenceMethod* inf;
+	CInference* inf;
 	CMap<TParameter*, SGVector<float64_t> >* grad;
 	CSGObject* obj;
 	TParameter* param;
@@ -52,23 +52,23 @@ struct GRADIENT_THREAD_PARAM
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CInferenceMethod::CInferenceMethod()
+CInference::CInference()
 {
 	init();
 }
 
-float64_t CInferenceMethod::get_scale() const
+float64_t CInference::get_scale() const
 {
 	return CMath::exp(m_log_scale);
 }
 
-void CInferenceMethod::set_scale(float64_t scale)
+void CInference::set_scale(float64_t scale)
 {
 	REQUIRE(scale>0, "Scale (%f) must be positive", scale);
 	m_log_scale=CMath::log(scale);
 }
 
-SGMatrix<float64_t> CInferenceMethod::get_multiclass_E()
+SGMatrix<float64_t> CInference::get_multiclass_E()
 {
 	if (parameter_hash_changed())
 		update();
@@ -76,7 +76,7 @@ SGMatrix<float64_t> CInferenceMethod::get_multiclass_E()
 	return SGMatrix<float64_t>(m_E);
 }
 
-CInferenceMethod::CInferenceMethod(CKernel* kernel, CFeatures* features,
+CInference::CInference(CKernel* kernel, CFeatures* features,
 	CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
 {
 	init();
@@ -88,7 +88,7 @@ CInferenceMethod::CInferenceMethod(CKernel* kernel, CFeatures* features,
 	set_mean(mean);
 }
 
-CInferenceMethod::~CInferenceMethod()
+CInference::~CInference()
 {
 	SG_UNREF(m_kernel);
 	SG_UNREF(m_features);
@@ -98,7 +98,7 @@ CInferenceMethod::~CInferenceMethod()
 	delete m_minimizer;
 }
 
-void CInferenceMethod::init()
+void CInference::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
 	SG_ADD(&m_log_scale, "log_scale", "Kernel log scale", MS_AVAILABLE, GRADIENT_AVAILABLE);
@@ -124,7 +124,7 @@ void CInferenceMethod::init()
 	SG_ADD(&m_E, "E", "the matrix used for multi classification", MS_NOT_AVAILABLE);
 }
 
-void CInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CInference::register_minimizer(Minimizer* minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
 	if(minimizer!=m_minimizer)
@@ -134,7 +134,7 @@ void CInferenceMethod::register_minimizer(Minimizer* minimizer)
 	}
 }
 
-float64_t CInferenceMethod::get_marginal_likelihood_estimate(
+float64_t CInference::get_marginal_likelihood_estimate(
 		int32_t num_importance_samples, float64_t ridge_size)
 {
 	/* sample from Gaussian approximation to q(f|y) */
@@ -192,7 +192,7 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 	return CMath::log_mean_exp(sum);
 }
 
-CMap<TParameter*, SGVector<float64_t> >* CInferenceMethod::
+CMap<TParameter*, SGVector<float64_t> >* CInference::
 get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* params)
 {
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
@@ -248,7 +248,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 			thread_params[t].grad=result;
 			thread_params[t].lock=&lock;
 
-			pthread_create(&threads[t], NULL, CInferenceMethod::get_derivative_helper,
+			pthread_create(&threads[t], NULL, CInference::get_derivative_helper,
 					(void*)&thread_params[t]);
 		}
 
@@ -263,11 +263,11 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	return result;
 }
 
-void* CInferenceMethod::get_derivative_helper(void *p)
+void* CInference::get_derivative_helper(void *p)
 {
 	GRADIENT_THREAD_PARAM* thread_param=(GRADIENT_THREAD_PARAM*)p;
 
-	CInferenceMethod* inf=thread_param->inf;
+	CInference* inf=thread_param->inf;
 	CSGObject* obj=thread_param->obj;
 	CMap<TParameter*, SGVector<float64_t> >* grad=thread_param->grad;
 	TParameter* param=thread_param->param;
@@ -311,13 +311,13 @@ void* CInferenceMethod::get_derivative_helper(void *p)
 	return NULL;
 }
 
-void CInferenceMethod::update()
+void CInference::update()
 {
 	check_members();
 	update_train_kernel();
 }
 
-void CInferenceMethod::check_members() const
+void CInference::check_members() const
 {
 	REQUIRE(m_features, "Training features should not be NULL\n")
 	REQUIRE(m_features->get_num_vectors(),
@@ -332,13 +332,13 @@ void CInferenceMethod::check_members() const
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
 }
 
-void CInferenceMethod::update_train_kernel()
+void CInference::update_train_kernel()
 {
 	m_kernel->init(m_features, m_features);
 	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
-void CInferenceMethod::compute_gradient()
+void CInference::compute_gradient()
 {
 	if (parameter_hash_changed())
 		update();

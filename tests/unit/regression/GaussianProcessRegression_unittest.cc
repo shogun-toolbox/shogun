@@ -43,7 +43,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
-#include <shogun/machine/gp/SparseVGInferenceMethod.h>
+#include <shogun/machine/gp/VarDTCInferenceMethod.h>
 
 using namespace shogun;
 
@@ -489,7 +489,7 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	SG_UNREF(gpr);
 }
 
-TEST(GaussianProcessRegression,sparse_vg_regression)
+TEST(GaussianProcessRegression,var_dtc_regression)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -544,7 +544,7 @@ TEST(GaussianProcessRegression,sparse_vg_regression)
 	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
 
 	// specify GP regression with FITC inference
-	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;

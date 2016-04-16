@@ -29,12 +29,12 @@
  *
  */
 
-#ifndef CSINGLEFITCLAPLACIANINFERENCEMETHOD_H
-#define CSINGLEFITCLAPLACIANINFERENCEMETHOD_H
+#ifndef CSINGLEFITCLAPLACEINFERENCEMETHOD_H
+#define CSINGLEFITCLAPLACEINFERENCEMETHOD_H
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SingleFITCLaplacianBase.h>
+#include <shogun/machine/gp/SingleFITCLaplace.h>
 
 namespace shogun
 {
@@ -44,25 +44,25 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCLaplacianBase::get_derivative_wrt_kernel(const TParameter* param),
+ * CSingleFITCLaplace::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
- * CSingleFITCLaplacianInferenceMethod::get_posterior_covariance() is called
+ * CSingleFITCLaplaceInferenceMethod::get_posterior_covariance() is called
  *
  * This specific implementation was adapted from the infFITC_Laplace.m file in the
  * GPML toolbox.
  */
-class CSingleFITCLaplacianInferenceMethod: public CSingleFITCLaplacianBase
+class CSingleFITCLaplaceInferenceMethod: public CSingleFITCLaplace
 {
 friend class CFITCPsiLine;
-friend class SingleFITCLaplacianNewtonOptimizer; 
-friend class SingleFITCLaplacianInferenceMethodCostFunction;
+friend class SingleFITCLaplaceNewtonOptimizer; 
+friend class SingleFITCLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CSingleFITCLaplacianInferenceMethod();
+	CSingleFITCLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -73,31 +73,31 @@ public:
 	 * @param model Likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
+	CSingleFITCLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CSingleFITCLaplacianInferenceMethod();
+	virtual ~CSingleFITCLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SingleFITCLaplacian
+	 * @return name SingleFITCLaplace
 	 */
-	virtual const char* get_name() const { return "SingleFITCLaplacianInferenceMethod"; }
+	virtual const char* get_name() const { return "SingleFITCLaplaceInferenceMethod"; }
 
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type FITC
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_FITC_LAPLACIAN_SINGLE; }
+	virtual EInferenceType get_inference_type() const { return INF_FITC_LAPLACE_SINGLE; }
 
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSingleFITCLaplacianInferenceMethod object
+	 * @return casted CSingleFITCLaplaceInferenceMethod object
 	 */
-	static CSingleFITCLaplacianInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CSingleFITCLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
@@ -193,9 +193,9 @@ protected:
 	virtual void update_deriv();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -373,4 +373,4 @@ protected:
 	bool m_Wneg;
 };
 }
-#endif /* CSINGLEFITCLAPLACIANINFERENCEMETHOD_H */
+#endif /* CSINGLEFITCLAPLACEINFERENCEMETHOD_H */

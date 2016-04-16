@@ -38,20 +38,22 @@
  *
  */
 
-#ifndef _KLLOWERTRIANGULARINFERENCEMETHOD_H_
-#define _KLLOWERTRIANGULARINFERENCEMETHOD_H_
+#ifndef _KLDIAGONALINFERENCEMETHOD_H_
+#define _KLDIAGONALINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
 
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLLowerTriangularInference.h>
 
 namespace shogun
 {
 
 /** @brief The KL approximation inference method class.
  *
- * The class is implemented based on the KL method in the Challis's paper,
- * which uses lower triangular represention.
+ * The class is implemented based on the KL method in the Challis's paper
+ * which uses 1-band (diagonal) represention.
+ * Note that in order to do variational inference, each diagonal element should be positive.
+ * This implementation updates the diagonal elements in log domain.
  *
  * Code adapted from
  * http://hannes.nickisch.org/code/approxXX.tar.gz
@@ -62,14 +64,17 @@ namespace shogun
  * "Concave Gaussian variational approximations for inference in large-scale Bayesian linear models."
  * International conference on Artificial Intelligence and Statistics. 2011.
  *
- * Note that "lowerTriangular" means lowerTriangular represention of the variational co-variance matrix
- * is explicitly used in inference
+ * The adapted Matlab code can be found at
+ * https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+ *
+ * Note that "Diagonal" means a variational diagonal co-variance matrix
+ * is used in inference.
  */
-class CKLLowerTriangularInferenceMethod: public CKLInferenceMethod
+class CKLDiagonalInferenceMethod: public CKLLowerTriangularInference
 {
 public:
 	/** default constructor */
-	CKLLowerTriangularInferenceMethod();
+	CKLDiagonalInferenceMethod();
 
 	/** constructor
 	 *
@@ -79,87 +84,73 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLLowerTriangularInferenceMethod(CKernel* kernel, CFeatures* features,
+	CKLDiagonalInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CKLLowerTriangularInferenceMethod();
+	virtual ~CKLDiagonalInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name KLLowerTriangularInferenceMethod
+	 * @return name KLDiagonalInferenceMethod
 	 */
-	virtual const char* get_name() const { return "KLLowerTriangularInferenceMethod"; }
+	virtual const char* get_name() const { return "KLDiagonalInferenceMethod"; }
 
-	/** get diagonal vector
+	/** return what type of inference we are
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix:
-	 *
-	 * Note that this vector is not avaliable for the KL method
+	 * @return inference type FITC
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	virtual EInferenceType get_inference_type() const { return INF_KL_DIAGONAL; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CKLDiagonalInferenceMethod object
+	 */
+	static CKLDiagonalInferenceMethod* obtain_from_generic(CInference* inference);
+
+	/** get alpha vector
+	 *
+	 * @return vector to compute posterior mean of Gaussian Process:
+	 */
+	virtual SGVector<float64_t> get_alpha();
 
 protected:
-	/** update cholesky matrix */
-	virtual void update_chol();
+	/** update alpha vector */
+	virtual void update_alpha();
 
-	/** update matrices which are required to compute negative log marginal
-	 * likelihood derivatives wrt hyperparameter
-	 */
-	virtual void update_deriv();
-
-	/** compute matrices which are required to compute negative log marginal
-	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that
-	 * get_derivative_wrt_inference_method(const TParameter* param)
-	 * and
-	 * get_derivative_wrt_kernel(const TParameter* param)
-	 * will call this function
+	/** the helper function to compute
+	 * the negative log marginal likelihood
 	 *
-	 * @param dK the gradient wrt hyperparameter related to cov
+	 * @return negative log marginal likelihood
 	 */
+	virtual float64_t get_negative_log_marginal_likelihood_helper();
 
-	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
-
-	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
-
-	/** The K^{-1}Sigma matrix */
-	SGMatrix<float64_t> m_InvK_Sigma;
-
-	/** The mean vector generated from mean function */
-	SGVector<float64_t> m_mean_vec;
-
-	/** The Log-determinant of Kernel */
-	float64_t m_log_det_Kernel;
-
-	/**The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale) */
-	SGMatrix<float64_t> m_Kernel_LsD;
-
-	/**The permutation sequence of P, where P are defined in LDLT factorization on Kernel*sq(m_scale) */
-	SGVector<index_t> m_Kernel_P;
-
-	/** compute the inv(corrected_Kernel*sq(m_scale))*A
+	/** compute the gradient wrt variational parameters
+	 * given the current variational parameters (mu and s2)
 	 *
-	 * @param A input matrix
-	 *
-	 * @return inv(corrected_Kernel*sq(m_scale))*A:
+	 * @return gradient of negative log marginal likelihood
 	 */
-	Eigen::MatrixXd solve_inverse(Eigen::MatrixXd A);
+	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
 
-	/** correct the kernel matrix and factorizated the corrected Kernel matrix
-	 * for update
+	/** pre-compute the information for optimization.
+	 * This function needs to be called before calling
+	 * get_negative_log_marginal_likelihood_wrt_parameters()
+	 * and/or
+	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+	 *
+	 * @return true if precomputed parameters are valid
 	 */
-	virtual void update_init();
+	virtual bool precompute();
 
 	/** compute posterior Sigma matrix*/
-	virtual void update_Sigma()=0;
+	virtual void update_Sigma();
 
 	/** compute inv(corrected_Kernel)*Sigma matrix */
-	virtual void update_InvK_Sigma()=0;
-
+	virtual void update_InvK_Sigma();
 private:
 	void init();
 
+	SGMatrix<float64_t> m_InvK;
 };
 }
-#endif /* _KLLOWERTRIANGULARINFERENCEMETHOD_H_ */
+#endif /* _KLDIAGONALINFERENCEMETHOD_H_ */

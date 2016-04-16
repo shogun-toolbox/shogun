@@ -30,7 +30,7 @@
  *
  */
 
-#include <shogun/machine/gp/LaplacianInferenceBase.h>
+#include <shogun/machine/gp/LaplaceInference.h>
 
 
 #include <shogun/mathematics/Math.h>
@@ -43,19 +43,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CLaplacianInferenceBase::CLaplacianInferenceBase() : CInferenceMethod()
+CLaplaceInference::CLaplaceInference() : CInference()
 {
 	init();
 }
 
-CLaplacianInferenceBase::CLaplacianInferenceBase(CKernel* kern,
+CLaplaceInference::CLaplaceInference(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CInferenceMethod(kern, feat, m, lab, mod)
+		: CInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CLaplacianInferenceBase::init()
+void CLaplaceInference::init()
 {
 	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
@@ -63,13 +63,13 @@ void CLaplacianInferenceBase::init()
 	SG_ADD(&m_W, "W", "the noise matrix", MS_NOT_AVAILABLE);
 }
 
-CLaplacianInferenceBase::~CLaplacianInferenceBase()
+CLaplaceInference::~CLaplaceInference()
 {
 }
 
-void CLaplacianInferenceBase::compute_gradient()
+void CLaplaceInference::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -79,11 +79,11 @@ void CLaplacianInferenceBase::compute_gradient()
 		update_parameter_hash();
 	}
 }
-void CLaplacianInferenceBase::update()
+void CLaplaceInference::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_alpha();
 	update_chol();
 	m_gradient_update=false;
@@ -92,7 +92,7 @@ void CLaplacianInferenceBase::update()
 	SG_DEBUG("leaving\n");
 }
 
-SGVector<float64_t> CLaplacianInferenceBase::get_alpha()
+SGVector<float64_t> CLaplaceInference::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -102,7 +102,7 @@ SGVector<float64_t> CLaplacianInferenceBase::get_alpha()
 
 }
 
-SGMatrix<float64_t> CLaplacianInferenceBase::get_cholesky()
+SGMatrix<float64_t> CLaplaceInference::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -111,7 +111,7 @@ SGMatrix<float64_t> CLaplacianInferenceBase::get_cholesky()
 
 }
 
-SGMatrix<float64_t> CLaplacianInferenceBase::get_posterior_covariance()
+SGMatrix<float64_t> CLaplaceInference::get_posterior_covariance()
 {
 	compute_gradient();
 
