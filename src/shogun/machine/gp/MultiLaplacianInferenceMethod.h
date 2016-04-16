@@ -150,53 +150,53 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
 
-        /** get tolerance for newton iterations
-         *
-         * @return tolerance for newton iterations
-         */
-        virtual float64_t get_newton_tolerance() { return m_tolerance; }
+	/** get tolerance for newton iterations
+	 *
+	 * @return tolerance for newton iterations
+	 */
+	virtual float64_t get_newton_tolerance() { return m_tolerance; }
 
-        /** set tolerance for newton iterations
-         *
-         * @param tol tolerance for newton iterations to set
-         */
-        virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
+	/** set tolerance for newton iterations
+	 *
+	 * @param tol tolerance for newton iterations to set
+	 */
+	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
-        /** get max Newton iterations
-         *
-         * @return max Newton iterations
-         */
-        virtual int32_t get_newton_iterations() { return m_iter; }
+	/** get max Newton iterations
+	 *
+	 * @return max Newton iterations
+	 */
+	virtual int32_t get_newton_iterations() { return m_iter; }
 
-        /** set max Newton iterations
-         *
-         * @param iter max Newton iterations
-         */
-        virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
+	/** set max Newton iterations
+	 *
+	 * @param iter max Newton iterations
+	 */
+	virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
 
-        /** get tolerance for Brent's minimization method
-         *
-         * @return tolerance for Brent's minimization method
-         */
-        virtual float64_t get_minimization_tolerance() { return m_opt_tolerance; }
+	/** get tolerance for Brent's minimization method
+	 *
+	 * @return tolerance for Brent's minimization method
+	 */
+	virtual float64_t get_minimization_tolerance() { return m_opt_tolerance; }
 
-        /** set tolerance for Brent's minimization method
-         *
-         * @param tol tolerance for Brent's minimization method
-         */
-        virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+	/** set tolerance for Brent's minimization method
+	 *
+	 * @param tol tolerance for Brent's minimization method
+	 */
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
-        /** get maximum for Brent's minimization method
-         *
-         * @return maximum for Brent's minimization method
-         */
-        virtual float64_t get_minimization_max() { return m_opt_max; }
+	/** get maximum for Brent's minimization method
+	 *
+	 * @return maximum for Brent's minimization method
+	 */
+	virtual float64_t get_minimization_max() { return m_opt_max; }
 
-        /** set maximum for Brent's minimization method
-         *
-         * @param max maximum for Brent's minimization method
-         */
-        virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
+	/** set maximum for Brent's minimization method
+	 *
+	 * @param max maximum for Brent's minimization method
+	 */
+	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
 protected:
 
@@ -285,17 +285,17 @@ protected:
 	 */
 	virtual void get_dpi_helper();
 
-        /** amount of tolerance for Newton's iterations */
-        float64_t m_tolerance;
+	/** amount of tolerance for Newton's iterations */
+	float64_t m_tolerance;
 
-        /** max Newton's iterations */
-        index_t m_iter;
+	/** max Newton's iterations */
+	index_t m_iter;
 
-        /** amount of tolerance for Brent's minimization method */
-        float64_t m_opt_tolerance;
+	/** amount of tolerance for Brent's minimization method */
+	float64_t m_opt_tolerance;
 
-        /** max iterations for Brent's minimization method */
-        float64_t m_opt_max;
+	/** max iterations for Brent's minimization method */
+	float64_t m_opt_max;
 };
 }
 #endif /* CMULTILAPLACIANINFERENCEMETHOD_H_ */

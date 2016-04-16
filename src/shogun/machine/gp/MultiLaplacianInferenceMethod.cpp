@@ -112,19 +112,19 @@ CMultiLaplacianInferenceMethod::CMultiLaplacianInferenceMethod(CKernel* kern,
 
 void CMultiLaplacianInferenceMethod::init()
 {
-        m_iter=20;
-        m_tolerance=1e-6;
-        m_opt_tolerance=1e-10;
-        m_opt_max=10;
+	m_iter=20;
+	m_tolerance=1e-6;
+	m_opt_tolerance=1e-10;
+	m_opt_max=10;
 
 	m_nlz=0;
 	SG_ADD(&m_nlz, "nlz", "negative log marginal likelihood ", MS_NOT_AVAILABLE);
 	SG_ADD(&m_U, "U", "the matrix used to compute gradient wrt hyperparameters", MS_NOT_AVAILABLE);
 
-        SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", MS_NOT_AVAILABLE);
-        SG_ADD(&m_iter, "iter", "max Newton's iterations", MS_NOT_AVAILABLE);
-        SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", MS_NOT_AVAILABLE);
-        SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", MS_NOT_AVAILABLE);
+	SG_ADD(&m_iter, "iter", "max Newton's iterations", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
 }
 
 CMultiLaplacianInferenceMethod::~CMultiLaplacianInferenceMethod()
