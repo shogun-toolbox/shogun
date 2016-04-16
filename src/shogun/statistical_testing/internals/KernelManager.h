@@ -48,11 +48,14 @@ namespace internal
 class KernelManager
 {
 public:
-	KernelManager(index_t num_kernels);
+	KernelManager();
+	explicit KernelManager(index_t num_kernels);
 	~KernelManager();
 
 	InitPerKernel kernel_at(size_t i);
 	CKernel* kernel_at(size_t i) const;
+
+	void push_back(CKernel* kernel);
 
 	void precompute_kernel_at(size_t i);
 	void restore_kernel_at(size_t i);

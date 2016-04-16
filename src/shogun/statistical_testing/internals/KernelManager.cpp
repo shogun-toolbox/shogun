@@ -38,6 +38,11 @@
 using namespace shogun;
 using namespace internal;
 
+KernelManager::KernelManager()
+{
+	SG_SDEBUG("Kernel manager instance initialized!\n");
+}
+
 KernelManager::KernelManager(index_t num_kernels)
 {
 	SG_SDEBUG("Kernel manager instance initialized with %d kernels!\n", num_kernels);
@@ -75,6 +80,14 @@ CKernel* KernelManager::kernel_at(size_t i) const
 	SG_SDEBUG("Precomputed kernel exists!\n");
 	SG_SDEBUG("Leaving!\n");
 	return m_precomputed_kernels[i].get();
+}
+
+void KernelManager::push_back(CKernel* kernel)
+{
+	SG_SDEBUG("Entering!\n");
+	SG_REF(kernel);
+	m_kernels.push_back(std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); }));
+	SG_SDEBUG("Leaving!\n");
 }
 
 void KernelManager::precompute_kernel_at(size_t i)
