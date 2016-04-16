@@ -20,10 +20,8 @@
 %rename(SingleFITCLaplacianBase) CSingleFITCLaplacianBase;
 %rename(SingleLaplacianInferenceMethod) CSingleLaplacianInferenceMethod;
 %rename(MultiLaplacianInferenceMethod) CMultiLaplacianInferenceMethod;
-%rename(SingleLaplacianInferenceMethodWithLBFGS) CSingleLaplacianInferenceMethodWithLBFGS;
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
 %rename(SingleFITCLaplacianInferenceMethod) CSingleFITCLaplacianInferenceMethod;
-%rename(SingleFITCLaplacianInferenceMethodWithLBFGS) CSingleFITCLaplacianInferenceMethodWithLBFGS;
 %rename(SparseVGInferenceMethod) CSparseVGInferenceMethod;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
@@ -89,9 +87,7 @@
 %include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 %include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
 %include <shogun/machine/gp/ExactInferenceMethod.h>
-%include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 %include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
-%include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
 %include <shogun/machine/gp/SparseVGInferenceMethod.h>
 %include <shogun/machine/gp/EPInferenceMethod.h>
@@ -107,3 +103,6 @@
 %include <shogun/classifier/GaussianProcessClassification.h>
 %include <shogun/regression/GaussianProcessRegression.h>
 
+%include <shogun/optimization/Minimizer.h>
+%include <shogun/optimization/FirstOrderMinimizer.h>
+%include <shogun/optimization/lbfgs/LBFGSMinimizer.h>

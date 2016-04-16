@@ -57,19 +57,10 @@ CLaplacianInferenceBase::CLaplacianInferenceBase(CKernel* kern,
 
 void CLaplacianInferenceBase::init()
 {
-	m_iter=20;
-	m_tolerance=1e-6;
-	m_opt_tolerance=1e-10;
-	m_opt_max=10;
-
 	SG_ADD(&m_dlp, "dlp", "derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_mu, "mu", "mean vector of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Sigma, "Sigma", "covariance matrix of the approximation to the posterior", MS_NOT_AVAILABLE);
 	SG_ADD(&m_W, "W", "the noise matrix", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "tolerance", "amount of tolerance for Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_iter, "iter", "max Newton's iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_tolerance, "opt_tolerance", "amount of tolerance for Brent's minimization method", MS_NOT_AVAILABLE);
-	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method", MS_NOT_AVAILABLE);
 }
 
 CLaplacianInferenceBase::~CLaplacianInferenceBase()

@@ -37,7 +37,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
@@ -45,6 +45,7 @@
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
 using namespace shogun;
 
@@ -88,8 +89,8 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -98,22 +99,21 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
-
+	inf->register_minimizer(opt);
 	// comparison the result from GPML package with the minfunc function:
 	/*L =
 		1.229795134715245   0.000000424572149   0.000004284193391   0.001003171160332   0.000023929911208
@@ -205,29 +205,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*alpha =
@@ -296,29 +296,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_pr
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*nlZ =
@@ -374,29 +374,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
@@ -470,8 +470,8 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihoo
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -479,22 +479,21 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihoo
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
-
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*post_mean =
@@ -561,29 +560,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_lik
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	SGMatrix<float64_t> approx_cov=inf->get_posterior_covariance();
 
@@ -676,29 +675,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*L =
@@ -791,8 +790,8 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -800,21 +799,21 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	SGVector<float64_t> alpha=inf->get_alpha();
 	// comparison the result from GPML package with the minfunc function:
@@ -883,29 +882,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_lo
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*nlZ =
@@ -963,29 +962,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
@@ -1055,29 +1054,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*L =
@@ -1164,29 +1163,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*alpha =
@@ -1248,29 +1247,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_ga
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*nlZ =
@@ -1323,29 +1322,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			lik);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
@@ -1421,29 +1420,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*L =
@@ -1530,29 +1529,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*alpha =
@@ -1614,29 +1613,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// comparison the result from GPML package with the minfunc function:
 	/*nlZ =
@@ -1688,29 +1687,29 @@ TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives
 	CStudentsTLikelihood* lik=new CStudentsTLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
 			lik);
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// build parameter dictionary
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();

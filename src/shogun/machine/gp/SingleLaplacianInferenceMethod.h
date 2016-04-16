@@ -22,7 +22,6 @@
 
 namespace shogun
 {
-
 /** @brief The SingleLaplace approximation inference method class
  * for regression and binary Classification.
  *
@@ -41,6 +40,8 @@ namespace shogun
  */
 class CSingleLaplacianInferenceMethod: public CLaplacianInferenceBase
 {
+friend class SingleLaplacianNewtonOptimizer; 
+friend class SingleLaplacianInferenceMethodCostFunction;
 public:
 	/** default constructor */
 	CSingleLaplacianInferenceMethod();
@@ -139,6 +140,8 @@ public:
 	 * @return mean vector
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
+
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 
 	/** initialize the update  */
@@ -197,10 +200,18 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
+
+	float64_t get_psi_wrt_alpha();
+
+	void get_gradient_wrt_alpha(SGVector<float64_t> gradient);
+
 private:
 	void init();
 
 protected:
+	/** a parameter used to compute function value and gradient for LBFGS update*/
+	SGVector<float64_t> m_mean_f;
+
 	/** square root of W */
 	SGVector<float64_t> m_sW;
 

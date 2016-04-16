@@ -57,7 +57,7 @@ class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 friend class KLDualInferenceMethodMinimizer;
 public:
-KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual ~KLDualInferenceMethodCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CKLDualInferenceMethod *obj)
 	{
