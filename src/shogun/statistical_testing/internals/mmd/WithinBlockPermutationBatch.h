@@ -53,12 +53,6 @@ private:
 	const EStatisticType stype;
 	SGVector<index_t> permuted_inds;
 	std::vector<std::vector<index_t>> inverted_permuted_inds;
-	struct terms_t
-	{
-		float64_t term[3];
-		float64_t diag[3];
-	};
-	std::vector<terms_t> terms;
 };
 
 }

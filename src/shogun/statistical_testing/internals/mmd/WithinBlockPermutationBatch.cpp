@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
+#include <array>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/GPUMatrix.h>
@@ -30,8 +31,14 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
+struct WithinBlockPermutationBatch::terms_t
+{
+	std::array<float64_t, 3> term{};
+	std::array<float64_t, 3> diag{};
+};
+
 WithinBlockPermutationBatch::WithinBlockPermutationBatch(index_t nx, index_t ny, index_t N, EStatisticType type)
-: n_x(nx), n_y(ny), num_null_samples(N), stype(type), terms()
+: n_x(nx), n_y(ny), num_null_samples(N), stype(type)
 {
 	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
 	SG_SDEBUG("number of null samples is %d!\n", num_null_samples);
@@ -39,7 +46,6 @@ WithinBlockPermutationBatch::WithinBlockPermutationBatch(index_t nx, index_t ny,
 	inverted_permuted_inds.resize(num_null_samples);
 	for (auto i=0; i<num_null_samples; ++i)
 		inverted_permuted_inds[i].resize(permuted_inds.vlen);
-	terms.resize(num_null_samples);
 }
 
 void WithinBlockPermutationBatch::add_term(terms_t& t, float64_t val, index_t i, index_t j)
@@ -71,11 +77,6 @@ SGVector<float64_t> WithinBlockPermutationBatch::operator()(SGMatrix<float64_t> 
 {
 	SG_SDEBUG("Entering!\n");
 
-	std::for_each(terms.begin(), terms.end(), [](terms_t& t) {
-		std::fill(&t.term[0], &t.term[2]+1, 0);
-		std::fill(&t.diag[0], &t.diag[2]+1, 0);
-	});
-
 	for (auto k=0; k<num_null_samples; ++k)
 	{
 		std::iota(permuted_inds.vector, permuted_inds.vector+permuted_inds.vlen, 0);
@@ -88,7 +89,7 @@ SGVector<float64_t> WithinBlockPermutationBatch::operator()(SGMatrix<float64_t> 
 #pragma omp parallel for
 	for (auto k=0; k<num_null_samples; ++k)
 	{
-		terms_t& t=terms[k];
+		terms_t t;
 		for (auto j=0; j<n_x+n_y; ++j)
 		{
 			for (auto i=0; i<n_x+n_y; ++i)
