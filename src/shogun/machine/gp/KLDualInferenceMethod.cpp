@@ -57,7 +57,7 @@ class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 friend class KLDualInferenceMethodMinimizer;
 public:
-KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
 	virtual ~KLDualInferenceMethodCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CKLDualInferenceMethod *obj)
 	{
@@ -169,7 +169,7 @@ private:
 	static float64_t evaluate(void *obj, const float64_t *variable,
 		float64_t *gradient, const int dim, const float64_t step)
 	{
-	  /* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
+		/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
 		KLDualInferenceMethodMinimizer * obj_prt
 			= static_cast<KLDualInferenceMethodMinimizer *>(obj);
 

@@ -51,10 +51,8 @@
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
@@ -63,6 +61,7 @@
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
 using namespace shogun;
 
@@ -567,8 +566,8 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-	= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+	= new CSingleLaplacianInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -576,21 +575,21 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -749,8 +748,8 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf
+		= new CSingleLaplacianInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -758,21 +757,21 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -931,26 +930,26 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf=new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 			features_train, mean, labels_train, likelihood);
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);

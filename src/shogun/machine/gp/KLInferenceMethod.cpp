@@ -77,8 +77,6 @@ public:
         virtual SGVector<float64_t> get_gradient()
         {
                 REQUIRE(m_obj,"Object not set\n");
-                //SGVector<float64_t> derivatives(m_derivatives.vector, m_derivatives.vlen, false);
-                //m_obj->get_gradient_of_nlml_wrt_parameters(derivatives);
 		m_obj->get_gradient_of_nlml_wrt_parameters(m_derivatives);
                 return m_derivatives;
         }
