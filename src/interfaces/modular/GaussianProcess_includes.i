@@ -25,7 +25,7 @@
  #include <shogun/machine/gp/Inference.h>
  #include <shogun/machine/gp/LaplaceInference.h>
  #include <shogun/machine/gp/SparseInference.h>
- #include <shogun/machine/gp/SingleFITCLaplace.h>
+ #include <shogun/machine/gp/SingleFITCInference.h>
  #include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
  #include <shogun/machine/gp/SingleSparseInference.h>
  #include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>

@@ -19,7 +19,7 @@
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SingleFITCLaplace.h>
+#include <shogun/machine/gp/SingleFITCInference.h>
 
 namespace shogun
 {
@@ -41,7 +41,7 @@ namespace shogun
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCLaplace::get_derivative_wrt_kernel(const TParameter* param),
+ * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
@@ -49,7 +49,7 @@ namespace shogun
  * Warning: the the time complexity increases from O(m^2*n) to O(n^2*m) if method
  * CFITCInferenceMethod::get_posterior_covariance() is called
  */
-class CFITCInferenceMethod: public CSingleFITCLaplace
+class CFITCInferenceMethod: public CSingleFITCInference
 {
 public:
 	/** default constructor */

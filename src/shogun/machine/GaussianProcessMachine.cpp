@@ -40,8 +40,7 @@
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/machine/gp/SingleFITCLaplace.h>
-
+#include <shogun/machine/gp/SingleFITCInference.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;

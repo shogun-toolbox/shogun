@@ -299,14 +299,14 @@ private:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CSingleFITCLaplaceInferenceMethod::CSingleFITCLaplaceInferenceMethod() : CSingleFITCLaplace()
+CSingleFITCLaplaceInferenceMethod::CSingleFITCLaplaceInferenceMethod() : CSingleFITCInference()
 {
 	init();
 }
 
 CSingleFITCLaplaceInferenceMethod::CSingleFITCLaplaceInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCLaplace(kern, feat, m, lab, mod, lat)
+		: CSingleFITCInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
@@ -743,7 +743,7 @@ float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_related_cov(SGVector
 	eigen_v=eigen_ddiagKi-eigen_dA.cwiseProduct(eigen_R0tV).colwise().sum().transpose();
 
 	//explicit term
-	float64_t result=CSingleFITCLaplace::get_derivative_related_cov(ddiagKi, dKuui, dKui, v, dA);
+	float64_t result=CSingleFITCInference::get_derivative_related_cov(ddiagKi, dKuui, dKui, v, dA);
 
 	//implicit term
 	Map<VectorXd> eigen_dlp(m_dlp.vector, m_dlp.vlen);
@@ -784,7 +784,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_infere
 			len=dim*num_samples;
 		}
 		else if (!m_fully_sparse)
-			return CSingleFITCLaplace::get_derivative_wrt_inference_method(param);
+			return CSingleFITCInference::get_derivative_wrt_inference_method(param);
 		else
 			return get_derivative_wrt_inducing_features(param);
 	}
@@ -904,7 +904,7 @@ float64_t CSingleFITCLaplaceInferenceMethod::get_derivative_related_mean(SGVecto
 {
 	//time complexity O(m*n)
 	//explicit term
-	float64_t result=CSingleFITCLaplace::get_derivative_related_mean(dmu);
+	float64_t result=CSingleFITCInference::get_derivative_related_mean(dmu);
 
 	//implicit term
 	//Zdm = mvmZ(dm,RVdd,t);
@@ -1009,7 +1009,7 @@ SGVector<float64_t> CSingleFITCLaplaceInferenceMethod::get_derivative_wrt_induci
 {
 	//time complexity O(m^2*n)
 	//explicit term
-	SGVector<float64_t> result=CSingleFITCLaplace::get_derivative_wrt_inducing_noise(param);
+	SGVector<float64_t> result=CSingleFITCInference::get_derivative_wrt_inducing_noise(param);
 
 	//implicit term
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);

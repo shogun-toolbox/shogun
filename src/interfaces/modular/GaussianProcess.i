@@ -17,7 +17,7 @@
 %rename(LaplaceInference) CLaplaceInference;
 %rename(SparseInference) CSparseInference;
 %rename(SingleSparseInference) CSingleSparseInference;
-%rename(SingleFITCLaplace) CSingleFITCLaplace;
+%rename(SingleFITCInference) CSingleFITCInference;
 %rename(SingleLaplaceInferenceMethod) CSingleLaplaceInferenceMethod;
 %rename(MultiLaplaceInferenceMethod) CMultiLaplaceInferenceMethod;
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
@@ -83,7 +83,7 @@
 %include <shogun/machine/gp/LaplaceInference.h>
 %include <shogun/machine/gp/SparseInference.h>
 %include <shogun/machine/gp/SingleSparseInference.h>
-%include <shogun/machine/gp/SingleFITCLaplace.h>
+%include <shogun/machine/gp/SingleFITCInference.h>
 %include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 %include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
 %include <shogun/machine/gp/ExactInferenceMethod.h>

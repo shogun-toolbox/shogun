@@ -34,17 +34,17 @@
 
 
 #include <shogun/lib/config.h>
-#include <shogun/machine/gp/SingleFITCLaplace.h>
+#include <shogun/machine/gp/SingleFITCInference.h>
 
 namespace shogun
 {
-/** @brief The SingleFITCLaplace approximation inference method class
+/** @brief The FITC approximation inference method class
  * for regression and binary Classification.
  * Note that the number of inducing points (m) is usually far less than the number of input points (n).
  * (the time complexity is computed based on the assumption m < n)
  *
  * Warning: the time complexity of method,
- * CSingleFITCLaplace::get_derivative_wrt_kernel(const TParameter* param),
+ * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
@@ -55,7 +55,7 @@ namespace shogun
  * This specific implementation was adapted from the infFITC_Laplace.m file in the
  * GPML toolbox.
  */
-class CSingleFITCLaplaceInferenceMethod: public CSingleFITCLaplace
+class CSingleFITCLaplaceInferenceMethod: public CSingleFITCInference
 {
 friend class CFITCPsiLine;
 friend class SingleFITCLaplaceNewtonOptimizer; 

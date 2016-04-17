@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef CSINGLEFITCLAPLACE_H
-#define CSINGLEFITCLAPLACE_H
+#ifndef CSINGLEFITCINFERENCE_H
+#define CSINGLEFITCINFERENCE_H
 
 
 #include <shogun/lib/config.h>
@@ -59,17 +59,17 @@ namespace shogun
  * in the GPML toolbox.
  *
  * Warning: the time complexity of method,
- * CSingleFITCLaplace::get_derivative_wrt_kernel(const TParameter* param),
+ * CSingleFITCInference::get_derivative_wrt_kernel(const TParameter* param),
  * depends on the implementation of virtual kernel method,
  * CKernel::get_parameter_gradient_diagonal(param, i).
  * The default time complexity of the kernel method can be O(n^2)
  *
  */
-class CSingleFITCLaplace: public CSingleSparseInference
+class CSingleFITCInference: public CSingleSparseInference
 {
 public:
 	/** default constructor */
-	CSingleFITCLaplace();
+	CSingleFITCInference();
 
 	/** constructor
 	 *
@@ -80,17 +80,17 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCLaplace(CKernel* kernel, CFeatures* features,
+	CSingleFITCInference(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* inducing_features);
 
-	virtual ~CSingleFITCLaplace();
+	virtual ~CSingleFITCInference();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name SingleFITCLaplace
+	 * @return name SingleFITCInference
 	 */
-	virtual const char* get_name() const { return "SingleFITCLaplace"; }
+	virtual const char* get_name() const { return "SingleFITCInference"; }
 
 protected:
 
@@ -255,4 +255,4 @@ private:
 	void init();
 };
 }
-#endif /* CSINGLEFITCLAPLACE_H */
+#endif /* CSINGLEFITCINFERENCE_H */
