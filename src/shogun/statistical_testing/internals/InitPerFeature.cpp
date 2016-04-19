@@ -40,5 +40,5 @@ InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 
 InitPerFeature::operator const CFeatures*() const
 {
-	return m_fetcher->m_samples.get();
+	return m_fetcher->m_samples;
 }
