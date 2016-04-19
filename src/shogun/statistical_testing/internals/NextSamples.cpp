@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/features/Features.h>
+#include <shogun/statistical_testing/internals/NextSamples.h>
 
 using namespace shogun;
 using namespace internal;
@@ -28,23 +27,32 @@ NextSamples::NextSamples(index_t num_distributions) : m_num_blocks(0)
 	next_samples.resize(num_distributions);
 }
 
-NextSamples::~NextSamples()
+NextSamples& NextSamples::operator=(const NextSamples& other)
 {
+	clear();
+	m_num_blocks=other.m_num_blocks;
+	next_samples=other.next_samples;
+	return *this;
 }
 
-std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i)
+NextSamples::~NextSamples()
 {
-	REQUIRE(i >= 0 && i < next_samples.size(),
+	clear();
+}
+
+std::vector<Block>& NextSamples::operator[](size_t i)
+{
+	REQUIRE(i>=0 && i<next_samples.size(),
 			"index (%d) must be between [0,%d]!\n",
-			i, next_samples.size() - 1);
+			i, next_samples.size()-1);
 	return next_samples[i];
 }
 
-const std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i) const
+const std::vector<Block>& NextSamples::operator[](size_t i) const
 {
-	REQUIRE(i >= 0 && i < next_samples.size(),
+	REQUIRE(i>=0 && i<next_samples.size(),
 			"index (%d) must be between [0,%d]!\n",
-			i, next_samples.size() - 1);
+			i, next_samples.size()-1);
 	return next_samples[i];
 }
 
@@ -55,6 +63,13 @@ const index_t NextSamples::num_blocks() const
 
 const bool NextSamples::empty() const
 {
-	using type = const std::vector<std::shared_ptr<CFeatures>>;
-	return std::any_of(next_samples.cbegin(), next_samples.cend(), [](type& f) { return f.size() == 0; });
+	using type=const std::vector<Block>;
+	return std::any_of(next_samples.cbegin(), next_samples.cend(), [](type& f) { return f.size()==0; });
+}
+
+void NextSamples::clear()
+{
+	using type=std::vector<Block>;
+	std::for_each(next_samples.begin(), next_samples.end(), [](type& f) { f.clear(); });
+	next_samples.clear();
 }

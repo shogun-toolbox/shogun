@@ -19,9 +19,10 @@
 #ifndef NEXT_SAMPLES_H__
 #define NEXT_SAMPLES_H__
 
-#include <vector>
 #include <memory>
+#include <vector>
 #include <shogun/lib/common.h>
+#include <shogun/statistical_testing/internals/Block.h>
 
 namespace shogun
 {
@@ -59,7 +60,16 @@ class NextSamples
 private:
 	NextSamples(index_t num_distributions);
 public:
+	/**
+	 * Assignment operator. Clears the current blocks.
+	 */
+	NextSamples& operator=(const NextSamples& other);
+
+	/**
+	 * Destructor
+	 */
 	~NextSamples();
+
 	/**
 	 * Contains a number of blocks (of samples) fetched in the current burst from a
 	 * specified distribution.
@@ -67,13 +77,13 @@ public:
 	 * @param i determines samples from which distribution
 	 * @return a vector of fetched blocks of features from the specified distribution
 	 */
-	std::vector<std::shared_ptr<CFeatures>>& operator[](index_t i);
+	std::vector<Block>& operator[](size_t i);
 
 	/**
 	 * Const version of the above. This is called when a const instance of NextSamples
 	 * is returned.
 	 */
-	const std::vector<std::shared_ptr<CFeatures>>& operator[](index_t i) const;
+	const std::vector<Block>& operator[](size_t i) const;
 
 	/**
 	 * @return number of blocks fetched from each of the distribution. It is assumed
@@ -89,9 +99,14 @@ public:
 	 * of the distribution
 	 */
 	const bool empty() const;
+
+	/**
+	 * Method that clears the memory occupied by the feature objects inside.
+	 */
+	void clear();
 private:
 	index_t m_num_blocks;
-	std::vector<std::vector<std::shared_ptr<CFeatures>>> next_samples;
+	std::vector<std::vector<Block>> next_samples;
 };
 
 }
