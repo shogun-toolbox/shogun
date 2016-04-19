@@ -31,6 +31,7 @@
 #ifndef MMD_H_
 #define MMD_H_
 
+#include <utility>
 #include <memory>
 #include <functional>
 #include <shogun/statistical_testing/TwoSampleTest.h>
@@ -41,6 +42,13 @@ namespace shogun
 class CKernel;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
+
+namespace internal
+{
+
+class OptMeasure;
+
+}
 
 enum class EStatisticType
 {
@@ -67,23 +75,28 @@ enum class EKernelSelectionMethod
 {
 	MEDIAN_HEURISRIC,
 	MAXIMIZE_MMD,
+	OPTIMIZE_MMD,
 	MAXIMIZE_POWER
 };
 
 class CMMD : public CTwoSampleTest
 {
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
+	friend class internal::OptMeasure;
 public:
 	CMMD();
 	virtual ~CMMD();
 
 	void add_kernel(CKernel *kernel);
-/*
 	void select_kernel(EKernelSelectionMethod kmethod);
-	CKernel* get_kernel() const;
-*/
+
 	virtual float64_t compute_statistic() override;
 	virtual float64_t compute_variance();
+
+	virtual SGVector<float64_t> sample_null() override;
+
+	void use_gpu(bool gpu);
+	void cleanup();
 
 	void set_statistic_type(EStatisticType stype);
 	const EStatisticType get_statistic_type() const;
@@ -97,10 +110,6 @@ public:
 	void set_null_approximation_method(ENullApproximationMethod nmethod);
 	const ENullApproximationMethod get_null_approximation_method() const;
 
-	virtual SGVector<float64_t> sample_null() override;
-
-	void use_gpu(bool gpu);
-
 	virtual const char* get_name() const;
 protected:
 	virtual const operation get_direct_estimation_method() const = 0;
@@ -110,7 +119,7 @@ protected:
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
-
+	virtual std::pair<float64_t, float64_t> compute_statistic_variance();
 };
 
 }

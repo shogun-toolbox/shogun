@@ -28,7 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <utility>
 #include <vector>
 #include <memory>
 #include <type_traits>
@@ -42,8 +41,11 @@
 #include <shogun/statistical_testing/LinearTimeMMD.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
+#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
+#include <shogun/statistical_testing/internals/MaxMeasure.h>
+#include <shogun/statistical_testing/internals/OptMeasure.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
@@ -61,8 +63,8 @@ struct CMMD::Self
 	void create_variance_job();
 	void create_computation_jobs();
 
-	void merge_samples(NextSamples&, std::vector<std::shared_ptr<CFeatures>>&) const;
-	void compute_kernel(ComputationManager&, std::vector<std::shared_ptr<CFeatures>>&, CKernel*) const;
+	void merge_samples(NextSamples&, std::vector<CFeatures*>&) const;
+	void compute_kernel(ComputationManager&, std::vector<CFeatures*>&, CKernel*) const;
 	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
@@ -134,41 +136,32 @@ void CMMD::Self::create_variance_job()
 	};
 }
 
-#define get_block_p(i) next_burst[0][i]
-#define get_block_q(i) next_burst[1][i]
-void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<std::shared_ptr<CFeatures>>& blocks) const
+void CMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFeatures*>& blocks) const
 {
 	blocks.resize(next_burst.num_blocks());
-
 #pragma omp parallel for
-	for (size_t i = 0; i < blocks.size(); ++i)
+	for (size_t i=0; i<blocks.size(); ++i)
 	{
-		auto block_p=get_block_p(i);
-		auto block_q=get_block_q(i);
-
-		auto block_p_and_q=block_p->create_merged_copy(block_q.get());
-		SG_REF(block_p_and_q);
-
-		block_p=nullptr;
-		block_q=nullptr;
-
-		blocks[i]=std::shared_ptr<CFeatures>(block_p_and_q, [](CFeatures* ptr) { SG_UNREF(ptr); });
+		auto block_p=next_burst[0][i].get();
+		auto block_q=next_burst[1][i].get();
+		auto block_p_and_q=FeaturesUtil::create_merged_copy(block_p, block_q);
+		blocks[i]=block_p_and_q;
 	}
+	next_burst.clear();
 }
-#undef get_block_p
-#undef get_block_q
 
-void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_ptr<CFeatures>>& blocks, CKernel* kernel) const
+void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFeatures*>& blocks, CKernel* kernel) const
 {
-	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom for streaming test!\n");
+	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
+	const auto& dm=owner.get_data_manager();
 #pragma omp parallel for
 	for (size_t i=0; i<blocks.size(); ++i)
 	{
 		try
 		{
 			auto kernel_clone=std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
-			kernel_clone->init(blocks[i].get(), blocks[i].get());
+			kernel_clone->init(blocks[i], blocks[i]);
 			cm.data(i)=kernel_clone->get_kernel_matrix<float32_t>();
 			kernel_clone->remove_lhs_and_rhs();
 		}
@@ -177,6 +170,7 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<std::shared_
 			SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
 		}
 	}
+	blocks.resize(0);
 }
 
 void CMMD::Self::compute_jobs(ComputationManager& cm) const
@@ -206,11 +200,10 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	cm.enqueue_job(statistic_job);
 	cm.enqueue_job(variance_job);
 
-	std::vector<std::shared_ptr<CFeatures>> blocks;
+	std::vector<CFeatures*> blocks;
 
 	dm.start();
 	auto next_burst=dm.next();
-
 	while (!next_burst.empty())
 	{
 		merge_samples(next_burst, blocks);
@@ -278,7 +271,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	create_statistic_job();
 	cm.enqueue_job(permutation_job);
 
-	std::vector<std::shared_ptr<CFeatures>> blocks;
+	std::vector<CFeatures*> blocks;
 
 	dm.start();
 	auto next_burst=dm.next();
@@ -328,6 +321,31 @@ void CMMD::add_kernel(CKernel* kernel)
 	self->kernel_selection_mgr.push_back(kernel);
 }
 
+void CMMD::select_kernel(EKernelSelectionMethod kmethod)
+{
+	SG_DEBUG("Entering!\n");
+	SG_DEBUG("Selecting kernels from a total of %d kernels!\n", self->kernel_selection_mgr.num_kernels());
+	switch (kmethod)
+	{
+		case EKernelSelectionMethod::MAXIMIZE_MMD:
+		{
+			MaxMeasure policy(self->kernel_selection_mgr, this);
+			get_kernel_manager().kernel_at(0)=policy.select_kernel();
+			break;
+		}
+		case EKernelSelectionMethod::OPTIMIZE_MMD:
+		{
+			OptMeasure policy(self->kernel_selection_mgr, this);
+			get_kernel_manager().kernel_at(0)=policy.select_kernel();
+			break;
+		}
+		default:
+			SG_ERROR("Unsupported kernel selection method specified!\n");
+			break;
+	}
+	SG_DEBUG("Leaving!\n");
+}
+
 float64_t CMMD::compute_statistic()
 {
 	return self->compute_statistic_variance().first;
@@ -336,6 +354,11 @@ float64_t CMMD::compute_statistic()
 float64_t CMMD::compute_variance()
 {
 	return self->compute_statistic_variance().second;
+}
+
+std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
+{
+	return self->compute_statistic_variance();
 }
 
 SGVector<float64_t> CMMD::sample_null()
@@ -361,6 +384,12 @@ void CMMD::use_gpu(bool gpu)
 bool CMMD::use_gpu() const
 {
 	return self->use_gpu;
+}
+
+void CMMD::cleanup()
+{
+	for (size_t i=0; i<get_kernel_manager().num_kernels(); ++i)
+		get_kernel_manager().restore_kernel_at(i);
 }
 
 void CMMD::set_statistic_type(EStatisticType stype)
