@@ -78,9 +78,7 @@ float64_t CHypothesisTest::compute_p_value(float64_t statistic)
 
 float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 {
-	float64_t result = 0;
 	SGVector<float64_t> values = sample_null();
-
 	std::sort(values.vector, values.vector + values.vlen);
 	return values[index_t(CMath::floor(values.vlen * (1 - alpha)))];
 }
