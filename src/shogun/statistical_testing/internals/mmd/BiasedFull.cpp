@@ -39,7 +39,5 @@ float32_t BiasedFull::operator()(SGMatrix<float32_t> km)
 	auto term_3=map.block(n_x, 0, n_y, n_x).sum();
 
 	auto statistic=term_1/n_x/n_x+term_2/n_y/n_y-2*term_3/n_x/n_y;
-
 	return statistic;
-
 }

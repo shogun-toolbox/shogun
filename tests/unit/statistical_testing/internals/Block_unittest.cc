@@ -38,7 +38,7 @@
 using namespace shogun;
 using namespace internal;
 
-TEST(Block, blocks)
+TEST(Block, create_blocks)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
