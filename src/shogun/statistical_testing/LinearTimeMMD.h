@@ -29,6 +29,7 @@ class CLinearTimeMMD : public CMMD
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 public:
 	CLinearTimeMMD();
+	CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
 	virtual ~CLinearTimeMMD();
 
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);

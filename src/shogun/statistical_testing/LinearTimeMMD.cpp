@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
@@ -30,14 +31,22 @@ CLinearTimeMMD::CLinearTimeMMD() : CMMD()
 {
 }
 
+CLinearTimeMMD::CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD()
+{
+	set_p(samples_from_p);
+	set_q(samples_from_q);
+}
+
 CLinearTimeMMD::~CLinearTimeMMD()
 {
 }
 
 void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	get_data_manager().set_blocksize(get_data_manager().get_min_blocksize());
-	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
+	auto& dm=get_data_manager();
+	dm.set_blocksize(get_data_manager().get_min_blocksize());
+	dm.set_num_blocks_per_burst(num_blocks_per_burst);
+	SG_SDEBUG("Block contains %d and %d samples, from P and Q respectively!\n", dm.blocksize_at(0), dm.blocksize_at(1));
 }
 
 const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_estimation_method() const
