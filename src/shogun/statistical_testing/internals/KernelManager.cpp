@@ -59,9 +59,9 @@ KernelManager::~KernelManager()
 InitPerKernel KernelManager::kernel_at(size_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<m_kernels.size(),
+	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
-			i, m_kernels.size()-1);
+			i, num_kernels()-1);
 	SG_SDEBUG("Leaving!\n");
 	return InitPerKernel(m_kernels[i]);
 }
@@ -69,9 +69,9 @@ InitPerKernel KernelManager::kernel_at(size_t i)
 CKernel* KernelManager::kernel_at(size_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<m_kernels.size(),
+	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
-			i, m_kernels.size()-1);
+			i, num_kernels()-1);
 	if (m_precomputed_kernels[i]==nullptr)
 	{
 		SG_SDEBUG("Leaving!\n");
@@ -87,15 +87,21 @@ void KernelManager::push_back(CKernel* kernel)
 	SG_SDEBUG("Entering!\n");
 	SG_REF(kernel);
 	m_kernels.push_back(std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); }));
+	m_precomputed_kernels.push_back(nullptr);
 	SG_SDEBUG("Leaving!\n");
+}
+
+const size_t KernelManager::num_kernels() const
+{
+	return m_kernels.size();
 }
 
 void KernelManager::precompute_kernel_at(size_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<m_kernels.size(),
+	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
-			i, m_kernels.size()-1);
+			i, num_kernels()-1);
 	auto kernel=m_kernels[i].get();
 	if (kernel->get_kernel_type()!=K_CUSTOM)
 	{
@@ -111,9 +117,9 @@ void KernelManager::precompute_kernel_at(size_t i)
 void KernelManager::restore_kernel_at(size_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<m_kernels.size(),
+	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
-			i, m_kernels.size()-1);
+			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
 	SG_SDEBUG("Leaving!\n");
 }

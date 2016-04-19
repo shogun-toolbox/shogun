@@ -56,6 +56,7 @@ public:
 	CKernel* kernel_at(size_t i) const;
 
 	void push_back(CKernel* kernel);
+	const size_t num_kernels() const;
 
 	void precompute_kernel_at(size_t i);
 	void restore_kernel_at(size_t i);
