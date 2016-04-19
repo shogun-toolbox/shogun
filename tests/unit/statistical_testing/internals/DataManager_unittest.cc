@@ -82,7 +82,6 @@ TEST(DataManager, full_data_one_distribution_streaming_feats)
 
 	auto feats_p=new CDenseFeatures<float64_t>(data_p);
 	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
-	SG_REF(streaming_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -159,8 +158,6 @@ TEST(DataManager, full_data_two_distributions_streaming_feats)
 	auto feats_q=new feat_type(data_q);
 	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
 	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
-	SG_REF(streaming_p);
-	SG_REF(streaming_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -239,7 +236,6 @@ TEST(DataManager, block_data_one_distribution_streaming_feats)
 
 	auto feats_p=new CDenseFeatures<float64_t>(data_p);
 	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
-	SG_REF(streaming_p);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -337,8 +333,6 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_equal_blocksize)
 	auto feats_q=new feat_type(data_q);
 	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
 	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
-	SG_REF(streaming_p);
-	SG_REF(streaming_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;
@@ -451,8 +445,6 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_different_blocksi
 	auto feats_q=new feat_type(data_q);
 	auto streaming_p=new CStreamingDenseFeatures<float64_t>(feats_p);
 	auto streaming_q=new CStreamingDenseFeatures<float64_t>(feats_q);
-	SG_REF(streaming_p);
-	SG_REF(streaming_q);
 
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0)=streaming_p;

@@ -33,6 +33,7 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
+#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/DataFetcherFactory.h>
 
 using namespace shogun;
@@ -128,9 +129,12 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 			"Blocksizes are not set!\n");
 
 	index_t max_num_blocks_per_burst=get_num_samples()/blocksize;
-	REQUIRE(num_blocks_per_burst<=max_num_blocks_per_burst,
-			"There can only be %d blocks per burst given the blocksize (%d)!",
-			max_num_blocks_per_burst, blocksize);
+	if (num_blocks_per_burst>max_num_blocks_per_burst)
+	{
+		SG_SPRINT("There can only be %d blocks per burst given the blocksize (%d)!\n", max_num_blocks_per_burst, blocksize);
+		SG_SPRINT("Setting num blocks per burst to be %d instead!\n", max_num_blocks_per_burst);
+		num_blocks_per_burst=max_num_blocks_per_burst;
+	}
 
 	for (size_t i=0; i<fetchers.size(); ++i)
 		fetchers[i]->fetch_blockwise().with_num_blocks_per_burst(num_blocks_per_burst);
@@ -212,17 +216,23 @@ NextSamples DataManager::next()
 			else
 				ASSERT(next_samples.m_num_blocks==num_blocks_curr_burst);
 
+			// TODO remove
+			SG_SPRINT("blocksize is %d!\n", blocksize);
+			SG_SPRINT("number of blocks to be fetched is %d!\n", num_blocks_curr_burst);
+
 			// next samples are gonna hold one feats obj per block for this burst
 			next_samples[i].resize(num_blocks_curr_burst);
-			SGVector<index_t> inds(blocksize);
-			std::iota(inds.vector, inds.vector + inds.vlen, 0);
 			for (auto j=0; j<num_blocks_curr_burst; ++j)
 			{
-				// subset each block and clone it separately
-				feats->add_subset(inds);
-				auto block=static_cast<CFeatures*>(feats->clone());
+				// create a shallow copy and subset each block separately
+				auto block=FeaturesUtil::create_shallow_copy(feats.get());
+				SGVector<index_t> inds(blocksize);
+				std::iota(inds.vector, inds.vector + inds.vlen, j*blocksize);
+				block->add_subset(inds);
+				SG_REF(block);
 				next_samples[i][j]=std::shared_ptr<CFeatures>(block, [](CFeatures* ptr) { SG_UNREF(ptr); });
-				feats->remove_subset();
+				// TODO remove
+				SG_SPRINT("Number of samples fetched is %d!\n", next_samples[i][j]->get_num_vectors());
 				std::for_each(inds.vector, inds.vector+inds.vlen, [&blocksize](index_t& val) { val+=blocksize; });
 			}
 		}
