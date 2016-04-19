@@ -56,8 +56,10 @@ TEST(DataFetcher, full_data)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr.get());
+	auto tmp=dynamic_cast<feat_type*>(curr);
 	ASSERT_TRUE(tmp!=nullptr);
+
+	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -88,9 +90,11 @@ TEST(DataFetcher, block_data)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		auto tmp=dynamic_cast<feat_type*>(curr.get());
+		auto tmp=dynamic_cast<feat_type*>(curr);
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
+
+		SG_UNREF(curr);
 		curr=fetcher.next();
 	}
 	fetcher.end();
@@ -115,8 +119,10 @@ TEST(DataFetcher, reset_functionality)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr.get());
+	auto tmp=dynamic_cast<feat_type*>(curr);
 	ASSERT_TRUE(tmp!=nullptr);
+
+	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -131,9 +137,10 @@ TEST(DataFetcher, reset_functionality)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		tmp=dynamic_cast<feat_type*>(curr.get());
+		tmp=dynamic_cast<feat_type*>(curr);
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
+		SG_UNREF(curr);
 		curr=fetcher.next();
 	}
 	fetcher.end();

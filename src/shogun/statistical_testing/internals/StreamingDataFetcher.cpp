@@ -17,19 +17,22 @@
  */
 
 #include <algorithm>
+#include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/statistical_testing/internals/StreamingDataFetcher.h>
-
+#include <shogun/statistical_testing/internals/BlockwiseDetails.h>
 
 using namespace shogun;
 using namespace internal;
 
-StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples) : DataFetcher(), parser_running(false)
+StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples)
+: DataFetcher(), parser_running(false)
 {
+	REQUIRE(samples!=nullptr, "Samples cannot be null!\n");
 	SG_REF(samples);
-	m_samples = std::shared_ptr<CStreamingFeatures>(samples, [](CFeatures* ptr) { SG_UNREF(ptr); });
-	m_num_samples = 0;
+	m_samples=std::shared_ptr<CStreamingFeatures>(samples, [](CStreamingFeatures* ptr) { SG_UNREF(ptr); });
+	m_num_samples=0;
 }
 
 StreamingDataFetcher::~StreamingDataFetcher()
@@ -44,47 +47,45 @@ const char* StreamingDataFetcher::get_name() const
 
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
 {
-	m_num_samples = num_samples;
+	m_num_samples=num_samples;
 }
 
 void StreamingDataFetcher::start()
 {
-	ASSERT(m_num_samples);
-	if (m_block_details.m_blocksize == 0)
+	REQUIRE(m_num_samples>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
+	if (m_block_details.m_blocksize==0)
 	{
+		SG_SINFO("Block details not set! Fetching entire data (%d samples)!\n", m_num_samples);
 		m_block_details.with_blocksize(m_num_samples);
 	}
-	m_block_details.m_total_num_blocks = m_num_samples / m_block_details.m_blocksize;
-	m_block_details.m_next_block_index = 0;
+	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
+	m_block_details.m_next_block_index=0;
 	if (!parser_running)
 	{
 		m_samples->start_parser();
-		parser_running = true;
+		parser_running=true;
 		// TODO check if resetting the stream is required
 	}
 }
 
-std::shared_ptr<CFeatures> StreamingDataFetcher::next()
+CFeatures* StreamingDataFetcher::next()
 {
-	auto num_more_samples = m_num_samples - m_block_details.m_next_block_index * m_block_details.m_blocksize;
-	if (num_more_samples > 0)
+	CFeatures* next_samples=nullptr;
+	// figure out how many samples to fetch in this burst
+	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
+	auto num_more_samples=m_num_samples-num_already_fetched;
+	if (num_more_samples>0)
 	{
-		auto num_samples_this_burst = m_block_details.m_max_num_samples_per_burst;
-		if (num_samples_this_burst > num_more_samples)
-		{
-			num_samples_this_burst = num_more_samples;
-		}
-
-		CFeatures* streamed = m_samples->get_streamed_features(num_samples_this_burst);
-		m_block_details.m_next_block_index += m_block_details.m_num_blocks_per_burst;
-		return std::shared_ptr<CFeatures>(streamed, [](CFeatures* ptr) { SG_UNREF(ptr); });
+		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
+		next_samples=m_samples->get_streamed_features(num_samples_this_burst);
+		m_block_details.m_next_block_index+=m_block_details.m_num_blocks_per_burst;
 	}
-	return nullptr;
+	return next_samples;
 }
 
 void StreamingDataFetcher::reset()
 {
-	m_block_details.m_next_block_index = 0;
+	m_block_details.m_next_block_index=0;
 	m_samples->reset_stream();
 }
 
@@ -93,6 +94,6 @@ void StreamingDataFetcher::end()
 	if (parser_running)
 	{
 		m_samples->end_parser();
-		parser_running = false;
+		parser_running=false;
 	}
 }

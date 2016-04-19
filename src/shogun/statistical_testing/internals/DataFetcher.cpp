@@ -19,24 +19,26 @@
 #include <algorithm>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
-
+#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 
 using namespace shogun;
 using namespace internal;
 
-DataFetcher::DataFetcher() : m_num_samples(0)
+DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr)
 {
 }
 
-DataFetcher::DataFetcher(CFeatures* samples)
+DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples)
 {
-	SG_REF(samples);
-	m_samples = std::shared_ptr<CFeatures>(samples, [](CFeatures* ptr) { SG_UNREF(ptr); });
-	m_num_samples = m_samples->get_num_vectors();
+	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
+	SG_REF(m_samples);
+	m_num_samples=m_samples->get_num_vectors();
 }
 
 DataFetcher::~DataFetcher()
 {
+	end();
+	SG_UNREF(m_samples);
 }
 
 const char* DataFetcher::get_name() const
@@ -46,47 +48,43 @@ const char* DataFetcher::get_name() const
 
 void DataFetcher::start()
 {
-	if (m_block_details.m_blocksize == 0)
+	REQUIRE(m_num_samples>0, "Number of samples is 0!\n");
+	if (m_block_details.m_blocksize==0)
 	{
+		SG_SINFO("Block details not set! Fetching entire data (%d samples)!\n", m_num_samples);
 		m_block_details.with_blocksize(m_num_samples);
 	}
-	m_block_details.m_total_num_blocks = m_num_samples / m_block_details.m_blocksize;
+	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
 	reset();
 }
 
-std::shared_ptr<CFeatures> DataFetcher::next()
+CFeatures* DataFetcher::next()
 {
-	auto num_more_samples = m_num_samples - m_block_details.m_next_block_index * m_block_details.m_blocksize;
-	if (num_more_samples > 0)
+	CFeatures* next_samples=nullptr;
+	// figure out how many samples to fetch in this burst
+	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
+	auto num_more_samples=m_num_samples-num_already_fetched;
+	if (num_more_samples>0)
 	{
-		auto num_samples_this_burst = m_block_details.m_max_num_samples_per_burst;
-		if (num_samples_this_burst > num_more_samples)
-		{
-			num_samples_this_burst = num_more_samples;
-		}
-		if (num_samples_this_burst < m_num_samples)
-		{
-			m_samples->remove_subset();
-			SGVector<index_t> inds(num_samples_this_burst);
-			std::iota(inds.vector, inds.vector + inds.vlen, m_block_details.m_next_block_index * m_block_details.m_blocksize);
-			m_samples->add_subset(inds);
-		}
+		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
+		// create a shallow copy and add proper index subset
+		next_samples=FeaturesUtil::create_shallow_copy(m_samples);
+		SGVector<index_t> inds(num_samples_this_burst);
+		std::iota(inds.vector, inds.vector+inds.vlen, num_already_fetched);
+		next_samples->add_subset(inds);
 
-		m_block_details.m_next_block_index += m_block_details.m_num_blocks_per_burst;
-		return m_samples;
+		m_block_details.m_next_block_index+=m_block_details.m_num_blocks_per_burst;
 	}
-	return nullptr;
+	return next_samples;
 }
 
 void DataFetcher::reset()
 {
-	m_block_details.m_next_block_index = 0;
-	m_samples->remove_all_subsets();
+	m_block_details.m_next_block_index=0;
 }
 
 void DataFetcher::end()
 {
-	m_samples->remove_all_subsets();
 }
 
 const index_t DataFetcher::get_num_samples() const

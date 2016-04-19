@@ -28,7 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/BlockwiseDetails.h>
 
@@ -53,7 +52,7 @@ public:
 	DataFetcher(CFeatures* samples);
 	virtual ~DataFetcher();
 	virtual void start();
-	virtual std::shared_ptr<CFeatures> next();
+	virtual CFeatures* next();
 	virtual void reset();
 	virtual void end();
 	const index_t get_num_samples() const;
@@ -64,7 +63,7 @@ protected:
 	BlockwiseDetails m_block_details;
 	index_t m_num_samples;
 private:
-	std::shared_ptr<CFeatures> m_samples;
+	CFeatures* m_samples;
 };
 
 }

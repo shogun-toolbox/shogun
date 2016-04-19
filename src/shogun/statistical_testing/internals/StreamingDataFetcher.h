@@ -19,7 +19,6 @@
 #include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
-#include <shogun/statistical_testing/internals/BlockwiseDetails.h>
 
 #ifndef STREMING_DATA_FETCHER_H__
 #define STREMING_DATA_FETCHER_H__
@@ -41,7 +40,7 @@ public:
 	StreamingDataFetcher(CStreamingFeatures* samples);
 	virtual ~StreamingDataFetcher() override;
 	virtual void start() override;
-	virtual std::shared_ptr<CFeatures> next() override;
+	virtual CFeatures* next() override;
 	virtual void reset() override;
 	virtual void end() override;
 	void set_num_samples(index_t num_samples);
