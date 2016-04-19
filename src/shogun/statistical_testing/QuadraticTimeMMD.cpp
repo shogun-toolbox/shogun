@@ -37,6 +37,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/internals/FeaturesUtil.h>
+#include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
@@ -150,24 +152,41 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	}
 	else
 	{
-		const DataManager& dm=owner.get_data_manager();
-		CFeatures *samples_p=dm.samples_at(0);
-		CFeatures *samples_q=dm.samples_at(1);
-		auto samples_p_and_q=samples_p->create_merged_copy(samples_q);
-		kernel->init(samples_p_and_q, samples_p_and_q);
-		try
+		DataManager& dm=owner.get_data_manager();
+
+		// using data manager next() API in order to make it work with
+		// streaming samples as well.
+		dm.start();
+		auto samples=dm.next();
+		if (!samples.empty())
 		{
-			owner.get_kernel_manager().precompute_kernel_at(0);
+			dm.end();
+
+			// use 0th block from each distribution (since there is only one block
+			// for quadratic time MMD
+			CFeatures *samples_p=samples[0][0].get();
+			CFeatures *samples_q=samples[1][0].get();
+			auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+			samples.clear();
+			kernel->init(samples_p_and_q, samples_p_and_q);
+			try
+			{
+				owner.get_kernel_manager().precompute_kernel_at(0);
+			}
+			catch (ShogunException e)
+			{
+				SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n", e.get_exception_string());
+			}
+			kernel->remove_lhs_and_rhs();
+			auto precomputed_kernel=dynamic_cast<CCustomKernel*>(km.kernel_at(0));
+			ASSERT(precomputed_kernel!=nullptr);
+			kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
 		}
-		catch (ShogunException e)
+		else
 		{
-			SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n",
-				e.get_exception_string());
+			dm.end();
+			SG_SERROR("Could not fetch samples!\n");
 		}
-		kernel->remove_lhs_and_rhs();
-		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(km.kernel_at(0));
-		ASSERT(precomputed_kernel!=nullptr);
-		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
 	}
 
 	SG_SDEBUG("Leaving\n");
