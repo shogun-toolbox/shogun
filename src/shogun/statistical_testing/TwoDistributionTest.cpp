@@ -34,49 +34,49 @@ CTwoDistributionTest::~CTwoDistributionTest()
 
 void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
 {
-	auto& dm = get_data_manager();
-	dm.samples_at(0) = samples_from_p;
+	auto& dm=get_data_manager();
+	dm.samples_at(0)=samples_from_p;
 }
 
 CFeatures* CTwoDistributionTest::get_p() const
 {
-	const auto& dm = get_data_manager();
+	const auto& dm=get_data_manager();
 	return dm.samples_at(0);
 }
 
 void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
 {
-	auto& dm = get_data_manager();
-	dm.samples_at(1) = samples_from_q;
+	auto& dm=get_data_manager();
+	dm.samples_at(1)=samples_from_q;
 }
 
 CFeatures* CTwoDistributionTest::get_q() const
 {
-	const auto& dm = get_data_manager();
+	const auto& dm=get_data_manager();
 	return dm.samples_at(1);
 }
 
 void CTwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
 {
-	auto& dm = get_data_manager();
-	dm.num_samples_at(0) = num_samples_from_p;
+	auto& dm=get_data_manager();
+	dm.num_samples_at(0)=num_samples_from_p;
 }
 
 const index_t CTwoDistributionTest::get_num_samples_p() const
 {
-	const auto& dm = get_data_manager();
+	const auto& dm=get_data_manager();
 	return dm.num_samples_at(0);
 }
 
 void CTwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
 {
-	auto& dm = get_data_manager();
-	dm.num_samples_at(1) = num_samples_from_q;
+	auto& dm=get_data_manager();
+	dm.num_samples_at(1)=num_samples_from_q;
 }
 
 const index_t CTwoDistributionTest::get_num_samples_q() const
 {
-	const auto& dm = get_data_manager();
+	const auto& dm=get_data_manager();
 	return dm.num_samples_at(1);
 }
 
