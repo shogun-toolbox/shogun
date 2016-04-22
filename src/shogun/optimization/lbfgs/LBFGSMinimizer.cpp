@@ -33,8 +33,8 @@
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
-using namespace shogun;
-
+namespace shogun
+{
 LBFGSMinimizer::LBFGSMinimizer()
 	:FirstOrderMinimizer()
 {
@@ -163,4 +163,6 @@ float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
 	return cost;
+}
+
 }
