@@ -372,5 +372,71 @@ protected:
 	/** whether W contains negative elements*/
 	bool m_Wneg;
 };
+
+class SingleFITCLaplaceNewtonOptimizer: public Minimizer
+{
+public:
+	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	virtual ~SingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
+	{
+		if(obj!=m_obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+
+	virtual float64_t minimize();
+
+	/** set maximum for Brent's minimization method
+	 *
+	 * @param max maximum for Brent's minimization method
+	 */
+	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
+
+	/** set tolerance for Brent's minimization method
+	 *
+	 * @param tol tolerance for Brent's minimization method
+	 */
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+
+	/** set max Newton iterations
+	 *
+	 * @param iter max Newton iterations
+	 */
+	virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
+
+	/** set tolerance for newton iterations
+	 *
+	 * @param tol tolerance for newton iterations to set
+	 */
+	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
+private:
+	void init()
+	{
+		m_obj=NULL;
+		m_iter=20;
+		m_tolerance=1e-6;
+		m_opt_tolerance=1e-10;
+		m_opt_max=10;
+	}
+
+	CSingleFITCLaplaceInferenceMethod *m_obj;
+
+	/** amount of tolerance for Newton's iterations */
+	float64_t m_tolerance;
+  
+	/** max Newton's iterations */
+	index_t m_iter;
+
+	/** amount of tolerance for Brent's minimization method */
+	float64_t m_opt_tolerance;
+
+	/** max iterations for Brent's minimization method */
+	float64_t m_opt_max;
+};
+
 }
 #endif /* CSINGLEFITCLAPLACEINFERENCEMETHOD_H */
