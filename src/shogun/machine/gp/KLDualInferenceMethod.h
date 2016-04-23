@@ -39,9 +39,52 @@
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/KLInference.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
 namespace shogun
 {
+
+class KLDualInferenceMethodMinimizer: public LBFGSMinimizer
+{
+public:
+	KLDualInferenceMethodMinimizer(): LBFGSMinimizer() { init(); }
+  
+	KLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): LBFGSMinimizer(fun) { init(); }
+  
+	virtual ~KLDualInferenceMethodMinimizer() {}
+  
+	virtual float64_t minimize();
+  
+protected:
+	/** Init before minimization */
+	virtual void init_minimization()
+	{
+		REQUIRE((m_linesearch == ELBFGSLineSearch::BACKTRACKING_ARMIJO) ||
+			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_WOLFE) ||
+			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE),
+			"The provided line search method is not supported. Please use backtracking line search methods\n");
+		LBFGSMinimizer::init_minimization();
+	}
+
+private:
+	/** A helper function is used in the C-style LBFGS API
+	 * Note that this function should be static and
+	 * private. */
+	static float64_t evaluate(void *obj, const float64_t *variable,
+		float64_t *gradient, const int dim, const float64_t step);
+
+	/** A helper function is passed to the LBFGS API
+	 * to adjust step size based on the feasible set S
+	 * defined in dual variational likelihood.
+	 * Note that this function should be static
+	 * */
+	static float64_t adjust_step(void *obj, const float64_t *parameters,
+		const float64_t *direction, const int dim, const float64_t step);
+
+	/** Init */
+	void init() { }
+};
+ 
 /** @brief The dual KL approximation inference method class.
  *
  * This inference process is described in the reference paper
