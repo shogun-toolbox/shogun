@@ -18,6 +18,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
+        "StaticCall": "$type.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

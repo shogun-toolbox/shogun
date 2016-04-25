@@ -55,6 +55,7 @@ class FastParser:
         "PRINTKEYWORD",
         "COMMA",
         "DOT",
+        "COLON",
         "ENUMKEYWORD",
         "EQUALS",
         "LPAREN",
@@ -80,6 +81,7 @@ class FastParser:
     t_STRINGLITERAL = '"[^"\n]*"'
     t_COMMA = ","
     t_DOT = "\."
+    t_COLON = ":"
     t_EQUALS = "="
     t_LPAREN = "\("
     t_RPAREN = "\)"
@@ -165,6 +167,10 @@ class FastParser:
     def p_methodCall(self, p):
         "methodCall : identifier DOT identifier LPAREN argumentList RPAREN"
         p[0] = {"MethodCall": [p[1], p[3], p[5]]}
+    
+    def p_staticCall(self, p):
+        "staticCall : type COLON identifier LPAREN argumentList RPAREN"
+        p[0] = {"StaticCall": [p[1], p[3], p[5]]}
 
     def p_enum(self, p):
         "enum : ENUMKEYWORD identifier DOT identifier"
@@ -187,6 +193,7 @@ class FastParser:
         """
         expr : enum
              | methodCall
+             | staticCall
              | string
              | bool
              | numeral

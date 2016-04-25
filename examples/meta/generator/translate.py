@@ -292,6 +292,19 @@ class Translator:
 
             return template.substitute(object=object, method=method, arguments=translatedArgsList)
 
+        elif key == "StaticCall":
+            template = Template(self.targetDict["Expr"]["StaticCall"])
+            type_ = self.translateType(expr[key][0])
+            method = expr[key][1]["Identifier"]
+            argsList = None
+            try:
+                argsList = expr[key][2]
+            except IndexError:
+                pass
+            translatedArgsList = self.translateArgumentList(argsList)
+
+            return template.substitute(type=type_, method=method, arguments=translatedArgsList)
+
         elif key == "BoolLiteral":
             return self.targetDict["Expr"]["BoolLiteral"][expr[key]]
 
