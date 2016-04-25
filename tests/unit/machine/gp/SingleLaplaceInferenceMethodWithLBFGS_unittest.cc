@@ -99,7 +99,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -213,7 +213,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -304,7 +304,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_prob
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -382,7 +382,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -479,7 +479,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -568,7 +568,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likel
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -683,7 +683,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -799,7 +799,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -890,7 +890,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logi
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -970,7 +970,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1062,7 +1062,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1171,7 +1171,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1255,7 +1255,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaus
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1330,7 +1330,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 			lik);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1428,7 +1428,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1537,7 +1537,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1621,7 +1621,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_li
 			likelihood);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
@@ -1695,7 +1695,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 			lik);
 	int m = 100;
 	int max_linesearch = 1000;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;

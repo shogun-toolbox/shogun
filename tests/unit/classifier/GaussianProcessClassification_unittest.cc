@@ -579,7 +579,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
@@ -761,7 +761,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vecto
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
@@ -939,7 +939,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	ELBFGSLineSearch linesearch=ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE;
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
 	LBFGSMinimizer* opt=new LBFGSMinimizer();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
