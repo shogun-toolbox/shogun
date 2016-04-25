@@ -628,7 +628,7 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		else
 			dK=m_kernel->get_parameter_gradient(param, i);
 
-		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
+		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 
 		// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
 		result[i]=(eigen_Z.cwiseProduct(eigen_dK)).sum()/2.0-

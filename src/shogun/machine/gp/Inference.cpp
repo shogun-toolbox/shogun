@@ -167,7 +167,7 @@ float64_t CInference::get_marginal_likelihood_estimate(
 		scaled_kernel.matrix[i]*=CMath::exp(m_log_scale*2.0);
 
 	/* add ridge */
-	for (index_t i=0; i<cov.num_rows; ++i)
+	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
 		scaled_kernel(i,i)+=ridge_size;
 
 	CGaussianDistribution* prior=new CGaussianDistribution(
