@@ -130,9 +130,9 @@ enum {
  */
 enum {
     /** The default algorithm (MoreThuente method). */
-    LBFGS_LINESEARCH_DEFAULT = ELBFGSLineSearch::MORETHUENTE,
+    LBFGS_LINESEARCH_DEFAULT = MORETHUENTE,
     /** MoreThuente method proposd by More and Thuente. */
-    LBFGS_LINESEARCH_MORETHUENTE = ELBFGSLineSearch::MORETHUENTE,
+    LBFGS_LINESEARCH_MORETHUENTE = MORETHUENTE,
     /**
      * Backtracking method with the Armijo condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -142,9 +142,9 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_ARMIJO = ELBFGSLineSearch::BACKTRACKING_ARMIJO,
+    LBFGS_LINESEARCH_BACKTRACKING_ARMIJO = BACKTRACKING_ARMIJO,
     /** The backtracking method with the defualt (regular Wolfe) condition. */
-    LBFGS_LINESEARCH_BACKTRACKING = ELBFGSLineSearch::BACKTRACKING_WOLFE,
+    LBFGS_LINESEARCH_BACKTRACKING = BACKTRACKING_WOLFE,
     /**
      * Backtracking method with regular Wolfe condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -155,7 +155,7 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_WOLFE = ELBFGSLineSearch::BACKTRACKING_WOLFE,
+    LBFGS_LINESEARCH_BACKTRACKING_WOLFE = BACKTRACKING_WOLFE,
     /**
      * Backtracking method with strong Wolfe condition.
      *  The backtracking method finds the step length such that it satisfies
@@ -166,7 +166,7 @@ enum {
      *  where x is the current point, d is the current search direction, and
      *  a is the step length.
      */
-    LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE = ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE
+    LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE = BACKTRACKING_STRONG_WOLFE
 };
 
 /**
