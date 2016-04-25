@@ -102,7 +102,7 @@ public:
 	 */
 	virtual void set_lbfgs_parameters(int m = 100,
 		int max_linesearch = 1000,
-		ELBFGSLineSearch linesearch = ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE,
+		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
 		int max_iterations = 1000,
 		float64_t delta = 0.0,
 		int past = 0,

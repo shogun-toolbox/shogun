@@ -59,9 +59,9 @@ protected:
 	/** Init before minimization */
 	virtual void init_minimization()
 	{
-		REQUIRE((m_linesearch == ELBFGSLineSearch::BACKTRACKING_ARMIJO) ||
-			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_WOLFE) ||
-			(m_linesearch == ELBFGSLineSearch::BACKTRACKING_STRONG_WOLFE),
+		REQUIRE((m_linesearch == BACKTRACKING_ARMIJO) ||
+			(m_linesearch == BACKTRACKING_WOLFE) ||
+			(m_linesearch == BACKTRACKING_STRONG_WOLFE),
 			"The provided line search method is not supported. Please use backtracking line search methods\n");
 		LBFGSMinimizer::init_minimization();
 	}
