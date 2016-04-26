@@ -811,7 +811,7 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
 		SG_SERROR("CCombinedKernel::obtain_from_generic(): provided kernel is "
-				"not of type CGaussianKernel!\n");
+				"not of type CCombinedKernel!\n");
 	}
 
 	/* since an additional reference is returned */
