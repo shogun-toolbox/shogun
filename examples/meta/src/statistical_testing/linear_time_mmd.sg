@@ -13,12 +13,20 @@ mmd.set_num_samples_p(100)
 mmd.set_num_samples_q(100)
 #![create_instance]
 
+#![set_burst]
+mmd.set_num_blocks_per_burst(1000)
+#![set_burst]
+
 #![estimate_mmd]
 Real statistic = mmd.compute_statistic()
 #![estimate_mmd]
 
-#![perform_test]
+#![perform_test_threshold]
 Real alpha = 0.05
 Real threshold = mmd.compute_threshold(alpha)
+#![perform_test_threshold]
+
+#![perform_test_p_value]
 Real p_value = mmd.compute_p_value(statistic)
-#![perform_test]
+#![perform_test_p_value]
+
