@@ -1,7 +1,7 @@
 CSVFile f_features_p_train("../../data/two_sample_test_gaussian.dat")
 CSVFile f_features_q_train("../../data/two_sample_test_laplace.dat")
-CSVFile f_features_p_test("../../data/two_sample_test_gaussian.dat")
-CSVFile f_features_q_test("../../data/two_sample_test_laplace.dat")
+CSVFile f_features_p_test("../../data/two_sample_test_gaussian2.dat")
+CSVFile f_features_q_test("../../data/two_sample_test_laplace2.dat")
 
 #![create_features]
 RealFeatures features_p_train(f_features_p_train)
