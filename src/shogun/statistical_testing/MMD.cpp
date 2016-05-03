@@ -330,12 +330,14 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod)
 		{
 			MaxMeasure policy(self->kernel_selection_mgr, this);
 			get_kernel_manager().kernel_at(0)=policy.select_kernel();
+			get_kernel_manager().restore_kernel_at(0);
 			break;
 		}
 		case EKernelSelectionMethod::MAXIMIZE_POWER:
 		{
 			MaxTestPower policy(self->kernel_selection_mgr, this);
 			get_kernel_manager().kernel_at(0)=policy.select_kernel();
+			get_kernel_manager().restore_kernel_at(0);
 			break;
 		}
 		default:
