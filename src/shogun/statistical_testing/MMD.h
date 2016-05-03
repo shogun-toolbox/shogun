@@ -46,7 +46,7 @@ template <typename> class SGMatrix;
 namespace internal
 {
 
-class OptMeasure;
+class MaxTestPower;
 
 }
 
@@ -75,14 +75,13 @@ enum class EKernelSelectionMethod
 {
 	MEDIAN_HEURISRIC,
 	MAXIMIZE_MMD,
-	OPTIMIZE_MMD,
 	MAXIMIZE_POWER
 };
 
 class CMMD : public CTwoSampleTest
 {
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
-	friend class internal::OptMeasure;
+	friend class internal::MaxTestPower;
 public:
 	CMMD();
 	virtual ~CMMD();

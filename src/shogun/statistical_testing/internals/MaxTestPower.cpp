@@ -29,37 +29,44 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef OPT_MEASURE_H__
-#define OPT_MEASURE_H__
+#include <algorithm>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+MaxTestPower::MaxTestPower(KernelManager& km, CMMD* est)
+: KernelSelection<MaxTestPower>(km), estimator(est), lambda(1E-5)
 {
-
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-
-namespace internal
-{
-
-class OptMeasure : public KernelSelection<OptMeasure>
-{
-public:
-	OptMeasure(KernelManager&, CMMD*);
-	OptMeasure(const OptMeasure& other)=delete;
-	OptMeasure& operator=(const OptMeasure& other)=delete;
-	CKernel* select_kernel();
-protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
-	float64_t lambda;
-};
-
 }
 
+SGVector<float64_t> MaxTestPower::compute_measures()
+{
+	SGVector<float64_t> result(kernel_mgr.num_kernels());
+	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	{
+		auto kernel=kernel_mgr.kernel_at(i);
+		estimator->set_kernel(kernel);
+		auto estimates=estimator->compute_statistic_variance();
+		result[i]=estimates.first/CMath::sqrt(estimates.second+lambda);
+		estimator->cleanup();
+	}
+	return result;
 }
 
-#endif // OPT_MEASURE_H__
+CKernel* MaxTestPower::select_kernel()
+{
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+
+	SGVector<float64_t> measures=compute_measures();
+	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
+	auto max_idx=std::distance(measures.vector, max_element);
+
+	return kernel_mgr.kernel_at(max_idx);
+}

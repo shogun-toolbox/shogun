@@ -29,44 +29,37 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <algorithm>
-#include <shogun/lib/SGVector.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/internals/OptMeasure.h>
-#include <shogun/statistical_testing/internals/KernelManager.h>
+#ifndef MAX_TEST_POWER_H__
+#define MAX_TEST_POWER_H__
 
-using namespace shogun;
-using namespace internal;
+#include <shogun/lib/common.h>
+#include <shogun/statistical_testing/internals/KernelSelection.h>
 
-OptMeasure::OptMeasure(KernelManager& km, CMMD* est)
-: KernelSelection<OptMeasure>(km), estimator(est), lambda(1E-5)
+namespace shogun
 {
+
+class CKernel;
+class CMMD;
+template <typename T> class SGVector;
+
+namespace internal
+{
+
+class MaxTestPower : public KernelSelection<MaxTestPower>
+{
+public:
+	MaxTestPower(KernelManager&, CMMD*);
+	MaxTestPower(const MaxTestPower& other)=delete;
+	MaxTestPower& operator=(const MaxTestPower& other)=delete;
+	CKernel* select_kernel();
+protected:
+	SGVector<float64_t> compute_measures();
+	CMMD* estimator;
+	float64_t lambda;
+};
+
 }
 
-SGVector<float64_t> OptMeasure::compute_measures()
-{
-	SGVector<float64_t> result(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		auto kernel=kernel_mgr.kernel_at(i);
-		estimator->set_kernel(kernel);
-		auto estimates=estimator->compute_statistic_variance();
-		result[i]=estimates.first/CMath::sqrt(estimates.second+lambda);
-		estimator->cleanup();
-	}
-	return result;
 }
 
-CKernel* OptMeasure::select_kernel()
-{
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
-
-	SGVector<float64_t> measures=compute_measures();
-	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
-	auto max_idx=std::distance(measures.vector, max_element);
-
-	return kernel_mgr.kernel_at(max_idx);
-}
+#endif // MAX_TEST_POWER_H__

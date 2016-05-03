@@ -72,7 +72,7 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_biased_full)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::OPTIMIZE_MMD);
+	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 
@@ -118,7 +118,7 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_full)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::OPTIMIZE_MMD);
+	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 
@@ -164,7 +164,7 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_incomplete)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::OPTIMIZE_MMD);
+	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 

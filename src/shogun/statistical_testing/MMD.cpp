@@ -45,7 +45,7 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/MaxMeasure.h>
-#include <shogun/statistical_testing/internals/OptMeasure.h>
+#include <shogun/statistical_testing/internals/MaxTestPower.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
@@ -154,7 +154,6 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFeatures*>&
 {
 	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
-	const auto& dm=owner.get_data_manager();
 #pragma omp parallel for
 	for (size_t i=0; i<blocks.size(); ++i)
 	{
@@ -333,9 +332,9 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod)
 			get_kernel_manager().kernel_at(0)=policy.select_kernel();
 			break;
 		}
-		case EKernelSelectionMethod::OPTIMIZE_MMD:
+		case EKernelSelectionMethod::MAXIMIZE_POWER:
 		{
-			OptMeasure policy(self->kernel_selection_mgr, this);
+			MaxTestPower policy(self->kernel_selection_mgr, this);
 			get_kernel_manager().kernel_at(0)=policy.select_kernel();
 			break;
 		}

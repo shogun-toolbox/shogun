@@ -34,7 +34,7 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/KernelSelection.h>
 #include <shogun/statistical_testing/internals/MaxMeasure.h>
-#include <shogun/statistical_testing/internals/OptMeasure.h>
+#include <shogun/statistical_testing/internals/MaxTestPower.h>
 
 namespace shogun
 {
@@ -55,7 +55,7 @@ CKernel* KernelSelection<Derived>::select_kernel()
 }
 
 template class KernelSelection<MaxMeasure>;
-template class KernelSelection<OptMeasure>;
+template class KernelSelection<MaxTestPower>;
 
 }
 
