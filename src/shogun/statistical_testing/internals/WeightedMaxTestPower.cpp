@@ -29,38 +29,48 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_TEST_POWER_H__
-#define MAX_TEST_POWER_H__
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
+#include <shogun/statistical_testing/internals/OptimizationSolver.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : MaxTestPower(km, est)
 {
-
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-
-namespace internal
-{
-
-class MaxTestPower : public KernelSelection
-{
-public:
-	MaxTestPower(KernelManager&, CMMD*);
-	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
-	MaxTestPower& operator=(const MaxTestPower& other)=delete;
-	virtual CKernel* select_kernel() override;
-protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
-	float64_t lambda;
-};
-
 }
 
+WeightedMaxTestPower::~WeightedMaxTestPower()
+{
 }
 
-#endif // MAX_TEST_POWER_H__
+CKernel* WeightedMaxTestPower::select_kernel()
+{
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+
+	auto estimates=estimator->compute_statistic_and_Q();
+	SGVector<float64_t> measures=estimates.first;
+	SGMatrix<float64_t> Q=estimates.second;
+
+	for (index_t i=0; i<Q.num_rows; ++i)
+		Q(i, i)+=lambda;
+
+	OptimizationSolver solver(measures, Q);
+	SGVector<float64_t> weights=solver.solve();
+
+	CCombinedKernel* kernel=new CCombinedKernel();
+	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	{
+		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))
+			SG_SERROR("Error while creating a combined kernel! Please contact Shogun developers!\n");
+	}
+	kernel->set_subkernel_weights(weights);
+	SG_SDEBUG("Created a weighted kernel!\n");
+	return kernel;
+}

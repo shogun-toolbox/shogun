@@ -39,16 +39,24 @@
 using namespace shogun;
 using namespace internal;
 
-MaxMeasure::MaxMeasure(KernelManager& km, CMMD* est)
-: KernelSelection(km), estimator(est)
+MaxMeasure::MaxMeasure(KernelManager& km, CMMD* est) : KernelSelection(km), estimator(est)
+{
+}
+
+MaxMeasure::~MaxMeasure()
 {
 }
 
 SGVector<float64_t> MaxMeasure::compute_measures()
 {
-	SGVector<float64_t> result(kernel_mgr.num_kernels());
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+
+	const size_t num_kernels=kernel_mgr.num_kernels();
+	REQUIRE(num_kernels>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+
+	SGVector<float64_t> result(num_kernels);
 	auto existing_kernel=estimator->get_kernel();
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (size_t i=0; i<num_kernels; ++i)
 	{
 		auto kernel=kernel_mgr.kernel_at(i);
 		estimator->set_kernel(kernel);
@@ -61,14 +69,9 @@ SGVector<float64_t> MaxMeasure::compute_measures()
 
 CKernel* MaxMeasure::select_kernel()
 {
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
-
 	SGVector<float64_t> measures=compute_measures();
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
-
 	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
-
 	return kernel_mgr.kernel_at(max_idx);
 }

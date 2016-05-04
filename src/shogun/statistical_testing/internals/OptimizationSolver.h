@@ -29,38 +29,36 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_TEST_POWER_H__
-#define MAX_TEST_POWER_H__
+#ifndef OPTIMIZATION_SOLVER_H__
+#define OPTIMIZATION_SOLVER_H__
 
+#include <memory>
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
 
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
 template <typename T> class SGVector;
+template <typename T> class SGMatrix;
 
 namespace internal
 {
 
-class MaxTestPower : public KernelSelection
+class OptimizationSolver
 {
 public:
-	MaxTestPower(KernelManager&, CMMD*);
-	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
-	MaxTestPower& operator=(const MaxTestPower& other)=delete;
-	virtual CKernel* select_kernel() override;
-protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
-	float64_t lambda;
+	OptimizationSolver(const SGVector<float64_t>& mmds, const SGMatrix<float64_t>& Q);
+	OptimizationSolver(const OptimizationSolver& other)=delete;
+	OptimizationSolver& operator=(const OptimizationSolver& other)=delete;
+	~OptimizationSolver();
+	SGVector<float64_t> solve() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
 };
 
 }
 
 }
 
-#endif // MAX_TEST_POWER_H__
+#endif // OPTIMIZATION_SOLVER_H__

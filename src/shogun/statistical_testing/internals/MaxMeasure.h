@@ -45,13 +45,14 @@ template <typename T> class SGVector;
 namespace internal
 {
 
-class MaxMeasure : public KernelSelection<MaxMeasure>
+class MaxMeasure : public KernelSelection
 {
 public:
 	MaxMeasure(KernelManager&, CMMD*);
 	MaxMeasure(const MaxMeasure& other)=delete;
+	~MaxMeasure();
 	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	CKernel* select_kernel();
+	virtual CKernel* select_kernel() override;
 protected:
 	SGVector<float64_t> compute_measures();
 	CMMD* estimator;

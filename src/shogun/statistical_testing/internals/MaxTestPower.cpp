@@ -40,13 +40,19 @@
 using namespace shogun;
 using namespace internal;
 
-MaxTestPower::MaxTestPower(KernelManager& km, CMMD* est)
-: KernelSelection<MaxTestPower>(km), estimator(est), lambda(1E-5)
+MaxTestPower::MaxTestPower(KernelManager& km, CMMD* est) : KernelSelection(km), estimator(est), lambda(1E-5)
+{
+}
+
+MaxTestPower::~MaxTestPower()
 {
 }
 
 SGVector<float64_t> MaxTestPower::compute_measures()
 {
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+
 	SGVector<float64_t> result(kernel_mgr.num_kernels());
 	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
@@ -61,12 +67,9 @@ SGVector<float64_t> MaxTestPower::compute_measures()
 
 CKernel* MaxTestPower::select_kernel()
 {
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
-
 	SGVector<float64_t> measures=compute_measures();
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
-
+	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
 	return kernel_mgr.kernel_at(max_idx);
 }

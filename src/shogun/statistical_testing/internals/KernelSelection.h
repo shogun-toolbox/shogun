@@ -44,14 +44,14 @@ namespace internal
 
 class KernelManager;
 
-template <class KernelSelectionPolicy>
 class KernelSelection
 {
 public:
 	explicit KernelSelection(KernelManager&);
 	KernelSelection(const KernelSelection& other)=delete;
+	virtual ~KernelSelection();
 	KernelSelection& operator=(const KernelSelection& other)=delete;
-	CKernel* select_kernel();
+	virtual CKernel* select_kernel()=0;
 protected:
 	const KernelManager& kernel_mgr;
 };

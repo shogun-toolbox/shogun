@@ -46,6 +46,8 @@
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/MaxMeasure.h>
 #include <shogun/statistical_testing/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
+#include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
@@ -388,30 +390,35 @@ void CMMD::add_kernel(CKernel* kernel)
 	self->kernel_selection_mgr.push_back(kernel);
 }
 
-void CMMD::select_kernel(EKernelSelectionMethod kmethod)
+void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel)
 {
 	SG_DEBUG("Entering!\n");
 	SG_DEBUG("Selecting kernels from a total of %d kernels!\n", self->kernel_selection_mgr.num_kernels());
+	std::shared_ptr<KernelSelection> policy=nullptr;
 	switch (kmethod)
 	{
 		case EKernelSelectionMethod::MAXIMIZE_MMD:
-		{
-			MaxMeasure policy(self->kernel_selection_mgr, this);
-			get_kernel_manager().kernel_at(0)=policy.select_kernel();
-			get_kernel_manager().restore_kernel_at(0);
+			if (weighted_kernel)
+				policy=std::shared_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(self->kernel_selection_mgr, this));
+			else
+				policy=std::shared_ptr<MaxMeasure>(new MaxMeasure(self->kernel_selection_mgr, this));
 			break;
-		}
 		case EKernelSelectionMethod::MAXIMIZE_POWER:
-		{
-			MaxTestPower policy(self->kernel_selection_mgr, this);
-			get_kernel_manager().kernel_at(0)=policy.select_kernel();
-			get_kernel_manager().restore_kernel_at(0);
+			if (weighted_kernel)
+				policy=std::shared_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(self->kernel_selection_mgr, this));
+			else
+				policy=std::shared_ptr<MaxTestPower>(new MaxTestPower(self->kernel_selection_mgr, this));
 			break;
-		}
 		default:
 			SG_ERROR("Unsupported kernel selection method specified! "
 					"Presently only accepted values are MAXIMIZE_MMD, MAXIMIZE_POWER!\n");
 			break;
+	}
+	if (policy!=nullptr)
+	{
+		auto& km=get_kernel_manager();
+		km.kernel_at(0)=policy->select_kernel();
+		km.restore_kernel_at(0);
 	}
 	SG_DEBUG("Leaving!\n");
 }
@@ -429,6 +436,11 @@ float64_t CMMD::compute_variance()
 std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 {
 	return self->compute_statistic_variance();
+}
+
+std::pair<SGVector<float64_t>, SGMatrix<float64_t>> CMMD::compute_statistic_and_Q()
+{
+	return self->compute_statistic_and_Q();
 }
 
 SGVector<float64_t> CMMD::sample_null()

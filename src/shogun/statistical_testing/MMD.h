@@ -47,6 +47,7 @@ namespace internal
 {
 
 class MaxTestPower;
+class WeightedMaxTestPower;
 
 }
 
@@ -75,19 +76,22 @@ enum class EKernelSelectionMethod
 {
 	MEDIAN_HEURISRIC,
 	MAXIMIZE_MMD,
-	MAXIMIZE_POWER
+	MAXIMIZE_POWER,
+	MAXIMIZE_XVALIDATION,
+	AUTO
 };
 
 class CMMD : public CTwoSampleTest
 {
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 	friend class internal::MaxTestPower;
+	friend class internal::WeightedMaxTestPower;
 public:
 	CMMD();
 	virtual ~CMMD();
 
 	void add_kernel(CKernel *kernel);
-	void select_kernel(EKernelSelectionMethod kmethod);
+	void select_kernel(EKernelSelectionMethod kmethod=EKernelSelectionMethod::AUTO, bool weighted_kernel=false);
 
 	virtual float64_t compute_statistic() override;
 	virtual float64_t compute_variance();
@@ -119,6 +123,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 	virtual std::pair<float64_t, float64_t> compute_statistic_variance();
+	virtual std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q();
 };
 
 }

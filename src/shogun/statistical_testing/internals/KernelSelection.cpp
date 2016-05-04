@@ -29,34 +29,16 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/KernelSelection.h>
-#include <shogun/statistical_testing/internals/MaxMeasure.h>
-#include <shogun/statistical_testing/internals/MaxTestPower.h>
 
-namespace shogun
-{
+using namespace shogun;
+using namespace internal;
 
-namespace internal
+KernelSelection::KernelSelection(KernelManager& km) : kernel_mgr(km)
 {
-
-template <class Derived>
-KernelSelection<Derived>::KernelSelection(KernelManager& km) : kernel_mgr(km)
-{
-	SG_SDEBUG("Kernel selection instance initialized!\n");
 }
 
-template <class Derived>
-CKernel* KernelSelection<Derived>::select_kernel()
+KernelSelection::~KernelSelection()
 {
-	return static_cast<Derived*>(this)->select_kernel();
-}
-
-template class KernelSelection<MaxMeasure>;
-template class KernelSelection<MaxTestPower>;
-
-}
-
 }

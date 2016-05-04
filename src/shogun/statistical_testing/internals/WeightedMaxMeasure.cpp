@@ -29,38 +29,45 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_TEST_POWER_H__
-#define MAX_TEST_POWER_H__
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
+#include <shogun/statistical_testing/internals/OptimizationSolver.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+WeightedMaxMeasure::WeightedMaxMeasure(KernelManager& km, CMMD* est) : MaxMeasure(km, est)
 {
-
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-
-namespace internal
-{
-
-class MaxTestPower : public KernelSelection
-{
-public:
-	MaxTestPower(KernelManager&, CMMD*);
-	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
-	MaxTestPower& operator=(const MaxTestPower& other)=delete;
-	virtual CKernel* select_kernel() override;
-protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
-	float64_t lambda;
-};
-
 }
 
+WeightedMaxMeasure::~WeightedMaxMeasure()
+{
 }
 
-#endif // MAX_TEST_POWER_H__
+CKernel* WeightedMaxMeasure::select_kernel()
+{
+	const size_t num_kernels=kernel_mgr.num_kernels();
+	SGVector<float64_t> measures=compute_measures();
+	SGMatrix<float64_t> Q(num_kernels, num_kernels);
+	std::fill(Q.data(), Q.data()+Q.size(), 0);
+	for (size_t i=0; i<num_kernels; ++i)
+		Q(i, i)=1;
+
+	OptimizationSolver solver(measures, Q);
+	SGVector<float64_t> weights=solver.solve();
+
+	CCombinedKernel* kernel=new CCombinedKernel();
+	for (size_t i=0; i<num_kernels; ++i)
+	{
+		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))
+			SG_SERROR("Error while creating a combined kernel! Please contact Shogun developers!\n");
+	}
+	kernel->set_subkernel_weights(weights);
+	SG_SDEBUG("Created a weighted kernel!\n");
+	return kernel;
+}

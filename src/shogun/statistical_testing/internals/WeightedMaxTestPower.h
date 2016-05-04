@@ -29,11 +29,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_TEST_POWER_H__
-#define MAX_TEST_POWER_H__
+#ifndef WEIGHTED_MAX_TEST_POWER_H__
+#define WEIGHTED_MAX_TEST_POWER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+#include <shogun/statistical_testing/internals/MaxTestPower.h>
 
 namespace shogun
 {
@@ -45,22 +45,18 @@ template <typename T> class SGVector;
 namespace internal
 {
 
-class MaxTestPower : public KernelSelection
+class WeightedMaxTestPower : public MaxTestPower
 {
 public:
-	MaxTestPower(KernelManager&, CMMD*);
-	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
-	MaxTestPower& operator=(const MaxTestPower& other)=delete;
+	WeightedMaxTestPower(KernelManager&, CMMD*);
+	WeightedMaxTestPower(const WeightedMaxTestPower& other)=delete;
+	~WeightedMaxTestPower();
+	WeightedMaxTestPower& operator=(const WeightedMaxTestPower& other)=delete;
 	virtual CKernel* select_kernel() override;
-protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
-	float64_t lambda;
 };
 
 }
 
 }
 
-#endif // MAX_TEST_POWER_H__
+#endif // WEIGHTED_MAX_TEST_POWER_H__
