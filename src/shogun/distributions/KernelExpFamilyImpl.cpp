@@ -166,6 +166,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 	auto ND = N*D;
 	SGVector<float64_t> h(ND);
 	Map<VectorXd> eigen_h(h.vector, ND);
+	eigen_h = VectorXd::Zero(ND);
 
 #pragma omp for
 	for (auto idx_b=0; idx_b<N; idx_b++)
