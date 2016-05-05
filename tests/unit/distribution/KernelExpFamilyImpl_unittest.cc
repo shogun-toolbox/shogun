@@ -82,8 +82,10 @@ TEST(KernelExpFamilyImpl, kernel_equals_shogun)
 	float64_t lambda = 1;
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	
-	auto k = some<CGaussianKernel>();
-	auto f = some<CDenseFeatures<float64_t>>(X);
+	auto k = new CGaussianKernel();
+	auto f = new CDenseFeatures<float64_t>(X);
+	SG_REF(k);
+	SG_REF(f);
 	k->set_width(sigma);
 	k->init(f,f);
 	
@@ -92,6 +94,8 @@ TEST(KernelExpFamilyImpl, kernel_equals_shogun)
 		for (auto idx_b=0; idx_b<N; idx_b++)
 			EXPECT_NEAR(k->kernel(idx_a, idx_b), est.kernel(idx_a, idx_b), 1e-15);
 	}
+	SG_UNREF(k);
+	SG_UNREF(f);
 }
 TEST(KernelExpFamilyImpl, kernel_dx_dx_dy)
 {
