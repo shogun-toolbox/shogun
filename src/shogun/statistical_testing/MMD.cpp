@@ -172,7 +172,6 @@ void CMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFeatures*>&
 			SG_SERROR("%s, Try using less number of blocks per burst!\n", e.get_exception_string());
 		}
 	}
-	blocks.resize(0);
 }
 
 void CMMD::Self::compute_jobs(ComputationManager& cm) const
@@ -210,6 +209,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
+		blocks.resize(0);
 		compute_jobs(cm);
 
 		auto mmds=cm.result(0);
@@ -282,27 +282,33 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t>> CMMD::Self::compute_statisti
 	std::vector<std::vector<float32_t>> mmds(num_kernels);
 	while (!next_burst.empty())
 	{
+		const size_t num_blocks=next_burst.num_blocks();
+		REQUIRE(num_blocks%2==0,
+				"The number of blocks per burst (%d this burst) has to be even!\n",
+				num_blocks);
 		merge_samples(next_burst, blocks);
-		REQUIRE(blocks.size()%2==0, "The number of blocks per burst (%d this burst) has to be even!\n", blocks.size());
+		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_REF(ptr); });
 		for (size_t k=0; k<num_kernels; ++k)
 		{
 			CKernel* kernel=kernel_selection_mgr.kernel_at(k);
 			compute_kernel(cm, blocks, kernel);
 			compute_jobs(cm);
 			mmds[k]=cm.result(0);
-			for (size_t i=0; i<mmds[k].size(); ++i)
+			for (size_t i=0; i<num_blocks; ++i)
 			{
 				auto delta=mmds[k][i]-statistic[k];
 				statistic[k]+=delta/term_counters_statistic[k]++;
 			}
 		}
+		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_UNREF(ptr); });
+		blocks.resize(0);
 		for (size_t i=0; i<num_kernels; ++i)
 		{
 			for (size_t j=0; j<=i; ++j)
 			{
-				for (size_t k=0; k<blocks.size()-1; k+=2)
+				for (size_t k=0; k<num_blocks-1; k+=2)
 				{
-					auto term=(mmds[i][k]-mmds[i][k+1])*(mmds[i][k]-mmds[i][k+1]);
+					auto term=(mmds[i][k]-mmds[i][k+1])*(mmds[j][k]-mmds[j][k+1]);
 					Q(i, j)+=(term-Q(i, j))/term_counters_Q(i, j)++;
 				}
 				Q(j, i)=Q(i, j);
@@ -349,6 +355,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	{
 		merge_samples(next_burst, blocks);
 		compute_kernel(cm, blocks, kernel);
+		blocks.resize(0);
 
 		for (auto j=0; j<num_null_samples; ++j)
 		{
