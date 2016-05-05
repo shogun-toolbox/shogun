@@ -318,9 +318,6 @@ TEST(KernelExpFamilyImpl, build_system)
 	auto A = result.first;
 	auto b = result.second;
 	
-	A.display_matrix("A");
-	b.display_vector("b");
-	
 	auto ND=N*D;
 	EXPECT_EQ(A.num_rows, ND+1);
 	EXPECT_EQ(A.num_cols, ND+1);
