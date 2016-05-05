@@ -31,7 +31,7 @@
 
 #include <shogun/base/some.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
@@ -42,7 +42,7 @@
 
 using namespace shogun;
 
-TEST(KernelSelectionOptMMD, perform_test_permutation_biased_full)
+TEST(KernelSelectionMaxPower, single_kernel)
 {
 	const index_t m=20;
 	const index_t n=30;
@@ -75,20 +75,9 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_biased_full)
 	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
-
-	// perform test with selected kernel
-	index_t num_null_samples=10;
-	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
-
-	// compute p-value using permutation for null distribution and
-	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
-	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
-//	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
 
-TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_full)
+TEST(KernelSelectionMaxPower, weighted_kernel)
 {
 	const index_t m=20;
 	const index_t n=30;
@@ -105,7 +94,7 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_full)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -118,64 +107,10 @@ TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_full)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
-	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
-
-	// perform test with selected kernel
-	index_t num_null_samples=10;
-	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
-
-	// compute p-value using permutation for null distribution and
-	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
-	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
-//	EXPECT_NEAR(p_value, 0.0, 1E-10);
-}
-
-TEST(KernelSelectionOptMMD, perform_test_permutation_unbiased_incomplete)
-{
-	const index_t m=20;
-	const index_t n=20;
-	const index_t dim=2;
-	const float64_t difference=0.5;
-	const index_t num_kernels=10;
-
-	// use fixed seed
-	sg_rand->set_seed(12345);
-
-	// streaming data generator for mean shift distributions
-	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
-	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
-
-	// create MMD instance, convienience constructor
-	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
-	mmd->set_num_samples_p(m);
-	mmd->set_num_samples_q(n);
-	mmd->set_num_blocks_per_burst(1000);
-
-	for (auto i=0; i<num_kernels; ++i)
-	{
-		// shoguns kernel width is different
-		float64_t sigma=(i+1)*0.5;
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-
-	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
-	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
-
-	// perform test with selected kernel
-	index_t num_null_samples=10;
-	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
-
-	// compute p-value using permutation for null distribution and
-	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
-	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
-//	EXPECT_NEAR(p_value, 0.0, 1E-10);
+	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER, true);
+	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
+	ASSERT_TRUE(weighted_kernel!=nullptr);
+	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
+	SGVector<float64_t> weights=weighted_kernel->get_subkernel_weights();
+	weights.display_vector("weights"); // TODO remove
 }
