@@ -167,16 +167,12 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 	SGVector<float64_t> h(ND);
 	Map<VectorXd> eigen_h(h.vector, ND);
 
-	// convenience to access column vectors
-	SGMatrix<float64_t> h_mat(h.vector, D, N, false);
-
 #pragma omp for
 	for (auto idx_b=0; idx_b<N; idx_b++)
 		for (auto idx_a=0; idx_a<N; idx_a++)
 		{
-			Map<VectorXd> result_col(h_mat.get_column_vector(idx_b), D);
 			SGMatrix<float64_t> temp = kernel_dx_dx_dy(idx_a, idx_b);
-			result_col += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
+			eigen_h.segment(idx_b*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
 
 	eigen_h /= N;
@@ -234,4 +230,22 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_s
 	eigen_b.segment(1, ND) = -eigen_h;
 
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::fit()
+{
+	auto D = get_dimension();
+	auto N = get_num_data();
+	auto ND = N*D;
+
+	auto A_b = build_system();
+	auto eigen_A = Map<MatrixXd>(A_b.first.matrix, ND+1, ND+1);
+	auto eigen_b = Map<VectorXd>(A_b.second.vector, ND+1);
+
+	SGVector<float64_t> x(ND+1);
+	auto eigen_x = Map<VectorXd>(x.vector, ND+1);
+
+	eigen_x = eigen_A.ldlt().solve(eigen_b);
+
+	return x;
 }

@@ -295,6 +295,8 @@ TEST(KernelExpFamilyImpl, compute_xi_norm_2)
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	
 	auto result = est.compute_xi_norm_2();
+	
+	// from kernel_exp_family Python implementation
 	EXPECT_NEAR(result, 2.5633762219921161, 1e-15);
 }
 
@@ -323,6 +325,7 @@ TEST(KernelExpFamilyImpl, build_system)
 	EXPECT_EQ(A.num_cols, ND+1);
 	EXPECT_EQ(b.vlen, ND+1);
 	
+	// from kernel_exp_family Python implementation
 	float64_t reference_A[] = {
 2.56539000231 ,0.0118777487667 ,0.0178237575117 ,0.0273952084559 ,0.0608313131137 ,
 -0.0387380656692 ,-0.0773521682976 ,0.0118777487667 ,1.33336723827 ,4.97272472278e-05 ,
@@ -345,5 +348,35 @@ TEST(KernelExpFamilyImpl, build_system)
 	
 	for (auto i=0; i<ND+1; i++)
 		EXPECT_NEAR(b[i], reference_b[i], 1e-8);
+	
+}
+
+TEST(KernelExpFamilyImpl, fit)
+{
+	index_t N=3;
+	index_t D=2;
+	auto ND=N*D;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	auto x = est.fit();
+	EXPECT_EQ(x.vlen, ND+1);
+	
+	// from kernel_exp_family Python implementation
+	float64_t reference_x[] = {-0.99999999999999989, 0.00228091,  0.00342023,
+         0.00406425,  0.0092514 ,
+        -0.00646103, -0.01294499};
+
+	for (auto i=0; i<ND+1; i++)
+		EXPECT_NEAR(x[i], reference_x[i], 1e-5);
 	
 }

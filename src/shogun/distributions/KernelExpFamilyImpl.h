@@ -56,6 +56,7 @@ public :
 	SGVector<float64_t> compute_h();
 	float64_t compute_xi_norm_2();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
+	SGVector<float64_t> fit();
 
 
 protected:
