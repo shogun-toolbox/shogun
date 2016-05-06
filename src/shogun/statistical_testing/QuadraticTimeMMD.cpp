@@ -325,7 +325,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		{
 			/* fit gamma and return inverse cdf at alpha */
 			SGVector<float64_t> params=gamma_fit_null();
-			result=CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
+			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
 			break;
 		}
 		default:
