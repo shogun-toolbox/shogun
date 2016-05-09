@@ -43,7 +43,7 @@
 using namespace shogun;
 using namespace Eigen;
 
-TEST(QuadraticTimeMMD, biased)
+TEST(QuadraticTimeMMD, biased_same_num_samples)
 {
 	index_t m=8;
 	index_t d=3;
@@ -86,7 +86,7 @@ TEST(QuadraticTimeMMD, biased)
 	EXPECT_NEAR(statistic, 0.17882546486779649, 1E-5);
 }
 
-TEST(QuadraticTimeMMD, unbiased)
+TEST(QuadraticTimeMMD, unbiased_same_num_samples)
 {
 	index_t m=8;
 	index_t d=3;
@@ -129,7 +129,7 @@ TEST(QuadraticTimeMMD, unbiased)
 	EXPECT_NEAR(statistic, 0.13440094336133723, 1E-5);
 }
 
-TEST(QuadraticTimeMMD, incomplete)
+TEST(QuadraticTimeMMD, incomplete_same_num_samples)
 {
 	index_t m=8;
 	index_t d=3;

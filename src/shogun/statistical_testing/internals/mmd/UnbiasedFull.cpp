@@ -49,5 +49,4 @@ float32_t UnbiasedFull::operator()(SGMatrix<float32_t> km)
 	auto statistic=term_1/n_x/(n_x-1)+term_2/n_y/(n_y-1)-2*term_3/n_x/n_y;
 
 	return statistic;
-
 }

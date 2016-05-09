@@ -44,7 +44,21 @@ CLinearTimeMMD::~CLinearTimeMMD()
 void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	auto& dm=get_data_manager();
-	dm.set_blocksize(get_data_manager().get_min_blocksize());
+	auto min_blocksize=dm.get_min_blocksize();
+	if (min_blocksize==2)
+	{
+		// only possible when number of samples from both the distributions are the same
+		auto N=dm.num_samples_at(0);
+		for (auto i=2; i<N; ++i)
+		{
+			if (N%i==0)
+			{
+				min_blocksize=i*2;
+				break;
+			}
+		}
+	}
+	dm.set_blocksize(min_blocksize);
 	dm.set_num_blocks_per_burst(num_blocks_per_burst);
 	SG_SDEBUG("Block contains %d and %d samples, from P and Q respectively!\n", dm.blocksize_at(0), dm.blocksize_at(1));
 }
