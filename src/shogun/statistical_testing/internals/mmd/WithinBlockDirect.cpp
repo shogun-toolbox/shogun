@@ -26,7 +26,7 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-float32_t WithinBlockDirect::operator()(SGMatrix<float32_t> km)
+float32_t WithinBlockDirect::operator()(const SGMatrix<float32_t>& km)
 {
 	Eigen::Map<Eigen::MatrixXf> map(km.matrix, km.num_rows, km.num_cols);
 	index_t B=km.num_rows;

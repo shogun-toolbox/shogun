@@ -29,7 +29,7 @@ BiasedFull::BiasedFull(index_t n) : n_x(n)
 {
 }
 
-float32_t BiasedFull::operator()(SGMatrix<float32_t> km)
+float32_t BiasedFull::operator()(const SGMatrix<float32_t>& km)
 {
 	Eigen::Map<const Eigen::MatrixXf> map(km.matrix, km.num_rows, km.num_cols);
 	index_t n_y=km.num_rows-n_x;

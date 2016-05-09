@@ -82,9 +82,9 @@ struct CMMD::Self
 	EVarianceEstimationMethod variance_estimation_method;
 	ENullApproximationMethod null_approximation_method;
 
-	std::function<float32_t(SGMatrix<float32_t>)> statistic_job;
-	std::function<float32_t(SGMatrix<float32_t>)> permutation_job;
-	std::function<float32_t(SGMatrix<float32_t>)> variance_job;
+	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
+	std::function<float32_t(const SGMatrix<float32_t>&)> permutation_job;
+	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
 
 	KernelManager kernel_selection_mgr;
 };

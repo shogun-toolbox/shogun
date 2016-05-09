@@ -29,7 +29,7 @@ UnbiasedFull::UnbiasedFull(index_t n) : n_x(n)
 {
 }
 
-float32_t UnbiasedFull::operator()(SGMatrix<float32_t> km)
+float32_t UnbiasedFull::operator()(const SGMatrix<float32_t>& km)
 {
 	using MatrixXt=const Eigen::MatrixXf;
 	using Block=const Eigen::Block<Eigen::Map<MatrixXt>>;

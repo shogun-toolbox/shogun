@@ -73,7 +73,7 @@ void WithinBlockPermutationBatch::add_term(terms_t& t, float32_t val, index_t i,
 	}
 }
 
-SGVector<float32_t> WithinBlockPermutationBatch::operator()(SGMatrix<float32_t> km)
+SGVector<float32_t> WithinBlockPermutationBatch::operator()(const SGMatrix<float32_t>& km)
 {
 	SG_SDEBUG("Entering!\n");
 

@@ -69,8 +69,8 @@ struct CQuadraticTimeMMD::Self
 	CQuadraticTimeMMD& owner;
 	index_t num_eigenvalues;
 
-	std::function<float32_t(SGMatrix<float32_t>)> statistic_job;
-	std::function<float32_t(SGMatrix<float32_t>)> variance_job;
+	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
+	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
 };
 
 CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),

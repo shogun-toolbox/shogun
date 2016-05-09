@@ -63,7 +63,7 @@ void WithinBlockPermutation::add_term(float32_t val, index_t i, index_t j)
 	}
 }
 
-float32_t WithinBlockPermutation::operator()(SGMatrix<float32_t> km)
+float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
 {
 	SG_SDEBUG("Entering!\n");
 

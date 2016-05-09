@@ -40,8 +40,8 @@ class WithinBlockPermutation
 	using return_type=float32_t;
 public:
 	WithinBlockPermutation(index_t, index_t, EStatisticType);
-	return_type operator()(SGMatrix<return_type> kernel_matrix);
-//	return_type operator()(CGPUMatrix<return_type> kernel_matrix);
+	return_type operator()(const SGMatrix<return_type>& kernel_matrix);
+//	return_type operator()(const CGPUMatrix<return_type>& kernel_matrix);
 private:
 	void add_term(float32_t, index_t, index_t);
 

@@ -36,8 +36,8 @@ namespace mmd
 struct FullDirect
 {
 	using return_type=float32_t;
-	return_type operator()(SGMatrix<return_type> kernel_matrix);
-//	return_type operator()(CGPUMatrix<return_type> kernel_matrix);
+	return_type operator()(const SGMatrix<return_type>& kernel_matrix);
+//	return_type operator()(const CGPUMatrix<return_type>& kernel_matrix);
 };
 
 }
