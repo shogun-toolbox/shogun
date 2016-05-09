@@ -47,17 +47,26 @@ class KernelExpFamilyImpl
 public :
 	KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda);
 
-	float64_t kernel(int32_t idx_a, int32_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx_dy(int32_t idx_a, int32_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx_dy_dy(int32_t idx_a, int32_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx(int32_t idx_a, int32_t idx_b);
+	float64_t kernel(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_dx(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_dx_dx_all();
+	float64_t kernel_dx_dx_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j);
 
+	// full estimator
 	SGVector<float64_t> compute_h();
 	float64_t compute_xi_norm_2();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
 	SGVector<float64_t> fit();
 
+	// nystrom approximation
+	std::pair<index_t, index_t> idx_to_ai(index_t idx);
+	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx);
+	SGVector<float64_t> compute_first_row_no_storing();
+	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_nystrom(SGVector<index_t> inds);
+	SGVector<float64_t> fit_nystrom(SGVector<index_t> inds);
+	SGMatrix<float64_t> pinv(SGMatrix<float64_t> A);
 
 protected:
 	index_t get_dimension();
