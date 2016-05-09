@@ -83,7 +83,7 @@ TEST(KernelSelectionMaxPower, weighted_kernel)
 	const index_t n=30;
 	const index_t dim=2;
 	const float64_t difference=0.5;
-	const index_t num_kernels=10;
+	const index_t num_kernels=4;
 
 	// use fixed seed
 	sg_rand->set_seed(12345);
