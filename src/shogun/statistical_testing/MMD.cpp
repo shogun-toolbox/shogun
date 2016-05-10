@@ -53,6 +53,7 @@
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace internal;
@@ -385,7 +386,11 @@ SGVector<float64_t> CMMD::Self::sample_null()
 
 CMMD::CMMD() : CTwoSampleTest()
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	Eigen::initParallel();
+#endif
 	self=std::unique_ptr<Self>(new Self(*this));
+	Eigen::initParallel();
 }
 
 CMMD::~CMMD()

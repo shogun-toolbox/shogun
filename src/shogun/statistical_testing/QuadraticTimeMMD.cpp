@@ -232,13 +232,11 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 	auto Ny=dm.num_samples_at(1);
 
 	WithinBlockPermutationBatch compute(Nx, Ny, owner.get_num_null_samples(), owner.get_statistic_type());
-	SG_SDEBUG("Leaving\n");
 	SGVector<float32_t> result=compute(kernel_matrix);
 	SGVector<float64_t> null_samples(result.vlen);
 	for (auto i=0; i<result.vlen; ++i)
-	{
 		null_samples[i]=owner.normalize_statistic(result[i]);
-	}
+	SG_SDEBUG("Leaving\n");
 	return null_samples;
 }
 

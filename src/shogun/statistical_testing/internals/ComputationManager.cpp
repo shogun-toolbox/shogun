@@ -95,7 +95,9 @@ void ComputationManager::compute_task_parallel_jobs()
 	}
 	else
 	{
-#pragma omp parallel for
+		// TODO figure out other ways to deal with the parallelization in presence of
+		// eigen3. presently due to that, using OpenMP here messes things up!
+//#pragma omp parallel for
 		for (size_t j=0; j<job_array.size(); ++j)
 		{
 			const auto& compute_job=job_array[j];
