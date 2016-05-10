@@ -420,6 +420,9 @@ SGMatrix<float64_t> KernelExpFamilyImpl::pinv(SGMatrix<float64_t> A)
 
 	JacobiSVD<MatrixXd> svd(eigen_A, ComputeThinU | ComputeThinV);
 	auto singular_values = svd.singularValues();
+	auto V=svd.matrixV();
+	auto U=svd.matrixU();
+
 
 	// tol = eps⋅max(m,n) * max(singularvalues)
 	// this is done in numpy/Octave & co
