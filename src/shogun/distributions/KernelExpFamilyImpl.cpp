@@ -35,9 +35,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
-#include <iostream>
-using namespace std;
-
 using namespace shogun;
 using namespace Eigen;
 
@@ -423,12 +420,6 @@ SGMatrix<float64_t> KernelExpFamilyImpl::pinv(SGMatrix<float64_t> A)
 
 	JacobiSVD<MatrixXd> svd(eigen_A, ComputeThinU | ComputeThinV);
 	auto singular_values = svd.singularValues();
-	auto V=svd.matrixV();
-	auto U=svd.matrixU();
-	cout << "V:" << endl << V << endl;
-	cout << "U:" << endl << U << endl;
-	cout << "singular_values:" << endl << singular_values << endl;
-
 
 	// tol = eps⋅max(m,n) * max(singularvalues)
 	// this is done in numpy/Octave & co
