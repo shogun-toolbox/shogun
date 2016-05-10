@@ -25,14 +25,14 @@ mmd.add_kernel(kernel3)
 
 #![select_kernel_single]
 mmd.select_kernel(enum EKernelSelectionMethod.MAXIMIZE_MMD)
-#GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
-#Real width = learnt_kernel_single.get_width()
+GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
+Real width = learnt_kernel_single.get_width()
 #![select_kernel_single]
 
 #![select_kernel_combined]
 mmd.select_kernel(enum EKernelSelectionMethod.MAXIMIZE_MMD, true)
-#CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
-#RealVector weights = learnt_kernel_combined.get_subkernel_weights()
+CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
+RealVector weights = learnt_kernel_combined.get_subkernel_weights()
 #![select_kernel_combined]
 
 #![perform_test]
