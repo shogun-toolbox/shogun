@@ -670,6 +670,32 @@ TEST(KernelExpFamilyImpl, fit_nystrom_all_inds_equals_exact)
 		EXPECT_NEAR(result[i], result_nystrom[i], 1e-12);
 }
 
+TEST(KernelExpFamilyImpl, fit_nystrom_half_inds_shape)
+{
+	index_t N=10;
+	index_t D=5;
+	auto ND=N*D;
+	index_t m=ND/2;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	SGVector<index_t> permutation(N*D);
+	permutation.range_fill();
+	CMath::permute(permutation);
+	SGVector<index_t> inds(m);
+	for (auto i=0; i<inds.vlen; i++)
+		inds[i]=permutation[i];
+	
+	auto result_nystrom = est.fit_nystrom(inds);
+	
+	ASSERT_EQ(result_nystrom.vlen, m+1);
+}
+
 TEST(KernelExpFamilyImpl, pinv_non_square1)
 {
 	index_t N=3;
@@ -782,4 +808,31 @@ TEST(KernelExpFamilyImpl, log_pdf_nystrom_all_inds_equals_exact)
 	auto log_pdf_nystrom = est.log_pdf_nystrom(x, alpha_beta_nystrom, inds);
 	
 	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-8);
+}
+
+TEST(KernelExpFamilyImpl, log_pdf_nystrom_half_inds_execute)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	SGVector<float64_t> x(D);
+	x[0] = 0;
+	x[1] = 1;
+
+	SGVector<index_t> permutation(N*D);
+	permutation.range_fill();
+	CMath::permute(permutation);
+	SGVector<index_t> inds(N*D/2);
+	for (auto i=0; i<inds.vlen; i++)
+		inds[i]=permutation[i];
+		
+	auto alpha_beta_nystrom = est.fit_nystrom(inds);
+	est.log_pdf_nystrom(x, alpha_beta_nystrom, inds);
 }
