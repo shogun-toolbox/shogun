@@ -505,8 +505,8 @@ TEST(KernelExpFamilyImpl, idx_to_ai)
 
 TEST(KernelExpFamilyImpl, compute_lower_right_submatrix_element)
 {
-	index_t N=10;
-	index_t D=5;
+	index_t N=5;
+	index_t D=3;
 	auto ND=N*D;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
@@ -553,8 +553,8 @@ TEST(KernelExpFamilyImpl, compute_first_row_no_storing)
 
 TEST(KernelExpFamilyImpl, build_system_nystrom_all_inds_equals_exact)
 {
-	index_t N=10;
-	index_t D=5;
+	index_t N=5;
+	index_t D=3;
 	auto ND=N*D;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
