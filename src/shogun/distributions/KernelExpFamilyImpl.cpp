@@ -507,8 +507,51 @@ float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x, const SGVec
 	return alpha_beta[0]*xi + beta_sum;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::grad(SGVector<float64_t> x)
+float64_t KernelExpFamilyImpl::kernel_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i)
 {
-	return SGVector<float64_t>();
+	auto D = get_dimension();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto diff = eigen_b-eigen_a;
+	auto k=CMath::exp(-diff.squaredNorm() / m_sigma);
+
+	return 2*k*diff[i]/m_sigma;
 }
 
+float64_t KernelExpFamilyImpl::kernel_dx_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i)
+{
+	auto D = get_dimension();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	auto sq_diff = (eigen_a-eigen_b).array().pow(2);
+
+	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
+
+	return k*(sq_diff[i]*pow(2.0/m_sigma, 2) -2.0/m_sigma);
+}
+
+float64_t KernelExpFamilyImpl::log_pdf_nystrom(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta, const SGVector<index_t>& inds)
+{
+	auto N = get_num_data();
+	auto m = inds.vlen;
+
+	float64_t xi = 0;
+	float64_t beta_sum = 0;
+
+	for (auto ind_idx=0; ind_idx<m; ind_idx++)
+	{
+		auto ai = idx_to_ai(ind_idx);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		auto grad_x_xa_i = kernel_dx_i(x, a, i);
+		auto xi_grad_i = kernel_dx_dx_i(x, a, i);
+
+		xi += xi_grad_i / N;
+		beta_sum += grad_x_xa_i * alpha_beta[1+ind_idx];
+	}
+
+	return alpha_beta[0]*xi + beta_sum;
+}

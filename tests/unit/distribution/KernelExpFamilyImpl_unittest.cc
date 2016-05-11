@@ -131,6 +131,35 @@ TEST(KernelExpFamilyImpl, kernel_dx)
 		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
 }
 
+TEST(KernelExpFamilyImpl, kernel_dx_i)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	index_t idx_a = 0;
+	SGVector<float64_t> b(D);
+	b[0]=-1;
+	b[1]=3;
+	auto result = est.kernel_dx(b, idx_a);
+	
+	// compare against full version
+	for (auto i=0; i<D; i++)
+	{
+		auto entry = est.kernel_dx_i(b, idx_a, i);
+		EXPECT_NEAR(result.vector[i], entry, 1e-15);
+	}
+}
+
 TEST(KernelExpFamilyImpl, kernel_dx_dx_dy)
 {
 	index_t N=3;
@@ -281,6 +310,35 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx)
 	ASSERT_EQ(result.vlen, D);
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
+}
+
+TEST(KernelExpFamilyImpl, kernel_dx_dx_i)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	index_t idx_a = 0;
+	SGVector<float64_t> b(D);
+	b[0]=-1;
+	b[1]=3;
+	auto result = est.kernel_dx_dx(b, idx_a);
+	
+	// compare against full version
+	for (auto i=0; i<D; i++)
+	{
+		auto entry = est.kernel_dx_dx_i(b, idx_a, i);
+		EXPECT_NEAR(result.vector[i], entry, 1e-15);
+	}
 }
 
 TEST(KernelExpFamilyImpl, kernel_hessian_i_j)
@@ -694,4 +752,34 @@ TEST(KernelExpFamilyImpl, log_pdf)
 
 	// from kernel_exp_family Python implementation
 	EXPECT_NEAR(log_pdf, 0.6612075586873365, 1e-15);
+}
+
+TEST(KernelExpFamilyImpl, log_pdf_nystrom_all_inds_equals_exact)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	auto alpha_beta = est.fit();
+	SGVector<float64_t> x(D);
+	x[0] = 0;
+	x[1] = 1;
+	auto log_pdf = est.log_pdf(x, alpha_beta);
+
+	SGVector<index_t> inds(N*D);
+	inds.range_fill();
+	auto alpha_beta_nystrom = est.fit_nystrom(inds);
+	auto log_pdf_nystrom = est.log_pdf_nystrom(x, alpha_beta_nystrom, inds);
+	
+	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-8);
 }

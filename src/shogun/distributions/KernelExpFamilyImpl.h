@@ -57,13 +57,17 @@ public :
 
 	// for new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
+	float64_t kernel_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
 	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
+	float64_t kernel_dx_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+
 
 	// full estimator
 	SGVector<float64_t> compute_h();
 	float64_t compute_xi_norm_2();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
 	SGVector<float64_t> fit();
+	float64_t log_pdf(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta);
 
 	// nystrom approximation
 	std::pair<index_t, index_t> idx_to_ai(index_t idx);
@@ -72,10 +76,8 @@ public :
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_nystrom(SGVector<index_t> inds);
 	SGVector<float64_t> fit_nystrom(SGVector<index_t> inds);
 	SGMatrix<float64_t> pinv(SGMatrix<float64_t> A);
+	float64_t  log_pdf_nystrom(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta, const SGVector<index_t>& inds);
 
-	// model
-	float64_t log_pdf(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta);
-	SGVector<float64_t> grad(SGVector<float64_t> x);
 
 protected:
 	index_t get_dimension();
