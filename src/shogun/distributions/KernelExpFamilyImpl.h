@@ -39,6 +39,31 @@
 #include <utility>
 
 
+/* TODO
+ *
+ * - Make all methods static functions using raw pointers, N, and D in the arguments
+ *   which allows to extract the code from shogun and use it in isolation.
+ *   The kernel can be optional later on. For now we can just fix it (too many
+ *   derivatives to be implemented for now.). We can make it a simple class where
+ *   people who want other kernels can overload methods in.
+ *   NOTE: The functions should should take a reference to the return type as
+ *         parameter, which allows for pre-allocation of that memory.
+ *         Should investigate whether that is needed before doing it. There might
+ *         be a few cases where we can avoid using double memory usage peaks for the
+ *         big matrices.
+ * - In the OOP code, the fit() method should store the alpha, beta inside rather
+ *   than returning it.
+ * - Make Nystrom a sub-class of the original estimator.
+ * - There are various TODOs in the code that address the question whether
+ *   vectorization makes sense. Check these.
+ * - The Gaussian kernel implemented should get doxygen math of what it does,
+ *   in particular in the derivatives.
+ * - Benchmark and profile the code and investigate in particular whether it has
+ *   a lot of cache misses and how we can avoid that. Investigate how it scales
+ *   with multiple cores. Investigate how much memory it uses for larger datasets.
+ *
+ */
+
 namespace shogun
 {
 
