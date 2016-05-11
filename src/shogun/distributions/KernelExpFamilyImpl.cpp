@@ -493,8 +493,8 @@ float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x, const SGVec
 	Map<VectorXd> eigen_alpha_beta(alpha_beta.vector, N*D+1);
 	for (auto idx_a=0; idx_a<N; idx_a++)
 	{
-		SGMatrix<float64_t> k=kernel_dx_dx(x, idx_a);
-		Map<MatrixXd> eigen_k(k.matrix, D, D);
+		SGVector<float64_t> k=kernel_dx_dx(x, idx_a);
+		Map<VectorXd> eigen_k(k.vector, D);
 		xi += eigen_k.sum() / N;
 
 		auto grad_x_xa = kernel_dx(x, idx_a);
