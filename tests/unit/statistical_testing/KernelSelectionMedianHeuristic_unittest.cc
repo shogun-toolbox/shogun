@@ -1,7 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 - 2013 Heiko Strathmann
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (W) 2012-2013 Heiko Strathmann
+ * Written (w) 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,48 +29,45 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/base/some.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <gtest/gtest.h>
 
-#ifndef QUADRATIC_TIME_MMD_H_
-#define QUADRATIC_TIME_MMD_H_
+using namespace shogun;
 
-#include <memory>
-#include <shogun/statistical_testing/MMD.h>
-
-namespace shogun
+TEST(KernelSelectionMedianHeuristic, quadratic_time_mmd)
 {
+	const index_t m=20;
+	const index_t n=30;
+	const index_t dim=2;
+	const float64_t difference=0.5;
+	const index_t num_kernels=10;
 
-template <typename> class SGVector;
+	// use fixed seed
+	sg_rand->set_seed(12345);
 
-class CQuadraticTimeMMD : public CMMD
-{
-	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
-public:
-	CQuadraticTimeMMD();
-	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
+	// streaming data generator for mean shift distributions
+	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
+	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	virtual ~CQuadraticTimeMMD();
+	// create MMD instance, convienience constructor
+	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_num_samples_p(m);
+	mmd->set_num_samples_q(n);
 
-	virtual float64_t compute_statistic() override;
-	virtual float64_t compute_variance() override;
+	for (auto i=0; i<num_kernels; ++i)
+	{
+		// shoguns kernel width is different
+		float64_t sigma=(i+1)*0.15;
+		float64_t sq_sigma_twice=sigma*sigma*2;
+		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
+	}
 
-	virtual SGVector<float64_t> sample_null() override;
-	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
-
-	virtual float64_t compute_p_value(float64_t statistic) override;
-	virtual float64_t compute_threshold(float64_t alpha) override;
-
-	virtual const char* get_name() const;
-private:
-	struct Self;
-	std::unique_ptr<Self> self;
-
-	virtual const operation get_direct_estimation_method() const override;
-	virtual const float64_t normalize_statistic(float64_t statistic) const override;
-	virtual const float64_t normalize_variance(float64_t variance) const override;
-	virtual std::shared_ptr<CCustomDistance> compute_distance() override;
-	SGVector<float64_t> gamma_fit_null();
-	SGVector<float64_t> spectrum_sample_null();
-};
-
+	mmd->select_kernel(EKernelSelectionMethod::MEDIAN_HEURISTIC);
+	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
+	EXPECT_NEAR(selected_kernel->get_width(), 1.62, 1E-10);
 }
-#endif // QUADRATIC_TIME_MMD_H_

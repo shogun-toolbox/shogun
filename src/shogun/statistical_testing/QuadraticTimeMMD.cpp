@@ -36,6 +36,8 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/distance/EuclideanDistance.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
@@ -488,6 +490,56 @@ SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
 
 	SG_DEBUG("Leaving\n");
 	return null_samples;
+}
+
+std::shared_ptr<CCustomDistance> CQuadraticTimeMMD::compute_distance()
+{
+	auto distance=std::shared_ptr<CCustomDistance>(new CCustomDistance());
+	DataManager& dm=get_data_manager();
+
+	// using data manager next() API in order to make it work with
+	// streaming samples as well.
+	dm.start();
+	auto samples=dm.next();
+	if (!samples.empty())
+	{
+		dm.end();
+
+		// use 0th block from each distribution (since there is only one block
+		// for quadratic time MMD
+		CFeatures *samples_p=samples[0][0].get();
+		CFeatures *samples_q=samples[1][0].get();
+
+		try
+		{
+			auto p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+			samples.clear();
+			auto euclidean_distance=std::unique_ptr<CEuclideanDistance>(new CEuclideanDistance());
+			if (euclidean_distance->init(p_and_q, p_and_q))
+			{
+				auto dist_mat=euclidean_distance->get_distance_matrix<float32_t>();
+				if (io->get_loglevel()==MSG_DEBUG)
+				{
+					dist_mat.display_matrix("distance_matrix");
+				}
+				distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
+			}
+			else
+			{
+				SG_SERROR("Computing distance matrix was not possible! Please contact Shogun developers.\n");
+			}
+		}
+		catch (ShogunException e)
+		{
+			SG_SERROR("%s, Data is too large! Computing distance matrix was not possible!\n", e.get_exception_string());
+		}
+	}
+	else
+	{
+		dm.end();
+		SG_SERROR("Could not fetch samples!\n");
+	}
+	return distance;
 }
 
 const char* CQuadraticTimeMMD::get_name() const

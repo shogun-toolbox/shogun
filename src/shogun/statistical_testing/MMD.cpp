@@ -46,6 +46,7 @@
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/MaxMeasure.h>
 #include <shogun/statistical_testing/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
 #include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
@@ -390,7 +391,6 @@ CMMD::CMMD() : CTwoSampleTest()
 	Eigen::initParallel();
 #endif
 	self=std::unique_ptr<Self>(new Self(*this));
-	Eigen::initParallel();
 }
 
 CMMD::~CMMD()
@@ -421,9 +421,16 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel)
 			else
 				policy=std::shared_ptr<MaxTestPower>(new MaxTestPower(self->kernel_selection_mgr, this));
 			break;
+		case EKernelSelectionMethod::MEDIAN_HEURISTIC:
+			{
+				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
+				auto distance=compute_distance();
+				policy=std::shared_ptr<MedianHeuristic>(new MedianHeuristic(self->kernel_selection_mgr, distance));
+			}
+			break;
 		default:
 			SG_ERROR("Unsupported kernel selection method specified! "
-					"Presently only accepted values are MAXIMIZE_MMD, MAXIMIZE_POWER!\n");
+					"Presently only accepted values are MAXIMIZE_MMD, MAXIMIZE_POWER and MEDIAN_HEURISTIC!\n");
 			break;
 	}
 	if (policy!=nullptr)

@@ -19,6 +19,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/BTestMMD.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockDirect.h>
@@ -107,6 +108,12 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 		}
 	}
 	return result;
+}
+
+std::shared_ptr<CCustomDistance> CBTestMMD::compute_distance()
+{
+	auto distance=std::shared_ptr<CCustomDistance>(new CCustomDistance());
+	return distance;
 }
 
 const char* CBTestMMD::get_name() const

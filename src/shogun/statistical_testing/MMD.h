@@ -40,6 +40,7 @@ namespace shogun
 {
 
 class CKernel;
+class CCustomDistance;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
 
@@ -74,7 +75,7 @@ enum class ENullApproximationMethod
 
 enum class EKernelSelectionMethod
 {
-	MEDIAN_HEURISRIC,
+	MEDIAN_HEURISTIC,
 	MAXIMIZE_MMD,
 	MAXIMIZE_POWER,
 	MAXIMIZE_XVALIDATION,
@@ -115,9 +116,10 @@ public:
 
 	virtual const char* get_name() const;
 protected:
-	virtual const operation get_direct_estimation_method() const = 0;
-	virtual const float64_t normalize_statistic(float64_t statistic) const = 0;
-	virtual const float64_t normalize_variance(float64_t variance) const = 0;
+	virtual const operation get_direct_estimation_method() const=0;
+	virtual const float64_t normalize_statistic(float64_t statistic) const=0;
+	virtual const float64_t normalize_variance(float64_t variance) const=0;
+	virtual std::shared_ptr<CCustomDistance> compute_distance()=0;
 	bool use_gpu() const;
 private:
 	struct Self;

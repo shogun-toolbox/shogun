@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 - 2013 Heiko Strathmann
+ * Written (W) 2013 Heiko Strathmann
  * Written (w) 2014 - 2016 Soumyajit De
  * All rights reserved.
  *
@@ -29,48 +29,39 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-
-#ifndef QUADRATIC_TIME_MMD_H_
-#define QUADRATIC_TIME_MMD_H_
+#ifndef MEDIAN_HEURISTIC_H__
+#define MEDIAN_HEURISTIC_H__
 
 #include <memory>
-#include <shogun/statistical_testing/MMD.h>
+#include <shogun/lib/common.h>
+#include <shogun/statistical_testing/internals/KernelSelection.h>
 
 namespace shogun
 {
 
-template <typename> class SGVector;
+class CKernel;
+class CMMD;
+class CCustomDistance;
+template <typename T> class SGVector;
 
-class CQuadraticTimeMMD : public CMMD
+namespace internal
 {
-	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
+
+class MedianHeuristic : public KernelSelection
+{
 public:
-	CQuadraticTimeMMD();
-	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
-	virtual ~CQuadraticTimeMMD();
-
-	virtual float64_t compute_statistic() override;
-	virtual float64_t compute_variance() override;
-
-	virtual SGVector<float64_t> sample_null() override;
-	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
-
-	virtual float64_t compute_p_value(float64_t statistic) override;
-	virtual float64_t compute_threshold(float64_t alpha) override;
-
-	virtual const char* get_name() const;
-private:
-	struct Self;
-	std::unique_ptr<Self> self;
-
-	virtual const operation get_direct_estimation_method() const override;
-	virtual const float64_t normalize_statistic(float64_t statistic) const override;
-	virtual const float64_t normalize_variance(float64_t variance) const override;
-	virtual std::shared_ptr<CCustomDistance> compute_distance() override;
-	SGVector<float64_t> gamma_fit_null();
-	SGVector<float64_t> spectrum_sample_null();
+	MedianHeuristic(KernelManager&, std::shared_ptr<CCustomDistance>);
+	MedianHeuristic(const MedianHeuristic& other)=delete;
+	~MedianHeuristic();
+	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
+	virtual CKernel* select_kernel() override;
+protected:
+	std::shared_ptr<CCustomDistance> distance;
+	const int32_t n;
 };
 
 }
-#endif // QUADRATIC_TIME_MMD_H_
+
+}
+
+#endif // MEDIAN_HEURISTIC_H__
