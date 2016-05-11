@@ -35,6 +35,9 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
+#include <iostream>
+using namespace std;
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -117,7 +120,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index
 	return result;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx(index_t idx_a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t idx_b)
 {
 	auto D = get_dimension();
 	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
@@ -137,7 +140,25 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx(index_t idx_a, index_t idx
 	return result;
 }
 
-float64_t KernelExpFamilyImpl::kernel_dx_dx_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j)
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b)
+{
+	auto D = get_dimension();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	auto sq_diff = (eigen_a-eigen_b).array().pow(2);
+
+	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
+
+	SGVector<float64_t> result(D);
+	Map<VectorXd> eigen_result(result.vector, D);
+
+    // k.T * (sq_differences*(2.0 / sigma)**2 - 2.0/sigma)
+	eigen_result = k*(sq_diff*pow(2.0/m_sigma, 2) -2.0/m_sigma);
+
+	return result;
+}
+
+float64_t KernelExpFamilyImpl::kernel_hessian_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j)
 {
 	auto D = get_dimension();
 
@@ -160,7 +181,7 @@ float64_t KernelExpFamilyImpl::kernel_dx_dx_i_j(index_t idx_a, index_t idx_b, in
 	return k*(ridge - 4*(differences_i*differences_j)/(m_sigma*m_sigma));
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_all()
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all()
 {
 	auto D = get_dimension();
 	auto N = get_num_data();
@@ -174,12 +195,28 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_all()
 		{
 			auto r_start = idx_a*D;
 			auto c_start = idx_b*D;
-			SGMatrix<float64_t> h=kernel_dx_dx(idx_a, idx_b);
+			SGMatrix<float64_t> h=kernel_hessian(idx_a, idx_b);
 			eigen_result.block(r_start, c_start, D, D) = Map<MatrixXd>(h.matrix, D, D);
 			eigen_result.block(c_start, r_start, D, D) = eigen_result.block(r_start, c_start, D, D);
 		}
 
 	return result;
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a, index_t idx_b)
+{
+	auto D = get_dimension();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto diff = eigen_b-eigen_a;
+	auto k=CMath::exp(-diff.squaredNorm() / m_sigma);
+
+	SGVector<float64_t> gradient(D);
+	Map<VectorXd> eigen_gradient(gradient.vector, D);
+	eigen_gradient = 2*k*diff/m_sigma;
+	return gradient;
 }
 
 SGVector<float64_t> KernelExpFamilyImpl::compute_h()
@@ -235,7 +272,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_s
 
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);
-	auto all_hessians = kernel_dx_dx_all();
+	auto all_hessians = kernel_hessian_all();
 	auto eigen_all_hessians = Map<MatrixXd>(all_hessians.matrix, ND, ND);
 	auto xi_norm_2 = compute_xi_norm_2();
 
@@ -294,15 +331,15 @@ float64_t KernelExpFamilyImpl::compute_lower_right_submatrix_element(index_t row
 	auto b = bj.first;
 	auto j = bj.second;
 
-	auto G_a_b_i_j = kernel_dx_dx_i_j(a, b, i, j);
+	auto G_a_b_i_j = kernel_hessian_i_j(a, b, i, j);
 
 	float64_t G_sum = 0;
 	for (auto idx_n=0; idx_n<N; idx_n++)
 		for (auto idx_d=0; idx_d<D; idx_d++)
 		{
 			// TODO find case when G1=G2 and dont re-compute
-			auto G1 = kernel_dx_dx_i_j(a, idx_n, i, idx_d);
-			auto G2 = kernel_dx_dx_i_j(idx_n, b, idx_d, j);
+			auto G1 = kernel_hessian_i_j(a, idx_n, i, idx_d);
+			auto G2 = kernel_hessian_i_j(idx_n, b, idx_d, j);
 			G_sum += G1*G2;
 		}
 
@@ -333,7 +370,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_first_row_no_storing()
 			auto bj = idx_to_ai(ind2);
 			auto b = bj.first;
 			auto j = bj.second;
-			auto entry = kernel_dx_dx_i_j(a, b, i, j);
+			auto entry = kernel_hessian_i_j(a, b, i, j);
 			result[ind1] += h[ind2] * entry;
 		}
 	}
@@ -444,3 +481,34 @@ SGMatrix<float64_t> KernelExpFamilyImpl::pinv(SGMatrix<float64_t> A)
 
 	return A_pinv;
 }
+
+float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta)
+{
+	auto D = get_dimension();
+	auto N = get_num_data();
+
+	float64_t xi = 0;
+	float64_t beta_sum = 0;
+
+	Map<VectorXd> eigen_alpha_beta(alpha_beta.vector, N*D+1);
+	for (auto idx_a=0; idx_a<N; idx_a++)
+	{
+		SGMatrix<float64_t> k=kernel_dx_dx(x, idx_a);
+		Map<MatrixXd> eigen_k(k.matrix, D, D);
+		xi += eigen_k.sum() / N;
+
+		auto grad_x_xa = kernel_dx(x, idx_a);
+		Map<VectorXd> eigen_grad_x_xa(grad_x_xa.vector, D);
+
+		// betasum += np.dot(gradient_x_xa, beta[a, :])
+		beta_sum += eigen_grad_x_xa.transpose()*eigen_alpha_beta.segment(1+idx_a*D, D);
+
+	}
+	return alpha_beta[0]*xi + beta_sum;
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::grad(SGVector<float64_t> x)
+{
+	return SGVector<float64_t>();
+}
+

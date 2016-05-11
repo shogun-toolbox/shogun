@@ -63,6 +63,7 @@ TEST(KernelExpFamilyImpl, kernel_equals_manual)
 				k+=d*d;
 			}
 			k = exp(-k/sigma);
+
 			EXPECT_NEAR(k, est.kernel(idx_a, idx_b), 1e-15);
 		}
 	}
@@ -95,6 +96,41 @@ TEST(KernelExpFamilyImpl, kernel_equals_shogun)
 	SG_UNREF(k);
 	SG_UNREF(f);
 }
+
+TEST(KernelExpFamilyImpl, kernel_dx)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	index_t idx_a = 0;
+	SGVector<float64_t> b(D);
+	b[0]=-1;
+	b[1]=3;
+	auto result = est.kernel_dx(b, idx_a);
+	
+	// from kernel_exp_family Python implementation
+	float64_t reference[] = {0.082085, -0.16417 };
+	ASSERT_EQ(result.vlen, D);
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
+	
+	idx_a = 1;
+	result = est.kernel_dx(b, idx_a);
+	float64_t reference2[] = {0.02021384,  0.00673795};
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
+}
+
 TEST(KernelExpFamilyImpl, kernel_dx_dx_dy)
 {
 	index_t N=3;
@@ -173,6 +209,52 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx_dy_dy)
 	
 }
 
+TEST(KernelExpFamilyImpl, kernel_hessian)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	index_t idx_a = 0;
+	index_t idx_b = 1;
+	auto result = est.kernel_hessian(idx_a, idx_b);
+	
+	// from kernel_exp_family Python implementation
+	float64_t reference[] = {-0.00451032, -0.00902064,
+							 -0.00902064 , -0.01202751};
+	ASSERT_EQ(result.num_rows, D);
+	ASSERT_EQ(result.num_cols, D);
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
+		
+	idx_a = 0;
+	idx_b = 0;
+	result = est.kernel_hessian(idx_a, idx_b);
+	ASSERT_EQ(result.num_rows, D);
+	ASSERT_EQ(result.num_cols, D);
+	for (auto i=0; i<D; i++)
+		for (auto j=0; i<D; i++)
+		{
+			float64_t ref;
+			if (i==j)
+				ref=1;
+			else
+				ref=0;
+				
+			EXPECT_EQ(result(i,j), ref);
+		}
+}
+
 TEST(KernelExpFamilyImpl, kernel_dx_dx)
 {
 	index_t N=3;
@@ -189,37 +271,19 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx)
 	float64_t lambda = 1;
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	
-	index_t idx_a = 0;
-	index_t idx_b = 1;
-	auto result = est.kernel_dx_dx(idx_a, idx_b);
+	index_t idx_a=0;
+	index_t idx_b=1;
+	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
 	
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = {-0.00451032, -0.00902064,
-							 -0.00902064 , -0.01202751};
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
-		
-	idx_a = 0;
-	idx_b = 0;
-	result = est.kernel_dx_dx(idx_a, idx_b);
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
+	auto result = est.kernel_dx_dx(a, idx_b);
+	float64_t reference[] = { 0.00451032,  0.01202751};
+	
+	ASSERT_EQ(result.vlen, D);
 	for (auto i=0; i<D; i++)
-		for (auto j=0; i<D; i++)
-		{
-			float64_t ref;
-			if (i==j)
-				ref=1;
-			else
-				ref=0;
-				
-			EXPECT_EQ(result(i,j), ref);
-		}
+		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx_dx_i_j)
+TEST(KernelExpFamilyImpl, kernel_hessian_i_j)
 {
 	index_t N=30;
 	index_t D=20;
@@ -234,18 +298,17 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx_i_j)
 	index_t idx_a = 0;
 	index_t idx_b = 1;
 	// compare against full version
-	auto result = est.kernel_dx_dx(idx_a, idx_b);
+	auto result = est.kernel_hessian(idx_a, idx_b);
 	
 	for (auto i=0; i<D; i++)
 		for (auto j=0; j<D; j++)
 		{
-			auto entry = est.kernel_dx_dx_i_j(idx_a, idx_b, i, j);
+			auto entry = est.kernel_hessian_i_j(idx_a, idx_b, i, j);
 			EXPECT_NEAR(result(i,j), entry, 1e-8);
 		}
-	
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx_dx_all)
+TEST(KernelExpFamilyImpl, kernel_hessian_all)
 {
 	index_t N=3;
 	index_t D=2;
@@ -262,7 +325,7 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx_all)
 	float64_t lambda = 1;
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	
-	auto result = est.kernel_dx_dx_all();
+	auto result = est.kernel_hessian_all();
 	
 	// from kernel_exp_family Python implementation
 	float64_t reference[] = {
@@ -604,4 +667,31 @@ TEST(KernelExpFamilyImpl, pinv_square)
 	
 	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
 		EXPECT_NEAR(pinv[i], reference[i], 1e-15);
+}
+
+TEST(KernelExpFamilyImpl, log_pdf)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	auto alpha_beta = est.fit();
+	
+	SGVector<float64_t> x(D);
+	x[0] = 0;
+	x[1] = 1;
+	auto log_pdf = est.log_pdf(x, alpha_beta);
+
+	// from kernel_exp_family Python implementation
+	EXPECT_NEAR(log_pdf, 0.6612075586873365, 1e-15);
 }

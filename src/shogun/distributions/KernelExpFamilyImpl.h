@@ -47,12 +47,17 @@ class KernelExpFamilyImpl
 public :
 	KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda);
 
-	float64_t kernel(index_t idx_a, index_t idx_b);
+	// for training
+	float64_t kernel(index_t idx_a, const index_t idx_b);
 	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx(index_t idx_a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx_all();
-	float64_t kernel_dx_dx_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j);
+	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_hessian_all();
+	float64_t kernel_hessian_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j);
+
+	// for new data
+	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
+	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
 
 	// full estimator
 	SGVector<float64_t> compute_h();
@@ -67,6 +72,10 @@ public :
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_nystrom(SGVector<index_t> inds);
 	SGVector<float64_t> fit_nystrom(SGVector<index_t> inds);
 	SGMatrix<float64_t> pinv(SGMatrix<float64_t> A);
+
+	// model
+	float64_t log_pdf(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta);
+	SGVector<float64_t> grad(SGVector<float64_t> x);
 
 protected:
 	index_t get_dimension();
