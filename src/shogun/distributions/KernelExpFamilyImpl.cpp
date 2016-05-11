@@ -430,7 +430,7 @@ SGVector<float64_t> KernelExpFamilyImpl::fit_nystrom(SGVector<index_t> inds)
 	auto m = inds.vlen;
 
 	auto A_mn_b = build_system_nystrom(inds);
-	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, ND+1, ND+1);
+	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, m+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_mn_b.second.vector, ND+1);
 
 	SGMatrix<float64_t> A(m+1,m+1);
