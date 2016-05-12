@@ -44,10 +44,6 @@ CKernelExpFamily::CKernelExpFamily() : CSGObject()
 CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda) : CSGObject()
 {
-	REQUIRE(data.matrix, "Data matrix must be set!\n");
-	REQUIRE(data.num_rows>0, "Data dimension (%) must be positive\n", data.num_rows);
-	REQUIRE(data.num_cols>1, "Number of data (%) must be at least 2\n", data.num_cols);
-
 	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
 }
 
