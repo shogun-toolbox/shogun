@@ -76,16 +76,18 @@ public :
 	// new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
 	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
 
 	SGVector<float64_t> compute_h();
 	float64_t compute_xi_norm_2();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
 	void fit();
 	float64_t log_pdf(const SGVector<float64_t>& x);
+	SGVector<float64_t> grad(const SGVector<float64_t>& x);
 
 	SGVector<float64_t> get_alpha_beta() { return m_alpha_beta; }
 
-protected:
 	index_t get_num_dimensions();
 	index_t get_num_data();
 

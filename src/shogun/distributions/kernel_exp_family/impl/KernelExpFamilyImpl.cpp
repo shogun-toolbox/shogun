@@ -309,3 +309,84 @@ float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x)
 	return m_alpha_beta[0]*xi + beta_sum;
 }
 
+SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_data();
+
+	SGVector<float64_t> xi_grad(D);
+	SGVector<float64_t> beta_sum_grad(D);
+	Map<VectorXd> eigen_xi_grad(xi_grad.vector, D);
+	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
+	eigen_xi_grad = VectorXd::Zero(D);
+	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
+
+	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
+	for (auto a=0; a<N; a++)
+	{
+		SGMatrix<float64_t> g=kernel_dx_i_dx_i_dx_j(x, a);
+		Map<MatrixXd> eigen_g(g.matrix, D, D);
+		eigen_xi_grad += eigen_g.colwise().sum() / N;
+
+		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
+		// betasum_grad += beta[a, :].dot(left_arg_hessian)
+		auto left_arg_hessian = kernel_dx_i_dx_j(x, a);
+		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
+		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_alpha_beta.segment(1+a*D, D).matrix();
+	}
+
+	// return alpha * xi_grad + betasum_grad
+	eigen_xi_grad *= m_alpha_beta[0];
+	return xi_grad + beta_sum_grad;
+}
+
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b)
+{
+	auto D = get_num_dimensions();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	auto diff = eigen_b-eigen_a;
+	auto sq_diff = diff.array().pow(2).matrix();
+	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
+
+	SGMatrix<float64_t> result(D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+
+	// pairwise_dist_squared_i = np.outer((y-x)**2, y-x)
+    // term1 = k*pairwise_dist_squared_i * (2.0/sigma)**3
+	eigen_result = sq_diff*diff.transpose();
+	eigen_result *= k* pow(2.0/m_sigma, 3);
+
+	// row_repeated_distances = np.tile(y-x, [d,1])
+	// term2 = k*row_repeated_distances * (2.0/sigma)**2
+	eigen_result.rowwise() -= k * diff.transpose() * pow(2.0/m_sigma, 2);
+
+	// term3 = term2*2*np.eye(d)
+	eigen_result.diagonal() -= 2* k * diff * pow(2.0/m_sigma, 2);
+
+	// return term1 - term2 - term3
+	return result;
+}
+
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b)
+{
+	auto D = get_num_dimensions();
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	auto diff = eigen_b-eigen_a;
+	auto k=CMath::exp(-diff.array().pow(2).sum() / m_sigma);
+
+	SGMatrix<float64_t> result(D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+
+	// pairwise_dist = np.outer(y-x, y-x)
+    // term1 = k*pairwise_dist * (2.0/sigma)**2
+	eigen_result = diff*diff.transpose();
+	eigen_result *= k * pow(2.0/m_sigma, 2);
+
+	// term2 = k*np.eye(d) * (2.0/sigma)
+	eigen_result.diagonal().array() -= k * 2.0/m_sigma;
+
+	// return term1 - term2
+	return result;
+}

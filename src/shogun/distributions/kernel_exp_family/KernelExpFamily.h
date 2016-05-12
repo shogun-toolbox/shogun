@@ -45,12 +45,13 @@ class CKernelExpFamily : public CSGObject
 {
 public:
 	CKernelExpFamily();
-	CKernelExpFamily(CDenseFeatures<float64_t>* data,
+	CKernelExpFamily(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda);
 	virtual ~CKernelExpFamily();
 
 	void fit();
-	float64_t log_pdf(const SGVector<float64_t>& x);
+	float64_t log_pdf(SGVector<float64_t> x);
+	SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 

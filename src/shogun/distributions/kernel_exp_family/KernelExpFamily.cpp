@@ -42,11 +42,14 @@ CKernelExpFamily::CKernelExpFamily() : CSGObject()
 	m_impl=NULL;
 }
 
-CKernelExpFamily::CKernelExpFamily(CDenseFeatures<float64_t>* data,
+CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda) : CSGObject()
 {
-	SGMatrix<float64_t> mat=data->get_feature_matrix();
-	m_impl = new KernelExpFamilyImpl(mat, sigma, lambda);
+	REQUIRE(data.matrix, "Data matrix must be set!\n");
+	REQUIRE(data.num_rows>0, "Data dimension (%) must be positive\n", data.num_rows);
+	REQUIRE(data.num_cols>1, "Number of data (%) must be at least 2\n", data.num_cols);
+
+	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
 }
 
 CKernelExpFamily::~CKernelExpFamily()
@@ -60,10 +63,24 @@ void CKernelExpFamily::fit()
 	m_impl->fit();
 }
 
+float64_t CKernelExpFamily::log_pdf(SGVector<float64_t> x)
+{
+	return m_impl->log_pdf(x);
+}
+
+SGVector<float64_t> CKernelExpFamily::log_pdf_multiple(SGMatrix<float64_t> X)
+{
+	SGVector<float64_t> result(X.num_rows);
+#pragma omp for
+	for (auto i=0; i<X.num_cols; i++)
+	{
+		SGVector<float64_t> x(X.get_column_vector(i), m_impl->get_num_dimensions(), false);
+		result[i] = m_impl->log_pdf(x);
+	}
+	return result;
+}
+
 SGVector<float64_t> CKernelExpFamily::get_alpha_beta()
 {
-	if (m_impl)
-		return m_impl->get_alpha_beta();
-	else
-		return SGVector<float64_t>();
+	return m_impl->get_alpha_beta();
 }

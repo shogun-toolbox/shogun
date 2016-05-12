@@ -36,9 +36,6 @@
 
 #include "KernelExpFamilyNystromImpl.h"
 
-#include <iostream>
-using namespace std;
-
 using namespace shogun;
 using namespace Eigen;
 
