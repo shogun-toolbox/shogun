@@ -43,17 +43,18 @@ class KernelExpFamilyImpl;
 
 class CKernelExpFamily : public CSGObject
 {
-public :
+public:
 	CKernelExpFamily();
 	CKernelExpFamily(CDenseFeatures<float64_t>* data,
 			float64_t sigma, float64_t lambda);
 	virtual ~CKernelExpFamily();
 
 	void fit();
+	float64_t log_pdf(const SGVector<float64_t>& x);
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 
-	float64_t log_pdf(const SGVector<float64_t>& x);
+	SGVector<float64_t> get_alpha_beta();
 
 protected:
 	KernelExpFamilyImpl* m_impl;

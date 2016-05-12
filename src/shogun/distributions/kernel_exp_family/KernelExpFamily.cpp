@@ -60,3 +60,10 @@ void CKernelExpFamily::fit()
 	m_impl->fit();
 }
 
+SGVector<float64_t> CKernelExpFamily::get_alpha_beta()
+{
+	if (m_impl)
+		return m_impl->get_alpha_beta();
+	else
+		return SGVector<float64_t>();
+}
