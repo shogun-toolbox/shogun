@@ -31,7 +31,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 #include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyImpl.h>
 

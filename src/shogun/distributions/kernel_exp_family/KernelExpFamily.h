@@ -38,7 +38,6 @@
 namespace shogun
 {
 
-template<class ST> class CDenseFeatures;
 class KernelExpFamilyImpl;
 
 class CKernelExpFamily : public CSGObject

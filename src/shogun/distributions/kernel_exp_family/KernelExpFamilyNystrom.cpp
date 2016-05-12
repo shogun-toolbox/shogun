@@ -31,7 +31,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyNystromImpl.h>
 
@@ -42,19 +41,17 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom() : CKernelExpFamily()
 	m_impl=NULL;
 }
 
-CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(CDenseFeatures<float64_t>* data,
+CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda, SGVector<index_t> inds)
 			: CKernelExpFamily()
 {
-	SGMatrix<float64_t> mat=data->get_feature_matrix();
-	m_impl = new KernelExpFamilyNystromImpl(mat, sigma, lambda, inds);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, inds);
 }
 
-CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(CDenseFeatures<float64_t>* data,
+CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda, index_t num_rkhs_basis) : CKernelExpFamily()
 {
-	SGMatrix<float64_t> mat=data->get_feature_matrix();
-	m_impl = new KernelExpFamilyNystromImpl(mat, sigma, lambda, num_rkhs_basis);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis);
 }
 
 CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()

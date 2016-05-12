@@ -39,15 +39,13 @@
 namespace shogun
 {
 
-template<class ST> class CDenseFeatures;
-
 class CKernelExpFamilyNystrom : public CKernelExpFamily
 {
 public :
 	CKernelExpFamilyNystrom();
-	CKernelExpFamilyNystrom(CDenseFeatures<float64_t>* data,
+	CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 				float64_t sigma, float64_t lambda, SGVector<index_t> inds);
-	CKernelExpFamilyNystrom(CDenseFeatures<float64_t>* data,
+	CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 				float64_t sigma, float64_t lambda, index_t num_rkhs_basis);
 
 	virtual ~CKernelExpFamilyNystrom();
