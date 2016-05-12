@@ -29,54 +29,44 @@
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/BlockwiseDetails.h>
-#include <shogun/statistical_testing/internals/TrainTestDetails.h>
 
-#ifndef DATA_FETCHER_H__
-#define DATA_FETCHER_H__
+#ifndef TRAIN_TEST_DETAILS_H__
+#define TRAIN_TEST_DETAILS_H__
 
 namespace shogun
 {
 
-class CFeatures;
-
 namespace internal
 {
 
-class DataManager;
-
-class DataFetcher
+/**
+ * @brief Class that holds train-test details for the data-fetchers.
+ * There are one instance of this class per fetcher.
+ */
+class TrainTestDetails
 {
-	friend class DataManager;
-	friend class InitPerFeature;
-public:
-	DataFetcher(CFeatures* samples);
-	virtual ~DataFetcher();
-	void set_train_test_ratio(float64_t train_test_ratio);
-	float64_t get_train_test_ratio() const;
-	void set_train_mode(bool train_mode);
-	void set_xvalidation_mode(bool xvalidation_mode);
-	index_t get_num_folds() const;
-	void use_fold(index_t idx);
+	friend class DataFetcher;
+	friend class StreamingDataFetcher;
 
-	virtual void start();
-	virtual CFeatures* next();
-	virtual void reset();
-	virtual void end();
-	const index_t get_num_samples() const;
-	BlockwiseDetails& fetch_blockwise();
-	virtual const char* get_name() const;
-protected:
-	DataFetcher();
-	BlockwiseDetails m_block_details;
-	TrainTestDetails m_train_test_details;
-	index_t m_num_samples;
+public:
+	TrainTestDetails();
+
+	void set_total_num_samples(index_t total_num_sampels);
+	index_t get_total_num_samples() const;
+
+	void set_num_training_samples(index_t num_training_samples);
+	index_t get_num_training_samples() const;
+	index_t get_num_test_samples() const;
+
+//	bool is_training_mode() const;
+//	void set_train_mode(bool train_mode);
+//	void set_xvalidation_mode(bool xvalidation_mode);
 private:
-	CFeatures* m_samples;
-	bool train_test_subset_used;
+	index_t m_total_num_samples;
+	index_t m_num_training_samples;
 };
 
 }
 
 }
-#endif // DATA_FETCHER_H__
+#endif // TRAIN_TEST_DETAILS_H__

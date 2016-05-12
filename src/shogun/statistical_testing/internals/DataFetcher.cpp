@@ -24,15 +24,16 @@
 using namespace shogun;
 using namespace internal;
 
-DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr)
+DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr), train_test_subset_used(false)
 {
 }
 
-DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples)
+DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples), train_test_subset_used(false)
 {
 	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
 	SG_REF(m_samples);
 	m_num_samples=m_samples->get_num_vectors();
+	m_train_test_details.set_total_num_samples(m_num_samples);
 }
 
 DataFetcher::~DataFetcher()
@@ -46,12 +47,82 @@ const char* DataFetcher::get_name() const
 	return "DataFetcher";
 }
 
+void DataFetcher::set_train_test_ratio(float64_t train_test_ratio)
+{
+	m_num_samples=m_train_test_details.get_total_num_samples();
+	index_t num_training_samples=m_num_samples*train_test_ratio/(train_test_ratio+1);
+	m_train_test_details.set_num_training_samples(num_training_samples);
+}
+
+float64_t DataFetcher::get_train_test_ratio() const
+{
+	return float64_t(m_train_test_details.get_num_training_samples())/m_train_test_details.get_num_test_samples();
+}
+
+void DataFetcher::set_train_mode(bool train_mode)
+{
+	index_t start_index=0;
+	if (train_mode)
+	{
+		m_num_samples=m_train_test_details.get_num_training_samples();
+		if (m_num_samples==0)
+			SG_SERROR("The number of training samples is 0! Please set a valid train-test ratio\n");
+	}
+	else
+	{
+		m_num_samples=m_train_test_details.get_num_test_samples();
+		start_index=m_train_test_details.get_num_training_samples();
+		if (start_index==0)
+		{
+			if (train_test_subset_used)
+			{
+				m_samples->remove_subset();
+				train_test_subset_used=false;
+			}
+			return;
+		}
+	}
+	SGVector<index_t> inds(m_num_samples);
+	std::iota(inds.data(), inds.data()+inds.size(), start_index);
+	if (train_test_subset_used)
+	{
+		m_samples->remove_subset();
+	}
+	m_samples->add_subset(inds);
+	train_test_subset_used=true;
+}
+
+void DataFetcher::set_xvalidation_mode(bool xvalidation_mode)
+{
+//	using fetcher_type=std::unique_ptr<DataFetcher>;
+//	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
+//	{
+//		f->set_xvalidation_mode(xvalidation_mode);
+//	});
+}
+
+index_t DataFetcher::get_num_folds() const
+{
+//	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
+//	return fetchers[0]->get_train_test_ratio();
+	return 0;
+}
+
+void DataFetcher::use_fold(index_t idx)
+{
+//	using fetcher_type=std::unique_ptr<DataFetcher>;
+//	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
+//	{
+//		f->use_fold(idx);
+//	});
+}
+
 void DataFetcher::start()
 {
 	REQUIRE(m_num_samples>0, "Number of samples is 0!\n");
-	if (m_block_details.m_blocksize==0)
+	if (m_block_details.m_blocksize==0 || m_block_details.m_blocksize>m_num_samples)
 	{
-		SG_SINFO("Block details not set! Fetching entire data (%d samples)!\n", m_num_samples);
+		SG_SINFO("Block details invalid! Fetching entire data (%d samples)!\n", m_num_samples);
 		m_block_details.with_blocksize(m_num_samples);
 	}
 	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;

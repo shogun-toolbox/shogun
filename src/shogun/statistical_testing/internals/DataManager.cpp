@@ -41,6 +41,9 @@
 using namespace shogun;
 using namespace internal;
 
+// TODO add nullptr check before calling the methods on actual fetchers
+// this would be where someone calls the other methofds before setiing the sameples
+
 DataManager::DataManager(size_t num_distributions)
 {
 	SG_SDEBUG("Data manager instance initialized with %d data sources!\n", num_distributions);
@@ -195,28 +198,58 @@ const index_t DataManager::blocksize_at(size_t i) const
 
 void DataManager::set_train_test_ratio(float64_t train_test_ratio)
 {
+	SG_SDEBUG("Entering!\n");
+	using fetcher_type=std::unique_ptr<DataFetcher>;
+	std::for_each(fetchers.begin(), fetchers.end(), [&train_test_ratio](fetcher_type& f)
+	{
+		f->set_train_test_ratio(train_test_ratio);
+	});
+	SG_SDEBUG("Leaving!\n");
 }
 
 float64_t DataManager::get_train_test_ratio() const
 {
-	return 0;
+	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
+	return fetchers[0]->get_train_test_ratio();
 }
 
 void DataManager::set_train_mode(bool train_mode)
 {
+	SG_SDEBUG("Entering!\n");
+	using fetcher_type=std::unique_ptr<DataFetcher>;
+	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
+	{
+		f->set_train_mode(train_mode);
+	});
+	SG_SDEBUG("Leaving!\n");
 }
 
 void DataManager::set_xvalidation_mode(bool xvalidation_mode)
 {
+	SG_SDEBUG("Entering!\n");
+	using fetcher_type=std::unique_ptr<DataFetcher>;
+	std::for_each(fetchers.begin(), fetchers.end(), [&xvalidation_mode](fetcher_type& f)
+	{
+		f->set_xvalidation_mode(xvalidation_mode);
+	});
+	SG_SDEBUG("Leaving!\n");
 }
 
 index_t DataManager::get_num_folds() const
 {
-	return 0;
+	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
+	return fetchers[0]->get_train_test_ratio();
 }
 
 void DataManager::use_fold(index_t idx)
 {
+	SG_SDEBUG("Entering!\n");
+	using fetcher_type=std::unique_ptr<DataFetcher>;
+	std::for_each(fetchers.begin(), fetchers.end(), [&idx](fetcher_type& f)
+	{
+		f->use_fold(idx);
+	});
+	SG_SDEBUG("Leaving!\n");
 }
 
 void DataManager::start()

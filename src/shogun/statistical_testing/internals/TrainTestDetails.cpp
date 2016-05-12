@@ -28,55 +28,51 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/BlockwiseDetails.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/statistical_testing/internals/TrainTestDetails.h>
 
-#ifndef DATA_FETCHER_H__
-#define DATA_FETCHER_H__
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+TrainTestDetails::TrainTestDetails() : m_total_num_samples(0), m_num_training_samples(0)
 {
-
-class CFeatures;
-
-namespace internal
-{
-
-class DataManager;
-
-class DataFetcher
-{
-	friend class DataManager;
-	friend class InitPerFeature;
-public:
-	DataFetcher(CFeatures* samples);
-	virtual ~DataFetcher();
-	void set_train_test_ratio(float64_t train_test_ratio);
-	float64_t get_train_test_ratio() const;
-	void set_train_mode(bool train_mode);
-	void set_xvalidation_mode(bool xvalidation_mode);
-	index_t get_num_folds() const;
-	void use_fold(index_t idx);
-
-	virtual void start();
-	virtual CFeatures* next();
-	virtual void reset();
-	virtual void end();
-	const index_t get_num_samples() const;
-	BlockwiseDetails& fetch_blockwise();
-	virtual const char* get_name() const;
-protected:
-	DataFetcher();
-	BlockwiseDetails m_block_details;
-	TrainTestDetails m_train_test_details;
-	index_t m_num_samples;
-private:
-	CFeatures* m_samples;
-	bool train_test_subset_used;
-};
-
 }
 
+void TrainTestDetails::set_total_num_samples(index_t total_num_samples)
+{
+	m_total_num_samples=total_num_samples;
 }
-#endif // DATA_FETCHER_H__
+
+index_t TrainTestDetails::get_total_num_samples() const
+{
+	return m_total_num_samples;
+}
+
+void TrainTestDetails::set_num_training_samples(index_t num_training_samples)
+{
+	REQUIRE(m_total_num_samples>=num_training_samples,
+			"Number of training samples cannot be greater than the total number of samples!\n");
+	m_num_training_samples=num_training_samples;
+}
+
+index_t TrainTestDetails::get_num_training_samples() const
+{
+	return m_num_training_samples;
+}
+
+index_t TrainTestDetails::get_num_test_samples() const
+{
+	return m_total_num_samples-m_num_training_samples;
+}
+//
+//bool TrainTestDetails::is_training_mode() const
+//{
+//}
+//
+//void TrainTestDetails::set_train_mode(bool train_mode)
+//{
+//}
+//
+//void TrainTestDetails::set_xvalidation_mode(bool xvalidation_mode)
+//{
+//}
