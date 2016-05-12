@@ -28,7 +28,7 @@ namespace shogun
 
 template <typename T> class SGMatrix;
 template <typename T> class CGPUMatrix;
-enum class EStatisticType;
+enum EStatisticType;
 
 namespace internal
 {

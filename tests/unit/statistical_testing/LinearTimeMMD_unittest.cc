@@ -73,7 +73,7 @@ TEST(LinearTimeMMD, biased_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -117,7 +117,7 @@ TEST(LinearTimeMMD, unbiased_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -161,7 +161,7 @@ TEST(LinearTimeMMD, incomplete_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -205,7 +205,7 @@ TEST(LinearTimeMMD, biased_different_null_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -249,7 +249,7 @@ TEST(LinearTimeMMD, unbiased_different_null_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	mmd->set_num_blocks_per_burst(1000);
 	mmd->set_kernel(kernel);
 
@@ -297,15 +297,15 @@ TEST(LinearTimeMMD, compute_variance_null)
 	mmd->set_kernel(kernel);
 
 	// assert local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0022330284118652344, 1E-10);
 
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0022330284118652344, 1E-10);
 
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0022330284118652344, 1E-10);
 }
@@ -339,11 +339,11 @@ TEST(LinearTimeMMD, perform_test_permutation_biased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
+	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
@@ -377,11 +377,11 @@ TEST(LinearTimeMMD, perform_test_permutation_unbiased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
+	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
@@ -415,11 +415,11 @@ TEST(LinearTimeMMD, perform_test_permutation_unbiased_incomplete)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
+	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.59999999999999998, 1E-10);
 }
@@ -453,13 +453,13 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::MMD1_GAUSSIAN);
+	mmd->set_null_approximation_method(NAM_MMD1_GAUSSIAN);
 
 	// biased case
 
 	// compute p-value using Gaussian approximation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_gaussian, 0.0, 1E-10);
 }
@@ -493,13 +493,13 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::MMD1_GAUSSIAN);
+	mmd->set_null_approximation_method(NAM_MMD1_GAUSSIAN);
 
 	// unbiased case
 
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_gaussian, 0.060947882185221292, 1E-10);
 }
@@ -533,13 +533,13 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::MMD1_GAUSSIAN);
+	mmd->set_null_approximation_method(NAM_MMD1_GAUSSIAN);
 
 	// unbiased case
 
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_gaussian, 0.40645354706402292, 1E-10);
 }

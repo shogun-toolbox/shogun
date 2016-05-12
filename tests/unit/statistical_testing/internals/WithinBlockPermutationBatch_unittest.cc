@@ -79,7 +79,7 @@ TEST(WithinBlockPermutationBatch, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::BIASED_FULL);
+	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, ST_BIASED_FULL);
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 
@@ -157,7 +157,7 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::UNBIASED_FULL);
+    shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, ST_UNBIASED_FULL);
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 
@@ -234,7 +234,7 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, n, num_null_samples, EStatisticType::UNBIASED_INCOMPLETE);
+	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, n, num_null_samples, ST_UNBIASED_INCOMPLETE);
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 

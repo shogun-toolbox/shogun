@@ -53,35 +53,34 @@ class WeightedMaxTestPower;
 
 }
 
-// TODO change enum class to enum in order to co-operate with python swig etc blah
-enum class EStatisticType
+enum EStatisticType
 {
-	UNBIASED_FULL,
-	UNBIASED_INCOMPLETE,
-	BIASED_FULL
+	ST_UNBIASED_FULL,
+	ST_UNBIASED_INCOMPLETE,
+	ST_BIASED_FULL
 };
 
-enum class EVarianceEstimationMethod
+enum EVarianceEstimationMethod
 {
-	DIRECT,
-	PERMUTATION
+	VEM_DIRECT,
+	VEM_PERMUTATION
 };
 
-enum class ENullApproximationMethod
+enum ENullApproximationMethod
 {
-	PERMUTATION,
-	MMD1_GAUSSIAN,
-	MMD2_SPECTRUM,
-	MMD2_GAMMA
+	NAM_PERMUTATION,
+	NAM_MMD1_GAUSSIAN,
+	NAM_MMD2_SPECTRUM,
+	NAM_MMD2_GAMMA
 };
 
-enum class EKernelSelectionMethod
+enum EKernelSelectionMethod
 {
-	MEDIAN_HEURISTIC,
-	MAXIMIZE_MMD,
-	MAXIMIZE_POWER,
-	MAXIMIZE_XVALIDATION,
-	AUTO
+	KSM_MEDIAN_HEURISTIC,
+	KSM_MAXIMIZE_MMD,
+	KSM_MAXIMIZE_POWER,
+	KSM_MAXIMIZE_XVALIDATION,
+	KSM_AUTO
 };
 
 class CMMD : public CTwoSampleTest
@@ -95,7 +94,7 @@ public:
 	virtual ~CMMD();
 
 	void add_kernel(CKernel *kernel);
-	void select_kernel(EKernelSelectionMethod kmethod=EKernelSelectionMethod::AUTO,
+	void select_kernel(EKernelSelectionMethod kmethod=KSM_AUTO,
 		bool weighted_kernel=false, float64_t train_test_ratio=1.0,
 		index_t num_run=10, float64_t alpha=0.05);
 

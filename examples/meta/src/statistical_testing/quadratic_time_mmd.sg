@@ -14,24 +14,24 @@ Real alpha = 0.05
 #![create_instance]
 
 #![estimate_mmd_unbiased]
-mmd.set_statistic_type(enum EStatisticType.UNBIASED_FULL)
+mmd.set_statistic_type(ST_UNBIASED_FULL)
 Real statistic_unbiased = mmd.compute_statistic()
 #![estimate_mmd_unbiased]
 
 #![estimate_mmd_biased]
-mmd.set_statistic_type(enum EStatisticType.BIASED_FULL)
+mmd.set_statistic_type(ST_BIASED_FULL)
 Real statistic_biased = mmd.compute_statistic()
 #![estimate_mmd_biased]
 
 #![perform_test_permutation]
-mmd.set_null_approximation_method(enum ENullApproximationMethod.PERMUTATION)
+mmd.set_null_approximation_method(NAM_PERMUTATION)
 mmd.set_num_null_samples(200)
 Real threshold_permutation = mmd.compute_threshold(alpha)
 Real p_value_permutation = mmd.compute_p_value(statistic_biased)
 #![perform_test_permutation]
 
 #![perform_test_spectrum]
-mmd.set_null_approximation_method(enum ENullApproximationMethod.MMD2_SPECTRUM)
+mmd.set_null_approximation_method(NAM_MMD2_SPECTRUM)
 mmd.set_num_null_samples(200)
 mmd.spectrum_set_num_eigenvalues(5)
 Real threshold_spectrum = mmd.compute_threshold(alpha)
@@ -39,7 +39,7 @@ Real p_value_spectrum = mmd.compute_p_value(statistic_biased)
 #![perform_test_spectrum]
 
 #![perform_test_gamma]
-mmd.set_null_approximation_method(enum ENullApproximationMethod.MMD2_GAMMA)
+mmd.set_null_approximation_method(NAM_MMD2_GAMMA)
 Real threshold_gamma = mmd.compute_threshold(alpha)
 Real p_value_gamma = mmd.compute_p_value(statistic_biased)
 #![perform_test_gamma]

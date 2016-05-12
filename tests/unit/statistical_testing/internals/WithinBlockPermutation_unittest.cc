@@ -78,7 +78,7 @@ TEST(WithinBlockPermutation, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::BIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -143,7 +143,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::UNBIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
@@ -207,7 +207,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, EStatisticType::UNBIASED_INCOMPLETE);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 

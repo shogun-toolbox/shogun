@@ -55,7 +55,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_mmd)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 
@@ -67,7 +67,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_mmd)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::MEDIAN_HEURISTIC);
+	mmd->select_kernel(KSM_MEDIAN_HEURISTIC);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 1.62, 1E-10);
 }

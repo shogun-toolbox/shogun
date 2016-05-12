@@ -83,7 +83,7 @@ const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 	const index_t Bx = dm.blocksize_at(0);
 	const index_t By = dm.blocksize_at(1);
 	const index_t B = Bx + By;
-	if (get_statistic_type() == EStatisticType::UNBIASED_INCOMPLETE)
+	if (get_statistic_type() == ST_UNBIASED_INCOMPLETE)
 	{
 		return variance * B * (B - 2) / 16;
 	}
@@ -96,7 +96,7 @@ const float64_t CLinearTimeMMD::gaussian_variance(float64_t variance) const
 	const index_t Bx = dm.blocksize_at(0);
 	const index_t By = dm.blocksize_at(1);
 	const index_t B = Bx + By;
-	if (get_statistic_type() == EStatisticType::UNBIASED_INCOMPLETE)
+	if (get_statistic_type() == ST_UNBIASED_INCOMPLETE)
 	{
 		return variance * 4 / (B - 2);
 	}
@@ -108,7 +108,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	float64_t result = 0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD1_GAUSSIAN:
+		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 			float64_t std_dev = CMath::sqrt(sigma_sq);
@@ -129,7 +129,7 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 	float64_t result = 0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD1_GAUSSIAN:
+		case NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 			float64_t std_dev = CMath::sqrt(sigma_sq);

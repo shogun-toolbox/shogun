@@ -52,37 +52,37 @@ const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estima
 
 const float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 {
-	const DataManager& dm = get_data_manager();
-	const index_t Nx = dm.num_samples_at(0);
-	const index_t Ny = dm.num_samples_at(1);
-	const index_t Bx = dm.blocksize_at(0);
-	const index_t By = dm.blocksize_at(1);
-	return Nx * Ny * statistic * CMath::sqrt((Bx + By)/float64_t(Nx + Ny)) / (Nx + Ny);
+	const DataManager& dm=get_data_manager();
+	const index_t Nx=dm.num_samples_at(0);
+	const index_t Ny=dm.num_samples_at(1);
+	const index_t Bx=dm.blocksize_at(0);
+	const index_t By=dm.blocksize_at(1);
+	return Nx*Ny*statistic*CMath::sqrt((Bx+By)/float64_t(Nx+Ny))/(Nx+Ny);
 }
 
 const float64_t CBTestMMD::normalize_variance(float64_t variance) const
 {
-	const DataManager& dm = get_data_manager();
-	const index_t Bx = dm.blocksize_at(0);
-	const index_t By = dm.blocksize_at(1);
-	return variance * CMath::sq(Bx * By / float64_t(Bx + By));
+	const DataManager& dm=get_data_manager();
+	const index_t Bx=dm.blocksize_at(0);
+	const index_t By=dm.blocksize_at(1);
+	return variance*CMath::sq(Bx*By/float64_t(Bx+By));
 }
 
 float64_t CBTestMMD::compute_p_value(float64_t statistic)
 {
-	float64_t result = 0;
+	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD1_GAUSSIAN:
+		case NAM_MMD1_GAUSSIAN:
 		{
-			float64_t sigma_sq = compute_variance();
-			float64_t std_dev = CMath::sqrt(sigma_sq);
-			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+			float64_t sigma_sq=compute_variance();
+			float64_t std_dev=CMath::sqrt(sigma_sq);
+			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 			break;
 		}
 		default:
 		{
-			result = CHypothesisTest::compute_p_value(statistic);
+			result=CHypothesisTest::compute_p_value(statistic);
 			break;
 		}
 	}
@@ -91,19 +91,19 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 
 float64_t CBTestMMD::compute_threshold(float64_t alpha)
 {
-	float64_t result = 0;
+	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD1_GAUSSIAN:
+		case NAM_MMD1_GAUSSIAN:
 		{
-			float64_t sigma_sq = compute_variance();
-			float64_t std_dev = CMath::sqrt(sigma_sq);
-			result = 1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+			float64_t sigma_sq=compute_variance();
+			float64_t std_dev=CMath::sqrt(sigma_sq);
+			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
 			break;
 		}
 		default:
 		{
-			result = CHypothesisTest::compute_threshold(alpha);
+			result=CHypothesisTest::compute_threshold(alpha);
 			break;
 		}
 	}

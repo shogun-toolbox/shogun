@@ -31,7 +31,6 @@
 #include <memory>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h> // TODO remove
 #include <shogun/statistical_testing/internals/Block.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
@@ -214,6 +213,10 @@ void DataManager::set_xvalidation_mode(bool xvalidation_mode)
 index_t DataManager::get_num_folds() const
 {
 	return 0;
+}
+
+void DataManager::use_fold(index_t idx)
+{
 }
 
 void DataManager::start()

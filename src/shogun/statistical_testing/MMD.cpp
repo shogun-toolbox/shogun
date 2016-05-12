@@ -94,9 +94,9 @@ struct CMMD::Self
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
-	statistic_type(EStatisticType::UNBIASED_FULL),
-	variance_estimation_method(EVarianceEstimationMethod::DIRECT),
-	null_approximation_method(ENullApproximationMethod::PERMUTATION),
+	statistic_type(ST_UNBIASED_FULL),
+	variance_estimation_method(VEM_DIRECT),
+	null_approximation_method(NAM_PERMUTATION),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 }
@@ -114,13 +114,13 @@ void CMMD::Self::create_statistic_job()
 	auto By=dm.blocksize_at(1);
 	switch (statistic_type)
 	{
-		case EStatisticType::UNBIASED_FULL:
+		case ST_UNBIASED_FULL:
 			statistic_job=mmd::UnbiasedFull(Bx);
 			break;
-		case EStatisticType::UNBIASED_INCOMPLETE:
+		case ST_UNBIASED_INCOMPLETE:
 			statistic_job=mmd::UnbiasedIncomplete(Bx);
 			break;
-		case EStatisticType::BIASED_FULL:
+		case ST_BIASED_FULL:
 			statistic_job=mmd::BiasedFull(Bx);
 			break;
 		default : break;
@@ -132,10 +132,10 @@ void CMMD::Self::create_variance_job()
 {
 	switch (variance_estimation_method)
 	{
-		case EVarianceEstimationMethod::DIRECT:
+		case VEM_DIRECT:
 			variance_job=owner.get_direct_estimation_method();
 			break;
-		case EVarianceEstimationMethod::PERMUTATION:
+		case VEM_PERMUTATION:
 			variance_job=permutation_job;
 			break;
 		default : break;
@@ -225,7 +225,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 			statistic_term_counter++;
 		}
 
-		if (variance_estimation_method==EVarianceEstimationMethod::DIRECT)
+		if (variance_estimation_method==VEM_DIRECT)
 		{
 			for (size_t i=0; i<mmds.size(); ++i)
 			{
@@ -252,7 +252,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	// normalize statistic and variance
 	statistic=owner.normalize_statistic(statistic);
-	if (variance_estimation_method==EVarianceEstimationMethod::PERMUTATION)
+	if (variance_estimation_method==VEM_PERMUTATION)
 		variance=owner.normalize_variance(variance);
 
 	return std::make_pair(statistic, variance);
@@ -416,7 +416,7 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel, f
 
 	switch (kmethod)
 	{
-		case EKernelSelectionMethod::MEDIAN_HEURISTIC:
+		case KSM_MEDIAN_HEURISTIC:
 			{
 				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
 				auto distance=compute_distance();
@@ -424,19 +424,19 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel, f
 				dm.set_train_test_ratio(0);
 			}
 			break;
-		case EKernelSelectionMethod::MAXIMIZE_XVALIDATION:
+		case KSM_MAXIMIZE_XVALIDATION:
 			{
 				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MAXIMIZE_XVALIDATION!\n");
 				policy=std::unique_ptr<MaxXValidation>(new MaxXValidation(self->kernel_selection_mgr, this, num_run, alpha));
 			}
 			break;
-		case EKernelSelectionMethod::MAXIMIZE_MMD:
+		case KSM_MAXIMIZE_MMD:
 			if (weighted_kernel)
 				policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(self->kernel_selection_mgr, this));
 			else
 				policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(self->kernel_selection_mgr, this));
 			break;
-		case EKernelSelectionMethod::MAXIMIZE_POWER:
+		case KSM_MAXIMIZE_POWER:
 			if (weighted_kernel)
 				policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(self->kernel_selection_mgr, this));
 			else

@@ -59,7 +59,7 @@ TEST(KernelSelectionMaxPower, single_kernel)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -72,7 +72,7 @@ TEST(KernelSelectionMaxPower, single_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER);
+	mmd->select_kernel(KSM_MAXIMIZE_POWER);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 }
@@ -94,7 +94,7 @@ TEST(KernelSelectionMaxPower, weighted_kernel)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -107,7 +107,7 @@ TEST(KernelSelectionMaxPower, weighted_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(EKernelSelectionMethod::MAXIMIZE_POWER, true);
+	mmd->select_kernel(KSM_MAXIMIZE_POWER, true);
 	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
