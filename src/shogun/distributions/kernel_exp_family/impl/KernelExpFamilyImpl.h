@@ -35,25 +35,19 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/kernel/Kernel.h>
 #include <utility>
 
 
 /* TODO
  *
- * - Make all methods static functions using raw pointers, N, and D in the arguments
- *   which allows to extract the code from shogun and use it in isolation.
  *   The kernel can be optional later on. For now we can just fix it (too many
  *   derivatives to be implemented for now.). We can make it a simple class where
  *   people who want other kernels can overload methods in.
- *   NOTE: The functions should should take a reference to the return type as
+ *   NOTE: Some functions should should take a reference to the return type as
  *         parameter, which allows for pre-allocation of that memory.
  *         Should investigate whether that is needed before doing it. There might
  *         be a few cases where we can avoid using double memory usage peaks for the
  *         big matrices.
- * - In the OOP code, the fit() method should store the alpha, beta inside rather
- *   than returning it.
- * - Make Nystrom a sub-class of the original estimator.
  * - There are various TODOs in the code that address the question whether
  *   vectorization makes sense. Check these.
  * - The Gaussian kernel implemented should get doxygen math of what it does,
@@ -78,34 +72,21 @@ public :
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_hessian_all();
-	float64_t kernel_hessian_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j);
 
-	// for new data
+	// new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
-	float64_t kernel_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
 	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
-	float64_t kernel_dx_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
 
-
-	// full estimator
 	SGVector<float64_t> compute_h();
 	float64_t compute_xi_norm_2();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
-	SGVector<float64_t> fit();
-	float64_t log_pdf(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta);
+	void fit();
+	float64_t log_pdf(const SGVector<float64_t>& x);
 
-	// nystrom approximation
-	std::pair<index_t, index_t> idx_to_ai(index_t idx);
-	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx);
-	SGVector<float64_t> compute_first_row_no_storing();
-	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_nystrom(SGVector<index_t> inds);
-	SGVector<float64_t> fit_nystrom(SGVector<index_t> inds);
-	SGMatrix<float64_t> pinv(SGMatrix<float64_t> A);
-	float64_t  log_pdf_nystrom(const SGVector<float64_t>& x, const SGVector<float64_t>& alpha_beta, const SGVector<index_t>& inds);
-
+	SGVector<float64_t> get_alpha_beta() { return m_alpha_beta; }
 
 protected:
-	index_t get_dimension();
+	index_t get_num_dimensions();
 	index_t get_num_data();
 
 
@@ -113,6 +94,8 @@ protected:
 	SGMatrix<float64_t> m_data;
 	float64_t m_sigma;
 	float64_t m_lambda;
+
+	SGVector<float64_t> m_alpha_beta;
 };
 
 }

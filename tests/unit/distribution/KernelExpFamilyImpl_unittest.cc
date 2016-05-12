@@ -29,7 +29,7 @@
  */
 
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/distributions/KernelExpFamilyImpl.h>
+#include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyImpl.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/some.h>
@@ -129,35 +129,6 @@ TEST(KernelExpFamilyImpl, kernel_dx)
 	float64_t reference2[] = {0.02021384,  0.00673795};
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
-}
-
-TEST(KernelExpFamilyImpl, kernel_dx_i)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a = 0;
-	SGVector<float64_t> b(D);
-	b[0]=-1;
-	b[1]=3;
-	auto result = est.kernel_dx(b, idx_a);
-	
-	// compare against full version
-	for (auto i=0; i<D; i++)
-	{
-		auto entry = est.kernel_dx_i(b, idx_a, i);
-		EXPECT_NEAR(result.vector[i], entry, 1e-15);
-	}
 }
 
 TEST(KernelExpFamilyImpl, kernel_dx_dx_dy)
@@ -312,60 +283,6 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx)
 		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx_dx_i)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a = 0;
-	SGVector<float64_t> b(D);
-	b[0]=-1;
-	b[1]=3;
-	auto result = est.kernel_dx_dx(b, idx_a);
-	
-	// compare against full version
-	for (auto i=0; i<D; i++)
-	{
-		auto entry = est.kernel_dx_dx_i(b, idx_a, i);
-		EXPECT_NEAR(result.vector[i], entry, 1e-15);
-	}
-}
-
-TEST(KernelExpFamilyImpl, kernel_hessian_i_j)
-{
-	index_t N=30;
-	index_t D=20;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a = 0;
-	index_t idx_b = 1;
-	// compare against full version
-	auto result = est.kernel_hessian(idx_a, idx_b);
-	
-	for (auto i=0; i<D; i++)
-		for (auto j=0; j<D; j++)
-		{
-			auto entry = est.kernel_hessian_i_j(idx_a, idx_b, i, j);
-			EXPECT_NEAR(result(i,j), entry, 1e-8);
-		}
-}
-
 TEST(KernelExpFamilyImpl, kernel_hessian_all)
 {
 	index_t N=3;
@@ -517,8 +434,10 @@ TEST(KernelExpFamilyImpl, fit)
 	float64_t lambda = 1;
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	
-	auto x = est.fit();
+	est.fit();
+	auto x = est.get_alpha_beta();
 	ASSERT_EQ(x.vlen, ND+1);
+	ASSERT(x.vector);
 	
 	// from kernel_exp_family Python implementation
 	float64_t reference_x[] = {-0.99999999999999989, 0.00228091,  0.00342023,
@@ -528,229 +447,6 @@ TEST(KernelExpFamilyImpl, fit)
 	for (auto i=0; i<ND+1; i++)
 		EXPECT_NEAR(x[i], reference_x[i], 1e-5);
 	
-}
-
-TEST(KernelExpFamilyImpl, idx_to_ai)
-{
-	index_t D=3;
-	KernelExpFamilyImpl est(SGMatrix<float64_t>(D,1), 1, 1);
-	
-	index_t idx=0;
-	auto ai=est.idx_to_ai(idx);
-	EXPECT_EQ(ai.first, 0);
-	EXPECT_EQ(ai.second, 0);
-	
-	idx=1;
-	ai=est.idx_to_ai(idx);
-	EXPECT_EQ(ai.first, 0);
-	EXPECT_EQ(ai.second, 1);
-	
-	idx=2;
-	ai=est.idx_to_ai(idx);
-	EXPECT_EQ(ai.first, 0);
-	EXPECT_EQ(ai.second, 2);
-	
-	idx=3;
-	ai=est.idx_to_ai(idx);
-	EXPECT_EQ(ai.first, 1);
-	EXPECT_EQ(ai.second, 0);
-	
-	idx=4;
-	ai=est.idx_to_ai(idx);
-	EXPECT_EQ(ai.first, 1);
-	EXPECT_EQ(ai.second, 1);
-}
-
-TEST(KernelExpFamilyImpl, compute_lower_right_submatrix_element)
-{
-	index_t N=5;
-	index_t D=3;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto result = est.build_system();
-	auto A = result.first;
-
-	// compare against full version
-	for (auto row_idx=0; row_idx<ND; row_idx++)
-		for (auto col_idx=0; col_idx<ND; col_idx++)
-		{
-			auto entry=est.compute_lower_right_submatrix_element(row_idx, col_idx);
-			EXPECT_NEAR(entry, A(row_idx+1, col_idx+1), 1e-15);
-		}
-}
-
-TEST(KernelExpFamilyImpl, compute_first_row_no_storing)
-{
-	index_t N=10;
-	index_t D=5;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto result = est.build_system();
-	auto A = result.first;
-	auto first_row = est.compute_first_row_no_storing();
-	ASSERT_EQ(first_row.vlen, ND);
-	
-	// compare against full version
-	for (auto i=0; i<ND; i++)
-		EXPECT_NEAR(first_row[i], A(0,i+1), 1e-15);
-}
-
-TEST(KernelExpFamilyImpl, build_system_nystrom_all_inds_equals_exact)
-{
-	index_t N=5;
-	index_t D=3;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto result = est.build_system();
-	auto A = result.first;
-	auto b = result.second;
-	
-	SGVector<index_t> inds(ND);
-	inds.range_fill();
-	
-	// compare against full version
-	auto result_nystrom = est.build_system_nystrom(inds);
-	auto A_nystrom = result.first;
-	auto b_nystrom = result.second;
-	
-	for (auto i=0; i<ND; i++)
-		EXPECT_NEAR(b[i], b_nystrom[i], 1e-15);
-	
-	for (auto i=0; i<ND*ND; i++)
-		EXPECT_NEAR(A.matrix[i], A_nystrom.matrix[i], 1e-15);
-	
-}
-
-TEST(KernelExpFamilyImpl, fit_nystrom_all_inds_equals_exact)
-{
-	index_t N=10;
-	index_t D=5;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto result = est.fit();
-	
-	SGVector<index_t> inds(ND);
-	inds.range_fill();
-	
-	// compare against full version
-	auto result_nystrom = est.fit_nystrom(inds);
-	
-	ASSERT_EQ(result.vlen, ND+1);
-	ASSERT_EQ(result_nystrom.vlen, ND+1);
-	
-	for (auto i=0; i<ND+1; i++)
-		EXPECT_NEAR(result[i], result_nystrom[i], 1e-12);
-}
-
-TEST(KernelExpFamilyImpl, fit_nystrom_half_inds_shape)
-{
-	index_t N=10;
-	index_t D=5;
-	auto ND=N*D;
-	index_t m=ND/2;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	SGVector<index_t> permutation(N*D);
-	permutation.range_fill();
-	CMath::permute(permutation);
-	SGVector<index_t> inds(m);
-	for (auto i=0; i<inds.vlen; i++)
-		inds[i]=permutation[i];
-	
-	auto result_nystrom = est.fit_nystrom(inds);
-	
-	ASSERT_EQ(result_nystrom.vlen, m+1);
-}
-
-TEST(KernelExpFamilyImpl, pinv_non_square1)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto pinv = est.pinv(X);
-	
-	ASSERT_EQ(pinv.num_rows, N);
-	ASSERT_EQ(pinv.num_cols, D);
-
-	// from numpy.linalg.pinv
-	// using rcond=np.finfo(np.float32).eps * np.max((N,D))=3.57627868652e-07
-	float64_t reference[] = {-2.00000000e+00,   1.53846154e-01,   2.30769231e-01,
-         1.00000000e+00,   7.63278329e-17,  -4.16333634e-17};
-	
-	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
-		EXPECT_NEAR(pinv[i], reference[i], 1e-9);
-}
-
-TEST(KernelExpFamilyImpl, pinv_square)
-{
-	index_t N=2;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto pinv = est.pinv(X);
-	
-	ASSERT_EQ(pinv.num_rows, 2);
-	ASSERT_EQ(pinv.num_cols, 2);
-
-	// from numpy.linalg.pinv
-	float64_t reference[] = {-2.00000000e+00, 5.00000000e-01, 
-							 1.00000000e+00,  -2.77555756e-17};
-	
-	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
-		EXPECT_NEAR(pinv[i], reference[i], 1e-15);
 }
 
 TEST(KernelExpFamilyImpl, log_pdf)
@@ -768,71 +464,13 @@ TEST(KernelExpFamilyImpl, log_pdf)
 	float64_t sigma = 2;
 	float64_t lambda = 1;
 	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto alpha_beta = est.fit();
+	est.fit();
 	
 	SGVector<float64_t> x(D);
 	x[0] = 0;
 	x[1] = 1;
-	auto log_pdf = est.log_pdf(x, alpha_beta);
+	auto log_pdf = est.log_pdf(x);
 
 	// from kernel_exp_family Python implementation
 	EXPECT_NEAR(log_pdf, 0.6612075586873365, 1e-15);
-}
-
-TEST(KernelExpFamilyImpl, log_pdf_nystrom_all_inds_equals_exact)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	auto alpha_beta = est.fit();
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	auto log_pdf = est.log_pdf(x, alpha_beta);
-
-	SGVector<index_t> inds(N*D);
-	inds.range_fill();
-	auto alpha_beta_nystrom = est.fit_nystrom(inds);
-	auto log_pdf_nystrom = est.log_pdf_nystrom(x, alpha_beta_nystrom, inds);
-	
-	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-8);
-}
-
-TEST(KernelExpFamilyImpl, log_pdf_nystrom_half_inds_execute)
-{
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-
-	SGVector<index_t> permutation(N*D);
-	permutation.range_fill();
-	CMath::permute(permutation);
-	SGVector<index_t> inds(N*D/2);
-	for (auto i=0; i<inds.vlen; i++)
-		inds[i]=permutation[i];
-		
-	auto alpha_beta_nystrom = est.fit_nystrom(inds);
-	est.log_pdf_nystrom(x, alpha_beta_nystrom, inds);
 }
