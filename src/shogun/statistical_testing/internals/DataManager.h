@@ -190,6 +190,42 @@ public:
 	index_t get_min_blocksize() const;
 
 	/**
+	 * @param train_test_ratio The split ratio for train-test data. The default value is 0
+	 * which means that all of the data would be used for testing.
+	 */
+	void set_train_test_ratio(float64_t train_test_ratio);
+
+	/**
+	 * @return The split ratio for train-test data. The default value is 0, which means
+	 * that all of the data would be used for testing.
+	 */
+	float64_t get_train_test_ratio() const;
+
+	/**
+	 * @param train_mode If set to true, then the training data would be returned by the data
+	 * fetching API of this data manager. Otherwise, test data would be returend.
+	 */
+	void set_train_mode(bool train_mode);
+
+	/**
+	 * @param xvalidation_mode If set to true, then the data would be split in N fold (the value
+	 * of N is determined from the train_test_ratio).
+	 */
+	void set_xvalidation_mode(bool xvalidation_mode);
+
+	/**
+	 * @return The number of folds that can be used based on the train-test ratio. Returns
+	 * an integer if xvalidation mode is ON, 0 otherwise.
+	 */
+	index_t get_num_folds() const;
+
+	/**
+	 * @param idx The index of the fold in X-validation scenario, has to be within the range of
+	 * \f$[0, N)\f$, where N is the number of folds as returned by get_num_folds() method.
+	 */
+	void use_fold(index_t idx);
+
+	/**
 	 * Call this method before fetching the data from the data manager
 	 */
 	void start();

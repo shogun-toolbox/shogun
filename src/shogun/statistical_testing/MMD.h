@@ -48,10 +48,12 @@ namespace internal
 {
 
 class MaxTestPower;
+class MaxXValidation;
 class WeightedMaxTestPower;
 
 }
 
+// TODO change enum class to enum in order to co-operate with python swig etc blah
 enum class EStatisticType
 {
 	UNBIASED_FULL,
@@ -87,12 +89,15 @@ class CMMD : public CTwoSampleTest
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
+	friend class internal::MaxXValidation;
 public:
 	CMMD();
 	virtual ~CMMD();
 
 	void add_kernel(CKernel *kernel);
-	void select_kernel(EKernelSelectionMethod kmethod=EKernelSelectionMethod::AUTO, bool weighted_kernel=false);
+	void select_kernel(EKernelSelectionMethod kmethod=EKernelSelectionMethod::AUTO,
+		bool weighted_kernel=false, float64_t train_test_ratio=1.0,
+		index_t num_run=10, float64_t alpha=0.05);
 
 	virtual float64_t compute_statistic() override;
 	virtual float64_t compute_variance();

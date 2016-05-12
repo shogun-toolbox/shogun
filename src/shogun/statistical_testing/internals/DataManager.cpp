@@ -194,6 +194,28 @@ const index_t DataManager::blocksize_at(size_t i) const
 	return fetchers[i]->m_block_details.m_blocksize;
 }
 
+void DataManager::set_train_test_ratio(float64_t train_test_ratio)
+{
+}
+
+float64_t DataManager::get_train_test_ratio() const
+{
+	return 0;
+}
+
+void DataManager::set_train_mode(bool train_mode)
+{
+}
+
+void DataManager::set_xvalidation_mode(bool xvalidation_mode)
+{
+}
+
+index_t DataManager::get_num_folds() const
+{
+	return 0;
+}
+
 void DataManager::start()
 {
 	SG_SDEBUG("Entering!\n");

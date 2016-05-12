@@ -46,6 +46,7 @@
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/MaxMeasure.h>
 #include <shogun/statistical_testing/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/internals/MaxXValidation.h>
 #include <shogun/statistical_testing/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
 #include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
@@ -402,43 +403,56 @@ void CMMD::add_kernel(CKernel* kernel)
 	self->kernel_selection_mgr.push_back(kernel);
 }
 
-void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel)
+void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel, float64_t train_test_ratio,
+		index_t num_run, float64_t alpha)
 {
 	SG_DEBUG("Entering!\n");
 	SG_DEBUG("Selecting kernels from a total of %d kernels!\n", self->kernel_selection_mgr.num_kernels());
-	std::shared_ptr<KernelSelection> policy=nullptr;
+	std::unique_ptr<KernelSelection> policy=nullptr;
+
+	auto& dm=get_data_manager();
+	dm.set_train_test_ratio(train_test_ratio);
+	dm.set_train_mode(true);
+
 	switch (kmethod)
 	{
-		case EKernelSelectionMethod::MAXIMIZE_MMD:
-			if (weighted_kernel)
-				policy=std::shared_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(self->kernel_selection_mgr, this));
-			else
-				policy=std::shared_ptr<MaxMeasure>(new MaxMeasure(self->kernel_selection_mgr, this));
-			break;
-		case EKernelSelectionMethod::MAXIMIZE_POWER:
-			if (weighted_kernel)
-				policy=std::shared_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(self->kernel_selection_mgr, this));
-			else
-				policy=std::shared_ptr<MaxTestPower>(new MaxTestPower(self->kernel_selection_mgr, this));
-			break;
 		case EKernelSelectionMethod::MEDIAN_HEURISTIC:
 			{
 				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
 				auto distance=compute_distance();
-				policy=std::shared_ptr<MedianHeuristic>(new MedianHeuristic(self->kernel_selection_mgr, distance));
+				policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(self->kernel_selection_mgr, distance));
+				dm.set_train_test_ratio(0);
 			}
+			break;
+		case EKernelSelectionMethod::MAXIMIZE_XVALIDATION:
+			{
+				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MAXIMIZE_XVALIDATION!\n");
+				policy=std::unique_ptr<MaxXValidation>(new MaxXValidation(self->kernel_selection_mgr, this, num_run, alpha));
+			}
+			break;
+		case EKernelSelectionMethod::MAXIMIZE_MMD:
+			if (weighted_kernel)
+				policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(self->kernel_selection_mgr, this));
+			else
+				policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(self->kernel_selection_mgr, this));
+			break;
+		case EKernelSelectionMethod::MAXIMIZE_POWER:
+			if (weighted_kernel)
+				policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(self->kernel_selection_mgr, this));
+			else
+				policy=std::unique_ptr<MaxTestPower>(new MaxTestPower(self->kernel_selection_mgr, this));
 			break;
 		default:
 			SG_ERROR("Unsupported kernel selection method specified! "
 					"Presently only accepted values are MAXIMIZE_MMD, MAXIMIZE_POWER and MEDIAN_HEURISTIC!\n");
 			break;
 	}
-	if (policy!=nullptr)
-	{
-		auto& km=get_kernel_manager();
-		km.kernel_at(0)=policy->select_kernel();
-		km.restore_kernel_at(0);
-	}
+	ASSERT(policy!=nullptr);
+	auto& km=get_kernel_manager();
+	km.kernel_at(0)=policy->select_kernel();
+	km.restore_kernel_at(0);
+
+	dm.set_train_mode(false);
 	SG_DEBUG("Leaving!\n");
 }
 
