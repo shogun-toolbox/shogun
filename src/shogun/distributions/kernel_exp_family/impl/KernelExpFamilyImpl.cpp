@@ -150,7 +150,7 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>&
 	SGVector<float64_t> result(D);
 	Map<VectorXd> eigen_result(result.vector, D);
 
-    // k.T * (sq_differences*(2.0 / sigma)**2 - 2.0/sigma)
+	// k.T * (sq_differences*(2.0 / sigma)**2 - 2.0/sigma)
 	eigen_result = k*(sq_diff*pow(2.0/m_sigma, 2) -2.0/m_sigma);
 
 	return result;
@@ -328,7 +328,7 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
 	{
 		SGMatrix<float64_t> g=kernel_dx_i_dx_i_dx_j(x, a);
 		Map<MatrixXd> eigen_g(g.matrix, D, D);
-		eigen_xi_grad += eigen_g.colwise().sum() / N;
+		eigen_xi_grad += eigen_g.colwise().sum();
 
 		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
 		// betasum_grad += beta[a, :].dot(left_arg_hessian)
@@ -338,7 +338,7 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
 	}
 
 	// return alpha * xi_grad + betasum_grad
-	eigen_xi_grad *= m_alpha_beta[0];
+	eigen_xi_grad *= m_alpha_beta[0] / N;
 	return xi_grad + beta_sum_grad;
 }
 
@@ -355,7 +355,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_i_dx_j(const SGVector<fl
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
 
 	// pairwise_dist_squared_i = np.outer((y-x)**2, y-x)
-    // term1 = k*pairwise_dist_squared_i * (2.0/sigma)**3
+	// term1 = k*pairwise_dist_squared_i * (2.0/sigma)**3
 	eigen_result = sq_diff*diff.transpose();
 	eigen_result *= k* pow(2.0/m_sigma, 3);
 
