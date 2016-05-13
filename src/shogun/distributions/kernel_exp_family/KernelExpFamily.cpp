@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 #include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyImpl.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
@@ -44,6 +45,12 @@ CKernelExpFamily::CKernelExpFamily() : CSGObject()
 CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda) : CSGObject()
 {
+	REQUIRE(data.matrix, "Given observations cannot be empty\n");
+	REQUIRE(data.num_cols>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
+	REQUIRE(data.num_rows>0, "Number of given observations (%d) must be positive.\n", data.num_cols);
+	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
+	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+
 	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
 }
 
@@ -60,12 +67,30 @@ void CKernelExpFamily::fit()
 
 float64_t CKernelExpFamily::log_pdf(SGVector<float64_t> x)
 {
+	auto D = m_impl->get_num_dimensions();
+	REQUIRE(x.vector, "Given data point cannot be empty\n");
+	REQUIRE(x.vector, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
+
 	return m_impl->log_pdf(x);
+}
+
+SGVector<float64_t> CKernelExpFamily::grad(SGVector<float64_t> x)
+{
+	auto D = m_impl->get_num_dimensions();
+	REQUIRE(x.vector, "Given data point cannot be empty\n");
+	REQUIRE(x.vlen==D, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
+
+	return m_impl->grad(x);
 }
 
 SGVector<float64_t> CKernelExpFamily::log_pdf_multiple(SGMatrix<float64_t> X)
 {
-	SGVector<float64_t> result(X.num_rows);
+	auto D = m_impl->get_num_dimensions();
+	REQUIRE(X.matrix, "Given observations cannot be empty\n");
+	REQUIRE(X.num_cols==D, "Dimension of given observations (%d) must match the estimator's (%d)\n", X.num_rows, D);
+	REQUIRE(X.num_rows>0, "Number of given bservations (%d) must be positive.\n", X.num_cols);
+
+	SGVector<float64_t> result(X.num_cols);
 #pragma omp for
 	for (auto i=0; i<X.num_cols; i++)
 	{

@@ -52,6 +52,8 @@ public:
 	float64_t log_pdf(SGVector<float64_t> x);
 	SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
 
+	SGVector<float64_t> grad(SGVector<float64_t> x);
+
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 
 	SGVector<float64_t> get_alpha_beta();
