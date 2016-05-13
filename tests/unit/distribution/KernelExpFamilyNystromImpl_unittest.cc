@@ -398,8 +398,9 @@ TEST(KernelExpFamilyNystromImpl, log_pdf_all_inds_equals_exact)
 	est.fit();
 	
 	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
+	for (auto i=0; i<D; i++)
+		x[i]=CMath::randn_float();
+		
 	auto log_pdf = est.log_pdf(x);
 	auto log_pdf_nystrom = est_nystrom.log_pdf(x);
 	
