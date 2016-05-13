@@ -79,7 +79,8 @@ public :
 	// for training
 	float64_t kernel(index_t idx_a, const index_t idx_b);
 	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
+	float64_t kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b);
+
 	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_hessian_all();
 
@@ -101,6 +102,8 @@ public :
 	index_t get_num_dimensions();
 	index_t get_num_data();
 
+	// old develop code
+	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
 
 protected:
 	SGMatrix<float64_t> m_data;

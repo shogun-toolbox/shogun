@@ -83,6 +83,30 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t 
 	return result;
 }
 
+float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b)
+{
+	auto D = get_num_dimensions();
+	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
+	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
+	VectorXd diff2 = (x-y).array().pow(2).matrix();
+
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto k=CMath::exp(-diff2.sum() / m_sigma);
+	auto factor = k*pow(2.0/m_sigma, 3);
+
+	float64_t sum = 0;
+	for (auto i=0; i<D; i++)
+		for (auto j=0; j<D; j++)
+		{
+			sum += k*pow(2.0/m_sigma, 4) * (diff2[i]*diff2[j]);
+			sum -= factor*(diff2[i]+diff2[j] - 1);
+			if (i==j)
+				sum -= 4*factor*diff2[i] - 2*factor;
+		}
+
+	return sum;
+}
+
 SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b)
 {
 	auto D = get_num_dimensions();
@@ -226,11 +250,7 @@ float64_t KernelExpFamilyImpl::compute_xi_norm_2()
 #pragma omp for
 	for (auto idx_a=0; idx_a<N; idx_a++)
 		for (auto idx_b=0; idx_b<N; idx_b++)
-		{
-			// TODO optimise, no need to store matrix
-			SGMatrix<float64_t> temp=kernel_dx_dx_dy_dy(idx_a, idx_b);
-			xi_norm_2 += Map<MatrixXd>(temp.matrix, D, D).sum();
-		}
+			xi_norm_2 += kernel_dx_dx_dy_dy_sum(idx_a, idx_b);
 
 	xi_norm_2 /= (N*N);
 

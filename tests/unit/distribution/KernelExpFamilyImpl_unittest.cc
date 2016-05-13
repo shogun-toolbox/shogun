@@ -584,3 +584,28 @@ TEST(KernelExpFamilyImpl, grad)
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference2[i], 1e-8);
 }
+
+TEST(KernelExpFamilyImpl, kernel_dx_dx_dy_dy_sum)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	est.fit();
+	
+	// compare against batch version
+	auto idx_a=0;
+	auto idx_b=1;
+	auto mat = est.kernel_dx_dx_dy_dy(idx_a, idx_b);
+	float64_t sum_manual=0;
+	for (auto i=0; i<D*D; i++)
+		sum_manual += mat.matrix[i];
+		
+	auto sum = est.kernel_dx_dx_dy_dy_sum(idx_a, idx_b);
+	EXPECT_NEAR(sum, sum_manual, 1e-15);
+}
