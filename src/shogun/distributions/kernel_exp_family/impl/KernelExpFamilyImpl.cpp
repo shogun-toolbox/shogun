@@ -382,7 +382,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const SGVector<float64
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
 
 	// pairwise_dist = np.outer(y-x, y-x)
-    // term1 = k*pairwise_dist * (2.0/sigma)**2
+	// term1 = k*pairwise_dist * (2.0/sigma)**2
 	eigen_result = diff*diff.transpose();
 	eigen_result *= k * pow(2.0/m_sigma, 2);
 
