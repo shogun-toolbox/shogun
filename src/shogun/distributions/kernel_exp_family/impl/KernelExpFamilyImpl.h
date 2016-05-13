@@ -55,6 +55,7 @@
  * - Benchmark and profile the code and investigate in particular whether it has
  *   a lot of cache misses and how we can avoid that. Investigate how it scales
  *   with multiple cores. Investigate how much memory it uses for larger datasets.
+ * - Profile memory usage of full vs Nystrom.
  *
  *   Optimizations:
  * - See the various TODOs in the code
