@@ -428,6 +428,7 @@ template <class T>
     else
         example_type = E_UNLABELLED;
 
+	SG_UNREF(examples_ring);
     examples_ring = new CParseBuffer<T>(size);
     SG_REF(examples_ring);
 

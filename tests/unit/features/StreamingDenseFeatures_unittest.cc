@@ -95,3 +95,33 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 
 	SG_UNREF(feats);
 }
+
+TEST(StreamingDenseFeaturesTest, reset_stream)
+{
+	index_t n=20;
+	index_t dim=2;
+
+	SGMatrix<float64_t> data(dim,n);
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i]=sg_rand->std_normal_distrib();
+
+	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
+	CStreamingDenseFeatures<float64_t>* feats=new CStreamingDenseFeatures<float64_t>(orig_feats);
+
+	feats->start_parser();
+
+	CDenseFeatures<float64_t>* streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	ASSERT_TRUE(streamed!=nullptr);
+	ASSERT_TRUE(orig_feats->equals(streamed));
+	SG_UNREF(streamed);
+
+	feats->reset_stream();
+
+	streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	ASSERT_TRUE(streamed!=nullptr);
+	ASSERT_TRUE(orig_feats->equals(streamed));
+	SG_UNREF(streamed);
+
+	feats->end_parser();
+	SG_UNREF(feats);
+}
