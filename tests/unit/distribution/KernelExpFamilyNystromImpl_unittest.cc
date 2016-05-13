@@ -416,7 +416,7 @@ TEST(KernelExpFamilyNystromImpl, log_pdf_almost_all_inds_close_exact)
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
-	auto m=N*D-2;
+	auto m=N*D-1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	est_nystrom.fit();
@@ -469,7 +469,7 @@ TEST(KernelExpFamilyNystromImpl, grad_almost_all_inds_close_exact)
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
-	auto m=N*D-2;
+	auto m=N*D-1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	est_nystrom.fit();
