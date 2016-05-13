@@ -86,6 +86,9 @@ private:
 
 	/** Total number of blocks to be fetched. Set by data fetchers */
 	index_t m_total_num_blocks;
+
+	/** Whether the block should consist of full data (i.e. no block at all) */
+	bool m_full_data;
 };
 
 }

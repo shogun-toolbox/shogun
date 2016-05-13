@@ -52,6 +52,7 @@ void DataFetcher::set_train_test_ratio(float64_t train_test_ratio)
 	m_num_samples=m_train_test_details.get_total_num_samples();
 	index_t num_training_samples=m_num_samples*train_test_ratio/(train_test_ratio+1);
 	m_train_test_details.set_num_training_samples(num_training_samples);
+	SG_SINFO("Must set the train/test mode by calling set_train_mode(True/False)!\n");
 }
 
 float64_t DataFetcher::get_train_test_ratio() const
@@ -85,9 +86,7 @@ void DataFetcher::set_train_mode(bool train_mode)
 	SGVector<index_t> inds(m_num_samples);
 	std::iota(inds.data(), inds.data()+inds.size(), start_index);
 	if (train_test_subset_used)
-	{
 		m_samples->remove_subset();
-	}
 	m_samples->add_subset(inds);
 	train_test_subset_used=true;
 }
@@ -120,9 +119,9 @@ void DataFetcher::use_fold(index_t idx)
 void DataFetcher::start()
 {
 	REQUIRE(m_num_samples>0, "Number of samples is 0!\n");
-	if (m_block_details.m_blocksize==0 || m_block_details.m_blocksize>m_num_samples)
+	if (m_block_details.m_full_data || m_block_details.m_blocksize>m_num_samples)
 	{
-		SG_SINFO("Block details invalid! Fetching entire data (%d samples)!\n", m_num_samples);
+		SG_SINFO("Fetching entire data (%d samples)!\n", m_num_samples);
 		m_block_details.with_blocksize(m_num_samples);
 	}
 	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
@@ -165,5 +164,6 @@ const index_t DataFetcher::get_num_samples() const
 
 BlockwiseDetails& DataFetcher::fetch_blockwise()
 {
+	m_block_details.m_full_data=false;
 	return m_block_details;
 }

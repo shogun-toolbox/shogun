@@ -34,7 +34,8 @@ using namespace shogun;
 using namespace internal;
 
 BlockwiseDetails::BlockwiseDetails() : m_blocksize(0), m_num_blocks_per_burst(1),
-	m_max_num_samples_per_burst(0), m_next_block_index(0), m_total_num_blocks(0)
+	m_max_num_samples_per_burst(0), m_next_block_index(0), m_total_num_blocks(0),
+	m_full_data(true)
 {
 }
 

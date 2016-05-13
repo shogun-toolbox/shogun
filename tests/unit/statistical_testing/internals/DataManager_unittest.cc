@@ -521,6 +521,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 
 	next_burst=mgr.next();
 	ASSERT_TRUE(next_burst.empty());
+	mgr.end();
 
 	// test data
 	mgr.set_train_mode(false);
@@ -540,6 +541,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 
 	next_burst=mgr.next();
 	ASSERT_TRUE(next_burst.empty());
+	mgr.end();
 
 	// full data
 	mgr.set_train_test_ratio(0);
@@ -560,5 +562,115 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 
 	next_burst=mgr.next();
 	ASSERT_TRUE(next_burst.empty());
+	mgr.end();
 }
 
+TEST(DataManager, train_data_two_distributions_normal_feats_blockwise)
+{
+	const index_t dim=3;
+	const index_t num_vec=8;
+	const index_t blocksize=2;
+	const index_t num_blocks_per_burst=2;
+	const index_t num_distributions=2;
+	const index_t train_test_ratio=3;
+
+	SGMatrix<float64_t> data_p(dim, num_vec);
+	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
+
+	SGMatrix<float64_t> data_q(dim, num_vec);
+	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
+
+	using feat_type=CDenseFeatures<float64_t>;
+	auto feats_p=new feat_type(data_p);
+	auto feats_q=new feat_type(data_q);
+
+	DataManager mgr(num_distributions);
+	mgr.samples_at(0)=feats_p;
+	mgr.samples_at(1)=feats_q;
+	mgr.set_blocksize(blocksize);
+	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
+
+	mgr.set_train_test_ratio(train_test_ratio);
+
+	// train data
+	mgr.set_train_mode(true);
+	mgr.start();
+
+	auto next_burst=mgr.next();
+	ASSERT_TRUE(!next_burst.empty());
+
+	auto total=0;
+
+	while (!next_burst.empty())
+	{
+		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
+		for (auto i=0; i<next_burst.num_blocks(); ++i)
+		{
+			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
+			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			ASSERT_TRUE(tmp_p!=nullptr);
+			ASSERT_TRUE(tmp_q!=nullptr);
+			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
+			ASSERT_TRUE(tmp_q->get_num_vectors()==blocksize/2);
+			total+=tmp_p->get_num_vectors();
+		}
+		next_burst=mgr.next();
+	}
+	ASSERT_TRUE(total==num_vec*train_test_ratio/(train_test_ratio+1));
+	mgr.end();
+
+	// test data
+	mgr.set_train_mode(false);
+	mgr.start();
+
+	next_burst=mgr.next();
+	ASSERT_TRUE(!next_burst.empty());
+
+	total=0;
+
+	while (!next_burst.empty())
+	{
+		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
+		for (auto i=0; i<next_burst.num_blocks(); ++i)
+		{
+			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
+			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			ASSERT_TRUE(tmp_p!=nullptr);
+			ASSERT_TRUE(tmp_q!=nullptr);
+			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
+			ASSERT_TRUE(tmp_q->get_num_vectors()==blocksize/2);
+			total+=tmp_p->get_num_vectors();
+		}
+		next_burst=mgr.next();
+	}
+	ASSERT_TRUE(total==num_vec/(train_test_ratio+1));
+	mgr.end();
+
+	// full data
+	mgr.set_train_test_ratio(0);
+	mgr.set_train_mode(false);
+	mgr.start();
+
+	next_burst=mgr.next();
+	ASSERT_TRUE(!next_burst.empty());
+
+	total=0;
+
+	while (!next_burst.empty())
+	{
+		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
+		for (auto i=0; i<next_burst.num_blocks(); ++i)
+		{
+			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
+			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			ASSERT_TRUE(tmp_p!=nullptr);
+			ASSERT_TRUE(tmp_q!=nullptr);
+			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
+			ASSERT_TRUE(tmp_q->get_num_vectors()==blocksize/2);
+			total+=tmp_p->get_num_vectors();
+		}
+		next_burst=mgr.next();
+	}
+	ASSERT_TRUE(total==num_vec);
+	mgr.end();
+}
