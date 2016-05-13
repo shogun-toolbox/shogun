@@ -66,6 +66,14 @@ struct FeaturesUtil
 	 * vectors of feats_a.num_vectors+feats_b.num_vectors.
 	 */
 	static CFeatures* create_merged_copy(CFeatures* feats_a, CFeatures* feats_b);
+
+	/**
+	 * This copies the subset stack from the src features object to the dst.
+	 *
+	 * @param src The source features object
+	 * @param dst The destination features object
+	 */
+	static void clone_subset_stack(CFeatures* src, CFeatures* dst);
 };
 
 }

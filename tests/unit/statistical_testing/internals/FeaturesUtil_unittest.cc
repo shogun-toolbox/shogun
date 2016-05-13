@@ -49,10 +49,10 @@ TEST(FeaturesUtil, create_shallow_copy)
 
 	auto feats=new CDenseFeatures<float64_t>(data);
 	SGVector<index_t> inds(5);
-	std::iota(inds.data(), inds.data()+inds.size(), 0);
+	std::iota(inds.data(), inds.data()+inds.size(), 3);
 	feats->add_subset(inds);
 	SGVector<index_t> inds2(2);
-	std::iota(inds2.data(), inds2.data()+inds2.size(), 0);
+	std::iota(inds2.data(), inds2.data()+inds2.size(), 1);
 	feats->add_subset(inds2);
 
 	auto shallow_copy=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_shallow_copy(feats));
@@ -61,12 +61,6 @@ TEST(FeaturesUtil, create_shallow_copy)
 	ASSERT_TRUE(data.data()==copied_data);
 	ASSERT_TRUE(dim==num_feats);
 	ASSERT_TRUE(num_vec==num_vecs);
-
-	auto src_subset_stack=feats->get_subset_stack();
-	auto dst_subset_stack=shallow_copy->get_subset_stack();
-	ASSERT_TRUE(src_subset_stack->equals(dst_subset_stack));
-	SG_UNREF(src_subset_stack);
-	SG_UNREF(dst_subset_stack);
 
 	SGMatrix<float64_t> src=feats->get_feature_matrix();
 	SGMatrix<float64_t> dst=shallow_copy->get_feature_matrix();
@@ -112,4 +106,36 @@ TEST(FeaturesUtil, create_merged_copy)
 	SG_UNREF(merged_copy);
 	SG_UNREF(feats_a);
 	SG_UNREF(feats_b);
+}
+
+TEST(FeaturesUtil, clone_subset_stack)
+{
+	const index_t dim=2;
+	const index_t num_vec=10;
+
+	SGMatrix<float64_t> data(dim, num_vec);
+	std::iota(data.matrix, data.matrix+dim*num_vec, 0);
+
+	auto feats=new CDenseFeatures<float64_t>(data);
+	SGVector<index_t> inds(5);
+	std::iota(inds.data(), inds.data()+inds.size(), 3);
+	feats->add_subset(inds);
+	SGVector<index_t> inds2(2);
+	std::iota(inds2.data(), inds2.data()+inds2.size(), 1);
+	feats->add_subset(inds2);
+
+	auto copy=new CDenseFeatures<float64_t>(data);
+	FeaturesUtil::clone_subset_stack(feats, copy);
+
+	auto src_subset_stack=feats->get_subset_stack();
+	auto dst_subset_stack=copy->get_subset_stack();
+	ASSERT_TRUE(src_subset_stack->equals(dst_subset_stack));
+	SG_UNREF(src_subset_stack);
+	SG_UNREF(dst_subset_stack);
+
+	copy->remove_all_subsets();
+	SG_UNREF(copy);
+
+	feats->remove_all_subsets();
+	SG_UNREF(feats);
 }

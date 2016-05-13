@@ -57,27 +57,7 @@ CFeatures* FeaturesUtil::create_shallow_copy(CFeatures* other)
 		SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_feats, num_vecs);
 		SGMatrix<float64_t> feats_matrix(data, num_feats, num_vecs, false);
 		shallow_copy=new CDenseFeatures<float64_t>(feats_matrix);
-
-		// clone the subsets if there are any
-		CSubsetStack* src_subset_stack=casted->get_subset_stack();
-		if (src_subset_stack->has_subsets())
-		{
-			SG_SDEBUG("Subset present, cloning the subsets!\n");
-			CSubsetStack* subset_stack=static_cast<CSubsetStack*>(src_subset_stack->clone());
-			std::stack<SGVector<index_t>> stack;
-			while (subset_stack->has_subsets())
-			{
-				stack.push(subset_stack->get_last_subset()->get_subset_idx());
-				subset_stack->remove_subset();
-			}
-			SG_UNREF(subset_stack);
-			while (!stack.empty())
-			{
-				shallow_copy->add_subset(stack.top());
-				stack.pop();
-			}
-		}
-		SG_UNREF(src_subset_stack);
+		clone_subset_stack(other, shallow_copy);
 	}
 	else
 		SG_SNOTIMPLEMENTED;
@@ -119,4 +99,51 @@ CFeatures* FeaturesUtil::create_merged_copy(CFeatures* feats_a, CFeatures* feats
 
 	SG_SDEBUG("Leaving!\n");
 	return merged_copy;
+}
+
+void FeaturesUtil::clone_subset_stack(CFeatures* src, CFeatures* dst)
+{
+	SG_SDEBUG("Entering!\n");
+	CSubsetStack* src_subset_stack=src->get_subset_stack();
+	if (src_subset_stack->has_subsets())
+	{
+		SG_SDEBUG("Subset present, cloning the subsets!\n");
+		CSubsetStack* subset_stack=static_cast<CSubsetStack*>(src_subset_stack->clone());
+		std::stack<SGVector<index_t>> stack;
+		while (subset_stack->has_subsets())
+		{
+			stack.push(subset_stack->get_last_subset()->get_subset_idx());
+			subset_stack->remove_subset();
+		}
+		SG_UNREF(subset_stack);
+		SG_SDEBUG("Number of subsets to be added is %d!\n", stack.size());
+		if (stack.size()>1)
+		{
+			SGVector<index_t> ref=stack.top();
+			dst->add_subset(ref);
+			stack.pop();
+			do
+			{
+				SGVector<index_t> inds=stack.top();
+				for (auto i=0, j=0; i<ref.size() && j<inds.size(); ++i)
+				{
+					if (ref[i]==inds[j])
+						inds[j++]=i;
+				}
+				dst->add_subset(inds);
+				inds=ref;
+				stack.pop();
+			} while (!stack.empty());
+		}
+		else
+		{
+			while (!stack.empty())
+			{
+				dst->add_subset(stack.top());
+				stack.pop();
+			}
+		}
+	}
+	SG_UNREF(src_subset_stack);
+	SG_SDEBUG("Leaving!\n");
 }
