@@ -50,6 +50,7 @@ const char* DataFetcher::get_name() const
 void DataFetcher::set_train_test_ratio(float64_t train_test_ratio)
 {
 	m_num_samples=m_train_test_details.get_total_num_samples();
+	REQUIRE(m_num_samples>0, "Number of samples is not set!\n");
 	index_t num_training_samples=m_num_samples*train_test_ratio/(train_test_ratio+1);
 	m_train_test_details.set_num_training_samples(num_training_samples);
 	SG_SINFO("Must set the train/test mode by calling set_train_mode(True/False)!\n");
@@ -68,10 +69,12 @@ void DataFetcher::set_train_mode(bool train_mode)
 		m_num_samples=m_train_test_details.get_num_training_samples();
 		if (m_num_samples==0)
 			SG_SERROR("The number of training samples is 0! Please set a valid train-test ratio\n");
+		SG_SINFO("Using %d number of samples for training!\n", m_num_samples);
 	}
 	else
 	{
 		m_num_samples=m_train_test_details.get_num_test_samples();
+		SG_SINFO("Using %d number of samples for testing!\n", m_num_samples);
 		start_index=m_train_test_details.get_num_training_samples();
 		if (start_index==0)
 		{

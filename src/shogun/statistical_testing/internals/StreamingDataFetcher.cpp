@@ -48,14 +48,38 @@ const char* StreamingDataFetcher::get_name() const
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
 {
 	m_num_samples=num_samples;
+	m_train_test_details.set_total_num_samples(m_num_samples);
+}
+
+void StreamingDataFetcher::set_train_test_ratio(float64_t train_test_ratio)
+{
+	if (m_train_test_details.get_total_num_samples()==0)
+		m_train_test_details.set_total_num_samples(m_num_samples);
+	DataFetcher::set_train_test_ratio(train_test_ratio);
+}
+
+void StreamingDataFetcher::set_train_mode(bool train_mode)
+{
+	if (train_mode)
+	{
+		m_num_samples=m_train_test_details.get_num_training_samples();
+		if (m_num_samples==0)
+			SG_SERROR("The number of training samples is 0! Please set a valid train-test ratio\n");
+		SG_SINFO("Using %d number of samples for training!\n", m_num_samples);
+	}
+	else
+	{
+		m_num_samples=m_train_test_details.get_num_test_samples();
+		SG_SINFO("Using %d number of samples for testing!\n", m_num_samples);
+	}
 }
 
 void StreamingDataFetcher::start()
 {
 	REQUIRE(m_num_samples>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
-	if (m_block_details.m_blocksize==0)
+	if (m_block_details.m_full_data || m_block_details.m_blocksize>m_num_samples)
 	{
-		SG_SINFO("Block details not set! Fetching entire data (%d samples)!\n", m_num_samples);
+		SG_SINFO("Fetching entire data (%d samples)!\n", m_num_samples);
 		m_block_details.with_blocksize(m_num_samples);
 	}
 	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
@@ -64,7 +88,6 @@ void StreamingDataFetcher::start()
 	{
 		m_samples->start_parser();
 		parser_running=true;
-		// TODO check if resetting the stream is required
 	}
 }
 

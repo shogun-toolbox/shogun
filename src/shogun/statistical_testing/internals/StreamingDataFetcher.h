@@ -39,6 +39,8 @@ class StreamingDataFetcher : public DataFetcher
 public:
 	StreamingDataFetcher(CStreamingFeatures* samples);
 	virtual ~StreamingDataFetcher() override;
+	virtual void set_train_test_ratio(float64_t train_test_ratio) override;
+	virtual void set_train_mode(bool train_mode) override;
 	virtual void start() override;
 	virtual CFeatures* next() override;
 	virtual void reset() override;

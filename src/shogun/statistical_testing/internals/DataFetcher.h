@@ -52,9 +52,9 @@ class DataFetcher
 public:
 	DataFetcher(CFeatures* samples);
 	virtual ~DataFetcher();
-	void set_train_test_ratio(float64_t train_test_ratio);
+	virtual void set_train_test_ratio(float64_t train_test_ratio);
 	float64_t get_train_test_ratio() const;
-	void set_train_mode(bool train_mode);
+	virtual void set_train_mode(bool train_mode);
 	void set_xvalidation_mode(bool xvalidation_mode);
 	index_t get_num_folds() const;
 	void use_fold(index_t idx);
