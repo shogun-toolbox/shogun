@@ -337,11 +337,11 @@ float64_t KernelExpFamilyNystromImpl::log_pdf(const SGVector<float64_t>& x)
 		auto grad_x_xa_i = kernel_dx_component(x, a, i);
 		auto xi_grad_i = kernel_dx_dx_component(x, a, i);
 
-		xi += xi_grad_i / N;
+		xi += xi_grad_i;
 		beta_sum += grad_x_xa_i * m_alpha_beta[1+ind_idx];
 	}
 
-	return m_alpha_beta[0]*xi + beta_sum;
+	return m_alpha_beta[0]*xi/N + beta_sum;
 }
 
 SGVector<float64_t> KernelExpFamilyNystromImpl::grad(const SGVector<float64_t>& x)
