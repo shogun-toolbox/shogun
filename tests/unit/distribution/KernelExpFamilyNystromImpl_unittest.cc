@@ -375,6 +375,7 @@ TEST(KernelExpFamilyNystromImpl, log_pdf_half_inds_execute)
 	SGVector<float64_t> x(D);
 	x[0] = 0;
 	x[1] = 1;
+	x[2] = 2;
 
 	est.log_pdf(x);
 }
