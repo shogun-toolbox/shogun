@@ -207,6 +207,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 	for (auto idx_b=0; idx_b<N; idx_b++)
 		for (auto idx_a=0; idx_a<N; idx_a++)
 		{
+			// TODO optimise, no need to store matrix
 			SGMatrix<float64_t> temp = kernel_dx_dx_dy(idx_a, idx_b);
 			eigen_h.segment(idx_b*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
@@ -226,6 +227,7 @@ float64_t KernelExpFamilyImpl::compute_xi_norm_2()
 	for (auto idx_a=0; idx_a<N; idx_a++)
 		for (auto idx_b=0; idx_b<N; idx_b++)
 		{
+			// TODO optimise, no need to store matrix
 			SGMatrix<float64_t> temp=kernel_dx_dx_dy_dy(idx_a, idx_b);
 			xi_norm_2 += Map<MatrixXd>(temp.matrix, D, D).sum();
 		}

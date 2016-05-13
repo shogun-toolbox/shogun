@@ -107,6 +107,8 @@ float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(inde
 	auto G_a_b_i_j = kernel_hessian_i_j(a, b, i, j);
 
 	float64_t G_sum = 0;
+	// TODO check parallel with accumulating on the G_sum
+#pragma omp for
 	for (auto idx_n=0; idx_n<N; idx_n++)
 		for (auto idx_d=0; idx_d<D; idx_d++)
 		{
@@ -132,9 +134,9 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 	Map<VectorXd> eigen_result(result.vector, ND);
 	eigen_result=VectorXd::Zero(ND);
 
+	// TODO check parallel with accumulating on the G_sum
 #pragma omp for
 	for (auto ind1=0; ind1<ND; ind1++)
-	{
 		for (auto ind2=0; ind2<ND; ind2++)
 		{
 			auto ai = idx_to_ai(ind1);
@@ -146,7 +148,6 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 			auto entry = kernel_hessian_i_j(a, b, i, j);
 			result[ind1] += h[ind2] * entry;
 		}
-	}
 
 	eigen_result /= N;
 	eigen_result += m_lambda * eigen_h;
