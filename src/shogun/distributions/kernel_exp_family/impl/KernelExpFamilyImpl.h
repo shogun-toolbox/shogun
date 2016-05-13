@@ -40,7 +40,7 @@
 
 /* TODO
  *
- *   The kernel can be optional later on. For now we can just fix it (too many
+ * -  The kernel can be optional later on. For now we can just fix it (too many
  *   derivatives to be implemented for now.). We can make it a simple class where
  *   people who want other kernels can overload methods in.
  *   NOTE: Some functions should should take a reference to the return type as
@@ -56,6 +56,7 @@
  *   a lot of cache misses and how we can avoid that. Investigate how it scales
  *   with multiple cores. Investigate how much memory it uses for larger datasets.
  * - Profile memory usage of full vs Nystrom.
+ * - Nystrom can be slower than full (N=1000, D=5). Why is that?
  *
  *   Optimizations:
  * - See the various TODOs in the code

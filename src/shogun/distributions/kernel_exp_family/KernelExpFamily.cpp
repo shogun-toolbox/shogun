@@ -43,7 +43,7 @@ CKernelExpFamily::CKernelExpFamily() : CSGObject()
 }
 
 CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda) : CSGObject()
+			float64_t sigma, float64_t lambda, float memory_limit_gib) : CSGObject()
 {
 	REQUIRE(data.matrix, "Given observations cannot be empty\n");
 	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
@@ -52,6 +52,19 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 
 	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
+
+	auto N =  m_impl->get_num_data();
+	auto D = m_impl->get_num_dimensions();
+	auto ND = D*N;
+	auto system_size = (ND+1)*(ND+1) + (ND+1);
+	auto memory_required_gib = system_size * sizeof(float64_t) / 8.0 / 1024.0 / 1024.0 / 1024.0;
+	if (memory_required_gib > memory_limit_gib)
+	{
+		SG_ERROR("The problem's size (N=%d, D=%d) will at least use %f GiB of computer memory, "
+				"which is above the set limit (%f). "
+				"In order to remove this error, increase this limit in the constructor.\n",
+				N, D, memory_required_gib, memory_limit_gib);
+	}
 }
 
 CKernelExpFamily::~CKernelExpFamily()

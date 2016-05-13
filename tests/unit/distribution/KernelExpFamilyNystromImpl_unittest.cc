@@ -38,7 +38,7 @@
 
 using namespace shogun;
 
-TEST(KernelExpFamilyNystromImpl, kernel_dx_i)
+TEST(KernelExpFamilyNystromImpl, kernel_dx_component)
 {
 	index_t N=3;
 	index_t D=2;
@@ -62,12 +62,12 @@ TEST(KernelExpFamilyNystromImpl, kernel_dx_i)
 	// compare against full version
 	for (auto i=0; i<D; i++)
 	{
-		auto entry = est.kernel_dx_i(b, idx_a, i);
+		auto entry = est.kernel_dx_component(b, idx_a, i);
 		EXPECT_NEAR(result.vector[i], entry, 1e-15);
 	}
 }
 
-TEST(KernelExpFamilyNystromImpl, kernel_dx_dx_i)
+TEST(KernelExpFamilyNystromImpl, kernel_dx_dx_component)
 {
 	index_t N=3;
 	index_t D=2;
@@ -91,12 +91,64 @@ TEST(KernelExpFamilyNystromImpl, kernel_dx_dx_i)
 	// compare against full version
 	for (auto i=0; i<D; i++)
 	{
-		auto entry = est.kernel_dx_dx_i(b, idx_a, i);
+		auto entry = est.kernel_dx_dx_component(b, idx_a, i);
 		EXPECT_NEAR(result.vector[i], entry, 1e-15);
 	}
 }
 
-TEST(KernelExpFamilyNystromImpl, kernel_hessian_i_j)
+TEST(KernelExpFamilyNystromImpl, kernel_dx_i_dx_j_component)
+{
+	index_t N=30;
+	index_t D=20;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromImpl est(X, sigma, lambda, N*D);
+	
+	index_t idx_a = 0;
+	index_t idx_b = 1;
+	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
+	// compare against full version
+	auto result = est.kernel_dx_i_dx_j(a, idx_b);
+	
+	for (auto i=0; i<D; i++)
+	{
+		auto entry = est.kernel_dx_i_dx_j_component(a, idx_b, i);
+		for (auto j=0; j<D; j++)
+			EXPECT_NEAR(result(i,j), entry[j], 1e-8);
+	}
+}
+
+TEST(KernelExpFamilyNystromImpl, kernel_dx_i_dx_i_dx_j_component)
+{
+	index_t N=30;
+	index_t D=20;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromImpl est(X, sigma, lambda, N*D);
+	
+	index_t idx_a = 0;
+	index_t idx_b = 1;
+	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
+	// compare against full version
+	auto result = est.kernel_dx_i_dx_i_dx_j(a, idx_b);
+	
+	for (auto i=0; i<D; i++)
+	{
+		auto entry = est.kernel_dx_i_dx_i_dx_j_component(a, idx_b, i);
+		for (auto j=0; j<D; j++)
+			EXPECT_NEAR(result(i,j), entry[j], 1e-8);
+	}
+}
+
+TEST(KernelExpFamilyNystromImpl, kernel_hessian_component)
 {
 	index_t N=30;
 	index_t D=20;
@@ -116,7 +168,7 @@ TEST(KernelExpFamilyNystromImpl, kernel_hessian_i_j)
 	for (auto i=0; i<D; i++)
 		for (auto j=0; j<D; j++)
 		{
-			auto entry = est.kernel_hessian_i_j(idx_a, idx_b, i, j);
+			auto entry = est.kernel_hessian_component(idx_a, idx_b, i, j);
 			EXPECT_NEAR(result(i,j), entry, 1e-8);
 		}
 }
@@ -331,15 +383,11 @@ TEST(KernelExpFamilyNystromImpl, pinv_square)
 
 TEST(KernelExpFamilyNystromImpl, log_pdf_all_inds_equals_exact)
 {
-	index_t N=3;
-	index_t D=2;
+	index_t N=5;
+	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
@@ -358,7 +406,7 @@ TEST(KernelExpFamilyNystromImpl, log_pdf_all_inds_equals_exact)
 	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-8);
 }
 
-TEST(KernelExpFamilyNystromImpl, log_pdf_half_inds_execute)
+TEST(KernelExpFamilyNystromImpl, log_pdf_almost_all_inds_close_exact)
 {
 	index_t N=5;
 	index_t D=3;
@@ -368,14 +416,72 @@ TEST(KernelExpFamilyNystromImpl, log_pdf_half_inds_execute)
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
-	auto m = N*D;
-	KernelExpFamilyNystromImpl est(X, sigma, lambda, m);
+	auto m=N*D-2;
+	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	est_nystrom.fit();
 	est.fit();
 	
 	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	x[2] = 2;
+	for (auto i=0; i<D; i++)
+		x[i]=CMath::randn_float();
 
-	est.log_pdf(x);
+	auto log_pdf = est.log_pdf(x);
+	auto log_pdf_nystrom = est_nystrom.log_pdf(x);
+	
+	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-1);
+}
+
+TEST(KernelExpFamilyNystromImpl, grad_all_inds_equals_exact)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	auto m=N*D;
+	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	est_nystrom.fit();
+	est.fit();
+	
+	SGVector<float64_t> x(D);
+	for (auto i=0; i<D; i++)
+		x[i]=CMath::randn_float();
+
+	auto grad = est.grad(x);
+	auto grad_nystrom = est_nystrom.grad(x);
+	
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(grad[i], grad_nystrom[i], 1e-8);
+}
+
+TEST(KernelExpFamilyNystromImpl, grad_almost_all_inds_close_exact)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	auto m=N*D-2;
+	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	est_nystrom.fit();
+	est.fit();
+	
+	SGVector<float64_t> x(D);
+	for (auto i=0; i<D; i++)
+		x[i]=CMath::randn_float();
+
+	auto grad = est.grad(x);
+	auto grad_nystrom = est_nystrom.grad(x);
+	
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(grad[i], grad_nystrom[i], 1e-1);
 }

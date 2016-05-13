@@ -50,17 +50,20 @@ public :
 			SGVector<index_t> inds);
 
 	// for training
-	float64_t kernel_hessian_i_j(index_t idx_a, index_t idx_b, index_t i, index_t j);
+	float64_t kernel_hessian_component(index_t idx_a, index_t idx_b, index_t i, index_t j);
 
 	// for new data
-	float64_t kernel_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
-	float64_t kernel_dx_dx_i(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+	float64_t kernel_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+	float64_t kernel_dx_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+	SGVector<float64_t> kernel_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
 
 	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx);
 	SGVector<float64_t> compute_first_row_no_storing();
 	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
 	void fit();
 	float64_t  log_pdf(const SGVector<float64_t>& x);
+	SGVector<float64_t> grad(const SGVector<float64_t>& x);
 
 	std::pair<index_t, index_t> idx_to_ai(const index_t& idx);
 	static SGMatrix<float64_t> pinv(const SGMatrix<float64_t>& A);
