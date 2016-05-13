@@ -56,6 +56,14 @@
  *   a lot of cache misses and how we can avoid that. Investigate how it scales
  *   with multiple cores. Investigate how much memory it uses for larger datasets.
  *
+ *   Optimizations:
+ * - See the various TODOs in the code
+ * - Nystrom: Does it make sense to store another (subsetted) copy of the data
+ *   to increase speed when looping over it?
+ * - How does openmp parallelization affect speed (ask Rahul about data vs job parallel)
+ * - Traverse data once and compute the A matrix elements accordingly?
+ *   Just like in permutation tests
+ *
  */
 
 namespace shogun
