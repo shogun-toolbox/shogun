@@ -91,7 +91,8 @@ def modelselection_parameter_tree_modular (dummy):
     #	root.print_tree()
     combinations=root.get_combinations()
     #	for i in range(combinations.get_num_elements()):
-    #		combinations.get_element(i).print_tree()
+    #		params = ParameterCombination.obtain_from_generic(combinations.get_element(i))
+    #		params.print_tree()
 
     return
 
