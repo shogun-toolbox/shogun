@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/io/SGIO.h>
 
 #include "KernelExpFamilyImpl.h"
 
@@ -49,11 +50,31 @@ index_t KernelExpFamilyImpl::get_num_data()
 	return m_data.num_cols;
 }
 
+void KernelExpFamilyImpl::precompute_kernel()
+{
+	// precompute kernel matrix to be more efficient later
+	// TODO only store lower diagonal matrix
+	auto N = get_num_data();
+	m_kernel_matrix = SGMatrix<float64_t>(N,N);
+#pragma omp parallel for
+	for (auto i=0; i<N; i++)
+		for (auto j=0; j<=i; j++)
+		{
+			m_kernel_matrix(i,j)=kernel(i,j);
+			m_kernel_matrix(j,i)=m_kernel_matrix(i,j);
+		}
+}
+
 KernelExpFamilyImpl::KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda)
 {
 	m_data = data;
 	m_sigma = sigma;
 	m_lambda = lambda;
+
+	SG_SINFO("Problem size is N=%d, D=%d.\n", get_num_data(), get_num_dimensions());
+
+	SG_SINFO("Precomputing kernel matrix.\n");
+	precompute_kernel();
 }
 
 float64_t KernelExpFamilyImpl::kernel(index_t idx_a, index_t idx_b)
@@ -72,7 +93,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t 
 	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
 	auto diff=x-y;
 	auto diff2 = diff.array().pow(2).matrix();
-	auto k=CMath::exp(-diff2.sum() / m_sigma);
+	auto k=m_kernel_matrix(idx_a,idx_b);
 
 	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
@@ -91,7 +112,7 @@ float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx
 	VectorXd diff2 = (x-y).array().pow(2).matrix();
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto k=CMath::exp(-diff2.sum() / m_sigma);
+	auto k=m_kernel_matrix(idx_a,idx_b);
 	auto factor = k*pow(2.0/m_sigma, 3);
 
 	float64_t sum = 0;
@@ -115,7 +136,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index
 	VectorXd diff2 = (x-y).array().pow(2).matrix();
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto k=CMath::exp(-diff2.sum() / m_sigma);
+	auto k=m_kernel_matrix(idx_a,idx_b);
 
 	auto factor = k*pow(2.0/m_sigma, 3);
 	SGMatrix<float64_t> result(D, D);
@@ -150,7 +171,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t i
 	auto diff = x-y;
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto k=CMath::exp(-diff.array().pow(2).sum() / m_sigma);
+	auto k=m_kernel_matrix(idx_a,idx_b);
 
 	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
@@ -188,7 +209,8 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all()
 	SGMatrix<float64_t> result(ND,ND);
 	Map<MatrixXd> eigen_result(result.matrix, ND,ND);
 
-#pragma omp for
+	//TODO exploit symmetry both in computation and storage
+#pragma omp parallel for
 	for (auto idx_a=0; idx_a<N; idx_a++)
 		for (auto idx_b=0; idx_b<N; idx_b++)
 		{
@@ -227,7 +249,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 	Map<VectorXd> eigen_h(h.vector, ND);
 	eigen_h = VectorXd::Zero(ND);
 
-#pragma omp for
+#pragma omp parallel for
 	for (auto idx_b=0; idx_b<N; idx_b++)
 		for (auto idx_a=0; idx_a<N; idx_a++)
 		{
@@ -244,10 +266,9 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 float64_t KernelExpFamilyImpl::compute_xi_norm_2()
 {
 	auto N = get_num_data();
-	auto D = get_num_dimensions();
 	float64_t xi_norm_2=0;
 
-#pragma omp for
+#pragma omp parallel for reduction (+:xi_norm_2)
 	for (auto idx_a=0; idx_a<N; idx_a++)
 		for (auto idx_b=0; idx_b<N; idx_b++)
 			xi_norm_2 += kernel_dx_dx_dy_dy_sum(idx_a, idx_b);
@@ -262,26 +283,35 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_s
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
 	auto ND = N*D;
+
+	// TODO A matrix should be stored exploiting symmetry
+	SG_SINFO("Allocating memory for system.\n");
 	SGMatrix<float64_t> A(ND+1,ND+1);
 	Map<MatrixXd> eigen_A(A.matrix, ND+1,ND+1);
 	SGVector<float64_t> b(ND+1);
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
+	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);
+
+	SG_SINFO("Computing all kernel Hessians.\n");
 	auto all_hessians = kernel_hessian_all();
 	auto eigen_all_hessians = Map<MatrixXd>(all_hessians.matrix, ND, ND);
+
+	SG_SINFO("Computing xi norm.\n");
 	auto xi_norm_2 = compute_xi_norm_2();
 
+	SG_SINFO("Populating A matrix.\n");
 	// A[0, 0] = np.dot(h, h) / n + lmbda * xi_norm_2
 	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
 
 	// A[1:, 1:] = np.dot(all_hessians, all_hessians) / N + lmbda * all_hessians
-	eigen_A.block(1,1,ND,ND)=eigen_all_hessians*eigen_all_hessians / N + m_lambda*eigen_all_hessians;
-
 	// A[0, 1:] = np.dot(h, all_hessians) / n + lmbda * h; A[1:, 0] = A[0, 1:]
-	eigen_A.row(0).segment(1, ND) = eigen_all_hessians*eigen_h / N + m_lambda*eigen_h;
-	eigen_A.col(0).segment(1, ND) = eigen_A.row(0).segment(1, ND);
+	// can use noalias to speed up as matrices are definitely different
+	eigen_A.block(1,1,ND,ND).noalias()=eigen_all_hessians*eigen_all_hessians / N + m_lambda*eigen_all_hessians;
+	eigen_A.row(0).segment(1, ND).noalias() = eigen_all_hessians*eigen_h / N + m_lambda*eigen_h;
+	eigen_A.col(0).segment(1, ND).noalias() = eigen_A.row(0).segment(1, ND);
 
 	// b[0] = -xi_norm_2; b[1:] = -h.reshape(-1)
 	b[0] = -xi_norm_2;
@@ -296,6 +326,7 @@ void KernelExpFamilyImpl::fit()
 	auto N = get_num_data();
 	auto ND = N*D;
 
+	SG_SINFO("Building system.\n");
 	auto A_b = build_system();
 	auto eigen_A = Map<MatrixXd>(A_b.first.matrix, ND+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_b.second.vector, ND+1);
@@ -303,6 +334,7 @@ void KernelExpFamilyImpl::fit()
 	m_alpha_beta = SGVector<float64_t>(ND+1);
 	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, ND+1);
 
+	SG_SINFO("Solving system.\n");
 	eigen_alpha_beta = eigen_A.ldlt().solve(eigen_b);
 }
 
@@ -352,6 +384,7 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
 
 		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
 		// betasum_grad += beta[a, :].dot(left_arg_hessian)
+		// TODO storage is not necessary here
 		auto left_arg_hessian = kernel_dx_i_dx_j(x, a);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
 		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_alpha_beta.segment(1+a*D, D).matrix();

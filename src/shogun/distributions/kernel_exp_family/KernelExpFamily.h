@@ -48,11 +48,10 @@ public:
 			float64_t sigma, float64_t lambda, float memory_limit_gib=4.0);
 	virtual ~CKernelExpFamily();
 
-	void fit();
-	float64_t log_pdf(SGVector<float64_t> x);
-	SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
-
-	SGVector<float64_t> grad(SGVector<float64_t> x);
+	virtual void fit();
+	virtual float64_t log_pdf(SGVector<float64_t> x);
+	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
+	virtual SGVector<float64_t> grad(SGVector<float64_t> x);
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 

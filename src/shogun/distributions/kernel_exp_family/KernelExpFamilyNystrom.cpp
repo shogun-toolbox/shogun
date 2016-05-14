@@ -31,6 +31,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyNystromImpl.h>
 
@@ -45,6 +46,28 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda, SGVector<index_t> inds)
 			: CKernelExpFamily()
 {
+	REQUIRE(data.matrix, "Given observations cannot be empty\n");
+	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
+	REQUIRE(data.num_cols>0, "Number of given observations (%d) must be positive.\n", data.num_cols);
+	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
+	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+
+	auto m=inds.vlen;
+	auto N=data.num_cols;
+	auto D=data.num_rows;
+	auto ND=N*D;
+	REQUIRE(m>0, "Given indices' length (%d) must be positive.\n", m);
+	REQUIRE(m>0, "Given indices' cannot be empty.\n", inds.vector);
+
+	for (auto i=0; i<m; i++)
+	{
+		REQUIRE(inds[i]>=0, "Sub-sampling index at position %d (%d) must be positive or zero.\n",
+				i, inds[i]);
+		REQUIRE(inds[i]<ND, "Sub-sampling index at position %d(%d) must be smaller than N*D=%d*$d=%d.\n",
+				i, inds[i], N, D, ND);
+
+	}
+
 	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, inds);
 }
 

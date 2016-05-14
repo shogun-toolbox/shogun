@@ -69,7 +69,7 @@ float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, in
 	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto k=CMath::exp(-(x-y).squaredNorm() / m_sigma);
+	auto k=m_kernel_matrix(idx_a, idx_b);
 
 	auto differences_i = y[i] - x[i];
 	auto differences_j = y[j] - x[j];
@@ -81,7 +81,7 @@ float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, in
 		ridge /= m_sigma;
 	}
 
-	return k*(ridge - 4*(differences_i*differences_j)/(m_sigma*m_sigma));
+	return k*(ridge - 4*(differences_i*differences_j)/pow(m_sigma, 2));
 }
 
 std::pair<index_t, index_t> KernelExpFamilyNystromImpl::idx_to_ai(const index_t& idx)
@@ -108,7 +108,7 @@ float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(inde
 
 	float64_t G_sum = 0;
 	// TODO check parallel with accumulating on the G_sum
-#pragma omp for
+	// no parallel here as is called from build_system's parallel
 	for (auto idx_n=0; idx_n<N; idx_n++)
 		for (auto idx_d=0; idx_d<D; idx_d++)
 		{
@@ -162,23 +162,31 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
+	SG_SINFO("Allocating memory for system.\n");
 	SGMatrix<float64_t> A(m+1,ND+1);
 	Map<MatrixXd> eigen_A(A.matrix, m+1, ND+1);
 	SGVector<float64_t> b(ND+1);
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
+	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);
+
+	SG_SINFO("Computing xi norm.\n");
 	auto xi_norm_2 = compute_xi_norm_2();
 
+	SG_SINFO("Populating A matrix.\n");
 	// A[0, 0] = np.dot(h, h) / n + lmbda * xi_norm_2
 	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
 
-#pragma omp for
+	// TODO parallelise properly, read up on openmp
 	// A_mn[1 + row_idx, 1 + col_idx] = compute_lower_right_submatrix_component(X, lmbda, inds[row_idx], col_idx, sigma)
-	for (auto row_idx=0; row_idx<m; row_idx++)
-		for (auto col_idx=0; col_idx<ND; col_idx++)
+#pragma omp parallel for
+	for (auto col_idx=0; col_idx<ND; col_idx++)
+	{
+		for (auto row_idx=0; row_idx<m; row_idx++)
 			A(1+row_idx, 1+col_idx) = compute_lower_right_submatrix_element(m_inds[row_idx], col_idx);
+	}
 
 	// A_mn[0, 1:] = compute_first_row_without_storing(X, h, N, lmbda, sigma)
 	auto first_row = compute_first_row_no_storing();
@@ -196,6 +204,21 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
 
+void KernelExpFamilyNystromImpl::precompute_kernel()
+{
+	// precompute kernel matrix to be more efficient later
+	// TODO only store lower diagonal matrix
+	auto N = get_num_data();
+	m_kernel_matrix = SGMatrix<float64_t>(N,N);
+#pragma omp parallel for
+	for (auto i=0; i<N; i++)
+		for (auto j=0; j<=i; j++)
+		{
+			m_kernel_matrix(i,j)=kernel(i,j);
+			m_kernel_matrix(j,i)=m_kernel_matrix(i,j);
+		}
+}
+
 void KernelExpFamilyNystromImpl::fit()
 {
 	auto D = get_num_dimensions();
@@ -203,6 +226,7 @@ void KernelExpFamilyNystromImpl::fit()
 	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
+	SG_SINFO("Building system.\n");
 	auto A_mn_b = build_system();
 	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, m+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_mn_b.second.vector, ND+1);
@@ -210,6 +234,7 @@ void KernelExpFamilyNystromImpl::fit()
 	SGMatrix<float64_t> A(m+1,m+1);
 	Map<MatrixXd> eigen_A(A.matrix, m+1, m+1);
 
+	SG_SINFO("Solving system.\n");
 	eigen_A = eigen_A_mn*eigen_A_mn.transpose();
 	auto b_m = eigen_A_mn*eigen_b;
 

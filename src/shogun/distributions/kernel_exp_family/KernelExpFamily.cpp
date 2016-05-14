@@ -56,12 +56,13 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 	auto N =  m_impl->get_num_data();
 	auto D = m_impl->get_num_dimensions();
 	auto ND = D*N;
-	auto system_size = (ND+1)*(ND+1) + (ND+1);
-	auto memory_required_gib = system_size * sizeof(float64_t) / 8.0 / 1024.0 / 1024.0 / 1024.0;
+	// size: A matrix, b vetor, all_hessians matrix, h vector, kernel matrix
+	auto storage_size = (ND+1)*(ND+1) +(ND+1) +  ND*ND + ND + N*N;
+	auto memory_required_gib = storage_size * sizeof(float64_t) / 8.0 / 1024.0 / 1024.0 / 1024.0;
 	if (memory_required_gib > memory_limit_gib)
 	{
 		SG_ERROR("The problem's size (N=%d, D=%d) will at least use %f GiB of computer memory, "
-				"which is above the set limit (%f). "
+				"which is above the set limit (%f GiB). "
 				"In order to remove this error, increase this limit in the constructor.\n",
 				N, D, memory_required_gib, memory_limit_gib);
 	}
@@ -104,7 +105,7 @@ SGVector<float64_t> CKernelExpFamily::log_pdf_multiple(SGMatrix<float64_t> X)
 	REQUIRE(X.num_cols>0, "Number of given observations (%d) must be positive.\n", X.num_cols);
 
 	SGVector<float64_t> result(X.num_cols);
-#pragma omp for
+#pragma omp parallel for
 	for (auto i=0; i<X.num_cols; i++)
 	{
 		SGVector<float64_t> x(X.get_column_vector(i), m_impl->get_num_dimensions(), false);

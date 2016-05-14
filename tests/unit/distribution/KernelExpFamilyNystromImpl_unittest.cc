@@ -309,7 +309,7 @@ TEST(KernelExpFamilyNystromImpl, fit_all_inds_equals_exact)
 	
 	
 	for (auto i=0; i<ND+1; i++)
-		EXPECT_NEAR(result[i], result_nystrom[i], 1e-12);
+		EXPECT_NEAR(result[i], result_nystrom[i], 1e-11);
 }
 
 TEST(KernelExpFamilyNystromImpl, fit_half_inds_shape)
