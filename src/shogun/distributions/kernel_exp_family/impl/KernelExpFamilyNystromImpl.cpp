@@ -168,6 +168,10 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	SGVector<float64_t> b(ND+1);
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
+	// TODO all this can be done in a single pass over the data
+	// TODO should have an option to store the kernel hessians to speed things up when possible
+	// TODO think of a block scheme where one kernel hessian (or N) are stored and less things are recomputed?
+
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);

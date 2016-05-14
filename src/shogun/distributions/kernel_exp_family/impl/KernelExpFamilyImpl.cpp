@@ -291,6 +291,8 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_s
 	SGVector<float64_t> b(ND+1);
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
+	// TODO all this can be done using a single pass over all data
+
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);
