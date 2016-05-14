@@ -75,6 +75,7 @@ class KernelExpFamilyImpl
 {
 public :
 	KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda);
+	virtual ~KernelExpFamilyImpl() {};
 
 	// for training
 	float64_t kernel(index_t idx_a, const index_t idx_b);
