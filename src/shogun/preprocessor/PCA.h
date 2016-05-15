@@ -178,7 +178,7 @@ class CPCA: public CDimensionReductionPreprocessor
 		EPCAMemoryMode get_memory_mode() const;
 
 		/** set PCA memory mode to be used
-		 * @param choice between MEM_REALLOCATE and MEM_IN_PLACE
+		 * @param e hoice between MEM_REALLOCATE and MEM_IN_PLACE
 		 */
 		void set_memory_mode(EPCAMemoryMode e);
 
