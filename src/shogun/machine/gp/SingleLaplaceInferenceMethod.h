@@ -200,8 +200,16 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
 
+	/** compute the function value given the current alpha
+	 *
+	 * @return the function value
+	 */
 	float64_t get_psi_wrt_alpha();
 
+	/** compute the gradient given the current alpha
+	 *
+	 * @param gradient derivative of the function wrt alpha
+	 */
 	void get_gradient_wrt_alpha(SGVector<float64_t> gradient);
 
 private:
@@ -223,8 +231,10 @@ protected:
 	/** derivative of negative log (approximated) marginal likelihood wrt fhat */ 
 	SGVector<float64_t> m_dfhat;
 
+	/** z */
 	SGMatrix<float64_t> m_Z;
 
+	/** g */
 	SGVector<float64_t> m_g;
 
 	/** posterior log likelihood without constant terms */
@@ -232,11 +242,17 @@ protected:
 };
 
 
+/** @brief The build-in minimizer for SingleLaplaceInference */
 class SingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
 	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+
 	virtual ~SingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+
+	/** Set the inference method
+	 * @param obj the inference method
+	 */
 	void set_target(CSingleLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
@@ -246,8 +262,13 @@ public:
 			m_obj=obj;
 		}
 	}
+
+	/** Do minimization and get the optimal value 
+	 * 
+	 * @return optimal value
+	 */
 	virtual float64_t minimize();
-  
+
 	/** set maximum for Brent's minimization method
 	 *
 	 * @param max maximum for Brent's minimization method
@@ -281,6 +302,8 @@ private:
 	  m_opt_tolerance=1e-10;
 	  m_opt_max=10;
 	}
+
+	/** the inference method */
 	CSingleLaplaceInferenceMethod *m_obj;
 
 	/** amount of tolerance for Newton's iterations */
