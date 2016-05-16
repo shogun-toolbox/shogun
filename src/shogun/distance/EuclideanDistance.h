@@ -38,8 +38,11 @@ namespace shogun
  *  d({\bf x},{\bf x'})= \sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2
  * \f]
  * 
- * Distance is computed as :  
+ * Distance is computed as :
+ * 
+ * \f[\displaystyle
  * \sqrt{{\bf x}\cdot {\bf x} - 2{\bf x}\cdot {\bf x'} + {\bf x'}\cdot {\bf x'}}
+ * \f]
  *  
  * Squared norms for left hand side and right hand side features can be precomputed.
  * WARNING : Make sure to reset squared norms using reset_squared_norms() when features

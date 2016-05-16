@@ -148,7 +148,7 @@ public:
 	/** Adds a group of visible units to the RBM
 	 *
 	 * @param num_units Number of visible units
-	 * @param visible_unit_type Type of the visible units
+	 * @param unit_type Type of the visible units
 	 */
 	virtual void add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type);
 

@@ -107,7 +107,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
-		 * @param dimensions number of dimensions to retain
+		 * @param num_dimensions number of dimensions to retain
 		 */
 		virtual bool fit(CFeatures* features, CLabels* labels, int32_t num_dimensions=0);
 
@@ -122,7 +122,7 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 		/** apply preprocessor to feature vector
-		 * @param features on which the learned transformation has to be applied.
+		 * @param vector features on which the learned transformation has to be applied.
 		 * @return processed feature vector with reduced dimensions.
 		 */
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);

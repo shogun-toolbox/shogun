@@ -85,7 +85,7 @@ template<class T> class SGMatrix;
  * the fly it then uses the solution vectors \f$\mathbf x_i\f$ to compute the
  * matrix-matrix product \f$\mathbf C_*=\mathbf G_*\mathbf{GG}_*^{-1}\f$
  * using \f$\mathbf C_{*,(j,i)}=\mathbf G_{*,j}\cdot \mathbf x_i\f$, where
- * $\mathbf G_{*,j}$ is the \f$j^{\text{th}}\f$ row of \f$\mathbf G_*$ (or
+ * \f$\mathbf G_{*,j}\f$ is the \f$j^{\text{th}}\f$ row of \f$\mathbf G_*\f$ (or
  * column, since it is symmetric) and then discarding the vector.
  *
  * The final trace computation is also simplified using the symmetry of the

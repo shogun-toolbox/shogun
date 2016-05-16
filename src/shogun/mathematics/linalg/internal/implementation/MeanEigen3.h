@@ -130,7 +130,7 @@ struct rowwise_mean
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param mat the matrix whose rowwise sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @param result Pre-allocated vector for the result of the computation
 	 */
@@ -154,7 +154,7 @@ struct mean<Backend::EIGEN3, Matrix>
 	 * Method that computes the mean of SGVectors using Eigen3
 	 *
 	 * @param a vector whose mean has to be computed
-	 * @return the vector mean \f\bar a_i\f$
+	 * @return the vector mean \f$\bar a_i\f$
 	 */
 	static ReturnType compute(SGVector<T> vec)
 	{
@@ -228,7 +228,7 @@ struct rowwise_mean<Backend::EIGEN3, Matrix>
 	/**
 	 * Method that computes the rowwise mean of SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose rowwise mean has to be computed
+	 * @param mat the matrix whose rowwise mean has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the mean
 	 * @param result Pre-allocated vector for the result of the computation
 	 */

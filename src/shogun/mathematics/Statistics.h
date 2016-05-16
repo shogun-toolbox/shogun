@@ -173,7 +173,7 @@ public:
 	 *
 	 * Returns the argument \f$x\f$ for which the CDF is equal to \f$y\f$.
 	 *
-	 * @param y CDF value \f$y\f$.
+	 * @param p CDF value \f$y\f$.
 	 * @param a Shape parameter \f$\alpha\f$
 	 * @param b Rate parameter \f$\beta\f$
 	 * @return Argument \f$x\f$ that produces \f$y\f$.
@@ -188,8 +188,7 @@ public:
 	 * \f]
 	 *
 	 * @param x Argument \f$x\f$ to evaluate.
-	 * @param a Shape parameter \f$\alpha\f$
-	 * @param b Rate parameter \f$\beta\f$
+	 * @param std_dev Standard deviation \f$\sigma\f$. Default value is 1.
 	 * @return Gamma CDF at \f$x\f$
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
@@ -203,7 +202,7 @@ public:
 	 *
 	 * Returns the argument \f$x\f$ for which CDF is equal to \f$y\f$.
 	 *
-	 * @param y CDF value \f$y\f$.
+	 * @param y0 CDF value \f$y\f$.
 	 * @param mean Mean \f$\mu\f$. Default value is 0.
 	 * @param std_dev Standard deviation \f$\sigma\f$. Default value is 1.
 	 * @return Argument \f$x\f$ that produces \f$y\f$.
