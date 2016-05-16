@@ -9,6 +9,16 @@ using namespace std;
 
 # include "cdflib.hpp"
 
+// Declaration
+static void E0000 ( int IENTRY, int *status, double *x, double *fx,
+  unsigned long *qleft, unsigned long *qhi, double *zabsst,
+  double *zabsto, double *zbig, double *zrelst,
+  double *zrelto, double *zsmall, double *zstpmu );
+static void E0001 ( int IENTRY, int *status, double *x, double *fx,
+  double *xlo, double *xhi, unsigned long *qleft,
+  unsigned long *qhi, double *zabstl, double *zreltl,
+  double *zxlohi, double *zxlo );
+
 //****************************************************************************80
 
 double algdiv ( double *a, double *b )
@@ -2220,7 +2230,7 @@ S120:
 //
 //     S
 //
-    if(!(*s < 0.0e0 || *which != 3 && *s > *xn)) goto S160;
+    if(!(*s < 0.0e0 || (*which != 3 && *s > *xn))) goto S160;
     if(!(*s < 0.0e0)) goto S140;
     *bound = 0.0e0;
     goto S150;
@@ -3906,7 +3916,7 @@ S250:
 S260:
         fx = ccum-*q;
 S270:
-        if(!(qporq && cum > 1.5e0 || !qporq && ccum > 1.5e0)) goto S280;
+        if(!((qporq && cum > 1.5e0) || (!qporq && ccum > 1.5e0))) goto S280;
         *status = 10;
         return;
 S280:
@@ -6850,7 +6860,7 @@ static void E0000 ( int IENTRY, int *status, double *x, double *fx,
   static double big,fbig,fsmall,relstp,reltol,small,step,stpmul,xhi,
     xlb,xlo,xsave,xub,yy;
   static int i99999;
-  static unsigned long qbdd,qcond,qdum1,qdum2,qincr,qlim,qok,qup;
+  static unsigned long qbdd,qcond,qdum1,qdum2,qincr,qlim,qup;
     switch(IENTRY){case 0: goto DINVR; case 1: goto DSTINV;}
 DINVR:
     if(*status > 0) goto S310;
@@ -6918,10 +6928,9 @@ S90:
     yy = *fx;
     if(!(yy == 0.0e0)) goto S100;
     *status = 0;
-    qok = 1;
     return;
 S100:
-    qup = qincr && yy < 0.0e0 || !qincr && yy > 0.0e0;
+    qup = (qincr && yy < 0.0e0) || (!qincr && yy > 0.0e0);
 //
 //     HANDLE CASE IN WHICH WE MUST STEP HIGHER
 //
@@ -6943,7 +6952,7 @@ S120:
     goto S300;
 S130:
     yy = *fx;
-    qbdd = qincr && yy >= 0.0e0 || !qincr && yy <= 0.0e0;
+    qbdd = (qincr && yy >= 0.0e0) || (!qincr && yy <= 0.0e0);
     qlim = xub >= big;
     qcond = qbdd || qlim;
     if(qcond) goto S140;
@@ -6982,7 +6991,7 @@ S190:
     goto S300;
 S200:
     yy = *fx;
-    qbdd = qincr && yy <= 0.0e0 || !qincr && yy >= 0.0e0;
+    qbdd = (qincr && yy <= 0.0e0) || (!qincr && yy >= 0.0e0);
     qlim = xlb <= small;
     qcond = qbdd || qlim;
     if(qcond) goto S210;
@@ -7187,7 +7196,7 @@ S230:
     goto S80;
 S240:
     *xhi = c;
-    qrzero = fc >= 0.0e0 && fb <= 0.0e0 || fc < 0.0e0 && fb >= 0.0e0;
+    qrzero = (fc >= 0.0e0 && fb <= 0.0e0) || (fc < 0.0e0 && fb >= 0.0e0);
     if(!qrzero) goto S250;
     *status = 0;
     goto S260;
@@ -10853,13 +10862,11 @@ void timestamp ( )
 
   static char time_buffer[TIME_SIZE];
   const struct tm *tm;
-  size_t len;
   time_t now;
 
   now = time ( NULL );
   tm = localtime ( &now );
 
-  len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
   cout << time_buffer << "\n";
 
