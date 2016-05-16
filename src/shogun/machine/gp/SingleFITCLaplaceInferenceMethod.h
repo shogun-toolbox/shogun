@@ -322,9 +322,18 @@ protected:
 	 */
 	virtual float64_t get_derivative_implicit_term_helper(SGVector<float64_t> d);
 
+	/** compute the function value given the current alpha
+	 *
+	 * @return the function value
+	 */
 	float64_t get_psi_wrt_alpha();
 
+	/** compute the gradient given the current alpha
+	 *
+	 * @param gradient derivative of the function wrt alpha
+	 */
 	void get_gradient_wrt_alpha(SGVector<float64_t> gradient);
+
 private:
 	/** init */
 	void init();
@@ -373,11 +382,18 @@ protected:
 	bool m_Wneg;
 };
 
+/** @brief The build-in minimizer for SingleFITCLaplaceInference */
 class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 {
 public:
 	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+
 	virtual ~SingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+
+	/** Set the inference method
+	 * @param obj the inference method
+	 *
+	 */
 	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
 	{
 		if(obj!=m_obj)
@@ -387,7 +403,11 @@ public:
 			m_obj=obj;
 		}
 	}
-
+	
+	/** Do minimization and get the optimal value 
+	 * 
+	 * @return optimal value
+	 */
 	virtual float64_t minimize();
 
 	/** set maximum for Brent's minimization method
@@ -423,6 +443,7 @@ private:
 		m_opt_max=10;
 	}
 
+	/** the inference method */
 	CSingleFITCLaplaceInferenceMethod *m_obj;
 
 	/** amount of tolerance for Newton's iterations */

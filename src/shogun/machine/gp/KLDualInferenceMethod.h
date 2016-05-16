@@ -44,15 +44,23 @@
 namespace shogun
 {
 
+/** @brief Build-in minimizer for KLDualInference */
 class KLDualInferenceMethodMinimizer: public LBFGSMinimizer
 {
 public:
 	KLDualInferenceMethodMinimizer(): LBFGSMinimizer() { init(); }
   
+	/** Constructor
+	 * @param fun a cost function
+	 */
 	KLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): LBFGSMinimizer(fun) { init(); }
   
 	virtual ~KLDualInferenceMethodMinimizer() {}
-  
+
+	/** Do minimization and get the optimal value 
+	 *  
+	 * @return optimal value
+	 */
 	virtual float64_t minimize();
   
 protected:
