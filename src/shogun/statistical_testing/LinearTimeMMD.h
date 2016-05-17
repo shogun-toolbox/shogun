@@ -26,16 +26,16 @@ namespace shogun
 
 class CLinearTimeMMD : public CMMD
 {
-	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 public:
+	typedef std::function<float32_t(SGMatrix<float32_t>)> override;
 	CLinearTimeMMD();
 	CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
 	virtual ~CLinearTimeMMD();
 
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 
-	virtual float64_t compute_p_value(float64_t statistic) override;
-	virtual float64_t compute_threshold(float64_t alpha) override;
+	virtual float64_t compute_p_value(float64_t statistic);
+	virtual float64_t compute_threshold(float64_t alpha);
 
 	virtual const char* get_name() const;
 private:

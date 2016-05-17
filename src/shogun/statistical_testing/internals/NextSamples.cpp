@@ -63,13 +63,13 @@ const index_t NextSamples::num_blocks() const
 
 const bool NextSamples::empty() const
 {
-	using type=const std::vector<Block>;
+	typedef const std::vector<Block> type;
 	return std::any_of(next_samples.cbegin(), next_samples.cend(), [](type& f) { return f.size()==0; });
 }
 
 void NextSamples::clear()
 {
-	using type=std::vector<Block>;
+	typedef std::vector<Block> type;
 	std::for_each(next_samples.begin(), next_samples.end(), [](type& f) { f.clear(); });
 	next_samples.clear();
 }

@@ -31,8 +31,8 @@ UnbiasedFull::UnbiasedFull(index_t n) : n_x(n)
 
 float32_t UnbiasedFull::operator()(const SGMatrix<float32_t>& km)
 {
-	using MatrixXt=const Eigen::MatrixXf;
-	using Block=const Eigen::Block<Eigen::Map<MatrixXt>>;
+	typedef const Eigen::MatrixXf MatrixXt;
+	typedef const Eigen::Block<Eigen::Map<MatrixXt> > Block;
 
 	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
 	index_t n_y=km.num_rows-n_x;

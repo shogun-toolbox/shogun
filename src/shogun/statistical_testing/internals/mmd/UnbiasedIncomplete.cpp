@@ -31,8 +31,8 @@ UnbiasedIncomplete::UnbiasedIncomplete(index_t _n) : n(_n)
 
 float32_t UnbiasedIncomplete::operator()(const SGMatrix<float32_t>& km)
 {
-	using MatrixXt=const Eigen::MatrixXf;
-	using Block=const Eigen::Block<Eigen::Map<MatrixXt>>;
+	typedef const Eigen::MatrixXf MatrixXt;
+	typedef const Eigen::Block<Eigen::Map<MatrixXt> > Block;
 
 	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
 

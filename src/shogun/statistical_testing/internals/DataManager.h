@@ -261,7 +261,7 @@ private:
 	/**
 	 * The internal data fetcher instances.
 	 */
-	std::vector<std::unique_ptr<DataFetcher>> fetchers;
+	std::vector<std::unique_ptr<DataFetcher> > fetchers;
 };
 
 }

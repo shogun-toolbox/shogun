@@ -106,7 +106,7 @@ public:
 	void clear();
 private:
 	index_t m_num_blocks;
-	std::vector<std::vector<Block>> next_samples;
+	std::vector<std::vector<Block> > next_samples;
 };
 
 }

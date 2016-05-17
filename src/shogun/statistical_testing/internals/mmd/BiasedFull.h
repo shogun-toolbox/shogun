@@ -35,7 +35,7 @@ namespace mmd
 
 struct BiasedFull
 {
-	using return_type=float32_t;
+	typedef float32_t return_type;
 	BiasedFull(index_t n);
 
 	return_type operator()(const SGMatrix<return_type>& kernel_matrix);

@@ -85,11 +85,12 @@ enum EKernelSelectionMethod
 
 class CMMD : public CTwoSampleTest
 {
-	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
 	friend class internal::MaxXValidation;
 public:
+	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
+	
 	CMMD();
 	virtual ~CMMD();
 
@@ -98,10 +99,10 @@ public:
 		bool weighted_kernel=false, float64_t train_test_ratio=1.0,
 		index_t num_run=10, float64_t alpha=0.05);
 
-	virtual float64_t compute_statistic() override;
+	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
 
-	virtual SGVector<float64_t> sample_null() override;
+	virtual SGVector<float64_t> sample_null();
 
 	void use_gpu(bool gpu);
 	void cleanup();
@@ -128,7 +129,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 	virtual std::pair<float64_t, float64_t> compute_statistic_variance();
-	virtual std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q();
+	virtual std::pair<SGVector<float64_t>, SGMatrix<float64_t> > compute_statistic_and_Q();
 };
 
 }

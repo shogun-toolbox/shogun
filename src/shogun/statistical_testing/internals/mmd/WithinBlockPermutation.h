@@ -37,7 +37,7 @@ namespace mmd
 
 class WithinBlockPermutation
 {
-	using return_type=float32_t;
+	typedef float32_t return_type;
 public:
 	WithinBlockPermutation(index_t, index_t, EStatisticType);
 	return_type operator()(const SGMatrix<return_type>& kernel_matrix);

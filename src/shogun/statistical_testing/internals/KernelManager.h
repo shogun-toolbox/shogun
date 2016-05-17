@@ -61,8 +61,8 @@ public:
 	void precompute_kernel_at(size_t i);
 	void restore_kernel_at(size_t i);
 private:
-	std::vector<std::shared_ptr<CKernel>> m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
+	std::vector<std::shared_ptr<CKernel> > m_kernels;
+	std::vector<std::shared_ptr<CCustomKernel> > m_precomputed_kernels;
 };
 
 }

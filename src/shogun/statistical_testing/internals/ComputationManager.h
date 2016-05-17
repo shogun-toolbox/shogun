@@ -50,9 +50,9 @@ public:
 	ComputationManager& use_gpu();
 private:
 	bool gpu;
-	std::vector<SGMatrix<float32_t>> data_array;
-	std::vector<std::function<float32_t(const SGMatrix<float32_t>&)>> job_array;
-	std::vector<std::vector<float32_t>> result_array;
+	std::vector<SGMatrix<float32_t> > data_array;
+	std::vector<std::function<float32_t(const SGMatrix<float32_t>&)> > job_array;
+	std::vector<std::vector<float32_t> > result_array;
 };
 
 } // namespace internal

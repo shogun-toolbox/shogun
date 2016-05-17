@@ -261,7 +261,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	return std::make_pair(statistic, variance);
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t>> CMMD::Self::compute_statistic_and_Q()
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statistic_and_Q()
 {
 	REQUIRE(kernel_selection_mgr.num_kernels()>0, "No kernels specified for kernel learning! "
 		"Please add kernels using add_kernel() method!\n");
@@ -285,7 +285,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t>> CMMD::Self::compute_statisti
 	dm.start();
 	auto next_burst=dm.next();
 	std::vector<CFeatures*> blocks;
-	std::vector<std::vector<float32_t>> mmds(num_kernels);
+	std::vector<std::vector<float32_t> > mmds(num_kernels);
 	while (!next_burst.empty())
 	{
 		const size_t num_blocks=next_burst.num_blocks();
@@ -526,7 +526,7 @@ std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 	return self->compute_statistic_variance();
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t>> CMMD::compute_statistic_and_Q()
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::compute_statistic_and_Q()
 {
 	return self->compute_statistic_and_Q();
 }

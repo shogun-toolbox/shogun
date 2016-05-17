@@ -38,8 +38,8 @@ namespace mmd
 
 class WithinBlockPermutationBatch
 {
-	using value_type=float32_t;
-	using return_type=SGVector<value_type>;
+	typedef float32_t value_type;
+	typedef SGVector<value_type> return_type;
 public:
 	WithinBlockPermutationBatch(index_t, index_t, index_t, EStatisticType);
 	template <class Kernel> return_type operator()(const Kernel& kernel);
@@ -52,7 +52,7 @@ private:
 	const index_t num_null_samples;
 	const EStatisticType stype;
 	SGVector<index_t> permuted_inds;
-	std::vector<std::vector<index_t>> inverted_permuted_inds;
+	std::vector<std::vector<index_t> > inverted_permuted_inds;
 };
 
 }

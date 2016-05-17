@@ -109,7 +109,7 @@ void FeaturesUtil::clone_subset_stack(CFeatures* src, CFeatures* dst)
 	{
 		SG_SDEBUG("Subset present, cloning the subsets!\n");
 		CSubsetStack* subset_stack=static_cast<CSubsetStack*>(src_subset_stack->clone());
-		std::stack<SGVector<index_t>> stack;
+		std::stack<SGVector<index_t> > stack;
 		while (subset_stack->has_subsets())
 		{
 			stack.push(subset_stack->get_last_subset()->get_subset_idx());

@@ -59,7 +59,7 @@ index_t DataManager::get_num_samples() const
 {
 	SG_SDEBUG("Entering!\n");
 	index_t n=0;
-	using fetcher_type=const std::unique_ptr<DataFetcher>;
+	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
 		SG_SERROR("number of samples from all the distributions are not set!")
 	else
@@ -72,7 +72,7 @@ index_t DataManager::get_min_blocksize() const
 {
 	SG_SDEBUG("Entering!\n");
 	index_t min_blocksize=0;
-	using fetcher_type=const std::unique_ptr<DataFetcher>;
+	typedef const std::unique_ptr<DataFetcher> fetcher_type;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { return f->m_num_samples==0; }))
 		SG_SERROR("number of samples from all the distributions are not set!")
 	else
@@ -125,7 +125,7 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 			num_blocks_per_burst);
 
 	index_t blocksize=0;
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [&blocksize](fetcher_type& f)
 	{
 		blocksize+=f->m_block_details.m_blocksize;
@@ -217,7 +217,7 @@ void DataManager::set_blockwise(bool blockwise)
 void DataManager::set_train_test_ratio(float64_t train_test_ratio)
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [&train_test_ratio](fetcher_type& f)
 	{
 		f->set_train_test_ratio(train_test_ratio);
@@ -234,7 +234,7 @@ float64_t DataManager::get_train_test_ratio() const
 void DataManager::set_train_mode(bool train_mode)
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
 	{
 		f->set_train_mode(train_mode);
@@ -245,7 +245,7 @@ void DataManager::set_train_mode(bool train_mode)
 void DataManager::set_xvalidation_mode(bool xvalidation_mode)
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [&xvalidation_mode](fetcher_type& f)
 	{
 		f->set_xvalidation_mode(xvalidation_mode);
@@ -262,7 +262,7 @@ index_t DataManager::get_num_folds() const
 void DataManager::use_fold(index_t idx)
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [&idx](fetcher_type& f)
 	{
 		f->use_fold(idx);
@@ -273,7 +273,7 @@ void DataManager::use_fold(index_t idx)
 void DataManager::start()
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->start(); });
 	SG_SDEBUG("Leaving!\n");
 }
@@ -312,7 +312,7 @@ NextSamples DataManager::next()
 void DataManager::end()
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->end(); });
 	SG_SDEBUG("Leaving!\n");
 }
@@ -320,7 +320,7 @@ void DataManager::end()
 void DataManager::reset()
 {
 	SG_SDEBUG("Entering!\n");
-	using fetcher_type=std::unique_ptr<DataFetcher>;
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->reset(); });
 	SG_SDEBUG("Leaving!\n");
 }
