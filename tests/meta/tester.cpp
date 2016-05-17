@@ -41,7 +41,7 @@ int main(int argc, const char *argv[])
     a->load_serializable(f);
     a_ref->load_serializable(f_ref);
     
-    bool equal = a->equals(a_ref);
+    bool equal = a->equals(a_ref, 10E-8, true);
     
     SG_UNREF(f);
     SG_UNREF(f_ref);
