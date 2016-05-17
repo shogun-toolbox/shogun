@@ -1,54 +1,55 @@
-if (ATLAS_LIBRARIES)
-  set(ATLAS_FIND_QUIETLY TRUE)
-endif (ATLAS_LIBRARIES)
+# Find the Atlas (and Lapack) libraries
+#
+# The following variables are optionally searched for defaults
+#  Atlas_ROOT_DIR:            Base directory where all Atlas components are found
+#
+# The following are set after configuration is done:
+#  Atlas_FOUND
+#  Atlas_INCLUDE_DIRS
+#  Atlas_LIBRARIES
+#  Atlas_LIBRARYRARY_DIRS
 
-find_file(ATLAS_LIB libatlas.so.3 PATHS /usr/lib /usr/lib64 $ENV{ATLASDIR} PATH_SUFFIXES atlas atlas-base)
-find_library(ATLAS_LIB atlas PATHS $ENV{ATLASDIR})
+set(Atlas_INCLUDE_SEARCH_PATHS
+  /usr/include
+  /usr/include/atlas
+  /usr/include/atlas-base
+  $ENV{Atlas_ROOT_DIR}
+  $ENV{Atlas_ROOT_DIR}/include
+)
 
-find_file(ATLAS_CBLAS libcblas.so.3 PATHS /usr/lib /usr/lib64 $ENV{ATLASDIR} PATH_SUFFIXES atlas atlas-base)
-find_library(ATLAS_CBLAS cblas PATHS $ENV{ATLASDIR})
+set(Atlas_LIB_SEARCH_PATHS
+  /usr/lib/atlas
+  /usr/lib/atlas-base
+  /usr/lib64
+  /usr/lib64/atlas
+  $ENV{Atlas_ROOT_DIR}
+  $ENV{Atlas_ROOT_DIR}/lib
+)
 
-find_file(ATLAS_LAPACK NAMES liblapack_atlas.so.3 PATHS /usr/lib /usr/lib64 $ENV{ATLASDIR} PATH_SUFFIXES atlas atlas-base)
-find_library(ATLAS_LAPACK NAMES lapack_atlas alapack PATHS $ENV{ATLASDIR})
+find_path(Atlas_CBLAS_INCLUDE_DIR   NAMES cblas.h   PATHS ${Atlas_INCLUDE_SEARCH_PATHS})
+find_path(Atlas_CLAPACK_INCLUDE_DIR NAMES clapack.h PATHS ${Atlas_INCLUDE_SEARCH_PATHS})
 
-if(ATLAS_LAPACK)
-  include(CheckLibraryExists)
-  set(CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${ATLAS_CBLAS})
-  check_library_exists("${ATLAS_LAPACK}" clapack_dpotrf "" FOUND_CLAPACK)
-  if(NOT FOUND_CLAPACK)
-    unset(ATLAS_LAPACK CACHE)
-  endif()
-  unset(CMAKE_REQUIRED_LIBRARIES CACHE)
-else()
-  find_file(ATLAS_LAPACK liblapack.so.3 PATHS /usr/lib/atlas /usr/lib64/atlas)
-  find_library(ATLAS_LAPACK NAMES lapack)
-  set(CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARIES} ${ATLAS_CBLAS})
-  check_library_exists("${ATLAS_LAPACK}" clapack_dpotrf "" FOUND_CLAPACK)
-  if(NOT FOUND_CLAPACK)
-    unset(ATLAS_LAPACK CACHE)
-  endif()
-  unset(CMAKE_REQUIRED_LIBRARIES CACHE)
-endif()
+find_library(Atlas_CBLAS_LIBRARY  NAMES ptcblas_r ptcblas cblas_r cblas blas   PATHS ${Atlas_LIB_SEARCH_PATHS})
+find_library(Atlas_BLAS_LIBRARY   NAMES atlas_r atlas tatlas satlas            PATHS ${Atlas_LIB_SEARCH_PATHS})
+find_library(Atlas_LAPACK_LIBRARY NAMES alapack_r alapack lapack_atlas lapacke PATHS ${Atlas_LIB_SEARCH_PATHS})
 
-find_file(ATLAS_F77BLAS libf77blas.so.3 PATHS /usr/lib /usr/lib64 $ENV{ATLASDIR} PATH_SUFFIXES atlas atlas-base)
-find_library(ATLAS_F77BLAS f77blas PATHS $ENV{ATLASDIR} PATH_SUFFIXES atlas atlas-base)
+set(LOOKED_FOR
+  Atlas_CBLAS_INCLUDE_DIR
+  Atlas_CLAPACK_INCLUDE_DIR
 
-if(ATLAS_LIB AND ATLAS_CBLAS AND ATLAS_LAPACK AND ATLAS_F77BLAS)
-
-  set(ATLAS_LIBRARIES ${ATLAS_LAPACK} ${ATLAS_CBLAS} ${ATLAS_F77BLAS} ${ATLAS_LIB})
-
-  # search the default lapack lib link to it
-  find_file(ATLAS_REFERENCE_LAPACK liblapack.so.3 PATHS /usr/lib /usr/lib64)
-  find_library(ATLAS_REFERENCE_LAPACK NAMES lapack)
-  if(ATLAS_REFERENCE_LAPACK)
-    set(ATLAS_LIBRARIES ${ATLAS_LIBRARIES} ${ATLAS_REFERENCE_LAPACK})
-  endif()
-
-endif(ATLAS_LIB AND ATLAS_CBLAS AND ATLAS_LAPACK AND ATLAS_F77BLAS)
-
-find_path(ATLAS_INCLUDES clapack.h PATHS /usr/include/atlas /usr/local/include/atlas /opt/local/include/atlas $ENV{ATLASDIR})
+  Atlas_CBLAS_LIBRARY
+  Atlas_BLAS_LIBRARY
+  Atlas_LAPACK_LIBRARY
+)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ATLAS DEFAULT_MSG ATLAS_LIBRARIES ATLAS_INCLUDES)
+find_package_handle_standard_args(Atlas DEFAULT_MSG ${LOOKED_FOR})
 
-mark_as_advanced(ATLAS_LIBRARIES ATLAS_INCLUDES)
+if(ATLAS_FOUND)
+  set(Atlas_INCLUDE_DIR ${Atlas_CBLAS_INCLUDE_DIR} ${Atlas_CLAPACK_INCLUDE_DIR})
+  set(Atlas_LIBRARIES ${Atlas_LAPACK_LIBRARY} ${Atlas_CBLAS_LIBRARY} ${Atlas_BLAS_LIBRARY})
+  mark_as_advanced(${LOOKED_FOR})
+
+  message(STATUS "Found Atlas (include: ${Atlas_CBLAS_INCLUDE_DIR}, library: ${Atlas_BLAS_LIBRARY})")
+endif(ATLAS_FOUND)
+
