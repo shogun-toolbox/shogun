@@ -182,7 +182,12 @@ TEST(RationalApproximation, trace_accuracy)
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	// compute the trace of log(m) using Eigen3 that uses Schur-Parlett algorithm
 	Map<MatrixXd> eig_m(m.matrix, m.num_rows, m.num_cols);
+#if EIGEN_WITH_LOG_BUG_1229
+	MatrixXd tmp = eig_m;
+	float64_t trace_log_m=tmp.log().diagonal().sum();
+#else
 	float64_t trace_log_m=eig_m.log().diagonal().sum();
+#endif
 #else
 	float64_t trace_log_m=-11.51292546497021618279;
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -364,7 +369,12 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	// compute the trace of log(m) using Eigen3 that uses Schur-Parlett algorithm
 	Map<MatrixXd> eig_m(m.matrix, m.num_rows, m.num_cols);
+#if EIGEN_WITH_LOG_BUG_1229
+	MatrixXd tmp = eig_m;
+	float64_t trace_log_m=tmp.log().diagonal().sum();
+#else
 	float64_t trace_log_m=eig_m.log().diagonal().sum();
+#endif
 #else
 	float64_t trace_log_m=-11.51292546497021618279;
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)

@@ -61,6 +61,13 @@
 
 	#endif	//EIGEN_VERSION_AT_LEAST(3,0,93)
 
+#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
+	((EIGEN_MINOR_VERSION == 91) || (EIGEN_MINOR_VERSION == 92)))
+	// Regression has been introduced to eigen develop (3.3alpha1+):
+	// http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1229
+	// until this is not fixed we need to copy the matrix and calculate the log
+	#define EIGEN_WITH_LOG_BUG_1229 1
+#endif
 namespace shogun
 {
 template<class T> class SGSparseMatrix;

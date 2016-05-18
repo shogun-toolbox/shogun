@@ -49,12 +49,12 @@ namespace tapkee
 		TapkeeOutput(const tapkee::DenseMatrix& e, const tapkee::ProjectingFunction& p) :
 			embedding(), projection(p)
 		{
-			embedding.swap(e);
+			embedding = e;
 		}
 		TapkeeOutput(const TapkeeOutput& that) :
 			embedding(), projection(that.projection)
 		{
-			this->embedding.swap(that.embedding);
+			this->embedding = that.embedding;
 		}
 		tapkee::DenseMatrix embedding;
 		tapkee::ProjectingFunction projection;

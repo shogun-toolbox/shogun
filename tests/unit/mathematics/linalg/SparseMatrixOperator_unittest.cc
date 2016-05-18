@@ -219,33 +219,37 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex128)
 
 TEST(SparseMatrixOperator, get_sparsity_structure)
 {
-	const int size=9;
-	const int max_pow=10;
+	const int32_t size=9;
+	const int32_t max_pow=10;
 
-	SGMatrix<double> m(size, size);
+	SGMatrix<float64_t> m(size, size);
 
 	m.set_const(0.0);
-	for (int i=0; i<size; ++i)
+	for (int32_t i=0; i<size; ++i)
 		m(i,i)=2.0;
-	for (int i=0; i<size; i+=4)
+	for (int32_t i=0; i<size; i+=4)
 		m(i,size-1)=2.0;
-	for (int i=0; i<size; i+=4)
+	for (int32_t i=0; i<size; i+=4)
 		m(size-1,i)=2.0;
 
-	CSparseFeatures<double> feat(m);
-	SGSparseMatrix<double> sm=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<double> op(sm);
+	CSparseFeatures<float64_t> feat(m);
+	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
+	CSparseMatrixOperator<float64_t> op(sm);
 	CSparseMatrixOperator<bool>* b_op
 		=static_cast<CSparseMatrixOperator<bool>*>(op);
 
-	SparseMatrix<bool, RowMajor, int> sp
+	SparseMatrix<bool, RowMajor, int32_t> sp
 		=EigenSparseUtil<bool>::toEigenSparse(b_op->get_matrix_operator());
-	SparseMatrix<double, RowMajor, int> sm2
-		=EigenSparseUtil<double>::toEigenSparse(sm);
+	SparseMatrix<float64_t, RowMajor, int32_t> sm2
+		=EigenSparseUtil<float64_t>::toEigenSparse(sm);
 
 	// compute direct matrix power and then the sparsity structure
-	for (int i=2; i<=max_pow; ++i)
+	for (int32_t i=2; i<=max_pow; ++i)
+#if EIGEN_VERSION_AT_LEAST(3,2,91)
+		sp=(sp.cast<float64_t>()*sm2).cast<bool>();
+#else
 		sp=sp*sm2;
+#endif
 
 	int32_t* outerIndexPtr=const_cast<int32_t*>(sp.outerIndexPtr());
 	int32_t* innerIndexPtr=const_cast<int32_t*>(sp.innerIndexPtr());

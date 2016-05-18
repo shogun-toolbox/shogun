@@ -62,7 +62,12 @@ void CDenseMatrixExactLog::precompute()
 	Map<MatrixXd> mat(m.matrix, m.num_rows, m.num_cols);
 	SGMatrix<float64_t> log_m(m.num_rows, m.num_cols);
 	Map<MatrixXd> log_mat(log_m.matrix, log_m.num_rows, log_m.num_cols);
+#if EIGEN_WITH_LOG_BUG_1229
+	MatrixXd tmp = mat;
+	log_mat=tmp.log();
+#else
 	log_mat=mat.log();
+#endif
 
 	// the log(C) is also a linear operator here
 	// reset the operator of this function with log(C)
