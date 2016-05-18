@@ -154,8 +154,64 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 	return result;
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system()
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_slow_low_memory()
 {
+	// TODO benchmark against build_system of full estimator
+	auto D = get_num_dimensions();
+	auto N = get_num_data();
+	auto ND = N*D;
+	auto m = get_num_rkhs_basis();
+
+	SG_SINFO("Allocating memory for system.\n");
+	SGMatrix<float64_t> A(m+1,ND+1);
+	Map<MatrixXd> eigen_A(A.matrix, m+1, ND+1);
+	SGVector<float64_t> b(ND+1);
+	Map<VectorXd> eigen_b(b.vector, ND+1);
+
+	// TODO all this can be done in a single pass over the data
+	// TODO should have an option to store the kernel hessians to speed things up when possible
+	// TODO think of a block scheme where one kernel hessian (or N) are stored and less things are recomputed?
+
+	SG_SINFO("Computing h.\n");
+	auto h = compute_h();
+	auto eigen_h=Map<VectorXd>(h.vector, ND);
+
+	SG_SINFO("Computing xi norm.\n");
+	auto xi_norm_2 = compute_xi_norm_2();
+
+	SG_SINFO("Populating A matrix.\n");
+	// A[0, 0] = np.dot(h, h) / n + lmbda * xi_norm_2
+	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
+
+	// TODO parallelise properly, read up on openmp
+	// A_mn[1 + row_idx, 1 + col_idx] = compute_lower_right_submatrix_component(X, lmbda, inds[row_idx], col_idx, sigma)
+#pragma omp parallel for
+	for (auto col_idx=0; col_idx<ND; col_idx++)
+	{
+		for (auto row_idx=0; row_idx<m; row_idx++)
+			A(1+row_idx, 1+col_idx) = compute_lower_right_submatrix_element(m_inds[row_idx], col_idx);
+	}
+
+	// A_mn[0, 1:] = compute_first_row_without_storing(X, h, N, lmbda, sigma)
+	auto first_row = compute_first_row_no_storing();
+	Map<VectorXd> eigen_first_row(first_row.vector, ND);
+	eigen_A.row(0).segment(1, ND) = eigen_first_row.transpose();
+
+	// A_mn[1:, 0] = A_mn[0, inds + 1]
+	for (auto ind_idx=0; ind_idx<m; ind_idx++)
+		eigen_A(ind_idx+1,0) = first_row[m_inds[ind_idx]];
+
+	// b[0] = -xi_norm_2; b[1:] = -h.reshape(-1)
+	b[0] = -xi_norm_2;
+	eigen_b.segment(1, ND) = -eigen_h;
+
+	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
+}
+
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_large_memory()
+{
+	// TODO actually implement in the fast mem hungry way
+
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
@@ -231,7 +287,7 @@ void KernelExpFamilyNystromImpl::fit()
 	auto m = get_num_rkhs_basis();
 
 	SG_SINFO("Building system.\n");
-	auto A_mn_b = build_system();
+	auto A_mn_b = build_system_fast_large_memory();
 	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, m+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_mn_b.second.vector, ND+1);
 
