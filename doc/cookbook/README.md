@@ -27,6 +27,7 @@ To add an entry, only two files are needed (plus a test):
 
 ## Guidelines
 
+ * Please don't break the build. Check the requirements (`LAPACK`, `NLOPT`, etc) for the meta example and potentially add them [here](https://github.com/shogun-toolbox/shogun/blob/develop/cmake/FindMetaExamples.cmake)
  * Orient yourself as close as possible on the above reference example. Include the same elements as used thereim.
  * Write proper English. Pay attention to grammar, spelling, and punctuation.
  * Keep the example *specific*. Only talk about the particular algorithm and its interface. General concepts (for example 'supervised learning') should go to overview pages.
