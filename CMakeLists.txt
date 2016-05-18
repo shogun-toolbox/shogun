@@ -531,7 +531,12 @@ FIND_PACKAGE(PkgConfig)
 OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
 
 FIND_PACKAGE(LAPACK)
-IF (LAPACK_FOUND)
+IF(DARWIN AND RModular)
+	MESSAGE(WARNING "Turning OFF LAPACK support because of RModular on interface, see issue #3022")
+ENDIF()
+# Cannot use Accelerate.framework and R at the same time on OSX
+# because there's a redefinition of COMPLEX, see issue #3022
+IF (LAPACK_FOUND AND NOT (DARWIN AND RModular))
 	# find out whether it is Accelerate.framework we found for LaPack/BLAS
 	IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
 		SET(HAVE_MVEC 1)
