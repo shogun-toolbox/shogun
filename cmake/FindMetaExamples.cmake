@@ -9,6 +9,10 @@ function(find_meta_examples)
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/gaussian_processes/gaussian_process_regression.sg)
 	ENDIF()
+	
+	IF(NOT HAVE_LAPACK)
+		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/regression/linear_ridge_regression.sg)
+	ENDIF()
 
 	SET(META_EXAMPLES ${META_EXAMPLE_LISTINGS} PARENT_SCOPE)
 endfunction()
