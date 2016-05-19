@@ -39,9 +39,9 @@ public:
 
 	virtual const char* get_name() const;
 private:
-	virtual const operation get_direct_estimation_method() const override;
-	virtual const float64_t normalize_statistic(float64_t statistic) const override;
-	virtual const float64_t normalize_variance(float64_t variance) const override;
+	virtual const operation get_direct_estimation_method() const;
+	virtual const float64_t normalize_statistic(float64_t statistic) const;
+	virtual const float64_t normalize_variance(float64_t variance) const;
 };
 
 }
