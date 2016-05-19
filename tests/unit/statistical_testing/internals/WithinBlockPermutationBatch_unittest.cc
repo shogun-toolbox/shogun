@@ -51,9 +51,9 @@ using namespace Eigen;
 
 TEST(WithinBlockPermutationBatch, biased_full)
 {
-	const index_t dim=3000;
-	const index_t n=1500;
-	const index_t m=1500;
+	const index_t dim=2;
+	const index_t n=13;
+	const index_t m=7;
 	const index_t num_null_samples=5;
 
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
