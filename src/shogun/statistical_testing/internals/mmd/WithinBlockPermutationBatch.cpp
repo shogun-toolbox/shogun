@@ -34,8 +34,8 @@ using namespace mmd;
 
 struct WithinBlockPermutationBatch::terms_t
 {
-	std::array<float32_t, 3> term{};
-	std::array<float32_t, 3> diag{};
+	std::array<float64_t, 3> term{};
+	std::array<float64_t, 3> diag{};
 };
 
 WithinBlockPermutationBatch::WithinBlockPermutationBatch(index_t nx, index_t ny, index_t N, EStatisticType type)
