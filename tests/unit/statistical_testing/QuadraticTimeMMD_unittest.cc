@@ -456,3 +456,40 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
 }
+
+TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
+{
+	const index_t m=20;
+	const index_t n=20;
+	const index_t dim=3;
+
+	float64_t difference=0.5;
+
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	CFeatures* feat_p=gen_p->get_streamed_features(m);
+	CFeatures* feat_q=gen_q->get_streamed_features(n);
+
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	mmd->set_kernel(kernel);
+
+	index_t num_null_samples=10;
+	mmd->set_num_null_samples(num_null_samples);
+	mmd->set_null_approximation_method(NAM_PERMUTATION);
+
+	sg_rand->set_seed(12345);
+	SGVector<float64_t> result_1=mmd->sample_null();
+
+	mmd->precompute_kernel_matrix(false);
+	sg_rand->set_seed(12345);
+	SGVector<float64_t> result_2=mmd->sample_null();
+
+	ASSERT_EQ(result_1.size(), result_2.size());
+	for (auto i=0; i<result_1.size(); ++i)
+		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
+}

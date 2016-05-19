@@ -22,6 +22,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
@@ -73,7 +74,8 @@ void WithinBlockPermutationBatch::add_term(terms_t& t, float32_t val, index_t i,
 	}
 }
 
-SGVector<float32_t> WithinBlockPermutationBatch::operator()(const SGMatrix<float32_t>& km)
+template <class Kernel>
+SGVector<float32_t> WithinBlockPermutationBatch::operator()(const Kernel& km)
 {
 	SG_SDEBUG("Entering!\n");
 
@@ -134,3 +136,6 @@ SGVector<float32_t> WithinBlockPermutationBatch::operator()(const SGMatrix<float
 	SG_SDEBUG("Leaving!\n");
 	return result;
 }
+
+template SGVector<float32_t> WithinBlockPermutationBatch::operator()(const SGMatrix<float32_t>&);
+template SGVector<float32_t> WithinBlockPermutationBatch::operator()(const Kernel&);

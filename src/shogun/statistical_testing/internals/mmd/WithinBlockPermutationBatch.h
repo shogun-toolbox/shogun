@@ -42,8 +42,7 @@ class WithinBlockPermutationBatch
 	using return_type=SGVector<value_type>;
 public:
 	WithinBlockPermutationBatch(index_t, index_t, index_t, EStatisticType);
-	return_type operator()(const SGMatrix<value_type>& kernel_matrix);
-//	return_type operator()(const CGPUMatrix<value_type>& kernel_matrix);
+	template <class Kernel> return_type operator()(const Kernel& kernel);
 private:
 	struct terms_t;
 	void add_term(terms_t&, float32_t, index_t, index_t);

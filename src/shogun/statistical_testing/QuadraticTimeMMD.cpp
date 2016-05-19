@@ -37,6 +37,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
@@ -59,6 +60,7 @@ struct CQuadraticTimeMMD::Self
 	SGMatrix<float32_t> get_kernel_matrix();
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	SGVector<float64_t> sample_null();
+	void init_kernel();
 
 	void create_statistic_job();
 	void create_variance_job();
@@ -68,12 +70,15 @@ struct CQuadraticTimeMMD::Self
 
 	CQuadraticTimeMMD& owner;
 	index_t num_eigenvalues;
+	bool precompute;
+	bool is_kernel_initialized;
 
 	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
 	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
 };
 
 CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),
+	precompute(true), is_kernel_initialized(false),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 }
@@ -133,6 +138,38 @@ void CQuadraticTimeMMD::Self::compute_jobs(ComputationManager& cm) const
 	SG_SDEBUG("Leaving\n");
 }
 
+void CQuadraticTimeMMD::Self::init_kernel()
+{
+	SG_SDEBUG("Entering\n");
+	const KernelManager& km=owner.get_kernel_manager();
+	auto kernel=km.kernel_at(0);
+	REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
+
+	if (!is_kernel_initialized && !(kernel->get_kernel_type()==K_CUSTOM))
+	{
+		DataManager& dm=owner.get_data_manager();
+		dm.start();
+		auto samples=dm.next();
+		if (!samples.empty())
+		{
+			dm.end();
+			CFeatures *samples_p=samples[0][0].get();
+			CFeatures *samples_q=samples[1][0].get();
+			auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+			samples.clear();
+			kernel->init(samples_p_and_q, samples_p_and_q);
+			is_kernel_initialized=true;
+			SG_SDEBUG("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
+		}
+		else
+		{
+			dm.end();
+			SG_SERROR("Could not fetch samples!\n");
+		}
+	}
+	SG_SDEBUG("Leaving\n");
+}
+
 SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 {
 	SG_SDEBUG("Entering\n");
@@ -141,9 +178,6 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
 
 	SGMatrix<float32_t> kernel_matrix;
-
-	// check if precomputed kernel is given, no need to do anything in that case
-	// otherwise, init kernel with data and precompute kernel matrix
 	if (kernel->get_kernel_type()==K_CUSTOM)
 	{
 		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(kernel);
@@ -152,41 +186,19 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	}
 	else
 	{
-		DataManager& dm=owner.get_data_manager();
-
-		// using data manager next() API in order to make it work with
-		// streaming samples as well.
-		dm.start();
-		auto samples=dm.next();
-		if (!samples.empty())
+		init_kernel();
+		try
 		{
-			dm.end();
-
-			// use 0th block from each distribution (since there is only one block
-			// for quadratic time MMD
-			CFeatures *samples_p=samples[0][0].get();
-			CFeatures *samples_q=samples[1][0].get();
-			auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
-			samples.clear();
-			kernel->init(samples_p_and_q, samples_p_and_q);
-			try
-			{
-				owner.get_kernel_manager().precompute_kernel_at(0);
-			}
-			catch (ShogunException e)
-			{
-				SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n", e.get_exception_string());
-			}
-			kernel->remove_lhs_and_rhs();
-			auto precomputed_kernel=dynamic_cast<CCustomKernel*>(km.kernel_at(0));
-			ASSERT(precomputed_kernel!=nullptr);
-			kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
+			owner.get_kernel_manager().precompute_kernel_at(0);
 		}
-		else
+		catch (ShogunException e)
 		{
-			dm.end();
-			SG_SERROR("Could not fetch samples!\n");
+			SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n", e.get_exception_string());
 		}
+		kernel->remove_lhs_and_rhs();
+		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(km.kernel_at(0));
+		ASSERT(precomputed_kernel!=nullptr);
+		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
 	}
 
 	SG_SDEBUG("Leaving\n");
@@ -225,17 +237,35 @@ std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_varia
 SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 {
 	SG_SDEBUG("Entering\n");
-	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
 
 	const DataManager& dm=owner.get_data_manager();
 	auto Nx=dm.num_samples_at(0);
 	auto Ny=dm.num_samples_at(1);
-
 	WithinBlockPermutationBatch compute(Nx, Ny, owner.get_num_null_samples(), owner.get_statistic_type());
-	SGVector<float32_t> result=compute(kernel_matrix);
+
+	SGVector<float32_t> result;
+	if (precompute)
+	{
+		SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
+		result=compute(kernel_matrix);
+	}
+	else
+	{
+		const KernelManager& km=owner.get_kernel_manager();
+		auto kernel=km.kernel_at(0);
+		REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
+		if (kernel->get_kernel_type()==K_CUSTOM)
+		{
+			SG_SERROR("Precomputed kernel matrix exists!\n");
+		}
+		init_kernel();
+		result=compute(internal::Kernel(kernel));
+	}
+
 	SGVector<float64_t> null_samples(result.vlen);
 	for (auto i=0; i<result.vlen; ++i)
 		null_samples[i]=owner.normalize_statistic(result[i]);
+
 	SG_SDEBUG("Leaving\n");
 	return null_samples;
 }
@@ -483,6 +513,30 @@ SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
 
 	SG_DEBUG("Leaving\n");
 	return null_samples;
+}
+
+void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
+{
+	if (self->precompute && !precompute)
+	{
+		const KernelManager& km=get_kernel_manager();
+		auto kernel=km.kernel_at(0);
+		REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
+
+		if (kernel->get_kernel_type()==K_CUSTOM)
+		{
+			SG_SINFO("Precomputed kernel matrix exists! Removing the existing matrix!\n");
+			get_kernel_manager().restore_kernel_at(0);
+			kernel=km.kernel_at(0);
+			REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
+			if (kernel->get_kernel_type()==K_CUSTOM)
+			{
+				SG_SERROR("The underlying kernel itself is a precomputed kernel!\n");
+			}
+		}
+		self->is_kernel_initialized=false;
+	}
+	self->precompute=precompute;
 }
 
 const char* CQuadraticTimeMMD::get_name() const

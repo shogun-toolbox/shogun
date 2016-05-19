@@ -39,6 +39,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
@@ -50,9 +51,9 @@ using namespace Eigen;
 
 TEST(WithinBlockPermutationBatch, biased_full)
 {
-	const index_t dim=2;
-	const index_t n=13;
-	const index_t m=7;
+	const index_t dim=3000;
+	const index_t n=1500;
+	const index_t m=1500;
 	const index_t num_null_samples=5;
 
 	using operation=std::function<float32_t(SGMatrix<float32_t>)>;
@@ -280,3 +281,48 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 
 	SG_UNREF(feats);
 }
+
+TEST(WithinBlockPermutationBatch, kernel_functor)
+{
+	const index_t dim=2;
+	const index_t n=8;
+	const index_t m=8;
+	const index_t num_null_samples=5;
+
+	SGMatrix<float64_t> data_p(dim, n);
+	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
+	std::for_each(data_p.matrix, data_p.matrix+dim*n, [&n](float64_t& val) { val/=n; });
+
+	SGMatrix<float64_t> data_q(dim, m);
+	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
+	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
+
+	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats=feats_p->create_merged_copy(feats_q);
+	SG_REF(feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
+
+	auto kernel=some<CGaussianKernel>();
+	kernel->set_width(2.0);
+
+	kernel->init(feats, feats);
+	auto mat=kernel->get_kernel_matrix<float32_t>();
+
+	// compute using within-block-permutation functor
+	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, ST_BIASED_FULL);
+
+	sg_rand->set_seed(12345);
+	SGVector<float32_t> result_1=batch(mat);
+
+	sg_rand->set_seed(12345);
+	SGVector<float32_t> result_2=batch(shogun::internal::Kernel(kernel));
+
+	EXPECT_TRUE(result_1.size()==result_2.size());
+	for (auto i=0; i<result_1.size(); ++i)
+		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
+
+	SG_UNREF(feats);
+}
+

@@ -59,6 +59,8 @@ public:
 	virtual float64_t compute_p_value(float64_t statistic) override;
 	virtual float64_t compute_threshold(float64_t alpha) override;
 
+	void precompute_kernel_matrix(bool precompute);
+
 	virtual const char* get_name() const;
 private:
 	struct Self;
