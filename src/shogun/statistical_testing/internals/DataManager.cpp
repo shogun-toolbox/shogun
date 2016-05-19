@@ -196,6 +196,24 @@ const index_t DataManager::blocksize_at(size_t i) const
 	return fetchers[i]->m_block_details.m_blocksize;
 }
 
+const bool DataManager::is_blockwise() const
+{
+	SG_SDEBUG("Entering!\n");
+	bool blockwise=true;
+	for (size_t i=0; i<fetchers.size(); ++i)
+		blockwise&=!fetchers[i]->m_block_details.m_full_data;
+	SG_SDEBUG("Leaving!\n");
+	return blockwise;
+}
+
+void DataManager::set_blockwise(bool blockwise)
+{
+	SG_SDEBUG("Entering!\n");
+	for (size_t i=0; i<fetchers.size(); ++i)
+		fetchers[i]->m_block_details.m_full_data=!blockwise;
+	SG_SDEBUG("Leaving!\n");
+}
+
 void DataManager::set_train_test_ratio(float64_t train_test_ratio)
 {
 	SG_SDEBUG("Entering!\n");

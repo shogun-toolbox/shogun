@@ -875,3 +875,55 @@ TEST(DataManager, train_data_two_distributions_streaming_feats_blockwise)
 	ASSERT_TRUE(total==num_vec);
 	mgr.end();
 }
+
+TEST(DataManager, set_blockwise_on_off)
+{
+	const index_t dim=3;
+	const index_t num_vec=8;
+	const index_t blocksize=2;
+	const index_t num_blocks_per_burst=2;
+	const index_t num_distributions=1;
+
+	SGMatrix<float64_t> data_p(dim, num_vec);
+	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
+
+	auto feats_p=new CDenseFeatures<float64_t>(data_p);
+
+	DataManager mgr(num_distributions);
+	mgr.samples_at(0)=feats_p;
+	mgr.set_blocksize(blocksize);
+	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
+
+	mgr.set_blockwise(false);
+	mgr.start();
+	auto next_burst=mgr.next();
+	ASSERT_TRUE(!next_burst.empty());
+	ASSERT_TRUE(next_burst.num_blocks()==1);
+	auto casted=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][0].get());
+	casted->get_feature_matrix().display_matrix("whole");
+	ASSERT_TRUE(casted!=nullptr);
+	ASSERT_TRUE(casted->get_num_vectors()==num_vec);
+	next_burst=mgr.next();
+	ASSERT_TRUE(next_burst.empty());
+	mgr.end();
+
+	mgr.reset();
+	mgr.set_blockwise(true);
+	mgr.start();
+	auto total=0;
+	next_burst=mgr.next();
+	while (!next_burst.empty())
+	{
+//		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
+		for (auto i=0; i<next_burst.num_blocks(); ++i)
+		{
+			auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][i].get());
+			ASSERT_TRUE(tmp!=nullptr);
+			tmp->get_feature_matrix().display_matrix("block");
+//			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
+			total+=tmp->get_num_vectors();
+		}
+		next_burst=mgr.next();
+	}
+//	ASSERT_TRUE(total==num_vec);
+}

@@ -35,6 +35,8 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/Features.h>
+#include <shogun/distance/EuclideanDistance.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/BTestMMD.h>
@@ -74,6 +76,7 @@ struct CMMD::Self
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q();
+	std::shared_ptr<CCustomDistance> compute_distance();
 	SGVector<float64_t> sample_null();
 
 	CMMD& owner;
@@ -386,6 +389,57 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	return statistic;
 }
 
+std::shared_ptr<CCustomDistance> CMMD::Self::compute_distance()
+{
+	auto distance=std::shared_ptr<CCustomDistance>(new CCustomDistance());
+	DataManager& dm=owner.get_data_manager();
+
+	bool blockwise=dm.is_blockwise();
+	dm.set_blockwise(false);
+
+	// using data manager next() API in order to make it work with
+	// streaming samples as well.
+	dm.start();
+	auto samples=dm.next();
+	if (!samples.empty())
+	{
+		dm.end();
+
+		// use 0th block from each distribution (since there is only one block
+		// for quadratic time MMD
+		CFeatures *samples_p=samples[0][0].get();
+		CFeatures *samples_q=samples[1][0].get();
+
+		try
+		{
+			auto p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+			samples.clear();
+			auto euclidean_distance=std::unique_ptr<CEuclideanDistance>(new CEuclideanDistance());
+			if (euclidean_distance->init(p_and_q, p_and_q))
+			{
+				auto dist_mat=euclidean_distance->get_distance_matrix<float32_t>();
+				distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
+			}
+			else
+			{
+				SG_SERROR("Computing distance matrix was not possible! Please contact Shogun developers.\n");
+			}
+		}
+		catch (ShogunException e)
+		{
+			SG_SERROR("%s, Data is too large! Computing distance matrix was not possible!\n", e.get_exception_string());
+		}
+	}
+	else
+	{
+		dm.end();
+		SG_SERROR("Could not fetch samples!\n");
+	}
+
+	dm.set_blockwise(blockwise);
+	return distance;
+}
+
 CMMD::CMMD() : CTwoSampleTest()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -419,9 +473,10 @@ void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel, f
 		case KSM_MEDIAN_HEURISTIC:
 			{
 				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
-				auto distance=compute_distance();
+				auto distance=self->compute_distance();
 				policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(self->kernel_selection_mgr, distance));
 				dm.set_train_test_ratio(0);
+				dm.reset();
 			}
 			break;
 		case KSM_MAXIMIZE_XVALIDATION:

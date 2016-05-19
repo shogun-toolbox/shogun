@@ -123,7 +123,6 @@ protected:
 	virtual const operation get_direct_estimation_method() const=0;
 	virtual const float64_t normalize_statistic(float64_t statistic) const=0;
 	virtual const float64_t normalize_variance(float64_t variance) const=0;
-	virtual std::shared_ptr<CCustomDistance> compute_distance()=0;
 	bool use_gpu() const;
 private:
 	struct Self;

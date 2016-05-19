@@ -42,7 +42,6 @@ private:
 	virtual const operation get_direct_estimation_method() const override;
 	virtual const float64_t normalize_statistic(float64_t statistic) const override;
 	virtual const float64_t normalize_variance(float64_t variance) const override;
-	virtual std::shared_ptr<CCustomDistance> compute_distance() override;
 	const float64_t gaussian_variance(float64_t variance) const;
 };
 

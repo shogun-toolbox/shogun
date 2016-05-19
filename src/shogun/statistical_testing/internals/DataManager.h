@@ -177,6 +177,19 @@ public:
 	const index_t blocksize_at(size_t i) const;
 
 	/**
+	 * @return True if block-wise fetching is on, False otherwise.
+	 */
+	const bool is_blockwise() const;
+
+	/**
+	 * Turns on blockwise fetching if True is passed. Turns off blockwise fetching if
+	 * False is passed. The blockwise details are not destroyed when set to False, i.e.
+	 * turning blockwise fetching back on again, we can get blocks as we would have got
+	 * in the original setup.
+	 */
+	void set_blockwise(bool blockwise);
+
+	/**
 	 * @return Total number of samples that can be fetched from all the data sources.
 	 */
 	index_t get_num_samples() const;

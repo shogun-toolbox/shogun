@@ -145,12 +145,6 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 	return result;
 }
 
-std::shared_ptr<CCustomDistance> CLinearTimeMMD::compute_distance()
-{
-	auto distance=std::shared_ptr<CCustomDistance>(new CCustomDistance());
-	return distance;
-}
-
 const char* CLinearTimeMMD::get_name() const
 {
 	return "LinearTimeMMD";
