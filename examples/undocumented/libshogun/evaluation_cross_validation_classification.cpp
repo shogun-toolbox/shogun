@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <chrono>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -18,6 +19,8 @@
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
+using namespace std;
+using namespace std::chrono; 
 
 void print_message(FILE* target, const char* str)
 {
@@ -27,7 +30,7 @@ void print_message(FILE* target, const char* str)
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=40;
+	index_t num_vectors=1000;
 	index_t num_features=5;
 
 	/* data means -1, 1 in all components, std deviation of 3 */
@@ -76,24 +79,24 @@ void test_cross_validation()
 	svm->set_epsilon(svm_eps);
 
 	/* train and output */
-	svm->train(features);
-	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
+//	svm->train(features);
+//	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
+//	for (index_t i=0; i<num_vectors; ++i)
+//		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
 	CContingencyTableEvaluation* eval_crit=
 			new CContingencyTableEvaluation(ACCURACY);
 
 	/* evaluate training error */
-	float64_t eval_result=eval_crit->evaluate(output, labels);
-	SG_SPRINT("training error: %f\n", eval_result);
-	SG_UNREF(output);
+//	float64_t eval_result=eval_crit->evaluate(output, labels);
+//	SG_SPRINT("training error: %f\n", eval_result);
+//	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
 	 * approx. right */
-	ASSERT(eval_result<2);
+//	ASSERT(eval_result<2);
 
 	/* splitting strategy */
 	index_t n_folds=5;
@@ -125,10 +128,16 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	sg_io->set_loglevel(MSG_DEBUG);
+	//sg_io->set_loglevel(MSG_DEBUG);
 
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();  
+	
 	test_cross_validation();
 
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  	auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
+  	//duration = duration/1000000;
+  	SG_SPRINT("D %d \n", duration);
 	exit_shogun();
 
 	return 0;
