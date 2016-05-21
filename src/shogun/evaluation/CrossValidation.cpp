@@ -203,6 +203,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
+			inverse_subset_indices.display_vector();
+			
 
 			/* train machine on training features */
 			m_machine->train_locked(inverse_subset_indices);
@@ -210,6 +212,9 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* feature subset for testing */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
+			CMath::qsort(subset_indices);
+			subset_indices.display_vector();
+			
 
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
@@ -280,6 +285,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
+			inverse_subset_indices.display_vector();			
 			m_features->add_subset(inverse_subset_indices);
 			for (index_t p=0; p<m_features->get_num_preprocessors(); p++)
 			{
@@ -320,6 +326,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
+			CMath::qsort(subset_indices);			
+			subset_indices.display_vector();			
 			m_features->add_subset(subset_indices);
 
 			/* set label subset for testing */
