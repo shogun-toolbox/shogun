@@ -192,7 +192,7 @@ class CLinearMachine : public CMachine
 		float64_t bias;
 		/** features */
 		CDotFeatures* features;
-		/** If true, bias is computed in ::train method */
+		/** If true, bias is computed in train method */
 		bool m_compute_bias;
 };
 }

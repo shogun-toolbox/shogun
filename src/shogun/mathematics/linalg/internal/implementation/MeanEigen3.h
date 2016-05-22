@@ -153,7 +153,7 @@ struct mean<Backend::EIGEN3, Matrix>
 	/**
 	 * Method that computes the mean of SGVectors using Eigen3
 	 *
-	 * @param a vector whose mean has to be computed
+	 * @param vec a vector whose mean has to be computed
 	 * @return the vector mean \f$\bar a_i\f$
 	 */
 	static ReturnType compute(SGVector<T> vec)
