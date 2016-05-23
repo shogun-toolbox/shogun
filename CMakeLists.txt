@@ -72,7 +72,8 @@ SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/src/shogun
 	${CMAKE_BINARY_DIR}/src
-	${CMAKE_BINARY_DIR}/src/shogun)
+	${CMAKE_BINARY_DIR}/src/shogun
+	${CMAKE_SOURCE_DIR}/cereal-1.1.2/include)
 
 # check whether any of the modular interfaces are turned ON
 IF (
@@ -606,8 +607,10 @@ FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
 IF(NOT EIGEN3_FOUND)
 	include(external/Eigen3)
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
+	SET(HAVE_EIGEN3 1)
 ELSE()
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
+        SET(HAVE_EIGEN3 1)
 ENDIF()
 
 # OpenCL/ViennaCL detection

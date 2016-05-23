@@ -15,9 +15,9 @@
 #define __SGVECTOR_H__
 
 #include <shogun/lib/config.h>
-
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <vector>
 
 namespace Eigen
 {
@@ -474,7 +474,31 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return matrix
 		 */
 		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+
 #endif // #ifndef SWIG // SWIG should skip this part
+
+		template<class Archive>
+		void save(Archive & ar) const
+		{
+				std::vector<T> vector_std;
+				vector_std.assign(vector, vector+vlen);
+				ar(vector_std);
+		}
+
+		template<class Archive>
+		void load(Archive & ar)
+		{
+				std::vector<T> vector_std;
+				ar(vector_std);
+
+				unref();
+				vlen = vector_std.size();
+				vector = SG_MALLOC(T, vlen);
+				ref();
+				memcpy(vector, vector_std.data(), vlen);
+
+		}
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig);

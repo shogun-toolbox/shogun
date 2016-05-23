@@ -28,10 +28,10 @@ class CDistanceMachine;
 enum EKMeansMethod
 {
 	/** Mini batch based training */
-    KMM_MINI_BATCH,
+	KMM_MINI_BATCH,
 
-    /* Standard KMeans with Lloyds algorithm */
-    KMM_LLOYD
+	/* Standard KMeans with Lloyds algorithm */
+	KMM_LLOYD
 };
 
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
@@ -227,6 +227,29 @@ class CKMeans : public CDistanceMachine
 		 */
 		void set_mbKMeans_params(int32_t b, int32_t t);
 
+		template<class Archive>
+		void save(Archive & ar) const
+		{
+			auto pt_max_iter = std::make_shared<int32_t>(max_iter);
+			auto pt_k = std::make_shared<int32_t>(k);
+			auto pt_dimensions = std::make_shared<int32_t>(dimensions);
+			auto pt_R = std::make_shared<SGVector<float64_t> >(R);
+			ar(pt_max_iter, pt_k, pt_dimensions, R);
+		}
+
+		template<class Archive>
+		void load(Archive & ar)
+		{
+			auto pt_max_iter = std::make_shared<int32_t>();
+			auto pt_k = std::make_shared<int32_t>();
+			auto pt_dimensions = std::make_shared<int32_t>();
+			auto pt_R = std::make_shared<SGVector<float64_t> >();
+			ar(pt_max_iter, pt_k, pt_dimensions, pt_R);
+			max_iter = *pt_max_iter;
+			k = *pt_k;
+			dimensions = *pt_dimensions;
+		}
+
 	private:
 		/** train k-means
 		 *
@@ -293,4 +316,3 @@ class CKMeans : public CDistanceMachine
 };
 }
 #endif
-
