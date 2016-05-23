@@ -79,8 +79,8 @@ TEST(KernelSelectionMaxPower, single_kernel)
 
 TEST(KernelSelectionMaxPower, weighted_kernel)
 {
-	const index_t m=20;
-	const index_t n=30;
+	const index_t m=24;
+	const index_t n=32;
 	const index_t dim=2;
 	const float64_t difference=0.5;
 	const index_t num_kernels=4;
