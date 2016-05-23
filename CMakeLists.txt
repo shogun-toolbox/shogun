@@ -14,11 +14,6 @@ IF(POLICY CMP0056)
 	SET(CMAKE_POLICY_DEFAULT_CMP0056 NEW)
 ENDIF(POLICY CMP0056)
 
-IF(POLICY CMP0042)
-	CMAKE_POLICY(SET CMP0042 NEW)
-	SET(CMAKE_POLICY_DEFAULT_CMP0042 NEW)
-ENDIF(POLICY CMP0042)
-
 project(shogun)
 cmake_minimum_required(VERSION 2.8.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
@@ -72,7 +67,8 @@ SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/src/shogun
 	${CMAKE_BINARY_DIR}/src
-	${CMAKE_BINARY_DIR}/src/shogun)
+	${CMAKE_BINARY_DIR}/src/shogun
+	${CMAKE_SOURCE_DIR}/cereal-1.1.2/include)
 
 # check whether any of the modular interfaces are turned ON
 IF (
@@ -109,26 +105,6 @@ ENDIF()
 # Detect OS
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	SET(DARWIN 1)
-	set(CMAKE_MACOSX_RPATH TRUE)
-
-	# use, i.e. don't skip the full RPATH for the build tree
-	set(CMAKE_SKIP_BUILD_RPATH FALSE)
-
-	# when building, don't use the install RPATH already
-	# (but later on when installing)
-	set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-	set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-	# add the automatically determined parts of the RPATH
-	# which point to directories outside the build tree to the install RPATH
-	set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-	# the RPATH to be used when installing, but only if it's not a system directory
-	list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-	if(${isSystemDir} STREQUAL "-1")
-		set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-	endif(${isSystemDir} STREQUAL "-1")
 ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	SET(LINUX 1)
 ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
@@ -531,12 +507,7 @@ FIND_PACKAGE(PkgConfig)
 OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
 
 FIND_PACKAGE(LAPACK)
-IF(DARWIN AND RModular)
-	MESSAGE(WARNING "Turning OFF LAPACK support because of RModular on interface, see issue #3022")
-ENDIF()
-# Cannot use Accelerate.framework and R at the same time on OSX
-# because there's a redefinition of COMPLEX, see issue #3022
-IF (LAPACK_FOUND AND NOT (DARWIN AND RModular))
+IF (LAPACK_FOUND)
 	# find out whether it is Accelerate.framework we found for LaPack/BLAS
 	IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
 		SET(HAVE_MVEC 1)
@@ -551,22 +522,22 @@ IF (LAPACK_FOUND AND NOT (DARWIN AND RModular))
 		SET(HAVE_MKL 1)
 	ELSE()
 		FIND_PACKAGE(Atlas)
-		IF(Atlas_FOUND)
+		IF(ATLAS_FOUND)
 			SET(HAVE_ATLAS 1)
 			SET(HAVE_LAPACK 1)
-			LIST(APPEND INCLUDES ${Atlas_INCLUDE_DIRS})
+			LIST(APPEND INCLUDES ${ATLAS_INCLUDES})
 			IF(USE_ORIGINAL_LAPACK)
 				SET(ATLAS_CLAPACK_LIBRARY)
-				FOREACH(ITR ${Atlas_LIBRARIES})
+				FOREACH(ITR ${ATLAS_LIBRARIES})
 					IF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-						STRING(REGEX REPLACE "lapack" "clapack" ITR ${ITR})
-						LIST(APPEND ATLAS_CLAPACK_LIBRARY ${ITR})
+					STRING(REGEX REPLACE "lapack" "clapack" ITR ${ITR})
+					LIST(APPEND ATLAS_CLAPACK_LIBRARY ${ITR})
 					ENDIF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
 				ENDFOREACH(ITR ${ATLAS_LIBRARIES})
 				MESSAGE(STATUS "using ATLAS-CLAPACK from: ${ATLAS_CLAPACK_LIBRARY}")
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES} ${ATLAS_CLAPACK_LIBRARY} ${Atlas_LIBRARIES})
+				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES} ${ATLAS_CLAPACK_LIBRARY} ${ATLAS_LIBRARIES})
 			ELSE(USE_ORIGINAL_LAPACK)
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Atlas_LIBRARIES})
+				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${ATLAS_LIBRARIES})
 			ENDIF(USE_ORIGINAL_LAPACK)
 		ELSE()
 			FIND_PACKAGE(CBLAS)
@@ -823,15 +794,11 @@ ELSE ()
 ENDIF ()
 
 # Linear algebra default global backend setups
-if( NOT LINALG_DEFAULT_BACKEND )
-  set( LINALG_DEFAULT_BACKEND EIGEN3 CACHE STRING
-       "Set global linear algebra backend library for all modules: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_DEFAULT_BACKEND STREQUAL "EIGEN3")
+OPTION (LinAlgBackend "Set global linear algebra backend library for all modules")
+IF (LinAlgBackend STREQUAL "EIGEN3")
 	SET(USE_EIGEN3 1)
 	MESSAGE("-- Eigen3 set as default global linear algebra backend library")
-ELSEIF (LINALG_DEFAULT_BACKEND STREQUAL "VIENNACL")
+ELSEIF (LinAlgBackend STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL 1)
@@ -844,15 +811,11 @@ ENDIF ()
 # Linear algebra default module specific backend setup
 
 # Core module
-if( NOT LINALG_CORE_LIB )
-  set( LINALG_CORE_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for core module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_CORE_LIB STREQUAL "EIGEN3")
+OPTION (CoreLib "Set linear algebra backend library for core module")
+IF (CoreLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_CORE 1)
 	MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
-ELSEIF (LINALG_CORE_LIB STREQUAL "VIENNACL")
+ELSEIF (CoreLib STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_CORE 1)
@@ -863,15 +826,11 @@ ELSEIF (LINALG_CORE_LIB STREQUAL "VIENNACL")
 ENDIF ()
 
 # Reduction module
-if( NOT LINALG_REDUX_LIB )
-  set( LINALG_REDUX_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for reduction module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_REDUX_LIB STREQUAL "EIGEN3")
+OPTION (ReduxLib "Set linear algebra backend library for reduction module")
+IF (ReduxLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_REDUX 1)
 	MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
-ELSEIF (LINALG_REDUX_LIB STREQUAL "VIENNACL")
+ELSEIF (ReduxLib STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_REDUX 1)
@@ -882,15 +841,11 @@ ELSEIF (LINALG_REDUX_LIB STREQUAL "VIENNACL")
 ENDIF ()
 
 # Linear solver module
-if( NOT LINALG_LINEAR_SOLVER_LIB )
-  set( LINALG_SOLVER_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for linear solver module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_LINEAR_SOLVER_LIB STREQUAL "EIGEN3")
+OPTION (LinSolverLib "Set linear algebra backend library for linear solver module")
+IF (LinSolverLib STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_LINSLV 1)
 	MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
-ELSEIF (LINALG_LINEAR_SOLVER_LIB STREQUAL "VIENNACL")
+ELSEIF (LinSolverLib STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_LINSLV 1)
@@ -901,15 +856,11 @@ ELSEIF (LINALG_LINEAR_SOLVER_LIB STREQUAL "VIENNACL")
 ENDIF ()
 
 # Eigen solver module
-if( NOT LINALG_EIGENSOLVER_LIB )
-  set( LINALG_EIGENSOLVER_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for eigen solver module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_EIGENSOLVER_LIB STREQUAL "EIGEN3")
+OPTION (EigenSolver "Set linear algebra backend library for eigen solver module")
+IF (EigenSolver STREQUAL "EIGEN3")
 	SET(USE_EIGEN3_EIGSLV 1)
 	MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
-ELSEIF (LINALG_EIGENSOLVER_LIB STREQUAL "VIENNACL")
+ELSEIF (EigenSolver STREQUAL "VIENNACL")
 	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
 	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
 		SET(USE_VIENNACL_EIGSLV 1)
@@ -951,7 +902,7 @@ ENDIF(REDUCE_SWIG_DEBUG)
 IF (PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
-	FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
+	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
 
 	SET(HAVE_PYTHON 1)
