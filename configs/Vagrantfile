@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# SHOGUN Machine Learning Toolbox development environment
+# Based on Vagrant and Docker
+#
+# 1. Run, in the directory containing both Vagrantfile and Dockerfile:
+#    $   vagrant up --provider=docker
+#
+# 2. Due to HashiCorp's Docker base image, you will need to provide login data.
+#    username: docker
+#    password: tcuser
+#
+# 3. To connect after the automatic development environment setup, run:
+#    $   vagrant ssh
+#
+
+Vagrant.configure(2) do |config|
+
+  config.ssh.insert_key = true 
+  config.ssh.username = 'docker'
+  config.ssh.password = 'tcuser'
+  config.ssh.guest_port = 2222
+  config.ssh.port = 22
+  config.ssh.host = '127.0.0.1'
+
+  config.vm.provider "docker" do |d|
+    d.build_dir = "."
+  end
+
+end
