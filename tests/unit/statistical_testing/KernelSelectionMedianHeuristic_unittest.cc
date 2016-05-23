@@ -34,6 +34,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/LinearTimeMMD.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -55,6 +56,40 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_mmd)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
+	mmd->set_statistic_type(ST_BIASED_FULL);
+	mmd->set_num_samples_p(m);
+	mmd->set_num_samples_q(n);
+
+	for (auto i=0; i<num_kernels; ++i)
+	{
+		// shoguns kernel width is different
+		float64_t sigma=(i+1)*0.15;
+		float64_t sq_sigma_twice=sigma*sigma*2;
+		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
+	}
+
+	mmd->select_kernel(KSM_MEDIAN_HEURISTIC);
+	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
+	EXPECT_NEAR(selected_kernel->get_width(), 1.62, 1E-10);
+}
+
+TEST(KernelSelectionMedianHeuristic, linear_time_mmd)
+{
+	const index_t m=20;
+	const index_t n=30;
+	const index_t dim=2;
+	const float64_t difference=0.5;
+	const index_t num_kernels=10;
+
+	// use fixed seed
+	sg_rand->set_seed(12345);
+
+	// streaming data generator for mean shift distributions
+	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
+	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+
+	// create MMD instance, convienience constructor
+	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);

@@ -34,6 +34,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <gtest/gtest.h>
@@ -681,22 +682,15 @@ TEST(DataManager, train_data_two_distributions_streaming_feats)
 	const index_t num_vec=8;
 	const index_t num_distributions=2;
 	const index_t train_test_ratio=3;
-
-	SGMatrix<float64_t> data_p(dim, num_vec);
-	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
-
-	SGMatrix<float64_t> data_q(dim, num_vec);
-	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
-
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	const float64_t difference=0.5;
 
 	DataManager mgr(num_distributions);
-	mgr.samples_at(0)=new CStreamingDenseFeatures<float64_t>(feats_p);
-	mgr.samples_at(1)=new CStreamingDenseFeatures<float64_t>(feats_q);
+	mgr.samples_at(0)=new CMeanShiftDataGenerator(0, dim, 0);
+	mgr.samples_at(1)=new CMeanShiftDataGenerator(difference, dim, 0);
 	mgr.num_samples_at(0)=num_vec;
 	mgr.num_samples_at(1)=num_vec;
+
+	typedef CDenseFeatures<float64_t> feat_type;
 
 	// training data
 	mgr.set_train_test_ratio(train_test_ratio);
@@ -770,27 +764,18 @@ TEST(DataManager, train_data_two_distributions_streaming_feats_blockwise)
 	const index_t num_blocks_per_burst=2;
 	const index_t num_distributions=2;
 	const index_t train_test_ratio=3;
-
-	SGMatrix<float64_t> data_p(dim, num_vec);
-	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
-
-	SGMatrix<float64_t> data_q(dim, num_vec);
-	std::iota(data_q.matrix, data_q.matrix+dim*num_vec, dim*num_vec);
-
-	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
-	auto feats_q=new feat_type(data_q);
+	const float64_t difference=0.5;
 
 	DataManager mgr(num_distributions);
-	mgr.samples_at(0)=new CStreamingDenseFeatures<float64_t>(feats_p);
-	mgr.samples_at(1)=new CStreamingDenseFeatures<float64_t>(feats_q);
+	mgr.samples_at(0)=new CMeanShiftDataGenerator(0, dim, 0);
+	mgr.samples_at(1)=new CMeanShiftDataGenerator(difference, dim, 0);
 	mgr.num_samples_at(0)=num_vec;
 	mgr.num_samples_at(1)=num_vec;
-
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
-
 	mgr.set_train_test_ratio(train_test_ratio);
+
+	typedef CDenseFeatures<float64_t> feat_type;
 
 	// train data
 	mgr.set_train_mode(true);
