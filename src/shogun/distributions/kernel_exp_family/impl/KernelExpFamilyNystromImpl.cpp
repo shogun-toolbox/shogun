@@ -109,6 +109,7 @@ float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(inde
 	float64_t G_sum = 0;
 	// TODO check parallel with accumulating on the G_sum
 	// no parallel here as is called from build_system's parallel
+	// TODO merge with compute_first_row_no_storing
 	for (auto idx_n=0; idx_n<N; idx_n++)
 		for (auto idx_d=0; idx_d<D; idx_d++)
 		{
@@ -134,7 +135,9 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 	Map<VectorXd> eigen_result(result.vector, ND);
 	eigen_result=VectorXd::Zero(ND);
 
-	// TODO check parallel with accumulating on the G_sum
+	// TODO check parallel with accumulating on the sum
+	// TODO this can be done at the same time as computing the lower right submatrix
+	//      to avoid re-computing the kernel hessian
 #pragma omp for
 	for (auto ind1=0; ind1<ND; ind1++)
 		for (auto ind2=0; ind2<ND; ind2++)
