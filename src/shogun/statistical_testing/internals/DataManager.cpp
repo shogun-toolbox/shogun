@@ -210,7 +210,7 @@ void DataManager::set_blockwise(bool blockwise)
 {
 	SG_SDEBUG("Entering!\n");
 	for (size_t i=0; i<fetchers.size(); ++i)
-		fetchers[i]->m_block_details.m_full_data=!blockwise;
+		fetchers[i]->set_blockwise(blockwise);
 	SG_SDEBUG("Leaving!\n");
 }
 

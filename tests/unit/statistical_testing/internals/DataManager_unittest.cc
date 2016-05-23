@@ -900,7 +900,6 @@ TEST(DataManager, set_blockwise_on_off)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 	auto casted=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][0].get());
-	casted->get_feature_matrix().display_matrix("whole");
 	ASSERT_TRUE(casted!=nullptr);
 	ASSERT_TRUE(casted->get_num_vectors()==num_vec);
 	next_burst=mgr.next();
@@ -914,16 +913,15 @@ TEST(DataManager, set_blockwise_on_off)
 	next_burst=mgr.next();
 	while (!next_burst.empty())
 	{
-//		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
+		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
 			auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][i].get());
 			ASSERT_TRUE(tmp!=nullptr);
-			tmp->get_feature_matrix().display_matrix("block");
-//			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
+			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();
 		}
 		next_burst=mgr.next();
 	}
-//	ASSERT_TRUE(total==num_vec);
+	ASSERT_TRUE(total==num_vec);
 }

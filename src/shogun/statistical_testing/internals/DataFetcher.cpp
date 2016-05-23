@@ -24,11 +24,13 @@
 using namespace shogun;
 using namespace internal;
 
-DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr), train_test_subset_used(false)
+DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr),
+	train_test_subset_used(false)
 {
 }
 
-DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples), train_test_subset_used(false)
+DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples),
+	train_test_subset_used(false)
 {
 	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
 	SG_REF(m_samples);
@@ -117,6 +119,22 @@ void DataFetcher::use_fold(index_t idx)
 //	{
 //		f->use_fold(idx);
 //	});
+}
+
+void DataFetcher::set_blockwise(bool blockwise)
+{
+	if (blockwise)
+	{
+		m_block_details=last_blockwise_details;
+		SG_SDEBUG("Restoring the blockwise details!\n");
+		m_block_details.m_full_data=false;
+	}
+	else
+	{
+		last_blockwise_details=m_block_details;
+		SG_SDEBUG("Saving the blockwise details!\n");
+		m_block_details=BlockwiseDetails();
+	}
 }
 
 void DataFetcher::start()

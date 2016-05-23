@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/BlockwiseDetails.h>
 #include <shogun/statistical_testing/internals/TrainTestDetails.h>
@@ -58,6 +59,7 @@ public:
 	void set_xvalidation_mode(bool xvalidation_mode);
 	index_t get_num_folds() const;
 	void use_fold(index_t idx);
+	void set_blockwise(bool blockwise);
 
 	virtual void start();
 	virtual CFeatures* next();
@@ -74,6 +76,7 @@ protected:
 private:
 	CFeatures* m_samples;
 	bool train_test_subset_used;
+	BlockwiseDetails last_blockwise_details;
 };
 
 }
