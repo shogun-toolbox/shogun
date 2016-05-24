@@ -222,8 +222,8 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	auto m = get_num_rkhs_basis();
 
 	SG_SINFO("Allocating memory for system.\n");
-	SGMatrix<float64_t> A(m+1,ND+1);
-	Map<MatrixXd> eigen_A(A.matrix, m+1, ND+1);
+	SGMatrix<float64_t> A(ND+1, m+1);
+	Map<MatrixXd> eigen_A(A.matrix, ND+1, m+1);
 	SGVector<float64_t> b(ND+1);
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
@@ -238,18 +238,34 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	SG_SINFO("Computing xi norm.\n");
 	auto xi_norm_2 = compute_xi_norm_2();
 
+	SG_SINFO("Computing all kernel Hessians.\n");
+	auto all_hessians = kernel_hessian_all();
+
+	SG_SINFO("Creating sub-sampled copies.\n");
+	SGMatrix<float64_t> col_sub_sampled_hessian(ND, m);
+	SGMatrix<float64_t> fully_sub_sampled_hessian(m, m);
+	auto eigen_fully_sub_sampled_hessian = Map<MatrixXd>(fully_sub_sampled_hessian.matrix, m, m);
+	auto eigen_col_sub_sampled_hessian = Map<MatrixXd>(col_sub_sampled_hessian.matrix, ND, m);
+
+	for (auto j=0; j<m; j++)
+	{
+		for (auto i=0; i<ND; i++)
+		{
+			col_sub_sampled_hessian(i,j)=all_hessians(i, m_inds[j]);
+			if (i<m)
+				fully_sub_sampled_hessian(i,j)=all_hessians(m_inds[i], m_inds[j]);
+		}
+	}
+
+	// not needed anymore
+	all_hessians = SGMatrix<float64_t>();
+
 	SG_SINFO("Populating A matrix.\n");
 	// A[0, 0] = np.dot(h, h) / n + lmbda * xi_norm_2
 	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
 
-	// TODO parallelise properly, read up on openmp
-	// A_mn[1 + row_idx, 1 + col_idx] = compute_lower_right_submatrix_component(X, lmbda, inds[row_idx], col_idx, sigma)
-#pragma omp parallel for
-	for (auto col_idx=0; col_idx<ND; col_idx++)
-	{
-		for (auto row_idx=0; row_idx<m; row_idx++)
-			A(1+row_idx, 1+col_idx) = compute_lower_right_submatrix_element(m_inds[row_idx], col_idx);
-	}
+	// can use noalias to speed up as matrices are definitely different
+	eigen_A.block(1,1,ND,m).noalias()=eigen_col_sub_sampled_hessian*eigen_fully_sub_sampled_hessian / N + m_lambda*eigen_fully_sub_sampled_hessian;
 
 	// A_mn[0, 1:] = compute_first_row_without_storing(X, h, N, lmbda, sigma)
 	auto first_row = compute_first_row_no_storing();
@@ -290,7 +306,7 @@ void KernelExpFamilyNystromImpl::fit()
 	auto m = get_num_rkhs_basis();
 
 	SG_SINFO("Building system.\n");
-	auto A_mn_b = build_system_fast_large_memory();
+	auto A_mn_b = build_system_slow_low_memory();
 	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, m+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_mn_b.second.vector, ND+1);
 
