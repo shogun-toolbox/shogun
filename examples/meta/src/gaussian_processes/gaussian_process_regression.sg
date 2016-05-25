@@ -11,7 +11,7 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
-Real width = 1
+real width = 1
 GaussianKernel kernel(features_train, features_train, width)
 ZeroMean mean_function()
 #![create_appropriate_kernel_and_mean_function]
@@ -38,8 +38,8 @@ best_theta.apply_to_machine(gp_regression)
 
 #![evaluate_error_and_marginal_likelihood]
 MeanSquaredError eval()
-Real mse = eval.evaluate(labels_predict, labels_test)
-Real marg_ll = inference_method.get_negative_log_marginal_likelihood()
+real mse = eval.evaluate(labels_predict, labels_test)
+real marg_ll = inference_method.get_negative_log_marginal_likelihood()
 #![evaluate_error_and_marginal_likelihood]
 
 # integration testing variables

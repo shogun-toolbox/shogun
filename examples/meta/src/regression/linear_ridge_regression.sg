@@ -11,14 +11,14 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Real tau = 0.001
+real tau = 0.001
 LinearRidgeRegression lrr(tau, features_train, labels_train)
 #![create_instance]
 
 #![train_and_apply]
 lrr.train()
 RegressionLabels labels_predict = lrr.apply_regression(features_test)
-Real bias = lrr.get_bias()
+real bias = lrr.get_bias()
 #![train_and_apply]
 
 #[!disable_bias]
@@ -35,7 +35,7 @@ RealVector weights = lrr.get_w()
 
 #![evaluate_error]
 MeanSquaredError eval()
-Real mse = eval.evaluate(labels_predict, labels_test)
+real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables

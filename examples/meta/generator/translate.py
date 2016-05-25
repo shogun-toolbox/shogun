@@ -242,10 +242,19 @@ class Translator:
         """
         typeString = self.translateType(init[0])
         nameString = init[1]["Identifier"]
-
+        
         # store only real valued matrices, vectors and scalars
-        if self.storeVars and init[0]["ObjectType"] in ("Real", "RealVector", "RealMatrix"):
-            self.varsToStore.append((typeString, nameString))
+        if self.storeVars:
+            append_store = False
+            if "ObjectType" in init[0]:
+                if init[0]["ObjectType"] in ("RealVector", "RealMatrix", "FloatVector", "FloatMatrix"):
+                    append_store = True
+            elif "BasicType" in init[0]:
+                if init[0]["BasicType"] in ("real", "float", "int"):
+                    append_store = True
+            
+            if append_store:
+                self.varsToStore.append((typeString, nameString))
 
         initialisation = init[2]
 

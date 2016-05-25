@@ -72,6 +72,7 @@ class FastParser:
         'int': 'BASICTYPE',
         'bool': 'BASICTYPE',
         'float':  'BASICTYPE',
+        'real': 'BASICTYPE',
         'string': 'BASICTYPE'
     }
 
