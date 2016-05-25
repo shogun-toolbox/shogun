@@ -487,7 +487,7 @@ TEST(KernelExpFamilyNystromImpl, grad_almost_all_inds_close_exact)
 		EXPECT_NEAR(grad[i], grad_nystrom[i], 0.3);
 }
 
-TEST(KernelExpFamilyNystromImpl, build_system_fast_large_memory)
+TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory)
 {
 	index_t N=5;
 	index_t D=3;
@@ -500,7 +500,7 @@ TEST(KernelExpFamilyNystromImpl, build_system_fast_large_memory)
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, ND);
 	auto result_slow = est_nystrom.build_system_slow_low_memory();
-	auto result_fast = est_nystrom.build_system_fast_large_memory();
+	auto result_fast = est_nystrom.build_system_fast_high_memory();
 	
 	// compare against (tested) slow low memory version
 	

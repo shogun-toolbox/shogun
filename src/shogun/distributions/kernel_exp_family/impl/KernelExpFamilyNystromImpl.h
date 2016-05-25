@@ -53,6 +53,7 @@ public :
 
 	// for training
 	float64_t kernel_hessian_component(index_t idx_a, index_t idx_b, index_t i, index_t j);
+	virtual void sub_sample_rkhs_basis(index_t num_rkhs_basis);
 
 	// for new data
 	float64_t kernel_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
@@ -63,13 +64,11 @@ public :
 	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx);
 	SGVector<float64_t> compute_first_row_no_storing();
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_slow_low_memory();
-	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_fast_large_memory();
+	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_fast_high_memory();
 
 	virtual void fit();
 	virtual float64_t  log_pdf(const SGVector<float64_t>& x);
 	virtual SGVector<float64_t> grad(const SGVector<float64_t>& x);
-
-	virtual void precompute_kernel();
 
 	std::pair<index_t, index_t> idx_to_ai(const index_t& idx);
 	static SGMatrix<float64_t> pinv(const SGMatrix<float64_t>& A);

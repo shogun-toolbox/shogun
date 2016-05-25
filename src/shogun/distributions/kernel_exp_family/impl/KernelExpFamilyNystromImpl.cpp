@@ -48,8 +48,14 @@ KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data,
 KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
 		index_t num_rkhs_basis)  : KernelExpFamilyImpl(data, sigma, lambda)
 {
+	sub_sample_rkhs_basis(num_rkhs_basis);
+}
+
+void KernelExpFamilyNystromImpl::sub_sample_rkhs_basis(index_t num_rkhs_basis)
+{
 	auto N = get_num_data();
 	auto D = get_num_dimensions();
+
 	SGVector<index_t> permutation(N*D);
 	permutation.range_fill();
 	CMath::permute(permutation);
@@ -189,9 +195,9 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	// TODO parallelise properly, read up on openmp
 	// A_mn[1 + row_idx, 1 + col_idx] = compute_lower_right_submatrix_component(X, lmbda, inds[row_idx], col_idx, sigma)
 #pragma omp parallel for
-	for (auto col_idx=0; col_idx<ND; col_idx++)
+	for (auto row_idx=0; row_idx<m; row_idx++)
 	{
-		for (auto row_idx=0; row_idx<m; row_idx++)
+		for (auto col_idx=0; col_idx<ND; col_idx++)
 			A(1+row_idx, 1+col_idx) = compute_lower_right_submatrix_element(m_inds[row_idx], col_idx);
 	}
 
@@ -211,7 +217,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_large_memory()
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_high_memory()
 {
 	// TODO actually implement in the fast mem hungry way
 
@@ -281,21 +287,6 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	eigen_b.segment(1, ND) = -eigen_h;
 
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
-}
-
-void KernelExpFamilyNystromImpl::precompute_kernel()
-{
-	// precompute kernel matrix to be more efficient later
-	// TODO only store lower diagonal matrix
-	auto N = get_num_data();
-	m_kernel_matrix = SGMatrix<float64_t>(N,N);
-#pragma omp parallel for
-	for (auto i=0; i<N; i++)
-		for (auto j=0; j<=i; j++)
-		{
-			m_kernel_matrix(i,j)=kernel(i,j);
-			m_kernel_matrix(j,i)=m_kernel_matrix(i,j);
-		}
 }
 
 void KernelExpFamilyNystromImpl::fit()
