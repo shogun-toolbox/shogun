@@ -49,6 +49,7 @@ public:
 	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
 
 	virtual ~CQuadraticTimeMMD();
+	virtual void set_kernel(CKernel* kernel);
 
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();

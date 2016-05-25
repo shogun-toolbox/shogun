@@ -256,7 +256,7 @@ void DataManager::set_xvalidation_mode(bool xvalidation_mode)
 index_t DataManager::get_num_folds() const
 {
 	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
-	return fetchers[0]->get_train_test_ratio();
+	return fetchers[0]->get_num_folds();
 }
 
 void DataManager::use_fold(index_t idx)

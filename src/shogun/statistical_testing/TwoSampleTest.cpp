@@ -34,13 +34,14 @@ CTwoSampleTest::~CTwoSampleTest()
 
 void CTwoSampleTest::set_kernel(CKernel* kernel)
 {
-	auto& km = get_kernel_manager();
-	km.kernel_at(0) = kernel;
+	auto& km=get_kernel_manager();
+	km.kernel_at(0)=kernel;
+	km.restore_kernel_at(0);
 }
 
 CKernel* CTwoSampleTest::get_kernel() const
 {
-	const auto& km = get_kernel_manager();
+	const auto& km=get_kernel_manager();
 	return km.kernel_at(0);
 }
 

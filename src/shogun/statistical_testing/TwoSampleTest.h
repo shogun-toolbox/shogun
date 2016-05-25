@@ -32,7 +32,7 @@ public:
 	CTwoSampleTest();
 	virtual ~CTwoSampleTest();
 
-	void set_kernel(CKernel* kernel);
+	virtual void set_kernel(CKernel* kernel);
 	CKernel* get_kernel() const;
 
 	virtual float64_t compute_statistic() = 0;

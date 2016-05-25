@@ -287,6 +287,12 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 	get_kernel_manager().restore_kernel_at(0);
 }
 
+void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
+{
+	CTwoSampleTest::set_kernel(kernel);
+	self->is_kernel_initialized=false;
+}
+
 const std::function<float32_t(SGMatrix<float32_t>)> CQuadraticTimeMMD::get_direct_estimation_method() const
 {
 	return FullDirect();

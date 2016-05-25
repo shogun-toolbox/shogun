@@ -65,8 +65,10 @@ float64_t DataFetcher::get_train_test_ratio() const
 
 void DataFetcher::set_train_mode(bool train_mode)
 {
+	m_train_test_details.train_mode=train_mode;
+	// TODO put the following in another methods
 	index_t start_index=0;
-	if (train_mode)
+	if (m_train_test_details.train_mode)
 	{
 		m_num_samples=m_train_test_details.get_num_training_samples();
 		if (m_num_samples==0)
@@ -107,18 +109,46 @@ void DataFetcher::set_xvalidation_mode(bool xvalidation_mode)
 
 index_t DataFetcher::get_num_folds() const
 {
-//	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
-//	return fetchers[0]->get_train_test_ratio();
-	return 0;
+	return 1+ceil(get_train_test_ratio());
 }
 
 void DataFetcher::use_fold(index_t idx)
 {
-//	using fetcher_type=std::unique_ptr<DataFetcher>;
-//	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
-//	{
-//		f->use_fold(idx);
-//	});
+	auto num_folds=get_num_folds();
+	REQUIRE(idx>=0, "The index (%d) has to be between 0 and %d, both inclusive!\n", idx, num_folds-1);
+	REQUIRE(idx<num_folds, "The index (%d) has to be between 0 and %d, both inclusive!\n", idx, num_folds-1);
+
+	auto num_per_fold=m_train_test_details.get_total_num_samples()/num_folds;
+
+	if (train_test_subset_used)
+		m_samples->remove_subset();
+
+	SGVector<index_t> inds;
+	auto start_idx=idx*num_per_fold;
+	auto num_samples=0;
+
+	if (m_train_test_details.train_mode)
+	{
+		num_samples=m_train_test_details.get_num_training_samples();
+		inds=SGVector<index_t>(num_samples);
+		std::iota(inds.data(), inds.data()+inds.size(), 0);
+		if (start_idx<inds.size())
+		{
+			std::for_each(inds.data()+start_idx, inds.data()+inds.size(), [&num_per_fold](index_t& val)
+			{
+				val+=num_per_fold;
+			});
+		}
+	}
+	else
+	{
+		num_samples=m_train_test_details.get_num_test_samples();
+		inds=SGVector<index_t>(num_samples);
+		std::iota(inds.data(), inds.data()+inds.size(), start_idx);
+		m_samples->add_subset(inds);
+	}
+	inds.display_vector("inds");
+	m_samples->add_subset(inds);
 }
 
 void DataFetcher::set_blockwise(bool blockwise)
