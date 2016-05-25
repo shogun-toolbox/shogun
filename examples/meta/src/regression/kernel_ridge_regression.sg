@@ -11,12 +11,12 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
-Real width = 1
+real width = 1
 GaussianKernel kernel(features_train, features_train, width)
 #![create_appropriate_kernel]
 
 #![create_instance]
-Real tau = 0.001
+real tau = 0.001
 KernelRidgeRegression krr(tau, kernel, labels_train)
 #![create_instance]
 
@@ -31,7 +31,7 @@ RealVector alpha = krr.get_alphas()
 
 #![evaluate_error]
 MeanSquaredError eval()
-Real mse = eval.evaluate(labels_predict, labels_test)
+real mse = eval.evaluate(labels_predict, labels_test)
 #![evaluate_error]
 
 # integration testing variables

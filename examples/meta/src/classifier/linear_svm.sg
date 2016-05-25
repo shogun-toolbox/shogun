@@ -11,8 +11,8 @@ BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-Real C = 1
-Real epsilon = 0.001
+real C = 1
+real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
@@ -28,12 +28,12 @@ BinaryLabels labels_predict = svm.apply_binary(features_test)
 
 #![extract_weights_bias]
 RealVector w = svm.get_w()
-Real b = svm.get_bias()
+real b = svm.get_bias()
 #![extract_weights_bias]
 
 #![evaluate_accuracy]
 AccuracyMeasure eval()
-Real accuracy = eval.evaluate(labels_predict, labels_test)
+real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
