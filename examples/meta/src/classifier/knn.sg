@@ -15,7 +15,8 @@ EuclideanDistance distance(features_train, features_train)
 #![choose_distance]
 
 #![create_instance]
-KNN knn(3, distance, labels_train)
+Int k = 3
+KNN knn(k, distance, labels_train)
 #![create_instance]
 
 #![train_and_apply]

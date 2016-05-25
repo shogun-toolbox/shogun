@@ -56,7 +56,8 @@ typedef long double floatmax_t;
 #define STRING_LEN_STR             "256"
 typedef char                       string_t[STRING_LEN];
 
-typedef int                        machine_int_t;
+typedef int                        int32_t;
+typedef int32_t machine_int_t;
 
 /** index type */
 typedef int32_t index_t;
