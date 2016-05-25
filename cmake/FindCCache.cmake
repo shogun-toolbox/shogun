@@ -12,7 +12,7 @@ else ()
   find_package_handle_standard_args(CCache REQUIRED_VARS CCACHE)
 endif ()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	SET(CCACHE_FLAGS "-Qunused-arguments -fcolor-diagnostics")
 	#set env CCACHE_CPP2=yes
 	SET(ENV{CCACHE_CPP} YES)
