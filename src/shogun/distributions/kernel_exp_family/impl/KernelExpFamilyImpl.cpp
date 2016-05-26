@@ -57,19 +57,21 @@ void KernelExpFamilyImpl::precompute()
 	auto N = get_num_data();
 	auto D = get_num_dimensions();
 
-	// TODO exploit symmetry
+	// TODO exploit symmetry in storage
 	SGMatrix<float64_t> sq_difference_norms(N,N);
 	SGMatrix<float64_t> differences(D,N*N);
 
 #pragma omp parallel for
 	for (auto i=0; i<N; i++)
-		for (auto j=0; j<N; j++)
+		for (auto j=0; j<=i; j++)
 		{
 			SGVector<float64_t> diff(differences.get_column_vector(i*N+j), D, false);
 			difference(i, j, diff);
+			diff = SGVector<float64_t>(differences.get_column_vector(j*N+i), D, false);
+			difference(j, i, diff);
 
 			sq_difference_norms(i,j)=sq_difference_norm(i,j);
-//			sq_difference_norms(j,i)=sq_difference_norms(i,j);
+			sq_difference_norms(j,i)=sq_difference_norms(i,j);
 		}
 
 	// might affect methods, so only set now
