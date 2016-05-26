@@ -75,7 +75,7 @@ float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, in
 	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto k=m_kernel_matrix(idx_a, idx_b);
+	auto k=kernel(idx_a, idx_b);
 
 	auto differences_i = y[i] - x[i];
 	auto differences_j = y[j] - x[j];

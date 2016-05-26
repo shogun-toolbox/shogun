@@ -79,6 +79,10 @@ public :
 
 	// for training
 	float64_t kernel(index_t idx_a, const index_t idx_b);
+	float64_t sq_difference_norm(index_t idx_a, index_t idx_b);
+	SGVector<float64_t> difference(index_t idx_a, index_t idx_b);
+	void difference(index_t idx_a, index_t idx_b, SGVector<float64_t>& result);
+
 	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b);
 	float64_t kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b);
 
@@ -98,8 +102,6 @@ public :
 	virtual float64_t log_pdf(const SGVector<float64_t>& x);
 	virtual SGVector<float64_t> grad(const SGVector<float64_t>& x);
 
-	virtual void precompute_kernel();
-
 	SGVector<float64_t> get_alpha_beta() { return m_alpha_beta; }
 
 	index_t get_num_dimensions();
@@ -109,13 +111,18 @@ public :
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
 
 protected:
+	virtual void precompute();
+
 	SGMatrix<float64_t> m_data;
 	float64_t m_sigma;
 	float64_t m_lambda;
 
 	SGVector<float64_t> m_alpha_beta;
 
-	SGMatrix<float64_t> m_kernel_matrix;
+	// precomputed quantities
+	SGMatrix<float64_t> m_sq_difference_norms;
+	SGMatrix<float64_t> m_differences;
+
 };
 
 }
