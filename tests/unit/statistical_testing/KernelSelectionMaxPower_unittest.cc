@@ -38,6 +38,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
+#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -72,7 +73,8 @@ TEST(KernelSelectionMaxPower, single_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(KSM_MAXIMIZE_POWER);
+	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_POWER));
+	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 }
@@ -107,7 +109,8 @@ TEST(KernelSelectionMaxPower, weighted_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(KSM_MAXIMIZE_POWER, true);
+	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_POWER, true));
+	mmd->select_kernel();
 	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);

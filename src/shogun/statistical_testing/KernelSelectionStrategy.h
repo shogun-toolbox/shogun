@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2013 Heiko Strathmann
+ * Written (w) 2012 - 2013 Heiko Strathmann
  * Written (w) 2014 - 2016 Soumyajit De
  * All rights reserved.
  *
@@ -29,48 +29,58 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
-#include <shogun/statistical_testing/internals/OptimizationSolver.h>
+#ifndef KERNEL_SELECTION_STRAGERY_H_
+#define KERNEL_SELECTION_STRAGERY_H_
 
-using namespace shogun;
-using namespace internal;
+#include <memory>
+#include <shogun/base/SGObject.h>
 
-WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : MaxTestPower(km, est)
+namespace shogun
 {
+
+class CKernel;
+class CMMD;
+
+namespace internal
+{
+class KernelManager;
 }
 
-WeightedMaxTestPower::~WeightedMaxTestPower()
+enum EKernelSelectionMethod
 {
-}
+	KSM_MEDIAN_HEURISTIC,
+	KSM_MAXIMIZE_MMD,
+	KSM_MAXIMIZE_POWER,
+	KSM_MAXIMIZE_XVALIDATION,
+	KSM_AUTO
+};
 
-CKernel* WeightedMaxTestPower::select_kernel()
+class CKernelSelectionStrategy : public CSGObject
 {
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+	friend class CMMD;
+public:
+	CKernelSelectionStrategy();
+	explicit CKernelSelectionStrategy(EKernelSelectionMethod method);
+	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted);
+	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha);
+	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
+	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;
+	~CKernelSelectionStrategy();
 
-	auto estimates=estimator->compute_statistic_and_Q(kernel_mgr);
-	SGVector<float64_t> measures=estimates.first;
-	SGMatrix<float64_t> Q=estimates.second;
+	CKernelSelectionStrategy& use_method(EKernelSelectionMethod method);
+	CKernelSelectionStrategy& use_num_runs(index_t num_runs);
+	CKernelSelectionStrategy& use_alpha(float64_t alpha);
+	CKernelSelectionStrategy& use_weighted(bool weighted);
 
-	for (index_t i=0; i<Q.num_rows; ++i)
-		Q(i, i)+=lambda;
+	void add_kernel(CKernel* kernel);
+	CKernel* select_kernel(CMMD* estimator);
+	virtual const char* get_name() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
+	void init();
+	const internal::KernelManager& get_kernel_manager() const;
+};
 
-	OptimizationSolver solver(measures, Q);
-	SGVector<float64_t> weights=solver.solve();
-
-	CCombinedKernel* kernel=new CCombinedKernel();
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))
-			SG_SERROR("Error while creating a combined kernel! Please contact Shogun developers!\n");
-	}
-	kernel->set_subkernel_weights(weights);
-	SG_SDEBUG("Created a weighted kernel!\n");
-	return kernel;
 }
+#endif // KERNEL_SELECTION_STRAGERY_H_

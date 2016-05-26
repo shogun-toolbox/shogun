@@ -62,6 +62,7 @@ public:
 //	void set_train_mode(bool train_mode);
 //	void set_xvalidation_mode(bool xvalidation_mode);
 private:
+	bool train_mode;
 	index_t m_total_num_samples;
 	index_t m_num_training_samples;
 };

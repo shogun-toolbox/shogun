@@ -42,9 +42,10 @@
 using namespace shogun;
 using namespace internal;
 
-MedianHeuristic::MedianHeuristic(KernelManager& km, std::shared_ptr<CCustomDistance> dist)
-: KernelSelection(km), distance(dist), n(dist->get_num_vec_lhs())
+MedianHeuristic::MedianHeuristic(KernelManager& km, CCustomDistance* dist) : KernelSelection(km), distance(dist)
 {
+	SG_REF(distance);
+	n=dist->get_num_vec_lhs();
 	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
 			"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",
 			distance->get_num_vec_lhs(), distance->get_num_vec_rhs());
@@ -59,6 +60,7 @@ MedianHeuristic::MedianHeuristic(KernelManager& km, std::shared_ptr<CCustomDista
 
 MedianHeuristic::~MedianHeuristic()
 {
+	SG_UNREF(distance);
 }
 
 CKernel* MedianHeuristic::select_kernel()

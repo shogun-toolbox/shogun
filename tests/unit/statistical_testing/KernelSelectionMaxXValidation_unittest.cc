@@ -38,6 +38,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -78,7 +79,8 @@ TEST(KernelSelectionMaxXValidation, single_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(KSM_MAXIMIZE_XVALIDATION, false, 4, 1, 0.05);
+	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_XVALIDATION, 1, 0.05));
+	mmd->select_kernel(4);
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 }

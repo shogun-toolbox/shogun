@@ -75,8 +75,8 @@ struct CMMD::Self
 	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
-	std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q();
-	std::shared_ptr<CCustomDistance> compute_distance();
+	std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q(const KernelManager&);
+	CCustomDistance* compute_distance();
 	SGVector<float64_t> sample_null();
 
 	CMMD& owner;
@@ -92,7 +92,7 @@ struct CMMD::Self
 	std::function<float32_t(const SGMatrix<float32_t>&)> permutation_job;
 	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
 
-	KernelManager kernel_selection_mgr;
+	std::shared_ptr<CKernelSelectionStrategy> strategy;
 };
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
@@ -102,6 +102,9 @@ CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 	null_approximation_method(NAM_PERMUTATION),
 	statistic_job(nullptr), variance_job(nullptr)
 {
+	auto default_strategy=new CKernelSelectionStrategy();
+	SG_REF(default_strategy);
+	strategy=std::shared_ptr<CKernelSelectionStrategy>(default_strategy, [](CKernelSelectionStrategy* ptr) { SG_UNREF(ptr); });
 }
 
 void CMMD::Self::create_computation_jobs()
@@ -261,8 +264,12 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	return std::make_pair(statistic, variance);
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statistic_and_Q()
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
 {
+//	const size_t num_kernels=0;
+//	SGVector<float64_t> statistic(num_kernels);
+//	SGMatrix<float64_t> Q(num_kernels, num_kernels);
+//	return std::make_pair(statistic, Q);
 	REQUIRE(kernel_selection_mgr.num_kernels()>0, "No kernels specified for kernel learning! "
 		"Please add kernels using add_kernel() method!\n");
 
@@ -389,9 +396,9 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	return statistic;
 }
 
-std::shared_ptr<CCustomDistance> CMMD::Self::compute_distance()
+CCustomDistance* CMMD::Self::compute_distance()
 {
-	auto distance=std::shared_ptr<CCustomDistance>(new CCustomDistance());
+	auto distance=new CCustomDistance();
 	DataManager& dm=owner.get_data_manager();
 
 	bool blockwise=dm.is_blockwise();
@@ -437,6 +444,8 @@ std::shared_ptr<CCustomDistance> CMMD::Self::compute_distance()
 	}
 
 	dm.set_blockwise(blockwise);
+
+	SG_REF(distance);
 	return distance;
 }
 
@@ -452,63 +461,38 @@ CMMD::~CMMD()
 {
 }
 
-void CMMD::add_kernel(CKernel* kernel)
+void CMMD::set_kernel_selection_strategy(CKernelSelectionStrategy* strategy)
 {
-	self->kernel_selection_mgr.push_back(kernel);
+	SG_REF(strategy);
+	const auto& km=self->strategy->get_kernel_manager();
+	for (size_t i=0; i<km.num_kernels(); ++i)
+		strategy->add_kernel(km.kernel_at(i));
+	self->strategy=std::shared_ptr<CKernelSelectionStrategy>(strategy, [](CKernelSelectionStrategy* ptr) { SG_UNREF(ptr); });
 }
 
-void CMMD::select_kernel(EKernelSelectionMethod kmethod, bool weighted_kernel, float64_t train_test_ratio,
-		index_t num_run, float64_t alpha)
+void CMMD::add_kernel(CKernel* kernel)
+{
+	self->strategy->add_kernel(kernel);
+}
+
+void CMMD::select_kernel(float64_t ratio)
 {
 	SG_DEBUG("Entering!\n");
-	SG_DEBUG("Selecting kernels from a total of %d kernels!\n", self->kernel_selection_mgr.num_kernels());
-	std::unique_ptr<KernelSelection> policy=nullptr;
-
 	auto& dm=get_data_manager();
-	dm.set_train_test_ratio(train_test_ratio);
+	dm.set_train_test_ratio(ratio);
 	dm.set_train_mode(true);
 
-	switch (kmethod)
-	{
-		case KSM_MEDIAN_HEURISTIC:
-			{
-				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
-				auto distance=self->compute_distance();
-				policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(self->kernel_selection_mgr, distance));
-				dm.set_train_test_ratio(0);
-				dm.reset();
-			}
-			break;
-		case KSM_MAXIMIZE_XVALIDATION:
-			{
-				REQUIRE(!weighted_kernel, "Weighted kernel selection is not possible with MAXIMIZE_XVALIDATION!\n");
-				policy=std::unique_ptr<MaxXValidation>(new MaxXValidation(self->kernel_selection_mgr, this, num_run, alpha));
-			}
-			break;
-		case KSM_MAXIMIZE_MMD:
-			if (weighted_kernel)
-				policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(self->kernel_selection_mgr, this));
-			else
-				policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(self->kernel_selection_mgr, this));
-			break;
-		case KSM_MAXIMIZE_POWER:
-			if (weighted_kernel)
-				policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(self->kernel_selection_mgr, this));
-			else
-				policy=std::unique_ptr<MaxTestPower>(new MaxTestPower(self->kernel_selection_mgr, this));
-			break;
-		default:
-			SG_ERROR("Unsupported kernel selection method specified! "
-					"Presently only accepted values are MAXIMIZE_MMD, MAXIMIZE_POWER and MEDIAN_HEURISTIC!\n");
-			break;
-	}
-	ASSERT(policy!=nullptr);
 	auto& km=get_kernel_manager();
-	km.kernel_at(0)=policy->select_kernel();
+	km.kernel_at(0)=self->strategy->select_kernel(this);
 	km.restore_kernel_at(0);
 
 	dm.set_train_mode(false);
 	SG_DEBUG("Leaving!\n");
+}
+
+CCustomDistance* CMMD::compute_distance()
+{
+	return self->compute_distance();
 }
 
 float64_t CMMD::compute_statistic()
@@ -521,14 +505,21 @@ float64_t CMMD::compute_variance()
 	return self->compute_statistic_variance().second;
 }
 
+void CMMD::set_train_test_ratio(float64_t ratio)
+{
+	auto& dm=get_data_manager();
+	dm.set_train_test_ratio(ratio);
+	dm.reset();
+}
+
 std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 {
 	return self->compute_statistic_variance();
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::compute_statistic_and_Q()
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
 {
-	return self->compute_statistic_and_Q();
+	return self->compute_statistic_and_Q(kernel_selection_mgr);
 }
 
 SGVector<float64_t> CMMD::sample_null()

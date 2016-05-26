@@ -32,7 +32,6 @@
 #ifndef MEDIAN_HEURISTIC_H__
 #define MEDIAN_HEURISTIC_H__
 
-#include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/KernelSelection.h>
 
@@ -50,14 +49,14 @@ namespace internal
 class MedianHeuristic : public KernelSelection
 {
 public:
-	MedianHeuristic(KernelManager&, std::shared_ptr<CCustomDistance>);
+	MedianHeuristic(KernelManager&, CCustomDistance*);
 	MedianHeuristic(const MedianHeuristic& other)=delete;
 	~MedianHeuristic();
 	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
 	virtual CKernel* select_kernel() override;
 protected:
-	std::shared_ptr<CCustomDistance> distance;
-	const int32_t n;
+	CCustomDistance* distance;
+	int32_t n;
 };
 
 }

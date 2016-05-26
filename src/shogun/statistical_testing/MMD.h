@@ -35,6 +35,7 @@
 #include <memory>
 #include <functional>
 #include <shogun/statistical_testing/TwoSampleTest.h>
+#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 
 namespace shogun
 {
@@ -47,6 +48,7 @@ template <typename> class SGMatrix;
 namespace internal
 {
 
+class KernelManager;
 class MaxTestPower;
 class MaxXValidation;
 class WeightedMaxTestPower;
@@ -74,15 +76,6 @@ enum ENullApproximationMethod
 	NAM_MMD2_GAMMA
 };
 
-enum EKernelSelectionMethod
-{
-	KSM_MEDIAN_HEURISTIC,
-	KSM_MAXIMIZE_MMD,
-	KSM_MAXIMIZE_POWER,
-	KSM_MAXIMIZE_XVALIDATION,
-	KSM_AUTO
-};
-
 class CMMD : public CTwoSampleTest
 {
 	friend class internal::MaxTestPower;
@@ -90,15 +83,16 @@ class CMMD : public CTwoSampleTest
 	friend class internal::MaxXValidation;
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
-	
+
 	CMMD();
 	virtual ~CMMD();
 
+	void set_kernel_selection_strategy(CKernelSelectionStrategy* strategy);
 	void add_kernel(CKernel *kernel);
-	void select_kernel(EKernelSelectionMethod kmethod=KSM_AUTO,
-		bool weighted_kernel=false, float64_t train_test_ratio=1.0,
-		index_t num_run=10, float64_t alpha=0.05);
+	void select_kernel(float64_t train_test_ratio=1.0);
 
+	CCustomDistance* compute_distance();
+	void set_train_test_ratio(float64_t ratio);
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
 
@@ -129,7 +123,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 	virtual std::pair<float64_t, float64_t> compute_statistic_variance();
-	virtual std::pair<SGVector<float64_t>, SGMatrix<float64_t> > compute_statistic_and_Q();
+	std::pair<SGVector<float64_t>, SGMatrix<float64_t> > compute_statistic_and_Q(const internal::KernelManager&);
 };
 
 }

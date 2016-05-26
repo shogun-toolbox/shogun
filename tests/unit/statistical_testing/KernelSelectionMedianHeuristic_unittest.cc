@@ -35,6 +35,7 @@
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
+#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -102,7 +103,8 @@ TEST(KernelSelectionMedianHeuristic, linear_time_mmd)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->select_kernel(KSM_MEDIAN_HEURISTIC);
+	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MEDIAN_HEURISTIC));
+	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 1.62, 1E-10);
 }

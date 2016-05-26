@@ -54,6 +54,13 @@ KernelManager::KernelManager(index_t num_kernels)
 
 KernelManager::~KernelManager()
 {
+	clear();
+}
+
+void KernelManager::clear()
+{
+	m_kernels.resize(0);
+	m_precomputed_kernels.resize(0);
 }
 
 InitPerKernel KernelManager::kernel_at(size_t i)
