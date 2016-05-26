@@ -44,6 +44,8 @@ KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data,
 {
 	m_inds = inds;
 	m_low_memory_mode = low_memory_mode;
+
+	SG_SINFO("Using m=%d user-defined RKHS basis function.\n", inds.vlen);
 }
 
 KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
@@ -55,6 +57,7 @@ KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data,
 
 void KernelExpFamilyNystromImpl::sub_sample_rkhs_basis(index_t num_rkhs_basis)
 {
+	SG_SINFO("Using m=%d uniformly sampled RKHS basis function.\n", num_rkhs_basis);
 	auto N = get_num_data();
 	auto D = get_num_dimensions();
 
