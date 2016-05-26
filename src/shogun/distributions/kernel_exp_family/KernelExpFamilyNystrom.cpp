@@ -43,7 +43,8 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom() : CKernelExpFamily()
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, SGVector<index_t> inds)
+			float64_t sigma, float64_t lambda, SGVector<index_t> inds,
+			bool low_memory_mode)
 			: CKernelExpFamily()
 {
 	REQUIRE(data.matrix, "Given observations cannot be empty\n");
@@ -68,13 +69,15 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 
 	}
 
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, inds);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, inds, low_memory_mode);
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, index_t num_rkhs_basis) : CKernelExpFamily()
+			float64_t sigma, float64_t lambda, index_t num_rkhs_basis,
+			bool low_memory_mode) : CKernelExpFamily()
 {
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis,
+			low_memory_mode);
 }
 
 CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()

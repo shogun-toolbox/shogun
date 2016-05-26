@@ -44,9 +44,11 @@ class CKernelExpFamilyNystrom : public CKernelExpFamily
 public :
 	CKernelExpFamilyNystrom();
 	CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-				float64_t sigma, float64_t lambda, SGVector<index_t> inds);
+				float64_t sigma, float64_t lambda, SGVector<index_t> inds,
+				bool low_memory_mode=false);
 	CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-				float64_t sigma, float64_t lambda, index_t num_rkhs_basis);
+				float64_t sigma, float64_t lambda, index_t num_rkhs_basis,
+				bool low_memory_mode=false);
 
 	virtual ~CKernelExpFamilyNystrom();
 
