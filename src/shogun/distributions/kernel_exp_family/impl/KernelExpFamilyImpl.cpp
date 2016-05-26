@@ -139,17 +139,18 @@ void KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b,
 SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t idx_b)
 {
 	auto D = get_num_dimensions();
-	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
-	auto diff=x-y;
-	auto diff2 = diff.array().pow(2).matrix();
+
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	Map<VectorXd> eigen_diff(diff.vector, D);
+
 	auto k=kernel(idx_a,idx_b);
 
 	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
-	eigen_result = pow(2./m_sigma,3) * k * (diff2*diff.transpose());
-	eigen_result -= pow(2./m_sigma,2) * k * 2* diff.asDiagonal();
-	eigen_result.rowwise() -=  (pow(2./m_sigma,2) * k * diff).transpose();
+	eigen_result = pow(2./m_sigma,3) * k *
+			((eigen_diff.array().pow(2).matrix())*(-eigen_diff.transpose()));
+	eigen_result += pow(2./m_sigma,2) * k * 2* eigen_diff.asDiagonal();
+	eigen_result.rowwise() +=  (pow(2./m_sigma,2) * k * eigen_diff).transpose();
 
 	return result;
 }
@@ -157,9 +158,9 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t 
 float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b)
 {
 	auto D = get_num_dimensions();
-	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
-	VectorXd diff2 = (x-y).array().pow(2).matrix();
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	Map<VectorXd> eigen_diff(diff.vector, D);
+	auto diff2 = eigen_diff.array().pow(2).matrix();
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto k=kernel(idx_a,idx_b);
@@ -181,9 +182,9 @@ float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx
 SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b)
 {
 	auto D = get_num_dimensions();
-	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
-	VectorXd diff2 = (x-y).array().pow(2).matrix();
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	Map<VectorXd> eigen_diff(diff.vector, D);
+	VectorXd diff2 = eigen_diff.array().pow(2).matrix();
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto k=kernel(idx_a,idx_b);
@@ -216,9 +217,8 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index
 SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t idx_b)
 {
 	auto D = get_num_dimensions();
-	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
-	auto diff = x-y;
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	Map<VectorXd> eigen_diff(diff.vector, D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto k=kernel(idx_a,idx_b);
@@ -227,7 +227,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t i
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
 
 	// H = k*(2*np.eye(d)/sigma - 4*np.outer(differences, differences)/sigma**2)
-	eigen_result = -diff*diff.transpose() / pow(m_sigma, 2) * k * 4;
+	eigen_result = -eigen_diff*eigen_diff.transpose() / pow(m_sigma, 2) * k * 4;
 	eigen_result.diagonal().array() += 2*k/m_sigma;
 
 	return result;
