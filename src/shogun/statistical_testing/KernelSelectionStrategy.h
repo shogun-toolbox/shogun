@@ -75,6 +75,7 @@ public:
 	void add_kernel(CKernel* kernel);
 	CKernel* select_kernel(CMMD* estimator);
 	virtual const char* get_name() const;
+	void erase_intermediate_results();
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
