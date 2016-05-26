@@ -110,7 +110,7 @@ SGVector<float64_t> KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b
 	auto D = get_num_dimensions();
 
 	if (m_differences.matrix)
-		return SGVector<float64_t>(m_differences.get_column_vector(idx_a*N+idx_b), D);
+		return SGVector<float64_t>(m_differences.get_column_vector(idx_a*N+idx_b), D, false);
 
 	SGVector<float64_t> result(D);
 	difference(idx_a, idx_b, result);
