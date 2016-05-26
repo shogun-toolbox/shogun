@@ -54,59 +54,70 @@ MaxXValidation::~MaxXValidation()
 
 SGVector<float64_t> MaxXValidation::get_measure_vector()
 {
-	SG_SNOTIMPLEMENTED;
-	return SGVector<float64_t>();
+	return measures;
 }
 
 SGMatrix<float64_t> MaxXValidation::get_measure_matrix()
 {
-	SG_SNOTIMPLEMENTED;
-	return SGMatrix<float64_t>();
+	return rejections;
 }
 
-void MaxXValidation::compute_measures(SGVector<float64_t>& measures, SGVector<index_t>& term_counters)
+void MaxXValidation::init_measures()
 {
+	const index_t num_kernels=kernel_mgr.num_kernels();
+	auto& dm=estimator->get_data_manager();
+	const index_t N=dm.get_num_folds();
+	REQUIRE(N!=0, "Number of folds is not set!\n");
+	if (rejections.num_rows!=N*num_run || rejections.num_cols!=num_kernels)
+		rejections=SGMatrix<float64_t>(N*num_run, num_kernels);
+	std::fill(rejections.data(), rejections.data()+rejections.size(), 0);
+	if (measures.size()!=num_kernels)
+		measures=SGVector<float64_t>(num_kernels);
+	std::fill(measures.data(), measures.data()+measures.size(), 0);
+}
+
+void MaxXValidation::compute_measures()
+{
+	auto& dm=estimator->get_data_manager();
+	dm.set_xvalidation_mode(true);
+
+	const index_t N=dm.get_num_folds();
+	SG_SINFO("Performing %d fold cross-validattion!\n", N);
+
 	const size_t num_kernels=kernel_mgr.num_kernels();
-	for (size_t i=0; i<num_kernels; ++i)
+	auto existing_kernel=estimator->get_kernel();
+	for (auto i=0; i<num_run; ++i)
 	{
-		auto kernel=kernel_mgr.kernel_at(i);
-		estimator->set_kernel(kernel);
-		bool rejected=estimator->compute_p_value(estimator->compute_statistic())<alpha;
-		auto delta=measures[i]-rejected;
-		measures[i]=delta/term_counters[i]++;
-		estimator->cleanup();
+		// TODO set permutation beforehand
+		for (auto j=0; j<N; ++j)
+		{
+			dm.use_fold(j);
+			for (size_t k=0; k<num_kernels; ++k)
+			{
+				auto kernel=kernel_mgr.kernel_at(k);
+				estimator->set_kernel(kernel);
+				rejections(i*N+j, k)=estimator->compute_p_value(estimator->compute_statistic())<alpha;
+				estimator->cleanup();
+			}
+		}
+	}
+	dm.set_xvalidation_mode(false);
+	estimator->set_kernel(existing_kernel);
+
+	for (auto j=0; j<rejections.num_cols; ++j)
+	{
+		auto begin=rejections.get_column_vector(j);
+		auto size=rejections.num_rows;
+		measures[j]=std::accumulate(begin, begin+size, 0)/size;
 	}
 }
 
 CKernel* MaxXValidation::select_kernel()
 {
-	auto& dm=estimator->get_data_manager();
-	dm.set_xvalidation_mode(true);
-	auto existing_kernel=estimator->get_kernel();
-
-	const index_t N=dm.get_num_folds();
-	// TODO write a more meaningful error message
-	REQUIRE(N!=0, "Number of folds is not set!\n");
-	SG_SINFO("Performing %d fold cross-validattion!\n", N);
-	// train mode is already ON by now! set by the caller
-	SGVector<float64_t> measures(kernel_mgr.num_kernels());
-	std::fill(measures.data(), measures.data()+measures.size(), 0);
-	SGVector<index_t> term_counters(measures.size());
-	std::fill(term_counters.data(), term_counters.data()+term_counters.size(), 1);
-	for (auto i=0; i<num_run; ++i)
-	{
-		for (auto j=0; j<N; ++j)
-		{
-			dm.use_fold(j);
-			compute_measures(measures, term_counters);
-		}
-	}
-
-	estimator->set_kernel(existing_kernel);
-	dm.set_xvalidation_mode(false);
-
-	auto min_element=std::min_element(measures.vector, measures.vector+measures.vlen);
-	auto min_idx=std::distance(measures.vector, min_element);
-	SG_SDEBUG("Selected kernel at %d position!\n", min_idx);
-	return kernel_mgr.kernel_at(min_idx);
+	init_measures();
+	compute_measures();
+	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
+	auto max_idx=std::distance(measures.vector, max_element);
+	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
+	return kernel_mgr.kernel_at(max_idx);
 }

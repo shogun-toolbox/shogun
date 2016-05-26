@@ -58,8 +58,8 @@ public:
 	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
-	void init_measures();
-	void compute_measures();
+	virtual void init_measures();
+	virtual void compute_measures();
 	CCustomDistance* distance;
 	SGVector<float64_t> measures;
 	int32_t n;

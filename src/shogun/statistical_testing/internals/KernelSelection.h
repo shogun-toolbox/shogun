@@ -60,6 +60,8 @@ public:
 protected:
 	const KernelManager& kernel_mgr;
 	CMMD* estimator;
+	virtual void init_measures()=0;
+	virtual void compute_measures()=0;
 };
 
 }

@@ -57,10 +57,9 @@ public:
 	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
+	virtual void init_measures();
 	virtual void compute_measures();
 	SGVector<float64_t> measures;
-
-	virtual void init_measures();
 };
 
 }

@@ -59,12 +59,17 @@ MedianHeuristic::~MedianHeuristic()
 
 void MedianHeuristic::init_measures()
 {
+	SG_SNOTIMPLEMENTED;
+}
+
+void MedianHeuristic::compute_measures()
+{
 	distance=estimator->compute_distance();
 	SG_REF(distance);
 	n=distance->get_num_vec_lhs();
 	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
-			"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",
-			distance->get_num_vec_lhs(), distance->get_num_vec_rhs());
+		"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",
+		distance->get_num_vec_lhs(), distance->get_num_vec_rhs());
 	measures=SGVector<float64_t>((n*(n-1))/2);
 	size_t write_idx=0;
 	for (auto j=0; j<n; ++j)
@@ -77,8 +82,7 @@ void MedianHeuristic::init_measures()
 
 SGVector<float64_t> MedianHeuristic::get_measure_vector()
 {
-	SG_SNOTIMPLEMENTED;
-	return SGVector<float64_t>();
+	return measures;
 }
 
 SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
@@ -88,7 +92,7 @@ SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
 
 CKernel* MedianHeuristic::select_kernel()
 {
-	init_measures();
+	compute_measures();
 	auto median_distance=measures[measures.size()/2];
 	SG_SDEBUG("kernel width (shogun): %f\n", median_distance);
 
