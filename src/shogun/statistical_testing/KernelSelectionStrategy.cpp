@@ -30,6 +30,8 @@
  */
 
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/KernelSelectionStrategy.h>
@@ -82,9 +84,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	case KSM_MEDIAN_HEURISTIC:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
-		auto distance=estimator->compute_distance();
-		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, distance));
-		SG_UNREF(distance);
+		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
 	}
 	break;
 	case KSM_MAXIMIZE_XVALIDATION:
@@ -203,6 +203,18 @@ void CKernelSelectionStrategy::erase_intermediate_results()
 {
 	self->policy=nullptr;
 	self->kernel_mgr.clear();
+}
+
+SGMatrix<float64_t> CKernelSelectionStrategy::get_measure_matrix()
+{
+	REQUIRE(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
+	return self->policy->get_measure_matrix();
+}
+
+SGVector<float64_t> CKernelSelectionStrategy::get_measure_vector()
+{
+	REQUIRE(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
+	return self->policy->get_measure_vector();
 }
 
 const char* CKernelSelectionStrategy::get_name() const

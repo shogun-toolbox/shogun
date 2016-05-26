@@ -51,7 +51,11 @@ public:
 	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
 	~WeightedMaxMeasure();
 	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
-	virtual CKernel* select_kernel() override;
+	virtual CKernel* select_kernel();
+	virtual SGMatrix<float64_t> get_measure_matrix();
+protected:
+	virtual void compute_measures();
+	SGMatrix<float64_t> Q;
 };
 
 }

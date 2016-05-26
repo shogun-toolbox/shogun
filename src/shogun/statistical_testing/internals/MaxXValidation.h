@@ -53,9 +53,10 @@ public:
 	~MaxXValidation();
 	MaxXValidation& operator=(const MaxXValidation& other)=delete;
 	virtual CKernel* select_kernel() override;
+	virtual SGVector<float64_t> get_measure_vector();
+	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
 	void compute_measures(SGVector<float64_t>&, SGVector<index_t>&);
-	CMMD* estimator;
 	const index_t num_run;
 	const float64_t alpha;
 };

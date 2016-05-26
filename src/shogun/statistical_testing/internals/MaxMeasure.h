@@ -41,6 +41,7 @@ namespace shogun
 class CKernel;
 class CMMD;
 template <typename T> class SGVector;
+template <typename T> class SGMatrix;
 
 namespace internal
 {
@@ -52,10 +53,14 @@ public:
 	MaxMeasure(const MaxMeasure& other)=delete;
 	~MaxMeasure();
 	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	virtual CKernel* select_kernel() override;
+	virtual CKernel* select_kernel();
+	virtual SGVector<float64_t> get_measure_vector();
+	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
+	virtual void compute_measures();
+	SGVector<float64_t> measures;
+
+	virtual void init_measures();
 };
 
 }

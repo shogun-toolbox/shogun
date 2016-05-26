@@ -33,29 +33,26 @@
 #define MAX_TEST_POWER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+#include <shogun/statistical_testing/internals/MaxMeasure.h>
 
 namespace shogun
 {
 
 class CKernel;
 class CMMD;
-template <typename T> class SGVector;
 
 namespace internal
 {
 
-class MaxTestPower : public KernelSelection
+class MaxTestPower : public MaxMeasure
 {
 public:
 	MaxTestPower(KernelManager&, CMMD*);
 	MaxTestPower(const MaxTestPower& other)=delete;
 	~MaxTestPower();
 	MaxTestPower& operator=(const MaxTestPower& other)=delete;
-	virtual CKernel* select_kernel() override;
 protected:
-	SGVector<float64_t> compute_measures();
-	CMMD* estimator;
+	virtual void compute_measures();
 	float64_t lambda;
 };
 

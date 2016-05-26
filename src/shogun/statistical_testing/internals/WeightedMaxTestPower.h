@@ -33,7 +33,7 @@
 #define WEIGHTED_MAX_TEST_POWER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
 
 namespace shogun
 {
@@ -45,14 +45,17 @@ template <typename T> class SGVector;
 namespace internal
 {
 
-class WeightedMaxTestPower : public MaxTestPower
+class WeightedMaxTestPower : public WeightedMaxMeasure
 {
 public:
 	WeightedMaxTestPower(KernelManager&, CMMD*);
 	WeightedMaxTestPower(const WeightedMaxTestPower& other)=delete;
 	~WeightedMaxTestPower();
 	WeightedMaxTestPower& operator=(const WeightedMaxTestPower& other)=delete;
-	virtual CKernel* select_kernel() override;
+protected:
+	virtual void init_measures();
+	virtual void compute_measures();
+	float64_t lambda;
 };
 
 }

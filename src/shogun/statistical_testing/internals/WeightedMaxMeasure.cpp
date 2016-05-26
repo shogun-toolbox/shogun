@@ -49,19 +49,32 @@ WeightedMaxMeasure::~WeightedMaxMeasure()
 {
 }
 
-CKernel* WeightedMaxMeasure::select_kernel()
+void WeightedMaxMeasure::compute_measures()
 {
+	MaxMeasure::compute_measures();
 	const size_t num_kernels=kernel_mgr.num_kernels();
-	SGVector<float64_t> measures=compute_measures();
-	SGMatrix<float64_t> Q(num_kernels, num_kernels);
+	if (Q.num_rows!=num_kernels || Q.num_cols!=num_kernels)
+		Q=SGMatrix<float64_t>(num_kernels, num_kernels);
 	std::fill(Q.data(), Q.data()+Q.size(), 0);
 	for (size_t i=0; i<num_kernels; ++i)
 		Q(i, i)=1;
+}
+
+SGMatrix<float64_t> WeightedMaxMeasure::get_measure_matrix()
+{
+	return Q;
+}
+
+CKernel* WeightedMaxMeasure::select_kernel()
+{
+	init_measures();
+	compute_measures();
 
 	OptimizationSolver solver(measures, Q);
 	SGVector<float64_t> weights=solver.solve();
 
 	CCombinedKernel* kernel=new CCombinedKernel();
+	const size_t num_kernels=kernel_mgr.num_kernels();
 	for (size_t i=0; i<num_kernels; ++i)
 	{
 		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))

@@ -40,6 +40,8 @@ namespace shogun
 
 class CKernel;
 class CMMD;
+template <class> class SGVector;
+template <class> class SGMatrix;
 
 namespace internal
 {
@@ -76,6 +78,9 @@ public:
 	CKernel* select_kernel(CMMD* estimator);
 	virtual const char* get_name() const;
 	void erase_intermediate_results();
+
+	SGMatrix<float64_t> get_measure_matrix();
+	SGVector<float64_t> get_measure_vector();
 private:
 	struct Self;
 	std::unique_ptr<Self> self;

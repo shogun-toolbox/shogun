@@ -41,7 +41,7 @@
 using namespace shogun;
 using namespace internal;
 
-WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : MaxTestPower(km, est)
+WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : WeightedMaxMeasure(km, est), lambda(1E-5)
 {
 }
 
@@ -49,28 +49,15 @@ WeightedMaxTestPower::~WeightedMaxTestPower()
 {
 }
 
-CKernel* WeightedMaxTestPower::select_kernel()
+void WeightedMaxTestPower::init_measures()
 {
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+}
 
-	auto estimates=estimator->compute_statistic_and_Q(kernel_mgr);
-	SGVector<float64_t> measures=estimates.first;
-	SGMatrix<float64_t> Q=estimates.second;
-
+void WeightedMaxTestPower::compute_measures()
+{
+	const auto& estimates=estimator->compute_statistic_and_Q(kernel_mgr);
+	measures=estimates.first;
+	Q=estimates.second;
 	for (index_t i=0; i<Q.num_rows; ++i)
 		Q(i, i)+=lambda;
-
-	OptimizationSolver solver(measures, Q);
-	SGVector<float64_t> weights=solver.solve();
-
-	CCombinedKernel* kernel=new CCombinedKernel();
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))
-			SG_SERROR("Error while creating a combined kernel! Please contact Shogun developers!\n");
-	}
-	kernel->set_subkernel_weights(weights);
-	SG_SDEBUG("Created a weighted kernel!\n");
-	return kernel;
 }

@@ -42,6 +42,7 @@ class CKernel;
 class CMMD;
 class CCustomDistance;
 template <typename T> class SGVector;
+template <typename T> class SGMatrix;
 
 namespace internal
 {
@@ -49,13 +50,18 @@ namespace internal
 class MedianHeuristic : public KernelSelection
 {
 public:
-	MedianHeuristic(KernelManager&, CCustomDistance*);
+	MedianHeuristic(KernelManager&, CMMD*);
 	MedianHeuristic(const MedianHeuristic& other)=delete;
 	~MedianHeuristic();
 	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
 	virtual CKernel* select_kernel() override;
+	virtual SGVector<float64_t> get_measure_vector();
+	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
+	void init_measures();
+	void compute_measures();
 	CCustomDistance* distance;
+	SGVector<float64_t> measures;
 	int32_t n;
 };
 

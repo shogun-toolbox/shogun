@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/MaxXValidation.h>
@@ -41,17 +42,26 @@ using namespace shogun;
 using namespace internal;
 
 MaxXValidation::MaxXValidation(KernelManager& km, CMMD* est, const index_t& M, const float64_t& alp)
-: KernelSelection(km), estimator(est), num_run(M), alpha(alp)
+: KernelSelection(km, est), num_run(M), alpha(alp)
 {
-	// TODO write a more meaningful error message
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
 	REQUIRE(num_run>0, "Number of runs is %d!\n", num_run);
 	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold is %f!\n", alpha);
 }
 
 MaxXValidation::~MaxXValidation()
 {
+}
+
+SGVector<float64_t> MaxXValidation::get_measure_vector()
+{
+	SG_SNOTIMPLEMENTED;
+	return SGVector<float64_t>();
+}
+
+SGMatrix<float64_t> MaxXValidation::get_measure_matrix()
+{
+	SG_SNOTIMPLEMENTED;
+	return SGMatrix<float64_t>();
 }
 
 void MaxXValidation::compute_measures(SGVector<float64_t>& measures, SGVector<index_t>& term_counters)

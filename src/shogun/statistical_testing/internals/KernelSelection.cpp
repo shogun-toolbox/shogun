@@ -29,14 +29,18 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/io/SGIO.h>
+#include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/KernelSelection.h>
 
 using namespace shogun;
 using namespace internal;
 
-KernelSelection::KernelSelection(KernelManager& km) : kernel_mgr(km)
+KernelSelection::KernelSelection(KernelManager& km, CMMD* est) : kernel_mgr(km), estimator(est)
 {
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
 }
 
 KernelSelection::~KernelSelection()
