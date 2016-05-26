@@ -271,16 +271,16 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
 
 	// can use noalias to speed up as matrices are definitely different
-	eigen_A.block(1,1,ND,m).noalias()=eigen_col_sub_sampled_hessian*eigen_fully_sub_sampled_hessian / N + m_lambda*eigen_fully_sub_sampled_hessian;
+	eigen_A.block(1,1,ND,m).noalias()=eigen_col_sub_sampled_hessian*eigen_fully_sub_sampled_hessian / N + m_lambda*eigen_col_sub_sampled_hessian;
 
 	// A_mn[0, 1:] = compute_first_row_without_storing(X, h, N, lmbda, sigma)
 	auto first_row = compute_first_row_no_storing();
 	Map<VectorXd> eigen_first_row(first_row.vector, ND);
-	eigen_A.row(0).segment(1, ND) = eigen_first_row.transpose();
+	eigen_A.col(0).segment(1, ND) = eigen_first_row.transpose();
 
 	// A_mn[1:, 0] = A_mn[0, inds + 1]
 	for (auto ind_idx=0; ind_idx<m; ind_idx++)
-		eigen_A(ind_idx+1,0) = first_row[m_inds[ind_idx]];
+		eigen_A(0, ind_idx+1) = first_row[m_inds[ind_idx]];
 
 	// b[0] = -xi_norm_2; b[1:] = -h.reshape(-1)
 	b[0] = -xi_norm_2;
@@ -298,6 +298,8 @@ void KernelExpFamilyNystromImpl::fit()
 
 	SG_SINFO("Building system.\n");
 	auto A_mn_b = build_system_slow_low_memory();
+//	auto A_mn_b = build_system_fast_high_memory();
+
 	auto eigen_A_mn = Map<MatrixXd>(A_mn_b.first.matrix, m+1, ND+1);
 	auto eigen_b = Map<VectorXd>(A_mn_b.second.vector, ND+1);
 
