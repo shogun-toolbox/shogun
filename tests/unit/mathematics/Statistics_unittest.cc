@@ -615,7 +615,7 @@ TEST(Statistics, log_det_general_test_2)
 	}
 
 	// check if log_det is equal to log(det(M))
-	EXPECT_NEAR(CStatistics::log_det_general(K), 12.731839097176634, 1E-10);
+	EXPECT_NEAR(12.731839097176634, CStatistics::log_det_general(K), 1E-10);
 }
 
 TEST(Statistics,log_det_general_test_3)
@@ -652,7 +652,7 @@ TEST(Statistics,log_det_general_test_3)
 	A(4,4) = 9.0;
 	result = CStatistics::log_det_general(A);
 	abs_tolerance = CMath::get_abs_tolerance(15.438851375567365, rel_tolerance);
-	EXPECT_NEAR(result, 15.438851375567365, abs_tolerance);
+	EXPECT_NEAR(15.438851375567365, result, abs_tolerance);
 }
 
 TEST(Statistics,log_det_general_test_4)
@@ -697,7 +697,7 @@ TEST(Statistics,log_det_general_test_4)
 	A(5,4) = 18.000000;
 	A(5,5) = 11.000000;
 	result = CStatistics::log_det_general(A);
-	EXPECT_EQ(result, CMath::INFTY);
+	EXPECT_EQ(CMath::INFTY, result);
 }
 
 TEST(Statistics, vector_mean_test)

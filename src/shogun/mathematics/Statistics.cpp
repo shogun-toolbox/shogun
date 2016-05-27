@@ -617,7 +617,7 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 		tmp[idx]=idx+1;
 
 	VectorXd p=lu.permutationP()*tmp;
-	int detP=1;
+	int32_t detP=1;
 
 	for (index_t idx=0; idx<p.rows(); idx++)
 	{
@@ -636,9 +636,9 @@ float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
 	}
 
 	VectorXd u=lu.matrixLU().diagonal();
-	int check_u=1;
+	int32_t check_u=1;
 
-	for (int idx=0; idx<u.rows(); idx++)
+	for (index_t idx=0; idx<u.rows(); idx++)
 	{
 		if (u[idx]<0)
 			check_u*=-1;

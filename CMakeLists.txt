@@ -176,7 +176,7 @@ ENDIF()
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops")
-	IF (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86_64" OR ${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "i686")
+	IF (${MACHINE} MATCHES "x86_64" OR ${MACHINE} MATCHES "i686")
 		SET(RELEASE_COMPILER_FLAGS "${RELEASE_COMPILER_FLAGS} -mfpmath=sse")
 	ENDIF()
 ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")

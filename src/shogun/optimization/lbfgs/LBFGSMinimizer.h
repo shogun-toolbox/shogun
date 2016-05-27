@@ -100,12 +100,12 @@ public:
 	 * @param orthantwise_end End index for computing L1 norm of the variables.
 	 * Default value is 1.
 	 */
-	virtual void set_lbfgs_parameters(int m = 100,
-		int max_linesearch = 1000,
+	virtual void set_lbfgs_parameters(int32_t m = 100,
+		int32_t max_linesearch = 1000,
 		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
-		int max_iterations = 1000,
+		int32_t max_iterations = 1000,
 		float64_t delta = 0.0,
-		int past = 0,
+		int32_t past = 0,
 		float64_t epsilon = 1e-5,
 		float64_t min_step = 1e-20,
 		float64_t max_step = 1e+20,
@@ -114,8 +114,8 @@ public:
 		float64_t gtol = 0.9,
 		float64_t xtol = 1e-16,
 		float64_t orthantwise_c = 0.0,
-		int orthantwise_start = 0,
-		int orthantwise_end = 1);
+		int32_t orthantwise_start = 0,
+		int32_t orthantwise_end = 1);
 
 
 	/** Return a context object which stores mutable variables
@@ -139,7 +139,7 @@ private:
 	static float64_t evaluate(void *obj,
 		const float64_t *variable,
 		float64_t *gradient,
-		const int dim,
+		const int32_t dim,
 		const float64_t step);
 
 	/** Init */
@@ -150,22 +150,22 @@ protected:
 	virtual void init_minimization();
 
 	/** The number of corrections to approximate the inverse hessian matrix.*/
-	int m_m;
+	int32_t m_m;
 
 	/** The maximum number of trials to do line search for each L-BFGS update.*/
-	int m_max_linesearch;
+	int32_t m_max_linesearch;
 
 	/** The line search algorithm.*/
 	ELBFGSLineSearch m_linesearch;
 
 	/** The maximum number of iterations for L-BFGS update.*/
-	int m_max_iterations;
+	int32_t m_max_iterations;
 
 	/** Delta for convergence test based on the change of function value.*/
 	float64_t m_delta;
 
 	/** Distance for delta-based convergence test.*/
-	int m_past;
+	int32_t m_past;
 
 	/** Epsilon for convergence test based on the change of gradient.*/
 	float64_t m_epsilon;
@@ -192,10 +192,10 @@ protected:
 	float64_t m_orthantwise_c;
 
 	/** Start index for computing L1 norm of the variables.*/
-	int m_orthantwise_start;
+	int32_t m_orthantwise_start;
 
 	/** End index for computing L1 norm of the variables.*/
-	int m_orthantwise_end;
+	int32_t m_orthantwise_end;
 
 	/** Target variable */
 	SGVector<float64_t> m_target_variable;

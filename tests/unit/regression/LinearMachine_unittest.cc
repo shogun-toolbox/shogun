@@ -76,6 +76,9 @@ TEST(LinearMachine,apply_train)
 	EXPECT_LE(CMath::abs(prediction_vector[0]-7), 0.5);
 	EXPECT_LE(CMath::abs(prediction_vector[1]-16), 0.5);
 	EXPECT_LE(CMath::abs(prediction_vector[2]-25), 0.5);
+
+	SG_UNREF(model);
+	SG_UNREF(predictions);
 }
 
 TEST(LinearMachine,compute_bias)
@@ -117,6 +120,10 @@ TEST(LinearMachine,compute_bias)
 	float64_t expected_bias = (eigen_labels-eigen_prediction).mean();
 
 	EXPECT_LE(CMath::abs(output_bias - expected_bias), 10E-15);
+
+	SG_UNREF(model);
+	SG_UNREF(model_nobias);
+	SG_UNREF(predictions_nobias)
 }
 
 #endif /* HAVE_LAPACK */

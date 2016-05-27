@@ -271,7 +271,7 @@ void CKLDualInferenceMethod::init()
 		MS_NOT_AVAILABLE);
 
 	m_is_dual_valid=false;
-	m_minimizer = new KLDualInferenceMethodMinimizer();
+	this->register_minimizer(new KLDualInferenceMethodMinimizer());
 }
 
 bool CKLDualInferenceMethod::precompute()

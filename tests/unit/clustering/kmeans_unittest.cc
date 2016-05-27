@@ -203,6 +203,7 @@ TEST(KMeans, fixed_centers)
 	
 	SG_UNREF(clustering);
 	SG_UNREF(features);
+	SG_UNREF(learnt_centers);
 }
 
 TEST(KMeans, random_centers_init)
@@ -232,6 +233,7 @@ TEST(KMeans, random_centers_init)
 	
 	SG_UNREF(clustering);
 	SG_UNREF(features);
+	SG_UNREF(learnt_centers);
 }
 
 TEST(KMeans, random_centers_assign)
@@ -276,5 +278,6 @@ TEST(KMeans, random_centers_assign)
 	
 	SG_UNREF(clustering);
 	SG_UNREF(features);
+	SG_UNREF(learnt_centers);
 }
 
