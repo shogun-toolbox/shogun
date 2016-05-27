@@ -1,0 +1,14 @@
+include(ExternalProject)
+ExternalProject_Add(
+	Cereal
+	PREFIX ${CMAKE_BINARY_DIR}/Cereal
+	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/Cereal
+    URL https://github.com/USCiLab/cereal/archive/v1.1.2.tar.gz
+	URL_MD5 34d4ad174acbff005c36d4d10e48cbb9
+	CMAKE_ARGS -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}${CMAKE_DEFINITIONS}
+		-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}${CMAKE_DEFINITIONS}
+	INSTALL_COMMAND ""
+	)
+
+SET(CEREAL_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/Cereal/src/Cereal/include)
+LIST(APPEND SHOGUN_DEPENDS Cereal)
