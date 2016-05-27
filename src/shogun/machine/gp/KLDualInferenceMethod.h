@@ -186,6 +186,8 @@ public:
 	 */
 	virtual void register_minimizer(Minimizer* minimizer);
 protected:
+	/** init default minimizer */
+	virtual void init_minimizer();
 
 	/** compute the gradient wrt variational parameters
 	 * given the current variational parameters (mu and s2)
