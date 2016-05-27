@@ -149,6 +149,11 @@ void CKLInference::init()
 		"Posterior covariance matrix Sigma",
 		MS_NOT_AVAILABLE);
 
+	init_minimizer();
+}
+
+void CKLInference::init_minimizer()
+{
         m_minimizer=new LBFGSMinimizer();
 }
 

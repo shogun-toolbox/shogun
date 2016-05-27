@@ -233,6 +233,8 @@ public:
          */
 	virtual void register_minimizer(Minimizer* minimizer);
 protected:
+	/** init default minimizer */
+	virtual void init_minimizer();
 
 	/** update gradients */
 	virtual void compute_gradient();
