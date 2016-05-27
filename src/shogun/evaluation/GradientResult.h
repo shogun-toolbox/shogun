@@ -15,6 +15,7 @@
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/lib/Map.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
