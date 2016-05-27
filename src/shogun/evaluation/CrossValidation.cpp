@@ -7,7 +7,8 @@
  * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-
+#include <shogun/machine/KernelMachine.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/evaluation/Evaluation.h>
@@ -16,6 +17,9 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/lib/List.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 using namespace shogun;
 
@@ -82,12 +86,12 @@ CEvaluationResult* CCrossValidation::evaluate()
 	}
 
 	/* set labels in any case (no locking needs this) */
-	m_machine->set_labels(m_labels);
-
+	//m_machine->set_labels(m_labels);
+	int32_t lo=0;
 	if (m_autolock)
 	{
 		/* if machine supports locking try to do so */
-		if (m_machine->supports_locking())
+		if (m_machine->supports_locking() && lo)
 		{
 			/* only lock if machine is not yet locked */
 			if (!m_machine->is_data_locked())
@@ -181,9 +185,10 @@ float64_t CCrossValidation::evaluate_one_run()
 
 	/* results array */
 	SGVector<float64_t> results(num_subsets);
+	int32_t flag=0;
 
 	/* different behavior whether data is locked or not */
-	if (m_machine->is_data_locked())
+	if (m_machine->is_data_locked() && flag)
 	{
 		SG_DEBUG("starting locked evaluation\n", get_name())
 		/* do actual cross-validation */
@@ -203,7 +208,6 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
-			inverse_subset_indices.display_vector();
 			
 
 			/* train machine on training features */
@@ -212,8 +216,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* feature subset for testing */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
-			CMath::qsort(subset_indices);
-			subset_indices.display_vector();
+			//CMath::qsort(subset_indices);
 			
 
 			/* evtl. update xvalidation output class */
@@ -269,8 +272,27 @@ float64_t CCrossValidation::evaluate_one_run()
 		m_machine->set_store_model_features(true);
 
 		/* do actual cross-validation */
+#pragma omp parallel for
 		for (index_t i=0; i <num_subsets; ++i)
 		{
+			CMachine* machine;
+			CKernel* k;
+			if (m_machine->get_classifier_type()==CT_LIBSVM)
+			{
+				machine=new CLibSVM();
+				SG_REF(machine);
+				((CLibSVM*)machine)->set_C(((CLibSVM*)m_machine)->get_C1(), ((CLibSVM*)m_machine)->get_C2());
+				CKernel* ker=((CLibSVM*)m_machine)->get_kernel();
+				if (ker->get_kernel_type() == K_GAUSSIAN)
+				{
+					//k=(CKernel*)ker->shallow_copy();
+					k=new CGaussianKernel(((CGaussianKernel*)ker)->get_cache_size(), ((CGaussianKernel*)ker)->get_width());
+					SG_REF(k);
+				}
+				((CLibSVM*)machine)->set_kernel(k);
+			}
+			machine->set_store_model_features(true);
+			
 			/* evtl. update xvalidation output class */
 			CCrossValidationOutput* current=(CCrossValidationOutput*)
 					m_xval_outputs->get_first_element();
@@ -281,22 +303,41 @@ float64_t CCrossValidation::evaluate_one_run()
 				current=(CCrossValidationOutput*)
 						m_xval_outputs->get_next_element();
 			}
-
+			
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
-			inverse_subset_indices.display_vector();			
-			m_features->add_subset(inverse_subset_indices);
-			for (index_t p=0; p<m_features->get_num_preprocessors(); p++)
+			//CMath::qsort(inverse_subset_indices);						
+			
+			CFeatures* temp_feat=CFeatures::create_shallow_copy(m_features);
+			SG_REF(temp_feat);
+			k->init(temp_feat, temp_feat);
+
+			temp_feat->add_subset(inverse_subset_indices);
+			for (index_t p=0; p<temp_feat->get_num_preprocessors(); p++)
 			{
-				CPreprocessor* preprocessor = m_features->get_preprocessor(p);
-				preprocessor->init(m_features);
+				CPreprocessor* preprocessor = temp_feat->get_preprocessor(p);
+				preprocessor->init(temp_feat);
 				SG_UNREF(preprocessor);
 			}
-
+			
+			CLabels* lab;
 			/* set label subset for training */
-			m_labels->add_subset(inverse_subset_indices);
+			if (m_labels->get_label_type()==LT_BINARY)
+			{	
+				lab= new CBinaryLabels();
+				SG_REF(lab);		
+				SGVector<float64_t> vec=((CBinaryLabels*)m_labels)->get_labels();
+				((CBinaryLabels*)lab)->set_labels(vec);
+			}
+			else
+			{
+				lab=m_labels;
+				//SG_REF(m_labels);
+			}
+			machine->set_labels(lab);	
 
+			lab->add_subset(inverse_subset_indices);
 			SG_DEBUG("training set %d:\n", i)
 			if (io->get_loglevel()==MSG_DEBUG)
 			{
@@ -306,32 +347,30 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* train machine on training features and remove subset */
 			SG_DEBUG("starting training\n")
-			m_machine->train(m_features);
+			machine->train(temp_feat);
 			SG_DEBUG("finished training\n")
-
+	
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
 			while (current)
 			{
 				current->update_train_indices(inverse_subset_indices, "\t");
-				current->update_trained_machine(m_machine, "\t");
+				current->update_trained_machine(machine, "\t");
 				SG_UNREF(current);
 				current=(CCrossValidationOutput*)
 						m_xval_outputs->get_next_element();
 			}
 
-			m_features->remove_subset();
-			m_labels->remove_subset();
+			temp_feat->remove_subset();
+			lab->remove_subset();
 
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
-			CMath::qsort(subset_indices);			
-			subset_indices.display_vector();			
-			m_features->add_subset(subset_indices);
+			temp_feat->add_subset(subset_indices);
 
 			/* set label subset for testing */
-			m_labels->add_subset(subset_indices);
+			lab->add_subset(subset_indices);
 
 			SG_DEBUG("test set %d:\n", i)
 			if (io->get_loglevel()==MSG_DEBUG)
@@ -343,13 +382,13 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* apply machine to test features and remove subset */
 			SG_DEBUG("starting evaluation\n")
 			SG_DEBUG("%p\n", m_features)
-			CLabels* result_labels=m_machine->apply(m_features);
+			CLabels* result_labels=machine->apply(temp_feat);
 			SG_DEBUG("finished evaluation\n")
-			m_features->remove_subset();
+			temp_feat->remove_subset();
 			SG_REF(result_labels);
 
 			/* evaluate */
-			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			results[i]=m_evaluation_criterion->evaluate(result_labels, lab);
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
@@ -358,7 +397,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			{
 				current->update_test_indices(subset_indices, "\t");
 				current->update_test_result(result_labels, "\t");
-				current->update_test_true_result(m_labels, "\t");
+				current->update_test_true_result(lab, "\t");
 				current->post_update_results();
 				current->update_evaluation_result(results[i], "\t");
 				SG_UNREF(current);
@@ -367,8 +406,12 @@ float64_t CCrossValidation::evaluate_one_run()
 			}
 
 			/* clean up, remove subsets */
+			lab->remove_subset();
+			SG_UNREF(machine);
+			SG_UNREF(k);						
+			SG_UNREF(temp_feat);
+			SG_UNREF(lab);
 			SG_UNREF(result_labels);
-			m_labels->remove_subset();
 		}
 
 		SG_DEBUG("done unlocked evaluation\n", get_name())

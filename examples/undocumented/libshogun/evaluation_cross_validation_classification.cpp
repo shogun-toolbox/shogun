@@ -22,16 +22,11 @@ using namespace shogun;
 using namespace std;
 using namespace std::chrono; 
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=1000;
-	index_t num_features=5;
+	index_t num_vectors=3000;
+	index_t num_features=100;
 
 	/* data means -1, 1 in all components, std deviation of 3 */
 	SGVector<float64_t> mean_1(num_features);
@@ -99,7 +94,7 @@ void test_cross_validation()
 //	ASSERT(eval_result<2);
 
 	/* splitting strategy */
-	index_t n_folds=5;
+	index_t n_folds=10;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
 
@@ -107,7 +102,7 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(10);
+	cross->set_num_runs(1);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
@@ -126,7 +121,7 @@ void test_cross_validation()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
 	//sg_io->set_loglevel(MSG_DEBUG);
 

@@ -197,7 +197,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param other matrix to compare with
 		 * @return true iff all elements are equal
 		 */
-		bool equals(SGMatrix<T>& other);
+		bool equals(SGMatrix<T>& other) const;
 
 		/** Set matrix to a constant */
 		void set_const(T const_elem);
@@ -220,7 +220,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		T max_single();
 
 		/** Clone matrix */
-		SGMatrix<T> clone();
+		SGMatrix<T> clone() const;
 
 		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);

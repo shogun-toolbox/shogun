@@ -24,6 +24,7 @@ namespace shogun {
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatures(size)
 {
 	init();
+	
 }
 
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & orig) :
@@ -264,7 +265,7 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 	}
 }
 
-template<class ST> SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
+template<class ST> const SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
 {
 	if (!m_subset_stack->has_subsets())
 		return feature_matrix;
