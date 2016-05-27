@@ -67,7 +67,7 @@ TEST(UAIFileTest, preamble)
                       factors_scope_in);
 
     const char net_type_expected[] = "MARKOV";
-    EXPECT_EQ(net_type.vlen, strlen(net_type_expected));
+    EXPECT_EQ(net_type.vlen, static_cast<int32_t>(strlen(net_type_expected)));
     for (int32_t i=0; i<net_type.vlen; i++)
         EXPECT_EQ(net_type[i], net_type_expected[i]);
 
