@@ -77,7 +77,7 @@ class FastParser:
         'string': 'BASICTYPE'
     }
 
-    t_NUMERAL = "[0-9]+(\.[0-9]+)?”
+    t_NUMERAL = "[0-9]+(\.[0-9]+)?"
     t_STRINGLITERAL = '"[^"\n]*"'
     t_COMMA = ","
     t_DOT = "\."
