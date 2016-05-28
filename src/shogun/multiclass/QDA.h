@@ -138,6 +138,8 @@ class CQDA : public CNativeMulticlassMachine
 		 */
 		inline SGMatrix< float64_t > get_cov(int32_t c) const
 		{
+			REQUIRE(m_store_covs, "Covariance matrices were not stored. "
+					"Please activate to access them subsequently.\n");
 			return SGMatrix< float64_t >(m_covs.get_matrix(c), m_dim, m_dim, false);
 		}
 
