@@ -75,9 +75,9 @@ void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
  	CDenseFeatures<float64_t>* lhs=((CDenseFeatures<float64_t>*) distance->get_lhs());
 	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
-			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
+			"Expected %d initial cluster centers, got %d.\n", k, centers.num_cols);
 	REQUIRE(centers.num_rows == dimensions,
-			"Expected %d dimensionional cluster centers, got %d", dimensions, centers.num_rows);
+			"Expected %d dimensionional cluster centers, got %d.\n", dimensions, centers.num_rows);
 	mus_initial = centers;
 	SG_UNREF(lhs);
 }
@@ -158,8 +158,9 @@ void CKMeans::compute_cluster_variances()
 
 bool CKMeans::train_machine(CFeatures* data)
 {
-	REQUIRE(distance, "Distance is not provided")
-	REQUIRE(distance->get_feature_type()==F_DREAL, "Distance's features type (%d) should be of type REAL (%d)")
+	REQUIRE(distance, "Distance is not provided.\n")
+	REQUIRE(distance->get_feature_type()==F_DREAL,
+			"Distance's features type (%d) should be of type REAL (%d).\n")
 	
 	if (data)
 		distance->init(data, data);
@@ -167,13 +168,13 @@ bool CKMeans::train_machine(CFeatures* data)
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
-	REQUIRE(lhs, "Lhs features of distance not provided");
+	REQUIRE(lhs, "Lhs features of distance not provided.\n");
 	int32_t lhs_size=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
 	const int32_t centers_size=dimensions*k;
 
-	REQUIRE(lhs_size>0, "Lhs features should not be empty");
-	REQUIRE(dimensions>0, "Lhs features should have more than zero dimensions");
+	REQUIRE(lhs_size>0, "Lhs features should not be empty.\n");
+	REQUIRE(dimensions>0, "Lhs features dimensions (%d) should be >0.\n", dimensions);
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)
@@ -235,7 +236,7 @@ bool CKMeans::get_use_kmeanspp() const
 
 void CKMeans::set_k(int32_t p_k)
 {
-	REQUIRE(p_k>0, "number of clusters should be > 0");
+	REQUIRE(p_k>0, "Number of clusters (%d) should be > 0\n", k);
 	this->k=p_k;
 }
 
@@ -246,7 +247,7 @@ int32_t CKMeans::get_k()
 
 void CKMeans::set_max_iter(int32_t iter)
 {
-	REQUIRE(iter>0, "number of clusters should be > 0");
+	REQUIRE(iter>0, "Maximum number of iterations (%d) should be > 0.\n", iter);
 	max_iter=iter;
 }
 
@@ -265,32 +266,32 @@ EKMeansMethod CKMeans::get_train_method() const
 	return train_method;
 }
 
-void CKMeans::set_mbKMeans_batch_size(int32_t b)
+void CKMeans::set_mini_batch_size(int32_t b)
 {
-	REQUIRE(b>0, "Parameter bach size should be > 0");
+	REQUIRE(b>0, "Batch size (%d) should be > 0.\n", b);
 	batch_size=b;
 }
 
-int32_t CKMeans::get_mbKMeans_batch_size() const
+int32_t CKMeans::get_mini_batch_size() const
 {
 	return batch_size;
 }
 
-void CKMeans::set_mbKMeans_iter(int32_t i)
+void CKMeans::set_mini_batch_num_iterations(int32_t i)
 {
-	REQUIRE(i>0, "Parameter number of iterations should be > 0");
+	REQUIRE(i>0, "Number of iterations (%d) should be > 0.\n", i);
 	minib_iter=i;
 }
 
-int32_t CKMeans::get_mbKMeans_iter() const
+int32_t CKMeans::get_mini_batch_num_iterations() const
 {
 	return minib_iter;
 }
 
-void CKMeans::set_mbKMeans_params(int32_t b, int32_t t)
+void CKMeans::set_mini_batch_parameters(int32_t b, int32_t t)
 {
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	REQUIRE(t>0, "Parameter number of iterations should be > 0");
+	REQUIRE(b>0, "Bach size (%d) should be > 0.\n", b);
+	REQUIRE(t>0, "Number of iterations (%d) should be > 0.\n", t);
 	batch_size=b;
 	minib_iter=t;
 }

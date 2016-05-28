@@ -149,7 +149,7 @@ TEST(KMeans, minibatch_training_test)
 	for (int32_t loop=0; loop<10; loop++)
 	{
 		clustering->set_train_method(KMM_MINI_BATCH);
-		clustering->set_mbKMeans_params(4,1000);
+		clustering->set_mini_batch_parameters(4,1000);
 		clustering->train(features);
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
