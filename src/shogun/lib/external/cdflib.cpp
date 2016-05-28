@@ -10861,11 +10861,9 @@ void timestamp ( )
 # define TIME_SIZE 40
 
   static char time_buffer[TIME_SIZE];
-  const struct tm *tm;
   time_t now;
 
   now = time ( NULL );
-  tm = localtime ( &now );
 
 
   cout << time_buffer << "\n";

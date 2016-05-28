@@ -128,7 +128,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
 	 *
-	 * @param m the matrix whose squared co-efficients matrix has to be computed
+	 * @param mat the matrix whose squared co-efficients matrix has to be computed
 	 * @param result Pre-allocated matrix for the result of the computation
 	 */
 	static void compute(SGMatrix<T> mat, SGMatrix<T> result)

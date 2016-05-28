@@ -96,7 +96,7 @@ template<class T> class SGMatrix;
  *	\mathbf R_X^i\cdot \mathbf R_Y^i
  * \f]
  *
- * For performing the independence test, ::PERMUTATION test is used by first
+ * For performing the independence test, PERMUTATION test is used by first
  * randomly shuffling the samples from one of the distributions while keeping
  * the samples from the other distribution in the original order. This way we
  * sample the null distribution and compute p-value and threshold for a given
