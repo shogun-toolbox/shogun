@@ -200,32 +200,32 @@ class CKMeans : public CDistanceMachine
 		 *
 		 *@param b batch size int32_t(greater than 0)
 		 */
-		void set_mbKMeans_batch_size(int32_t b);
+		void set_mini_batch_size(int32_t b);
 
 		/** get batch size for mini-batch KMeans
 		 *
 		 *@return batch size
 		 */
-		int32_t get_mbKMeans_batch_size() const;
+		int32_t get_mini_batch_size() const;
 
 		/** set no. of iterations for mini-batch KMeans
 		 *
 		 *@param t no. of iterations int32_t(greater than 0)
 		 */
-		void set_mbKMeans_iter(int32_t t);
+		void set_mini_batch_num_iterations(int32_t t);
 
 		/** get no. of iterations for mini-batch KMeans
 		 *
 		 *@return no. of iterations
 		 */
-		int32_t get_mbKMeans_iter() const;
+		int32_t get_mini_batch_num_iterations() const;
 
 		/** set batch size and no. of iteration for mini-batch KMeans
 		 *
 		 *@param b batch size
 		 *@param t no. of iterations
 		 */
-		void set_mbKMeans_params(int32_t b, int32_t t);
+		void set_mini_batch_parameters(int32_t b, int32_t t);
 
 	private:
 		/** train k-means
