@@ -83,7 +83,7 @@ void CGEMPLP::init()
 
 		int32_t s = 0;
 
-		for (set<int>::iterator t = m_region_intersections[c].begin();
+		for (std::set<int>::iterator t = m_region_intersections[c].begin();
 				t != m_region_intersections[c].end(); t++)
 		{
 			SGVector<int32_t> curr_intersection = m_all_intersections[*t];
@@ -288,7 +288,7 @@ void CGEMPLP::update_messages(int32_t id_region)
 	// \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)
 	int32_t s = 0;
 
-	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin();
+	for (std::set<int32_t>::iterator t = m_region_intersections[id_region].begin();
 				t != m_region_intersections[id_region].end(); t++)
 	{
 		int32_t id_intersection = *t;
@@ -313,7 +313,7 @@ void CGEMPLP::update_messages(int32_t id_region)
 
 	s = 0;
 
-	for (set<int32_t>::iterator t = m_region_intersections[id_region].begin();
+	for (std::set<int32_t>::iterator t = m_region_intersections[id_region].begin();
 				t != m_region_intersections[id_region].end(); t++)
 	{
 		// maximazation: \max_{x_c} \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)

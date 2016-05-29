@@ -21,7 +21,7 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 	indices.display_vector("indices");
 	ASSERT(m_task_relation)
 
-	set<index_t> indices_set;
+	std::set<index_t> indices_set;
 	for (int32_t i=0; i<indices.vlen; i++)
 		indices_set.insert(indices[i]);
 

@@ -143,14 +143,14 @@ protected:
  *	structure between tasks.
  *
  */
-class CTaxonomy : public CSGObject
+class CTaxonomy
 {
 
 public:
 
 	/** default constructor
 	 */
-	CTaxonomy() : CSGObject()
+	CTaxonomy()
 	{
 		root = new CNode();
 		nodes.push_back(root);
@@ -191,8 +191,8 @@ public:
 	 */
 	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta)
 	{
-		if (child_name=="")	SG_ERROR("child_name empty")
-		if (parent_name=="") SG_ERROR("parent_name empty")
+		if (child_name=="")	SG_SERROR("child_name empty")
+		if (parent_name=="") SG_SERROR("parent_name empty")
 
 
 		CNode* child_node = new CNode();
