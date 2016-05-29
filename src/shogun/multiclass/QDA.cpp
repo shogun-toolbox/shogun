@@ -23,19 +23,55 @@
 using namespace shogun;
 using namespace Eigen;
 
-CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_tolerance(tolerance),
-	m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+CQDA::CQDA() : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 }
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+CQDA::CQDA(float64_t tolerance, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	m_tolerance = tolerance;
+	m_store_covs = store_covs;
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
 	set_labels(trainlab);
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_tolerance = tolerance;
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_store_covs = store_covs;
+}
+
+
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_tolerance = tolerance;
+	m_store_covs = store_covs;
 }
 
 CQDA::~CQDA()
@@ -47,6 +83,8 @@ CQDA::~CQDA()
 
 void CQDA::init()
 {
+	m_tolerance = 1e-4;
+	m_store_covs = false;
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", MS_AVAILABLE);
 	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
@@ -330,4 +368,3 @@ bool CQDA::train_machine(CFeatures* data)
 	SG_FREE(class_nums);
 	return true;
 }
-
