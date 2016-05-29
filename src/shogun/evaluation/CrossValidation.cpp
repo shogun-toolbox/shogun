@@ -264,9 +264,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		m_machine->set_store_model_features(true);
 
 		/* do actual cross-validation */
-		// FIXME: re-enable multithreaded crossval
-		// after #3465 is fixed.
-		// #pragma omp parallel for
+		#pragma omp parallel for
 		for (index_t i=0; i <num_subsets; ++i)
 		{
 			CMachine* machine;

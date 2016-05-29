@@ -71,8 +71,11 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 	/*create simple linearly separable data*/
 	generate_data(mat, lab);
 
+<<<<<<< HEAD
 	sg_rand->set_seed(1);
 
+=======
+>>>>>>> ecd50bd... parallel xval with clone
 	for (index_t i=0; i<num/2; ++i)
 		lab.vector[i]-=1;
 	CBinaryLabels* labels=new CBinaryLabels(lab);
