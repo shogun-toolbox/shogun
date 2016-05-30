@@ -40,3 +40,12 @@ Gaussian Processes
    :glob:
 
    examples/gaussian_processes/**
+
+Clustering
+----------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/clustering/**
