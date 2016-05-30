@@ -36,18 +36,11 @@ TEST(LinalgRefactor, CPUBackend_dot)
 
     CPU_Vector<int32_t> a_CPU(a);
     CPU_Vector<int32_t> b_CPU(b);
-    BaseVector<int32_t>* a_base = static_cast<BaseVector<int32_t>*>(&a_CPU);
-    BaseVector<int32_t>* b_base = static_cast<BaseVector<int32_t>*>(&b_CPU);
 
-    std::shared_ptr<BaseVector<int32_t>> a_ptr = std::make_shared<BaseVector<int32_t> >(*a_base);
-    std::shared_ptr<BaseVector<int32_t>> b_ptr = std::make_shared<BaseVector<int32_t> >(*b_base);
     CPUBackend eigenBackend;
-    LinalgRefactor lr(std::make_shared<CPUBackend>(eigenBackend));
+    LinalgRefactor lr(&eigenBackend);
 
-    int32_t result = eigenBackend.dot(*static_cast<CPU_Vector<int32_t>*>(a_ptr.get()),
-                                *static_cast<CPU_Vector<int32_t>*>(b_ptr.get()));
-    //int32_t result = lr.dot(std::make_shared<BaseVector<int32_t> >(*a_base),
-    //                        std::make_shared<BaseVector<int32_t> >(*b_base));
+    int32_t result = lr.dot<int32_t>(&a_CPU, &b_CPU);
 
     EXPECT_NEAR(result, 20.0, 1E-15);
 }

@@ -1,6 +1,41 @@
+/*
+ * -*- coding: utf-8 -*-
+ * vim: set fileencoding=utf-8
+ *
+ * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *  3. Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Authors: Pan Deng
+ */
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <memory>
 #include <shogun/mathematics/eigen3.h>
 #include <iostream>
 
@@ -21,12 +56,12 @@ struct BaseVector
 template <class T>
 struct CPU_Vector : public BaseVector<T>
 {
-    //unique_pointer<SGVector<T>> CPUptr;
+    //<SGVector<T>>* CPUptr;
     SGVector<T> vec;
 
     CPU_Vector(const SGVector<T> vector)
     {
-        //CPUptr = unique_pointer<SGVector<T>>(new SGVector<T>(vec));
+        //CPUptr = &vector;
         vec = vector;
     }
 
@@ -49,16 +84,12 @@ struct GPU_Vector : public BaseVector<T>
     }
 };
 
-//template <typename T>
 class CPUBackend
 {
 public:
     template <typename T>
     T dot(CPU_Vector<T> a, CPU_Vector<T> b)
     {
-        std::cerr << "CPU calculation" << std::endl;
-        std::cerr << a.vec.vlen << std::endl;
-        std::cerr << b.vec.vlen << std::endl;
         typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
         Eigen::Map<VectorXt> vec_a = a.vec;
         Eigen::Map<VectorXt> vec_b = b.vec;
@@ -73,35 +104,40 @@ class GPUBackend
 {
 public:
  #ifdef HAVE_VIENNACL
-    template <typename T>
+    template <class T>
     T dot(GPU_Vector<T> a, GPU_Vector<T> b)
     {
         // Dereference a.GPUptr and b.GPUptr to vcl_vector?
         // viennacl::linalg::inner_prod(vcl_vector_a, vcl_vector_b);
         // Transfer back to CPU end???
     }
-
    // similarly, other methods
+  #else
+   template <class T>
+   T dot(GPU_Vector<T> a, GPU_Vector<T> b)
+   {
+       throw std::runtime_error("user did not register GPU backend");
+   }
  #endif
  };
 
 class LinalgRefactor
 {
-    std::shared_ptr<CPUBackend> cpubackend;
-    std::shared_ptr<GPUBackend> gpubackend;
+    CPUBackend* cpubackend;
+    GPUBackend* gpubackend;
 
 public:
-    LinalgRefactor():cpubackend({}), gpubackend({}){}
+    LinalgRefactor():cpubackend(nullptr), gpubackend(nullptr){}
 
-    LinalgRefactor(std::shared_ptr<CPUBackend> cpu_backend):cpubackend(cpu_backend), gpubackend({}){}
+    LinalgRefactor(CPUBackend* cpu_backend):cpubackend(cpu_backend), gpubackend(nullptr){}
 
-    LinalgRefactor(std::shared_ptr<GPUBackend> gpu_backend):cpubackend({}), gpubackend(gpu_backend){}
+    LinalgRefactor(GPUBackend* gpu_backend):cpubackend(nullptr), gpubackend(gpu_backend){}
 
-    LinalgRefactor(std::shared_ptr<CPUBackend> cpu_backend, std::shared_ptr<GPUBackend> gpu_backend)
+    LinalgRefactor(CPUBackend* cpu_backend, GPUBackend* gpu_backend)
     :cpubackend(cpu_backend), gpubackend(gpu_backend){}
 
     template <class T>
-    T dot(std::shared_ptr<BaseVector<T> > a, std::shared_ptr<BaseVector<T> > b)
+    T dot(BaseVector<T>* a, BaseVector<T>* b)
     {
         if (a->onGPU() && b->onGPU())
         {
@@ -109,11 +145,10 @@ public:
             {
                 // do the gpu backend dot product
                 // you shouldn't care whether it's viennacl or some other GPU backend.
-                return this->gpubackend->dot<T>(*static_cast<GPU_Vector<T>*>(a.get()),
-                                                *static_cast<GPU_Vector<T>*>(b.get()));
+                return this->gpubackend->dot<T>(*static_cast<GPU_Vector<T>*>(a),
+                                                *static_cast<GPU_Vector<T>*>(b));
             } else {
-                // either throw a RuntimeException or transfer back the data to cpu
-                // throw new RuntimeException("user did not register GPU backend");
+                throw std::runtime_error("user did not register GPU backend");
             }
         }
         else {
@@ -124,11 +159,8 @@ public:
             // do the non-gpu based default backend:
             // this should be actually as well implemented in a separate class's function and just that being called here:
             // like:
-            std::cerr << "CPUBackend!" << std::endl;
-            //std::cerr << (a->vec).vlen << std::endl;
-            //std::cerr << (b->vec).vlen << std::endl;
-            return this->cpubackend->dot<T>(*static_cast<CPU_Vector<T>*>(a.get()),
-                                            *static_cast<CPU_Vector<T>*>(b.get()));
+            return this->cpubackend->dot<T>(*static_cast<CPU_Vector<T>*>(a),
+                                            *static_cast<CPU_Vector<T>*>(b));
         }
     }
 
