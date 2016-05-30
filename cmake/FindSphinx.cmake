@@ -13,6 +13,7 @@
 
 find_program(SPHINX_EXECUTABLE
              NAMES sphinx-build sphinx-build2
+             PATH /usr/local/bin
              DOC "Path to sphinx-build executable")
 
 # Handle REQUIRED and QUIET arguments
