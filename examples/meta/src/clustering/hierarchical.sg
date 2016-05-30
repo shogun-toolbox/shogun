@@ -1,0 +1,23 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+#![create_features]
+
+#![choose_distance]
+EuclideanDistance distance(features_train, features_train)
+#![choose_distance]
+
+#![create_instance]
+int merges = 3
+Hierarchical hierarchical(merges, distance)
+#![create_instance]
+
+#![train_model]
+hierarchical.train()
+#![train_model]
+
+#![extract_results]
+RealVector d = hierarchical.get_merge_distances()
+IntMatrix cp = hierarchical.get_cluster_pairs()
+#![extract_results]
