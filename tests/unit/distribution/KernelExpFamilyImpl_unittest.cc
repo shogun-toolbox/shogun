@@ -97,7 +97,7 @@ TEST(KernelExpFamilyImpl, kernel_equals_shogun)
 	SG_UNREF(f);
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx)
+TEST(KernelExpFamilyImpl, kernel_dx_old)
 {
 	index_t N=3;
 	index_t D=2;
@@ -126,6 +126,41 @@ TEST(KernelExpFamilyImpl, kernel_dx)
 	
 	idx_a = 1;
 	result = est.kernel_dx(b, idx_a);
+	float64_t reference2[] = {0.02021384,  0.00673795};
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
+}
+
+TEST(KernelExpFamilyImpl, kernel_dx)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyImpl est(X, sigma, lambda);
+	
+	index_t idx_a = 0;
+	SGVector<float64_t> b(D);
+	b[0]=-1;
+	b[1]=3;
+	est.set_test_data(b);
+	auto result = est.kernel_dx(idx_a, 0);
+	
+	// from kernel_exp_family Python implementation
+	float64_t reference[] = {0.082085, -0.16417 };
+	ASSERT_EQ(result.vlen, D);
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
+	
+	idx_a = 1;
+	result = est.kernel_dx(idx_a, 0);
 	float64_t reference2[] = {0.02021384,  0.00673795};
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);

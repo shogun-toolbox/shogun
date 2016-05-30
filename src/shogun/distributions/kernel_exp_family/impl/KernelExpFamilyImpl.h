@@ -80,6 +80,8 @@ public :
 	// for training
 	float64_t kernel(index_t idx_a, const index_t idx_b);
 	float64_t sq_difference_norm(index_t idx_a, index_t idx_b);
+	float64_t sq_difference_norm(const SGVector<float64_t>& diff);
+
 	SGVector<float64_t> difference(index_t idx_a, index_t idx_b);
 	void difference(index_t idx_a, index_t idx_b, SGVector<float64_t>& result);
 
@@ -88,6 +90,12 @@ public :
 
 	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b);
 	SGMatrix<float64_t> kernel_hessian_all();
+
+	// for evaluation
+	void set_test_data(SGMatrix<float64_t> X);
+	void set_test_data(SGVector<float64_t> x);
+
+	SGVector<float64_t> kernel_dx(index_t a, index_t idx_b);
 
 	// new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);

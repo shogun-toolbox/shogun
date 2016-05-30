@@ -50,6 +50,17 @@ index_t KernelExpFamilyImpl::get_num_data_lhs()
 	return m_data_lhs.num_cols;
 }
 
+void KernelExpFamilyImpl::set_test_data(SGMatrix<float64_t> X)
+{
+	m_data_rhs = X;
+	precompute();
+}
+
+void KernelExpFamilyImpl::set_test_data(SGVector<float64_t> x)
+{
+	set_test_data(SGMatrix<float64_t>(x));
+}
+
 index_t KernelExpFamilyImpl::get_num_data_rhs()
 {
 	return m_data_rhs.num_cols;
@@ -57,41 +68,57 @@ index_t KernelExpFamilyImpl::get_num_data_rhs()
 
 void KernelExpFamilyImpl::precompute()
 {
-	SG_SINFO("Precomputing.\n");
-
-	auto N_lhs = get_num_data_lhs();
-	auto D = get_num_dimensions();
+	// remove potentially previously precomputed quantities to make calls below
+	// not use existing matrices
+	m_sq_difference_norms = SGMatrix<float64_t>();
+	m_differences = SGMatrix<float64_t>();
 
 	SGMatrix<float64_t> sq_difference_norms;
 	SGMatrix<float64_t> differences;
 
+	auto D = get_num_dimensions();
+
 	// distinguish symmetric and non-symmetric case
 	if (!m_data_rhs.matrix)
 	{
+		auto N = get_num_data_lhs();
+		SG_SINFO("Precomputing symmetric case with N=%d.\n", N);
+
 		// TODO exploit symmetry in storage
-		sq_difference_norms = SGMatrix<float64_t>(N_lhs,N_lhs);
-		differences = SGMatrix<float64_t>(D,N_lhs*N_lhs);
+		sq_difference_norms = SGMatrix<float64_t>(N,N);
+		differences = SGMatrix<float64_t>(D,N*N);
 
 #pragma omp parallel for
-		for (auto i=0; i<N_lhs; i++)
+		for (auto i=0; i<N; i++)
 		{
-			for (auto j=0; j<=i; j++)
+			for (auto j=0; j<i; j++)
 			{
-				SGVector<float64_t> diff(differences.get_column_vector(i*N_lhs+j), D, false);
+				SGVector<float64_t> diff(differences.get_column_vector(i*N+j), D, false);
 				difference(i, j, diff);
-				diff = SGVector<float64_t>(differences.get_column_vector(j*N_lhs+i), D, false);
-				difference(j, i, diff);
 
-				sq_difference_norms(i,j)=sq_difference_norm(i,j);
+				// use symmetry and only remember sign flip
+				auto p = differences.get_column_vector(j*N+i);
+				memcpy(p, diff.vector, sizeof(float64_t)*D);
+				Map<VectorXd> diff2(p, D);
+				diff2*=-1;
+
+				sq_difference_norms(i,j)=sq_difference_norm(diff);
 				sq_difference_norms(j,i)=sq_difference_norms(i,j);
 			}
+
+			// avoid computing distances for equal case
+			memset(differences.get_column_vector(i*N+i), 0, sizeof(float64_t)*D);
+			sq_difference_norms(i,i)=0;
 		}
 	}
 	else
 	// non symmetric case
 	{
+		auto N_lhs = get_num_data_lhs();
 		auto N_rhs = get_num_data_rhs();
-		sq_difference_norms = SGMatrix<float64_t>(N_lhs,N_rhs);
+		SG_SINFO("Precomputing non symmetric case with N_lhs=%d, N_rhs=%d.\n",
+				N_lhs, N_rhs);
+		sq_difference_norms = SGMatrix<float64_t>(N_lhs, N_rhs);
 		differences = SGMatrix<float64_t>(D,N_lhs*N_rhs);
 
 #pragma omp parallel for
@@ -99,10 +126,10 @@ void KernelExpFamilyImpl::precompute()
 		{
 			for (auto j=0; j<N_rhs; j++)
 			{
-				SGVector<float64_t> diff(differences.get_column_vector(i*N_lhs+j), D, false);
+				SGVector<float64_t> diff(differences.get_column_vector(i*N_rhs+j), D, false);
 				difference(i, j, diff);
 
-				sq_difference_norms(i,j)=sq_difference_norm(i,j);
+				sq_difference_norms(i,j)=sq_difference_norm(diff);
 			}
 		}
 	}
@@ -115,7 +142,6 @@ void KernelExpFamilyImpl::precompute()
 KernelExpFamilyImpl::KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda)
 {
 	m_data_lhs = data;
-	m_data_rhs = data;
 
 	m_sigma = sigma;
 	m_lambda = lambda;
@@ -136,18 +162,24 @@ float64_t KernelExpFamilyImpl::sq_difference_norm(index_t idx_a, index_t idx_b)
 		return m_sq_difference_norms(idx_a, idx_b);
 
 	SGVector<float64_t> diff = difference(idx_a, idx_b);
-	Map<VectorXd> eigen_diff(diff.vector, diff.vlen);
+	return sq_difference_norm(diff);
+}
 
+float64_t KernelExpFamilyImpl::sq_difference_norm(const SGVector<float64_t>& diff)
+{
+	Map<VectorXd> eigen_diff(diff.vector, diff.vlen);
 	return eigen_diff.squaredNorm();
 }
 
 SGVector<float64_t> KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b)
 {
-	auto N = get_num_data_lhs();
 	auto D = get_num_dimensions();
 
 	if (m_differences.matrix)
-		return SGVector<float64_t>(m_differences.get_column_vector(idx_a*N+idx_b), D, false);
+	{
+		auto N_rhs = m_data_rhs.matrix ? get_num_data_rhs(): get_num_data_lhs();
+		return SGVector<float64_t>(m_differences.get_column_vector(idx_a*N_rhs+idx_b), D, false);
+	}
 
 	SGVector<float64_t> result(D);
 	difference(idx_a, idx_b, result);
@@ -157,16 +189,20 @@ SGVector<float64_t> KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b
 void KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b,
 		SGVector<float64_t>& result)
 {
-	auto N = get_num_data_lhs();
 	auto D = get_num_dimensions();
 	if (m_differences.matrix)
+	{
+		auto N_rhs = m_data_rhs.matrix ? get_num_data_rhs() : get_num_data_lhs();
 		memcpy(result.vector,
-				m_differences.get_column_vector(idx_a*N+idx_b),
+				m_differences.get_column_vector(idx_a*N_rhs+idx_b),
 				sizeof(float64_t)*D);
+	}
 	else
 	{
 		Map<VectorXd> x(m_data_lhs.get_column_vector(idx_a), D);
-		Map<VectorXd> y(m_data_lhs.get_column_vector(idx_b), D);
+		float64_t* right_pointer = m_data_rhs.matrix ?
+				m_data_rhs.get_column_vector(idx_b) : m_data_lhs.get_column_vector(idx_b);
+		Map<VectorXd> y(right_pointer, D);
 
 		Map<VectorXd> eigen_diff(result.vector, D);
 		eigen_diff = y-x;
@@ -309,6 +345,23 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all()
 		}
 
 	return result;
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(index_t idx_a, index_t idx_b)
+{
+	auto D = get_num_dimensions();
+
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto diff = difference(idx_a, idx_b);
+
+	// negative diff as arguments are swapped compared to our Python code
+	auto eigen_diff = -Map<VectorXd>(diff, D);
+	auto k = kernel(idx_a, idx_b);
+
+	SGVector<float64_t> gradient(D);
+	Map<VectorXd> eigen_gradient(gradient.vector, D);
+	eigen_gradient = 2*k*eigen_diff/m_sigma;
+	return gradient;
 }
 
 SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a, index_t idx_b)
