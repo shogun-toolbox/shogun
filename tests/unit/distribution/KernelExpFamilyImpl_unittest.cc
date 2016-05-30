@@ -607,5 +607,5 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx_dy_dy_sum)
 		sum_manual += mat.matrix[i];
 		
 	auto sum = est.kernel_dx_dx_dy_dy_sum(idx_a, idx_b);
-	EXPECT_NEAR(sum, sum_manual, 1e-15);
+	EXPECT_NEAR(sum, sum_manual, 1e-14);
 }
