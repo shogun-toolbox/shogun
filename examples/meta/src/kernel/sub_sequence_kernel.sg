@@ -1,0 +1,32 @@
+CSVFile f_feats_train("../../data/fm_train_dna.dat")
+CSVFile f_feats_test("../../data/fm_test_dna.dat")
+CSVFile f_labels_train("../../data/label_train_dna.dat")
+
+#![create_features]
+StringCharFeatures features_train(f_feats_train)
+StringCharFeatures features_test(f_feats_test)
+BinaryLabels labels_train(f_labels_train)
+#![create_features]
+
+#![create_appropriate_kernel]
+real maxlen = 1
+real decay = 1
+SubsequenceStringKernel kernel(features_train, features_train, maxlen, decay)
+#![create_appropriate_kernel]
+
+#![create_instance]
+LibLinear svm(C, kernel, labels_train)
+#![create_instance]
+
+#![train_and_apply]
+svm.train()
+BinaryLabels labels_predict = svm.apply_binary(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+AccuracyMeasure eval()
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_predict.get_labels()
