@@ -53,7 +53,7 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 
 	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
 
-	auto N =  m_impl->get_num_data();
+	auto N =  m_impl->get_num_data_lhs();
 	auto D = m_impl->get_num_dimensions();
 	auto ND = D*N;
 	// size: A matrix, b vetor, all_hessians matrix, h vector, kernel matrix

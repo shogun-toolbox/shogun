@@ -58,7 +58,7 @@ KernelExpFamilyNystromImpl::KernelExpFamilyNystromImpl(SGMatrix<float64_t> data,
 void KernelExpFamilyNystromImpl::sub_sample_rkhs_basis(index_t num_rkhs_basis)
 {
 	SG_SINFO("Using m=%d uniformly sampled RKHS basis function.\n", num_rkhs_basis);
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto D = get_num_dimensions();
 
 	SGVector<index_t> permutation(N*D);
@@ -76,8 +76,8 @@ float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, in
 {
 	auto D = get_num_dimensions();
 
-	Map<VectorXd> x(m_data.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_data.get_column_vector(idx_b), D);
+	Map<VectorXd> x(m_data_lhs.get_column_vector(idx_a), D);
+	Map<VectorXd> y(m_data_lhs.get_column_vector(idx_b), D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto k=kernel(idx_a, idx_b);
@@ -106,7 +106,7 @@ float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(inde
 {
 	// TODO benchmark against full version using all kernel hessians
 	auto D = get_num_dimensions();
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 
 	auto ai = idx_to_ai(row_idx);
 	auto bj = idx_to_ai(col_idx);
@@ -137,7 +137,7 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 {
 	// TODO benchmark against the first row in build_system
 	auto D = get_num_dimensions();
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto ND = N*D;
 
 	auto h=compute_h();
@@ -172,7 +172,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 {
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
@@ -228,7 +228,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
@@ -287,7 +287,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 void KernelExpFamilyNystromImpl::fit()
 {
 	auto D = get_num_dimensions();
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
@@ -352,7 +352,7 @@ float64_t KernelExpFamilyNystromImpl::kernel_dx_component(const SGVector<float64
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
-	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto diff = eigen_b-eigen_a;
@@ -365,7 +365,7 @@ float64_t KernelExpFamilyNystromImpl::kernel_dx_dx_component(const SGVector<floa
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
-	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
 	auto sq_diff = (eigen_a-eigen_b).array().pow(2);
 
 	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
@@ -376,7 +376,7 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_i_dx_j_component(
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
-	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
 	auto diff = eigen_b-eigen_a;
 	auto sq_diff = diff.array().pow(2).matrix();
 	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
@@ -396,7 +396,7 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_j_component(const
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
-	Map<VectorXd> eigen_b(m_data.get_column_vector(idx_b), D);
+	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
 	auto diff = eigen_b-eigen_a;
 	auto k=CMath::exp(-diff.array().pow(2).sum() / m_sigma);
 
@@ -417,7 +417,7 @@ index_t KernelExpFamilyNystromImpl::get_num_rkhs_basis()
 
 float64_t KernelExpFamilyNystromImpl::log_pdf(const SGVector<float64_t>& x)
 {
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto m = get_num_rkhs_basis();
 
 	float64_t xi = 0;
@@ -441,7 +441,7 @@ float64_t KernelExpFamilyNystromImpl::log_pdf(const SGVector<float64_t>& x)
 
 SGVector<float64_t> KernelExpFamilyNystromImpl::grad(const SGVector<float64_t>& x)
 {
-	auto N = get_num_data();
+	auto N = get_num_data_lhs();
 	auto D = get_num_dimensions();
 	auto m = get_num_rkhs_basis();
 

@@ -105,7 +105,7 @@ public :
 	SGVector<float64_t> get_alpha_beta() { return m_alpha_beta; }
 
 	index_t get_num_dimensions();
-	index_t get_num_data();
+	index_t get_num_data_lhs();
 
 	// old develop code
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
@@ -113,7 +113,8 @@ public :
 protected:
 	virtual void precompute();
 
-	SGMatrix<float64_t> m_data;
+	SGMatrix<float64_t> m_data_lhs;
+
 	float64_t m_sigma;
 	float64_t m_lambda;
 
