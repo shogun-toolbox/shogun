@@ -106,6 +106,7 @@ public :
 
 	index_t get_num_dimensions();
 	index_t get_num_data_lhs();
+	index_t get_num_data_rhs();
 
 	// old develop code
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
@@ -114,6 +115,7 @@ protected:
 	virtual void precompute();
 
 	SGMatrix<float64_t> m_data_lhs;
+	SGMatrix<float64_t> m_data_rhs;
 
 	float64_t m_sigma;
 	float64_t m_lambda;

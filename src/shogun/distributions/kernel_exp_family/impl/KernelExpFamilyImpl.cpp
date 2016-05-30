@@ -50,29 +50,62 @@ index_t KernelExpFamilyImpl::get_num_data_lhs()
 	return m_data_lhs.num_cols;
 }
 
+index_t KernelExpFamilyImpl::get_num_data_rhs()
+{
+	return m_data_rhs.num_cols;
+}
+
 void KernelExpFamilyImpl::precompute()
 {
 	SG_SINFO("Precomputing.\n");
 
-	auto N = get_num_data_lhs();
+	auto N_lhs = get_num_data_lhs();
 	auto D = get_num_dimensions();
 
-	// TODO exploit symmetry in storage
-	SGMatrix<float64_t> sq_difference_norms(N,N);
-	SGMatrix<float64_t> differences(D,N*N);
+	SGMatrix<float64_t> sq_difference_norms;
+	SGMatrix<float64_t> differences;
+
+	// distinguish symmetric and non-symmetric case
+	if (!m_data_rhs.matrix)
+	{
+		// TODO exploit symmetry in storage
+		sq_difference_norms = SGMatrix<float64_t>(N_lhs,N_lhs);
+		differences = SGMatrix<float64_t>(D,N_lhs*N_lhs);
 
 #pragma omp parallel for
-	for (auto i=0; i<N; i++)
-		for (auto j=0; j<=i; j++)
+		for (auto i=0; i<N_lhs; i++)
 		{
-			SGVector<float64_t> diff(differences.get_column_vector(i*N+j), D, false);
-			difference(i, j, diff);
-			diff = SGVector<float64_t>(differences.get_column_vector(j*N+i), D, false);
-			difference(j, i, diff);
+			for (auto j=0; j<=i; j++)
+			{
+				SGVector<float64_t> diff(differences.get_column_vector(i*N_lhs+j), D, false);
+				difference(i, j, diff);
+				diff = SGVector<float64_t>(differences.get_column_vector(j*N_lhs+i), D, false);
+				difference(j, i, diff);
 
-			sq_difference_norms(i,j)=sq_difference_norm(i,j);
-			sq_difference_norms(j,i)=sq_difference_norms(i,j);
+				sq_difference_norms(i,j)=sq_difference_norm(i,j);
+				sq_difference_norms(j,i)=sq_difference_norms(i,j);
+			}
 		}
+	}
+	else
+	// non symmetric case
+	{
+		auto N_rhs = get_num_data_rhs();
+		sq_difference_norms = SGMatrix<float64_t>(N_lhs,N_rhs);
+		differences = SGMatrix<float64_t>(D,N_lhs*N_rhs);
+
+#pragma omp parallel for
+		for (auto i=0; i<N_lhs; i++)
+		{
+			for (auto j=0; j<N_rhs; j++)
+			{
+				SGVector<float64_t> diff(differences.get_column_vector(i*N_lhs+j), D, false);
+				difference(i, j, diff);
+
+				sq_difference_norms(i,j)=sq_difference_norm(i,j);
+			}
+		}
+	}
 
 	// might affect methods, so only set now
 	m_differences = differences;
@@ -82,6 +115,8 @@ void KernelExpFamilyImpl::precompute()
 KernelExpFamilyImpl::KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda)
 {
 	m_data_lhs = data;
+	m_data_rhs = data;
+
 	m_sigma = sigma;
 	m_lambda = lambda;
 
