@@ -15,6 +15,7 @@
     "Assign": "$name = $expr",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
+        "StringCharFeatures": "CStringFeatures<char>",
         "Default": "$type",
         "bool": "bool",
         "string": "char*",
