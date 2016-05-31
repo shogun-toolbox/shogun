@@ -100,12 +100,6 @@ public :
 	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(index_t a, index_t idx_b) const;
 	SGMatrix<float64_t> kernel_dx_i_dx_j(index_t a, index_t idx_b) const;
 
-	// new data
-	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
-	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
-
 	SGVector<float64_t> compute_h() const;
 	float64_t compute_xi_norm_2() const;
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;

@@ -97,40 +97,6 @@ TEST(KernelExpFamilyImpl, kernel_equals_shogun)
 	SG_UNREF(f);
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx_old)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a = 0;
-	SGVector<float64_t> b(D);
-	b[0]=-1;
-	b[1]=3;
-	auto result = est.kernel_dx(b, idx_a);
-	
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = {0.082085, -0.16417 };
-	ASSERT_EQ(result.vlen, D);
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
-	
-	idx_a = 1;
-	result = est.kernel_dx(b, idx_a);
-	float64_t reference2[] = {0.02021384,  0.00673795};
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
-}
-
 TEST(KernelExpFamilyImpl, kernel_dx)
 {
 	index_t N=3;
@@ -289,34 +255,6 @@ TEST(KernelExpFamilyImpl, kernel_hessian)
 		}
 }
 
-TEST(KernelExpFamilyImpl, kernel_dx_dx_old)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a=0;
-	index_t idx_b=1;
-	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
-	
-	auto result = est.kernel_dx_dx(a, idx_b);
-	float64_t reference[] = { 0.00451032,  0.01202751};
-	
-	ASSERT_EQ(result.vlen, D);
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
-}
-
 TEST(KernelExpFamilyImpl, kernel_dx_dx)
 {
 	index_t N=3;
@@ -344,44 +282,6 @@ TEST(KernelExpFamilyImpl, kernel_dx_dx)
 	ASSERT_EQ(result.vlen, D);
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
-}
-
-TEST(KernelExpFamilyImpl, kernel_dx_i_dx_i_dx_j_old)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a=0;
-	index_t idx_b=1;
-	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
-	
-	auto result = est.kernel_dx_i_dx_i_dx_j(a, idx_b);
-	
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = { 0.00300688,  0.02405503, 0.01353095,  0.02706191};
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
-	
-	idx_b=2;
-	result = est.kernel_dx_i_dx_i_dx_j(a, idx_b);
-	float64_t reference2[] = {7.45188789e-07,   2.98075516e-06, 1.65597509e-06,   4.55393149e-06};
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference2[i], 1e-8);
 }
 
 TEST(KernelExpFamilyImpl, kernel_dx_i_dx_i_dx_j)
@@ -417,44 +317,6 @@ TEST(KernelExpFamilyImpl, kernel_dx_i_dx_i_dx_j)
 	idx_b=2;
 	result = est.kernel_dx_i_dx_i_dx_j(idx_b, 0);
 	float64_t reference2[] = {-7.45188789e-07,   -2.98075516e-06, -1.65597509e-06,  -4.55393149e-06};
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference2[i], 1e-8);
-}
-
-TEST(KernelExpFamilyImpl, kernel_dx_i_dx_j_old)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	
-	index_t idx_a=0;
-	index_t idx_b=1;
-	SGVector<float64_t> a(X.get_column_vector(idx_a), D, false);
-	
-	auto result = est.kernel_dx_i_dx_j(a, idx_b);
-	
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = { 0.00451032,  0.00902064, 0.00902064,  0.01202751};
-	ASSERT_EQ(result.num_rows, D);
-	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
-	
-	idx_b=2;
-	result = est.kernel_dx_i_dx_j(a, idx_b);
-	float64_t reference2[] = { 3.31195018e-07,   6.20990658e-07,  6.20990658e-07,   9.93585053e-07};
 	ASSERT_EQ(result.num_rows, D);
 	ASSERT_EQ(result.num_cols, D);
 	for (auto i=0; i<D*D; i++)

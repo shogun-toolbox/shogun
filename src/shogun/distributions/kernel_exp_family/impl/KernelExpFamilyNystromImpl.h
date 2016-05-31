@@ -58,16 +58,10 @@ public :
 	virtual void sub_sample_rkhs_basis(index_t num_rkhs_basis);
 
 	// for evaluation
-	float64_t kernel_dx_component(index_t idx_a, index_t idx_b, index_t i);
-	float64_t kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i);
-	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i);
-	SGVector<float64_t> kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i);
-
-	// for new data
-	float64_t kernel_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
-	float64_t kernel_dx_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
-	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
-	SGVector<float64_t> kernel_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);
+	float64_t kernel_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
+	float64_t kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
+	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
+	SGVector<float64_t> kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
 
 	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx) const;
 	SGVector<float64_t> compute_first_row_no_storing() const;
@@ -75,8 +69,13 @@ public :
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_fast_high_memory() const;
 
 	virtual void fit();
-	virtual float64_t  log_pdf(const SGVector<float64_t>& x);
-	virtual SGVector<float64_t> grad(const SGVector<float64_t>& x);
+
+	virtual float64_t log_pdf(index_t idx_test) const;
+	virtual SGVector<float64_t> grad(index_t idx_test) const;
+
+	// wtf: why is this necessary? But removing it causes compile error.
+	float64_t log_pdf(SGVector<float64_t> x) { return KernelExpFamilyImpl::log_pdf(x); }
+	SGVector<float64_t> grad(SGVector<float64_t> x) { return KernelExpFamilyImpl::grad(x); }
 
 	std::pair<index_t, index_t> idx_to_ai(index_t idx) const;
 	static SGMatrix<float64_t> pinv(const SGMatrix<float64_t>& A);
