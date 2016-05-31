@@ -306,6 +306,24 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(const index_t idx_a, con
 	return result;
 }
 
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const index_t idx_a, const index_t idx_b) const
+{
+	auto D = get_num_dimensions();
+	auto diff = difference(idx_a, idx_b);
+	auto eigen_diff = Map<VectorXd>(diff.vector, D);
+	auto sq_diff = eigen_diff.array().pow(2);
+
+	auto k=kernel(idx_a, idx_b);
+
+	SGVector<float64_t> result(D);
+	Map<VectorXd> eigen_result(result.vector, D);
+
+	// k.T * (sq_differences*(2.0 / sigma)**2 - 2.0/sigma)
+	eigen_result = k*(sq_diff*pow(2.0/m_sigma, 2) -2.0/m_sigma);
+
+	return result;
+}
+
 SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
@@ -354,8 +372,7 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const index_t idx_a, const in
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto diff = difference(idx_a, idx_b);
 
-	// negative diff as arguments are swapped compared to our Python code
-	auto eigen_diff = -Map<VectorXd>(diff, D);
+	auto eigen_diff = Map<VectorXd>(diff, D);
 	auto k = kernel(idx_a, idx_b);
 
 	SGVector<float64_t> gradient(D);
