@@ -36,6 +36,12 @@ CGaussianKernel::CGaussianKernel() : CDotKernel()
 	init();
 }
 
+CGaussianKernel::CGaussianKernel(float64_t w) : CDotKernel()
+{
+	init();
+	set_width(w);
+}
+
 CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CDotKernel(size)
 {
 	init();

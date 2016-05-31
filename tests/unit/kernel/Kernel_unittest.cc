@@ -448,3 +448,11 @@ TEST(Kernel, row_col_wise_sum_block_no_diag)
 	// cleanup
 	SG_UNREF(kernel);
 }
+
+TEST(Kernel, gaussian_kernel_width_constructor)
+{
+	float64_t width = 5;
+	CGaussianKernel* kernel=new CGaussianKernel(width);
+	EXPECT_EQ(kernel->get_cache_size(), 10);
+	EXPECT_EQ(kernel->get_width(), width);
+}
