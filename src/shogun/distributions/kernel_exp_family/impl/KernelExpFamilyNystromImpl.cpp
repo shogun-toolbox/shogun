@@ -323,51 +323,48 @@ void KernelExpFamilyNystromImpl::fit()
 	SGMatrix<float64_t> A(m+1,m+1);
 	Map<MatrixXd> eigen_A(A.matrix, m+1, m+1);
 
-	SG_SINFO("Solving system.\n");
+	SG_SINFO("Solving system of size m=%d.\n", get_num_rkhs_basis());
 	eigen_A = eigen_A_nm.transpose()*eigen_A_nm;
 	auto b_m = eigen_A_nm.transpose()*eigen_b;
 
 	m_alpha_beta = SGVector<float64_t>(m+1);
 	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, m+1);
 
-	LLT<MatrixXd> llt(eigen_A);
-	eigen_alpha_beta = llt.solve(b_m);
-	return;
-
-//	// old pinv based code
-//	auto A_pinv = pinv(A);
-//	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
-//	eigen_alpha_beta = eigen_pinv*b_m;
+	auto A_pinv = pinv(A);
+	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
+	eigen_alpha_beta = eigen_pinv*b_m;
 }
 
 SGMatrix<float64_t> KernelExpFamilyNystromImpl::pinv(const SGMatrix<float64_t>& A)
 {
 	// based on the snippet from
 	// http://eigen.tuxfamily.org/index.php?title=FAQ#Is_there_a_method_to_compute_the_.28Moore-Penrose.29_pseudo_inverse_.3F
-	auto eigen_A=Map<MatrixXd>(A.matrix, A.num_rows, A.num_cols);
+	// modified using eigensolver for psd problems
+	auto m=A.num_rows;
+	ASSERT(A.num_cols == m);
+	auto eigen_A=Map<MatrixXd>(A.matrix, m, m);
 
-	JacobiSVD<MatrixXd> svd(eigen_A, ComputeThinU | ComputeThinV);
-	auto singular_values = svd.singularValues();
-	auto V=svd.matrixV();
-	auto U=svd.matrixU();
+	SelfAdjointEigenSolver<MatrixXd> solver(eigen_A);
+	auto s = solver.eigenvalues();
+	auto V = solver.eigenvectors();
 
 	// tol = eps⋅max(m,n) * max(singularvalues)
 	// this is done in numpy/Octave & co
 	// c.f. https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_pseudoinverse#Singular_value_decomposition_.28SVD.29
-	float64_t pinv_tol = CMath::MACHINE_EPSILON * CMath::max(A.num_rows, A.num_cols) * singular_values.maxCoeff();
+	float64_t pinv_tol = CMath::MACHINE_EPSILON * m * s.maxCoeff();
 
-	VectorXd inv_singular_values(singular_values.rows());
-	for (auto i=0; i<singular_values.rows(); i++)
+	VectorXd inv_s(m);
+	for (auto i=0; i<m; i++)
 	{
-		if (singular_values(i) > pinv_tol)
-			inv_singular_values(i)=1.0/singular_values(i);
+		if (s(i) > pinv_tol)
+			inv_s(i)=1.0/s(i);
 		else
-			inv_singular_values(i)=0;
+			inv_s(i)=0;
 	}
 
-	SGMatrix<float64_t> A_pinv(A.num_cols, A.num_rows);
-	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
-	eigen_pinv = (V*inv_singular_values.asDiagonal()*U.transpose());
+	SGMatrix<float64_t> A_pinv(m, m);
+	Map<MatrixXd> eigen_pinv(A_pinv.matrix, m, m);
+	eigen_pinv = (V*inv_s.asDiagonal()*V.transpose());
 
 	return A_pinv;
 }

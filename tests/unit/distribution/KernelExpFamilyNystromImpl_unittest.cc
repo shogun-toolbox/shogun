@@ -33,10 +33,12 @@
 #include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyNystromImpl.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/base/some.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 TEST(KernelExpFamilyNystromImpl, kernel_dx_component)
 {
@@ -355,7 +357,7 @@ TEST(KernelExpFamilyNystromImpl, fit_half_inds_shape)
 	ASSERT(alpha_beta.vector);
 }
 
-TEST(KernelExpFamilyNystromImpl, pinv_non_square1)
+TEST(KernelExpFamilyNystromImpl, pinv_square)
 {
 	index_t N=3;
 	index_t D=2;
@@ -365,43 +367,24 @@ TEST(KernelExpFamilyNystromImpl, pinv_non_square1)
 	X(0,1)=2;
 	X(1,1)=4;
 	X(0,2)=3;
-	X(1,2)=6;
-		
-	auto pinv = KernelExpFamilyNystromImpl::pinv(X);
+	X(1,2)=1;
 	
-	ASSERT_EQ(pinv.num_rows, N);
-	ASSERT_EQ(pinv.num_cols, D);
+	SGMatrix<float64_t> S(D, D);
 
-	// from numpy.linalg.pinv
-	// using rcond=np.finfo(np.float32).eps * np.max((N,D))=3.57627868652e-07
-	float64_t reference[] = {-2.00000000e+00,   1.53846154e-01,   2.30769231e-01,
-         1.00000000e+00,   7.63278329e-17,  -4.16333634e-17};
-	
-	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
-		EXPECT_NEAR(pinv[i], reference[i], 1e-9);
-}
-
-TEST(KernelExpFamilyNystromImpl, pinv_square)
-{
-	index_t N=2;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
+	auto eigen_X = Map<MatrixXd>(X.matrix, D, N);
+	auto eigen_S = Map<MatrixXd>(S.matrix, D, D);
+	eigen_S = eigen_X*eigen_X.transpose();
 		
-	auto pinv = KernelExpFamilyNystromImpl::pinv(X);
+	auto pinv = KernelExpFamilyNystromImpl::pinv(S);
 	
 	ASSERT_EQ(pinv.num_rows, 2);
 	ASSERT_EQ(pinv.num_cols, 2);
 
 	// from numpy.linalg.pinv
-	float64_t reference[] = {-2.00000000e+00, 5.00000000e-01, 
-							 1.00000000e+00,  -2.77555756e-17};
+	float64_t reference[] = {0.15929204, -0.09734513, -0.09734513,  0.11504425};
 	
 	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
-		EXPECT_NEAR(pinv[i], reference[i], 1e-15);
+		EXPECT_NEAR(pinv[i], reference[i], 1e-8);
 }
 
 TEST(KernelExpFamilyNystromImpl, log_pdf_all_inds_equals_exact)
