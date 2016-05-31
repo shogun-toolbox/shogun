@@ -97,6 +97,7 @@ public :
 
 	SGVector<float64_t> kernel_dx(const index_t a, const index_t idx_b) const;
 	SGVector<float64_t> kernel_dx_dx(const index_t a, const index_t idx_b) const;
+	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const index_t a, const index_t idx_b) const;
 
 	// new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, const index_t idx_b);
