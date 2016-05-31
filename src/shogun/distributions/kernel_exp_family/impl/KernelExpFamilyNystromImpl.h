@@ -51,9 +51,17 @@ public :
 
 	virtual ~KernelExpFamilyNystromImpl() {};
 
+	float64_t difference_component(index_t idx_a, index_t idx_b, index_t i) const;
+
 	// for training
 	float64_t kernel_hessian_component(const index_t idx_a, index_t idx_b, index_t i, index_t j) const;
 	virtual void sub_sample_rkhs_basis(index_t num_rkhs_basis);
+
+	// for evaluation
+	float64_t kernel_dx_component(index_t idx_a, index_t idx_b, index_t i);
+	float64_t kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i);
+	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i);
+	SGVector<float64_t> kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i);
 
 	// for new data
 	float64_t kernel_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i);

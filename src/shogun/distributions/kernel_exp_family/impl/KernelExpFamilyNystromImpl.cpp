@@ -72,6 +72,25 @@ void KernelExpFamilyNystromImpl::sub_sample_rkhs_basis(index_t num_rkhs_basis)
 	CMath::qsort(m_inds.vector, num_rkhs_basis);
 }
 
+float64_t KernelExpFamilyNystromImpl::difference_component(index_t idx_a, index_t idx_b, index_t i) const
+{
+	auto D = get_num_dimensions();
+
+	if (m_differences.matrix)
+	{
+		auto N_rhs = m_data_rhs.matrix ? get_num_data_rhs(): get_num_data_lhs();
+		auto diff = SGVector<float64_t>(m_differences.get_column_vector(idx_a*N_rhs+idx_b), D, false);
+		return diff[i];
+	}
+
+	Map<VectorXd> x(m_data_lhs.get_column_vector(idx_a), D);
+	float64_t* right_pointer = m_data_rhs.matrix ?
+			m_data_rhs.get_column_vector(idx_b) : m_data_lhs.get_column_vector(idx_b);
+	Map<VectorXd> y(right_pointer, D);
+
+	return y[i]-x[i];
+}
+
 float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(const index_t idx_a, const index_t idx_b, const index_t i, const index_t j) const
 {
 	auto D = get_num_dimensions();
@@ -361,6 +380,15 @@ float64_t KernelExpFamilyNystromImpl::kernel_dx_component(const SGVector<float64
 	return 2*k*diff[i]/m_sigma;
 }
 
+float64_t KernelExpFamilyNystromImpl::kernel_dx_component(index_t idx_a, index_t idx_b, index_t i)
+{
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto diff_i = difference_component(idx_a, idx_b, i);
+	auto k=kernel(idx_a, idx_b);
+
+	return 2*k*diff_i/m_sigma;
+}
+
 float64_t KernelExpFamilyNystromImpl::kernel_dx_dx_component(const SGVector<float64_t>& a, index_t idx_b, index_t i)
 {
 	auto D = get_num_dimensions();
@@ -372,6 +400,15 @@ float64_t KernelExpFamilyNystromImpl::kernel_dx_dx_component(const SGVector<floa
 
 	return k*(sq_diff[i]*pow(2.0/m_sigma, 2) -2.0/m_sigma);
 }
+
+float64_t KernelExpFamilyNystromImpl::kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i)
+{
+	auto diff_i = difference_component(idx_a, idx_b, i);
+	auto k=kernel(idx_a, idx_b);
+
+	return k*(pow(diff_i,2)*pow(2.0/m_sigma, 2) -2.0/m_sigma);
+}
+
 SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i)
 {
 	auto D = get_num_dimensions();
@@ -392,6 +429,24 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_i_dx_j_component(
 	return result;
 }
 
+SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i)
+{
+	auto D = get_num_dimensions();
+	auto diff = difference(idx_a, idx_b);
+	auto eigen_diff = Map<VectorXd>(diff.vector, D);
+	auto k=kernel(idx_a, idx_b);
+
+	SGVector<float64_t> result(D);
+	Map<VectorXd> eigen_result(result.vector, D);
+
+	eigen_result = pow(eigen_diff[i],2)*eigen_diff.transpose();
+	eigen_result *= k* pow(2.0/m_sigma, 3);
+	eigen_result -= k * eigen_diff.transpose() * pow(2.0/m_sigma, 2);
+	eigen_result[i] -= 2* k * eigen_diff[i] * pow(2.0/m_sigma, 2);
+
+	return result;
+}
+
 SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_j_component(const SGVector<float64_t>& a, index_t idx_b, index_t i)
 {
 	auto D = get_num_dimensions();
@@ -404,6 +459,23 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_j_component(const
 	Map<VectorXd> eigen_result(result.vector, D);
 
 	eigen_result = diff[i]*diff;
+	eigen_result *= k * pow(2.0/m_sigma, 2);
+	eigen_result[i] -= k * 2.0/m_sigma;
+
+	return result;
+}
+
+SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i)
+{
+	auto D = get_num_dimensions();
+	auto diff = difference(idx_a, idx_b);
+	auto eigen_diff = Map<VectorXd>(diff.vector, D);
+	auto k=kernel(idx_a, idx_b);
+
+	SGVector<float64_t> result(D);
+	Map<VectorXd> eigen_result(result.vector, D);
+
+	eigen_result = eigen_diff[i]*eigen_diff;
 	eigen_result *= k * pow(2.0/m_sigma, 2);
 	eigen_result[i] -= k * 2.0/m_sigma;
 
