@@ -459,7 +459,7 @@ void KernelExpFamilyImpl::fit()
 	m_alpha_beta = SGVector<float64_t>(ND+1);
 	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, ND+1);
 
-	SG_SINFO("Solving system of size N=%d.\n", N);
+	SG_SINFO("Solving system of size N*D=%d.\n", ND);
 	eigen_alpha_beta = eigen_A.ldlt().solve(eigen_b);
 }
 
