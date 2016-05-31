@@ -541,7 +541,13 @@ float64_t KernelExpFamilyImpl::log_pdf(const index_t idx_test) const
 	return m_alpha_beta[0]*xi + beta_sum;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
+SGVector<float64_t> KernelExpFamilyImpl::grad(SGVector<float64_t> x)
+{
+	set_test_data(x);
+	return grad(0);
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::grad(const index_t idx_test)
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -556,14 +562,15 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
 	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
 	for (auto a=0; a<N; a++)
 	{
-		SGMatrix<float64_t> g=kernel_dx_i_dx_i_dx_j(x, a);
+		SGMatrix<float64_t> g=kernel_dx_i_dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_g(g.matrix, D, D);
-		eigen_xi_grad += eigen_g.colwise().sum();
+		eigen_xi_grad -= eigen_g.colwise().sum();
 
 		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
 		// betasum_grad += beta[a, :].dot(left_arg_hessian)
 		// TODO storage is not necessary here
-		auto left_arg_hessian = kernel_dx_i_dx_j(x, a);
+		// note: sign flip as different argument order compared to Python code
+		auto left_arg_hessian = kernel_dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
 		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_alpha_beta.segment(1+a*D, D).matrix();
 	}
