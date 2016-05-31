@@ -513,7 +513,7 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(SGVector<float64_t> x)
 	return grad(0);
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::grad(index_t idx_test)
+SGVector<float64_t> KernelExpFamilyImpl::grad(index_t idx_test) const
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();

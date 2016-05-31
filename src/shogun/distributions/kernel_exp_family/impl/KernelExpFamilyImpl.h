@@ -110,7 +110,7 @@ public :
 	SGVector<float64_t> log_pdf(SGMatrix<float64_t> X);
 
 	SGVector<float64_t> grad(SGVector<float64_t> x);
-	virtual SGVector<float64_t> grad(index_t idx_test);
+	virtual SGVector<float64_t> grad(index_t idx_test) const;
 
 	SGVector<float64_t> get_alpha_beta() const { return m_alpha_beta; }
 
