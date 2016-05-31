@@ -500,9 +500,9 @@ void KernelExpFamilyImpl::fit()
 SGVector<float64_t> KernelExpFamilyImpl::log_pdf(const SGMatrix<float64_t> X)
 {
 	set_test_data(X);
-#pragma omp parallel for
-	N_test = get_num_data_rhs();
+	auto N_test = get_num_data_rhs();
 	SGVector<float64_t> result(N_test);
+#pragma omp parallel for
 	for (auto i=0; i<N_test; ++i)
 		result[i] = log_pdf(i);
 
