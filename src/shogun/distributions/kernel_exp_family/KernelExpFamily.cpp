@@ -104,14 +104,7 @@ SGVector<float64_t> CKernelExpFamily::log_pdf_multiple(SGMatrix<float64_t> X)
 	REQUIRE(X.num_rows==D, "Dimension of given observations (%d) must match the estimator's (%d)\n", X.num_rows, D);
 	REQUIRE(X.num_cols>0, "Number of given observations (%d) must be positive.\n", X.num_cols);
 
-	SGVector<float64_t> result(X.num_cols);
-#pragma omp parallel for
-	for (auto i=0; i<X.num_cols; i++)
-	{
-		SGVector<float64_t> x(X.get_column_vector(i), m_impl->get_num_dimensions(), false);
-		result[i] = m_impl->log_pdf(x);
-	}
-	return result;
+	return m_impl->log_pdf(X);
 }
 
 SGVector<float64_t> CKernelExpFamily::get_alpha_beta()

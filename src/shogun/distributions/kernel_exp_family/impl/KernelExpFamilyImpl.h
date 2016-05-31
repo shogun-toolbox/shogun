@@ -98,6 +98,7 @@ public :
 	SGVector<float64_t> kernel_dx(const index_t a, const index_t idx_b) const;
 	SGVector<float64_t> kernel_dx_dx(const index_t a, const index_t idx_b) const;
 	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const index_t a, const index_t idx_b) const;
+	SGMatrix<float64_t> kernel_dx_i_dx_j(const index_t a, const index_t idx_b) const;
 
 	// new data
 	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, const index_t idx_b);
@@ -109,7 +110,10 @@ public :
 	float64_t compute_xi_norm_2() const;
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 	virtual void fit();
-	virtual float64_t log_pdf(const SGVector<float64_t>& x);
+	virtual float64_t log_pdf(const index_t idx_test) const;
+	float64_t log_pdf(SGVector<float64_t> x);
+	SGVector<float64_t> log_pdf(SGMatrix<float64_t> X);
+
 	virtual SGVector<float64_t> grad(const SGVector<float64_t>& x);
 
 	SGVector<float64_t> get_alpha_beta() const { return m_alpha_beta; }

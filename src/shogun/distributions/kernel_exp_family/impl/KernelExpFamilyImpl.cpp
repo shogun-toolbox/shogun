@@ -306,14 +306,14 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(const index_t idx_a, con
 	return result;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const index_t idx_a, const index_t idx_b) const
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
-	auto diff = difference(idx_a, idx_b);
-	auto eigen_diff = Map<VectorXd>(diff.vector, D);
-	auto sq_diff = eigen_diff.array().pow(2);
+	Map<VectorXd> eigen_a(a.vector, D);
+	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
+	auto sq_diff = (eigen_a-eigen_b).array().pow(2);
 
-	auto k=kernel(idx_a, idx_b);
+	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
 
 	SGVector<float64_t> result(D);
 	Map<VectorXd> eigen_result(result.vector, D);
@@ -324,14 +324,14 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const index_t idx_a, const
 	return result;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, const index_t idx_b)
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
-	Map<VectorXd> eigen_a(a.vector, D);
-	Map<VectorXd> eigen_b(m_data_lhs.get_column_vector(idx_b), D);
-	auto sq_diff = (eigen_a-eigen_b).array().pow(2);
+	auto diff = difference(idx_a, idx_b);
+	auto eigen_diff = Map<VectorXd>(diff.vector, D);
+	auto sq_diff = eigen_diff.array().pow(2);
 
-	auto k=CMath::exp(-sq_diff.sum() / m_sigma);
+	auto k=kernel(idx_a, idx_b);
 
 	SGVector<float64_t> result(D);
 	Map<VectorXd> eigen_result(result.vector, D);
@@ -365,22 +365,6 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all() const
 	return result;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const index_t idx_a, const index_t idx_b) const
-{
-	auto D = get_num_dimensions();
-
-	//k = gaussian_kernel(x_2d, y_2d, sigma)
-	auto diff = difference(idx_a, idx_b);
-
-	auto eigen_diff = Map<VectorXd>(diff, D);
-	auto k = kernel(idx_a, idx_b);
-
-	SGVector<float64_t> gradient(D);
-	Map<VectorXd> eigen_gradient(gradient.vector, D);
-	eigen_gradient = 2*k*eigen_diff/m_sigma;
-	return gradient;
-}
-
 SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
@@ -394,6 +378,22 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a,
 	SGVector<float64_t> gradient(D);
 	Map<VectorXd> eigen_gradient(gradient.vector, D);
 	eigen_gradient = 2*k*diff/m_sigma;
+	return gradient;
+}
+
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const index_t idx_a, const index_t idx_b) const
+{
+	auto D = get_num_dimensions();
+
+	//k = gaussian_kernel(x_2d, y_2d, sigma)
+	auto diff = difference(idx_a, idx_b);
+
+	auto eigen_diff = Map<VectorXd>(diff, D);
+	auto k = kernel(idx_a, idx_b);
+
+	SGVector<float64_t> gradient(D);
+	Map<VectorXd> eigen_gradient(gradient.vector, D);
+	eigen_gradient = 2*k*eigen_diff/m_sigma;
 	return gradient;
 }
 
@@ -497,7 +497,25 @@ void KernelExpFamilyImpl::fit()
 	eigen_alpha_beta = eigen_A.ldlt().solve(eigen_b);
 }
 
-float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x)
+SGVector<float64_t> KernelExpFamilyImpl::log_pdf(const SGMatrix<float64_t> X)
+{
+	set_test_data(X);
+#pragma omp parallel for
+	N_test = get_num_data_rhs();
+	SGVector<float64_t> result(N_test);
+	for (auto i=0; i<N_test; ++i)
+		result[i] = log_pdf(i);
+
+	return result;
+}
+
+float64_t KernelExpFamilyImpl::log_pdf(SGVector<float64_t> x)
+{
+	set_test_data(x);
+	return log_pdf(0);
+}
+
+float64_t KernelExpFamilyImpl::log_pdf(const index_t idx_test) const
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -508,15 +526,16 @@ float64_t KernelExpFamilyImpl::log_pdf(const SGVector<float64_t>& x)
 	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
 	for (auto idx_a=0; idx_a<N; idx_a++)
 	{
-		SGVector<float64_t> k=kernel_dx_dx(x, idx_a);
+		SGVector<float64_t> k=kernel_dx_dx(idx_a, idx_test);
 		Map<VectorXd> eigen_k(k.vector, D);
 		xi += eigen_k.sum() / N;
 
-		auto grad_x_xa = kernel_dx(x, idx_a);
+		auto grad_x_xa = kernel_dx(idx_a, idx_test);
 		Map<VectorXd> eigen_grad_x_xa(grad_x_xa.vector, D);
 
 		// betasum += np.dot(gradient_x_xa, beta[a, :])
-		beta_sum += eigen_grad_x_xa.transpose()*eigen_alpha_beta.segment(1+idx_a*D, D);
+		// note: sign flip as different argument order compared to Python code
+		beta_sum -= eigen_grad_x_xa.transpose()*eigen_alpha_beta.segment(1+idx_a*D, D);
 
 	}
 	return m_alpha_beta[0]*xi + beta_sum;
@@ -623,6 +642,28 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const SGVector<float64
 	// pairwise_dist = np.outer(y-x, y-x)
 	// term1 = k*pairwise_dist * (2.0/sigma)**2
 	eigen_result = diff*diff.transpose();
+	eigen_result *= k * pow(2.0/m_sigma, 2);
+
+	// term2 = k*np.eye(d) * (2.0/sigma)
+	eigen_result.diagonal().array() -= k * 2.0/m_sigma;
+
+	// return term1 - term2
+	return result;
+}
+
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const index_t idx_a, const index_t idx_b) const
+{
+	auto D = get_num_dimensions();
+	auto diff = difference(idx_a, idx_b);
+	auto eigen_diff = Map<VectorXd>(diff.vector, D);
+	auto k=kernel(idx_a, idx_b);
+
+	SGMatrix<float64_t> result(D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+
+	// pairwise_dist = np.outer(y-x, y-x)
+	// term1 = k*pairwise_dist * (2.0/sigma)**2
+	eigen_result = eigen_diff*eigen_diff.transpose();
 	eigen_result *= k * pow(2.0/m_sigma, 2);
 
 	// term2 = k*np.eye(d) * (2.0/sigma)
