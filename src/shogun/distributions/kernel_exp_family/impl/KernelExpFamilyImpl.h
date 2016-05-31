@@ -78,46 +78,46 @@ public :
 	virtual ~KernelExpFamilyImpl() {};
 
 	// for training
-	float64_t kernel(index_t idx_a, const index_t idx_b);
-	float64_t sq_difference_norm(index_t idx_a, index_t idx_b);
-	float64_t sq_difference_norm(const SGVector<float64_t>& diff);
+	float64_t kernel(const index_t idx_a, const index_t idx_b) const;
+	float64_t sq_difference_norm(const index_t idx_a, const index_t idx_b) const;
+	float64_t sq_difference_norm(const SGVector<float64_t>& diff) const;
 
-	SGVector<float64_t> difference(index_t idx_a, index_t idx_b);
-	void difference(index_t idx_a, index_t idx_b, SGVector<float64_t>& result);
+	SGVector<float64_t> difference(const index_t idx_a, const index_t idx_b) const;
+	void difference(const index_t idx_a, const index_t idx_b, SGVector<float64_t>& result) const;
 
-	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b);
-	float64_t kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_dx_dy(const index_t idx_a, const index_t idx_b) const;
+	float64_t kernel_dx_dx_dy_dy_sum(const index_t idx_a, const index_t idx_b) const;
 
-	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b);
-	SGMatrix<float64_t> kernel_hessian_all();
+	SGMatrix<float64_t> kernel_hessian(const index_t idx_a, const index_t idx_b) const;
+	SGMatrix<float64_t> kernel_hessian_all() const;
 
 	// for evaluation
 	void set_test_data(SGMatrix<float64_t> X);
 	void set_test_data(SGVector<float64_t> x);
 
-	SGVector<float64_t> kernel_dx(index_t a, index_t idx_b);
+	SGVector<float64_t> kernel_dx(const index_t a, const index_t idx_b) const;
 
 	// new data
-	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, index_t idx_b);
-	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
-	SGMatrix<float64_t> kernel_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b);
+	SGVector<float64_t> kernel_dx(const SGVector<float64_t>& a, const index_t idx_b);
+	SGVector<float64_t> kernel_dx_dx(const SGVector<float64_t>& a, const index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, const index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_i_dx_j(const SGVector<float64_t>& a, const index_t idx_b);
 
-	SGVector<float64_t> compute_h();
-	float64_t compute_xi_norm_2();
-	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system();
+	SGVector<float64_t> compute_h() const;
+	float64_t compute_xi_norm_2() const;
+	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 	virtual void fit();
 	virtual float64_t log_pdf(const SGVector<float64_t>& x);
 	virtual SGVector<float64_t> grad(const SGVector<float64_t>& x);
 
-	SGVector<float64_t> get_alpha_beta() { return m_alpha_beta; }
+	SGVector<float64_t> get_alpha_beta() const { return m_alpha_beta; }
 
-	index_t get_num_dimensions();
-	index_t get_num_data_lhs();
-	index_t get_num_data_rhs();
+	index_t get_num_dimensions() const;
+	index_t get_num_data_lhs() const;
+	index_t get_num_data_rhs() const;
 
 	// old develop code
-	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b);
+	SGMatrix<float64_t> kernel_dx_dx_dy_dy(const index_t idx_a, const index_t idx_b) const;
 
 protected:
 	virtual void precompute();

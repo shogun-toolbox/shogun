@@ -40,12 +40,12 @@
 using namespace shogun;
 using namespace Eigen;
 
-index_t KernelExpFamilyImpl::get_num_dimensions()
+index_t KernelExpFamilyImpl::get_num_dimensions() const
 {
 	return m_data_lhs.num_rows;
 }
 
-index_t KernelExpFamilyImpl::get_num_data_lhs()
+index_t KernelExpFamilyImpl::get_num_data_lhs() const
 {
 	return m_data_lhs.num_cols;
 }
@@ -61,7 +61,7 @@ void KernelExpFamilyImpl::set_test_data(SGVector<float64_t> x)
 	set_test_data(SGMatrix<float64_t>(x));
 }
 
-index_t KernelExpFamilyImpl::get_num_data_rhs()
+index_t KernelExpFamilyImpl::get_num_data_rhs() const
 {
 	return m_data_rhs.num_cols;
 }
@@ -151,12 +151,12 @@ KernelExpFamilyImpl::KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sig
 	precompute();
 }
 
-float64_t KernelExpFamilyImpl::kernel(index_t idx_a, index_t idx_b)
+float64_t KernelExpFamilyImpl::kernel(const index_t idx_a, const index_t idx_b) const
 {
 	return CMath::exp(-sq_difference_norm(idx_a, idx_b) / m_sigma);
 }
 
-float64_t KernelExpFamilyImpl::sq_difference_norm(index_t idx_a, index_t idx_b)
+float64_t KernelExpFamilyImpl::sq_difference_norm(const index_t idx_a,  const index_t idx_b) const
 {
 	if (m_sq_difference_norms.matrix)
 		return m_sq_difference_norms(idx_a, idx_b);
@@ -165,13 +165,13 @@ float64_t KernelExpFamilyImpl::sq_difference_norm(index_t idx_a, index_t idx_b)
 	return sq_difference_norm(diff);
 }
 
-float64_t KernelExpFamilyImpl::sq_difference_norm(const SGVector<float64_t>& diff)
+float64_t KernelExpFamilyImpl::sq_difference_norm(const SGVector<float64_t>& diff) const
 {
 	Map<VectorXd> eigen_diff(diff.vector, diff.vlen);
 	return eigen_diff.squaredNorm();
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b)
+SGVector<float64_t> KernelExpFamilyImpl::difference(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 
@@ -186,8 +186,8 @@ SGVector<float64_t> KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b
 	return result;
 }
 
-void KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b,
-		SGVector<float64_t>& result)
+void KernelExpFamilyImpl::difference(const index_t idx_a, const index_t idx_b,
+		SGVector<float64_t>& result) const
 {
 	auto D = get_num_dimensions();
 	if (m_differences.matrix)
@@ -209,7 +209,7 @@ void KernelExpFamilyImpl::difference(index_t idx_a, index_t idx_b,
 	}
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 
@@ -228,7 +228,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy(index_t idx_a, index_t 
 	return result;
 }
 
-float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b)
+float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 	SGVector<float64_t> diff=difference(idx_a, idx_b);
@@ -252,7 +252,7 @@ float64_t KernelExpFamilyImpl::kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx
 	return sum;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 	SGVector<float64_t> diff=difference(idx_a, idx_b);
@@ -287,7 +287,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_dx_dy_dy(index_t idx_a, index
 	return result;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 	SGVector<float64_t> diff=difference(idx_a, idx_b);
@@ -306,7 +306,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian(index_t idx_a, index_t i
 	return result;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, index_t idx_b)
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
@@ -324,7 +324,7 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx_dx(const SGVector<float64_t>&
 	return result;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all()
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all() const
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -347,7 +347,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_hessian_all()
 	return result;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(index_t idx_a, index_t idx_b)
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const index_t idx_a, const index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 
@@ -364,7 +364,7 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(index_t idx_a, index_t idx_b)
 	return gradient;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a, index_t idx_b)
+SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
@@ -380,7 +380,7 @@ SGVector<float64_t> KernelExpFamilyImpl::kernel_dx(const SGVector<float64_t>& a,
 	return gradient;
 }
 
-SGVector<float64_t> KernelExpFamilyImpl::compute_h()
+SGVector<float64_t> KernelExpFamilyImpl::compute_h() const
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -403,7 +403,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h()
 	return h;
 }
 
-float64_t KernelExpFamilyImpl::compute_xi_norm_2()
+float64_t KernelExpFamilyImpl::compute_xi_norm_2() const
 {
 	auto N = get_num_data_lhs();
 	float64_t xi_norm_2=0;
@@ -418,7 +418,7 @@ float64_t KernelExpFamilyImpl::compute_xi_norm_2()
 	return xi_norm_2;
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_system()
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_system() const
 {
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -537,7 +537,7 @@ SGVector<float64_t> KernelExpFamilyImpl::grad(const SGVector<float64_t>& x)
 	return xi_grad + beta_sum_grad;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_i_dx_j(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
@@ -565,7 +565,7 @@ SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_i_dx_j(const SGVector<fl
 	return result;
 }
 
-SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const SGVector<float64_t>& a, index_t idx_b)
+SGMatrix<float64_t> KernelExpFamilyImpl::kernel_dx_i_dx_j(const SGVector<float64_t>& a, const index_t idx_b)
 {
 	auto D = get_num_dimensions();
 	Map<VectorXd> eigen_a(a.vector, D);
