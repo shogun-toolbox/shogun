@@ -42,6 +42,7 @@
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/StandardMomentumCorrection.h>
 #include <shogun/optimization/AdaDeltaUpdater.h>
+#include <shogun/optimization/AdamUpdater.h>
 #include <shogun/optimization/NesterovMomentumCorrection.h>
 #include <shogun/optimization/RmsPropUpdater.h>
 #include <shogun/optimization/AdaptMomentumCorrection.h>
@@ -945,6 +946,39 @@ TEST(AdaDeltaUpdater, test1)
 	delete momentum_correction2;
 	delete bb;
 }
+
+TEST(AdamUpdater, test1)
+{
+	ClassificationFixture data;
+	ClassificationForTestCostFunction2* bb=new ClassificationForTestCostFunction2();
+	bb->set_data(data.x, data.y);
+
+	SGDMinimizer* opt2=new SGDMinimizer(bb);
+	AdamUpdater* updater2=new AdamUpdater(0.1, 1e-8, 0.9, 0.999);
+	//updater2->set_learning_rate(0.1);
+	//updater2->set_epsilon(1e-8);
+	//updater2->set_first_moment_decay_factor(0.9);
+	//updater2->set_second_moment_decay_factor(0.999);
+
+	opt2->set_gradient_updater(updater2);
+	opt2->set_number_passes(1);
+	opt2->minimize();
+	//The reference result is from tensorflow
+	//w=
+	//1.49674  -0.88859
+	//cost=
+	//0.368617
+	float64_t cost=bb->get_cost()/(float64_t)bb->get_sample_size();
+	EXPECT_NEAR(cost,0.368617,1e-5);
+	SGVector<float64_t> w=bb->obtain_variable_reference();
+	EXPECT_NEAR(w[0],1.49674,1e-5);
+	EXPECT_NEAR(w[1],-0.88859,1e-5);
+
+	delete opt2;
+	delete updater2;
+	delete bb; 
+}
+
 
 TEST(AdaptMomentumCorrection, test1)
 {
