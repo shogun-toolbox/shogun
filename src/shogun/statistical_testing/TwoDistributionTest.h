@@ -32,9 +32,6 @@ public:
 	CTwoDistributionTest(index_t num_kernels);
 	virtual ~CTwoDistributionTest();
 
-	void set_p(CFeatures* samples_from_p);
-	void set_q(CFeatures* samples_from_q);
-
 	CFeatures* get_p() const;
 	CFeatures* get_q() const;
 
@@ -44,10 +41,13 @@ public:
 	const index_t get_num_samples_p() const;
 	const index_t get_num_samples_q() const;
 
-	virtual float64_t compute_statistic() = 0;
-	virtual SGVector<float64_t> sample_null() = 0;
+	virtual float64_t compute_statistic()=0;
+	virtual SGVector<float64_t> sample_null()=0;
 
 	virtual const char* get_name() const;
+protected:
+	void set_p(CFeatures* samples_from_p);
+	void set_q(CFeatures* samples_from_q);
 };
 
 }

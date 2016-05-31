@@ -88,7 +88,7 @@ void MaxXValidation::compute_measures()
 	auto existing_kernel=estimator->get_kernel();
 	for (auto i=0; i<num_run; ++i)
 	{
-		// TODO set permutation beforehand
+		dm.shuffle_features();
 		for (auto j=0; j<N; ++j)
 		{
 			dm.use_fold(j);
@@ -100,6 +100,7 @@ void MaxXValidation::compute_measures()
 				estimator->cleanup();
 			}
 		}
+		dm.unshuffle_features();
 	}
 	dm.set_xvalidation_mode(false);
 	estimator->set_kernel(existing_kernel);

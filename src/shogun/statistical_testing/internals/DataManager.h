@@ -233,6 +233,14 @@ public:
 	index_t get_num_folds() const;
 
 	/**
+	 * Permutes the feature vectors. Useful for cross-validation set-up. Everytime
+	 * TODO
+	 *
+	void shuffle_features()
+	void unshuffle_features()
+	*/
+
+	/**
 	 * @param idx The index of the fold in X-validation scenario, has to be within the range of
 	 * \f$[0, N)\f$, where N is the number of folds as returned by get_num_folds() method.
 	 */
@@ -257,11 +265,18 @@ public:
 	 * Resets the fetchers to the initial states.
 	 */
 	void reset();
+
+	void set_train_test_mode(bool on);
+	void set_train_test_ratio(float64_t ratio);
+
+	bool is_train_test_mode() const;
+	float64_t get_train_test_ratio() const;
 private:
-	/**
-	 * The internal data fetcher instances.
-	 */
 	std::vector<std::unique_ptr<DataFetcher> > fetchers;
+	bool train_test_mode;
+	float64_t train_test_ratio;
+	constexpr static bool default_train_test_mode=false;
+	constexpr static float64_t default_train_test_ratio=1.0;
 };
 
 }

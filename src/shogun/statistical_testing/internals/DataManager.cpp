@@ -49,6 +49,7 @@ DataManager::DataManager(size_t num_distributions)
 	SG_SDEBUG("Data manager instance initialized with %d data sources!\n", num_distributions);
 	fetchers.resize(num_distributions);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
+	train_test_mode=default_train_test_mode;
 }
 
 DataManager::~DataManager()
@@ -323,4 +324,14 @@ void DataManager::reset()
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->reset(); });
 	SG_SDEBUG("Leaving!\n");
+}
+
+void DataManager::set_train_test_mode(bool on)
+{
+	train_test_mode_on=on;
+}
+
+void DataManager::set_train_test_ratio(float64_t ratio)
+{
+	train_test_ratio=ratio;
 }

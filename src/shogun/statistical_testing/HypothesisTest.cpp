@@ -1,89 +1,111 @@
 /*
- * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2016  Soumyajit De
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012 - 2013 Heiko Strathmann
+ * Written (w) 2014 - 2016 Soumyajit De
+ * All rights reserved.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the selfied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <algorithm>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/HypothesisTest.h>
-#include <shogun/statistical_testing/internals/TestTypes.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
-#include <shogun/statistical_testing/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
 
 struct CHypothesisTest::Self
 {
-	Self(index_t num_distributions, index_t num_kernels)
-	: data_manager(num_distributions), kernel_manager(num_kernels)
-	{
-	}
-	DataManager data_manager;
-	KernelManager kernel_manager;
+	explicit Self(index_t num_distributions);
+	DataManager data_mgr;
 };
 
-CHypothesisTest::CHypothesisTest(index_t num_distributions, index_t num_kernels) : CSGObject()
+CHypothesisTest::Self::Self(index_t num_distributions) : data_mgr(num_distributions)
 {
-	self = std::unique_ptr<Self>(new CHypothesisTest::Self(num_distributions, num_kernels));
+}
+
+CHypothesisTest::CHypothesisTest(index_t num_distributions) : CSGObject()
+{
+	self=std::unique_ptr<Self>(new CHypothesisTest::Self(num_distributions));
 }
 
 CHypothesisTest::~CHypothesisTest()
 {
 }
 
-DataManager& CHypothesisTest::get_data_manager()
+void CHypothesisTest::set_train_test_mode(bool on)
 {
-	return self->data_manager;
+	self->data_mgr.set_train_test_mode(on);
 }
 
-const DataManager& CHypothesisTest::get_data_manager() const
+void CHypothesisTest::set_train_test_ratio(float64_t ratio)
 {
-	return self->data_manager;
-}
-
-KernelManager& CHypothesisTest::get_kernel_manager()
-{
-	return self->kernel_manager;
-}
-
-const KernelManager& CHypothesisTest::get_kernel_manager() const
-{
-	return self->kernel_manager;
+	self->data_mgr.train_test_ratio(ratio);
 }
 
 float64_t CHypothesisTest::compute_p_value(float64_t statistic)
 {
-	SGVector<float64_t> values = sample_null();
-
+	SGVector<float64_t> values=sample_null();
 	std::sort(values.vector, values.vector + values.vlen);
-	float64_t i = values.find_position_to_insert(statistic);
-
-	return 1.0 - i / values.vlen;
+	float64_t i=values.find_position_to_insert(statistic);
+	return 1.0-i/values.vlen;
 }
 
 float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 {
-	SGVector<float64_t> values = sample_null();
+	SGVector<float64_t> values=sample_null();
 	std::sort(values.vector, values.vector + values.vlen);
-	return values[index_t(CMath::floor(values.vlen * (1 - alpha)))];
+	return values[index_t(CMath::floor(values.vlen*(1-alpha)))];
+}
+
+bool CHypothesisTest::perform_test(float64_t alpha)
+{
+	auto statistic=compute_statistic();
+	auto p_value=compute_p_value(statistic);
+	return p_value<alpha;
 }
 
 const char* CHypothesisTest::get_name() const
 {
 	return "HypothesisTest";
+}
+
+CSGObject* CHypothesisTest::clone()
+{
+	SG_ERROR("Cloning CHypothesisTest instances is not supported!\n");
+	return nullptr;
+}
+
+DataManager& CHypothesisTest::get_data_mgr()
+{
+	return self->data_mgr;
+}
+
+const DataManager& CHypothesisTest::get_data_mgr() const
+{
+	return self->data_mgr;
 }
