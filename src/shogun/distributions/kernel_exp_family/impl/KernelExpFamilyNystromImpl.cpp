@@ -72,7 +72,7 @@ void KernelExpFamilyNystromImpl::sub_sample_rkhs_basis(index_t num_rkhs_basis)
 	CMath::qsort(m_inds.vector, num_rkhs_basis);
 }
 
-float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, index_t idx_b, index_t i, index_t j)
+float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(const index_t idx_a, const index_t idx_b, const index_t i, const index_t j) const
 {
 	auto D = get_num_dimensions();
 
@@ -95,14 +95,14 @@ float64_t KernelExpFamilyNystromImpl::kernel_hessian_component(index_t idx_a, in
 	return k*(ridge - 4*(differences_i*differences_j)/pow(m_sigma, 2));
 }
 
-std::pair<index_t, index_t> KernelExpFamilyNystromImpl::idx_to_ai(const index_t& idx)
+std::pair<index_t, index_t> KernelExpFamilyNystromImpl::idx_to_ai(index_t idx) const
 {
 	auto D = get_num_dimensions();
 	return std::pair<index_t, index_t>(idx / D, idx % D);
 }
 
 float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(index_t row_idx,
-		index_t col_idx)
+		index_t col_idx) const
 {
 	// TODO benchmark against full version using all kernel hessians
 	auto D = get_num_dimensions();
@@ -133,7 +133,7 @@ float64_t KernelExpFamilyNystromImpl::compute_lower_right_submatrix_element(inde
 	return G_sum/N + m_lambda*G_a_b_i_j;
 }
 
-SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
+SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing() const
 {
 	// TODO benchmark against the first row in build_system
 	auto D = get_num_dimensions();
@@ -168,7 +168,7 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing()
 	return result;
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_slow_low_memory()
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_slow_low_memory() const
 {
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
@@ -222,7 +222,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_high_memory()
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_high_memory() const
 {
 	// TODO actually implement in the fast mem hungry way
 
@@ -410,7 +410,7 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::kernel_dx_i_dx_j_component(const
 	return result;
 }
 
-index_t KernelExpFamilyNystromImpl::get_num_rkhs_basis()
+index_t KernelExpFamilyNystromImpl::get_num_rkhs_basis() const
 {
 	return m_inds.vlen;
 }
