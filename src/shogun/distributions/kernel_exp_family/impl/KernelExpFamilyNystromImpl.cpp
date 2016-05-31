@@ -329,10 +329,15 @@ void KernelExpFamilyNystromImpl::fit()
 
 	m_alpha_beta = SGVector<float64_t>(m+1);
 	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, m+1);
-	auto A_pinv = pinv(A);
-	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
 
-	eigen_alpha_beta = eigen_pinv*b_m;
+	LLT<MatrixXd> llt(eigen_A);
+	eigen_alpha_beta = llt.solve(b_m);
+	return;
+
+//	// old pinv based code
+//	auto A_pinv = pinv(A);
+//	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
+//	eigen_alpha_beta = eigen_pinv*b_m;
 }
 
 SGMatrix<float64_t> KernelExpFamilyNystromImpl::pinv(const SGMatrix<float64_t>& A)
