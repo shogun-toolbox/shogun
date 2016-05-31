@@ -44,6 +44,12 @@ class CGaussianKernel: public CDotKernel
 
 		/** constructor
 		 *
+		 * @param width width
+		 */
+		CGaussianKernel(float64_t width);
+
+		/** constructor
+		 *
 		 * @param size cache size
 		 * @param width width
 		 */
