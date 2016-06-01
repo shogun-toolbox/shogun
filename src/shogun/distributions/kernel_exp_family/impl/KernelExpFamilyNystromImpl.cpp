@@ -243,8 +243,6 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 
 std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_high_memory() const
 {
-	// TODO actually implement in the fast mem hungry way
-
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
 	auto N = get_num_data_lhs();
@@ -258,7 +256,6 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	Map<VectorXd> eigen_b(b.vector, ND+1);
 
 	// TODO all this can be done in a single pass over the data
-	// TODO should have an option to store the kernel hessians to speed things up when possible
 	// TODO think of a block scheme where one kernel hessian (or N) are stored and less things are recomputed?
 
 	SG_SINFO("Computing h.\n");
