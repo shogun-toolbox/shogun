@@ -111,7 +111,7 @@ bool SGMatrix<T>::operator==(SGMatrix<T>& other)
 }
 
 template <class T>
-bool SGMatrix<T>::equals(SGMatrix<T>& other)
+bool SGMatrix<T>::equals(SGMatrix<T>& other) const
 {
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
@@ -253,7 +253,7 @@ complex128_t SGMatrix<complex128_t>::max_single()
 }
 
 template <class T>
-SGMatrix<T> SGMatrix<T>::clone()
+SGMatrix<T> SGMatrix<T>::clone() const
 {
 	return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
 			num_rows, num_cols);

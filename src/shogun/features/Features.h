@@ -331,6 +331,10 @@ class CFeatures : public CSGObject
 		 * @return whether this class supports compatible computation
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
+
+		static CFeatures* create_shallow_copy(CFeatures* other);
+
+		static void clone_subset_stack(CFeatures* src, CFeatures* dst);
 	private:
 		void init();
 

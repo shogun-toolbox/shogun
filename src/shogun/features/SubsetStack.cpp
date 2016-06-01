@@ -96,6 +96,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		index_t max_index=CMath::max(subset.vector, subset.vlen);
 		if (max_index>=latest->m_subset_idx.vlen)
 		{
+			SG_SPRINT("MAX: %d , IDX: %d",max_index, latest->m_subset_idx.vlen);
 			subset.display_vector("subset");
 			latest->m_subset_idx.display_vector("last on stack");
 			SG_ERROR("%s::add_subset(): Provided index vector contains"

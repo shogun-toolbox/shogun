@@ -205,7 +205,7 @@ public:
 	 *
 	 * @return matrix feature matrix
 	 */
-	SGMatrix<ST> get_feature_matrix();
+	const SGMatrix<ST> get_feature_matrix();
 
 	/** steals feature matrix, i.e. returns matrix and
 	 * forget about it

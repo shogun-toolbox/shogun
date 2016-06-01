@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <chrono>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -18,17 +19,14 @@
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
+using namespace std;
+using namespace std::chrono; 
 
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=40;
-	index_t num_features=5;
+	index_t num_vectors=3000;
+	index_t num_features=100;
 
 	/* data means -1, 1 in all components, std deviation of 3 */
 	SGVector<float64_t> mean_1(num_features);
@@ -76,27 +74,27 @@ void test_cross_validation()
 	svm->set_epsilon(svm_eps);
 
 	/* train and output */
-	svm->train(features);
-	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
+//	svm->train(features);
+//	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
+//	for (index_t i=0; i<num_vectors; ++i)
+//		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
 	CContingencyTableEvaluation* eval_crit=
 			new CContingencyTableEvaluation(ACCURACY);
 
 	/* evaluate training error */
-	float64_t eval_result=eval_crit->evaluate(output, labels);
-	SG_SPRINT("training error: %f\n", eval_result);
-	SG_UNREF(output);
+//	float64_t eval_result=eval_crit->evaluate(output, labels);
+//	SG_SPRINT("training error: %f\n", eval_result);
+//	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
 	 * but should be a really coarse check to see if everything is going
 	 * approx. right */
-	ASSERT(eval_result<2);
+//	ASSERT(eval_result<2);
 
 	/* splitting strategy */
-	index_t n_folds=5;
+	index_t n_folds=10;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
 
@@ -104,7 +102,7 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(10);
+	cross->set_num_runs(1);
 //	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
@@ -123,12 +121,18 @@ void test_cross_validation()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
-	sg_io->set_loglevel(MSG_DEBUG);
+	//sg_io->set_loglevel(MSG_DEBUG);
 
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();  
+	
 	test_cross_validation();
 
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+  	auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
+  	//duration = duration/1000000;
+  	SG_SPRINT("D %d \n", duration);
 	exit_shogun();
 
 	return 0;

@@ -11,11 +11,12 @@
  */
 
 #include <shogun/features/Features.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/DynamicObjectArray.h>
-
+#include <stack>
 #include <string.h>
 
 using namespace shogun;
@@ -31,7 +32,6 @@ CFeatures::CFeatures(const CFeatures& orig)
 : CSGObject(orig)
 {
 	init();
-
 	// Call to init creates new preproc and preprocessed arrays.
 	SG_UNREF(preproc);
 	SG_UNREF(preprocessed);
@@ -357,4 +357,73 @@ bool CFeatures::get_feature_class_compatibility(EFeatureClass rhs) const
 	if (this->get_feature_class()==rhs)
 		return true;
 	return false;
+}
+
+CFeatures* CFeatures::create_shallow_copy(CFeatures* other)
+{
+	SG_SDEBUG("Entering!\n");
+	CFeatures* shallow_copy=nullptr;
+	if (other->get_feature_type()==F_DREAL && other->get_feature_class()==C_DENSE)
+	{
+		auto casted=static_cast<CDenseFeatures<float64_t>*>(other);
+
+		// use the same underlying feature matrix, no ref-count
+		int32_t num_feats=0, num_vecs=0;
+		float64_t* data=casted->get_feature_matrix(num_feats, num_vecs);
+		SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_feats, num_vecs);
+		SGMatrix<float64_t> feats_matrix(data, num_feats, num_vecs, false);
+		shallow_copy=new CDenseFeatures<float64_t>(feats_matrix);
+		clone_subset_stack(other, shallow_copy);
+	}
+	else
+		SG_SNOTIMPLEMENTED;
+	SG_SDEBUG("Leaving!\n");
+	return shallow_copy;
+}
+
+void CFeatures::clone_subset_stack(CFeatures* src, CFeatures* dst)
+{
+	SG_SDEBUG("Entering!\n");
+	CSubsetStack* src_subset_stack=src->get_subset_stack();
+	if (src_subset_stack->has_subsets())
+	{
+		SG_SDEBUG("Subset present, cloning the subsets!\n");
+		CSubsetStack* subset_stack=static_cast<CSubsetStack*>(src_subset_stack->clone());
+		std::stack<SGVector<index_t> > stack;
+		while (subset_stack->has_subsets())
+		{
+			stack.push(subset_stack->get_last_subset()->get_subset_idx());
+			subset_stack->remove_subset();
+		}
+		SG_UNREF(subset_stack);
+		SG_SDEBUG("Number of subsets to be added is %d!\n", stack.size());
+		if (stack.size()>1)
+		{
+			SGVector<index_t> ref=stack.top();
+			dst->add_subset(ref);
+			stack.pop();
+			do
+			{
+				SGVector<index_t> inds=stack.top();
+				for (auto i=0, j=0; i<ref.size() && j<inds.size(); ++i)
+				{
+					if (ref[i]==inds[j])
+						inds[j++]=i;
+				}
+				dst->add_subset(inds);
+				inds=ref;
+				stack.pop();
+			} while (!stack.empty());
+		}
+		else
+		{
+			while (!stack.empty())
+			{
+				dst->add_subset(stack.top());
+				stack.pop();
+			}
+		}
+	}
+	SG_UNREF(src_subset_stack);
+	SG_SDEBUG("Leaving!\n");
 }
