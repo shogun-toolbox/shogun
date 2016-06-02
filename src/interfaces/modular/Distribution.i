@@ -26,7 +26,7 @@
 %rename(KernelDensity) CKernelDensity;
 %rename(KernelExpFamily) CKernelExpFamily;
 %rename(KernelExpFamilyNystrom) CKernelExpFamilyNystrom;
-%rename(KernelExpFamilyNystrom) CKernelExpFamilyNystromH;
+%rename(KernelExpFamilyNystromH) CKernelExpFamilyNystromH;
 
 
 /* Include Class Headers to make them visible from within the target language */
