@@ -42,33 +42,35 @@ using namespace Eigen;
 
 TEST(KernelExpFamilyNystromHImpl, fit_all_inds_equals_exact)
 {
-	index_t N=5;
-	index_t D=3;
-	auto ND=N*D;
+	index_t N=3;
+	index_t D=2;
+	index_t m=3;
 	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
-	KernelExpFamilyImpl est(X, sigma, lambda);
-	KernelExpFamilyNystromHImpl est_nystrom(X, sigma, lambda, ND);
+	SGVector<index_t> inds(m);
+	inds[0]=1;
+	inds[1]=3;
+	inds[2]=5;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, inds);
 	
 	est.fit();
-	est_nystrom.fit();
 	
-	// compare against full version
-	auto result_nystrom=est_nystrom.get_alpha_beta();
+	// compare against Pyntho version
 	auto result=est.get_alpha_beta();
 	
-	ASSERT_EQ(result.vlen, ND+1);
-	ASSERT_EQ(result_nystrom.vlen, ND+1);
-	ASSERT(result.vector);
-	ASSERT(result_nystrom.vector);
-	
-	
-	for (auto i=0; i<ND+1; i++)
-		EXPECT_NEAR(result[i], result_nystrom[i], 1e-10);
+	ASSERT_EQ(result.vlen, m+1);
+
+	float64_t reference[] = {-0.99984500690818401, 0.00341375,  0.00945666, -0.01301625 };
+	for (auto i=0; i<m; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
 TEST(KernelExpFamilyNystromHImpl, fit_half_inds_shape)
@@ -77,6 +79,25 @@ TEST(KernelExpFamilyNystromHImpl, fit_half_inds_shape)
 	index_t D=3;
 	auto ND=N*D;
 	index_t m=ND/2;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, m);
+	est.fit();
+	
+	auto alpha_beta=est.get_alpha_beta();
+	ASSERT_EQ(alpha_beta.vlen, m+1);
+	ASSERT(alpha_beta.vector);
+}
+
+TEST(KernelExpFamilyNystromHImpl, fit)
+{
+	index_t N=5;
+	index_t D=3;
+	index_t m=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
 		X.matrix[i]=CMath::randn_float();
