@@ -37,6 +37,8 @@
 #include <shogun/lib/SGVector.h>
 
 #include "KernelExpFamilyNystromImpl.h"
+#include "KernelExpFamilyImpl.h"
+
 
 namespace shogun
 {
@@ -52,6 +54,8 @@ public :
 	virtual ~KernelExpFamilyNystromHImpl() {};
 
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
+
+	using KernelExpFamilyImpl::solve_and_store;
 };
 
 }
