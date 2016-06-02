@@ -11,4 +11,5 @@
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
+#include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystromH.h>
 %}

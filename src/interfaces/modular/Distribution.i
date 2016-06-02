@@ -26,6 +26,8 @@
 %rename(KernelDensity) CKernelDensity;
 %rename(KernelExpFamily) CKernelExpFamily;
 %rename(KernelExpFamilyNystrom) CKernelExpFamilyNystrom;
+%rename(KernelExpFamilyNystrom) CKernelExpFamilyNystromH;
+
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
@@ -40,3 +42,5 @@
 %include <shogun/distributions/classical/GaussianDistribution.h>
 %include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 %include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
+%include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystromH.h>
+
