@@ -17,6 +17,7 @@
 %rename(LinearTimeMMD) CLinearTimeMMD;
 %rename(BTestMMD) CBTestMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
+%rename(KernelSelectionStrategy) CKernelSelectionStrategy;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/statistical_testing/HypothesisTest.h>
@@ -28,3 +29,4 @@
 %include <shogun/statistical_testing/LinearTimeMMD.h>
 %include <shogun/statistical_testing/BTestMMD.h>
 %include <shogun/statistical_testing/QuadraticTimeMMD.h>
+%include <shogun/statistical_testing/KernelSelectionStrategy.h>
