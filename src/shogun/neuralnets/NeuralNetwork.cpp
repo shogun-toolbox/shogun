@@ -34,6 +34,8 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/optimization/DescendUpdater.h>
+#include <shogun/optimization/GradientDescendUpdater.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>
@@ -331,9 +333,9 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 			{
 				param_updates[k] = gd_momentum*param_updates[k]
 						-alpha*gradients[k];
-
-				m_params[k] -= alpha*gradients[k];
 			}
+
+			descend_updater->update_variable(m_params,gradients,alpha);
 
 			if (error_last_time!=-1.0)
 			{
@@ -392,6 +394,7 @@ bool CNeuralNetwork::train_lbfgs(SGMatrix<float64_t> inputs,
 	else
 	{
 		SG_INFO("L-BFGS optimization ended with return code %i\n",result);
+		
 	}
 	return true;
 }
@@ -770,6 +773,7 @@ void CNeuralNetwork::init()
 	m_lbfgs_temp_inputs = NULL;
 	m_lbfgs_temp_targets = NULL;
 	m_is_training = false;
+	descend_updater = new GradientDescendUpdater();
 
 	SG_ADD((machine_int_t*)&optimization_method, "optimization_method",
 	       "Optimization Method", MS_NOT_AVAILABLE);
@@ -816,4 +820,6 @@ void CNeuralNetwork::init()
 		MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
 		"is_training", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&descend_updater, "descend_updater",
+		"Descend Updater", MS_NOT_AVAILABLE);
 }

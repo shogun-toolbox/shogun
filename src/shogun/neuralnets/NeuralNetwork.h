@@ -44,6 +44,7 @@ namespace shogun
 template<class T> class CDenseFeatures;
 class CDynamicObjectArray;
 class CNeuralLayer;
+class DescendUpdater;
 
 /** optimization method for neural networks */
 enum ENNOptimizationMethod
@@ -442,6 +443,14 @@ public:
 	 * default value is -1
 	 */
 	float64_t gd_error_damping_coeff;
+
+	/** Used in Gradient Descent training for updating params.
+	 * Optimization method used is set by passing the exact object.
+	 *
+	 * default is GradientDescendUpdater
+	 */
+	DescendUpdater *descend_updater;
+
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
