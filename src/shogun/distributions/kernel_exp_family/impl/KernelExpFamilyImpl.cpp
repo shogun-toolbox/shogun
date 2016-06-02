@@ -461,6 +461,8 @@ void KernelExpFamilyImpl::solve_and_store(const SGMatrix<float64_t>& A, const SG
 
 	m_alpha_beta = SGVector<float64_t>(b.vlen);
 	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, m_alpha_beta.vlen);
+
+	SG_SINFO("Computing LLT.\n");
 	eigen_alpha_beta = eigen_A.ldlt().solve(eigen_b);
 }
 
