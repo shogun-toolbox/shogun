@@ -19,26 +19,40 @@
 #ifndef TWO_SAMPLE_TEST_H_
 #define TWO_SAMPLE_TEST_H_
 
+#include <memory>
 #include <shogun/statistical_testing/TwoDistributionTest.h>
 
 namespace shogun
 {
 
 class CKernel;
+class CFeatures;
+
+namespace internal
+{
+	class KernelManager;
+}
 
 class CTwoSampleTest : public CTwoDistributionTest
 {
 public:
 	CTwoSampleTest();
+	CTwoSampleTest(CFeatures* samples_from_p, CFeatures* samples_from_q);
 	virtual ~CTwoSampleTest();
 
 	virtual void set_kernel(CKernel* kernel);
 	CKernel* get_kernel() const;
 
-	virtual float64_t compute_statistic() = 0;
-	virtual SGVector<float64_t> sample_null() = 0;
+	virtual float64_t compute_statistic()=0;
+	virtual SGVector<float64_t> sample_null()=0;
 
 	virtual const char* get_name() const;
+protected:
+	internal::KernelManager& get_kernel_mgr();
+	const internal::KernelManager& get_kernel_mgr() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
 };
 
 }

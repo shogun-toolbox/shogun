@@ -40,49 +40,48 @@ StreamingDataFetcher::~StreamingDataFetcher()
 	end();
 }
 
-const char* StreamingDataFetcher::get_name() const
-{
-	return "StreamingDataFetcher";
-}
-
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
 {
 	m_num_samples=num_samples;
-	m_train_test_details.set_total_num_samples(m_num_samples);
 }
 
-void StreamingDataFetcher::set_train_test_ratio(float64_t train_test_ratio)
+void StreamingDataFetcher::shuffle_features()
 {
-	if (m_train_test_details.get_total_num_samples()==0)
-		m_train_test_details.set_total_num_samples(m_num_samples);
-	DataFetcher::set_train_test_ratio(train_test_ratio);
 }
 
-void StreamingDataFetcher::set_train_mode(bool train_mode)
+void StreamingDataFetcher::unshuffle_features()
 {
-	if (train_mode)
+}
+
+void StreamingDataFetcher::use_fold(index_t i)
+{
+}
+
+void StreamingDataFetcher::init_active_subset()
+{
+}
+
+index_t StreamingDataFetcher::get_num_samples() const
+{
+	if (train_test_mode)
 	{
-		m_num_samples=m_train_test_details.get_num_training_samples();
-		if (m_num_samples==0)
-			SG_SERROR("The number of training samples is 0! Please set a valid train-test ratio\n");
-		SG_SINFO("Using %d number of samples for training!\n", m_num_samples);
+		if (train_mode)
+			return m_num_samples*train_test_ratio/(train_test_ratio+1);
+		else
+			return m_num_samples/(train_test_ratio+1);
 	}
-	else
-	{
-		m_num_samples=m_train_test_details.get_num_test_samples();
-		SG_SINFO("Using %d number of samples for testing!\n", m_num_samples);
-	}
+	return m_num_samples;
 }
 
 void StreamingDataFetcher::start()
 {
-	REQUIRE(m_num_samples>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
-	if (m_block_details.m_full_data || m_block_details.m_blocksize>m_num_samples)
+	REQUIRE(get_num_samples()>0, "Number of samples is not set! It is MANDATORY for streaming features!\n");
+	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
 	{
-		SG_SINFO("Fetching entire data (%d samples)!\n", m_num_samples);
-		m_block_details.with_blocksize(m_num_samples);
+		SG_SINFO("Fetching entire data (%d samples)!\n", get_num_samples());
+		m_block_details.with_blocksize(get_num_samples());
 	}
-	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
+	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;
 	m_block_details.m_next_block_index=0;
 	if (!parser_running)
 	{
@@ -96,7 +95,7 @@ CFeatures* StreamingDataFetcher::next()
 	CFeatures* next_samples=nullptr;
 	// figure out how many samples to fetch in this burst
 	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
-	auto num_more_samples=m_num_samples-num_already_fetched;
+	auto num_more_samples=get_num_samples()-num_already_fetched;
 	if (num_more_samples>0)
 	{
 		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);

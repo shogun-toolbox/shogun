@@ -24,131 +24,22 @@
 using namespace shogun;
 using namespace internal;
 
-DataFetcher::DataFetcher() : m_num_samples(0), m_samples(nullptr),
-	train_test_subset_used(false)
+DataFetcher::DataFetcher() : m_num_samples(0), train_test_mode(false),
+	train_mode(false), m_samples(nullptr), features_shuffled(false)
 {
 }
 
-DataFetcher::DataFetcher(CFeatures* samples) : m_samples(samples),
-	train_test_subset_used(false)
+DataFetcher::DataFetcher(CFeatures* samples) : train_test_mode(false),
+   	train_mode(false), m_samples(samples), features_shuffled(false)
 {
 	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
 	SG_REF(m_samples);
 	m_num_samples=m_samples->get_num_vectors();
-	m_train_test_details.set_total_num_samples(m_num_samples);
 }
 
 DataFetcher::~DataFetcher()
 {
-	end();
 	SG_UNREF(m_samples);
-}
-
-const char* DataFetcher::get_name() const
-{
-	return "DataFetcher";
-}
-
-void DataFetcher::set_train_test_ratio(float64_t train_test_ratio)
-{
-	m_num_samples=m_train_test_details.get_total_num_samples();
-	REQUIRE(m_num_samples>0, "Number of samples is not set!\n");
-	index_t num_training_samples=m_num_samples*train_test_ratio/(train_test_ratio+1);
-	m_train_test_details.set_num_training_samples(num_training_samples);
-	SG_SINFO("Must set the train/test mode by calling set_train_mode(True/False)!\n");
-}
-
-float64_t DataFetcher::get_train_test_ratio() const
-{
-	return float64_t(m_train_test_details.get_num_training_samples())/m_train_test_details.get_num_test_samples();
-}
-
-void DataFetcher::set_train_mode(bool train_mode)
-{
-	m_train_test_details.train_mode=train_mode;
-	// TODO put the following in another methods
-	index_t start_index=0;
-	if (m_train_test_details.train_mode)
-	{
-		m_num_samples=m_train_test_details.get_num_training_samples();
-		if (m_num_samples==0)
-			SG_SERROR("The number of training samples is 0! Please set a valid train-test ratio\n");
-		SG_SINFO("Using %d number of samples for training!\n", m_num_samples);
-	}
-	else
-	{
-		m_num_samples=m_train_test_details.get_num_test_samples();
-		SG_SINFO("Using %d number of samples for testing!\n", m_num_samples);
-		start_index=m_train_test_details.get_num_training_samples();
-		if (start_index==0)
-		{
-			if (train_test_subset_used)
-			{
-				m_samples->remove_subset();
-				train_test_subset_used=false;
-			}
-			return;
-		}
-	}
-	SGVector<index_t> inds(m_num_samples);
-	std::iota(inds.data(), inds.data()+inds.size(), start_index);
-	if (train_test_subset_used)
-		m_samples->remove_subset();
-	m_samples->add_subset(inds);
-	train_test_subset_used=true;
-}
-
-void DataFetcher::set_xvalidation_mode(bool xvalidation_mode)
-{
-//	using fetcher_type=std::unique_ptr<DataFetcher>;
-//	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
-//	{
-//		f->set_xvalidation_mode(xvalidation_mode);
-//	});
-}
-
-index_t DataFetcher::get_num_folds() const
-{
-	return 1+ceil(get_train_test_ratio());
-}
-
-void DataFetcher::use_fold(index_t idx)
-{
-	auto num_folds=get_num_folds();
-	REQUIRE(idx>=0, "The index (%d) has to be between 0 and %d, both inclusive!\n", idx, num_folds-1);
-	REQUIRE(idx<num_folds, "The index (%d) has to be between 0 and %d, both inclusive!\n", idx, num_folds-1);
-
-	auto num_per_fold=m_train_test_details.get_total_num_samples()/num_folds;
-
-	if (train_test_subset_used)
-		m_samples->remove_subset();
-
-	SGVector<index_t> inds;
-	auto start_idx=idx*num_per_fold;
-	auto num_samples=0;
-
-	if (m_train_test_details.train_mode)
-	{
-		num_samples=m_train_test_details.get_num_training_samples();
-		inds=SGVector<index_t>(num_samples);
-		std::iota(inds.data(), inds.data()+inds.size(), 0);
-		if (start_idx<inds.size())
-		{
-			std::for_each(inds.data()+start_idx, inds.data()+inds.size(), [&num_per_fold](index_t& val)
-			{
-				val+=num_per_fold;
-			});
-		}
-	}
-	else
-	{
-		num_samples=m_train_test_details.get_num_test_samples();
-		inds=SGVector<index_t>(num_samples);
-		std::iota(inds.data(), inds.data()+inds.size(), start_idx);
-		m_samples->add_subset(inds);
-	}
-	inds.display_vector("inds");
-	m_samples->add_subset(inds);
 }
 
 void DataFetcher::set_blockwise(bool blockwise)
@@ -167,15 +58,127 @@ void DataFetcher::set_blockwise(bool blockwise)
 	}
 }
 
+void DataFetcher::set_train_test_mode(bool on)
+{
+	train_test_mode=on;
+}
+
+bool DataFetcher::is_train_test_mode() const
+{
+	return train_test_mode;
+}
+
+void DataFetcher::set_train_mode(bool on)
+{
+	train_mode=on;
+}
+
+bool DataFetcher::is_train_mode() const
+{
+	return train_mode;
+}
+
+void DataFetcher::set_train_test_ratio(float64_t ratio)
+{
+	train_test_ratio=ratio;
+}
+
+float64_t DataFetcher::get_train_test_ratio() const
+{
+	return train_test_ratio;
+}
+
+void DataFetcher::shuffle_features()
+{
+	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	if (features_shuffled)
+	{
+		SG_SWARNING("Features are already shuffled! Call to shuffle_features() has no effect."
+		"If you want to reshuffle, please call unshuffle_features() first and then call this method!\n");
+	}
+	else
+	{
+		const index_t size=m_samples->get_num_vectors();
+		SG_SDEBUG("Current number of feature vectors = %d\n", size);
+		if (shuffle_subset.size()<size)
+		{
+			SG_SDEBUG("Resizing the shuffle indices vector (from %d to %d)\n", shuffle_subset.size(), size);
+			shuffle_subset=SGVector<index_t>(size);
+		}
+		std::iota(shuffle_subset.data(), shuffle_subset.data()+shuffle_subset.size(), 0);
+		CMath::permute(shuffle_subset);
+//		shuffle_subset.display_vector("shuffle_subset");
+
+		SG_SDEBUG("Shuffling %d feature vectors\n", size);
+		m_samples->add_subset(shuffle_subset);
+
+		features_shuffled=true;
+	}
+}
+
+void DataFetcher::unshuffle_features()
+{
+	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	if (features_shuffled)
+	{
+		m_samples->remove_subset();
+		features_shuffled=false;
+	}
+	else
+	{
+		SG_SWARNING("Features are NOT shuffled! Call to unshuffle_features() has no effect."
+		"If you want to reshuffle, please call shuffle_features() instead!\n");
+	}
+}
+
+void DataFetcher::use_fold(index_t idx)
+{
+	allocate_active_subset();
+	auto num_samples_per_fold=get_num_samples()/get_num_folds();
+	auto start_idx=idx*num_samples_per_fold;
+	if (train_mode)
+	{
+		std::iota(active_subset.data(), active_subset.data()+active_subset.size(), 0);
+		if (start_idx<active_subset.size())
+		{
+			std::for_each(active_subset.data()+start_idx, active_subset.data()+active_subset.size(),
+			[&num_samples_per_fold](index_t& val)
+			{
+				val+=num_samples_per_fold;
+			});
+		}
+	}
+	else
+		std::iota(active_subset.data(), active_subset.data()+active_subset.size(), start_idx);
+//	active_subset.display_vector("active_subset");
+}
+
+void DataFetcher::init_active_subset()
+{
+	allocate_active_subset();
+	index_t start_index=0;
+	if (!train_mode)
+		start_index=m_samples->get_num_vectors()*train_test_ratio/(train_test_ratio+1);
+	std::iota(active_subset.data(), active_subset.data()+active_subset.size(), start_index);
+//	active_subset.display_vector("active_subset");
+}
+
 void DataFetcher::start()
 {
-	REQUIRE(m_num_samples>0, "Number of samples is 0!\n");
-	if (m_block_details.m_full_data || m_block_details.m_blocksize>m_num_samples)
+	REQUIRE(get_num_samples()>0, "Number of samples is 0!\n");
+	if (train_test_mode)
 	{
-		SG_SINFO("Fetching entire data (%d samples)!\n", m_num_samples);
-		m_block_details.with_blocksize(m_num_samples);
+		m_samples->add_subset(active_subset);
+		SG_SDEBUG("Added active subset!\n");
+		SG_SINFO("Currently active number of samples is %d\n", get_num_samples());
 	}
-	m_block_details.m_total_num_blocks=m_num_samples/m_block_details.m_blocksize;
+
+	if (m_block_details.m_full_data || m_block_details.m_blocksize>get_num_samples())
+	{
+		SG_SINFO("Fetching entire data (%d samples)!\n", get_num_samples());
+		m_block_details.with_blocksize(get_num_samples());
+	}
+	m_block_details.m_total_num_blocks=get_num_samples()/m_block_details.m_blocksize;
 	reset();
 }
 
@@ -184,16 +187,18 @@ CFeatures* DataFetcher::next()
 	CFeatures* next_samples=nullptr;
 	// figure out how many samples to fetch in this burst
 	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
-	auto num_more_samples=m_num_samples-num_already_fetched;
+	auto num_more_samples=get_num_samples()-num_already_fetched;
 	if (num_more_samples>0)
 	{
-		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
 		// create a shallow copy and add proper index subset
 		next_samples=FeaturesUtil::create_shallow_copy(m_samples);
-		SGVector<index_t> inds(num_samples_this_burst);
-		std::iota(inds.vector, inds.vector+inds.vlen, num_already_fetched);
-		next_samples->add_subset(inds);
-
+		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
+		if (num_samples_this_burst<next_samples->get_num_vectors())
+		{
+			SGVector<index_t> inds(num_samples_this_burst);
+			std::iota(inds.vector, inds.vector+inds.vlen, num_already_fetched);
+			next_samples->add_subset(inds);
+		}
 		m_block_details.m_next_block_index+=m_block_details.m_num_blocks_per_burst;
 	}
 	return next_samples;
@@ -206,15 +211,66 @@ void DataFetcher::reset()
 
 void DataFetcher::end()
 {
+	if (train_test_mode)
+	{
+		m_samples->remove_subset();
+		SG_SDEBUG("Removed active subset!\n");
+		SG_SINFO("Currently active number of samples is %d\n", get_num_samples());
+	}
 }
 
-const index_t DataFetcher::get_num_samples() const
+index_t DataFetcher::get_num_samples() const
 {
-	return m_num_samples;
+	if (train_test_mode)
+	{
+		if (train_mode)
+			return m_num_samples*train_test_ratio/(train_test_ratio+1);
+		else
+			return m_num_samples/(train_test_ratio+1);
+	}
+	return m_samples->get_num_vectors();
+}
+
+index_t DataFetcher::get_num_folds() const
+{
+	return 1+ceil(get_train_test_ratio());
+}
+
+index_t DataFetcher::get_num_training_samples() const
+{
+	return get_num_samples()*get_train_test_ratio()/(get_train_test_ratio()+1);
+}
+
+index_t DataFetcher::get_num_testing_samples() const
+{
+	return get_num_samples()/(get_train_test_ratio()+1);
 }
 
 BlockwiseDetails& DataFetcher::fetch_blockwise()
 {
 	m_block_details.m_full_data=false;
 	return m_block_details;
+}
+
+void DataFetcher::allocate_active_subset()
+{
+	REQUIRE(train_test_mode, "This method is allowed only when Train/Test method is active!\n");
+	index_t num_active_samples=0;
+	if (train_mode)
+	{
+		num_active_samples=m_samples->get_num_vectors()*train_test_ratio/(train_test_ratio+1);
+		SG_SINFO("Using %d number of samples for this fold as training samples!\n", num_active_samples);
+	}
+	else
+	{
+		num_active_samples=m_samples->get_num_vectors()/(train_test_ratio+1);
+		SG_SINFO("Using %d number of samples for this fold as testing samples!\n", num_active_samples);
+	}
+
+	ASSERT(num_active_samples>0);
+	if (active_subset.size()!=num_active_samples)
+	{
+		SG_SDEBUG("Resizing the active subset from %d to %d\n", active_subset.size(), num_active_samples);
+		active_subset=SGVector<index_t>(num_active_samples);
+	}
 }

@@ -89,7 +89,7 @@ public:
 
 	void set_kernel_selection_strategy(CKernelSelectionStrategy* strategy);
 	void add_kernel(CKernel *kernel);
-	void select_kernel(float64_t train_test_ratio=1.0);
+	void select_kernel();
 
 	CCustomDistance* compute_distance();
 	void set_train_test_ratio(float64_t ratio);

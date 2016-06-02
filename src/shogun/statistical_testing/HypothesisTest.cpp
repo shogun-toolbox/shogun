@@ -64,7 +64,7 @@ void CHypothesisTest::set_train_test_mode(bool on)
 
 void CHypothesisTest::set_train_test_ratio(float64_t ratio)
 {
-	self->data_mgr.train_test_ratio(ratio);
+	self->data_mgr.set_train_test_ratio(ratio);
 }
 
 float64_t CHypothesisTest::compute_p_value(float64_t statistic)

@@ -115,9 +115,9 @@ void CMMD::Self::create_computation_jobs()
 
 void CMMD::Self::create_statistic_job()
 {
-	const DataManager& dm=owner.get_data_manager();
-	auto Bx=dm.blocksize_at(0);
-	auto By=dm.blocksize_at(1);
+	const DataManager& data_mgr=owner.get_data_mgr();
+	auto Bx=data_mgr.blocksize_at(0);
+	auto By=data_mgr.blocksize_at(1);
 	switch (statistic_type)
 	{
 		case ST_UNBIASED_FULL:
@@ -193,8 +193,8 @@ void CMMD::Self::compute_jobs(ComputationManager& cm) const
 
 std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 {
-	const KernelManager& km=owner.get_kernel_manager();
-	auto kernel=km.kernel_at(0);
+	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
+	auto kernel=kernel_mgr.kernel_at(0);
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	float64_t statistic=0;
@@ -203,7 +203,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	index_t statistic_term_counter=1;
 	index_t variance_term_counter=1;
 
-	DataManager& dm=owner.get_data_manager();
+	DataManager& data_mgr=owner.get_data_mgr();
 	ComputationManager cm;
 
 	create_computation_jobs();
@@ -212,8 +212,8 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	std::vector<CFeatures*> blocks;
 
-	dm.start();
-	auto next_burst=dm.next();
+	data_mgr.start();
+	auto next_burst=data_mgr.next();
 	while (!next_burst.empty())
 	{
 		merge_samples(next_burst, blocks);
@@ -250,10 +250,10 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 				variance_term_counter++;
 			}
 		}
-		next_burst=dm.next();
+		next_burst=data_mgr.next();
 	}
 
-	dm.end();
+	data_mgr.end();
 	cm.done();
 
 	// normalize statistic and variance
@@ -284,13 +284,13 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statist
 	SGMatrix<index_t> term_counters_Q(num_kernels, num_kernels);
 	std::fill(term_counters_Q.data(), term_counters_Q.data()+term_counters_Q.size(), 1);
 
-	DataManager& dm=owner.get_data_manager();
+	DataManager& data_mgr=owner.get_data_mgr();
 	ComputationManager cm;
 	create_computation_jobs();
 	cm.enqueue_job(statistic_job);
 
-	dm.start();
-	auto next_burst=dm.next();
+	data_mgr.start();
+	auto next_burst=data_mgr.next();
 	std::vector<CFeatures*> blocks;
 	std::vector<std::vector<float32_t> > mmds(num_kernels);
 	while (!next_burst.empty())
@@ -327,11 +327,11 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statist
 				Q(j, i)=Q(i, j);
 			}
 		}
-		next_burst=dm.next();
+		next_burst=data_mgr.next();
 	}
 	mmds.clear();
 
-	dm.end();
+	data_mgr.end();
 	cm.done();
 
 	std::for_each(statistic.data(), statistic.data()+statistic.size(), [this](float64_t val)
@@ -343,8 +343,8 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CMMD::Self::compute_statist
 
 SGVector<float64_t> CMMD::Self::sample_null()
 {
-	const KernelManager& km=owner.get_kernel_manager();
-	auto kernel=km.kernel_at(0);
+	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
+	auto kernel=kernel_mgr.kernel_at(0);
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
@@ -353,7 +353,7 @@ SGVector<float64_t> CMMD::Self::sample_null()
 	std::fill(statistic.vector, statistic.vector+statistic.vlen, 0);
 	std::fill(term_counters.data(), term_counters.data()+term_counters.size(), 1);
 
-	DataManager& dm=owner.get_data_manager();
+	DataManager& data_mgr=owner.get_data_mgr();
 	ComputationManager cm;
 
 	create_statistic_job();
@@ -361,8 +361,8 @@ SGVector<float64_t> CMMD::Self::sample_null()
 
 	std::vector<CFeatures*> blocks;
 
-	dm.start();
-	auto next_burst=dm.next();
+	data_mgr.start();
+	auto next_burst=data_mgr.next();
 
 	while (!next_burst.empty())
 	{
@@ -381,10 +381,10 @@ SGVector<float64_t> CMMD::Self::sample_null()
 				term_counters[j]++;
 			}
 		}
-		next_burst=dm.next();
+		next_burst=data_mgr.next();
 	}
 
-	dm.end();
+	data_mgr.end();
 	cm.done();
 
 	// normalize statistic
@@ -399,19 +399,17 @@ SGVector<float64_t> CMMD::Self::sample_null()
 CCustomDistance* CMMD::Self::compute_distance()
 {
 	auto distance=new CCustomDistance();
-	DataManager& dm=owner.get_data_manager();
+	DataManager& data_mgr=owner.get_data_mgr();
 
-	bool blockwise=dm.is_blockwise();
-	dm.set_blockwise(false);
+	bool blockwise=data_mgr.is_blockwise();
+	data_mgr.set_blockwise(false);
 
 	// using data manager next() API in order to make it work with
 	// streaming samples as well.
-	dm.start();
-	auto samples=dm.next();
+	data_mgr.start();
+	auto samples=data_mgr.next();
 	if (!samples.empty())
 	{
-		dm.end();
-
 		// use 0th block from each distribution (since there is only one block
 		// for quadratic time MMD
 		CFeatures *samples_p=samples[0][0].get();
@@ -438,14 +436,11 @@ CCustomDistance* CMMD::Self::compute_distance()
 		}
 	}
 	else
-	{
-		dm.end();
 		SG_SERROR("Could not fetch samples!\n");
-	}
 
-	dm.set_blockwise(blockwise);
+	data_mgr.end();
+	data_mgr.set_blockwise(blockwise);
 
-	SG_REF(distance);
 	return distance;
 }
 
@@ -464,9 +459,9 @@ CMMD::~CMMD()
 void CMMD::set_kernel_selection_strategy(CKernelSelectionStrategy* strategy)
 {
 	SG_REF(strategy);
-	const auto& km=self->strategy->get_kernel_manager();
-	for (size_t i=0; i<km.num_kernels(); ++i)
-		strategy->add_kernel(km.kernel_at(i));
+	const auto& kernel_mgr=self->strategy->get_kernel_mgr();
+	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+		strategy->add_kernel(kernel_mgr.kernel_at(i));
 	self->strategy=std::shared_ptr<CKernelSelectionStrategy>(strategy, [](CKernelSelectionStrategy* ptr) { SG_UNREF(ptr); });
 }
 
@@ -475,18 +470,17 @@ void CMMD::add_kernel(CKernel* kernel)
 	self->strategy->add_kernel(kernel);
 }
 
-void CMMD::select_kernel(float64_t ratio)
+void CMMD::select_kernel()
 {
 	SG_DEBUG("Entering!\n");
-	auto& dm=get_data_manager();
-	dm.set_train_test_ratio(ratio);
-	dm.set_train_mode(true);
+	auto& data_mgr=get_data_mgr();
+	data_mgr.set_train_mode(true);
 
-	auto& km=get_kernel_manager();
-	km.kernel_at(0)=self->strategy->select_kernel(this);
-	km.restore_kernel_at(0);
+	auto& kernel_mgr=get_kernel_mgr();
+	kernel_mgr.kernel_at(0)=self->strategy->select_kernel(this);
+	kernel_mgr.restore_kernel_at(0);
 
-	dm.set_train_mode(false);
+	data_mgr.set_train_mode(false);
 	SG_DEBUG("Leaving!\n");
 }
 
@@ -507,9 +501,9 @@ float64_t CMMD::compute_variance()
 
 void CMMD::set_train_test_ratio(float64_t ratio)
 {
-	auto& dm=get_data_manager();
-	dm.set_train_test_ratio(ratio);
-	dm.reset();
+	auto& data_mgr=get_data_mgr();
+	data_mgr.set_train_test_ratio(ratio);
+	data_mgr.reset();
 }
 
 std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
@@ -549,8 +543,8 @@ bool CMMD::use_gpu() const
 
 void CMMD::cleanup()
 {
-	for (size_t i=0; i<get_kernel_manager().num_kernels(); ++i)
-		get_kernel_manager().restore_kernel_at(i);
+	for (size_t i=0; i<get_kernel_mgr().num_kernels(); ++i)
+		get_kernel_mgr().restore_kernel_at(i);
 }
 
 void CMMD::set_statistic_type(EStatisticType stype)

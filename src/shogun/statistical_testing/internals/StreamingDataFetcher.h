@@ -38,15 +38,25 @@ class StreamingDataFetcher : public DataFetcher
 	friend class DataManager;
 public:
 	StreamingDataFetcher(CStreamingFeatures* samples);
-	virtual ~StreamingDataFetcher() override;
-	virtual void set_train_test_ratio(float64_t train_test_ratio) override;
-	virtual void set_train_mode(bool train_mode) override;
-	virtual void start() override;
-	virtual CFeatures* next() override;
-	virtual void reset() override;
-	virtual void end() override;
+	virtual ~StreamingDataFetcher();
 	void set_num_samples(index_t num_samples);
-	virtual const char* get_name() const override;
+
+	virtual void shuffle_features();
+	virtual void unshuffle_features();
+
+	virtual void use_fold(index_t i);
+	virtual void init_active_subset();
+
+	virtual void start();
+	virtual CFeatures* next();
+	virtual void reset();
+	virtual void end();
+
+	virtual index_t get_num_samples() const;
+	virtual const char* get_name() const
+	{
+		return "StreamingDataFetcher";
+	}
 private:
 	std::shared_ptr<CStreamingFeatures> m_samples;
 	bool parser_running;

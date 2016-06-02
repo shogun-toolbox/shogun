@@ -222,7 +222,7 @@ const char* CKernelSelectionStrategy::get_name() const
 	return "KernelSelectionStrategy";
 }
 
-const KernelManager& CKernelSelectionStrategy::get_kernel_manager() const
+const KernelManager& CKernelSelectionStrategy::get_kernel_mgr() const
 {
 	return self->kernel_mgr;
 }

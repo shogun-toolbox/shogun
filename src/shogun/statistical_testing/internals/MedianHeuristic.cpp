@@ -42,7 +42,7 @@
 using namespace shogun;
 using namespace internal;
 
-MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection(km, est)
+MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection(km, est), distance(nullptr)
 {
 	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
@@ -64,6 +64,7 @@ void MedianHeuristic::init_measures()
 
 void MedianHeuristic::compute_measures()
 {
+	SG_UNREF(distance);
 	distance=estimator->compute_distance();
 	SG_REF(distance);
 	n=distance->get_num_vec_lhs();
@@ -87,6 +88,7 @@ SGVector<float64_t> MedianHeuristic::get_measure_vector()
 
 SGMatrix<float64_t> MedianHeuristic::get_measure_matrix()
 {
+	REQUIRE(distance!=nullptr, "Distance is not initialized!\n");
 	return distance->get_distance_matrix();
 }
 

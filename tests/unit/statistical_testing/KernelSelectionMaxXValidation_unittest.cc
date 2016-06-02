@@ -51,9 +51,6 @@ TEST(KernelSelectionMaxXValidation, single_kernel)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-//	sg_io->set_loglevel(MSG_DEBUG);
-//	sg_io->set_location_info(MSG_FUNCTION);
-
 	// use fixed seed
 	sg_rand->set_seed(12345);
 
@@ -79,8 +76,10 @@ TEST(KernelSelectionMaxXValidation, single_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_XVALIDATION, 1, 0.05));
-	mmd->select_kernel(4);
+	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_XVALIDATION, 5, 0.05));
+	mmd->set_train_test_mode(true);
+	mmd->set_train_test_ratio(4);
+	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
 }

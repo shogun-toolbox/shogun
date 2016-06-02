@@ -19,9 +19,7 @@
 #ifndef ONE_DISTRIBUTION_TEST_H_
 #define ONE_DISTRIBUTION_TEST_H_
 
-#include <shogun/lib/common.h>
 #include <shogun/statistical_testing/HypothesisTest.h>
-#include <shogun/statistical_testing/internals/TestTypes.h>
 
 namespace shogun
 {
@@ -29,7 +27,7 @@ namespace shogun
 class COneDistributionTest : public CHypothesisTest
 {
 public:
-	COneDistributionTest(index_t num_kernels);
+	COneDistributionTest();
 	virtual ~COneDistributionTest();
 
 	void set_samples(CFeatures* samples);
@@ -38,8 +36,8 @@ public:
 	void set_num_samples(index_t num_samples);
 	index_t get_num_samples() const;
 
-	virtual float64_t compute_statistic() = 0;
-	virtual SGVector<float64_t> sample_null() = 0;
+	virtual float64_t compute_statistic()=0;
+	virtual SGVector<float64_t> sample_null()=0;
 
 	virtual const char* get_name() const;
 };

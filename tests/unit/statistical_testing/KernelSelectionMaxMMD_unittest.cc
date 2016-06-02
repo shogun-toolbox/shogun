@@ -74,6 +74,7 @@ TEST(KernelSelectionMaxMMD, single_kernel)
 	}
 
 	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_MMD));
+	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
 	EXPECT_NEAR(selected_kernel->get_width(), 0.5, 1E-10);
@@ -110,6 +111,7 @@ TEST(KernelSelectionMaxMMD, weighted_kernel)
 	}
 
 	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_MMD, true));
+	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
 	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
 	ASSERT_TRUE(weighted_kernel!=nullptr);

@@ -30,8 +30,8 @@
 
 #include <memory>
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/statistical_testing/internals/BlockwiseDetails.h>
-#include <shogun/statistical_testing/internals/TrainTestDetails.h>
 
 #ifndef DATA_FETCHER_H__
 #define DATA_FETCHER_H__
@@ -53,30 +53,54 @@ class DataFetcher
 public:
 	DataFetcher(CFeatures* samples);
 	virtual ~DataFetcher();
-	virtual void set_train_test_ratio(float64_t train_test_ratio);
-	float64_t get_train_test_ratio() const;
-	virtual void set_train_mode(bool train_mode);
-	void set_xvalidation_mode(bool xvalidation_mode);
-	index_t get_num_folds() const;
-	void use_fold(index_t idx);
+
 	void set_blockwise(bool blockwise);
+
+	void set_train_test_mode(bool on);
+	bool is_train_test_mode() const;
+
+	void set_train_mode(bool on);
+	bool is_train_mode() const;
+
+	void set_train_test_ratio(float64_t ratio);
+	float64_t get_train_test_ratio() const;
+
+	virtual void shuffle_features();
+	virtual void unshuffle_features();
+
+	virtual void use_fold(index_t i);
+	virtual void init_active_subset();
 
 	virtual void start();
 	virtual CFeatures* next();
 	virtual void reset();
 	virtual void end();
-	const index_t get_num_samples() const;
+
+	virtual index_t get_num_samples() const;
+
+	index_t get_num_folds() const;
+	index_t get_num_training_samples() const;
+	index_t get_num_testing_samples() const;
+
 	BlockwiseDetails& fetch_blockwise();
-	virtual const char* get_name() const;
+	virtual const char* get_name() const
+	{
+		return "DataFetcher";
+	}
 protected:
 	DataFetcher();
 	BlockwiseDetails m_block_details;
-	TrainTestDetails m_train_test_details;
 	index_t m_num_samples;
+	bool train_test_mode;
+	bool train_mode;
+	float64_t train_test_ratio;
 private:
 	CFeatures* m_samples;
-	bool train_test_subset_used;
+	SGVector<index_t> shuffle_subset;
+	SGVector<index_t> active_subset;
+	bool features_shuffled;
 	BlockwiseDetails last_blockwise_details;
+	void allocate_active_subset();
 };
 
 }

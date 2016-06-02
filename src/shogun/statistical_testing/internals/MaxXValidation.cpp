@@ -65,8 +65,8 @@ SGMatrix<float64_t> MaxXValidation::get_measure_matrix()
 void MaxXValidation::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
-	auto& dm=estimator->get_data_manager();
-	const index_t N=dm.get_num_folds();
+	auto& data_mgr=estimator->get_data_mgr();
+	const index_t N=data_mgr.get_num_folds();
 	REQUIRE(N!=0, "Number of folds is not set!\n");
 	if (rejections.num_rows!=N*num_run || rejections.num_cols!=num_kernels)
 		rejections=SGMatrix<float64_t>(N*num_run, num_kernels);
@@ -78,31 +78,33 @@ void MaxXValidation::init_measures()
 
 void MaxXValidation::compute_measures()
 {
-	auto& dm=estimator->get_data_manager();
-	dm.set_xvalidation_mode(true);
+	auto& data_mgr=estimator->get_data_mgr();
+	data_mgr.set_cross_validation_mode(true);
 
-	const index_t N=dm.get_num_folds();
+	const index_t N=data_mgr.get_num_folds();
 	SG_SINFO("Performing %d fold cross-validattion!\n", N);
 
 	const size_t num_kernels=kernel_mgr.num_kernels();
 	auto existing_kernel=estimator->get_kernel();
 	for (auto i=0; i<num_run; ++i)
 	{
-		dm.shuffle_features();
+		data_mgr.shuffle_features();
 		for (auto j=0; j<N; ++j)
 		{
-			dm.use_fold(j);
+			data_mgr.use_fold(j);
+			SG_SDEBUG("Running fold %d\n", j);
 			for (size_t k=0; k<num_kernels; ++k)
 			{
 				auto kernel=kernel_mgr.kernel_at(k);
 				estimator->set_kernel(kernel);
-				rejections(i*N+j, k)=estimator->compute_p_value(estimator->compute_statistic())<alpha;
+				auto statistic=estimator->compute_statistic();
+				rejections(i*N+j, k)=estimator->compute_p_value(statistic)<alpha;
 				estimator->cleanup();
 			}
 		}
-		dm.unshuffle_features();
+		data_mgr.unshuffle_features();
 	}
-	dm.set_xvalidation_mode(false);
+	data_mgr.set_cross_validation_mode(false);
 	estimator->set_kernel(existing_kernel);
 
 	for (auto j=0; j<rejections.num_cols; ++j)

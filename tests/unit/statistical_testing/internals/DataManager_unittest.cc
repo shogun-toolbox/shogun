@@ -482,7 +482,7 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_different_blocksi
 	ASSERT_TRUE(total_q==num_vec_q);
 }
 
-TEST(DataManager, train_data_two_distributions_normal_feats)
+TEST(DataManager, train_test_whole_dense)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -503,8 +503,10 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 	mgr.samples_at(0)=feats_p;
 	mgr.samples_at(1)=feats_q;
 
-	// training data
+	mgr.set_train_test_mode(true);
 	mgr.set_train_test_ratio(train_test_ratio);
+
+	// training data
 	mgr.set_train_mode(true);
 	mgr.start();
 
@@ -545,8 +547,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 	mgr.end();
 
 	// full data
-	mgr.set_train_test_ratio(0);
-	mgr.set_train_mode(false);
+	mgr.set_train_test_mode(false);
 	mgr.start();
 
 	next_burst=mgr.next();
@@ -566,7 +567,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats)
 	mgr.end();
 }
 
-TEST(DataManager, train_data_two_distributions_normal_feats_blockwise)
+TEST(DataManager, train_test_blockwise_dense)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -591,6 +592,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats_blockwise)
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
+	mgr.set_train_test_mode(true);
 	mgr.set_train_test_ratio(train_test_ratio);
 
 	// train data
@@ -648,8 +650,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats_blockwise)
 	mgr.end();
 
 	// full data
-	mgr.set_train_test_ratio(0);
-	mgr.set_train_mode(false);
+	mgr.set_train_test_mode(false);
 	mgr.start();
 
 	next_burst=mgr.next();
@@ -676,7 +677,7 @@ TEST(DataManager, train_data_two_distributions_normal_feats_blockwise)
 	mgr.end();
 }
 
-TEST(DataManager, train_data_two_distributions_streaming_feats)
+TEST(DataManager, train_test_whole_streaming)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -692,8 +693,10 @@ TEST(DataManager, train_data_two_distributions_streaming_feats)
 
 	typedef CDenseFeatures<float64_t> feat_type;
 
-	// training data
+	mgr.set_train_test_mode(true);
 	mgr.set_train_test_ratio(train_test_ratio);
+
+	// training data
 	mgr.set_train_mode(true);
 	mgr.start();
 
@@ -734,8 +737,7 @@ TEST(DataManager, train_data_two_distributions_streaming_feats)
 	mgr.end();
 
 	// full data
-	mgr.set_train_test_ratio(0);
-	mgr.set_train_mode(false);
+	mgr.set_train_test_mode(false);
 	mgr.reset();
 	mgr.start();
 
@@ -756,7 +758,7 @@ TEST(DataManager, train_data_two_distributions_streaming_feats)
 	mgr.end();
 }
 
-TEST(DataManager, train_data_two_distributions_streaming_feats_blockwise)
+TEST(DataManager, train_test_blockwise_streaming)
 {
 	const index_t dim=3;
 	const index_t num_vec=8;
@@ -773,9 +775,11 @@ TEST(DataManager, train_data_two_distributions_streaming_feats_blockwise)
 	mgr.num_samples_at(1)=num_vec;
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
-	mgr.set_train_test_ratio(train_test_ratio);
 
 	typedef CDenseFeatures<float64_t> feat_type;
+
+	mgr.set_train_test_mode(true);
+	mgr.set_train_test_ratio(train_test_ratio);
 
 	// train data
 	mgr.set_train_mode(true);
@@ -832,8 +836,7 @@ TEST(DataManager, train_data_two_distributions_streaming_feats_blockwise)
 	mgr.end();
 
 	// full data
-	mgr.set_train_test_ratio(0);
-	mgr.set_train_mode(false);
+	mgr.set_train_test_mode(false);
 	mgr.reset();
 	mgr.start();
 

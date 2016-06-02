@@ -177,19 +177,6 @@ public:
 	const index_t blocksize_at(size_t i) const;
 
 	/**
-	 * @return True if block-wise fetching is on, False otherwise.
-	 */
-	const bool is_blockwise() const;
-
-	/**
-	 * Turns on blockwise fetching if True is passed. Turns off blockwise fetching if
-	 * False is passed. The blockwise details are not destroyed when set to False, i.e.
-	 * turning blockwise fetching back on again, we can get blocks as we would have got
-	 * in the original setup.
-	 */
-	void set_blockwise(bool blockwise);
-
-	/**
 	 * @return Total number of samples that can be fetched from all the data sources.
 	 */
 	index_t get_num_samples() const;
@@ -202,80 +189,44 @@ public:
 	 */
 	index_t get_min_blocksize() const;
 
-	/**
-	 * @param train_test_ratio The split ratio for train-test data. The default value is 0
-	 * which means that all of the data would be used for testing.
-	 */
-	void set_train_test_ratio(float64_t train_test_ratio);
-
-	/**
-	 * @return The split ratio for train-test data. The default value is 0, which means
-	 * that all of the data would be used for testing.
-	 */
-	float64_t get_train_test_ratio() const;
-
-	/**
-	 * @param train_mode If set to true, then the training data would be returned by the data
-	 * fetching API of this data manager. Otherwise, test data would be returend.
-	 */
-	void set_train_mode(bool train_mode);
-
-	/**
-	 * @param xvalidation_mode If set to true, then the data would be split in N fold (the value
-	 * of N is determined from the train_test_ratio).
-	 */
-	void set_xvalidation_mode(bool xvalidation_mode);
-
-	/**
-	 * @return The number of folds that can be used based on the train-test ratio. Returns
-	 * an integer if xvalidation mode is ON, 0 otherwise.
-	 */
-	index_t get_num_folds() const;
-
-	/**
-	 * Permutes the feature vectors. Useful for cross-validation set-up. Everytime
-	 * TODO
-	 *
-	void shuffle_features()
-	void unshuffle_features()
-	*/
-
-	/**
-	 * @param idx The index of the fold in X-validation scenario, has to be within the range of
-	 * \f$[0, N)\f$, where N is the number of folds as returned by get_num_folds() method.
-	 */
-	void use_fold(index_t idx);
-
-	/**
-	 * Call this method before fetching the data from the data manager
-	 */
-	void start();
-
-	/**
-	 * @return The next bunch of blocks fetched at any given burst.
-	 */
-	NextSamples next();
-
-	/**
-	 * call this method after fetching the data is done.
-	 */
-	void end();
-
-	/**
-	 * Resets the fetchers to the initial states.
-	 */
-	void reset();
+	void set_blockwise(bool blockwise);
+	const bool is_blockwise() const;
 
 	void set_train_test_mode(bool on);
-	void set_train_test_ratio(float64_t ratio);
-
 	bool is_train_test_mode() const;
+
+	void set_train_mode(bool on);
+	bool is_train_mode() const;
+
+	void set_cross_validation_mode(bool on);
+	bool is_cross_validation_mode() const;
+
+	void set_train_test_ratio(float64_t ratio);
 	float64_t get_train_test_ratio() const;
+
+	index_t get_num_folds() const;
+
+	void shuffle_features();
+	void unshuffle_features();
+
+	void use_fold(index_t i);
+	void init_active_subset();
+
+	void start();
+	NextSamples next();
+	void end();
+	void reset();
 private:
 	std::vector<std::unique_ptr<DataFetcher> > fetchers;
-	bool train_test_mode;
+
+	bool train_test_mode; // -> if ON, then train/test/fold subset is used (in start()) in end() method, we remove these subsets.
+	bool cross_validation_mode; // -> if ON, then shuffle subset is used, remove it after train_test mode in end()
+	bool train_mode; // -> if train/test mode ON or cross-validation mode on, this one is used.
 	float64_t train_test_ratio;
+
 	constexpr static bool default_train_test_mode=false;
+	constexpr static bool default_train_mode=false;
+	constexpr static bool default_cross_validation_mode=false;
 	constexpr static float64_t default_train_test_ratio=1.0;
 };
 

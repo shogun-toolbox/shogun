@@ -23,8 +23,7 @@
 using namespace shogun;
 using namespace internal;
 
-COneDistributionTest::COneDistributionTest(index_t num_kernels)
-: CHypothesisTest(OneDistributionTest::num_feats, num_kernels)
+COneDistributionTest::COneDistributionTest() : CHypothesisTest(OneDistributionTest::num_feats)
 {
 }
 
@@ -34,26 +33,26 @@ COneDistributionTest::~COneDistributionTest()
 
 void COneDistributionTest::set_samples(CFeatures* samples)
 {
-	auto& dm = get_data_manager();
-	dm.samples_at(0) = samples;
+	auto& data_mgr=get_data_mgr();
+	data_mgr.samples_at(0)=samples;
 }
 
 CFeatures* COneDistributionTest::get_samples() const
 {
-	const auto& dm = get_data_manager();
-	return dm.samples_at(0);
+	const auto& data_mgr=get_data_mgr();
+	return data_mgr.samples_at(0);
 }
 
 void COneDistributionTest::set_num_samples(index_t num_samples)
 {
-	auto& dm = get_data_manager();
-	dm.num_samples_at(0) = num_samples;
+	auto& data_mgr=get_data_mgr();
+	data_mgr.num_samples_at(0)=num_samples;
 }
 
 index_t COneDistributionTest::get_num_samples() const
 {
-	const auto& dm = get_data_manager();
-	return dm.num_samples_at(0);
+	const auto& data_mgr=get_data_mgr();
+	return data_mgr.num_samples_at(0);
 }
 
 const char* COneDistributionTest::get_name() const

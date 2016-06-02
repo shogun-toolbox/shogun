@@ -19,12 +19,18 @@
 #ifndef INDEPENDENCE_TEST_H_
 #define INDEPENDENCE_TEST_H_
 
+#include <memory>
 #include <shogun/statistical_testing/TwoDistributionTest.h>
 
 namespace shogun
 {
 
 class CKernel;
+
+namespace internal
+{
+	class KernelManager;
+}
 
 class CIndependenceTest : public CTwoDistributionTest
 {
@@ -38,10 +44,16 @@ public:
 	void set_kernel_q(CKernel* kernel_q);
 	CKernel* get_kernel_q() const;
 
-	virtual float64_t compute_statistic() = 0;
-	virtual SGVector<float64_t> sample_null() = 0;
+	virtual float64_t compute_statistic()=0;
+	virtual SGVector<float64_t> sample_null()=0;
 
 	virtual const char* get_name() const;
+protected:
+	internal::KernelManager& get_kernel_mgr();
+	const internal::KernelManager& get_kernel_mgr() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
 };
 
 }

@@ -41,15 +41,16 @@
 using namespace shogun;
 using namespace internal;
 
-// TODO add nullptr check before calling the methods on actual fetchers
-// this would be where someone calls the other methofds before setiing the sameples
-
 DataManager::DataManager(size_t num_distributions)
 {
 	SG_SDEBUG("Data manager instance initialized with %d data sources!\n", num_distributions);
 	fetchers.resize(num_distributions);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
+
 	train_test_mode=default_train_test_mode;
+	train_mode=default_train_mode;
+	train_test_ratio=default_train_test_ratio;
+	cross_validation_mode=default_cross_validation_mode;
 }
 
 DataManager::~DataManager()
@@ -103,15 +104,15 @@ void DataManager::set_blocksize(index_t blocksize)
 			"The blocksize has to be within [0, %d], given = %d!\n",
 			n, blocksize);
 	REQUIRE(n%blocksize==0,
-			"Total number of samples (%d) has to be divisble by the blocksize (%d)!\n",
-			n, blocksize);
+		"Total number of samples (%d) has to be divisble by the blocksize (%d)!\n",
+		n, blocksize);
 
 	for (size_t i=0; i<fetchers.size(); ++i)
 	{
 		index_t m=fetchers[i]->m_num_samples;
 		REQUIRE((blocksize*m)%n==0,
-				"Blocksize (%d) cannot be even distributed with a ratio of %f!\n",
-				blocksize, m/n);
+			"Blocksize (%d) cannot be even distributed with a ratio of %f!\n",
+			blocksize, m/n);
 		fetchers[i]->fetch_blockwise().with_blocksize(blocksize*m/n);
 		SG_SDEBUG("block[%d].size = ", i, blocksize*m/n);
 	}
@@ -122,8 +123,8 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(num_blocks_per_burst>0,
-		   	"Number of blocks per burst (%d) has to be greater than 0!\n",
-			num_blocks_per_burst);
+	   	"Number of blocks per burst (%d) has to be greater than 0!\n",
+		num_blocks_per_burst);
 
 	index_t blocksize=0;
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
@@ -184,7 +185,7 @@ const index_t DataManager::num_samples_at(size_t i) const
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
-	return fetchers[i]->m_num_samples;
+	return fetchers[i]->get_num_samples();
 }
 
 const index_t DataManager::blocksize_at(size_t i) const
@@ -197,6 +198,14 @@ const index_t DataManager::blocksize_at(size_t i) const
 	return fetchers[i]->m_block_details.m_blocksize;
 }
 
+void DataManager::set_blockwise(bool blockwise)
+{
+	SG_SDEBUG("Entering!\n");
+	for (size_t i=0; i<fetchers.size(); ++i)
+		fetchers[i]->set_blockwise(blockwise);
+	SG_SDEBUG("Leaving!\n");
+}
+
 const bool DataManager::is_blockwise() const
 {
 	SG_SDEBUG("Entering!\n");
@@ -207,65 +216,139 @@ const bool DataManager::is_blockwise() const
 	return blockwise;
 }
 
-void DataManager::set_blockwise(bool blockwise)
+void DataManager::set_train_test_mode(bool on)
 {
-	SG_SDEBUG("Entering!\n");
-	for (size_t i=0; i<fetchers.size(); ++i)
-		fetchers[i]->set_blockwise(blockwise);
-	SG_SDEBUG("Leaving!\n");
+	train_test_mode=on;
+	if (!train_test_mode)
+	{
+		train_mode=default_train_mode;
+		train_test_ratio=default_train_test_ratio;
+		cross_validation_mode=default_cross_validation_mode;
+	}
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
+	std::for_each(fetchers.begin(), fetchers.end(), [this, on](fetcher_type& f)
+	{
+		f->set_train_test_mode(on);
+		if (on)
+		{
+			f->set_train_mode(train_mode);
+			f->set_train_test_ratio(train_test_ratio);
+		}
+	});
 }
 
-void DataManager::set_train_test_ratio(float64_t train_test_ratio)
+bool DataManager::is_train_test_mode() const
 {
-	SG_SDEBUG("Entering!\n");
-	typedef std::unique_ptr<DataFetcher> fetcher_type;
-	std::for_each(fetchers.begin(), fetchers.end(), [&train_test_ratio](fetcher_type& f)
+	return train_test_mode;
+}
+
+void DataManager::set_train_mode(bool on)
+{
+	if (train_test_mode)
+		train_mode=on;
+	else
 	{
-		f->set_train_test_ratio(train_test_ratio);
-	});
-	SG_SDEBUG("Leaving!\n");
+		SG_SERROR("Train mode cannot be used without turning on Train/Test mode first!"
+		"Please call set_train_test_mode(True) before using this method!\n");
+	}
+}
+
+bool DataManager::is_train_mode() const
+{
+	return train_mode;
+}
+
+void DataManager::set_cross_validation_mode(bool on)
+{
+	if (train_test_mode)
+		cross_validation_mode=on;
+	else
+	{
+		SG_SERROR("Cross-validation mode cannot be used without turning on Train/Test mode first!"
+		"Please call set_train_test_mode(True) before using this method!\n");
+	}
+}
+
+bool DataManager::is_cross_validation_mode() const
+{
+	return cross_validation_mode;
+}
+
+void DataManager::set_train_test_ratio(float64_t ratio)
+{
+	if (train_test_mode)
+		train_test_ratio=ratio;
+	else
+	{
+		SG_SERROR("Train-test ratio cannot be set without turning on Train/Test mode first!"
+		"Please call set_train_test_mode(True) before using this method!\n");
+	}
 }
 
 float64_t DataManager::get_train_test_ratio() const
 {
-	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
-	return fetchers[0]->get_train_test_ratio();
-}
-
-void DataManager::set_train_mode(bool train_mode)
-{
-	SG_SDEBUG("Entering!\n");
-	typedef std::unique_ptr<DataFetcher> fetcher_type;
-	std::for_each(fetchers.begin(), fetchers.end(), [&train_mode](fetcher_type& f)
-	{
-		f->set_train_mode(train_mode);
-	});
-	SG_SDEBUG("Leaving!\n");
-}
-
-void DataManager::set_xvalidation_mode(bool xvalidation_mode)
-{
-	SG_SDEBUG("Entering!\n");
-	typedef std::unique_ptr<DataFetcher> fetcher_type;
-	std::for_each(fetchers.begin(), fetchers.end(), [&xvalidation_mode](fetcher_type& f)
-	{
-		f->set_xvalidation_mode(xvalidation_mode);
-	});
-	SG_SDEBUG("Leaving!\n");
+	return train_test_ratio;
 }
 
 index_t DataManager::get_num_folds() const
 {
-	REQUIRE(fetchers[0]!=nullptr, "Please set the samples first!\n");
-	return fetchers[0]->get_num_folds();
+	return ceil(get_train_test_ratio())+1;
+}
+
+void DataManager::shuffle_features()
+{
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
+	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->shuffle_features(); });
+	SG_SDEBUG("Leaving!\n");
+}
+
+void DataManager::unshuffle_features()
+{
+	SG_SDEBUG("Entering!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
+	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->unshuffle_features(); });
+	SG_SDEBUG("Leaving!\n");
+}
+
+void DataManager::init_active_subset()
+{
+	SG_SDEBUG("Entering!\n");
+
+	REQUIRE(train_test_mode,
+		"Train-test subset cannot be used without turning on Train/Test mode first!"
+		"Please call set_train_test_mode(True) before using this method!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+
+	typedef std::unique_ptr<DataFetcher> fetcher_type;
+	std::for_each(fetchers.begin(), fetchers.end(), [this](fetcher_type& f)
+	{
+   		f->set_train_mode(train_mode);
+		f->set_train_test_ratio(train_test_ratio);
+		f->init_active_subset();
+	});
+	SG_SDEBUG("Leaving!\n");
 }
 
 void DataManager::use_fold(index_t idx)
 {
 	SG_SDEBUG("Entering!\n");
+
+	REQUIRE(train_test_mode,
+		"Fold subset cannot be used without turning on Train/Test mode first!"
+		"Please call set_train_test_mode(True) before using this method!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+	REQUIRE(idx>=0, "Fold index has to be in [0, %d]!", get_num_folds()-1);
+	REQUIRE(idx<get_num_folds(), "Fold index has to be in [0, %d]!", get_num_folds()-1);
+
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
-	std::for_each(fetchers.begin(), fetchers.end(), [&idx](fetcher_type& f)
+	std::for_each(fetchers.begin(), fetchers.end(), [this, idx](fetcher_type& f)
 	{
+		f->set_train_mode(train_mode);
+		f->set_train_test_ratio(train_test_ratio);
 		f->use_fold(idx);
 	});
 	SG_SDEBUG("Leaving!\n");
@@ -274,6 +357,11 @@ void DataManager::use_fold(index_t idx)
 void DataManager::start()
 {
 	SG_SDEBUG("Entering!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
+
+	if (train_test_mode && !cross_validation_mode)
+		init_active_subset();
+
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->start(); });
 	SG_SDEBUG("Leaving!\n");
@@ -313,6 +401,7 @@ NextSamples DataManager::next()
 void DataManager::end()
 {
 	SG_SDEBUG("Entering!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->end(); });
 	SG_SDEBUG("Leaving!\n");
@@ -321,17 +410,8 @@ void DataManager::end()
 void DataManager::reset()
 {
 	SG_SDEBUG("Entering!\n");
+	REQUIRE(fetchers.size()>0, "Features are not set!");
 	typedef std::unique_ptr<DataFetcher> fetcher_type;
 	std::for_each(fetchers.begin(), fetchers.end(), [](fetcher_type& f) { f->reset(); });
 	SG_SDEBUG("Leaving!\n");
-}
-
-void DataManager::set_train_test_mode(bool on)
-{
-	train_test_mode_on=on;
-}
-
-void DataManager::set_train_test_ratio(float64_t ratio)
-{
-	train_test_ratio=ratio;
 }

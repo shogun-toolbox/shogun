@@ -44,12 +44,12 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	auto& dm=get_data_manager();
-	auto min_blocksize=dm.get_min_blocksize();
+	auto& data_mgr=get_data_mgr();
+	auto min_blocksize=data_mgr.get_min_blocksize();
 	if (min_blocksize==2)
 	{
 		// only possible when number of samples from both the distributions are the same
-		auto N=dm.num_samples_at(0);
+		auto N=data_mgr.num_samples_at(0);
 		for (auto i=2; i<N; ++i)
 		{
 			if (N%i==0)
@@ -59,9 +59,9 @@ void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 			}
 		}
 	}
-	dm.set_blocksize(min_blocksize);
-	dm.set_num_blocks_per_burst(num_blocks_per_burst);
-	SG_SDEBUG("Block contains %d and %d samples, from P and Q respectively!\n", dm.blocksize_at(0), dm.blocksize_at(1));
+	data_mgr.set_blocksize(min_blocksize);
+	data_mgr.set_num_blocks_per_burst(num_blocks_per_burst);
+	SG_SDEBUG("Block contains %d and %d samples, from P and Q respectively!\n", data_mgr.blocksize_at(0), data_mgr.blocksize_at(1));
 }
 
 const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_estimation_method() const
@@ -71,17 +71,17 @@ const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_e
 
 const float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
 {
-	const DataManager& dm = get_data_manager();
-	const index_t Nx = dm.num_samples_at(0);
-	const index_t Ny = dm.num_samples_at(1);
+	const DataManager& data_mgr = get_data_mgr();
+	const index_t Nx = data_mgr.num_samples_at(0);
+	const index_t Ny = data_mgr.num_samples_at(1);
 	return CMath::sqrt(Nx * Ny / float64_t(Nx + Ny)) * statistic;
 }
 
 const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 {
-	const DataManager& dm = get_data_manager();
-	const index_t Bx = dm.blocksize_at(0);
-	const index_t By = dm.blocksize_at(1);
+	const DataManager& data_mgr = get_data_mgr();
+	const index_t Bx = data_mgr.blocksize_at(0);
+	const index_t By = data_mgr.blocksize_at(1);
 	const index_t B = Bx + By;
 	if (get_statistic_type() == ST_UNBIASED_INCOMPLETE)
 	{
@@ -92,9 +92,9 @@ const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 
 const float64_t CLinearTimeMMD::gaussian_variance(float64_t variance) const
 {
-	const DataManager& dm = get_data_manager();
-	const index_t Bx = dm.blocksize_at(0);
-	const index_t By = dm.blocksize_at(1);
+	const DataManager& data_mgr = get_data_mgr();
+	const index_t Bx = data_mgr.blocksize_at(0);
+	const index_t By = data_mgr.blocksize_at(1);
 	const index_t B = Bx + By;
 	if (get_statistic_type() == ST_UNBIASED_INCOMPLETE)
 	{

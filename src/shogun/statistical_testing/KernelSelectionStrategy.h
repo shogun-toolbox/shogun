@@ -85,7 +85,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 	void init();
-	const internal::KernelManager& get_kernel_manager() const;
+	const internal::KernelManager& get_kernel_mgr() const;
 };
 
 }

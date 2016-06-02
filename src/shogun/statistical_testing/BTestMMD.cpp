@@ -37,12 +37,12 @@ CBTestMMD::~CBTestMMD()
 
 void CBTestMMD::set_blocksize(index_t blocksize)
 {
-	get_data_manager().set_blocksize(blocksize);
+	get_data_mgr().set_blocksize(blocksize);
 }
 
 void CBTestMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
+	get_data_mgr().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
 const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estimation_method() const
@@ -52,19 +52,19 @@ const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estima
 
 const float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 {
-	const DataManager& dm=get_data_manager();
-	const index_t Nx=dm.num_samples_at(0);
-	const index_t Ny=dm.num_samples_at(1);
-	const index_t Bx=dm.blocksize_at(0);
-	const index_t By=dm.blocksize_at(1);
+	const DataManager& data_mgr=get_data_mgr();
+	const index_t Nx=data_mgr.num_samples_at(0);
+	const index_t Ny=data_mgr.num_samples_at(1);
+	const index_t Bx=data_mgr.blocksize_at(0);
+	const index_t By=data_mgr.blocksize_at(1);
 	return Nx*Ny*statistic*CMath::sqrt((Bx+By)/float64_t(Nx+Ny))/(Nx+Ny);
 }
 
 const float64_t CBTestMMD::normalize_variance(float64_t variance) const
 {
-	const DataManager& dm=get_data_manager();
-	const index_t Bx=dm.blocksize_at(0);
-	const index_t By=dm.blocksize_at(1);
+	const DataManager& data_mgr=get_data_mgr();
+	const index_t Bx=data_mgr.blocksize_at(0);
+	const index_t By=data_mgr.blocksize_at(1);
 	return variance*CMath::sq(Bx*By/float64_t(Bx+By));
 }
 
