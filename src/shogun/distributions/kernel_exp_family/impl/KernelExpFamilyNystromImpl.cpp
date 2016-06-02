@@ -187,7 +187,37 @@ SGVector<float64_t> KernelExpFamilyNystromImpl::compute_first_row_no_storing() c
 	return result;
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_slow_low_memory() const
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system() const
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_data_lhs();
+	auto ND = N*D;
+	auto m = get_num_rkhs_basis();
+
+	SG_SINFO("Preparing system.\n");
+	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> A_nm_b;
+	if (m_low_memory_mode)
+		A_nm_b = prepare_system_slow_low_memory();
+	else
+		A_nm_b = prepare_system_fast_high_memory();
+
+	auto eigen_A_nm = Map<MatrixXd>(A_nm_b.first.matrix, ND+1, m+1);
+	auto eigen_b = Map<VectorXd>(A_nm_b.second.vector, ND+1);
+
+	SGMatrix<float64_t> A(m+1,m+1);
+	Map<MatrixXd> eigen_A(A.matrix, m+1, m+1);
+
+	SG_SINFO("Building system of size m=%d.\n", get_num_rkhs_basis());
+	eigen_A = eigen_A_nm.transpose()*eigen_A_nm;
+
+	SGVector<float64_t> b_m(m+1);
+	Map<VectorXd> eigen_b_m(b_m.vector, m+1);
+	eigen_b_m = eigen_A_nm.transpose()*eigen_b;
+
+	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b_m);
+}
+
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::prepare_system_slow_low_memory() const
 {
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
@@ -241,7 +271,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
 
-std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::build_system_fast_high_memory() const
+std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::prepare_system_fast_high_memory() const
 {
 	// TODO benchmark against build_system of full estimator
 	auto D = get_num_dimensions();
@@ -300,39 +330,21 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromImpl::
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
 
-void KernelExpFamilyNystromImpl::fit()
+void KernelExpFamilyNystromImpl::solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b)
 {
-	auto D = get_num_dimensions();
-	auto N = get_num_data_lhs();
-	auto ND = N*D;
 	auto m = get_num_rkhs_basis();
 
-	SG_SINFO("Building system.\n");
-	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> A_nm_b;
-	if (m_low_memory_mode)
-		A_nm_b = build_system_slow_low_memory();
-	else
-		A_nm_b = build_system_fast_high_memory();
-
-	auto eigen_A_nm = Map<MatrixXd>(A_nm_b.first.matrix, ND+1, m+1);
-	auto eigen_b = Map<VectorXd>(A_nm_b.second.vector, ND+1);
-
-	SGMatrix<float64_t> A(m+1,m+1);
-	Map<MatrixXd> eigen_A(A.matrix, m+1, m+1);
-
-	SG_SINFO("Solving system of size m=%d.\n", get_num_rkhs_basis());
-	eigen_A = eigen_A_nm.transpose()*eigen_A_nm;
-	auto b_m = eigen_A_nm.transpose()*eigen_b;
-
 	m_alpha_beta = SGVector<float64_t>(m+1);
-	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, m+1);
+	SG_SINFO("Computing pseudo-inverse.\n");
+	auto A_pinv = pinv_self_adjoint(A);
 
-	auto A_pinv = pinv(A);
 	Map<MatrixXd> eigen_pinv(A_pinv.matrix, A_pinv.num_rows, A_pinv.num_cols);
-	eigen_alpha_beta = eigen_pinv*b_m;
+	Map<VectorXd> eigen_b(b.vector, m+1);
+	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, m+1);
+	eigen_alpha_beta = eigen_pinv*eigen_b;
 }
 
-SGMatrix<float64_t> KernelExpFamilyNystromImpl::pinv(const SGMatrix<float64_t>& A)
+SGMatrix<float64_t> KernelExpFamilyNystromImpl::pinv_self_adjoint(const SGMatrix<float64_t>& A)
 {
 	// based on the snippet from
 	// http://eigen.tuxfamily.org/index.php?title=FAQ#Is_there_a_method_to_compute_the_.28Moore-Penrose.29_pseudo_inverse_.3F

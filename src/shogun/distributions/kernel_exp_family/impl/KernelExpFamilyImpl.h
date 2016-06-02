@@ -103,7 +103,7 @@ public :
 	SGVector<float64_t> compute_h() const;
 	float64_t compute_xi_norm_2() const;
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
-	virtual void fit();
+	void fit();
 
 	virtual float64_t log_pdf(index_t idx_test) const;
 	float64_t log_pdf(SGVector<float64_t> x);
@@ -122,6 +122,7 @@ public :
 	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b) const;
 
 protected:
+	virtual void solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b);
 	virtual void precompute();
 
 	SGMatrix<float64_t> m_data_lhs;

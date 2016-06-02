@@ -65,10 +65,10 @@ public :
 
 	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx) const;
 	SGVector<float64_t> compute_first_row_no_storing() const;
-	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_slow_low_memory() const;
-	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_fast_high_memory() const;
 
-	virtual void fit();
+	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
+	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> prepare_system_slow_low_memory() const;
+	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> prepare_system_fast_high_memory() const;
 
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
@@ -78,12 +78,13 @@ public :
 	SGVector<float64_t> grad(SGVector<float64_t> x) { return KernelExpFamilyImpl::grad(x); }
 
 	std::pair<index_t, index_t> idx_to_ai(index_t idx) const;
-	static SGMatrix<float64_t> pinv(const SGMatrix<float64_t>& A);
+	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
 
 	SGVector<index_t> get_inds() { return m_inds; }
 
 
 protected:
+	virtual void solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b);
 	index_t get_num_rkhs_basis() const;
 
 protected:

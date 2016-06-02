@@ -223,7 +223,7 @@ TEST(KernelExpFamilyNystromImpl, compute_lower_right_submatrix_element)
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est(X, sigma, lambda, N*D);
 	
-	auto result = est.build_system_slow_low_memory();
+	auto result = est.prepare_system_slow_low_memory();
 	auto A = result.first;
 
 	// compare against full version
@@ -248,7 +248,7 @@ TEST(KernelExpFamilyNystromImpl, compute_first_row_no_storing)
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est(X, sigma, lambda, N*D);
 	
-	auto result = est.build_system_slow_low_memory();
+	auto result = est.prepare_system_slow_low_memory();
 	auto A = result.first;
 	auto first_row = est.compute_first_row_no_storing();
 	ASSERT_EQ(first_row.vlen, ND);
@@ -258,7 +258,7 @@ TEST(KernelExpFamilyNystromImpl, compute_first_row_no_storing)
 		EXPECT_NEAR(first_row[i], A(0,i+1), 1e-15);
 }
 
-TEST(KernelExpFamilyNystromImpl, build_system_slow_low_memory_all_inds_equals_exact)
+TEST(KernelExpFamilyNystromImpl, prepare_system_slow_low_memory_all_inds_equals_exact)
 {
 	index_t N=5;
 	index_t D=3;
@@ -272,7 +272,7 @@ TEST(KernelExpFamilyNystromImpl, build_system_slow_low_memory_all_inds_equals_ex
 	KernelExpFamilyImpl est(X, sigma, lambda);
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, ND);
 	auto result = est.build_system();
-	auto result_nystrom = est_nystrom.build_system_slow_low_memory();
+	auto result_nystrom = est_nystrom.prepare_system_slow_low_memory();
 	
 	// compare against full version
 	auto A = result.first;
@@ -287,7 +287,7 @@ TEST(KernelExpFamilyNystromImpl, build_system_slow_low_memory_all_inds_equals_ex
 		EXPECT_NEAR(A.matrix[i], A_nystrom.matrix[i], 1e-15);
 }
 
-TEST(KernelExpFamilyNystromImpl, build_system_slow_low_memory_half_inds_shape)
+TEST(KernelExpFamilyNystromImpl, prepare_system_slow_low_memory_half_inds_shape)
 {
 	index_t N=5;
 	index_t D=3;
@@ -300,7 +300,7 @@ TEST(KernelExpFamilyNystromImpl, build_system_slow_low_memory_half_inds_shape)
 	float64_t sigma = 2;
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, m);
-	auto result = est_nystrom.build_system_slow_low_memory();
+	auto result = est_nystrom.prepare_system_slow_low_memory();
 	
 	EXPECT_EQ(result.first.num_rows, ND+1);
 	EXPECT_EQ(result.first.num_cols, m+1);
@@ -357,7 +357,7 @@ TEST(KernelExpFamilyNystromImpl, fit_half_inds_shape)
 	ASSERT(alpha_beta.vector);
 }
 
-TEST(KernelExpFamilyNystromImpl, pinv_square)
+TEST(KernelExpFamilyNystromImpl, pinv_self_adjoint)
 {
 	index_t N=3;
 	index_t D=2;
@@ -375,7 +375,7 @@ TEST(KernelExpFamilyNystromImpl, pinv_square)
 	auto eigen_S = Map<MatrixXd>(S.matrix, D, D);
 	eigen_S = eigen_X*eigen_X.transpose();
 		
-	auto pinv = KernelExpFamilyNystromImpl::pinv(S);
+	auto pinv = KernelExpFamilyNystromImpl::pinv_self_adjoint(S);
 	
 	ASSERT_EQ(pinv.num_rows, 2);
 	ASSERT_EQ(pinv.num_cols, 2);
@@ -493,7 +493,7 @@ TEST(KernelExpFamilyNystromImpl, grad_almost_all_inds_close_exact)
 		EXPECT_NEAR(grad[i], grad_nystrom[i], 0.3);
 }
 
-TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory)
+TEST(KernelExpFamilyNystromImpl, prepare_system_fast_high_memory)
 {
 	index_t N=5;
 	index_t D=3;
@@ -505,8 +505,8 @@ TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory)
 	float64_t sigma = 2;
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, ND);
-	auto result_slow = est_nystrom.build_system_slow_low_memory();
-	auto result_fast = est_nystrom.build_system_fast_high_memory();
+	auto result_slow = est_nystrom.prepare_system_slow_low_memory();
+	auto result_fast = est_nystrom.prepare_system_fast_high_memory();
 	
 	// compare against (tested) slow low memory version
 	
@@ -517,7 +517,7 @@ TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory)
 		EXPECT_NEAR(result_slow.first[i], result_fast.first[i], 1e-15);
 }
 
-TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory_half_inds)
+TEST(KernelExpFamilyNystromImpl, prepare_system_fast_high_memory_half_inds)
 {
 	index_t N=2;
 	index_t D=2;
@@ -529,8 +529,8 @@ TEST(KernelExpFamilyNystromImpl, build_system_fast_high_memory_half_inds)
 	float64_t sigma = 2;
 	float64_t lambda = 1;
 	KernelExpFamilyNystromImpl est_nystrom(X, sigma, lambda, ND);
-	auto result_slow = est_nystrom.build_system_slow_low_memory();
-	auto result_fast = est_nystrom.build_system_fast_high_memory();
+	auto result_slow = est_nystrom.prepare_system_slow_low_memory();
+	auto result_fast = est_nystrom.prepare_system_fast_high_memory();
 	
 	// compare against (tested) slow low memory version
 	for (auto i=0; i<ND; i++)

@@ -447,19 +447,20 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyImpl::build_s
 
 void KernelExpFamilyImpl::fit()
 {
-	auto D = get_num_dimensions();
-	auto N = get_num_data_lhs();
-	auto ND = N*D;
-
 	SG_SINFO("Building system.\n");
 	auto A_b = build_system();
-	auto eigen_A = Map<MatrixXd>(A_b.first.matrix, ND+1, ND+1);
-	auto eigen_b = Map<VectorXd>(A_b.second.vector, ND+1);
 
-	m_alpha_beta = SGVector<float64_t>(ND+1);
-	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, ND+1);
+	SG_SINFO("Solving system of size %d.\n", A_b.second.vlen);
+	solve_and_store(A_b.first, A_b.second);
+}
 
-	SG_SINFO("Solving system of size N*D=%d.\n", ND);
+void KernelExpFamilyImpl::solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b)
+{
+	auto eigen_A = Map<MatrixXd>(A.matrix, A.num_rows, A.num_cols);
+	auto eigen_b = Map<VectorXd>(b.vector, b.vlen);
+
+	m_alpha_beta = SGVector<float64_t>(b.vlen);
+	auto eigen_alpha_beta = Map<VectorXd>(m_alpha_beta.vector, m_alpha_beta.vlen);
 	eigen_alpha_beta = eigen_A.ldlt().solve(eigen_b);
 }
 
