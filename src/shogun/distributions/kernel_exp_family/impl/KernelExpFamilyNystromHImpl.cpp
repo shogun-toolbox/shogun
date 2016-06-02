@@ -98,17 +98,8 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	A(0,0) = eigen_h.squaredNorm() / N + m_lambda * xi_norm_2;
 
 	// can use noalias to speed up as matrices are definitely different
-	SGVector<float64_t> hessians_times_h(ND);
-	SGVector<float64_t> sub_sampled_hessians_times_h(ND);
-	auto eigen_hessian_times_h = Map<VectorXd>(hessians_times_h.vector, ND);
-	auto eigen_sub_sampled_hessian_times_h = Map<VectorXd>(sub_sampled_hessians_times_h.vector, m);
-
-	eigen_hessian_times_h.noalias() = eigen_hessians*eigen_h;
-	for (auto i=0; i<m; i++)
-		sub_sampled_hessians_times_h[i] = hessians_times_h[m_inds[i]];
-
 	eigen_A.block(1,1,m,m).noalias()=eigen_col_sub_sampled_hessian.transpose()*eigen_col_sub_sampled_hessian / N + m_lambda*eigen_sub_sampled_hessian;
-	eigen_A.col(0).segment(1, m).noalias() = eigen_sub_sampled_hessian_times_h / N + m_lambda*eigen_sub_sampled_h;
+	eigen_A.col(0).segment(1, m).noalias() = eigen_sub_sampled_hessian*eigen_sub_sampled_h / N + m_lambda*eigen_sub_sampled_h;
 
 	for (auto ind_idx=0; ind_idx<m; ind_idx++)
 		A(0, ind_idx+1) = A(ind_idx+1, 0);
