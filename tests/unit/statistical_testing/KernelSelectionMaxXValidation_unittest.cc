@@ -76,7 +76,7 @@ TEST(KernelSelectionMaxXValidation, single_kernel)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MAXIMIZE_XVALIDATION, 5, 0.05));
+	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_XVALIDATION, 5, 0.05);
 	mmd->set_train_test_mode(true);
 	mmd->set_train_test_ratio(4);
 	mmd->select_kernel();

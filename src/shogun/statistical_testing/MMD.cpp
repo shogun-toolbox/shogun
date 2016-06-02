@@ -41,6 +41,7 @@
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/BTestMMD.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
+#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
@@ -456,13 +457,36 @@ CMMD::~CMMD()
 {
 }
 
-void CMMD::set_kernel_selection_strategy(CKernelSelectionStrategy* strategy)
+void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method)
 {
-	SG_REF(strategy);
+	auto strategy=std::shared_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy(method));
 	const auto& kernel_mgr=self->strategy->get_kernel_mgr();
 	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
 		strategy->add_kernel(kernel_mgr.kernel_at(i));
-	self->strategy=std::shared_ptr<CKernelSelectionStrategy>(strategy, [](CKernelSelectionStrategy* ptr) { SG_UNREF(ptr); });
+	self->strategy=strategy;
+}
+
+void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted)
+{
+	auto strategy=std::shared_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy(method, weighted));
+	const auto& kernel_mgr=self->strategy->get_kernel_mgr();
+	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+		strategy->add_kernel(kernel_mgr.kernel_at(i));
+	self->strategy=strategy;
+}
+
+void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha)
+{
+	auto strategy=std::shared_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy(method, num_runs, alpha));
+	const auto& kernel_mgr=self->strategy->get_kernel_mgr();
+	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+		strategy->add_kernel(kernel_mgr.kernel_at(i));
+	self->strategy=strategy;
+}
+
+CKernelSelectionStrategy* CMMD::get_kernel_selection_strategy() const
+{
+	return self->strategy.get();
 }
 
 void CMMD::add_kernel(CKernel* kernel)

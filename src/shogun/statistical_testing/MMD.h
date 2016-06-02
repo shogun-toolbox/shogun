@@ -35,7 +35,6 @@
 #include <memory>
 #include <functional>
 #include <shogun/statistical_testing/TwoSampleTest.h>
-#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 
 namespace shogun
 {
@@ -44,6 +43,8 @@ class CKernel;
 class CCustomDistance;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
+class CKernelSelectionStrategy;
+enum EKernelSelectionMethod : uint32_t;
 
 namespace internal
 {
@@ -87,7 +88,11 @@ public:
 	CMMD();
 	virtual ~CMMD();
 
-	void set_kernel_selection_strategy(CKernelSelectionStrategy* strategy);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha);
+	CKernelSelectionStrategy* get_kernel_selection_strategy() const;
+
 	void add_kernel(CKernel *kernel);
 	void select_kernel();
 

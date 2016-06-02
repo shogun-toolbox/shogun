@@ -69,7 +69,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_mmd)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MEDIAN_HEURISTIC));
+	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
@@ -105,7 +105,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_mmd)
 		mmd->add_kernel(new CGaussianKernel(10, sq_sigma_twice));
 	}
 
-	mmd->set_kernel_selection_strategy(new CKernelSelectionStrategy(KSM_MEDIAN_HEURISTIC));
+	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());

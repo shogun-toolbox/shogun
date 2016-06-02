@@ -70,7 +70,7 @@ struct CKernelSelectionStrategy::Self
 const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
 const bool CKernelSelectionStrategy::Self::default_weighted=false;
 const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
-const float64_t CKernelSelectionStrategy::Self::default_alpha=0.5;
+const float64_t CKernelSelectionStrategy::Self::default_alpha=0.05;
 
 CKernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method),
 	weighted(default_weighted), num_runs(default_num_runs), alpha(default_alpha)
@@ -147,6 +147,27 @@ CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method
 	self->num_runs=num_runs;
 	self->alpha=alpha;
 }
+
+//CKernelSelectionStrategy::CKernelSelectionStrategy(const CKernelSelectionStrategy& other)
+//{
+//	init();
+//	self->method=other.self->method;
+//	self->num_runs=other.self->num_runs;
+//	self->alpha=other.self->alpha;
+//	for (size_t i=0; i<other.self->kernel_mgr.num_kernels(); ++i)
+//		self->kernel_mgr.push_back(other.self->kernel_mgr.kernel_at(i));
+//}
+//
+//CKernelSelectionStrategy& CKernelSelectionStrategy::operator=(const CKernelSelectionStrategy& other)
+//{
+//	init();
+//	self->method=other.self->method;
+//	self->num_runs=other.self->num_runs;
+//	self->alpha=other.self->alpha;
+//	for (size_t i=0; i<other.self->kernel_mgr.num_kernels(); ++i)
+//		self->kernel_mgr.push_back(other.self->kernel_mgr.kernel_at(i));
+//	return *this;
+//}
 
 void CKernelSelectionStrategy::init()
 {

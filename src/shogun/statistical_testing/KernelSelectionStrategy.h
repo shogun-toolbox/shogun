@@ -48,13 +48,13 @@ namespace internal
 class KernelManager;
 }
 
-enum EKernelSelectionMethod
+enum EKernelSelectionMethod : uint32_t
 {
 	KSM_MEDIAN_HEURISTIC,
 	KSM_MAXIMIZE_MMD,
 	KSM_MAXIMIZE_POWER,
 	KSM_MAXIMIZE_XVALIDATION,
-	KSM_AUTO
+	KSM_AUTO=KSM_MAXIMIZE_POWER
 };
 
 class CKernelSelectionStrategy : public CSGObject
@@ -67,7 +67,7 @@ public:
 	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha);
 	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
 	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;
-	~CKernelSelectionStrategy();
+	virtual ~CKernelSelectionStrategy();
 
 	CKernelSelectionStrategy& use_method(EKernelSelectionMethod method);
 	CKernelSelectionStrategy& use_num_runs(index_t num_runs);
