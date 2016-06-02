@@ -377,6 +377,7 @@ SGVector<float64_t> KernelExpFamilyImpl::compute_h() const
 		for (auto idx_a=0; idx_a<N; idx_a++)
 		{
 			// TODO optimise, no need to store matrix
+			// TODO in Nystrom, this needs to be sub-sampled as well
 			SGMatrix<float64_t> temp = kernel_dx_dx_dy(idx_a, idx_b);
 			eigen_h.segment(idx_b*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
