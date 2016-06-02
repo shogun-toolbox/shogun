@@ -104,8 +104,9 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	for (auto ind_idx=0; ind_idx<m; ind_idx++)
 		A(0, ind_idx+1) = A(ind_idx+1, 0);
 
-	b[0] = -xi_norm_2;
-	eigen_b.segment(1, m) = -eigen_sub_sampled_h;
+	// did a sign flip, not sure why necessary
+	b[0] = xi_norm_2;
+	eigen_b.segment(1, m) = eigen_sub_sampled_h;
 
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }
