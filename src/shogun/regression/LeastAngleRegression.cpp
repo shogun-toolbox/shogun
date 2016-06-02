@@ -21,7 +21,9 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/regression/LeastAngleRegression.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/eigen3.h>
 
+using namespace Eigen;
 using namespace shogun;
 using namespace std;
 
@@ -80,6 +82,8 @@ CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
 	CLinearMachine(), m_lasso(lasso),
 	m_max_nonz(0), m_max_l1_norm(0)
 {
+	m_epsilon = CMath::MACHINE_EPSILON;
+	SG_ADD(&m_epsilon, "epsilon", "Epsilon for early stopping", MS_AVAILABLE);
 	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
 	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
 }
@@ -127,25 +131,26 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
 	SGVector<float64_t> y = ((CRegressionLabels*) m_labels)->get_labels();
+	Map<VectorXd> map_y(y.vector, y.size());
 	SGMatrix<float64_t> Xorig = feats->get_feature_matrix();
 
 	// transpose(X) is more convenient to work with since we care
 	// about features here. After transpose, each row will be a data
 	// point while each column corresponds to a feature
-	SGMatrix<float64_t> X(n_vec, n_fea, true);
-	for (int32_t i=0; i < n_vec; ++i)
-	{
-		for (int32_t j=0; j < n_fea; ++j)
-			X(i,j) = Xorig(j,i);
-	}
+	SGMatrix<float64_t> X (n_vec, n_fea);
+	Map<MatrixXd> map_Xr(Xorig.matrix, n_fea, n_vec);
+	Map<MatrixXd> map_X(X.matrix, n_vec, n_fea);
+	map_X = map_Xr.transpose();
+	
+	SGMatrix<float64_t> X_active(n_vec, n_fea);
 
 	// beta is the estimator
 	vector<float64_t> beta = make_vector(n_fea, 0);
 
 	vector<float64_t> Xy = make_vector(n_fea, 0);
+	Map<VectorXd> map_Xy(&Xy[0], n_fea);
 	// Xy = X' * y
-	cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, 1, X.matrix, n_vec,
-		y.vector, 1, 0, &Xy[0], 1);
+	map_Xy=map_Xr*map_y;
 
 	// mu is the prediction
 	vector<float64_t> mu = make_vector(n_vec, 0);
@@ -172,13 +177,14 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	// main loop
 	//========================================
 	int32_t nloop=0;
-	while (m_num_active < max_active_allowed && max_corr > CMath::MACHINE_EPSILON && !stop_cond)
+	while (m_num_active < max_active_allowed && max_corr/n_vec > m_epsilon && !stop_cond)
 	{
 		// corr = X' * (y-mu) = - X'*mu + Xy
-		copy(Xy.begin(), Xy.end(), corr.begin());
-		cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, -1,
-			X.matrix, n_vec, &mu[0], 1, 1, &corr[0], 1);
-
+		Map<VectorXd> map_corr(&corr[0], n_fea);
+		Map<VectorXd> map_mu(&mu[0], n_vec);
+		
+		map_corr = map_Xy - (map_Xr*map_mu);
+		
 		// corr_sign = sign(corr)
 		for (uint32_t i=0; i < corr.size(); ++i)
 			corr_sign[i] = CMath::sign(corr[i]);
@@ -189,63 +195,67 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		if (!lasso_cond)
 		{
 			// update Cholesky factorization matrix
-			R=cholesky_insert(X, R, i_max_corr);
+			if (m_num_active == 0)
+			{ 
+				// R isn't allocated yet
+				R=SGMatrix<float64_t>(1,1);
+				float64_t diag_k = map_X.col(i_max_corr).dot(map_X.col(i_max_corr));
+				R(0,0) = CMath::sqrt(diag_k);
+			}
+			else
+				R=cholesky_insert(X, X_active, R, i_max_corr, m_num_active);
 			activate_variable(i_max_corr);
 		}
 
-		// corr_sign_a = corr_sign[m_active_set]
-		vector<float64_t> corr_sign_a(m_num_active);
+		// Active variables
+		Map<MatrixXd> map_Xa(X_active.matrix, n_vec, m_num_active);
+		if (!lasso_cond)
+			map_Xa.col(m_num_active-1)=map_X.col(i_max_corr);
+		
+		SGVector<float64_t> corr_sign_a(m_num_active);
 		for (int32_t i=0; i < m_num_active; ++i)
 			corr_sign_a[i] = corr_sign[m_active_set[i]];
 
-		// GA1 = R\(R'\corr_sign_a)
-		vector<float64_t> GA1(corr_sign_a);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit,
-			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
-			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
+		Map<VectorXd> map_corr_sign_a(corr_sign_a.vector, corr_sign_a.size());
+		Map<MatrixXd> map_R(R.matrix, R.num_rows, R.num_cols);
+		VectorXd solve = map_R.transpose().triangularView<Lower>().solve<OnTheLeft>(map_corr_sign_a);
+		VectorXd GA1 = map_R.triangularView<Upper>().solve<OnTheLeft>(solve);
 
 		// AA = 1/sqrt(GA1' * corr_sign_a)
-		float64_t AA = cblas_ddot(m_num_active, &GA1[0], 1, &corr_sign_a[0], 1);
+		float64_t AA = GA1.dot(map_corr_sign_a);
 		AA = 1/CMath::sqrt(AA);
 
-		// wA = AA*GA1
-		vector<float64_t> wA(GA1);
-		for (int32_t i=0; i < m_num_active; ++i)
-			wA[i] *= AA;
+		VectorXd wA = AA*GA1;
 
 		// equiangular direction (unit vector)
 		vector<float64_t> u = make_vector(n_vec, 0);
-		// u = X[:,m_active_set] * wA
-		for (int32_t i=0; i < m_num_active; ++i)
-		{
-			// u += wA[i] * X[:,m_active_set[i]]
-			cblas_daxpy(n_vec, wA[i],
-				X.get_column_vector(m_active_set[i]), 1, &u[0], 1);
-		}
+		Map<VectorXd> map_u(&u[0], n_vec);
+		
+		map_u = map_Xa*wA;
 
-		// step size
 		float64_t gamma = max_corr / AA;
 		if (m_num_active < n_fea)
 		{
+			#pragma omp parallel for shared(gamma)
 			for (int32_t i=0; i < n_fea; ++i)
 			{
 				if (m_is_active[i])
 					continue;
 
 				// correlation between X[:,i] and u
-				float64_t dir_corr = cblas_ddot(n_vec,
-					X.get_column_vector(i), 1, &u[0], 1);
+				float64_t dir_corr = map_u.dot(map_X.col(i));
 
 				float64_t tmp1 = (max_corr-corr[i])/(AA-dir_corr);
 				float64_t tmp2 = (max_corr+corr[i])/(AA+dir_corr);
+				#pragma omp critical
+				{
 				if (tmp1 > CMath::MACHINE_EPSILON && tmp1 < gamma)
 					gamma = tmp1;
 				if (tmp2 > CMath::MACHINE_EPSILON && tmp2 < gamma)
 					gamma = tmp2;
+				}
 			}
 		}
-
 		int32_t i_kick=-1;
 		int32_t i_change=i_max_corr;
 		if (m_lasso)
@@ -256,7 +266,7 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 
 			for (int32_t i=0; i < m_num_active; ++i)
 			{
-				float64_t tmp = -beta[m_active_set[i]] / wA[i];
+				float64_t tmp = -beta[m_active_set[i]] / wA(i);
 				if (tmp > CMath::MACHINE_EPSILON && tmp < lasso_bound)
 				{
 					lasso_bound = tmp;
@@ -273,12 +283,11 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		}
 
 		// update prediction: mu = mu + gamma * u
-		cblas_daxpy(n_vec, gamma, &u[0], 1, &mu[0], 1);
+		map_mu += gamma*map_u;
 
 		// update estimator
 		for (int32_t i=0; i < m_num_active; ++i)
-			beta[m_active_set[i]] += gamma * wA[i];
-
+			beta[m_active_set[i]] += gamma * wA(i);
 		// early stopping on max l1-norm
 		if (m_max_l1_norm > 0)
 		{
@@ -301,11 +310,16 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
 		{
-			beta[i_change] = 0; // ensure it be zero
-
-			// update Cholesky factorization
+			beta[i_change] = 0; 
 			R=cholesky_delete(R, i_kick);
 			deactivate_variable(i_kick);
+
+			// Remove column from active set
+			int32_t numRows = map_Xa.rows();
+			int32_t numCols = map_Xa.cols()-1;
+			if( i_kick < numCols )
+				map_Xa.block(0, i_kick, numRows, numCols-i_kick) = 
+					map_Xa.block(0, i_kick+1, numRows, numCols-i_kick).eval();			
 		}
 
 		nloop++;
@@ -318,8 +332,9 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		// early stopping with max number of non-zero variables
 		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
 			stop_cond = true;
+		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
 
-	} // main loop
+	}
 
 	// assign default estimator
 	w.vlen = n_fea;
@@ -328,56 +343,33 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(
-		SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr)
+SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, 
+		const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active)
 {
-	// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
-	float64_t diag_k = cblas_ddot(X.num_rows, X.get_column_vector(i_max_corr), 1,
-		X.get_column_vector(i_max_corr), 1);
+	Map<MatrixXd> map_X(X.matrix, X.num_rows, X.num_cols);
+	Map<MatrixXd> map_X_active(X_active.matrix, X.num_rows, num_active);
+	float64_t diag_k = map_X.col(i_max_corr).dot(map_X.col(i_max_corr));
+	
+	// col_k is the k-th column of (X'X)
+	Map<VectorXd> map_i_max(X.get_column_vector(i_max_corr), X.num_rows);
+	VectorXd R_k = map_X_active.transpose()*map_i_max;
+	Map<MatrixXd> map_R(R.matrix, R.num_rows, R.num_cols);
 
-	if (m_num_active == 0)
-	{ // R isn't allocated yet
-		SGMatrix<float64_t> nR(1,1);
-		nR(0,0) = CMath::sqrt(diag_k);
-		return nR;
-	}
-	else
-	{
+	// R' * R_k = (X' * X)_k = col_k, solving to get R_k
+	map_R.transpose().triangularView<Lower>().solveInPlace<OnTheLeft>(R_k);
+	float64_t R_kk = CMath::sqrt(diag_k - R_k.dot(R_k));
 
-		// col_k is the k-th column of (X'X)
-		vector<float64_t> col_k(m_num_active);
-		for (int32_t i=0; i < m_num_active; ++i)
-		{
-			// col_k[i] = X[:,i_max_corr]' * X[:,m_active_set[i]]
-			col_k[i] = cblas_ddot(X.num_rows, X.get_column_vector(i_max_corr), 1,
-				X.get_column_vector(m_active_set[i]), 1);
-		}
+	SGMatrix<float64_t> R_new(num_active+1, num_active+1);
+	Map<MatrixXd> map_R_new(R_new.matrix, R_new.num_rows, R_new.num_cols);
 
-		// R' * R_k = (X' * X)_k = col_k, solving to get R_k
-		vector<float64_t> R_k(col_k);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, m_num_active, 1,
-			1, R.matrix, m_num_active, &R_k[0], m_num_active);
-
-		float64_t R_kk = CMath::sqrt(diag_k -
-			cblas_ddot(m_num_active, &R_k[0], 1, &R_k[0], 1));
-
-		// new_R = [R R_k; zeros(...) R_kk]
-		SGMatrix<float64_t> nR(m_num_active+1, m_num_active+1);
-		for (int32_t i=0; i < m_num_active; ++i)
-			for (int32_t j=0; j < m_num_active; ++j)
-				nR(i,j) = R(i,j);
-		for (int32_t i=0; i < m_num_active; ++i)
-			nR(i, m_num_active) = R_k[i];
-		for (int32_t i=0; i < m_num_active; ++i)
-			nR(m_num_active, i) = 0;
-		nR(m_num_active, m_num_active) = R_kk;
-
-		return nR;
-	}
-
+	map_R_new.block(0, 0, num_active, num_active) = map_R;
+	memcpy(R_new.matrix+num_active*(num_active+1), R_k.data(), sizeof(float64_t)*(num_active));
+	map_R_new.row(num_active).setZero();
+	map_R_new(num_active, num_active) = R_kk;
+	return R_new;
 }
 
-SGMatrix<float64_t> CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> R, int32_t i_kick)
+SGMatrix<float64_t> CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t>& R, int32_t i_kick)
 {
 	if (i_kick != m_num_active-1)
 	{

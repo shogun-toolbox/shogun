@@ -168,11 +168,28 @@ public:
 		return CT_LARS;
 	}
 
+	/** Set epsilon used for early stopping */
+	void set_epsilon(float64_t epsilon)
+	{
+		m_epsilon = epsilon;
+	}
+
+	/** Get epsilon used for early stopping */
+	float64_t get_epsilon()
+	{
+		return m_epsilon;
+	}
+
 	/** @return object name */
 	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);
+
+	SGMatrix<float64_t> cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, 
+			SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
+	
+	SGMatrix<float64_t> cholesky_delete(SGMatrix<float64_t>& R, int32_t i_kick);
 
 private:
 	void activate_variable(int32_t v)
@@ -187,11 +204,7 @@ private:
 		m_is_active[m_active_set[v_idx]] = false;
 		m_active_set.erase(m_active_set.begin() + v_idx);
 	}
-
-	SGMatrix<float64_t> cholesky_insert(SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr);
-	SGMatrix<float64_t> cholesky_delete(SGMatrix<float64_t> R, int32_t i_kick);
-
-
+	
 	bool m_lasso; //!< enable lasso modification
 
 	int32_t m_max_nonz;  //!< max number of non-zero variables for early stopping
@@ -199,10 +212,10 @@ private:
 
 	std::vector<std::vector<float64_t> > m_beta_path;
 	std::vector<int32_t> m_beta_idx;
-
 	std::vector<int32_t> m_active_set;
 	std::vector<bool> m_is_active;
 	int32_t m_num_active;
+	float64_t m_epsilon;
 }; // class LARS
 
 } // namespace shogun
