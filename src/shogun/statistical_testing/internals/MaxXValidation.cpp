@@ -111,7 +111,7 @@ void MaxXValidation::compute_measures()
 	{
 		auto begin=rejections.get_column_vector(j);
 		auto size=rejections.num_rows;
-		measures[j]=std::accumulate(begin, begin+size, 0)/size;
+		measures[j]=std::accumulate(begin, begin+size, 0)/float64_t(size);
 	}
 }
 
