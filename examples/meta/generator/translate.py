@@ -14,8 +14,15 @@ except NameError:
 class Translator:
     def __init__(self, targetDict):
         self.dependencies = {
+            # All object types used throughout the program
             "AllClasses":set(),
-            "ConstructedClasses":set(),
+
+            # All classes where the class interface has been used explicitly.
+            # I.e. classes used to construct objects and classes where static
+            # methods are called
+            "InterfacedClasses":set(),
+
+            # All enum types used throughout the program
             "Enums":set()
         }
 
@@ -30,7 +37,7 @@ class Translator:
         """
         # reset dependencies
         self.dependencies["AllClasses"] = set()
-        self.dependencies["ConstructedClasses"] = set()
+        self.dependencies["InterfacedClasses"] = set()
         self.dependencies["Enums"] = set()
         self.tags = tags
         self.storeVars = storeVars
@@ -109,7 +116,7 @@ class Translator:
         # a list of all explicitly constructed classes,
         # and list of all enums used. All are optional.
         allClassDependencies = ""
-        constructedClassDependencies = ""
+        interfacedClassDependencies = ""
         enumDependencies = ""
         dependenciesExist = False
 
@@ -118,10 +125,10 @@ class Translator:
             template = Template(self.targetDict["Dependencies"]["AllClassDependencies"])
             allClassDependencies = template.substitute(classlist=self.seperatedClassDependencies("AllClasses"))
 
-        if len(self.dependencies["ConstructedClasses"]) > 0 and "ConstructedClassDependencies" in self.targetDict["Dependencies"]:
+        if len(self.dependencies["InterfacedClasses"]) > 0 and "InterfacedClassDependencies" in self.targetDict["Dependencies"]:
             dependenciesExist = True
-            template = Template(self.targetDict["Dependencies"]["ConstructedClassDependencies"])
-            constructedClassDependencies = template.substitute(classlist=self.seperatedClassDependencies("ConstructedClasses"))
+            template = Template(self.targetDict["Dependencies"]["InterfacedClassDependencies"])
+            interfacedClassDependencies = template.substitute(classlist=self.seperatedClassDependencies("InterfacedClasses"))
 
         if len(self.dependencies["Enums"]) > 0 and "EnumDependencies" in self.targetDict["Dependencies"]:
             dependenciesExist = True
@@ -133,7 +140,7 @@ class Translator:
 
         allDependenciesTemplate = Template(self.targetDict["Dependencies"]["AllDependencies"])
         return allDependenciesTemplate.substitute(allClassDependencies=allClassDependencies,
-                                                  constructedClassDependencies=constructedClassDependencies,
+                                                  interfacedClassDependencies=interfacedClassDependencies,
                                                   enumDependencies=enumDependencies)
 
     def seperatedClassDependencies(self, type):
@@ -264,7 +271,7 @@ class Translator:
             exprString = self.translateExpr(initialisation["Expr"])
             return template.substitute(name=nameString, type=typeString, expr=exprString)
         elif list(initialisation.keys())[0] == "ArgumentList":
-            self.dependencies["ConstructedClasses"].add(typeString)
+            self.dependencies["InterfacedClasses"].add(typeString)
             template = Template(self.targetDict["Init"]["Construct"])
             argsString = self.translateArgumentList(initialisation["ArgumentList"])
             return template.substitute(name=nameString, type=typeString, arguments=argsString)
@@ -302,6 +309,8 @@ class Translator:
             except IndexError:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
+
+            self.dependencies["InterfacedClasses"].add(type_)
 
             return template.substitute(type=type_, method=method, arguments=translatedArgsList)
 
