@@ -38,7 +38,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
-#include <shogun/statistical_testing/KernelSelectionStrategy.h>
+#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

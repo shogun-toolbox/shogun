@@ -35,7 +35,7 @@
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
-#include <shogun/statistical_testing/KernelSelectionStrategy.h>
+#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

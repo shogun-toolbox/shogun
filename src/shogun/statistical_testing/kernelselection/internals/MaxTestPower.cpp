@@ -29,20 +29,38 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/io/SGIO.h>
+#include <algorithm>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
 
 using namespace shogun;
 using namespace internal;
 
-KernelSelection::KernelSelection(KernelManager& km, CMMD* est) : kernel_mgr(km), estimator(est)
+MaxTestPower::MaxTestPower(KernelManager& km, CMMD* est) : MaxMeasure(km, est), lambda(1E-5)
 {
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
-	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
 }
 
-KernelSelection::~KernelSelection()
+MaxTestPower::~MaxTestPower()
 {
+}
+
+void MaxTestPower::compute_measures()
+{
+	init_measures();
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	auto existing_kernel=estimator->get_kernel();
+	const size_t num_kernels=kernel_mgr.num_kernels();
+	for (size_t i=0; i<num_kernels; ++i)
+	{
+		auto kernel=kernel_mgr.kernel_at(i);
+		estimator->set_kernel(kernel);
+		auto estimates=estimator->compute_statistic_variance();
+		measures[i]=estimates.first/CMath::sqrt(estimates.second+lambda);
+		estimator->cleanup();
+	}
+	estimator->set_kernel(existing_kernel);
 }

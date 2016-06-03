@@ -36,7 +36,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/internals/MedianHeuristic.h>
+#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 
 using namespace shogun;

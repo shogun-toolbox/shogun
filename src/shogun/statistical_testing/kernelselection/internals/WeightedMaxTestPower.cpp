@@ -29,41 +29,35 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_MEASURE_H__
-#define MAX_MEASURE_H__
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
+#include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : WeightedMaxMeasure(km, est), lambda(1E-5)
 {
-
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-template <typename T> class SGMatrix;
-
-namespace internal
-{
-
-class MaxMeasure : public KernelSelection
-{
-public:
-	MaxMeasure(KernelManager&, CMMD*);
-	MaxMeasure(const MaxMeasure& other)=delete;
-	~MaxMeasure();
-	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	virtual CKernel* select_kernel();
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
-protected:
-	virtual void init_measures();
-	virtual void compute_measures();
-	SGVector<float64_t> measures;
-};
-
 }
 
+WeightedMaxTestPower::~WeightedMaxTestPower()
+{
 }
 
-#endif // MAX_MEASURE_H__
+void WeightedMaxTestPower::init_measures()
+{
+}
+
+void WeightedMaxTestPower::compute_measures()
+{
+	const auto& estimates=estimator->compute_statistic_and_Q(kernel_mgr);
+	measures=estimates.first;
+	Q=estimates.second;
+	for (index_t i=0; i<Q.num_rows; ++i)
+		Q(i, i)+=lambda;
+}

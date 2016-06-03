@@ -29,35 +29,41 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_TEST_POWER_H__
-#define MAX_TEST_POWER_H__
+#ifndef MAX_MEASURE_H__
+#define MAX_MEASURE_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/MaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 
 namespace shogun
 {
 
 class CKernel;
 class CMMD;
+template <typename T> class SGVector;
+template <typename T> class SGMatrix;
 
 namespace internal
 {
 
-class MaxTestPower : public MaxMeasure
+class MaxMeasure : public KernelSelection
 {
 public:
-	MaxTestPower(KernelManager&, CMMD*);
-	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
-	MaxTestPower& operator=(const MaxTestPower& other)=delete;
+	MaxMeasure(KernelManager&, CMMD*);
+	MaxMeasure(const MaxMeasure& other)=delete;
+	~MaxMeasure();
+	MaxMeasure& operator=(const MaxMeasure& other)=delete;
+	virtual CKernel* select_kernel();
+	virtual SGVector<float64_t> get_measure_vector();
+	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
+	virtual void init_measures();
 	virtual void compute_measures();
-	float64_t lambda;
+	SGVector<float64_t> measures;
 };
 
 }
 
 }
 
-#endif // MAX_TEST_POWER_H__
+#endif // MAX_MEASURE_H__

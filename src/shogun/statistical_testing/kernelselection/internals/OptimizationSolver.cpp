@@ -14,7 +14,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/statistical_testing/internals/OptimizationSolver.h>
+#include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
 //#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/libqp.h>

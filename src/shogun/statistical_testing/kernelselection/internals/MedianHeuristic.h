@@ -29,37 +29,44 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef WEIGHTED_MAX_MEASURE_H__
-#define WEIGHTED_MAX_MEASURE_H__
+#ifndef MEDIAN_HEURISTIC_H__
+#define MEDIAN_HEURISTIC_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/MaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 
 namespace shogun
 {
 
 class CKernel;
 class CMMD;
+class CCustomDistance;
+template <typename T> class SGVector;
+template <typename T> class SGMatrix;
 
 namespace internal
 {
 
-class WeightedMaxMeasure : public MaxMeasure
+class MedianHeuristic : public KernelSelection
 {
 public:
-	WeightedMaxMeasure(KernelManager&, CMMD*);
-	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
-	~WeightedMaxMeasure();
-	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
-	virtual CKernel* select_kernel();
+	MedianHeuristic(KernelManager&, CMMD*);
+	MedianHeuristic(const MedianHeuristic& other)=delete;
+	~MedianHeuristic();
+	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
+	virtual CKernel* select_kernel() override;
+	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
+	virtual void init_measures();
 	virtual void compute_measures();
-	SGMatrix<float64_t> Q;
+	CCustomDistance* distance;
+	SGVector<float64_t> measures;
+	int32_t n;
 };
 
 }
 
 }
 
-#endif // WEIGHTED_MAX_MEASURE_H__
+#endif // MEDIAN_HEURISTIC_H__

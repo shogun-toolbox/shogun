@@ -35,8 +35,8 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
-#include <shogun/statistical_testing/internals/OptimizationSolver.h>
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
 using namespace shogun;
 using namespace internal;

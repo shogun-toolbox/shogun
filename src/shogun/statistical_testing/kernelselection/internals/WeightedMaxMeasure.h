@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2016 Soumyajit De
+ * Written (W) 2013 Heiko Strathmann
+ * Written (w) 2014 - 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +29,37 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/base/some.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <shogun/statistical_testing/QuadraticTimeMMD.h>
-#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
-#include <gtest/gtest.h>
+#ifndef WEIGHTED_MAX_MEASURE_H__
+#define WEIGHTED_MAX_MEASURE_H__
 
-using namespace shogun;
+#include <shogun/lib/common.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 
-TEST(KernelSelectionMaxXValidation, single_kernel)
+namespace shogun
 {
-	const index_t m=5;
-	const index_t n=10;
-	const index_t dim=1;
-	const float64_t difference=0.5;
-	const index_t num_kernels=10;
-	const index_t num_runs=1;
-	const index_t num_folds=5;
-	const float64_t alpha=0.05;
 
-	sg_rand->set_seed(12345);
+class CKernel;
+class CMMD;
 
-	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
-	auto feats_p=gen_p->get_streamed_features(m);
-	auto feats_q=gen_q->get_streamed_features(n);
+namespace internal
+{
 
-	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
+class WeightedMaxMeasure : public MaxMeasure
+{
+public:
+	WeightedMaxMeasure(KernelManager&, CMMD*);
+	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
+	~WeightedMaxMeasure();
+	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
+	virtual CKernel* select_kernel();
+	virtual SGMatrix<float64_t> get_measure_matrix();
+protected:
+	virtual void compute_measures();
+	SGMatrix<float64_t> Q;
+};
 
-	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-	{
-		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(new CGaussianKernel(10, tau));
-	}
-
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_XVALIDATION, num_runs, alpha);
-	mmd->set_train_test_mode(true);
-	mmd->set_train_test_ratio(num_folds-1);
-	mmd->select_kernel();
-	mmd->set_train_test_mode(false);
-
-	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
+
+}
+
+#endif // WEIGHTED_MAX_MEASURE_H__

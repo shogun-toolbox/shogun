@@ -29,35 +29,35 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
-#include <shogun/statistical_testing/internals/OptimizationSolver.h>
+#ifndef MAX_TEST_POWER_H__
+#define MAX_TEST_POWER_H__
 
-using namespace shogun;
-using namespace internal;
+#include <shogun/lib/common.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 
-WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : WeightedMaxMeasure(km, est), lambda(1E-5)
+namespace shogun
 {
+
+class CKernel;
+class CMMD;
+
+namespace internal
+{
+
+class MaxTestPower : public MaxMeasure
+{
+public:
+	MaxTestPower(KernelManager&, CMMD*);
+	MaxTestPower(const MaxTestPower& other)=delete;
+	~MaxTestPower();
+	MaxTestPower& operator=(const MaxTestPower& other)=delete;
+protected:
+	virtual void compute_measures();
+	float64_t lambda;
+};
+
 }
 
-WeightedMaxTestPower::~WeightedMaxTestPower()
-{
 }
 
-void WeightedMaxTestPower::init_measures()
-{
-}
-
-void WeightedMaxTestPower::compute_measures()
-{
-	const auto& estimates=estimator->compute_statistic_and_Q(kernel_mgr);
-	measures=estimates.first;
-	Q=estimates.second;
-	for (index_t i=0; i<Q.num_rows; ++i)
-		Q(i, i)+=lambda;
-}
+#endif // MAX_TEST_POWER_H__

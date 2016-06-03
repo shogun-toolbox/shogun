@@ -34,15 +34,15 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/KernelSelectionStrategy.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
-#include <shogun/statistical_testing/internals/MaxMeasure.h>
-#include <shogun/statistical_testing/internals/MaxTestPower.h>
-#include <shogun/statistical_testing/internals/MaxXValidation.h>
-#include <shogun/statistical_testing/internals/MedianHeuristic.h>
-#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
-#include <shogun/statistical_testing/internals/WeightedMaxTestPower.h>
+#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
+#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxXValidation.h>
+#include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
 
 using namespace shogun;
 using namespace internal;

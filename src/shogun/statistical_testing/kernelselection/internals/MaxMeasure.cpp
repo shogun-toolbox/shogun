@@ -29,44 +29,66 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MEDIAN_HEURISTIC_H__
-#define MEDIAN_HEURISTIC_H__
+#include <algorithm>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+MaxMeasure::MaxMeasure(KernelManager& km, CMMD* est) : KernelSelection(km, est)
 {
-
-class CKernel;
-class CMMD;
-class CCustomDistance;
-template <typename T> class SGVector;
-template <typename T> class SGMatrix;
-
-namespace internal
-{
-
-class MedianHeuristic : public KernelSelection
-{
-public:
-	MedianHeuristic(KernelManager&, CMMD*);
-	MedianHeuristic(const MedianHeuristic& other)=delete;
-	~MedianHeuristic();
-	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
-	virtual CKernel* select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
-protected:
-	virtual void init_measures();
-	virtual void compute_measures();
-	CCustomDistance* distance;
-	SGVector<float64_t> measures;
-	int32_t n;
-};
-
 }
 
+MaxMeasure::~MaxMeasure()
+{
 }
 
-#endif // MEDIAN_HEURISTIC_H__
+SGVector<float64_t> MaxMeasure::get_measure_vector()
+{
+	return measures;
+}
+
+SGMatrix<float64_t> MaxMeasure::get_measure_matrix()
+{
+	SG_SNOTIMPLEMENTED;
+	return SGMatrix<float64_t>();
+}
+
+void MaxMeasure::init_measures()
+{
+	const size_t num_kernels=kernel_mgr.num_kernels();
+	REQUIRE(num_kernels>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
+	if (measures.size()!=num_kernels)
+		measures=SGVector<float64_t>(num_kernels);
+	std::fill(measures.data(), measures.data()+measures.size(), 0);
+}
+
+void MaxMeasure::compute_measures()
+{
+	init_measures();
+	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	auto existing_kernel=estimator->get_kernel();
+	const size_t num_kernels=kernel_mgr.num_kernels();
+	for (size_t i=0; i<num_kernels; ++i)
+	{
+		auto kernel=kernel_mgr.kernel_at(i);
+		estimator->set_kernel(kernel);
+		measures[i]=estimator->compute_statistic();
+		estimator->cleanup();
+	}
+	estimator->set_kernel(existing_kernel);
+}
+
+CKernel* MaxMeasure::select_kernel()
+{
+	compute_measures();
+	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
+	auto max_idx=std::distance(measures.vector, max_element);
+	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);
+	return kernel_mgr.kernel_at(max_idx);
+}

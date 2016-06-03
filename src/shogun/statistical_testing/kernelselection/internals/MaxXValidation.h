@@ -33,7 +33,7 @@
 #define MAX_XVALIDATIN_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/KernelSelection.h>
+#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 
 namespace shogun
 {
