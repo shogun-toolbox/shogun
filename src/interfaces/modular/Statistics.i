@@ -29,4 +29,4 @@
 %include <shogun/statistical_testing/LinearTimeMMD.h>
 %include <shogun/statistical_testing/BTestMMD.h>
 %include <shogun/statistical_testing/QuadraticTimeMMD.h>
-%include <shogun/statistical_testing/KernelSelectionStrategy.h>
+%include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
