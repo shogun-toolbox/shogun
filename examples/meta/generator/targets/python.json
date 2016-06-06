@@ -1,8 +1,8 @@
 {
     "Program": "$dependencies$program$testing",
     "Dependencies": {
-        "AllDependencies": "$constructedClassDependencies$enumDependencies\n",
-        "ConstructedClassDependencies": "from modshogun import $classlist\n",
+        "AllDependencies": "$interfacedClassDependencies$enumDependencies\n",
+        "InterfacedClassDependencies": "from modshogun import $classlist\n",
         "EnumDependencies": "from modshogun import $enums\n",
         "DependencyListElementEnum": "$value",
         "DependencyListSeparator": ", "
