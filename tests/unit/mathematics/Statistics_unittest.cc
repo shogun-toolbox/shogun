@@ -8,6 +8,7 @@
 #include <math.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/linalg.h>
 
 using namespace shogun;
 
@@ -717,4 +718,38 @@ TEST(Statistics, vector_mean_overflow_test)
 	SGVector<float64_t> a(10);
 	a.set_const(std::numeric_limits<float64_t>::max());
 	EXPECT_EQ(std::numeric_limits<float64_t>::max(), CStatistics::mean(a));
+}
+
+TEST(Statistics, variance_test)
+{
+	SGMatrix<float64_t> a(2,2);
+	a(0,0) = 2.5;
+	a(0,1) = 9;
+	a(1,0) = 7.33;
+	a(1,1) = 6;
+	EXPECT_NEAR(7.61555, linalg::variance(a), 1E-5);
+}
+
+TEST(Statistics, vector_variance_test)
+{
+	SGVector<float64_t> a(3);
+	a[0] = 3;
+	a[1] = 5;
+	a[2] = 12;
+	
+	EXPECT_NEAR(22.33333333, linalg::vector_variance(a), 1E-5);
+}
+
+TEST(Statistics, rowwise_variance_test)
+{
+	SGMatrix<float64_t> a(2,2);
+	a(0,0) = 2.5;
+	a(0,1) = 9;
+	a(1,0) = 7.33;
+	a(1,1) = 6;
+
+	SGVector<float64_t> result = linalg::rowwise_variance(a);
+	
+	EXPECT_NEAR(21.125, result[0], 1E-5);
+	EXPECT_NEAR(0.88445, result[1], 1E-5);
 }
