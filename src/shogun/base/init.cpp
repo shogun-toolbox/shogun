@@ -14,6 +14,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/linalgrefactor/linalgRefactor.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
@@ -39,6 +40,7 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
+	std::unique_ptr<Linalg> sg_linalg(nullptr);
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -68,6 +70,8 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
+		if (!sg_linalg)
+			sg_linalg = std::unique_ptr<Linalg>(new shogun::Linalg());
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -186,6 +190,11 @@ namespace shogun
 	{
 		SG_REF(sg_rand);
 		return sg_rand;
+	}
+
+	Linalg* get_global_linalg()
+	{
+		return sg_linalg.get();
 	}
 
 	void init_from_env()
