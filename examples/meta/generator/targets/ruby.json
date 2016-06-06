@@ -18,7 +18,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
-        "StaticCall": "$type.$method($arguments)",
+        "StaticCall": "$Modshogun::type.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"Modshogun::$value"
     },
