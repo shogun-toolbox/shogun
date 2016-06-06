@@ -33,7 +33,7 @@
 #define WEIGHTED_MAX_TEST_POWER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/WeightedMaxMeasure.h>
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
 
 namespace shogun
 {
