@@ -1,0 +1,47 @@
+CSVFile f_feats_train("../../data/regression_1d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![preprocess_features]
+PruneVarSubMean SubMean()
+NormOne Normalize()
+SubMean.init(features_train)
+SubMean.apply_to_feature_matrix(features_train)
+SubMean.apply_to_feature_matrix(features_test)
+Normalize.init(features_train)
+Normalize.apply_to_feature_matrix(features_train)
+Normalize.apply_to_feature_matrix(features_test)	
+#![preprocess_features]
+
+#![create_instance]
+real lamda1 = 0.01
+LeastAngleRegression lars(False)
+lars.set_features(features_train)
+lars.set_labels(labels_train)
+lars.set_max_l1_norm(lamda1)
+#![create_instance]
+
+#![train_and_apply]
+lars.train()
+RegressionLabels labels_predict = lars.apply_regression(features_test)
+
+#[!extract_w]
+RealVector weights = lars.get_w()
+#[!extract_w]
+
+#![evaluate_error]
+MeanSquaredError eval()
+real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()
+
