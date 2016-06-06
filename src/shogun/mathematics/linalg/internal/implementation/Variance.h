@@ -96,14 +96,12 @@ struct variance<Backend::EIGEN3, Matrix>
 		REQUIRE(x.num_rows > 0, "Please ensure that m has more than 0 rows.\n")
 		REQUIRE(x.num_cols > 0, "Please ensure that m has more than %d columns.\n")
 
-		SGMatrix<T> squaredResult(x.num_rows, x.num_cols);
 		Eigen::Map<MatrixXt> eigX = x;
-		Eigen::Map<MatrixXt> eigSquaredResult = squaredResult;
+		MatrixXt eigSquaredResult(x.num_rows, x.num_cols);
 
 		T meanVal = mean<Backend::EIGEN3, SGMatrix<T>>::compute(x);		
 		eigSquaredResult.fill(meanVal);
-		eigSquaredResult = eigX - eigSquaredResult;
-		eigSquaredResult = eigSquaredResult.array() * eigSquaredResult.array();
+		eigSquaredResult = (eigX - eigSquaredResult).array().square();
 
 		return ((T) 1 / (x.num_rows*x.num_cols - 1)) * eigSquaredResult.sum();
 	}
@@ -155,15 +153,12 @@ struct vector_variance<Backend::EIGEN3, Vector>
 	{
 		REQUIRE(x.vlen>1, "Please ensure that vector length is greater than 1.\n")
 
-		SGVector<T> squaredResult(x.vlen);
 		Eigen::Map<VectorXt> eigX = x;
-		Eigen::Map<VectorXt> eigSquaredResult = squaredResult;
+		VectorXt eigSquaredResult(x.vlen);
 
 		T meanVal = mean<Backend::EIGEN3, SGVector<T>>::compute(x);
 		eigSquaredResult.fill(meanVal);
-		eigSquaredResult = eigX - eigSquaredResult;
-		eigSquaredResult = eigSquaredResult.array() * eigSquaredResult.array();
-
+		eigSquaredResult = (eigX - eigSquaredResult).array().square();
 		return ((T) 1 / (x.vlen - 1)) * eigSquaredResult.sum();
 	}
 };
@@ -290,21 +285,19 @@ struct rowwise_variance<Backend::EIGEN3, Matrix>
 		REQUIRE(x.num_cols > 0, "Please ensure that x has more than 0 columns.\n")
 
 		SGVector<T> tempVec; //used to store multiple results
-		SGMatrix<T> squaredResult(x.num_rows, x.num_cols);
 		Eigen::Map<MatrixXt> eigX = x;
-		Eigen::Map<MatrixXt> eigSquaredResult = squaredResult;
+		MatrixXt eigSquaredResult(x.num_rows, x.num_cols);
 
 		tempVec = rowwise_mean<Backend::EIGEN3, SGVector<T>>::compute(x, false);
-		Eigen::Map<VectorXt> eigMean = tempVec;
+		Eigen::Map<VectorXt> eigTempVec = tempVec;
 		for(int i = 0; i < x.num_cols; ++i)
 		{
-			eigSquaredResult.col(i) = eigMean;
+			eigSquaredResult.col(i) = eigTempVec;
 		}
-		eigSquaredResult = eigX - eigSquaredResult;
-		eigSquaredResult = eigSquaredResult.array() * eigSquaredResult.array();
+		eigSquaredResult = (eigX - eigSquaredResult).array().square();
 
-		tempVec = rowwise_sum<Backend::EIGEN3, SGMatrix<T>>::compute(squaredResult, false);
-		tempVec.scale((T) 1 / (x.num_cols -1));
+		eigTempVec = eigSquaredResult.rowwise().sum();
+		eigTempVec *= ((T) 1 / (x.num_cols -1));
 		return  tempVec;
 	}
 };
