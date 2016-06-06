@@ -43,8 +43,8 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
 
     # Translate each example
     for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
-    	print("Translating {}".format(os.sep.join([dirRelative,filename])))
-    
+        print("Translating {}".format(os.sep.join([dirRelative,filename])))
+
         # Parse the example file
         with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
             ast = parse(file.read(), os.path.join(dirRelative, filename))
