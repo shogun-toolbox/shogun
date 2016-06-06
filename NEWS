@@ -7,6 +7,7 @@
 	* Features:
 	    - Add new Shogun cookbook for documentation and testing across all 
 	      target languages [Heiko Strathmann, Sergey Lisitsyn].
+           - Add multi thread support for unlocked cross-validation [Saurabh Mahindre]
 	* Bugfixes:
 		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 		- Make Java and CSharp install-dir configurable [Björn Esser].
