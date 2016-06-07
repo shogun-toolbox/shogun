@@ -73,7 +73,7 @@ public:
     GPUBackend* get_gpu_backend();
 
     template <class T>
-    T dot(BaseVector<T> *a, BaseVector<T> *b);
+    T dot(BaseVector<T> const * const a, BaseVector<T> const * const b);
 
     bool hasGPUBackend();
 
