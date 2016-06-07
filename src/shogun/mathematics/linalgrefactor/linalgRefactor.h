@@ -51,32 +51,32 @@ namespace shogun
 /** Linalg Class **/
 class Linalg
 {
-    CPUBackend* cpubackend;
-    GPUBackend* gpubackend;
+    CPUBackend eigenBackend;
+    CPUBackend* m_cpubackend;
+    GPUBackend* m_gpubackend;
 
 public:
     Linalg();
 
-    Linalg(CPUBackend* cpu_backend);
+    Linalg(CPUBackend* cpubackend);
 
-    Linalg(GPUBackend* gpu_backend);
+    Linalg(GPUBackend* gpubackend);
 
-    Linalg(CPUBackend* cpu_backend, GPUBackend* gpu_backend);
+    Linalg(CPUBackend* cpubackend, GPUBackend* gpubackend);
 
-    void set_cpu_backend(const CPUBackend* cpu_backend);
+    void set_cpu_backend(CPUBackend* cpubackend);
 
     CPUBackend* get_cpu_backend();
 
-    void set_gpu_backend(const GPUBackend* gpu_backend);
+    void set_gpu_backend(GPUBackend* gpubackend);
 
     GPUBackend* get_gpu_backend();
 
     template <class T>
-    T dot(BaseVector<T>* a, BaseVector<T>* b);
+    T dot(BaseVector<T> *a, BaseVector<T> *b);
 
     bool hasGPUBackend();
 
-    //virtual const char* get_name() const { return "Linalg"; }
 };
 
 }
