@@ -34,6 +34,18 @@
 }
 
 {
+   shogun pthread_create stack warnings for libgomp (-fopenmp)
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_*
+   obj:*/usr/*lib*/libgomp.so*
+}
+
+{
    libxml strange leaks 64-bit
    Memcheck:Leak
    fun:calloc
