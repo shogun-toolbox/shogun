@@ -12,4 +12,5 @@ template <typename T> T CPUBackend::dot(const CPUVector<T> &a, const CPUVector<T
 }
 
 template int32_t CPUBackend::dot<int32_t>(const CPUVector<int32_t> &a, const CPUVector<int32_t> &b);
+template float32_t CPUBackend::dot<float32_t>(const CPUVector<float32_t> &a, const CPUVector<float32_t> &b);
 }

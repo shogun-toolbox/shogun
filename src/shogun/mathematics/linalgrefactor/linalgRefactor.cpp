@@ -33,7 +33,7 @@ GPUBackend* Linalg::get_gpu_backend()
 }
 
 template <class T>
-T Linalg::dot(BaseVector<T> const * const a, BaseVector<T> const * const b)
+T Linalg::dot(BaseVector<T> *a, BaseVector<T> *b)
 {
     if (a->onGPU() && b->onGPU())
     {
@@ -72,6 +72,6 @@ bool Linalg::hasGPUBackend()
     return m_gpubackend != nullptr;
 }
 
-template int32_t Linalg::dot<int32_t>(BaseVector<int32_t> const * const a, BaseVector<int32_t> const * const b);
-
+template int32_t Linalg::dot<int32_t>(BaseVector<int32_t> *a, BaseVector<int32_t> *b);
+template float32_t Linalg::dot<float32_t>(BaseVector<float32_t> *a, BaseVector<float32_t> *b);
 }

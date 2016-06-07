@@ -12,7 +12,7 @@ template <class T>
 struct BaseVector
 {
     BaseVector(){}
-    const virtual bool onGPU() = 0;
+    virtual bool onGPU() = 0 ;
 
     index_t vlen;
 };
