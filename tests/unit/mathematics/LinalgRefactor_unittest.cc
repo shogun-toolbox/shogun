@@ -41,9 +41,6 @@ TEST(LinalgRefactor, CPUBackend_dot)
     CPUVector<int32_t> a_CPU(a);
     CPUVector<int32_t> b_CPU(b);
 
-    CPUBackend eigenBackend;
-
-    sg_linalg->set_cpu_backend(&eigenBackend);
     auto result = sg_linalg->dot(&a_CPU, &b_CPU);
 
     EXPECT_NEAR(result, 20.0, 1E-15);
