@@ -27,6 +27,17 @@ TEST(Some,basic)
     SG_UNREF(raw);
 }
 
+TEST(Some,reassignment)
+{
+    auto kernel = some<CGaussianKernel>();
+    CGaussianKernel* raw = new CGaussianKernel();
+    EXPECT_EQ(1, kernel->ref_count());
+    EXPECT_EQ(0, raw->ref_count());
+    kernel = raw;
+    EXPECT_TRUE(kernel->equals(raw));
+    EXPECT_EQ(1, kernel->ref_count());
+}
+
 TEST(Some,get)
 {
     auto kernel = some<CGaussianKernel>();

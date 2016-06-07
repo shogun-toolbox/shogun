@@ -31,6 +31,7 @@ namespace shogun
 			Some(const Some<T>& other);
 			Some(Some<T>&& other);
 			Some& operator=(const Some<T>& other);
+			Some& operator=(T* other);
 			~Some();
 
 			/** Casts the underlying object back to raw pointer
@@ -45,6 +46,7 @@ namespace shogun
 			T* operator->();
 		private:
 			using std::shared_ptr<T>::get;
+			using std::shared_ptr<T>::reset;
 	};
 
 	template <typename T>
@@ -65,6 +67,13 @@ namespace shogun
 	template <typename T>
 	Some<T>::~Some()
 	{
+	}
+	template <typename T>
+	Some<T>& Some<T>::operator=(T* other)
+	{
+		this->reset(other);
+		SG_REF(this->get());
+		return *this;
 	}
 	template <typename T>
 	Some<T>::operator T*()
