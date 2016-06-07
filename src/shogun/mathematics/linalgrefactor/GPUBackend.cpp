@@ -25,5 +25,5 @@ template <typename T> T GPUBackend::dot(const GPU_Vector<T> &a, const GPU_Vector
 }
 
 template int32_t GPUBackend::dot<int32_t>(const GPU_Vector<int32_t> &a, const GPU_Vector<int32_t> &b);
-
+template float32_t GPUBackend::dot<float32_t>(const GPU_Vector<float32_t> &a, const GPU_Vector<float32_t> &b);
 }

@@ -20,7 +20,7 @@ struct CPUVector : public BaseVector<T>
 
     CPUVector(const CPUVector<T> &vector);
 
-    const bool onGPU() { return false; }
+    bool onGPU() { return false; }
 };
 
 }
