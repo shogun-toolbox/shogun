@@ -16,6 +16,7 @@ TEST(Some,basic)
         EXPECT_EQ(1, kernel->ref_count());
         EXPECT_EQ(1, kernel->ref_count());
         raw = kernel;
+        SG_REF(raw);
         EXPECT_TRUE(kernel->equals(raw));
 
         // reference is held
@@ -42,6 +43,7 @@ TEST(Some,get)
 {
     auto kernel = some<CGaussianKernel>();
     CGaussianKernel* raw = kernel;
+    SG_REF(raw);
     EXPECT_TRUE(kernel->equals(raw));
     EXPECT_EQ(2, raw->ref_count());
     SG_UNREF(raw);
