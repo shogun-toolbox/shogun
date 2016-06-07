@@ -40,7 +40,6 @@ namespace shogun
 {
 
 class CKernel;
-class CCustomDistance;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
 class CKernelSelectionStrategy;
@@ -96,7 +95,6 @@ public:
 	void add_kernel(CKernel *kernel);
 	void select_kernel();
 
-	CCustomDistance* compute_distance();
 	void set_train_test_ratio(float64_t ratio);
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();

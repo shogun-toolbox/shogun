@@ -26,6 +26,8 @@
 namespace shogun
 {
 
+class CCustomDistance;
+
 class CTwoDistributionTest : public CHypothesisTest
 {
 public:
@@ -43,6 +45,8 @@ public:
 
 	void set_num_samples_q(index_t num_samples_from_q);
 	const index_t get_num_samples_q() const;
+
+	CCustomDistance* compute_distance();
 
 	virtual float64_t compute_statistic()=0;
 	virtual SGVector<float64_t> sample_null()=0;
