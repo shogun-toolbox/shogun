@@ -59,5 +59,5 @@ GPU_Vector<T>& GPU_Vector<T>::operator=(const GPU_Vector<T> &other)
 template <class T> GPU_Vector<T>::~GPU_Vector() { }
 
 template struct GPU_Vector<int32_t>;
-
+template struct GPU_Vector<float32_t>;
 }

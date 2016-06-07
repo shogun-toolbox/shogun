@@ -42,5 +42,5 @@ GPU_Vector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
 #endif
 
 template struct GPU_Vector<int32_t>;
-
+template struct GPU_Vector<float32_t>;
 }
