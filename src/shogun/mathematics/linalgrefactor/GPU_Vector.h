@@ -32,7 +32,7 @@ public:
 
     GPU_Vector<T>& operator=(const GPU_Vector<T> &other);
 
-    const bool onGPU() { return true; }
+    bool onGPU() { return true; }
 
 public:
     /** Vector length */
