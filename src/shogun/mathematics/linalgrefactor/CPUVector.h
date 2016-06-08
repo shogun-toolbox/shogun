@@ -11,16 +11,19 @@ namespace shogun
 template <class T>
 struct CPUVector : public BaseVector<T>
 {
-    T* CPUptr;
-    index_t vlen;
+	T* CPUptr;
+	index_t vlen;
 
-    CPUVector();
+	CPUVector();
 
-    CPUVector(const SGVector<T> &vector);
+	CPUVector(const SGVector<T> &vector);
 
-    CPUVector(const CPUVector<T> &vector);
+	CPUVector(const CPUVector<T> &vector);
 
-    bool onGPU() { return false; }
+	inline bool onGPU()
+    	{
+        	return false;
+	}
 };
 
 }

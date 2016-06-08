@@ -1,12 +1,12 @@
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/linalgrefactor/linalgRefactor.h>
+#include <shogun/mathematics/linalgrefactor/SGLinalg.h>
 #include <shogun/lib/SGVector.h>
 #include <memory>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 
-TEST(LinalgRefactor, CPU_Vector_convert)
+TEST(SGLinalg, CPU_Vector_convert)
 {
     const index_t size = 10;
     SGVector<int32_t> a(size);
@@ -18,7 +18,7 @@ TEST(LinalgRefactor, CPU_Vector_convert)
         EXPECT_NEAR(a[i], (a_CPU.CPUptr)[i], 1E-15);
 }
 
-TEST(LinalgRefactor, CPU_Vector_copy)
+TEST(SGLinalg, CPU_Vector_copy)
 {
     const index_t size = 10;
     SGVector<int32_t> a(size);
@@ -31,7 +31,7 @@ TEST(LinalgRefactor, CPU_Vector_copy)
         EXPECT_NEAR((a_CPU.CPUptr)[i], (b_CPU.CPUptr)[i], 1E-15);
 }
 
-TEST(LinalgRefactor, CPUBackend_dot)
+TEST(SGLinalg, CPUBackend_dot)
 {
     const index_t size=10;
     SGVector<int32_t> a(size), b(size);
@@ -48,30 +48,31 @@ TEST(LinalgRefactor, CPUBackend_dot)
 
 #ifdef HAVE_VIENNACL
 
-TEST(LinalgRefactor, GPU_Vector_copy)
+TEST(SGLinalg, GPU_Vector_copy)
 {
     const index_t size=10;
     SGVector<int32_t> a(size), b(size);
         for (index_t i = 0; i < size; ++i) a[i] = i;
 
-    GPU_Vector<int32_t> a_GPU(a);
-    GPU_Vector<int32_t> b_GPU;
+    GPUVector<int32_t> a_GPU(a);
+    GPUVector<int32_t> b_GPU;
     b_GPU = a_GPU;
 }
 
-TEST(LinalgRefactor, GPUBackend_dot)
+TEST(SGLinalg, GPUBackend_dot)
 {
     const index_t size=10;
     SGVector<int32_t> a(size), b(size);
     a.set_const(1);
     b.set_const(2);
 
-    GPU_Vector<int32_t> a_GPU(a);
-    GPU_Vector<int32_t> b_GPU(b);
+    GPUVector<int32_t> a_GPU(a);
+    GPUVector<int32_t> b_GPU(b);
 
-    GPUBackend ViennaCLBackend;
+    std::unique_ptr<GPUBackend> ViennaCLBackend;
+    ViennaCLBackend = std::unique_ptr<GPUBackend>(new GPUBackend);
 
-    sg_linalg->set_gpu_backend(&ViennaCLBackend);
+    sg_linalg->set_gpu_backend(std::move(ViennaCLBackend));
     auto result = sg_linalg->dot(&a_GPU, &b_GPU);
 
     EXPECT_NEAR(result, 20.0, 1E-15);

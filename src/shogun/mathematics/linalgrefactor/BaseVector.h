@@ -11,10 +11,13 @@ namespace shogun
 template <class T>
 struct BaseVector
 {
-    BaseVector(){}
-    virtual bool onGPU() = 0 ;
+	BaseVector()
+	{
+	}
+    
+	virtual bool onGPU() = 0 ;
 
-    index_t vlen;
+	index_t vlen;
 };
 }
 
