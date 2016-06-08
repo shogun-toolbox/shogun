@@ -46,8 +46,6 @@ namespace shogun
 template <class T>
 struct GPUVector : public BaseVector<T>
 {
-	friend class GPUBackend;
-
 	struct GPUArray;
 	std::unique_ptr<GPUArray> gpuarray;
 
