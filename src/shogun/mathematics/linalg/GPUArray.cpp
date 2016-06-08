@@ -31,47 +31,59 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/GPUVector.h>
-#include <memory>
+#include <shogun/mathematics/linalg/GPUArray.h>
 
-#ifdef HAVE_VIENNACL
-#include <viennacl/vector.hpp>
-#endif
-
-#ifndef GPU_ARRAY_H__
-#define GPU_ARRAY_H__
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-template <class T>
-struct GPUVector<T>::GPUArray
-{
-
 #ifdef HAVE_VIENNACL
-	typedef viennacl::backend::mem_handle VCLMemoryArray;
-	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
-	typedef viennacl::vector<T> VCLVector;
 
-	std::shared_ptr<VCLMemoryArray> GPUptr;
-	index_t vlen;
-	index_t offset;
+template <class T>
+GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
+:GPUptr(new VCLMemoryArray()), vlen(vector.vlen), offset(0)
+{
+	viennacl::backend::memory_create(*GPUptr, sizeof(T)*vlen,
+        	viennacl::context());
 
-	GPUArray(const SGVector<T> &vector);
-	GPUArray(const GPUVector<T>::GPUArray &array);
+	viennacl::backend::memory_write(*GPUptr, 0, vlen*sizeof(T),
+        	vector.vector);
+}
 
-	VCLVectorBase GPUvec();
-	VCLVector vector();
+template <class T>
+GPUVector<T>::GPUArray::GPUArray(const GPUVector<T>::GPUArray &array)
+{
+	GPUptr = array.GPUptr;
+	vlen = array.vlen;
+	offset = array.offset;
+}
 
-#else //HAVE_VIENNACL
-	GPUArray(const SGVector<T> &vector);
+template <class T>
+typename GPUVector<T>::GPUArray::VCLVectorBase GPUVector<T>::GPUArray::GPUvec()
+{
+	 return VCLVectorBase(*GPUptr, vlen, offset, 1);
+}
+
+template <class T>
+typename GPUVector<T>::GPUArray::VCLVector GPUVector<T>::GPUArray::vector()
+{
+	return VCLVector(GPUVector<T>::GPUArray::GPUvec());
+}
+
+#else // HAVE_VIENNACL
+
+template <class T>
+GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
+{
+	SG_SERROR("User did not register GPU backend. \n");
+}
+
 #endif //HAVE_VIENNACL
 
-};
+template struct GPUVector<int32_t>;
+template struct GPUVector<float32_t>;
 
 }
 
-#endif
+#endif //HAVE_CXX11

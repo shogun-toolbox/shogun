@@ -34,43 +34,72 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/linalgrefactor/CPUBackend.h>
-#include <shogun/mathematics/linalgrefactor/GPUBackend.h>
-#include <shogun/mathematics/linalgrefactor/CPUVector.h>
-#include <shogun/mathematics/linalgrefactor/GPUVector.h>
+#include <shogun/mathematics/linalg/CPUBackend.h>
+#include <shogun/mathematics/linalg/GPUBackend.h>
+#include <shogun/mathematics/linalg/CPUVector.h>
+#include <shogun/mathematics/linalg/GPUVector.h>
 #include <memory>
 
 #ifndef LINALGR_H__
 #define LINALGR_H__
 
+#ifdef HAVE_CXX11
+
 namespace shogun
 {
+
 /** Linalg Class **/
 class SGLinalg
 {
-	std::unique_ptr<CPUBackend> m_cpubackend;
-	std::unique_ptr<GPUBackend> m_gpubackend;
+	/** pointer to cpubackend */
+	std::shared_ptr<CPUBackend> m_cpubackend;
+
+	/** pointer to gpubackend */
+	std::shared_ptr<GPUBackend> m_gpubackend;
 
 public:
+	/** Default Constructor */
 	SGLinalg();
 
-	SGLinalg(std::unique_ptr<CPUBackend> cpubackend);
+	/** Constructor: explicitly set CPU Backend */
+	SGLinalg(std::shared_ptr<CPUBackend> cpubackend);
 
-	SGLinalg(std::unique_ptr<GPUBackend> gpubackend);
+	/** Constructor: explicitly set GPU Backend */
+	SGLinalg(std::shared_ptr<GPUBackend> gpubackend);
 
-	SGLinalg(std::unique_ptr<CPUBackend> cpubackend, std::unique_ptr<GPUBackend> gpubackend);
+	/** Constructor: explicitly set CPU and GPU Backend */
+	SGLinalg(std::shared_ptr<CPUBackend> cpubackend, std::shared_ptr<GPUBackend> gpubackend);
 
-	void set_cpu_backend(std::unique_ptr<CPUBackend> cpubackend);
+	/** set CPU backend
+	 * @param cpubackend cpubackend
+	 */
+	void set_cpu_backend(std::shared_ptr<CPUBackend> cpubackend);
 
-	CPUBackend* get_cpu_backend();
+	/** get CPU backend */
+	std::shared_ptr<CPUBackend> get_cpu_backend();
 
-	void set_gpu_backend(std::unique_ptr<GPUBackend> gpubackend);
+	/** set GPU backend
+	 * @param gpubackend gpubackend
+	 */
+	void set_gpu_backend(std::shared_ptr<GPUBackend> gpubackend);
 
-	GPUBackend* get_gpu_backend();
+	/** get GPU backend */
+	std::shared_ptr<GPUBackend> get_gpu_backend();
 
+
+	/**
+	 * Wrapper method of implementation of vector dot-product that works
+	 * with generic vectors
+	 *
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
+	 * as \f$\sum_i a_i b_i\f$
+	 */
 	template <class T>
 	T dot(BaseVector<T> *a, BaseVector<T> *b) const;
 
+	/** Check whether gpubackend is registered by user */
 	bool hasGPUBackend() const;
 
 };
@@ -81,4 +110,7 @@ namespace shogun
 {
 	extern std::unique_ptr<SGLinalg> sg_linalg;
 }
+
+#endif //HAVE_CXX11
+
 #endif

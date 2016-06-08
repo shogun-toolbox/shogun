@@ -33,25 +33,64 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/BaseVector.h>
-#include <shogun/mathematics/linalgrefactor/GPUVector.h>
+#include <shogun/mathematics/linalg/BaseVector.h>
 #include <memory>
 
-#ifndef GPUBACKEND_H__
-#define GPUBACKEND_H__
+#ifndef GPU_Vector_H__
+#define GPU_Vector_H__
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-class GPUBackend
+/** GPU vector wrapper structure */
+template <class T>
+struct GPUVector : public BaseVector<T>
 {
+	/** Structure for different types of GPU vectors */
+	struct GPUArray;
+
+	/** Opaque pointer of GPUArray */
+	std::unique_ptr<GPUArray> gpuarray;
+
+	/** Default Constructor */
+	GPUVector();
+
+	/** Wrap SGVector */
+	GPUVector(const SGVector<T> &vector);
+
+	/** Copy Constructor*/
+	GPUVector(const GPUVector<T> &vector);
+
+	/** Empty destructor */
+	~GPUVector();
+
+	/** needs to be overridden to initialize empty data */
+	void init();
+
+	/** Overload operator "=" */
+	GPUVector<T>& operator=(const GPUVector<T> &other);
+
+	/** Data Storage */
+	inline bool onGPU()
+	{
+		return true;
+	}
+
 public:
-	template <typename T>
-	T dot(const GPUVector<T> &a, const GPUVector<T> &b) const;
+	/** Vector length */
+	index_t vlen;
+
+	/** Offset for the memory segment, i.e the data of the vector
+	 * starts at vector+offset
+	 */
+	index_t offset;
 };
 
 }
+
+#endif //HAVE_CXX11
 
 #endif

@@ -31,28 +31,33 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalgrefactor/CPUVector.h>
+#include <shogun/mathematics/linalg/CPUVector.h>
 
-#ifndef CPUBACKEND_H__
-#define CPUBACKEND_H__
+#ifdef HAVE_CXX11
 
 namespace shogun
+
 {
-
-/** Backend Class **/
-class CPUBackend
+template <class T>
+CPUVector<T>::CPUVector():CPUptr(nullptr), vlen(0)
 {
-public:
+}
 
-	CPUBackend();
-	CPUBackend(const CPUBackend& cpubackend);
+template <class T>
+CPUVector<T>::CPUVector(const SGVector<T> &vector)
+: CPUptr(vector.vector), vlen(vector.vlen)
+{
+}
 
-	template <typename T>
-	T dot(const CPUVector<T> &a, const CPUVector<T> &b) const;
-};
+template <class T>
+CPUVector<T>::CPUVector(const CPUVector<T> &vector)
+: CPUptr(vector.CPUptr), vlen(vector.vlen)
+{
+}
+
+template struct CPUVector<int32_t>;
+template struct CPUVector<float32_t>;
 
 }
 
-#endif
+#endif //HAVE_CXX11
