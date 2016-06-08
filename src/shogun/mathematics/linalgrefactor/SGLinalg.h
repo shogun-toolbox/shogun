@@ -1,7 +1,4 @@
 /*
- * -*- coding: utf-8 -*-
- * vim: set fileencoding=utf-8
- *
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
  *
@@ -31,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors:
+ * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
 #include <shogun/lib/config.h>
