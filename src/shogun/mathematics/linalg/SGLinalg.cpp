@@ -31,50 +31,50 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/SGLinalg.h>
+#include <shogun/mathematics/linalg/SGLinalg.h>
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-SGLinalg::SGLinalg():m_cpubackend(std::unique_ptr<CPUBackend>(new CPUBackend)), m_gpubackend(nullptr)
+SGLinalg::SGLinalg():m_cpubackend(std::shared_ptr<CPUBackend>(new CPUBackend)), m_gpubackend(nullptr)
 {
 }
 
-SGLinalg::SGLinalg(std::unique_ptr<CPUBackend> cpubackend)
-:m_cpubackend(std::unique_ptr<CPUBackend>(new CPUBackend(*(cpubackend)))), m_gpubackend(nullptr)
+SGLinalg::SGLinalg(std::shared_ptr<CPUBackend> cpubackend)
+:m_cpubackend(cpubackend), m_gpubackend(nullptr)
 {
 }
 
-SGLinalg::SGLinalg(std::unique_ptr<GPUBackend> gpubackend)
-:m_cpubackend(std::unique_ptr<CPUBackend>(new CPUBackend)),
- m_gpubackend(std::unique_ptr<GPUBackend>(new GPUBackend(*(gpubackend))))
+SGLinalg::SGLinalg(std::shared_ptr<GPUBackend> gpubackend)
+:m_cpubackend(std::shared_ptr<CPUBackend>(new CPUBackend)), m_gpubackend(gpubackend)
  {
  }
 
-SGLinalg::SGLinalg(std::unique_ptr<CPUBackend> cpubackend, std::unique_ptr<GPUBackend> gpubackend)
-:m_cpubackend(std::unique_ptr<CPUBackend>(new CPUBackend(*(cpubackend)))),
- m_gpubackend(std::unique_ptr<GPUBackend>(new GPUBackend(*(gpubackend))))
+SGLinalg::SGLinalg(std::shared_ptr<CPUBackend> cpubackend, std::shared_ptr<GPUBackend> gpubackend)
+:m_cpubackend(cpubackend), m_gpubackend(gpubackend)
  {
  }
 
-void SGLinalg::set_cpu_backend(std::unique_ptr<CPUBackend> cpubackend)
+void SGLinalg::set_cpu_backend(std::shared_ptr<CPUBackend> cpubackend)
 {
-	m_cpubackend.reset(new CPUBackend(*(cpubackend)));
+	m_cpubackend = cpubackend;
 }
 
-CPUBackend* SGLinalg::get_cpu_backend()
+std::shared_ptr<CPUBackend> SGLinalg::get_cpu_backend()
 {
-	return m_cpubackend.get();
+	return m_cpubackend;
 }
 
-void SGLinalg::set_gpu_backend(std::unique_ptr<GPUBackend> gpubackend)
+void SGLinalg::set_gpu_backend(std::shared_ptr<GPUBackend> gpubackend)
 {
-	m_gpubackend.reset(new GPUBackend(*(gpubackend)));
+	m_gpubackend = gpubackend;
 }
 
-GPUBackend* SGLinalg::get_gpu_backend()
+std::shared_ptr<GPUBackend> SGLinalg::get_gpu_backend()
 {
-	return m_gpubackend.get();
+	return m_gpubackend;
 }
 
 template <class T>
@@ -121,3 +121,5 @@ bool SGLinalg::hasGPUBackend() const
 template int32_t SGLinalg::dot<int32_t>(BaseVector<int32_t> *a, BaseVector<int32_t> *b) const;
 template float32_t SGLinalg::dot<float32_t>(BaseVector<float32_t> *a, BaseVector<float32_t> *b) const;
 }
+
+#endif //HAVE_CXX11

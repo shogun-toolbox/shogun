@@ -33,26 +33,35 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/BaseVector.h>
+#include <shogun/mathematics/linalg/BaseVector.h>
 
 #ifndef CPUVECTOR_H__
 #define CPUVECTOR_H__
 
+#ifdef HAVE_CXX11
+
 namespace shogun
 {
 
+/** CPU vector structure */
 template <class T>
 struct CPUVector : public BaseVector<T>
 {
+	/** vector  */
 	T* CPUptr;
+	/** length of vector  */
 	index_t vlen;
 
+	/** Default Constructor */
 	CPUVector();
 
+	/** Wrap SGVector */
 	CPUVector(const SGVector<T> &vector);
 
+	/** Copy Constructor*/
 	CPUVector(const CPUVector<T> &vector);
 
+	/** Data Storage */
 	inline bool onGPU()
     	{
         	return false;
@@ -60,5 +69,7 @@ struct CPUVector : public BaseVector<T>
 };
 
 }
+
+#endif //HAVE_CXX11
 
 #endif

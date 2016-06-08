@@ -31,29 +31,33 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/CPUBackend.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
+
+#ifndef BASEVECTOR_H__
+#define BASEVECTOR_H__
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-CPUBackend::CPUBackend()
+/** Vector structure
+ * Base vector for both CPU and GPU vector
+ */
+template <class T>
+struct BaseVector
 {
+	/** Default Constructor */
+	BaseVector()
+	{
+	}
+
+	/** Data Storage */
+	virtual bool onGPU() = 0 ;
+};
 }
 
-CPUBackend::CPUBackend(const CPUBackend& cpubackend)
-{
-}
+#endif // HAVE_CXX11
 
-template <typename T>
-T CPUBackend::dot(const CPUVector<T> &a, const CPUVector<T> &b) const
-{
-	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
-	Eigen::Map<VectorXt> vec_a(a.CPUptr, a.vlen);
-	Eigen::Map<VectorXt> vec_b(b.CPUptr, b.vlen);
-	return vec_a.dot(vec_b);
-}
-
-template int32_t CPUBackend::dot<int32_t>(const CPUVector<int32_t> &a, const CPUVector<int32_t> &b) const;
-template float32_t CPUBackend::dot<float32_t>(const CPUVector<float32_t> &a, const CPUVector<float32_t> &b) const;
-
-}
+#endif

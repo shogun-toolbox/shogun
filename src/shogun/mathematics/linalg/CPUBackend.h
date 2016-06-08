@@ -32,26 +32,43 @@
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/CPUVector.h>
 
-#ifndef BASEVECTOR_H__
-#define BASEVECTOR_H__
+#ifndef CPUBACKEND_H__
+#define CPUBACKEND_H__
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-/** Vector structure **/
-template <class T>
-struct BaseVector
+/** CPU Backend Class */
+class CPUBackend
 {
-	BaseVector()
-	{
-	}
+public:
 
-	virtual bool onGPU() = 0 ;
+	/** Default Constructor */
+	CPUBackend();
 
-	index_t vlen;
+	/** Copy constructor */
+	CPUBackend(const CPUBackend& cpubackend);
+
+	/**
+	 * Implementation of Eigen3 vector dot-product that works
+	 * with CPUVectors (SGVectors)
+	 *
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
+	 * as \f$\sum_i a_i b_i\f$
+	 */
+	template <typename T>
+	T dot(const CPUVector<T> &a, const CPUVector<T> &b) const;
 };
+
 }
+
+#endif //HAVE_CXX11
 
 #endif
