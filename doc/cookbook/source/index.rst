@@ -49,3 +49,13 @@ Clustering
    :glob:
 
    examples/clustering/**
+
+Dissimilarity
+--------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/dissimilarity/**
+
