@@ -22,7 +22,7 @@ namespace shogun
 	class Version;
 	class Parallel;
 	class CRandom;
-	class Linalg;
+	class SGLinalg;
 
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
@@ -113,13 +113,13 @@ CRandom* get_global_rand();
  *
  * @param linalg linalg object to use
  */
-void set_global_linlg(Linalg* linalg);
+void set_global_linlg(SGLinalg* linalg);
 
 /** get the global linalg library object
  *
  * @return linalg object
  */
-Linalg* get_global_linlg();
+SGLinalg* get_global_linlg();
 
 /** Checks environment variables and modifies global objects
  */
