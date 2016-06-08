@@ -25,7 +25,7 @@ class FastParser:
         """
 
         # Add trailing endline if missing
-        if programString[-1] != "\n":
+        if len(programString) and programString[-1] != "\n":
             programString += "\n"
 
         # Parse program and add FilePath key to object
