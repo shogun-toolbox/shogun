@@ -75,8 +75,8 @@ TEST(NeuralNetwork, backpropagation_linear)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l2_coefficient = 0.01;
-	network->l1_coefficient = 0.03;
+	network->set_l2_coefficient(0.01);
+	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
@@ -107,8 +107,8 @@ TEST(NeuralNetwork, neural_layers_builder)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l2_coefficient = 0.01;
-	network->l1_coefficient = 0.03;
+	network->set_l2_coefficient(0.01);
+	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
@@ -142,8 +142,8 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l1_coefficient = 0.03;
-	network->l2_coefficient = 0.01;
+	network->set_l1_coefficient(0.03);
+	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
@@ -174,8 +174,8 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l1_coefficient = 0.03;
-	network->l2_coefficient = 0.01;
+	network->set_l1_coefficient(0.03);
+	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
@@ -206,8 +206,8 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l1_coefficient = 0.03;
-	network->l2_coefficient = 0.01;
+	network->set_l1_coefficient(0.03);
+	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
@@ -241,8 +241,8 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	network->connect(4,5);
 
 	network->initialize_neural_network();
-	network->l1_coefficient = 0.03;
-	network->l2_coefficient = 0.01;
+	network->set_l1_coefficient(0.03);
+	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
@@ -284,7 +284,7 @@ TEST(NeuralNetwork, binary_classification)
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
-	network->epsilon = 1e-8;
+	network->set_epsilon(1e-8);
 
 	network->set_labels(labels);
 	network->train(features);
@@ -343,7 +343,7 @@ TEST(NeuralNetwork, multiclass_classification)
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
-	network->epsilon = 1e-8;
+	network->set_epsilon(1e-8);
 
 	network->set_labels(labels);
 	network->train(features);
@@ -394,7 +394,7 @@ TEST(NeuralNetwork, regression)
 	network->quick_connect();
 	network->initialize_neural_network(1e-6);
 
-	network->epsilon = 1e-6;
+	network->set_epsilon(1e-6);
 
 	network->set_labels(labels);
 	network->train(features);
@@ -448,10 +448,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
-	network->optimization_method = NNOM_GRADIENT_DESCENT;
-	network->gd_learning_rate = 10.0;
-	network->epsilon = 0.0;
-	network->max_num_epochs = 1000;
+	network->set_optimization_method(NNOM_GRADIENT_DESCENT);
+	network->set_gd_learning_rate(10.0);
+	network->set_epsilon(0.0);
+	network->set_max_num_epochs(1000);
 
 	network->set_labels(labels);
 	network->train(features);
