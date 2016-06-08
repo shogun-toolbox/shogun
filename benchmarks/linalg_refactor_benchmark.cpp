@@ -1,6 +1,6 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/linalgRefactor.h>
+#include <shogun/mathematics/linalgrefactor/SGLinalg.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <viennacl/linalg/inner_prod.hpp>
@@ -61,8 +61,10 @@ struct Data
 		Bg = std::unique_ptr<BaseVector<value_type>> (init_g(B));
 
 		init_shogun_with_defaults();
-		GPUBackend viennaclBackend;
-		sg_linalg->set_gpu_backend(&viennaclBackend);
+
+		std::unique_ptr<GPUBackend> ViennaCLBackend;
+	    ViennaCLBackend = std::unique_ptr<GPUBackend>(new GPUBackend);
+	    sg_linalg->set_gpu_backend(std::move(ViennaCLBackend));
 	}
 
 	/** SGVector **/
@@ -92,14 +94,14 @@ struct Data
 	std::unique_ptr<BaseVector<value_type>> init_c(SGVector<value_type> m)
 	{
 		std::unique_ptr<CPUVector<value_type>> mc(new CPUVector<value_type>(m));
-		return std::move(mc);
+        	return std::move(mc);
 	}
 
 	/** GPUVector derived from BaseVector **/
 	std::unique_ptr<BaseVector<value_type>> init_g(SGVector<value_type> m)
 	{
-		std::unique_ptr<GPU_Vector<value_type>> mg(new GPU_Vector<value_type>(m));
-		return std::move(mg);
+        	std::unique_ptr<GPUVector<value_type>> mg(new GPUVector<value_type>(m));
+        	return std::move(mg);
 	}
 
 	SGVector<value_type> A;
@@ -130,13 +132,31 @@ BENCHMARK_P(CPUVector, dot_eigen3, 10, 1000,
 	auto C = sg_linalg->dot(A, B);
 }
 
-BENCHMARK_P(GPU_Vector, dot_explict_viennacl, 10, 1000,
+BENCHMARK_P(CPUVector_both_stack, dot_eigen3_cpu, 10, 1000,
+	(const CPUVector<T> &A, const CPUVector<T> &B, CPUBackend &cpubackend))
+{
+	auto C = cpubackend.dot(A, B);
+}
+
+BENCHMARK_P(CPUVector_stack, dot_eigen3_cpu, 10, 1000,
+	(CPUVector<T> *A, CPUVector<T> *B, CPUBackend &cpubackend))
+{
+	auto C = cpubackend.dot(*A, *B);
+}
+
+BENCHMARK_P(CPUVector_heap, dot_eigen3_cpu, 10, 1000,
+	(CPUVector<T> *A, CPUVector<T> *B, CPUBackend *cpubackend))
+{
+	auto C = cpubackend->dot(*A, *B);
+}
+
+BENCHMARK_P(GPUVector, dot_explict_viennacl, 10, 1000,
 	(const VCLVectorBase &A, const VCLVectorBase &B))
 {
 	auto C = viennacl::linalg::inner_prod(A, B);
 }
 
-BENCHMARK_P(GPU_Vector, dot_viennacl, 10, 1000,
+BENCHMARK_P(GPUVector, dot_viennacl, 10, 1000,
 	(BaseVector<T> *A, BaseVector<T> *B))
 {
 	auto C = sg_linalg->dot(A, B);
@@ -145,5 +165,5 @@ BENCHMARK_P(GPU_Vector, dot_viennacl, 10, 1000,
 Data<T> data(1000000);
 BENCHMARK_P_INSTANCE(CPUVector, dot_explict_eigen3, (data.A, data.B));
 BENCHMARK_P_INSTANCE(CPUVector, dot_eigen3, (data.Ac.get(), data.Bc.get()));
-BENCHMARK_P_INSTANCE(GPU_Vector, dot_explict_viennacl, (data.Av, data.Bv));
-BENCHMARK_P_INSTANCE(GPU_Vector, dot_viennacl, (data.Ag.get(), data.Bg.get()));
+BENCHMARK_P_INSTANCE(GPUVector, dot_explict_viennacl, (data.Av, data.Bv));
+BENCHMARK_P_INSTANCE(GPUVector, dot_viennacl, (data.Ag.get(), data.Bg.get()));
