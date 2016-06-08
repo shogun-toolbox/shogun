@@ -31,55 +31,33 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/GPUArray.h>
+#include <shogun/mathematics/linalg/CPUBackend.h>
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-#ifdef HAVE_VIENNACL
-
-template <class T>
-GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
-:GPUptr(new VCLMemoryArray()), vlen(vector.vlen), offset(0)
+CPUBackend::CPUBackend()
 {
-	viennacl::backend::memory_create(*GPUptr, sizeof(T)*vlen,
-        	viennacl::context());
-
-	viennacl::backend::memory_write(*GPUptr, 0, vlen*sizeof(T),
-        	vector.vector);
 }
 
-template <class T>
-GPUVector<T>::GPUArray::GPUArray(const GPUVector<T>::GPUArray &array)
+CPUBackend::CPUBackend(const CPUBackend& cpubackend)
 {
-	GPUptr = array.GPUptr;
-	vlen = array.vlen;
-	offset = array.offset;
 }
 
-template <class T>
-typename GPUVector<T>::GPUArray::VCLVectorBase GPUVector<T>::GPUArray::GPUvec()
+template <typename T>
+T CPUBackend::dot(const CPUVector<T> &a, const CPUVector<T> &b) const
 {
-        return VCLVectorBase(*GPUptr, vlen, offset, 1);
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
+	Eigen::Map<VectorXt> vec_a(a.CPUptr, a.vlen);
+	Eigen::Map<VectorXt> vec_b(b.CPUptr, b.vlen);
+	return vec_a.dot(vec_b);
 }
 
-template <class T>
-typename GPUVector<T>::GPUArray::VCLVector GPUVector<T>::GPUArray::vector()
-{
-	return VCLVector(GPUVector<T>::GPUArray::GPUvec());
-}
-
-#else // HAVE_VIENNACL
-
-template <class T>
-GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
-{
-	SG_SERROR("User did not register GPU backend. \n");
-}
-
-#endif //HAVE_VIENNACL
-
-template struct GPUVector<int32_t>;
-template struct GPUVector<float32_t>;
+template int32_t CPUBackend::dot<int32_t>(const CPUVector<int32_t> &a, const CPUVector<int32_t> &b) const;
+template float32_t CPUBackend::dot<float32_t>(const CPUVector<float32_t> &a, const CPUVector<float32_t> &b) const;
 
 }
+
+#endif //HAVE_CXX11

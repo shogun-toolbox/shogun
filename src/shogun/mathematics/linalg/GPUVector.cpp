@@ -31,8 +31,10 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/GPUVector.h>
-#include <shogun/mathematics/linalgrefactor/GPUArray.h>
+#include <shogun/mathematics/linalg/GPUVector.h>
+#include <shogun/mathematics/linalg/GPUArray.h>
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
@@ -100,3 +102,5 @@ template struct GPUVector<int32_t>;
 template struct GPUVector<float32_t>;
 
 }
+
+#endif //HAVE_CXX11

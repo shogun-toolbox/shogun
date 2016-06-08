@@ -31,33 +31,70 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/GPUBackend.h>
-#include <shogun/mathematics/linalgrefactor/GPUArray.h>
+#include <shogun/lib/config.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalgrefactor/GPUVector.h>
+#include <memory>
 
 #ifdef HAVE_VIENNACL
 #include <viennacl/vector.hpp>
-#include <viennacl/linalg/inner_prod.hpp>
 #endif
+
+#ifndef GPU_ARRAY_H__
+#define GPU_ARRAY_H__
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-template <typename T>
-T GPUBackend::dot(const GPUVector<T> &a, const GPUVector<T> &b) const
+/** GPU array structure */
+template <class T>
+struct GPUVector<T>::GPUArray
 {
+
 #ifdef HAVE_VIENNACL
-	/**
-	* Method that computes the dot product using ViennaCL
-	*/
-	return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
+	typedef viennacl::backend::mem_handle VCLMemoryArray;
+	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
+	typedef viennacl::vector<T> VCLVector;
 
-#else
-	SG_SERROR("User did not register GPU backend. \n");
-	return T(0);
+	/** Memory segment holding the data for the vector */
+	std::shared_ptr<VCLMemoryArray> GPUptr;
+
+	/** Vector length */
+	index_t vlen;
+	
+	/** Offset for the memory segment, i.e the data of the vector
+	 * starts at vector+offset
+	 */
+	index_t offset;
+
+	/** Creates a gpu vector with SGVector */
+	GPUArray(const SGVector<T> &vector);
+
+	/** Copy Constructor */
+	GPUArray(const GPUVector<T>::GPUArray &array);
+
+	/** Returns a ViennaCL vector wrapped around the data of this vector. Can be
+	 * used to call native ViennaCL methods on this vector
+	 */
+	VCLVectorBase GPUvec();
+
+	/** Cast of VCLVectorBase to VCLVector
+	 * allows element access
+	 */
+	VCLVector vector();
+
+#else //HAVE_VIENNACL
+	/** Creates a gpu vector with SGVector */
+	GPUArray(const SGVector<T> &vector);
+#endif //HAVE_VIENNACL
+
+};
+
+}
+
+#endif //HAVE_CXX11
+
 #endif
-}
-
-template int32_t GPUBackend::dot<int32_t>(const GPUVector<int32_t> &a, const GPUVector<int32_t> &b) const;
-template float32_t GPUBackend::dot<float32_t>(const GPUVector<float32_t> &a, const GPUVector<float32_t> &b) const;
-
-}
