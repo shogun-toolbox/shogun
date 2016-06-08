@@ -23,16 +23,6 @@ add_custom_target(meta_examples
 INCLUDE(FindMetaExamples)
 find_meta_examples()
 
-# run the Python generator tests
-IF(ENABLE_TESTING)
-    find_program(NOSETESTS nosetests)
-    IF(NOSETESTS)
-	    add_test(NAME meta-examples-generator
-	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generator
-	    COMMAND ${NOSETESTS})
-    ENDIF(NOSETESTS)
-ENDIF(ENABLE_TESTING)
-
 # If testing is enabled we run the examples
 IF(ENABLE_TESTING)
     IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
