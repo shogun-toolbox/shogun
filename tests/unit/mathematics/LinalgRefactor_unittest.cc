@@ -9,6 +9,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalgrefactor/SGLinalg.h>
+#include <shogun/mathematics/linalgrefactor/GPUArray.h>
 #include <shogun/lib/SGVector.h>
 #include <memory>
 #include <gtest/gtest.h>
@@ -56,6 +57,18 @@ TEST(SGLinalg, CPUBackend_dot)
 }
 
 #ifdef HAVE_VIENNACL
+
+TEST(SGLinalg, GPU_Vector_convert)
+{
+    const index_t size = 10;
+    SGVector<int32_t> a(size);
+    for (index_t i = 0; i < size; ++i) a[i] = i;
+
+    GPUVector<int32_t> a_GPU(a);
+
+    for (index_t i = 0; i < size; ++i)
+        EXPECT_NEAR(a[i], (a_GPU.gpuarray->vector())[i], 1E-15);
+}
 
 TEST(SGLinalg, GPU_Vector_copy)
 {
