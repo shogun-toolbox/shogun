@@ -47,9 +47,6 @@ namespace shogun
 
 class GPUBackend
 {
-
-template <class T> friend struct GPUVector;
-
 public:
 	template <typename T>
 	T dot(const GPUVector<T> &a, const GPUVector<T> &b) const;
