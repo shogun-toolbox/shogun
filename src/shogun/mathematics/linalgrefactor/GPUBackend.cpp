@@ -8,22 +8,23 @@
 
 namespace shogun
 {
-/** GPU calculation backend **/
-template <typename T> T GPUBackend::dot(const GPU_Vector<T> &a, const GPU_Vector<T> &b)
+
+template <typename T>
+T GPUBackend::dot(const GPUVector<T> &a, const GPUVector<T> &b) const
 {
 #ifdef HAVE_VIENNACL
-    /**
-    * Method that computes the dot product using ViennaCL
-    */
-    //return T(0);
-    return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
-// similarly, other methods
+	/**
+	* Method that computes the dot product using ViennaCL
+	*/
+    	return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
+
 #else
-    SG_SERROR("User did not register GPU backend. \n");
-    return T(0);
+	SG_SERROR("User did not register GPU backend. \n");
+	return T(0);
 #endif
 }
 
-template int32_t GPUBackend::dot<int32_t>(const GPU_Vector<int32_t> &a, const GPU_Vector<int32_t> &b);
-template float32_t GPUBackend::dot<float32_t>(const GPU_Vector<float32_t> &a, const GPU_Vector<float32_t> &b);
+template int32_t GPUBackend::dot<int32_t>(const GPUVector<int32_t> &a, const GPUVector<int32_t> &b) const;
+template float32_t GPUBackend::dot<float32_t>(const GPUVector<float32_t> &a, const GPUVector<float32_t> &b) const;
+
 }
