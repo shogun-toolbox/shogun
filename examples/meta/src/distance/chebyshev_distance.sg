@@ -1,0 +1,17 @@
+CSVFile f_feats_train("../../data/fm_train_real.dat")
+CSVFile f_feats_test("../../data/fm_test_real.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+#![create_features]
+
+#![create_distance]
+ChebyshewMetric distance(features_train, features_train)
+#![create_distance]
+
+#![train_and_init]
+DenseDistance dm_train = distance.get_distance_matrix()
+distance.init(features_train, features_test)
+DenseDistance dm_test = distance.get_distance_matrix()
+#![train_and_init]
