@@ -12,8 +12,12 @@ namespace shogun
 class CPUBackend
 {
 public:
-    template <typename T>
-    T dot(const CPUVector<T> &a, const CPUVector<T> &b);
+
+	CPUBackend();
+	CPUBackend(const CPUBackend& cpubackend);
+
+	template <typename T>
+	T dot(const CPUVector<T> &a, const CPUVector<T> &b) const;
 };
 
 }

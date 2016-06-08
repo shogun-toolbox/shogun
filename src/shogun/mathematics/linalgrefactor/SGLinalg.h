@@ -40,7 +40,7 @@
 #include <shogun/mathematics/linalgrefactor/CPUBackend.h>
 #include <shogun/mathematics/linalgrefactor/GPUBackend.h>
 #include <shogun/mathematics/linalgrefactor/CPUVector.h>
-#include <shogun/mathematics/linalgrefactor/GPU_Vector.h>
+#include <shogun/mathematics/linalgrefactor/GPUVector.h>
 #include <memory>
 
 #ifndef LINALGR_H__
@@ -49,33 +49,32 @@
 namespace shogun
 {
 /** Linalg Class **/
-class Linalg
+class SGLinalg
 {
-    CPUBackend eigenBackend;
-    CPUBackend* m_cpubackend;
-    GPUBackend* m_gpubackend;
+	std::unique_ptr<CPUBackend> m_cpubackend;
+	std::unique_ptr<GPUBackend> m_gpubackend;
 
 public:
-    Linalg();
+	SGLinalg();
 
-    Linalg(CPUBackend* cpubackend);
+	SGLinalg(std::unique_ptr<CPUBackend> cpubackend);
 
-    Linalg(GPUBackend* gpubackend);
+	SGLinalg(std::unique_ptr<GPUBackend> gpubackend);
 
-    Linalg(CPUBackend* cpubackend, GPUBackend* gpubackend);
+	SGLinalg(std::unique_ptr<CPUBackend> cpubackend, std::unique_ptr<GPUBackend> gpubackend);
 
-    void set_cpu_backend(CPUBackend* cpubackend);
+	void set_cpu_backend(std::unique_ptr<CPUBackend> cpubackend);
 
-    CPUBackend* get_cpu_backend();
+	CPUBackend* get_cpu_backend();
 
-    void set_gpu_backend(GPUBackend* gpubackend);
+	void set_gpu_backend(std::unique_ptr<GPUBackend> gpubackend);
 
-    GPUBackend* get_gpu_backend();
+	GPUBackend* get_gpu_backend();
 
-    template <class T>
-    T dot(BaseVector<T> *a, BaseVector<T> *b);
+	template <class T>
+	T dot(BaseVector<T> *a, BaseVector<T> *b) const;
 
-    bool hasGPUBackend();
+	bool hasGPUBackend() const;
 
 };
 
@@ -83,6 +82,6 @@ public:
 
 namespace shogun
 {
-    extern std::unique_ptr<Linalg> sg_linalg;
+	extern std::unique_ptr<SGLinalg> sg_linalg;
 }
 #endif

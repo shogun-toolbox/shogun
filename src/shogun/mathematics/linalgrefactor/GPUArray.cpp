@@ -6,41 +6,55 @@ namespace shogun
 #ifdef HAVE_VIENNACL
 
 template <class T>
-GPU_Vector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
+GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
 :GPUptr(new VCLMemoryArray()), vlen(vector.vlen), offset(0)
 {
-    viennacl::backend::memory_create(*GPUptr, sizeof(T)*vlen,
-        viennacl::context());
+	viennacl::backend::memory_create(*GPUptr, sizeof(T)*vlen,
+        	viennacl::context());
 
-    viennacl::backend::memory_write(*GPUptr, 0, vlen*sizeof(T),
-        vector.vector);
+	viennacl::backend::memory_write(*GPUptr, 0, vlen*sizeof(T),
+        	vector.vector);
 }
 
 template <class T>
-GPU_Vector<T>::GPUArray::GPUArray(const GPU_Vector<T>::GPUArray &array)
-//:GPUptr(new VCLMemoryArray()), vlen(array.vlen), offset(0)
+GPUVector<T>::GPUArray::GPUArray(const GPUVector<T>::GPUArray &array)
 {
-    GPUptr = array.GPUptr;
+	GPUptr = array.GPUptr;
 	vlen = array.vlen;
 	offset = array.offset;
 }
 
 template <class T>
-typename GPU_Vector<T>::GPUArray::VCLVectorBase GPU_Vector<T>::GPUArray::GPUvec()
+typename GPUVector<T>::GPUArray::VCLVectorBase GPUVector<T>::GPUArray::GPUvec()
 {
         return VCLVectorBase(*GPUptr, vlen, offset, 1);
 }
 
-#else
-
 template <class T>
-GPU_Vector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
+typename viennacl::const_entry_proxy<T>
+GPUVector<T>::GPUArray::operator[](index_t index) const
 {
-    SG_SERROR("User did not register GPU backend. \n");
+	return viennacl::const_entry_proxy<T>(offset+index, *GPUptr);
 }
 
-#endif
+template <class T>
+typename viennacl::entry_proxy<T>
+GPUVector<T>::GPUArray::operator[](index_t index)
+{
+	return viennacl::entry_proxy<T>(offset+index, *GPUptr);
+}
 
-template struct GPU_Vector<int32_t>;
-template struct GPU_Vector<float32_t>;
+#else // HAVE_VIENNACL
+
+template <class T>
+GPUVector<T>::GPUArray::GPUArray(const SGVector<T> &vector)
+{
+	SG_SERROR("User did not register GPU backend. \n");
+}
+
+#endif //HAVE_VIENNACL
+
+template struct GPUVector<int32_t>;
+template struct GPUVector<float32_t>;
+
 }
