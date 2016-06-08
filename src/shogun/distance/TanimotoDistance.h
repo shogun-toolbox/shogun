@@ -26,7 +26,7 @@ namespace shogun
  * \f[\displaystyle
  *  d(\bf{x},\bf{x'}) = \frac{\sum_{i=1}^{n}x_{i}x'_{i}}{
  *  \sum_{i=1}^{n}x_{i}x_{i}x'_{i}x'_{i}-x_{i}x'_{i}}
- *  /quad x,x' /in R^{n}
+ *  \quad x,x' \in R^{n}
  * \f]
  *
  * @see <a href="http://en.wikipedia.org/wiki/Jaccard_index">Wikipedia:
