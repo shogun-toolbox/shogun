@@ -31,50 +31,38 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/BaseVector.h>
-#include <memory>
+#include <shogun/mathematics/linalg/GPUBackend.h>
+#include <shogun/mathematics/linalg/GPUArray.h>
 
-#ifndef GPU_Vector_H__
-#define GPU_Vector_H__
+#ifdef HAVE_VIENNACL
+#include <viennacl/vector.hpp>
+#include <viennacl/linalg/inner_prod.hpp>
+#endif
+
+#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-template <class T>
-struct GPUVector : public BaseVector<T>
+GPUBackend::GPUBackend()
 {
-	struct GPUArray;
-	std::unique_ptr<GPUArray> gpuarray;
+}
 
-	GPUVector();
-	GPUVector(const SGVector<T> &vector);
+template <typename T>
+T GPUBackend::dot(const GPUVector<T> &a, const GPUVector<T> &b) const
+{
+#ifdef HAVE_VIENNACL
+	return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
 
-	GPUVector(const GPUVector<T> &vector);
+#else
+	SG_SERROR("User did not register GPU backend. \n");
+	return T(0);
+#endif
+}
 
-	~GPUVector();
-
-	void init();
-
-	GPUVector<T>& operator=(const GPUVector<T> &other);
-
-	inline bool onGPU()
-	{
-		return true;
-	}
-
-public:
-	/** Vector length */
-	index_t vlen;
-
-	/** Offset for the memory segment, i.e the data of the vector
-	 * starts at vector+offset
-	 */
-	index_t offset;
-};
+template int32_t GPUBackend::dot<int32_t>(const GPUVector<int32_t> &a, const GPUVector<int32_t> &b) const;
+template float32_t GPUBackend::dot<float32_t>(const GPUVector<float32_t> &a, const GPUVector<float32_t> &b) const;
 
 }
 
-#endif
+#endif //HAVE_CXX11

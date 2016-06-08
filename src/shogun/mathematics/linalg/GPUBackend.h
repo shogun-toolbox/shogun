@@ -31,29 +31,45 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
  */
 
-#include <shogun/mathematics/linalgrefactor/CPUVector.h>
+#include <shogun/lib/config.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/BaseVector.h>
+#include <shogun/mathematics/linalg/GPUVector.h>
+#include <memory>
+
+#ifndef GPUBACKEND_H__
+#define GPUBACKEND_H__
+
+#ifdef HAVE_CXX11
 
 namespace shogun
+{
 
+/** GPU backend */
+class GPUBackend
 {
-template <class T>
-CPUVector<T>::CPUVector():CPUptr(nullptr), vlen(0)
-{
+public:
+	/** Default Constructor */
+	GPUBackend();
+
+	/**
+	 * Implementation of vector dot-product that works
+	 * with GPUVectors
+	 * Works with different GPU algebra libraries
+	 *
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
+	 * as \f$\sum_i a_i b_i\f$
+	 */
+	template <typename T>
+	T dot(const GPUVector<T> &a, const GPUVector<T> &b) const;
+};
+
 }
 
-template <class T>
-CPUVector<T>::CPUVector(const SGVector<T> &vector)
-: CPUptr(vector.vector), vlen(vector.vlen)
-{
-}
+#endif //HAVE_CXX11
 
-template <class T>
-CPUVector<T>::CPUVector(const CPUVector<T> &vector)
-: CPUptr(vector.CPUptr), vlen(vector.vlen)
-{
-}
-
-template struct CPUVector<int32_t>;
-template struct CPUVector<float32_t>;
-
-}
+#endif
