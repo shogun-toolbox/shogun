@@ -37,10 +37,15 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         # Ignore targets not in includedTargets
         if includedTargets and not os.path.basename(target).split(".")[0] in includedTargets:
             continue
-
-        with open(os.path.join(targetsDir, target)) as tFile:
-            targets.append(json.load(tFile))
-
+        
+        translate_file = os.path.join(targetsDir, target)
+        
+        with open(translate_file) as tFile:
+            try:
+                targets.append(json.load(tFile))
+            except Exception, err:
+                print("Error translating file: %s\n%s" % (translate_file, err))
+    
     # Translate each example
     for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
         print("Translating {}".format(os.sep.join([dirRelative,filename])))
