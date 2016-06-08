@@ -16,7 +16,7 @@ T GPUBackend::dot(const GPUVector<T> &a, const GPUVector<T> &b) const
 	/**
 	* Method that computes the dot product using ViennaCL
 	*/
-    	return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
+	return viennacl::linalg::inner_prod(a.gpuarray->GPUvec(), b.gpuarray->GPUvec());
 
 #else
 	SG_SERROR("User did not register GPU backend. \n");
