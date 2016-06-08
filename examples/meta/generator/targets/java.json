@@ -1,8 +1,8 @@
 {
     "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.modshogun;\n${dependencies}class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program$testing\n}\n}\n",
     "Dependencies": {
-        "AllDependencies": "$interfacedClassDependencies\n$enumDependencies\n\n",
-        "InterfacedClassDependencies": "$classlist\n",
+        "AllDependencies": "$allClassDependencies\n$enumDependencies\n",
+        "AllClassDependencies": "$classlist\n",
         "EnumDependencies": "$enums",
         "DependencyListElementClass": "import org.shogun.$element;",
         "DependencyListElementEnum": "import static org.shogun.$type.$value;",
