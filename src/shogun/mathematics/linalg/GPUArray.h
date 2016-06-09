@@ -34,7 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/GPUVector.h>
+#include <shogun/mathematics/linalg/GPUVector.h>
 #include <memory>
 
 #ifdef HAVE_VIENNACL
@@ -64,7 +64,7 @@ struct GPUVector<T>::GPUArray
 
 	/** Vector length */
 	index_t vlen;
-	
+
 	/** Offset for the memory segment, i.e the data of the vector
 	 * starts at vector+offset
 	 */
