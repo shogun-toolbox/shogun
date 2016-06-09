@@ -1,6 +1,38 @@
+/*
+ * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *  3. Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Authors: 2016 Pan Deng, Soumyajit De */
+
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalgrefactor/linalgRefactor.h>
+#include <shogun/mathematics/linalg/SGLinalg.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <viennacl/linalg/inner_prod.hpp>
@@ -61,8 +93,10 @@ struct Data
 		Bg = std::unique_ptr<BaseVector<value_type>> (init_g(B));
 
 		init_shogun_with_defaults();
-		GPUBackend viennaclBackend;
-		sg_linalg->set_gpu_backend(&viennaclBackend);
+
+		std::shared_ptr<GPUBackend> ViennaCLBackend;
+	    ViennaCLBackend = std::shared_ptr<GPUBackend>(new GPUBackend);
+	    sg_linalg->set_gpu_backend(ViennaCLBackend);
 	}
 
 	/** SGVector **/
@@ -92,14 +126,14 @@ struct Data
 	std::unique_ptr<BaseVector<value_type>> init_c(SGVector<value_type> m)
 	{
 		std::unique_ptr<CPUVector<value_type>> mc(new CPUVector<value_type>(m));
-		return std::move(mc);
+        	return std::move(mc);
 	}
 
 	/** GPUVector derived from BaseVector **/
 	std::unique_ptr<BaseVector<value_type>> init_g(SGVector<value_type> m)
 	{
-		std::unique_ptr<GPU_Vector<value_type>> mg(new GPU_Vector<value_type>(m));
-		return std::move(mg);
+        	std::unique_ptr<GPUVector<value_type>> mg(new GPUVector<value_type>(m));
+        	return std::move(mg);
 	}
 
 	SGVector<value_type> A;
@@ -130,13 +164,31 @@ BENCHMARK_P(CPUVector, dot_eigen3, 10, 1000,
 	auto C = sg_linalg->dot(A, B);
 }
 
-BENCHMARK_P(GPU_Vector, dot_explict_viennacl, 10, 1000,
+BENCHMARK_P(CPUVector_both_stack, dot_eigen3_cpu, 10, 1000,
+	(const CPUVector<T> &A, const CPUVector<T> &B, CPUBackend &cpubackend))
+{
+	auto C = cpubackend.dot(A, B);
+}
+
+BENCHMARK_P(CPUVector_stack, dot_eigen3_cpu, 10, 1000,
+	(CPUVector<T> *A, CPUVector<T> *B, CPUBackend &cpubackend))
+{
+	auto C = cpubackend.dot(*A, *B);
+}
+
+BENCHMARK_P(CPUVector_heap, dot_eigen3_cpu, 10, 1000,
+	(CPUVector<T> *A, CPUVector<T> *B, CPUBackend *cpubackend))
+{
+	auto C = cpubackend->dot(*A, *B);
+}
+
+BENCHMARK_P(GPUVector, dot_explict_viennacl, 10, 1000,
 	(const VCLVectorBase &A, const VCLVectorBase &B))
 {
 	auto C = viennacl::linalg::inner_prod(A, B);
 }
 
-BENCHMARK_P(GPU_Vector, dot_viennacl, 10, 1000,
+BENCHMARK_P(GPUVector, dot_viennacl, 10, 1000,
 	(BaseVector<T> *A, BaseVector<T> *B))
 {
 	auto C = sg_linalg->dot(A, B);
@@ -145,5 +197,5 @@ BENCHMARK_P(GPU_Vector, dot_viennacl, 10, 1000,
 Data<T> data(1000000);
 BENCHMARK_P_INSTANCE(CPUVector, dot_explict_eigen3, (data.A, data.B));
 BENCHMARK_P_INSTANCE(CPUVector, dot_eigen3, (data.Ac.get(), data.Bc.get()));
-BENCHMARK_P_INSTANCE(GPU_Vector, dot_explict_viennacl, (data.Av, data.Bv));
-BENCHMARK_P_INSTANCE(GPU_Vector, dot_viennacl, (data.Ag.get(), data.Bg.get()));
+BENCHMARK_P_INSTANCE(GPUVector, dot_explict_viennacl, (data.Av, data.Bv));
+BENCHMARK_P_INSTANCE(GPUVector, dot_viennacl, (data.Ag.get(), data.Bg.get()));
