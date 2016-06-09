@@ -1,18 +1,20 @@
 CSVFile f_feats_train("../../data/fm_train_dna.dat")
 CSVFile f_feats_test("../../data/fm_test_dna.dat")
 CSVFile f_labels_train("../../data/label_train_dna.dat")
+CSVFile f_labels_test("../../data/label_test_dna.dat")
 
 #![create_features]
 StringCharFeatures features_train(f_feats_train)
 StringCharFeatures features_test(f_feats_test)
 BinaryLabels labels_train(f_labels_train)
+BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
-#![create_appropriate_kernel]
-real maxlen = 1
+#![create_kernel]
+real len = 1
 real decay = 1
-SubsequenceStringKernel kernel(features_train, features_train, maxlen, decay)
-#![create_appropriate_kernel]
+SubsequenceStringKernel kernel(features_train, features_train, len, decay)
+#![create_kernel]
 
 #![create_instance]
 LibLinear svm(C, kernel, labels_train)
