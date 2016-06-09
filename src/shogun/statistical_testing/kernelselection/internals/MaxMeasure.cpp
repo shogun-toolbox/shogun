@@ -34,6 +34,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 
@@ -61,7 +62,7 @@ SGMatrix<float64_t> MaxMeasure::get_measure_matrix()
 
 void MaxMeasure::init_measures()
 {
-	const size_t num_kernels=kernel_mgr.num_kernels();
+	const index_t num_kernels=kernel_mgr.num_kernels();
 	REQUIRE(num_kernels>0, "Number of kernels is %d!\n", kernel_mgr.num_kernels());
 	if (measures.size()!=num_kernels)
 		measures=SGVector<float64_t>(num_kernels);
@@ -70,23 +71,30 @@ void MaxMeasure::init_measures()
 
 void MaxMeasure::compute_measures()
 {
-	init_measures();
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	auto existing_kernel=estimator->get_kernel();
-	const size_t num_kernels=kernel_mgr.num_kernels();
-	for (size_t i=0; i<num_kernels; ++i)
+	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+	if (mmd!=nullptr && same_distance_type())
+		measures=mmd->compute_statistic(kernel_mgr);
+	else
 	{
-		auto kernel=kernel_mgr.kernel_at(i);
-		estimator->set_kernel(kernel);
-		measures[i]=estimator->compute_statistic();
-		estimator->cleanup();
+		init_measures();
+		auto existing_kernel=estimator->get_kernel();
+		const size_t num_kernels=kernel_mgr.num_kernels();
+		for (size_t i=0; i<num_kernels; ++i)
+		{
+			auto kernel=kernel_mgr.kernel_at(i);
+			estimator->set_kernel(kernel);
+			measures[i]=estimator->compute_statistic();
+			estimator->cleanup();
+		}
+		estimator->set_kernel(existing_kernel);
 	}
-	estimator->set_kernel(existing_kernel);
 }
 
 CKernel* MaxMeasure::select_kernel()
 {
 	compute_measures();
+	ASSERT(size_t(measures.size())==kernel_mgr.num_kernels());
 	auto max_element=std::max_element(measures.vector, measures.vector+measures.vlen);
 	auto max_idx=std::distance(measures.vector, max_element);
 	SG_SDEBUG("Selected kernel at %d position!\n", max_idx);

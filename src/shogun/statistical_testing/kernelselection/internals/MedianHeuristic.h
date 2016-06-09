@@ -32,7 +32,7 @@
 #ifndef MEDIAN_HEURISTIC_H__
 #define MEDIAN_HEURISTIC_H__
 
-#include <shogun/lib/common.h>
+#include <memory>
 #include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 
 namespace shogun
@@ -60,7 +60,7 @@ public:
 protected:
 	virtual void init_measures();
 	virtual void compute_measures();
-	CCustomDistance* distance;
+	std::shared_ptr<CCustomDistance> distance;
 	SGVector<float64_t> measures;
 	int32_t n;
 };

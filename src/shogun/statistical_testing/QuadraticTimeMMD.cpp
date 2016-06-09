@@ -48,6 +48,8 @@
 #include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
+#include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
+#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 
 using namespace shogun;
 using namespace internal;
@@ -540,6 +542,21 @@ void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 		self->is_kernel_initialized=false;
 	}
 	self->precompute=precompute;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelManager& kernel_mgr)
+{
+	SG_DEBUG("Entering");
+	const auto& data_mgr=get_data_mgr();
+	const index_t nx=data_mgr.num_samples_at(0);
+	const index_t ny=data_mgr.num_samples_at(1);
+	MultiKernelMMD compute(nx, ny, get_statistic_type());
+	compute.set_distance(compute_distance());
+	SGVector<float64_t> result=compute(kernel_mgr);
+	for (auto i=0; i<result.vlen; ++i)
+		result[i]=normalize_statistic(result[i]);
+	SG_DEBUG("Leaving");
+	return result;
 }
 
 const char* CQuadraticTimeMMD::get_name() const

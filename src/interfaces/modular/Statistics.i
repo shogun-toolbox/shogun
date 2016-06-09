@@ -7,6 +7,9 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
+/* These functions return new Objects */
+%newobject shogun::CTwoDistributionTest::compute_distance();
+
 /* Remove C Prefix */
 %rename(HypothesisTest) CHypothesisTest;
 %rename(OneDistributionTest) COneDistributionTest;

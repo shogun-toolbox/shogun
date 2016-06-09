@@ -104,6 +104,7 @@ CCustomDistance* CTwoDistributionTest::compute_distance()
 			auto euclidean_distance=std::unique_ptr<CEuclideanDistance>(new CEuclideanDistance());
 			if (euclidean_distance->init(p_and_q, p_and_q))
 			{
+				euclidean_distance->set_disable_sqrt(true);
 				auto dist_mat=euclidean_distance->get_distance_matrix<float32_t>();
 				distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 			}

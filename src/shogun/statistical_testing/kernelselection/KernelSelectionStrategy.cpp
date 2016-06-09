@@ -220,6 +220,7 @@ CKernel* CKernelSelectionStrategy::select_kernel(CMMD* estimator)
 	return self->policy->select_kernel();
 }
 
+// TODO call this method when test train mode is turned off
 void CKernelSelectionStrategy::erase_intermediate_results()
 {
 	self->policy=nullptr;

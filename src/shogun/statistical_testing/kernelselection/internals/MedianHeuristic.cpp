@@ -54,7 +54,6 @@ MedianHeuristic::MedianHeuristic(KernelManager& km, CMMD* est) : KernelSelection
 
 MedianHeuristic::~MedianHeuristic()
 {
-	SG_UNREF(distance);
 }
 
 void MedianHeuristic::init_measures()
@@ -64,9 +63,7 @@ void MedianHeuristic::init_measures()
 
 void MedianHeuristic::compute_measures()
 {
-	SG_UNREF(distance);
-	distance=estimator->compute_distance();
-	SG_REF(distance);
+	distance=std::shared_ptr<CCustomDistance>(estimator->compute_distance());
 	n=distance->get_num_vec_lhs();
 	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
 		"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",

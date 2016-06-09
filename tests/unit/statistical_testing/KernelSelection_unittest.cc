@@ -74,6 +74,39 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
+TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
+{
+	const index_t m=5;
+	const index_t n=10;
+	const index_t dim=1;
+	const float64_t difference=0.5;
+	const index_t num_kernels=10;
+
+	sg_rand->set_seed(12345);
+
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	auto feats_p=gen_p->get_streamed_features(m);
+	auto feats_q=gen_q->get_streamed_features(n);
+
+	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
+	mmd->set_statistic_type(ST_BIASED_FULL);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+	{
+		float64_t tau=pow(2, sigma);
+		mmd->add_kernel(new CGaussianKernel(10, tau));
+	}
+	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
+
+	mmd->set_train_test_mode(true);
+	mmd->select_kernel();
+	mmd->set_train_test_mode(false);
+
+	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
+	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
+}
+
 TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 {
 	const index_t m=5;

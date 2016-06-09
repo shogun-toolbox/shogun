@@ -40,6 +40,7 @@ namespace shogun
 
 class CKernel;
 class CMMD;
+class CQuadraticTimeMMD;
 template <class> class SGVector;
 template <class> class SGMatrix;
 
@@ -60,6 +61,7 @@ enum EKernelSelectionMethod : uint32_t
 class CKernelSelectionStrategy : public CSGObject
 {
 	friend class CMMD;
+	friend class CQuadraticTimeMMD;
 public:
 	CKernelSelectionStrategy();
 	explicit CKernelSelectionStrategy(EKernelSelectionMethod method);

@@ -74,7 +74,7 @@ TEST(TwoDistributionTest, compute_distance_dense)
 	auto distance=test->compute_distance();
 	auto distance_mat1=distance->get_distance_matrix();
 
-	SGMatrix<float64_t> data_p_and_q(1, m+n);
+	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	auto data_p=feats_p->get_feature_matrix();
 	auto data_q=feats_q->get_feature_matrix();
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
@@ -117,7 +117,7 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 
-	SGMatrix<float64_t> data_p_and_q(1, m+n);
+	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	auto data_p=feats_p->get_feature_matrix();
 	auto data_q=feats_q->get_feature_matrix();
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());

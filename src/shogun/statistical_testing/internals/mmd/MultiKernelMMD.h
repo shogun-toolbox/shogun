@@ -1,6 +1,5 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 - 2013 Heiko Strathmann
  * Written (w) 2014 - 2016 Soumyajit De
  * All rights reserved.
  *
@@ -29,9 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-
-#ifndef QUADRATIC_TIME_MMD_H_
-#define QUADRATIC_TIME_MMD_H_
+#ifndef MULTI_KERNEL_MMD_H_
+#define MULTI_KERNEL_MMD_H_
 
 #include <memory>
 #include <shogun/statistical_testing/MMD.h>
@@ -39,49 +37,34 @@
 namespace shogun
 {
 
-template <typename> class SGVector;
+template <typename T> class SGVector;
+class CCustomDistance;
 
 namespace internal
 {
-class KernelManager;
-class MaxMeasure;
-}
 
-class CQuadraticTimeMMD : public CMMD
+namespace mmd
 {
-	friend class internal::MaxMeasure;
+
+class MultiKernelMMD
+{
 public:
-	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
-	CQuadraticTimeMMD();
-	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
-	virtual ~CQuadraticTimeMMD();
-	virtual void set_kernel(CKernel* kernel);
-
-	virtual float64_t compute_statistic();
-	virtual float64_t compute_variance();
-
-	virtual SGVector<float64_t> sample_null();
-	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
-
-	virtual float64_t compute_p_value(float64_t statistic);
-	virtual float64_t compute_threshold(float64_t alpha);
-
-	void precompute_kernel_matrix(bool precompute);
-
-	virtual const char* get_name() const;
+	MultiKernelMMD(index_t nx, index_t ny, EStatisticType stype);
+	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const;
+	void set_distance(CCustomDistance* distance);
 private:
-	struct Self;
-	std::unique_ptr<Self> self;
-
-	virtual const operation get_direct_estimation_method() const;
-	virtual const float64_t normalize_statistic(float64_t statistic) const;
-	virtual const float64_t normalize_variance(float64_t variance) const;
-	SGVector<float64_t> gamma_fit_null();
-	SGVector<float64_t> spectrum_sample_null();
-
-	SGVector<float64_t> compute_statistic(const internal::KernelManager& kernel_mgr);
+	struct terms_t;
+	const index_t n_x;
+	const index_t n_y;
+	const EStatisticType s_type;
+	std::shared_ptr<CCustomDistance> m_distance;
+	void add_term(terms_t&, float32_t, index_t, index_t) const;
 };
 
 }
-#endif // QUADRATIC_TIME_MMD_H_
+
+}
+
+}
+
+#endif // MULTI_KERNEL_MMD_H_

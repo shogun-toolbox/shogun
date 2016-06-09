@@ -62,6 +62,7 @@ protected:
 	CMMD* estimator;
 	virtual void init_measures()=0;
 	virtual void compute_measures()=0;
+	bool same_distance_type() const;
 };
 
 }

@@ -39,6 +39,14 @@
 namespace shogun
 {
 
+namespace internal
+{
+	namespace mmd
+	{
+		class MultiKernelMMD;
+	}
+}
+
 /** @brief Base class for the family of kernel functions that only depend on
  * the difference of the inputs, i.e. whose values does not change if the
  * inputs are shifted by the same amount. More precisely,
@@ -49,6 +57,9 @@ namespace shogun
  */
 class CShiftInvariantKernel: public CKernel
 {
+
+	friend class internal::mmd::MultiKernelMMD;
+
 public:
 	/** Default constructor.  */
 	CShiftInvariantKernel();
