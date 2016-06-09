@@ -1,18 +1,18 @@
-CSVFile f_feats_train("../../data/fm_train_real.dat")
-CSVFile f_feats_test("../../data/fm_test_real.dat")
+CSVFile f_feats_a("../../data/fm_train_real.dat")
+CSVFile f_feats_b("../../data/fm_test_real.dat")
 
 #![create_features]
-RealFeatures features_train(f_feats_train)
-RealFeatures features_test(f_feats_test)
+RealFeatures features_a(f_feats_a)
+RealFeatures features_b(f_feats_b)
 #![create_features]
 
 #![create_distance]
-ManhattanMetric distance(features_train, features_train)
+ManhattanMetric distance(features_a, features_b)
 #![create_distance]
 
 #![train_and_init]
-DoubleMatrix dm_train = distance.get_distance_matrix()
-distance.init(features_train, features_test)
-DoubleMatrix dm_test = distance.get_distance_matrix()
+RealMatrix dm_train = distance.get_distance_matrix()
+distance.init(features_a, features_b)
+RealMatrix dm_test = distance.get_distance_matrix()
 #![train_and_init]
 
