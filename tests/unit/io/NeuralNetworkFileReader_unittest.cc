@@ -108,19 +108,19 @@ TEST(NeuralNetworkFileReader, read)
 	CNeuralNetworkFileReader reader;
 	CNeuralNetwork* net = reader.read_string(net_string);
 
-	EXPECT_EQ(NNOM_GRADIENT_DESCENT, net->optimization_method);
-	EXPECT_EQ(0.001, net->l2_coefficient);
-	EXPECT_EQ(0.003, net->l1_coefficient);
-	EXPECT_EQ(0.5, net->dropout_hidden);
-	EXPECT_EQ(0.2, net->dropout_input);
-	EXPECT_EQ(15, net->max_norm);
-	EXPECT_EQ(1e-8, net->epsilon);
-	EXPECT_EQ(1000, net->max_num_epochs);
-	EXPECT_EQ(100, net->gd_mini_batch_size);
-	EXPECT_EQ(1.0, net->gd_learning_rate);
-	EXPECT_EQ(0.995, net->gd_learning_rate_decay);
-	EXPECT_EQ(0.95, net->gd_momentum);
-	EXPECT_EQ(0.9, net->gd_error_damping_coeff);
+	EXPECT_EQ(NNOM_GRADIENT_DESCENT, net->get_optimization_method());
+	EXPECT_EQ(0.001, net->get_l2_coefficient());
+	EXPECT_EQ(0.003, net->get_l1_coefficient());
+	EXPECT_EQ(0.5, net->get_dropout_hidden());
+	EXPECT_EQ(0.2, net->get_dropout_input());
+	EXPECT_EQ(15, net->get_max_norm());
+	EXPECT_EQ(1e-8, net->get_epsilon());
+	EXPECT_EQ(1000, net->get_max_num_epochs());
+	EXPECT_EQ(100, net->get_gd_mini_batch_size());
+	EXPECT_EQ(1.0, net->get_gd_learning_rate());
+	EXPECT_EQ(0.995, net->get_gd_learning_rate_decay());
+	EXPECT_EQ(0.95, net->get_gd_momentum());
+	EXPECT_EQ(0.9, net->get_gd_error_damping_coeff());
 
 	CDynamicObjectArray* layers = net->get_layers();
 

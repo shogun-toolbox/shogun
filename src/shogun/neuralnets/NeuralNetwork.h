@@ -231,6 +231,231 @@ public:
 
 	virtual const char* get_name() const { return "NeuralNetwork";}
 
+	/** Sets optimization method
+	 * default is NNOM_LBFGS
+	 * @param optimization_method optimiation method
+	 */
+	void set_optimization_method(ENNOptimizationMethod optimization_method)
+	{
+		m_optimization_method = optimization_method;
+	}
+
+	/** Returns optimization method */
+	ENNOptimizationMethod get_optimization_method() const
+	{
+		return m_optimization_method;
+	}
+	/** Sets L2 Regularization coeff
+	 * default value is 0.0
+	 * @param l2_coefficient l2_coefficient
+	 */
+	void set_l2_coefficient(float64_t l2_coefficient)
+	{
+		m_l2_coefficient = l2_coefficient;
+	}
+
+	/** Returns L2 coefficient */
+	float64_t get_l2_coefficient() const
+	{
+		return m_l2_coefficient;
+	}
+	/** Sets L1 Regularization coeff
+	 * default value is 0.0
+	 * @param l1_coefficient l1_coefficient
+	 */
+	void set_l1_coefficient(float64_t l1_coefficient)
+	{
+		m_l1_coefficient = l1_coefficient;
+	}
+
+	/** Returns L1 coefficient */
+	float64_t get_l1_coefficient() const
+	{
+		return m_l1_coefficient;
+	}
+
+	/** Sets the probabilty that a hidden layer neuron will be dropped out
+	 * When using this, the recommended value is 0.5
+	 * default value 0.0 (no dropout)
+	 *
+	 * For more details on dropout, see
+	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
+	 * 
+	 * @param dropout_hidden dropout probability
+	 */
+	void set_dropout_hidden(float64_t dropout_hidden)
+	{
+		m_dropout_hidden = dropout_hidden;
+	}
+
+	/** Returns dropout probability for hidden layers */
+	float64_t get_dropout_hidden() const
+	{
+		return m_dropout_hidden;
+	}
+
+	/** Sets the probabilty that an input layer neuron will be dropped out
+	 * When using this, a good value might be 0.2
+	 * default value 0.0 (no dropout)
+	 *
+	 * For more details on dropout, see this
+	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
+	 *
+	 * @param dropout_input dropout probability
+	 */
+	void set_dropout_input(float64_t dropout_input)
+	{
+		m_dropout_input = dropout_input;
+	}
+
+	/** Returns dropout probability for input layers */
+	float64_t get_dropout_input() const
+	{
+		return m_dropout_input;
+	}
+
+	/** Sets maximum allowable L2 norm for a neurons weights
+	 * When using this, a good value might be 15
+	 * default value -1 (max-norm regularization disabled)
+	 * @param max_norm maximum allowable L2 norm
+	 */
+	void set_max_norm(float64_t max_norm)
+	{
+		m_max_norm = max_norm;
+	}
+
+	/** Returns maximum allowable L2 norm */
+	float64_t get_max_norm() const
+	{
+		return m_max_norm;
+	}
+
+	/** Sets convergence criteria
+	 * training stops when (E'- E)/E < epsilon
+	 * where E is the error at the current iterations and E' is the error at the
+	 * previous iteration
+	 * default value is 1.0e-5
+	 * @param epsilon convergence criteria
+	 */
+	void set_epsilon(float64_t epsilon)
+	{
+		m_epsilon = epsilon;
+	}
+
+	/** Returns epsilon */
+	float64_t get_epsilon() const
+	{
+		return m_epsilon;
+	}
+
+	/** Sets maximum number of iterations over the training set.
+	 * If 0, training will continue until convergence.
+	 * defualt value is 0
+	 * @param max_num_epochs maximum number of iterations over the training set
+	 */
+	void set_max_num_epochs(int32_t max_num_epochs)
+	{
+		m_max_num_epochs = max_num_epochs;
+	}
+
+	/** Returns maximum number of epochs */
+	int32_t get_max_num_epochs() const
+	{
+		return m_max_num_epochs;
+	}
+
+	/** Sets size of the mini-batch used during gradient descent training,
+	 * if 0 full-batch training is performed
+	 * default value is 0
+	 * @param gd_mini_batch_size mini batch size
+	 */
+	void set_gd_mini_batch_size(int32_t gd_mini_batch_size)
+	{
+		m_gd_mini_batch_size = gd_mini_batch_size;
+	}
+
+	/** Returns mini batch size */
+	int32_t get_gd_mini_batch_size() const
+	{
+		return m_gd_mini_batch_size;
+	}
+
+	/** Sets gradient descent learning rate
+	 * defualt value 0.1
+	 * @param gd_learning_rate gradient descent learning rate
+	 */
+	void set_gd_learning_rate(float64_t gd_learning_rate)
+	{
+		m_gd_learning_rate = gd_learning_rate;
+	}
+
+	/** Returns gradient descent learning rate */
+	float64_t get_gd_learning_rate() const
+	{
+		return m_gd_learning_rate;
+	}
+
+	/** Sets gradient descent learning rate decay
+	 * learning rate is updated at each iteration i according to:
+	 * alpha(i)=decay*alpha(i-1)
+	 * default value is 1.0 (no decay)
+	 * @param gd_learning_rate_decay gradient descent learning rate decay
+	 */
+	void set_gd_learning_rate_decay(float64_t gd_learning_rate_decay)
+	{
+		m_gd_learning_rate_decay = gd_learning_rate_decay;
+	}
+
+	/** Returns gradient descent learning rate decay */
+	float64_t get_gd_learning_rate_decay() const
+	{
+		return m_gd_learning_rate_decay;
+	}
+
+	/** Sets gradient descent momentum multiplier
+	 *
+	 * default value is 0.9
+	 *
+	 * For more details on momentum, see this
+	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html)
+	 * [Sutskever, 2013]
+	 *
+	 * @param gd_momentum gradient descent momentum multiplier
+	 */
+	void set_gd_momentum(float64_t gd_momentum)
+	{
+		m_gd_momentum = gd_momentum;
+	}
+
+	/** Returns gradient descent momentum multiplier */
+	float64_t get_gd_momentum() const
+	{
+		return m_gd_momentum;
+	}
+
+	/** Sets gradient descent error damping coefficient
+	 * Used to damp the error fluctuations when stochastic gradient descent is
+	 * used. damping is done according to:
+	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
+	 * where c is the damping coefficient
+	 *
+	 * If -1, the damping coefficient is automatically computed according to:
+	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
+	 *
+	 * default value is -1
+	 *
+	 * @param gd_error_damping_coeff error damping coefficient
+	 */
+	void set_gd_error_damping_coeff(float64_t gd_error_damping_coeff)
+	{
+		m_gd_error_damping_coeff = gd_error_damping_coeff;
+	}
+
+	float64_t get_gd_error_damping_coeff() const
+	{
+		return m_gd_error_damping_coeff;
+	}
+
 protected:
 	/** trains the network */
 	virtual bool train_machine(CFeatures* data=NULL);
@@ -354,94 +579,7 @@ private:
 	/** Returns the section of vector v that belongs to layer i */
 	template<class T>
 	SGVector<T> get_section(SGVector<T> v, int32_t i);
-public:
-	/** Optimization method, default is NNOM_LBFGS */
-	ENNOptimizationMethod optimization_method;
 
-	/** L2 Regularization coeff, default value is 0.0*/
-	float64_t l2_coefficient;
-
-	/** L1 Regularization coeff, default value is 0.0*/
-	float64_t l1_coefficient;
-
-	/** Probabilty that a hidden layer neuron will be dropped out
-	 * When using this, the recommended value is 0.5
-	 *
-	 * default value 0.0 (no dropout)
-	 *
-	 * For more details on dropout, see
-	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
-	 */
-	float64_t dropout_hidden;
-
-	/** Probabilty that a input layer neuron will be dropped out
-	 * When using this, a good value might be 0.2
-	 *
-	 * default value 0.0 (no dropout)
-	 *
-	 * For more details on dropout, see this
-	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
-	 */
-	float64_t dropout_input;
-
-	/** Maximum allowable L2 norm for a neurons weights
-	 *When using this, a good value might be 15
-	 *
-	 * default value -1 (max-norm regularization disabled)
-	 */
-	float64_t max_norm;
-
-	/** convergence criteria
-	 * training stops when (E'- E)/E < epsilon
-	 * where E is the error at the current iterations and E' is the error at the
-	 * previous iteration
-	 * default value is 1.0e-5
-	 */
-	float64_t epsilon;
-
-	/** maximum number of iterations over the training set.
-	 * If 0, training will continue until convergence.
-	 * defualt value is 0
-	 */
-	int32_t max_num_epochs;
-
-	/** size of the mini-batch used during gradient descent training,
-	 * if 0 full-batch training is performed
-	 * default value is 0
-	 */
-	int32_t gd_mini_batch_size;
-
-	/** gradient descent learning rate, defualt value 0.1 */
-	float64_t gd_learning_rate;
-
-	/** gradient descent learning rate decay
-	 * learning rate is updated at each iteration i according to:
-	 * alpha(i)=decay*alpha(i-1)
-	 * default value is 1.0 (no decay)
-	 */
-	float64_t gd_learning_rate_decay;
-
-	/** gradient descent momentum multiplier
-	 *
-	 * default value is 0.9
-	 *
-	 * For more details on momentum, see this
-	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html)
-	 * [Sutskever, 2013]
-	 */
-	float64_t gd_momentum;
-
-	/** Used to damp the error fluctuations when stochastic gradient descent is
-	 * used. damping is done according to:
-	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
-	 * where c is the damping coefficient
-	 *
-	 * If -1, the damping coefficient is automatically computed according to:
-	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
-	 *
-	 * default value is -1
-	 */
-	float64_t gd_error_damping_coeff;
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
@@ -483,6 +621,94 @@ protected:
 	 * initial value is false
 	 */
 	bool m_is_training;
+
+	/** Optimization method, default is NNOM_LBFGS */
+	ENNOptimizationMethod m_optimization_method;
+
+	/** L2 Regularization coeff, default value is 0.0*/
+	float64_t m_l2_coefficient;
+
+	/** L1 Regularization coeff, default value is 0.0*/
+	float64_t m_l1_coefficient;
+
+	/** Probabilty that a hidden layer neuron will be dropped out
+	 * When using this, the recommended value is 0.5
+	 *
+	 * default value 0.0 (no dropout)
+	 *
+	 * For more details on dropout, see
+	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
+	 */
+	float64_t m_dropout_hidden;
+
+	/** Probabilty that a input layer neuron will be dropped out
+	 * When using this, a good value might be 0.2
+	 *
+	 * default value 0.0 (no dropout)
+	 *
+	 * For more details on dropout, see this
+	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
+	 */
+	float64_t m_dropout_input;
+
+	/** Maximum allowable L2 norm for a neurons weights
+	 *When using this, a good value might be 15
+	 *
+	 * default value -1 (max-norm regularization disabled)
+	 */
+	float64_t m_max_norm;
+
+	/** convergence criteria
+	 * training stops when (E'- E)/E < epsilon
+	 * where E is the error at the current iterations and E' is the error at the
+	 * previous iteration
+	 * default value is 1.0e-5
+	 */
+	float64_t m_epsilon;
+
+	/** maximum number of iterations over the training set.
+	 * If 0, training will continue until convergence.
+	 * defualt value is 0
+	 */
+	int32_t m_max_num_epochs;
+
+	/** size of the mini-batch used during gradient descent training,
+	 * if 0 full-batch training is performed
+	 * default value is 0
+	 */
+	int32_t m_gd_mini_batch_size;
+
+	/** gradient descent learning rate, defualt value 0.1 */
+	float64_t m_gd_learning_rate;
+
+	/** gradient descent learning rate decay
+	 * learning rate is updated at each iteration i according to:
+	 * alpha(i)=decay*alpha(i-1)
+	 * default value is 1.0 (no decay)
+	 */
+	float64_t m_gd_learning_rate_decay;
+
+	/** gradient descent momentum multiplier
+	 *
+	 * default value is 0.9
+	 *
+	 * For more details on momentum, see this
+	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html)
+	 * [Sutskever, 2013]
+	 */
+	float64_t m_gd_momentum;
+
+	/** Used to damp the error fluctuations when stochastic gradient descent is
+	 * used. damping is done according to:
+	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
+	 * where c is the damping coefficient
+	 *
+	 * If -1, the damping coefficient is automatically computed according to:
+	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
+	 *
+	 * default value is -1
+	 */
+	float64_t m_gd_error_damping_coeff;
 
 private:
 	/** temperary pointers to the training data, used to pass the data to L-BFGS
