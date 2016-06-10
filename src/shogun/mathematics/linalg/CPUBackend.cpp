@@ -55,8 +55,19 @@ T CPUBackend::dot(const CPUVector<T> &a, const CPUVector<T> &b) const
 	return vec_a.dot(vec_b);
 }
 
+template <typename T>
+T CPUBackend::sum(const CPUVector<T> &vec) const
+{
+	typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
+	Eigen::Map<VectorXt> v(vec.CPUptr, vec.vlen);;
+	return v.sum();
+}
+
 template int32_t CPUBackend::dot<int32_t>(const CPUVector<int32_t> &a, const CPUVector<int32_t> &b) const;
 template float32_t CPUBackend::dot<float32_t>(const CPUVector<float32_t> &a, const CPUVector<float32_t> &b) const;
+
+template int32_t CPUBackend::sum<int32_t>(const CPUVector<int32_t> &vec) const;
+template float32_t CPUBackend::sum<float32_t>(const CPUVector<float32_t> &vec) const;
 
 }
 

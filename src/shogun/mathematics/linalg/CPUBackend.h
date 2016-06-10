@@ -65,6 +65,15 @@ public:
 	 */
 	template <typename T>
 	T dot(const CPUVector<T> &a, const CPUVector<T> &b) const;
+
+	/**
+	 * Method that computes the sum of SGVectors using Eigen3
+	 *
+	 * @param vec a vector whose sum has to be computed
+	 * @return the vector sum \f$\sum_i a_i\f$
+	 */
+	template <typename T>
+	T sum(const CPUVector<T> &vec) const;
 };
 
 }
