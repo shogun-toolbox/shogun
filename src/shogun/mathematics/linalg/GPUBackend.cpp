@@ -37,6 +37,7 @@
 #ifdef HAVE_VIENNACL
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
+#include <viennacl/linalg/sum.hpp>
 #endif
 
 #ifdef HAVE_CXX11
@@ -60,8 +61,22 @@ T GPUBackend::dot(const GPUVector<T> &a, const GPUVector<T> &b) const
 #endif
 }
 
+template <typename T>
+T GPUBackend::sum(const GPUVector<T> &vec) const
+{
+#ifdef HAVE_VIENNACL
+	return viennacl::linalg::sum(vec.gpuarray->GPUvec());
+#else
+	SG_SERROR("User did not register GPU backend. \n");
+	return T(0);
+#endif
+}
+
 template int32_t GPUBackend::dot<int32_t>(const GPUVector<int32_t> &a, const GPUVector<int32_t> &b) const;
 template float32_t GPUBackend::dot<float32_t>(const GPUVector<float32_t> &a, const GPUVector<float32_t> &b) const;
+
+template int32_t GPUBackend::sum<int32_t>(const GPUVector<int32_t> &vec) const;
+template float32_t GPUBackend::sum<float32_t>(const GPUVector<float32_t> &vec) const;
 
 }
 

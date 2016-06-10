@@ -99,6 +99,15 @@ public:
 	template <class T>
 	T dot(BaseVector<T> *a, BaseVector<T> *b) const;
 
+	/**
+	 * Method that computes the sum of a vector
+	 *
+	 * @param vec a vector whose sum has to be computed
+	 * @return the vector sum \f$\sum_i a_i\f$
+	 */
+	template <class T>
+	T sum(BaseVector<T> *vec) const;
+
 	/** Check whether gpubackend is registered by user */
 	bool hasGPUBackend() const;
 

@@ -113,6 +113,27 @@ T SGLinalg::dot(BaseVector<T> *a, BaseVector<T> *b) const
 	}
 }
 
+template <class T>
+T SGLinalg::sum(BaseVector<T> *vec) const
+{
+	if (vec->onGPU())
+	{
+		if (this->hasGPUBackend())
+		{
+			return m_gpubackend->sum<T>(static_cast<GPUVector<T>&>(*vec));
+		}
+		else
+		{
+			SG_SERROR("User did not register GPU backend. \n");
+ 			return -1;
+		}
+	}
+	else
+	{
+		return m_cpubackend->sum<T>(static_cast<CPUVector<T>&>(*vec));
+	}
+}
+
 bool SGLinalg::hasGPUBackend() const
 {
 	return m_gpubackend != nullptr;
@@ -120,6 +141,9 @@ bool SGLinalg::hasGPUBackend() const
 
 template int32_t SGLinalg::dot<int32_t>(BaseVector<int32_t> *a, BaseVector<int32_t> *b) const;
 template float32_t SGLinalg::dot<float32_t>(BaseVector<float32_t> *a, BaseVector<float32_t> *b) const;
+
+template int32_t SGLinalg::sum<int32_t>(BaseVector<int32_t> *vec) const;
+template float32_t SGLinalg::sum<float32_t>(BaseVector<float32_t> *vec) const;
 }
 
 #endif //HAVE_CXX11

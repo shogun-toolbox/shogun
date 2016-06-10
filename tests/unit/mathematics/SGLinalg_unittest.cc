@@ -60,6 +60,19 @@ TEST(SGLinalg, CPUBackend_dot)
 	EXPECT_NEAR(result, 20.0, 1E-15);
 }
 
+TEST(SGLinalg, CPUBackend_sum)
+{
+	const index_t size=10;
+	SGVector<int32_t> a(size);
+	a.set_const(2);
+
+	CPUVector<int32_t> a_CPU(a);
+
+	auto result = sg_linalg->sum(&a_CPU);
+
+	EXPECT_NEAR(result, 20.0, 1E-15);
+}
+
 #ifdef HAVE_VIENNACL
 
 TEST(SGLinalg, GPU_Vector_convert)
@@ -102,6 +115,23 @@ TEST(SGLinalg, GPUBackend_dot)
 
 	sg_linalg->set_gpu_backend(ViennaCLBackend);
 	auto result = sg_linalg->dot(&a_GPU, &b_GPU);
+
+	EXPECT_NEAR(result, 20.0, 1E-15);
+}
+
+TEST(SGLinalg, GPUBackend_sum)
+{
+	const index_t size=10;
+	SGVector<int32_t> a(size);
+	a.set_const(2);
+
+	GPUVector<int32_t> a_GPU(a);
+
+	std::shared_ptr<GPUBackend> ViennaCLBackend;
+	ViennaCLBackend = std::shared_ptr<GPUBackend>(new GPUBackend);
+
+	sg_linalg->set_gpu_backend(ViennaCLBackend);
+	auto result = sg_linalg->sum(&a_GPU);
 
 	EXPECT_NEAR(result, 20.0, 1E-15);
 }
