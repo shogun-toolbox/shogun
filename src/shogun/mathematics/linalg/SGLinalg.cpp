@@ -120,8 +120,6 @@ T SGLinalg::sum(BaseVector<T> *vec) const
 	{
 		if (this->hasGPUBackend())
 		{
-			// do the gpu backend dot product
-			// you shouldn't care whether it's viennacl or some other GPU backend.
 			return m_gpubackend->sum<T>(static_cast<GPUVector<T>&>(*vec));
 		}
 		else
