@@ -57,7 +57,8 @@ IF(ENABLE_TESTING)
 
     # r
     IF (RModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/r)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/r)
+        # temporarily disabled as R and static calls has to be fixed
+        #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/r)
     ENDIF()
     
     # csharp
