@@ -39,6 +39,13 @@ TEST(Some,reassignment)
     EXPECT_EQ(1, kernel->ref_count());
 }
 
+TEST(Some,self_assignment)
+{
+    auto kernel = some<CGaussianKernel>();
+    kernel = kernel;
+    EXPECT_EQ(1, kernel->ref_count());
+}
+
 TEST(Some,get)
 {
     auto kernel = some<CGaussianKernel>();

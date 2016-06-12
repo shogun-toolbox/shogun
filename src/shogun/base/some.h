@@ -68,9 +68,11 @@ namespace shogun
     template <typename T>
     Some<T>& Some<T>::operator=(T* other)
     {
-        unref();
-        raw = other;
-        ref();
+        if (raw != other) {
+            unref();
+            raw = other;
+            ref();
+        }
         return *this;
     }
     template <typename T>
