@@ -2,7 +2,7 @@
 ID3 Classifier
 ====================
 
-ID3 classifier is a decision tree based learning algorithm that can perform multi-class classification. The ID3 algorithm begins with the original set :math:`{\bf S}` as the root node. On each iteration of the algorithm, it iterates through every unused attribute of the set :math:`{\bf S}` and calculates the information gain :math:`{ IG(\bf S)}` of that attribute. It then selects the attribute which has the largest information gain value. The set :math:`{\bf S}` is then split by the selected attribute. The algorithm continues to recurse on each subset till a stopping criteria is reached. 
+The ID3 algorithm is a decision tree based learning algorithm that can perform multi-class classification. It begins with the original set of attributes as the root node. On each iteration of the algorithm, it iterates through every unused attribute of the set and calculates the information gain of that attribute. It then selects the attribute which has the largest information gain value. The set is then split by the selected attribute. The algorithm continues to recurse on each subset until a stopping criteria is reached. 
 
 -------
 Example
