@@ -31,7 +31,7 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
 */
 
-#include <shogun/mathematics/linalg/LinalgVector.h>
+#include <shogun/mathematics/linalg/linalgVector.h>
 #include <shogun/mathematics/linalg/GPUVectorImpl.h>
 
 #ifdef HAVE_CXX11
@@ -49,7 +49,8 @@ template<class T>
 LinalgVector<T>::LinalgVector(SGVector<T> const &vector)
 {
 	init();
-	m_data = vector.vector;
+	m_data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen));
+	std::copy(vector.vector, vector.vector+vector.vlen, m_data);
 	m_len = vector.vlen;
 }
 
@@ -64,23 +65,24 @@ LinalgVector<T>::LinalgVector(LinalgVector<T> const &vector)
 	if (vector.onGPU())
 	{
 		m_onGPU = true;
-		m_gpu_impl = std::unique_ptr<GPUVectorImpl>
-					(new GPUVectorImpl(*(vector.m_gpu_impl)));
+		m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(*(vector.m_gpu_impl)));
 	}
 }
 
 template<class T>
 LinalgVector<T>::~LinalgVector()
 {
+	free(m_data);
 }
 
 template<class T>
 LinalgVector<T>& LinalgVector<T>::operator=(SGVector<T> const &vector)
 {
-
-	m_data = vector.vector;
+	m_data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen));
+	std::copy(vector.vector, vector.vector+vector.vlen, m_data);
 	m_len = vector.vlen;
 	m_onGPU = false;
+	m_gpu_impl.release();
 	return *this;
 }
 

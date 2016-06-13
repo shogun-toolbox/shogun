@@ -80,15 +80,15 @@ public:
 
 private:
 	/** Memory segment holding the data for the vector */
-	std::shared_ptr<VCLMemoryArray> m_GPUptr;
+	alignas(CPU_CACHE_LINE_SIZE) std::shared_ptr<VCLMemoryArray> m_GPUptr;
 
 	/** Vector length */
-	index_t m_len;
+	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;
 
 	/** Offset for the memory segment, i.e the data of the vector
 	 * starts at vector+offset
 	 */
-	index_t m_offset;
+	alignas(CPU_CACHE_LINE_SIZE) index_t m_offset;
 
 };
 

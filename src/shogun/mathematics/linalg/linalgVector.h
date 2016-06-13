@@ -49,11 +49,8 @@ namespace shogun
 template <class T>
 class LinalgVector
 {
-private:
-	class GPUVectorImpl;
-	std::unique_ptr<GPUVectorImpl> m_gpu_impl;
-
-	void init();
+	
+	typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
 
 public:
 	/** Default Constructor */
@@ -86,10 +83,23 @@ public:
 
 	void transferToCPU();
 
+	/** Operator overload for vector read only access
+	 *
+	 * @param index dimension to access
+	 *
+	 */
+	inline const T& operator[](index_t index) const
+	{
+		return m_data[index];
+	}
+
 private:
-	bool m_onGPU;
-	index_t m_len;  // same logic
-	T* m_data;      // non-owning ptr, referring to the SGVector.vector
+	alignas(CPU_CACHE_LINE_SIZE) bool m_onGPU;
+	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;  // same logic
+	alignas(CPU_CACHE_LINE_SIZE) T* m_data;      // non-owning ptr, referring to the SGVector.vector
+	class GPUVectorImpl;
+	alignas(CPU_CACHE_LINE_SIZE) std::unique_ptr<GPUVectorImpl> m_gpu_impl;
+	void init();
 };
 }
 
