@@ -1,10 +1,10 @@
 {
-    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program$testing\nexit_shogun();\nreturn 0;\n}\n",
+    "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\nexit_shogun();\nreturn 0;\n}\n",
     "Dependencies": {
         "AllClassDependencies": "$classlist",
         "AllDependencies": "$allClassDependencies",
         "DependencyListSeparator": "\n",
-        "DependencyListElementClass": "#include <$include>"
+        "DependencyListElementClass": "#include <$includePath>"
     },
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
@@ -12,7 +12,7 @@
         "Construct": "auto $name = some<C$type>($arguments)",
         "Copy": "auto $name = wrap($expr)"
     },
-    "Assign": "$name = wrap($expr)",
+    "Assign": "$lhs = wrap($expr)",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "StringCharFeatures": "CStringFeatures<char>",
@@ -61,6 +61,12 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
+    "ElementAccess": {
+        "Vector": "$identifier[$indices]",
+        "Matrix": "$identifier($indices)",
+        "ZeroIndexed": true
+    },
+    "ZeroIndexed": true,
     "Print": "SG_SPRINT($expr)",
     "OutputDirectoryName": "cpp",
     "FileExtension": ".cpp"

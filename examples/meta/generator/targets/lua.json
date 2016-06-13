@@ -1,12 +1,12 @@
 {
-    "Program": "require 'modshogun'\n\n$dependencies$program$testing",
+    "Program": "require 'modshogun'\n\n$dependencies$program",
     "Statement": "$statement\n",
     "Comment": "--$comment\n",
     "Init": {
         "Construct": "$name = modshogun.$type($arguments)",
         "Copy": "$name = $expr"
     },
-    "Assign": "$name = $expr",
+    "Assign": "$lhs = $expr",
     "Type": {
         "Default": "$type"
     },
@@ -21,6 +21,11 @@
         "StaticCall": "$type:$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"modshogun.$value"
+    },
+    "ElementAccess": {
+        "Vector": "$identifier[$indices]",
+        "Matrix": "$identifier[$indices]",
+        "ZeroIndexed": false
     },
     "Print": "print($expr)",
     "OutputDirectoryName": "lua",

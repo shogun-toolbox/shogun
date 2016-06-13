@@ -1,8 +1,8 @@
 import sys
 import json
-import os
 import argparse
 import ply
+
 
 # The FastParser parses input using PLY
 class FastParser:
@@ -10,12 +10,8 @@ class FastParser:
         from ply import lex
         from ply import yacc
 
-        # Add all shogun types to reserved identifiers
-        # (this is commented out as we allow any identifier to be shogun one)
-        #self.addShogunTypes(self.reserved)
-
         # Build the lexer and the parser
-        self.lexer = lex.lex(module=self,optimize=1)
+        self.lexer = lex.lex(module=self, optimize=1)
         self.parser = yacc.yacc(module=self)
 
     def parse(self, programString, filePath="Unknown"):
@@ -34,16 +30,6 @@ class FastParser:
 
         return program
 
-    def addShogunTypes(self, dictionary):
-        "Reads shogun types from types/typelist and adds them to dictionary"
-
-        basepath = os.path.dirname(__file__)
-        with open(os.path.join(basepath,"types/typelist"), "r") as typelist:
-            for line in typelist:
-                # Make sure the line is not an empty string
-                if line.replace('\n', '') != '':
-                    dictionary[line.replace('\n', '')] = "SHOGUNTYPE"
-
     # Lexer specification
     # ---------------------------------------
     tokens = (
@@ -51,7 +37,7 @@ class FastParser:
         "STRINGLITERAL",
         "BOOLLITERAL",
         "BASICTYPE",
-        #"SHOGUNTYPE",
+        "SHOGUNSGTYPE",
         "PRINTKEYWORD",
         "COMMA",
         "DOT",
@@ -60,6 +46,8 @@ class FastParser:
         "EQUALS",
         "LPAREN",
         "RPAREN",
+        "LSQUARE",
+        "RSQUARE",
         "COMMENT",
         "NEWLINE",
         "IDENTIFIER"
@@ -72,9 +60,33 @@ class FastParser:
         'False': 'BOOLLITERAL',
         'int': 'BASICTYPE',
         'bool': 'BASICTYPE',
-        'float':  'BASICTYPE',
+        'float': 'BASICTYPE',
         'real': 'BASICTYPE',
-        'string': 'BASICTYPE'
+        'string': 'BASICTYPE',
+        'BoolVector': 'SHOGUNSGTYPE',
+        'CharVector': 'SHOGUNSGTYPE',
+        'ByteVector': 'SHOGUNSGTYPE',
+        'WordVector': 'SHOGUNSGTYPE',
+        'ShortVector': 'SHOGUNSGTYPE',
+        'IntVector': 'SHOGUNSGTYPE',
+        'LongIntVector': 'SHOGUNSGTYPE',
+        'ULongIntVector': 'SHOGUNSGTYPE',
+        'ShortRealVector': 'SHOGUNSGTYPE',
+        'RealVector': 'SHOGUNSGTYPE',
+        'LongRealVector': 'SHOGUNSGTYPE',
+        'ComplexVector': 'SHOGUNSGTYPE',
+        'BoolMatrix': 'SHOGUNSGTYPE',
+        'CharMatrix': 'SHOGUNSGTYPE',
+        'ByteMatrix': 'SHOGUNSGTYPE',
+        'WordMatrix': 'SHOGUNSGTYPE',
+        'ShortMatrix': 'SHOGUNSGTYPE',
+        'IntMatrix': 'SHOGUNSGTYPE',
+        'LongIntMatrix': 'SHOGUNSGTYPE',
+        'ULongIntMatrix': 'SHOGUNSGTYPE',
+        'ShortRealMatrix': 'SHOGUNSGTYPE',
+        'RealMatrix': 'SHOGUNSGTYPE',
+        'LongRealMatrix': 'SHOGUNSGTYPE',
+        'ComplexMatrix': 'SHOGUNSGTYPE'
     }
 
     t_NUMERAL = "[0-9]+(\.[0-9]+)?"
@@ -85,22 +97,28 @@ class FastParser:
     t_EQUALS = "="
     t_LPAREN = "\("
     t_RPAREN = "\)"
-    t_COMMENT = r"\#.*\n"
-    t_ignore  = " \t"
+    t_LSQUARE = "\["
+    t_RSQUARE = "\]"
+    t_ignore = " \t"
 
     def t_IDENTIFIER(self, t):
         "[a-zA-Z][a-zA-Z0-9-_]*"
-        t.type = self.reserved.get(t.value,'IDENTIFIER')    # Check for reserved words
+        # Check for reserved words
+        t.type = self.reserved.get(t.value, 'IDENTIFIER')
         return t
 
     def t_NEWLINE(self, t):
         r'\n'
-        t.lexer.lineno += len(t.value)
+        t.lexer.lineno += 1
+        return t
+
+    def t_COMMENT(self, t):
+        r"\#.*\n"
+        t.lexer.lineno += 1
         return t
 
     def t_error(self, t):
         raise TypeError("Failed to tokenize input. Unknown text on line %d '%s'" % (t.lineno, t.value,))
-
 
     # Grammar specification
     # ---------------------------------------
@@ -123,11 +141,13 @@ class FastParser:
     def p_comment(self, p):
         "comment : COMMENT"
         # Strip leading hashtag symbol and trailing newline
-        p[0] = {"Comment": p[1][1:-1]}
+        p[0] = {"Comment": p[1][1:-1],
+                "__PARSER_INFO_LINE_NO": p.lineno(1)}
 
     def p_type(self, p):
         """
         type : basictype
+             | shogunsgtype
              | objecttype
         """
         p[0] = p[1]
@@ -135,6 +155,10 @@ class FastParser:
     def p_basicType(self, p):
         "basictype : BASICTYPE"
         p[0] = {"BasicType": p[1]}
+
+    def p_shogunSGType(self, p):
+        "shogunsgtype : SHOGUNSGTYPE"
+        p[0] = {"ShogunSGType": p[1]}
 
     def p_objectType(self, p):
         "objecttype : IDENTIFIER"
@@ -167,10 +191,24 @@ class FastParser:
     def p_methodCall(self, p):
         "methodCall : identifier DOT identifier LPAREN argumentList RPAREN"
         p[0] = {"MethodCall": [p[1], p[3], p[5]]}
-    
+
     def p_staticCall(self, p):
         "staticCall : type COLON identifier LPAREN argumentList RPAREN"
         p[0] = {"StaticCall": [p[1], p[3], p[5]]}
+
+    def p_indexList(self, p):
+        """
+        indexList : numeral
+                   | numeral COMMA indexList
+        """
+        p[0] = [p[1]]
+        if len(p) > 2:
+            p[0].extend(p[3])
+
+    def p_elementAccess(self, p):
+        "elementAccess : identifier LSQUARE indexList RSQUARE"
+        p[0] = {"ElementAccess": [p[1],
+                                  {"IndexList": p[3]}]}
 
     def p_enum(self, p):
         "enum : ENUMKEYWORD identifier DOT identifier"
@@ -194,6 +232,7 @@ class FastParser:
         expr : enum
              | methodCall
              | staticCall
+             | elementAccess
              | string
              | bool
              | numeral
@@ -202,7 +241,10 @@ class FastParser:
         p[0] = {"Expr": p[1]}
 
     def p_assignment(self, p):
-        "assignment : identifier EQUALS expr"
+        """
+        assignment : identifier EQUALS expr
+                   | elementAccess EQUALS expr
+        """
         p[0] = {"Assign": [p[1], p[3]]}
 
     def p_initialisation(self, p):
@@ -224,12 +266,14 @@ class FastParser:
                   | output NEWLINE
                   | NEWLINE
         """
-        p[0] = {"Statement": p[1]}
+        p[0] = {"Statement": p[1],
+                "__PARSER_INFO_LINE_NO": p.lineno(-1)}
 
     # Error rule for syntax errors
     def p_error(self, p):
         if p:
-            print("Syntax error in input: " + str(p.value) + " on line " + str(p.lineno))
+            print("Syntax error in input: " +
+                  str(p.value) + " on line " + str(p.lineno))
         else:
             print("Reached end of file without completing parse")
 
@@ -251,7 +295,7 @@ if __name__ == "__main__":
     filePath = ""
 
     # Read from specified file or, if not specified, from stdin
-    if args.path :
+    if args.path:
         with open(args.path, 'r') as file:
             programString = file.read()
         filePath = args.path

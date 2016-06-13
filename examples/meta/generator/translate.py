@@ -11,77 +11,164 @@ except NameError:
     from sets import Set as set
 
 
+def find(key, dictionary):
+    """ Recursively search a dictionary for a key """
+    for k, v in dictionary.iteritems():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                for result in find(key, d):
+                    yield result
+
+
+def getDependencies(program):
+    """ Traverses the program AST and extracts all dependencies """
+    allClasses = set()
+    interfaceClasses = set()
+    enums = set()
+
+    # All classes used
+    for objectType in find("ObjectType", program):
+        allClasses.add(objectType)
+
+    for shogunSGType in find("ShogunSGType", program):
+        allClasses.add(shogunSGType)
+
+    # All classes where the constructor is called
+    for initialisation in find("Init", program):
+        # Constructor interface is used if an argument list is passed
+        if list(initialisation[2].keys())[0] == "ArgumentList":
+            typeDict = initialisation[0]
+            objectKey = list(typeDict.keys())[0]
+            interfaceClasses.add(typeDict[objectKey])
+
+    # All classes on which a static method is called
+    for staticCall in find("StaticCall", program):
+        typeDict = staticCall[0]
+        objectKey = list(typeDict.keys())[0]
+        interfaceClasses.add(typeDict[objectKey])
+
+    # All enums used
+    for enum in find("Enum", program):
+        enumType = enum[0]["Identifier"]
+        enumValue = enum[1]["Identifier"]
+        enums.add((enumType, enumValue))
+
+    return allClasses, interfaceClasses, enums
+
+
+def getVarsToStore(program):
+    """ Extracts all variables in program that should be stored """
+    varsToStore = []
+
+    # store only real valued matrices, vectors and scalars
+    for init in find("Init", program):
+        typeObject = init[0]
+        nameString = init[1]["Identifier"]
+
+        append_store = False
+        if "ShogunSGType" in init[0]:
+            if init[0]["ShogunSGType"] in ("RealVector",
+                                           "RealMatrix",
+                                           "FloatVector",
+                                           "FloatMatrix"):
+                append_store = True
+
+        elif "BasicType" in init[0]:
+            if init[0]["BasicType"] in ("real", "float", "int"):
+                append_store = True
+
+        if append_store:
+            varsToStore.append((typeObject, nameString))
+
+    return varsToStore
+
+
+class TranslationFailure(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class Translator:
-    def __init__(self, targetDict):
-        self.dependencies = {
-            # All object types used throughout the program
-            "AllClasses":set(),
-
-            # All classes where the class interface has been used explicitly.
-            # I.e. classes used to construct objects and classes where static
-            # methods are called
-            "InterfacedClasses":set(),
-
-            # All enum types used throughout the program
-            "Enums":set()
-        }
-
+    def __init__(self, targetDict, tags={}):
         self.targetDict = targetDict
-        self.storeVars = False
+        self.tags = tags
 
-    def translateProgram(self, program, programName=None,
-                         tags={}, storeVars=False):
+    def translateProgram(self, program, programName=None, storeVars=False):
         """ Translate program AST
         Args:
-            program: object like [statementAST, statementAST, statementAST, ...]
+            program: object like {"Program": [statementAST,
+                                              statementAST,
+                                              statementAST, ..]}
         """
-        # reset dependencies
-        self.dependencies["AllClasses"] = set()
-        self.dependencies["InterfacedClasses"] = set()
-        self.dependencies["Enums"] = set()
-        self.tags = tags
-        self.storeVars = storeVars
-        self.varsToStore = []
+        if storeVars:
+            varsToStore = getVarsToStore(program)
+            self.injectVarsStoring(program["Program"],
+                                   programName,
+                                   varsToStore)
 
         targetProgram = ""
-        for line in program:
-            if "Statement" in line:
-                targetProgram += self.translateStatement(line["Statement"])
-            elif "Comment" in line:
-                targetProgram += self.translateComment(line["Comment"])
+        for line in program["Program"]:
+            try:
+                if "Statement" in line:
+                    targetProgram += self.translateStatement(line["Statement"])
+                elif "Comment" in line:
+                    targetProgram += self.translateComment(line["Comment"])
+            except TranslationFailure as e:
+                raise TranslationFailure("Translation failed on line " +
+                                         str(line["__PARSER_INFO_LINE_NO"]) +
+                                         ". Error: " + str(e))
+
+        allClasses, interfacedClasses, enums = getDependencies(program)
+        try:
+            dependenciesString = self.dependenciesString(allClasses,
+                                                         interfacedClasses,
+                                                         enums)
+        except TranslationFailure as e:
+            raise TranslationFailure("Translation of dependencies failed!"
+                                     " Error: " + str(e))
 
         programTemplate = Template(self.targetDict["Program"])
-
-        testing = ""
-        if self.storeVars:
-            testing = self.translateVarsStoring(programName)
-
         return programTemplate.substitute(program=targetProgram,
-                                          testing=testing,
-                                          dependencies=self.dependenciesString(),
+                                          dependencies=dependenciesString,
                                           programName=programName)
 
-    def translateVarsStoring(self, programName):
-        result = ""
+    def injectVarsStoring(self, statementList, programName, varsToStore):
+        """ Injects statements at the end of the program that perform variable
+            storing
+        """
         storage = "__sg_storage"
         storageFile = "__sg_storage_file"
 
         # TODO: handle directories
-        storageFilename = {"Expr": {"StringLiteral": "{}.dat".format(programName)}}
+        storageFilename = {
+            "Expr": {"StringLiteral": "{}.dat".format(programName)}
+        }
         # 'w'
         storageFilemode = {"Expr": {"NumberLiteral": "119"}}
-        storageComment = {"Comment": {"StringLiteral": "Serialize output for integration testing (automatically generated)"}}
+        storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
         storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
                                 {"Identifier": storage},
                                 {"ArgumentList": []}]}
-        storageFileInit = {"Init": [{"ObjectType": "SerializableAsciiFile"},
-                                    {"Identifier": storageFile},
-                                    {"ArgumentList": [storageFilename, storageFilemode]}]}
+        storageFileInit = {
+            "Init": [{"ObjectType": "SerializableAsciiFile"},
+                     {"Identifier": storageFile},
+                     {"ArgumentList": [storageFilename, storageFilemode]}]
+        }
 
-        result += self.translateStatement(storageInit)
-        result += self.translateStatement(storageFileInit)
+        statementList.append({"Statement": "\n"})
+        statementList.append(storageComment)
+        statementList.append({"Statement": storageInit})
+        statementList.append({"Statement": storageFileInit})
 
-        for vartype, varname in self.varsToStore:
+        for vartypeAST, varname in varsToStore:
             # avoid storing itself
             if varname in (storage, storageFile):
                 continue
@@ -89,26 +176,30 @@ class Translator:
             varnameExpr = {"Expr": {"StringLiteral": varname}}
             varnameIdentifierExpr = {"Expr": {"Identifier": varname}}
 
-            methodCall = {"MethodCall": [{"Identifier": storage},
-                                         {"Identifier": "append_wrapped"},
-                                         [varnameIdentifierExpr, varnameExpr]]}
+            methodCall = {
+                "MethodCall": [{"Identifier": storage},
+                               {"Identifier": "append_wrapped"},
+                               {"ArgumentList": [varnameIdentifierExpr,
+                                                 varnameExpr]}]
+            }
             expression = {"Expr": methodCall}
-            result += self.translateStatement(expression)
+            statementList.append({"Statement": expression})
 
-        storageSerialize = {"Expr": {"MethodCall": [{"Identifier": storage},
-                                                    {"Identifier": "save_serializable"},
-                                                    [{"Expr": {"Identifier": storageFile}}]]}}
-        result += self.translateStatement(storageSerialize)
+        storageSerialize = {
+            "Expr": {"MethodCall": [
+                {"Identifier": storage},
+                {"Identifier": "save_serializable"},
+                {"ArgumentList": [{"Expr": {"Identifier": storageFile}}]}
+            ]}
+        }
+        statementList.append({"Statement": storageSerialize})
 
-        return result
-
-
-    def dependenciesString(self):
+    def dependenciesString(self, allClasses, interfacedClasses, enums):
         """ Returns dependency import string
             e.g. for python: "from modshogun import RealFeatures\n\n"
         """
 
-        if not "Dependencies" in self.targetDict:
+        if "Dependencies" not in self.targetDict:
             # Dependency strings are optional so we just return empty string
             return ""
 
@@ -120,20 +211,20 @@ class Translator:
         enumDependencies = ""
         dependenciesExist = False
 
-        if len(self.dependencies["AllClasses"]) > 0 and "AllClassDependencies" in self.targetDict["Dependencies"]:
+        if len(allClasses) > 0 and "AllClassDependencies" in self.targetDict["Dependencies"]:
             dependenciesExist = True
             template = Template(self.targetDict["Dependencies"]["AllClassDependencies"])
-            allClassDependencies = template.substitute(classlist=self.seperatedClassDependencies("AllClasses"))
+            allClassDependencies = template.substitute(classlist=self.seperatedClassDependencies(allClasses))
 
-        if len(self.dependencies["InterfacedClasses"]) > 0 and "InterfacedClassDependencies" in self.targetDict["Dependencies"]:
+        if len(interfacedClasses) > 0 and "InterfacedClassDependencies" in self.targetDict["Dependencies"]:
             dependenciesExist = True
             template = Template(self.targetDict["Dependencies"]["InterfacedClassDependencies"])
-            interfacedClassDependencies = template.substitute(classlist=self.seperatedClassDependencies("InterfacedClasses"))
+            interfacedClassDependencies = template.substitute(classlist=self.seperatedClassDependencies(interfacedClasses))
 
-        if len(self.dependencies["Enums"]) > 0 and "EnumDependencies" in self.targetDict["Dependencies"]:
+        if len(enums) > 0 and "EnumDependencies" in self.targetDict["Dependencies"]:
             dependenciesExist = True
             template = Template(self.targetDict["Dependencies"]["EnumDependencies"])
-            enumDependencies = template.substitute(enums=self.seperatedEnumDependencies())
+            enumDependencies = template.substitute(enums=self.seperatedEnumDependencies(enums))
 
         if not dependenciesExist:
             return ""
@@ -143,14 +234,14 @@ class Translator:
                                                   interfacedClassDependencies=interfacedClassDependencies,
                                                   enumDependencies=enumDependencies)
 
-    def seperatedClassDependencies(self, type):
-        if len(self.dependencies[type]) == 0:
+    def seperatedClassDependencies(self, classes):
+        if len(classes) == 0:
             return ""
 
-        dependencyList = list(self.dependencies[type])
+        dependencyList = list(classes)
 
         # Elements are just formatted as their names as default
-        elementTemplate = Template("$element")
+        elementTemplate = Template("$className")
         if "DependencyListElementClass" in self.targetDict["Dependencies"]:
             elementTemplate = Template(self.targetDict["Dependencies"]["DependencyListElementClass"])
 
@@ -159,13 +250,17 @@ class Translator:
 
         # separated dependencies
         csdependencies = ""
-        for i, x in enumerate(dependencyList):
-            if '$include' in elementTemplate.template:
-                csdependencies += elementTemplate.substitute(element=x, include=self.getIncludePathForClass(x))
-            else:
-                csdependencies += elementTemplate.substitute(element=x)
+        for i, className in enumerate(dependencyList):
 
-            if i < len(dependencyList)-1:
+            includePath = None
+            if '$includePath' in elementTemplate.template:
+                # C++ needs the full include path
+                includePath = self.getIncludePathForClass(className)
+
+            csdependencies += elementTemplate.substitute(className=className,
+                                                         includePath=includePath)
+
+            if i < len(dependencyList) - 1:
                 csdependencies += seperator
 
         return csdependencies
@@ -174,23 +269,23 @@ class Translator:
         translatedType = self.translateType({"ObjectType": type_})
         template_parameter_matcher = '\<[0-9a-zA-Z_]*\>'
         variants = [
-                translatedType,
-                'C' + translatedType,
-                re.sub(template_parameter_matcher, '', translatedType),
-                'C' + re.sub(template_parameter_matcher, '', translatedType)
-                ]
+            translatedType,
+            'C' + translatedType,
+            re.sub(template_parameter_matcher, '', translatedType),
+            'C' + re.sub(template_parameter_matcher, '', translatedType)
+        ]
         for variant in variants:
             if variant in self.tags:
                 return self.tags[variant]
 
-        raise Exception('Failed to obtain include path for %s' % (' or '.join(variants)))
+        raise TranslationFailure('Failed to obtain include path for %s' %
+                                 (' or '.join(variants)))
 
-
-    def seperatedEnumDependencies(self):
-        if len(self.dependencies["Enums"]) == 0:
+    def seperatedEnumDependencies(self, enums):
+        if len(enums) == 0:
             return ""
 
-        dependencyList = list(self.dependencies["Enums"])
+        dependencyList = list(enums)
 
         # Enums are formatted as their value by default
         elementTemplate = Template("$value")
@@ -203,12 +298,11 @@ class Translator:
         # separated dependencies
         sdependencies = ""
         for i, x in enumerate(dependencyList):
-            sdependencies += elementTemplate.substitute(type=x[0],value=x[1])
-            if i < len(dependencyList)-1:
+            sdependencies += elementTemplate.substitute(type=x[0], value=x[1])
+            if i < len(dependencyList) - 1:
                 sdependencies += seperator
 
         return sdependencies
-
 
     def translateStatement(self, statement):
         """ Translate statement AST
@@ -216,27 +310,25 @@ class Translator:
             statement: object like {"Init": initAST}, {"Assign": assignAST},
                        {"Expr": exprAST}, "\n"
         """
-        if statement == "\n": # Newline handling
+        # Newline handling
+        if statement == "\n":
             return "\n"
-        
+
         # python2/3 safe dictionary keys
         type = list(statement.keys())[0]
-        
+
         translation = None
         if type == "Init":
             translation = self.translateInit(statement["Init"])
         elif type == "Assign":
-            template = Template(self.targetDict["Assign"])
-            name = statement["Assign"][0]["Identifier"]
-            expr = self.translateExpr(statement["Assign"][1]["Expr"])
-            translation = template.substitute(name=name, expr=expr)
+            translation = self.translateAssign(statement["Assign"])
         elif type == "Expr":
             translation = self.translateExpr(statement["Expr"])
         elif type == "Print":
             translation = self.translatePrint(statement["Print"])
 
-        if translation == None:
-            raise Exception("Unknown statement type: " + type)
+        if translation is None:
+            raise TranslationFailure("Unknown statement type: " + type)
 
         template = Template(self.targetDict["Statement"])
         return template.substitute(statement=translation)
@@ -249,43 +341,62 @@ class Translator:
         """
         typeString = self.translateType(init[0])
         nameString = init[1]["Identifier"]
-        
-        # store only real valued matrices, vectors and scalars
-        if self.storeVars:
-            append_store = False
-            if "ObjectType" in init[0]:
-                if init[0]["ObjectType"] in ("RealVector", "RealMatrix", "FloatVector", "FloatMatrix"):
-                    append_store = True
-            elif "BasicType" in init[0]:
-                if init[0]["BasicType"] in ("real", "float", "int"):
-                    append_store = True
-            
-            if append_store:
-                self.varsToStore.append((typeString, nameString))
-
         initialisation = init[2]
+        typeKey = list(init[0].keys())[0]
 
         # python2/3 safe dictionary keys
         if list(initialisation.keys())[0] == "Expr":
             template = Template(self.targetDict["Init"]["Copy"])
             exprString = self.translateExpr(initialisation["Expr"])
-            return template.substitute(name=nameString, type=typeString, expr=exprString)
+            return template.substitute(name=nameString,
+                                       type=typeString,
+                                       expr=exprString)
         elif list(initialisation.keys())[0] == "ArgumentList":
-            self.dependencies["InterfacedClasses"].add(typeString)
             template = Template(self.targetDict["Init"]["Construct"])
+
+            # Optional custom SGType construction
+            if typeKey == "ShogunSGType"\
+               and init[0][typeKey] in self.targetDict["Init"]:
+                template = Template(self.targetDict["Init"][init[0][typeKey]])
+
             argsString = self.translateArgumentList(initialisation["ArgumentList"])
-            return template.substitute(name=nameString, type=typeString, arguments=argsString)
+            return template.substitute(name=nameString,
+                                       type=typeString,
+                                       arguments=argsString)
+
+    def translateAssign(self, assign):
+        """ Translatie assignment AST
+        Args:
+            assign: object like [ElementAccessAST, expr] and [identifier, expr]
+        """
+        firstElementKey = list(assign[0].keys())[0]
+        LHS = None
+        if firstElementKey == "Identifier":
+            LHS = assign[0][firstElementKey]
+        elif firstElementKey == "ElementAccess":
+            LHS = self.translateElementAccess(assign[0][firstElementKey])
+        else:
+            raise TranslationFailure("Uknown assignment structure: " +
+                                     str(assign))
+
+        template = Template(self.targetDict["Assign"])
+        expr = self.translateExpr(assign[1]["Expr"])
+        return template.substitute(lhs=LHS, expr=expr)
 
     def translateExpr(self, expr):
         """ Translate expression AST
         Args:
-            expr: object like {"MethodCall": [identifierAST, identifierAST, argumentListAST]},
-                  {"BoolLiteral": "False"}, {"StringLiteral": "train.dat"}, {"NumberLiteral": 4},
-                  {"Identifier": "feats_test"}, etc.
+            expr: objects like
+                {"MethodCall": [identifierAST, identifierAST, argumentListAST]}
+                {"BoolLiteral": "False"}
+                {"StringLiteral": "train.dat"}
+                {"NumberLiteral": 4}
+                {"Identifier": "feats_test"}
+                etc.
         """
         # python2/3 safe dictionary keys
         key = list(expr.keys())[0]
-        
+
         if key == "MethodCall":
             template = Template(self.targetDict["Expr"]["MethodCall"])
             object = expr[key][0]["Identifier"]
@@ -297,7 +408,9 @@ class Translator:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
 
-            return template.substitute(object=object, method=method, arguments=translatedArgsList)
+            return template.substitute(object=object,
+                                       method=method,
+                                       arguments=translatedArgsList)
 
         elif key == "StaticCall":
             template = Template(self.targetDict["Expr"]["StaticCall"])
@@ -310,9 +423,12 @@ class Translator:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
 
-            self.dependencies["InterfacedClasses"].add(type_)
+            return template.substitute(type=type_,
+                                       method=method,
+                                       arguments=translatedArgsList)
 
-            return template.substitute(type=type_, method=method, arguments=translatedArgsList)
+        elif key == "ElementAccess":
+            return self.translateElementAccess(expr[key])
 
         elif key == "BoolLiteral":
             return self.targetDict["Expr"]["BoolLiteral"][expr[key]]
@@ -330,12 +446,11 @@ class Translator:
             return template.substitute(identifier=expr[key])
 
         elif key == "Enum":
-            # Add enum to dependencies in case they need to be imported explicitly
-            self.dependencies["Enums"].add((expr[key][0]["Identifier"], expr[key][1]["Identifier"]))
             template = Template(self.targetDict["Expr"]["Enum"])
-            return template.substitute(type=expr[key][0]["Identifier"],value=expr[key][1]["Identifier"])
+            return template.substitute(type=expr[key][0]["Identifier"],
+                                       value=expr[key][1]["Identifier"])
 
-        raise Exception("Unknown expression type: " + key)
+        raise TranslationFailure("Unknown expression type: " + key)
 
     def translatePrint(self, printStmt):
         template = Template(self.targetDict["Print"])
@@ -348,15 +463,12 @@ class Translator:
     def translateType(self, type):
         """ Translate type AST
         Args:
-            type: object like {"ObjectType": "IntMatrix"}, {"BasicType": "float"}, etc.
+            type: object like {"ObjectType": "IntMatrix"},
+                              {"BasicType": "float"}, etc.
         """
         template = ""
         # python2/3 safe dictionary keys
         typeKey = list(type.keys())[0]
-
-        # Store dependency
-        if typeKey == "ObjectType":
-            self.dependencies["AllClasses"].add(type[typeKey])
 
         if type[typeKey] in self.targetDict["Type"]:
             template = Template(self.targetDict["Type"][type[typeKey]])
@@ -371,7 +483,7 @@ class Translator:
             argumentList: object like None, {"Expr": exprAST},
                           [{"Expr": exprAST}, {"Expr": exprAST}], etc.
         """
-        if argumentList == None or argumentList == []:
+        if argumentList is None or argumentList == []:
             return ""
         if isinstance(argumentList, list):
             head = argumentList[0]
@@ -388,10 +500,62 @@ class Translator:
             elif "ArgumentList" in argumentList:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
+    def translateElementAccess(self, elementAccess):
+        """ Translate element access AST
+        Args:
+            elementAccess: object like [identifierAST, argumentListAST]
+        """
+        identifier = elementAccess[0]["Identifier"]
+        indexList = elementAccess[1]["IndexList"]
+        indexListTranslation = self.translateIndexList(indexList)
+
+        template = None
+        if len(indexList) == 1:
+            template = Template(self.targetDict["ElementAccess"]["Vector"])
+        elif len(indexList) == 2:
+            template = Template(self.targetDict["ElementAccess"]["Matrix"])
+        else:
+            raise TranslationFailure("Element access takes either 1 index "
+                                     "(vector) or 2 indices (matrix). Given "
+                                     " " + str(len(indexList)) + " indices")
+
+        return template.substitute(identifier=identifier,
+                                   indices=indexListTranslation)
+
+    def translateIndexList(self, indexList):
+        """ Translate index list AST
+        Args:
+            indexList: object like [NumberLiteralAST, NumberLiteralAST, ..]
+        """
+        addOne = not self.targetDict["ElementAccess"]["ZeroIndexed"]
+        translation = ""
+        for idx, numberLiteral in enumerate(indexList):
+            try:
+                index = int(numberLiteral["NumberLiteral"])
+            except ValueError:
+                raise TranslationFailure("Indices of element access must be "
+                                         "integers.\n Error in literal: " +
+                                         str(numberLiteral["NumberLiteral"]))
+
+            if addOne:
+                index += 1
+
+            translation += str(index)
+
+            if idx < len(indexList) - 1:
+                translation += ", "
+
+        return translation
+
+
 def translate(ast, targetDict, tags, storeVars):
-    translator = Translator(targetDict)
+    translator = Translator(targetDict, tags)
     programName = os.path.basename(ast["FilePath"]).split(".")[0]
-    return translator.translateProgram(ast["Program"], programName, tags, storeVars)
+
+    return translator.translateProgram(ast,
+                                       programName,
+                                       storeVars)
+
 
 def loadTargetDict(targetJsonPath):
     try:
@@ -407,8 +571,17 @@ def loadTargetDict(targetJsonPath):
 if __name__ == "__main__":
     # Parse command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--target", nargs='?', help="Translation target. Possible values: cpp, python, java, r, octave, csharp, ruby, lua. (default: python)")
-    parser.add_argument("path", nargs='?', help="Path to input file. If not specified input is read from stdin")
+    parser.add_argument("-t",
+                        "--target",
+                        nargs='?',
+                        help="Translation target. Possible values: cpp, python, java, r, octave, csharp, ruby, lua. (default: python)")
+    parser.add_argument("path",
+                        nargs='?',
+                        help="Path to input file. If not specified input is read from stdin")
+    parser.add_argument("-g", "--ctags", help="path to ctags file")
+    parser.add_argument("--store-vars",
+                        help="whether to store all variables for testing",
+                        action='store_true')
     args = parser.parse_args()
 
     # Load target dictionary
@@ -416,6 +589,14 @@ if __name__ == "__main__":
     if args.target:
         target = args.target
     targetDict = loadTargetDict("targets/" + target + ".json")
+
+    # Load ctags file
+    tags = {}
+    if args.ctags:
+        from generate import parseCtags
+        tags = parseCtags(args.ctags)
+
+    storeVars = True if args.store_vars else False
 
     # Read from input file (stdin or given path)
     programObject = None
@@ -425,4 +606,7 @@ if __name__ == "__main__":
     else:
         programObject = json.load(sys.stdin)
 
-    print(translate(programObject, targetDict, tags={}, storeVars=False))
+    print(translate(programObject,
+                    targetDict,
+                    tags=tags,
+                    storeVars=storeVars))
