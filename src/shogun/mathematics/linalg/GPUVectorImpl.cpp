@@ -40,26 +40,23 @@ namespace shogun
 {
 
 template<class T>
-LinalgVector<T>::GPUVectorImpl::GPUVectorImpl()
+Vector<T>::GPUVectorImpl::GPUVectorImpl()
 {
 }
 
 template<class T>
-LinalgVector<T>::GPUVectorImpl::GPUVectorImpl(T* data, index_t len)
+Vector<T>::GPUVectorImpl::GPUVectorImpl(T* data, index_t len)
 :m_GPUptr(new VCLMemoryArray()), m_len(len), m_offset(0)
 {
+	viennacl::backend::memory_create(*m_GPUptr, sizeof(T)*m_len,
+    		viennacl::context());
 
-	{
-		viennacl::backend::memory_create(*m_GPUptr, sizeof(T)*m_len,
-	        	viennacl::context());
-
-		viennacl::backend::memory_write(*m_GPUptr, 0, m_len*sizeof(T), data);
-	}
+	viennacl::backend::memory_write(*m_GPUptr, 0, m_len*sizeof(T), data);
 }
 
 template<class T>
-LinalgVector<T>::GPUVectorImpl::GPUVectorImpl
-(const LinalgVector<T>::GPUVectorImpl &array)
+Vector<T>::GPUVectorImpl::GPUVectorImpl
+(const Vector<T>::GPUVectorImpl &array)
 {
 	m_GPUptr = array.m_GPUptr;
 	m_len = array.m_len;
@@ -67,19 +64,38 @@ LinalgVector<T>::GPUVectorImpl::GPUVectorImpl
 }
 
 template<class T>
-typename LinalgVector<T>::GPUVectorImpl::VCLVectorBase LinalgVector<T>::GPUVectorImpl::GPUvec()
+typename Vector<T>::GPUVectorImpl::VCLVectorBase Vector<T>::GPUVectorImpl::GPUvec()
 {
 	return VCLVectorBase(*m_GPUptr, m_len, m_offset, 1);
 }
 
 template<class T>
-typename LinalgVector<T>::GPUVectorImpl::VCLVector LinalgVector<T>::GPUVectorImpl::vector()
+typename Vector<T>::GPUVectorImpl::VCLVector Vector<T>::GPUVectorImpl::vector()
 {
-	return VCLVector(LinalgVector<T>::GPUVectorImpl::GPUvec());
+	return VCLVector(Vector<T>::GPUVectorImpl::GPUvec());
 }
 
-template class LinalgVector<int32_t>;
-template class LinalgVector<float32_t>;
+template <class T>
+void Vector<T>::GPUVectorImpl::transferToCPU(T* data)
+{
+	viennacl::backend::memory_read(*m_GPUptr, m_offset*sizeof(T), m_len*sizeof(T),
+		data);
+}
+
+template <class T>
+viennacl::const_entry_proxy<T> Vector<T>::GPUVectorImpl::operator[](index_t index) const
+{
+	return viennacl::const_entry_proxy<T>(m_offset+index, *m_GPUptr);
+}
+
+template <class T>
+viennacl::entry_proxy<T> Vector<T>::GPUVectorImpl::operator[](index_t index)
+{
+	return viennacl::entry_proxy<T>(m_offset+index, *m_GPUptr);
+}
+
+template class Vector<int32_t>;
+template class Vector<float32_t>;
 
 }
 

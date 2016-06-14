@@ -36,7 +36,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalg/linalgVector.h>
+#include <shogun/mathematics/linalg/Vector.h>
 #include <memory>
 
 #ifndef GPU_VECTOR_IMPL_H__
@@ -51,7 +51,7 @@ namespace shogun
 
 /** GPU array structure */
 template <class T>
-class LinalgVector<T>::GPUVectorImpl
+class Vector<T>::GPUVectorImpl
 {
 
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
@@ -61,11 +61,11 @@ class LinalgVector<T>::GPUVectorImpl
 public:
 	GPUVectorImpl();
 
-	/** Creates a gpu vector with LinalgVector */
+	/** Creates a gpu vector with Vector */
 	GPUVectorImpl(T* data, index_t len);
 
 	/** Copy Constructor */
-	GPUVectorImpl(const LinalgVector<T>::GPUVectorImpl &array);
+	GPUVectorImpl(const Vector<T>::GPUVectorImpl &array);
 
 	/** Returns a ViennaCL vector wrapped around the data of this vector. Can be
 	 * used to call native ViennaCL methods on this vector
@@ -76,6 +76,22 @@ public:
 	 * allows element access
 	 */
 	VCLVector vector();
+
+	/** Read only memory access. Note that this is very slow as it copies the
+	 * element from the GPU to the CPU
+	 *
+	 * @param index Element index
+	 */
+	viennacl::const_entry_proxy<T> operator[](index_t index) const;
+
+	/** Read/write memory access. Note that this is very slow as it copies the
+	 * element between the GPU and the CPU
+	 *
+	 * @param index Element index
+	 */
+	viennacl::entry_proxy<T> operator[](index_t index);
+
+	void transferToCPU(T* data);
 
 
 private:

@@ -31,7 +31,7 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
 */
 
-#include <shogun/mathematics/linalg/linalgVector.h>
+#include <shogun/mathematics/linalg/Vector.h>
 #include <shogun/mathematics/linalg/GPUVectorImpl.h>
 
 #ifdef HAVE_CXX11
@@ -40,46 +40,47 @@ namespace shogun
 {
 
 template<class T>
-LinalgVector<T>::LinalgVector()
+Vector<T>::Vector()
 {
 	init();
 }
 
 template<class T>
-LinalgVector<T>::LinalgVector(SGVector<T> const &vector)
+Vector<T>::Vector(SGVector<T> const &vector)
 {
 	init();
-	m_data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen));
-	std::copy(vector.vector, vector.vector+vector.vlen, m_data);
+	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen)), free);
+	std::copy(vector.vector, vector.vector + vector.vlen, m_data.get());
 	m_len = vector.vlen;
 }
 
 template<class T>
-LinalgVector<T>::LinalgVector(LinalgVector<T> const &vector)
+Vector<T>::Vector(Vector<T> const &vector)
 {
 	init();
-	m_data = vector.m_data;
+
+	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.size())), free);
+	std::copy(vector.data(), vector.data() + vector.size(), m_data.get());
 	m_len = vector.m_len;
-	m_onGPU = vector.m_onGPU;
 
 	if (vector.onGPU())
 	{
 		m_onGPU = true;
 		m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(*(vector.m_gpu_impl)));
+		transferToCPU();
 	}
 }
 
 template<class T>
-LinalgVector<T>::~LinalgVector()
+Vector<T>::~Vector()
 {
-	free(m_data);
 }
 
 template<class T>
-LinalgVector<T>& LinalgVector<T>::operator=(SGVector<T> const &vector)
+Vector<T>& Vector<T>::operator=(SGVector<T> const &vector)
 {
-	m_data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen));
-	std::copy(vector.vector, vector.vector+vector.vlen, m_data);
+	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen)), free);
+	std::copy(vector.vector, vector.vector+vector.vlen, m_data.get());
 	m_len = vector.vlen;
 	m_onGPU = false;
 	m_gpu_impl.release();
@@ -87,81 +88,93 @@ LinalgVector<T>& LinalgVector<T>::operator=(SGVector<T> const &vector)
 }
 
 template<class T>
-LinalgVector<T>& LinalgVector<T>::operator=(LinalgVector<T> const &vector)
+Vector<T>& Vector<T>::operator=(Vector<T> const &vector)
 {
-
-	m_data = vector.m_data;
+	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.size())), free);
+	std::copy(vector.data(), vector.data() + vector.size(), m_data.get());
 	m_len = vector.m_len;
 	m_onGPU = vector.m_onGPU;
+
 	if (vector.onGPU())
 	{
+		m_onGPU = true;
 		m_gpu_impl.reset(new GPUVectorImpl(*(vector.m_gpu_impl)));
+		transferToCPU();
 	}
 	return *this;
-
 }
 
 template<class T>
-LinalgVector<T>::operator SGVector<T>() const
+Vector<T>::operator SGVector<T>()
 {
-	return SGVector<T>(m_data, m_len);
+	if (onGPU())
+		transferToCPU();
+	SGVector<T> vector(m_len);
+	std::copy(m_data.get(), m_data.get()+m_len, vector.vector);
+	return vector;
 }
 
 template<class T>
-bool LinalgVector<T>::onGPU() const
+bool Vector<T>::onGPU() const
 {
 	return m_onGPU;
 }
 
 template<class T>
-T* LinalgVector<T>::data()
+T* Vector<T>::data()
 {
-	return m_data;
+	return m_data.get();
 }
 
 template<class T>
-T const * LinalgVector<T>::data() const
+T const * Vector<T>::data() const
 {
-	return m_data;
+	return m_data.get();
 }
 
 template<class T>
-index_t LinalgVector<T>::size() const
+index_t Vector<T>::size() const
 {
 	return m_len;
 }
 
 template<class T>
-void LinalgVector<T>::transferToGPU()
+void Vector<T>::transferToGPU()
 {
 #ifdef HAVE_VIENNACL
-	m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(m_data, m_len));
+	m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(m_data.get(), m_len));
 	m_onGPU = true;
 #else
-	SG_SERROR("User did not register GPU backend. \n");
+	SG_SERROR("Transfer incomplete. No registered GPU backend found.\n");
 #endif
 }
 
 template<class T>
-void LinalgVector<T>::transferToCPU()
+void Vector<T>::transferToCPU()
 {
-	if (m_gpu_impl != nullptr)
+	if (!onGPU())
 	{
-		m_gpu_impl.release();
+		SG_SINFO("There is no data to transfer on GPU.\n")
+		return;
 	}
-	m_onGPU = false;
+
+#ifdef HAVE_VIENNACL
+	m_gpu_impl->transferToCPU(m_data.get());
+#else
+	SG_SERROR("Transfer incomplete. No registered GPU backend found.\n"); // In case user unregisters GPU backend?
+#endif
 }
 
 template<class T>
-void LinalgVector<T>::init()
+void Vector<T>::init()
 {
 	m_data = nullptr;
 	m_len = 0;
 	m_onGPU = false;
 }
 
-template class LinalgVector<int32_t>;
-template class LinalgVector<float32_t>;
+template class Vector<int32_t>;
+template class Vector<float32_t>;
 
 }
 

@@ -43,30 +43,31 @@
 namespace shogun
 {
 
- /** Vector structure
-  * for both CPU and GPU vector
-  */
+/** Vector structure
+ * for both CPU and GPU vector
+ */
 template <class T>
-class LinalgVector
+class Vector
 {
-	
+
 	typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
 
 public:
 	/** Default Constructor */
-	LinalgVector();
+	Vector();
 
-	LinalgVector(SGVector<T> const &vector);
+	Vector(SGVector<T> const &vector);
 
-	LinalgVector(LinalgVector<T> const &vector);
+	/** Copy Constructor */
+	Vector(Vector<T> const &vector);
 
-	~LinalgVector();
+	~Vector();
 
-	LinalgVector& operator=(SGVector<T> const &vector);
+	Vector& operator=(SGVector<T> const &vector);
 
-	LinalgVector& operator=(LinalgVector<T> const &vector);
+	Vector& operator=(Vector<T> const &vector);
 
-	operator SGVector<T>() const;
+	operator SGVector<T>();
 
 	/** Data Storage
 	 * @return whether data is on GPU
@@ -90,16 +91,30 @@ public:
 	 */
 	inline const T& operator[](index_t index) const
 	{
-		return m_data[index];
+		return m_data.get()[index];
+	}
+
+	/** Operator overload for vector read only access
+	 *
+	 * @param index dimension to access
+	 *
+	 */
+	inline T& operator[](index_t index)
+	{
+		return m_data.get()[index];
 	}
 
 private:
-	alignas(CPU_CACHE_LINE_SIZE) bool m_onGPU;
-	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;  // same logic
-	alignas(CPU_CACHE_LINE_SIZE) T* m_data;      // non-owning ptr, referring to the SGVector.vector
+	void init();
+
+public: // Has to be public for unit-tests to use
 	class GPUVectorImpl;
 	alignas(CPU_CACHE_LINE_SIZE) std::unique_ptr<GPUVectorImpl> m_gpu_impl;
-	void init();
+
+private:
+	alignas(CPU_CACHE_LINE_SIZE) bool m_onGPU;
+	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;
+	alignas(CPU_CACHE_LINE_SIZE) std::shared_ptr<T> m_data;
 };
 }
 
