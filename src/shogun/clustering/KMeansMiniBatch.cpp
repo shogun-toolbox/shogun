@@ -7,7 +7,7 @@
  * Written (W) 2014 Parijat Mazumdar
  */
 
-#include <shogun/clustering/KMeansMiniBatchImpl.h>
+#include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
@@ -16,7 +16,56 @@ using namespace shogun;
 
 namespace shogun
 {
-void CKMeansMiniBatchImpl::minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus)
+CKMeansMiniBatch::CKMeansMiniBatch():CKMeansBase()
+{
+	init_mb_params();
+}
+
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+{
+	init_mb_params();
+}
+
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+{
+	init_mb_params();
+}
+
+CKMeansMiniBatch::~CKMeansMiniBatch()
+{
+}
+
+void CKMeansMiniBatch::set_batch_size(int32_t b)
+{
+	REQUIRE(b>0, "Parameter bach size should be > 0");
+	batch_size=b;
+}
+
+int32_t CKMeansMiniBatch::get_batch_size() const
+{
+	return batch_size;
+}
+
+void CKMeansMiniBatch::set_mb_iter(int32_t i)
+{
+	REQUIRE(i>0, "Parameter number of iterations should be > 0");
+	minib_iter=i;
+}
+
+int32_t CKMeansMiniBatch::get_mb_iter() const
+{
+	return minib_iter;
+}
+
+void CKMeansMiniBatch::set_mb_params(int32_t b, int32_t t)
+{
+	REQUIRE(b>0, "Parameter bach size should be > 0");
+	REQUIRE(t>0, "Parameter number of iterations should be > 0");
+	batch_size=b;
+	minib_iter=t;
+}
+
+void CKMeansMiniBatch::minibatch_KMeans()
 {
 	REQUIRE(batch_size>0,
 		"batch size not set to positive value. Current batch size %d \n", batch_size);
@@ -74,7 +123,7 @@ void CKMeansMiniBatchImpl::minibatch_KMeans(int32_t k, CDistance* distance, int3
 	delete rhs_mus;
 }
 
-SGVector<int32_t> CKMeansMiniBatchImpl::mbchoose_rand(int32_t b, int32_t num)
+SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
@@ -92,4 +141,19 @@ SGVector<int32_t> CKMeansMiniBatchImpl::mbchoose_rand(int32_t b, int32_t num)
 	}
 	return ret;
 }
+
+void CKMeansMiniBatch::init_mb_params()
+{
+	batch_size=-1;
+	minib_iter=-1;
+}
+
+bool CKMeansMiniBatch::train_machine(CFeatures* data)
+{
+	initialize_training(data);
+	minibatch_KMeans();
+	compute_cluster_variances();	
+	return true;	
+}
+
 }

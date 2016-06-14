@@ -10,6 +10,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
+#include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <gtest/gtest.h>
 
@@ -144,12 +145,11 @@ TEST(KMeans, minibatch_training_test)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	SG_REF(features);	
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeans* clustering=new CKMeans(1, distance,initial_centers);
+	CKMeansMiniBatch* clustering=new CKMeansMiniBatch(1, distance,initial_centers);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
-		clustering->set_train_method(KMM_MINI_BATCH);
-		clustering->set_mini_batch_parameters(4,1000);
+		clustering->set_mb_params(4,1000);
 		clustering->train(features);
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
@@ -196,10 +196,10 @@ TEST(KMeans, fixed_centers)
 	ASSERT_NE(learnt_centers, (CDenseFeatures<float64_t>*)NULL);
 	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
 		
-	EXPECT_EQ(c(0,0), 0);
-	EXPECT_EQ(c(1,0), 5);
-	EXPECT_EQ(c(0,1), 20);
-	EXPECT_EQ(c(1,1), 5);
+	EXPECT_NEAR(c(0,0), 0.0, 10E-12);
+	EXPECT_NEAR(c(1,0), 5.0, 10E-12);
+	EXPECT_NEAR(c(0,1), 20.0, 10E-12);
+	EXPECT_NEAR(c(1,1), 5.0, 10E-12);
 	
 	SG_UNREF(clustering);
 	SG_UNREF(features);
