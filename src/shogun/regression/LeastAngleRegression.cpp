@@ -10,15 +10,12 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <vector>
 #include <limits>
 #include <algorithm>
 
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/regression/LeastAngleRegression.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
@@ -300,10 +297,9 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 				float64_t l1_prev = SGVector<float64_t>::onenorm(&m_beta_path[nloop][0], n_fea);
 				float64_t s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
 
-				// beta = beta_prev + s*(beta-beta_prev)
-				//      = (1-s)*beta_prev + s*beta
-				cblas_dscal(n_fea, s, &beta[0], 1);
-				cblas_daxpy(n_fea, 1-s, &m_beta_path[nloop][0], 1, &beta[0], 1);
+				Map<VectorXd> map_beta(&beta[0], n_fea);
+				Map<VectorXd> map_beta_prev(&m_beta_path[nloop][0], n_fea);
+				map_beta = (1-s)*map_beta_prev + s*map_beta;
 			}
 		}
 
@@ -403,4 +399,3 @@ SGMatrix<float64_t> CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t>& 
 	return nR;
 }
 
-#endif // HAVE_LAPACK
