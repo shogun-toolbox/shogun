@@ -43,7 +43,7 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         with open(translate_file) as tFile:
             try:
                 targets.append(json.load(tFile))
-            except Exception, err:
+            except Exception as err:
                 print("Error translating file: %s\n%s" % (translate_file, err))
     
     # Translate each example
