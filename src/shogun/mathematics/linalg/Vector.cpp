@@ -114,6 +114,7 @@ Vector<T>& Vector<T>::operator=(Vector<T> const &vector)
 	else
 	{
 		m_onGPU = false;
+		m_gpu_impl.release();
 		std::copy(vector.data(), vector.data() + vector.size(), m_data.get());
 	}
 	return *this;
