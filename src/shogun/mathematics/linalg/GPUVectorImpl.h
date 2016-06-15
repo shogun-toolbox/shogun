@@ -45,6 +45,7 @@
 #ifdef HAVE_CXX11
 #ifdef HAVE_VIENNACL
 #include <viennacl/vector.hpp>
+#endif
 
 namespace shogun
 {
@@ -53,12 +54,14 @@ namespace shogun
 template <class T>
 class Vector<T>::GPUVectorImpl
 {
+#ifdef HAVE_VIENNACL
 
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
 	typedef viennacl::vector<T> VCLVector;
 
 public:
+	/** Default constructor */
 	GPUVectorImpl();
 
 	/** Creates a gpu vector with Vector */
@@ -106,11 +109,11 @@ private:
 	 */
 	alignas(CPU_CACHE_LINE_SIZE) index_t m_offset;
 
+#endif //HAVE_CXX11
 };
 
 }
 
-#endif //HAVE_CXX11
 #endif //HAVE_VIENNACL
 
 #endif

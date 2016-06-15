@@ -51,7 +51,7 @@ TEST(LinalgVector, transfer_to_GPU)
 	a_vec.transferToGPU();
 
 	for (index_t i = 0; i < size; ++i)
-		EXPECT_NEAR(a[i], (*a_vec.m_gpu_impl)[i], 1E-15);
+		EXPECT_NEAR(a[i], a_vec[i], 1E-15);
 }
 
 TEST(LinalgVector, transfer_to_CPU)
@@ -60,15 +60,13 @@ TEST(LinalgVector, transfer_to_CPU)
 	SGVector<int32_t> a(size);
 	a.range_fill(0);
 
-	Vector<int32_t> a_vec(a);
-	a_vec.transferToGPU();
-	for (index_t i = 0; i < size; ++i)
-		(*a_vec.m_gpu_impl)[i] += 1;
-	a_vec.transferToCPU();
+	Vector<int32_t> vec_1(a);
+	Vector<int32_t> vec_2(a);
+	vec_1.transferToGPU();
+	vec_1.transferToCPU();
 
-	a.range_fill(1);
 	for (index_t i = 0; i < size; ++i)
-		EXPECT_NEAR(a[i], a_vec[i], 1E-15);
+		EXPECT_NEAR(vec_1[i], vec_2[i], 1E-15);
 }
 
 TEST(LinalgVector, deepcopy_constructor_from_Vector_with_GPU)
@@ -81,12 +79,12 @@ TEST(LinalgVector, deepcopy_constructor_from_Vector_with_GPU)
 
 	vec_1.transferToGPU();
 	for (index_t i = 0; i < size; ++i)
-		(*vec_1.m_gpu_impl)[i] += 1;
+		vec_1[i] += 1;
 
 	Vector<int32_t> vec_2(vec_1);
 
 	for (index_t i = 0; i < size; ++i)
-		(*vec_1.m_gpu_impl)[i] += 1;
+		vec_1[i] += 1;
 
 	a.range_fill(1);
 	for (index_t i = 0; i < size; ++i)
@@ -103,7 +101,7 @@ TEST(LinalgVector, return_SGVector_from_Vector_with_GPU)
 
 	vec.transferToGPU();
 	for (index_t i = 0; i < size; ++i)
-		(*vec.m_gpu_impl)[i] += 1;
+		vec[i] += 1;
 
 	SGVector<int32_t> b(size);
 	b = SGVector<int32_t>(vec);

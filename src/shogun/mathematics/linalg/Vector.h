@@ -49,72 +49,83 @@ namespace shogun
 template <class T>
 class Vector
 {
-
+	/** Memory aligned datatype */
 	typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
 
 public:
 	/** Default Constructor */
 	Vector();
 
+	/** Construct and copy from SGVector */
 	Vector(SGVector<T> const &vector);
 
 	/** Copy Constructor */
 	Vector(Vector<T> const &vector);
 
+	/** Destructor */
 	~Vector();
 
+	/** overload operator = */
 	Vector& operator=(SGVector<T> const &vector);
 
+	/** overload operator = */
 	Vector& operator=(Vector<T> const &vector);
 
+	/** Converts the vector into an SGVector */
 	operator SGVector<T>();
 
-	/** Data Storage
-	 * @return whether data is on GPU
-	*/
+	/** Data Storage */
 	bool onGPU() const;
 
+	/** Return vector data */
 	T* data();
 
+	/** Return vector data. Read only */
 	T const * data() const;
 
+	/** Return vector size. Read only */
 	index_t size() const;
 
+	/** Transfer vector from CPU to GPU */
 	void transferToGPU();
 
+	/** Transfer vector from GPU to CPU */
 	void transferToCPU();
 
-	/** Operator overload for vector read only access
-	 *
-	 * @param index dimension to access
-	 *
-	 */
-	inline const T& operator[](index_t index) const
-	{
-		return m_data.get()[index];
-	}
+	/** Release vector from GPU */
+	void releaseFromGPU();
 
 	/** Operator overload for vector read only access
 	 *
 	 * @param index dimension to access
 	 *
 	 */
-	inline T& operator[](index_t index)
-	{
-		return m_data.get()[index];
-	}
+	T& operator[](index_t index);
+
+	/** Operator overload for vector read only access
+	 *
+	 * @param index dimension to access
+	 *
+	 */
+	const T& operator[](index_t index) const;
 
 private:
 	void init();
 
-public: // Has to be public for unit-tests to use
-	class GPUVectorImpl;
-	alignas(CPU_CACHE_LINE_SIZE) std::unique_ptr<GPUVectorImpl> m_gpu_impl;
-
-private:
+	/** Store the position of the data */
 	alignas(CPU_CACHE_LINE_SIZE) bool m_onGPU;
+
+	/** Vector length */
 	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;
+
+	/** Vector data */
 	alignas(CPU_CACHE_LINE_SIZE) std::shared_ptr<T> m_data;
+
+	/** GPU Vector class */
+	class GPUVectorImpl;
+
+	/** Pointer to GPU Vector Class */
+	alignas(CPU_CACHE_LINE_SIZE) std::unique_ptr<GPUVectorImpl> m_gpu_impl;
 };
 }
 
