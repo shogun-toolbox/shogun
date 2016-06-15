@@ -12,16 +12,15 @@ using namespace shogun;
 TEST(LinalgVector, deepcopy_constructor_from_SGVector)
 {
 	const index_t size = 10;
-	SGVector<int32_t> a(size);
+	SGVector<int32_t> a(size), b(size);
 	a.range_fill(0);
+	b.range_fill(0);
 
-	Vector<int32_t> a_copy(a);
 	Vector<int32_t> a_vec(a);
-
 	a.range_fill(1);
 
 	for (index_t i = 0; i < size; ++i)
-		EXPECT_NEAR(a_copy[i], a_vec[i], 1E-15);
+		EXPECT_NEAR(a_vec[i], b[i], 1E-15);
 }
 
 TEST(LinalgVector, deepcopy_constructor_from_Vector_with_no_GPU)
