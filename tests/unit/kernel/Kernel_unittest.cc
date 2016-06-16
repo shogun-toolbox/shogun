@@ -455,4 +455,5 @@ TEST(Kernel, gaussian_kernel_width_constructor)
 	CGaussianKernel* kernel=new CGaussianKernel(width);
 	EXPECT_EQ(kernel->get_cache_size(), 10);
 	EXPECT_EQ(kernel->get_width(), width);
+	SG_UNREF(kernel);
 }
