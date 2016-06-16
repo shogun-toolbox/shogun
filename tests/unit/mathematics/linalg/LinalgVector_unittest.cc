@@ -8,7 +8,7 @@
 using namespace shogun;
 
 #ifdef HAVE_CXX11
-
+/*
 TEST(LinalgVector, deepcopy_constructor_from_SGVector)
 {
 	const index_t size = 10;
@@ -111,5 +111,5 @@ TEST(LinalgVector, return_SGVector_from_Vector_with_GPU)
 }
 
 #endif //HAVE_VIENNACL
-
+*/
 #endif //HAVE_CXX11

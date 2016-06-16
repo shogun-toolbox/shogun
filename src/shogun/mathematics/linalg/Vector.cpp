@@ -49,9 +49,7 @@ template<class T>
 Vector<T>::Vector(SGVector<T> const &vector)
 {
 	init();
-	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen)),
-									[](T* ptr) {SG_FREE(ptr);});
-	std::copy(vector.vector, vector.vector + vector.vlen, m_data.get());
+	m_data = vector.vector;
 	m_len = vector.vlen;
 }
 
@@ -59,24 +57,15 @@ template<class T>
 Vector<T>::Vector(Vector<T> const &vector)
 {
 	init();
-
-	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.size())),
-									[](T* ptr) {SG_FREE(ptr);});
+	m_data = vector.m_data;
 	m_len = vector.m_len;
-
-
+#ifdef HAVE_VIENNACL
 	if (vector.onGPU())
 	{
-#ifdef HAVE_VIENNACL
 		m_onGPU = true;
 		m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(*(vector.m_gpu_impl)));
-		transferToCPU();
+	}
 #endif
-	}
-	else
-	{
-		std::copy(vector.data(), vector.data() + vector.size(), m_data.get());
-	}
 }
 
 template<class T>
@@ -87,36 +76,30 @@ Vector<T>::~Vector()
 template<class T>
 Vector<T>& Vector<T>::operator=(SGVector<T> const &vector)
 {
-	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen)),
-									[](T* ptr) {SG_FREE(ptr);});
-	std::copy(vector.vector, vector.vector+vector.vlen, m_data.get());
+	m_data = vector.vector;
 	m_len = vector.vlen;
+
 	m_onGPU = false;
 	m_gpu_impl.release();
+
 	return *this;
 }
 
 template<class T>
 Vector<T>& Vector<T>::operator=(Vector<T> const &vector)
 {
-	m_data = std::shared_ptr<T>(reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.size())),
-	 							[](T* ptr) {SG_FREE(ptr);});
+	m_data = vector.m_data;
 	m_len = vector.m_len;
+	m_onGPU = false;
+	m_gpu_impl.reset();
 
+#ifdef HAVE_VIENNACL
 	if (vector.onGPU())
 	{
-#ifdef HAVE_VIENNACL
 		m_onGPU = true;
 		m_gpu_impl.reset(new GPUVectorImpl(*(vector.m_gpu_impl)));
-		transferToCPU();
+	}
 #endif
-	}
-	else
-	{
-		m_onGPU = false;
-		m_gpu_impl.release();
-		std::copy(vector.data(), vector.data() + vector.size(), m_data.get());
-	}
 	return *this;
 }
 
@@ -124,10 +107,8 @@ template<class T>
 Vector<T>::operator SGVector<T>()
 {
 	if (onGPU())
-		transferToCPU();
-	SGVector<T> vector(m_len);
-	std::copy(m_data.get(), m_data.get()+m_len, vector.vector);
-	return vector;
+		copy_to_CPU();
+	return SGVector<T>(m_data, m_len);
 }
 
 template<class T>
@@ -139,15 +120,13 @@ bool Vector<T>::onGPU() const
 template<class T>
 T* Vector<T>::data()
 {
-	if (onGPU())
-		transferToCPU();
-	return m_data.get();
+	return m_data;
 }
 
 template<class T>
 T const * Vector<T>::data() const
 {
-	return m_data.get();
+	return m_data;
 }
 
 template<class T>
@@ -157,10 +136,16 @@ index_t Vector<T>::size() const
 }
 
 template<class T>
-void Vector<T>::transferToGPU()
+void Vector<T>::copy_to_GPU()
 {
+	if (m_data == nullptr)
+	{
+		SG_SINFO("There is no data to copy to GPU.\n")
+		return;
+	}
+
 #ifdef HAVE_VIENNACL
-	m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(m_data.get(), m_len));
+	m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(m_data, m_len));
 	m_onGPU = true;
 #else
 	SG_SINFO("Transfer incomplete. No registered GPU backend found.\n");
@@ -168,16 +153,44 @@ void Vector<T>::transferToGPU()
 }
 
 template<class T>
-void Vector<T>::releaseFromGPU()
+void Vector<T>::move_to_GPU()
 {
+	if (m_data == nullptr)
+	{
+		SG_SINFO("There is no data to transfer to GPU.\n")
+		return;
+	}
+
 #ifdef HAVE_VIENNACL
-	m_gpu_impl.reset(nullptr);
-	m_onGPU = false;
+	m_gpu_impl = std::unique_ptr<GPUVectorImpl>(new GPUVectorImpl(m_data, m_len));
+	m_onGPU = true;
+	release_from_CPU();
+#else
+	SG_SINFO("Transfer incomplete. No registered GPU backend found.\n");
 #endif
 }
 
 template<class T>
-void Vector<T>::transferToCPU()
+void Vector<T>::copy_to_CPU()
+{
+	if (!onGPU())
+	{
+		SG_SINFO("There is no data to copy on GPU.\n")
+		return;
+	}
+
+#ifdef HAVE_VIENNACL
+	if (m_data == nullptr)
+	{
+		m_data = SG_MALLOC(T, m_gpu_impl->size());
+		m_len = m_gpu_impl->size();
+	}
+	m_gpu_impl->transferToCPU(m_data); // Assume the transfer won't change the length of the vector
+#endif
+}
+
+template<class T>
+void Vector<T>::move_to_CPU()
 {
 	if (!onGPU())
 	{
@@ -186,29 +199,28 @@ void Vector<T>::transferToCPU()
 	}
 
 #ifdef HAVE_VIENNACL
-	m_gpu_impl->transferToCPU(m_data.get()); // Assume the transfer won't change the length of the vector
+	if (m_data == nullptr)
+	{
+		m_data = SG_MALLOC(T, m_gpu_impl->size());
+		m_len = m_gpu_impl->size();
+	}
+	m_gpu_impl->transferToCPU(m_data); // Assume the transfer won't change the length of the vector
+	release_from_GPU();
 #endif
 }
 
 template<class T>
-T& Vector<T>::operator[](index_t index)
+void Vector<T>::release_from_GPU()
 {
-// Doesn't seem to work
-/*
-#ifdef HAVE_VIENNACL
-	if (onGPU())
-		return (*m_gpu_impl)[index];
-#endif
-*/
-	if (onGPU())
-		transferToCPU();
-	return m_data.get()[index];
+	m_gpu_impl.reset();
+	m_onGPU = false;
 }
 
 template<class T>
-const T& Vector<T>::operator[](index_t index) const
+void Vector<T>::release_from_CPU()
 {
-	return m_data.get()[index];
+	m_data = nullptr;
+	m_len = 0;
 }
 
 template<class T>

@@ -64,6 +64,12 @@ public:
 	/** Default constructor */
 	GPUVectorImpl();
 
+	/** Creates a new vector
+	 *
+	 * @param length Number of elements
+	 */
+	GPUVectorImpl(index_t length);
+
 	/** Creates a gpu vector with Vector */
 	GPUVectorImpl(T* data, index_t len);
 
@@ -80,19 +86,8 @@ public:
 	 */
 	VCLVector vector();
 
-	/** Read only memory access. Note that this is very slow as it copies the
-	 * element from the GPU to the CPU
-	 *
-	 * @param index Element index
-	 */
-	viennacl::const_entry_proxy<T> operator[](index_t index) const;
-
-	/** Read/write memory access. Note that this is very slow as it copies the
-	 * element between the GPU and the CPU
-	 *
-	 * @param index Element index
-	 */
-	viennacl::entry_proxy<T> operator[](index_t index);
+	/** Size */
+	inline index_t size() const { return m_len; }
 
 	void transferToCPU(T* data);
 

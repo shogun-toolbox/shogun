@@ -34,6 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <memory>
+#include <shogun/lib/SGReferencedData.h>
 
 #ifndef LINALG_VECTOR_H__
 #define LINALG_VECTOR_H__
@@ -47,10 +48,8 @@ namespace shogun
  * for both CPU and GPU vector
  */
 template <class T>
-class Vector
+class Vector : public SGReferencedData
 {
-	/** Memory aligned datatype */
-	typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
 
 public:
 	/** Default Constructor */
@@ -86,46 +85,44 @@ public:
 	/** Return vector size. Read only */
 	index_t size() const;
 
+	/** Copy vector from CPU to GPU */
+	void copy_to_GPU();
+
 	/** Transfer vector from CPU to GPU */
-	void transferToGPU();
+	void move_to_GPU();
+
+	/** Copy vector from GPU to CPU */
+	void copy_to_CPU();
+
+	/** Copy vector from CPU to GPU */
+	void move_to_CPU();
 
 	/** Transfer vector from GPU to CPU */
-	void transferToCPU();
+	void transfer_to_CPU();
 
 	/** Release vector from GPU */
-	void releaseFromGPU();
+	void release_from_GPU();
 
-	/** Operator overload for vector read only access
-	 *
-	 * @param index dimension to access
-	 *
-	 */
-	T& operator[](index_t index);
-
-	/** Operator overload for vector read only access
-	 *
-	 * @param index dimension to access
-	 *
-	 */
-	const T& operator[](index_t index) const;
+	/** Release SGVector pointer from CPU */
+	void release_from_CPU();
 
 private:
 	void init();
 
 	/** Store the position of the data */
-	alignas(CPU_CACHE_LINE_SIZE) bool m_onGPU;
+	bool m_onGPU;
 
 	/** Vector length */
-	alignas(CPU_CACHE_LINE_SIZE) index_t m_len;
+	index_t m_len;
 
 	/** Vector data */
-	alignas(CPU_CACHE_LINE_SIZE) std::shared_ptr<T> m_data;
+	T* m_data;
 
 	/** GPU Vector class */
 	class GPUVectorImpl;
 
 	/** Pointer to GPU Vector Class */
-	alignas(CPU_CACHE_LINE_SIZE) std::unique_ptr<GPUVectorImpl> m_gpu_impl;
+	std::unique_ptr<GPUVectorImpl> m_gpu_impl;
 };
 }
 
