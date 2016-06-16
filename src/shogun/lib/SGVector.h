@@ -52,6 +52,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Constructor for setting params */
 		SGVector(T* v, index_t len, bool ref_counting=true);
 
+		/** Constructor with SGReferenceData */
+		SGVector(T* v, index_t len, const SGReferencedData &orig);
+
 		/** Wraps a vector around an existing memory segment with an offset */
 		SGVector(T* m, index_t len, index_t offset)
 			: SGReferencedData(false), vector(m+offset), vlen(len) { }

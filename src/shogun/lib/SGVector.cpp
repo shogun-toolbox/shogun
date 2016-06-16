@@ -82,6 +82,12 @@ SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
 }
 
 template<class T>
+SGVector<T>::SGVector(T* v, index_t len, const SGReferencedData &orig)
+: SGReferencedData(orig), vector(v), vlen(len)
+{
+}
+
+template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len)
 {

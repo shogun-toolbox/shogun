@@ -47,6 +47,7 @@ Vector<T>::Vector()
 
 template<class T>
 Vector<T>::Vector(SGVector<T> const &vector)
+:SGReferencedData(vector)
 {
 	init();
 	m_data = vector.vector;
@@ -55,6 +56,7 @@ Vector<T>::Vector(SGVector<T> const &vector)
 
 template<class T>
 Vector<T>::Vector(Vector<T> const &vector)
+:SGReferencedData(vector)
 {
 	init();
 	m_data = vector.m_data;
@@ -71,11 +73,18 @@ Vector<T>::Vector(Vector<T> const &vector)
 template<class T>
 Vector<T>::~Vector()
 {
+	if (m_data != nullptr)
+	{
+		unref();
+	}
 }
 
 template<class T>
 Vector<T>& Vector<T>::operator=(SGVector<T> const &vector)
 {
+	unref();
+	copy_refcount(vector);
+
 	m_data = vector.vector;
 	m_len = vector.vlen;
 
@@ -88,8 +97,12 @@ Vector<T>& Vector<T>::operator=(SGVector<T> const &vector)
 template<class T>
 Vector<T>& Vector<T>::operator=(Vector<T> const &vector)
 {
+	unref();
+	copy_refcount(vector);
+
 	m_data = vector.m_data;
 	m_len = vector.m_len;
+
 	m_onGPU = false;
 	m_gpu_impl.reset();
 
@@ -108,7 +121,8 @@ Vector<T>::operator SGVector<T>()
 {
 	if (onGPU())
 		copy_to_CPU();
-	return SGVector<T>(m_data, m_len);
+
+	return SGVector<T>(m_data, m_len, *this);
 }
 
 template<class T>
@@ -184,6 +198,8 @@ void Vector<T>::copy_to_CPU()
 	{
 		m_data = SG_MALLOC(T, m_gpu_impl->size());
 		m_len = m_gpu_impl->size();
+		allocate_ref();
+		ref();
 	}
 	m_gpu_impl->transferToCPU(m_data); // Assume the transfer won't change the length of the vector
 #endif
@@ -203,6 +219,8 @@ void Vector<T>::move_to_CPU()
 	{
 		m_data = SG_MALLOC(T, m_gpu_impl->size());
 		m_len = m_gpu_impl->size();
+		allocate_ref();
+		ref();
 	}
 	m_gpu_impl->transferToCPU(m_data); // Assume the transfer won't change the length of the vector
 	release_from_GPU();
@@ -219,6 +237,7 @@ void Vector<T>::release_from_GPU()
 template<class T>
 void Vector<T>::release_from_CPU()
 {
+	unref();
 	m_data = nullptr;
 	m_len = 0;
 }
