@@ -60,6 +60,9 @@ class SGReferencedData
 		 */
 		int32_t unref();
 
+		/** Allocate a new m_refcount */
+		void allocate_ref();
+
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)=0;
 

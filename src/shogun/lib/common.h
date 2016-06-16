@@ -42,6 +42,9 @@
 #undef __STDC_FORMAT_MACROS
 #endif
 
+/** CPU cache line size */
+#define CPU_CACHE_LINE_SIZE 64
+
 /**
  * Implementations tend to follow IEEE754
  * @see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=4610935

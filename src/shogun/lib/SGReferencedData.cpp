@@ -112,4 +112,9 @@ int32_t SGReferencedData::unref()
 		return c;
 	}
 }
+
+void SGReferencedData::allocate_ref()
+{
+	m_refcount = new RefCount(0);
+}
 }
