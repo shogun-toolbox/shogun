@@ -40,7 +40,6 @@
 
 using namespace Eigen;
 using namespace shogun;
-#ifdef HAVE_LAPACK
 
 //Generate the Data that N is greater than D
 void generate_data_n_greater_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
@@ -300,8 +299,8 @@ TEST(LeastAngleRegression, ols_equivalence)
 	
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);
 	lab.random(0.0,1.0);
-
 	float64_t mean=linalg::mean(lab);
+	
 	for (index_t i=0; i<lab.size(); i++)
 		lab[i]-=mean;
 
@@ -342,4 +341,37 @@ TEST(LeastAngleRegression, ols_equivalence)
 	SG_UNREF(labels);
 }
 
-#endif
+TEST(LeastAngleRegression, early_stop_l1_norm)
+{
+	SGMatrix<float64_t> data(3,5);
+	SGVector<float64_t> lab(5);
+	generate_data_n_greater_d(data, lab);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	SG_REF(features);
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+	SG_REF(labels);
+	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
+	lars->set_labels((CLabels*) labels);
+	// set max l1 norm
+	lars->set_max_l1_norm(1);
+	lars->train(features);
+
+	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
+	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
+
+	float64_t epsilon=0.000000000001;
+
+	EXPECT_NEAR(active2[0],0.453702890189,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],0.546297109810,epsilon);
+
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.092594219621,epsilon);
+
+	SG_UNREF(lars);
+	SG_UNREF(features);
+	SG_UNREF(labels);
+}
+
