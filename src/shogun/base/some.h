@@ -124,6 +124,24 @@ namespace shogun
         return Some<T>::from_raw(ptr);
     }
 
+    template <class T>
+    inline T wrap(const T& value)
+    {
+        return value;
+    }
+
+    template <class T>
+    inline Some<T> wrap(T* ptr)
+    {
+        return Some<T>::from_raw(ptr);
+    }
+
+    template <class T>
+    inline Some<T> wrap(const Some<T>& other)
+    {
+        return other;
+    }
+
 };
 
 #endif /* HAVE_CXX11 */
