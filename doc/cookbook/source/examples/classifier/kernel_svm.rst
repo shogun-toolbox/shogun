@@ -16,7 +16,7 @@ subject to:
 
 where :math:`N` is the number of training samples, :math:`{\bf x}_i` are training samples, :math:`k` is a kernel, :math:`\alpha_i` are the weights, :math:`y_i` is the corresponding label where :math:`y_i \in \{-1,+1\}` and :math:`C` is a pre-specified regularization parameter.
 
-Implementation of Kernel SVM in Shogun uses LibSVM :cite:`chang2011libsvm`.
+This example uses LibSVM :cite:`chang2011libsvm` as backend, Shogun has many more SVM implementations, see :sgclass:`CSVM`.
 
 See :cite:`scholkopf2002learning` and Chapter 6 in :cite:`cristianini2000introduction` for a detailed introduction.
 
