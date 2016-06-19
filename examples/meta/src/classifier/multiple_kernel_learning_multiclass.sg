@@ -1,0 +1,54 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_kernel]
+PolyKernel poly_kernel(10,2)
+GaussianKernel gauss_kernel(2)
+LinearKernel linear_kernel()
+#![create_kernel]
+
+#![create_combined_train]
+CombinedKernel combined_kernel()
+combined_kernel.append_kernel(poly_kernel)
+combined_kernel.append_kernel(gauss_kernel)
+combined_kernel.append_kernel(linear_kernel)
+combined_kernel.init(features_train, features_train)
+#![create_combined_train]
+
+#![train_mkl]
+real C = 1
+real epsilon = 0.001
+real mkl_epsilon = 0.001
+real mkl_norm = 1.5
+MKLMulticlass mkl(C, combined_kernel, labels_train)
+mkl.set_epsilon(epsilon)
+mkl.set_mkl_epsilon(mkl_epsilon)
+mkl.set_mkl_norm(mkl_norm)
+mkl.train()
+#![train_mkl]
+
+#![extract_weights]
+RealVector beta = combined_kernel.get_subkernel_weights()
+#![extract_weights]
+
+#![mkl_apply]
+combined_kernel.init(features_train, features_test)
+MulticlassLabels labels_predict = mkl.apply_multiclass()
+#![mkl_apply]
+
+#![evaluate_accuracy]
+MulticlassAccuracy eval()
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()
