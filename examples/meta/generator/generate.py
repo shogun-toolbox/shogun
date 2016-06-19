@@ -2,9 +2,10 @@
 
 import os
 from parse import parse
-from translate import translate
+from translate import translate, TranslationFailure
 import json
 import argparse
+
 
 def subfilesRelative(directory, filter_by):
     """ Returns a generator of pairs (subpath, filename) in a given directory.
@@ -14,6 +15,7 @@ def subfilesRelative(directory, filter_by):
         for file in files:
             if filter_by(file):
                 yield os.path.relpath(dir_, inputDir), file
+
 
 def parseCtags(filename):
     tags = {}
@@ -27,6 +29,7 @@ def parseCtags(filename):
             tags[symbol] = location.split('src/')[-1]
     return tags
 
+
 def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
                       includedTargets=None, storeVars=False):
 
@@ -37,30 +40,36 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         # Ignore targets not in includedTargets
         if includedTargets and not os.path.basename(target).split(".")[0] in includedTargets:
             continue
-        
+
         translate_file = os.path.join(targetsDir, target)
-        
+
         with open(translate_file) as tFile:
             try:
                 targets.append(json.load(tFile))
             except Exception as err:
                 print("Error translating file: %s\n%s" % (translate_file, err))
-    
+
     # Translate each example
     for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
-        print("Translating {}".format(os.sep.join([dirRelative,filename])))
+        print("Translating {}".format(os.sep.join([dirRelative, filename])))
 
         # Parse the example file
         with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
             ast = parse(file.read(), os.path.join(dirRelative, filename))
-        basename = os.path.splitext(filename)[0]
 
         # Translate ast to each target language
         for target in targets:
-            translation = translate(ast, targetDict=target,
-                                    tags=tags,
-                                    # TODO: enable storeVars for other targets
-                                    storeVars=storeVars if target['FileExtension']==".cpp" else False)
+            try:
+                translation = translate(ast, targetDict=target,
+                                        tags=tags,
+                                        # TODO: enable storeVars for other targets
+                                        storeVars=storeVars if target['FileExtension'] == ".cpp" else False)
+            except TranslationFailure as e:
+                raise Exception("Could not translate file " +
+                                os.path.join(inputDir, dirRelative, filename) +
+                                " to " + target['FileExtension'] +
+                                ".\n" + str(e))
+
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
 
@@ -69,7 +78,9 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
                 os.makedirs(directory)
 
             # Write translation
-            outputFile = os.path.join(directory, dirRelative, os.path.splitext(filename)[0]+extension)
+            outputFile = os.path.join(directory,
+                                      dirRelative,
+                                      os.path.splitext(filename)[0] + extension)
 
             # create subdirectories if they don't exist yet
             try:
@@ -90,15 +101,15 @@ if __name__ == "__main__":
                         help="whether to store all variables for testing",
                         action='store_true')
     available_targets = [
-            'cpp',
-            'python',
-            'java',
-            'r',
-            'octave',
-            'csharp',
-            'ruby',
-            'lua',
-            ]
+        'cpp',
+        'python',
+        'java',
+        'r',
+        'octave',
+        'csharp',
+        'ruby',
+        'lua',
+    ]
     parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: %s). If not specified all targets are produced." % (' '.join(available_targets)))
 
     args = parser.parse_args()
@@ -119,5 +130,5 @@ if __name__ == "__main__":
     storeVars = True if args.store_vars else False
 
     translateExamples(inputDir=inputDir, outputDir=outputDir,
-            targetsDir=targetsDir, ctagsFile=ctagsFile,
-            includedTargets=args.targets, storeVars=storeVars)
+                      targetsDir=targetsDir, ctagsFile=ctagsFile,
+                      includedTargets=args.targets, storeVars=storeVars)

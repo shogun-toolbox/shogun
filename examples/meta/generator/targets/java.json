@@ -1,10 +1,10 @@
 {
-    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.modshogun;\n${dependencies}class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program$testing\n}\n}\n",
+    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.modshogun;\n${dependencies}class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
     "Dependencies": {
         "AllDependencies": "$allClassDependencies\n$enumDependencies\n",
         "AllClassDependencies": "$classlist\n",
         "EnumDependencies": "$enums",
-        "DependencyListElementClass": "import org.shogun.$element;",
+        "DependencyListElementClass": "import org.shogun.$className;",
         "DependencyListElementEnum": "import static org.shogun.$type.$value;",
         "DependencyListSeparator": "\n"
     },
@@ -14,7 +14,7 @@
         "Construct": "$type $name = new $type($arguments)",
         "Copy": "$type $name = $expr"
     },
-    "Assign": "$name = $expr",
+    "Assign": "$lhs = $expr",
     "Type": {
         "Default": "$type",
         "Math": "org.shogun.Math",
@@ -59,6 +59,11 @@
         "StaticCall": "$type.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
+    },
+    "ElementAccess": {
+        "Vector": "$identifier[$indices]",
+        "Matrix": "$identifier[$indices]",
+        "ZeroIndexed": true
     },
     "Print": "System.out.println($expr)",
     "OutputDirectoryName": "java",

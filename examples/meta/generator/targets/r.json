@@ -1,12 +1,12 @@
 {
-    "Program": "library(shogun)\n\n$program$testing",
+    "Program": "library(shogun)\n\n$program",
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
         "Construct": "$name <- $type($arguments)",
         "Copy": "$name <- $expr"
     },
-    "Assign": "$name <- $expr",
+    "Assign": "$lhs <- $expr",
     "Type": {
         "Default": "$type"
     },
@@ -21,6 +21,11 @@
         "StaticCall": "$type$$$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"\"$value\""
+    },
+    "ElementAccess": {
+        "Vector": "$identifier[$indices]",
+        "Matrix": "$identifier[$indices]",
+        "ZeroIndexed": false
     },
     "Print": "print($expr)",
     "OutputDirectoryName": "r",

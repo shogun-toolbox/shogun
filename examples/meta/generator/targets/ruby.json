@@ -1,12 +1,12 @@
 {
-    "Program": "require 'modshogun'\n\n$dependencies$program$testing",
+    "Program": "require 'modshogun'\n\n$dependencies$program",
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
         "Construct": "$name = Modshogun::$type.new $arguments",
         "Copy": "$name = $expr"
     },
-    "Assign": "$name = $expr",
+    "Assign": "$lhs = $expr",
     "Type": {
         "Default": "$type"
     },
@@ -21,6 +21,11 @@
         "StaticCall": "Modshogun::$type.$method $arguments",
         "Identifier": "$identifier",
         "Enum":"Modshogun::$value"
+    },
+    "ElementAccess": {
+        "Vector": "$identifier[$indices]",
+        "Matrix": "$identifier[$indices]",
+        "ZeroIndexed": true
     },
     "Print": "puts $expr",
     "OutputDirectoryName": "ruby",
