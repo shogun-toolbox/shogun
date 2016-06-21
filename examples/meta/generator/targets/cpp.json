@@ -10,9 +10,9 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "auto $name = some<C$type>($arguments)",
-        "Copy": "auto $name = wrap($expr)"
+        "Copy": "auto $name = $expr"
     },
-    "Assign": "$lhs = wrap($expr)",
+    "Assign": "$lhs = $expr",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "StringCharFeatures": "CStringFeatures<char>",
