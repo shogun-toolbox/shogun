@@ -20,6 +20,7 @@
         "ULongIntVector": "auto $name = SGVector<uint64_t>($arguments)",
         "ShortRealVector": "auto $name = SGVector<float32_t>($arguments)",
         "RealVector": "auto $name = SGVector<float64_t>($arguments)",
+        "LongRealVector": "auto $name = SGVector<floatmax_t>($arguments)",
         "ComplexVector": "auto $name = SGVector<complex128_t>($arguments)",
         "BoolMatrix": "auto $name = SGMatrix<bool>($arguments)",
         "CharMatrix": "auto $name = SGMatrix<char>($arguments)",
@@ -30,6 +31,7 @@
         "ULongIntMatrix": "auto $name = SGMatrix<uint64_t>($arguments)",
         "ShortRealMatrix": "auto $name = SGMatrix<float32_t>($arguments)",
         "RealMatrix": "auto $name = SGMatrix<float64_t>($arguments)",
+        "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
         "ComplexMatrix": "auto $name = SGMatrix<bool>($arguments)"
     },
     "Assign": "$lhs = $expr",
