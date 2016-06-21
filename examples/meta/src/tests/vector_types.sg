@@ -26,6 +26,6 @@ RealVector real_vector(2)
 real_vector[0]=0.1
 real_vector[1]=0.1
 
-LongRealVector long_real_vector(2)
-long_real_vector[0]=0.1
-long_real_vector[1]=0.1
+#LongRealVector long_real_vector(2)
+#long_real_vector[0]=0.1
+#long_real_vector[1]=0.1
