@@ -47,7 +47,8 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
             try:
                 targets.append(json.load(tFile))
             except Exception as err:
-                print("Error translating file: %s\n%s" % (translate_file, err))
+                print("Error loading file: %s\n%s" % (translate_file, err))
+                raise err
 
     # Translate each example
     for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
