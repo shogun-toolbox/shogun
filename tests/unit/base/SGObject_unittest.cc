@@ -208,7 +208,7 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(file);
 
 	/* now compare */
-	floatmax_t accuracy=1E-15;
+	floatmax_t accuracy=1E-10;
 	EXPECT_TRUE(predictions->equals(predictions_copy, accuracy));
 	EXPECT_TRUE(gpr->equals(gpr_copy, accuracy));
 

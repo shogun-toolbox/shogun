@@ -87,11 +87,11 @@ void CEuclideanDistance::precompute_lhs()
 	REQUIRE(lhs, "Left hand side feature cannot be NULL!\n");
 	const index_t num_vec=lhs->get_num_vectors();
 
-	if (!m_lhs_squared_norms.vector || m_lhs_squared_norms.vlen!=num_vec)
+	if (m_lhs_squared_norms.vlen!=num_vec)
 		m_lhs_squared_norms=SGVector<float64_t>(num_vec);
 
 	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
-#pragma omp paralle for
+#pragma omp parallel for
 	for(index_t i =0; i<num_vec; ++i)
 		m_lhs_squared_norms[i]=casted_lhs->dot(i, casted_lhs, i);
 }
@@ -101,11 +101,11 @@ void CEuclideanDistance::precompute_rhs()
 	REQUIRE(rhs, "Right hand side feature cannot be NULL!\n");
 	const index_t num_vec=rhs->get_num_vectors();
 
-	if (!m_rhs_squared_norms.vector || m_rhs_squared_norms.vlen!=num_vec)
+	if (m_rhs_squared_norms.vlen!=num_vec)
 		m_rhs_squared_norms=SGVector<float64_t>(num_vec);
 
 	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
-#pragma omp paralle for
+#pragma omp parallel for
 	for(index_t i =0; i<num_vec; ++i)
 		m_rhs_squared_norms[i]=casted_rhs->dot(i, casted_rhs, i);
 }
