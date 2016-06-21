@@ -5,10 +5,12 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Fernando J. Iglesias Garcia
+ * Written (W) 2016 Soumyajit De
  */
 
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DenseSubSamplesFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/init.h>
 #include <gtest/gtest.h>
@@ -59,7 +61,7 @@ TEST(EuclideanDistance,distance)
 	EXPECT_EQ(euclidean->distance(1,0), 5);
 	EXPECT_EQ(euclidean->distance(1,1), 5);
 
-	SG_UNREF(euclidean); 
+	SG_UNREF(euclidean);
 }
 
 TEST(EuclideanDistance, distance_precomputed_norms)
@@ -70,7 +72,7 @@ TEST(EuclideanDistance, distance_precomputed_norms)
 	CEuclideanDistance* euclidean=new CEuclideanDistance(features_lhs,features_rhs);
 	euclidean->set_disable_sqrt(true);
 	euclidean->precompute_lhs();
-	euclidean->precompute_rhs();	
+	euclidean->precompute_rhs();
 
 	// check distances computed one by one
 	EXPECT_EQ(euclidean->distance(0,0), 2);
@@ -80,13 +82,11 @@ TEST(EuclideanDistance, distance_precomputed_norms)
 
 	euclidean->reset_precompute();
 
-	SG_UNREF(euclidean); 
+	SG_UNREF(euclidean);
 }
-
 
 TEST(EuclideanDistance,get_distance_matrix)
 {
-	init_shogun_with_defaults();
 	CDenseFeatures<float64_t>* features_lhs=create_lhs();
 	CDenseFeatures<float64_t>* features_rhs=create_rhs();
 
@@ -96,7 +96,6 @@ TEST(EuclideanDistance,get_distance_matrix)
 	euclidean->parallel->set_num_threads(1);
 
 	SGMatrix<float64_t> distance_matrix=euclidean->get_distance_matrix();
-//	distance_matrix.display_matrix();
 
 	// check distance matrix
 	EXPECT_EQ(distance_matrix(0,0), euclidean->distance(0,0));
@@ -105,5 +104,47 @@ TEST(EuclideanDistance,get_distance_matrix)
 	EXPECT_EQ(distance_matrix(1,1), euclidean->distance(1,1));
 
 	SG_UNREF(euclidean);
-	exit_shogun();
+}
+
+TEST(EuclideanDistance, heterogenous_features)
+{
+	CDenseFeatures<float64_t>* features_lhs=create_lhs();
+	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+	SG_REF(features_lhs);
+	SG_REF(features_rhs);
+
+	SGVector<int32_t> idx(2);
+	idx[0]=0;
+	idx[1]=1;
+
+	CDenseSubSamplesFeatures<float64_t>* subsample_lhs=new CDenseSubSamplesFeatures<float64_t>(features_lhs, idx);
+	CDenseSubSamplesFeatures<float64_t>* subsample_rhs=new CDenseSubSamplesFeatures<float64_t>(features_rhs, idx);
+	SG_REF(subsample_lhs);
+	SG_REF(subsample_rhs);
+
+	CEuclideanDistance* euclidean=new CEuclideanDistance();
+	euclidean->set_disable_sqrt(true);
+	euclidean->parallel->set_num_threads(1);
+
+	float64_t accuracy=1E-15;
+
+	euclidean->init(subsample_lhs, features_rhs);
+
+	EXPECT_NEAR(euclidean->distance(0, 0), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(0, 1), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 0), 5, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 1), 5, accuracy);
+
+	euclidean->init(features_lhs, subsample_rhs);
+
+	EXPECT_NEAR(euclidean->distance(0, 0), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(0, 1), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 0), 5, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 1), 5, accuracy);
+
+	SG_UNREF(euclidean);
+	SG_UNREF(subsample_lhs);
+	SG_UNREF(subsample_rhs);
+	SG_UNREF(features_lhs);
+	SG_UNREF(features_rhs);
 }

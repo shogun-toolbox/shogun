@@ -5,28 +5,27 @@
  * (at your option) any later version.
  *
  * Written (W) 2007-2009 Soeren Sonnenburg
+ * Written (W) 2016 Soumyajit De
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclideanDistance.h>
-
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
+#include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
-CEuclideanDistance::CEuclideanDistance() : CRealDistance()
+CEuclideanDistance::CEuclideanDistance() : CDistance()
 {
-	init();
+	register_params();
 }
 
-CEuclideanDistance::CEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
-: CRealDistance()
+CEuclideanDistance::CEuclideanDistance(CDotFeatures* l, CDotFeatures* r) : CDistance()
 {
-	init();
+	register_params();
 	init(l, r);
 }
 
@@ -37,80 +36,78 @@ CEuclideanDistance::~CEuclideanDistance()
 
 bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
 {
-	CRealDistance::init(l, r);
+	cleanup();
+
+	CDistance::init(l, r);
+	REQUIRE(l->has_property(FP_DOT), "Left hand side features must support dot property!\n");
+	REQUIRE(r->has_property(FP_DOT), "Right hand side features must support dot property!\n");
+
+	CDotFeatures* casted_l=static_cast<CDotFeatures*>(l);
+	CDotFeatures* casted_r=static_cast<CDotFeatures*>(r);
+
+	REQUIRE(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
+		"Number of dimension mismatch (l:%d vs. r:%d)!\n",
+		casted_l->get_dim_feature_space(),casted_r->get_dim_feature_space());
+
+	precompute_lhs();
+	if (lhs==rhs)
+		m_rhs_squared_norms=m_lhs_squared_norms;
+	else
+		precompute_rhs();
 
 	return true;
 }
 
 void CEuclideanDistance::cleanup()
 {
+	reset_precompute();
 }
 
 float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t alen, blen;
-	bool afree, bfree;
 	float64_t result=0;
+	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
+	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
 
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
-		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
-		get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen)
-
-	result+=CMath::dot(avec, bvec, alen);
-	result*=-2;
-	
-	if(m_rhs_squared_norms.vector)
-		result+=m_rhs_squared_norms[idx_b];
+	if (lhs->get_feature_class()==rhs->get_feature_class() || lhs->support_compatible_class())
+		result=casted_lhs->dot(idx_a, casted_rhs, idx_b);
 	else
-		result+=CMath::dot(bvec, bvec, alen);
+		result=casted_rhs->dot(idx_b, casted_lhs, idx_a);
 
-	if(m_lhs_squared_norms.vector)
-		result+=m_lhs_squared_norms[idx_a];
-	else
-		result+=CMath::dot(avec, avec, alen);
-	
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	SG_DEBUG("distance=(%f)+(%f)-2*(%f)\n", m_lhs_squared_norms[idx_a], m_rhs_squared_norms[idx_a], result);
 
+	result=m_lhs_squared_norms[idx_a]+m_rhs_squared_norms[idx_b]-2*result;
 	if (disable_sqrt)
 		return result;
-
 	return CMath::sqrt(result);
-}
-
-void CEuclideanDistance::precompute_rhs()
-{
-#ifdef HAVE_LINALG_LIB
-	SGVector<float64_t>rhs_sq=SGVector<float64_t>(rhs->get_num_vectors());
-	
-	for(int32_t idx_i =0; idx_i<rhs->get_num_vectors(); idx_i++)
-	{
-		SGVector<float64_t> tempvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_i);
-		rhs_sq[idx_i]=linalg::dot(tempvec, tempvec);
-		((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(tempvec, idx_i);
-	}
-
-	m_rhs_squared_norms=rhs_sq;
-#endif
-	
 }
 
 void CEuclideanDistance::precompute_lhs()
 {
-#ifdef HAVE_LINALG_LIB
-	SGVector<float64_t>lhs_sq=SGVector<float64_t>(lhs->get_num_vectors());
+	REQUIRE(lhs, "Left hand side feature cannot be NULL!\n");
+	const index_t num_vec=lhs->get_num_vectors();
 
-	for(int32_t idx_i=0; idx_i<lhs->get_num_vectors(); idx_i++)
-	{
-		SGVector<float64_t> tempvec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_i);
-		lhs_sq[idx_i]=linalg::dot(tempvec, tempvec);
-		((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(tempvec, idx_i);
-	}
+	if (!m_lhs_squared_norms.vector || m_lhs_squared_norms.vlen!=num_vec)
+		m_lhs_squared_norms=SGVector<float64_t>(num_vec);
 
-	m_lhs_squared_norms=lhs_sq;
-#endif
+	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
+#pragma omp paralle for
+	for(index_t i =0; i<num_vec; ++i)
+		m_lhs_squared_norms[i]=casted_lhs->dot(i, casted_lhs, i);
+}
+
+void CEuclideanDistance::precompute_rhs()
+{
+	REQUIRE(rhs, "Right hand side feature cannot be NULL!\n");
+	const index_t num_vec=rhs->get_num_vectors();
+
+	if (!m_rhs_squared_norms.vector || m_rhs_squared_norms.vlen!=num_vec)
+		m_rhs_squared_norms=SGVector<float64_t>(num_vec);
+
+	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
+#pragma omp paralle for
+	for(index_t i =0; i<num_vec; ++i)
+		m_rhs_squared_norms[i]=casted_rhs->dot(i, casted_rhs, i);
 }
 
 void CEuclideanDistance::reset_precompute()
@@ -119,52 +116,66 @@ void CEuclideanDistance::reset_precompute()
 	m_rhs_squared_norms=SGVector<float64_t>();
 }
 
-void CEuclideanDistance::init()
+CFeatures* CEuclideanDistance::replace_lhs(CFeatures* l)
+{
+	CFeatures* previous_lhs=CDistance::replace_lhs(l);
+	precompute_lhs();
+	if (lhs==rhs)
+		m_rhs_squared_norms=m_lhs_squared_norms;
+	return previous_lhs;
+}
+
+CFeatures* CEuclideanDistance::replace_rhs(CFeatures* r)
+{
+	CFeatures* previous_rhs=CDistance::replace_rhs(r);
+	if (lhs==rhs)
+		m_rhs_squared_norms=m_lhs_squared_norms;
+	else
+		precompute_rhs();
+	return previous_rhs;
+}
+
+void CEuclideanDistance::register_params()
 {
 	disable_sqrt=false;
 	reset_precompute();
-	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
-	m_parameters->add(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side");	
-	m_parameters->add(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side");	
+	SG_ADD(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_rhs_squared_norms, "m_rhs_squared_norms", "Squared norms from features of right hand side", MS_NOT_AVAILABLE);
+	SG_ADD(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side", MS_NOT_AVAILABLE);
 }
 
 float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
 {
-	int32_t alen, blen;
-	bool afree, bfree;
+	REQUIRE(lhs->get_feature_class()==C_DENSE,
+		"Left hand side (was %s) has to be CDenseFeatures instance!\n", lhs->get_name());
+	REQUIRE(rhs->get_feature_class()==C_DENSE,
+		"Right hand side (was %s) has to be CDenseFeatures instance!\n", rhs->get_name());
+
+	REQUIRE(lhs->get_feature_type()==F_DREAL,
+		"Left hand side (was %s) has to be of double type!\n", lhs->get_name());
+	REQUIRE(rhs->get_feature_type()==F_DREAL,
+		"Right hand side (was %s) has to be double type!\n", rhs->get_name());
+
+	CDenseFeatures<float64_t>* casted_lhs=static_cast<CDenseFeatures<float64_t>*>(lhs);
+	CDenseFeatures<float64_t>* casted_rhs=static_cast<CDenseFeatures<float64_t>*>(rhs);
+
+	upper_bound*=upper_bound;
+
+	SGVector<float64_t> avec=casted_lhs->get_feature_vector(idx_a);
+	SGVector<float64_t> bvec=casted_rhs->get_feature_vector(idx_b);
+
+	REQUIRE(avec.vlen==bvec.vlen, "The vector lengths are not equal (%d vs %d)!\n", avec.vlen, bvec.vlen);
+
 	float64_t result=0;
-
-	upper_bound *= upper_bound;
-
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
-		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
-		get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen)
-
-	for (int32_t i=0; i<alen; i++)
+	for (int32_t i=0; i<avec.vlen; i++)
 	{
-		result+=CMath::sq(avec[i] - bvec[i]);
-
-		if (result > upper_bound)
-		{
-			((CDenseFeatures<float64_t>*) lhs)->
-				free_feature_vector(avec, idx_a, afree);
-			((CDenseFeatures<float64_t>*) rhs)->
-				free_feature_vector(bvec, idx_b, bfree);
-
-			if (disable_sqrt)
-				return result;
-			else
-				return CMath::sqrt(result);
-		}
+		result+=CMath::sq(avec[i]-bvec[i]);
+		if (result>upper_bound)
+			break;
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	if (!disable_sqrt)
+		result=CMath::sqrt(result);
 
-	if (disable_sqrt)
-		return result;
-	else
-		return CMath::sqrt(result);
+	return result;
 }

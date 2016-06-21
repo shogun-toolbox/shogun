@@ -9,6 +9,7 @@
 
 #include <shogun/statistics/MMDKernelSelectionMedian.h>
 #include <shogun/statistics/LinearTimeMMD.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/distance/EuclideanDistance.h>

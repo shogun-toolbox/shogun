@@ -78,9 +78,9 @@ enum EDistanceType
  * on the 'space' of CFeatures.
  *
  * Precomputations can be done for left hand side and right hand side features.
- * This has to be implemented in overloaded methods for precompute_lhs() and 
+ * This has to be implemented in overloaded methods for precompute_lhs() and
  * precompute_rhs() in derived classes.
- * WARNING : Make sure to reset precomputations for features using reset_precompute() 
+ * WARNING : Make sure to reset precomputations for features using reset_precompute()
  * when features or feature matrix are changed.
  *
  */
@@ -126,7 +126,7 @@ class CDistance : public CSGObject
 			return distance(idx_a, idx_b);
 		}
 
-		/**  
+		/**
 		 * Precomputation related to features of right hand side
 		 * WARNING : Make sure to reset computations using reset_precompute()
 		 * when features or feature matrix are changed.
@@ -134,15 +134,15 @@ class CDistance : public CSGObject
 		 */
 		virtual void precompute_rhs(){}
 
-		/** 
+		/**
 		 * Precomputation related to features of left hand side
 		 * WARNING : Make sure to reset computations using reset_precompute()
 		 * when features or feature matrix are changed.
 		 * This method is empty, should be overloaded in derived class.
 		 */
 		virtual void precompute_lhs(){}
-	
-		/** 
+
+		/**
 		 * Reset precomputations for features of both sides
 		 * Should be used to reset whenever features or feature matrix are changed.
 		 * This method is empty, should be overloaded in derived class.
@@ -237,7 +237,7 @@ class CDistance : public CSGObject
 		 * @param rhs features of right-hand side
 		 * @return replaced right-hand side features
 		 */
-		CFeatures* replace_rhs(CFeatures* rhs);
+		virtual CFeatures* replace_rhs(CFeatures* rhs);
 
 		/** replace left-hand side features used in distance matrix
 		 *
@@ -247,7 +247,7 @@ class CDistance : public CSGObject
 		 * @param lhs features of right-hand side
 		 * @return replaced left-hand side features
 		 */
-		CFeatures* replace_lhs(CFeatures* lhs);
+		virtual CFeatures* replace_lhs(CFeatures* lhs);
 
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();
@@ -353,6 +353,15 @@ class CDistance : public CSGObject
 
 		/// matrix precomputation
 		void do_precompute_matrix();
+
+		/**
+		 * Checks the compatibility between two supplied features
+		 *
+		 * @param l left hand side features
+		 * @param r right hand side features
+		 * @return true if the features are compatible
+		 */
+		virtual bool check_compatibility(CFeatures* l, CFeatures* r);
 
 	private:
 		void init();

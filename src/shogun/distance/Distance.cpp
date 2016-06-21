@@ -77,13 +77,7 @@ CDistance::~CDistance()
 
 bool CDistance::init(CFeatures* l, CFeatures* r)
 {
-	//make sure features were indeed supplied
-	ASSERT(l)
-	ASSERT(r)
-
-	//make sure features are compatible
-	ASSERT(l->get_feature_class()==r->get_feature_class())
-	ASSERT(l->get_feature_type()==r->get_feature_type())
+	REQUIRE(check_compatibility(l, r), "Features are not compatible!\n");
 
 	//remove references to previous features
 	remove_lhs_and_rhs();
@@ -100,6 +94,37 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=NULL ;
+
+	return true;
+}
+
+bool CDistance::check_compatibility(CFeatures* l, CFeatures* r)
+{
+	REQUIRE(l, "Left hand side features must be set!\n");
+	REQUIRE(r, "Right hand side features must be set!\n");
+
+	REQUIRE(l->get_feature_type()==r->get_feature_type(),
+		"Right hand side of features (%s) must be of same type with left hand side features (%s)\n",
+		r->get_name(), l->get_name());
+
+	if (l->support_compatible_class())
+	{
+		REQUIRE(l->get_feature_class_compatibility(r->get_feature_class()),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			r->get_name(), l->get_name());
+	}
+	else if (r->support_compatible_class())
+	{
+		REQUIRE(r->get_feature_class_compatibility(l->get_feature_class()),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			r->get_name(), l->get_name());
+	}
+	else
+	{
+		REQUIRE(l->get_feature_class()==r->get_feature_class(),
+			"Right hand side of features (%s) must be compatible with left hand side features (%s)\n",
+			r->get_name(), l->get_name());
+	}
 
 	return true;
 }
@@ -144,12 +169,8 @@ void CDistance::remove_rhs()
 
 CFeatures* CDistance::replace_rhs(CFeatures* r)
 {
-	//make sure features were indeed supplied
-	ASSERT(r)
-
 	//make sure features are compatible
-	ASSERT(lhs->get_feature_class()==r->get_feature_class())
-	ASSERT(lhs->get_feature_type()==r->get_feature_type())
+	REQUIRE(check_compatibility(lhs, r), "Features are not compatible!\n");
 
 	//remove references to previous rhs features
 	CFeatures* tmp=rhs;
@@ -166,12 +187,8 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
 
 CFeatures* CDistance::replace_lhs(CFeatures* l)
 {
-	//make sure features were indeed supplied
-	ASSERT(l)
-
 	//make sure features are compatible
-	ASSERT(rhs->get_feature_class()==l->get_feature_class())
-	ASSERT(rhs->get_feature_type()==l->get_feature_type())
+	REQUIRE(check_compatibility(l, rhs), "Features are not compatible!\n");
 
 	//remove references to previous rhs features
 	CFeatures* tmp=lhs;
