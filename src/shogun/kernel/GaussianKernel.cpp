@@ -7,53 +7,43 @@
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Abhinav Maurya
  * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2016 Soumyajit De
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
-void CGaussianKernel::set_width(float64_t w)
+CGaussianKernel::CGaussianKernel() : CShiftInvariantKernel()
 {
-	REQUIRE(w>0, "width (%f) must be positive\n",w);
-	m_log_width=CMath::log(w/2.0)/2.0;
+	register_params();
 }
 
-float64_t CGaussianKernel::get_width() const
+CGaussianKernel::CGaussianKernel(float64_t w) : CShiftInvariantKernel()
 {
-	return CMath::exp(m_log_width*2.0)*2.0;
-}
-
-CGaussianKernel::CGaussianKernel() : CDotKernel()
-{
-	init();
-}
-
-CGaussianKernel::CGaussianKernel(float64_t w) : CDotKernel()
-{
-	init();
+	register_params();
 	set_width(w);
 }
 
-CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CDotKernel(size)
+CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CShiftInvariantKernel()
 {
-	init();
+	register_params();
 	set_width(w);
+	set_cache_size(size);
 }
 
-CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r,
-		float64_t w, int32_t size) : CDotKernel(size)
+CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size) : CShiftInvariantKernel()
 {
-	init();
+	register_params();
 	set_width(w);
-	init(l,r);
+	set_cache_size(size);
+	init(l, r);
 }
 
 CGaussianKernel::~CGaussianKernel()
@@ -63,13 +53,9 @@ CGaussianKernel::~CGaussianKernel()
 
 CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
 {
-	if (kernel->get_kernel_type()!=K_GAUSSIAN)
-	{
-		SG_SERROR("CGaussianKernel::obtain_from_generic(): provided kernel is "
-				"not of type CGaussianKernel!\n");
-	}
+	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN,
+		"Provided kernel (%s) must be of type CGaussianKernel!\n", kernel->get_name());
 
-	/* since an additional reference is returned */
 	SG_REF(kernel);
 	return (CGaussianKernel*)kernel;
 }
@@ -82,86 +68,56 @@ CSGObject *CGaussianKernel::shallow_copy() const
 	// with the implement here
 	ASSERT(typeid(*this) == typeid(CGaussianKernel))
 	CGaussianKernel *ker = new CGaussianKernel(cache_size, get_width());
-	if (lhs)
+	if (lhs && rhs)
 	{
 		ker->init(lhs, rhs);
+		ker->m_distance->init(lhs, rhs);
 	}
 	return ker;
 }
 
 void CGaussianKernel::cleanup()
 {
-	if (sq_lhs != sq_rhs)
-		SG_FREE(sq_rhs);
-	sq_rhs = NULL;
-
-	SG_FREE(sq_lhs);
-	sq_lhs = NULL;
-
 	CKernel::cleanup();
-}
-
-void CGaussianKernel::precompute_squared_helper(float64_t* &buf, CDotFeatures* df)
-{
-	ASSERT(df)
-	int32_t num_vec=df->get_num_vectors();
-	buf=SG_MALLOC(float64_t, num_vec);
-
-	for (int32_t i=0; i<num_vec; i++)
-		buf[i]=df->dot(i,df, i);
+	m_distance->cleanup();
 }
 
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
-	///free sq_{r,l}hs first
 	cleanup();
-
-	CDotKernel::init(l, r);
-	precompute_squared();
+	CShiftInvariantKernel::init(l, r);
+	m_distance->init(l, r);
 	return init_normalizer();
 }
 
-float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
+void CGaussianKernel::set_width(float64_t w)
 {
-    float64_t result=distance(idx_a,idx_b);
-    return CMath::exp(-result);
+	REQUIRE(w>0, "width (%f) must be positive\n",w);
+	m_log_width=CMath::log(w/2.0)/2.0;
 }
 
-void CGaussianKernel::load_serializable_post() throw (ShogunException)
+float64_t CGaussianKernel::get_width() const
 {
-	CKernel::load_serializable_post();
-	precompute_squared();
+	return CMath::exp(m_log_width*2.0)*2.0;
 }
 
-void CGaussianKernel::precompute_squared()
+SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
 {
-	if (!lhs || !rhs)
-		return;
-
-	precompute_squared_helper(sq_lhs, (CDotFeatures*) lhs);
-
-	if (lhs==rhs)
-		sq_rhs=sq_lhs;
-	else
-		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
-}
-
-SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(
-		const TParameter* param, index_t index)
-{
-	REQUIRE(lhs && rhs, "Features not set!\n")
+	REQUIRE(lhs, "Left hand side features must be set!\n")
+	REQUIRE(rhs, "Rightt hand side features must be set!\n")
 
 	if (!strcmp(param->m_name, "log_width"))
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
-
-		for (int j=0; j<num_lhs; j++)
-			for (int k=0; k<num_rhs; k++)
+		for (int k=0; k<num_rhs; k++)
+		{
+#pragma omp parallel for
+			for (int j=0; j<num_lhs; j++)
 			{
-				float64_t element=distance(j,k);
-				derivative(j,k)=exp(-element)*element*2.0;
+				float64_t element=distance(j, k);
+				derivative(j, k)=CMath::exp(-element)*element*2.0;
 			}
-
+		}
 		return derivative;
 	}
 	else
@@ -171,15 +127,34 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(
 	}
 }
 
-void CGaussianKernel::init()
+float64_t CGaussianKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	set_width(1.0);
-	sq_lhs=NULL;
-	sq_rhs=NULL;
-	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
+    float64_t result=distance(idx_a, idx_b);
+    return CMath::exp(-result);
 }
 
-float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b)
+void CGaussianKernel::load_serializable_post() throw (ShogunException)
 {
-	return (sq_lhs[idx_a]+sq_rhs[idx_b]-2*CDotKernel::compute(idx_a,idx_b))/get_width();
+	CKernel::load_serializable_post();
+	if (lhs && rhs)
+		m_distance->init(lhs, rhs);
+}
+
+float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
+{
+	const float64_t inv_width=1.0/get_width();
+	return CShiftInvariantKernel::distance(idx_a, idx_b)*inv_width;
+}
+
+void CGaussianKernel::register_params()
+{
+	set_width(1.0);
+	set_cache_size(10);
+
+	CEuclideanDistance* distance=new CEuclideanDistance();
+	distance->set_disable_sqrt(true);
+	m_distance=distance;
+	SG_REF(m_distance);
+
+	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }

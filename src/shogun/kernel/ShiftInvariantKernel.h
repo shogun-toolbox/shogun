@@ -82,6 +82,18 @@ public:
 	 */
 	virtual void cleanup();
 
+	/** compute kernel function for features a and b
+	 * idx_{a,b} denote the index of the feature vectors
+	 * in the corresponding feature object
+	 *
+	 * abstract base method
+	 *
+	 * @param x index a
+	 * @param y index b
+	 * @return computed kernel function at indices a,b
+	 */
+	virtual float64_t compute(int32_t x, int32_t y)=0;
+
 	/** @return kernel type */
 	virtual EKernelType get_kernel_type()=0;
 
