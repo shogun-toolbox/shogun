@@ -18,6 +18,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 namespace Eigen
 {
@@ -42,7 +43,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
 		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
-	
+
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
@@ -59,8 +60,23 @@ template<class T> class SGVector : public SGReferencedData
 		/** Constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
 
+		/** Constructor from GPU Vector */
+		/** TEMP: @param bool ref_counting leads to ambiguous in gist:
+		 * https://gist.github.com/OXPHOS/b07673fd736a66cf01a8e1ba9c6ef72f
+		 */
+		SGVector(GPUMemoryBase<T>* vector, index_t len);
+
 		/** Copy constructor */
 		SGVector(const SGVector &orig);
+
+		/** overload operator = */
+		SGVector& operator=(SGVector<T> const &orig);
+
+		/** Check whether data is stored on GPUMemoryBase */
+		inline bool on_gpu() const
+		{
+			return (gpu_vector != NULL);
+		}
 
 #ifndef SWIG // SWIG should skip this part
 #if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
@@ -490,6 +506,8 @@ template<class T> class SGVector : public SGReferencedData
 		T* vector;
 		/** length of vector  */
 		index_t vlen;
+		/** GPU Vector structure */
+		GPUMemoryBase<T>* gpu_vector;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

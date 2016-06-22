@@ -77,20 +77,34 @@ SGVector<T>::SGVector() : SGReferencedData()
 
 template<class T>
 SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
-: SGReferencedData(ref_counting), vector(v), vlen(len)
+: SGReferencedData(ref_counting), vector(v), vlen(len), gpu_vector(NULL)
 {
 }
 
 template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
-: SGReferencedData(ref_counting), vlen(len)
+: SGReferencedData(ref_counting), vlen(len), gpu_vector(NULL)
 {
 	vector=SG_MALLOC(T, len);
 }
 
 template<class T>
+SGVector<T>::SGVector(GPUMemoryBase<T>* vector, index_t len)
+ : SGReferencedData(true), vector(NULL), vlen(len), gpu_vector(vector)
+{
+}
+
+template<class T>
 SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 {
+	copy_data(orig);
+}
+
+template<class T>
+SGVector<T>& SGVector<T>::operator=(SGVector<T> const &orig)
+{
+	copy_refcount(orig);
+	ref();
 	copy_data(orig);
 }
 
@@ -316,6 +330,7 @@ void SGVector<T>::display_size() const
 template<class T>
 void SGVector<T>::copy_data(const SGReferencedData &orig)
 {
+	gpu_vector=((SGVector*)(&orig))->gpu_vector;
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
 }
@@ -325,6 +340,7 @@ void SGVector<T>::init_data()
 {
 	vector=NULL;
 	vlen=0;
+	gpu_vector=NULL;
 }
 
 template<class T>
