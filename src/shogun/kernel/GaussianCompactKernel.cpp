@@ -1,4 +1,5 @@
 #include <shogun/kernel/GaussianCompactKernel.h>
+#include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
 

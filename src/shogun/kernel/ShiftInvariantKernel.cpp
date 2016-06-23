@@ -82,6 +82,7 @@ void CShiftInvariantKernel::cleanup()
 	SG_UNREF(m_precomputed_distance);
 	m_precomputed_distance=NULL;
 	CKernel::cleanup();
+	m_distance->cleanup();
 }
 
 EDistanceType CShiftInvariantKernel::get_distance_type() const

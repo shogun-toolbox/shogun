@@ -58,6 +58,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
 %rename(DistanceKernel) CDistanceKernel;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
+%rename(ShiftInvariantKernel) CShiftInvariantKernel;
 %rename(GaussianKernel) CGaussianKernel;
 %rename(GaussianCompactKernel) CGaussianCompactKernel;
 %rename(DirectorKernel) CDirectorKernel;
@@ -186,6 +187,7 @@ namespace shogun
 %include <shogun/kernel/string/DistantSegmentsKernel.h>
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/string/FixedDegreeStringKernel.h>
+%include <shogun/kernel/ShiftInvariantKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
 %include <shogun/kernel/DirectorKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
