@@ -36,7 +36,6 @@
 %rename(ManhattanWordDistance) CManhattanWordDistance;
 %rename(CanberraWordDistance) CCanberraWordDistance;
 %rename(EuclideanDistance) CEuclideanDistance;
-%rename(SparseEuclideanDistance) CSparseEuclideanDistance;
 %rename(BrayCurtisDistance) CBrayCurtisDistance;
 %rename(ChiSquareDistance) CChiSquareDistance;
 %rename(CosineDistance) CCosineDistance;
@@ -119,7 +118,6 @@ namespace shogun
 %include <shogun/distance/ManhattanWordDistance.h>
 %include <shogun/distance/CanberraWordDistance.h>
 %include <shogun/distance/EuclideanDistance.h>
-%include <shogun/distance/SparseEuclideanDistance.h>
 %include <shogun/distance/BrayCurtisDistance.h>
 %include <shogun/distance/ChiSquareDistance.h>
 %include <shogun/distance/CosineDistance.h>

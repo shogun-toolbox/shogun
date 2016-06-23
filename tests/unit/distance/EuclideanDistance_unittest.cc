@@ -11,6 +11,7 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubSamplesFeatures.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/init.h>
 #include <gtest/gtest.h>
@@ -124,7 +125,6 @@ TEST(EuclideanDistance, heterogenous_features)
 
 	CEuclideanDistance* euclidean=new CEuclideanDistance();
 	euclidean->set_disable_sqrt(true);
-	euclidean->parallel->set_num_threads(1);
 
 	float64_t accuracy=1E-15;
 
@@ -147,4 +147,27 @@ TEST(EuclideanDistance, heterogenous_features)
 	SG_UNREF(subsample_rhs);
 	SG_UNREF(features_lhs);
 	SG_UNREF(features_rhs);
+}
+
+TEST(EuclideanDistance, sparse_features)
+{
+	CDenseFeatures<float64_t>* features_lhs=create_lhs();
+	CDenseFeatures<float64_t>* features_rhs=create_rhs();
+
+	CSparseFeatures<float64_t>* sparse_lhs=new CSparseFeatures<float64_t>(features_lhs->get_feature_matrix());
+	CSparseFeatures<float64_t>* sparse_rhs=new CSparseFeatures<float64_t>(features_rhs->get_feature_matrix());
+
+	SG_UNREF(features_lhs);
+	SG_UNREF(features_rhs);
+
+	CEuclideanDistance* euclidean=new CEuclideanDistance(sparse_lhs, sparse_rhs);
+	euclidean->set_disable_sqrt(true);
+	float64_t accuracy=1E-15;
+
+	EXPECT_NEAR(euclidean->distance(0, 0), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(0, 1), 2, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 0), 5, accuracy);
+	EXPECT_NEAR(euclidean->distance(1, 1), 5, accuracy);
+
+	SG_UNREF(euclidean);
 }

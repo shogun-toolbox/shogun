@@ -14,7 +14,7 @@ realfeat=RealFeatures(fm_test_real);
 feats_test=SparseRealFeatures();
 feats_test.obtain_from_simple(realfeat);
 
-distance=SparseEuclideanDistance(feats_train, feats_train);
+distance=EuclideanDistance(feats_train, feats_train);
 
 dm_train=distance.get_distance_matrix();
 distance.init(feats_train, feats_test);

@@ -17,7 +17,6 @@
 #include <shogun/distance/ManhattanWordDistance.h>
 #include <shogun/distance/CanberraWordDistance.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <shogun/distance/SparseEuclideanDistance.h>
 #include <shogun/distance/BrayCurtisDistance.h>
 #include <shogun/distance/ChiSquareDistance.h>
 #include <shogun/distance/CosineDistance.h>
