@@ -114,14 +114,14 @@ SGVector<T>::~SGVector()
 
 template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
-: SGReferencedData(false), vector(vec.data()), vlen(vec.size())
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_vector(NULL)
 {
 
 }
 
 template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
-: SGReferencedData(false), vector(vec.data()), vlen(vec.size())
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_vector(NULL)
 {
 
 }
@@ -129,18 +129,24 @@ SGVector<T>::SGVector(EigenRowVectorXt& vec)
 template <class T>
 SGVector<T>::operator EigenVectorXtMap() const
 {
+	if (on_gpu())
+		SG_SERROR("EigenRowVectorXtMap method not available for vectors on GPU.\n")
 	return EigenVectorXtMap(vector, vlen);
 }
 
 template <class T>
 SGVector<T>::operator EigenRowVectorXtMap() const
 {
+	if (on_gpu())
+		SG_SERROR("EigenRowVectorXtMap method not available for vectors on GPU.\n")
 	return EigenRowVectorXtMap(vector, vlen);
 }
 
 template<class T>
 void SGVector<T>::zero()
 {
+	if (on_gpu())
+		SG_SERROR("Zero method not available for vectors on GPU.\n")
 	if (vector && vlen)
 		set_const(0);
 }
@@ -148,6 +154,8 @@ void SGVector<T>::zero()
 template <>
 void SGVector<complex128_t>::zero()
 {
+	if (on_gpu())
+		SG_SERROR("Zero method not available for vectors on GPU.\n")
 	if (vector && vlen)
 		set_const(complex128_t(0.0));
 }
