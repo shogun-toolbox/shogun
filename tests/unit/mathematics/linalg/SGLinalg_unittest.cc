@@ -1,7 +1,11 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+
+#ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+#endif
+
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
@@ -39,7 +43,7 @@ TEST(LinalgRefactor, linalg_gpu_backend_dot_with_gpu_backend)
 	#ifdef HAVE_VIENNACL
 		sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 	#endif
-	
+
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
 	a.set_const(1);
