@@ -6,6 +6,8 @@
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
 
+#include <memory>
+
 #ifndef SG_LINALG_H__
 #define SG_LINALG_H__
 
