@@ -11,7 +11,7 @@ struct GPUMemoryBase
 	{
 	}
 
-	virtual void transfer_to_CPU(T* data) const = 0;
+	virtual void from_gpu(T* data) const = 0;
 };
 
 }

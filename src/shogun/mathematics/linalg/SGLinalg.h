@@ -1,3 +1,8 @@
+#include <shogun/lib/config.h>
+
+#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
+
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
 
@@ -16,6 +21,12 @@ public:
 	{
 		cpu_backend = new LinalgBackendEigen();
 		gpu_backend = NULL;
+	}
+
+	~SGLinalg()
+	{
+		SG_FREE(cpu_backend);
+		SG_FREE(gpu_backend);
 	}
 
 	inline void set_cpu_backend(LinalgBackendBase* backend)
@@ -39,11 +50,11 @@ public:
 	}
 
 private:
-    // cpu is always available (eigen3 or other default/complete implementation)
-   LinalgBackendBase* cpu_backend;
+	// cpu is always available (eigen3 or other default/complete implementation)
+	LinalgBackendBase* cpu_backend;
 
-   // gpu is NULL until something is registered
-   LinalgBackendBase* gpu_backend;
+	// gpu is NULL until something is registered
+	LinalgBackendBase* gpu_backend;
 };
 }
 

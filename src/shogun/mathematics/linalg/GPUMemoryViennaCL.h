@@ -5,6 +5,7 @@
 #ifdef HAVE_VIENNACL
 
 #include <viennacl/vector.hpp>
+#include <memory>
 
 namespace shogun
 {
@@ -17,20 +18,31 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 
 	GPUMemoryViennaCL()
 	{
-		m_data = NULL;
-		m_len = 0;
-		m_offset = 0;
+		init();
 	};
 
-	GPUMemoryViennaCL(const SGVector<T>& vector):m_len(vector.vlen), m_offset(0)
+	GPUMemoryViennaCL(GPUMemoryBase<T>* vector)
 	{
+		GPUMemoryViennaCL<T>* temp_vec = static_cast<GPUMemoryViennaCL<T>*>(vector);
+		init();
+		m_data = temp_vec->m_data;
+		m_len = temp_vec->m_len;
+		m_offset = temp_vec->m_offset;
+	};
+
+	GPUMemoryViennaCL(const SGVector<T>& vector) : m_data(new VCLMemoryArray())
+	{
+
+		init();
+		m_len = vector.vlen;
+
 		viennacl::backend::memory_create(*m_data, sizeof(T)*m_len,
 				viennacl::context());
 
 		viennacl::backend::memory_write(*m_data, 0, m_len*sizeof(T), vector.vector);
 	}
 
-	void transfer_to_CPU(T* data) const
+	void from_gpu(T* data) const
 	{
 		viennacl::backend::memory_read(*m_data, m_offset*sizeof(T), m_len*sizeof(T),
 			data);
@@ -43,6 +55,12 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	}
 
 private:
+	void init()
+	{
+		m_len = 0;
+		m_offset = 0;
+	}
+
 	/** Returns a ViennaCL vector wrapped around the data of this vector. Can be
 	 * used to call native ViennaCL methods on this vector
 	 */
@@ -51,7 +69,7 @@ private:
 		return VCLVectorBase(*m_data, m_len, m_offset, 1);
 	}
 
-    VCLMemoryArray* m_data;
+	std::shared_ptr<VCLMemoryArray> m_data;
 	index_t m_len;
 	index_t m_offset;
 };

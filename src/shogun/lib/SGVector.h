@@ -16,6 +16,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
@@ -69,10 +70,10 @@ template<class T> class SGVector : public SGReferencedData
 		/** Copy constructor */
 		SGVector(const SGVector &orig);
 
-		/** overload operator = */
-		SGVector& operator=(SGVector<T> const &orig);
-
-		/** Check whether data is stored on GPUMemoryBase */
+		/** Check whether data is stored on GPUMemoryBase
+		 *
+		 * @return true is vector is on GPU
+		 */
 		inline bool on_gpu() const
 		{
 			return (gpu_vector != NULL);
@@ -131,6 +132,10 @@ template<class T> class SGVector : public SGReferencedData
 		/** Data pointer */
 		inline T* data() const
 		{
+			if (gpu_vector != NULL)
+			{
+				SG_SERROR("Cannot return data from GPU.\n")
+			}
 			return vector;
 		}
 
@@ -205,6 +210,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint64_t index) const
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -215,6 +222,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int64_t index) const
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -225,6 +234,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint32_t index) const
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -235,6 +246,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int32_t index) const
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -245,6 +258,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint64_t index)
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -255,6 +270,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int64_t index)
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -265,6 +282,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint32_t index)
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 
@@ -275,6 +294,8 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int32_t index)
 		{
+			if (on_gpu())
+				SG_SERROR("Element access not available for vectors on GPU.\n")
 			return vector[index];
 		}
 

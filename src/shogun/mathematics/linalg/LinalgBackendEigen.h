@@ -1,8 +1,6 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 
-#include <iostream>
-
 #ifndef Linalg_Backend_Eigen_H__
 #define Linalg_Backend_Eigen_H__
 
@@ -14,17 +12,16 @@ namespace shogun
 class LinalgBackendEigen : public LinalgBackendBase
 {
 public:
-    // macro to avoid templating
-    #define BACKEND_GENERIC_DOT(Type) \
-	Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
-    {  \
-		std::cerr << "cpu.dot - cpu.backend" << std::endl; \
+	// macro to avoid templating
+	#define BACKEND_GENERIC_DOT(Type) \
+	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
+	{  \
 		return dot_impl(a, b);  \
-    }
+	}
 
-    BACKEND_GENERIC_DOT(float32_t);
-    BACKEND_GENERIC_DOT(float64_t);
-    BACKEND_GENERIC_DOT(int32_t);
+	BACKEND_GENERIC_DOT(float32_t);
+	BACKEND_GENERIC_DOT(float64_t);
+	BACKEND_GENERIC_DOT(int32_t);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "Eigen3"; }

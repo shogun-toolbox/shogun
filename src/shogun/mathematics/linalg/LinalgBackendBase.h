@@ -4,8 +4,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
-#include <iostream>
-
 #ifndef Linalg_Backend_Base_H__
 #define Linalg_Backend_Base_H__
 
@@ -17,39 +15,37 @@ namespace shogun
 class LinalgBackendBase
 {
 public:
-    // macro to avoid templating
+	// macro to avoid templating
 	#define BACKEND_GENERIC_DOT(Type) \
-	virtual Type dot(SGVector<Type>, SGVector<Type>) const \
-    {  \
-		std::cerr << "cpu.dot - base.backend" << std::endl; \
+	virtual Type dot(const SGVector<Type>&, const SGVector<Type>&) const \
+	{  \
 		SG_SNOTIMPLEMENTED; \
-    }
+	}
 
-    BACKEND_GENERIC_DOT(float32_t);
-    BACKEND_GENERIC_DOT(float64_t);
-    BACKEND_GENERIC_DOT(int32_t);
+	BACKEND_GENERIC_DOT(float32_t);
+	BACKEND_GENERIC_DOT(float64_t);
+	BACKEND_GENERIC_DOT(int32_t);
 
-    #define BACKEND_GENERIC_TO_GPU(Type) \
-	virtual GPUMemoryBase<Type>* to_gpu(SGVector<Type>) const \
-    {  \
+	#define BACKEND_GENERIC_TO_GPU(Type) \
+	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>&) const \
+	{  \
 		SG_SWARNING("BASE BACKEND.\n") \
 		SG_SNOTIMPLEMENTED; \
-    }
+	}
 
-
-    BACKEND_GENERIC_TO_GPU(float32_t);
-    BACKEND_GENERIC_TO_GPU(float64_t);
-    BACKEND_GENERIC_TO_GPU(int32_t);
+	BACKEND_GENERIC_TO_GPU(float32_t);
+	BACKEND_GENERIC_TO_GPU(float64_t);
+	BACKEND_GENERIC_TO_GPU(int32_t);
 
 	#define BACKEND_GENERIC_FROM_GPU(Type) \
-	virtual void from_gpu(SGVector<Type>, Type* data) const \
-    {  \
+	virtual void from_gpu(const SGVector<Type>&, Type* data) const \
+	{  \
 		SG_SNOTIMPLEMENTED; \
-    }
+	}
 
-    BACKEND_GENERIC_FROM_GPU(float32_t);
-    BACKEND_GENERIC_FROM_GPU(float64_t);
-    BACKEND_GENERIC_FROM_GPU(int32_t);
+	BACKEND_GENERIC_FROM_GPU(float32_t);
+	BACKEND_GENERIC_FROM_GPU(float64_t);
+	BACKEND_GENERIC_FROM_GPU(int32_t);
 
 	virtual const char* get_name() const = 0;
 };

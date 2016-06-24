@@ -7,9 +7,8 @@
 
 using namespace shogun;
 
-TEST(LinalgRefactor, CPU_dot)
+TEST(LinalgRefactor, linalg_cpu_backend_dot)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size);
 	a.set_const(1);
@@ -20,20 +19,53 @@ TEST(LinalgRefactor, CPU_dot)
 	EXPECT_NEAR(result, 20, 1E-15);
 }
 
-#ifdef HAVE_VIENNACL
-TEST(LinalgRefactor, transfer_between_GPU_and_CPU)
+TEST(LinalgRefactor, linalg_gpu_backend_dot_without_gpu_backend)
 {
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 	const index_t size = 10;
-	SGVector<int32_t> a(size), b;
+	SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
+	a.set_const(1);
+	b.set_const(2);
+
+	a_gpu.set(linalgns::to_gpu(a));
+	b_gpu.set(linalgns::to_gpu(b));
+
+	auto result = linalgns::dot(a, b);
+
+	EXPECT_NEAR(result, 20, 1E-15);
+}
+
+TEST(LinalgRefactor, linalg_gpu_backend_dot_with_gpu_backend)
+{
+	#ifdef HAVE_VIENNACL
+		sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	#endif
+	
+	const index_t size = 10;
+	SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
+	a.set_const(1);
+	b.set_const(2);
+
+	a_gpu.set(linalgns::to_gpu(a));
+	b_gpu.set(linalgns::to_gpu(b));
+
+	auto result = linalgns::dot(a, b);
+
+	EXPECT_NEAR(result, 20, 1E-15);
+}
+
+
+TEST(LinalgRefactor, gpu_transfer_between_viennacl_and_cpu_backend)
+{
+#ifdef HAVE_VIENNACL
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+#endif
+	const index_t size = 10;
+	SGVector<int32_t> a(size), b, c;
 	a.range_fill(0);
 
-	//SGVector<int32_t> b(linalgns::to_gpu(a));
+	b.set(linalgns::to_gpu(a));
+	c.set(linalgns::from_gpu(b));
 
-	b = linalgns::to_gpu(a);
-	//c = linalgns::from_gpu(b);
-
-	//for (index_t i = 0; i < size; ++i)
-	//	EXPECT_NEAR(a[i], c[i], 1E-15);
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(a[i], c[i], 1E-15);
 }
-#endif

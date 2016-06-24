@@ -38,9 +38,7 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
-#ifdef HAVE_CXX11
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
-#endif
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -70,10 +68,8 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
-#ifdef HAVE_CXX11
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
-#endif
 
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
@@ -195,12 +191,10 @@ namespace shogun
 		return sg_rand;
 	}
 
-#ifdef HAVE_CXX11
 	SGLinalg* get_global_linalg()
 	{
 		return sg_linalg.get();
 	}
-#endif
 
 	void init_from_env()
 	{
