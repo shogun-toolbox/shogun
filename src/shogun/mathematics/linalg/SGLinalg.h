@@ -21,42 +21,40 @@ class SGLinalg
 public:
 	SGLinalg()
 	{
-		cpu_backend = new LinalgBackendEigen();
-		gpu_backend = NULL;
+		cpu_backend = std::unique_ptr<LinalgBackendBase>(new LinalgBackendEigen());
+		gpu_backend = nullptr;
 	}
 
 	~SGLinalg()
 	{
-		SG_FREE(cpu_backend);
-		SG_FREE(gpu_backend);
 	}
 
 	inline void set_cpu_backend(LinalgBackendBase* backend)
 	{
-		cpu_backend = backend;
+		cpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
 	}
 
 	inline LinalgBackendBase* const get_cpu_backend() const
 	{
-		return cpu_backend;
+		return cpu_backend.get();
 	}
 
 	inline void set_gpu_backend(LinalgBackendBase* backend)
 	{
-		gpu_backend = backend;
+		gpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
 	}
 
 	inline LinalgBackendBase* const get_gpu_backend() const
 	{
-		return gpu_backend;
+		return gpu_backend.get();
 	}
 
 private:
 	// cpu is always available (eigen3 or other default/complete implementation)
-	LinalgBackendBase* cpu_backend;
+	std::unique_ptr<LinalgBackendBase> cpu_backend;
 
 	// gpu is NULL until something is registered
-	LinalgBackendBase* gpu_backend;
+	std::unique_ptr<LinalgBackendBase> gpu_backend;
 };
 }
 
