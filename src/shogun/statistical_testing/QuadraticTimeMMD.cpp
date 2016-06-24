@@ -34,6 +34,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
@@ -551,8 +552,15 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelM
 	const index_t nx=data_mgr.num_samples_at(0);
 	const index_t ny=data_mgr.num_samples_at(1);
 	MultiKernelMMD compute(nx, ny, get_statistic_type());
-	compute.set_distance(compute_distance());
+	// TODO refactor and remove
+	auto distance=new CEuclideanDistance();
+	distance->set_disable_sqrt(true);
+	SG_REF(distance);
+
+	compute.set_distance(compute_distance(distance));
 	SGVector<float64_t> result=compute(kernel_mgr);
+	SG_UNREF(distance);
+
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=normalize_statistic(result[i]);
 	SG_DEBUG("Leaving");

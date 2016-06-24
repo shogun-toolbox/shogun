@@ -56,12 +56,12 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 {
 	REQUIRE(check_compatibility(l, r), "Features are not compatible!\n");
 
-	//remove references to previous features
-	remove_lhs_and_rhs();
-
 	//increase reference counts
 	SG_REF(l);
 	SG_REF(r);
+
+	//remove references to previous features
+	remove_lhs_and_rhs();
 
 	lhs=l;
 	rhs=r;

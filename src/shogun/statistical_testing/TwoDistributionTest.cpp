@@ -1,23 +1,35 @@
 /*
- * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2016  Soumyajit De
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012 - 2013 Heiko Strathmann
+ * Written (w) 2014 - 2016 Soumyajit De
+ * All rights reserved.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #include <shogun/distance/CustomDistance.h>
-#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/statistical_testing/TwoDistributionTest.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/TestTypes.h>
@@ -83,48 +95,65 @@ const index_t CTwoDistributionTest::get_num_samples_q() const
 	return dm.num_samples_at(1);
 }
 
-CCustomDistance* CTwoDistributionTest::compute_distance()
+CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 {
-	auto distance=new CCustomDistance();
 	auto& data_mgr=get_data_mgr();
-
 	bool is_blockwise=data_mgr.is_blockwise();
 	data_mgr.set_blockwise(false);
 
 	data_mgr.start();
 	auto samples=data_mgr.next();
-	if (!samples.empty())
-	{
-		CFeatures *samples_p=samples[0][0].get();
-		CFeatures *samples_q=samples[1][0].get();
-		try
-		{
-			auto p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
-			samples.clear();
-			auto euclidean_distance=std::unique_ptr<CEuclideanDistance>(new CEuclideanDistance());
-			if (euclidean_distance->init(p_and_q, p_and_q))
-			{
-				euclidean_distance->set_disable_sqrt(true);
-				auto dist_mat=euclidean_distance->get_distance_matrix<float32_t>();
-				distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
-			}
-			else
-			{
-				SG_SERROR("Computing distance matrix was not possible! Please contact Shogun developers.\n");
-			}
-		}
-		catch (ShogunException e)
-		{
-			SG_SERROR("%s, Data is too large! Computing distance matrix was not possible!\n", e.get_exception_string());
-		}
-	}
-	else
-		SG_SERROR("Could not fetch samples!\n");
+	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
 
+	CFeatures *samples_p=samples[0][0].get();
+	CFeatures *samples_q=samples[1][0].get();
+	SG_REF(samples_p);
+	SG_REF(samples_q);
+
+	distance->cleanup();
+	distance->remove_lhs_and_rhs();
+	REQUIRE(distance->init(samples_p, samples_q), "Could not initialize distance instance!\n");
+	auto dist_mat=distance->get_distance_matrix<float32_t>();
+	distance->remove_lhs_and_rhs();
+	distance->cleanup();
+
+	samples.clear();
 	data_mgr.end();
 	data_mgr.set_blockwise(is_blockwise);
 
-	return distance;
+	auto precomputed_distance=new CCustomDistance();
+	precomputed_distance->set_full_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
+	return precomputed_distance;
+}
+
+CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distance)
+{
+	auto& data_mgr=get_data_mgr();
+	bool is_blockwise=data_mgr.is_blockwise();
+	data_mgr.set_blockwise(false);
+
+	data_mgr.start();
+	auto samples=data_mgr.next();
+	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
+
+	CFeatures *samples_p=samples[0][0].get();
+	CFeatures *samples_q=samples[1][0].get();
+	auto p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+
+	samples.clear();
+	data_mgr.end();
+	data_mgr.set_blockwise(is_blockwise);
+
+	distance->cleanup();
+	distance->remove_lhs_and_rhs();
+	REQUIRE(distance->init(p_and_q, p_and_q), "Could not initialize distance instance!\n");
+	auto dist_mat=distance->get_distance_matrix<float32_t>();
+	distance->remove_lhs_and_rhs();
+	distance->cleanup();
+
+	auto precomputed_distance=new CCustomDistance();
+	precomputed_distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
+	return precomputed_distance;
 }
 
 const char* CTwoDistributionTest::get_name() const

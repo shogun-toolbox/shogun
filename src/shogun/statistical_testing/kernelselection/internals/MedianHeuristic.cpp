@@ -35,6 +35,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/distance/CustomDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
@@ -63,7 +64,12 @@ void MedianHeuristic::init_measures()
 
 void MedianHeuristic::compute_measures()
 {
-	distance=std::shared_ptr<CCustomDistance>(estimator->compute_distance());
+	auto tmp=new CEuclideanDistance();
+	tmp->set_disable_sqrt(false);
+	SG_REF(tmp);
+	distance=std::shared_ptr<CCustomDistance>(estimator->compute_joint_distance(tmp));
+	SG_UNREF(tmp);
+
 	n=distance->get_num_vec_lhs();
 	REQUIRE(distance->get_num_vec_lhs()==distance->get_num_vec_rhs(),
 		"Distance matrix is supposed to be a square matrix (was of dimension %dX%d)!\n",

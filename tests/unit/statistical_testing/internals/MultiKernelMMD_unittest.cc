@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -86,7 +87,9 @@ TEST(MultiKernelMMD, biased_full)
 	test->set_q(feats_q);
 
 	MultiKernelMMD tester(m, n, stype);
-	tester.set_distance(test->compute_distance());
+	auto distance=some<CEuclideanDistance>();
+	distance->set_disable_sqrt(true);
+	tester.set_distance(test->compute_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
@@ -146,7 +149,9 @@ TEST(MultiKernelMMD, unbiased_full)
 	test->set_q(feats_q);
 
 	MultiKernelMMD tester(m, n, stype);
-	tester.set_distance(test->compute_distance());
+	auto distance=some<CEuclideanDistance>();
+	distance->set_disable_sqrt(true);
+	tester.set_distance(test->compute_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
@@ -206,7 +211,9 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	test->set_q(feats_q);
 
 	MultiKernelMMD tester(m, n, stype);
-	tester.set_distance(test->compute_distance());
+	auto distance=some<CEuclideanDistance>();
+	distance->set_disable_sqrt(true);
+	tester.set_distance(test->compute_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();

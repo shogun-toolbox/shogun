@@ -67,11 +67,43 @@ TEST(TwoDistributionTest, compute_distance_dense)
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 
-	auto test=some<CTwoDistributionTestMock>();
-	test->set_p(feats_p);
-	test->set_q(feats_q);
+	auto mock_obj=some<CTwoDistributionTestMock>();
+	mock_obj->set_p(feats_p);
+	mock_obj->set_q(feats_q);
 
-	auto distance=test->compute_distance();
+	auto euclidean_distance=some<CEuclideanDistance>();
+	auto distance=mock_obj->compute_distance(euclidean_distance);
+	auto distance_mat1=distance->get_distance_matrix();
+	SG_UNREF(distance);
+
+	euclidean_distance->init(feats_p, feats_q);
+	auto distance_mat2=euclidean_distance->get_distance_matrix();
+
+	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
+	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
+	for (size_t i=0; i<distance_mat1.size(); ++i)
+		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
+}
+
+TEST(TwoDistributionTest, compute_joint_distance_dense)
+{
+	const index_t m=5;
+	const index_t n=10;
+	const index_t dim=1;
+	const float64_t difference=0.5;
+
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
+	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
+
+	auto mock_obj=some<CTwoDistributionTestMock>();
+	mock_obj->set_p(feats_p);
+	mock_obj->set_q(feats_q);
+
+	auto euclidean_distance=some<CEuclideanDistance>();
+	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
@@ -79,9 +111,8 @@ TEST(TwoDistributionTest, compute_distance_dense)
 	auto data_q=feats_q->get_feature_matrix();
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=new CDenseFeatures<float64_t>(data_p_and_q);
+	auto feats_p_and_q=some<CDenseFeatures<float64_t> >(data_p_and_q);
 
-	auto euclidean_distance=some<CEuclideanDistance>();
 	euclidean_distance->init(feats_p_and_q, feats_p_and_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();
 
@@ -103,14 +134,50 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
-	auto test=some<CTwoDistributionTestMock>();
-	test->set_p(gen_p);
-	test->set_q(gen_q);
-	test->set_num_samples_p(m);
-	test->set_num_samples_q(n);
+	auto mock_obj=some<CTwoDistributionTestMock>();
+	mock_obj->set_p(gen_p);
+	mock_obj->set_q(gen_q);
+	mock_obj->set_num_samples_p(m);
+	mock_obj->set_num_samples_q(n);
 
 	sg_rand->set_seed(12345);
-	auto distance=test->compute_distance();
+	auto euclidean_distance=some<CEuclideanDistance>();
+	auto distance=mock_obj->compute_distance(euclidean_distance);
+	auto distance_mat1=distance->get_distance_matrix();
+
+	sg_rand->set_seed(12345);
+	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
+	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
+	euclidean_distance->init(feats_p, feats_q);
+	auto distance_mat2=euclidean_distance->get_distance_matrix();
+
+	EXPECT_TRUE(distance_mat1.num_rows==distance_mat2.num_rows);
+	EXPECT_TRUE(distance_mat1.num_cols==distance_mat2.num_cols);
+	for (size_t i=0; i<distance_mat1.size(); ++i)
+		EXPECT_NEAR(distance_mat1.data()[i], distance_mat2.data()[i], 1E-6);
+
+	SG_UNREF(distance);
+}
+
+TEST(TwoDistributionTest, compute_joint_distance_streaming)
+{
+	const index_t m=5;
+	const index_t n=10;
+	const index_t dim=1;
+	const float64_t difference=0.5;
+
+	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
+	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+
+	auto mock_obj=some<CTwoDistributionTestMock>();
+	mock_obj->set_p(gen_p);
+	mock_obj->set_q(gen_q);
+	mock_obj->set_num_samples_p(m);
+	mock_obj->set_num_samples_q(n);
+
+	sg_rand->set_seed(12345);
+	auto euclidean_distance=some<CEuclideanDistance>();
+	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
 	sg_rand->set_seed(12345);
@@ -126,7 +193,6 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
 
-	auto euclidean_distance=some<CEuclideanDistance>();
 	euclidean_distance->init(feats_p_and_q, feats_p_and_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();
 
