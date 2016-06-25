@@ -97,6 +97,12 @@ class CDenseLabels : public CLabels
 		 */
 		bool set_int_label(int32_t idx, int32_t label);
 
+		/** Getter for labels
+		 *
+		 * @return labels, a copy if a subset is set
+		 */
+		SGVector<float64_t> get_labels();
+
 		/** get label
 		 *
 		 * possible with subset
@@ -105,6 +111,21 @@ class CDenseLabels : public CLabels
 		 * @return value of label
 		 */
 		float64_t get_label(int32_t idx);
+
+		/** get label
+		 *
+		 * possible with subset
+		 *
+		 * @param idx index of label to get
+		 * @return value of label
+		 */
+		template<typename ST>
+		ST get_label_t(int32_t idx)
+		{
+			int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
+			ASSERT(m_labels.vector && idx<get_num_labels())
+			return m_labels.vector[real_num];
+		}
 
 		/** get INT label
 		 *
@@ -115,19 +136,59 @@ class CDenseLabels : public CLabels
 		 */
 		int32_t get_int_label(int32_t idx);
 
-		/** Getter for labels
-		 *
-		 * @return labels, a copy if a subset is set
-		 */
-		SGVector<float64_t> get_labels();
-
-		/** get copy of labels.
+		/** Gets a copy of the labels.
 		 *
 		 * possible with subset
 		 *
 		 * @return labels
 		 */
 		SGVector<float64_t> get_labels_copy();
+
+ 		/** Getter for labels
+		 *
+		 * @return labels, or a copy of them if a subset is 
+		 * set or if ST is not of type float64_t
+		 */ 
+		template<typename ST>
+		SGVector<ST> get_labels_t()
+		{
+			if (m_subset_stack->has_subsets())
+				return get_labels_copy_t<ST>();
+
+			SGVector<ST> labels_copy(m_labels.vlen);
+			for(int i = 0; i < m_labels.vlen; ++i)
+				labels_copy[i] = (ST) m_labels[i];
+
+			return labels_copy;
+		}
+
+		/** Get copy of labels.
+		 *
+		 * possible with subset
+		 *
+		 * @return labels
+		 */
+		template<typename ST>
+		SGVector<ST> get_labels_copy_t()
+		{
+			if (!m_subset_stack->has_subsets())
+			{
+				SGVector<ST> labels_copy(m_labels.vlen);
+				for(int i = 0; i < m_labels.vlen; ++i)
+					labels_copy[i] = (ST) m_labels[i];
+
+				return labels_copy;
+			}
+
+			index_t num_labels = get_num_labels();
+			SGVector<ST> result(num_labels);
+
+			/* copy element wise because of possible subset */
+			for (index_t i=0; i<num_labels; i++)
+				result[i] = get_label_t<ST>(i);
+
+			return result;
+		}
 
 		/** set labels
 		 *
@@ -209,5 +270,19 @@ class CDenseLabels : public CLabels
 		/** the label vector */
 		SGVector<float64_t> m_labels;
 };
+
+	/**
+	* Specialization of get_labels for float64_t
+	* @return labels, or a copy of them if a subset
+	* is set 
+	*/
+	template<> inline
+	SGVector<float64_t> CDenseLabels::get_labels_t<float64_t>()
+	{
+		if (m_subset_stack->has_subsets())
+			return get_labels_copy_t<float64_t>();
+
+		return m_labels;
+	}
 }
 #endif

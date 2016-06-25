@@ -16,6 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 
 #include <string.h>
 

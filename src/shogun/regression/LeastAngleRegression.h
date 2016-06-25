@@ -19,6 +19,7 @@
 
 namespace shogun
 {
+
 class CFeatures;
 
 /** @brief Class for Least Angle Regression, can be used to solve LASSO.
@@ -72,6 +73,7 @@ class CFeatures;
 class CLeastAngleRegression: public CLinearMachine
 {
 public:
+
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
@@ -79,7 +81,7 @@ public:
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
 	 * */
-	CLeastAngleRegression(bool lasso=true);
+	CLeastAngleRegression(bool lasso = true);
 
 	/** default destructor */
 	virtual ~CLeastAngleRegression();
@@ -120,14 +122,16 @@ public:
 	 *
 	 * @param num_variable number of non-zero coefficients
 	 */
+	
 	void switch_w(int32_t num_variable)
 	{
 		if (w.vlen <= 0)
-			SG_ERROR("cannot swith estimator before training")
+			SG_ERROR("Please train the model before updating its parameters")
 		if (size_t(num_variable) >= m_beta_idx.size() || num_variable < 0)
 			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable)
 		if (w.vector == NULL)
 			w = SGVector<float64_t>(w.vlen);
+
 		std::copy(m_beta_path[m_beta_idx[num_variable]].begin(),
 			m_beta_path[m_beta_idx[num_variable]].end(), w.vector);
 	}
@@ -184,20 +188,49 @@ public:
 	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
-	virtual bool train_machine(CFeatures* data=NULL);
+	/**
+	* An interface method to - this is called by the superclass's (CLinearMachine)
+	* train() method.  This method checks to see if data is a dense feature vector,
+	* and that it's elements are of type float64_t or float32_t.  It then calls 
+	* train_machine_templated with the appropriate template parameters (either float64_t or
+	* float32_t)
+	* @param data the data being passed to LARs to be trained on
+	* @see train
+	* @see train_machine_templated
+	*/
+	bool train_machine(CFeatures * data);
 
-	SGMatrix<float64_t> cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, 
-			SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
-	
-	SGMatrix<float64_t> cholesky_delete(SGMatrix<float64_t>& R, int32_t i_kick);
+	template <typename ST>
+	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
+			const SGMatrix<ST>& X_active, SGMatrix<ST>& R, int32_t i_max_corr, int32_t num_active);
+
+	template <typename ST>
+	SGMatrix<ST> cholesky_delete(SGMatrix<ST>& R, int32_t i_kick);
+
+	template <typename ST>
+	static void plane_rot(ST x0, ST x1,
+		ST &y0, ST &y1, SGMatrix<ST> &G);
+
+	template <typename ST>
+	static void find_max_abs(const std::vector<ST> &vec, const std::vector<bool> &ignore_mask,
+		int32_t &imax, ST& vmax);
 
 private:
+	/**
+	* A templated specialization of the train_machine method
+	* @param data the data being passed to LARs to be trained on
+	* @see train_machine
+	*/
+	template <typename ST>
+	bool train_machine_templated(CDenseFeatures<ST> * data);
+
 	void activate_variable(int32_t v)
 	{
 		m_num_active++;
 		m_active_set.push_back(v);
 		m_is_active[v] = true;
 	}
+
 	void deactivate_variable(int32_t v_idx)
 	{
 		m_num_active--;

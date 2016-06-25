@@ -92,7 +92,7 @@ void generate_data_n_less_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 	lab[2]=-0.553422897279663;
 }
 
-TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
+TEST(LeastAngleRegression, lasso_n_greater_than_d)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
@@ -128,7 +128,7 @@ TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lasso_N_LessThan_D)
+TEST(LeastAngleRegression, lasso_n_less_than_d)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
@@ -163,7 +163,7 @@ TEST(LeastAngleRegression, lasso_N_LessThan_D)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lars_N_GreaterThan_D)
+TEST(LeastAngleRegression, lars_n_greater_than_d)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
@@ -199,7 +199,7 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lars_N_LessThan_D)
+TEST(LeastAngleRegression, lars_n_less_than_d)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
@@ -232,6 +232,113 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 	SG_UNREF(lars);
 	SG_UNREF(features);
 	SG_UNREF(labels);
+}
+
+template <typename ST>
+void lars_n_less_than_d_feature_test_templated()
+{
+	SGMatrix<float64_t> data_64(5,3);
+	SGVector<float64_t> lab(3);
+	generate_data_n_less_d(data_64,lab);
+
+	//copy data_64 into a ST SGMatrix
+	SGMatrix<ST> data(5,3);
+	for(index_t c = 0; c < data_64.num_cols; ++c)
+		for(index_t r = 0; r < data_64.num_rows; ++r)
+			data(r, c) = (ST) data_64(r, c);
+
+	CDenseFeatures<ST>* features = new CDenseFeatures<ST>(data);
+	SG_REF(features);
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+	SG_REF(labels);
+	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
+	lars->set_labels(labels);
+	lars->train(features);
+
+	SGVector<float64_t> active2 = lars->get_w_for_var(2);
+	SGVector<float64_t> active1 = lars->get_w_for_var(1);
+
+	float64_t epsilon=0.0001;
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[3],0.039226231353,epsilon);
+	EXPECT_NEAR(active1[4],0.000000000000,epsilon);
+
+	EXPECT_NEAR(active2[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[3],2.578863294056,epsilon);
+	EXPECT_NEAR(active2[4],2.539637062702,epsilon);
+
+	SG_UNREF(lars);
+	SG_UNREF(features);
+	SG_UNREF(labels);
+}
+
+TEST(LeastAngleRegression, lars_template_test_bool)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<bool>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_char)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<char>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_int8)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<int8_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_unit8)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<uint8_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_int16)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<int16_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_uint16)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<uint16_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_int32)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<int32_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_uint32)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<uint32_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_int64)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<int64_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_uint64)
+{
+	EXPECT_ANY_THROW(lars_n_less_than_d_feature_test_templated<uint64_t>());
+}
+
+TEST(LeastAngleRegression, lars_template_test_float32)
+{
+	lars_n_less_than_d_feature_test_templated<float32_t>();
+}
+
+TEST(LeastAngleRegression, lars_template_test_float64)
+{
+	lars_n_less_than_d_feature_test_templated<float64_t>();
+}
+
+TEST(LeastAngleRegression, lars_template_test_floatmax)
+{
+	lars_n_less_than_d_feature_test_templated<floatmax_t>();
 }
 
 #ifndef USE_VIENNACL
@@ -243,7 +350,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 			SGMatrix<float64_t> cholesky_insert_helper(const SGMatrix<float64_t>& X,
 					const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i, int32_t n)
 			{
-				return CLeastAngleRegression::cholesky_insert(X, X_active, R, i, n);
+				return CLeastAngleRegression::cholesky_insert<float64_t>(X, X_active, R, i, n);
 			}
 	};
 
