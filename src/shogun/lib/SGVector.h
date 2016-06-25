@@ -21,6 +21,8 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
+#include <memory>
+
 namespace Eigen
 {
 	template <class, int, int, int, int, int> class Matrix;
@@ -515,7 +517,7 @@ template<class T> class SGVector : public SGReferencedData
 		virtual void free_data();
 
 	private:
-		void on_gpu_check()
+		void on_gpu_check() const
 		{
 			if (on_gpu())
 				SG_SERROR("You called a direct memory access method when data is in GPU memory.\n");

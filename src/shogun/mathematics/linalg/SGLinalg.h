@@ -29,22 +29,22 @@ public:
 	{
 	}
 
-	inline void set_cpu_backend(LinalgBackendBase* backend)
+	void set_cpu_backend(LinalgBackendBase* backend)
 	{
 		cpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
 	}
 
-	inline LinalgBackendBase* const get_cpu_backend() const
+	LinalgBackendBase* const get_cpu_backend() const
 	{
 		return cpu_backend.get();
 	}
 
-	inline void set_gpu_backend(LinalgBackendBase* backend)
+	void set_gpu_backend(LinalgBackendBase* backend)
 	{
 		gpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
 	}
 
-	inline LinalgBackendBase* const get_gpu_backend() const
+	LinalgBackendBase* const get_gpu_backend() const
 	{
 		return gpu_backend.get();
 	}

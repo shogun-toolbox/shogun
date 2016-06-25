@@ -3,6 +3,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
+#include <memory>
 
 #ifndef Linalg_Backend_Base_H__
 #define Linalg_Backend_Base_H__

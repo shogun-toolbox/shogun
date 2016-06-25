@@ -223,8 +223,10 @@ index_t SGVector<complex128_t>::find_position_to_insert(complex128_t element)
 template<class T>
 SGVector<T> SGVector<T>::clone() const
 {
-	// NEED WORK FOR GPU VECTOR
-	return SGVector<T>(clone_vector(vector, vlen), vlen);
+	if (on_gpu())
+		return SGVector<T>(gpu_vector->clone_vector(*this), vlen);
+	else
+		return SGVector<T>(clone_vector(vector, vlen), vlen);
 }
 
 template<class T>

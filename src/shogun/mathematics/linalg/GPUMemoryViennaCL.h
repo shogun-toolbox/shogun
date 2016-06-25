@@ -30,9 +30,9 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		m_offset = temp_vec->m_offset;
 	};
 
-	GPUMemoryViennaCL(const SGVector<T>& vector) : m_data(new VCLMemoryArray())
+	GPUMemoryViennaCL(const SGVector<T>& vector)
+	: m_data(new VCLMemoryArray())
 	{
-
 		init();
 		m_len = vector.vlen;
 
@@ -42,6 +42,13 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		viennacl::backend::memory_write(*m_data, 0, m_len*sizeof(T), vector.vector);
 	}
 
+	GPUMemoryBase<T>* clone_vector(const SGVector<T>& vector) const
+	{
+		std::shared_ptr<GPUMemoryViennaCL<T>> temp_vector;
+		temp_vector = std::shared_ptr<GPUMemoryViennaCL<T>>(new GPUMemoryViennaCL<T>(vector));
+		return temp_vector.get();
+	}
+
 	void from_gpu(T* data) const
 	{
 		viennacl::backend::memory_read(*m_data, m_offset*sizeof(T), m_len*sizeof(T),
@@ -49,7 +56,7 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	}
 
 	/** The data */
-	inline VCLVectorBase data()
+	VCLVectorBase data()
 	{
 		return vcl_vector();
 	}
