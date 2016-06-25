@@ -6,6 +6,12 @@
 %newobject reconstruct(CDenseFeatures<float64_t>* data);
 %newobject transform(CDenseFeatures<float64_t>* data);
 %newobject done();
+%newobject input(int32_t size);
+%newobject logistic(int32_t size);
+%newobject linear(int32_t size);
+%newobject rectified_linear(int32_t size);
+%newobject leaky_rectified_linear(int32_t size);
+%newobject softmax(int32_t size);
 
 /* Remove C Prefix */
 %rename(NeuralNetwork) CNeuralNetwork;
