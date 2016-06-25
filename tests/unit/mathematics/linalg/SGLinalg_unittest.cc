@@ -38,11 +38,10 @@ TEST(LinalgRefactor, linalg_gpu_backend_dot_without_gpu_backend)
 	EXPECT_NEAR(result, 20, 1E-15);
 }
 
+#ifdef HAVE_VIENNACL
 TEST(LinalgRefactor, linalg_gpu_backend_dot_with_gpu_backend)
 {
-	#ifdef HAVE_VIENNACL
-		sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
-	#endif
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
@@ -55,14 +54,12 @@ TEST(LinalgRefactor, linalg_gpu_backend_dot_with_gpu_backend)
 	auto result = linalgns::dot(a, b);
 
 	EXPECT_NEAR(result, 20, 1E-15);
-}
 
+}
+#endif
 
 TEST(LinalgRefactor, gpu_transfer_between_viennacl_and_cpu_backend)
 {
-#ifdef HAVE_VIENNACL
-	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
-#endif
 	const index_t size = 10;
 	SGVector<int32_t> a(size), b, c;
 	a.range_fill(0);

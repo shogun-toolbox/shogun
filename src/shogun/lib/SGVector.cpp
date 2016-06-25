@@ -90,7 +90,8 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 
 template<class T>
 SGVector<T>::SGVector(GPUMemoryBase<T>* vector, index_t len)
- : SGReferencedData(true), vector(NULL), vlen(len), gpu_vector(vector)
+ : SGReferencedData(true), vector(NULL), vlen(len),
+   gpu_vector(std::shared_ptr<GPUMemoryBase<T>>(vector))
 {
 }
 
@@ -129,24 +130,21 @@ SGVector<T>::SGVector(EigenRowVectorXt& vec)
 template <class T>
 SGVector<T>::operator EigenVectorXtMap() const
 {
-	if (on_gpu())
-		SG_SERROR("EigenRowVectorXtMap method not available for vectors on GPU.\n")
+	on_gpu_check();
 	return EigenVectorXtMap(vector, vlen);
 }
 
 template <class T>
 SGVector<T>::operator EigenRowVectorXtMap() const
 {
-	if (on_gpu())
-		SG_SERROR("EigenRowVectorXtMap method not available for vectors on GPU.\n")
+	on_gpu_check();
 	return EigenRowVectorXtMap(vector, vlen);
 }
 
 template<class T>
 void SGVector<T>::zero()
 {
-	if (on_gpu())
-		SG_SERROR("Zero method not available for vectors on GPU.\n")
+	on_gpu_check();
 	if (vector && vlen)
 		set_const(0);
 }
@@ -154,8 +152,7 @@ void SGVector<T>::zero()
 template <>
 void SGVector<complex128_t>::zero()
 {
-	if (on_gpu())
-		SG_SERROR("Zero method not available for vectors on GPU.\n")
+	on_gpu_check();
 	if (vector && vlen)
 		set_const(complex128_t(0.0));
 }
@@ -163,8 +160,7 @@ void SGVector<complex128_t>::zero()
 template<class T>
 void SGVector<T>::set_const(T const_elem)
 {
-	if (on_gpu())
-		SG_SERROR("Set_const method not available for vectors on GPU.\n")
+	on_gpu_check();
 	for (index_t i=0; i<vlen; i++)
 		vector[i]=const_elem ;
 }
@@ -173,16 +169,14 @@ void SGVector<T>::set_const(T const_elem)
 template<>
 void SGVector<float64_t>::set_const(float64_t const_elem)
 {
-	if (on_gpu())
-		SG_SERROR("Set_const method not available for vectors on GPU.\n")
+	on_gpu_check();
 	catlas_dset(vlen, const_elem, vector, 1);
 }
 
 template<>
 void SGVector<float32_t>::set_const(float32_t const_elem)
 {
-	if (on_gpu())
-		SG_SERROR("Set_const method not available for vectors on GPU.\n")
+	on_gpu_check();
 	catlas_sset(vlen, const_elem, vector, 1);
 }
 #endif // HAVE_CATLAS
@@ -190,8 +184,7 @@ void SGVector<float32_t>::set_const(float32_t const_elem)
 template<class T>
 void SGVector<T>::range_fill(T start)
 {
-	if (on_gpu())
-		SG_SERROR("Range_fill method not available for vectors on GPU.\n")
+	on_gpu_check();
 	range_fill_vector(vector, vlen, start);
 }
 
@@ -200,8 +193,7 @@ COMPLEX128_ERROR_ONEARG(range_fill)
 template<class T>
 void SGVector<T>::random(T min_value, T max_value)
 {
-	if (on_gpu())
-		SG_SERROR("Random method not available for vectors on GPU.\n")
+	on_gpu_check();
 	random_vector(vector, vlen, min_value, max_value);
 }
 
@@ -210,8 +202,7 @@ COMPLEX128_ERROR_TWOARGS(random)
 template <class T>
 index_t SGVector<T>::find_position_to_insert(T element)
 {
-	if (on_gpu())
-		SG_SERROR("Find_position_to_insert method not available for vectors on GPU.\n")
+	on_gpu_check();
 	index_t i;
 	for (i=0; i<vlen; ++i)
 	{
@@ -269,8 +260,7 @@ void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 template<class T>
 const T& SGVector<T>::get_element(index_t index)
 {
-	if (on_gpu())
-		SG_SERROR("Get_element method not available for vectors on GPU.\n")
+	on_gpu_check();
 	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
 	return vector[index];
 }
@@ -278,8 +268,7 @@ const T& SGVector<T>::get_element(index_t index)
 template<class T>
 void SGVector<T>::set_element(const T& p_element, index_t index)
 {
-	if (on_gpu())
-		SG_SERROR("Set_element method not available for vectors on GPU.\n")
+	on_gpu_check();
 	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
 	vector[index]=p_element;
 }
@@ -287,8 +276,7 @@ void SGVector<T>::set_element(const T& p_element, index_t index)
 template<class T>
 void SGVector<T>::resize_vector(int32_t n)
 {
-	if (on_gpu())
-		SG_SERROR("Resize_vector method not available for vectors on GPU.\n")
+	on_gpu_check();
 	vector=SG_REALLOC(T, vector, vlen, n);
 
 	if (n > vlen)
@@ -300,8 +288,7 @@ void SGVector<T>::resize_vector(int32_t n)
 template<class T>
 SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
-	if (on_gpu())
-		SG_SERROR("Operator+ not available for vectors on GPU.\n")
+	on_gpu_check();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
 	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
@@ -313,8 +300,7 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const SGVector<T> x)
 {
-	if (on_gpu())
-		SG_SERROR("Add method not available for vectors on GPU.\n")
+	on_gpu_check();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
 	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
@@ -325,8 +311,7 @@ void SGVector<T>::add(const SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const T x)
 {
-	if (on_gpu())
-		SG_SERROR("Add method not available for vectors on GPU.\n")
+	on_gpu_check();
 	REQUIRE(vector, "Addition possible for only non-null vectors.\n");
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x;
@@ -335,8 +320,7 @@ void SGVector<T>::add(const T x)
 template<class T>
 void SGVector<T>::add(const SGSparseVector<T>& x)
 {
-	if (on_gpu())
-		SG_SERROR("Add method not available for vectors on GPU.\n")
+	on_gpu_check();
 	if (x.features)
 	{
 		for (int32_t i=0; i < x.num_feat_entries; i++)
@@ -351,15 +335,14 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 template<class T>
 void SGVector<T>::display_size() const
 {
-	if (on_gpu())
-		SG_SERROR("Display_size method not available for vectors on GPU.\n")
+	on_gpu_check();
 	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen)
 }
 
 template<class T>
 void SGVector<T>::copy_data(const SGReferencedData &orig)
 {
-	gpu_vector=((SGVector*)(&orig))->gpu_vector;
+	gpu_vector=std::shared_ptr<GPUMemoryBase<T>>(((SGVector*)(&orig))->gpu_vector);
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
 }
@@ -376,7 +359,6 @@ template<class T>
 void SGVector<T>::free_data()
 {
 	SG_FREE(vector);
-	SG_FREE(gpu_vector);
 	vector=NULL;
 	vlen=0;
 	gpu_vector=NULL;
@@ -385,8 +367,7 @@ void SGVector<T>::free_data()
 template<class T>
 bool SGVector<T>::equals(SGVector<T>& other)
 {
-	if (on_gpu())
-		SG_SERROR("Equals method not available for vectors on GPU.\n")
+	on_gpu_check();
 	if (other.vlen!=vlen)
 		return false;
 
@@ -500,6 +481,7 @@ void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const
 		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
+
 
 template <>
 void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
@@ -854,8 +836,7 @@ int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 template <class T>
 SGVector<index_t> SGVector<T>::find(T elem)
 {
-	if (on_gpu())
-		SG_SERROR("Find method not available for vectors on GPU.\n")
+	on_gpu_check();
 	SGVector<index_t> idx(vlen);
 	index_t k=0;
 
@@ -930,8 +911,7 @@ void SGVector<complex128_t>::save(CFile* saver)
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()
 {
-	if (on_gpu())
-		SG_SERROR("Get_real method not available for vectors on GPU.\n")
+	on_gpu_check();
 	SGVector<float64_t> real(vlen);
 	for (int32_t i=0; i<vlen; i++)
 		real[i]=CMath::real(vector[i]);
@@ -940,8 +920,7 @@ template <class T> SGVector<float64_t> SGVector<T>::get_real()
 
 template <class T> SGVector<float64_t> SGVector<T>::get_imag()
 {
-	if (on_gpu())
-		SG_SERROR("Get_imag method not available for vectors on GPU.\n")
+	on_gpu_check();
 	SGVector<float64_t> imag(vlen);
 	for (int32_t i=0; i<vlen; i++)
 		imag[i]=CMath::imag(vector[i]);

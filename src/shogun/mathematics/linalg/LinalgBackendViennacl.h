@@ -57,8 +57,8 @@ public:
 		// we know that the memory is of Vienna type as it was done with this backend
 		// if the developer is YOLO and changes the gpu backend after a gpu transfer and calls dot with
 		// he DESERVES a crash
-		GPUMemoryViennaCL<T>* a_gpu=static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector);
-		GPUMemoryViennaCL<T>* b_gpu=static_cast<GPUMemoryViennaCL<T>*>(b.gpu_vector);
+		GPUMemoryViennaCL<T>* a_gpu=static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector.get());
+		GPUMemoryViennaCL<T>* b_gpu=static_cast<GPUMemoryViennaCL<T>*>(b.gpu_vector.get());
 
 		return viennacl::linalg::inner_prod(a_gpu->data(), b_gpu->data());
 	}
