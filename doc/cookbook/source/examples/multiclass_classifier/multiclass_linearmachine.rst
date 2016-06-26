@@ -6,7 +6,7 @@ We extend the application of linear machines to multi-class datasets by construc
 
 In this example, we show how to apply :sgclass:`CLibLinear` to multi-class cases with :sgclass:`CLinearMulticlassMachine`.
 
-`See the linear SVM cookbook <http://shogun.ml/cookbook/latest/examples/classifier/linear_svm.html>`_ for the infomration about :sgclass:`CLibLinear` binary classifier.
+`See the linear SVM cookbook <http://shogun.ml/cookbook/latest/examples/binary_classifier/linear_svm.html>`_ for the infomration about :sgclass:`CLibLinear` binary classifier.
 
 -------
 Example

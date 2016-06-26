@@ -27,7 +27,7 @@ Imagine we have files with training and test data. We create CDenseFeatures (her
 .. sgexample:: multiclass_ecoc_random.sg:create_features
 
 We use :sgclass:`CLibLinear` as base classifier and create an instance of :sgclass:`CLibLinear`.
-(`See the linear SVM cookbook <http://shogun.ml/cookbook/latest/examples/classifier/linear_svm.html>`_)
+(`See the linear SVM cookbook <http://shogun.ml/cookbook/latest/examples/binary_classifier/linear_svm.html>`_)
 
 .. sgexample:: multiclass_ecoc_random.sg:create_classifier
 
