@@ -4,14 +4,23 @@ The Shogun API cookbook
 This is a collection of cookbook-style examples for using Shogun.
 Every example contains code listings in all of Shogun's supported target languages.
 
-Classifier
-----------
+Binary classifier
+-----------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   examples/classifier/**
+   examples/binary_classifier/**
+
+Multiclass classifier
+---------------------
+
+.. toctree::
+  :maxdepth: 1
+  :glob:
+
+  examples/multiclass_classifier/**
 
 
 Regression
@@ -58,4 +67,3 @@ Distance
    :glob:
 
    examples/distance/**
-
