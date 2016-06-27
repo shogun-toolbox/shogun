@@ -1,3 +1,9 @@
+ruby-shogun (3.2.0-5.3) unstable; urgency=medium
+
+  * Rewrite packaging to include Ruby interface.
+
+ -- Ariane Paola Gomes <arianepaola@users.noreply.github.com>  Wed, 22 June 2016 15:17:32 +0200
+
 python-shogun (3.2.0-5.2build2) yakkety; urgency=medium
 
   * No-change rebuild against glpk 4.60
