@@ -1,0 +1,3 @@
+version=3
+http://ftp.debian.org/debian/pool/main/s/shogun/shogun_([\d\.]+).orig.tar.xz \
+ debian debian/orig-tar.sh

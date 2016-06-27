@@ -1,0 +1,97 @@
+Source: python-shogun
+Section: python
+Priority: optional
+Maintainer: Soeren Sonnenburg <sonne@debian.org>
+Build-Depends: libatlas-base-dev [!powerpc !alpha !arm !armel !armhf !sh4] | liblapack-dev,
+ libeigen3-dev, debhelper (>= 9), libreadline-dev | libreadline5-dev, libblas-dev,
+ libglpk-dev, libnlopt-dev, libshogun-dev (>= 3.2.0~), liblzo2-dev, zlib1g-dev, liblzma-dev,
+ libxml2-dev, libjson-c-dev | libjson0-dev, cmake, libarpack2-dev, libsnappy-dev,
+ libhdf5-dev (>= 1.8.8~) | libhdf5-serial-dev, swig3.0 (>= 3.0.2-1~),
+ python-numpy (>= 1:1.7.1-1~), python-all-dev (>= 2.7.0-1~),
+ libprotobuf-dev, protobuf-compiler, libcurl4-gnutls-dev, libbz2-dev, libcolpack-dev,
+ clang [mips mipsel powerpc]
+#python3-numpy (>= 1:1.7.1-1~), python3-all-dev (>= 3.3.0-1~),
+X-Python-Version: >= 2.7
+#X-Python3-Version: >= 3.3
+Standards-Version: 3.9.5
+Homepage: http://www.shogun-toolbox.org
+Vcs-Svn: http://bollin.googlecode.com/svn/python-shogun/trunk/
+Vcs-Browser: http://bollin.googlecode.com/svn/python-shogun/trunk/
+
+Package: python-shogun
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libshogun16
+Recommends: python-matplotlib, python-scipy
+Provides: ${python:Provides}
+Description: Large Scale Machine Learning Toolbox
+ SHOGUN - is a new machine learning toolbox with focus on large scale kernel
+ methods and especially on Support Vector Machines (SVM) with focus to
+ bioinformatics. It provides a generic SVM object interfacing to several
+ different SVM implementations. Each of the SVMs can be combined with a variety
+ of the many kernels implemented. It can deal with weighted linear combination
+ of a number of sub-kernels, each of which not necessarily working on the same
+ domain, where  an optimal sub-kernel weighting can be learned using Multiple
+ Kernel Learning.  Apart from SVM 2-class classification and regression
+ problems, a number of linear methods like Linear Discriminant Analysis (LDA),
+ Linear Programming Machine (LPM), (Kernel) Perceptrons and also algorithms to
+ train hidden markov models are implemented. The input feature-objects can be
+ dense, sparse or strings and of type int/short/double/char and can be
+ converted into different feature types. Chains of preprocessors (e.g.
+ substracting the mean) can be attached to each feature object allowing for
+ on-the-fly pre-processing.
+ .
+ SHOGUN comes in different flavours, a stand-a-lone version and also with
+ interfaces to Matlab(tm), R, Octave, Readline and Python. This package contains
+ the static and the modular Python interfaces.
+
+Package: python-shogun-dbg
+Architecture: any
+Priority: extra
+Section: debug
+Depends: ${misc:Depends}, python-shogun (= ${binary:Version})
+Description: Large Scale Machine Learning Toolbox
+ SHOGUN - is a new machine learning toolbox with focus on large scale kernel
+ methods and especially on Support Vector Machines (SVM) with focus to
+ bioinformatics. It provides a generic SVM object interfacing to several
+ different SVM implementations. Each of the SVMs can be combined with a variety
+ of the many kernels implemented. It can deal with weighted linear combination
+ of a number of sub-kernels, each of which not necessarily working on the same
+ domain, where  an optimal sub-kernel weighting can be learned using Multiple
+ Kernel Learning.  Apart from SVM 2-class classification and regression
+ problems, a number of linear methods like Linear Discriminant Analysis (LDA),
+ Linear Programming Machine (LPM), (Kernel) Perceptrons and also algorithms to
+ train hidden markov models are implemented. The input feature-objects can be
+ dense, sparse or strings and of type int/short/double/char and can be
+ converted into different feature types. Chains of preprocessors (e.g.
+ substracting the mean) can be attached to each feature object allowing for
+ on-the-fly pre-processing.
+ .
+ SHOGUN comes in different flavours, a stand-a-lone version and also with
+ interfaces to Matlab(tm), R, Octave, Readline and Python. This package contains
+ the debug symbols for the static and the modular Python interfaces.
+
+#Package: python3-shogun
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, libshogun16
+#Recommends: python3-matplotlib, python3-scipy
+#Provides: ${python3:Provides}
+#Description: Large Scale Machine Learning Toolbox
+# SHOGUN - is a new machine learning toolbox with focus on large scale kernel
+# methods and especially on Support Vector Machines (SVM) with focus to
+# bioinformatics. It provides a generic SVM object interfacing to several
+# different SVM implementations. Each of the SVMs can be combined with a variety
+# of the many kernels implemented. It can deal with weighted linear combination
+# of a number of sub-kernels, each of which not necessarily working on the same
+# domain, where  an optimal sub-kernel weighting can be learned using Multiple
+# Kernel Learning.  Apart from SVM 2-class classification and regression
+# problems, a number of linear methods like Linear Discriminant Analysis (LDA),
+# Linear Programming Machine (LPM), (Kernel) Perceptrons and also algorithms to
+# train hidden markov models are implemented. The input feature-objects can be
+# dense, sparse or strings and of type int/short/double/char and can be
+# converted into different feature types. Chains of preprocessors (e.g.
+# substracting the mean) can be attached to each feature object allowing for
+# on-the-fly pre-processing.
+# .
+# SHOGUN comes in different flavours, a stand-a-lone version and also with
+# interfaces to Matlab(tm), R, Octave, Readline and Python. This package contains
+# the static and the modular Python 3 interfaces.
