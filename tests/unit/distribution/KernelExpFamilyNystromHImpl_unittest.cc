@@ -40,37 +40,72 @@
 using namespace shogun;
 using namespace Eigen;
 
-TEST(KernelExpFamilyNystromHImpl, fit_all_inds_equals_exact)
+TEST(KernelExpFamilyNystromHImpl, kernel_dx_dx_dy_dy_component)
 {
-	index_t N=3;
-	index_t D=2;
-	index_t m=3;
+	index_t N=30;
+	index_t D=20;
 	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
 		
 	float64_t sigma = 2;
 	float64_t lambda = 1;
-	SGVector<index_t> inds(m);
-	inds[0]=1;
-	inds[1]=3;
-	inds[2]=5;
-	KernelExpFamilyNystromHImpl est(X, sigma, lambda, inds);
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	
+	auto result = est.kernel_dx_dx_dy_dy(0, 1);
+	
+	// compare against full version
+	for (auto i=0; i<D; i++)
+	{
+	    for (auto j=0; j<D; j++)
+	    {
+		    auto entry = est.kernel_dx_dx_dy_dy_component(0, 1, i, j);
+		    EXPECT_NEAR(result(i,j), entry, 1e-15);
+	    }
+	}
+}
+
+TEST(KernelExpFamilyNystromHImpl, compute_xi_norm_2_all_inds_equals_exact)
+{
+	index_t N=30;
+	index_t D=20;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	KernelExpFamilyImpl est_full(X, sigma, lambda);
+	
+	// compare against full version
+    EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-13);
+}
+
+TEST(KernelExpFamilyNystromHImpl, fit_all_inds_equals_exact)
+{
+	index_t N=30;
+	index_t D=20;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	KernelExpFamilyImpl est_full(X, sigma, lambda);
 	
 	est.fit();
+	est_full.fit();
 	
-	// compare against Pyntho version
+	// compare against full version
 	auto result=est.get_alpha_beta();
+	auto result_full=est_full.get_alpha_beta();
 	
-	ASSERT_EQ(result.vlen, m+1);
+	EXPECT_EQ(result.vlen, result_full.vlen);
 
-	float64_t reference[] = {-0.99984500690818401, 0.00341375,  0.00945666, -0.01301625 };
-	for (auto i=0; i<m; i++)
-		EXPECT_NEAR(result[i], reference[i], 1e-8);
+	for (auto i=0; i<N*D; i++)
+		EXPECT_NEAR(result[i], result_full[i], 1e-8);
 }
 
 TEST(KernelExpFamilyNystromHImpl, fit_half_inds_shape)

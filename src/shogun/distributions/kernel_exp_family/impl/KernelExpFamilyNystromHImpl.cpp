@@ -49,6 +49,47 @@ KernelExpFamilyNystromHImpl::KernelExpFamilyNystromHImpl(SGMatrix<float64_t> dat
 {
 }
 
+float64_t KernelExpFamilyNystromHImpl::kernel_dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const
+{
+	// this assumes that distances are precomputed, i.e. this call only causes memory io
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	auto diff2_i = pow(diff[i], 2);
+	auto diff2_j = pow(diff[j], 2);
+
+	auto k=kernel(idx_a,idx_b);
+	auto factor = k*pow(2.0/m_sigma, 3);
+
+	float64_t result = k*pow(2.0/m_sigma, 4) * (diff2_i*diff2_j);
+	result -= factor*(diff2_i+diff2_j - 1);
+	if (i==j)
+		result -= 4*factor*diff2_i - 2*factor;
+
+	return result;
+}
+
+float64_t KernelExpFamilyNystromHImpl::compute_xi_norm_2() const
+{
+	auto N = get_num_data_lhs();
+	auto m = get_num_rkhs_basis();
+	auto D = get_num_dimensions();
+	float64_t xi_norm_2=0;
+
+#pragma omp parallel for reduction (+:xi_norm_2)
+	for (auto idx_a=0; idx_a<N; idx_a++)
+		for (auto i=0; i<D; i++)
+			for (auto col_idx=0; col_idx<m; col_idx++)
+			{
+				auto bj = idx_to_ai(m_inds[col_idx]);
+				auto idx_b = bj.first;
+				auto j = bj.second;
+				xi_norm_2 += kernel_dx_dx_dy_dy_component(idx_a, idx_b, i, j);
+			}
+
+	xi_norm_2 /= (N*N);
+
+	return xi_norm_2;
+}
+
 std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl::build_system() const
 {
 	auto D = get_num_dimensions();
@@ -82,6 +123,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	auto eigen_sub_sampled_hessian = Map<MatrixXd>(sub_sampled_hessian.matrix, m, m);
 	auto eigen_sub_sampled_h = Map<VectorXd>(sub_sampled_h.vector, m);
 
+#pragma omp parallel for
 	for (auto i=0; i<m; i++)
 	{
 		memcpy(col_sub_sampled_hessian.get_column_vector(i),
@@ -105,8 +147,8 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 		A(0, ind_idx+1) = A(ind_idx+1, 0);
 
 	// did a sign flip, not sure why necessary
-	b[0] = xi_norm_2;
-	eigen_b.segment(1, m) = eigen_sub_sampled_h;
+	b[0] = -xi_norm_2;
+	eigen_b.segment(1, m) = -eigen_sub_sampled_h;
 
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
 }

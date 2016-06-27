@@ -53,6 +53,11 @@ public :
 
 	virtual ~KernelExpFamilyNystromHImpl() {};
 
+	// overloaded
+	float64_t compute_xi_norm_2() const;
+
+	float64_t kernel_dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
+
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 
 	using KernelExpFamilyImpl::solve_and_store;
