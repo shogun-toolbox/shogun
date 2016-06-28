@@ -74,7 +74,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		 *
 		 * @param tau new tau
 		 */
-		inline void set_tau(float64_t tau) { m_tau = tau; };
+		inline virtual void set_tau(float64_t tau) { m_tau = tau; };
 
 		/** set convergence precision for gauss seidel method
 		 *
@@ -125,15 +125,16 @@ class CKernelRidgeRegression : public CKernelMachine
 		 *
 		 * @return boolean to indicate success
 		 */
-		bool solve_krr_system();
+		virtual bool solve_krr_system();
 
 	private:
 		void init();
 
-	private:
+	protected:
 		/** regularization parameter tau */
 		float64_t m_tau;
 
+	private:
 		/** epsilon constant */
 		float64_t m_epsilon;
 
