@@ -34,7 +34,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/distance/ManhattanMetric.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
@@ -548,15 +550,33 @@ void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
+	REQUIRE(kernel_mgr.same_distance_type(), "The kernels have to have same distance type!\n");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
 	const auto& data_mgr=get_data_mgr();
 	const index_t nx=data_mgr.num_samples_at(0);
 	const index_t ny=data_mgr.num_samples_at(1);
 	MultiKernelMMD compute(nx, ny, get_statistic_type());
-	// TODO refactor and remove
-	auto distance=new CEuclideanDistance();
-	distance->set_disable_sqrt(true);
-	SG_REF(distance);
 
+	CDistance* distance=nullptr;
+	CShiftInvariantKernel* kernel_0=dynamic_cast<CShiftInvariantKernel*>(kernel_mgr.kernel_at(0));
+	REQUIRE(kernel_0, "Kernel (%s) must be of CShiftInvariantKernel type!\n", kernel_mgr.kernel_at(0)->get_name());
+	if (kernel_0->get_distance_type()==D_EUCLIDEAN)
+	{
+		auto euclidean_distance=new CEuclideanDistance();
+		euclidean_distance->set_disable_sqrt(true);
+		distance=euclidean_distance;
+	}
+	else if (kernel_0->get_distance_type()==D_MANHATTAN)
+	{
+		auto manhattan_distance=new CManhattanMetric();
+		distance=manhattan_distance;
+	}
+	else
+	{
+		SG_ERROR("Unsupported distance type!\n");
+	}
+
+	SG_REF(distance);
 	compute.set_distance(compute_joint_distance(distance));
 	SGVector<float64_t> result=compute(kernel_mgr);
 	SG_UNREF(distance);

@@ -73,7 +73,7 @@ void MaxMeasure::compute_measures()
 {
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
 	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
-	if (mmd!=nullptr && same_distance_type())
+	if (mmd!=nullptr && kernel_mgr.same_distance_type())
 		measures=mmd->compute_statistic(kernel_mgr);
 	else
 	{

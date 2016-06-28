@@ -31,8 +31,10 @@
 #include <vector>
 #include <memory>
 #include <shogun/io/SGIO.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 
 using namespace shogun;
@@ -129,4 +131,34 @@ void KernelManager::restore_kernel_at(size_t i)
 			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
 	SG_SDEBUG("Leaving!\n");
+}
+
+bool KernelManager::same_distance_type() const
+{
+	bool same=false;
+	EDistanceType distance_type=D_UNKNOWN;
+	for (size_t i=0; i<num_kernels(); ++i)
+	{
+		CShiftInvariantKernel* shift_invariant_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_at(i));
+		if (shift_invariant_kernel!=nullptr)
+		{
+			if (distance_type==D_UNKNOWN)
+				distance_type=shift_invariant_kernel->get_distance_type();
+			else if (distance_type==shift_invariant_kernel->get_distance_type())
+				same=true;
+			else
+			{
+				same=false;
+				break;
+			}
+		}
+		else
+		{
+			same=false;
+			SG_SINFO("Kernel at location %d is not of CShiftInvariantKernel type (was of %s type)!\n",
+				i, kernel_at(i)->get_name());
+			break;
+		}
+	}
+	return same;
 }

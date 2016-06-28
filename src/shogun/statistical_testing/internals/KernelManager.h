@@ -62,6 +62,7 @@ public:
 	void restore_kernel_at(size_t i);
 
 	void clear();
+	bool same_distance_type() const;
 private:
 	std::vector<std::shared_ptr<CKernel> > m_kernels;
 	std::vector<std::shared_ptr<CCustomKernel> > m_precomputed_kernels;

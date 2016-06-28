@@ -49,25 +49,3 @@ KernelSelection::KernelSelection(KernelManager& km, CMMD* est) : kernel_mgr(km),
 KernelSelection::~KernelSelection()
 {
 }
-
-bool KernelSelection::same_distance_type() const
-{
-	bool same=false;
-	EDistanceType distance_type=D_UNKNOWN;
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		CShiftInvariantKernel* shift_invariant_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_mgr.kernel_at(i));
-		if (shift_invariant_kernel!=nullptr)
-		{
-			if (distance_type==D_UNKNOWN)
-				distance_type=shift_invariant_kernel->get_distance_type();
-			else if (distance_type==shift_invariant_kernel->get_distance_type())
-				same=true;
-			else
-				break;
-		}
-		else
-			break;
-	}
-	return same;
-}
