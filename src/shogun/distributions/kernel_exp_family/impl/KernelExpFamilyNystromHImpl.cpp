@@ -170,6 +170,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	SGVector<float64_t> b(m+1);
 	Map<VectorXd> eigen_b(b.vector, m+1);
 
+	// TODO dont compute full h
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, ND);
@@ -220,7 +221,6 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	for (auto ind_idx=0; ind_idx<m; ind_idx++)
 		A(0, ind_idx+1) = A(ind_idx+1, 0);
 
-	// did a sign flip, not sure why necessary
 	b[0] = -xi_norm_2;
 	eigen_b.segment(1, m) = -eigen_sub_sampled_h;
 
