@@ -225,8 +225,11 @@ public:
 	 */
 	 void set_label_epsilon(float64_t epsilon);
 
-protected:
+	void pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
+	 
+	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
+protected:
 	/** train machine - build CART from training data
 	 * @param data training data
 	 * @return true
@@ -264,9 +267,9 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec,
-		SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing,
-		int32_t &count_left, int32_t &count_right);
+	virtual int32_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CLabels* labels,
+		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing,
+		int32_t &count_left, int32_t &count_right, int32_t subset_size=0, const SGVector<int32_t>& active_indices=SGVector<index_t>());
 
 
 	/** handles missing values through surrogate splits
@@ -329,7 +332,7 @@ protected:
 	 * @param wtotal label distribution in current node
 	 * @return Gini gain achieved after spliting the node
 	 */
-	float64_t gain(SGVector<float64_t> wleft, SGVector<float64_t> wright, SGVector<float64_t> wtotal);
+	float64_t gain(const SGVector<float64_t>& wleft, const SGVector<float64_t>& wright, const SGVector<float64_t>& wtotal);
 
 	/** returns Gini impurity of a node
 	 *
@@ -337,7 +340,7 @@ protected:
 	 * @param total_weight stores the total weight of all classes
 	 * @return Gini index of the node
 	 */
-	float64_t gini_impurity_index(SGVector<float64_t> weighted_lab_classes, float64_t &total_weight);
+	float64_t gini_impurity_index(const SGVector<float64_t>& weighted_lab_classes, float64_t &total_weight);
 
 	/** returns least squares deviation
 	 *
@@ -346,7 +349,7 @@ protected:
 	 * @param total_weight stores sum of weights in weights vector
 	 * @return least squares deviation of the data
 	 */
-	float64_t least_squares_deviation(SGVector<float64_t> labels, SGVector<float64_t> weights, float64_t &total_weight);
+	float64_t least_squares_deviation(const SGVector<float64_t>& labels, const SGVector<float64_t>& weights, float64_t &total_weight);
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -404,6 +407,7 @@ protected:
 	/** initializes members of class */
 	void init();
 
+
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;
@@ -423,6 +427,15 @@ protected:
 
 	/** weights of samples in training set **/
 	SGVector<float64_t> m_weights;
+
+	/** sorted transposed features */
+	SGMatrix<float64_t> m_sorted_features;
+
+	/** sorted indices */
+	SGMatrix<index_t> m_sorted_indices;
+
+	/** If pre sorted features are used in train */
+	bool m_pre_sort;
 
 	/** flag storing whether the type of various feature dimensions are specified using is_nominal_feature **/
 	bool m_types_set;

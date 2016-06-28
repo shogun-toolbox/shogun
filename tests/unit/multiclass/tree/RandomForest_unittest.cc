@@ -51,12 +51,8 @@ using namespace shogun;
 #define weak 1.
 #define strong 2.
 
-TEST(RandomForest,classify_test)
+void generate_nm_data(SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
 {
-	sg_rand->set_seed(1);
-
-	SGMatrix<float64_t> data(4,14);
-
 	//vector = [Outlook Temperature Humidity Wind]
 	data(0,0)=sunny;
 	data(1,0)=hot;
@@ -127,11 +123,7 @@ TEST(RandomForest,classify_test)
 	data(1,13)=mild;
 	data(2,13)=high;
 	data(3,13)=strong;
-
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
-
-	// yes 1. no 0.
-	SGVector<float64_t> lab(14);
+	
 	lab[0]=0.0;
 	lab[1]=0.0;
 	lab[2]=1.0;
@@ -146,6 +138,18 @@ TEST(RandomForest,classify_test)
 	lab[11]=1.0;
 	lab[12]=1.0;
 	lab[13]=0.0;
+}
+
+TEST(RandomForest,classify_nominal_test)
+{
+	sg_rand->set_seed(1);
+
+	SGMatrix<float64_t> data(4,14);
+	SGVector<float64_t> lab(14);
+
+	generate_nm_data(data, lab);
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	SGVector<bool> ft=SGVector<bool>(4);
 	ft[0]=true;
@@ -198,6 +202,75 @@ TEST(RandomForest,classify_test)
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
 	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
+
+	SG_UNREF(test_feats);
+	SG_UNREF(result);
+	SG_UNREF(c);
+	SG_UNREF(eval);
+}
+
+TEST(RandomForest,classify_non_nominal_test)
+{
+	sg_rand->set_seed(1);
+	
+	SGMatrix<float64_t> data(4,14);
+	SGVector<float64_t> lab(14);	
+
+	generate_nm_data(data, lab);
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+
+	SGVector<bool> ft=SGVector<bool>(4);
+	ft[0]=false;
+	ft[1]=false;
+	ft[2]=false;
+	ft[3]=false;
+
+	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+
+	CRandomForest* c=new CRandomForest(feats, labels, 100,2);
+	c->set_feature_types(ft);
+	CMajorityVote* mv = new CMajorityVote();
+	c->set_combination_rule(mv);
+	c->train(feats);
+
+	SGMatrix<float64_t> test(4,5);
+	test(0,0)=overcast;
+	test(0,1)=rain;
+	test(0,2)=sunny;
+	test(0,3)=rain;
+	test(0,4)=sunny;
+
+	test(1,0)=hot;
+	test(1,1)=cool;
+	test(1,2)=mild;
+	test(1,3)=mild;
+	test(1,4)=hot;
+
+	test(2,0)=normal;
+	test(2,1)=high;
+	test(2,2)=high;
+	test(2,3)=normal;
+	test(2,4)=normal;
+
+	test(3,0)=strong;
+	test(3,1)=strong;
+	test(3,2)=weak;
+	test(3,3)=weak;
+	test(3,4)=strong;
+
+	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
+	CMulticlassLabels* result=(CMulticlassLabels*) c->apply(test_feats);
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(0.0,res_vector[1]);
+	EXPECT_EQ(0.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+	EXPECT_EQ(1.0,res_vector[4]);
+
+	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
+	EXPECT_NEAR(0.571428,c->get_oob_error(eval),1e-6);
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
