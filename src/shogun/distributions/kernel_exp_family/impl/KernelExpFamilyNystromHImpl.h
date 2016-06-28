@@ -47,9 +47,9 @@ class KernelExpFamilyNystromHImpl : public KernelExpFamilyNystromImpl
 {
 public :
 	KernelExpFamilyNystromHImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-				index_t num_rkhs_basis, bool low_memory_mode=false);
+				index_t num_rkhs_basis, bool low_memory_mode=true);
 	KernelExpFamilyNystromHImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-			SGVector<index_t> inds, bool low_memory_mode=false);
+			SGVector<index_t> inds, bool low_memory_mode=true);
 
 	virtual ~KernelExpFamilyNystromHImpl() {};
 
@@ -57,6 +57,8 @@ public :
 	float64_t compute_xi_norm_2() const;
 
 	float64_t kernel_dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
+
+	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system_from_full() const;
 
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 

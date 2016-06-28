@@ -42,8 +42,8 @@ using namespace Eigen;
 
 TEST(KernelExpFamilyNystromHImpl, kernel_dx_dx_dy_dy_component)
 {
-	index_t N=30;
-	index_t D=20;
+	index_t N=5;
+	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
 		X.matrix[i]=CMath::randn_float();
@@ -67,8 +67,8 @@ TEST(KernelExpFamilyNystromHImpl, kernel_dx_dx_dy_dy_component)
 
 TEST(KernelExpFamilyNystromHImpl, compute_xi_norm_2_all_inds_equals_exact)
 {
-	index_t N=30;
-	index_t D=20;
+	index_t N=5;
+	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
 		X.matrix[i]=CMath::randn_float();
@@ -79,13 +79,40 @@ TEST(KernelExpFamilyNystromHImpl, compute_xi_norm_2_all_inds_equals_exact)
 	KernelExpFamilyImpl est_full(X, sigma, lambda);
 	
 	// compare against full version
-    EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-13);
+    EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-12);
+}
+
+TEST(KernelExpFamilyNystromHImpl, build_system_equals_build_system_from_full)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	
+	// compare against full version
+	auto result=est.build_system();
+	auto result_full=est.build_system_from_full();
+	
+	ASSERT_EQ(result.first.num_rows, result_full.first.num_rows);
+	ASSERT_EQ(result.first.num_cols, result_full.first.num_cols);
+	ASSERT_EQ(result.second.vlen, result_full.second.vlen);
+
+	for (auto i=0; i<N*D*N*D; i++)
+		EXPECT_NEAR(result.first.matrix[i], result_full.first.matrix[i], 1e-8);
+		
+	for (auto i=0; i<N*D; i++)
+		EXPECT_NEAR(result.second[i], result_full.second[i], 1e-8);
 }
 
 TEST(KernelExpFamilyNystromHImpl, fit_all_inds_equals_exact)
 {
-	index_t N=30;
-	index_t D=20;
+	index_t N=5;
+	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
 		X.matrix[i]=CMath::randn_float();
