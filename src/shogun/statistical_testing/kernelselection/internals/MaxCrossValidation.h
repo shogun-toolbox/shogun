@@ -29,8 +29,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_XVALIDATIN_H__
-#define MAX_XVALIDATIN_H__
+#ifndef MAX_CROSS_VALIDATION_H__
+#define MAX_CROSS_VALIDATION_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
@@ -45,13 +45,13 @@ template <typename T> class SGVector;
 namespace internal
 {
 
-class MaxXValidation : public KernelSelection
+class MaxCrossValidation : public KernelSelection
 {
 public:
-	MaxXValidation(KernelManager&, CMMD*, const index_t&, const float64_t&);
-	MaxXValidation(const MaxXValidation& other)=delete;
-	~MaxXValidation();
-	MaxXValidation& operator=(const MaxXValidation& other)=delete;
+	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const float64_t&);
+	MaxCrossValidation(const MaxCrossValidation& other)=delete;
+	~MaxCrossValidation();
+	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
 	virtual CKernel* select_kernel() override;
 	virtual SGVector<float64_t> get_measure_vector();
 	virtual SGMatrix<float64_t> get_measure_matrix();
@@ -68,4 +68,4 @@ protected:
 
 }
 
-#endif // MAX_XVALIDATIN_H__
+#endif // MAX_CROSS_VALIDATION_H__

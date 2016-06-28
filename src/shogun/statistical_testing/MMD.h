@@ -50,7 +50,7 @@ namespace internal
 
 class KernelManager;
 class MaxTestPower;
-class MaxXValidation;
+class MaxCrossValidation;
 class WeightedMaxTestPower;
 
 }
@@ -80,7 +80,7 @@ class CMMD : public CTwoSampleTest
 {
 	friend class internal::MaxTestPower;
 	friend class internal::WeightedMaxTestPower;
-	friend class internal::MaxXValidation;
+	friend class internal::MaxCrossValidation;
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 

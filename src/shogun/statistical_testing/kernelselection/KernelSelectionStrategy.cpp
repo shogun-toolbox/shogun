@@ -39,7 +39,7 @@
 #include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
-#include <shogun/statistical_testing/kernelselection/internals/MaxXValidation.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 #include <shogun/statistical_testing/kernelselection/internals/MedianHeuristic.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
@@ -87,10 +87,10 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
 	}
 	break;
-	case KSM_MAXIMIZE_XVALIDATION:
+	case KSM_MAXIMIZE_CROSS_VALIDATION:
 	{
-		REQUIRE(!weighted, "Weighted kernel selection is not possible with MAXIMIZE_XVALIDATION!\n");
-		policy=std::unique_ptr<MaxXValidation>(new MaxXValidation(kernel_mgr, estimator,
+		REQUIRE(!weighted, "Weighted kernel selection is not possible with MAXIMIZE_CROSS_VALIDATION!\n");
+		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
 			num_runs, alpha));
 	}
 	break;
@@ -115,7 +115,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 		SG_SERROR("Unsupported kernel selection method specified! Accepted strategies are "
 			"MAXIMIZE_MMD (single, weighted), "
 			"MAXIMIZE_POWER (single, weighted), "
-			"MAXIMIZE_XVALIDATION (single) and "
+			"MAXIMIZE_CROSS_VALIDATION (single) and "
 			"MEDIAN_HEURISTIC (single)!\n");
 	}
 	break;

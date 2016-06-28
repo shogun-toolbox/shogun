@@ -36,33 +36,33 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
-#include <shogun/statistical_testing/kernelselection/internals/MaxXValidation.h>
+#include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 
 using namespace shogun;
 using namespace internal;
 
-MaxXValidation::MaxXValidation(KernelManager& km, CMMD* est, const index_t& M, const float64_t& alp)
+MaxCrossValidation::MaxCrossValidation(KernelManager& km, CMMD* est, const index_t& M, const float64_t& alp)
 : KernelSelection(km, est), num_run(M), alpha(alp)
 {
 	REQUIRE(num_run>0, "Number of runs is %d!\n", num_run);
 	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold is %f!\n", alpha);
 }
 
-MaxXValidation::~MaxXValidation()
+MaxCrossValidation::~MaxCrossValidation()
 {
 }
 
-SGVector<float64_t> MaxXValidation::get_measure_vector()
+SGVector<float64_t> MaxCrossValidation::get_measure_vector()
 {
 	return measures;
 }
 
-SGMatrix<float64_t> MaxXValidation::get_measure_matrix()
+SGMatrix<float64_t> MaxCrossValidation::get_measure_matrix()
 {
 	return rejections;
 }
 
-void MaxXValidation::init_measures()
+void MaxCrossValidation::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
 	auto& data_mgr=estimator->get_data_mgr();
@@ -76,7 +76,7 @@ void MaxXValidation::init_measures()
 	std::fill(measures.data(), measures.data()+measures.size(), 0);
 }
 
-void MaxXValidation::compute_measures()
+void MaxCrossValidation::compute_measures()
 {
 	auto& data_mgr=estimator->get_data_mgr();
 	data_mgr.set_cross_validation_mode(true);
@@ -115,7 +115,7 @@ void MaxXValidation::compute_measures()
 	}
 }
 
-CKernel* MaxXValidation::select_kernel()
+CKernel* MaxCrossValidation::select_kernel()
 {
 	init_measures();
 	compute_measures();
