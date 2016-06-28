@@ -68,7 +68,7 @@ void AdamUpdater::set_epsilon(float64_t epsilon)
 void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 {
 	REQUIRE(decay_factor>0.0 && decay_factor<=1.0,
-		"decay factor (%f) for first moment must in (0,1]\n",
+		"Decay factor (%f) for first moment must in (0,1]\n",
 		decay_factor);
 	m_decay_factor_first_moment=decay_factor;
 }
@@ -76,7 +76,7 @@ void AdamUpdater::set_first_moment_decay_factor(float64_t decay_factor)
 void AdamUpdater::set_second_moment_decay_factor(float64_t decay_factor)
 {
 	REQUIRE(decay_factor>0.0 && decay_factor<=1.0,
-		"decay factor (%f) for second moment must in (0,1]\n",
+		"Decay factor (%f) for second moment must in (0,1]\n",
 		decay_factor);
 	m_decay_factor_second_moment=decay_factor;
 }

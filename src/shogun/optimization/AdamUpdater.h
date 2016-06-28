@@ -37,12 +37,8 @@ namespace shogun
 {
 /** @brief The class implements the Adam method.
  *
- * Given a target variable, \f$w\f$, and its gradient, \f$d\f$,
- * without gradient correction (eg, momentum correction),
- * this class performs the following update.
- * \f[
- * \f],
- * where \f$\lambda\f$ is a learning rate.
+ * Please see the paper (https://arxiv.org/abs/1412.6980) for technical detail.
+ *
  */
 class AdamUpdater: public DescendUpdaterWithCorrection
 {
@@ -71,10 +67,23 @@ public:
 	 */
 	virtual void set_learning_rate(float64_t learning_rate);
 
+	/** Set epsilon
+	 *
+	 * @param epsilon epsilon
+	 */
 	virtual void set_epsilon(float64_t epsilon);
 
+	/** Set decay factor for first moment
+	 *
+	 * @param decay_factor decay factor
+	 */
 	virtual void set_first_moment_decay_factor(float64_t decay_factor);
 
+
+	/** Set decay factor for second moment
+	 *
+	 * @param decay_factor decay factor
+	 */
 	virtual void set_second_moment_decay_factor(float64_t decay_factor);
 
 
@@ -127,18 +136,25 @@ protected:
 	/* learning_rate at iteration */
 	float64_t m_log_learning_rate;
 
+	/* epsilon */
 	float64_t m_epsilon;
 
+	/* counter of iteration */
 	int64_t m_iteration_counter;
 
+	/* decay_factor in first moment */
 	float64_t m_decay_factor_first_moment;
 
+	/* decay_factor in second moment */
 	float64_t m_decay_factor_second_moment;
 
+	/* weighted factor in logarithmic domain */
 	float64_t m_log_scale_pre_iteration;
 
+	/* first moment of gradient */
 	SGVector<float64_t> m_gradient_first_moment;
 
+	/* second moment of gradient */
 	SGVector<float64_t> m_gradient_second_moment;
 private:
 	/*  Init */
