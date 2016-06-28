@@ -233,6 +233,7 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 	SG_UNREF(labels);
 }
 
+#ifndef USE_VIENNACL
 TEST(LeastAngleRegression, cholesky_insert)
 {
 	class lars_helper: public CLeastAngleRegression
@@ -340,6 +341,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 	SG_UNREF(features);
 	SG_UNREF(labels);
 }
+#endif
 
 TEST(LeastAngleRegression, early_stop_l1_norm)
 {

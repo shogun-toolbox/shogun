@@ -42,6 +42,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <algorithm>
+#include <numeric>
 
 using namespace shogun;
 using std::iota;
