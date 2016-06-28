@@ -557,7 +557,7 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelM
 	distance->set_disable_sqrt(true);
 	SG_REF(distance);
 
-	compute.set_distance(compute_distance(distance));
+	compute.set_distance(compute_joint_distance(distance));
 	SGVector<float64_t> result=compute(kernel_mgr);
 	SG_UNREF(distance);
 

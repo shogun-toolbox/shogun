@@ -89,7 +89,7 @@ TEST(MultiKernelMMD, biased_full)
 	MultiKernelMMD tester(m, n, stype);
 	auto distance=some<CEuclideanDistance>();
 	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_distance(distance));
+	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
@@ -151,7 +151,7 @@ TEST(MultiKernelMMD, unbiased_full)
 	MultiKernelMMD tester(m, n, stype);
 	auto distance=some<CEuclideanDistance>();
 	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_distance(distance));
+	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
@@ -213,7 +213,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	MultiKernelMMD tester(m, n, stype);
 	auto distance=some<CEuclideanDistance>();
 	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_distance(distance));
+	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
