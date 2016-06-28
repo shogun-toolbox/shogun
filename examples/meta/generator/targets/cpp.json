@@ -15,6 +15,7 @@
     "Assign": "$lhs = $expr",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
+        "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
         "StringCharFeatures": "CStringFeatures<char>",
         "Default": "$type",
         "bool": "bool",

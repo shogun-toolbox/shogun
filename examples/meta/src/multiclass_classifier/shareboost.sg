@@ -1,0 +1,29 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_instance]
+ShareBoost shareboost(features_train, labels_train, 2)
+#![create_instance]
+
+#![train_and_apply]
+shareboost.train()
+RealSubsetFeatures features_test_sub(features_test, shareboost.get_activeset())
+MulticlassLabels labels_predict = shareboost.apply_multiclass(features_test_sub)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+MulticlassAccuracy eval()
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()
