@@ -123,6 +123,12 @@ public:
 	 */
 	virtual SGVector<float64_t> get_values();
 
+	virtual CLabels* shallow_subset_copy()
+	{
+		SG_SNOTIMPLEMENTED;
+		return NULL;
+	}
+
 private:
 	void init();
 

@@ -203,3 +203,4 @@ int32_t CDenseLabels::get_num_labels() const
 	return m_subset_stack->has_subsets()
 			? m_subset_stack->get_size() : m_labels.vlen;
 }
+

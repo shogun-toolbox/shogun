@@ -515,6 +515,8 @@ public:
 	 */
 	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
 
+	virtual CFeatures* shallow_subset_copy();
+
 	/** @return object name */
 	virtual const char* get_name() const { return "DenseFeatures"; }
 

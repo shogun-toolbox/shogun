@@ -331,6 +331,12 @@ class CFeatures : public CSGObject
 		 * @return whether this class supports compatible computation
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
+
+		virtual CFeatures* shallow_subset_copy() 
+		{ 
+			SG_SNOTIMPLEMENTED;
+			return NULL;
+		}
 	private:
 		void init();
 

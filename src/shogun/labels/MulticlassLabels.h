@@ -123,6 +123,8 @@ class CMulticlassLabels : public CDenseLabels
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
+		
+		virtual CLabels* shallow_subset_copy();
 
 	private:
 		/** initialises and register parameters */
