@@ -68,7 +68,7 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 	temp.range_fill();
 	CMath::permute(temp);
 	SGVector<int32_t> col(m_num_rkhs_basis);
-	for (auto i=0; i<m_num_rkhs_basis; ++i)
+	for (index_t i=0; i<m_num_rkhs_basis; ++i)
 		col[i]=temp[i];
 	CMath::qsort(col.vector, m_num_rkhs_basis);
 
