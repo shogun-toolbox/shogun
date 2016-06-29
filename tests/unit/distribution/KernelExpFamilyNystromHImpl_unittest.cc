@@ -82,6 +82,60 @@ TEST(KernelExpFamilyNystromHImpl, compute_xi_norm_2_all_inds_equals_exact)
     EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-12);
 }
 
+TEST(KernelExpFamilyNystromHImpl, compute_h_all_inds_equals_full)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	KernelExpFamilyImpl est_full(X, sigma, lambda);
+	
+	// compare against full version
+	auto h = est.compute_h();
+	auto h_full = est.compute_h();
+	
+	ASSERT_EQ(h.vlen, h_full.vlen);
+	
+	for (auto i=0; i<N*D; i++)
+        EXPECT_NEAR(h[i], h_full[i], 1e-12);
+}
+
+TEST(KernelExpFamilyNystromHImpl, compute_h_half_inds_equals_subsampled_full)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	
+	index_t m=5;
+	SGVector<index_t> temp(N*D);
+	temp.range_fill();
+	CMath::permute(temp);
+	SGVector<index_t> inds(m);
+	memcpy(inds.vector, temp.vector, sizeof(index_t)*m);
+	
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, inds);
+	KernelExpFamilyImpl est_full(X, sigma, lambda);
+	
+	// compare against full version
+	auto h = est.compute_h();
+	auto h_full = est_full.compute_h();
+	
+	ASSERT_EQ(h.vlen, m);
+	ASSERT_EQ(h_full.vlen, N*D);
+	for (auto i=0; i<m; i++)
+        EXPECT_NEAR(h[i], h_full[inds[i]], 1e-12);
+}
+
 TEST(KernelExpFamilyNystromHImpl, build_system_equals_build_system_from_full)
 {
 	index_t N=5;

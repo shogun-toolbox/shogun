@@ -173,7 +173,7 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	// TODO dont compute full h
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, ND);
+	auto eigen_h=Map<VectorXd>(h.vector, m);
 
 	SG_SINFO("Computing xi norm.\n");
 	auto xi_norm_2 = compute_xi_norm_2();
@@ -181,11 +181,9 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 	SG_SINFO("Creating sub-sampled kernel Hessians.\n");
 	SGMatrix<float64_t> col_sub_sampled_hessian(ND, m);
 	SGMatrix<float64_t> sub_sampled_hessian(m, m);
-	SGVector<float64_t> sub_sampled_h(m);
 
 	auto eigen_col_sub_sampled_hessian = Map<MatrixXd>(col_sub_sampled_hessian.matrix, ND, m);
 	auto eigen_sub_sampled_hessian = Map<MatrixXd>(sub_sampled_hessian.matrix, m, m);
-	auto eigen_sub_sampled_h = Map<VectorXd>(sub_sampled_h.vector, m);
 
 #pragma omp parallel for
 	for (auto col_idx=0; col_idx<m; col_idx++)
@@ -206,9 +204,6 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 
 		for (auto row_idx=0; row_idx<m; row_idx++)
 			sub_sampled_hessian(row_idx,col_idx)=col_sub_sampled_hessian(m_inds[row_idx], col_idx);
-
-		// TODO remove subsampling here
-		sub_sampled_h[col_idx] = h[m_inds[col_idx]];
 	}
 
 	SG_SINFO("Populating A matrix.\n");
@@ -216,13 +211,26 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 
 	// can use noalias to speed up as matrices are definitely different
 	eigen_A.block(1,1,m,m).noalias()=eigen_col_sub_sampled_hessian.transpose()*eigen_col_sub_sampled_hessian / N + m_lambda*eigen_sub_sampled_hessian;
-	eigen_A.col(0).segment(1, m).noalias() = eigen_sub_sampled_hessian*eigen_sub_sampled_h / N + m_lambda*eigen_sub_sampled_h;
+	eigen_A.col(0).segment(1, m).noalias() = eigen_sub_sampled_hessian*eigen_h / N + m_lambda*eigen_h;
 
 	for (auto ind_idx=0; ind_idx<m; ind_idx++)
 		A(0, ind_idx+1) = A(ind_idx+1, 0);
 
 	b[0] = -xi_norm_2;
-	eigen_b.segment(1, m) = -eigen_sub_sampled_h;
+	eigen_b.segment(1, m) = -eigen_h;
 
 	return std::pair<SGMatrix<float64_t>, SGVector<float64_t>>(A, b);
+}
+
+SGVector<float64_t> KernelExpFamilyNystromHImpl::compute_h() const
+{
+	auto m = get_num_rkhs_basis();
+
+	auto h_full = KernelExpFamilyImpl::compute_h();
+	SGVector<float64_t> h(m);
+
+	for (auto i=0; i<m; i++)
+		h[i] = h_full[m_inds[i]];
+
+	return h;
 }
