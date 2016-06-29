@@ -2,7 +2,7 @@
 ShareBoost
 ==========
 
-ShareBoost algorithm learns a multiclass predictor from a subset of shared features of the samples with forward greedy selection approach.
+The shareBoost algorithm learns a multiclass predictor from a subset of shared features of the samples with forward greedy selection approach.
 
 See :cite:`shalev2011shareboost` for a detailed introduction.
 
