@@ -145,12 +145,12 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 
 	SGMatrix<float64_t> orig_matrix=features->get_feature_matrix();
 	SGMatrix<float64_t> copy_matrix=static_cast<CDenseFeatures<float64_t>*>(features_copy)->get_feature_matrix();
-	
+
 
 	for (index_t i=0; i<dim; ++i)
-		for (index_t j=0; j<inds.size(); ++j)	
+		for (index_t j=0; j<inds.size(); ++j)
 			EXPECT_EQ(orig_matrix(i,j), copy_matrix(i,j));
-	
+
 	SG_UNREF(features_copy);
 	SG_UNREF(features);
 }

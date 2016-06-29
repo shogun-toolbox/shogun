@@ -105,7 +105,7 @@ CMulticlassLabels* CCARTree::apply_multiclass(CFeatures* data)
 
 	// apply multiclass starting from root
 	bnode_t* current=dynamic_cast<bnode_t*>(get_root());
-	
+
 	REQUIRE(current, "Tree machine not yet trained.\n");
 	CLabels* ret=apply_from_current_node(dynamic_cast<CDenseFeatures<float64_t>*>(data), current);
 
@@ -289,7 +289,7 @@ bool CCARTree::train_machine(CFeatures* data)
 
 void CCARTree::set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
 {
-	m_pre_sort=true;	
+	m_pre_sort=true;
 	m_sorted_features=sorted_feats;
 	m_sorted_indices=sorted_indices;
 }
@@ -414,7 +414,7 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 	int32_t c_left=-1;
 	int32_t c_right=-1;
 	int32_t best_attribute;
-	
+
 	SGVector<index_t> indices(num_vecs);
 	if (m_pre_sort)
 	{
@@ -532,13 +532,13 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing_final, int32_t &count_left,
 	int32_t &count_right, int32_t subset_size, const SGVector<index_t>& active_indices)
 {
-	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();	
+	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
 	int32_t num_vecs=labels->get_num_labels();
 	int32_t num_feats;
 	if (m_pre_sort)
 		num_feats=mat.num_cols;
 	else
-		num_feats=mat.num_rows;		
+		num_feats=mat.num_rows;
 
 	int32_t n_ulabels;
 	SGVector<float64_t> ulabels=get_unique_labels(labels_vec,n_ulabels);
@@ -567,7 +567,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 			}
 		}
 	}
-	
+
 	SGVector<index_t> idx(num_feats);
 	idx.range_fill();
 	if (subset_size)
@@ -579,7 +579,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	float64_t max_gain=MIN_SPLIT_GAIN;
 	int32_t best_attribute=-1;
 	float64_t best_threshold=0;
-	
+
 	SGVector<int64_t> indices_mask;
 	SGVector<int32_t> count_indices(mat.num_rows);
 	count_indices.zero();
@@ -708,7 +708,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 					if(dupes[j]!=j)
 						is_left[j]=is_left[dupes[j]];
 				}
-				
+
 				float64_t g=0;
 				if (m_mode==PT_MULTICLASS)
 					g=gain(wleft,wright,total_wclasses);
@@ -806,7 +806,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 		count_right=1;
 		if (m_pre_sort)
 		{
-			SGVector<float64_t> temp_vec(mat.get_column_vector(best_attribute), mat.num_rows, false);			
+			SGVector<float64_t> temp_vec(mat.get_column_vector(best_attribute), mat.num_rows, false);
 			SGVector<index_t> sorted_indices(m_sorted_indices.get_column_vector(best_attribute), mat.num_rows, false);
 			int32_t count=0;
 			for(int32_t i=0;i<mat.num_rows;i++)
@@ -824,8 +824,8 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 				if(dupes[i]!=i)
 					is_left_final[i]=is_left_final[dupes[i]];
 			}
-				
-		}	
+
+		}
 		else
 		{
 			for (int32_t i=0;i<num_vecs;i++)
@@ -1088,7 +1088,7 @@ float64_t CCARTree::least_squares_deviation(const SGVector<float64_t>& feats, co
 {
 
 	Map<VectorXd> map_weights(weights.vector, weights.size());
-	Map<VectorXd> map_feats(feats.vector, weights.size());	
+	Map<VectorXd> map_feats(feats.vector, weights.size());
 	float64_t mean=map_weights.dot(map_feats);
 	total_weight=map_weights.sum();
 
@@ -1104,7 +1104,7 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 {
 	int32_t num_vecs=feats->get_num_vectors();
 	REQUIRE(num_vecs>0, "No data provided in apply\n");
-	
+
 	SGVector<float64_t> labels(num_vecs);
 	for (int32_t i=0;i<num_vecs;i++)
 	{
@@ -1365,7 +1365,7 @@ float64_t CCARTree::compute_error(CLabels* labels, CLabels* reference, SGVector<
 CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 {
 	REQUIRE(tree, "Tree not provided for pruning.\n");
-	
+
 	CDynamicObjectArray* trees=new CDynamicObjectArray();
 	SG_UNREF(m_alphas);
 	m_alphas=new CDynamicArray<float64_t>();
