@@ -145,6 +145,5 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 	
-	SG_SDEBUG("Leaving!\n");
 	return shallow_copy_labels;	
 }

@@ -131,16 +131,16 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 	/*
 	  TODO: enable multi-threaded learning. This requires views support
-		on CFeatures
-	#pragma omp parallel for num_threads(parallel->get_num_threads())
-	*/
+		on CFeatures*/
+	#pragma omp parallel for	
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());
 		ASSERT(c != NULL);
 		SGVector<index_t> idx(get_bag_size());
 		idx.random(0, m_features->get_num_vectors()-1);
-		m_labels->add_subset(idx);
+		CLabels* labels = m_labels->shallow_subset_copy();
+		labels->add_subset(idx);
 		/* TODO:
 		   if it's a binary labeling ensure that
 		   there's always samples of both classes
@@ -157,19 +157,23 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 			}
 		}
 		*/
-		m_features->add_subset(idx);
+		CFeatures* features = m_features->shallow_subset_copy();
+		features->add_subset(idx);
 		set_machine_parameters(c,idx);
-		c->set_labels(m_labels);
-		c->train(m_features);
-		m_features->remove_subset();
-		m_labels->remove_subset();
+		c->set_labels(labels);
+		c->train(features);
+		features->remove_subset();
+		labels->remove_subset();
 
+		#pragma omp critical
+		{		
 		// get out of bag indexes
 		CDynamicArray<index_t>* oob = get_oob_indices(idx);
 		m_oob_indices->push_back(oob);
 
 		// add trained machine to bag array
 		m_bags->push_back(c);
+		}
 
 		SG_UNREF(c);
 	}
