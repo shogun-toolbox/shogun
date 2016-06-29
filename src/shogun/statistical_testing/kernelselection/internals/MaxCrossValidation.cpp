@@ -34,18 +34,24 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
+#include <shogun/statistical_testing/internals/NextSamples.h>
+#include <shogun/statistical_testing/internals/FeaturesUtil.h>
+#include <shogun/statistical_testing/internals/mmd/PermutationTestCrossValidation.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 
 using namespace shogun;
 using namespace internal;
+using namespace mmd;
 
-MaxCrossValidation::MaxCrossValidation(KernelManager& km, CMMD* est, const index_t& M, const float64_t& alp)
-: KernelSelection(km, est), num_run(M), alpha(alp)
+MaxCrossValidation::MaxCrossValidation(KernelManager& km, CMMD* est, const index_t& M, const index_t& K, const float64_t& alp)
+: KernelSelection(km, est), num_runs(M), num_folds(K),  alpha(alp)
 {
-	REQUIRE(num_run>0, "Number of runs is %d!\n", num_run);
-	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold is %f!\n", alpha);
+	REQUIRE(num_runs>0, "Number of runs (%d) must be positive!\n", num_runs);
+	REQUIRE(num_folds>0, "Number of folds (%d) must be positive!\n", num_folds);
+	REQUIRE(alpha>=0.0 && alpha<=1.0, "Threshold (%f) has to be in [0, 1]!\n", alpha);
 }
 
 MaxCrossValidation::~MaxCrossValidation()
@@ -65,11 +71,8 @@ SGMatrix<float64_t> MaxCrossValidation::get_measure_matrix()
 void MaxCrossValidation::init_measures()
 {
 	const index_t num_kernels=kernel_mgr.num_kernels();
-	auto& data_mgr=estimator->get_data_mgr();
-	const index_t N=data_mgr.get_num_folds();
-	REQUIRE(N!=0, "Number of folds is not set!\n");
-	if (rejections.num_rows!=N*num_run || rejections.num_cols!=num_kernels)
-		rejections=SGMatrix<float64_t>(N*num_run, num_kernels);
+	if (rejections.num_rows!=num_folds*num_runs || rejections.num_cols!=num_kernels)
+		rejections=SGMatrix<float64_t>(num_folds*num_runs, num_kernels);
 	std::fill(rejections.data(), rejections.data()+rejections.size(), 0);
 	if (measures.size()!=num_kernels)
 		measures=SGVector<float64_t>(num_kernels);
@@ -79,33 +82,76 @@ void MaxCrossValidation::init_measures()
 void MaxCrossValidation::compute_measures()
 {
 	auto& data_mgr=estimator->get_data_mgr();
-	data_mgr.set_cross_validation_mode(true);
-
-	const index_t N=data_mgr.get_num_folds();
-	SG_SINFO("Performing %d fold cross-validattion!\n", N);
+	SG_SINFO("Performing %d fold cross-validattion!\n", num_folds);
 
 	const size_t num_kernels=kernel_mgr.num_kernels();
-	auto existing_kernel=estimator->get_kernel();
-	for (auto i=0; i<num_run; ++i)
+
+	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+	if (quadratic_time_mmd)
 	{
-		data_mgr.shuffle_features();
-		for (auto j=0; j<N; ++j)
+//		if (kernel_mgr.same_distance_type())
+//		{
+//			// compute distance on estimator and set the distance to the kernels
+//			MultiKernelPermutationTestCrossValidation compute(num_runs, num_folds, rejections);
+//			compute(kernel_mgr);
+//		}
+//		else
 		{
-			data_mgr.use_fold(j);
-			SG_SDEBUG("Running fold %d\n", j);
-			for (size_t k=0; k<num_kernels; ++k)
+			data_mgr.start();
+			auto samples=data_mgr.next();
+			if (!samples.empty())
 			{
-				auto kernel=kernel_mgr.kernel_at(k);
-				estimator->set_kernel(kernel);
-				auto statistic=estimator->compute_statistic();
-				rejections(i*N+j, k)=estimator->compute_p_value(statistic)<alpha;
-				estimator->cleanup();
+				CFeatures *samples_p=samples[0][0].get();
+				CFeatures *samples_q=samples[1][0].get();
+				auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+				SG_REF(samples_p_and_q);
+				samples.clear();
+
+				auto Nx=estimator->get_num_samples_p();
+				auto Ny=estimator->get_num_samples_q();
+				auto num_null_samples=estimator->get_num_null_samples();
+				auto stype=estimator->get_statistic_type();
+
+				PermutationTestCrossValidation compute(Nx, Ny, num_null_samples, stype);
+				compute.set_num_runs(num_runs);
+				compute.set_num_folds(num_folds);
+				compute.set_alpha(alpha);
+				compute.set_measure_matrix(rejections);
+
+				for (size_t k=0; k<num_kernels; ++k)
+				{
+					CKernel* kernel=kernel_mgr.kernel_at(k);
+					kernel->init(samples_p_and_q, samples_p_and_q);
+					compute(kernel->get_kernel_matrix(), k);
+					kernel->remove_lhs_and_rhs();
+				}
+				SG_UNREF(samples_p_and_q);
+			}
+			else
+				SG_SERROR("Could not fetch samples!\n");
+			data_mgr.end();
+		}
+	}
+	else // TODO put check, this one assumes infinite data
+	{
+		auto existing_kernel=estimator->get_kernel();
+		for (auto i=0; i<num_runs; ++i)
+		{
+			for (auto j=0; j<num_folds; ++j)
+			{
+				SG_SDEBUG("Running fold %d\n", j);
+				for (size_t k=0; k<num_kernels; ++k)
+				{
+					auto kernel=kernel_mgr.kernel_at(k);
+					estimator->set_kernel(kernel);
+					auto statistic=estimator->compute_statistic();
+					rejections(i*num_folds+j, k)=estimator->compute_p_value(statistic)<alpha;
+					estimator->cleanup();
+				}
 			}
 		}
-		data_mgr.unshuffle_features();
+		estimator->set_kernel(existing_kernel);
 	}
-	data_mgr.set_cross_validation_mode(false);
-	estimator->set_kernel(existing_kernel);
 
 	for (auto j=0; j<rejections.num_cols; ++j)
 	{

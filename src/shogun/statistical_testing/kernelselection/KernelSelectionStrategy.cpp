@@ -57,6 +57,7 @@ struct CKernelSelectionStrategy::Self
 	EKernelSelectionMethod method;
 	bool weighted;
 	index_t num_runs;
+	index_t num_folds;
 	float64_t alpha;
 
 	void init_policy(CMMD* estimator);
@@ -64,16 +65,18 @@ struct CKernelSelectionStrategy::Self
 	const static EKernelSelectionMethod default_method;
 	const static bool default_weighted;
 	const static index_t default_num_runs;
+	const static index_t default_num_folds;
 	const static float64_t default_alpha;
 };
 
 const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
 const bool CKernelSelectionStrategy::Self::default_weighted=false;
 const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
+const index_t CKernelSelectionStrategy::Self::default_num_folds=3;
 const float64_t CKernelSelectionStrategy::Self::default_alpha=0.05;
 
 CKernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method),
-	weighted(default_weighted), num_runs(default_num_runs), alpha(default_alpha)
+	weighted(default_weighted), num_runs(default_num_runs), num_folds(default_num_folds), alpha(default_alpha)
 {
 }
 
@@ -91,7 +94,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with MAXIMIZE_CROSS_VALIDATION!\n");
 		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
-			num_runs, alpha));
+			num_runs, num_folds, alpha));
 	}
 	break;
 	case KSM_MAXIMIZE_MMD:
@@ -140,34 +143,15 @@ CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method
 	self->weighted=weighted;
 }
 
-CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha)
+CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs,
+	index_t num_folds, float64_t alpha)
 {
 	init();
 	self->method=method;
 	self->num_runs=num_runs;
+	self->num_folds=num_folds;
 	self->alpha=alpha;
 }
-
-//CKernelSelectionStrategy::CKernelSelectionStrategy(const CKernelSelectionStrategy& other)
-//{
-//	init();
-//	self->method=other.self->method;
-//	self->num_runs=other.self->num_runs;
-//	self->alpha=other.self->alpha;
-//	for (size_t i=0; i<other.self->kernel_mgr.num_kernels(); ++i)
-//		self->kernel_mgr.push_back(other.self->kernel_mgr.kernel_at(i));
-//}
-//
-//CKernelSelectionStrategy& CKernelSelectionStrategy::operator=(const CKernelSelectionStrategy& other)
-//{
-//	init();
-//	self->method=other.self->method;
-//	self->num_runs=other.self->num_runs;
-//	self->alpha=other.self->alpha;
-//	for (size_t i=0; i<other.self->kernel_mgr.num_kernels(); ++i)
-//		self->kernel_mgr.push_back(other.self->kernel_mgr.kernel_at(i));
-//	return *this;
-//}
 
 void CKernelSelectionStrategy::init()
 {
@@ -188,6 +172,12 @@ CKernelSelectionStrategy& CKernelSelectionStrategy::use_method(EKernelSelectionM
 CKernelSelectionStrategy& CKernelSelectionStrategy::use_num_runs(index_t num_runs)
 {
 	self->num_runs=num_runs;
+	return *this;
+}
+
+CKernelSelectionStrategy& CKernelSelectionStrategy::use_num_folds(index_t num_folds)
+{
+	self->num_folds=num_folds;
 	return *this;
 }
 

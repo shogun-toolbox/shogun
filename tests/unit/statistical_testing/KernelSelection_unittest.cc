@@ -218,13 +218,14 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 
 TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 {
-	const index_t m=5;
-	const index_t n=10;
+	const index_t m=8;
+	const index_t n=12;
 	const index_t dim=1;
-	const float64_t difference=0.5;
-	const index_t num_kernels=10;
+	const float64_t difference=1.0;
+	const index_t num_kernels=2;
 	const index_t num_runs=1;
-	const index_t num_folds=5;
+	const index_t num_folds=3;
+	const float64_t train_test_ratio=3;
 	const float64_t alpha=0.05;
 
 	sg_rand->set_seed(12345);
@@ -236,16 +237,20 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 
 	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
+	mmd->set_null_approximation_method(NAM_PERMUTATION);
+	mmd->set_num_null_samples(1);
+	mmd->io->set_loglevel(MSG_DEBUG);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, alpha);
+	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
-	mmd->set_train_test_ratio(num_folds-1);
+	mmd->set_train_test_ratio(train_test_ratio);
 	mmd->select_kernel();
+	mmd->get_kernel_selection_strategy()->get_measure_matrix().display_matrix();
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
@@ -254,13 +259,14 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 
 TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 {
-	const index_t m=5;
-	const index_t n=10;
+	const index_t m=8;
+	const index_t n=12;
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 	const index_t num_runs=1;
-	const index_t num_folds=5;
+	const index_t num_folds=3;
+	const float64_t train_test_ratio=3;
 	const float64_t alpha=0.05;
 
 	sg_rand->set_seed(12345);
@@ -277,10 +283,10 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, alpha);
+	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
-	mmd->set_train_test_ratio(num_folds-1);
+	mmd->set_train_test_ratio(train_test_ratio);
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 

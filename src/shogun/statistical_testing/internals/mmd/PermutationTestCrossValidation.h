@@ -1,7 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2013 Heiko Strathmann
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (w) 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,44 +28,54 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_CROSS_VALIDATION_H__
-#define MAX_CROSS_VALIDATION_H__
+#ifndef PERMUTATION_TEST_CROSS_VALIDATION
+#define PERMUTATION_TEST_CROSS_VALIDATION
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/statistical_testing/MMD.h>
 
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-
 namespace internal
 {
 
-class MaxCrossValidation : public KernelSelection
+namespace mmd
+{
+
+/**
+ * @brief class that runs cross-validation test for MMD for a single kernel.
+ */
+class PermutationTestCrossValidation
 {
 public:
-	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const index_t&, const float64_t&);
-	MaxCrossValidation(const MaxCrossValidation& other)=delete;
-	~MaxCrossValidation();
-	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
-	virtual CKernel* select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
-protected:
-	virtual void init_measures();
-	virtual void compute_measures();
-	const index_t num_runs;
-	const index_t num_folds;
-	const float64_t alpha;
+	PermutationTestCrossValidation(index_t nx, index_t ny, index_t null_samples, EStatisticType type);
+	~PermutationTestCrossValidation();
+	template <typename T> void operator()(const SGMatrix<T>& km, index_t k);
+	void set_num_runs(index_t nr);
+	void set_num_folds(index_t nf);
+	void set_alpha(index_t alp);
+	void set_measure_matrix(SGMatrix<float64_t> measures);
+private:
+	struct terms_t;
+	template <typename T> void add_term(terms_t&, T kernel, index_t i, index_t j);
+	float64_t compute_mmd(terms_t&);
+	const index_t n_x;
+	const index_t n_y;
+	const index_t num_null_samples;
+	const EStatisticType stype;
+	index_t num_runs;
+	index_t num_folds;
+	float64_t alpha;
 	SGMatrix<float64_t> rejections;
-	SGVector<float64_t> measures;
 };
 
 }
 
 }
 
-#endif // MAX_CROSS_VALIDATION_H__
+}
+
+#endif // PERMUTATION_TEST_CROSS_VALIDATION

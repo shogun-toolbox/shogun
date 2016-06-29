@@ -66,13 +66,14 @@ public:
 	CKernelSelectionStrategy();
 	explicit CKernelSelectionStrategy(EKernelSelectionMethod method);
 	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted);
-	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha);
+	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
 	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
 	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;
 	virtual ~CKernelSelectionStrategy();
 
 	CKernelSelectionStrategy& use_method(EKernelSelectionMethod method);
 	CKernelSelectionStrategy& use_num_runs(index_t num_runs);
+	CKernelSelectionStrategy& use_num_folds(index_t num_folds);
 	CKernelSelectionStrategy& use_alpha(float64_t alpha);
 	CKernelSelectionStrategy& use_weighted(bool weighted);
 

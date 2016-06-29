@@ -55,20 +55,20 @@ class WeightedMaxTestPower;
 
 }
 
-enum EStatisticType
+enum EStatisticType : uint32_t
 {
 	ST_UNBIASED_FULL,
 	ST_UNBIASED_INCOMPLETE,
 	ST_BIASED_FULL
 };
 
-enum EVarianceEstimationMethod
+enum EVarianceEstimationMethod : uint32_t
 {
 	VEM_DIRECT,
 	VEM_PERMUTATION
 };
 
-enum ENullApproximationMethod
+enum ENullApproximationMethod : uint32_t
 {
 	NAM_PERMUTATION,
 	NAM_MMD1_GAUSSIAN,
@@ -89,7 +89,7 @@ public:
 
 	void set_kernel_selection_strategy(EKernelSelectionMethod method);
 	void set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted);
-	void set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha);
+	void set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
 	CKernelSelectionStrategy* get_kernel_selection_strategy() const;
 
 	void add_kernel(CKernel *kernel);

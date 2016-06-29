@@ -418,9 +418,9 @@ void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, bool wei
 	self->strategy=strategy;
 }
 
-void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, float64_t alpha)
+void CMMD::set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha)
 {
-	auto strategy=std::shared_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy(method, num_runs, alpha));
+	auto strategy=std::shared_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy(method, num_runs, num_folds, alpha));
 	const auto& kernel_mgr=self->strategy->get_kernel_mgr();
 	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
 		strategy->add_kernel(kernel_mgr.kernel_at(i));
