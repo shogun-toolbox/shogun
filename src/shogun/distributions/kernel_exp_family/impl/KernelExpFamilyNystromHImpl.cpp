@@ -225,12 +225,45 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> KernelExpFamilyNystromHImpl:
 SGVector<float64_t> KernelExpFamilyNystromHImpl::compute_h() const
 {
 	auto m = get_num_rkhs_basis();
+	auto D = get_num_dimensions();
+	auto N = get_num_data_lhs();
 
-	auto h_full = KernelExpFamilyImpl::compute_h();
 	SGVector<float64_t> h(m);
+	Map<VectorXd> eigen_h(h.vector, m);
+	eigen_h = VectorXd::Zero(m);
 
-	for (auto i=0; i<m; i++)
-		h[i] = h_full[m_inds[i]];
+#pragma omp parallel for
+	for (auto rkhs_idx=0; rkhs_idx<m; rkhs_idx++)
+	{
+		auto bj = idx_to_ai(m_inds[rkhs_idx]);
+		auto idx_b = bj.first;
+		auto j = bj.second;
+
+		// TODO compute sum in single go
+		for (auto idx_a=0; idx_a<N; idx_a++)
+			for (auto i=0; i<D; i++)
+				h[rkhs_idx] += kernel_dx_dx_dy_component(idx_a, idx_b, i, j);
+	}
+
+	eigen_h /= N;
 
 	return h;
+}
+
+float64_t KernelExpFamilyNystromHImpl::kernel_dx_dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const
+{
+	// this assumes that distances are precomputed, i.e. this call only causes memory io
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	auto diff2_i = pow(diff[i], 2);
+
+	auto k=kernel(idx_a,idx_b);
+
+	float64_t result = -pow(2./m_sigma,3) * k * diff2_i*diff[j];
+
+	if (i==j)
+		result += pow(2./m_sigma,2) * k * 2* diff[i];
+
+	result += pow(2./m_sigma,2) * k * diff[j];
+
+	return result;
 }

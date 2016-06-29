@@ -307,3 +307,33 @@ TEST(KernelExpFamilyNystromHImpl, grad_almost_all_inds_close_exact)
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], grad_nystrom[i], 0.3);
 }
+
+TEST(KernelExpFamilyNystromHImpl, kernel_dx_dx_dy_component)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+		
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	
+	KernelExpFamilyNystromHImpl est(X, sigma, lambda, N*D);
+	
+	// compare against full version
+	for (auto idx_a=0; idx_a<N; idx_a++)
+	    for (auto idx_b=0; idx_b<N; idx_b++)
+	    {
+	        auto result = est.kernel_dx_dx_dy(idx_a,idx_b);
+	
+	        ASSERT_EQ(result.num_rows, D);
+	        ASSERT_EQ(result.num_cols, D);
+	        for (auto i=0; i<D; i++)
+	            for (auto j=0; j<D; j++)
+	            {
+	                auto comp = est.kernel_dx_dx_dy_component(idx_a,idx_b, i, j);
+                    EXPECT_NEAR(result(i,j), comp, 1e-12);
+                }
+        }
+}
