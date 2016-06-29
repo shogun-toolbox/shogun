@@ -4,6 +4,7 @@ from string import Template
 import os.path
 import argparse
 import re
+from copy import copy
 # import set in a python 2->3 safe way
 try:
     set
@@ -110,6 +111,11 @@ class Translator:
         """
         if storeVars:
             varsToStore = getVarsToStore(program)
+
+            # Shallow copy of the statement list, so we don't alter the original
+            program = copy(program)
+            program["Program"] = copy(program["Program"])
+
             self.injectVarsStoring(program["Program"],
                                    programName,
                                    varsToStore)
