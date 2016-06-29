@@ -38,6 +38,7 @@
 
 #include "KernelExpFamilyImpl.h"
 
+
 namespace shogun
 {
 
@@ -45,52 +46,45 @@ class KernelExpFamilyNystromImpl : public KernelExpFamilyImpl
 {
 public :
 	KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-				index_t num_rkhs_basis, bool low_memory_mode=false);
+				index_t num_rkhs_basis);
 	KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-			SGVector<index_t> inds, bool low_memory_mode=false);
+			SGVector<index_t> rkhs_basis_inds);
 
 	virtual ~KernelExpFamilyNystromImpl() {};
 
+	void sub_sample_rkhs_basis(index_t num_rkhs_basis);
+
+	// overloaded
+	float64_t compute_xi_norm_2() const;
+	SGVector<float64_t> compute_h() const;
+
 	float64_t difference_component(index_t idx_a, index_t idx_b, index_t i) const;
-
-	// for training
 	float64_t kernel_hessian_component(const index_t idx_a, index_t idx_b, index_t i, index_t j) const;
-	virtual void sub_sample_rkhs_basis(index_t num_rkhs_basis);
-
-	// for evaluation
+	float64_t kernel_dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
+	float64_t kernel_dx_dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
 	float64_t kernel_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
 	float64_t kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
 	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
 	SGVector<float64_t> kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
 
-	float64_t compute_lower_right_submatrix_element(index_t row_idx, index_t col_idx) const;
-	SGVector<float64_t> compute_first_row_no_storing() const;
-
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
-	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> prepare_system_slow_low_memory() const;
-	std::pair<SGMatrix<float64_t>, SGVector<float64_t>> prepare_system_fast_high_memory() const;
+
+	std::pair<index_t, index_t> idx_to_ai(index_t idx) const;
 
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
 
-	// wtf: why is this necessary? But removing it causes compile error.
-	float64_t log_pdf(SGVector<float64_t> x) { return KernelExpFamilyImpl::log_pdf(x); }
-	SGVector<float64_t> grad(SGVector<float64_t> x) { return KernelExpFamilyImpl::grad(x); }
+	using KernelExpFamilyImpl::solve_and_store;
+	using KernelExpFamilyImpl::log_pdf;
+	using KernelExpFamilyImpl::grad;
 
-	std::pair<index_t, index_t> idx_to_ai(index_t idx) const;
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
 
-	SGVector<index_t> get_inds() { return m_inds; }
-
-
 protected:
-	virtual void solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b);
 	index_t get_num_rkhs_basis() const;
 
 protected:
-	SGVector<index_t> m_inds;
-
-	bool m_low_memory_mode;
+	SGVector<index_t> m_rkhs_basis_inds;
 };
 
 }

@@ -43,41 +43,38 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom() : CKernelExpFamily()
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, SGVector<index_t> inds,
-			bool low_memory_mode)
+			float64_t sigma, float64_t lambda, SGVector<index_t> rkhs_basis_inds)
 			: CKernelExpFamily()
 {
-	REQUIRE(data.matrix, "Given observations cannot be empty\n");
+	REQUIRE(data.matrix, "Given observations cannot be empty.\n");
 	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
 	REQUIRE(data.num_cols>0, "Number of given observations (%d) must be positive.\n", data.num_cols);
 	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 
-	auto m=inds.vlen;
+	auto m=rkhs_basis_inds.vlen;
 	auto N=data.num_cols;
 	auto D=data.num_rows;
 	auto ND=N*D;
-	REQUIRE(m>0, "Given indices' length (%d) must be positive.\n", m);
-	REQUIRE(m>0, "Given indices' cannot be empty.\n", inds.vector);
+	REQUIRE(m>0, "Given number of RKHS basis functions (%d) must be positive.\n", m);
+	REQUIRE(m>0, "Given indices of RKHS basis functions cannot be empty.\n", rkhs_basis_inds.vector);
 
 	for (auto i=0; i<m; i++)
 	{
-		REQUIRE(inds[i]>=0, "Sub-sampling index at position %d (%d) must be positive or zero.\n",
-				i, inds[i]);
-		REQUIRE(inds[i]<ND, "Sub-sampling index at position %d(%d) must be smaller than N*D=%d*$d=%d.\n",
-				i, inds[i], N, D, ND);
+		REQUIRE(rkhs_basis_inds[i]>=0, "RKHS basis index at position %d (%d) must be positive or zero.\n",
+				i, rkhs_basis_inds[i]);
+		REQUIRE(rkhs_basis_inds[i]<ND, "RKHS basis index at position %d(%d) must be smaller than N*D=%d*$d=%d.\n",
+				i, rkhs_basis_inds[i], N, D, ND);
 
 	}
 
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, inds, low_memory_mode);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, rkhs_basis_inds);
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, index_t num_rkhs_basis,
-			bool low_memory_mode) : CKernelExpFamily()
+			float64_t sigma, float64_t lambda, index_t num_rkhs_basis) : CKernelExpFamily()
 {
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis,
-			low_memory_mode);
+	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis);
 }
 
 CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()
