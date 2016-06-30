@@ -41,6 +41,7 @@
 using namespace Eigen;
 using namespace shogun;
 
+#ifdef HAVE_CXX11
 //Generate the Data that N is greater than D
 void generate_data_n_greater_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 {
@@ -376,4 +377,4 @@ TEST(LeastAngleRegression, early_stop_l1_norm)
 	SG_UNREF(features);
 	SG_UNREF(labels);
 }
-
+#endif
