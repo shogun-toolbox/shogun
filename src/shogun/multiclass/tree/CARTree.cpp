@@ -603,6 +603,8 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	{
 		SGVector<float64_t> feats(num_vecs);
 		SGVector<index_t> sorted_args(num_vecs);
+		SGVector<int32_t> temp_count_indices(count_indices.size());
+		memcpy(temp_count_indices.vector, count_indices.vector, sizeof(int32_t)*count_indices.size());
 
 		if (m_pre_sort)
 		{
