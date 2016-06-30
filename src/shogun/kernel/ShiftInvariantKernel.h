@@ -41,10 +41,7 @@ namespace shogun
 
 namespace internal
 {
-	namespace mmd
-	{
-		class MultiKernelMMD;
-	}
+	class KernelManager;
 }
 
 /** @brief Base class for the family of kernel functions that only depend on
@@ -58,7 +55,7 @@ namespace internal
 class CShiftInvariantKernel: public CKernel
 {
 
-	friend class internal::mmd::MultiKernelMMD;
+	friend class internal::KernelManager;
 
 public:
 	/** Default constructor.  */

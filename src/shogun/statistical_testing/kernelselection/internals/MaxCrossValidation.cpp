@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/distance/Distance.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
@@ -40,6 +41,7 @@
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationTestCrossValidation.h>
+#include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTestCrossValidation.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 
 using namespace shogun;
@@ -81,22 +83,35 @@ void MaxCrossValidation::init_measures()
 
 void MaxCrossValidation::compute_measures()
 {
-	auto& data_mgr=estimator->get_data_mgr();
-	SG_SINFO("Performing %d fold cross-validattion!\n", num_folds);
-
+	SG_SDEBUG("Performing %d fold cross-validattion!\n", num_folds);
 	const size_t num_kernels=kernel_mgr.num_kernels();
 
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
 	{
-//		if (kernel_mgr.same_distance_type())
-//		{
-//			// compute distance on estimator and set the distance to the kernels
-//			MultiKernelPermutationTestCrossValidation compute(num_runs, num_folds, rejections);
-//			compute(kernel_mgr);
-//		}
-//		else
+		if (kernel_mgr.same_distance_type())
 		{
+			auto Nx=estimator->get_num_samples_p();
+			auto Ny=estimator->get_num_samples_q();
+			auto num_null_samples=estimator->get_num_null_samples();
+			auto stype=estimator->get_statistic_type();
+
+			MultiKernelPermutationTestCrossValidation compute(Nx, Ny, num_null_samples, stype);
+			compute.set_num_runs(num_runs);
+			compute.set_num_folds(num_folds);
+			compute.set_alpha(alpha);
+			compute.set_measure_matrix(rejections);
+
+			CDistance* distance=kernel_mgr.get_distance_instance();
+			SG_REF(distance);
+			compute.set_distance(estimator->compute_joint_distance(distance));
+			SG_UNREF(distance);
+
+			compute(kernel_mgr);
+		}
+		else
+		{
+			auto& data_mgr=estimator->get_data_mgr();
 			data_mgr.start();
 			auto samples=data_mgr.next();
 			if (!samples.empty())

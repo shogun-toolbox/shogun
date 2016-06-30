@@ -34,6 +34,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/distance/EuclideanDistance.h>
+#include <shogun/distance/ManhattanMetric.h>
 #include <shogun/kernel/ShiftInvariantKernel.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 
@@ -161,4 +163,55 @@ bool KernelManager::same_distance_type() const
 		}
 	}
 	return same;
+}
+
+CDistance* KernelManager::get_distance_instance() const
+{
+	REQUIRE(same_distance_type(), "Distance types for all the kernels are not the same!\n");
+
+	CDistance* distance=nullptr;
+	CShiftInvariantKernel* kernel_0=dynamic_cast<CShiftInvariantKernel*>(kernel_at(0));
+	REQUIRE(kernel_0, "Kernel (%s) must be of CShiftInvariantKernel type!\n", kernel_at(0)->get_name());
+	if (kernel_0->get_distance_type()==D_EUCLIDEAN)
+	{
+		auto euclidean_distance=new CEuclideanDistance();
+		euclidean_distance->set_disable_sqrt(true);
+		distance=euclidean_distance;
+	}
+	else if (kernel_0->get_distance_type()==D_MANHATTAN)
+	{
+		auto manhattan_distance=new CManhattanMetric();
+		distance=manhattan_distance;
+	}
+	else
+	{
+		SG_SERROR("Unsupported distance type!\n");
+	}
+	return distance;
+}
+
+void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
+{
+	for (size_t i=0; i<num_kernels(); ++i)
+	{
+		CKernel* kernel=kernel_at(i);
+		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
+		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
+		shift_inv_kernel->m_precomputed_distance=distance;
+		shift_inv_kernel->num_lhs=distance->get_num_vec_lhs();
+		shift_inv_kernel->num_rhs=distance->get_num_vec_rhs();
+	}
+}
+
+void KernelManager::unset_precomputed_distance() const
+{
+	for (size_t i=0; i<num_kernels(); ++i)
+	{
+		CKernel* kernel=kernel_at(i);
+		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
+		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
+		shift_inv_kernel->m_precomputed_distance=nullptr;
+		shift_inv_kernel->num_lhs=0;
+		shift_inv_kernel->num_rhs=0;
+	}
 }

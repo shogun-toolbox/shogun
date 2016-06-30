@@ -85,15 +85,8 @@ void MultiKernelMMD::add_term(terms_t& t, float32_t val, index_t i, index_t j) c
 SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) const
 {
 	SG_SDEBUG("Entering!\n");
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		CShiftInvariantKernel* kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_mgr.kernel_at(i));
-		REQUIRE(kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n",
-			kernel_mgr.kernel_at(i)->get_name());
-		kernel->m_precomputed_distance=m_distance.get();
-		kernel->num_lhs=n_x+n_y;
-		kernel->num_rhs=n_x+n_y;
-	}
+	REQUIRE(m_distance, "Distance instace is not set!\n");
+	kernel_mgr.set_precomputed_distance(m_distance.get());
 
 	SGVector<float64_t> result(kernel_mgr.num_kernels());
 #pragma omp parallel for
@@ -145,16 +138,7 @@ SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) 
 		SG_SDEBUG("result[%d] = %f!\n", k, result[k]);
 	}
 
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
-	{
-		CShiftInvariantKernel* kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_mgr.kernel_at(i));
-		REQUIRE(kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n",
-			kernel_mgr.kernel_at(i)->get_name());
-		kernel->m_precomputed_distance=nullptr;
-		kernel->num_lhs=0;
-		kernel->num_rhs=0;
-	}
-
+	kernel_mgr.unset_precomputed_distance();
 	SG_SDEBUG("Leaving!\n");
 	return result;
 }

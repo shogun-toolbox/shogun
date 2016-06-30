@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (w) 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,53 +28,64 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_MANAGER_H__
-#define KERNEL_MANAGER_H__
+#ifndef MULTIKERNEL_PERMUTATION_TEST_CROSS_VALIDATION
+#define MULTIKERNEL_PERMUTATION_TEST_CROSS_VALIDATION
 
-#include <vector>
 #include <memory>
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/internals/InitPerKernel.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
 
-class CKernel;
-class CDistance;
+enum EStatisticType : uint32_t;
 class CCustomDistance;
-class CCustomKernel;
 
 namespace internal
 {
 
-class KernelManager
+class KernelManager;
+
+namespace mmd
+{
+
+/**
+ * @brief class that runs cross-validation test for MMD for multiple kernels.
+ */
+class MultiKernelPermutationTestCrossValidation
 {
 public:
-	KernelManager();
-	explicit KernelManager(index_t num_kernels);
-	~KernelManager();
+	MultiKernelPermutationTestCrossValidation(index_t nx, index_t ny, index_t null_samples, EStatisticType type);
+	~MultiKernelPermutationTestCrossValidation();
 
-	InitPerKernel kernel_at(size_t i);
-	CKernel* kernel_at(size_t i) const;
+	void operator()(const KernelManager& km);
 
-	void push_back(CKernel* kernel);
-	const size_t num_kernels() const;
-
-	void precompute_kernel_at(size_t i);
-	void restore_kernel_at(size_t i);
-
-	void clear();
-	bool same_distance_type() const;
-	CDistance* get_distance_instance() const;
-	void set_precomputed_distance(CCustomDistance* distance) const;
-	void unset_precomputed_distance() const;
+	void set_num_runs(index_t nr);
+	void set_num_folds(index_t nf);
+	void set_alpha(index_t alp);
+	void set_measure_matrix(SGMatrix<float64_t> measures);
+	void set_distance(CCustomDistance* distance);
 private:
-	std::vector<std::shared_ptr<CKernel> > m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel> > m_precomputed_kernels;
+	struct terms_t;
+
+	void add_term(terms_t&, float64_t kernel, index_t i, index_t j);
+	float64_t compute_mmd(terms_t&);
+
+	const index_t n_x;
+	const index_t n_y;
+	const index_t num_null_samples;
+	const EStatisticType stype;
+	index_t num_runs;
+	index_t num_folds;
+	float64_t alpha;
+	SGMatrix<float64_t> rejections;
+	std::shared_ptr<CCustomDistance> m_distance;
 };
 
 }
 
 }
 
-#endif // KERNEL_MANAGER_H__
+}
+
+#endif // MULTIKERNEL_PERMUTATION_TEST_CROSS_VALIDATION
