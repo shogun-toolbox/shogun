@@ -65,6 +65,8 @@ class CRegressionLabels : public CDenseLabels
 
 		/** @return object name */
 		virtual const char* get_name() const { return "RegressionLabels"; }
+
+		virtual CLabels* shallow_subset_copy();		
 };
 }
 #endif

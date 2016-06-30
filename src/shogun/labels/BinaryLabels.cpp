@@ -138,3 +138,16 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 
 	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
 }
+
+CLabels* CBinaryLabels::shallow_subset_copy()
+{
+	CLabels* shallow_copy_labels=nullptr;
+	SGVector<float64_t> shallow_copy_vector(m_labels);
+	shallow_copy_labels=new CBinaryLabels(m_labels.size());
+
+	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
+	if (m_subset_stack->has_subsets())
+		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
+	
+	return shallow_copy_labels;
+}	

@@ -116,6 +116,9 @@ public:
 	{
 		return "BinaryLabels";
 	}
+
+	virtual CLabels* shallow_subset_copy();
+	
 };
 }
 #endif
