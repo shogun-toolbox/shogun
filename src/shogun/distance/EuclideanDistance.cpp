@@ -74,8 +74,6 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	else
 		result=casted_rhs->dot(idx_b, casted_lhs, idx_a);
 
-	SG_DEBUG("distance=(%f)+(%f)-2*(%f)\n", m_lhs_squared_norms[idx_a], m_rhs_squared_norms[idx_a], result);
-
 	result=m_lhs_squared_norms[idx_a]+m_rhs_squared_norms[idx_b]-2*result;
 	if (disable_sqrt)
 		return result;
