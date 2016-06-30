@@ -239,7 +239,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	mmd->set_null_approximation_method(NAM_PERMUTATION);
 	mmd->set_num_null_samples(1);
-	mmd->io->set_loglevel(MSG_DEBUG);
+//	mmd->io->set_loglevel(MSG_DEBUG);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);

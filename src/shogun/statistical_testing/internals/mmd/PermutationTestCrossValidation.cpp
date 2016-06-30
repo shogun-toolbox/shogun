@@ -153,9 +153,9 @@ void PermutationTestCrossValidation::operator()(const SGMatrix<T>& km, index_t k
 		k, rejections.num_cols-1);
 
 //	km.display_matrix("kernel_matrix");
-	typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
-	Map<MatrixXt> map(km.data(), km.num_rows, km.num_cols);
-	cout << map << endl;
+//	typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
+//	Map<MatrixXt> map(km.data(), km.num_rows, km.num_cols);
+//	cout << map << endl;
 
 	SGVector<int64_t> dummy_labels_x(n_x);
 	SGVector<int64_t> dummy_labels_y(n_y);
