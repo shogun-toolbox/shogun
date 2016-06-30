@@ -28,41 +28,54 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_EXP_FAMILY__
-#define KERNEL_EXP_FAMILY__
-
 #include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/io/SGIO.h>
 
-namespace shogun
+#include "Base.h"
+
+using namespace shogun;
+using namespace shogun::kernel_exp_family_impl::kernel;
+using namespace Eigen;
+
+index_t Base::get_num_dimensions() const
 {
-
-namespace kernel_exp_family_impl
-{
-class Base;
-};
-
-class CKernelExpFamily : public CSGObject
-{
-public:
-	CKernelExpFamily();
-	CKernelExpFamily(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, float memory_limit_gib=4.0);
-	virtual ~CKernelExpFamily();
-
-	virtual void fit();
-	virtual float64_t log_pdf(SGVector<float64_t> x);
-	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
-	virtual SGVector<float64_t> grad(SGVector<float64_t> x);
-
-	virtual const char* get_name() const { return "KernelExpFamily"; }
-
-	SGVector<float64_t> get_alpha_beta();
-
-protected:
-	kernel_exp_family_impl::Base* m_impl;
-};
-
+	return m_lhs.num_rows;
 }
-#endif // KERNEL_EXP_FAMILY__
+
+index_t Base::get_num_lhs() const
+{
+	return m_lhs.num_cols;
+}
+
+void Base::set_rhs(SGMatrix<float64_t> rhs)
+{
+	m_rhs = rhs;
+}
+
+void Base::set_rhs(SGVector<float64_t> rhs)
+{
+	set_rhs(SGMatrix<float64_t>(rhs));
+}
+
+void Base::set_lhs(SGMatrix<float64_t> lhs)
+{
+	m_lhs = lhs;
+}
+
+void Base::set_lhs(SGVector<float64_t> lhs)
+{
+	set_lhs(SGMatrix<float64_t>(lhs));
+}
+
+index_t Base::get_num_rhs() const
+{
+	return m_rhs.num_cols;
+}
+
+Base::Base()
+{
+}

@@ -28,29 +28,31 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_EXP_FAMILY_NYSTROM_IMPL__
-#define KERNEL_EXP_FAMILY_NYSTROM_IMPL__
+#ifndef KERNEL_EXP_FAMILY_IMPL_NYSTROM__
+#define KERNEL_EXP_FAMILY_IMPL_NYSTROM__
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-#include "KernelExpFamilyImpl.h"
+#include "Base.h"
 
 
 namespace shogun
 {
 
-class KernelExpFamilyNystromImpl : public KernelExpFamilyImpl
+namespace kernel_exp_family_impl
+{
+class Nystrom : public Base
 {
 public :
-	KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-				index_t num_rkhs_basis);
-	KernelExpFamilyNystromImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda,
-			SGVector<index_t> rkhs_basis_inds);
+	Nystrom(SGMatrix<float64_t> data, kernel::Base* kernel,
+			float64_t lambda, index_t num_rkhs_basis);
+	Nystrom(SGMatrix<float64_t> data, kernel::Base* kernel,
+			float64_t lambda, SGVector<index_t> rkhs_basis_inds);
 
-	virtual ~KernelExpFamilyNystromImpl() {};
+	virtual ~Nystrom() {};
 
 	void sub_sample_rkhs_basis(index_t num_rkhs_basis);
 
@@ -58,25 +60,16 @@ public :
 	float64_t compute_xi_norm_2() const;
 	SGVector<float64_t> compute_h() const;
 
-	float64_t difference_component(index_t idx_a, index_t idx_b, index_t i) const;
-	float64_t kernel_hessian_component(const index_t idx_a, index_t idx_b, index_t i, index_t j) const;
-	float64_t kernel_dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
-	float64_t kernel_dx_dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
-	float64_t kernel_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
-	float64_t kernel_dx_dx_component(index_t idx_a, index_t idx_b, index_t i) const;
-	SGVector<float64_t> kernel_dx_i_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
-	SGVector<float64_t> kernel_dx_i_dx_j_component(index_t idx_a, index_t idx_b, index_t i) const;
-
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 
 	std::pair<index_t, index_t> idx_to_ai(index_t idx) const;
+	static std::pair<index_t, index_t> idx_to_ai(index_t idx, index_t D);
 
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
 
-	using KernelExpFamilyImpl::solve_and_store;
-	using KernelExpFamilyImpl::log_pdf;
-	using KernelExpFamilyImpl::grad;
+	using Base::log_pdf;
+	using Base::grad;
 
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
 
@@ -86,6 +79,7 @@ protected:
 protected:
 	SGVector<index_t> m_rkhs_basis_inds;
 };
+};
 
 }
-#endif // KERNEL_EXP_FAMILY_NYSTROM_IMPL__
+#endif // KERNEL_EXP_FAMILY_IMPL_NYSTROM__

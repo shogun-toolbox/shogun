@@ -32,8 +32,10 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
-#include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyImpl.h>
 #include <shogun/io/SGIO.h>
+
+#include "impl/Full.h"
+#include "impl/kernel/Gaussian.h"
 
 using namespace shogun;
 
@@ -51,9 +53,10 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 
-	m_impl = new KernelExpFamilyImpl(data, sigma, lambda);
+	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	m_impl = new kernel_exp_family_impl::Full(data, kernel, lambda);
 
-	auto N =  m_impl->get_num_data_lhs();
+	auto N =  m_impl->get_num_lhs();
 	auto D = m_impl->get_num_dimensions();
 	auto ND = D*N;
 	// size: A matrix, b vetor, all_hessians matrix, h vector, kernel matrix

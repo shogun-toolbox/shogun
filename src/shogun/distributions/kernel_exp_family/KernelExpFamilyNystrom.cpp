@@ -33,7 +33,10 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
-#include <shogun/distributions/kernel_exp_family/impl/KernelExpFamilyNystromImpl.h>
+#include <shogun/distributions/kernel_exp_family/impl/Nystrom.h>
+
+#include "impl/kernel/Gaussian.h"
+
 
 using namespace shogun;
 
@@ -68,13 +71,15 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 
 	}
 
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, rkhs_basis_inds);
+	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	m_impl = new kernel_exp_family_impl::Nystrom(data, kernel, lambda, rkhs_basis_inds);
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 			float64_t sigma, float64_t lambda, index_t num_rkhs_basis) : CKernelExpFamily()
 {
-	m_impl = new KernelExpFamilyNystromImpl(data, sigma, lambda, num_rkhs_basis);
+	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	m_impl = new kernel_exp_family_impl::Nystrom(data, kernel, lambda, num_rkhs_basis);
 }
 
 CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()

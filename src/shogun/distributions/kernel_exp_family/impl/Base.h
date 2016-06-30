@@ -28,41 +28,64 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_EXP_FAMILY__
-#define KERNEL_EXP_FAMILY__
+#ifndef KERNEL_EXP_FAMILY_IMPL_BASE__
+#define KERNEL_EXP_FAMILY_IMPL_BASE__
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <utility>
+
+#include "kernel/Base.h"
 
 namespace shogun
 {
 
 namespace kernel_exp_family_impl
 {
+
+namespace kernel
+{
 class Base;
 };
 
-class CKernelExpFamily : public CSGObject
+class Base
 {
-public:
-	CKernelExpFamily();
-	CKernelExpFamily(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, float memory_limit_gib=4.0);
-	virtual ~CKernelExpFamily();
+public :
+	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda);
+	virtual ~Base();
 
-	virtual void fit();
-	virtual float64_t log_pdf(SGVector<float64_t> x);
-	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
-	virtual SGVector<float64_t> grad(SGVector<float64_t> x);
+	// for evaluation
+	void set_test_data(SGMatrix<float64_t> X);
+	void set_test_data(SGVector<float64_t> x);
 
-	virtual const char* get_name() const { return "KernelExpFamily"; }
+	void fit();
 
-	SGVector<float64_t> get_alpha_beta();
+	float64_t log_pdf(SGVector<float64_t> x);
+	SGVector<float64_t> log_pdf(SGMatrix<float64_t> X);
+
+	SGVector<float64_t> grad(SGVector<float64_t> x);
+
+	SGVector<float64_t> get_alpha_beta() const { return m_alpha_beta; }
+
+	index_t get_num_dimensions() const;
+	index_t get_num_lhs() const;
+	index_t get_num_rhs() const;
+
+	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const=0;
+	virtual float64_t log_pdf(index_t idx_test) const=0;
+	virtual SGVector<float64_t> grad(index_t idx_test) const=0;
 
 protected:
-	kernel_exp_family_impl::Base* m_impl;
+	virtual void solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b);
+
+	kernel::Base* m_kernel;
+	float64_t m_lambda;
+
+	SGVector<float64_t> m_alpha_beta;
+};
 };
 
 }
-#endif // KERNEL_EXP_FAMILY__
+#endif // KERNEL_EXP_FAMILY_IMPL_BASE__

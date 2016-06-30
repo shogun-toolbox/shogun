@@ -28,15 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_EXP_FAMILY_IMPL__
-#define KERNEL_EXP_FAMILY_IMPL__
+#ifndef KERNEL_EXP_FAMILY_IMPL_FULL__
+#define KERNEL_EXP_FAMILY_IMPL_FULL__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <utility>
-
+#include "Base.h"
 
 /* TODO
  *
@@ -71,73 +66,31 @@
 namespace shogun
 {
 
-class KernelExpFamilyImpl
+namespace kernel_exp_family_impl
+{
+
+namespace kernel
+{
+class Base;
+};
+
+class Full : public Base
 {
 public :
-	KernelExpFamilyImpl(SGMatrix<float64_t> data, float64_t sigma, float64_t lambda);
-	virtual ~KernelExpFamilyImpl() {};
+	Full(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda);
+	virtual ~Full() {};
 
-	// for training
-	float64_t kernel(index_t idx_a, index_t idx_b) const;
-	float64_t sq_difference_norm(index_t idx_a, index_t idx_b) const;
-	float64_t sq_difference_norm(const SGVector<float64_t>& diff) const;
-
-	SGVector<float64_t> difference(index_t idx_a, index_t idx_b) const;
-	void difference(index_t idx_a, index_t idx_b, SGVector<float64_t>& result) const;
-
-	SGMatrix<float64_t> kernel_dx_dx_dy(index_t idx_a, index_t idx_b) const;
-	float64_t kernel_dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const;
-
-	SGMatrix<float64_t> kernel_hessian(index_t idx_a, index_t idx_b) const;
-	SGMatrix<float64_t> kernel_hessian_all() const;
-
-	// for evaluation
-	void set_test_data(SGMatrix<float64_t> X);
-	void set_test_data(SGVector<float64_t> x);
-
-	SGVector<float64_t> kernel_dx(index_t a, index_t idx_b) const;
-	SGVector<float64_t> kernel_dx_dx(index_t a, index_t idx_b) const;
-	SGMatrix<float64_t> kernel_dx_i_dx_i_dx_j(index_t a, index_t idx_b) const;
-	SGMatrix<float64_t> kernel_dx_i_dx_j(index_t a, index_t idx_b) const;
-
-	SGVector<float64_t> compute_h() const;
-	float64_t compute_xi_norm_2() const;
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
-	void fit();
-
 	virtual float64_t log_pdf(index_t idx_test) const;
-	float64_t log_pdf(SGVector<float64_t> x);
-	SGVector<float64_t> log_pdf(SGMatrix<float64_t> X);
-
-	SGVector<float64_t> grad(SGVector<float64_t> x);
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
 
-	SGVector<float64_t> get_alpha_beta() const { return m_alpha_beta; }
+	float64_t compute_xi_norm_2() const;
+	SGVector<float64_t> compute_h() const;
 
-	index_t get_num_dimensions() const;
-	index_t get_num_data_lhs() const;
-	index_t get_num_data_rhs() const;
-
-	// old develop code
-	SGMatrix<float64_t> kernel_dx_dx_dy_dy(index_t idx_a, index_t idx_b) const;
-
-protected:
-	virtual void solve_and_store(const SGMatrix<float64_t>& A, const SGVector<float64_t>& b);
-	virtual void precompute();
-
-	SGMatrix<float64_t> m_data_lhs;
-	SGMatrix<float64_t> m_data_rhs;
-
-	float64_t m_sigma;
-	float64_t m_lambda;
-
-	SGVector<float64_t> m_alpha_beta;
-
-	// precomputed quantities
-	SGMatrix<float64_t> m_sq_difference_norms;
-	SGMatrix<float64_t> m_differences;
-
+	using Base::log_pdf;
+	using Base::grad;
+};
 };
 
 }
-#endif // KERNEL_EXP_FAMILY_IMPL__
+#endif // KERNEL_EXP_FAMILY_IMPL_FULL__
