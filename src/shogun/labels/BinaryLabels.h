@@ -119,7 +119,6 @@ public:
 #ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy();
 #endif
-
 };
 }
 #endif
