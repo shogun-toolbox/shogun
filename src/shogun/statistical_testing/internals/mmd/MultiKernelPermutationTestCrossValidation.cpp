@@ -232,16 +232,20 @@ void MultiKernelPermutationTestCrossValidation::operator()(const KernelManager& 
 
 			// transpose the null_samples matrix for faster access
 			MatrixXd transposed_null_samples=null_samples_map.transpose();
+//			cout << transposed_null_samples << endl;
 #pragma omp parallel for
 			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 			{
 				SGVector<float64_t> null_samples_k(transposed_null_samples.col(k).data(), num_null_samples, false);
 				std::sort(null_samples_k.data(), null_samples_k.data()+null_samples_k.size());
+//				null_samples_k.display_vector("null_samples_k");
 				SG_SDEBUG("statistic=%f\n", statistic[k]);
 				float64_t idx=null_samples_k.find_position_to_insert(statistic[k]);
+				SG_SDEBUG("index=%f\n", idx);
 				auto p_value=1.0-idx/num_null_samples;
-				SG_SDEBUG("p-value=%f, rejected=%d\n", p_value, p_value<alpha);
-				rejections(i*num_folds+j, k)=p_value<alpha;
+				bool rejected=p_value<alpha;
+				SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, alpha, rejected);
+				rejections(i*num_folds+j, k)=rejected;
 			}
 		}
 	}
@@ -260,7 +264,7 @@ void MultiKernelPermutationTestCrossValidation::set_num_folds(index_t nf)
 	num_folds=nf;
 }
 
-void MultiKernelPermutationTestCrossValidation::set_alpha(index_t alp)
+void MultiKernelPermutationTestCrossValidation::set_alpha(float64_t alp)
 {
 	alpha=alp;
 }

@@ -258,7 +258,7 @@ void PermutationTestCrossValidation::set_num_folds(index_t nf)
 	num_folds=nf;
 }
 
-void PermutationTestCrossValidation::set_alpha(index_t alp)
+void PermutationTestCrossValidation::set_alpha(float64_t alp)
 {
 	alpha=alp;
 }

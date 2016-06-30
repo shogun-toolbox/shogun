@@ -56,7 +56,7 @@ public:
 	template <typename T> void operator()(const SGMatrix<T>& km, index_t k);
 	void set_num_runs(index_t nr);
 	void set_num_folds(index_t nf);
-	void set_alpha(index_t alp);
+	void set_alpha(float64_t alp);
 	void set_measure_matrix(SGMatrix<float64_t> measures);
 private:
 	struct terms_t;
