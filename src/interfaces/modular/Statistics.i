@@ -8,7 +8,8 @@
  */
 
 /* These functions return new Objects */
-%newobject shogun::CTwoDistributionTest::compute_distance();
+%newobject shogun::CTwoDistributionTest::compute_distance(CDistance*);
+%newobject shogun::CTwoDistributionTest::compute_joint_distance(CDistance*);
 
 /* Remove C Prefix */
 %rename(HypothesisTest) CHypothesisTest;
