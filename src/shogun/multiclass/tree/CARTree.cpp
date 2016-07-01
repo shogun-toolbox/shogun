@@ -580,14 +580,14 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	int32_t best_attribute=-1;
 	float64_t best_threshold=0;
 	
-	SGVector<int32_t> indices_mask;
+	SGVector<int64_t> indices_mask;
 	SGVector<int32_t> count_indices(mat.num_rows);
 	count_indices.zero();
 	SGVector<int32_t> dupes(num_vecs);
 	dupes.range_fill();
 	if (m_pre_sort)
 	{
-		indices_mask = SGVector<int32_t>(mat.num_rows);
+		indices_mask = SGVector<int64_t>(mat.num_rows);
 		indices_mask.set_const(-1);
 		for(int32_t j=0;j<active_indices.size();j++)
 		{
@@ -603,8 +603,6 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 	{
 		SGVector<float64_t> feats(num_vecs);
 		SGVector<index_t> sorted_args(num_vecs);
-		SGVector<int32_t> temp_count_indices(count_indices.size());
-		memcpy(temp_count_indices.vector, count_indices.vector, sizeof(int32_t)*count_indices.size());
 
 		if (m_pre_sort)
 		{
@@ -615,12 +613,13 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 			{
 				if (indices_mask[sorted_indices[j]]>=0)
 				{
-					while(temp_count_indices[sorted_indices[j]]>0)
+					int32_t count_index = count_indices[sorted_indices[j]];
+					while(count_index>0)
 					{
 						feats[count]=temp_col[j];
 						sorted_args[count]=indices_mask[sorted_indices[j]];
 						++count;
-						--temp_count_indices[sorted_indices[j]];
+						--count_index;
 					}
 					if (count==num_vecs)
 						break;
