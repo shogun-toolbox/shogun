@@ -127,7 +127,7 @@ class Translator:
                     targetProgram += self.translateStatement(line["Statement"])
                 elif "Comment" in line:
                     targetProgram += self.translateComment(line["Comment"])
-            except TranslationFailure as e:
+            except Exception as e:
                 raise TranslationFailure("Translation failed on line " +
                                          str(line["__PARSER_INFO_LINE_NO"]) +
                                          ". Error: " + str(e))
@@ -209,67 +209,53 @@ class Translator:
             # Dependency strings are optional so we just return empty string
             return ""
 
-        # Three types of dependencies: a list of all classes used,
-        # a list of all explicitly constructed classes,
-        # and list of all enums used. All are optional.
-        allClassDependencies = ""
-        interfacedClassDependencies = ""
-        enumDependencies = ""
-        dependenciesExist = False
+        dependencies = set()
 
-        if len(allClasses) > 0 and "AllClassDependencies" in self.targetDict["Dependencies"]:
-            dependenciesExist = True
-            template = Template(self.targetDict["Dependencies"]["AllClassDependencies"])
-            allClassDependencies = template.substitute(classlist=self.seperatedClassDependencies(allClasses))
+        if self.targetDict["Dependencies"].get("IncludeAllClasses"):
+            dependencies = dependencies.union(allClasses)
+        if self.targetDict["Dependencies"].get("IncludeInterfacedClasses"):
+            dependencies = dependencies.union(interfacedClasses)
+        if self.targetDict["Dependencies"].get("IncludeEnums"):
+            dependencies = dependencies.union(enums)
 
-        if len(interfacedClasses) > 0 and "InterfacedClassDependencies" in self.targetDict["Dependencies"]:
-            dependenciesExist = True
-            template = Template(self.targetDict["Dependencies"]["InterfacedClassDependencies"])
-            interfacedClassDependencies = template.substitute(classlist=self.seperatedClassDependencies(interfacedClasses))
+        translations = set(map(self.translateDependencyElement, dependencies))
 
-        if len(enums) > 0 and "EnumDependencies" in self.targetDict["Dependencies"]:
-            dependenciesExist = True
-            template = Template(self.targetDict["Dependencies"]["EnumDependencies"])
-            enumDependencies = template.substitute(enums=self.seperatedEnumDependencies(enums))
+        separator = self.targetDict["Dependencies"]["DependencyListSeparator"]
+        return reduce(lambda l, r: r if l == "" else l+separator+r,
+                      translations,
+                      "")
 
-        if not dependenciesExist:
-            return ""
+    def translateDependencyElement(self, dependencyElement):
+        """ Translates a dependency element
+        Args:
+            dependencyElement: object like "RealFeatures"
+                               or ("LIBLINEAR_SOLVER_TYPE", "L2R_L2LOSS_SVC")
+        """
+        dependencyRules = self.targetDict["Dependencies"]
+        elementTemplate = Template(dependencyRules["DependencyListElement"])
 
-        allDependenciesTemplate = Template(self.targetDict["Dependencies"]["AllDependencies"])
-        return allDependenciesTemplate.substitute(allClassDependencies=allClassDependencies,
-                                                  interfacedClassDependencies=interfacedClassDependencies,
-                                                  enumDependencies=enumDependencies)
+        typeName = dependencyElement
+        value = ""
+        includePath = ""
 
-    def seperatedClassDependencies(self, classes):
-        if len(classes) == 0:
-            return ""
+        # If enum
+        if isinstance(dependencyElement, tuple):
+            typeName = dependencyElement[0]
+            value = dependencyElement[1]
 
-        dependencyList = list(classes)
+            if "DependencyListElementEnum" in dependencyRules:
+                elementTemplate = Template(dependencyRules["DependencyListElementEnum"])
 
-        # Elements are just formatted as their names as default
-        elementTemplate = Template("$className")
-        if "DependencyListElementClass" in self.targetDict["Dependencies"]:
-            elementTemplate = Template(self.targetDict["Dependencies"]["DependencyListElementClass"])
+        elif "DependencyListElementClass" in dependencyRules:
+            elementTemplate = Template(dependencyRules["DependencyListElementClass"])
 
-        # Retrieve list separator
-        seperator = self.targetDict["Dependencies"]["DependencyListSeparator"]
 
-        # separated dependencies
-        csdependencies = ""
-        for i, className in enumerate(dependencyList):
+        if "$includePath" in elementTemplate.template:
+            includePath = self.getIncludePathForClass(typeName)
 
-            includePath = None
-            if '$includePath' in elementTemplate.template:
-                # C++ needs the full include path
-                includePath = self.getIncludePathForClass(className)
-
-            csdependencies += elementTemplate.substitute(className=className,
-                                                         includePath=includePath)
-
-            if i < len(dependencyList) - 1:
-                csdependencies += seperator
-
-        return csdependencies
+        return elementTemplate.substitute(typeName=typeName,
+                                          value=value,
+                                          includePath=includePath)
 
     def getIncludePathForClass(self, type_):
         translatedType = self.translateType({"ObjectType": type_})
@@ -286,29 +272,6 @@ class Translator:
 
         raise TranslationFailure('Failed to obtain include path for %s' %
                                  (' or '.join(variants)))
-
-    def seperatedEnumDependencies(self, enums):
-        if len(enums) == 0:
-            return ""
-
-        dependencyList = list(enums)
-
-        # Enums are formatted as their value by default
-        elementTemplate = Template("$value")
-        if "DependencyListElementEnum" in self.targetDict["Dependencies"]:
-            elementTemplate = Template(self.targetDict["Dependencies"]["DependencyListElementEnum"])
-
-        # Retrieve list separator
-        seperator = self.targetDict["Dependencies"]["DependencyListSeparator"]
-
-        # separated dependencies
-        sdependencies = ""
-        for i, x in enumerate(dependencyList):
-            sdependencies += elementTemplate.substitute(type=x[0], value=x[1])
-            if i < len(dependencyList) - 1:
-                sdependencies += seperator
-
-        return sdependencies
 
     def translateStatement(self, statement):
         """ Translate statement AST
@@ -355,7 +318,7 @@ class Translator:
             template = Template(self.targetDict["Init"]["Copy"])
             exprString = self.translateExpr(initialisation["Expr"])
             return template.substitute(name=nameString,
-                                       type=typeString,
+                                       typeName=typeString,
                                        expr=exprString)
         elif list(initialisation.keys())[0] == "ArgumentList":
             template = Template(self.targetDict["Init"]["Construct"])
@@ -367,7 +330,7 @@ class Translator:
 
             argsString = self.translateArgumentList(initialisation["ArgumentList"])
             return template.substitute(name=nameString,
-                                       type=typeString,
+                                       typeName=typeString,
                                        arguments=argsString)
 
     def translateAssign(self, assign):
@@ -429,7 +392,7 @@ class Translator:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
 
-            return template.substitute(type=type_,
+            return template.substitute(typeName=type_,
                                        method=method,
                                        arguments=translatedArgsList)
 
@@ -453,7 +416,7 @@ class Translator:
 
         elif key == "Enum":
             template = Template(self.targetDict["Expr"]["Enum"])
-            return template.substitute(type=expr[key][0]["Identifier"],
+            return template.substitute(typeName=expr[key][0]["Identifier"],
                                        value=expr[key][1]["Identifier"])
 
         raise TranslationFailure("Unknown expression type: " + key)
@@ -481,7 +444,7 @@ class Translator:
         else:
             template = Template(self.targetDict["Type"]["Default"])
 
-        return template.substitute(type=type[typeKey])
+        return template.substitute(typeName=type[typeKey])
 
     def translateArgumentList(self, argumentList):
         """ Translate argument list AST

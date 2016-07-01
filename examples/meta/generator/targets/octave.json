@@ -3,12 +3,12 @@
     "Statement": "$statement;\n",
     "Comment": "%$comment\n",
     "Init": {
-        "Construct": "$name = $type($arguments)",
+        "Construct": "$name = $typeName($arguments)",
         "Copy": "$name = $expr"
     },
     "Assign": "$lhs = $expr",
     "Type": {
-        "Default": "$type"
+        "Default": "$typeName"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
@@ -18,7 +18,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
-        "StaticCall": "$type.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

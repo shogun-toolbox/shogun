@@ -1,15 +1,15 @@
 {
     "Program": "#include <shogun/base/init.h>\n#include <shogun/base/some.h>\n${dependencies}\n\nusing namespace shogun;\n\nint main(int, char*[])\n{\ninit_shogun_with_defaults();\n\n$program\nexit_shogun();\nreturn 0;\n}\n",
     "Dependencies": {
-        "AllClassDependencies": "$classlist",
-        "AllDependencies": "$allClassDependencies",
-        "DependencyListSeparator": "\n",
-        "DependencyListElementClass": "#include <$includePath>"
+        "IncludeAllClasses": true,
+        "IncludeEnums": true,
+        "DependencyListElement": "#include <$includePath>",
+        "DependencyListSeparator": "\n"
     },
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
-        "Construct": "auto $name = some<C$type>($arguments)",
+        "Construct": "auto $name = some<C$typeName>($arguments)",
         "Copy": "auto $name = $expr"
     },
     "Assign": "$lhs = $expr",
@@ -17,7 +17,7 @@
         "RealFeatures": "DenseFeatures<float64_t>",
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
         "StringCharFeatures": "CStringFeatures<char>",
-        "Default": "$type",
+        "Default": "$typeName",
         "bool": "bool",
         "string": "char*",
         "int": "int32_t",
@@ -58,7 +58,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object->$method($arguments)",
-        "StaticCall": "C$type::$method($arguments)",
+        "StaticCall": "C$typeName::$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },
@@ -67,7 +67,6 @@
         "Matrix": "$identifier($indices)",
         "ZeroIndexed": true
     },
-    "ZeroIndexed": true,
     "Print": "SG_SPRINT($expr)",
     "OutputDirectoryName": "cpp",
     "FileExtension": ".cpp"
