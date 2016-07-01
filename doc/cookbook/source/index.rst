@@ -67,3 +67,12 @@ Distance
    :glob:
 
    examples/distance/**
+
+Neural Networks
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   examples/neural_nets/**
