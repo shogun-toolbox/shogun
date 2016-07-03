@@ -544,7 +544,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* first step: get all names in the sets */
-	set<string> names;
+	std::set<string> names;
 
 	for (index_t j=0;
 			j<sets->get_num_elements(); ++j)
@@ -568,7 +568,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 	}
 
 	SG_SDEBUG("all names\n")
-	for (set<string>::iterator it=names.begin(); it!=names.end(); ++it)
+	for (std::set<string>::iterator it=names.begin(); it!=names.end(); ++it)
 		SG_SDEBUG("\"%s\"\n", (*it).c_str())
 
 	/* only do stuff if there are names */
@@ -601,7 +601,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 
 		/* now iterate over the remaining names and build products */
 		SG_SDEBUG("building products with remaining trees:\n")
-		set<string>::iterator it=names.begin();
+		std::set<string>::iterator it=names.begin();
 		for (++it; it!=names.end(); ++it)
 		{
 			SG_SDEBUG("processing \"%s\"\n", (*it).c_str())

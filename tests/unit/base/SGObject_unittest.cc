@@ -19,6 +19,9 @@
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
+#include <../tests/unit/base/MockObject.h>
+#include <shogun/base/some.h>
 #include <pthread.h>
 #include <gtest/gtest.h>
 
@@ -311,3 +314,73 @@ TEST(SGObject,parameter_hash_changed)
 	SG_UNREF(inf);
 }
 #endif //USE_GPL_SHOGUN
+
+TEST(SGObject, tags_set_get_string_sgvector)
+{
+	auto obj = some<CMockObject>();
+	auto vec = SGVector<float64_t>(1);
+	vec[0] = 1;
+
+	obj->set("vector", vec);
+	EXPECT_THROW(obj->set("foo", vec), ShogunException);
+
+	auto retr = obj->get<SGVector<float64_t> >("vector");
+
+	EXPECT_EQ(retr.vlen, vec.vlen);
+	EXPECT_EQ(vec[0], retr[0]);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+}
+
+TEST(SGObject, tags_set_get_tag_sgvector)
+{
+	auto obj = some<CMockObject>();
+	auto vec = SGVector<float64_t>(1);
+	vec[0] = 1;
+	float64_t bar = 1.0;
+
+	obj->set(Tag<SGVector<float64_t> >("vector"), vec);
+	EXPECT_THROW(obj->set(Tag<SGVector<float64_t> >("foo"), vec), ShogunException);
+	EXPECT_THROW(obj->set(Tag<float64_t>("vector"), bar), ShogunException);
+
+	auto retr = obj->get<SGVector<float64_t> >("vector");
+
+	EXPECT_EQ(retr.vlen, vec.vlen);
+	EXPECT_EQ(vec[0], retr[0]);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+}
+
+TEST(SGObject, tags_set_get_int)
+{
+	auto obj = some<CMockObject>();
+
+	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
+	obj->set("int", 10);
+	EXPECT_EQ(obj->get(Tag<int32_t>("int")), 10);
+	EXPECT_THROW(obj->get<float64_t>("int"), ShogunException);
+	EXPECT_THROW(obj->get(Tag<float64_t>("int")), ShogunException);
+	EXPECT_EQ(obj->get<int>("int"), 10);
+}
+
+TEST(SGObject, tags_has)
+{	
+	auto obj = some<CMockObject>();
+
+	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
+	EXPECT_EQ(obj->has("int"), true);
+	EXPECT_EQ(obj->has<float64_t>("int"), false);
+	EXPECT_EQ(obj->has<int32_t>("int"), true);
+	
+	obj->set("int", 10);
+	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
+	EXPECT_EQ(obj->has("int"), true);
+	EXPECT_EQ(obj->has<float64_t>("int"), false);
+	EXPECT_EQ(obj->has<int32_t>("int"), true);
+
+	EXPECT_EQ(obj->has("foo"), false);
+	EXPECT_EQ(obj->has<int32_t>("foo"), false);
+	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
+}

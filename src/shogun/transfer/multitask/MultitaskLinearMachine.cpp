@@ -89,7 +89,7 @@ void CMultitaskLinearMachine::post_lock(CLabels* labels, CFeatures* features_)
 	m_tasks_indices.clear();
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		set<index_t> indices_set;
+		std::set<index_t> indices_set;
 		SGVector<index_t> task_indices = tasks_indices[i];
 		for (int32_t j=0; j<task_indices.vlen; j++)
 			indices_set.insert(task_indices[j]);
