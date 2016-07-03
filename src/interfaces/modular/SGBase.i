@@ -107,6 +107,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
+ #include <shogun/base/class_list.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
@@ -325,6 +326,7 @@ namespace std {
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+%include <shogun/base/class_list.h>
 
 #ifdef SWIGPYTHON
 namespace shogun
@@ -508,3 +510,7 @@ copy_reg._reconstructor=_sg_reconstructor
 
 
 #endif /* SWIGPYTHON  */
+
+using namespace shogun;
+
+%template(createKernel) create<CKernel>;

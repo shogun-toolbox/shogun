@@ -12,7 +12,6 @@
 #define __SG_CLASS_LIST_H__
 
 #include <shogun/lib/config.h>
-
 #include <shogun/lib/DataType.h>
 
 namespace shogun {
@@ -24,6 +23,20 @@ namespace shogun {
 	 */
 	CSGObject* new_sgserializable(const char* sgserializable_name,
 										EPrimitiveType generic);
+
+    /** Creates an instance of a class identified by input name
+     * that is wrapped with a shared pointer like structure @ref Some
+     *
+     * @param name name of class
+     * @param type type for template class
+     * @return Some object that holds created instance of @ref T
+     */
+    template<class T>
+    T* create(const char* name,
+        EPrimitiveType type=PT_NOT_GENERIC)
+    {
+        return dynamic_cast<T*>(new_sgserializable(name, type));
+    }
 }
 
 #endif /* __SG_CLASS_LIST_H__  */
