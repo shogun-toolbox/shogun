@@ -3,12 +3,12 @@
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = Modshogun::$type.new $arguments",
+        "Construct": "$name = Modshogun::$typeName.new $arguments",
         "Copy": "$name = $expr"
     },
     "Assign": "$lhs = $expr",
     "Type": {
-        "Default": "$type"
+        "Default": "$typeName"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
@@ -18,7 +18,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
-        "StaticCall": "Modshogun::$type.$method $arguments",
+        "StaticCall": "Modshogun::$typeName.$method $arguments",
         "Identifier": "$identifier",
         "Enum":"Modshogun::$value"
     },

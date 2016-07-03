@@ -38,7 +38,12 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
     targets = []
     for target in os.listdir(targetsDir):
         # Ignore targets not in includedTargets
-        if includedTargets and not os.path.basename(target).split(".")[0] in includedTargets:
+        fileName = os.path.basename(target).split(".")[0]
+        fileExtension = os.path.basename(target).split(".")[1]
+        if includedTargets and not fileName in includedTargets:
+            continue
+
+        if fileExtension != "json":
             continue
 
         translate_file = os.path.join(targetsDir, target)
@@ -47,8 +52,8 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
             try:
                 targets.append(json.load(tFile))
             except Exception as err:
-                print("Error loading file: %s\n%s" % (translate_file, err))
-                raise err
+                print("Error loading file: {}\n{}".format(translate_file, err))
+                raise
 
     # Translate each example
     for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):

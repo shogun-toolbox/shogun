@@ -1,16 +1,17 @@
 {
-    "Program": "import numpy as np\n$dependencies$program",
+    "Program": "import numpy as np\n$dependencies\n\n$program",
     "Dependencies": {
-        "AllDependencies": "$interfacedClassDependencies$enumDependencies\n",
-        "InterfacedClassDependencies": "from modshogun import $classlist\n",
-        "EnumDependencies": "from modshogun import $enums\n",
-        "DependencyListElementEnum": "$value",
-        "DependencyListSeparator": ", "
+        "IncludeAllClasses": false,
+        "IncludeInterfacedClasses": true, 
+        "IncludeEnums": true,
+        "DependencyListElement": "from modshogun import $typeName",
+        "DependencyListElementEnum": "from modshogun import $value",
+        "DependencyListSeparator": "\n"
     },
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = $type($arguments)",
+        "Construct": "$name = $typeName($arguments)",
         "Copy": "$name = $expr",
         "BoolVector": "$name = np.zeros( ($arguments), dtype='bool')",
         "CharVector": "$name = np.zeros( ($arguments), dtype='|S1')",
@@ -35,7 +36,7 @@
     },
     "Assign": "$lhs = $expr",
     "Type": {
-        "Default": "$type"
+        "Default": "$typeName"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
@@ -45,7 +46,7 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
-        "StaticCall": "$type.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

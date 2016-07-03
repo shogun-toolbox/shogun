@@ -3,12 +3,12 @@
     "Statement": "$statement;\n",
     "Comment": "//$comment\n",
     "Init": {
-        "Construct": "$type $name = new $type($arguments)",
-        "Copy": "$type $name = $expr"
+        "Construct": "$typeName $name = new $typeName($arguments)",
+        "Copy": "$typeName $name = $expr"
     },
     "Assign": "$lhs = $expr",
     "Type": {
-        "Default": "$type",
+        "Default": "$typeName",
         "bool": "bool",
         "string": "String",
         "int": "int",
@@ -47,9 +47,9 @@
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
-        "StaticCall": "$type.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"$type.$value"
+        "Enum":"$typeName.$value"
     },
     "ElementAccess": {
         "Vector": "$identifier[$indices]",
