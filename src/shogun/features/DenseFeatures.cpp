@@ -636,6 +636,21 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
 	return result;
 }
 
+template<class ST>
+CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
+{
+	CFeatures* shallow_copy_features=nullptr;
+	
+	SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_features, num_vectors);
+	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
+	shallow_copy_features=new CDenseFeatures<ST>(shallow_copy_matrix);
+	SG_REF(shallow_copy_features);
+	if (m_subset_stack->has_subsets())
+		shallow_copy_features->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
+	
+	return shallow_copy_features;
+}
+
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
 		ST* target)
 {

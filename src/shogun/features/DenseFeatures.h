@@ -515,6 +515,10 @@ public:
 	 */
 	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
 
+#ifndef SWIG // SWIG should skip this part
+	virtual CFeatures* shallow_subset_copy();
+#endif
+
 	/** @return object name */
 	virtual const char* get_name() const { return "DenseFeatures"; }
 
