@@ -8,38 +8,55 @@ RealFeatures features_q(f_features_q)
 
 #![create_instance]
 QuadraticTimeMMD mmd(features_p, features_q)
-GaussianKernel kernel()
+GaussianKernel kernel(10, 1)
 mmd.set_kernel(kernel)
-Real alpha = 0.05
+real alpha = 0.05
 #![create_instance]
 
-#![estimate_mmd_unbiased]
-mmd.set_statistic_type(ST_UNBIASED_FULL)
-Real statistic_unbiased = mmd.compute_statistic()
-#![estimate_mmd_unbiased]
+#![estimate_mmd]
+mmd.set_statistic_type(enum EStatisticType.ST_BIASED_FULL)
+real statistic = mmd.compute_statistic()
+#![estimate_mmd]
 
-#![estimate_mmd_biased]
-mmd.set_statistic_type(ST_BIASED_FULL)
-Real statistic_biased = mmd.compute_statistic()
-#![estimate_mmd_biased]
-
-#![perform_test_permutation]
-mmd.set_null_approximation_method(NAM_PERMUTATION)
+#![perform_test]
+mmd.set_null_approximation_method(enum ENullApproximationMethod.NAM_PERMUTATION)
 mmd.set_num_null_samples(200)
-Real threshold_permutation = mmd.compute_threshold(alpha)
-Real p_value_permutation = mmd.compute_p_value(statistic_biased)
-#![perform_test_permutation]
+real threshold = mmd.compute_threshold(alpha)
+real p_value = mmd.compute_p_value(statistic)
+#![perform_test]
 
-#![perform_test_spectrum]
-mmd.set_null_approximation_method(NAM_MMD2_SPECTRUM)
-mmd.set_num_null_samples(200)
-mmd.spectrum_set_num_eigenvalues(5)
-Real threshold_spectrum = mmd.compute_threshold(alpha)
-Real p_value_spectrum = mmd.compute_p_value(statistic_biased)
-#![perform_test_spectrum]
+#![add_kernels]
+GaussianKernel kernel1(10, 0.1)
+GaussianKernel kernel2(10, 1)
+GaussianKernel kernel3(10, 10)
+mmd.add_kernel(kernel1)
+mmd.add_kernel(kernel2)
+mmd.add_kernel(kernel3)
+#![add_kernels]
 
-#![perform_test_gamma]
-mmd.set_null_approximation_method(NAM_MMD2_GAMMA)
-Real threshold_gamma = mmd.compute_threshold(alpha)
-Real p_value_gamma = mmd.compute_p_value(statistic_biased)
-#![perform_test_gamma]
+#![enable_train_test_mode]
+mmd.set_train_test_mode(true)
+mmd.set_train_test_ratio(1)   
+#![enable_train_test_mode]
+
+#![select_kernel_single]
+int num_runs = 1
+int num_folds = 3
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha)
+mmd.select_kernel()
+GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
+real width = learnt_kernel_single.get_width()
+#![select_kernel_single]
+
+#![select_kernel_combined]
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_MMD, true)
+mmd.select_kernel()
+CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
+RealVector weights = learnt_kernel_combined.get_subkernel_weights()
+#![select_kernel_combined]
+
+#![perform_test_optimized]
+# TODO fix these lines execution
+real statistic_optimized = mmd.compute_statistic()
+real p_value_optimized = mmd.compute_p_value(statistic)
+#![perform_test_optimized]

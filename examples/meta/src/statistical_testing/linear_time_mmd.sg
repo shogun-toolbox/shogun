@@ -1,16 +1,15 @@
-#![create_features]
 GaussianBlobsDataGenerator features_p()
 GaussianBlobsDataGenerator features_q()
-#![create_features]
 
 #![create_instance]
 LinearTimeMMD mmd()
-GaussianKernel kernel()
+GaussianKernel kernel(10, 1)
 mmd.set_kernel(kernel)
 mmd.set_p(features_p)
 mmd.set_q(features_q)
-mmd.set_num_samples_p(100)
-mmd.set_num_samples_q(100)
+mmd.set_num_samples_p(1000)
+mmd.set_num_samples_q(1000)
+real alpha = 0.05
 #![create_instance]
 
 #![set_burst]
@@ -18,15 +17,43 @@ mmd.set_num_blocks_per_burst(1000)
 #![set_burst]
 
 #![estimate_mmd]
-Real statistic = mmd.compute_statistic()
+real statistic = mmd.compute_statistic()
 #![estimate_mmd]
 
-#![perform_test_threshold]
-Real alpha = 0.05
-Real threshold = mmd.compute_threshold(alpha)
-#![perform_test_threshold]
+#![perform_test]
+real threshold = mmd.compute_threshold(alpha)
+real p_value = mmd.compute_p_value(statistic)
+#![perform_test]
 
-#![perform_test_p_value]
-Real p_value = mmd.compute_p_value(statistic)
-#![perform_test_p_value]
+#![add_kernels]
+GaussianKernel kernel1(10, 0.1)
+GaussianKernel kernel2(10, 1)
+GaussianKernel kernel3(10, 10)
+mmd.add_kernel(kernel1)
+mmd.add_kernel(kernel2)
+mmd.add_kernel(kernel3)
+#![add_kernels]
 
+#![enable_train_test_mode]
+mmd.set_train_test_mode(true)
+mmd.set_train_test_ratio(1)
+#![enable_train_test_mode]
+
+#![select_kernel_single]
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER)
+mmd.select_kernel()
+GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
+real width = learnt_kernel_single.get_width()
+#![select_kernel_single]
+
+#![select_kernel_combined]
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER, true)
+mmd.select_kernel()
+CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
+RealVector weights = learnt_kernel_combined.get_subkernel_weights()
+#![select_kernel_combined]
+
+#![perform_test_optimized]
+real statistic_optimized = mmd.compute_statistic()
+real p_value_optimized = mmd.compute_p_value(statistic)
+#![perform_test_optimized]
