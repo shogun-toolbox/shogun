@@ -332,11 +332,14 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
+#ifndef SWIG // SWIG should skip this part
 		virtual CFeatures* shallow_subset_copy() 
 		{ 
 			SG_SNOTIMPLEMENTED;
 			return NULL;
 		}
+#endif
+
 	private:
 		void init();
 

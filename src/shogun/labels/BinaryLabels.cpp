@@ -139,7 +139,6 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
 }
 
-#ifndef SWIG // SWIG should skip this part
 CLabels* CBinaryLabels::shallow_subset_copy()
 {
 	CLabels* shallow_copy_labels=nullptr;
@@ -153,4 +152,3 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 	
 	return shallow_copy_labels;
 }
-#endif

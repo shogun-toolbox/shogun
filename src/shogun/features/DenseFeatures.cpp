@@ -636,7 +636,6 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
 	return result;
 }
 
-#ifndef SWIG // SWIG should skip this part
 template<class ST>
 CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 {
@@ -651,7 +650,6 @@ CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 	
 	return shallow_copy_features;
 }
-#endif
 
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
 		ST* target)

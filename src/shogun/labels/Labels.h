@@ -123,11 +123,13 @@ public:
 	 */
 	virtual SGVector<float64_t> get_values();
 
+#ifndef SWIG // SWIG should skip this part
 	virtual CLabels* shallow_subset_copy()
 	{
 		SG_SNOTIMPLEMENTED;
 		return NULL;
 	}
+#endif
 
 private:
 	void init();

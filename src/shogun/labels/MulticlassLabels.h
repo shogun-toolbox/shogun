@@ -123,8 +123,9 @@ class CMulticlassLabels : public CDenseLabels
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
-		
+#ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy();
+#endif
 
 	private:
 		/** initialises and register parameters */

@@ -25,7 +25,6 @@ ELabelType CRegressionLabels::get_label_type() const
 	return LT_REGRESSION;
 }
 
-#ifndef SWIG // SWIG should skip this part
 CLabels* CRegressionLabels::shallow_subset_copy()
 {
 	CLabels* shallow_copy_labels=nullptr;
@@ -39,4 +38,3 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 	
 	return shallow_copy_labels;
 }
-#endif
