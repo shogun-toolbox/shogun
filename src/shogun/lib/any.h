@@ -163,13 +163,13 @@ namespace shogun
         struct Empty;
 
         /** Constructor */
-        Any() : policy(selectPolicy<Empty>()), storage(nullptr)
+        Any() : policy(select_policy<Empty>()), storage(nullptr)
         {
         }
 
         /** Constructor to copy value */
         template <typename T>
-        explicit Any(const T& v) : policy(selectPolicy<T>()), storage(nullptr)
+        explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
         {
             policy->set(&storage, &v);
         }
@@ -218,7 +218,7 @@ namespace shogun
         template <typename T>
         T& as() const
         {
-            if (sameType<T>())
+            if (same_type<T>())
             {
                 return *(reinterpret_cast<T*>(storage));
             } 
@@ -231,14 +231,14 @@ namespace shogun
 
         /** @return true if type is same. */
         template <typename T>
-        inline bool sameType() const
+        inline bool same_type() const
         {
-            return (policy == selectPolicy<T>()) || sameTypeFallback<T>();
+            return (policy == select_policy<T>()) || same_type_fallback<T>();
         }
 
         /** @return true if type-id is same. */
         template <typename T>
-        bool sameTypeFallback() const
+        bool same_type_fallback() const
         {
             return policy->matches(typeid(T));
         }
@@ -246,11 +246,11 @@ namespace shogun
         /** @return true if Any object is empty. */
         bool empty() const
         {
-            return sameType<Empty>();
+            return same_type<Empty>();
         }
     private:
         template <typename T>
-        static BaseAnyPolicy* selectPolicy()
+        static BaseAnyPolicy* select_policy()
         {
             typedef PointerValueAnyPolicy<T> Policy;
             static Policy policy;

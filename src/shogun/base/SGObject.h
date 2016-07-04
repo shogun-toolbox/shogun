@@ -315,7 +315,7 @@ public:
 		if(!has_with_base_tag(tag))
 			return false;
 		const Any value = get_with_base_tag(tag);
-		return value.sameType<T>();
+		return value.same_type<T>();
 	}
 
 	/** Setter for a class parameter, identified by a Tag.
@@ -340,7 +340,7 @@ public:
 		else
 		{
 			SG_ERROR("\"%s\" does not have a parameter with name \"%s\".\n",
-				_tag.name().c_str(), get_name());
+				get_name(), _tag.name().c_str());
 		}
 	}
 

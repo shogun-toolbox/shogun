@@ -75,17 +75,13 @@ namespace shogun
             return *this;
         }
         
-        /** Returns name of Tag
-         * @return name
-         */
+        /** @return name of Tag */
         inline std::string name() const
         {
             return m_name;
         }
 
-        /** Returns hash of Tag
-         * @return hash
-         */
+        /** @return hash of Tag */
         inline std::size_t hash() const
         {
             return m_hash;
