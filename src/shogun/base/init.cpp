@@ -23,7 +23,6 @@
 #include <string>
 #include <stdlib.h>
 #include <string.h>
-
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
@@ -40,9 +39,7 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
-#ifdef HAVE_CXX11
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
-#endif
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -72,10 +69,9 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
-#ifdef HAVE_CXX11
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
-#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -195,14 +191,12 @@ namespace shogun
 		SG_REF(sg_rand);
 		return sg_rand;
 	}
-
-#ifdef HAVE_CXX11
+#ifndef SWIG // SWIG should skip this part
 	SGLinalg* get_global_linalg()
 	{
 		return sg_linalg.get();
 	}
 #endif
-
 	void init_from_env()
 	{
 		char* env_log_val = NULL;

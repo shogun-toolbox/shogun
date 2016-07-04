@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,36 +27,66 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
+ * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/mathematics/linalg/CPUVector.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/mathematics/linalg/GPUMemoryBase.h>
+#include <memory>
 
-#ifdef HAVE_CXX11
+#ifndef LINALG_BACKEND_GPU_BASE_H__
+#define LINALG_BACKEND_GPU_BASE_H__
 
 namespace shogun
+{
 
+/** @brief Base interface of generic GPU linalg methods
+ * and generic GPU memory transfer methods.
+ */
+class LinalgBackendGPUBase : public LinalgBackendBase
 {
-template <class T>
-CPUVector<T>::CPUVector():CPUptr(nullptr), vlen(0)
-{
+public:
+	/**
+	 * Wrapper method of Transferring data to GPU memory.
+	 *
+	 * @see LinalgBackendBase::to_gpu
+	 */
+	#define BACKEND_GENERIC_TO_GPU(Type) \
+	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>&) const = 0;\
+
+	BACKEND_GENERIC_TO_GPU(char);
+	BACKEND_GENERIC_TO_GPU(uint8_t);
+	BACKEND_GENERIC_TO_GPU(int16_t);
+	BACKEND_GENERIC_TO_GPU(uint16_t);
+	BACKEND_GENERIC_TO_GPU(int32_t);
+	BACKEND_GENERIC_TO_GPU(uint32_t);
+	BACKEND_GENERIC_TO_GPU(float32_t);
+	BACKEND_GENERIC_TO_GPU(float64_t);
+	#undef BACKEND_GENERIC_TO_GPU
+
+	/**
+	 * Wrapper method of fetching data from GPU memory.
+	 *
+	 * @see LinalgBackendBase::from_gpu
+	 */
+	#define BACKEND_GENERIC_FROM_GPU(Type) \
+	virtual void from_gpu(const SGVector<Type>&, Type* data) const = 0;\
+
+	BACKEND_GENERIC_FROM_GPU(char);
+	BACKEND_GENERIC_FROM_GPU(uint8_t);
+	BACKEND_GENERIC_FROM_GPU(int16_t);
+	BACKEND_GENERIC_FROM_GPU(uint16_t);
+	BACKEND_GENERIC_FROM_GPU(int32_t);
+	BACKEND_GENERIC_FROM_GPU(uint32_t);
+	BACKEND_GENERIC_FROM_GPU(float32_t);
+	BACKEND_GENERIC_FROM_GPU(float64_t);
+	#undef BACKEND_GENERIC_FROM_GPU
+
+};
+
 }
 
-template <class T>
-CPUVector<T>::CPUVector(const SGVector<T> &vector)
-: CPUptr(vector.vector), vlen(vector.vlen)
-{
-}
-
-template <class T>
-CPUVector<T>::CPUVector(const CPUVector<T> &vector)
-: CPUptr(vector.CPUptr), vlen(vector.vlen)
-{
-}
-
-template struct CPUVector<int32_t>;
-template struct CPUVector<float32_t>;
-
-}
-
-#endif //HAVE_CXX11
+#endif //LINALG_BACKEND_GPU_BASE_H__
