@@ -128,18 +128,17 @@ class Translator:
                 elif "Comment" in line:
                     targetProgram += self.translateComment(line["Comment"])
             except Exception as e:
-                raise TranslationFailure("Translation failed on line " +
-                                         str(line["__PARSER_INFO_LINE_NO"]) +
-                                         ". Error: " + str(e))
+                print("Translation failed on line {}".format(line["__PARSER_INFO_LINE_NO"]))
+                raise
 
         allClasses, interfacedClasses, enums = getDependencies(program)
         try:
             dependenciesString = self.dependenciesString(allClasses,
                                                          interfacedClasses,
                                                          enums)
-        except TranslationFailure as e:
-            raise TranslationFailure("Translation of dependencies failed!"
-                                     " Error: " + str(e))
+        except Exception as e:
+            print("Translation of dependencies failed!")
+            raise
 
         programTemplate = Template(self.targetDict["Program"])
         return programTemplate.substitute(program=targetProgram,

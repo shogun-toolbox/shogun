@@ -60,8 +60,9 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         print("Translating {}".format(os.sep.join([dirRelative, filename])))
 
         # Parse the example file
+        filePath = os.path.join(dirRelative, filename)
         with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
-            ast = parse(file.read(), os.path.join(dirRelative, filename))
+            ast = parse(file.read(), filePath)
 
         # Translate ast to each target language
         for target in targets:
@@ -70,11 +71,10 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
                                         tags=tags,
                                         # TODO: enable storeVars for other targets
                                         storeVars=storeVars if target['FileExtension'] == ".cpp" else False)
-            except TranslationFailure as e:
-                raise Exception("Could not translate file " +
-                                os.path.join(inputDir, dirRelative, filename) +
-                                " to " + target['FileExtension'] +
-                                ".\n" + str(e))
+            except Exception as e:
+                print("Could not translate file {} to {}.".format(filePath,
+                                                                  target['FileExtension']))
+                raise
 
             directory = os.path.join(outputDir, target["OutputDirectoryName"])
             extension = target["FileExtension"]
