@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,89 +27,92 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
+ * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/linalg/CPUBackend.h>
-#include <shogun/mathematics/linalg/GPUBackend.h>
-#include <shogun/mathematics/linalg/CPUVector.h>
-#include <shogun/mathematics/linalg/GPUVector.h>
+
+#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
+
+#include <shogun/mathematics/linalg/LinalgBackendBase.h>
+#include <shogun/mathematics/linalg/LinalgBackendEigen.h>
+
 #include <memory>
 
-#ifndef LINALGR_H__
-#define LINALGR_H__
-
-#ifdef HAVE_CXX11
+#ifndef SG_LINALG_H__
+#define SG_LINALG_H__
 
 namespace shogun
 {
 
-/** Linalg Class **/
+/** @brief linalg library backend */
 class SGLinalg
 {
-	/** pointer to cpubackend */
-	std::shared_ptr<CPUBackend> m_cpubackend;
-
-	/** pointer to gpubackend */
-	std::shared_ptr<GPUBackend> m_gpubackend;
-
 public:
-	/** Default Constructor */
-	SGLinalg();
+	/** Default constructor */
+	SGLinalg()
+	{
+		cpu_backend = std::unique_ptr<LinalgBackendBase>(new LinalgBackendEigen());
+		gpu_backend = nullptr;
+	}
 
-	/** Constructor: explicitly set CPU Backend */
-	SGLinalg(std::shared_ptr<CPUBackend> cpubackend);
+	/** Default destructor */
+	~SGLinalg()
+	{
+	}
 
-	/** Constructor: explicitly set GPU Backend */
-	SGLinalg(std::shared_ptr<GPUBackend> gpubackend);
-
-	/** Constructor: explicitly set CPU and GPU Backend */
-	SGLinalg(std::shared_ptr<CPUBackend> cpubackend, std::shared_ptr<GPUBackend> gpubackend);
-
-	/** set CPU backend
-	 * @param cpubackend cpubackend
+	/** Set CPU backend
+	 * The default CPU backend is EIGEN3
 	 */
-	void set_cpu_backend(std::shared_ptr<CPUBackend> cpubackend);
+	void set_cpu_backend(LinalgBackendBase* backend)
+	{
+		cpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
+	}
 
-	/** get CPU backend */
-	std::shared_ptr<CPUBackend> get_cpu_backend();
-
-	/** set GPU backend
-	 * @param gpubackend gpubackend
-	 */
-	void set_gpu_backend(std::shared_ptr<GPUBackend> gpubackend);
-
-	/** get GPU backend */
-	std::shared_ptr<GPUBackend> get_gpu_backend();
-
-
-	/**
-	 * Wrapper method of implementation of vector dot-product that works
-	 * with generic vectors
+	/** Set CPU backend
 	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
-	 * as \f$\sum_i a_i b_i\f$
+	 * @return pointer of LinalgBackendBase type
 	 */
-	template <class T>
-	T dot(BaseVector<T> *a, BaseVector<T> *b) const;
+	LinalgBackendBase* const get_cpu_backend() const
+	{
+		return cpu_backend.get();
+	}
 
-	/** Check whether gpubackend is registered by user */
-	bool hasGPUBackend() const;
+	/** Set GPU backend
+	 * The default GPU backend is NULL
+	 */
+	void set_gpu_backend(LinalgBackendBase* backend)
+	{
+		gpu_backend = std::unique_ptr<LinalgBackendBase>(backend);
+	}
 
+	/** Set GPU backend
+	 *
+	 * @return pointer of LinalgBackendBase type
+	 */
+	LinalgBackendBase* const get_gpu_backend() const
+	{
+		return gpu_backend.get();
+	}
+
+private:
+	/** Pointer to CPU backend. CPU backend is always available
+	 * with EIGEN3 or other default/complete implementation.
+	 */
+	std::unique_ptr<LinalgBackendBase> cpu_backend;
+
+	/** Pointer to GPU backend.
+	 * NULL utill assigned.
+	 */
+	std::unique_ptr<LinalgBackendBase> gpu_backend;
 };
-
 }
 
 namespace shogun
 {
+	/** Variable that holds the CPU and GPU backends. */
 	extern std::unique_ptr<SGLinalg> sg_linalg;
 }
 
-#endif //HAVE_CXX11
-
-#endif
+#endif //SG_LINALG_H__
