@@ -9,6 +9,29 @@
 using namespace shogun;
 using namespace linalg;
 
+TEST(LinalgBackendViennaCL, add)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+
+	SGVector<float64_t> A(9), A_gpu;
+	SGVector<float64_t> B(9), B_gpu;
+
+	for (index_t i = 0; i < 9; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+
+	auto result = add(A, B, alpha, beta);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
+}
+
 TEST(LinalgBackendViennaCL, dot)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
