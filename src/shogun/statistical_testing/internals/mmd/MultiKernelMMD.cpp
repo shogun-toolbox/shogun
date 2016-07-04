@@ -88,7 +88,7 @@ float64_t MultiKernelMMD::compute_mmd(terms_t& t) const
 	t.term[1]=2*(t.term[1]-t.diag[1]);
 	SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", t.term[0]);
 	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", t.term[1]);
-	if (s_type!=ST_BIASED_FULL)
+	if (s_type!=EStatisticType::ST_BIASED_FULL)
 	{
 		t.term[0]/=n_x*(n_x-1);
 		t.term[1]/=n_y*(n_y-1);
@@ -106,7 +106,7 @@ float64_t MultiKernelMMD::compute_mmd(terms_t& t) const
 	SG_SDEBUG("term_1 (normalized) = %f!\n", t.term[1]);
 
 	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", t.term[2]);
-	if (s_type==ST_UNBIASED_INCOMPLETE)
+	if (s_type==EStatisticType::ST_UNBIASED_INCOMPLETE)
 	{
 		t.term[2]-=t.diag[2];
 		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", t.term[2]);
