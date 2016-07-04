@@ -126,10 +126,8 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 	index_t n=10;
 
 	SGMatrix<float64_t> data(dim, n);
-	for (index_t i=0; i<dim; ++i)
-		for (index_t j=0; j<n; ++j)	
-			data(i,j)=CMath::random(0, n-1);
-	
+	std::iota(data.data(), data.data()+data.size(), 1);
+
 	SGVector<index_t> inds(n/2);
 	inds.random(0, n-1);
 

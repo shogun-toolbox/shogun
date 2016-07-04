@@ -135,6 +135,7 @@ int32_t CMulticlassLabels::get_num_classes()
 	return unique.vlen;
 }
 
+#ifndef SWIG // SWIG should skip this part
 CLabels* CMulticlassLabels::shallow_subset_copy()
 {
 	CLabels* shallow_copy_labels=nullptr;
@@ -147,3 +148,4 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 	
 	return shallow_copy_labels;	
 }
+#endif
