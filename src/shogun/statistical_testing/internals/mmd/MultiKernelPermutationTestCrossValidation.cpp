@@ -75,14 +75,14 @@ MultiKernelPermutationTestCrossValidation::~MultiKernelPermutationTestCrossValid
 
 void MultiKernelPermutationTestCrossValidation::add_term(terms_t& terms, float64_t val, index_t i, index_t j)
 {
-	if (i<n_x && j<n_x && i<=j)
+	if (i<n_x && j<n_x && i>=j)
 	{
 		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_0!\n", i, j, val);
 		terms.term[0]+=val;
 		if (i==j)
 			terms.diag[0]+=val;
 	}
-	else if (i>=n_x && j>=n_x && i<=j)
+	else if (i>=n_x && j>=n_x && i>=j)
 	{
 		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_1!\n", i, j, val);
 		terms.term[1]+=val;
@@ -151,104 +151,124 @@ void MultiKernelPermutationTestCrossValidation::operator()(const KernelManager& 
 	SGVector<float64_t> statistic(kernel_mgr.num_kernels());
 	SGMatrix<float64_t> null_samples(kernel_mgr.num_kernels(), num_null_samples);
 	Map<MatrixXd> null_samples_map(null_samples.data(), null_samples.num_rows, null_samples.num_cols);
-
-	for (auto i=0; i<num_runs; ++i)
+	auto stacks=std::vector<std::shared_ptr<CSubsetStack> >(num_null_samples);
+	for (auto n=0; n<num_null_samples; ++n)
 	{
-		kfold_x->build_subsets();
-		kfold_y->build_subsets();
-		for (auto j=0; j<num_folds; ++j)
+		stacks[n]=std::shared_ptr<CSubsetStack>(new CSubsetStack());
+	}
+
+#pragma omp parallel
+	{
+		for (auto i=0; i<num_runs; ++i)
 		{
-			SGVector<index_t> x_inds=kfold_x->generate_subset_inverse(j);
-			SGVector<index_t> y_inds=kfold_y->generate_subset_inverse(j);
-			std::for_each(y_inds.data(), y_inds.data()+y_inds.size(), [this](index_t& val) { val += n_x; });
-
-			SGVector<index_t> xy_inds(x_inds.size()+y_inds.size());
-			std::copy(x_inds.data(), x_inds.data()+x_inds.size(), xy_inds.data());
-			std::copy(y_inds.data(), y_inds.data()+y_inds.size(), xy_inds.data()+x_inds.size());
-
-			SGVector<index_t> inverted_inds(n_x+n_y);
-			std::fill(inverted_inds.data(), inverted_inds.data()+n_x+n_y, -1);
-			for (int idx=0; idx<xy_inds.size(); ++idx)
-				inverted_inds[xy_inds[idx]]=idx;
-
-#pragma omp parallel for
-			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+			kfold_x->build_subsets();
+			kfold_y->build_subsets();
+			for (auto j=0; j<num_folds; ++j)
 			{
-				CKernel* kernel=kernel_mgr.kernel_at(k);
-				terms_t stat_terms;
-				for (auto row=0; row<n_x+n_y; ++row)
+				SGVector<index_t> x_inds=kfold_x->generate_subset_inverse(j);
+				SGVector<index_t> y_inds=kfold_y->generate_subset_inverse(j);
+				std::for_each(y_inds.data(), y_inds.data()+y_inds.size(), [this](index_t& val) { val += n_x; });
+
+				SGVector<index_t> xy_inds(x_inds.size()+y_inds.size());
+				std::copy(x_inds.data(), x_inds.data()+x_inds.size(), xy_inds.data());
+				std::copy(y_inds.data(), y_inds.data()+y_inds.size(), xy_inds.data()+x_inds.size());
+				std::for_each(stacks.begin(), stacks.end(), [&xy_inds](std::shared_ptr<CSubsetStack>& stack)
 				{
-					for (auto col=0; col<n_x+n_y; ++col)
+					stack->add_subset(xy_inds);
+				});
+
+				SGVector<index_t> inverted_inds(n_x+n_y);
+				std::fill(inverted_inds.data(), inverted_inds.data()+n_x+n_y, -1);
+				for (int idx=0; idx<xy_inds.size(); ++idx)
+					inverted_inds[xy_inds[idx]]=idx;
+
+				std::vector<terms_t> stat_terms(kernel_mgr.num_kernels());
+				for (auto col=0; col<n_x+n_y; ++col)
+				{
+					for (auto row=col; row<n_x+n_y; ++row)
 					{
 						auto inverted_row=inverted_inds[row];
 						auto inverted_col=inverted_inds[col];
 						if (inverted_row!=-1 && inverted_col!=-1)
 						{
-							add_term(stat_terms, kernel->kernel(row, col), inverted_row, inverted_col);
+							for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+							{
+								float64_t kernel_value=kernel_mgr.kernel_at(k)->kernel(row, col);
+								add_term(stat_terms[k], kernel_value, inverted_row, inverted_col);
+							}
 						}
 					}
 				}
-				statistic[k]=compute_mmd(stat_terms);
-			}
-
-			// compute the null samples
-			for (auto n=0; n<num_null_samples; ++n)
-			{
-				auto stack=some<CSubsetStack>();
-				stack->add_subset(xy_inds);
-
-				SGVector<index_t> permutation_inds(xy_inds.size());
-				std::iota(permutation_inds.data(), permutation_inds.data()+permutation_inds.size(), 0);
-				CMath::permute(permutation_inds);
-				stack->add_subset(permutation_inds);
-
-				SGVector<index_t> inds=stack->get_last_subset()->get_subset_idx();
-
-				SGVector<index_t> inverted_permutation_inds(n_x+n_y);
-				std::fill(inverted_permutation_inds.data(), inverted_permutation_inds.data()+n_x+n_y, -1);
-				for (int idx=0; idx<inds.size(); ++idx)
-					inverted_permutation_inds[inds[idx]]=idx;
-
-#pragma omp parallel for
 				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 				{
-					CKernel* kernel=kernel_mgr.kernel_at(k);
-					terms_t terms;
-					for (auto row=0; row<n_x+n_y; ++row)
+					statistic[k]=compute_mmd(stat_terms[k]);
+				}
+
+				#pragma omp for
+				for (auto n=0; n<num_null_samples; ++n)
+				{
+					SGVector<index_t> permutation_inds(xy_inds.size());
+					std::iota(permutation_inds.data(), permutation_inds.data()+permutation_inds.size(), 0);
+					CMath::permute(permutation_inds);
+
+					stacks[n]->add_subset(permutation_inds);
+					SGVector<index_t> inds=stacks[n]->get_last_subset()->get_subset_idx();
+					stacks[n]->remove_subset();
+
+					SGVector<index_t> inverted_permutation_inds(n_x+n_y);
+					std::fill(inverted_permutation_inds.data(), inverted_permutation_inds.data()+n_x+n_y, -1);
+					for (int idx=0; idx<inds.size(); ++idx)
+						inverted_permutation_inds[inds[idx]]=idx;
+
+					std::vector<terms_t> terms(kernel_mgr.num_kernels());
+					for (auto col=0; col<n_x+n_y; ++col)
 					{
-						for (auto col=0; col<n_x+n_y; ++col)
+						for (auto row=col; row<n_x+n_y; ++row)
 						{
 							auto permuted_row=inverted_permutation_inds[row];
 							auto permuted_col=inverted_permutation_inds[col];
 							if (permuted_row!=-1 && permuted_col!=-1)
 							{
-								add_term(terms, kernel->kernel(row, col), permuted_row, permuted_col);
+								for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+								{
+									float64_t kernel_value=kernel_mgr.kernel_at(k)->kernel(row, col);
+									add_term(terms[k], kernel_value, permuted_row, permuted_col);
+								}
 							}
 						}
 					}
-					null_samples(k, n)=compute_mmd(terms);
+					for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+					{
+						null_samples(k, n)=compute_mmd(terms[k]);
+					}
 				}
-			}
 
-			// transpose the null_samples matrix for faster access
-			MatrixXd transposed_null_samples=null_samples_map.transpose();
-//			cout << transposed_null_samples << endl;
-#pragma omp parallel for
-			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
-			{
-				SGVector<float64_t> null_samples_k(transposed_null_samples.col(k).data(), num_null_samples, false);
-				std::sort(null_samples_k.data(), null_samples_k.data()+null_samples_k.size());
-//				null_samples_k.display_vector("null_samples_k");
-				SG_SDEBUG("statistic=%f\n", statistic[k]);
-				float64_t idx=null_samples_k.find_position_to_insert(statistic[k]);
-				SG_SDEBUG("index=%f\n", idx);
-				auto p_value=1.0-idx/num_null_samples;
-				bool rejected=p_value<alpha;
-				SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, alpha, rejected);
-				rejections(i*num_folds+j, k)=rejected;
+				std::for_each(stacks.begin(), stacks.end(), [](std::shared_ptr<CSubsetStack>& stack)
+				{
+					stack->remove_subset();
+				});
+
+				// transpose the null_samples matrix for faster access
+				MatrixXd transposed_null_samples=null_samples_map.transpose();
+	//			cout << transposed_null_samples << endl;
+	//#pragma omp for
+				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+				{
+					SGVector<float64_t> null_samples_k(transposed_null_samples.col(k).data(), num_null_samples, false);
+					std::sort(null_samples_k.data(), null_samples_k.data()+null_samples_k.size());
+	//				null_samples_k.display_vector("null_samples_k");
+					SG_SDEBUG("statistic=%f\n", statistic[k]);
+					float64_t idx=null_samples_k.find_position_to_insert(statistic[k]);
+					SG_SDEBUG("index=%f\n", idx);
+					auto p_value=1.0-idx/num_null_samples;
+					bool rejected=p_value<alpha;
+					SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, alpha, rejected);
+					rejections(i*num_folds+j, k)=rejected;
+				}
 			}
 		}
 	}
+	stacks.resize(0);
 
 	kernel_mgr.unset_precomputed_distance();
 	SG_SDEBUG("Leaving!\n");
