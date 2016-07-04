@@ -1,7 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 - 2013 Heiko Strathmann
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (w) 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,63 +28,57 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-
-#ifndef QUADRATIC_TIME_MMD_H_
-#define QUADRATIC_TIME_MMD_H_
+#ifndef MULTIKERNEL_PERMUTATION_TEST_
+#define MULTIKERNEL_PERMUTATION_TEST_
 
 #include <memory>
-#include <shogun/statistical_testing/MMD.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
 
-template <typename> class SGVector;
+enum class EStatisticType;
+class CCustomDistance;
 
 namespace internal
 {
+
 class KernelManager;
-class MaxMeasure;
-}
 
-class CQuadraticTimeMMD : public CMMD
+namespace mmd
 {
-	friend class internal::MaxMeasure;
+
+/**
+ * @brief class that performs test with quadratic time MMD for multiple kernels.
+ */
+class MultiKernelPermutationTest
+{
 public:
-	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
-	CQuadraticTimeMMD();
-	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-
-	virtual ~CQuadraticTimeMMD();
-	virtual void set_kernel(CKernel* kernel);
-
-	virtual float64_t compute_statistic();
-	virtual float64_t compute_variance();
-
-	virtual SGVector<float64_t> compute_multiple();
-	virtual SGVector<bool> perform_test_multiple(float64_t alpha);
-
-	virtual SGVector<float64_t> sample_null();
-	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
-
-	virtual float64_t compute_p_value(float64_t statistic);
-	virtual float64_t compute_threshold(float64_t alpha);
-
-	void precompute_kernel_matrix(bool precompute);
-
-	virtual const char* get_name() const;
+	MultiKernelPermutationTest(index_t nx, index_t ny, index_t null_samples, EStatisticType type);
+	~MultiKernelPermutationTest();
+	SGVector<bool> operator()(const KernelManager& km);
+	void set_alpha(float64_t alp);
 private:
-	struct Self;
-	std::unique_ptr<Self> self;
+	struct terms_t;
 
-	virtual const operation get_direct_estimation_method() const;
-	virtual const float64_t normalize_statistic(float64_t statistic) const;
-	virtual const float64_t normalize_variance(float64_t variance) const;
-	SGVector<float64_t> gamma_fit_null();
-	SGVector<float64_t> spectrum_sample_null();
+	void add_term(terms_t&, float64_t kernel, index_t i, index_t j);
+	float64_t compute_mmd(terms_t&);
 
-	SGVector<float64_t> compute_statistic(const internal::KernelManager& kernel_mgr);
-	SGVector<bool> perform_test_multiple(const internal::KernelManager& kernel_mgr, float64_t alpha);
+	const index_t n_x;
+	const index_t n_y;
+	const index_t num_null_samples;
+	const EStatisticType stype;
+	float64_t alpha;
+
+	SGVector<index_t> permuted_inds;
+	std::vector<std::vector<index_t> > inverted_permuted_inds;
 };
 
 }
-#endif // QUADRATIC_TIME_MMD_H_
+
+}
+
+}
+
+#endif // MULTIKERNEL_PERMUTATION_TEST_

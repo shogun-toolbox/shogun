@@ -51,6 +51,7 @@
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
 #include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
+#include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTest.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 
 using namespace shogun;
@@ -333,6 +334,11 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_multiple()
 	return compute_statistic(get_strategy()->get_kernel_mgr());
 }
 
+SGVector<bool> CQuadraticTimeMMD::perform_test_multiple(float64_t alpha)
+{
+	return perform_test_multiple(get_strategy()->get_kernel_mgr(), alpha);
+}
+
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	SG_DEBUG("Entering\n");
@@ -571,6 +577,29 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelM
 
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=normalize_statistic(result[i]);
+
+	SG_DEBUG("Leaving");
+	return result;
+}
+
+SGVector<bool> CQuadraticTimeMMD::perform_test_multiple(const internal::KernelManager& kernel_mgr, float64_t alpha)
+{
+	SG_DEBUG("Entering");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
+
+	CDistance* distance=kernel_mgr.get_distance_instance();
+	SG_REF(distance);
+	kernel_mgr.set_precomputed_distance(compute_joint_distance(distance));
+	SG_UNREF(distance);
+
+	const index_t nx=get_num_samples_p();
+	const index_t ny=get_num_samples_q();
+
+	MultiKernelPermutationTest compute(nx, ny, get_num_null_samples(), get_statistic_type());
+	compute.set_alpha(alpha);
+	SGVector<bool> result=compute(kernel_mgr);
+
+	kernel_mgr.unset_precomputed_distance();
 
 	SG_DEBUG("Leaving");
 	return result;

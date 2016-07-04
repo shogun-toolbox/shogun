@@ -64,7 +64,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -97,7 +97,7 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -130,7 +130,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD, true);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD, true);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -168,7 +168,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_POWER);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_POWER);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -201,7 +201,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_POWER, true);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_POWER, true);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -244,7 +244,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
 	mmd->set_train_test_ratio(train_test_ratio);
@@ -281,7 +281,7 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
 	mmd->set_train_test_ratio(train_test_ratio);
@@ -314,7 +314,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MEDIAN_HEURISTIC);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -346,7 +346,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MEDIAN_HEURISTIC);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
