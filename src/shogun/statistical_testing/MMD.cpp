@@ -89,9 +89,9 @@ struct CMMD::Self
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
-	statistic_type(ST_UNBIASED_FULL),
-	variance_estimation_method(VEM_DIRECT),
-	null_approximation_method(NAM_PERMUTATION),
+	statistic_type(EStatisticType::ST_UNBIASED_FULL),
+	variance_estimation_method(EVarianceEstimationMethod::VEM_DIRECT),
+	null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 	auto default_strategy=new CKernelSelectionStrategy();
@@ -112,13 +112,13 @@ void CMMD::Self::create_statistic_job()
 	auto By=data_mgr.blocksize_at(1);
 	switch (statistic_type)
 	{
-		case ST_UNBIASED_FULL:
+		case EStatisticType::ST_UNBIASED_FULL:
 			statistic_job=mmd::UnbiasedFull(Bx);
 			break;
-		case ST_UNBIASED_INCOMPLETE:
+		case EStatisticType::ST_UNBIASED_INCOMPLETE:
 			statistic_job=mmd::UnbiasedIncomplete(Bx);
 			break;
-		case ST_BIASED_FULL:
+		case EStatisticType::ST_BIASED_FULL:
 			statistic_job=mmd::BiasedFull(Bx);
 			break;
 		default : break;
@@ -130,10 +130,10 @@ void CMMD::Self::create_variance_job()
 {
 	switch (variance_estimation_method)
 	{
-		case VEM_DIRECT:
+		case EVarianceEstimationMethod::VEM_DIRECT:
 			variance_job=owner.get_direct_estimation_method();
 			break;
-		case VEM_PERMUTATION:
+		case EVarianceEstimationMethod::VEM_PERMUTATION:
 			variance_job=permutation_job;
 			break;
 		default : break;
@@ -223,7 +223,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 			statistic_term_counter++;
 		}
 
-		if (variance_estimation_method==VEM_DIRECT)
+		if (variance_estimation_method==EVarianceEstimationMethod::VEM_DIRECT)
 		{
 			for (size_t i=0; i<mmds.size(); ++i)
 			{
@@ -250,7 +250,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	// normalize statistic and variance
 	statistic=owner.normalize_statistic(statistic);
-	if (variance_estimation_method==VEM_PERMUTATION)
+	if (variance_estimation_method==EVarianceEstimationMethod::VEM_PERMUTATION)
 		variance=owner.normalize_variance(variance);
 
 	return std::make_pair(statistic, variance);

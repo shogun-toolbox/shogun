@@ -49,7 +49,7 @@ namespace internal
 class KernelManager;
 }
 
-enum EKernelSelectionMethod : uint32_t
+enum class EKernelSelectionMethod
 {
 	KSM_MEDIAN_HEURISTIC,
 	KSM_MAXIMIZE_MMD,

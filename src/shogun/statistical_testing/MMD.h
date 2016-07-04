@@ -43,7 +43,7 @@ class CKernel;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
 class CKernelSelectionStrategy;
-enum EKernelSelectionMethod : uint32_t;
+enum class EKernelSelectionMethod;
 
 namespace internal
 {
@@ -55,20 +55,20 @@ class WeightedMaxTestPower;
 
 }
 
-enum EStatisticType : uint32_t
+enum class EStatisticType
 {
 	ST_UNBIASED_FULL,
 	ST_UNBIASED_INCOMPLETE,
 	ST_BIASED_FULL
 };
 
-enum EVarianceEstimationMethod : uint32_t
+enum class EVarianceEstimationMethod
 {
 	VEM_DIRECT,
 	VEM_PERMUTATION
 };
 
-enum ENullApproximationMethod : uint32_t
+enum class ENullApproximationMethod
 {
 	NAM_PERMUTATION,
 	NAM_MMD1_GAUSSIAN,

@@ -73,7 +73,7 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case NAM_MMD1_GAUSSIAN:
+		case ENullApproximationMethod::NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
 			float64_t std_dev=CMath::sqrt(sigma_sq);
@@ -94,7 +94,7 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case NAM_MMD1_GAUSSIAN:
+		case ENullApproximationMethod::NAM_MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
 			float64_t std_dev=CMath::sqrt(sigma_sq);

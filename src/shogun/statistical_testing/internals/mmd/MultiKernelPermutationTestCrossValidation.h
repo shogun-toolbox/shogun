@@ -38,7 +38,7 @@
 namespace shogun
 {
 
-enum EStatisticType : uint32_t;
+enum class EStatisticType;
 class CCustomDistance;
 
 namespace internal
