@@ -1,6 +1,7 @@
 /* base includes required by any module */
 %include "stdint.i"
 %include "exception.i"
+%include "std_string.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
 %feature("unref") shogun::CSGObject "SG_UNREF($this);"
@@ -107,6 +108,26 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
+ #include <memory>
+ #include <shogun/base/some.h>
+ #include <shogun/optimization/DescendUpdater.h>
+ #include <shogun/optimization/SparsePenalty.h>
+ #include <shogun/optimization/ProximalPenalty.h>
+ #include <shogun/optimization/Penalty.h>
+ #include <shogun/optimization/DescendCorrection.h>
+ #include <shogun/optimization/MappingFunction.h>
+ #include <shogun/optimization/LearningRate.h>
+ #include <shogun/optimization/FirstOrderStochasticMinimizer.h>
+ #include <shogun/optimization/FirstOrderMinimizer.h>
+ #include <shogun/optimization/Minimizer.h>
+ #include <shogun/optimization/FirstOrderSAGCostFunction.h>
+ #include <shogun/optimization/FirstOrderStochasticCostFunction.h>
+ #include <shogun/optimization/FirstOrderCostFunction.h>
+ #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
+ #include <shogun/optimization/liblinear/tron.h>
+ #include <shogun/ui/SGInterface.h>
+ #include <shogun/distributions/DiscreteDistribution.h>
+ #include <shogun/mathematics/Function.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
@@ -321,6 +342,8 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+%include <shogun/lib/basetag.h>
+%include <shogun/lib/tag.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
@@ -508,3 +531,190 @@ copy_reg._reconstructor=_sg_reconstructor
 
 
 #endif /* SWIGPYTHON  */
+
+#define INSTA(name, type)   \
+    %template(Tag ## name) Tag<type>;   \
+    %template(set) CSGObject::set<type>;    \
+    %template(set ## name) CSGObject::set<type, void>;  \
+    %template(get) CSGObject::get<type>;    \
+    %template(get ## name) CSGObject::get<type, void>;  \
+    %template(has) CSGObject::has<type>;    \
+    %template(has ## name) CSGObject::has<type, void>;  \
+
+#define INSTA_SG(type)  \
+    INSTA(type, C ## type ## *)  \
+
+using namespace shogun;
+
+INSTA(Int, int)
+INSTA(String, std::string)
+INSTA(Float, float)
+
+// ensemble
+INSTA_SG(CombinationRule)
+
+// converter
+INSTA_SG(Converter)
+INSTA_SG(ICAConverter)
+INSTA_SG(EmbeddingConverter)
+
+// labels
+INSTA_SG(DenseLabels)
+INSTA_SG(Labels)
+
+// modelselection
+INSTA_SG(ModelSelection)
+
+// transfer/multitask
+INSTA_SG(TaskRelation)
+INSTA_SG(MultitaskKernelMklNormalizer)
+
+// statistics
+INSTA_SG(KernelIndependenceTest)
+INSTA_SG(IndependenceTest)
+INSTA_SG(HypothesisTest)
+INSTA_SG(KernelTwoSampleTest)
+INSTA_SG(TwoSampleTest)
+INSTA_SG(MMDKernelSelection)
+INSTA_SG(KernelSelection)
+
+// features
+INSTA_SG(Features)
+// INSTA_SG(DenseFeatures)
+INSTA_SG(DotFeatures)
+INSTA_SG(AttributeFeatures)
+INSTA_SG(RandomKitchenSinksDotFeatures)
+INSTA_SG(StreamingDotFeatures)
+INSTA_SG(StreamingFeatures)
+
+// kernel
+INSTA_SG(Kernel)
+INSTA_SG(ExponentialARDKernel)
+INSTA_SG(DotKernel)
+//INSTA_SG(SparseKernel)
+//INSTA_SG(StringKernel)
+INSTA_SG(KernelNormalizer)
+
+// latent
+INSTA_SG(LatentModel)
+
+// multiclass
+INSTA_SG(ECOCSimpleDecoder)
+INSTA_SG(ECOCDecoder)
+INSTA_SG(ECOCEncoder)
+//INSTA_SG(VwConditionalProbabilityTree)
+INSTA_SG(NbodyTree)
+INSTA_SG(ConditionalProbabilityTree)
+INSTA_SG(MulticlassStrategy)
+INSTA_SG(RejectionStrategy)
+// INSTA_SG(TreeMachine)
+
+// lib
+INSTA_SG(IndependentJob)
+INSTA_SG(IndependentComputationEngine)
+//INSTA_SG(StoreVectorAggregator)
+INSTA_SG(JobResultAggregator)
+INSTA_SG(Tokenizer)
+INSTA(SGReferencedData, SGReferencedData*)
+
+// preprocessor
+INSTA_SG(Preprocessor)
+//INSTA_SG(SparsePreprocessor)
+//INSTA_SG(DensePreprocessor)
+//INSTA_SG(StringPreprocessor)
+INSTA_SG(DependenceMaximization)
+INSTA_SG(KernelDependenceMaximization)
+//INSTA_SG(FeatureSelection)
+
+// optimization
+INSTA(DescendUpdater, DescendUpdater *)
+INSTA(SparsePenalty, SparsePenalty *)
+INSTA(ProximalPenalty, ProximalPenalty *)
+INSTA(Penalty, Penalty *)
+INSTA(DescendCorrection, DescendCorrection *)
+INSTA(MappingFunction, MappingFunction *)
+INSTA(LearningRate, LearningRate *)
+INSTA(FirstOrderStochasticMinimizer, FirstOrderStochasticMinimizer *)
+INSTA(FirstOrderMinimizer, FirstOrderMinimizer *)
+INSTA(Minimizer, Minimizer *)
+INSTA(FirstOrderSAGCostFunction, FirstOrderSAGCostFunction *)
+INSTA(FirstOrderStochasticCostFunction, FirstOrderStochasticCostFunction *)
+INSTA(FirstOrderCostFunction, FirstOrderCostFunction *)
+INSTA(FirstOrderBoundConstraintsCostFunction, FirstOrderBoundConstraintsCostFunction *)
+INSTA_SG(Tron)
+
+// structure
+INSTA_SG(PlifBase)
+INSTA_SG(StructuredModel)
+INSTA_SG(MAPInference)
+INSTA_SG(StateModel)
+
+// io
+INSTA_SG(File)
+
+// ui
+INSTA_SG(SGInterface)
+
+// loss
+INSTA_SG(LossFunction)
+
+// distributions
+INSTA_SG(ProbabilityDistribution)
+//INSTA_SG(EMBase)
+INSTA_SG(DiscreteDistribution)
+INSTA_SG(Distribution)
+
+// mathematics
+// INSTA_SG(IterativeShiftedLinearFamilySolver)
+// INSTA_SG(IterativeLinearSolver)
+// INSTA_SG(LinearSolver)
+// INSTA_SG(MatrixOperator)
+// INSTA_SG(LinearOperator)
+INSTA_SG(EigenSolver)
+// INSTA_SG(OperatorFunction)
+INSTA_SG(TraceSampler)
+INSTA_SG(RationalApproximation)
+// INSTA_SG(OperatorFunction)
+INSTA_SG(Function)
+
+// classifier
+INSTA_SG(MKL)
+INSTA_SG(SVM)
+INSTA_SG(KernelMachine)
+INSTA_SG(VwCacheWriter)
+INSTA_SG(VwCacheReader)
+INSTA_SG(VwLearner)
+
+// distance
+INSTA_SG(Distance)
+INSTA_SG(RealDistance)
+// CDenseDistance
+// CStringDistance
+// CSparseDistance
+
+// evaluation
+INSTA_SG(Evaluation)
+INSTA_SG(SplittingStrategy)
+INSTA_SG(EvaluationResult)
+INSTA_SG(MachineEvaluation)
+INSTA_SG(ClusteringEvaluation)
+INSTA_SG(BinaryClassEvaluation)
+INSTA_SG(CrossValidationOutput)
+
+// machine
+INSTA_SG(Machine)
+INSTA_SG(Inference)
+INSTA_SG(MeanFunction)
+INSTA_SG(BaseMulticlassMachine)
+INSTA_SG(LinearLatentMachine)
+INSTA_SG(LinearMachine)
+INSTA_SG(LikelihoodModel)
+INSTA_SG(VariationalLikelihood)
+INSTA_SG(VariationalGaussianLikelihood)
+INSTA_SG(DualVariationalGaussianLikelihood)
+INSTA_SG(NumericalVGLikelihood)
+INSTA_SG(SingleFITCInference)
+INSTA_SG(SparseInference)
+INSTA_SG(KLLowerTriangularInference)
+INSTA_SG(KLInference)
+INSTA_SG(LaplaceInference)
