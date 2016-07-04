@@ -59,14 +59,14 @@ void MultiKernelMMD::set_distance(CCustomDistance* distance)
 
 void MultiKernelMMD::add_term(terms_t& t, float32_t val, index_t i, index_t j) const
 {
-	if (i<n_x && j<n_x && i<=j)
+	if (i<n_x && j<n_x && i>=j)
 	{
 		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_0!\n", i, j, val);
 		t.term[0]+=val;
 		if (i==j)
 			t.diag[0]+=val;
 	}
-	else if (i>=n_x && j>=n_x && i<=j)
+	else if (i>=n_x && j>=n_x && i>=j)
 	{
 		SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_1!\n", i, j, val);
 		t.term[1]+=val;
@@ -82,6 +82,45 @@ void MultiKernelMMD::add_term(terms_t& t, float32_t val, index_t i, index_t j) c
 	}
 }
 
+float64_t MultiKernelMMD::compute_mmd(terms_t& t) const
+{
+	t.term[0]=2*(t.term[0]-t.diag[0]);
+	t.term[1]=2*(t.term[1]-t.diag[1]);
+	SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", t.term[0]);
+	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", t.term[1]);
+	if (s_type!=ST_BIASED_FULL)
+	{
+		t.term[0]/=n_x*(n_x-1);
+		t.term[1]/=n_y*(n_y-1);
+	}
+	else
+	{
+		t.term[0]+=t.diag[0];
+		t.term[1]+=t.diag[1];
+		SG_SDEBUG("term_0 sum (with diagonal) = %f!\n", t.term[0]);
+		SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", t.term[1]);
+		t.term[0]/=n_x*n_x;
+		t.term[1]/=n_y*n_y;
+	}
+	SG_SDEBUG("term_0 (normalized) = %f!\n", t.term[0]);
+	SG_SDEBUG("term_1 (normalized) = %f!\n", t.term[1]);
+
+	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", t.term[2]);
+	if (s_type==ST_UNBIASED_INCOMPLETE)
+	{
+		t.term[2]-=t.diag[2];
+		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", t.term[2]);
+		t.term[2]/=n_x*(n_x-1);
+	}
+	else
+		t.term[2]/=n_x*n_y;
+	SG_SDEBUG("term_2 (normalized) = %f!\n", t.term[2]);
+
+	auto result=t.term[0]+t.term[1]-2*t.term[2];
+	SG_SDEBUG("result = %f!\n", result);
+	return result;
+}
+
 SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) const
 {
 	SG_SDEBUG("Entering!\n");
@@ -89,54 +128,26 @@ SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) 
 	kernel_mgr.set_precomputed_distance(m_distance.get());
 
 	SGVector<float64_t> result(kernel_mgr.num_kernels());
-#pragma omp parallel for
-	for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+	std::vector<terms_t> terms(result.size());
+
+	for (auto j=0; j<n_x+n_y; ++j)
 	{
-		terms_t t;
-		for (auto j=0; j<n_x+n_y; ++j)
+		for (auto i=j; i<n_x+n_y; ++i)
 		{
-			for (auto i=0; i<n_x+n_y; ++i)
+			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 			{
 				auto kernel=kernel_mgr.kernel_at(k)->kernel(i, j);
-				add_term(t, kernel, i, j);
+				add_term(terms[k], kernel, i, j);
 			}
 		}
+	}
 
-		t.term[0]=2*(t.term[0]-t.diag[0]);
-		t.term[1]=2*(t.term[1]-t.diag[1]);
-		SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", t.term[0]);
-		SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", t.term[1]);
-		if (s_type!=ST_BIASED_FULL)
-		{
-			t.term[0]/=n_x*(n_x-1);
-			t.term[1]/=n_y*(n_y-1);
-		}
-		else
-		{
-			t.term[0]+=t.diag[0];
-			t.term[1]+=t.diag[1];
-			SG_SDEBUG("term_0 sum (with diagonal) = %f!\n", t.term[0]);
-			SG_SDEBUG("term_1 sum (with diagonal) = %f!\n", t.term[1]);
-			t.term[0]/=n_x*n_x;
-			t.term[1]/=n_y*n_y;
-		}
-		SG_SDEBUG("term_0 (normalized) = %f!\n", t.term[0]);
-		SG_SDEBUG("term_1 (normalized) = %f!\n", t.term[1]);
-
-		SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", t.term[2]);
-		if (s_type==ST_UNBIASED_INCOMPLETE)
-		{
-			t.term[2]-=t.diag[2];
-			SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", t.term[2]);
-			t.term[2]/=n_x*(n_x-1);
-		}
-		else
-			t.term[2]/=n_x*n_y;
-		SG_SDEBUG("term_2 (normalized) = %f!\n", t.term[2]);
-
-		result[k]=t.term[0]+t.term[1]-2*t.term[2];
+	for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+	{
+		result[k]=compute_mmd(terms[k]);
 		SG_SDEBUG("result[%d] = %f!\n", k, result[k]);
 	}
+	terms.resize(0);
 
 	kernel_mgr.unset_precomputed_distance();
 	SG_SDEBUG("Leaving!\n");

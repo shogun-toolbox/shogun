@@ -61,6 +61,8 @@ public:
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
 
+	virtual SGVector<float64_t> compute_multiple();
+
 	virtual SGVector<float64_t> sample_null();
 	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
 

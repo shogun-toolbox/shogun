@@ -59,6 +59,7 @@ private:
 	const EStatisticType s_type;
 	std::shared_ptr<CCustomDistance> m_distance;
 	void add_term(terms_t&, float32_t, index_t, index_t) const;
+	float64_t compute_mmd(terms_t& t) const;
 };
 
 }

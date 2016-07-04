@@ -99,6 +99,8 @@ public:
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
 
+	virtual SGVector<float64_t> compute_multiple();
+
 	virtual SGVector<float64_t> sample_null();
 
 	void use_gpu(bool gpu);
@@ -122,6 +124,7 @@ protected:
 	virtual const float64_t normalize_statistic(float64_t statistic) const=0;
 	virtual const float64_t normalize_variance(float64_t variance) const=0;
 	bool use_gpu() const;
+	std::shared_ptr<CKernelSelectionStrategy> get_strategy();
 private:
 	struct Self;
 	std::unique_ptr<Self> self;

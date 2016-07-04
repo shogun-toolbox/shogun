@@ -328,6 +328,11 @@ float64_t CQuadraticTimeMMD::compute_variance()
 	return self->compute_statistic_variance().second;
 }
 
+SGVector<float64_t> CQuadraticTimeMMD::compute_multiple()
+{
+	return compute_statistic(get_strategy()->get_kernel_mgr());
+}
+
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	SG_DEBUG("Entering\n");

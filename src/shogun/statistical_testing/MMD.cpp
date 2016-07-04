@@ -461,6 +461,16 @@ float64_t CMMD::compute_variance()
 	return self->compute_statistic_variance().second;
 }
 
+SGVector<float64_t> CMMD::compute_multiple()
+{
+	return self->compute_statistic_and_Q(self->strategy->get_kernel_mgr()).first;
+}
+
+std::shared_ptr<CKernelSelectionStrategy> CMMD::get_strategy()
+{
+	return self->strategy;
+}
+
 void CMMD::set_train_test_ratio(float64_t ratio)
 {
 	auto& data_mgr=get_data_mgr();

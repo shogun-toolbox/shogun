@@ -493,3 +493,41 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 	for (auto i=0; i<result_1.size(); ++i)
 		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
 }
+
+TEST(QuadraticTimeMMD, compute_multiple)
+{
+	const index_t m=20;
+	const index_t n=20;
+	const index_t dim=1;
+	const index_t num_kernels=10;
+
+	float64_t difference=0.5;
+	sg_rand->set_seed(12345);
+
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	CFeatures* feat_p=gen_p->get_streamed_features(m);
+	CFeatures* feat_q=gen_q->get_streamed_features(n);
+
+	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+	{
+		float64_t tau=pow(2, sigma);
+		mmd->add_kernel(new CGaussianKernel(10, tau));
+	}
+	SGVector<float64_t> mmd_multiple=mmd->compute_multiple();
+
+	SGVector<float64_t> mmd_single(num_kernels);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+	{
+		auto mmd2=some<CQuadraticTimeMMD>(feat_p, feat_q);
+		float64_t tau=pow(2, sigma);
+		mmd2->set_kernel(new CGaussianKernel(10, tau));
+		mmd_single[i]=mmd2->compute_statistic();
+	}
+
+	ASSERT_EQ(mmd_multiple.size(), mmd_single.size());
+	for (auto i=0; i<mmd_multiple.size(); ++i)
+		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-5);
+}
