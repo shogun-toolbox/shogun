@@ -108,6 +108,17 @@ void set_global_rand(CRandom* rand);
  */
 CRandom* get_global_rand();
 
+<<<<<<< HEAD
+=======
+#ifndef SWIG // SWIG should skip this part
+/** get the global linalg library object
+ *
+ * @return linalg object
+ */
+SGLinalg* get_global_linalg();
+#endif
+
+>>>>>>> 3fe967a... LinalgRefactor
 /** Checks environment variables and modifies global objects
  */
 void init_from_env();

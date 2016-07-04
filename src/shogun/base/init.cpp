@@ -20,7 +20,6 @@
 #include <shogun/base/SGObject.h>
 #include <stdlib.h>
 #include <string.h>
-
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
@@ -37,6 +36,10 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
+<<<<<<< HEAD
+=======
+	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
+>>>>>>> 3fe967a... LinalgRefactor
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -66,6 +69,12 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
+<<<<<<< HEAD
+=======
+		if (!sg_linalg)
+			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
+
+>>>>>>> 3fe967a... LinalgRefactor
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -185,7 +194,16 @@ namespace shogun
 		SG_REF(sg_rand);
 		return sg_rand;
 	}
+<<<<<<< HEAD
 
+=======
+#ifndef SWIG // SWIG should skip this part
+	SGLinalg* get_global_linalg()
+	{
+		return sg_linalg.get();
+	}
+#endif
+>>>>>>> 3fe967a... LinalgRefactor
 	void init_from_env()
 	{
 		char* env_log_val = NULL;
