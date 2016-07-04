@@ -558,18 +558,20 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelM
 
 	CDistance* distance=kernel_mgr.get_distance_instance();
 	SG_REF(distance);
+	kernel_mgr.set_precomputed_distance(compute_joint_distance(distance));
+	SG_UNREF(distance);
 
 	const index_t nx=get_num_samples_p();
 	const index_t ny=get_num_samples_q();
 
 	MultiKernelMMD compute(nx, ny, get_statistic_type());
-	compute.set_distance(compute_joint_distance(distance));
 	SGVector<float64_t> result=compute(kernel_mgr);
+
+	kernel_mgr.unset_precomputed_distance();
 
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=normalize_statistic(result[i]);
 
-	SG_UNREF(distance);
 	SG_DEBUG("Leaving");
 	return result;
 }

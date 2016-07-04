@@ -78,19 +78,19 @@ TEST(MultiKernelMMD, biased_full)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	KernelManager kernel_mgr(num_kernels);
-	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
-
 	auto test=some<CTwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
+	KernelManager kernel_mgr(num_kernels);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+	auto distance=kernel_mgr.get_distance_instance();
+	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+
 	MultiKernelMMD tester(m, n, stype);
-	auto distance=some<CEuclideanDistance>();
-	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
+	kernel_mgr.unset_precomputed_distance();
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
@@ -140,19 +140,19 @@ TEST(MultiKernelMMD, unbiased_full)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	KernelManager kernel_mgr(num_kernels);
-	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
-
 	auto test=some<CTwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
+	KernelManager kernel_mgr(num_kernels);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+	auto distance=kernel_mgr.get_distance_instance();
+	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+
 	MultiKernelMMD tester(m, n, stype);
-	auto distance=some<CEuclideanDistance>();
-	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
+	kernel_mgr.unset_precomputed_distance();
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
@@ -193,7 +193,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	const index_t n=8;
 	const index_t dim=1;
 	const float64_t difference=0.5;
-	const index_t num_kernels=1;
+	const index_t num_kernels=10;
 	const EStatisticType stype=ST_UNBIASED_INCOMPLETE;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
@@ -202,19 +202,19 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	KernelManager kernel_mgr(num_kernels);
-	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
-		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
-
 	auto test=some<CTwoDistributionTestMock>();
 	test->set_p(feats_p);
 	test->set_q(feats_q);
 
+	KernelManager kernel_mgr(num_kernels);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
+	auto distance=kernel_mgr.get_distance_instance();
+	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+
 	MultiKernelMMD tester(m, n, stype);
-	auto distance=some<CEuclideanDistance>();
-	distance->set_disable_sqrt(true);
-	tester.set_distance(test->compute_joint_distance(distance));
 	SGVector<float64_t> values=tester(kernel_mgr);
+	kernel_mgr.unset_precomputed_distance();
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();

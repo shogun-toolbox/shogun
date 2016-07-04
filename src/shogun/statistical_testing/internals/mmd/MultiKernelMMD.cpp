@@ -29,10 +29,8 @@
  */
 
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/kernel/ShiftInvariantKernel.h>
-#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
@@ -50,11 +48,6 @@ struct MultiKernelMMD::terms_t
 MultiKernelMMD::MultiKernelMMD(index_t nx, index_t ny, EStatisticType stype) : n_x(nx), n_y(ny), s_type(stype)
 {
 	SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
-}
-
-void MultiKernelMMD::set_distance(CCustomDistance* distance)
-{
-	m_distance=std::shared_ptr<CCustomDistance>(distance);
 }
 
 void MultiKernelMMD::add_term(terms_t& t, float32_t val, index_t i, index_t j) const
@@ -124,8 +117,6 @@ float64_t MultiKernelMMD::compute_mmd(terms_t& t) const
 SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(m_distance, "Distance instace is not set!\n");
-	kernel_mgr.set_precomputed_distance(m_distance.get());
 
 	SGVector<float64_t> result(kernel_mgr.num_kernels());
 	std::vector<terms_t> terms(result.size());
@@ -149,7 +140,6 @@ SGVector<float64_t> MultiKernelMMD::operator()(const KernelManager& kernel_mgr) 
 	}
 	terms.resize(0);
 
-	kernel_mgr.unset_precomputed_distance();
 	SG_SDEBUG("Leaving!\n");
 	return result;
 }

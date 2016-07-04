@@ -38,7 +38,6 @@ namespace shogun
 {
 
 template <typename T> class SGVector;
-class CCustomDistance;
 
 namespace internal
 {
@@ -51,15 +50,14 @@ class MultiKernelMMD
 public:
 	MultiKernelMMD(index_t nx, index_t ny, EStatisticType stype);
 	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const;
-	void set_distance(CCustomDistance* distance);
 private:
 	struct terms_t;
+	void add_term(terms_t&, float32_t, index_t, index_t) const;
+	float64_t compute_mmd(terms_t& t) const;
+
 	const index_t n_x;
 	const index_t n_y;
 	const EStatisticType s_type;
-	std::shared_ptr<CCustomDistance> m_distance;
-	void add_term(terms_t&, float32_t, index_t, index_t) const;
-	float64_t compute_mmd(terms_t& t) const;
 };
 
 }
