@@ -44,12 +44,12 @@ TEST(Any, as)
 	EXPECT_THROW(any.as<float64_t>(), std::logic_error);
 }
 
-TEST(Any, sameType)
+TEST(Any, same_type)
 {
 	int32_t integer = 10;
 	auto any = Any(integer);
-	EXPECT_EQ(any.sameType<int32_t>(), true);
-	EXPECT_EQ(any.sameType<float64_t>(), false);
+	EXPECT_EQ(any.same_type<int32_t>(), true);
+	EXPECT_EQ(any.same_type<float64_t>(), false);
 }
 
 TEST(Any, empty)
@@ -61,12 +61,12 @@ TEST(Any, empty)
 	EXPECT_EQ(empty_any.empty(), true);
 }
 
-TEST(Any, sameTypeFallback)
+TEST(Any, same_type_fallback)
 {
 	int32_t integer = 10;
 	auto any = Any(integer);
-	EXPECT_EQ(any.sameTypeFallback<int32_t>(), true);
-	EXPECT_EQ(any.sameTypeFallback<float64_t>(), false);
+	EXPECT_EQ(any.same_type_fallback<int32_t>(), true);
+	EXPECT_EQ(any.same_type_fallback<float64_t>(), false);
 }
 
 TEST(Any, erase_type)
