@@ -5,6 +5,7 @@ import os.path
 import argparse
 import re
 from copy import copy
+from functools import reduce
 # import set in a python 2->3 safe way
 try:
     set
