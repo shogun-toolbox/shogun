@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,48 +27,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
+ * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalg/BaseVector.h>
-
-#ifndef CPUVECTOR_H__
-#define CPUVECTOR_H__
-
-#ifdef HAVE_CXX11
+#ifndef GPU_MEMORY_BASE_H__
+#define GPU_MEMORY_BASE_H__
 
 namespace shogun
 {
 
-/** CPU vector structure */
-template <class T>
-struct CPUVector : public BaseVector<T>
+/** @brief interface for GPU memory libraries */
+template <typename T>
+struct GPUMemoryBase
 {
-	/** vector  */
-	T* CPUptr;
-	/** length of vector  */
-	index_t vlen;
-
-	/** Default Constructor */
-	CPUVector();
-
-	/** Wrap SGVector */
-	CPUVector(const SGVector<T> &vector);
-
-	/** Copy Constructor*/
-	CPUVector(const CPUVector<T> &vector);
-
-	/** Data Storage */
-	inline bool onGPU()
-    	{
-        	return false;
+	/** Default constructor */
+	GPUMemoryBase()
+	{
 	}
+
+	/** Clone GPU vector
+	 *
+	 * @param GPUMemoryBase structure pointer
+	 * @return a deep-copy of GPUMemoryBase structure pointer
+	 */
+	virtual GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector) const = 0;
 };
 
 }
 
-#endif //HAVE_CXX11
-
-#endif
+#endif //GPU_MEMORY_BASE_H__

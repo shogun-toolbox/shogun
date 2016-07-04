@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,79 +27,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
+ * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/mathematics/linalg/GPUVector.h>
-#include <shogun/mathematics/linalg/GPUArray.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgBackendBase.h>
 
-#ifdef HAVE_CXX11
+#ifndef LINALG_BACKEND_EIGEN_H__
+#define LINALG_BACKEND_EIGEN_H__
 
 namespace shogun
 {
 
-template <class T>
-GPUVector<T>::GPUVector()
+/** @brief linalg methods with Eigen3 backend */
+class LinalgBackendEigen : public LinalgBackendBase
 {
-	init();
-}
-
-template <class T>
-GPUVector<T>::GPUVector(const SGVector<T> &vector)
-{
-	init();
-	vlen = vector.vlen;
-
-#ifdef HAVE_VIENNACL
-	gpuarray = std::unique_ptr<GPUArray>(new GPUArray(vector));
-#else
-	SG_SERROR("User did not register GPU backend. \n");
-#endif
-}
-
-template <class T>
-GPUVector<T>::GPUVector(const GPUVector<T> &vector)
-{
-	init();
-	vlen = vector.vlen;
-	offset = vector.offset;
-#ifdef HAVE_VIENNACL
-	gpuarray = std::unique_ptr<GPUArray>(new GPUArray(*(vector.gpuarray)));
-#else
-	SG_SERROR("User did not register GPU backend. \n");
-#endif
-}
-
-template <class T>
-void GPUVector<T>::init()
-{
-	vlen = 0;
-	offset = 0;
-}
-
-template <class T>
-GPUVector<T>& GPUVector<T>::operator=(const GPUVector<T> &other)
-{
-	// check for self-assignment
-	if(&other == this)
-	{
-		return *this;
+public:
+	/** Implementation of @see LinalgBackendBase::dot */
+	#define BACKEND_GENERIC_DOT(Type) \
+	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
+	{  \
+		return dot_impl(a, b);  \
 	}
 
-	// reuse storage when possible
-	gpuarray.reset(new GPUArray(*(other.gpuarray)));
-	vlen = other.vlen;
-	return *this;
+	BACKEND_GENERIC_DOT(bool);
+	BACKEND_GENERIC_DOT(char);
+	BACKEND_GENERIC_DOT(int8_t);
+	BACKEND_GENERIC_DOT(uint8_t);
+	BACKEND_GENERIC_DOT(int16_t);
+	BACKEND_GENERIC_DOT(uint16_t);
+	BACKEND_GENERIC_DOT(int32_t);
+	BACKEND_GENERIC_DOT(uint32_t);
+	BACKEND_GENERIC_DOT(int64_t);
+	BACKEND_GENERIC_DOT(uint64_t);
+	BACKEND_GENERIC_DOT(float32_t);
+	BACKEND_GENERIC_DOT(float64_t);
+	BACKEND_GENERIC_DOT(floatmax_t);
+	BACKEND_GENERIC_DOT(complex128_t);
+	#undef BACKEND_GENERIC_DOT
+
+private:
+	/** Eigen3 vector dot-product method */
+	template <typename T>
+	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
+	{
+		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+};
+
 }
 
-template <class T>
-GPUVector<T>::~GPUVector()
-{
-}
-
-template struct GPUVector<int32_t>;
-template struct GPUVector<float32_t>;
-
-}
-
-#endif //HAVE_CXX11
+#endif //LINALG_BACKEND_EIGEN_H__
