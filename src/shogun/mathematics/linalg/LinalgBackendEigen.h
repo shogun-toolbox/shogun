@@ -44,6 +44,29 @@ namespace shogun
 class LinalgBackendEigen : public LinalgBackendBase
 {
 public:
+	/** Implementation of @see LinalgBackendBase::add */
+	#define BACKEND_GENERIC_ADD(Type) \
+	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
+	{  \
+		return add_impl(a, b, alpha, beta); \
+	}
+
+	BACKEND_GENERIC_ADD(bool);
+	BACKEND_GENERIC_ADD(char);
+	BACKEND_GENERIC_ADD(int8_t);
+	BACKEND_GENERIC_ADD(uint8_t);
+	BACKEND_GENERIC_ADD(int16_t);
+	BACKEND_GENERIC_ADD(uint16_t);
+	BACKEND_GENERIC_ADD(int32_t);
+	BACKEND_GENERIC_ADD(uint32_t);
+	BACKEND_GENERIC_ADD(int64_t);
+	BACKEND_GENERIC_ADD(uint64_t);
+	BACKEND_GENERIC_ADD(float32_t);
+	BACKEND_GENERIC_ADD(float64_t);
+	BACKEND_GENERIC_ADD(floatmax_t);
+	BACKEND_GENERIC_ADD(complex128_t);
+	#undef BACKEND_GENERIC_ADD
+
 	/** Implementation of @see LinalgBackendBase::dot */
 	#define BACKEND_GENERIC_DOT(Type) \
 	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
@@ -68,6 +91,19 @@ public:
 	#undef BACKEND_GENERIC_DOT
 
 private:
+	/** Eigen3 vector C = alpha*A + beta*B method */
+	template <typename T>
+	SGVector<T> add_impl(const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta) const
+	{
+		SGVector<T> c(a.vlen);
+		typename SGVector<T>::EigenVectorXtMap a_eig = a;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap c_eig = c;
+
+		c_eig = alpha * a_eig + beta * b_eig;
+		return c;
+	}
+
 	/** Eigen3 vector dot-product method */
 	template <typename T>
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
