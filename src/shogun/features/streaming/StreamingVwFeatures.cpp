@@ -77,14 +77,17 @@ void CStreamingVwFeatures::reset_stream()
 
 CVwEnvironment* CStreamingVwFeatures::get_env()
 {
-	SG_REF(env);
 	return env;
 }
 
 void CStreamingVwFeatures::set_env(CVwEnvironment* vw_env)
 {
-	env = vw_env;
-	SG_REF(env);
+	if(vw_env!=env)
+	{
+		SG_REF(vw_env);
+		SG_UNREF(env);
+		env = vw_env;
+	}
 }
 
 void CStreamingVwFeatures::expand_if_required(float32_t*& vec, int32_t& len)
