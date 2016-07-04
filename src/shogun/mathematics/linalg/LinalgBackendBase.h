@@ -50,6 +50,33 @@ class LinalgBackendBase
 {
 public:
 	/**
+	 * Wrapper method of add operation the operation C = alpha*A + beta*B.
+	 *
+	 * @see linalg::add
+	 */
+	#define BACKEND_GENERIC_ADD(Type) \
+	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+
+	BACKEND_GENERIC_ADD(bool);
+	BACKEND_GENERIC_ADD(char);
+	BACKEND_GENERIC_ADD(int8_t);
+	BACKEND_GENERIC_ADD(uint8_t);
+	BACKEND_GENERIC_ADD(int16_t);
+	BACKEND_GENERIC_ADD(uint16_t);
+	BACKEND_GENERIC_ADD(int32_t);
+	BACKEND_GENERIC_ADD(uint32_t);
+	BACKEND_GENERIC_ADD(int64_t);
+	BACKEND_GENERIC_ADD(uint64_t);
+	BACKEND_GENERIC_ADD(float32_t);
+	BACKEND_GENERIC_ADD(float64_t);
+	BACKEND_GENERIC_ADD(floatmax_t);
+	BACKEND_GENERIC_ADD(complex128_t);
+	#undef BACKEND_GENERIC_ADD
+
+	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.
 	 *
 	 * @see linalg::dot

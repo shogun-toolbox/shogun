@@ -71,6 +71,23 @@ LinalgBackendBase* infer_backend(const SGVector<Type>& a, const SGVector<Type>& 
 }
 
 /**
+ * Performs the operation C = alpha*A + beta*B.
+ * @param A first vector
+ * @param B second vector
+ * @param alpha constant to be multiplied by the first vector
+ * @param beta constant to be multiplied by the second vector
+ * @return The result vector
+ */
+template <typename Type>
+SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha=1, Type beta=1)
+{
+	REQUIRE(a.vlen == b.vlen, "Vectors should have same length! "
+			"a(%d) vs b(%d)\n", a.vlen, b.vlen);
+
+	return infer_backend(a, b)->add(a, b, alpha, beta);
+}
+
+/**
  * Vector dot-product that works with generic vectors.
  *
  * @param a first vector
