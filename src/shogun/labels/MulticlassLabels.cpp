@@ -137,7 +137,7 @@ int32_t CMulticlassLabels::get_num_classes()
 
 CLabels* CMulticlassLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=nullptr;
+	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
 	shallow_copy_labels=new CMulticlassLabels(m_labels.size());
 	SG_REF(shallow_copy_labels);

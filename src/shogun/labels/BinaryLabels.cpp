@@ -141,7 +141,7 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 
 CLabels* CBinaryLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=nullptr;
+	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
 	shallow_copy_labels=new CBinaryLabels(m_labels.size());
 	SG_REF(shallow_copy_labels);

@@ -27,7 +27,7 @@ ELabelType CRegressionLabels::get_label_type() const
 
 CLabels* CRegressionLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=nullptr;
+	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
 	shallow_copy_labels=new CRegressionLabels(m_labels.size());
 	SG_REF(shallow_copy_labels);
