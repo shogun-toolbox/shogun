@@ -644,6 +644,7 @@ CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 	SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_features, num_vectors);
 	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
 	shallow_copy_features=new CDenseFeatures<ST>(shallow_copy_matrix);
+	SG_REF(shallow_copy_features);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_features->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 	

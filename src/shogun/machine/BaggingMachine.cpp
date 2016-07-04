@@ -76,9 +76,8 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
 	output.zero();
 
-	/*
-	#pragma omp parallel for num_threads(parallel->get_num_threads())
-	*/
+	
+	#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
@@ -139,7 +138,21 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		ASSERT(c != NULL);
 		SGVector<index_t> idx(get_bag_size());
 		idx.random(0, m_features->get_num_vectors()-1);
-		CLabels* labels = m_labels->shallow_subset_copy();
+
+		CFeatures* features;
+		CLabels* labels;
+
+		if (get_global_parallel()->get_num_threads()==1)
+		{
+			features = m_features;
+			labels = m_labels;
+		}
+		else
+		{
+			features = m_features->shallow_subset_copy();
+			labels = m_labels->shallow_subset_copy();
+		}
+
 		labels->add_subset(idx);
 		/* TODO:
 		   if it's a binary labeling ensure that
@@ -157,7 +170,6 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 			}
 		}
 		*/
-		CFeatures* features = m_features->shallow_subset_copy();
 		features->add_subset(idx);
 		set_machine_parameters(c,idx);
 		c->set_labels(labels);
@@ -173,6 +185,12 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 		// add trained machine to bag array
 		m_bags->push_back(c);
+		}
+
+		if (get_global_parallel()->get_num_threads()!=1)
+		{
+			SG_UNREF(features);
+			SG_UNREF(labels);
 		}
 
 		SG_UNREF(c);

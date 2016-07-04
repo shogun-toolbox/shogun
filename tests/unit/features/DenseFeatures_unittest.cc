@@ -131,8 +131,7 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 			data(i,j)=CMath::random(0, n-1);
 	
 	SGVector<index_t> inds(n/2);
-	for (index_t i=0; i<inds.vlen; ++i)
-		inds[i]=CMath::random(0, n-1);
+	inds.random(0, n-1);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	features->add_subset(inds);
