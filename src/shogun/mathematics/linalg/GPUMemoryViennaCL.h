@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,69 +27,81 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: 2016 Pan Deng, Soumyajit De, Viktor Gal
+ * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/linalg/BaseVector.h>
+#ifndef GPU_MEMORY_VIENNACL_H__
+#define GPU_MEMORY_VIENNACL_H__
+
+#include <shogun/lib/common.h>
+
+#ifdef HAVE_VIENNACL
+#include <viennacl/vector.hpp>
 #include <memory>
-
-#ifndef GPU_Vector_H__
-#define GPU_Vector_H__
-
-#ifdef HAVE_CXX11
 
 namespace shogun
 {
 
-/** GPU vector wrapper structure */
-template <class T>
-struct GPUVector : public BaseVector<T>
+/** @brief ViennaCL memory structure.
+ * Saves data to GPU and clone data.
+ * @see SGVector
+ */
+template <typename T>
+struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 {
-	/** Structure for different types of GPU vectors */
-	struct GPUArray;
+	friend class LinalgBackendViennaCL;
 
-	/** Opaque pointer of GPUArray */
-	std::unique_ptr<GPUArray> gpuarray;
+	typedef viennacl::backend::mem_handle VCLMemoryArray;
+	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
 
-	/** Default Constructor */
-	GPUVector();
-
-	/** Wrap SGVector */
-	GPUVector(const SGVector<T> &vector);
-
-	/** Copy Constructor*/
-	GPUVector(const GPUVector<T> &vector);
-
-	/** Empty destructor */
-	~GPUVector();
-
-	/** needs to be overridden to initialize empty data */
-	void init();
-
-	/** Overload operator "=" */
-	GPUVector<T>& operator=(const GPUVector<T> &other);
-
-	/** Data Storage */
-	inline bool onGPU()
+	/** Default constructor */
+	GPUMemoryViennaCL() : m_data(new VCLMemoryArray())
 	{
-		return true;
+		init();
+	};
+
+	/** Wraps a vector around an existing memory segment
+	 *
+	 * @param vector GPUMemoryBase pointer
+	 */
+	GPUMemoryViennaCL(GPUMemoryBase<T>* vector) : m_data(new VCLMemoryArray())
+	{
+		GPUMemoryViennaCL<T>* temp_vec = static_cast<GPUMemoryViennaCL<T>*>(vector);
+		init();
+		m_data = temp_vec->m_data;
+		m_offset = temp_vec->m_offset;
+	};
+
+	/** Clone GPU vector */
+	GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector) const
+	{
+		std::shared_ptr<GPUMemoryViennaCL<T>> temp_vector;
+		temp_vector = std::shared_ptr<GPUMemoryViennaCL<T>>(new GPUMemoryViennaCL<T>(vector));
+		return temp_vector.get();
 	}
 
-public:
-	/** Vector length */
-	index_t vlen;
+	/** ViennaCL Vector structure that saves the data */
+	VCLVectorBase data(index_t len)
+	{
+		return VCLVectorBase(*m_data, len, m_offset, 1);
+	}
+
+private:
+	void init()
+	{
+		m_offset = 0;
+	}
+
+	/** Memory segment holding the data for the vector */
+	alignas(CPU_CACHE_LINE_SIZE) std::shared_ptr<VCLMemoryArray> m_data;
 
 	/** Offset for the memory segment, i.e the data of the vector
 	 * starts at vector+offset
 	 */
-	index_t offset;
+	alignas(CPU_CACHE_LINE_SIZE) index_t m_offset;
 };
 
 }
+#endif // HAVE_VIENNACL
 
-#endif //HAVE_CXX11
-
-#endif
+#endif //GPU_MEMORY_VIENNACL_H__
