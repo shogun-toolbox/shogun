@@ -102,6 +102,18 @@ Type dot(const SGVector<Type>& a, const SGVector<Type>& b)
 }
 
 /**
+ * Method that computes the vector sum
+ *
+ * @param vec a vector whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$
+ */
+template <typename Type>
+Type sum(const SGVector<Type>& vec)
+{
+	return infer_backend(vec)->sum(vec);
+}
+
+/**
  * Transfers data to GPU memory. Does nothing if no GPU backend registered.
  *
  * @param vector SGVector to be transferred

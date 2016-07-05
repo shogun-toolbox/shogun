@@ -90,6 +90,28 @@ public:
 	BACKEND_GENERIC_DOT(complex128_t);
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::sum */
+	#define BACKEND_GENERIC_SUM(Type) \
+	virtual Type sum(const SGVector<Type>& vec) const \
+	{  \
+		return sum_impl(vec);  \
+	}
+	BACKEND_GENERIC_SUM(bool);
+	BACKEND_GENERIC_SUM(char);
+	BACKEND_GENERIC_SUM(int8_t);
+	BACKEND_GENERIC_SUM(uint8_t);
+	BACKEND_GENERIC_SUM(int16_t);
+	BACKEND_GENERIC_SUM(uint16_t);
+	BACKEND_GENERIC_SUM(int32_t);
+	BACKEND_GENERIC_SUM(uint32_t);
+	BACKEND_GENERIC_SUM(int64_t);
+	BACKEND_GENERIC_SUM(uint64_t);
+	BACKEND_GENERIC_SUM(float32_t);
+	BACKEND_GENERIC_SUM(float64_t);
+	BACKEND_GENERIC_SUM(floatmax_t);
+	BACKEND_GENERIC_SUM(complex128_t);
+	#undef BACKEND_GENERIC_SUM
+
 private:
 	/** Eigen3 vector C = alpha*A + beta*B method */
 	template <typename T>
@@ -109,6 +131,13 @@ private:
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+	/** Eigen3 vector sum method */
+	template <typename T>
+	T sum_impl(const SGVector<T>& vec) const
+	{
+		return (typename SGVector<T>::EigenVectorXtMap(vec)).sum();
 	}
 
 };

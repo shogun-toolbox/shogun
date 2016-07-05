@@ -37,3 +37,14 @@ TEST(LinalgBackendEigen, dot)
 
 	EXPECT_NEAR(result, 5, 1E-15);
 }
+
+TEST(LinalgBackendEigen, sum)
+{
+	const index_t size = 10;
+	SGVector<int32_t> vec(size);
+	vec.range_fill(0);
+
+	auto result = sum(vec);
+
+	EXPECT_NEAR(result, 45, 1E-15);
+}

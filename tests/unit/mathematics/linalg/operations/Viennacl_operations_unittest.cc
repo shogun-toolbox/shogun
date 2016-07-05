@@ -49,4 +49,19 @@ TEST(LinalgBackendViennaCL, dot)
 	EXPECT_NEAR(result, 5, 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, sum)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 10;
+	SGVector<int32_t> vec(size), vec_gpu;
+	vec.range_fill(0);
+
+	vec_gpu = to_gpu(vec);
+
+	auto result = sum(vec);
+
+	EXPECT_NEAR(result, 45, 1E-15);
+}
+
 #endif // HAVE_VIENNACL
