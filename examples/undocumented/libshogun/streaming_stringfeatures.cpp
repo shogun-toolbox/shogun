@@ -1,7 +1,12 @@
 // This example simply demonstrates the use/working of StreamingStringFeatures
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingStringFeatures.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/SGString.h>
+#include <shogun/base/init.h>
+
+#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <shogun/features/streaming/StreamingStringFeatures.h>
 
 using namespace shogun;
 
@@ -22,9 +27,11 @@ int main(int argc, char **argv)
 
 	// Create a StreamingAsciiFile from our input file
 	CStreamingAsciiFile* file = new CStreamingAsciiFile("../data/fm_train_dna.dat");
+	SG_REF(file);
 
 	// This file contains unlabelled data, so the second arg is `false'.
 	CStreamingStringFeatures<char>* feat = new CStreamingStringFeatures<char>(file, false, 1024);
+	SG_REF(feat);
 	// Alphabet to use is DNA
 	feat->use_alphabet(DNA);
 
@@ -45,7 +52,6 @@ int main(int argc, char **argv)
 	SG_UNREF(alpha);
 
 	SG_UNREF(feat);
-	SG_UNREF(file);
 
 	exit_shogun();
 	return 0;

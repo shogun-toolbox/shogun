@@ -174,6 +174,11 @@ public:
 	 */
 	virtual const char* get_name() const { return "ParseBuffer"; }
 
+	/** Initialize vector if free_vectors_on_destruct is True and the vector is NULL
+	 *
+	 */
+	void init_vector();
+
 protected:
 	/**
 	 * Increments the 'read' position in the buffer.
@@ -220,6 +225,18 @@ protected:
 	bool free_vectors_on_destruct;
 };
 
+
+template <class T> void CParseBuffer<T>::init_vector()
+{
+	if (!free_vectors_on_destruct)
+		return;
+	for (int32_t i=0; i<ring_size; i++)
+	{
+		if(ex_ring[i].fv==NULL)
+			ex_ring[i].fv = new T();
+	}
+}
+
 template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 {
 	ring_size = size;
@@ -239,10 +256,8 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	{
 		ex_used[i] = E_EMPTY;
 
-		/* this closes a memory leak, seems to have no bad consequences,
-		 * but I am not completely sure due to lack of any tests */
-		//ex_ring[i].fv = SG_MALLOC(T, 1);
-		//ex_ring[i].length = 1;
+		ex_ring[i].fv = NULL;
+		ex_ring[i].length = 1;
 		ex_ring[i].label = FLT_MAX;
 
 		pthread_cond_init(&ex_in_use_cond[i], NULL);
@@ -262,7 +277,7 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 		{
 			SG_DEBUG("%s::~%s(): destroying examples ring vector %d at %p\n",
 					get_name(), get_name(), i, ex_ring[i].fv);
-			SG_FREE(ex_ring[i].fv);
+			delete ex_ring[i].fv;
 		}
 		pthread_mutex_destroy(&ex_in_use_mutex[i]);
 		pthread_cond_destroy(&ex_in_use_cond[i]);
