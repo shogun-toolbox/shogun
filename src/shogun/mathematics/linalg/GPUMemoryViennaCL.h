@@ -60,6 +60,17 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		init();
 	};
 
+	/** Creates a new vector
+	 *
+	 * @param length Number of elements
+	 */
+	GPUMemoryViennaCL(index_t len): m_data(new VCLMemoryArray())
+	{
+		init();
+		viennacl::backend::memory_create(*m_data, sizeof(T)*len,
+			viennacl::context());
+	}
+
 	/** Wraps a vector around an existing memory segment
 	 *
 	 * @param vector GPUMemoryBase pointer
