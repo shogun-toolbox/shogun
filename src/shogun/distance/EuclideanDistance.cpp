@@ -11,11 +11,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/EuclideanDistance.h>
+
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 using namespace shogun;
 
 CEuclideanDistance::CEuclideanDistance() : CDistance()
@@ -96,16 +98,24 @@ void CEuclideanDistance::precompute_lhs()
 
 void CEuclideanDistance::precompute_rhs()
 {
+<<<<<<< HEAD
 	REQUIRE(rhs, "Right hand side feature cannot be NULL!\n");
 	const index_t num_vec=rhs->get_num_vectors();
+=======
+	SGVector<float64_t>lhs_sq=SGVector<float64_t>(lhs->get_num_vectors());
+>>>>>>> 9f0980c... Remove linalg::dot
 
 	if (m_rhs_squared_norms.vlen!=num_vec)
 		m_rhs_squared_norms=SGVector<float64_t>(num_vec);
 
+<<<<<<< HEAD
 	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
 #pragma omp parallel for
 	for(index_t i =0; i<num_vec; ++i)
 		m_rhs_squared_norms[i]=casted_rhs->dot(i, casted_rhs, i);
+=======
+	m_lhs_squared_norms=lhs_sq;
+>>>>>>> 9f0980c... Remove linalg::dot
 }
 
 void CEuclideanDistance::reset_precompute()
