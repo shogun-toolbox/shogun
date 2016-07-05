@@ -32,7 +32,6 @@
 #ifndef REDUX_H_
 #define REDUX_H_
 
-#include <shogun/mathematics/linalg/internal/implementation/Dot.h>
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
@@ -44,22 +43,6 @@ namespace shogun
 
 namespace linalg
 {
-
-/**
- * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors.
- *
- * @param a first vector
- * @param b second vector
- * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
- * as \f$\sum_i a_i b_i\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Vector>
-typename Vector::Scalar dot(Vector a, Vector b)
-{
-	return implementation::dot<backend,Vector>::compute(a, b);
-}
-
 /** Returns the largest element in a matrix or vector
  * @param m the matrix or the vector
  * @return the value of the largest element
