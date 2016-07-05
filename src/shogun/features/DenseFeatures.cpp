@@ -639,7 +639,7 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
 template<class ST>
 CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
 {
-	CFeatures* shallow_copy_features=nullptr;
+	CFeatures* shallow_copy_features=NULL;
 	
 	SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_features, num_vectors);
 	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
