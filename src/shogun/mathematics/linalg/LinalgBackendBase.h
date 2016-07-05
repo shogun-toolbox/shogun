@@ -50,6 +50,33 @@ class LinalgBackendBase
 {
 public:
 	/**
+	 * Wrapper method of add operation the operation C = alpha*A + beta*B.
+	 *
+	 * @see linalg::add
+	 */
+	#define BACKEND_GENERIC_ADD(Type) \
+	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+
+	BACKEND_GENERIC_ADD(bool);
+	BACKEND_GENERIC_ADD(char);
+	BACKEND_GENERIC_ADD(int8_t);
+	BACKEND_GENERIC_ADD(uint8_t);
+	BACKEND_GENERIC_ADD(int16_t);
+	BACKEND_GENERIC_ADD(uint16_t);
+	BACKEND_GENERIC_ADD(int32_t);
+	BACKEND_GENERIC_ADD(uint32_t);
+	BACKEND_GENERIC_ADD(int64_t);
+	BACKEND_GENERIC_ADD(uint64_t);
+	BACKEND_GENERIC_ADD(float32_t);
+	BACKEND_GENERIC_ADD(float64_t);
+	BACKEND_GENERIC_ADD(floatmax_t);
+	BACKEND_GENERIC_ADD(complex128_t);
+	#undef BACKEND_GENERIC_ADD
+
+	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.
 	 *
 	 * @see linalg::dot
@@ -75,6 +102,32 @@ public:
 	BACKEND_GENERIC_DOT(floatmax_t);
 	BACKEND_GENERIC_DOT(complex128_t);
 	#undef BACKEND_GENERIC_DOT
+
+	/**
+	 * Wrapper method of vector sum that works with generic vectors.
+	 *
+	 * @see linalg::sum
+	 */
+	#define BACKEND_GENERIC_SUM(Type) \
+	virtual Type sum(const SGVector<Type>& vec) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	BACKEND_GENERIC_SUM(bool);
+	BACKEND_GENERIC_SUM(char);
+	BACKEND_GENERIC_SUM(int8_t);
+	BACKEND_GENERIC_SUM(uint8_t);
+	BACKEND_GENERIC_SUM(int16_t);
+	BACKEND_GENERIC_SUM(uint16_t);
+	BACKEND_GENERIC_SUM(int32_t);
+	BACKEND_GENERIC_SUM(uint32_t);
+	BACKEND_GENERIC_SUM(int64_t);
+	BACKEND_GENERIC_SUM(uint64_t);
+	BACKEND_GENERIC_SUM(float32_t);
+	BACKEND_GENERIC_SUM(float64_t);
+	BACKEND_GENERIC_SUM(floatmax_t);
+	BACKEND_GENERIC_SUM(complex128_t);
+	#undef BACKEND_GENERIC_SUM
 
 	/**
 	 * Wrapper method of Transferring data to GPU memory.
