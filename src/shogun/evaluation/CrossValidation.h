@@ -154,7 +154,7 @@ public:
 		m_shared_features = shared_features;
 	}
 
-	bool get_shared_features(bool shared_features)
+	bool get_shared_features()
 	{
 		return m_shared_features;
 	}
