@@ -149,6 +149,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_cholesky)
 	EXPECT_NEAR(L(2,2),  -0.006876868793106,  abs_tolorance);
 
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
@@ -242,6 +243,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
 	EXPECT_NEAR(alpha[2],  0.028021450045659,  abs_tolorance);
 
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
 
 
@@ -331,6 +333,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_negative_log_marginal_likelihood)
 	EXPECT_NEAR(nml, 3.617413494305376,  abs_tolorance);
 
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
@@ -466,7 +469,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	// clean up
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
-
+	SG_UNREF(latent_features_train);
 	SG_UNREF(inf);
 }
 

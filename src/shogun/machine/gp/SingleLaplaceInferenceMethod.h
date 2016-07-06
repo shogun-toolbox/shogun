@@ -248,20 +248,12 @@ class SingleLaplaceNewtonOptimizer: public Minimizer
 public:
 	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual ~SingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~SingleLaplaceNewtonOptimizer() {}
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleLaplaceInferenceMethod *obj)
-	{
-		if(obj!=m_obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
-			m_obj=obj;
-		}
-	}
+	void set_target(CSingleLaplaceInferenceMethod *obj) { m_obj=obj; }
 
 	/** Do minimization and get the optimal value 
 	 * 

@@ -3472,6 +3472,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
@@ -3585,6 +3586,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
 	EXPECT_NEAR(var_vector[3],  0.747898784171351,  abs_tolorance);
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
@@ -3698,6 +3700,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
 #endif /* HAVE_LINALG_LIB */

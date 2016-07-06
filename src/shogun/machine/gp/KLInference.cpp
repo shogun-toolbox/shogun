@@ -48,15 +48,10 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~KLInferenceCostFunction() { SG_UNREF(m_obj); }
+        virtual ~KLInferenceCostFunction() {}
         void set_target(CKLInference *obj)
         {
-                if(obj!=m_obj)
-                {
-                        SG_REF(obj);
-                        SG_UNREF(m_obj);
-                        m_obj=obj;
-                }
+		m_obj=obj;
         }
         virtual float64_t get_cost()
         {
@@ -328,7 +323,6 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 float64_t CKLInference::optimization()
 {
         KLInferenceCostFunction *cost_fun=new KLInferenceCostFunction();
-        SG_REF(this);
         cost_fun->set_target(this);
 
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
