@@ -73,15 +73,10 @@ class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public: 
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	virtual ~SingleLaplaceInferenceMethodCostFunction() {}
 	void set_target(CSingleLaplaceInferenceMethod *obj)
 	{
-		if(obj!=m_obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
-			m_obj=obj;
-		}
+		m_obj=obj;
 	}
 	virtual float64_t get_cost()
 	{
@@ -452,7 +447,6 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 	SingleLaplaceNewtonOptimizer *opt=dynamic_cast<SingleLaplaceNewtonOptimizer*>(m_minimizer);
 	if (opt)
 	{
-		SG_REF(this);
 		opt->set_target(this);
 		opt->minimize();
 	}
@@ -462,7 +456,6 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
 
 		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
-		SG_REF(this);
 		cost_fun->set_target(this);
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();

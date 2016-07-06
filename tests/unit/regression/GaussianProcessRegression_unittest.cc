@@ -610,6 +610,7 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	
 	// clean up
 	SG_UNREF(gpr);
+	SG_UNREF(inducing_features_train);
 }
 
 #ifdef HAVE_LINALG_LIB
@@ -734,6 +735,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	EXPECT_NEAR(var_vector[3], 4.354657330167651, 1E-10);
 
 	// clean up
+	SG_UNREF(latent_features_train);
 	SG_UNREF(gpr);
 }
 #endif /* HAVE_LINALG_LIB */

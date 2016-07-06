@@ -205,6 +205,7 @@ TEST(SingleFITCInference,set_kernel)
 
 	SG_UNREF(gradient2);
 	SG_UNREF(parameter_dictionary2);
+	SG_UNREF(inducing_features_train);
 
 	SG_UNREF(inf);
 }

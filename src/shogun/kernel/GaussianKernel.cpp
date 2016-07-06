@@ -151,9 +151,9 @@ void CGaussianKernel::register_params()
 	set_width(1.0);
 	set_cache_size(10);
 
-	CEuclideanDistance* distance=new CEuclideanDistance();
-	distance->set_disable_sqrt(true);
-	m_distance=distance;
+	CEuclideanDistance* dist=new CEuclideanDistance();
+	dist->set_disable_sqrt(true);
+	m_distance=dist;
 	SG_REF(m_distance);
 
 	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);

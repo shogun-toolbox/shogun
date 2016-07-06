@@ -56,15 +56,10 @@ class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 friend class KLDualInferenceMethodMinimizer;
 public:
 	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~KLDualInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	virtual ~KLDualInferenceMethodCostFunction() {}
 	void set_target(CKLDualInferenceMethod *obj)
 	{
-		if(obj!=m_obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
-			m_obj=obj;
-		}
+		m_obj=obj;
 	}
 	virtual float64_t get_cost()
 	{
@@ -498,6 +493,7 @@ void CKLDualInferenceMethod::update_alpha()
 		m_mu=SGVector<float64_t>(len);
 		m_s2=SGVector<float64_t>(len);
 		m_Sigma=SGMatrix<float64_t>(len, len);
+		m_Sigma.zero();
 		m_V=SGMatrix<float64_t>(len, len);
 	}
 
@@ -514,7 +510,6 @@ float64_t CKLDualInferenceMethod::optimization()
 	KLDualInferenceMethodMinimizer *minimizer=dynamic_cast<KLDualInferenceMethodMinimizer*>(m_minimizer);
 	REQUIRE(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer\n"); 
         KLDualInferenceMethodCostFunction* cost_fun=new  KLDualInferenceMethodCostFunction();
-	SG_REF(this);
 	cost_fun->set_target(this);
 	minimizer->set_cost_function(cost_fun);
 	float64_t nlml_opt = minimizer->minimize();

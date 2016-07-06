@@ -120,6 +120,7 @@ TEST(VarDTCInferenceMethod,get_negative_log_marginal_likelihood)
 	EXPECT_NEAR(nlz, 58.616164107936129, 1E-6);
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
@@ -221,6 +222,7 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 #ifdef HAVE_LINALG_LIB
@@ -329,5 +331,6 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 #endif /* HAVE_LINALG_LIB */

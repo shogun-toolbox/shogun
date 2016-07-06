@@ -388,21 +388,13 @@ class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 public:
 	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual ~SingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~SingleFITCLaplaceNewtonOptimizer() {}
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 *
 	 */
-	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
-	{
-		if(obj!=m_obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
-			m_obj=obj;
-		}
-	}
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj) { m_obj=obj; }
 	
 	/** Do minimization and get the optimal value 
 	 * 
