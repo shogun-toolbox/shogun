@@ -39,7 +39,6 @@ int main()
 	sgd->set_lambda(0.1);
 	sgd->train();
 
-	train_file->close();
 
 	// Now we want to test on other data
 	const char* test_file_name = "../data/fm_test_sparsereal.dat";
