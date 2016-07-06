@@ -122,12 +122,19 @@ public:
 	#undef BACKEND_GENERIC_FROM_GPU
 
 private:
+	/** static cast GPUMemoryBase class to GPUMemoryViennaCL */
+	template <typename T>
+	GPUMemoryViennaCL<T>* cast_to_viennacl(const SGVector<T> &a) const
+	{
+		return static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector.get());
+	}
+
 	/** ViennaCL vector C = alpha*A + beta*B method */
 	template <typename T>
 	SGVector<T> add_impl(const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta) const
 	{
-		GPUMemoryViennaCL<T>* a_gpu = static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector.get());
-		GPUMemoryViennaCL<T>* b_gpu = static_cast<GPUMemoryViennaCL<T>*>(b.gpu_vector.get());
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 		GPUMemoryViennaCL<T>* c_gpu = new GPUMemoryViennaCL<T>(a.size());
 
 		c_gpu->data(a.size()) = alpha * a_gpu->data(a.size()) + beta * b_gpu->data(b.size());
@@ -138,8 +145,8 @@ private:
 	template <typename T>
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
-		GPUMemoryViennaCL<T>* a_gpu = static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector.get());
-		GPUMemoryViennaCL<T>* b_gpu = static_cast<GPUMemoryViennaCL<T>*>(b.gpu_vector.get());
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
 		return viennacl::linalg::inner_prod(a_gpu->data(a.size()), b_gpu->data(b.size()));
 	}
@@ -163,7 +170,7 @@ private:
 	template <typename T>
 	void from_gpu_impl(const SGVector<T>& vector, T* data) const \
 	{
-		GPUMemoryViennaCL<T>* gpu_vec = static_cast<GPUMemoryViennaCL<T>*>(vector.gpu_vector.get());
+		GPUMemoryViennaCL<T>* gpu_vec = cast_to_viennacl(vector);
 		viennacl::backend::memory_read(*(gpu_vec->m_data),
 			gpu_vec->m_offset*sizeof(T), vector.size()*sizeof(T), data);
 	}
