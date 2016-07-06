@@ -82,7 +82,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_equals_shogun)
 		X.matrix[i]=CMath::randn_float();
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -114,7 +114,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx)
 	X(0,2)=3;
 	X(1,2)=6;
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a = 0;
@@ -149,7 +149,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy)
 	X(0,2)=3;
 	X(1,2)=6;
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -191,7 +191,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	index_t idx_a = 0;
@@ -229,7 +229,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -276,7 +276,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a=0;
@@ -305,7 +305,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a=0;
@@ -344,7 +344,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_dx_i_dx_j)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a=0;
@@ -384,7 +384,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_all)
 	X(1,2)=6;
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -414,7 +414,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy_sum)
 		X.matrix[i]=CMath::randn_float();
 		
 	float64_t sigma = 2;
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -443,7 +443,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_component)
 	X(1,2)=6;
 	float64_t sigma = 2;
 
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a = 0;
@@ -474,7 +474,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_component)
 	X(1,2)=6;
 	float64_t sigma = 2;
 
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a = 0;
@@ -502,7 +502,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_component)
 		
 	float64_t sigma = 2;
 
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a = 0;
@@ -530,7 +530,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j_component)
 		
 	float64_t sigma = 2;
 
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	
 	index_t idx_a = 0;
@@ -558,7 +558,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_component)
 		
 	float64_t sigma = 2;
 
-    auto kernel = make_shared<Gaussian>(sigma);
+	auto kernel = make_shared<Gaussian>(sigma);
 	kernel->set_lhs(X);
 	kernel->set_rhs(X);
 	
@@ -573,4 +573,78 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_component)
 			auto entry = kernel->dx_dy_component(idx_a, idx_b, i, j);
 			EXPECT_NEAR(result(i,j), entry, 1e-8);
 		}
+}
+
+TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dot_vec)
+{
+	index_t N=2;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=1.62435;
+	X(1,0)=-0.61176;
+	X(2,0)=-0.52817;
+	X(0,1)=-1.07297;
+	X(1,1)=0.86541;
+	X(2,1)=-2.30154;
+
+	SGVector<float64_t> vec(D);
+	vec[0] = 1.74481;
+	vec[1] = -0.76121;
+	vec[2] = 0.31904;
+
+	float64_t sigma = 2.0;
+	auto kernel = make_shared<Gaussian>(sigma);
+	kernel->set_lhs(X);
+	kernel->set_rhs(X);
+
+	SGMatrix<float64_t> result = kernel->dx_i_dx_j_dx_k_dot_vec(0,1,vec);
+
+	ASSERT_EQ(result.num_rows, D);
+	ASSERT_EQ(result.num_cols, D);
+
+	float64_t reference[] = {
+		-0.0563599, 0.03825135, -0.04886405,
+		0.03825135, -0.00974275, 0.02739213,
+		-0.04886405, 0.02739213, -0.02308755
+	};
+
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-8);
+}
+
+TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_dot_vec)
+{
+	index_t N=2;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=1.62435;
+	X(1,0)=-0.61176;
+	X(2,0)=-0.52817;
+	X(0,1)=-1.07297;
+	X(1,1)=0.86541;
+	X(2,1)=-2.30154;
+
+	SGVector<float64_t> vec(D);
+	vec[0] = 1.74481;
+	vec[1] = -0.76121;
+	vec[2] = 0.31904;
+
+	float64_t sigma = 2.0;
+	auto kernel = make_shared<Gaussian>(sigma);
+	kernel->set_lhs(X);
+	kernel->set_rhs(X);
+
+	SGMatrix<float64_t> result = kernel->dx_i_dx_j_dx_k_dx_k_dot_vec(0,1,vec);
+
+	ASSERT_EQ(result.num_rows, D);
+	ASSERT_EQ(result.num_cols, D);
+
+	float64_t reference[] = {
+		0.03681826, -0.06406674, 0.05795899,
+		-0.06406674, 0.0326645, -0.05582142,
+		0.05795899, -0.05582142, 0.03603589
+	};
+
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }

@@ -269,6 +269,14 @@ SGVector<float64_t> Nystrom::grad(index_t idx_test) const
 	return xi_grad;
 }
 
+SGMatrix<float64_t> Nystrom::hessian(index_t idx_test) const
+{
+	REQUIRE(false, "The hessian is not implemented for the Nystrom approximation\n");
+	auto D = get_num_dimensions();
+
+	return SGMatrix<float64_t>(D, D);
+}
+
 SGMatrix<float64_t> Nystrom::pinv_self_adjoint(const SGMatrix<float64_t>& A)
 {
 	// based on the snippet from

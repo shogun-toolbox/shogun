@@ -166,8 +166,8 @@ TEST(kernel_exp_family_impl_Full, fit_kernel_Gaussian)
 	
 	// from kernel_exp_family Python implementation
 	float64_t reference_x[] = {-0.99999999999999989, 0.00228091,  0.00342023,
-         0.00406425,  0.0092514 ,
-        -0.00646103, -0.01294499};
+		 0.00406425,  0.0092514 ,
+		-0.00646103, -0.01294499};
 
 	for (auto i=0; i<ND+1; i++)
 		EXPECT_NEAR(x[i], reference_x[i], 1e-5);
@@ -235,4 +235,44 @@ TEST(kernel_exp_family_impl_Full, grad_kernel_Gaussian)
 	float64_t reference2[] = {-0.61982803, -0.04194253};
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference2[i], 1e-8);
+}
+
+TEST(kernel_exp_family_impl_Full, hessian_kernel_Gaussian)
+{
+	index_t N=3;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=2;
+	X(1,1)=4;
+	X(0,2)=3;
+	X(1,2)=6;
+
+	float64_t sigma = 2;
+	float64_t lambda = 2;
+	auto kernel = new kernel::Gaussian(sigma);
+	Full est(X, kernel, lambda);
+	est.fit();
+	
+	SGVector<float64_t> x(D);
+	x[0] = 1;
+	x[1] = 1;
+	auto hessian = est.hessian(x);
+	
+	float64_t reference[] = {0.20518773, -0.01275602,
+							-0.01275602, -0.33620648};
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(hessian[i], reference[i], 1e-8);
+
+	x[0] = -1;
+	x[1] = 0;
+
+	hessian = est.hessian(x);
+
+	float64_t reference2[] = {0.12205638, 0.24511196,
+							  0.24511196, 0.12173557};
+
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(hessian[i], reference2[i], 1e-8);
 }

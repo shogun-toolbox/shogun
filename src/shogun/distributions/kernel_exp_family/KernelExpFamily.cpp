@@ -86,7 +86,7 @@ float64_t CKernelExpFamily::log_pdf(SGVector<float64_t> x)
 {
 	auto D = m_impl->get_num_dimensions();
 	REQUIRE(x.vector, "Given data point cannot be empty\n");
-	REQUIRE(x.vector, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
+	REQUIRE(x.vlen==D, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
 
 	return m_impl->log_pdf(x);
 }
@@ -98,6 +98,15 @@ SGVector<float64_t> CKernelExpFamily::grad(SGVector<float64_t> x)
 	REQUIRE(x.vlen==D, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
 
 	return m_impl->grad(x);
+}
+
+SGMatrix<float64_t> CKernelExpFamily::hessian(SGVector<float64_t> x)
+{
+	auto D = m_impl->get_num_dimensions();
+	REQUIRE(x.vector, "Given data point cannot be empty\n");
+	REQUIRE(x.vlen==D, "Dimension of given data point (%d) must match the estimator's (%d)\n", x.vlen, D);
+
+	return m_impl->hessian(x);
 }
 
 SGVector<float64_t> CKernelExpFamily::log_pdf_multiple(SGMatrix<float64_t> X)

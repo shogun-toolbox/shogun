@@ -83,12 +83,14 @@ public :
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
+	virtual SGMatrix<float64_t> hessian(index_t idx_test) const;
 
 	float64_t compute_xi_norm_2() const;
 	SGVector<float64_t> compute_h() const;
 
 	using Base::log_pdf;
 	using Base::grad;
+	using Base::hessian;
 };
 };
 
