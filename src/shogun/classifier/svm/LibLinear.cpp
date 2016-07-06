@@ -18,7 +18,7 @@
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
-
+#include <omp.h>
 using namespace shogun;
 
 CLibLinear::CLibLinear()
@@ -260,7 +260,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	int l = prob->l;
 	int w_size = prob->n;
 	int i, s, iter = 0;
-	double C, d, G;
+	double C, d;
 	double *QD = SG_MALLOC(double, l);
 	int *index = SG_MALLOC(int, l);
 	double *alpha = SG_MALLOC(double, l);
@@ -272,6 +272,18 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	double PGmax_old = CMath::INFTY;
 	double PGmin_old = -CMath::INFTY;
 	double PGmax_new, PGmin_new;
+
+	// for multi-core dual CD
+	// candidates: a block considered for gradient evaluation
+	// workingset: a subset of candidates for sequential CD updates
+	double eps1 = 0.1;
+	double min_eps1 = CMath::min(0.01*eps, eps1);
+	int init_candidates_size = 256;
+	int max_candidates_size = 4096;
+	int candidates_size = CMath::min(init_candidates_size, max_candidates_size);
+	double *Grad = new double[max_candidates_size];
+	int *workingset = new int[max_candidates_size];
+
 
 	// default solver_type: L2R_L2LOSS_SVC_DUAL
 	double diag[3] = {0.5/Cn, 0, 0.5/Cp};
@@ -304,8 +316,11 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			y[i] = -1;
 		}
 		QD[i] = diag[GETI(i)];
+		float64_t temp=prob->x->dot(i, prob->x,i);
 
-		QD[i] += prob->x->dot(i, prob->x,i);
+		QD[i] += temp;
+		prob->x->add_to_dense_vec(y[i]*alpha[i], i, w.vector, n);
+
 		index[i] = i;
 	}
 
@@ -318,96 +333,147 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		PGmax_new = -CMath::INFTY;
 		PGmin_new = CMath::INFTY;
+		int t = 0;
+		int num_updates_one_iter = 0;
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j =  CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 
-		for (s=0;s<active_size;s++)
+		while (t < active_size)
 		{
-			i = index[s];
-			int32_t yi = y[i];
+			
+			int32_t send = CMath::min(candidates_size, active_size-t);
 
-			G = prob->x->dense_dot(i, w.vector, n);
-			if (prob->use_bias)
-				G+=w.vector[n];
-
-			if (m_linear_term.vector)
-				G = G*yi + m_linear_term.vector[i];
-			else
-				G = G*yi-1;
-
-			C = upper_bound[GETI(i)];
-			G += alpha[i]*diag[GETI(i)];
-
-			PG = 0;
-			if (alpha[i] == 0)
+#pragma omp parallel for private(s,i) schedule(static)
+			for (s=0; s<send; s++)
 			{
-				if (G > PGmax_old)
-				{
-					active_size--;
-					CMath::swap(index[s], index[active_size]);
-					s--;
-					continue;
-				}
-				else if (G < 0)
-					PG = G;
-			}
-			else if (alpha[i] == C)
-			{
-				if (G < PGmin_old)
-				{
-					active_size--;
-					CMath::swap(index[s], index[active_size]);
-					s--;
-					continue;
-				}
-				else if (G > 0)
-					PG = G;
-			}
-			else
-				PG = G;
-
-			PGmax_new = CMath::max(PGmax_new, PG);
-			PGmin_new = CMath::min(PGmin_new, PG);
-
-			if(fabs(PG) > 1.0e-12)
-			{
-				double alpha_old = alpha[i];
-				alpha[i] = CMath::min(CMath::max(alpha[i] - G/QD[i], 0.0), C);
-				d = (alpha[i] - alpha_old)*yi;
-
-				prob->x->add_to_dense_vec(d, i, w.vector, n);
-
+				i = index[t+s];
+				Grad[s] = prob->x->dense_dot(i, w.vector, n);
 				if (prob->use_bias)
-					w.vector[n]+=d;
+					Grad[s]+=w[n];
+
+				if (m_linear_term.vector)
+					Grad[s] = Grad[s]*y[i] + m_linear_term.vector[i];
+				else
+					Grad[s] = Grad[s]*y[i]-1;
+				Grad[s] += alpha[i]*diag[GETI(i)];	
 			}
+			
+			int workingset_size = 0;
+			
+			for (s=0; s<send; s++)
+			{
+				PG = 0;
+				i = index[t+s];
+				C = upper_bound[GETI(i)];
+				if ((alpha[i] < C && Grad[s] < 0) ||
+					(alpha[i] > 0 && Grad[s] > 0))
+					PG = Grad[s];
+				else if ((alpha[i] == 0 && Grad[s] > PGmax_old) ||
+						 (alpha[i] == C && Grad[s] < PGmin_old))
+				{
+					active_size--;
+					send--;
+					if (t+send == active_size)
+						CMath::swap(index[t+s], index[t+send]);
+					else
+					{
+						int r = index[active_size];
+						index[active_size] = index[t+s];
+						index[t+s] = index[t+send];
+						index[t+send] = r;
+					}
+					Grad[s] = Grad[send];
+					s--;
+					continue;
+				}
+				PGmax_new = CMath::max(PGmax_new, PG);
+				PGmin_new = CMath::min(PGmin_new, PG);
+				if (fabs(PG) >= 0.1*eps1)
+				{
+					workingset[workingset_size] = i;
+					workingset_size++;
+				}
+			}
+			if (workingset_size == 0)
+				candidates_size = CMath::min((int)(candidates_size*1.5), max_candidates_size);
+			else if (workingset_size >= init_candidates_size)
+				candidates_size = candidates_size/2;
+
+			for (s=0; s<workingset_size; s++)
+			{
+				i = workingset[s];
+
+				const int32_t yi = y[i];
+
+				double G = (yi*(prob->x->dense_dot(i, w.vector, n)))-1;
+				if (prob->use_bias)
+					G+=yi*w[n];
+
+				C = upper_bound[GETI(i)];
+				G += alpha[i]*diag[GETI(i)];
+
+				double alpha_new = CMath::min(CMath::max(alpha[i] - G/QD[i], 0.0), C);
+				
+				d = alpha_new - alpha[i];
+				if (fabs(d) > 1.0e-15)
+				{
+					alpha[i] = alpha_new;
+					prob->x->add_to_dense_vec(d*yi, i, w.vector, n);
+					if (prob->use_bias)
+						w[n]+=yi*d;
+					num_updates_one_iter++;
+				}
+			}
+			t = t + send;
+
 		}
 
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
 		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6)
+		
+		// reset active set and decrease eps1
+		if(num_updates_one_iter == 0)
+		{
+			if(active_size == l && eps1 <= eps)
+				break;
+
+			eps1 = CMath::max(0.1*eps1, min_eps1);
+
+			active_size = l;
+			PGmax_old = CMath::INFTY;;
+			PGmin_old = -CMath::INFTY;;
+			continue;
+		}
+
+		if(gap <= eps1)
+			eps1 = CMath::max(0.1*eps1, min_eps1);
 
 		if(gap <= eps)
 		{
 			if(active_size == l)
 				break;
-			else
+
+			// use a stricter criteria for resetting active set
+			if(gap <= 0.9*eps || active_size >= 0.05*l)
 			{
 				active_size = l;
-				PGmax_old = CMath::INFTY;
-				PGmin_old = -CMath::INFTY;
+				PGmax_old = CMath::INFTY;;
+				PGmin_old = -CMath::INFTY;;
 				continue;
 			}
 		}
+
 		PGmax_old = PGmax_new;
 		PGmin_old = PGmin_new;
 		if (PGmax_old <= 0)
-			PGmax_old = CMath::INFTY;
+			PGmax_old = CMath::INFTY;;
 		if (PGmin_old >= 0)
-			PGmin_old = -CMath::INFTY;
+			PGmin_old = -CMath::INFTY;;
 	}
 
 	SG_DONE()
@@ -423,16 +489,16 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	double v = 0;
 	int nSV = 0;
 	for(i=0; i<w_size; i++)
-		v += w.vector[i]*w.vector[i];
+		v += w[i]*w[i];
 	for(i=0; i<l; i++)
 	{
 		v += alpha[i]*(alpha[i]*diag[GETI(i)] - 2);
 		if(alpha[i] > 0)
 			++nSV;
 	}
+	
 	SG_INFO("Objective value = %lf\n",v/2)
 	SG_INFO("nSV = %d\n",nSV)
-
 	SG_FREE(QD);
 	SG_FREE(alpha);
 	SG_FREE(y);
