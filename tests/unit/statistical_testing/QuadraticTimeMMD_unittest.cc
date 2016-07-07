@@ -535,11 +535,13 @@ TEST(QuadraticTimeMMD, compute_multiple)
 
 TEST(QuadraticTimeMMD, perform_test_multiple)
 {
-	const index_t m=20;
-	const index_t n=20;
+	const index_t m=8;
+	const index_t n=12;
 	const index_t dim=1;
 	const index_t num_kernels=10;
 	const float64_t alpha=0.05;
+	const index_t num_null_samples=200;
+	const index_t cache_size=10;
 
 	float64_t difference=0.5;
 
@@ -550,10 +552,11 @@ TEST(QuadraticTimeMMD, perform_test_multiple)
 	CFeatures* feat_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	mmd->set_num_null_samples(num_null_samples);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(new CGaussianKernel(cache_size, tau));
 	}
 	sg_rand->set_seed(12345);
 	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
@@ -561,10 +564,11 @@ TEST(QuadraticTimeMMD, perform_test_multiple)
 	SGVector<bool> rejections_single(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
-		sg_rand->set_seed(12345);
 		auto mmd2=some<CQuadraticTimeMMD>(feat_p, feat_q);
+		mmd2->set_num_null_samples(num_null_samples);
 		float64_t tau=pow(2, sigma);
-		mmd2->set_kernel(new CGaussianKernel(10, tau));
+		mmd2->set_kernel(new CGaussianKernel(cache_size, tau));
+		sg_rand->set_seed(12345);
 		rejections_single[i]=mmd2->perform_test(alpha);
 	}
 

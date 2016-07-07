@@ -137,6 +137,7 @@ void KernelManager::restore_kernel_at(size_t i)
 
 bool KernelManager::same_distance_type() const
 {
+	ASSERT(num_kernels()>0);
 	bool same=false;
 	EDistanceType distance_type=D_UNKNOWN;
 	for (size_t i=0; i<num_kernels(); ++i)
@@ -144,9 +145,13 @@ bool KernelManager::same_distance_type() const
 		CShiftInvariantKernel* shift_invariant_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_at(i));
 		if (shift_invariant_kernel!=nullptr)
 		{
+			auto current_distance_type=shift_invariant_kernel->get_distance_type();
 			if (distance_type==D_UNKNOWN)
-				distance_type=shift_invariant_kernel->get_distance_type();
-			else if (distance_type==shift_invariant_kernel->get_distance_type())
+			{
+				distance_type=current_distance_type;
+				same=true;
+			}
+			else if (distance_type==current_distance_type)
 				same=true;
 			else
 			{
