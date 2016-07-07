@@ -35,6 +35,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
 
@@ -74,7 +75,7 @@ void MaxMeasure::compute_measures()
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
 	CQuadraticTimeMMD* mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (mmd!=nullptr && kernel_mgr.same_distance_type())
-		measures=mmd->compute_statistic(kernel_mgr);
+		measures=mmd->multikernel()->statistic(kernel_mgr);
 	else
 	{
 		init_measures();

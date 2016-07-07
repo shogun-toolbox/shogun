@@ -122,7 +122,7 @@ float64_t MultiKernelPermutationTest::compute_mmd(terms_t& terms)
 	return terms.term[0]+terms.term[1]-2*terms.term[2];
 }
 
-SGVector<bool> MultiKernelPermutationTest::operator()(const KernelManager& kernel_mgr)
+SGVector<float64_t> MultiKernelPermutationTest::operator()(const KernelManager& kernel_mgr)
 {
 	SG_SDEBUG("Entering!\n");
 
@@ -135,7 +135,7 @@ SGVector<bool> MultiKernelPermutationTest::operator()(const KernelManager& kerne
 	}
 
 	SGVector<float64_t> null_samples(num_null_samples);
-	SGVector<bool> result(kernel_mgr.num_kernels());
+	SGVector<float64_t> result(kernel_mgr.num_kernels());
 
 	const index_t size=n_x+n_y;
 	SGVector<float32_t> km(size*(size+1)/2);
@@ -177,17 +177,11 @@ SGVector<bool> MultiKernelPermutationTest::operator()(const KernelManager& kerne
 			float64_t idx=null_samples.find_position_to_insert(statistic);
 			SG_SDEBUG("Kernel(%d): index=%f\n", k, idx);
 			auto p_value=1.0-idx/num_null_samples;
-			bool rejected=p_value<alpha;
-			SG_SDEBUG("Kernel(%d): p-value=%f, alpha=%f, rejected=%d\n", k, p_value, alpha, rejected);
-			result[k]=rejected;
+			SG_SDEBUG("Kernel(%d): p-value=%f\n", k, p_value);
+			result[k]=p_value;
 		}
 	}
 
 	SG_SDEBUG("Leaving!\n");
 	return result;
-}
-
-void MultiKernelPermutationTest::set_alpha(float64_t alp)
-{
-	alpha=alp;
 }

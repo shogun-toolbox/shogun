@@ -38,6 +38,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -514,9 +515,9 @@ TEST(QuadraticTimeMMD, compute_multiple)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
 	}
-	SGVector<float64_t> mmd_multiple=mmd->compute_multiple();
+	SGVector<float64_t> mmd_multiple=mmd->multikernel()->statistic();
 
 	SGVector<float64_t> mmd_single(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
@@ -552,15 +553,15 @@ TEST(QuadraticTimeMMD, perform_test_multiple)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(new CGaussianKernel(10, tau));
+		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
 	}
 	sg_rand->set_seed(12345);
-	SGVector<bool> rejections_multiple=mmd->perform_test_multiple(alpha);
+	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
 
 	SGVector<bool> rejections_single(num_kernels);
-	sg_rand->set_seed(12345);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
+		sg_rand->set_seed(12345);
 		auto mmd2=some<CQuadraticTimeMMD>(feat_p, feat_q);
 		float64_t tau=pow(2, sigma);
 		mmd2->set_kernel(new CGaussianKernel(10, tau));

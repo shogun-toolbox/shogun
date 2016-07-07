@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2016 Soumyajit De
+ * Written (w) 2012 - 2013 Heiko Strathmann
+ * Written (w) 2014 - 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,55 +29,60 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MULTIKERNEL_PERMUTATION_TEST_
-#define MULTIKERNEL_PERMUTATION_TEST_
+#ifndef MULTI_KERNEL_QUADRATIC_TIME_MMD_H_
+#define MULTI_KERNEL_QUADRATIC_TIME_MMD_H_
 
 #include <memory>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
 
-enum class EStatisticType;
-class CCustomDistance;
+class CFeatures;
+class CQuadraticTimeMMD;
+class CShiftInvariantKernel;
+template <typename> class SGVector;
 
 namespace internal
 {
-
 class KernelManager;
-
-namespace mmd
-{
+class MaxMeasure;
+}
 
 /**
- * @brief class that performs test with quadratic time MMD for multiple kernels.
+ * @brief Class that performs quadratic time MMD test optimized for multiple
+ * shift-invariant kernels. If the kernels are not shift-invariant, then the
+ * class CQuadraticTimeMMD should be used multiple times instead of this one.
+ *
+ * This implementation assumes that features are never updated. If new features
+ * are to be used, new instance of this class should be created.
  */
-class MultiKernelPermutationTest
+class CMultiKernelQuadraticTimeMMD : public CSGObject
 {
-public:
-	MultiKernelPermutationTest(index_t nx, index_t ny, index_t null_samples, EStatisticType type);
-	~MultiKernelPermutationTest();
-	SGVector<float64_t> operator()(const KernelManager& km);
+	friend class CQuadraticTimeMMD;
+	friend class internal::MaxMeasure;
 private:
-	struct terms_t;
+	CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner);
+public:
+	CMultiKernelQuadraticTimeMMD();
+	virtual ~CMultiKernelQuadraticTimeMMD();
+	void add_kernel(CShiftInvariantKernel *kernel);
+	void cleanup();
 
-	void add_term(terms_t&, float64_t kernel, index_t i, index_t j);
-	float64_t compute_mmd(terms_t&);
+	SGVector<float64_t> statistic();
+	SGVector<float64_t> variance_h0();
+	SGVector<float64_t> variance_h1();
 
-	const index_t n_x;
-	const index_t n_y;
-	const index_t num_null_samples;
-	const EStatisticType stype;
+	SGVector<float64_t> p_values();
+	SGVector<bool> perform_test(float64_t alpha);
 
-	SGVector<index_t> permuted_inds;
-	std::vector<std::vector<index_t> > inverted_permuted_inds;
+	virtual const char* get_name() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
+	SGVector<float64_t> statistic(const internal::KernelManager& kernel_mgr);
+	SGVector<float64_t> p_values(const internal::KernelManager& kernel_mgr);
 };
 
 }
-
-}
-
-}
-
-#endif // MULTIKERNEL_PERMUTATION_TEST_
+#endif // MULTI_KERNEL_QUADRATIC_TIME_MMD_H_

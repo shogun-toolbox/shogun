@@ -39,6 +39,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
@@ -74,6 +75,7 @@ struct CQuadraticTimeMMD::Self
 	void compute_jobs(ComputationManager&) const;
 
 	CQuadraticTimeMMD& owner;
+	std::unique_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
 	index_t num_eigenvalues;
 	bool precompute;
 	bool is_kernel_initialized;
@@ -275,11 +277,13 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
 {
 	self=std::unique_ptr<Self>(new Self(*this));
+	self->multi_kernel=std::unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
 }
 
 CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD()
 {
 	self=std::unique_ptr<Self>(new Self(*this));
+	self->multi_kernel=std::unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
 	set_p(samples_from_p);
 	set_q(samples_from_q);
 }
@@ -327,16 +331,6 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 float64_t CQuadraticTimeMMD::compute_variance()
 {
 	return self->compute_statistic_variance().second;
-}
-
-SGVector<float64_t> CQuadraticTimeMMD::compute_multiple()
-{
-	return compute_statistic(get_strategy()->get_kernel_mgr());
-}
-
-SGVector<bool> CQuadraticTimeMMD::perform_test_multiple(float64_t alpha)
-{
-	return perform_test_multiple(get_strategy()->get_kernel_mgr(), alpha);
 }
 
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
@@ -557,52 +551,9 @@ void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 	self->precompute=precompute;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(const internal::KernelManager& kernel_mgr)
+CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
 {
-	SG_DEBUG("Entering");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
-
-	CDistance* distance=kernel_mgr.get_distance_instance();
-	SG_REF(distance);
-	kernel_mgr.set_precomputed_distance(compute_joint_distance(distance));
-	SG_UNREF(distance);
-
-	const index_t nx=get_num_samples_p();
-	const index_t ny=get_num_samples_q();
-
-	MultiKernelMMD compute(nx, ny, get_statistic_type());
-	SGVector<float64_t> result=compute(kernel_mgr);
-
-	kernel_mgr.unset_precomputed_distance();
-
-	for (auto i=0; i<result.vlen; ++i)
-		result[i]=normalize_statistic(result[i]);
-
-	SG_DEBUG("Leaving");
-	return result;
-}
-
-SGVector<bool> CQuadraticTimeMMD::perform_test_multiple(const internal::KernelManager& kernel_mgr, float64_t alpha)
-{
-	SG_DEBUG("Entering");
-	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
-
-	CDistance* distance=kernel_mgr.get_distance_instance();
-	SG_REF(distance);
-	kernel_mgr.set_precomputed_distance(compute_joint_distance(distance));
-	SG_UNREF(distance);
-
-	const index_t nx=get_num_samples_p();
-	const index_t ny=get_num_samples_q();
-
-	MultiKernelPermutationTest compute(nx, ny, get_num_null_samples(), get_statistic_type());
-	compute.set_alpha(alpha);
-	SGVector<bool> result=compute(kernel_mgr);
-
-	kernel_mgr.unset_precomputed_distance();
-
-	SG_DEBUG("Leaving");
-	return result;
+	return self->multi_kernel.get();
 }
 
 const char* CQuadraticTimeMMD::get_name() const

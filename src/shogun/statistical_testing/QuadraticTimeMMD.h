@@ -39,6 +39,7 @@
 namespace shogun
 {
 
+class CMultiKernelQuadraticTimeMMD;
 template <typename> class SGVector;
 
 namespace internal
@@ -49,7 +50,7 @@ class MaxMeasure;
 
 class CQuadraticTimeMMD : public CMMD
 {
-	friend class internal::MaxMeasure;
+	friend class CMultiKernelQuadraticTimeMMD;
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 	CQuadraticTimeMMD();
@@ -61,8 +62,7 @@ public:
 	virtual float64_t compute_statistic();
 	virtual float64_t compute_variance();
 
-	virtual SGVector<float64_t> compute_multiple();
-	virtual SGVector<bool> perform_test_multiple(float64_t alpha);
+	CMultiKernelQuadraticTimeMMD* multikernel();
 
 	virtual SGVector<float64_t> sample_null();
 	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
@@ -82,9 +82,6 @@ private:
 	virtual const float64_t normalize_variance(float64_t variance) const;
 	SGVector<float64_t> gamma_fit_null();
 	SGVector<float64_t> spectrum_sample_null();
-
-	SGVector<float64_t> compute_statistic(const internal::KernelManager& kernel_mgr);
-	SGVector<bool> perform_test_multiple(const internal::KernelManager& kernel_mgr, float64_t alpha);
 };
 
 }
