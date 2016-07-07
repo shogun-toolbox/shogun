@@ -6,13 +6,23 @@ import ply
 
 # The FastParser parses input using PLY
 class FastParser:
-    def __init__(self):
+    def __init__(self, generatedFilesOutputDir=None):
         from ply import lex
         from ply import yacc
 
+        generateFiles = not generatedFilesOutputDir is None
+
+        if generateFiles:
+            sys.path.append(generatedFilesOutputDir)
+
         # Build the lexer and the parser
-        self.lexer = lex.lex(module=self, optimize=1)
-        self.parser = yacc.yacc(module=self)
+        self.lexer = lex.lex(module=self,
+                             optimize=generateFiles,
+                             outputdir=generatedFilesOutputDir)
+        self.parser = yacc.yacc(module=self,
+                                write_tables=generateFiles,
+                                outputdir=generatedFilesOutputDir,
+                                debug=generateFiles)
 
     def parse(self, programString, filePath="Unknown"):
         """
@@ -278,8 +288,8 @@ class FastParser:
             print("Reached end of file without completing parse")
 
 
-def parse(programString, filePath):
-    parser = FastParser()
+def parse(programString, filePath, generatedFilesOutputDir=None):
+    parser = FastParser(generatedFilesOutputDir)
 
     # Parse input
     return parser.parse(programString, filePath)
@@ -289,6 +299,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--pretty", action="store_true", help="If specified, output is pretty printed")
     argparser.add_argument("path", nargs='?', help="Path to input file. If not specified input is read from stdin")
+    argparser.add_argument("--parser_files_dir", nargs='?', help='Path to directory where generated parser and lexer files should be stored.')
     args = argparser.parse_args()
 
     programString = ""
@@ -306,6 +317,6 @@ if __name__ == "__main__":
     indentWidth = 2 if args.pretty > 0 else None
 
     # Parse input and print json output
-    program = parse(programString, filePath)
+    program = parse(programString, filePath, args.parser_files_dir)
 
     print(json.dumps(program, indent=indentWidth))
