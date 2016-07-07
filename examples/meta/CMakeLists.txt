@@ -7,6 +7,8 @@
 # Generate type list
 # execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/typelist)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser_files)
+
 # Run example generation script
 add_custom_target(meta_examples
     COMMAND ${PYTHON_EXECUTABLE}
@@ -16,6 +18,7 @@ add_custom_target(meta_examples
     -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
     -g ${CTAGS_FILE}
     --store-vars
+    --parser_files_dir=${CMAKE_CURRENT_BINARY_DIR}/parser_files
     COMMENT "Generating examples from meta-language"
     DEPENDS ctags)
 

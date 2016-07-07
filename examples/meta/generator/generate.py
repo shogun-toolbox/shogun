@@ -31,7 +31,8 @@ def parseCtags(filename):
 
 
 def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
-                      includedTargets=None, storeVars=False):
+                      includedTargets=None, storeVars=False,
+                      generatedFilesOutputDir=None):
 
     tags = parseCtags(ctagsFile)
     # Load all target dictionaries
@@ -62,7 +63,7 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
         # Parse the example file
         filePath = os.path.join(dirRelative, filename)
         with open(os.path.join(inputDir, dirRelative, filename), 'r') as file:
-            ast = parse(file.read(), filePath)
+            ast = parse(file.read(), filePath, generatedFilesOutputDir)
 
         # Translate ast to each target language
         for target in targets:
@@ -117,6 +118,7 @@ if __name__ == "__main__":
         'lua',
     ]
     parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: %s). If not specified all targets are produced." % (' '.join(available_targets)))
+    parser.add_argument("--parser_files_dir", nargs='?', help='Path to directory where generated parser and lexer files should be stored.')
 
     args = parser.parse_args()
 
@@ -137,4 +139,5 @@ if __name__ == "__main__":
 
     translateExamples(inputDir=inputDir, outputDir=outputDir,
                       targetsDir=targetsDir, ctagsFile=ctagsFile,
-                      includedTargets=args.targets, storeVars=storeVars)
+                      includedTargets=args.targets, storeVars=storeVars,
+                      generatedFilesOutputDir=args.parser_files_dir)
