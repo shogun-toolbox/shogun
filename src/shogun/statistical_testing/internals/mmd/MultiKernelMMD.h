@@ -48,8 +48,11 @@ namespace mmd
 
 struct MultiKernelMMD : ComputeMMD
 {
-	MultiKernelMMD(index_t n_x, index_t n_y, EStatisticType stype) : ComputeMMD(n_x, n_y, stype)
+	MultiKernelMMD(index_t n_x, index_t n_y, EStatisticType stype)
 	{
+		m_n_x=n_x;
+		m_n_y=n_y;
+		m_stype=stype;
 	}
 
 	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const

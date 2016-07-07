@@ -35,6 +35,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {
@@ -56,39 +57,68 @@ struct terms_t
  */
 struct ComputeMMD
 {
-	ComputeMMD(index_t n_x, index_t n_y, EStatisticType stype) : m_n_x(n_x), m_n_y(n_y), m_stype(stype)
+	ComputeMMD() : m_n_x(0), m_n_y(0), m_stype(EStatisticType::ST_UNBIASED_FULL)
 	{
-		SG_SDEBUG("number of samples are %d and %d!\n", n_x, n_y);
 	}
 
 	template <typename T>
-	inline void add_term(terms_t& terms, T val, index_t i, index_t j) const
+	T operator()(const SGMatrix<T>& kernel_matrix) const
 	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		const index_t size=m_n_x+m_n_y;
+		ASSERT(kernel_matrix.num_rows==size && kernel_matrix.num_cols==size);
+
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
+		typedef Eigen::Block<Eigen::Map<const MatrixXt> > BlockXt;
+
+		Eigen::Map<const MatrixXt> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
+
+		const BlockXt& b_x=map.block(0, 0, m_n_x, m_n_x);
+		const BlockXt& b_y=map.block(m_n_x, m_n_x, m_n_y, m_n_y);
+		const BlockXt& b_xy=map.block(m_n_x, 0, m_n_y, m_n_x);
+
+		terms_t terms;
+		terms.diag[0]=b_x.diagonal().sum();
+		terms.diag[1]=b_y.diagonal().sum();
+		terms.diag[2]=b_xy.diagonal().sum();
+
+		terms.term[0]=(b_x.sum()-terms.diag[0])/2+terms.diag[0];
+		terms.term[1]=(b_y.sum()-terms.diag[1])/2+terms.diag[1];
+		terms.term[2]=b_xy.sum();
+
+		return static_cast<T>(compute(terms));
+	}
+
+	template <typename T>
+	inline void add_term(terms_t& terms, T kernel_value, index_t i, index_t j) const
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
 		if (i<m_n_x && j<m_n_x && i>=j)
 		{
-			SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_0!\n", i, j, val);
-			terms.term[0]+=val;
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_0!\n", i, j, kernel_value);
+			terms.term[0]+=kernel_value;
 			if (i==j)
-				terms.diag[0]+=val;
+				terms.diag[0]+=kernel_value;
 		}
 		else if (i>=m_n_x && j>=m_n_x && i>=j)
 		{
-			SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_1!\n", i, j, val);
-			terms.term[1]+=val;
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_1!\n", i, j, kernel_value);
+			terms.term[1]+=kernel_value;
 			if (i==j)
-				terms.diag[1]+=val;
+				terms.diag[1]+=kernel_value;
 		}
 		else if (i>=m_n_x && j<m_n_x)
 		{
-			SG_SDEBUG("Adding Kernel(%d,%d)=%f to term_2!\n", i, j, val);
-			terms.term[2]+=val;
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_2!\n", i, j, kernel_value);
+			terms.term[2]+=kernel_value;
 			if (i-m_n_x==j)
-				terms.diag[2]+=val;
+				terms.diag[2]+=kernel_value;
 		}
 	}
 
 	inline float64_t compute(terms_t& terms) const
 	{
+		ASSERT(m_n_x>0 && m_n_y>0);
 		terms.term[0]=2*(terms.term[0]-terms.diag[0]);
 		terms.term[1]=2*(terms.term[1]-terms.diag[1]);
 		SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", terms.term[0]);
@@ -126,9 +156,9 @@ struct ComputeMMD
 		return result;
 	}
 
-	const index_t m_n_x;
-	const index_t m_n_y;
-	const EStatisticType m_stype;
+	index_t m_n_x;
+	index_t m_n_y;
+	EStatisticType m_stype;
 };
 
 }

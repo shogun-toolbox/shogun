@@ -501,7 +501,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.060947882185221292, 1E-10);
+	EXPECT_NEAR(p_value_gaussian, 0.060947882185221292, 1E-6);
 }
 
 TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
@@ -541,5 +541,5 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	// assert against local machine computed result
 	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_INCOMPLETE);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.40645354706402292, 1E-10);
+	EXPECT_NEAR(p_value_gaussian, 0.40645354706402292, 1E-6);
 }

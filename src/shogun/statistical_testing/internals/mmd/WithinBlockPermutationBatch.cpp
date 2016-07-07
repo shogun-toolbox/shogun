@@ -24,9 +24,6 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 
 using namespace shogun;
 using namespace internal;

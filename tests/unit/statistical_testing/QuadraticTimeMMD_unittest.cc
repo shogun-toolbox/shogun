@@ -530,7 +530,7 @@ TEST(QuadraticTimeMMD, compute_multiple)
 
 	ASSERT_EQ(mmd_multiple.size(), mmd_single.size());
 	for (auto i=0; i<mmd_multiple.size(); ++i)
-		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-5);
+		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-4);
 }
 
 TEST(QuadraticTimeMMD, perform_test_multiple)

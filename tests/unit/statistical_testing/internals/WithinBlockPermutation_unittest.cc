@@ -39,9 +39,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/statistical_testing/MMD.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 #include <gtest/gtest.h>
 
@@ -82,7 +80,11 @@ TEST(WithinBlockPermutation, biased_full)
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
-	compute=shogun::internal::mmd::BiasedFull(n);
+	auto mmd=shogun::internal::mmd::ComputeMMD();
+	mmd.m_n_x=n;
+	mmd.m_n_y=m;
+	mmd.m_stype=EStatisticType::ST_BIASED_FULL;
+	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first
 	// then compute a biased-full statistic on this matrix
@@ -147,7 +149,11 @@ TEST(WithinBlockPermutation, unbiased_full)
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
-	compute=shogun::internal::mmd::UnbiasedFull(n);
+	auto mmd=shogun::internal::mmd::ComputeMMD();
+	mmd.m_n_x=n;
+	mmd.m_n_y=m;
+	mmd.m_stype=EStatisticType::ST_UNBIASED_FULL;
+	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first
 	// then compute unbiased-full statistic on this matrix
@@ -211,7 +217,11 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
-	compute=shogun::internal::mmd::UnbiasedIncomplete(n);
+	auto mmd=shogun::internal::mmd::ComputeMMD();
+	mmd.m_n_x=n;
+	mmd.m_n_y=n;
+	mmd.m_stype=EStatisticType::ST_UNBIASED_INCOMPLETE;
+	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first
 	// then compute unbiased-incomplete statistic on this matrix

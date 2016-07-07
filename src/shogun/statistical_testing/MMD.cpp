@@ -45,9 +45,7 @@
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 #include <shogun/mathematics/eigen3.h>
@@ -108,21 +106,19 @@ void CMMD::Self::create_computation_jobs()
 void CMMD::Self::create_statistic_job()
 {
 	const DataManager& data_mgr=owner.get_data_mgr();
+
 	auto Bx=data_mgr.blocksize_at(0);
 	auto By=data_mgr.blocksize_at(1);
-	switch (statistic_type)
-	{
-		case EStatisticType::ST_UNBIASED_FULL:
-			statistic_job=mmd::UnbiasedFull(Bx);
-			break;
-		case EStatisticType::ST_UNBIASED_INCOMPLETE:
-			statistic_job=mmd::UnbiasedIncomplete(Bx);
-			break;
-		case EStatisticType::ST_BIASED_FULL:
-			statistic_job=mmd::BiasedFull(Bx);
-			break;
-		default : break;
-	};
+
+	REQUIRE(Bx>0, "Blocksize for samples from P cannot be 0!\n");
+	REQUIRE(By>0, "Blocksize for samples from Q cannot be 0!\n");
+
+	auto mmd=mmd::ComputeMMD();
+	mmd.m_n_x=Bx;
+	mmd.m_n_y=By;
+	mmd.m_stype=statistic_type;
+
+	statistic_job=mmd;
 	permutation_job=mmd::WithinBlockPermutation(Bx, By, statistic_type);
 }
 
@@ -196,57 +192,58 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 	index_t variance_term_counter=1;
 
 	DataManager& data_mgr=owner.get_data_mgr();
-	ComputationManager cm;
-
-	create_computation_jobs();
-	cm.enqueue_job(statistic_job);
-	cm.enqueue_job(variance_job);
-
-	std::vector<CFeatures*> blocks;
-
 	data_mgr.start();
 	auto next_burst=data_mgr.next();
-	while (!next_burst.empty())
+	if (!next_burst.empty())
 	{
-		merge_samples(next_burst, blocks);
-		compute_kernel(cm, blocks, kernel);
-		blocks.resize(0);
-		compute_jobs(cm);
+		ComputationManager cm;
+		create_computation_jobs();
+		cm.enqueue_job(statistic_job);
+		cm.enqueue_job(variance_job);
 
-		auto mmds=cm.result(0);
-		auto vars=cm.result(1);
+		std::vector<CFeatures*> blocks;
 
-		for (size_t i=0; i<mmds.size(); ++i)
+		while (!next_burst.empty())
 		{
-			auto delta=mmds[i]-statistic;
-			statistic+=delta/statistic_term_counter;
-			statistic_term_counter++;
-		}
+			merge_samples(next_burst, blocks);
+			compute_kernel(cm, blocks, kernel);
+			blocks.resize(0);
+			compute_jobs(cm);
 
-		if (variance_estimation_method==EVarianceEstimationMethod::VEM_DIRECT)
-		{
+			auto mmds=cm.result(0);
+			auto vars=cm.result(1);
+
 			for (size_t i=0; i<mmds.size(); ++i)
 			{
-				auto delta=vars[i]-variance;
-				variance+=delta/variance_term_counter;
-				variance_term_counter++;
+				auto delta=mmds[i]-statistic;
+				statistic+=delta/statistic_term_counter;
+				statistic_term_counter++;
 			}
-		}
-		else
-		{
-			for (size_t i=0; i<vars.size(); ++i)
-			{
-				auto delta=vars[i]-permuted_samples_statistic;
-				permuted_samples_statistic+=delta/variance_term_counter;
-				variance+=delta*(vars[i]-permuted_samples_statistic);
-				variance_term_counter++;
-			}
-		}
-		next_burst=data_mgr.next();
-	}
 
+			if (variance_estimation_method==EVarianceEstimationMethod::VEM_DIRECT)
+			{
+				for (size_t i=0; i<mmds.size(); ++i)
+				{
+					auto delta=vars[i]-variance;
+					variance+=delta/variance_term_counter;
+					variance_term_counter++;
+				}
+			}
+			else
+			{
+				for (size_t i=0; i<vars.size(); ++i)
+				{
+					auto delta=vars[i]-permuted_samples_statistic;
+					permuted_samples_statistic+=delta/variance_term_counter;
+					variance+=delta*(vars[i]-permuted_samples_statistic);
+					variance_term_counter++;
+				}
+			}
+			next_burst=data_mgr.next();
+		}
+		cm.done();
+	}
 	data_mgr.end();
-	cm.done();
 
 	// normalize statistic and variance
 	statistic=owner.normalize_statistic(statistic);

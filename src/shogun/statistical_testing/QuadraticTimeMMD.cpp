@@ -46,9 +46,7 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
 #include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
@@ -92,36 +90,24 @@ CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenval
 
 void CQuadraticTimeMMD::Self::create_computation_jobs()
 {
-	SG_SDEBUG("Entering\n");
 	create_statistic_job();
 	create_variance_job();
-	SG_SDEBUG("Leaving\n");
 }
 
 void CQuadraticTimeMMD::Self::create_statistic_job()
 {
-	SG_SDEBUG("Entering\n");
-	const DataManager& data_mgr=owner.get_data_mgr();
-	auto Nx=data_mgr.num_samples_at(0);
-	switch (owner.get_statistic_type())
-	{
-		case EStatisticType::ST_UNBIASED_FULL:
-			statistic_job=UnbiasedFull(Nx);
-			break;
-		case EStatisticType::ST_UNBIASED_INCOMPLETE:
-			statistic_job=UnbiasedIncomplete(Nx);
-			break;
-		case EStatisticType::ST_BIASED_FULL:
-			statistic_job=BiasedFull(Nx);
-			break;
-		default : break;
-	};
-	SG_SDEBUG("Leaving\n");
+	auto mmd=mmd::ComputeMMD();
+	REQUIRE(owner.get_num_samples_p()>0, "Number of samples from P cannot be 0!\n");
+	REQUIRE(owner.get_num_samples_q()>0, "Number of samples from Q cannot be 0!\n");
+
+	mmd.m_n_x=owner.get_num_samples_p();
+	mmd.m_n_y=owner.get_num_samples_q();
+	mmd.m_stype=owner.get_statistic_type();
+	statistic_job=mmd;
 }
 
 void CQuadraticTimeMMD::Self::create_variance_job()
 {
-	SG_SDEBUG("Entering\n");
 	switch (owner.get_variance_estimation_method())
 	{
 		case EVarianceEstimationMethod::VEM_DIRECT:
@@ -132,7 +118,6 @@ void CQuadraticTimeMMD::Self::create_variance_job()
 			break;
 		default : break;
 	};
-	SG_SDEBUG("Leaving\n");
 }
 
 void CQuadraticTimeMMD::Self::compute_jobs(ComputationManager& cm) const

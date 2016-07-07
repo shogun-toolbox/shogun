@@ -36,9 +36,6 @@
 #include <shogun/features/SubsetStack.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationTestCrossValidation.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 
 // TODO remove
 #include <shogun/mathematics/eigen3.h>

@@ -39,7 +39,6 @@
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
 #include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTestCrossValidation.h>
 
 // TODO remove

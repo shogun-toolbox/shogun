@@ -18,7 +18,6 @@
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
 
 using namespace shogun;
 using namespace internal;

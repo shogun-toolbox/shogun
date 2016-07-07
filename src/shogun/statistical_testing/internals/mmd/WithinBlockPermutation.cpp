@@ -22,9 +22,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
-#include <shogun/statistical_testing/internals/mmd/BiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedFull.h>
-#include <shogun/statistical_testing/internals/mmd/UnbiasedIncomplete.h>
 
 using namespace shogun;
 using namespace internal;
