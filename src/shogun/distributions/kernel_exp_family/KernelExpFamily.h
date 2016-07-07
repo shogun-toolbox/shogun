@@ -55,6 +55,7 @@ public:
 	virtual float64_t log_pdf(SGVector<float64_t> x);
 	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> X);
 	virtual SGVector<float64_t> grad(SGVector<float64_t> x);
+	virtual SGMatrix<float64_t> hessian(SGVector<float64_t> x);
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 

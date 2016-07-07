@@ -112,7 +112,7 @@ SGVector<float64_t> Base::log_pdf(const SGMatrix<float64_t> X)
 	SGVector<float64_t> result(N_test);
 #pragma omp parallel for
 	for (auto i=0; i<N_test; ++i)
-		result[i] = log_pdf(i);
+		result[i] = ((const Base*)this)->log_pdf(i);
 
 	return result;
 }
@@ -120,12 +120,18 @@ SGVector<float64_t> Base::log_pdf(const SGMatrix<float64_t> X)
 float64_t Base::log_pdf(SGVector<float64_t> x)
 {
 	set_test_data(x);
-	return log_pdf(0);
+	return ((const Base*)this)->log_pdf(0);
 }
 
 SGVector<float64_t> Base::grad(SGVector<float64_t> x)
 {
 	set_test_data(x);
-	return grad(0);
+	return ((const Base*)this)->grad(0);
+}
+
+SGMatrix<float64_t> Base::hessian(SGVector<float64_t> x)
+{
+	set_test_data(x);
+	return ((const Base*)this)->hessian(0);
 }
 

@@ -189,3 +189,51 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 	eigen_xi_grad *= m_alpha_beta[0] / N;
 	return xi_grad + beta_sum_grad;
 }
+
+SGMatrix<float64_t> Full::hessian(index_t idx_test) const
+{
+	auto N = get_num_lhs();
+	auto D = get_num_dimensions();
+
+	SGMatrix<float64_t> xi_hessian(D, D);
+	SGMatrix<float64_t> beta_sum_hessian(D, D);
+	SGVector<float64_t> ones(D);
+
+	Map<MatrixXd> eigen_xi_hessian(xi_hessian.matrix, D, D);
+	Map<MatrixXd> eigen_beta_sum_hessian(beta_sum_hessian.matrix, D, D);
+	Map<VectorXd> eigen_ones(ones.vector, D);
+
+	eigen_xi_hessian = MatrixXd::Zero(D, D);
+	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
+	eigen_ones = VectorXd::Ones(D);
+
+	// Entire alpha-beta vector
+	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
+	// Beta segment vector
+	SGVector<float64_t> beta_a(D);
+	Map<VectorXd> eigen_beta_a(beta_a.vector, D);
+
+	for (auto a=0; a<N; a++)
+	{
+		// Arguments are opposite order of Python code but sign flip is not
+		// needed since the function is symmetric
+		auto xi_hess_summ = m_kernel->dx_i_dx_j_dx_k_dx_k_dot_vec(a, idx_test, ones);
+		Map<MatrixXd> eigen_xi_hess_summ(xi_hess_summ.matrix, D, D);
+		eigen_xi_hessian += eigen_xi_hess_summ;
+
+		eigen_beta_a = eigen_alpha_beta.segment(1+a*D, D);
+
+		// Note sign flip becayse arguments are opposite order of Python code
+		auto beta_hess_summ = m_kernel->dx_i_dx_j_dx_k_dot_vec(a, idx_test, beta_a);
+		Map<MatrixXd> eigen_beta_hess_summ(beta_hess_summ.matrix, D, D);
+		eigen_beta_sum_hessian -= eigen_beta_hess_summ;
+	}
+
+	eigen_xi_hessian.array() *= m_alpha_beta[0] / N;
+
+	SGMatrix<float64_t> result(D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+	eigen_result = eigen_xi_hessian + eigen_beta_sum_hessian;
+
+	return result;
+}

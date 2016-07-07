@@ -67,9 +67,11 @@ public :
 
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
+	virtual SGMatrix<float64_t> hessian(index_t idx_test) const;
 
 	using Base::log_pdf;
 	using Base::grad;
+	using Base::hessian;
 
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
 
