@@ -24,7 +24,7 @@ CStreamingVwCacheFile::CStreamingVwCacheFile(EVwCacheType cache_type)
 	init(cache_type);
 }
 
-CStreamingVwCacheFile::CStreamingVwCacheFile(char* fname, char rw, EVwCacheType cache_type)
+CStreamingVwCacheFile::CStreamingVwCacheFile(const char* fname, char rw, EVwCacheType cache_type)
 	: CStreamingFile(fname, rw)
 {
 	init(cache_type);
