@@ -31,13 +31,14 @@
 #ifndef MULTI_KERNEL_MMD_H_
 #define MULTI_KERNEL_MMD_H_
 
-#include <memory>
-#include <shogun/statistical_testing/MMD.h>
+#include <vector>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
 
 namespace shogun
 {
-
-template <typename T> class SGVector;
 
 namespace internal
 {
@@ -45,19 +46,40 @@ namespace internal
 namespace mmd
 {
 
-class MultiKernelMMD
+struct MultiKernelMMD : ComputeMMD
 {
-public:
-	MultiKernelMMD(index_t nx, index_t ny, EStatisticType stype);
-	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const;
-private:
-	struct terms_t;
-	void add_term(terms_t&, float32_t, index_t, index_t) const;
-	float64_t compute_mmd(terms_t& t) const;
+	MultiKernelMMD(index_t n_x, index_t n_y, EStatisticType stype) : ComputeMMD(n_x, n_y, stype)
+	{
+	}
 
-	const index_t n_x;
-	const index_t n_y;
-	const EStatisticType s_type;
+	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const
+	{
+		SG_SDEBUG("Entering!\n");
+		std::vector<terms_t> terms(kernel_mgr.num_kernels());
+		const index_t size=m_n_x+m_n_y;
+		for (auto j=0; j<size; ++j)
+		{
+			for (auto i=j; i<size; ++i)
+			{
+				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+				{
+					auto kernel=kernel_mgr.kernel_at(k)->kernel(i, j);
+					add_term(terms[k], kernel, i, j);
+				}
+			}
+		}
+
+		SGVector<float64_t> result(kernel_mgr.num_kernels());
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		{
+			result[k]=compute(terms[k]);
+			SG_SDEBUG("result[%d] = %f!\n", k, result[k]);
+		}
+		terms.resize(0);
+
+		SG_SDEBUG("Leaving!\n");
+		return result;
+	}
 };
 
 }
