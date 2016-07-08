@@ -41,7 +41,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/statistical_testing/TwoDistributionTest.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -88,7 +88,10 @@ TEST(MultiKernelMMD, biased_full)
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
 
-	MultiKernelMMD tester(m, n, stype);
+	ComputeMMD tester;
+	tester.m_n_x=m;
+	tester.m_n_y=n;
+	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -150,7 +153,10 @@ TEST(MultiKernelMMD, unbiased_full)
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
 
-	MultiKernelMMD tester(m, n, stype);
+	ComputeMMD tester;
+	tester.m_n_x=m;
+	tester.m_n_y=n;
+	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -212,7 +218,10 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
 
-	MultiKernelMMD tester(m, n, stype);
+	ComputeMMD tester;
+	tester.m_n_x=m;
+	tester.m_n_y=n;
+	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 

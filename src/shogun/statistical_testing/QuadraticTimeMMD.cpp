@@ -49,8 +49,6 @@
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTest.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 
 using namespace shogun;

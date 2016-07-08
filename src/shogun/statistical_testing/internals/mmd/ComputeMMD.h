@@ -32,9 +32,13 @@
 #define COMPUTE_MMD_H_
 
 #include <array>
+#include <vector>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/mathematics/eigen3.h>
 
 namespace shogun
@@ -87,6 +91,33 @@ struct ComputeMMD
 		terms.term[2]=b_xy.sum();
 
 		return static_cast<T>(compute(terms));
+	}
+
+	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		std::vector<terms_t> terms(kernel_mgr.num_kernels());
+		const index_t size=m_n_x+m_n_y;
+		for (auto j=0; j<size; ++j)
+		{
+			for (auto i=j; i<size; ++i)
+			{
+				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+				{
+					auto kernel=kernel_mgr.kernel_at(k)->kernel(i, j);
+					add_term(terms[k], kernel, i, j);
+				}
+			}
+		}
+
+		SGVector<float64_t> result(kernel_mgr.num_kernels());
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		{
+			result[k]=compute(terms[k]);
+			SG_SDEBUG("result[%d] = %f!\n", k, result[k]);
+		}
+		terms.resize(0);
+		return result;
 	}
 
 	template <typename T>

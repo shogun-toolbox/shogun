@@ -37,7 +37,7 @@
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelMMD.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTest.h>
 
 using namespace shogun;
@@ -54,6 +54,7 @@ struct CMultiKernelQuadraticTimeMMD::Self
 	unique_ptr<CCustomDistance> m_pairwise_distance;
 	EDistanceType m_dtype;
 	KernelManager m_kernel_mgr;
+	ComputeMMD compute_mmd;
 };
 
 CMultiKernelQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD *owner) : m_owner(owner),
@@ -158,8 +159,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
 	SG_UNREF(distance);
 
-	MultiKernelMMD compute(nx, ny, stype);
-	SGVector<float64_t> result=compute(kernel_mgr);
+	self->compute_mmd.m_n_x=nx;
+   	self->compute_mmd.m_n_y=ny;
+   	self->compute_mmd.m_stype=stype;
+	SGVector<float64_t> result=self->compute_mmd(kernel_mgr);
 
 	kernel_mgr.unset_precomputed_distance();
 
