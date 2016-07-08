@@ -11,6 +11,8 @@ using namespace linalg;
 
 TEST(LinalgBackendViennaCL, add)
 {
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+	
 	const float64_t alpha = 0.3;
 	const float64_t beta = -1.5;
 
