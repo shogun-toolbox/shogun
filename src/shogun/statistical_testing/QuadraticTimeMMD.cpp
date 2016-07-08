@@ -47,8 +47,8 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
+#include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
-#include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 
 using namespace shogun;
@@ -78,6 +78,7 @@ struct CQuadraticTimeMMD::Self
 
 	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
 	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
+	PermutationMMD permutation_job;
 };
 
 CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),
@@ -197,6 +198,7 @@ std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_varia
 	SG_SDEBUG("Entering\n");
 	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
 
+	// TODO make sure it works even when precompute is turned-off
 	ComputationManager cm;
 	create_computation_jobs();
 	cm.enqueue_job(statistic_job);
@@ -225,16 +227,16 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 {
 	SG_SDEBUG("Entering\n");
 
-	const DataManager& data_mgr=owner.get_data_mgr();
-	auto Nx=data_mgr.num_samples_at(0);
-	auto Ny=data_mgr.num_samples_at(1);
-	WithinBlockPermutationBatch compute(Nx, Ny, owner.get_num_null_samples(), owner.get_statistic_type());
+	permutation_job.m_n_x=owner.get_num_samples_p();
+	permutation_job.m_n_y=owner.get_num_samples_q();
+	permutation_job.m_stype=owner.get_statistic_type();
+	permutation_job.m_num_null_samples=owner.get_num_null_samples();
 
 	SGVector<float32_t> result;
 	if (precompute)
 	{
 		SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
-		result=compute(kernel_matrix);
+		result=permutation_job(kernel_matrix);
 	}
 	else
 	{
@@ -246,7 +248,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 			SG_SERROR("Precomputed kernel matrix exists!\n");
 		}
 		init_kernel();
-		result=compute(internal::Kernel(kernel));
+		result=permutation_job(internal::Kernel(kernel));
 	}
 
 	SGVector<float64_t> null_samples(result.vlen);

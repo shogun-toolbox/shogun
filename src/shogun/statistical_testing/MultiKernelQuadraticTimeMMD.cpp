@@ -38,7 +38,7 @@
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTest.h>
+#include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 
 using namespace shogun;
 using namespace internal;
@@ -54,7 +54,8 @@ struct CMultiKernelQuadraticTimeMMD::Self
 	unique_ptr<CCustomDistance> m_pairwise_distance;
 	EDistanceType m_dtype;
 	KernelManager m_kernel_mgr;
-	ComputeMMD compute_mmd;
+	ComputeMMD statistic_job;
+	PermutationMMD permutation_job;
 };
 
 CMultiKernelQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD *owner) : m_owner(owner),
@@ -159,15 +160,48 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
 	SG_UNREF(distance);
 
-	self->compute_mmd.m_n_x=nx;
-   	self->compute_mmd.m_n_y=ny;
-   	self->compute_mmd.m_stype=stype;
-	SGVector<float64_t> result=self->compute_mmd(kernel_mgr);
+	self->statistic_job.m_n_x=nx;
+   	self->statistic_job.m_n_y=ny;
+   	self->statistic_job.m_stype=stype;
+	SGVector<float64_t> result=self->statistic_job(kernel_mgr);
 
 	kernel_mgr.unset_precomputed_distance();
 
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=self->m_owner->normalize_statistic(result[i]);
+
+	SG_DEBUG("Leaving");
+	return result;
+}
+
+SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
+{
+	SG_DEBUG("Entering");
+	REQUIRE(self->m_owner->get_null_approximation_method()==ENullApproximationMethod::NAM_PERMUTATION,
+		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!\n");
+
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
+
+	const auto nx=self->m_owner->get_num_samples_p();
+	const auto ny=self->m_owner->get_num_samples_q();
+	const auto stype = self->m_owner->get_statistic_type();
+	const auto num_null_samples = self->m_owner->get_num_null_samples();
+
+	CDistance* distance=kernel_mgr.get_distance_instance();
+	self->update_pairwise_distance(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
+	SG_UNREF(distance);
+
+	self->permutation_job.m_n_x=nx;
+	self->permutation_job.m_n_y=ny;
+   	self->permutation_job.m_num_null_samples=num_null_samples;
+	self->permutation_job.m_stype=stype;
+	SGMatrix<float32_t> result=self->permutation_job(kernel_mgr);
+
+	kernel_mgr.unset_precomputed_distance();
+
+	for (auto i=0; i<result.size(); ++i)
+		result.matrix[i]=self->m_owner->normalize_statistic(result.matrix[i]);
 
 	SG_DEBUG("Leaving");
 	return result;
@@ -191,8 +225,11 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& 
 	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
 	SG_UNREF(distance);
 
-	MultiKernelPermutationTest compute(nx, ny, num_null_samples, stype);
-	SGVector<float64_t> result=compute(kernel_mgr);
+	self->permutation_job.m_n_x=nx;
+	self->permutation_job.m_n_y=ny;
+   	self->permutation_job.m_num_null_samples=num_null_samples;
+	self->permutation_job.m_stype=stype;
+	SGVector<float64_t> result=self->permutation_job.p_value(kernel_mgr);
 
 	kernel_mgr.unset_precomputed_distance();
 

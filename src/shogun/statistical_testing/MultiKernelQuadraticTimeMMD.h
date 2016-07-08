@@ -73,6 +73,7 @@ public:
 	SGVector<float64_t> variance_h0();
 	SGVector<float64_t> variance_h1();
 
+	SGMatrix<float32_t> sample_null();
 	SGVector<float64_t> p_values();
 	SGVector<bool> perform_test(float64_t alpha);
 
@@ -81,6 +82,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 	SGVector<float64_t> statistic(const internal::KernelManager& kernel_mgr);
+	SGMatrix<float32_t> sample_null(const internal::KernelManager& kernel_mgr);
 	SGVector<float64_t> p_values(const internal::KernelManager& kernel_mgr);
 };
 

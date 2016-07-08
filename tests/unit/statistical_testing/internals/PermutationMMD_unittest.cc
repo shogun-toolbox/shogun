@@ -41,13 +41,13 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
-#include <shogun/statistical_testing/internals/mmd/WithinBlockPermutationBatch.h>
+#include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;
 
-TEST(WithinBlockPermutationBatch, biased_full)
+TEST(PermutationMMD, biased_full)
 {
 	const index_t dim=2;
 	const index_t n=13;
@@ -78,7 +78,11 @@ TEST(WithinBlockPermutationBatch, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::ST_BIASED_FULL);
+	auto batch=shogun::internal::mmd::PermutationMMD();
+	batch.m_n_x=n;
+	batch.m_n_y=m;
+	batch.m_num_null_samples=num_null_samples;
+	batch.m_stype=EStatisticType::ST_BIASED_FULL;
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 
@@ -129,7 +133,7 @@ TEST(WithinBlockPermutationBatch, biased_full)
 	SG_UNREF(feats);
 }
 
-TEST(WithinBlockPermutationBatch, unbiased_full)
+TEST(PermutationMMD, unbiased_full)
 {
 	const index_t dim=2;
 	const index_t n=13;
@@ -160,7 +164,11 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::ST_UNBIASED_FULL);
+	auto batch=shogun::internal::mmd::PermutationMMD();
+	batch.m_n_x=n;
+	batch.m_n_y=m;
+	batch.m_num_null_samples=num_null_samples;
+	batch.m_stype=EStatisticType::ST_UNBIASED_FULL;
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 
@@ -211,7 +219,7 @@ TEST(WithinBlockPermutationBatch, unbiased_full)
 	SG_UNREF(feats);
 }
 
-TEST(WithinBlockPermutationBatch, unbiased_incomplete)
+TEST(PermutationMMD, unbiased_incomplete)
 {
 	const index_t dim=2;
 	const index_t n=10;
@@ -241,7 +249,11 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, n, num_null_samples, EStatisticType::ST_UNBIASED_INCOMPLETE);
+	auto batch=shogun::internal::mmd::PermutationMMD();
+	batch.m_n_x=n;
+	batch.m_n_y=n;
+	batch.m_num_null_samples=num_null_samples;
+	batch.m_stype=EStatisticType::ST_UNBIASED_INCOMPLETE;
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);
 
@@ -292,7 +304,7 @@ TEST(WithinBlockPermutationBatch, unbiased_incomplete)
 	SG_UNREF(feats);
 }
 
-TEST(WithinBlockPermutationBatch, kernel_functor)
+TEST(PermutationMMD, kernel_functor)
 {
 	const index_t dim=2;
 	const index_t n=8;
@@ -321,7 +333,11 @@ TEST(WithinBlockPermutationBatch, kernel_functor)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-	shogun::internal::mmd::WithinBlockPermutationBatch batch(n, m, num_null_samples, EStatisticType::ST_BIASED_FULL);
+	auto batch=shogun::internal::mmd::PermutationMMD();
+	batch.m_n_x=n;
+	batch.m_n_y=m;
+	batch.m_num_null_samples=num_null_samples;
+	batch.m_stype=EStatisticType::ST_BIASED_FULL;
 
 	sg_rand->set_seed(12345);
 	SGVector<float32_t> result_1=batch(mat);

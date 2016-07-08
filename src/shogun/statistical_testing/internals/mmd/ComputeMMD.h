@@ -33,13 +33,14 @@
 
 #include <array>
 #include <vector>
-#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -65,8 +66,22 @@ struct ComputeMMD
 	{
 	}
 
+	template <class Kernel>
+	float32_t operator()(const Kernel& kernel) const
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		const index_t size=m_n_x+m_n_y;
+		terms_t terms;
+		for (auto i=0; i<size; ++i)
+		{
+			for (auto j=i; j<size; ++j)
+				add_term(terms, kernel(i, j), i, j);
+		}
+		return compute(terms);
+	}
+
 	template <typename T>
-	T operator()(const SGMatrix<T>& kernel_matrix) const
+	float32_t operator()(const SGMatrix<T>& kernel_matrix) const
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		const index_t size=m_n_x+m_n_y;
@@ -90,7 +105,7 @@ struct ComputeMMD
 		terms.term[1]=(b_y.sum()-terms.diag[1])/2+terms.diag[1];
 		terms.term[2]=b_xy.sum();
 
-		return static_cast<T>(compute(terms));
+		return compute(terms);
 	}
 
 	SGVector<float64_t> operator()(const KernelManager& kernel_mgr) const
@@ -120,6 +135,15 @@ struct ComputeMMD
 		return result;
 	}
 
+	/**
+	 * Adds the kernel value to to the term that corresponding to K(i, j). It only
+	 * uses the lower triangular half of the matrix to exploit symmetry.
+	 *
+	 * @param terms the terms for computing MMD
+	 * @param kernel_value the kernel value between i-th and j-th features.
+	 * @param i the row index for the Gram matrix
+	 * @param j the col index for the Gram matrix
+	 */
 	template <typename T>
 	inline void add_term(terms_t& terms, T kernel_value, index_t i, index_t j) const
 	{
