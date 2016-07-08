@@ -163,6 +163,7 @@ TEST(RandomForest,classify_nominal_test)
 	c->set_feature_types(ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
+	c->parallel->set_num_threads(1);
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);
@@ -232,6 +233,7 @@ TEST(RandomForest,classify_non_nominal_test)
 	c->set_feature_types(ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
+	c->parallel->set_num_threads(1);	
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);
