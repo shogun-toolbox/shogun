@@ -11,10 +11,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
 
 using namespace shogun;
 
@@ -99,7 +97,6 @@ void CEuclideanDistance::precompute_rhs()
 
 void CEuclideanDistance::precompute_lhs()
 {
-#ifdef HAVE_LINALG_LIB
 	SGVector<float64_t>lhs_sq=SGVector<float64_t>(lhs->get_num_vectors());
 
 	for(int32_t idx_i=0; idx_i<lhs->get_num_vectors(); idx_i++)
@@ -110,7 +107,6 @@ void CEuclideanDistance::precompute_lhs()
 	}
 
 	m_lhs_squared_norms=lhs_sq;
-#endif
 }
 
 void CEuclideanDistance::reset_precompute()
