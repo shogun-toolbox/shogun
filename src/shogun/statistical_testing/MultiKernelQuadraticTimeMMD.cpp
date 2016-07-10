@@ -200,7 +200,7 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 
 	kernel_mgr.unset_precomputed_distance();
 
-	for (auto i=0; i<result.size(); ++i)
+	for (size_t i=0; i<result.size(); ++i)
 		result.matrix[i]=self->m_owner->normalize_statistic(result.matrix[i]);
 
 	SG_DEBUG("Leaving");

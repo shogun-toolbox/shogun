@@ -64,7 +64,7 @@ struct PermutationMMD : ComputeMMD
 			for (auto j=0; j<size; ++j)
 			{
 				for (auto i=0; i<size; ++i)
-					add_term(terms, kernel(i, j), inverted_permuted_inds[n][i], inverted_permuted_inds[n][j]);
+					add_term(terms, kernel(i, j), m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 			}
 			null_samples[n]=compute(terms);
 			SG_SDEBUG("null_samples[%d] = %f!\n", n, null_samples[n]);
@@ -99,16 +99,16 @@ struct PermutationMMD : ComputeMMD
 #pragma omp for
 				for (auto n=0; n<m_num_null_samples; ++n)
 				{
-					terms_t terms;
+					terms_t null_sample_terms;
 					for (auto i=0; i<size; ++i)
 					{
 						for (auto j=i; j<size; ++j)
 						{
 							float64_t value=km[i*size-i*(i+1)/2+j];
-							add_term(terms, value, inverted_permuted_inds[n][i], inverted_permuted_inds[n][j]);
+							add_term(null_sample_terms, value, m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 						}
 					}
-					null_samples(n, k)=compute(terms);
+					null_samples(n, k)=compute(null_sample_terms);
 				}
 			}
 		}
@@ -155,16 +155,16 @@ struct PermutationMMD : ComputeMMD
 #pragma omp for
 				for (auto n=0; n<m_num_null_samples; ++n)
 				{
-					terms_t terms;
+					terms_t null_sample_terms;
 					for (auto i=0; i<size; ++i)
 					{
 						for (auto j=i; j<size; ++j)
 						{
 							float64_t value=km[i*size-i*(i+1)/2+j];
-							add_term(terms, value, inverted_permuted_inds[n][i], inverted_permuted_inds[n][j]);
+							add_term(null_sample_terms, value, m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 						}
 					}
-					null_samples[n]=compute(terms);
+					null_samples[n]=compute(null_sample_terms);
 				}
 				result[k]=compute_p_value(null_samples, statistic);
 				SG_SDEBUG("Kernel(%d): p_value=%f\n", k, result[k]);
@@ -178,13 +178,13 @@ struct PermutationMMD : ComputeMMD
 	{
 		ASSERT(m_num_null_samples>0);
 		allocate_permutation_inds();
-		SGVector<index_t> sg_wrapper(permuted_inds.data(), permuted_inds.size(), false);
+		SGVector<index_t> sg_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
-			std::iota(permuted_inds.data(), permuted_inds.data()+permuted_inds.size(), 0);
+			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
 			CMath::permute(sg_wrapper);
-			for (auto i=0; i<permuted_inds.size(); ++i)
-				inverted_permuted_inds[n][permuted_inds[i]]=i;
+			for (size_t i=0; i<m_permuted_inds.size(); ++i)
+				m_inverted_permuted_inds[n][m_permuted_inds[i]]=i;
 		}
 	}
 
@@ -198,22 +198,22 @@ struct PermutationMMD : ComputeMMD
 	inline void allocate_permutation_inds()
 	{
 		const index_t size=m_n_x+m_n_y;
-		if (permuted_inds.size()!=size)
-			permuted_inds.resize(size);
+		if (m_permuted_inds.size()!=size_t(size))
+			m_permuted_inds.resize(size);
 
-		if (inverted_permuted_inds.size()!=m_num_null_samples)
-			inverted_permuted_inds.resize(m_num_null_samples);
+		if (m_inverted_permuted_inds.size()!=size_t(m_num_null_samples))
+			m_inverted_permuted_inds.resize(m_num_null_samples);
 
 		for (auto i=0; i<m_num_null_samples; ++i)
 		{
-			if (inverted_permuted_inds[i].size()!=size)
-				inverted_permuted_inds[i].resize(size);
+			if (m_inverted_permuted_inds[i].size()!=size_t(size))
+				m_inverted_permuted_inds[i].resize(size);
 		}
 	}
 
 	index_t m_num_null_samples;
-	std::vector<index_t> permuted_inds;
-	std::vector<std::vector<index_t> > inverted_permuted_inds;
+	std::vector<index_t> m_permuted_inds;
+	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
 };
 
 }

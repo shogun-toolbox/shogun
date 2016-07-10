@@ -40,8 +40,7 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
-#include <shogun/statistical_testing/internals/mmd/PermutationTestCrossValidation.h>
-#include <shogun/statistical_testing/internals/mmd/MultiKernelPermutationTestCrossValidation.h>
+#include <shogun/statistical_testing/internals/mmd/CrossValidationMMD.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 
 using namespace shogun;
@@ -89,25 +88,26 @@ void MaxCrossValidation::compute_measures()
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
 	{
+		REQUIRE(estimator->get_null_approximation_method()==ENullApproximationMethod::NAM_PERMUTATION,
+			"Only supported with PERMUTATION method for null distribution approximation!\n");
+
+		auto Nx=estimator->get_num_samples_p();
+		auto Ny=estimator->get_num_samples_q();
+		auto num_null_samples=estimator->get_num_null_samples();
+		auto stype=estimator->get_statistic_type();
+		CrossValidationMMD compute(Nx, Ny, num_folds, num_null_samples);
+		compute.m_stype=stype;
+		compute.m_alpha=alpha;
+		compute.m_num_runs=num_runs;
+		compute.m_rejections=rejections;
+
 		if (kernel_mgr.same_distance_type())
 		{
-			auto Nx=estimator->get_num_samples_p();
-			auto Ny=estimator->get_num_samples_q();
-			auto num_null_samples=estimator->get_num_null_samples();
-			auto stype=estimator->get_statistic_type();
-
-			MultiKernelPermutationTestCrossValidation compute(Nx, Ny, num_null_samples, stype);
-			compute.set_num_runs(num_runs);
-			compute.set_num_folds(num_folds);
-			compute.set_alpha(alpha);
-			compute.set_measure_matrix(rejections);
-
 			CDistance* distance=kernel_mgr.get_distance_instance();
-			SG_REF(distance);
-			compute.set_distance(estimator->compute_joint_distance(distance));
+			kernel_mgr.set_precomputed_distance(estimator->compute_joint_distance(distance));
 			SG_UNREF(distance);
-
 			compute(kernel_mgr);
+			kernel_mgr.unset_precomputed_distance();
 		}
 		else
 		{
@@ -122,22 +122,11 @@ void MaxCrossValidation::compute_measures()
 				SG_REF(samples_p_and_q);
 				samples.clear();
 
-				auto Nx=estimator->get_num_samples_p();
-				auto Ny=estimator->get_num_samples_q();
-				auto num_null_samples=estimator->get_num_null_samples();
-				auto stype=estimator->get_statistic_type();
-
-				PermutationTestCrossValidation compute(Nx, Ny, num_null_samples, stype);
-				compute.set_num_runs(num_runs);
-				compute.set_num_folds(num_folds);
-				compute.set_alpha(alpha);
-				compute.set_measure_matrix(rejections);
-
 				for (size_t k=0; k<num_kernels; ++k)
 				{
 					CKernel* kernel=kernel_mgr.kernel_at(k);
 					kernel->init(samples_p_and_q, samples_p_and_q);
-					compute(kernel->get_kernel_matrix(), k);
+					compute(kernel->get_kernel_matrix<float32_t>(), k);
 					kernel->remove_lhs_and_rhs();
 				}
 				SG_UNREF(samples_p_and_q);
