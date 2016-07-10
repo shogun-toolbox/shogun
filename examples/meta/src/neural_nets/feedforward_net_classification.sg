@@ -47,8 +47,8 @@ RealVector parameters = network.get_parameters()
 #![get_params]
 
 #![evaluate_accuracy]
-AccuracyMeasure eval()
-real accuracy = eval.evaluate(labels_predict, labels_test)
+AccuracyMeasure am()
+real accuracy = am.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # additional integration testing variables
