@@ -157,7 +157,10 @@ struct CrossValidationMMD : PermutationMMD
 									if (inverted_row!=-1 && inverted_col!=-1)
 									{
 										auto idx=i*size-i*(i+1)/2+j;
-										add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
+										if (inverted_row<=inverted_col)
+											add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
+										else
+											add_term_upper(null_terms, precomputed_km[idx], inverted_col, inverted_row);
 									}
 								}
 							}

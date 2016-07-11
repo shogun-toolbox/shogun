@@ -64,7 +64,15 @@ struct PermutationMMD : ComputeMMD
 			for (auto j=0; j<size; ++j)
 			{
 				for (auto i=j; i<size; ++i)
-					add_term(terms, kernel(i, j), m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
+				{
+					auto inverted_row=m_inverted_permuted_inds[n][i];
+					auto inverted_col=m_inverted_permuted_inds[n][j];
+
+					if (inverted_row>=inverted_col)
+						add_term_lower(terms, kernel(i, j), inverted_row, inverted_col);
+					else
+						add_term_lower(terms, kernel(i, j), inverted_col, inverted_row);
+				}
 			}
 			null_samples[n]=compute(terms);
 			SG_SDEBUG("null_samples[%d] = %f!\n", n, null_samples[n]);
@@ -105,7 +113,13 @@ struct PermutationMMD : ComputeMMD
 						for (auto j=i; j<size; ++j)
 						{
 							auto index=i*size-i*(i+1)/2+j;
-							add_term_upper(null_terms, km[index], m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
+							auto inverted_row=m_inverted_permuted_inds[n][i];
+							auto inverted_col=m_inverted_permuted_inds[n][j];
+
+							if (inverted_row<=inverted_col)
+								add_term_upper(null_terms, km[index], inverted_row, inverted_col);
+							else
+								add_term_upper(null_terms, km[index], inverted_col, inverted_row);
 						}
 					}
 					null_samples(n, k)=compute(null_terms);
@@ -161,7 +175,13 @@ struct PermutationMMD : ComputeMMD
 						for (auto j=i; j<size; ++j)
 						{
 							auto index=i*size-i*(i+1)/2+j;
-							add_term_upper(null_terms, km[index], m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
+							auto inverted_row=m_inverted_permuted_inds[n][i];
+							auto inverted_col=m_inverted_permuted_inds[n][j];
+
+							if (inverted_row<=inverted_col)
+								add_term_upper(null_terms, km[index], inverted_row, inverted_col);
+							else
+								add_term_upper(null_terms, km[index], inverted_col, inverted_row);
 						}
 					}
 					null_samples[n]=compute(null_terms);

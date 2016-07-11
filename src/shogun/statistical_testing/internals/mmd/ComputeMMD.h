@@ -75,7 +75,7 @@ struct ComputeMMD
 		for (auto i=0; i<size; ++i)
 		{
 			for (auto j=i; j<size; ++j)
-				add_term(terms, kernel(i, j), i, j);
+				add_term_lower(terms, kernel(i, j), i, j);
 		}
 		return compute(terms);
 	}
@@ -120,7 +120,7 @@ struct ComputeMMD
 				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 				{
 					auto kernel=kernel_mgr.kernel_at(k)->kernel(i, j);
-					add_term(terms[k], kernel, i, j);
+					add_term_lower(terms[k], kernel, i, j);
 				}
 			}
 		}
@@ -145,7 +145,7 @@ struct ComputeMMD
 	 * @param j the col index for the Gram matrix
 	 */
 	template <typename T>
-	inline void add_term(terms_t& terms, T kernel_value, index_t i, index_t j) const
+	inline void add_term_lower(terms_t& terms, T kernel_value, index_t i, index_t j) const
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);
 		if (i<m_n_x && j<m_n_x && i>=j)
