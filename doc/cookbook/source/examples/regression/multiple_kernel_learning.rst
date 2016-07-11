@@ -10,7 +10,7 @@ Multiple kernel learning (MKL) is based on convex combinations of arbitrary kern
 
 where :math:`\beta_k > 0`, :math:`\sum_{k=1}^{K} \beta_k = 1`, :math:`K` is the number of sub-kernels, :math:`\bf{k}` is a combined kernel, :math:`{\bf k}_i` is an individual kernel and :math:`{x_i}_i` are the training data.
 
-Regression is done by using :sgclass:`CSVMLight`. `See the SVR cookbook <http://shogun.ml/cookbook/latest/examples/regression/support_vector_regression.html>`_ for more details.
+Regression is done by using :sgclass:`CSVMLight`. See :doc:`support_vector_regression` for more details.
 
 
 See :cite:`sonnenburg2006large` for more information about MKL.
@@ -51,6 +51,8 @@ Finally, we can evaluate the :sgclass:`CMeanSquaredError`.
 References
 ----------
 :wiki:`Multiple_kernel_learning`
+
+:doc:`support_vector_regression`
 
 .. bibliography:: ../../references.bib
     :filter: docname in docnames
