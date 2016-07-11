@@ -44,51 +44,43 @@ namespace shogun
 class LinalgBackendEigen : public LinalgBackendBase
 {
 public:
+	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
+	METHODNAME(bool, Container); \
+	METHODNAME(char, Container); \
+	METHODNAME(int8_t, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(int64_t, Container); \
+	METHODNAME(uint64_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container); \
+	METHODNAME(complex128_t, Container); \
+
 	/** Implementation of @see LinalgBackendBase::add */
-	#define BACKEND_GENERIC_ADD(Type) \
-	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
+	#define BACKEND_GENERIC_ADD(Type, Container) \
+	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
 	{  \
 		return add_impl(a, b, alpha, beta); \
 	}
 
-	BACKEND_GENERIC_ADD(bool);
-	BACKEND_GENERIC_ADD(char);
-	BACKEND_GENERIC_ADD(int8_t);
-	BACKEND_GENERIC_ADD(uint8_t);
-	BACKEND_GENERIC_ADD(int16_t);
-	BACKEND_GENERIC_ADD(uint16_t);
-	BACKEND_GENERIC_ADD(int32_t);
-	BACKEND_GENERIC_ADD(uint32_t);
-	BACKEND_GENERIC_ADD(int64_t);
-	BACKEND_GENERIC_ADD(uint64_t);
-	BACKEND_GENERIC_ADD(float32_t);
-	BACKEND_GENERIC_ADD(float64_t);
-	BACKEND_GENERIC_ADD(floatmax_t);
-	BACKEND_GENERIC_ADD(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
 
 	/** Implementation of @see LinalgBackendBase::dot */
-	#define BACKEND_GENERIC_DOT(Type) \
-	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
+	#define BACKEND_GENERIC_DOT(Type, Container) \
+	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
 	{  \
 		return dot_impl(a, b);  \
 	}
 
-	BACKEND_GENERIC_DOT(bool);
-	BACKEND_GENERIC_DOT(char);
-	BACKEND_GENERIC_DOT(int8_t);
-	BACKEND_GENERIC_DOT(uint8_t);
-	BACKEND_GENERIC_DOT(int16_t);
-	BACKEND_GENERIC_DOT(uint16_t);
-	BACKEND_GENERIC_DOT(int32_t);
-	BACKEND_GENERIC_DOT(uint32_t);
-	BACKEND_GENERIC_DOT(int64_t);
-	BACKEND_GENERIC_DOT(uint64_t);
-	BACKEND_GENERIC_DOT(float32_t);
-	BACKEND_GENERIC_DOT(float64_t);
-	BACKEND_GENERIC_DOT(floatmax_t);
-	BACKEND_GENERIC_DOT(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
+
+	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
 	/** Eigen3 vector C = alpha*A + beta*B method */
