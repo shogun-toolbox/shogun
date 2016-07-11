@@ -69,98 +69,6 @@ struct CrossValidationMMD : PermutationMMD
 		init();
 	}
 
-	template <class Kernel>
-	void operator()(const Kernel& kernel, index_t k)
-	{
-		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
-			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
-			m_rejections.num_rows, m_num_runs, m_num_folds, m_num_runs*m_num_folds);
-		REQUIRE(m_rejections.num_cols>k,
-			"Number of columns in the measure matrix (was %d), has to be greater than %d!\n",
-			m_rejections.num_cols, k);
-
-		const index_t size=m_n_x+m_n_y;
-		SGVector<float64_t> null_samples(m_num_null_samples);
-#pragma omp parallel
-		{
-			for (auto current_run=0; current_run<m_num_runs; ++current_run)
-			{
-				m_kfold_x->build_subsets();
-				m_kfold_y->build_subsets();
-				for (auto current_fold=0; current_fold<m_num_folds; ++current_fold)
-				{
-					generate_inds(current_fold);
-					std::fill(m_inverted_inds.data(), m_inverted_inds.data()+m_inverted_inds.size(), -1);
-					for (size_t idx=0; idx<m_xy_inds.size(); ++idx)
-						m_inverted_inds[m_xy_inds[idx]]=idx;
-
-					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
-					m_stack->add_subset(xy_wrapper);
-
-					m_permuted_inds.resize(m_xy_inds.size());
-					SGVector<index_t> permutation_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
-					for (auto n=0; n<m_num_null_samples; ++n)
-					{
-						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(permutation_wrapper);
-
-						m_stack->add_subset(permutation_wrapper);
-						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
-						m_stack->remove_subset();
-
-						std::fill(m_inverted_permuted_inds[n].data(), m_inverted_permuted_inds[n].data()+size, -1);
-						for (int idx=0; idx<inds.size(); ++idx)
-							m_inverted_permuted_inds[n][inds[idx]]=idx;
-					}
-					m_stack->remove_subset();
-
-					terms_t terms;
-					for (auto j=0; j<size; ++j)
-					{
-						for (auto i=j; i<size; ++i)
-						{
-							auto inverted_row=m_inverted_inds[i];
-							auto inverted_col=m_inverted_inds[j];
-							if (inverted_row!=-1 && inverted_col!=-1)
-							{
-								add_term(terms, kernel(i, j), inverted_row, inverted_col);
-							}
-						}
-					}
-					auto statistic=compute(terms);
-
-					#pragma omp for
-					for (auto n=0; n<m_num_null_samples; ++n)
-					{
-						terms_t permutation_terms;
-						for (auto j=0; j<size; ++j)
-						{
-							for (auto i=j; i<size; ++i)
-							{
-								auto inverted_row=m_inverted_permuted_inds[n][i];
-								auto inverted_col=m_inverted_permuted_inds[n][j];
-								if (inverted_row!=-1 && inverted_col!=-1)
-								{
-									add_term(permutation_terms, kernel(i, j), inverted_row, inverted_col);
-								}
-							}
-						}
-						null_samples[n]=compute(permutation_terms);
-					}
-
-					std::sort(null_samples.data(), null_samples.data()+null_samples.size());
-					SG_SDEBUG("statistic=%f\n", statistic);
-					float64_t idx=null_samples.find_position_to_insert(statistic);
-					SG_SDEBUG("index=%f\n", idx);
-					auto p_value=1.0-idx/m_num_null_samples;
-					bool rejected=p_value<m_alpha;
-					SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
-					m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
-				}
-			}
-		}
-	}
-
 	void operator()(const KernelManager& kernel_mgr)
 	{
 		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
@@ -171,8 +79,10 @@ struct CrossValidationMMD : PermutationMMD
 			m_rejections.num_cols, kernel_mgr.num_kernels());
 
 		const index_t size=m_n_x+m_n_y;
+		const index_t orig_n_x=m_n_x;
+		const index_t orig_n_y=m_n_y;
 		SGVector<float64_t> null_samples(m_num_null_samples);
-		SGVector<float32_t> precomputed_kernel_matrix(size*(size+1)/2);
+		SGVector<float32_t> precomputed_km(size*(size+1)/2);
 #pragma omp parallel
 		{
 			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
@@ -183,7 +93,7 @@ struct CrossValidationMMD : PermutationMMD
 					for (auto j=i; j<size; ++j)
 					{
 						auto index=i*size-i*(i+1)/2+j;
-						precomputed_kernel_matrix[index]=kernel->kernel(i, j);
+						precomputed_km[index]=kernel->kernel(i, j);
 					}
 				}
 
@@ -228,7 +138,7 @@ struct CrossValidationMMD : PermutationMMD
 								if (inverted_row!=-1 && inverted_col!=-1)
 								{
 									auto idx=i*size-i*(i+1)/2+j;
-									add_term(terms, precomputed_kernel_matrix[idx], inverted_row, inverted_col);
+									add_term_upper(terms, precomputed_km[idx], inverted_row, inverted_col);
 								}
 							}
 						}
@@ -237,7 +147,7 @@ struct CrossValidationMMD : PermutationMMD
 						#pragma omp for
 						for (auto n=0; n<m_num_null_samples; ++n)
 						{
-							terms_t permutation_terms;
+							terms_t null_terms;
 							for (auto i=0; i<size; ++i)
 							{
 								for (auto j=i; j<size; ++j)
@@ -247,11 +157,11 @@ struct CrossValidationMMD : PermutationMMD
 									if (inverted_row!=-1 && inverted_col!=-1)
 									{
 										auto idx=i*size-i*(i+1)/2+j;
-										add_term(permutation_terms, precomputed_kernel_matrix[idx], inverted_row, inverted_col);
+										add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
 									}
 								}
 							}
-							null_samples[n]=compute(permutation_terms);
+							null_samples[n]=compute(null_terms);
 						}
 
 						std::sort(null_samples.data(), null_samples.data()+null_samples.size());
@@ -262,6 +172,9 @@ struct CrossValidationMMD : PermutationMMD
 						bool rejected=p_value<m_alpha;
 						SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
 						m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
+
+						m_n_x=orig_n_x;
+						m_n_y=orig_n_y;
 					}
 				}
 			}
@@ -308,6 +221,9 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<index_t> x_inds=m_kfold_x->generate_subset_inverse(current_fold);
 		SGVector<index_t> y_inds=m_kfold_y->generate_subset_inverse(current_fold);
 		std::for_each(y_inds.data(), y_inds.data()+y_inds.size(), [this](index_t& val) { val += m_n_x; });
+
+		m_n_x=x_inds.size();
+		m_n_y=y_inds.size();
 
 		m_xy_inds.resize(x_inds.size()+y_inds.size());
 		std::copy(x_inds.data(), x_inds.data()+x_inds.size(), m_xy_inds.data());

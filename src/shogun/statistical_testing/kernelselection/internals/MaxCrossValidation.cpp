@@ -126,7 +126,13 @@ void MaxCrossValidation::compute_measures()
 				{
 					CKernel* kernel=kernel_mgr.kernel_at(k);
 					kernel->init(samples_p_and_q, samples_p_and_q);
-					compute(kernel->get_kernel_matrix<float32_t>(), k);
+				}
+
+				compute(kernel_mgr);
+
+				for (size_t k=0; k<num_kernels; ++k)
+				{
+					CKernel* kernel=kernel_mgr.kernel_at(k);
 					kernel->remove_lhs_and_rhs();
 				}
 				SG_UNREF(samples_p_and_q);

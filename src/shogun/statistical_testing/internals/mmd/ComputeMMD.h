@@ -171,6 +171,42 @@ struct ComputeMMD
 		}
 	}
 
+	/**
+	 * Adds the kernel value to to the term that corresponding to K(i, j). It only
+	 * uses the upper triangular half of the matrix to exploit symmetry.
+	 *
+	 * @param terms the terms for computing MMD
+	 * @param kernel_value the kernel value between i-th and j-th features.
+	 * @param i the row index for the Gram matrix
+	 * @param j the col index for the Gram matrix
+	 */
+	template <typename T>
+	inline void add_term_upper(terms_t& terms, T kernel_value, index_t i, index_t j) const
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		if (i<m_n_x && j<m_n_x && i<=j)
+		{
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_0!\n", i, j, kernel_value);
+			terms.term[0]+=kernel_value;
+			if (i==j)
+				terms.diag[0]+=kernel_value;
+		}
+		else if (i>=m_n_x && j>=m_n_x && i<=j)
+		{
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_1!\n", i, j, kernel_value);
+			terms.term[1]+=kernel_value;
+			if (i==j)
+				terms.diag[1]+=kernel_value;
+		}
+		else if (i<m_n_x && j>=m_n_x)
+		{
+			SG_SDEBUG("Adding Kernel(%d, %d)=%f to term_2!\n", i, j, kernel_value);
+			terms.term[2]+=kernel_value;
+			if (i+m_n_x==j)
+				terms.diag[2]+=kernel_value;
+		}
+	}
+
 	inline float64_t compute(terms_t& terms) const
 	{
 		ASSERT(m_n_x>0 && m_n_y>0);

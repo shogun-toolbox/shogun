@@ -63,7 +63,7 @@ struct PermutationMMD : ComputeMMD
 			terms_t terms;
 			for (auto j=0; j<size; ++j)
 			{
-				for (auto i=0; i<size; ++i)
+				for (auto i=j; i<size; ++i)
 					add_term(terms, kernel(i, j), m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 			}
 			null_samples[n]=compute(terms);
@@ -99,16 +99,16 @@ struct PermutationMMD : ComputeMMD
 #pragma omp for
 				for (auto n=0; n<m_num_null_samples; ++n)
 				{
-					terms_t null_sample_terms;
+					terms_t null_terms;
 					for (auto i=0; i<size; ++i)
 					{
 						for (auto j=i; j<size; ++j)
 						{
-							float64_t value=km[i*size-i*(i+1)/2+j];
-							add_term(null_sample_terms, value, m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
+							auto index=i*size-i*(i+1)/2+j;
+							add_term_upper(null_terms, km[index], m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 						}
 					}
-					null_samples(n, k)=compute(null_sample_terms);
+					null_samples(n, k)=compute(null_terms);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ struct PermutationMMD : ComputeMMD
 					{
 						auto index=i*size-i*(i+1)/2+j;
 						km[index]=kernel->kernel(i, j);
-						add_term(terms, km[index], i, j);
+						add_term_upper(terms, km[index], i, j);
 					}
 				}
 				float32_t statistic=compute(terms);
@@ -155,16 +155,16 @@ struct PermutationMMD : ComputeMMD
 #pragma omp for
 				for (auto n=0; n<m_num_null_samples; ++n)
 				{
-					terms_t null_sample_terms;
+					terms_t null_terms;
 					for (auto i=0; i<size; ++i)
 					{
 						for (auto j=i; j<size; ++j)
 						{
-							float64_t value=km[i*size-i*(i+1)/2+j];
-							add_term(null_sample_terms, value, m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
+							auto index=i*size-i*(i+1)/2+j;
+							add_term_upper(null_terms, km[index], m_inverted_permuted_inds[n][i], m_inverted_permuted_inds[n][j]);
 						}
 					}
-					null_samples[n]=compute(null_sample_terms);
+					null_samples[n]=compute(null_terms);
 				}
 				result[k]=compute_p_value(null_samples, statistic);
 				SG_SDEBUG("Kernel(%d): p_value=%f\n", k, result[k]);
