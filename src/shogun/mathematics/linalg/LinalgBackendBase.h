@@ -49,31 +49,34 @@ namespace shogun
 class LinalgBackendBase
 {
 public:
+	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
+	METHODNAME(bool, Container); \
+	METHODNAME(char, Container); \
+	METHODNAME(int8_t, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(int64_t, Container); \
+	METHODNAME(uint64_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container); \
+	METHODNAME(complex128_t, Container); \
+
 	/**
 	 * Wrapper method of add operation the operation C = alpha*A + beta*B.
 	 *
 	 * @see linalg::add
 	 */
-	#define BACKEND_GENERIC_ADD(Type) \
-	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
+	#define BACKEND_GENERIC_ADD(Type, Container) \
+	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
 
-	BACKEND_GENERIC_ADD(bool);
-	BACKEND_GENERIC_ADD(char);
-	BACKEND_GENERIC_ADD(int8_t);
-	BACKEND_GENERIC_ADD(uint8_t);
-	BACKEND_GENERIC_ADD(int16_t);
-	BACKEND_GENERIC_ADD(uint16_t);
-	BACKEND_GENERIC_ADD(int32_t);
-	BACKEND_GENERIC_ADD(uint32_t);
-	BACKEND_GENERIC_ADD(int64_t);
-	BACKEND_GENERIC_ADD(uint64_t);
-	BACKEND_GENERIC_ADD(float32_t);
-	BACKEND_GENERIC_ADD(float64_t);
-	BACKEND_GENERIC_ADD(floatmax_t);
-	BACKEND_GENERIC_ADD(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
 
 	/**
@@ -81,26 +84,13 @@ public:
 	 *
 	 * @see linalg::dot
 	 */
-	#define BACKEND_GENERIC_DOT(Type) \
-	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
+	#define BACKEND_GENERIC_DOT(Type, Container) \
+	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
 
-	BACKEND_GENERIC_DOT(bool);
-	BACKEND_GENERIC_DOT(char);
-	BACKEND_GENERIC_DOT(int8_t);
-	BACKEND_GENERIC_DOT(uint8_t);
-	BACKEND_GENERIC_DOT(int16_t);
-	BACKEND_GENERIC_DOT(uint16_t);
-	BACKEND_GENERIC_DOT(int32_t);
-	BACKEND_GENERIC_DOT(uint32_t);
-	BACKEND_GENERIC_DOT(int64_t);
-	BACKEND_GENERIC_DOT(uint64_t);
-	BACKEND_GENERIC_DOT(float32_t);
-	BACKEND_GENERIC_DOT(float64_t);
-	BACKEND_GENERIC_DOT(floatmax_t);
-	BACKEND_GENERIC_DOT(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
 	/**
@@ -109,26 +99,13 @@ public:
 	 *
 	 * @see linalg::to_gpu
 	 */
-	#define BACKEND_GENERIC_TO_GPU(Type) \
-	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>&) const \
+	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
+	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
 
-	BACKEND_GENERIC_TO_GPU(bool);
-	BACKEND_GENERIC_TO_GPU(char);
-	BACKEND_GENERIC_TO_GPU(int8_t);
-	BACKEND_GENERIC_TO_GPU(uint8_t);
-	BACKEND_GENERIC_TO_GPU(int16_t);
-	BACKEND_GENERIC_TO_GPU(uint16_t);
-	BACKEND_GENERIC_TO_GPU(int32_t);
-	BACKEND_GENERIC_TO_GPU(uint32_t);
-	BACKEND_GENERIC_TO_GPU(int64_t);
-	BACKEND_GENERIC_TO_GPU(uint64_t);
-	BACKEND_GENERIC_TO_GPU(float32_t);
-	BACKEND_GENERIC_TO_GPU(float64_t);
-	BACKEND_GENERIC_TO_GPU(floatmax_t);
-	BACKEND_GENERIC_TO_GPU(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/**
@@ -136,28 +113,16 @@ public:
 	 *
 	 * @see linalg::from_gpu
 	 */
-	#define BACKEND_GENERIC_FROM_GPU(Type) \
-	virtual void from_gpu(const SGVector<Type>&, Type* data) const \
+	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
+	virtual void from_gpu(const Container<Type>&, Type* data) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
 
-	BACKEND_GENERIC_FROM_GPU(bool);
-	BACKEND_GENERIC_FROM_GPU(char);
-	BACKEND_GENERIC_FROM_GPU(int8_t);
-	BACKEND_GENERIC_FROM_GPU(uint8_t);
-	BACKEND_GENERIC_FROM_GPU(int16_t);
-	BACKEND_GENERIC_FROM_GPU(uint16_t);
-	BACKEND_GENERIC_FROM_GPU(int32_t);
-	BACKEND_GENERIC_FROM_GPU(uint32_t);
-	BACKEND_GENERIC_FROM_GPU(int64_t);
-	BACKEND_GENERIC_FROM_GPU(uint64_t);
-	BACKEND_GENERIC_FROM_GPU(float32_t);
-	BACKEND_GENERIC_FROM_GPU(float64_t);
-	BACKEND_GENERIC_FROM_GPU(floatmax_t);
-	BACKEND_GENERIC_FROM_GPU(complex128_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
 	#undef BACKEND_GENERIC_FROM_GPU
 
+	#undef DEFINE_FOR_ALL_PTYPE
 };
 
 }

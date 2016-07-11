@@ -53,73 +53,57 @@ class LinalgBackendViennaCL : public LinalgBackendGPUBase
 	friend struct GPUMemoryViennaCL;
 
 public:
+	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
+	METHODNAME(char, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+
 	/** Implementation of @see LinalgBackendBase::add */
-	#define BACKEND_GENERIC_ADD(Type) \
-	virtual SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha, Type beta) const \
-	{ \
+	#define BACKEND_GENERIC_ADD(Type, Container) \
+	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
+	{  \
 		return add_impl(a, b, alpha, beta); \
 	}
 
-	BACKEND_GENERIC_ADD(char);
-	BACKEND_GENERIC_ADD(uint8_t);
-	BACKEND_GENERIC_ADD(int16_t);
-	BACKEND_GENERIC_ADD(uint16_t);
-	BACKEND_GENERIC_ADD(int32_t);
-	BACKEND_GENERIC_ADD(uint32_t);
-	BACKEND_GENERIC_ADD(float32_t);
-	BACKEND_GENERIC_ADD(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
 
 	/** Implementation of @see LinalgBackendBase::dot */
-	#define BACKEND_GENERIC_DOT(Type) \
-	virtual Type dot(const SGVector<Type>& a, const SGVector<Type>& b) const \
+	#define BACKEND_GENERIC_DOT(Type, Container) \
+	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
 	{  \
 		return dot_impl(a, b);  \
 	}
 
-	BACKEND_GENERIC_DOT(char);
-	BACKEND_GENERIC_DOT(uint8_t);
-	BACKEND_GENERIC_DOT(int16_t);
-	BACKEND_GENERIC_DOT(uint16_t);
-	BACKEND_GENERIC_DOT(int32_t);
-	BACKEND_GENERIC_DOT(uint32_t);
-	BACKEND_GENERIC_DOT(float32_t);
-	BACKEND_GENERIC_DOT(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
 	/** Implementation of @see LinalgBackendBase::to_gpu */
-	#define BACKEND_GENERIC_TO_GPU(Type) \
-	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>& vector) const \
+	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
+	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>& vector) const \
 	{  \
 		return to_gpu_impl(vector);  \
 	}
 
-	BACKEND_GENERIC_TO_GPU(char);
-	BACKEND_GENERIC_TO_GPU(uint8_t);
-	BACKEND_GENERIC_TO_GPU(int16_t);
-	BACKEND_GENERIC_TO_GPU(uint16_t);
-	BACKEND_GENERIC_TO_GPU(int32_t);
-	BACKEND_GENERIC_TO_GPU(uint32_t);
-	BACKEND_GENERIC_TO_GPU(float32_t);
-	BACKEND_GENERIC_TO_GPU(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/** Implementation of @see LinalgBackendGPUBase::from_gpu */
-	#define BACKEND_GENERIC_FROM_GPU(Type) \
-	virtual void from_gpu(const SGVector<Type>& vector, Type* data) const \
+	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
+	virtual void from_gpu(const Container<Type>& vector, Type* data) const \
 	{  \
 		return from_gpu_impl(vector, data);  \
 	}
 
-	BACKEND_GENERIC_FROM_GPU(char);
-	BACKEND_GENERIC_FROM_GPU(uint8_t);
-	BACKEND_GENERIC_FROM_GPU(int16_t);
-	BACKEND_GENERIC_FROM_GPU(uint16_t);
-	BACKEND_GENERIC_FROM_GPU(int32_t);
-	BACKEND_GENERIC_FROM_GPU(uint32_t);
-	BACKEND_GENERIC_FROM_GPU(float32_t);
-	BACKEND_GENERIC_FROM_GPU(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
 	#undef BACKEND_GENERIC_FROM_GPU
+
+	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
 	/** static cast GPUMemoryBase class to GPUMemoryViennaCL */
