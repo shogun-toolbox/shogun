@@ -39,35 +39,58 @@ namespace shogun
 namespace linalg
 {
 
-/** Return the corresponding backend of SGVector
- * @param vec SGVector
+/** Return the corresponding backend of SGVector or SGMatrix
+ * @param a SGVector or SGMatrix
  * @return LinalgBackendBase pointer
  */
-template <typename Type>
-LinalgBackendBase* infer_backend(const SGVector<Type>& vec)
+template <typename T, template <typename> class Container>
+LinalgBackendBase* infer_backend(const Container<T>& a)
 {
-	if (vec.on_gpu())
-		return sg_linalg->get_gpu_backend();
+	if (a.on_gpu())
+	{
+		if (sg_linalg->get_gpu_backend())
+			return sg_linalg->get_gpu_backend();
+		else
+		{
+			SG_SERROR("Vector memory on GPU but no GPU backend registered. \
+						This can happen if the GPU backend was de-activated \
+						after memory has been transferred to GPU.\n");
+			return NULL;
+		}
+	}
 	else
 		return sg_linalg->get_cpu_backend();
 }
 
-/** Return the corresponding backend of SGVector
- * Raise error if the two SGVectors are not on the same backend.
- * @param a the fisrt SGVector
- * @param b the second SGVector
+/** Return the corresponding backend of SGVector or SGMatrix
+ * Raise error if the two Containers are not on the same backend.
+ * @param a the fisrt SGVector/SGMatrix
+ * @param b the second SGVector/SGMatrix
  * @return LinalgBackendBase pointer
  */
-template <typename Type>
-LinalgBackendBase* infer_backend(const SGVector<Type>& a, const SGVector<Type>& b)
+template <typename T, template <typename> class Container>
+LinalgBackendBase* infer_backend(const Container<T>& a, const Container<T>& b)
 {
 	if (a.on_gpu() && b.on_gpu())
-		return sg_linalg->get_gpu_backend();
+	{
+		if (sg_linalg->get_gpu_backend())
+			return sg_linalg->get_gpu_backend();
+		else
+		{
+			SG_SERROR("Vector memory on GPU but no GPU backend registered. \
+					  This can happen if the GPU backend was de-activated \
+					  after memory has been transferred to GPU.\n");
+			return NULL;
+		}
+	}
 	else if (a.on_gpu() || b.on_gpu())
+	{
 		SG_SERROR("Cannot operate with first vector gpu (%d) and second vector gpu (%d).\n",
 					a.on_gpu(), b.on_gpu());
-
-	return sg_linalg->get_cpu_backend();
+		return NULL;
+	}
+	else
+		return sg_linalg->get_cpu_backend();
 }
 
 /**
@@ -78,8 +101,8 @@ LinalgBackendBase* infer_backend(const SGVector<Type>& a, const SGVector<Type>& 
  * @param beta constant to be multiplied by the second vector
  * @return The result vector
  */
-template <typename Type>
-SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha=1, Type beta=1)
+template <typename T, template <typename> class Container>
+Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta=1)
 {
 	REQUIRE(a.vlen == b.vlen, "Vectors should have same length! "
 			"a(%d) vs b(%d)\n", a.vlen, b.vlen);
@@ -95,8 +118,8 @@ SGVector<Type> add(const SGVector<Type>& a, const SGVector<Type>& b, Type alpha=
  * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
  * as \f$\sum_i a_i b_i\f$
  */
-template <typename Type>
-Type dot(const SGVector<Type>& a, const SGVector<Type>& b)
+template <typename T>
+T dot(const SGVector<T>& a, const SGVector<T>& b)
 {
 	return infer_backend(a, b)->dot(a, b);
 }
@@ -130,22 +153,33 @@ SGVector<T> to_gpu(const SGVector<T>& vector)
  * and a shallow-copy of SGVector with vector on GPU if GPU backend not available
  */
 template <typename T>
-SGVector<T> from_gpu(const SGVector<T>& vector)
+SGVector<T> from_gpu(const SGVector<T>& vec)
 {
-	LinalgBackendBase* gpu_backend = sg_linalg->get_gpu_backend();
-	if (gpu_backend)
+	if (vec.on_gpu())
 	{
-		typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
-		T* data;
-		data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vector.vlen));
-		gpu_backend->from_gpu(vector, data);
-		return SGVector<T>(data, vector.vlen);
+		LinalgBackendBase* gpu_backend = sg_linalg->get_gpu_backend();
+		if (gpu_backend)
+		{
+			typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
+			T* data;
+			data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, vec.size()));
+			gpu_backend->from_gpu(vec, data);
+			return SGVector<T>(data, vec.size());
+		}
+		else
+		{
+			SG_SERROR("Data memory on GPU but no GPU backend registered. \
+						This can happen if the GPU backend was de-activated \
+						after memory has been transferred to GPU.\n");
+			return NULL;
+		}
 	}
 	else
 	{
-		SG_SWARNING("Trying to run GPU code without GPU backend registered.\n");
-		return vector;
+		SG_SWARNING("The data is already on CPU.\n");
+		return vec;
 	}
+
 }
 
 }

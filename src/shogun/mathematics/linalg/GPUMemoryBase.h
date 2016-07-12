@@ -45,12 +45,12 @@ struct GPUMemoryBase
 	{
 	}
 
-	/** Clone GPU vector
+	/** Clone GPU vector or matrix
 	 *
 	 * @param GPUMemoryBase structure pointer
 	 * @return a deep-copy of GPUMemoryBase structure pointer
 	 */
-	virtual GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector) const = 0;
+	virtual GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* gpu_ptr) const = 0;
 };
 
 }

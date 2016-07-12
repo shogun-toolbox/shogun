@@ -75,12 +75,12 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	 *
 	 * @param vector GPUMemoryBase pointer
 	 */
-	GPUMemoryViennaCL(GPUMemoryBase<T>* vector) : m_data(new VCLMemoryArray())
+	GPUMemoryViennaCL(GPUMemoryBase<T>* gpu_ptr) : m_data(new VCLMemoryArray())
 	{
-		GPUMemoryViennaCL<T>* temp_vec = static_cast<GPUMemoryViennaCL<T>*>(vector);
+		GPUMemoryViennaCL<T>* temp_ptr = static_cast<GPUMemoryViennaCL<T>*>(gpu_ptr);
 		init();
-		m_data = temp_vec->m_data;
-		m_offset = temp_vec->m_offset;
+		m_data = temp_ptr->m_data;
+		m_offset = temp_ptr->m_offset;
 	};
 
 	/** Clone GPU vector */
