@@ -90,7 +90,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		bool on_gpu() const
 		{
-			return gpu_vector != NULL;
+			return gpu_ptr != NULL;
 		}
 
 #ifndef SWIG // SWIG should skip this part
@@ -541,7 +541,7 @@ template<class T> class SGVector : public SGReferencedData
 		/** Length of vector  */
 		index_t vlen;
 		/** GPU Vector structure. Stores pointer to the data on GPU. */
-		std::shared_ptr<GPUMemoryBase<T>> gpu_vector;
+		std::shared_ptr<GPUMemoryBase<T>> gpu_ptr;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
