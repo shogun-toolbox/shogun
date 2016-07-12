@@ -129,6 +129,12 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1()
 	return SGVector<float64_t>();
 }
 
+SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null()
+{
+	ASSERT(self->m_owner);
+	return sample_null(self->m_kernel_mgr);
+}
+
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values()
 {
 	ASSERT(self->m_owner);
