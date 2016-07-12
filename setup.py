@@ -56,6 +56,12 @@ show_debug_information = True
 with open(os.path.join(setup_py_location, 'README.md')) as f:
   readme = f.read()
 
+try:
+    import pypandoc
+    readme = pypandoc.convert(readme, to='rst', format='md')
+except:
+    print("Conversion of long_description from markdown to reStructuredText failed, skipping...")
+
 
 def shogun_bootstrap():
     global shogun_completed_cmake
@@ -289,16 +295,16 @@ class ShogunInstall(setuptools.command.install.install):
 
 
 shogun_setup(
-    name = "shogun",
+    name = "shogun-ml",
     version = get_shogun_version(),
     
     description = 'The Shogun Machine Learning Toolbox',
-    long_description = readme,
+    long_description=readme,
     url = 'http://www.shogun-toolbox.org/',
     
-    author = 'Ariane Paola Gomes',
-    author_email = 'arianepaola@users.noreply.github.com',
-    
+    author = 'Shogun Team',
+    author_email = 'shogun-list@shogun-toolbox.org',
+
     license = 'The GNU General Public License v3.0',
     
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -314,7 +320,12 @@ shogun_setup(
         'Programming Language :: Python :: 3'
     ],
     
-    keywords = 'Unified and efficient Machine Learning',
+    keywords = [
+        'Machine Learning',
+        'Gaussian Processes',
+        'Neural Networks',
+        'Deep Learning'
+    ],
     
     zip_safe = False,
     
