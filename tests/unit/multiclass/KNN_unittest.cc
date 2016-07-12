@@ -29,21 +29,21 @@ TEST (KNN, simple_classification)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-    CKNN* knn=new CKNN(4, distance, labels);
+	CKNN* knn=new CKNN(4, distance, labels);
     
-    knn->train(features);
+	knn->train(features);
     
     /*Test data*/
-    SGMatrix<float64_t> data(2, 1);
+	SGMatrix<float64_t> data(2, 1);
 	data(0,0)=0;
 	data(0,1)=0;
-    CDenseFeatures<float64_t>* test=new CDenseFeatures<float64_t>(data);
-    
-    CMulticlassLabels* result=knn->apply_multiclass(test);
-    
-    EXPECT_EQ(1.000000, result->get_label(0));
-    
-    SG_UNREF(knn);
-    SG_UNREF(features);
-     
-    }
+	CDenseFeatures<float64_t>* test=new CDenseFeatures<float64_t>(data);
+
+	CMulticlassLabels* result=knn->apply_multiclass(test);
+
+	EXPECT_EQ(1.000000, result->get_label(0));
+	
+	SG_UNREF(knn);
+	SG_UNREF(features);
+
+	}
