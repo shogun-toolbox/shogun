@@ -49,22 +49,25 @@ namespace shogun
 class LinalgBackendGPUBase : public LinalgBackendBase
 {
 public:
+	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
+	METHODNAME(char, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+
 	/**
 	 * Wrapper method of Transferring data to GPU memory.
 	 *
 	 * @see LinalgBackendBase::to_gpu
 	 */
-	#define BACKEND_GENERIC_TO_GPU(Type) \
+	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
 	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>&) const = 0;\
 
-	BACKEND_GENERIC_TO_GPU(char);
-	BACKEND_GENERIC_TO_GPU(uint8_t);
-	BACKEND_GENERIC_TO_GPU(int16_t);
-	BACKEND_GENERIC_TO_GPU(uint16_t);
-	BACKEND_GENERIC_TO_GPU(int32_t);
-	BACKEND_GENERIC_TO_GPU(uint32_t);
-	BACKEND_GENERIC_TO_GPU(float32_t);
-	BACKEND_GENERIC_TO_GPU(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/**
@@ -72,19 +75,13 @@ public:
 	 *
 	 * @see LinalgBackendBase::from_gpu
 	 */
-	#define BACKEND_GENERIC_FROM_GPU(Type) \
+	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
 	virtual void from_gpu(const SGVector<Type>&, Type* data) const = 0;\
 
-	BACKEND_GENERIC_FROM_GPU(char);
-	BACKEND_GENERIC_FROM_GPU(uint8_t);
-	BACKEND_GENERIC_FROM_GPU(int16_t);
-	BACKEND_GENERIC_FROM_GPU(uint16_t);
-	BACKEND_GENERIC_FROM_GPU(int32_t);
-	BACKEND_GENERIC_FROM_GPU(uint32_t);
-	BACKEND_GENERIC_FROM_GPU(float32_t);
-	BACKEND_GENERIC_FROM_GPU(float64_t);
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
 	#undef BACKEND_GENERIC_FROM_GPU
 
+	#undef DEFINE_FOR_ALL_PTYPE
 };
 
 }
