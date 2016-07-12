@@ -85,9 +85,9 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::to_gpu */
 	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
-	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>& vector) const \
+	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>& a) const \
 	{  \
-		return to_gpu_impl(vector);  \
+		return to_gpu_impl(a);  \
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
@@ -95,9 +95,9 @@ public:
 
 	/** Implementation of @see LinalgBackendGPUBase::from_gpu */
 	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
-	virtual void from_gpu(const Container<Type>& vector, Type* data) const \
+	virtual void from_gpu(const Container<Type>& a, Type* data) const \
 	{  \
-		return from_gpu_impl(vector, data);  \
+		return from_gpu_impl(a, data);  \
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
@@ -110,7 +110,7 @@ private:
 	template <typename T>
 	GPUMemoryViennaCL<T>* cast_to_viennacl(const SGVector<T> &a) const
 	{
-		return static_cast<GPUMemoryViennaCL<T>*>(a.gpu_vector.get());
+		return static_cast<GPUMemoryViennaCL<T>*>(a.gpu_ptr.get());
 	}
 
 	/** ViennaCL vector C = alpha*A + beta*B method */

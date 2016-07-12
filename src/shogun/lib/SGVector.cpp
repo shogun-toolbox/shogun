@@ -77,13 +77,13 @@ SGVector<T>::SGVector() : SGReferencedData()
 
 template<class T>
 SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
-: SGReferencedData(ref_counting), vector(v), vlen(len), gpu_vector(NULL)
+: SGReferencedData(ref_counting), vector(v), vlen(len), gpu_ptr(NULL)
 {
 }
 
 template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
-: SGReferencedData(ref_counting), vlen(len), gpu_vector(NULL)
+: SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
 	vector=SG_MALLOC(T, len);
 }
@@ -91,7 +91,7 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 template<class T>
 SGVector<T>::SGVector(GPUMemoryBase<T>* vector, index_t len)
  : SGReferencedData(true), vector(NULL), vlen(len),
-   gpu_vector(std::shared_ptr<GPUMemoryBase<T>>(vector))
+   gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(vector))
 {
 }
 
@@ -115,14 +115,14 @@ SGVector<T>::~SGVector()
 
 template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
-: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_vector(NULL)
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
 
 }
 
 template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
-: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_vector(NULL)
+: SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
 
 }
@@ -224,7 +224,7 @@ template<class T>
 SGVector<T> SGVector<T>::clone() const
 {
 	if (on_gpu())
-		return SGVector<T>(gpu_vector->clone_vector(gpu_vector.get()), vlen);
+		return SGVector<T>(gpu_ptr->clone_vector(gpu_ptr.get()), vlen);
 	else
 		return SGVector<T>(clone_vector(vector, vlen), vlen);
 }
@@ -328,7 +328,7 @@ void SGVector<T>::display_size() const
 template<class T>
 void SGVector<T>::copy_data(const SGReferencedData &orig)
 {
-	gpu_vector=std::shared_ptr<GPUMemoryBase<T>>(((SGVector*)(&orig))->gpu_vector);
+	gpu_ptr=std::shared_ptr<GPUMemoryBase<T>>(((SGVector*)(&orig))->gpu_ptr);
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
 }
@@ -338,7 +338,7 @@ void SGVector<T>::init_data()
 {
 	vector=NULL;
 	vlen=0;
-	gpu_vector=NULL;
+	gpu_ptr=NULL;
 }
 
 template<class T>
@@ -347,7 +347,7 @@ void SGVector<T>::free_data()
 	SG_FREE(vector);
 	vector=NULL;
 	vlen=0;
-	gpu_vector=NULL;
+	gpu_ptr=NULL;
 }
 
 template<class T>
