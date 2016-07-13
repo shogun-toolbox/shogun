@@ -33,6 +33,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <memory>
@@ -106,6 +107,7 @@ public:
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/**
@@ -120,6 +122,7 @@ public:
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_FROM_GPU
 
 	#undef DEFINE_FOR_ALL_PTYPE

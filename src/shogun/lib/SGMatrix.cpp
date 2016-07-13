@@ -39,11 +39,11 @@ SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
 template <class T>
 SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), matrix(m),
-	num_rows(nrows), num_cols(ncols) { }
+	num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr) { }
 
 template <class T>
 SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
-	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
+	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
 {
 	matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
 }
@@ -51,17 +51,18 @@ SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
 {
-	REQUIRE(vec.vector, "Vector not initialized!\n");
+	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
 	matrix=vec.vector;
 	num_rows=vec.vlen;
 	num_cols=1;
+	gpu_ptr = vec.gpu_ptr;
 }
 
 template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 : SGReferencedData(vec)
 {
-	REQUIRE(vec.vector, "Vector not initialized!\n");
+	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
 	REQUIRE(nrows>0, "Number of rows (%d) has to be a positive integer!\n", nrows);
 	REQUIRE(ncols>0, "Number of cols (%d) has to be a positive integer!\n", ncols);
 	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix (%d) must "
@@ -70,6 +71,14 @@ SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 	matrix=vec.vector;
 	num_rows=nrows;
 	num_cols=ncols;
+	gpu_ptr = vec.gpu_ptr;
+}
+
+template<class T>
+SGMatrix<T>::SGMatrix(GPUMemoryBase<T>* mat, index_t nrows, index_t ncols)
+	: SGReferencedData(true), matrix(NULL), num_rows(nrows), num_cols(ncols),
+	gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(mat))
+{
 }
 
 template <class T>
@@ -81,7 +90,7 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 template <class T>
 SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 : SGReferencedData(false), matrix(mat.data()),
-	num_rows(mat.rows()), num_cols(mat.cols())
+	num_rows(mat.rows()), num_cols(mat.cols()), gpu_ptr(nullptr)
 {
 
 }
@@ -1022,6 +1031,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 template<class T>
 void SGMatrix<T>::copy_data(const SGReferencedData &orig)
 {
+	gpu_ptr=std::shared_ptr<GPUMemoryBase<T>>(((SGMatrix*)(&orig))->gpu_ptr);
 	matrix=((SGMatrix*)(&orig))->matrix;
 	num_rows=((SGMatrix*)(&orig))->num_rows;
 	num_cols=((SGMatrix*)(&orig))->num_cols;
@@ -1033,6 +1043,7 @@ void SGMatrix<T>::init_data()
 	matrix=NULL;
 	num_rows=0;
 	num_cols=0;
+	gpu_ptr=nullptr;
 }
 
 template<class T>
