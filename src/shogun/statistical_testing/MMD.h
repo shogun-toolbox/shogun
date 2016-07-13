@@ -39,11 +39,15 @@
 namespace shogun
 {
 
+/** forward declarations */
 class CKernel;
+class CKernelSelectionStrategy;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
-class CKernelSelectionStrategy;
 enum class EKernelSelectionMethod;
+enum class EStatisticType;
+enum class EVarianceEstimationMethod;
+enum class ENullApproximationMethod;
 
 namespace internal
 {
@@ -54,27 +58,6 @@ class MaxCrossValidation;
 class WeightedMaxTestPower;
 
 }
-
-enum class EStatisticType
-{
-	ST_UNBIASED_FULL,
-	ST_UNBIASED_INCOMPLETE,
-	ST_BIASED_FULL
-};
-
-enum class EVarianceEstimationMethod
-{
-	VEM_DIRECT,
-	VEM_PERMUTATION
-};
-
-enum class ENullApproximationMethod
-{
-	NAM_PERMUTATION,
-	NAM_MMD1_GAUSSIAN,
-	NAM_MMD2_SPECTRUM,
-	NAM_MMD2_GAMMA
-};
 
 class CMMD : public CTwoSampleTest
 {

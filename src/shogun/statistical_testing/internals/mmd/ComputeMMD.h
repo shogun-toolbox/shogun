@@ -38,6 +38,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/io/SGIO.h>
@@ -62,7 +63,7 @@ struct terms_t
  */
 struct ComputeMMD
 {
-	ComputeMMD() : m_n_x(0), m_n_y(0), m_stype(EStatisticType::ST_UNBIASED_FULL)
+	ComputeMMD() : m_n_x(0), m_n_y(0), m_stype(EStatisticType::UNBIASED_FULL)
 	{
 	}
 
@@ -214,7 +215,7 @@ struct ComputeMMD
 		terms.term[1]=2*(terms.term[1]-terms.diag[1]);
 		SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", terms.term[0]);
 		SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[1]);
-		if (m_stype!=EStatisticType::ST_BIASED_FULL)
+		if (m_stype!=EStatisticType::BIASED_FULL)
 		{
 			terms.term[0]/=m_n_x*(m_n_x-1);
 			terms.term[1]/=m_n_y*(m_n_y-1);
@@ -232,7 +233,7 @@ struct ComputeMMD
 		SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[1]);
 
 		SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[2]);
-		if (m_stype==EStatisticType::ST_UNBIASED_INCOMPLETE)
+		if (m_stype==EStatisticType::UNBIASED_INCOMPLETE)
 		{
 			terms.term[2]-=terms.diag[2];
 			SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[2]);

@@ -37,6 +37,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <gtest/gtest.h>
@@ -79,7 +80,7 @@ TEST(QuadraticTimeMMD, biased_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_kernel(kernel);
 
 	// assert matlab result
@@ -122,7 +123,7 @@ TEST(QuadraticTimeMMD, unbiased_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	mmd->set_kernel(kernel);
 
 	// assert matlab result
@@ -165,7 +166,7 @@ TEST(QuadraticTimeMMD, incomplete_same_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
 	mmd->set_kernel(kernel);
 
 	// assert local machine computed result
@@ -197,7 +198,7 @@ TEST(QuadraticTimeMMD, unbiased_different_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	mmd->set_kernel(kernel);
 
 	// assert python result at
@@ -230,7 +231,7 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 
 	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_kernel(kernel);
 
 	// assert python result at
@@ -277,15 +278,15 @@ TEST(QuadraticTimeMMD, compute_variance_null)
 	mmd->set_kernel(kernel);
 
 	// assert local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	float64_t var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0064888052500351456, 1E-10);
 
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0071464012090942663, 1E-10);
 
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
 	var=mmd->compute_variance();
 	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
 }
@@ -320,11 +321,11 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
@@ -359,11 +360,11 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
@@ -398,11 +399,11 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 
 	// compute p-value using permutation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_INCOMPLETE);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
@@ -438,14 +439,14 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	index_t num_null_samples=10;
 	index_t num_eigenvalues=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_MMD2_SPECTRUM);
+	mmd->set_null_approximation_method(ENullApproximationMethod::MMD2_SPECTRUM);
 	mmd->spectrum_set_num_eigenvalues(num_eigenvalues);
 
 	// biased case
 
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	float64_t p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
 
@@ -453,7 +454,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 
 	// compute p-value using spectrum approximation for null distribution and
 	// assert against local machine computed result
-	mmd->set_statistic_type(EStatisticType::ST_UNBIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
 	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
 }
@@ -481,7 +482,7 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 
 	index_t num_null_samples=10;
 	mmd->set_num_null_samples(num_null_samples);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 
 	sg_rand->set_seed(12345);
 	SGVector<float64_t> result_1=mmd->sample_null();

@@ -39,6 +39,7 @@
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/CrossValidationMMD.h>
@@ -60,7 +61,7 @@ TEST(CrossValidationMMD, biased_full)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::ST_BIASED_FULL;
+	const auto stype=EStatisticType::BIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -151,7 +152,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::ST_UNBIASED_FULL;
+	const auto stype=EStatisticType::UNBIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -242,7 +243,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::ST_UNBIASED_INCOMPLETE;
+	const auto stype=EStatisticType::UNBIASED_INCOMPLETE;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);

@@ -38,6 +38,7 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
@@ -109,10 +110,10 @@ void CQuadraticTimeMMD::Self::create_variance_job()
 {
 	switch (owner.get_variance_estimation_method())
 	{
-		case EVarianceEstimationMethod::VEM_DIRECT:
+		case EVarianceEstimationMethod::DIRECT:
 			variance_job=owner.get_direct_estimation_method();
 			break;
-		case EVarianceEstimationMethod::VEM_PERMUTATION:
+		case EVarianceEstimationMethod::PERMUTATION:
 			SG_SERROR("Permutation method is not allowed with Quadratic Time MMD!\n");
 			break;
 		default : break;
@@ -324,7 +325,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::NAM_MMD2_GAMMA:
+		case ENullApproximationMethod::MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=gamma_fit_null();
 			result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
@@ -344,7 +345,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::NAM_MMD2_GAMMA:
+		case ENullApproximationMethod::MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=gamma_fit_null();
 			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
@@ -364,7 +365,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	SGVector<float64_t> null_samples;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::NAM_MMD2_SPECTRUM:
+		case ENullApproximationMethod::MMD2_SPECTRUM:
 			null_samples=spectrum_sample_null();
 			break;
 		default:
@@ -386,7 +387,7 @@ SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
 	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", n, m)
 
 	/* evtl. warn user not to use wrong statistic type */
-	if (get_statistic_type()!=EStatisticType::ST_BIASED_FULL)
+	if (get_statistic_type()!=EStatisticType::BIASED_FULL)
 	{
 		SG_WARNING("Note: provided statistic has to be BIASED. Please ensure that! "
 		"To get rid of warning, call %s::set_statistic_type(EStatisticType::BIASED_FULL)\n", get_name());
@@ -500,7 +501,7 @@ SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
 			float64_t eigenvalue_estimate=eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
 			eigenvalue_estimate/=(m+n);
 
-			if (get_statistic_type()==EStatisticType::ST_UNBIASED_FULL)
+			if (get_statistic_type()==EStatisticType::UNBIASED_FULL)
 				multiple-=1;
 
 			null_sample+=eigenvalue_estimate*multiple;

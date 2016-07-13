@@ -34,6 +34,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 #include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
@@ -69,7 +70,7 @@ struct CKernelSelectionStrategy::Self
 	const static float64_t default_alpha;
 };
 
-const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=EKernelSelectionMethod::KSM_AUTO;
+const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=EKernelSelectionMethod::AUTO;
 const bool CKernelSelectionStrategy::Self::default_weighted=false;
 const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
 const index_t CKernelSelectionStrategy::Self::default_num_folds=3;
@@ -84,20 +85,20 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 {
 	switch (method)
 	{
-	case EKernelSelectionMethod::KSM_MEDIAN_HEURISTIC:
+	case EKernelSelectionMethod::MEDIAN_HEURISTIC:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
 		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
 	}
 	break;
-	case EKernelSelectionMethod::KSM_MAXIMIZE_CROSS_VALIDATION:
+	case EKernelSelectionMethod::CROSS_VALIDATION:
 	{
-		REQUIRE(!weighted, "Weighted kernel selection is not possible with MAXIMIZE_CROSS_VALIDATION!\n");
+		REQUIRE(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
 		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
 			num_runs, num_folds, alpha));
 	}
 	break;
-	case EKernelSelectionMethod::KSM_MAXIMIZE_MMD:
+	case EKernelSelectionMethod::MAXIMIZE_MMD:
 	{
 		if (weighted)
 			policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(kernel_mgr, estimator));
@@ -105,7 +106,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 			policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(kernel_mgr, estimator));
 	}
 	break;
-	case EKernelSelectionMethod::KSM_MAXIMIZE_POWER:
+	case EKernelSelectionMethod::MAXIMIZE_POWER:
 	{
 		if (weighted)
 			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
@@ -118,7 +119,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 		SG_SERROR("Unsupported kernel selection method specified! Accepted strategies are "
 			"MAXIMIZE_MMD (single, weighted), "
 			"MAXIMIZE_POWER (single, weighted), "
-			"MAXIMIZE_CROSS_VALIDATION (single) and "
+			"CROSS_VALIDATION (single) and "
 			"MEDIAN_HEURISTIC (single)!\n");
 	}
 	break;

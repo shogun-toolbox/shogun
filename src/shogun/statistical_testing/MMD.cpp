@@ -35,6 +35,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/Features.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/BTestMMD.h>
@@ -87,9 +88,9 @@ struct CMMD::Self
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
-	statistic_type(EStatisticType::ST_UNBIASED_FULL),
-	variance_estimation_method(EVarianceEstimationMethod::VEM_DIRECT),
-	null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION),
+	statistic_type(EStatisticType::UNBIASED_FULL),
+	variance_estimation_method(EVarianceEstimationMethod::DIRECT),
+	null_approximation_method(ENullApproximationMethod::PERMUTATION),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 	auto default_strategy=new CKernelSelectionStrategy();
@@ -126,10 +127,10 @@ void CMMD::Self::create_variance_job()
 {
 	switch (variance_estimation_method)
 	{
-		case EVarianceEstimationMethod::VEM_DIRECT:
+		case EVarianceEstimationMethod::DIRECT:
 			variance_job=owner.get_direct_estimation_method();
 			break;
-		case EVarianceEstimationMethod::VEM_PERMUTATION:
+		case EVarianceEstimationMethod::PERMUTATION:
 			variance_job=permutation_job;
 			break;
 		default : break;
@@ -220,7 +221,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 				statistic_term_counter++;
 			}
 
-			if (variance_estimation_method==EVarianceEstimationMethod::VEM_DIRECT)
+			if (variance_estimation_method==EVarianceEstimationMethod::DIRECT)
 			{
 				for (size_t i=0; i<mmds.size(); ++i)
 				{
@@ -247,7 +248,7 @@ std::pair<float64_t, float64_t> CMMD::Self::compute_statistic_variance()
 
 	// normalize statistic and variance
 	statistic=owner.normalize_statistic(statistic);
-	if (variance_estimation_method==EVarianceEstimationMethod::VEM_PERMUTATION)
+	if (variance_estimation_method==EVarianceEstimationMethod::PERMUTATION)
 		variance=owner.normalize_variance(variance);
 
 	return std::make_pair(statistic, variance);

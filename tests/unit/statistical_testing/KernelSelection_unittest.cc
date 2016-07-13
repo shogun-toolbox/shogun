@@ -34,6 +34,7 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/LinearTimeMMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
@@ -55,7 +56,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -64,7 +65,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MAXIMIZE_MMD);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -91,13 +92,13 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MAXIMIZE_MMD);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -121,7 +122,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -130,7 +131,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_MMD, true);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MAXIMIZE_MMD, true);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -159,7 +160,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -168,7 +169,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_POWER);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MAXIMIZE_POWER);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -192,7 +193,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	mmd->set_num_blocks_per_burst(1000);
@@ -201,7 +202,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_POWER, true);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MAXIMIZE_POWER, true);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -236,15 +237,15 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CQuadraticTimeMMD>(feats_p, feats_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
-	mmd->set_null_approximation_method(ENullApproximationMethod::NAM_PERMUTATION);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
+	mmd->set_null_approximation_method(ENullApproximationMethod::PERMUTATION);
 	mmd->set_num_null_samples(10);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
 	mmd->set_train_test_ratio(train_test_ratio);
@@ -275,13 +276,13 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 	auto feats_q=gen_q->get_streamed_features(n);
 
 	auto mmd=some<CLinearTimeMMD>(feats_p, feats_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::CROSS_VALIDATION, num_runs, num_folds, alpha);
 
 	mmd->set_train_test_mode(true);
 	mmd->set_train_test_ratio(train_test_ratio);
@@ -306,7 +307,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CQuadraticTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
@@ -314,7 +315,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MEDIAN_HEURISTIC);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MEDIAN_HEURISTIC);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();
@@ -338,7 +339,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mmd=some<CLinearTimeMMD>(gen_p, gen_q);
-	mmd->set_statistic_type(EStatisticType::ST_BIASED_FULL);
+	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
 	mmd->set_num_samples_p(m);
 	mmd->set_num_samples_q(n);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
@@ -346,7 +347,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 		float64_t tau=pow(2, sigma);
 		mmd->add_kernel(new CGaussianKernel(10, tau));
 	}
-	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::KSM_MEDIAN_HEURISTIC);
+	mmd->set_kernel_selection_strategy(EKernelSelectionMethod::MEDIAN_HEURISTIC);
 
 	mmd->set_train_test_mode(true);
 	mmd->select_kernel();

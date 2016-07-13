@@ -39,6 +39,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
 #include <gtest/gtest.h>
@@ -76,14 +77,14 @@ TEST(WithinBlockPermutation, biased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::ST_BIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::BIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
 	mmd.m_n_x=n;
 	mmd.m_n_y=m;
-	mmd.m_stype=EStatisticType::ST_BIASED_FULL;
+	mmd.m_stype=EStatisticType::BIASED_FULL;
 	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first
@@ -145,14 +146,14 @@ TEST(WithinBlockPermutation, unbiased_full)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::ST_UNBIASED_FULL);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, EStatisticType::UNBIASED_FULL);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
 	mmd.m_n_x=n;
 	mmd.m_n_y=m;
-	mmd.m_stype=EStatisticType::ST_UNBIASED_FULL;
+	mmd.m_stype=EStatisticType::UNBIASED_FULL;
 	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first
@@ -213,14 +214,14 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	auto mat=kernel->get_kernel_matrix<float32_t>();
 
 	// compute using within-block-permutation functor
-    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, EStatisticType::ST_UNBIASED_INCOMPLETE);
+    operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, EStatisticType::UNBIASED_INCOMPLETE);
 	sg_rand->set_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
 	mmd.m_n_x=n;
 	mmd.m_n_y=n;
-	mmd.m_stype=EStatisticType::ST_UNBIASED_INCOMPLETE;
+	mmd.m_stype=EStatisticType::UNBIASED_INCOMPLETE;
 	compute=mmd;
 
 	// compute a row-column permuted temporary matrix first

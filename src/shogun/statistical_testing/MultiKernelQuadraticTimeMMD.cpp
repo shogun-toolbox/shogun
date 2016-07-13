@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/ShiftInvariantKernel.h>
 #include <shogun/distance/CustomDistance.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
@@ -183,7 +184,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(self->m_owner->get_null_approximation_method()==ENullApproximationMethod::NAM_PERMUTATION,
+	REQUIRE(self->m_owner->get_null_approximation_method()==ENullApproximationMethod::PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!\n");
 
 	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
@@ -216,7 +217,7 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
-	REQUIRE(self->m_owner->get_null_approximation_method()==ENullApproximationMethod::NAM_PERMUTATION,
+	REQUIRE(self->m_owner->get_null_approximation_method()==ENullApproximationMethod::PERMUTATION,
 		"Multi-kernel tests requires the H0 approximation method to be PERMUTATION!\n");
 
 	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());

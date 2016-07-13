@@ -14,12 +14,12 @@ real alpha = 0.05
 #![create_instance]
 
 #![estimate_mmd]
-mmd.set_statistic_type(enum EStatisticType.ST_BIASED_FULL)
+mmd.set_statistic_type(enum EStatisticType.BIASED_FULL)
 real statistic = mmd.compute_statistic()
 #![estimate_mmd]
 
 #![perform_test]
-mmd.set_null_approximation_method(enum ENullApproximationMethod.NAM_PERMUTATION)
+mmd.set_null_approximation_method(enum ENullApproximationMethod.PERMUTATION)
 mmd.set_num_null_samples(200)
 real threshold = mmd.compute_threshold(alpha)
 real p_value = mmd.compute_p_value(statistic)
@@ -36,20 +36,20 @@ mmd.add_kernel(kernel3)
 
 #![enable_train_test_mode]
 mmd.set_train_test_mode(true)
-mmd.set_train_test_ratio(1)   
+mmd.set_train_test_ratio(1)
 #![enable_train_test_mode]
 
 #![select_kernel_single]
 int num_runs = 1
 int num_folds = 3
-mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_CROSS_VALIDATION, num_runs, num_folds, alpha)
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.CROSS_VALIDATION, num_runs, num_folds, alpha)
 mmd.select_kernel()
 GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
 real width = learnt_kernel_single.get_width()
 #![select_kernel_single]
 
 #![select_kernel_combined]
-mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_MMD, true)
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.MAXIMIZE_MMD, true)
 mmd.select_kernel()
 CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
 RealVector weights = learnt_kernel_combined.get_subkernel_weights()

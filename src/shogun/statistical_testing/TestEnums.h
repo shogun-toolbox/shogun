@@ -29,61 +29,41 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_SELECTION_STRAGERY_H_
-#define KERNEL_SELECTION_STRAGERY_H_
-
-#include <memory>
-#include <shogun/base/SGObject.h>
+#ifndef TEST_ENUMS_H_
+#define TEST_ENUMS_H_
 
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
-class CQuadraticTimeMMD;
-template <class> class SGVector;
-template <class> class SGMatrix;
-enum class EKernelSelectionMethod;
-
-namespace internal
+enum class EStatisticType
 {
+	UNBIASED_FULL,
+	UNBIASED_INCOMPLETE,
+	BIASED_FULL
+};
 
-class KernelManager;
-
-}
-
-class CKernelSelectionStrategy : public CSGObject
+enum class EVarianceEstimationMethod
 {
-	friend class CMMD;
-	friend class CQuadraticTimeMMD;
-public:
-	CKernelSelectionStrategy();
-	explicit CKernelSelectionStrategy(EKernelSelectionMethod method);
-	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted);
-	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
-	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
-	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;
-	virtual ~CKernelSelectionStrategy();
+	DIRECT,
+	PERMUTATION
+};
 
-	CKernelSelectionStrategy& use_method(EKernelSelectionMethod method);
-	CKernelSelectionStrategy& use_num_runs(index_t num_runs);
-	CKernelSelectionStrategy& use_num_folds(index_t num_folds);
-	CKernelSelectionStrategy& use_alpha(float64_t alpha);
-	CKernelSelectionStrategy& use_weighted(bool weighted);
+enum class ENullApproximationMethod
+{
+	PERMUTATION,
+	MMD1_GAUSSIAN,
+	MMD2_SPECTRUM,
+	MMD2_GAMMA
+};
 
-	void add_kernel(CKernel* kernel);
-	CKernel* select_kernel(CMMD* estimator);
-	virtual const char* get_name() const;
-	void erase_intermediate_results();
-
-	SGMatrix<float64_t> get_measure_matrix();
-	SGVector<float64_t> get_measure_vector();
-private:
-	struct Self;
-	std::unique_ptr<Self> self;
-	void init();
-	const internal::KernelManager& get_kernel_mgr() const;
+enum class EKernelSelectionMethod
+{
+	MEDIAN_HEURISTIC,
+	MAXIMIZE_MMD,
+	MAXIMIZE_POWER,
+	CROSS_VALIDATION,
+	AUTO = MAXIMIZE_POWER
 };
 
 }
-#endif // KERNEL_SELECTION_STRAGERY_H_
+#endif // TEST_ENUMS_H_

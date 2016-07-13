@@ -21,6 +21,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/BTestMMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockDirect.h>
 
@@ -73,7 +74,7 @@ float64_t CBTestMMD::compute_p_value(float64_t statistic)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::NAM_MMD1_GAUSSIAN:
+		case ENullApproximationMethod::MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
 			float64_t std_dev=CMath::sqrt(sigma_sq);
@@ -94,7 +95,7 @@ float64_t CBTestMMD::compute_threshold(float64_t alpha)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::NAM_MMD1_GAUSSIAN:
+		case ENullApproximationMethod::MMD1_GAUSSIAN:
 		{
 			float64_t sigma_sq=compute_variance();
 			float64_t std_dev=CMath::sqrt(sigma_sq);

@@ -34,6 +34,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
@@ -88,7 +89,7 @@ void MaxCrossValidation::compute_measures()
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
 	{
-		REQUIRE(estimator->get_null_approximation_method()==ENullApproximationMethod::NAM_PERMUTATION,
+		REQUIRE(estimator->get_null_approximation_method()==ENullApproximationMethod::PERMUTATION,
 			"Only supported with PERMUTATION method for null distribution approximation!\n");
 
 		auto Nx=estimator->get_num_samples_p();
