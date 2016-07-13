@@ -146,6 +146,27 @@ SGVector<T> to_gpu(const SGVector<T>& vector)
 }
 
 /**
+ * Transfers data to GPU memory. Does nothing if no GPU backend registered.
+ *
+ * @param vector SGMatrix to be transferred
+ * @return SGMatrix with matrix on GPU if GPU backend is available
+ * and a shallow-copy of SGMatrix with matrix on CPU if GPU backend not available
+ */
+template <typename T>
+SGMatrix<T> to_gpu(const SGMatrix<T>& mat)
+{
+	REQUIRE(!mat.on_gpu(), "The matrix is already on GPU.\n");
+	LinalgBackendBase* gpu_backend = sg_linalg->get_gpu_backend();
+	if (gpu_backend)
+		return SGMatrix<T>(gpu_backend->to_gpu(mat), mat.num_rows, mat.num_cols);
+	else
+	{
+		SG_SWARNING("Trying to access GPU memory without GPU backend registered.\n");
+		return mat;
+	}
+}
+
+/**
  * Fetches data from GPU memory.
  *
  * @param vector SGVector to be transferred
@@ -180,6 +201,42 @@ SGVector<T> from_gpu(const SGVector<T>& vec)
 		return vec;
 	}
 
+}
+
+/**
+ * Fetches data from GPU memory.
+ *
+ * @param vector SGMatrix to be transferred
+ * @return SGMatrix with matrix on CPU if GPU backend is still available
+ * and a shallow-copy of SGMatrix with matrix on GPU if GPU backend not available
+ */
+template <typename T>
+SGMatrix<T> from_gpu(const SGMatrix<T>& mat)
+{
+	if (mat.on_gpu())
+	{
+		LinalgBackendBase* gpu_backend = sg_linalg->get_gpu_backend();
+		if (gpu_backend)
+		{
+			typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
+			T* data;
+			data = reinterpret_cast<T*>(SG_MALLOC(aligned_t, mat.num_rows*mat.num_cols));
+			gpu_backend->from_gpu(mat, data);
+			return SGMatrix<T>(data, mat.num_rows, mat.num_cols);
+		}
+		else
+		{
+			SG_SERROR("Data memory on GPU but no GPU backend registered. \
+						This can happen if the GPU backend was de-activated \
+						after memory has been transferred to GPU.\n");
+			return NULL;
+		}
+	}
+	else
+	{
+		SG_SWARNING("The data is already on CPU.\n");
+		return mat;
+	}
 }
 
 }
