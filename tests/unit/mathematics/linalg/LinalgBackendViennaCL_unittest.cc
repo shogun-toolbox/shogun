@@ -22,6 +22,20 @@ TEST(LinalgBackendViennaCL, SGVector_to_gpu_viennacl)
 	EXPECT_TRUE(b.on_gpu());
 }
 
+TEST(LinalgBackendViennaCL, SGMatrix_to_gpu_viennacl)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+			a[i] = i;
+	b = to_gpu(a);
+
+	EXPECT_FALSE(a.on_gpu());
+	EXPECT_TRUE(b.on_gpu());
+}
+
 TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_on_gpu_flags_check)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -50,6 +64,23 @@ TEST(LinalgBackendViennaCL, SGVector_from_gpu_viennacl_values_check)
 
 	for (index_t i = 0; i < size; ++i)
 		EXPECT_NEAR(i, c[i], 1E-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_from_gpu_viennacl_values_check)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols), c;
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+			a[i] = i;
+
+	b = to_gpu(a);
+	c = from_gpu(b);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		EXPECT_NEAR(a[i], c[i], 1E-15);
 }
 
 #endif // HAVE_VIENNACL

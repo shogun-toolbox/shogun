@@ -65,9 +65,10 @@ public:
 	 * @see LinalgBackendBase::to_gpu
 	 */
 	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
-	virtual GPUMemoryBase<Type>* to_gpu(const SGVector<Type>&) const = 0;\
+	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const = 0;\
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/**
@@ -76,9 +77,10 @@ public:
 	 * @see LinalgBackendBase::from_gpu
 	 */
 	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
-	virtual void from_gpu(const SGVector<Type>&, Type* data) const = 0;\
+	virtual void from_gpu(const Container<Type>&, Type* data) const = 0;\
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_FROM_GPU
 
 	#undef DEFINE_FOR_ALL_PTYPE

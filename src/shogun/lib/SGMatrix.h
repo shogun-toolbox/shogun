@@ -16,6 +16,9 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/mathematics/linalg/GPUMemoryBase.h>
+
+#include <memory>
 
 namespace Eigen
 {
@@ -56,6 +59,25 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
+
+		/**
+		 * Construct SGMatrix from GPU memory.
+		 *
+		 * @param vector GPUMemoryBase pointer
+		 * @param nrows row number of the matrix
+		 * @param ncols column number of the matrix
+		 * @see GPUMemoryBase
+		 */
+		 SGMatrix(GPUMemoryBase<T>* matrix, index_t nrows, index_t ncols);
+
+		/** Check whether data is stored on GPU
+		 *
+		 * @return true if matrix is on GPU
+		 */
+		bool on_gpu() const
+		{
+			return gpu_ptr != NULL;
+		}
 
 #ifndef SWIG // SWIG should skip this part
 #if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
@@ -400,6 +422,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		index_t num_rows;
 		/** number of columns of matrix  */
 		index_t num_cols;
+		/** GPU Matrix structure. Stores pointer to the data on GPU. */
+		std::shared_ptr<GPUMemoryBase<T>> gpu_ptr;
 };
 }
 #endif // __SGMATRIX_H__
