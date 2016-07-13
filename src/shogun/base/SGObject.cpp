@@ -27,13 +27,24 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
+#ifdef HAVE_CXX11
 #include <unordered_map>
+#else
+#include <map>
+#endif
 
 namespace shogun
 {
+#ifdef HAVE_CXX11
+	typedef std::unordered_map<BaseTag, Any> ParametersMap;
+#else
+	typedef std::map<BaseTag, Any> ParametersMap;
+#endif
+
 	class CSGObject::Self
 	{
-    public:
+	public:
 		void set(const BaseTag& tag, const Any& any)
 		{
 			map[tag] = any;
@@ -51,7 +62,7 @@ namespace shogun
 			return map.find(tag) != map.end();
 		}
 
-		std::unordered_map<BaseTag, Any> map;
+		ParametersMap map;
 	};
 
 	class Parallel;

@@ -99,6 +99,12 @@ namespace shogun
          */
         friend inline bool operator!=(const BaseTag& first, const BaseTag& second);
 
+        /** Comparison operator
+         * @param first first BaseTag
+         * @param second secondBaseTag
+         */
+        friend inline bool operator<(const BaseTag& first, const BaseTag& second);
+
     private:
         /** name for object */
         std::string m_name;
@@ -114,6 +120,11 @@ namespace shogun
     inline bool operator!=(const BaseTag& first, const BaseTag& second)
     {
         return !(first == second);
+    }
+
+    inline bool operator<(const BaseTag& first, const BaseTag& second)
+    {
+        return first.m_name < second.m_name;
     }
 
 }
