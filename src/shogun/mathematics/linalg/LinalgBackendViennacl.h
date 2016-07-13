@@ -91,6 +91,7 @@ public:
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_TO_GPU
 
 	/** Implementation of @see LinalgBackendGPUBase::from_gpu */
@@ -101,14 +102,15 @@ public:
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_FROM_GPU
 
 	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
 	/** static cast GPUMemoryBase class to GPUMemoryViennaCL */
-	template <typename T>
-	GPUMemoryViennaCL<T>* cast_to_viennacl(const SGVector<T> &a) const
+	template <typename T, template<typename> class Container>
+	GPUMemoryViennaCL<T>* cast_to_viennacl(const Container<T> &a) const
 	{
 		return static_cast<GPUMemoryViennaCL<T>*>(a.gpu_ptr.get());
 	}
@@ -136,27 +138,26 @@ private:
 	}
 
 	/** Transfers data to GPU with ViennaCL method. */
-	template <typename T>
-	GPUMemoryBase<T>* to_gpu_impl(const SGVector<T>& vector) const \
+	template <typename T, template<typename> class Container>
+	GPUMemoryBase<T>* to_gpu_impl(const Container<T>& a) const
 	{
-		GPUMemoryViennaCL<T>* gpu_vec;
-		gpu_vec = new GPUMemoryViennaCL<T>();
+		GPUMemoryViennaCL<T>* gpu_ptr = new GPUMemoryViennaCL<T>();
 
-		viennacl::backend::memory_create(*(gpu_vec->m_data), sizeof(T)*vector.size(),
-				viennacl::context());
-		viennacl::backend::memory_write(*(gpu_vec->m_data), 0,
-				vector.size()*sizeof(T), vector.data());
+		viennacl::backend::memory_create(*(gpu_ptr->m_data), sizeof(T)*a.size(),
+			viennacl::context());
+		viennacl::backend::memory_write(*(gpu_ptr->m_data), 0,
+			a.size()*sizeof(T), a.data());
 
-		return gpu_vec;
+			return gpu_ptr;
 	}
 
 	/** Fetches data from GPU with ViennaCL method. */
-	template <typename T>
-	void from_gpu_impl(const SGVector<T>& vector, T* data) const \
+	template <typename T, template<typename> class Container>
+	void from_gpu_impl(const Container<T>& a, T* data) const
 	{
-		GPUMemoryViennaCL<T>* gpu_vec = cast_to_viennacl(vector);
-		viennacl::backend::memory_read(*(gpu_vec->m_data),
-			gpu_vec->m_offset*sizeof(T), vector.size()*sizeof(T), data);
+		GPUMemoryViennaCL<T>* gpu_ptr = cast_to_viennacl(a);
+		viennacl::backend::memory_read(*(gpu_ptr->m_data),
+			gpu_ptr->m_offset*sizeof(T), a.size()*sizeof(T), data);
 	}
 };
 
