@@ -110,8 +110,8 @@ void CECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
 
 void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>& part2)
 {
-    set<int32_t> idata1;
-    set<int32_t> idata2;
+    std::set<int32_t> idata1;
+    std::set<int32_t> idata2;
 
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
@@ -131,8 +131,8 @@ void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>&
     }
 }
 
-float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>& part1, set<int32_t>& idata1,
-        vector<int32_t>& part2, set<int32_t>& idata2)
+float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>& part1, std::set<int32_t>& idata1,
+        vector<int32_t>& part2, std::set<int32_t>& idata2)
 {
     if (part1.size() <= 1)
         return MI;
@@ -173,7 +173,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
 
 }
 
-float64_t CECOCDiscriminantEncoder::compute_MI(const set<int32_t>& idata1, const set<int32_t>& idata2)
+float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, const std::set<int32_t>& idata2)
 {
     float64_t MI = 0;
 
@@ -206,12 +206,12 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const set<int32_t>& idata1, const
 }
 
 void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,
-        const set<int32_t>& idata, int32_t *hist)
+        const std::set<int32_t>& idata, int32_t *hist)
 {
     // hist of 0:0.1:1
     fill(hist, hist+10, 0);
 
-    for (set<int32_t>::const_iterator it = idata.begin(); it != idata.end(); ++it)
+    for (std::set<int32_t>::const_iterator it = idata.begin(); it != idata.end(); ++it)
     {
         float64_t val = (m_feats(i, *it) - min_val) / (max_val - min_val);
         int32_t pos = min(9, static_cast<int32_t>(val*10));
