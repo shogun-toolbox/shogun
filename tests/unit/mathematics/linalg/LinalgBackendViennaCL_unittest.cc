@@ -29,7 +29,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_to_gpu_viennacl)
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols);
 	for (index_t i = 0; i < nrows * ncols; ++i)
-			a[i] = i;
+		a[i] = i;
 	b = to_gpu(a);
 
 	EXPECT_FALSE(a.on_gpu());
@@ -74,7 +74,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_from_gpu_viennacl_values_check)
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols), c;
 
 	for (index_t i = 0; i < nrows * ncols; ++i)
-			a[i] = i;
+		a[i] = i;
 
 	b = to_gpu(a);
 	c = from_gpu(b);

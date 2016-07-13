@@ -27,7 +27,7 @@ TEST(LinalgBackendBase, SGMatrix_to_gpu_without_gpu_backend)
 	SGMatrix<int32_t> a(nrows, ncols), b(nrows, ncols), c;
 
 	for (index_t i = 0; i < nrows * ncols; ++i)
-			a[i] = i;
+		a[i] = i;
 
 	b = to_gpu(a);
 	c = from_gpu(b);
