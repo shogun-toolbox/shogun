@@ -19,12 +19,12 @@
 #ifndef LINEAR_TIME_MMD_H_
 #define LINEAR_TIME_MMD_H_
 
-#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/StreamingMMD.h>
 
 namespace shogun
 {
 
-class CLinearTimeMMD : public CMMD
+class CLinearTimeMMD : public CStreamingMMD
 {
 public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
@@ -40,7 +40,7 @@ public:
 	virtual const char* get_name() const;
 private:
 	virtual const operation get_direct_estimation_method() const;
-	virtual const float64_t normalize_statistic(float64_t statistic) const;
+	virtual float64_t normalize_statistic(float64_t statistic) const;
 	virtual const float64_t normalize_variance(float64_t variance) const;
 	const float64_t gaussian_variance(float64_t variance) const;
 };

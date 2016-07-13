@@ -33,7 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/StreamingMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
 
@@ -54,13 +54,16 @@ void MaxTestPower::compute_measures()
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
 	auto existing_kernel=estimator->get_kernel();
 	const size_t num_kernels=kernel_mgr.num_kernels();
+	auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
+	ASSERT(casted_estimator);
 	for (size_t i=0; i<num_kernels; ++i)
 	{
 		auto kernel=kernel_mgr.kernel_at(i);
 		estimator->set_kernel(kernel);
-		auto estimates=estimator->compute_statistic_variance();
+		auto estimates=casted_estimator->compute_statistic_variance();
 		measures[i]=estimates.first/CMath::sqrt(estimates.second+lambda);
 		estimator->cleanup();
 	}
-	estimator->set_kernel(existing_kernel);
+	if (existing_kernel)
+		estimator->set_kernel(existing_kernel);
 }

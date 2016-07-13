@@ -55,11 +55,11 @@ class KernelManager;
 class CKernelSelectionStrategy : public CSGObject
 {
 	friend class CMMD;
+	friend class CStreamingMMD;
 	friend class CQuadraticTimeMMD;
 public:
 	CKernelSelectionStrategy();
-	explicit CKernelSelectionStrategy(EKernelSelectionMethod method);
-	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted);
+	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted = false);
 	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
 	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
 	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;

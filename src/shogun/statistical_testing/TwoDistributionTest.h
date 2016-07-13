@@ -46,10 +46,10 @@ public:
 	CTwoDistributionTest();
 	virtual ~CTwoDistributionTest();
 
-	void set_p(CFeatures* samples_from_p);
+	virtual void set_p(CFeatures* samples_from_p);
 	CFeatures* get_p() const;
 
-	void set_q(CFeatures* samples_from_q);
+	virtual void set_q(CFeatures* samples_from_q);
 	CFeatures* get_q() const;
 
 	void set_num_samples_p(index_t num_samples_from_p);

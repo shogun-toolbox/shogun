@@ -121,6 +121,8 @@ void KernelManager::precompute_kernel_at(size_t i)
 		// the kernel matrix.
 		SGMatrix<float32_t> kernel_matrix=kernel->get_kernel_matrix<float32_t>();
 		m_precomputed_kernels[i]=std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel_matrix));
+		SG_SDEBUG("Kernel type %s is precomputed and replaced internally with %s!\n",
+			kernel->get_name(), m_precomputed_kernels[i]->get_name());
 	}
 	SG_SDEBUG("Leaving!\n");
 }
@@ -132,6 +134,7 @@ void KernelManager::restore_kernel_at(size_t i)
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
 	m_precomputed_kernels[i]=nullptr;
+	SG_SDEBUG("Precomputed kernel (if any) was deleted!\n");
 	SG_SDEBUG("Leaving!\n");
 }
 

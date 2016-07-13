@@ -52,13 +52,14 @@ CTwoSampleTest::~CTwoSampleTest()
 
 void CTwoSampleTest::set_kernel(CKernel* kernel)
 {
+	REQUIRE(kernel, "Kernel cannot be NULL!\n");
 	self->kernel_mgr.kernel_at(0)=kernel;
 	self->kernel_mgr.restore_kernel_at(0);
 }
 
 CKernel* CTwoSampleTest::get_kernel() const
 {
-	return self->kernel_mgr.kernel_at(0);
+	return get_kernel_mgr().kernel_at(0);
 }
 
 const char* CTwoSampleTest::get_name() const

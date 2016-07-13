@@ -29,11 +29,11 @@
 using namespace shogun;
 using namespace internal;
 
-CLinearTimeMMD::CLinearTimeMMD() : CMMD()
+CLinearTimeMMD::CLinearTimeMMD() : CStreamingMMD()
 {
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD()
+CLinearTimeMMD::CLinearTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CStreamingMMD()
 {
 	set_p(samples_from_p);
 	set_q(samples_from_q);
@@ -70,7 +70,7 @@ const std::function<float32_t(SGMatrix<float32_t>)> CLinearTimeMMD::get_direct_e
 	return mmd::WithinBlockDirect();
 }
 
-const float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
+float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
 {
 	const DataManager& data_mgr = get_data_mgr();
 	const index_t Nx = data_mgr.num_samples_at(0);

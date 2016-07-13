@@ -10,6 +10,7 @@
 /* These functions return new Objects */
 %newobject shogun::CTwoDistributionTest::compute_distance(CDistance*);
 %newobject shogun::CTwoDistributionTest::compute_joint_distance(CDistance*);
+%newobject shogun::CQuadraticTimeMMD::get_p_and_q();
 
 /* Remove C Prefix */
 %rename(HypothesisTest) CHypothesisTest;

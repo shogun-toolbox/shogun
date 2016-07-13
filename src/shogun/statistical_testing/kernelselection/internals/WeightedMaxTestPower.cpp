@@ -33,7 +33,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/StreamingMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
@@ -55,7 +55,9 @@ void WeightedMaxTestPower::init_measures()
 
 void WeightedMaxTestPower::compute_measures()
 {
-	const auto& estimates=estimator->compute_statistic_and_Q(kernel_mgr);
+	auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
+	ASSERT(casted_estimator);
+	const auto& estimates=casted_estimator->compute_statistic_and_Q(kernel_mgr);
 	measures=estimates.first;
 	Q=estimates.second;
 	for (index_t i=0; i<Q.num_rows; ++i)

@@ -112,35 +112,24 @@ void MaxCrossValidation::compute_measures()
 		}
 		else
 		{
-			auto& data_mgr=estimator->get_data_mgr();
-			data_mgr.start();
-			auto samples=data_mgr.next();
-			if (!samples.empty())
+			auto samples_p_and_q=quadratic_time_mmd->get_p_and_q();
+			SG_REF(samples_p_and_q);
+
+			for (size_t k=0; k<num_kernels; ++k)
 			{
-				CFeatures *samples_p=samples[0][0].get();
-				CFeatures *samples_q=samples[1][0].get();
-				auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
-				SG_REF(samples_p_and_q);
-				samples.clear();
-
-				for (size_t k=0; k<num_kernels; ++k)
-				{
-					CKernel* kernel=kernel_mgr.kernel_at(k);
-					kernel->init(samples_p_and_q, samples_p_and_q);
-				}
-
-				compute(kernel_mgr);
-
-				for (size_t k=0; k<num_kernels; ++k)
-				{
-					CKernel* kernel=kernel_mgr.kernel_at(k);
-					kernel->remove_lhs_and_rhs();
-				}
-				SG_UNREF(samples_p_and_q);
+				CKernel* kernel=kernel_mgr.kernel_at(k);
+				kernel->init(samples_p_and_q, samples_p_and_q);
 			}
-			else
-				SG_SERROR("Could not fetch samples!\n");
-			data_mgr.end();
+
+			compute(kernel_mgr);
+
+			for (size_t k=0; k<num_kernels; ++k)
+			{
+				CKernel* kernel=kernel_mgr.kernel_at(k);
+				kernel->remove_lhs_and_rhs();
+			}
+
+			SG_UNREF(samples_p_and_q);
 		}
 	}
 	else // TODO put check, this one assumes infinite data
@@ -161,7 +150,8 @@ void MaxCrossValidation::compute_measures()
 				}
 			}
 		}
-		estimator->set_kernel(existing_kernel);
+		if (existing_kernel)
+			estimator->set_kernel(existing_kernel);
 	}
 
 	for (auto j=0; j<rejections.num_cols; ++j)

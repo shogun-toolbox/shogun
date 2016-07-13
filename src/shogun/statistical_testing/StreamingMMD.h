@@ -1,7 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 - 2013 Heiko Strathmann
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (w) 2016 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,61 +28,83 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MMD_H_
-#define MMD_H_
+#ifndef STREAMING_MMD_H_
+#define STREAMING_MMD_H_
 
 #include <utility>
 #include <memory>
 #include <functional>
-#include <shogun/statistical_testing/TwoSampleTest.h>
+#include <shogun/statistical_testing/MMD.h>
 
 namespace shogun
 {
 
+/** forward declarations */
 class CKernel;
 class CKernelSelectionStrategy;
 template <typename> class SGVector;
+template <typename> class SGMatrix;
 enum class EKernelSelectionMethod;
 enum class EStatisticType;
+enum class EVarianceEstimationMethod;
 enum class ENullApproximationMethod;
 
-class CMMD : public CTwoSampleTest
+namespace internal
 {
+
+class KernelManager;
+class MaxTestPower;
+class MaxCrossValidation;
+class WeightedMaxTestPower;
+
+}
+
+class CStreamingMMD : public CMMD
+{
+	friend class internal::MaxTestPower;
+	friend class internal::WeightedMaxTestPower;
+	friend class internal::MaxCrossValidation;
 public:
-	CMMD();
-	CMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
-	virtual ~CMMD();
+	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 
-	void set_kernel_selection_strategy(EKernelSelectionMethod method, bool weighted = false);
-	void set_kernel_selection_strategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
+	CStreamingMMD();
+	virtual ~CStreamingMMD();
 
-	void add_kernel(CKernel *kernel);
-	virtual void select_kernel();
+	virtual float64_t compute_statistic();
+	virtual float64_t compute_variance();
 
-	CKernelSelectionStrategy const * get_kernel_selection_strategy() const;
+	virtual SGVector<float64_t> compute_multiple();
 
-	virtual float64_t compute_statistic() = 0;
-	virtual SGVector<float64_t> sample_null() = 0;
+	virtual SGVector<float64_t> sample_null();
 
+	void use_gpu(bool gpu);
 	void cleanup();
 
-	void set_num_null_samples(index_t null_samples);
-	index_t get_num_null_samples() const;
-
 	void set_statistic_type(EStatisticType stype);
-	EStatisticType get_statistic_type() const;
+	const EStatisticType get_statistic_type() const;
+
+	void set_variance_estimation_method(EVarianceEstimationMethod vmethod);
+	const EVarianceEstimationMethod get_variance_estimation_method() const;
+
+	void set_num_null_samples(index_t null_samples);
+	const index_t get_num_null_samples() const;
 
 	void set_null_approximation_method(ENullApproximationMethod nmethod);
-	ENullApproximationMethod get_null_approximation_method() const;
+	const ENullApproximationMethod get_null_approximation_method() const;
 
 	virtual const char* get_name() const;
 protected:
-	virtual float64_t normalize_statistic(float64_t statistic) const = 0;
+	virtual const operation get_direct_estimation_method() const=0;
+	virtual float64_t normalize_statistic(float64_t statistic) const=0;
+	virtual const float64_t normalize_variance(float64_t variance) const=0;
+	bool use_gpu() const;
+	std::shared_ptr<CKernelSelectionStrategy> get_strategy();
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
-	void init();
+	virtual std::pair<float64_t, float64_t> compute_statistic_variance();
+	std::pair<SGVector<float64_t>, SGMatrix<float64_t> > compute_statistic_and_Q(const internal::KernelManager&);
 };
 
 }
-#endif // MMD_H_
+#endif // STREAMING_MMD_H_

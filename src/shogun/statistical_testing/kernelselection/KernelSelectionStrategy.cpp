@@ -131,12 +131,6 @@ CKernelSelectionStrategy::CKernelSelectionStrategy()
 	init();
 }
 
-CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method)
-{
-	init();
-	self->method=method;
-}
-
 CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted)
 {
 	init();

@@ -49,6 +49,7 @@ CTwoDistributionTest::~CTwoDistributionTest()
 
 void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
 {
+	REQUIRE(samples_from_p, "Samples from P cannot be NULL!\n");
 	auto& dm=get_data_mgr();
 	dm.samples_at(0)=samples_from_p;
 }
@@ -61,6 +62,7 @@ CFeatures* CTwoDistributionTest::get_p() const
 
 void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
 {
+	REQUIRE(samples_from_q, "Samples from Q cannot be NULL!\n");
 	auto& dm=get_data_mgr();
 	dm.samples_at(1)=samples_from_q;
 }

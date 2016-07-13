@@ -28,7 +28,7 @@
 using namespace shogun;
 using namespace internal;
 
-CBTestMMD::CBTestMMD() : CMMD()
+CBTestMMD::CBTestMMD() : CStreamingMMD()
 {
 }
 
@@ -51,7 +51,7 @@ const std::function<float32_t(SGMatrix<float32_t>)> CBTestMMD::get_direct_estima
 	return mmd::WithinBlockDirect();
 }
 
-const float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
+float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 {
 	const DataManager& data_mgr=get_data_mgr();
 	const index_t Nx=data_mgr.num_samples_at(0);

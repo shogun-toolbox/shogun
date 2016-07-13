@@ -88,7 +88,8 @@ void MaxMeasure::compute_measures()
 			measures[i]=estimator->compute_statistic();
 			estimator->cleanup();
 		}
-		estimator->set_kernel(existing_kernel);
+		if (existing_kernel)
+			estimator->set_kernel(existing_kernel);
 	}
 }
 

@@ -240,7 +240,7 @@ TEST(QuadraticTimeMMD, biased_different_num_samples)
 	EXPECT_NEAR(statistic, 0.54418915736201567, 1E-5);
 }
 
-TEST(QuadraticTimeMMD, compute_variance_null)
+TEST(QuadraticTimeMMD, compute_variance_h0)
 {
 	index_t m=8;
 	index_t d=3;
@@ -279,15 +279,15 @@ TEST(QuadraticTimeMMD, compute_variance_null)
 
 	// assert local machine computed result
 	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
-	float64_t var=mmd->compute_variance();
+	float64_t var=mmd->compute_variance_h0();
 	EXPECT_NEAR(var, 0.0064888052500351456, 1E-10);
 
 	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
-	var=mmd->compute_variance();
+	var=mmd->compute_variance_h0();
 	EXPECT_NEAR(var, 0.0071464012090942663, 1E-10);
 
 	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
-	var=mmd->compute_variance();
+	var=mmd->compute_variance_h0();
 	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
 }
 

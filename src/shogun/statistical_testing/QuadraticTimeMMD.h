@@ -29,7 +29,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-
 #ifndef QUADRATIC_TIME_MMD_H_
 #define QUADRATIC_TIME_MMD_H_
 
@@ -42,46 +41,45 @@ namespace shogun
 class CMultiKernelQuadraticTimeMMD;
 template <typename> class SGVector;
 
-namespace internal
-{
-class KernelManager;
-class MaxMeasure;
-}
-
 class CQuadraticTimeMMD : public CMMD
 {
 	friend class CMultiKernelQuadraticTimeMMD;
+
 public:
-	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 	CQuadraticTimeMMD();
 	CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q);
+	virtual void set_p(CFeatures* samples_from_p);
+	virtual void set_q(CFeatures* samples_from_q);
+	CFeatures* get_p_and_q();
 
 	virtual ~CQuadraticTimeMMD();
 	virtual void set_kernel(CKernel* kernel);
+	virtual void select_kernel();
 
 	virtual float64_t compute_statistic();
-	virtual float64_t compute_variance();
+	virtual SGVector<float64_t> sample_null();
+	virtual float64_t compute_p_value(float64_t statistic);
+	virtual float64_t compute_threshold(float64_t alpha);
+
+	float64_t compute_variance_h0();
+	float64_t compute_variance_h1();
 
 	CMultiKernelQuadraticTimeMMD* multikernel();
 
-	virtual SGVector<float64_t> sample_null();
 	void spectrum_set_num_eigenvalues(index_t num_eigenvalues);
-
-	virtual float64_t compute_p_value(float64_t statistic);
-	virtual float64_t compute_threshold(float64_t alpha);
+	index_t spectrum_get_num_eigenvalues() const;
 
 	void precompute_kernel_matrix(bool precompute);
 
 	virtual const char* get_name() const;
+
+protected:
+	virtual float64_t normalize_statistic(float64_t statistic) const;
+
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
-
-	virtual const operation get_direct_estimation_method() const;
-	virtual const float64_t normalize_statistic(float64_t statistic) const;
-	virtual const float64_t normalize_variance(float64_t variance) const;
-	SGVector<float64_t> gamma_fit_null();
-	SGVector<float64_t> spectrum_sample_null();
+	void init();
 };
 
 }

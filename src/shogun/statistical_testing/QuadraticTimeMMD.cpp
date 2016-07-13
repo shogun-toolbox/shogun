@@ -29,14 +29,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <algorithm>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
-#include <shogun/kernel/ShiftInvariantKernel.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
@@ -46,192 +42,294 @@
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 #include <shogun/statistical_testing/internals/mmd/FullDirect.h>
-#include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace mmd;
+using std::unique_ptr;
 
 struct CQuadraticTimeMMD::Self
 {
 	Self(CQuadraticTimeMMD&);
 
-	SGMatrix<float32_t> get_kernel_matrix();
-	std::pair<float64_t, float64_t> compute_statistic_variance();
-	SGVector<float64_t> sample_null();
+	void init_statistic_job();
+	void init_permutation_job();
 	void init_kernel();
+	SGMatrix<float32_t> get_kernel_matrix();
 
-	void create_statistic_job();
-	void create_variance_job();
-	void create_computation_jobs();
-
-	void compute_jobs(ComputationManager&) const;
+	SGVector<float64_t> sample_null_spectrum();
+	SGVector<float64_t> sample_null_permutation();
+	SGVector<float64_t> gamma_fit_null();
 
 	CQuadraticTimeMMD& owner;
-	std::unique_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
-	index_t num_eigenvalues;
+	unique_ptr<CMultiKernelQuadraticTimeMMD> multi_kernel;
+
+	/**
+	 * Whether to precompute the kernel matrix. by default this is true.
+	 * It can be changed by the precompute_kernel_matrix() call. Keep in mind that
+	 * precompute is always true as long as the underlying kernel itself is a
+	 * precomputed kernel. Further updation of this value is ignored unless the
+	 * kernel is changed to a non-precomputed one.
+	 */
 	bool precompute;
+
+	/**
+	 * Whether the kernel is initialized with the joint features. If a kernel is
+	 * initialized once, then it becomes true. It can then becomes false only when
+	 * (a) the features are updated, or
+	 * (b) the kernel is updated later, or
+	 * (c) the internally precomputed kernel is removed and the underlying kernel is in use.
+	 * However, for (a), if the underlying kernel itself is a pre-computed one, it
+	 * stays true even when the features are updated. Also, for (b), if the newly
+	 * updated kernel is a pre-computed one, then also it stays true.
+	 */
 	bool is_kernel_initialized;
 
-	std::function<float32_t(const SGMatrix<float32_t>&)> statistic_job;
-	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
+	index_t num_eigenvalues;
+
+	ComputeMMD statistic_job;
+	FullDirect variance_h0_job;
 	PermutationMMD permutation_job;
+
+	static constexpr bool DEFAULT_PRECOMPUTE = true;
+	static constexpr index_t DEFAULT_NUM_EIGENVALUES = 10;
 };
 
-CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd), num_eigenvalues(10),
-	precompute(true), is_kernel_initialized(false),
-	statistic_job(nullptr), variance_job(nullptr)
+CQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD& mmd) : owner(mmd)
 {
+	is_kernel_initialized=false;
+	precompute=DEFAULT_PRECOMPUTE;
+	num_eigenvalues=DEFAULT_NUM_EIGENVALUES;
 }
 
-void CQuadraticTimeMMD::Self::create_computation_jobs()
+void CQuadraticTimeMMD::Self::init_statistic_job()
 {
-	create_statistic_job();
-	create_variance_job();
+	REQUIRE(owner.get_num_samples_p()>0,
+		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+	REQUIRE(owner.get_num_samples_q()>0,
+		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+
+	statistic_job.m_n_x=owner.get_num_samples_p();
+	statistic_job.m_n_y=owner.get_num_samples_q();
+	statistic_job.m_stype=owner.get_statistic_type();
 }
 
-void CQuadraticTimeMMD::Self::create_statistic_job()
+void CQuadraticTimeMMD::Self::init_permutation_job()
 {
-	auto mmd=mmd::ComputeMMD();
-	REQUIRE(owner.get_num_samples_p()>0, "Number of samples from P cannot be 0!\n");
-	REQUIRE(owner.get_num_samples_q()>0, "Number of samples from Q cannot be 0!\n");
-
-	mmd.m_n_x=owner.get_num_samples_p();
-	mmd.m_n_y=owner.get_num_samples_q();
-	mmd.m_stype=owner.get_statistic_type();
-	statistic_job=mmd;
-}
-
-void CQuadraticTimeMMD::Self::create_variance_job()
-{
-	switch (owner.get_variance_estimation_method())
-	{
-		case EVarianceEstimationMethod::DIRECT:
-			variance_job=owner.get_direct_estimation_method();
-			break;
-		case EVarianceEstimationMethod::PERMUTATION:
-			SG_SERROR("Permutation method is not allowed with Quadratic Time MMD!\n");
-			break;
-		default : break;
-	};
-}
-
-void CQuadraticTimeMMD::Self::compute_jobs(ComputationManager& cm) const
-{
-	SG_SDEBUG("Entering\n");
-	if (owner.use_gpu())
-		cm.use_gpu().compute_task_parallel_jobs();
-	else
-		cm.use_cpu().compute_task_parallel_jobs();
-	SG_SDEBUG("Leaving\n");
-}
-
-void CQuadraticTimeMMD::Self::init_kernel()
-{
-	SG_SDEBUG("Entering\n");
-	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
-	auto kernel=kernel_mgr.kernel_at(0);
-	REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
-
-	if (!is_kernel_initialized && !(kernel->get_kernel_type()==K_CUSTOM))
-	{
-		DataManager& data_mgr=owner.get_data_mgr();
-		data_mgr.start();
-		auto samples=data_mgr.next();
-		if (!samples.empty())
-		{
-			CFeatures *samples_p=samples[0][0].get();
-			CFeatures *samples_q=samples[1][0].get();
-			auto samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
-			samples.clear();
-			kernel->init(samples_p_and_q, samples_p_and_q);
-			is_kernel_initialized=true;
-			SG_SDEBUG("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
-		}
-		else
-			SG_SERROR("Could not fetch samples!\n");
-		data_mgr.end();
-	}
-	SG_SDEBUG("Leaving\n");
-}
-
-SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
-{
-	SG_SDEBUG("Entering\n");
-	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
-	auto kernel=kernel_mgr.kernel_at(0);
-	REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
-
-	SGMatrix<float32_t> kernel_matrix;
-	if (kernel->get_kernel_type()==K_CUSTOM)
-	{
-		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(kernel);
-		ASSERT(precomputed_kernel!=nullptr);
-		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
-	}
-	else
-	{
-		init_kernel();
-		try
-		{
-			owner.get_kernel_mgr().precompute_kernel_at(0);
-		}
-		catch (ShogunException e)
-		{
-			SG_SERROR("%s, Data is too large! Computing kernel matrix was not possible!\n", e.get_exception_string());
-		}
-		kernel->remove_lhs_and_rhs();
-		auto precomputed_kernel=dynamic_cast<CCustomKernel*>(kernel_mgr.kernel_at(0));
-		ASSERT(precomputed_kernel!=nullptr);
-		kernel_matrix=precomputed_kernel->get_float32_kernel_matrix();
-	}
-
-	SG_SDEBUG("Leaving\n");
-	return kernel_matrix;
-}
-
-std::pair<float64_t, float64_t> CQuadraticTimeMMD::Self::compute_statistic_variance()
-{
-	SG_SDEBUG("Entering\n");
-	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
-
-	// TODO make sure it works even when precompute is turned-off
-	ComputationManager cm;
-	create_computation_jobs();
-	cm.enqueue_job(statistic_job);
-	cm.enqueue_job(variance_job);
-
-	cm.num_data(1);
-	cm.data(0)=kernel_matrix;
-
-	compute_jobs(cm);
-	auto mmd=cm.result(0);
-	auto var=cm.result(1);
-	float64_t statistic=mmd[0];
-	float64_t variance=var[0];
-	cm.done();
-
-	SG_SDEBUG("statistic=%f [un-normalized]\n", statistic);
-	statistic=owner.normalize_statistic(statistic);
-	SG_SDEBUG("statistic=%f [normalized]\n", statistic);
-	SG_SDEBUG("variance=%f [normalized]\n", variance);
-
-	SG_SDEBUG("Leaving\n");
-	return std::make_pair(statistic, variance);
-}
-
-SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
-{
-	SG_SDEBUG("Entering\n");
+	REQUIRE(owner.get_num_samples_p()>0,
+		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+	REQUIRE(owner.get_num_samples_q()>0,
+		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+	REQUIRE(owner.get_num_null_samples()>0,
+		"Number of null samples (was %d) has to be > 0!\n", owner.get_num_null_samples());
 
 	permutation_job.m_n_x=owner.get_num_samples_p();
 	permutation_job.m_n_y=owner.get_num_samples_q();
 	permutation_job.m_stype=owner.get_statistic_type();
 	permutation_job.m_num_null_samples=owner.get_num_null_samples();
+}
+
+void CQuadraticTimeMMD::Self::init_kernel()
+{
+	ASSERT(owner.get_kernel());
+	if (!is_kernel_initialized)
+	{
+		ASSERT(owner.get_kernel()->get_kernel_type()!=K_CUSTOM);
+		auto samples_p_and_q=owner.get_p_and_q();
+
+		auto kernel=owner.get_kernel();
+		kernel->init(samples_p_and_q, samples_p_and_q);
+		is_kernel_initialized=true;
+		SG_SINFO("Kernel is initialized with joint features of %d total samples!\n", samples_p_and_q->get_num_vectors());
+	}
+}
+
+SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
+{
+	ASSERT(precompute);
+	ASSERT(owner.get_kernel());
+	ASSERT(is_kernel_initialized);
+
+	if (owner.get_kernel()->get_kernel_type()!=K_CUSTOM)
+	{
+		auto kernel=owner.get_kernel();
+		owner.get_kernel_mgr().precompute_kernel_at(0);
+		kernel->remove_lhs_and_rhs();
+	}
+
+	ASSERT(owner.get_kernel()->get_kernel_type()==K_CUSTOM);
+	auto precomputed_kernel=static_cast<CCustomKernel*>(owner.get_kernel());
+	return precomputed_kernel->get_float32_kernel_matrix();
+}
+
+CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
+{
+	init();
+}
+
+CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD(samples_from_p, samples_from_q)
+{
+	init();
+}
+
+void CQuadraticTimeMMD::init()
+{
+	self=unique_ptr<Self>(new Self(*this));
+	self->multi_kernel=unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
+}
+
+CQuadraticTimeMMD::~CQuadraticTimeMMD()
+{
+	CMMD::cleanup();
+}
+
+void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
+{
+	if (samples_from_p!=get_p())
+	{
+		CTwoDistributionTest::set_p(samples_from_p);
+		get_kernel_mgr().restore_kernel_at(0);
+		self->is_kernel_initialized=false;
+
+		if (get_kernel() && get_kernel()->get_kernel_type()==K_CUSTOM)
+		{
+			SG_WARNING("Existing kernel is already precomputed. Features provided will be\
+					ignored unless the kernel is updated with a non-precomputed one!\n");
+			self->is_kernel_initialized=true;
+		}
+	}
+	else
+	{
+		SG_INFO("Provided features are the same as the existing one. Ignoring!\n");
+	}
+}
+
+void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
+{
+	if (samples_from_q!=get_q())
+	{
+		CTwoDistributionTest::set_q(samples_from_q);
+		get_kernel_mgr().restore_kernel_at(0);
+		self->is_kernel_initialized=false;
+
+		if (get_kernel() && get_kernel()->get_kernel_type()==K_CUSTOM)
+		{
+			SG_WARNING("Existing kernel is already precomputed. Features provided will be\
+					ignored unless the kernel is updated with a non-precomputed one!\n");
+			self->is_kernel_initialized=true;
+		}
+	}
+	else
+	{
+		SG_INFO("Provided features are the same as the existing one. Ignoring!\n");
+	}
+}
+
+CFeatures* CQuadraticTimeMMD::get_p_and_q()
+{
+	CFeatures* samples_p_and_q=nullptr;
+	REQUIRE(get_p(), "Samples from P are not set!\n");
+	REQUIRE(get_q(), "Samples from Q are not set!\n");
+
+	DataManager& data_mgr=get_data_mgr();
+	data_mgr.start();
+	auto samples=data_mgr.next();
+	if (!samples.empty())
+	{
+		CFeatures *samples_p=samples[0][0].get();
+		CFeatures *samples_q=samples[1][0].get();
+		samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+		samples.clear();
+	}
+	else
+	{
+		SG_SERROR("Could not fetch samples!\n");
+	}
+	data_mgr.end();
+	return samples_p_and_q;
+}
+
+void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
+{
+	if (kernel!=get_kernel())
+	{
+		// removing any pre-computed kernel is done in the base already
+		CTwoSampleTest::set_kernel(kernel);
+		self->is_kernel_initialized=false;
+
+		if (kernel->get_kernel_type()==K_CUSTOM)
+		{
+			SG_INFO("Setting a precomputed kernel. Features provided will be ignored!\n");
+			self->is_kernel_initialized=true;
+		}
+	}
+	else
+	{
+		SG_INFO("Provided kernel is the same as the existing one. Ignoring!\n");
+	}
+}
+
+void CQuadraticTimeMMD::select_kernel()
+{
+	CMMD::select_kernel();
+	self->is_kernel_initialized=false;
+
+	ASSERT(get_kernel());
+	if (get_kernel()->get_kernel_type()==K_CUSTOM)
+	{
+		SG_WARNING("Selected kernel is already precomputed. Features provided will be\
+				ignored unless the kernel is updated with a non-precomputed one!\n");
+		self->is_kernel_initialized=true;
+	}
+}
+
+float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
+{
+	const index_t Nx=get_num_samples_p();
+	const index_t Ny=get_num_samples_q();
+	return Nx*Ny*statistic/(Nx+Ny);
+}
+
+
+float64_t CQuadraticTimeMMD::compute_statistic()
+{
+	SG_DEBUG("Entering\n");
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+
+	self->init_statistic_job();
+	self->init_kernel();
+
+	float64_t statistic=0;
+	if (self->precompute)
+	{
+		SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
+		statistic=self->statistic_job(kernel_matrix);
+	}
+	else
+	{
+		auto kernel=get_kernel();
+		if (kernel->get_kernel_type()==K_CUSTOM)
+			SG_INFO("Precompute is turned off, but provided kernel is already precomputed!\n");
+		auto kernel_functor=internal::Kernel(kernel);
+		statistic=self->statistic_job(kernel_functor);
+	}
+
+	statistic=normalize_statistic(statistic);
+
+	SG_DEBUG("Leaving\n");
+	return statistic;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_permutation()
+{
+	SG_SDEBUG("Entering\n");
+	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
+
+	init_permutation_job();
+	init_kernel();
 
 	SGVector<float32_t> result;
 	if (precompute)
@@ -241,15 +339,11 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 	}
 	else
 	{
-		const KernelManager& kernel_mgr=owner.get_kernel_mgr();
-		auto kernel=kernel_mgr.kernel_at(0);
-		REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
+		auto kernel=owner.get_kernel();
 		if (kernel->get_kernel_type()==K_CUSTOM)
-		{
-			SG_SERROR("Precomputed kernel matrix exists!\n");
-		}
-		init_kernel();
-		result=permutation_job(internal::Kernel(kernel));
+			SG_SINFO("Precompute is turned off, but provided kernel is already precomputed!\n");
+		auto kernel_functor=internal::Kernel(kernel);
+		result=permutation_job(kernel_functor);
 	}
 
 	SGVector<float64_t> null_samples(result.vlen);
@@ -260,146 +354,84 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null()
 	return null_samples;
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
+SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 {
-	self=std::unique_ptr<Self>(new Self(*this));
-	self->multi_kernel=std::unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
-}
+	SG_SDEBUG("Entering\n");
+	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
+	REQUIRE(precompute, "MMD2_SPECTRUM is not possible without precomputing the kernel matrix!\n");
 
-CQuadraticTimeMMD::CQuadraticTimeMMD(CFeatures* samples_from_p, CFeatures* samples_from_q) : CMMD()
-{
-	self=std::unique_ptr<Self>(new Self(*this));
-	self->multi_kernel=std::unique_ptr<CMultiKernelQuadraticTimeMMD>(new CMultiKernelQuadraticTimeMMD(this));
-	set_p(samples_from_p);
-	set_q(samples_from_q);
-}
+	index_t m=owner.get_num_samples_p();
+	index_t n=owner.get_num_samples_q();
 
-CQuadraticTimeMMD::~CQuadraticTimeMMD()
-{
-	get_kernel_mgr().restore_kernel_at(0);
-}
+	REQUIRE(num_eigenvalues>0 && num_eigenvalues<m+n-1,
+		"Number of Eigenvalues (%d) must be in between [1, %d]\n", num_eigenvalues, m+n-1);
 
-void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
-{
-	CTwoSampleTest::set_kernel(kernel);
-	self->is_kernel_initialized=false;
-}
-
-const std::function<float32_t(SGMatrix<float32_t>)> CQuadraticTimeMMD::get_direct_estimation_method() const
-{
-	return FullDirect();
-}
-
-const float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
-{
-	const DataManager& data_mgr=get_data_mgr();
-	const index_t Nx=data_mgr.num_samples_at(0);
-	const index_t Ny=data_mgr.num_samples_at(1);
-	return Nx*Ny*statistic/(Nx+Ny);
-}
-
-const float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance) const
-{
-	SG_SNOTIMPLEMENTED;
-	return variance;
-}
-
-void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)
-{
-	self->num_eigenvalues=num_eigenvalues;
-}
-
-float64_t CQuadraticTimeMMD::compute_statistic()
-{
-	return self->compute_statistic_variance().first;
-}
-
-float64_t CQuadraticTimeMMD::compute_variance()
-{
-	return self->compute_statistic_variance().second;
-}
-
-float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
-{
-	SG_DEBUG("Entering\n");
-	float64_t result=0;
-	switch (get_null_approximation_method())
-	{
-		case ENullApproximationMethod::MMD2_GAMMA:
-		{
-			SGVector<float64_t> params=gamma_fit_null();
-			result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
-			break;
-		}
-		default:
-			result=CHypothesisTest::compute_p_value(statistic);
-		break;
-	}
-	SG_DEBUG("Leaving\n");
-	return result;
-}
-
-float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
-{
-	SG_DEBUG("Entering\n");
-	float64_t result=0;
-	switch (get_null_approximation_method())
-	{
-		case ENullApproximationMethod::MMD2_GAMMA:
-		{
-			SGVector<float64_t> params=gamma_fit_null();
-			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
-			break;
-		}
-		default:
-			result=CHypothesisTest::compute_threshold(alpha);
-			break;
-	}
-	SG_DEBUG("Leaving\n");
-	return result;
-}
-
-SGVector<float64_t> CQuadraticTimeMMD::sample_null()
-{
-	SG_DEBUG("Entering\n");
-	SGVector<float64_t> null_samples;
-	switch (get_null_approximation_method())
-	{
-		case ENullApproximationMethod::MMD2_SPECTRUM:
-			null_samples=spectrum_sample_null();
-			break;
-		default:
-			null_samples=self->sample_null();
-			break;
-		}
-
-	SG_DEBUG("Leaving\n");
-	return null_samples;
-}
-
-SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
-{
-	SG_DEBUG("Entering\n");
-	DataManager& data_mgr=get_data_mgr();
-	index_t m=data_mgr.num_samples_at(0);
-	index_t n=data_mgr.num_samples_at(1);
-
-	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", n, m)
-
-	/* evtl. warn user not to use wrong statistic type */
-	if (get_statistic_type()!=EStatisticType::BIASED_FULL)
-	{
-		SG_WARNING("Note: provided statistic has to be BIASED. Please ensure that! "
-		"To get rid of warning, call %s::set_statistic_type(EStatisticType::BIASED_FULL)\n", get_name());
-	}
-
-	SGVector<float64_t> result(2);
-	std::fill(result.vector, result.vector+result.vlen, 0);
+	init_kernel();
 
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
-	SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
+	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
+	SGMatrix<float32_t> K(kernel_matrix.num_rows, kernel_matrix.num_cols);
+	std::copy(kernel_matrix.data(), kernel_matrix.data()+kernel_matrix.size(), K.data());
+
+	/* center matrix K=H*K*H */
+	K.center();
+
+	/* compute eigenvalues and select num_eigenvalues largest ones */
+	Eigen::Map<Eigen::MatrixXf> c_kernel_matrix(K.matrix, K.num_rows, K.num_cols);
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> eigen_solver(c_kernel_matrix);
+	REQUIRE(eigen_solver.info()==Eigen::Success, "Eigendecomposition failed!\n");
+	index_t max_num_eigenvalues=eigen_solver.eigenvalues().rows();
+
+	SGVector<float64_t> null_samples(owner.get_num_null_samples());
+
+	/* finally, sample from null distribution */
+	for (auto i=0; i<null_samples.vlen; ++i)
+	{
+		float64_t null_sample=0;
+		for (index_t j=0; j<num_eigenvalues; ++j)
+		{
+			float64_t z_j=CMath::randn_double();
+			float64_t multiple=CMath::sq(z_j);
+
+			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
+			float64_t eigenvalue_estimate=eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
+			eigenvalue_estimate/=(m+n);
+
+			if (owner.get_statistic_type()==EStatisticType::UNBIASED_FULL)
+				multiple-=1;
+
+			null_sample+=eigenvalue_estimate*multiple;
+		}
+		null_samples[i]=null_sample;
+	}
+
+	SG_SDEBUG("Leaving\n");
+	return null_samples;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
+{
+	SG_SDEBUG("Entering\n");
+
+	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
+	REQUIRE(precompute, "MMD2_GAMMA is not possible without precomputing the kernel matrix!\n");
+	REQUIRE(owner.get_statistic_type()==EStatisticType::BIASED_FULL, "Provided statistic has to be BIASED!\n");
+
+	index_t m=owner.get_num_samples_p();
+	index_t n=owner.get_num_samples_q();
+	REQUIRE(m==n, "Number of samples from p (%d) and q (%d) must be equal.\n", n, m)
+
+	SGVector<float64_t> result(2);
+	std::fill(result.vector, result.vector+result.vlen, 0);
+
+	init_kernel();
+
+	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
+	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
+	 * works since X and Y are concatenated here */
+	SGMatrix<float32_t> kernel_matrix=get_kernel_matrix();
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD =2/m * ( 1  - 1/m*sum(diag(KL))  );
@@ -445,101 +477,119 @@ SGVector<float64_t> CQuadraticTimeMMD::gamma_fit_null()
 	result[0]=a;
 	result[1]=b;
 
-	SG_DEBUG("Leaving\n");
+	SG_SDEBUG("Leaving\n");
 	return result;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::spectrum_sample_null()
+float64_t CQuadraticTimeMMD::compute_variance_h0()
 {
-	SG_DEBUG("Entering\n");
-	DataManager& data_mgr=get_data_mgr();
-	index_t m=data_mgr.num_samples_at(0);
-	index_t n=data_mgr.num_samples_at(1);
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+	REQUIRE(self->precompute,
+		"Computing variance estimate is not possible without precomputing the kernel matrix!\n");
 
-	if (self->num_eigenvalues > m+n - 1)
+	// TODO
+	SG_NOTIMPLEMENTED;
+	return 0;
+}
+
+float64_t CQuadraticTimeMMD::compute_variance_h1()
+{
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+	REQUIRE(self->precompute,
+		"Computing variance estimate is not possible without precomputing the kernel matrix!\n");
+
+	// TODO
+	SG_NOTIMPLEMENTED;
+	return 0;
+}
+
+float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
+{
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+	float64_t result=0;
+	switch (get_null_approximation_method())
 	{
-		SG_ERROR("Number of Eigenvalues (%d) for spectrum approximation"
-				" must be smaller than %d\n", self->num_eigenvalues,
-				m+n - 1);
-	}
-
-	if (self->num_eigenvalues<1)
-	{
-		SG_ERROR("Number of Eigenvalues (%d) must be positive.\n",
-				self->num_eigenvalues);
-	}
-
-	SGVector<float64_t> null_samples(get_num_null_samples());
-	std::fill(null_samples.vector, null_samples.vector+null_samples.vlen, 0);
-
-	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
-	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
-	 * works since X and Y are concatenated here */
-	SGMatrix<float32_t> precomputed_kernel_mgr=self->get_kernel_matrix();
-	SGMatrix<float32_t> K(precomputed_kernel_mgr.num_rows, precomputed_kernel_mgr.num_cols);
-	std::copy(precomputed_kernel_mgr.matrix, precomputed_kernel_mgr.matrix+precomputed_kernel_mgr.num_rows*precomputed_kernel_mgr.num_cols, K.matrix);
-
-	/* center matrix K=H*K*H */
-	K.center();
-
-	/* compute eigenvalues and select num_eigenvalues largest ones */
-	Eigen::Map<Eigen::MatrixXf> c_kernel_matrix(K.matrix, K.num_rows, K.num_cols);
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> eigen_solver(c_kernel_matrix);
-	REQUIRE(eigen_solver.info()==Eigen::Success, "Eigendecomposition failed!\n");
-	index_t max_num_eigenvalues=eigen_solver.eigenvalues().rows();
-
-	/* finally, sample from null distribution */
-	for (auto i=0; i<null_samples.vlen; ++i)
-	{
-		float64_t null_sample=0;
-		for (index_t j=0; j<self->num_eigenvalues; ++j)
+		case ENullApproximationMethod::MMD2_GAMMA:
 		{
-			float64_t z_j=CMath::randn_double();
-			float64_t multiple=CMath::sq(z_j);
-
-			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
-			float64_t eigenvalue_estimate=eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
-			eigenvalue_estimate/=(m+n);
-
-			if (get_statistic_type()==EStatisticType::UNBIASED_FULL)
-				multiple-=1;
-
-			null_sample+=eigenvalue_estimate*multiple;
+			SGVector<float64_t> params=self->gamma_fit_null();
+			result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
+			break;
 		}
-		null_samples[i]=null_sample;
+		default:
+			result=CHypothesisTest::compute_p_value(statistic);
+		break;
 	}
+	return result;
+}
 
-	SG_DEBUG("Leaving\n");
+float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
+{
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+	float64_t result=0;
+	switch (get_null_approximation_method())
+	{
+		case ENullApproximationMethod::MMD2_GAMMA:
+		{
+			SGVector<float64_t> params=self->gamma_fit_null();
+			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
+			break;
+		}
+		default:
+			result=CHypothesisTest::compute_threshold(alpha);
+			break;
+	}
+	return result;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::sample_null()
+{
+	REQUIRE(get_kernel(), "Kernel is not set!\n");
+	SGVector<float64_t> null_samples;
+	switch (get_null_approximation_method())
+	{
+		case ENullApproximationMethod::MMD2_SPECTRUM:
+			null_samples=self->sample_null_spectrum();
+			break;
+		case ENullApproximationMethod::PERMUTATION:
+			null_samples=self->sample_null_permutation();
+			break;
+		default: break;
+	}
 	return null_samples;
+}
+
+CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
+{
+	return self->multi_kernel.get();
+}
+
+void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)
+{
+	self->num_eigenvalues=num_eigenvalues;
+}
+
+index_t CQuadraticTimeMMD::spectrum_get_num_eigenvalues() const
+{
+	return self->num_eigenvalues;
 }
 
 void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 {
 	if (self->precompute && !precompute)
 	{
-		const KernelManager& kernel_mgr=get_kernel_mgr();
-		auto kernel=kernel_mgr.kernel_at(0);
-		REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
-
-		if (kernel->get_kernel_type()==K_CUSTOM)
+		if (get_kernel())
 		{
-			SG_SINFO("Precomputed kernel matrix exists! Removing the existing matrix!\n");
 			get_kernel_mgr().restore_kernel_at(0);
-			kernel=kernel_mgr.kernel_at(0);
-			REQUIRE(kernel!=nullptr, "Kernel is not set!\n");
-			if (kernel->get_kernel_type()==K_CUSTOM)
+			self->is_kernel_initialized=false;
+			if (get_kernel()->get_kernel_type()==K_CUSTOM)
 			{
-				SG_SERROR("The underlying kernel itself is a precomputed kernel!\n");
+				SG_WARNING("The existing kernel itself is a precomputed kernel!\n");
+				precompute=true;
+				self->is_kernel_initialized=true;
 			}
 		}
-		self->is_kernel_initialized=false;
 	}
 	self->precompute=precompute;
-}
-
-CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
-{
-	return self->multi_kernel.get();
 }
 
 const char* CQuadraticTimeMMD::get_name() const
