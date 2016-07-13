@@ -1031,7 +1031,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 template<class T>
 void SGMatrix<T>::copy_data(const SGReferencedData &orig)
 {
-	gpu_ptr=std::shared_ptr<GPUMemoryBase<T>>(((SGMatrix*)(&orig))->gpu_ptr);
+	gpu_ptr=((SGMatrix*)(&orig))->gpu_ptr;
 	matrix=((SGMatrix*)(&orig))->matrix;
 	num_rows=((SGMatrix*)(&orig))->num_rows;
 	num_cols=((SGMatrix*)(&orig))->num_cols;
