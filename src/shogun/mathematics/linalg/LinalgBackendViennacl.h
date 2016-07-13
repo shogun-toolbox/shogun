@@ -148,7 +148,7 @@ private:
 		viennacl::backend::memory_write(*(gpu_ptr->m_data), 0,
 			a.size()*sizeof(T), a.data());
 
-			return gpu_ptr;
+		return gpu_ptr;
 	}
 
 	/** Fetches data from GPU with ViennaCL method. */
