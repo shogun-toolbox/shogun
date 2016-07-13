@@ -31,9 +31,9 @@
 
 namespace shogun
 {
-	struct CSGObject::Self
+	class CSGObject::Self
 	{
-
+    public:
 		void set(const BaseTag& tag, const Any& any)
 		{
 			map[tag] = any;
@@ -50,7 +50,7 @@ namespace shogun
 		{
 			return map.find(tag) != map.end();
 		}
-		
+
 		std::unordered_map<BaseTag, Any> map;
 	};
 
