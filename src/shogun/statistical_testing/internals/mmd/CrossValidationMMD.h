@@ -83,102 +83,100 @@ struct CrossValidationMMD : PermutationMMD
 		const index_t orig_n_y=m_n_y;
 		SGVector<float64_t> null_samples(m_num_null_samples);
 		SGVector<float32_t> precomputed_km(size*(size+1)/2);
-#pragma omp parallel
+
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
-			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+			auto kernel=kernel_mgr.kernel_at(k);
+			for (auto i=0; i<size; ++i)
 			{
-				auto kernel=kernel_mgr.kernel_at(k);
-				for (auto i=0; i<size; ++i)
+				for (auto j=i; j<size; ++j)
 				{
-					for (auto j=i; j<size; ++j)
-					{
-						auto index=i*size-i*(i+1)/2+j;
-						precomputed_km[index]=kernel->kernel(i, j);
-					}
+					auto index=i*size-i*(i+1)/2+j;
+					precomputed_km[index]=kernel->kernel(i, j);
 				}
+			}
 
-				for (auto current_run=0; current_run<m_num_runs; ++current_run)
+			for (auto current_run=0; current_run<m_num_runs; ++current_run)
+			{
+				m_kfold_x->build_subsets();
+				m_kfold_y->build_subsets();
+				for (auto current_fold=0; current_fold<m_num_folds; ++current_fold)
 				{
-					m_kfold_x->build_subsets();
-					m_kfold_y->build_subsets();
-					for (auto current_fold=0; current_fold<m_num_folds; ++current_fold)
+					generate_inds(current_fold);
+					std::fill(m_inverted_inds.data(), m_inverted_inds.data()+m_inverted_inds.size(), -1);
+					for (size_t idx=0; idx<m_xy_inds.size(); ++idx)
+						m_inverted_inds[m_xy_inds[idx]]=idx;
+
+					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
+					m_stack->add_subset(xy_wrapper);
+
+					m_permuted_inds.resize(m_xy_inds.size());
+					SGVector<index_t> permutation_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
+					for (auto n=0; n<m_num_null_samples; ++n)
 					{
-						generate_inds(current_fold);
-						std::fill(m_inverted_inds.data(), m_inverted_inds.data()+m_inverted_inds.size(), -1);
-						for (size_t idx=0; idx<m_xy_inds.size(); ++idx)
-							m_inverted_inds[m_xy_inds[idx]]=idx;
+						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
+						CMath::permute(permutation_wrapper);
 
-						SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
-						m_stack->add_subset(xy_wrapper);
-
-						m_permuted_inds.resize(m_xy_inds.size());
-						SGVector<index_t> permutation_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
-						for (auto n=0; n<m_num_null_samples; ++n)
-						{
-							std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-							CMath::permute(permutation_wrapper);
-
-							m_stack->add_subset(permutation_wrapper);
-							SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
-							m_stack->remove_subset();
-
-							std::fill(m_inverted_permuted_inds[n].data(), m_inverted_permuted_inds[n].data()+size, -1);
-							for (int idx=0; idx<inds.size(); ++idx)
-								m_inverted_permuted_inds[n][inds[idx]]=idx;
-						}
+						m_stack->add_subset(permutation_wrapper);
+						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
 						m_stack->remove_subset();
 
-						terms_t terms;
+						std::fill(m_inverted_permuted_inds[n].data(), m_inverted_permuted_inds[n].data()+size, -1);
+						for (int idx=0; idx<inds.size(); ++idx)
+							m_inverted_permuted_inds[n][inds[idx]]=idx;
+					}
+					m_stack->remove_subset();
+
+					terms_t terms;
+					for (auto i=0; i<size; ++i)
+					{
+						for (auto j=i; j<size; ++j)
+						{
+							auto inverted_row=m_inverted_inds[i];
+							auto inverted_col=m_inverted_inds[j];
+							if (inverted_row!=-1 && inverted_col!=-1)
+							{
+								auto idx=i*size-i*(i+1)/2+j;
+								add_term_upper(terms, precomputed_km[idx], inverted_row, inverted_col);
+							}
+						}
+					}
+					auto statistic=compute(terms);
+
+#pragma omp parallel for
+					for (auto n=0; n<m_num_null_samples; ++n)
+					{
+						terms_t null_terms;
 						for (auto i=0; i<size; ++i)
 						{
 							for (auto j=i; j<size; ++j)
 							{
-								auto inverted_row=m_inverted_inds[i];
-								auto inverted_col=m_inverted_inds[j];
+								auto inverted_row=m_inverted_permuted_inds[n][i];
+								auto inverted_col=m_inverted_permuted_inds[n][j];
 								if (inverted_row!=-1 && inverted_col!=-1)
 								{
 									auto idx=i*size-i*(i+1)/2+j;
-									add_term_upper(terms, precomputed_km[idx], inverted_row, inverted_col);
+									if (inverted_row<=inverted_col)
+										add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
+									else
+										add_term_upper(null_terms, precomputed_km[idx], inverted_col, inverted_row);
 								}
 							}
 						}
-						auto statistic=compute(terms);
-
-						#pragma omp for
-						for (auto n=0; n<m_num_null_samples; ++n)
-						{
-							terms_t null_terms;
-							for (auto i=0; i<size; ++i)
-							{
-								for (auto j=i; j<size; ++j)
-								{
-									auto inverted_row=m_inverted_permuted_inds[n][i];
-									auto inverted_col=m_inverted_permuted_inds[n][j];
-									if (inverted_row!=-1 && inverted_col!=-1)
-									{
-										auto idx=i*size-i*(i+1)/2+j;
-										if (inverted_row<=inverted_col)
-											add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
-										else
-											add_term_upper(null_terms, precomputed_km[idx], inverted_col, inverted_row);
-									}
-								}
-							}
-							null_samples[n]=compute(null_terms);
-						}
-
-						std::sort(null_samples.data(), null_samples.data()+null_samples.size());
-						SG_SDEBUG("statistic=%f\n", statistic);
-						float64_t idx=null_samples.find_position_to_insert(statistic);
-						SG_SDEBUG("index=%f\n", idx);
-						auto p_value=1.0-idx/m_num_null_samples;
-						bool rejected=p_value<m_alpha;
-						SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
-						m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
-
-						m_n_x=orig_n_x;
-						m_n_y=orig_n_y;
+						null_samples[n]=compute(null_terms);
 					}
+
+					std::sort(null_samples.data(), null_samples.data()+null_samples.size());
+					SG_SDEBUG("statistic=%f\n", statistic);
+					float64_t idx=null_samples.find_position_to_insert(statistic);
+					SG_SDEBUG("index=%f\n", idx);
+					auto p_value=1.0-idx/m_num_null_samples;
+					bool rejected=p_value<m_alpha;
+					SG_SDEBUG("p-value=%f, alpha=%f, rejected=%d\n", p_value, m_alpha, rejected);
+					m_rejections(current_run*m_num_folds+current_fold, k)=rejected;
+
+					m_n_x=orig_n_x;
+					m_n_y=orig_n_y;
 				}
 			}
 		}

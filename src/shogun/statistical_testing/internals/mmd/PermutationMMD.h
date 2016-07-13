@@ -89,41 +89,38 @@ struct PermutationMMD : ComputeMMD
 		const index_t size=m_n_x+m_n_y;
 		SGMatrix<float32_t> null_samples(m_num_null_samples, kernel_mgr.num_kernels());
 		SGVector<float32_t> km(size*(size+1)/2);
-#pragma omp parallel
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
-			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+			auto kernel=kernel_mgr.kernel_at(k);
+			terms_t terms;
+			for (auto i=0; i<size; ++i)
 			{
-				auto kernel=kernel_mgr.kernel_at(k);
-				terms_t terms;
+				for (auto j=i; j<size; ++j)
+				{
+					auto index=i*size-i*(i+1)/2+j;
+					km[index]=kernel->kernel(i, j);
+				}
+			}
+
+#pragma omp parallel for
+			for (auto n=0; n<m_num_null_samples; ++n)
+			{
+				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
 					for (auto j=i; j<size; ++j)
 					{
 						auto index=i*size-i*(i+1)/2+j;
-						km[index]=kernel->kernel(i, j);
+						auto inverted_row=m_inverted_permuted_inds[n][i];
+						auto inverted_col=m_inverted_permuted_inds[n][j];
+
+						if (inverted_row<=inverted_col)
+							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
+						else
+							add_term_upper(null_terms, km[index], inverted_col, inverted_row);
 					}
 				}
-
-#pragma omp for
-				for (auto n=0; n<m_num_null_samples; ++n)
-				{
-					terms_t null_terms;
-					for (auto i=0; i<size; ++i)
-					{
-						for (auto j=i; j<size; ++j)
-						{
-							auto index=i*size-i*(i+1)/2+j;
-							auto inverted_row=m_inverted_permuted_inds[n][i];
-							auto inverted_col=m_inverted_permuted_inds[n][j];
-
-							if (inverted_row<=inverted_col)
-								add_term_upper(null_terms, km[index], inverted_row, inverted_col);
-							else
-								add_term_upper(null_terms, km[index], inverted_col, inverted_row);
-						}
-					}
-					null_samples(n, k)=compute(null_terms);
-				}
+				null_samples(n, k)=compute(null_terms);
 			}
 		}
 		return null_samples;
@@ -148,47 +145,44 @@ struct PermutationMMD : ComputeMMD
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
 
 		SGVector<float32_t> km(size*(size+1)/2);
-#pragma omp parallel
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
-			for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+			auto kernel=kernel_mgr.kernel_at(k);
+			terms_t terms;
+			for (auto i=0; i<size; ++i)
 			{
-				auto kernel=kernel_mgr.kernel_at(k);
-				terms_t terms;
+				for (auto j=i; j<size; ++j)
+				{
+					auto index=i*size-i*(i+1)/2+j;
+					km[index]=kernel->kernel(i, j);
+					add_term_upper(terms, km[index], i, j);
+				}
+			}
+			float32_t statistic=compute(terms);
+			SG_SDEBUG("Kernel(%d): statistic=%f\n", k, statistic);
+
+#pragma omp parallel for
+			for (auto n=0; n<m_num_null_samples; ++n)
+			{
+				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
 					for (auto j=i; j<size; ++j)
 					{
 						auto index=i*size-i*(i+1)/2+j;
-						km[index]=kernel->kernel(i, j);
-						add_term_upper(terms, km[index], i, j);
+						auto inverted_row=m_inverted_permuted_inds[n][i];
+						auto inverted_col=m_inverted_permuted_inds[n][j];
+
+						if (inverted_row<=inverted_col)
+							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
+						else
+							add_term_upper(null_terms, km[index], inverted_col, inverted_row);
 					}
 				}
-				float32_t statistic=compute(terms);
-				SG_SDEBUG("Kernel(%d): statistic=%f\n", k, statistic);
-
-#pragma omp for
-				for (auto n=0; n<m_num_null_samples; ++n)
-				{
-					terms_t null_terms;
-					for (auto i=0; i<size; ++i)
-					{
-						for (auto j=i; j<size; ++j)
-						{
-							auto index=i*size-i*(i+1)/2+j;
-							auto inverted_row=m_inverted_permuted_inds[n][i];
-							auto inverted_col=m_inverted_permuted_inds[n][j];
-
-							if (inverted_row<=inverted_col)
-								add_term_upper(null_terms, km[index], inverted_row, inverted_col);
-							else
-								add_term_upper(null_terms, km[index], inverted_col, inverted_row);
-						}
-					}
-					null_samples[n]=compute(null_terms);
-				}
-				result[k]=compute_p_value(null_samples, statistic);
-				SG_SDEBUG("Kernel(%d): p_value=%f\n", k, result[k]);
+				null_samples[n]=compute(null_terms);
 			}
+			result[k]=compute_p_value(null_samples, statistic);
+			SG_SDEBUG("Kernel(%d): p_value=%f\n", k, result[k]);
 		}
 
 		return result;
