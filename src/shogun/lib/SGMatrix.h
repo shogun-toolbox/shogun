@@ -16,7 +16,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 #include <memory>
 
@@ -30,6 +29,7 @@ namespace Eigen
 namespace shogun
 {
 	template<class T> class SGVector;
+	template<typename T> struct GPUMemoryBase;
 	class CFile;
 
 /** @brief shogun matrix */
