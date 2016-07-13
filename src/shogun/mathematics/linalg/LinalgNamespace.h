@@ -39,7 +39,9 @@ namespace shogun
 namespace linalg
 {
 
-/** Return the corresponding backend of SGVector or SGMatrix
+/** Infer the appropriate backend for linalg operations
+ * from the input SGVector or SGMatrix(Container).
+ *
  * @param a SGVector or SGMatrix
  * @return LinalgBackendBase pointer
  */
@@ -62,9 +64,11 @@ LinalgBackendBase* infer_backend(const Container<T>& a)
 		return sg_linalg->get_cpu_backend();
 }
 
-/** Return the corresponding backend of SGVector or SGMatrix
- * Raise error if the two Containers are not on the same backend.
- * @param a the fisrt SGVector/SGMatrix
+/** Infer the appropriate backend for linalg operations
+ * from the input SGVector or SGMatrix(Container).
+ * Raise error if the backends from the two Containers don't match.
+ *
+ * @param a the first SGVector/SGMatrix
  * @param b the second SGVector/SGMatrix
  * @return LinalgBackendBase pointer
  */
