@@ -124,6 +124,16 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
+	#define CEREAL_SAVE_FUNCTION_NAME cereal_save
+	#define CEREAL_LOAD_FUNCTION_NAME cereal_load
+	template<class Archive>
+	void cereal_save(Archive& ar) const;
+
+	template<class Archive>
+	void cereal_load(Archive& ar);
+	#undef CEREAL_SAVE_FUNCTION_NAME
+	#undef CEREAL_LOAD_FUNCTION_NAME
+
 #ifdef USE_REFERENCE_COUNTING
 	/** increase reference counter
 	 *

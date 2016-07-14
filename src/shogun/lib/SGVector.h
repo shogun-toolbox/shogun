@@ -45,7 +45,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
 		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
-	
+
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
@@ -522,4 +522,5 @@ template<> void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1
 				const float32_t scalar, const float32_t* vec2, int32_t n);
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
+
 #endif // __SGVECTOR_H__

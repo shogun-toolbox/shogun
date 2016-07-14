@@ -34,6 +34,8 @@
 #include <map>
 #endif
 
+#include <cereal/archives/json.hpp>
+
 namespace shogun
 {
 #ifdef HAVE_CXX11
@@ -470,6 +472,31 @@ void CSGObject::save_serializable_post() throw (ShogunException)
 {
 	m_save_post_called = true;
 }
+
+#define CEREAL_SAVE_FUNCTION_NAME cereal_save
+#define CEREAL_LOAD_FUNCTION_NAME cereal_load
+template<class Archive>
+void CSGObject::cereal_save(Archive& ar) const
+{
+
+	for (int32_t i = 0; i < m_parameters->get_num_parameters(); i++)
+	{
+		if (m_parameters->get_parameter(i)->m_parameter != NULL)
+			ar(*(m_parameters->get_parameter(i)->m_parameter));
+	}
+
+}
+template void CSGObject::cereal_save<cereal::JSONOutputArchive>(cereal::JSONOutputArchive& ar) const;
+
+template<class Archive>
+void CSGObject::cereal_load(Archive& ar)
+{
+
+}
+template void CSGObject::cereal_load<cereal::JSONInputArchive>(cereal::JSONInputArchive& ar);
+
+#undef CEREAL_SAVE_FUNCTION_NAME
+#undef CEREAL_LOAD_FUNCTION_NAME
 
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
