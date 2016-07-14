@@ -106,6 +106,12 @@ void CMultiKernelQuadraticTimeMMD::cleanup()
 {
 	ASSERT(self->m_owner);
 	self->m_kernel_mgr.clear();
+	invalidate_precomputed_distance();
+}
+
+void CMultiKernelQuadraticTimeMMD::invalidate_precomputed_distance()
+{
+	ASSERT(self->m_owner);
 	self->m_pairwise_distance=nullptr;
 	self->m_dtype=D_UNKNOWN;
 }

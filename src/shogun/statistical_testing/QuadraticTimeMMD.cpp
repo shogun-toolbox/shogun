@@ -193,6 +193,7 @@ void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
 		CTwoDistributionTest::set_p(samples_from_p);
 		get_kernel_mgr().restore_kernel_at(0);
 		self->is_kernel_initialized=false;
+		self->multi_kernel->invalidate_precomputed_distance();
 
 		if (get_kernel() && get_kernel()->get_kernel_type()==K_CUSTOM)
 		{
@@ -214,6 +215,7 @@ void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
 		CTwoDistributionTest::set_q(samples_from_q);
 		get_kernel_mgr().restore_kernel_at(0);
 		self->is_kernel_initialized=false;
+		self->multi_kernel->invalidate_precomputed_distance();
 
 		if (get_kernel() && get_kernel()->get_kernel_type()==K_CUSTOM)
 		{

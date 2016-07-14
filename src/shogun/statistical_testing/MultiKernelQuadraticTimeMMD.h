@@ -54,8 +54,8 @@ class MaxMeasure;
  * shift-invariant kernels. If the kernels are not shift-invariant, then the
  * class CQuadraticTimeMMD should be used multiple times instead of this one.
  *
- * This implementation assumes that features are never updated. If new features
- * are to be used, new instance of this class should be created.
+ * If the features are updated, then (if any) existing precomputed distance
+ * instance has to be invalidated by the owner (CQuadraticTimeMMD instance).
  */
 class CMultiKernelQuadraticTimeMMD : public CSGObject
 {
@@ -80,6 +80,7 @@ public:
 private:
 	struct Self;
 	std::unique_ptr<Self> self;
+	void invalidate_precomputed_distance();
 	SGVector<float64_t> statistic(const internal::KernelManager& kernel_mgr);
 	SGMatrix<float32_t> sample_null(const internal::KernelManager& kernel_mgr);
 	SGVector<float64_t> p_values(const internal::KernelManager& kernel_mgr);
