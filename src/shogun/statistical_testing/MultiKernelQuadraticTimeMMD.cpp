@@ -110,20 +110,20 @@ void CMultiKernelQuadraticTimeMMD::cleanup()
 	self->m_dtype=D_UNKNOWN;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic()
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_statistic()
 {
 	ASSERT(self->m_owner);
 	return statistic(self->m_kernel_mgr);
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h0()
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h0()
 {
 	ASSERT(self->m_owner);
 	SG_NOTIMPLEMENTED;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1()
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h1()
 {
 	ASSERT(self->m_owner);
 	SG_NOTIMPLEMENTED;
@@ -136,7 +136,7 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null()
 	return sample_null(self->m_kernel_mgr);
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values()
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_p_value()
 {
 	ASSERT(self->m_owner);
 	return p_values(self->m_kernel_mgr);
@@ -144,7 +144,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values()
 
 SGVector<bool> CMultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
 {
-	SGVector<float64_t> pvalues=p_values();
+	SGVector<float64_t> pvalues=compute_p_value();
 	SGVector<bool> rejections(pvalues.size());
 	for (auto i=0; i<pvalues.size(); ++i)
 	{

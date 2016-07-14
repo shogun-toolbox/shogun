@@ -496,7 +496,7 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 		EXPECT_NEAR(result_1[i], result_2[i], 1E-6);
 }
 
-TEST(QuadraticTimeMMD, compute_multiple)
+TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 {
 	const index_t m=20;
 	const index_t n=20;
@@ -518,15 +518,15 @@ TEST(QuadraticTimeMMD, compute_multiple)
 		float64_t tau=pow(2, sigma);
 		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
 	}
-	SGVector<float64_t> mmd_multiple=mmd->multikernel()->statistic();
+	SGVector<float64_t> mmd_multiple=mmd->multikernel()->compute_statistic();
+	mmd->multikernel()->cleanup();
 
 	SGVector<float64_t> mmd_single(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
-		auto mmd2=some<CQuadraticTimeMMD>(feat_p, feat_q);
 		float64_t tau=pow(2, sigma);
-		mmd2->set_kernel(new CGaussianKernel(10, tau));
-		mmd_single[i]=mmd2->compute_statistic();
+		mmd->set_kernel(new CGaussianKernel(10, tau));
+		mmd_single[i]=mmd->compute_statistic();
 	}
 
 	ASSERT_EQ(mmd_multiple.size(), mmd_single.size());
@@ -534,7 +534,7 @@ TEST(QuadraticTimeMMD, compute_multiple)
 		EXPECT_NEAR(mmd_multiple[i], mmd_single[i], 1E-4);
 }
 
-TEST(QuadraticTimeMMD, perform_test_multiple)
+TEST(QuadraticTimeMMD, multikernel_perform_test)
 {
 	const index_t m=8;
 	const index_t n=12;
@@ -561,16 +561,15 @@ TEST(QuadraticTimeMMD, perform_test_multiple)
 	}
 	sg_rand->set_seed(12345);
 	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
+	mmd->multikernel()->cleanup();
 
 	SGVector<bool> rejections_single(num_kernels);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
-		auto mmd2=some<CQuadraticTimeMMD>(feat_p, feat_q);
-		mmd2->set_num_null_samples(num_null_samples);
 		float64_t tau=pow(2, sigma);
-		mmd2->set_kernel(new CGaussianKernel(cache_size, tau));
+		mmd->set_kernel(new CGaussianKernel(cache_size, tau));
 		sg_rand->set_seed(12345);
-		rejections_single[i]=mmd2->perform_test(alpha);
+		rejections_single[i]=mmd->perform_test(alpha);
 	}
 
 	ASSERT_EQ(rejections_multiple.size(), rejections_single.size());

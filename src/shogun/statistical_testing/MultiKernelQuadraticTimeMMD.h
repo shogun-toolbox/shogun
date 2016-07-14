@@ -69,12 +69,11 @@ public:
 	void add_kernel(CShiftInvariantKernel *kernel);
 	void cleanup();
 
-	SGVector<float64_t> statistic();
-	SGVector<float64_t> variance_h0();
-	SGVector<float64_t> variance_h1();
-
+	SGVector<float64_t> compute_statistic();
+	SGVector<float64_t> compute_variance_h0();
+	SGVector<float64_t> compute_variance_h1();
 	SGMatrix<float32_t> sample_null();
-	SGVector<float64_t> p_values();
+	SGVector<float64_t> compute_p_value();
 	SGVector<bool> perform_test(float64_t alpha);
 
 	virtual const char* get_name() const;
