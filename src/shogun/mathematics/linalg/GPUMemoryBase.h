@@ -45,7 +45,7 @@ struct GPUMemoryBase
 	{
 	}
 
-	/** Clone GPU vector or matrix
+	/** Clone GPU memory, i.e. vector or matrix
 	 *
 	 * @param GPUMemoryBase structure pointer
 	 * @return a deep-copy of GPUMemoryBase structure pointer
