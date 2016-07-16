@@ -435,11 +435,7 @@ void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
 	}
-	if(minimizer!=m_minimizer)
-	{
-		delete m_minimizer;
-		m_minimizer=minimizer;
-	}
+	CInference::register_minimizer(minimizer);
 }
 
 void CSingleLaplaceInferenceMethod::update_alpha()

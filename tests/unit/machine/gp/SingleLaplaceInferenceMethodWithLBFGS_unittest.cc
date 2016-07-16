@@ -161,6 +161,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 
@@ -253,6 +254,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_likelihood)
@@ -331,6 +333,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_prob
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -427,6 +430,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
@@ -517,6 +521,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihood)
@@ -631,6 +636,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likel
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
@@ -746,6 +752,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
@@ -837,6 +844,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 
@@ -917,6 +925,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logi
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 
@@ -1015,6 +1024,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	delete opt;
 }
 
 
@@ -1126,6 +1136,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 {
@@ -1209,6 +1220,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian_likelihood)
@@ -1282,6 +1294,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaus
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gaussian_likelihood)
@@ -1381,6 +1394,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	delete opt;
 }
 
 
@@ -1491,6 +1505,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
@@ -1575,6 +1590,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likelihood)
@@ -1648,6 +1664,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_li
 
 	// clean up
 	SG_UNREF(inf);
+	delete opt;
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_likelihood)
@@ -1751,4 +1768,5 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	delete opt;
 }

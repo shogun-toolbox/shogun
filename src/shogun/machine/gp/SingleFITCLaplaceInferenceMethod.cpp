@@ -475,6 +475,18 @@ void CSingleFITCLaplaceInferenceMethod::update_init()
 	m_Psi=Psi_New;
 }
 
+void CSingleFITCLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	REQUIRE(minimizer, "Minimizer must set\n");
+	if (!dynamic_cast<SingleFITCLaplaceNewtonOptimizer*>(minimizer))
+	{
+		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+		REQUIRE(opt, "The provided minimizer is not supported\n")
+	}
+	CInference::register_minimizer(minimizer);
+}
+
+
 void CSingleFITCLaplaceInferenceMethod::update_alpha()
 {
 

@@ -144,7 +144,7 @@ void CKLInference::init()
 		"Posterior covariance matrix Sigma",
 		MS_NOT_AVAILABLE);
 
-    this->register_minimizer(new LBFGSMinimizer());
+	this->register_minimizer(new LBFGSMinimizer());
 }
 
 CKLInference::~CKLInference()
@@ -341,12 +341,8 @@ void CKLInference::register_minimizer(Minimizer* minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
-	REQUIRE(opt, "FirstOrderMinimizer is required\n")
-	if(minimizer!=m_minimizer)
-	{
-		delete m_minimizer;
-		m_minimizer=minimizer;
-	}
+	REQUIRE(opt, "FirstOrderMinimizer is required\n");
+	CInference::register_minimizer(minimizer);
 }
 
 

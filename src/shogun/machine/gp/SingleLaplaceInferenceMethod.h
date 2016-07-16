@@ -140,7 +140,12 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
 
+	/** Set a minimizer
+	 *
+	 * @param minimizer minimizer used in inference method
+	 */
 	virtual void register_minimizer(Minimizer* minimizer);
+
 protected:
 
 	/** initialize the update  */
