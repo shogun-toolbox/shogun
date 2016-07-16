@@ -678,6 +678,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
 	EXPECT_NEAR(mean_vector[24], 0.041654120309486, abs_tolerance);
 
 	SG_UNREF(gpc);
+	delete opt;
 }
 
 TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vector)
@@ -858,8 +859,8 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vecto
 	abs_tolerance = CMath::get_abs_tolerance(0.998264934261243, rel_tolerance);
 	EXPECT_NEAR(variance_vector[24], 0.998264934261243, abs_tolerance);
 
-
 	SG_UNREF(gpc);
+	delete opt;
 }
 
 TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
@@ -1038,6 +1039,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
 	EXPECT_NEAR(probabilities[24], 0.520827060710866, abs_tolerance);
 
 	SG_UNREF(gpc);
+	delete opt;
 }
 
 TEST(GaussianProcessClassificationUsingKLCovariance,get_mean_vector)

@@ -465,6 +465,9 @@ protected:
 	/** minimizer */
 	Minimizer* m_minimizer;
 
+	/** do we use built-in minimizer*/
+	bool built_in_minimizer;
+
 	/** covariance function */
 	CKernel* m_kernel;
 

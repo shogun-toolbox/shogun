@@ -155,6 +155,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
+	delete opt;
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
@@ -251,6 +252,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
+	delete opt;
 }
 
 
@@ -336,6 +338,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelih
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
+	delete opt;
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives)
@@ -465,6 +468,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
+	delete opt;
 }
 
 #endif /* HAVE_LINALG_LIB */
