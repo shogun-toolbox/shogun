@@ -1,6 +1,6 @@
 BoolVector bool_vector(2)
-bool_vector[0]=false
-bool_vector[1]=true
+bool_vector[0]=False
+bool_vector[1]=True
 
 ByteVector byte_vector(2)
 byte_vector[0]=0
