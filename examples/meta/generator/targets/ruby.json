@@ -4,7 +4,7 @@
     "Comment": "#$comment\n",
     "Init": {
         "Construct": "$name = Modshogun::$typeName.new $arguments",
-        "Copy": "$name = $expr"
+        "Copy": "$name = $expr",
         "BoolVector": "auto $name = NArray.byte($arguments)",
         "CharVector": "auto $name = NArray.byte($arguments)",
         "ByteVector": "auto $name = NArray.byte($arguments)",
@@ -27,8 +27,7 @@
         "ShortRealMatrix": "auto $name = NMatrix.sfloat($arguments)",
         "RealMatrix": "auto $name = NMatrix.float($arguments)",
         "LongRealMatrix": "auto $name = NMatrix.float($arguments)",
-        "ComplexMatrix": "auto $name = NMatrix.scomplex($arguments)",
-    },
+        "ComplexMatrix": "auto $name = NMatrix.scomplex($arguments)"
     },
     "Assign": "$lhs = $expr",
     "Type": {
