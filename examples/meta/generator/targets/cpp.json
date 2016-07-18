@@ -86,7 +86,7 @@
         "MethodCall": "$object->$method($arguments)",
         "StaticCall": "C$typeName::$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"$typeName:$value"
+        "Enum":"$typeName::$value"
     },
     "Element": {
         "Access": {
