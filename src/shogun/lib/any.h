@@ -71,17 +71,17 @@ namespace shogun
          * @param v pointer to value
          */
         virtual void set(void** storage, const void* v) const = 0;
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
         virtual void clear(void** storage) const = 0;
-        
+
         /** Returns type-name as string.
          * @return name of type class
          */
         virtual std::string type() const = 0;
-        
+
         /** Compares type.
          * @param ti type information
          * @return true if type matches
@@ -95,7 +95,7 @@ namespace shogun
          */
         virtual bool equals(void** storage, void** other_storage) const = 0;
     };
-    
+
     /** @brief This is one concrete implementation of policy that
      * uses void pointers to store values.
      */
@@ -111,7 +111,7 @@ namespace shogun
         {
             *(storage) = new T(*reinterpret_cast<T const*>(v));
         }
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
@@ -119,7 +119,7 @@ namespace shogun
         {
             delete reinterpret_cast<T*>(*storage);
         }
-        
+
         /** Returns type-name as string.
          * @return name of type class
          */
@@ -127,7 +127,7 @@ namespace shogun
         {
             return demangledType<T>();
         }
-        
+
         /** Compares type.
          * @param ti type information
          * @return true if type matches
@@ -165,6 +165,7 @@ namespace shogun
         /** Constructor */
         Any() : policy(select_policy<Empty>()), storage(nullptr)
         {
+			enumtype = EnumType::TYPE_UNDEFINED;
         }
 
         /** Constructor to copy value */
@@ -172,6 +173,7 @@ namespace shogun
         explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
         {
             policy->set(&storage, &v);
+			enumtype = type2enum<T>();
         }
 
         /** Copy constructor */
@@ -212,6 +214,24 @@ namespace shogun
             policy->clear(&storage);
         }
 
+		template<class Archive>
+		void cereal_save(Archive& ar) const
+		{
+			switch (enumtype) {
+			case TYPE_INT:
+				ar(*(reinterpret_cast<int*>(storage))); break;
+			case TYPE_DOUBLE:
+				ar(*(reinterpret_cast<double*>(storage))); break;
+			case TYPE_SGVECTOR_INT:
+				ar(*(reinterpret_cast<SGVector<int>*>(storage))); break;
+			case TYPE_SGVECTOR_DOUBLE:
+				ar(*(reinterpret_cast<SGVector<double>*>(storage))); break;
+			case TYPE_UNDEFINED: default:
+				SG_SERROR("Type error: undefined data type\n");
+				break;
+			}
+		}
+
         /** Casts hidden value to provided type, fails otherwise.
          * @return type-casted value
          */
@@ -221,10 +241,10 @@ namespace shogun
             if (same_type<T>())
             {
                 return *(reinterpret_cast<T*>(storage));
-            } 
-            else 
+            }
+            else
             {
-                throw std::logic_error("Bad cast to " + demangledType<T>() + 
+                throw std::logic_error("Bad cast to " + demangledType<T>() +
                         " but the type is " + policy->type());
             }
         }
@@ -248,7 +268,22 @@ namespace shogun
         {
             return same_type<Empty>();
         }
-    private:
+
+	private:
+		enum EnumType
+		{
+			TYPE_INT,
+			TYPE_DOUBLE,
+			TYPE_SGVECTOR_INT,
+			TYPE_SGVECTOR_DOUBLE,
+			TYPE_UNDEFINED
+		};
+
+		template<typename T>
+		EnumType type2enum()
+		{
+		}
+		
         template <typename T>
         static BaseAnyPolicy* select_policy()
         {
@@ -259,18 +294,19 @@ namespace shogun
 
         BaseAnyPolicy* policy;
         void* storage;
+		EnumType enumtype;
     };
 
     inline bool operator==(const Any& lhs, const Any& rhs)
     {
         void* lhs_storage = lhs.storage;
-        void* rhs_storage = rhs.storage;        
+        void* rhs_storage = rhs.storage;
         return lhs.policy == rhs.policy and
             lhs.policy->equals(&lhs_storage, &rhs_storage);
     }
 
     inline bool operator!=(const Any& lhs, const Any& rhs)
-    {        
+    {
         return !(lhs == rhs);
     }
 
@@ -311,6 +347,7 @@ namespace shogun
     {
         return any.as<T>();
     }
+
 
 }
 

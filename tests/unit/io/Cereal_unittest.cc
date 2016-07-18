@@ -30,7 +30,7 @@ TEST(Cereal, Json_SGVector_FLOAT64_save_load_pair)
 	for (index_t i = 0; i < 2; i++)
 		EXPECT_NEAR(a[i], b[i], 1E-15);
 }
-
+/*
 TEST(Cereal, Json_SGObject_save_load_pair)
 {
 	CKMeansBase obj_save, obj_load;
@@ -48,3 +48,4 @@ TEST(Cereal, Json_SGObject_save_load_pair)
 	}
 
 }
+*/
