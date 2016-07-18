@@ -4,7 +4,27 @@
     "Comment": "%$comment\n",
     "Init": {
         "Construct": "$name = $typeName($arguments)",
-        "Copy": "$name = $expr"
+        "Copy": "$name = $expr",
+        "BoolVector": "$name = zeros($arguments, 'int8')",
+        "CharVector": "$name = zeros($arguments, 'char')",
+        "ByteVector": "$name = zeros($arguments, 'int8')",
+        "WordVector": "$name = zeros($arguments, 'int16')",
+        "IntVector": "$name = zeros($arguments, 'int32')",
+        "LongIntVector": "$name = zeros($arguments, 'int64')",
+        "ULongIntVector": "$name = zeros($arguments, 'uint64')",
+        "ShortRealVector": "$name = zeros($arguments, 'float32')",
+        "RealVector": "$name = zeros($arguments, 'float64')",
+        "LongRealVector": "$name = zeros($arguments, 'float64')",
+        "BoolMatrix": "$name = zeros($arguments, 'int8')",
+        "CharMatrix": "$name = zeros($arguments, 'char')",
+        "ByteMatrix": "$name = zeros($arguments, 'int8')",
+        "WordMatrix": "$name = zeros($arguments, 'int16')",
+        "IntMatrix": "$name = zeros($arguments, 'int32')",
+        "LongIntMatrix": "$name = zeros($arguments, 'int64')",
+        "ULongIntMatrix": "$name = zeros($arguments, 'uint64')",
+        "ShortRealMatrix": "$name = zeros($arguments, 'float64')",
+        "RealMatrix": "$name = zeros($arguments, 'float64')",
+        "LongRealMatrix": "$name = zeros($arguments, 'float64')"
     },
     "Assign": "$lhs = $expr",
     "Type": {
@@ -23,8 +43,8 @@
         "Enum":"$value"
     },
     "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+        "Vector": "$identifier($indices)",
+        "Matrix": "$identifier($indices)",
         "ZeroIndexed": false
     },
     "Print": "disp($expr)",
