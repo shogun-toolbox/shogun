@@ -19,8 +19,8 @@ long_int_vector[0]=0
 long_int_vector[1]=1
 
 ShortRealVector short_real_vector(2)
-short_real_vector[0]=0.1
-short_real_vector[1]=1.1
+short_real_vector[0]=0
+short_real_vector[1]=1
 
 RealVector real_vector(2)
 real_vector[0]=0.1
