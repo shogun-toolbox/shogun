@@ -32,7 +32,7 @@
 #ifndef L2PENALTY_H
 #define L2PENALTY_H
 #include <shogun/optimization/Penalty.h>
-#include <shogun/lib/config.h>
+#include <shogun/base/Parameter.h>
 namespace shogun
 {
 /** @brief The class implements L2 penalty/regularization within the FirstOrderMinimizer framework.
@@ -51,6 +51,12 @@ public:
 
 	/* Destructor */
 	virtual ~L2Penalty() {}
+
+	/** returns the name of the class
+	 *
+	 * @return name L2Penalty
+	 */
+	virtual const char* get_name() const { return "L2Penalty"; }
 
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 
@@ -75,24 +81,6 @@ public:
 	virtual float64_t get_penalty_gradient(float64_t variable,
 		float64_t gradient_of_variable) {return variable;}
 
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
 };
 
 }

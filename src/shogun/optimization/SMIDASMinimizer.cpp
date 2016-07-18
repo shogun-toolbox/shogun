@@ -32,6 +32,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/optimization/L1Penalty.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
+#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 SMIDASMinimizer::SMIDASMinimizer()
@@ -90,6 +91,8 @@ float64_t SMIDASMinimizer::minimize()
 void SMIDASMinimizer::init()
 {
 	m_dual_variable=SGVector<float64_t>();
+	SG_ADD(&m_dual_variable, "SMIDASMinimizer__m_dual_variable",
+		"dual_variable in SMIDASMinimizer", MS_NOT_AVAILABLE);
 }
 
 void SMIDASMinimizer::init_minimization()

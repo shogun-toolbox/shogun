@@ -29,46 +29,51 @@
  *
  */
 
-#include <shogun/lib/config.h>
-#include <algorithm>
 #include <shogun/optimization/NLOPTMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
+#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 #ifdef USE_GPL_SHOGUN
-NLOPTMinimizer::NLOPTMinimizer()
+CNLOPTMinimizer::CNLOPTMinimizer()
 	:FirstOrderMinimizer()
 {
 	init();
 }
 
-NLOPTMinimizer::~NLOPTMinimizer()
+CNLOPTMinimizer::~CNLOPTMinimizer()
 {
 }
 
-NLOPTMinimizer::NLOPTMinimizer(FirstOrderCostFunction *fun)
+CNLOPTMinimizer::CNLOPTMinimizer(FirstOrderCostFunction *fun)
 	:FirstOrderMinimizer(fun)
 {
 	init();
 }
 
-void NLOPTMinimizer::init()
+void CNLOPTMinimizer::init()
 {
 #ifdef HAVE_NLOPT
-	m_max_iterations=1000;
-	m_variable_tolerance=1e-6;
-	m_function_tolerance=1e-6;
-	m_nlopt_algorithm=NLOPT_LD_LBFGS;
 	m_target_variable=SGVector<float64_t>();
 	set_nlopt_parameters();
+	SG_ADD(&m_max_iterations, "CNLOPTMinimizer__m_max_iterations",
+		"max_iterations in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_variable_tolerance, "CNLOPTMinimizer__m_variable_tolerance",
+		"variable_tolerance in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_function_tolerance, "CNLOPTMinimizer__m_function_tolerance",
+		"function_tolerance in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_nlopt_algorithm_id, "CNLOPTMinimizer__m_nlopt_algorithm_id",
+		"nlopt_algorithm_id in CNLOPTMinimizer", MS_NOT_AVAILABLE);
 #endif
 }
 
-float64_t NLOPTMinimizer::minimize()
+float64_t CNLOPTMinimizer::minimize()
 {
 #ifdef HAVE_NLOPT
 	init_minimization();
 
-	nlopt_opt opt=nlopt_create(m_nlopt_algorithm, m_target_variable.vlen);
+	nlopt_opt opt=nlopt_create(NLOPTAlgorithmHelper::get_nlopt_algorithm(m_nlopt_algorithm_id),
+		m_target_variable.vlen);
 
 	//add bound constraints
 	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
@@ -108,7 +113,7 @@ float64_t NLOPTMinimizer::minimize()
 	nlopt_set_xtol_abs1(opt, m_variable_tolerance);
 	nlopt_set_ftol_abs(opt, m_function_tolerance);
 
-	nlopt_set_min_objective(opt, NLOPTMinimizer::nlopt_function, this);
+	nlopt_set_min_objective(opt, CNLOPTMinimizer::nlopt_function, this);
 
 #endif
 	// the minimum objective value, upon return
@@ -131,21 +136,21 @@ float64_t NLOPTMinimizer::minimize()
 }
 
 #ifdef HAVE_NLOPT
-void NLOPTMinimizer::set_nlopt_parameters(nlopt_algorithm algorithm,
+void CNLOPTMinimizer::set_nlopt_parameters(nlopt_algorithm algorithm,
 	float64_t max_iterations,
 	float64_t variable_tolerance,
 	float64_t function_tolerance)
 {
-	m_nlopt_algorithm=algorithm;
+	m_nlopt_algorithm_id=NLOPTAlgorithmHelper::get_nlopt_algorithm_id(algorithm);
 	m_max_iterations=max_iterations;
 	m_variable_tolerance=variable_tolerance;
 	m_function_tolerance=function_tolerance;
 };
 
-double NLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, double* gradient,
+double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, double* gradient,
 	void* func_data)
 {
-	NLOPTMinimizer* obj_prt=static_cast<NLOPTMinimizer *>(func_data);
+	CNLOPTMinimizer* obj_prt=static_cast<CNLOPTMinimizer *>(func_data);
 	REQUIRE(obj_prt, "The instance object passed to NLopt optimizer should not be NULL\n");
 
 	double cost=obj_prt->m_fun->get_cost();
@@ -161,7 +166,7 @@ double NLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, doub
 	return cost;
 }
 
-void NLOPTMinimizer::init_minimization()
+void CNLOPTMinimizer::init_minimization()
 {
 	REQUIRE(m_fun, "Cost function not set!\n");
 	m_target_variable=m_fun->obtain_variable_reference();

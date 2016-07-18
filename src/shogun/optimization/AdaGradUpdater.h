@@ -32,7 +32,6 @@
 #ifndef ADAGRADUPDATER_H
 #define ADAGRADUPDATER_H
 #include <shogun/optimization/DescendUpdaterWithCorrection.h>
-#include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
 /** @brief The class implements the AdaGrad method.
@@ -59,6 +58,13 @@ public:
 	/* Constructor */
 	AdaGradUpdater();
 
+	/** returns the name of the class
+	 *
+	 * @return name AdaGradUpdater
+	 */
+	virtual const char* get_name() const { return "AdaGradUpdater"; }
+
+
 	/** Parameterized Constructor
 	 * 
 	 * @param learning_rate learning_rate
@@ -81,24 +87,6 @@ public:
 	 */
 	virtual void set_epsilon(float64_t epsilon);
 
-	/** Update a context object to store mutable variables
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::save_to_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context);
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
-	 *
-	 * @return a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context);
 
 	/** Update the target variable based on the given negative descend direction
 	 *

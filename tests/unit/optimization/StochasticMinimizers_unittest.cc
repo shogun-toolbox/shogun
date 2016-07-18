@@ -492,9 +492,6 @@ TEST(SGDMinimizer,test1)
 	EXPECT_NEAR(cost,0.491198269864709, 1e-10);
 		
 	delete opt;
-	delete fun;
-	delete rate;
-	delete updater;
 }
 
 TEST(SGDMinimizer,test2)
@@ -522,7 +519,6 @@ TEST(SGDMinimizer,test2)
 
 	int32_t num_passes=20;
 	opt.set_number_passes(num_passes);
-
 	opt.minimize();
 
 	//the result is from the svrg software using plain stochastic gradient descent
@@ -534,10 +530,6 @@ TEST(SGDMinimizer,test2)
 	EXPECT_NEAR(w[0],0.425694,1e-6);
 	EXPECT_NEAR(w[1],-1.550272,1e-6);
 	EXPECT_NEAR(w[2],2.131146,1e-6);
-
-	delete fun;
-	delete rate;
-	delete updater;
 }
 
 TEST(SGDMinimizer,test3)
@@ -585,11 +577,6 @@ TEST(SGDMinimizer,test3)
 	EXPECT_NEAR(w[2],2.045611,1e-6);
 
 	delete opt;
-	delete fun;
-	delete rate;
-	delete penalty_type;
-	delete updater;
-	delete momentum_correction;
 }
 
 TEST(SGDMinimizer,test4)
@@ -636,11 +623,6 @@ TEST(SGDMinimizer,test4)
 	EXPECT_NEAR(cost,3.48852246851037, 1e-10);
 
 	delete opt;
-	delete fun;
-	delete rate;
-	delete penalty_type;
-	delete updater;
-	delete momentum_correction;
 }
 
 TEST(SGDMinimizer,test5)
@@ -672,32 +654,9 @@ TEST(SGDMinimizer,test5)
 
 	opt->set_learning_rate(rate);
 	opt->set_gradient_updater(updater);
-	opt->set_number_passes(5);
+	opt->set_number_passes(20);
 
 	float64_t cost=opt->minimize();
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete updater;
-	delete momentum_correction;
-	delete rate;
-
-	SGDMinimizer* opt2=new SGDMinimizer(fun);
-	opt2->set_penalty_weight(1.0);
-	opt2->set_penalty_type(penalty_type);
-
-	ConstLearningRate* rate2=new ConstLearningRate();
-	rate2->set_const_learning_rate(0.001);
-	GradientDescendUpdater* updater2=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction2=new StandardMomentumCorrection();
-	momentum_correction2->set_correction_weight(0.9);
-	updater2->set_descend_correction(momentum_correction2);
-	opt2->set_gradient_updater(updater2);
-	opt2->set_learning_rate(rate2);
-
-	opt2->load_from_context(context);
-	opt2->set_number_passes(15);
-	delete context;
-	cost=opt2->minimize();
 	cost=(cost-aa->get_cost())+aa->get_cost()/10;
 	//the result is from the svrg software using plain stochastic gradient descent
 	//http://riejohnson.com/svrg_download.html
@@ -707,12 +666,7 @@ TEST(SGDMinimizer,test5)
 	//cost is return by going through the data 20 times
 	//cost=8.54011254349676
 	EXPECT_NEAR(cost,8.54011254349676, 1e-10);
-	delete rate2;
-	delete updater2;
-	delete momentum_correction2;
-	delete fun;
-	delete penalty_type;
-	delete opt2;
+	delete opt;
 }
 
 TEST(SVRGMinimizer,test1)
@@ -749,39 +703,10 @@ TEST(SVRGMinimizer,test1)
 
 	opt->set_learning_rate(rate);
 	opt->set_gradient_updater(updater);
-	opt->set_number_passes(6);
+	opt->set_number_passes(10);
 	opt->set_sgd_number_passes(2);
 	opt->set_average_update_interval(2);
 	opt->minimize();
-
-	//can be used in serialization
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete updater;
-	delete rate;
-	delete momentum_correction;
-
-	SVRGMinimizer* opt2=new SVRGMinimizer(fun);
-	opt2->set_penalty_weight(1.0);
-	opt2->set_penalty_type(penalty_type);
-
-	ConstLearningRate* rate2=new ConstLearningRate();
-	rate2->set_const_learning_rate(0.001);
-	GradientDescendUpdater* updater2=new GradientDescendUpdater();
-	MomentumCorrection* momentum_correction2=new StandardMomentumCorrection();
-	momentum_correction2->set_correction_weight(0.9);
-	updater2->set_descend_correction(momentum_correction2);
-	opt2->set_gradient_updater(updater2);
-	opt2->set_learning_rate(rate2);
-
-	//can be used in deserialization
-	opt2->load_from_context(context);
-	delete context;
-
-	opt2->set_number_passes(4);
-	opt2->set_sgd_number_passes(0);
-	opt2->set_average_update_interval(2);
-	opt2->minimize();
 
 	//the result is from the svrg software using svrg method with momentum
 	//http://riejohnson.com/svrg_download.html
@@ -793,12 +718,7 @@ TEST(SVRGMinimizer,test1)
 	EXPECT_NEAR(w[1],-1.0194184559,1e-8);
 	EXPECT_NEAR(w[2],1.6913053544,1e-8);
 
-	delete rate2;
-	delete updater2;
-	delete fun;
-	delete penalty_type;
-	delete momentum_correction2;
-	delete opt2;
+	delete opt;
 }
 
 TEST(SVRGMinimizer,test2)
@@ -873,11 +793,7 @@ TEST(SVRGMinimizer,test2)
 	EXPECT_NEAR(w[0],1.840662,1e-6);
 	EXPECT_NEAR(w[1],-0.855683,1e-6);
 
-	delete bb;
 	delete opt;
-	delete rate;
-	delete updater;
-	delete penalty_type;
 }
 
 TEST(AdaDeltaUpdater, test1)
@@ -909,27 +825,9 @@ TEST(AdaDeltaUpdater, test1)
 	SGVector<float64_t> w=bb->obtain_variable_reference();
 	EXPECT_NEAR(w[0],9.322789137268,1e-10);
 	EXPECT_NEAR(w[1],-5.041678838144,1e-10);
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete updater;
-	delete momentum_correction;
 
-	SGDMinimizer* opt2=new SGDMinimizer(bb);
-	AdaDeltaUpdater* updater2=new AdaDeltaUpdater(1.8,1e-6,0.95);
-	/*
-	updater2->set_learning_rate(1.8);
-	updater2->set_epsilon(1e-6);
-	updater2->set_decay_factor(0.95);
-	*/
-	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
-	momentum_correction2->set_correction_weight(0.99);
-	updater2->set_descend_correction(momentum_correction2);
-	
-	opt2->set_gradient_updater(updater2);
-	opt2->set_number_passes(1);
-	opt2->load_from_context(context);
-	delete context;
-	opt2->minimize();
+	opt->set_number_passes(1);
+	opt->minimize();
 	//The reference result is from https://github.com/BRML/climin
 	//w=
 	//37.005870439442 -10.868474774524
@@ -941,10 +839,7 @@ TEST(AdaDeltaUpdater, test1)
 	EXPECT_NEAR(w[0],37.005870439442,1e-10);
 	EXPECT_NEAR(w[1],-10.868474774524,1e-10);
 
-	delete opt2;
-	delete updater2;
-	delete momentum_correction2;
-	delete bb;
+	delete opt;
 }
 
 TEST(AdamUpdater, test1)
@@ -955,10 +850,6 @@ TEST(AdamUpdater, test1)
 
 	SGDMinimizer* opt2=new SGDMinimizer(bb);
 	AdamUpdater* updater2=new AdamUpdater(0.1, 1e-8, 0.9, 0.999);
-	//updater2->set_learning_rate(0.1);
-	//updater2->set_epsilon(1e-8);
-	//updater2->set_first_moment_decay_factor(0.9);
-	//updater2->set_second_moment_decay_factor(0.999);
 
 	opt2->set_gradient_updater(updater2);
 	opt2->set_number_passes(1);
@@ -975,8 +866,6 @@ TEST(AdamUpdater, test1)
 	EXPECT_NEAR(w[1],-0.88859,1e-5);
 
 	delete opt2;
-	delete updater2;
-	delete bb; 
 }
 
 
@@ -1013,31 +902,9 @@ TEST(AdaptMomentumCorrection, test1)
 	EXPECT_NEAR(w[0],13.014770067941,1e-10);
 	EXPECT_NEAR(w[1],-6.735459931220,1e-10);
 
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete updater;
-	delete correction;
-	delete momentum_correction;
-	SGDMinimizer* opt2=new SGDMinimizer(bb);
-	RmsPropUpdater* updater2=new RmsPropUpdater(1.0,0.0,0.9);
-	/*	
-	updater2->set_learning_rate(1.0);
-	updater2->set_epsilon(0.0);
-	updater2->RmsPropUpdater::set_decay_factor(0.9);
-	*/	
-	MomentumCorrection* momentum_correction2=new NesterovMomentumCorrection();
-	momentum_correction2->set_correction_weight(0.5);
-	AdaptMomentumCorrection* correction2=new AdaptMomentumCorrection();
-	correction2->set_momentum_correction(momentum_correction2);
-	correction2->set_init_descend_rate(0.9);
-	correction2->set_adapt_rate(0.1, 0.05, 2.0);
-	updater2->set_descend_correction(correction2);
-	opt2->set_gradient_updater(updater2);
-	opt2->set_number_passes(1);
-	opt2->load_from_context(context);
-	delete context;
-	opt2->minimize();
 
+	opt->set_number_passes(1);
+	opt->minimize();
 	//The reference result is from https://github.com/BRML/climin
 	//w=
 	//13.898448669614 -11.852199405401
@@ -1048,11 +915,8 @@ TEST(AdaptMomentumCorrection, test1)
 	w=bb->obtain_variable_reference();
 	EXPECT_NEAR(w[0],13.898448669614,1e-10);
 	EXPECT_NEAR(w[1],-11.852199405401,1e-10);
-	delete opt2;
-	delete updater2;
-	delete correction2;
-	delete momentum_correction2;
-	delete bb;
+
+	delete opt;
 }
 
 TEST(L1PenaltyForTG, test1)
@@ -1092,11 +956,7 @@ TEST(L1PenaltyForTG, test1)
 	EXPECT_NEAR(w[0],0.047225925298,1e-10);
 	EXPECT_NEAR(w[1],-0.018566844801,1e-10);
 
-	delete bb;
 	delete opt;
-	delete updater;
-	delete penalty_type;
-	delete rate;
 }
 
 TEST(L1PenaltyForTG, test2)
@@ -1120,37 +980,10 @@ TEST(L1PenaltyForTG, test2)
 	penalty_type->set_rounding_epsilon(0);
 	
 	opt->set_penalty_type(penalty_type);
-	opt->set_number_passes(1);
+	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
 	opt->minimize();
 
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete rate;
-	delete updater;
-	delete penalty_type;
-
-	SGDMinimizer* opt2=new SGDMinimizer(bb);
-
-	InverseScalingLearningRate* rate2= new InverseScalingLearningRate();
-	rate2->set_initial_learning_rate(0.1);
-	rate2->set_exponent(0.6);
-	rate2->set_slope(1.0);
-	rate2->set_intercept(0.0);
-
-	GradientDescendUpdater* updater2=new GradientDescendUpdater();
-	opt2->set_gradient_updater(updater2);
-	opt2->set_penalty_weight(0.01);
-	L1Penalty* penalty_type2=new L1PenaltyForTG();
-	penalty_type2->set_rounding_epsilon(0);
-
-	opt2->set_penalty_type(penalty_type2);
-	opt2->set_number_passes(1);
-	opt2->set_learning_rate(rate2);
-	opt2->load_from_context(context);
-	delete context;
-
-	opt2->minimize();
 	//the loss in the reference program is log(1+exp(-y*w*x))
 	//However, the loss in our implementation is log(1+exp(y*w*x))
 	//
@@ -1167,11 +1000,7 @@ TEST(L1PenaltyForTG, test2)
 	EXPECT_NEAR(w[0],0.203765743995,1e-10);
 	EXPECT_NEAR(w[1],-0.109255680811,1e-10);
 
-	delete opt2;
-	delete rate2;
-	delete updater2;
-	delete penalty_type2;
-	delete bb;
+	delete opt;
 }
 
 TEST(ElasticNetPenalty, test1)
@@ -1195,37 +1024,10 @@ TEST(ElasticNetPenalty, test1)
 	penalty_type->set_l1_ratio(0.7);
 	
 	opt->set_penalty_type(penalty_type);
-	opt->set_number_passes(1);
+	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
 	opt->minimize();
 
-	CMinimizerContext* context=opt->save_to_context();
-	delete opt;
-	delete rate;
-	delete updater;
-	delete penalty_type;
-
-	SGDMinimizer* opt2=new SGDMinimizer(bb);
-
-	InverseScalingLearningRate* rate2= new InverseScalingLearningRate();
-	rate2->set_initial_learning_rate(0.1);
-	rate2->set_exponent(0.6);
-	rate2->set_slope(1.0);
-	rate2->set_intercept(0.0);
-
-	GradientDescendUpdater* updater2=new GradientDescendUpdater();
-	opt2->set_gradient_updater(updater2);
-	opt2->set_penalty_weight(0.01);
-	ElasticNetPenalty* penalty_type2=new ElasticNetPenalty();
-	penalty_type2->set_l1_ratio(0.7);
-
-	opt2->set_penalty_type(penalty_type2);
-	opt2->set_number_passes(1);
-	opt2->set_learning_rate(rate2);
-	opt2->load_from_context(context);
-	delete context;
-
-	opt2->minimize();
 	//the loss in the reference program is log(1+exp(-y*w*x))
 	//However, the loss in our implementation is log(1+exp(y*w*x))
 	//
@@ -1239,11 +1041,7 @@ TEST(ElasticNetPenalty, test1)
 	EXPECT_NEAR(w[0],0.206101230857,1e-10);
 	EXPECT_NEAR(w[1],-0.111680271395,1e-10);
 
-	delete opt2;
-	delete rate2;
-	delete updater2;
-	delete penalty_type2;
-	delete bb;
+	delete opt;
 }
 
 TEST(SMIDASMinimizer, test1)
@@ -1265,37 +1063,10 @@ TEST(SMIDASMinimizer, test1)
 	L1Penalty* penalty_type=new L1Penalty();
 	penalty_type->set_rounding_epsilon(1e-8);
 	opt->set_penalty_type(penalty_type);
-	opt->set_number_passes(1);
+	opt->set_number_passes(2);
 	opt->set_learning_rate(rate);
-
 	opt->minimize();
-	CMinimizerContext* context=opt->save_to_context();
 
-	delete rate;
-	delete opt;
-	delete updater;
-	delete penalty_type;
-	delete mapping;
-
-	SMIDASMinimizer* opt2=new SMIDASMinimizer(bb);
-
-	ConstLearningRate* rate2=new ConstLearningRate();
-	rate2->set_const_learning_rate(0.01);
-	GradientDescendUpdater* updater2=new GradientDescendUpdater();
-	opt2->set_gradient_updater(updater2);
-	PNormMappingFunction* mapping2=new PNormMappingFunction();
-	mapping2->set_norm(2.0);
-	opt2->set_mapping_function(mapping2);
-	opt2->set_penalty_weight(0.01);
-	L1Penalty* penalty_type2=new L1Penalty();
-	penalty_type2->set_rounding_epsilon(1e-8);
-	opt2->set_penalty_type(penalty_type2);
-	opt2->set_number_passes(1);
-	opt2->set_learning_rate(rate2);
-	opt2->load_from_context(context);
-	delete context;
-
-	opt2->minimize();
 	//the loss in the reference program is log(1+exp(-y*w*x))
 	//However, the loss in our implementation is log(1+exp(y*w*x))
 	//
@@ -1313,10 +1084,5 @@ TEST(SMIDASMinimizer, test1)
 	EXPECT_NEAR(w[0],0.0934993,1e-6);
 	EXPECT_NEAR(w[1],-0.0367823,1e-6);
 
-	delete rate2;
-	delete opt2;
-	delete updater2;
-	delete penalty_type2;
-	delete mapping2;
-	delete bb;
+	delete opt;
 }

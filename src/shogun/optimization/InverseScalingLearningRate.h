@@ -31,9 +31,7 @@
 
 #ifndef INVERSESCALINGLEARNINGRATE_H
 #define INVERSESCALINGLEARNINGRATE_H
-
 #include <shogun/optimization/LearningRate.h>
-#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -59,77 +57,43 @@ public:
 	/*  Destructor */
 	virtual ~InverseScalingLearningRate() {}
 
+	/** returns the name of the class
+	 *           
+	 * @return name InverseScalingLearningRate
+	 */
+	virtual const char* get_name() const { return "InverseScalingLearningRate"; }
+
 	/** Get the learning rate for descent direction
 	 * @param iter_counter the number of iterations
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate(int32_t iter_counter)
-	{
-		REQUIRE(iter_counter,"Iter_counter (%d) must be positive\n", iter_counter);
-		return m_initial_learning_rate/CMath::pow(m_intercept+m_slope*iter_counter,m_exponent);
-	}
+	virtual float64_t get_learning_rate(int32_t iter_counter);
 
 	/** Set the initial learning rate
 	 *
 	 * @param initial_learning_rate initial_learning_rate must be positive
 	 */
-	virtual void set_initial_learning_rate(float64_t initial_learning_rate)
-	{
-		REQUIRE(initial_learning_rate>0.0, "Initial learning rate (%f) should be positive\n",
-			initial_learning_rate);
-		m_initial_learning_rate=initial_learning_rate;
-	}
+	virtual void set_initial_learning_rate(float64_t initial_learning_rate);
 
 	/** Set the exponent term
 	 *
 	 * @param exponent exponent term should be positive
 	 */
-	virtual void set_exponent(float64_t exponent)
-	{
-		REQUIRE(exponent>0.0, "Exponent (%f) should be positive\n", exponent);
-		m_exponent=exponent;
-	}
+	virtual void set_exponent(float64_t exponent);
 
 	/** Set the slope term
 	 *
 	 * @param slope slope term should be positive
 	 */
-	virtual void set_slope(float64_t slope)
-	{
-		REQUIRE(slope>0.0,"Slope (%f) should be positive\n", slope);
-		m_slope=slope;
-	}
+	virtual void set_slope(float64_t slope);
 
 	/** Set the intercept term
 	 *
 	 * @param intercept intercept term should be positive
 	 */
-	virtual void set_intercept(float64_t intercept)
-	{
-		REQUIRE(intercept>=0, "Intercept (%f) should be non-negative\n",
-			intercept);
-		m_intercept=intercept;
-	}
+	virtual void set_intercept(float64_t intercept);
 
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
 protected:
 	/**  exponent */
 	float64_t m_exponent;
@@ -141,13 +105,7 @@ protected:
 	float64_t m_initial_learning_rate;
 private:
 	/**  Init */
-	void init()
-	{
-		m_exponent=0.5;
-		m_initial_learning_rate=1.0;
-		m_intercept=0.0;
-		m_slope=1.0;
-	}
+	void init();
 };
 
 }

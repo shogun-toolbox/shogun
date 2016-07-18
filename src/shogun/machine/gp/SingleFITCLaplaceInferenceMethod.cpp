@@ -94,12 +94,35 @@ class SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunctio
 {
 public:
 	SingleFITCLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleFITCLaplaceInferenceMethodCostFunction() {}
-	void set_target(CSingleFITCLaplaceInferenceMethod *obj) { m_obj=obj; }
+	virtual ~SingleFITCLaplaceInferenceMethodCostFunction() { clean(); }
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj)
+	{
+		REQUIRE(obj, "Obj must set\n");
+		if(m_obj != obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+
+	void clean()
+	{
+		SG_UNREF(m_obj);
+	}
+
 	virtual float64_t get_cost()
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		return m_obj->get_psi_wrt_alpha();
+	}
+	void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
 	}
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
@@ -113,11 +136,16 @@ public:
 		m_obj->get_gradient_wrt_alpha(m_derivatives);
 		return m_derivatives;
 	}
+	virtual const char* get_name() const { return "SingleFITCLaplaceInferenceMethodCostFunction"; }
 private:
 	void init()
 	{
 		m_obj=NULL;
 		m_derivatives = SGVector<float64_t>();
+		SG_ADD(&m_derivatives, "SingleFITCLaplaceInferenceMethodCostFunction__m_derivatives",
+			"derivatives in SingleFITCLaplaceInferenceMethodCostFunction", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_obj, "SingleFITCLaplaceInferenceMethodCostFunction__m_obj",
+			"obj in SingleFITCLaplaceInferenceMethodCostFunction", MS_NOT_AVAILABLE);
 	}
 
 	SGVector<float64_t> m_derivatives;
@@ -126,7 +154,48 @@ private:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-float64_t SingleFITCLaplaceNewtonOptimizer::minimize()
+void CSingleFITCLaplaceNewtonOptimizer::set_target(CSingleFITCLaplaceInferenceMethod *obj)
+{
+	REQUIRE(obj, "Obj must set\n");
+	if(m_obj != obj)
+	{
+		SG_REF(obj);
+		SG_UNREF(m_obj);
+		m_obj=obj;
+	}
+}
+
+void CSingleFITCLaplaceNewtonOptimizer::unset_target(bool is_unref)
+{
+	if(is_unref)
+	{
+		SG_UNREF(m_obj);
+	}
+	m_obj=NULL;
+
+}
+
+void CSingleFITCLaplaceNewtonOptimizer::init()
+{
+	m_obj=NULL;
+	m_iter=20;
+	m_tolerance=1e-6;
+	m_opt_tolerance=1e-6;
+	m_opt_max=10;
+
+	SG_ADD((CSGObject **)&m_obj, "CSingleFITCLaplaceNewtonOptimizer__m_obj",
+		"obj in CSingleFITCLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_iter, "CSingleFITCLaplaceNewtonOptimizer__m_iter",
+		"iter in CSingleFITCLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "CSingleFITCLaplaceNewtonOptimizer__m_tolerance",
+		"tolerance in CSingleFITCLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_tolerance, "CSingleFITCLaplaceNewtonOptimizer__m_opt_tolerance",
+		"opt_tolerance in CSingleFITCLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_max, "CSingleFITCLaplaceNewtonOptimizer__m_opt_max",
+		"opt_max in CSingleFITCLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+}
+
+float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 {
 	REQUIRE(m_obj,"Object not set\n");
 	//time complexity O(m^2*n)
@@ -259,7 +328,7 @@ void CSingleFITCLaplaceInferenceMethod::init()
 	SG_ADD(&m_Psi, "Psi", "the negative log likelihood without constant terms used in Newton's method", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Wneg, "Wneg", "whether W contains negative elements", MS_NOT_AVAILABLE);
 
-	m_minimizer=new SingleFITCLaplaceNewtonOptimizer();
+	register_minimizer(new CSingleFITCLaplaceNewtonOptimizer());
 }
 
 void CSingleFITCLaplaceInferenceMethod::compute_gradient()
@@ -478,7 +547,7 @@ void CSingleFITCLaplaceInferenceMethod::update_init()
 void CSingleFITCLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	if (!dynamic_cast<SingleFITCLaplaceNewtonOptimizer*>(minimizer))
+	if (!dynamic_cast<CSingleFITCLaplaceNewtonOptimizer*>(minimizer))
 	{
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
@@ -489,12 +558,15 @@ void CSingleFITCLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 
 void CSingleFITCLaplaceInferenceMethod::update_alpha()
 {
-
-	SingleFITCLaplaceNewtonOptimizer *opt=dynamic_cast<SingleFITCLaplaceNewtonOptimizer*>(m_minimizer);
+	CSingleFITCLaplaceNewtonOptimizer *opt=dynamic_cast<CSingleFITCLaplaceNewtonOptimizer*>(m_minimizer);
+	bool cleanup=false;
 	if (opt)
 	{
 		opt->set_target(this);
+		if(this->ref_count()>1)
+			cleanup=true;
 		opt->minimize();
+		opt->unset_target(cleanup);
 	}
 	else
 	{
@@ -503,10 +575,13 @@ void CSingleFITCLaplaceInferenceMethod::update_alpha()
 
 		SingleFITCLaplaceInferenceMethodCostFunction *cost_fun=new SingleFITCLaplaceInferenceMethodCostFunction();
 		cost_fun->set_target(this);
+		if(this->ref_count()>1)
+			cleanup=true;
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function();
-		delete cost_fun;
+		cost_fun->unset_target(cleanup);
+		SG_UNREF(cost_fun);
 	}
 
 	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);

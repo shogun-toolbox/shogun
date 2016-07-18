@@ -30,8 +30,7 @@
  */
 #include <shogun/optimization/SVRGMinimizer.h>
 #include <shogun/optimization/SGDMinimizer.h>
-#include <shogun/optimization/GradientDescendUpdater.h>
-#include <shogun/optimization/SparsePenalty.h>
+#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 SVRGMinimizer::SVRGMinimizer()
@@ -56,6 +55,15 @@ void SVRGMinimizer::init()
 	m_svrg_interval=0;
 	m_average_gradient=SGVector<float64_t>();
 	m_previous_variable=SGVector<float64_t>();
+
+	SG_ADD(&m_num_sgd_passes, "SVRGMinimizer__m_num_sgd_passes",
+		"num_sgd_passes in SVRGMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_svrg_interval, "SVRGMinimizer__m_svrg_interval",
+		"svrg_interval in SVRGMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_average_gradient, "SVRGMinimizer__m_average_gradient",
+		"average_gradient in SVRGMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_previous_variable, "SVRGMinimizer__m_previous_variable",
+		"previous_variable in SVRGMinimizer", MS_NOT_AVAILABLE);
 }
 
 void SVRGMinimizer::init_minimization()

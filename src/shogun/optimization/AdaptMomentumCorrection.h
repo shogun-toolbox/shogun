@@ -31,9 +31,10 @@
 
 #ifndef ADAPTMOMEMTUMCORRECTION_H
 #define ADAPTMOMEMTUMCORRECTION_H
-#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/optimization/MomentumCorrection.h>
+#include <shogun/mathematics/Math.h>
+
 namespace shogun
 {
 /** @brief This implements the adaptive momentum correction method.
@@ -58,50 +59,37 @@ public:
 		init();
 	}
 
+	/** returns the name of the class
+	 *
+	 * @return name AdaptMomentumCorrection
+	 */
+	virtual const char* get_name() const { return "AdaptMomentumCorrection"; }
+
 	/** Set a standard momentum method 
 	 * @param correction standard momentum method (eg, StandardMomentumCorrection)
 	 *
 	 */
-	virtual void set_momentum_correction(MomentumCorrection* correction)
-	{
-		REQUIRE(correction,"MomentumCorrection must not NULL\n");
-		REQUIRE(correction != this, "MomentumCorrection can not be itself\n");
-		m_momentum_correction=correction;
-	}
+	virtual void set_momentum_correction(MomentumCorrection* correction);
 
 	/*  Destructor */
-	virtual ~AdaptMomentumCorrection() { m_momentum_correction=NULL; };
+	virtual ~AdaptMomentumCorrection();
 
 	/** Is the standard momentum method  initialized?
 	 *
 	 *  @return whether the standard method  is initialized
 	 */
-	virtual bool is_initialized()
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		return m_momentum_correction->is_initialized();
-	}
+	virtual bool is_initialized();
 
 	/** Set the weight (momentum) for the standard momentum method
 	 *
 	 * @param weight momentum
 	 */
-	virtual void set_correction_weight(float64_t weight)
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		m_momentum_correction->set_correction_weight(weight);
-	}
+	virtual void set_correction_weight(float64_t weight);
 
 	/**  Initialize m_previous_descend_direction
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
-	virtual void initialize_previous_direction(index_t len)
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		m_momentum_correction->initialize_previous_direction(len);
-	}
-
 	/** Get corrected descend direction
 	 *
 	 * @param negative_descend_direction the negative descend direction
@@ -109,78 +97,13 @@ public:
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
 	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx)
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		REQUIRE(m_adapt_rate>0 && m_adapt_rate<1.0,"adaptive rate is invalid\n");
-		index_t len=m_momentum_correction->get_length_previous_descend_direction();
-		REQUIRE(idx>=0 && idx<len,
-			"The index (%d) is invalid\n", idx);
-		if(m_descend_rate.vlen==0)
-		{
-			m_descend_rate=SGVector<float64_t>(len);
-			m_descend_rate.set_const(m_init_descend_rate);
-		}
-		float64_t rate=m_descend_rate[idx];
-		float64_t pre=m_momentum_correction->get_previous_descend_direction(idx);
-		DescendPair pair=m_momentum_correction->get_corrected_descend_direction(rate*negative_descend_direction, idx);
-		float64_t cur=m_momentum_correction->get_previous_descend_direction(idx);
-		if(pre*cur>0.0)
-			rate*=(1.0+m_adapt_rate);
-		else
-		{
-			if(pre*cur==0.0 && (cur>0.0 || pre>0.0))
-				rate*=(1.0+m_adapt_rate);
-			else
-				rate*=(1.0-m_adapt_rate);
-		}
-		if(rate<m_rate_min)
-			rate=m_rate_min;
-		if(rate>m_rate_max)
-			rate=m_rate_max;
-		m_descend_rate[idx]=rate;
-		return pair;
-	}
+		index_t idx);
 
-	/** Update a context object to store mutable variables
-	 * used in descend update
+	/**  Initialize m_previous_descend_direction
 	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
-	 *
-	 * @param context a context object
+	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		m_momentum_correction->update_context(context);
-		REQUIRE(context, "context must set\n");
-		SGVector<float64_t> value(m_descend_rate.vlen);
-		std::copy(m_descend_rate.vector,
-			m_descend_rate.vector+m_descend_rate.vlen,
-			value.vector);
-		std::string key="AdaptMomentumCorrection::m_descend_rate";
-		context->save_data(key, value);
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(m_momentum_correction,"MomentumCorrection must set\n");
-		m_momentum_correction->load_from_context(context);
-		REQUIRE(context, "context must set\n");
-		std::string key="AdaptMomentumCorrection::m_descend_rate";
-		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-		m_descend_rate=SGVector<float64_t>(value.vlen);
-		std::copy(value.vector, value.vector+value.vlen,
-			m_descend_rate.vector);
-	}
+	virtual void initialize_previous_direction(index_t len);
 
 	/** Set adaptive weights used in this method
 	 *
@@ -188,26 +111,14 @@ public:
 	 * @param rate_min minimum of the rate
 	 * @param rate_max maximum of the rate
 	 */
-	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=CMath::INFTY)
-	{
-		REQUIRE(adapt_rate>0.0 && adapt_rate<1.0, "Adaptive rate (%f) must in (0,1)\n", adapt_rate);
-		REQUIRE(rate_min>=0, "Minimum speedup rate (%f) must be non-negative\n", rate_min);
-		REQUIRE(rate_max>rate_min, "Maximum speedup rate (%f) must greater than minimum speedup rate (%f)\n",
-			rate_max, rate_min);
-		m_adapt_rate=adapt_rate;
-		m_rate_min=rate_min;
-		m_rate_max=rate_max;
-	}
+	virtual void set_adapt_rate(float64_t adapt_rate, float64_t rate_min=0.0, float64_t rate_max=CMath::INFTY);
 
 	/** Set the init rate used to discount/raise the current descend direction 
 	 *
 	 * @param init_descend_rate the init rate (default 1.0)
 	 */
-	virtual void set_init_descend_rate(float64_t init_descend_rate)
-	{
-		REQUIRE(init_descend_rate>0,"Init speedup rate (%f) must be positive\n", init_descend_rate);
-		m_init_descend_rate=init_descend_rate;
-	}
+	virtual void set_init_descend_rate(float64_t init_descend_rate);
+
 protected:
 	/** element wise rate used to discount/raise the current descend direction  */
 	SGVector<float64_t> m_descend_rate;
@@ -223,15 +134,8 @@ protected:
 	float64_t m_init_descend_rate;
 private:
 	/** Init */
-	void init()
-	{
-		m_momentum_correction=NULL;
-		m_descend_rate=SGVector<float64_t>();
-		m_adapt_rate=0;
-		m_rate_min=0;
-		m_rate_max=CMath::INFTY;
-		m_init_descend_rate=1.0;
-	}
+	void init();
+
 };
 
 }

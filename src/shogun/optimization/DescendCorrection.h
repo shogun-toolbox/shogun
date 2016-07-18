@@ -31,9 +31,7 @@
 
 #ifndef DESCENDCORRECTION_H
 #define DESCENDCORRECTION_H
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/optimization/MinimizerContext.h>
+#include <shogun/base/SGObject.h>
 namespace shogun
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -54,10 +52,9 @@ struct DescendPair
  * The interfact will be used in DescendUpdaterWithCorrection::update_variable()
  * An example of descend based correction is NesterovMomentumCorrection
  */
-class DescendCorrection
+class DescendCorrection: public CSGObject
 {
 public:
-
 	/*  Constructor */
 	DescendCorrection()
 	{
@@ -71,11 +68,7 @@ public:
 	 *
 	 * param weight the weight
 	 */
-	virtual void set_correction_weight(float64_t weight)
-	{
-		REQUIRE(weight>0, "weight (%f) must be positive\n", weight);
-		m_weight=weight;
-	}
+	virtual void set_correction_weight(float64_t weight);
 
 	/** Get corrected descend direction
 	 *
@@ -86,35 +79,13 @@ public:
 	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
 		index_t idx)=0;
 
-	/** Update a context object to store mutable variables
-	 * used in descend update
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)=0;
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)=0;
-
 protected:
 	/**  weight of correction */
 	float64_t m_weight;
 
 private:
 	/** Init */
-	void init()
-	{
-		m_weight=0.0;
-	}
+	void init();
 };
 
 }

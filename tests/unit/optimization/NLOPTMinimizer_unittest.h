@@ -28,12 +28,11 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifdef USE_GPL_SHOGUN
- 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-#ifndef NLOPTMINIMIZER_UNITTEST_H
-#define NLOPTMINIMIZER_UNITTEST_H
+#ifndef CNLOPTMINIMIZER_UNITTEST_H
+#define CNLOPTMINIMIZER_UNITTEST_H
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 using namespace shogun;
 class CPiecewiseQuadraticObject2;
@@ -49,6 +48,7 @@ public:
 	virtual SGVector<float64_t> get_gradient();
 	virtual SGVector<float64_t> get_lower_bound();
 	virtual SGVector<float64_t> get_upper_bound();
+	virtual const char* get_name() const { return "NLOPTTestCostFunction"; }
 private:
 	void init();
 	CPiecewiseQuadraticObject2 *m_obj;
@@ -80,6 +80,6 @@ private:
 	float64_t m_x_upper_bound;
 };
 
-#endif /*  NLOPTMINIMIZER_UNITTEST_H */
+#endif /*  CNLOPTMINIMIZER_UNITTEST_H */
 #endif /*  HAVE_NLOPT */
 #endif //USE_GPL_SHOGUN

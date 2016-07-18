@@ -50,6 +50,8 @@ namespace shogun
 class FirstOrderStochasticCostFunction: public FirstOrderCostFunction
 {
 public:
+	virtual ~FirstOrderStochasticCostFunction() {};
+
 	/** Initialize to generate a sample sequence
 	 *
 	 */

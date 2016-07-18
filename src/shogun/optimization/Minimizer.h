@@ -32,13 +32,15 @@
 #ifndef MINIMIZER_H
 #define MINIMIZER_H
 #include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+
 namespace shogun
 {
 
 /** @brief The minimizer base class.
  *
  */
-class Minimizer
+class Minimizer: public CSGObject
 {
 public: 
 	/** Do minimization and get the optimal value 

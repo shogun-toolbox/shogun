@@ -30,13 +30,13 @@
  */
 
 
-#ifndef NLOPTMINIMIZER_H
-#define NLOPTMINIMIZER_H
+#ifndef CNLOPTMINIMIZER_H
+#define CNLOPTMINIMIZER_H
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-#include <nlopt.h>
+#include <shogun/optimization/nloptcommon.h>
 #endif 
 namespace shogun
 {
@@ -46,19 +46,26 @@ namespace shogun
  * and unconstrainted minimization using the NLOPT library
  *
  */
-class NLOPTMinimizer:public FirstOrderMinimizer
+class CNLOPTMinimizer: public FirstOrderMinimizer
 {
 public:
 	/** Default constructor */
-	NLOPTMinimizer();
+	CNLOPTMinimizer();
 
 	/** Constructor
 	 * @param fun cost function
 	 */
-	NLOPTMinimizer(FirstOrderCostFunction *fun);
+	CNLOPTMinimizer(FirstOrderCostFunction *fun);
+
+	/** returns the name of the class
+	 *
+	 * @return name CNLOPTMinimizer
+	 */
+	virtual const char* get_name() const { return "NLOPTMinimizer"; }
+
 
 	/** Destructor */
-	virtual ~NLOPTMinimizer();
+	virtual ~CNLOPTMinimizer();
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -71,20 +78,6 @@ public:
 	 * @return whether minimizer supports batch update
 	 */
 	virtual bool supports_batch_update() const {return true;}
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual CMinimizerContext* save_to_context() {return new CMinimizerContext();}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context) {}
 
 #ifdef HAVE_NLOPT
 	/* Set parameters used in NLOPT
@@ -125,7 +118,7 @@ protected:
 	float64_t m_function_tolerance;
 
 	/** algorithm provided by NLOPT for minimization  */
-	nlopt_algorithm m_nlopt_algorithm;
+	int16_t m_nlopt_algorithm_id;
 #endif /* HAVE_NLOPT */
 
 private:
@@ -135,5 +128,5 @@ private:
 
 }
 #endif //USE_GPL_SHOGUN
-#endif /* NLOPTMINIMIZER_H */
+#endif /* CNLOPTMINIMIZER_H */
 

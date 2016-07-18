@@ -29,27 +29,34 @@
  *
  */
 
-#ifndef LBFGSMINIMIZER_H
-#define LBFGSMINIMIZER_H
+#ifndef CLBFGSMINIMIZER_H
+#define CLBFGSMINIMIZER_H
 #include <shogun/optimization/FirstOrderMinimizer.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 namespace shogun
 {
 
 /** @brief The class wraps the Shogun's C-style LBFGS minimizer  */
-class LBFGSMinimizer: public FirstOrderMinimizer
+class CLBFGSMinimizer: public FirstOrderMinimizer
 {
 public:
 	/*  Default constructor */
-	LBFGSMinimizer();
+	CLBFGSMinimizer();
 
 	/** Constructor
 	 * @param fun cost function (user have to manully delete the pointer)
 	 */
-	LBFGSMinimizer(FirstOrderCostFunction *fun);
+	CLBFGSMinimizer(FirstOrderCostFunction *fun);
 
 	/*  Destructor */
-	virtual ~LBFGSMinimizer();
+	virtual ~CLBFGSMinimizer();
+
+	/** returns the name of the class
+	 *
+	 * @return name CLBFGSMinimizer
+	 */
+	virtual const char* get_name() const { return "LBFGSMinimizer"; }
+
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -101,8 +108,7 @@ public:
 	 * Default value is 1.
 	 */
 	virtual void set_lbfgs_parameters(int32_t m = 100,
-		int32_t max_linesearch = 1000,
-		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
+		int32_t max_linesearch = 1000, ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
 		int32_t max_iterations = 1000,
 		float64_t delta = 0.0,
 		int32_t past = 0,
@@ -116,21 +122,6 @@ public:
 		float64_t orthantwise_c = 0.0,
 		int32_t orthantwise_start = 0,
 		int32_t orthantwise_end = 1);
-
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual CMinimizerContext* save_to_context() {return new CMinimizerContext();}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context) {}
 
 private:
 	/** A helper function is used in the C-style LBFGS API
@@ -155,8 +146,8 @@ protected:
 	/** The maximum number of trials to do line search for each L-BFGS update.*/
 	int32_t m_max_linesearch;
 
-	/** The line search algorithm.*/
-	ELBFGSLineSearch m_linesearch;
+	/** Id for the line search algorithm.*/
+	int8_t m_linesearch_id;
 
 	/** The maximum number of iterations for L-BFGS update.*/
 	int32_t m_max_iterations;

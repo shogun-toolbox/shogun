@@ -32,7 +32,6 @@
 #ifndef AdamUpdater_H
 #define AdamUpdater_H
 #include <shogun/optimization/DescendUpdaterWithCorrection.h>
-#include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
 /** @brief The class implements the Adam method.
@@ -86,25 +85,11 @@ public:
 	 */
 	virtual void set_second_moment_decay_factor(float64_t decay_factor);
 
-
-	/** Update a context object to store mutable variables
+	/** returns the name of the class
 	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::save_to_context()
-	 *
-	 * @param context, a context object
+	 * @return name AdamUpdater
 	 */
-	virtual void update_context(CMinimizerContext* context);
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
-	 *
-	 * @return a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context);
+	virtual const char* get_name() const { return "AdamUpdater"; }
 
 	/** Update the target variable based on the given negative descend direction
 	 *

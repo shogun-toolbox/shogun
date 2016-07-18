@@ -32,7 +32,7 @@
 #ifndef L1PENALTYFORTG_H
 #define L1PENALTYFORTG_H
 #include <shogun/optimization/L1Penalty.h>
-#include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
 namespace shogun
 {
 /** @brief The is the base class for L1 penalty/regularization within the FirstOrderMinimizer framework.
@@ -57,72 +57,19 @@ public:
 	/* Destructor */
 	virtual ~L1PenaltyForTG() {}
 
+	/** returns the name of the class
+	 *
+	 * @return name L1PenaltyForTG
+	 */
+	virtual const char* get_name() const { return "L1PenaltyForTG"; }
+
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable
 	 * @param proximal_weight weight of the penalty
 	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight)
-	{
-		if(m_q.vlen==0)
-		{
-			m_q=SGVector<float64_t>(variable.vlen);
-			m_q.set_const(0.0);
-		}
-		else
-		{
-			REQUIRE(variable.vlen==m_q.vlen,
-				"The length of variable (%d) is changed. Last time, the length of variable was %d", variable.vlen, m_q.vlen);
-		}
-		m_u+=proximal_weight;
-		for(index_t idx=0; idx<variable.vlen; idx++)
-		{
-			float64_t z=variable[idx];
-			if(z>0.0)
-				variable[idx]=get_sparse_variable(z, m_u+m_q[idx]);
-			else if(z<0.0)
-				variable[idx]=get_sparse_variable(z, m_u-m_q[idx]);
-			m_q[idx]+=variable[idx]-z;
-		}
-	}
+		float64_t proximal_weight);
 
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-		L1Penalty::update_context(context);
-		SGVector<float64_t> value(m_q.vlen);
-		std::copy(m_q.vector,
-			m_q.vector+m_q.vlen,
-			value.vector);
-		std::string key="L1PenaltyForTG::m_q";
-		context->save_data(key, value);
-
-		key="L1PenaltyForTG::m_u";
-		context->save_data(key, m_u);
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-		L1Penalty::load_from_context(context);
-		std::string key="L1PenaltyForTG::m_q";
-		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-		m_q=SGVector<float64_t>(value.vlen);
-		std::copy(value.vector, value.vector+value.vlen,
-			m_q.vector);
-
-		key="L1PenaltyForTG::m_u";
-		m_u=context->get_data_float64(key);
-	}
 protected:
 	/** u is defined in Figure 2 of the reference */
 	float64_t m_u;
@@ -131,11 +78,7 @@ protected:
 
 private:
 	/** init */
-	void init()
-	{
-		m_u=0;
-		m_q=SGVector<float64_t>();
-	}
+	void init();
 
 };
 

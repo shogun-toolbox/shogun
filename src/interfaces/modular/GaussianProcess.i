@@ -49,6 +49,8 @@
 %rename(KLCholeskyInferenceMethod) CKLCholeskyInferenceMethod;
 %rename(KLDualInferenceMethod) CKLDualInferenceMethod;
 
+%rename(KLDualInferenceMethodMinimizer) CKLDualInferenceMethodMinimizer;
+
 %rename(GaussianProcessMachine) CGaussianProcessMachine;
 %rename(GaussianProcessClassification) CGaussianProcessClassification;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;

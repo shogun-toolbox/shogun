@@ -115,7 +115,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
 	inf->register_minimizer(opt);
 
 
@@ -155,7 +155,6 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
-	delete opt;
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
@@ -227,7 +226,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -252,7 +251,6 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
-	delete opt;
 }
 
 
@@ -318,7 +316,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelih
 	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -338,7 +336,6 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelih
 
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
-	delete opt;
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives)
@@ -403,7 +400,7 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	LBFGSMinimizer* opt=new LBFGSMinimizer();
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -468,7 +465,6 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
-	delete opt;
 }
 
 #endif /* HAVE_LINALG_LIB */

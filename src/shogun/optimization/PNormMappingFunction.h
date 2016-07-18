@@ -32,7 +32,6 @@
 #ifndef PNORMMAPPINGFUNCTION_H
 #define PNORMMAPPINGFUNCTION_H
 #include <shogun/optimization/MappingFunction.h>
-#include <shogun/mathematics/Math.h>
 namespace shogun
 {
 /** @brief This implements the P-norm mapping/projection function
@@ -52,18 +51,18 @@ public:
 	}
 	virtual ~PNormMappingFunction() {}
 
+
+	/** returns the name of the class
+	 *
+	 * @return name PNormMappingFunction
+	 */
+	virtual const char* get_name() const { return "PNormMappingFunction"; }
+
+
 	/** Get the degree of the Norm   
 	 * @param p degree of the norm
 	 */
-	virtual void set_norm(float64_t p)
-	{
-		if(p<2.0)
-		{
-			SG_SWARNING("The norm (%f) should not be less than 2.0 and we use p=2.0 in this case\n", p);
-		}
-		else
-			m_p=p;
-	}
+	virtual void set_norm(float64_t p);
 
 	/** Get dual variable
 	 *
@@ -71,48 +70,15 @@ public:
 	 * @return dual variable 
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable)
-	{
-		SGVector<float64_t> dual_variable(variable.vlen);
-		float64_t q=1.0/(1.0-1.0/m_p);
-		projection(variable, dual_variable, q);
-		return dual_variable;
-	}
-
+	virtual SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable);
+	
 	/** Update primal variable in place given dual variable
 	 *
 	 * @param variable primal variable to be updated
 	 * @param dual_variable dual variable are known
 	 *
 	 */
-	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable)
-	{
-		projection(dual_variable, variable, m_p);
-	}
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * This method will be called by
-	 * SMDMinimizer::update_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Contest must not NULL\n");
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * SMDMinimizer::load_from_context(CMinimizerContext* context)
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Contest must not NULL\n");
-	}
+	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable);
 protected:
 	/** P-norm  */
 	float64_t m_p;
@@ -123,29 +89,10 @@ protected:
 	 * @param output store the result
 	 * @param degree the parameter of the projection
 	 */
-	virtual void projection(SGVector<float64_t> input, SGVector<float64_t> output, float64_t degree)
-	{
-		REQUIRE(input.vlen==output.vlen,"The lenght (%d) of input and the length (%d) of output are diffent\n",
-			input.vlen, output.vlen);
-		float64_t scale=0.0;
-		for(index_t idx=0; idx<input.vlen; idx++)
-		{
-			scale += CMath::pow(CMath::abs(input[idx]),degree);
-			if (input[idx] >= 0.0)
-				output[idx]=CMath::pow(input[idx],degree-1);
-			else
-				output[idx]=-CMath::pow(-input[idx],degree-1);
-		}
-		scale=CMath::pow(scale,1.0-2.0/degree);
-		for(index_t idx=0; idx<input.vlen; idx++)
-			output[idx]/=scale;
-	}
+	virtual void projection(SGVector<float64_t> input, SGVector<float64_t> output, float64_t degree);
 
 private:
-	void init()
-	{
-		m_p=2.0;
-	}
+	void init();
 };
 
 }

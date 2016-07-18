@@ -71,6 +71,7 @@ class FirstOrderSAGCostFunction
 	: public FirstOrderStochasticCostFunction
 {
 public:
+	virtual ~FirstOrderSAGCostFunction() {};
 
 	/** Get the sample size 
 	 *

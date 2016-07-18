@@ -31,7 +31,8 @@
 
 #ifndef LEARNINGRATE_H
 #define LEARNINGRATE_H
-#include <shogun/optimization/MinimizerContext.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/config.h>
 namespace shogun
 {
 /** @brief The base class about learning rate for descent-based minimizers.
@@ -43,9 +44,11 @@ namespace shogun
  * )
  *
  */
-class LearningRate
+class LearningRate: public CSGObject
 {
 public:
+	virtual ~LearningRate() {};
+
 	/** Get a learning rate for descent direction
 	 * Note that the learning rate usually is positive
 	 *
@@ -54,19 +57,6 @@ public:
 	 * @return the learning rate (A.K.A step size/length)
 	 */
 	virtual float64_t get_learning_rate(int32_t iter_counter)=0;
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)=0;
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)=0;
 };
 
 }

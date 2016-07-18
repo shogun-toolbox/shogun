@@ -31,7 +31,6 @@
 
 #ifndef NESTEROVMOMENTUMCORRECTION_H
 #define NESTEROVMOMENTUMCORRECTION_H
-#include <shogun/lib/config.h>
 #include <shogun/optimization/MomentumCorrection.h>
 namespace shogun
 {
@@ -85,6 +84,13 @@ public:
 		init();
 	}
 
+	/** returns the name of the class
+	 *
+	 * @return name NesterovMomentumCorrection
+	 */
+	virtual const char* get_name() const { return "NesterovMomentumCorrection"; }
+
+
 	/*  Destructor */
 	virtual ~NesterovMomentumCorrection() {}
 
@@ -95,19 +101,11 @@ public:
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
 	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx)
-	{
-		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
-		float64_t tmp=m_weight*m_previous_descend_direction[idx];
-		m_previous_descend_direction[idx]=tmp-negative_descend_direction;
-		DescendPair pair;
-		pair.delta=m_previous_descend_direction[idx];
-		pair.descend_direction=(1.0+m_weight)*pair.delta-tmp;
-		return pair;
-	}
+		index_t idx);
+
 private:
 	/*  Init */
-	void init() { m_weight=0.9; }
+	void init();
 };
 
 }

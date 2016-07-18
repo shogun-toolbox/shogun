@@ -30,7 +30,9 @@
  */
 
 #include <shogun/optimization/AdamUpdater.h>
-#include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 AdamUpdater::AdamUpdater()
@@ -81,9 +83,7 @@ void AdamUpdater::set_second_moment_decay_factor(float64_t decay_factor)
 	m_decay_factor_second_moment=decay_factor;
 }
 
-AdamUpdater::~AdamUpdater()
-{
-}
+AdamUpdater::~AdamUpdater() { }
 
 void AdamUpdater::init()
 {
@@ -92,47 +92,26 @@ void AdamUpdater::init()
 	m_epsilon=1e-8;
 	m_log_learning_rate=CMath::log(0.001);
 	m_iteration_counter=0;
+	m_log_scale_pre_iteration=0;
 	m_gradient_first_moment=SGVector<float64_t>();
 	m_gradient_second_moment=SGVector<float64_t>();
-}
 
-void AdamUpdater::update_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::update_context(context);
-	REQUIRE(context, "Context must set\n");
-
-	SGVector<float64_t> value(m_gradient_first_moment.vlen);
-	std::copy(m_gradient_first_moment.vector,
-		m_gradient_first_moment.vector+m_gradient_first_moment.vlen,
-		value.vector);
-	std::string key="AdamUpdater::m_gradient_first_moment";
-	context->save_data(key, value);
-
-	value=SGVector<float64_t>(m_gradient_second_moment.vlen);
-	std::copy(m_gradient_second_moment.vector,
-		m_gradient_second_moment.vector+m_gradient_second_moment.vlen,
-		value.vector);
-	key="AdamUpdater::m_gradient_second_moment";
-	context->save_data(key, value);
-}
-
-void AdamUpdater::load_from_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::load_from_context(context);
-	REQUIRE(context, "context must set\n");
-
-	std::string key="AdamUpdater::m_gradient_first_moment";
-	SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-	m_gradient_first_moment=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_first_moment.vector);
-
-	key="AdamUpdater::m_gradient_second_moment";
-	value=context->get_data_sgvector_float64(key);
-	m_gradient_second_moment=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_second_moment.vector);
-
+	SG_ADD(&m_decay_factor_first_moment, "AdamUpdater__m_decay_factor_first_moment",
+		"decay_factor_first_moment in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_decay_factor_second_moment, "AdamUpdater__m_decay_factor_second_moment",
+		"decay_factor_second_moment in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_first_moment, "AdamUpdater__m_gradient_first_moment",
+		"m_gradient_first_moment in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_second_moment, "AdamUpdater__m_gradient_second_moment",
+		"m_gradient_second_moment in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "AdamUpdater__m_epsilon",
+		"epsilon in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_log_scale_pre_iteration, "AdamUpdater__m_log_scale_pre_iteration",
+		"log_scale_pre_iteration in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_log_learning_rate, "AdamUpdater__m_log_learning_rate",
+		"m_log_learning_rate in AdamUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_iteration_counter, "AdamUpdater__m_iteration_counter",
+		"m_iteration_counter in AdamUpdater", MS_NOT_AVAILABLE);
 }
 
 float64_t AdamUpdater::get_negative_descend_direction(float64_t variable,

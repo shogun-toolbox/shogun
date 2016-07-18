@@ -33,6 +33,7 @@
 #define FIRSTORDERCOSTFUNCTION_H
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/base/SGObject.h>
 namespace shogun
 {
 /** @brief The first order cost function base class.
@@ -47,9 +48,11 @@ namespace shogun
  * and \f$y_i\f$ is the lable of the i-th sample.
  *
  */
-class FirstOrderCostFunction
+class FirstOrderCostFunction: public CSGObject
 {
 public:
+	virtual ~FirstOrderCostFunction() {};
+
 	/** Get the cost given current target variables 
 	 *
 	 * For least square, that is the value of \f$f(w)\f$ given \f$w\f$ is known
