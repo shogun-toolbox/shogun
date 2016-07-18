@@ -31,7 +31,7 @@
         "ULongIntMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)",
         "ShortRealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)",
         "RealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)",
-        "LongRealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)",
+        "LongRealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)"
     },
     "Assign": "$lhs = $expr",
     "Type": {
