@@ -24,6 +24,12 @@
 
 namespace shogun
 {
+	enum KNN_SOLVER
+	{
+		KNN_BRUTE,
+		KNN_KDTREE,
+		KNN_COVER_TREE,
+	};
 
 class CDistanceMachine;
 
@@ -70,7 +76,8 @@ class CKNN : public CDistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		CKNN(int32_t k, CDistance* d, CLabels* trainlab);
+		CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+
 		virtual ~CKNN();
 
 		/** get classifier type
@@ -156,21 +163,38 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
-		/** set whether to use cover trees for fast KNN
-		 * @param use_covertree
+		/** get leaf size for KD-Tree
+		 *	@return leaf_size
 		 */
-		inline void set_use_covertree(bool use_covertree)
-		{
-			m_use_covertree = use_covertree;
-		}
+		inline int32_t get_leaf_size() const {return m_leaf_size; }
 
-		/** get whether to use cover trees for fast KNN
-		 * @return use_covertree parameter
+		/** Set leaf size for KD-Tree 
+		 *	@param leaf_size
 		 */
-		inline bool get_use_covertree() const { return m_use_covertree; }
+		inline void set_leaf_size(int32_t leaf_size)
+		{
+			m_leaf_size = leaf_size;
+		}
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
+
+		/**
+		 * @return the currently used KNN algorithm
+		 */
+		inline KNN_SOLVER get_knn_solver_type()
+		{
+			return m_knn_solver;
+		}
+
+		/** set the KNN algorithm
+		 *
+		 * @param knn_solver the liblinear solver
+		 */
+		inline void set_knn_solver_type(KNN_SOLVER knn_solver)
+		{
+			m_knn_solver = knn_solver;
+		}
 
 	protected:
 		/** Stores feature data of underlying model.
@@ -237,9 +261,6 @@ class CKNN : public CDistanceMachine
 		/// parameter q of rank weighting
 		float64_t m_q;
 
-		/// parameter to enable cover tree support
-		bool m_use_covertree;
-
 		///	number of classes (i.e. number of values labels can take)
 		int32_t m_num_classes;
 
@@ -248,6 +269,10 @@ class CKNN : public CDistanceMachine
 
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
+
+		KNN_SOLVER m_knn_solver;
+
+		int32_t m_leaf_size;
 };
 
 }
