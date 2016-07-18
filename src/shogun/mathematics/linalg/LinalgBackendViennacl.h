@@ -39,6 +39,7 @@
 
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
+#include <viennacl/linalg/sum.hpp>
 #include <shogun/mathematics/linalg/GPUMemoryViennaCL.h>
 
 namespace shogun
@@ -82,6 +83,17 @@ public:
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
+
+	/** Implementation of @see LinalgBackendBase::sum */
+	#define BACKEND_GENERIC_SUM(Type, Container) \
+	virtual Type sum(const Container<Type>& a) const \
+	{  \
+		return sum_impl(a);  \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SUM
 
 	/** Implementation of @see LinalgBackendBase::to_gpu */
 	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
@@ -135,6 +147,14 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
 		return viennacl::linalg::inner_prod(a_gpu->data(a.size()), b_gpu->data(b.size()));
+	}
+
+	/** ViennaCL sum method. */
+	template <typename T, template <typename> class Container>
+	T sum_impl(const Container<T>& a) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		return viennacl::linalg::sum(a_gpu->data(a.size()));
 	}
 
 	/** Transfers data to GPU with ViennaCL method. */

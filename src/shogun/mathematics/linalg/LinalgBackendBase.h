@@ -95,6 +95,21 @@ public:
 	#undef BACKEND_GENERIC_DOT
 
 	/**
+	* Wrapper method of vector sum that works with generic vectors.
+	*
+	* @see linalg::sum
+	*/
+	#define BACKEND_GENERIC_SUM(Type, Container) \
+	virtual Type sum(const Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SUM
+
+	/**
 	 * Wrapper method of Transferring data to GPU memory.
 	 * Does nothing if no GPU backend registered.
 	 *

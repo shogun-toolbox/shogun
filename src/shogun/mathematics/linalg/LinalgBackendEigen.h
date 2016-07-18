@@ -80,6 +80,17 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::sum */
+	#define BACKEND_GENERIC_SUM(Type, Container) \
+	virtual Type sum(const Container<Type>& a) const \
+	{  \
+		return sum_impl(a);  \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SUM
+
 	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
@@ -101,6 +112,20 @@ private:
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+	/** Eigen3 vector sum method */
+	template <typename T>
+	T sum_impl(const SGVector<T>& vec) const
+	{
+		return (typename SGVector<T>::EigenVectorXtMap(vec)).sum();
+	}
+
+	/** Eigen3 matrix sum method */
+	template <typename T>
+	T sum_impl(const SGMatrix<T>& mat) const
+	{
+		return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).sum();
 	}
 
 };

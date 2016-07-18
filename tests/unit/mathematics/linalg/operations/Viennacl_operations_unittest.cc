@@ -12,7 +12,7 @@ using namespace linalg;
 TEST(LinalgBackendViennaCL, add)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
-	
+
 	const float64_t alpha = 0.3;
 	const float64_t beta = -1.5;
 
@@ -49,6 +49,34 @@ TEST(LinalgBackendViennaCL, dot)
 	auto result = dot(a_gpu, b_gpu);
 
 	EXPECT_NEAR(result, 5, 1E-15);
+}
+
+TEST(LinalgBackendViennaCL, SGVector_sum)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 10;
+	SGVector<int32_t> vec(size), vec_gpu;
+	vec.range_fill(0);
+	vec_gpu = to_gpu(vec);
+
+	auto result = sum(vec);
+	EXPECT_NEAR(result, 45, 1E-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_sum)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> a(nrows, ncols), a_gpu(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		a[i] = i;
+
+	a_gpu = to_gpu(a);
+	
+	auto result = sum(a_gpu);
+	EXPECT_NEAR(result, 15, 1E-15);
 }
 
 #endif // HAVE_VIENNACL
