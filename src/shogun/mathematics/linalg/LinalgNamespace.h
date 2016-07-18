@@ -129,6 +129,18 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 }
 
 /**
+ * Method that computes the sum of vectors of matrices
+ *
+ * @param vec a vector whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$
+ */
+template <typename T, template <typename> class Container>
+T sum(const Container<T>& a)
+{
+	return infer_backend(a)->sum(a);
+}
+
+/**
  * Transfers data to GPU memory. Does nothing if no GPU backend registered.
  *
  * @param vector SGVector to be transferred

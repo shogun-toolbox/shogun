@@ -36,6 +36,7 @@ namespace shogun
 template<class T> class SGMatrix : public SGReferencedData
 {
 	public:
+                friend class LinalgBackendEigen;
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 		typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
 
