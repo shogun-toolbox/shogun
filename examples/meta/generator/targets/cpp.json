@@ -32,7 +32,7 @@
         "ShortRealMatrix": "auto $name = SGMatrix<float32_t>($arguments)",
         "RealMatrix": "auto $name = SGMatrix<float64_t>($arguments)",
         "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
-        "ComplexMatrix": "auto $name = SGMatrix<bool>($arguments)"
+        "ComplexMatrix": "auto $name = SGMatrix<complex128_t>($arguments)"
     },
     "Assign": "$identifier = $expr",
     "Type": {
