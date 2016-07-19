@@ -44,7 +44,8 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
-#include <shogun/statistical_testing/internals/mmd/FullDirect.h>
+#include <shogun/statistical_testing/internals/mmd/VarianceH0.h>
+#include <shogun/statistical_testing/internals/mmd/VarianceH1.h>
 
 using namespace shogun;
 using namespace internal;
@@ -57,6 +58,7 @@ struct CQuadraticTimeMMD::Self
 
 	void init_statistic_job();
 	void init_permutation_job();
+	void init_variance_h1_job();
 	void init_kernel();
 	SGMatrix<float32_t> get_kernel_matrix();
 
@@ -91,7 +93,8 @@ struct CQuadraticTimeMMD::Self
 	index_t num_eigenvalues;
 
 	ComputeMMD statistic_job;
-	FullDirect variance_h0_job;
+	VarianceH0 variance_h0_job;
+	VarianceH1 variance_h1_job;
 	PermutationMMD permutation_job;
 
 	static constexpr bool DEFAULT_PRECOMPUTE = true;
@@ -115,6 +118,17 @@ void CQuadraticTimeMMD::Self::init_statistic_job()
 	statistic_job.m_n_x=owner.get_num_samples_p();
 	statistic_job.m_n_y=owner.get_num_samples_q();
 	statistic_job.m_stype=owner.get_statistic_type();
+}
+
+void CQuadraticTimeMMD::Self::init_variance_h1_job()
+{
+	REQUIRE(owner.get_num_samples_p()>0,
+		"Number of samples from P (was %s) has to be > 0!\n", owner.get_num_samples_p());
+	REQUIRE(owner.get_num_samples_q()>0,
+		"Number of samples from Q (was %s) has to be > 0!\n", owner.get_num_samples_q());
+
+	variance_h1_job.m_n_x=owner.get_num_samples_p();
+	variance_h1_job.m_n_y=owner.get_num_samples_q();
 }
 
 void CQuadraticTimeMMD::Self::init_permutation_job()
@@ -489,9 +503,9 @@ float64_t CQuadraticTimeMMD::compute_variance_h0()
 	REQUIRE(self->precompute,
 		"Computing variance estimate is not possible without precomputing the kernel matrix!\n");
 
-	// TODO
-	SG_NOTIMPLEMENTED;
-	return 0;
+	self->init_kernel();
+	SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
+	return self->variance_h0_job(kernel_matrix);
 }
 
 float64_t CQuadraticTimeMMD::compute_variance_h1()
@@ -500,9 +514,10 @@ float64_t CQuadraticTimeMMD::compute_variance_h1()
 	REQUIRE(self->precompute,
 		"Computing variance estimate is not possible without precomputing the kernel matrix!\n");
 
-	// TODO
-	SG_NOTIMPLEMENTED;
-	return 0;
+	self->init_kernel();
+	self->init_variance_h1_job();
+	SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
+	return self->variance_h1_job(kernel_matrix);
 }
 
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)

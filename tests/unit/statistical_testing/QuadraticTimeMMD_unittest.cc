@@ -291,6 +291,41 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
 }
 
+TEST(QuadraticTimeMMD, compute_variance_h1)
+{
+	const index_t m=5;
+	const index_t d=1;
+	const float64_t sigma=0.1;
+
+	SGVector<float64_t> samples(2*m);
+	samples[0]=1.935070;
+	samples[1]=-0.068707;
+	samples[2]=0.022104;
+	samples[3]=-0.454249;
+	samples[4]=0.926944;
+	samples[5]=-0.62854;
+	samples[6]=0.91924;
+	samples[7]=-0.25241;
+	samples[8]=1.64107;
+	samples[9]=-0.65426;
+
+	SGMatrix<float64_t> data_p(d, m);
+	std::copy(samples.data(), samples.data()+m, data_p.data());
+
+	SGMatrix<float64_t> data_q(d, m);
+	std::copy(samples.data()+m, samples.data()+samples.size(), data_q.data());
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	CGaussianKernel* kernel=new CGaussianKernel(10, sigma*sigma*2);
+
+	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
+	mmd->set_kernel(kernel);
+	float64_t var=mmd->compute_variance_h1();
+	EXPECT_NEAR(var, 0.017511, 1E-6);
+}
+
 TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 {
 	const index_t m=20;
