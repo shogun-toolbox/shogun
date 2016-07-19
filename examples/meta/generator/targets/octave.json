@@ -45,7 +45,7 @@
     "Element": {
         "Access": {
             "Vector": "$identifier($indices)",
-            "Matrix": "$identifier[$indices]"
+            "Matrix": "$identifier($indices)"
         },
         "Assign": {
             "Vector": "$identifier($indices) = $expr",
