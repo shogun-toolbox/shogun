@@ -34,7 +34,7 @@
         "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
         "ComplexMatrix": "auto $name = SGMatrix<bool>($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
@@ -84,9 +84,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier($indices)",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier($indices) = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "SG_SPRINT($expr)",

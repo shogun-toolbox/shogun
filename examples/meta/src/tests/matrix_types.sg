@@ -1,31 +1,39 @@
 BoolMatrix bool_matrix(2,1)
 bool_matrix[0,0]=False
 bool_matrix[1,0]=True
+bool_matrix[0,0]=bool_matrix[1,0]
 
 ByteMatrix byte_matrix(2,1)
 byte_matrix[0,0]=0
 byte_matrix[1,0]=1
+byte_matrix[0,0]=byte_matrix[1,0]
 
 WordMatrix word_matrix(2,1)
 word_matrix[0,0]=0
 word_matrix[1,0]=1
+word_matrix[0,0]=word_matrix[1,0]
 
 IntMatrix int_matrix(2,1)
 int_matrix[0,0]=0
 int_matrix[1,0]=1
+int_matrix[0,0]=int_matrix[1,0]
 
 LongIntMatrix long_int_matrix(2,1)
 long_int_matrix[0,0]=0
 long_int_matrix[1,0]=1
+long_int_matrix[0,0]=long_int_matrix[1,0]
 
 ShortRealMatrix short_real_matrix(2,1)
 short_real_matrix[0,0]=0
 short_real_matrix[1,0]=1
+short_real_matrix[0,0]=short_real_matrix[1,0]
 
 RealMatrix real_matrix(2,1)
 real_matrix[0,0]=0.1
 real_matrix[1,0]=0.1
+real_matrix[0,0]=real_matrix[1,0]
 
 #LongRealMatrix long_real_matrix(2,1)
 #long_real_matrix[0,0]=0.1
 #long_real_matrix[1,0]=0.1
+#long_real_matrix[0,0]=long_real_matrix[1,0]

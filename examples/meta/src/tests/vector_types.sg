@@ -1,31 +1,39 @@
 BoolVector bool_vector(2)
 bool_vector[0]=False
 bool_vector[1]=True
+bool_vector[0]=bool_vector[1]
 
 ByteVector byte_vector(2)
 byte_vector[0]=0
 byte_vector[1]=1
+byte_vector[0]=byte_vector[1]
 
 WordVector word_vector(2)
 word_vector[0]=0
 word_vector[1]=1
+word_vector[0]=word_vector[1]
 
 IntVector int_vector(2)
 int_vector[0]=0
 int_vector[1]=1
+int_vector[0]=int_vector[1]
 
 LongIntVector long_int_vector(2)
 long_int_vector[0]=0
 long_int_vector[1]=1
+long_int_vector[0]=long_int_vector[1]
 
 ShortRealVector short_real_vector(2)
 short_real_vector[0]=0
 short_real_vector[1]=1
+short_real_vector[0]=short_real_vector[1]
 
 RealVector real_vector(2)
 real_vector[0]=0.1
 real_vector[1]=0.1
+real_vector[0]=real_vector[1]
 
 #LongRealVector long_real_vector(2)
 #long_real_vector[0]=0.1
 #long_real_vector[1]=0.1
+#lont_real_vector[0]=long_real_vector[1]

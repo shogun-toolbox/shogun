@@ -28,7 +28,7 @@
         "LongRealMatrix": "$name = NMatrix.float($arguments)",
         "ComplexMatrix": "$name = NMatrix.scomplex($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"
     },
@@ -44,9 +44,15 @@
         "Identifier": "$identifier",
         "Enum":"Modshogun::$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "puts $expr",

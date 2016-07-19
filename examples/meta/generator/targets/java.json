@@ -33,7 +33,7 @@
         "RealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)",
         "LongRealMatrix": "DoubleMatrix $name = DoubleMatrix($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",
         "Math": "org.shogun.Math",
@@ -79,9 +79,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier.get($indices)",
+            "Matrix": "$identifier.get($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier.put($indices, $expr)",
+            "Matrix": "$identifier.put($indices, $expr)"
+        },
         "ZeroIndexed": true
     },
     "Print": "System.out.println($expr)",
