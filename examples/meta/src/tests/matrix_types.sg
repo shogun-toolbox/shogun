@@ -1,6 +1,6 @@
 BoolMatrix bool_matrix(2,1)
-bool_matrix[0,0]=False
-bool_matrix[1,0]=True
+#bool_matrix[0,0]=False
+#bool_matrix[1,0]=True
 bool_matrix[0,0]=bool_matrix[1,0]
 
 ByteMatrix byte_matrix(2,1)
