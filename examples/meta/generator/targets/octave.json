@@ -26,7 +26,7 @@
         "RealMatrix": "$name = zeros($arguments, 'float64')",
         "LongRealMatrix": "$name = zeros($arguments, 'float64')"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"
     },
@@ -42,9 +42,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier($indices)",
-        "Matrix": "$identifier($indices)",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier($indices)",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier($indices) = $expr",
+            "Matrix": "$identifier($indices) = $expr"
+        },
         "ZeroIndexed": false
     },
     "Print": "disp($expr)",

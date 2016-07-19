@@ -28,7 +28,7 @@
         "LongRealMatrix": "var $name = new double[$arguments]",
         "ComplexMatrix": "var $name = new Complex[$arguments]"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",
         "bool": "bool",
@@ -73,9 +73,15 @@
         "Identifier": "$identifier",
         "Enum":"$typeName.$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "Console.Write($expr)",

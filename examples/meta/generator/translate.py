@@ -339,18 +339,22 @@ class Translator:
             assign: object like [ElementAccessAST, expr] and [identifier, expr]
         """
         firstElementKey = list(assign[0].keys())[0]
-        LHS = None
+        expr = assign[1]["Expr"]
+
         if firstElementKey == "Identifier":
-            LHS = assign[0][firstElementKey]
+            identifier = assign[0][firstElementKey]
+
+            template = Template(self.targetDict["Assign"])
+            exprString = self.translateExpr(expr)
+            return template.substitute(identifier=identifier, expr=exprString)
+
         elif firstElementKey == "ElementAccess":
-            LHS = self.translateElementAccess(assign[0][firstElementKey])
+            return self.translateElementAccess(assign[0][firstElementKey],
+                                               expr)
+
         else:
             raise TranslationFailure("Uknown assignment structure: " +
                                      str(assign))
-
-        template = Template(self.targetDict["Assign"])
-        expr = self.translateExpr(assign[1]["Expr"])
-        return template.substitute(lhs=LHS, expr=expr)
 
     def translateExpr(self, expr):
         """ Translate expression AST
@@ -469,34 +473,43 @@ class Translator:
             elif "ArgumentList" in argumentList:
                 return self.translateArgumentList(argumentList["ArgumentList"])
 
-    def translateElementAccess(self, elementAccess):
+    def translateElementAccess(self, elementAccess, expr=None):
         """ Translate element access AST
         Args:
             elementAccess: object like [identifierAST, argumentListAST]
+            expr: exprAST - if given this method will use the element
+                  assignment rule.
         """
         identifier = elementAccess[0]["Identifier"]
         indexList = elementAccess[1]["IndexList"]
         indexListTranslation = self.translateIndexList(indexList)
 
+        exprString = None
+        targetDict = self.targetDict["Element"]["Access"]
+        if expr is not None:
+            targetDict = self.targetDict["Element"]["Assign"]
+            exprString = self.translateExpr(expr)
+
         template = None
         if len(indexList) == 1:
-            template = Template(self.targetDict["ElementAccess"]["Vector"])
+            template = Template(targetDict["Vector"])
         elif len(indexList) == 2:
-            template = Template(self.targetDict["ElementAccess"]["Matrix"])
+            template = Template(targetDict["Matrix"])
         else:
             raise TranslationFailure("Element access takes either 1 index "
                                      "(vector) or 2 indices (matrix). Given "
                                      " " + str(len(indexList)) + " indices")
 
         return template.substitute(identifier=identifier,
-                                   indices=indexListTranslation)
+                                   indices=indexListTranslation,
+                                   expr=exprString)
 
     def translateIndexList(self, indexList):
         """ Translate index list AST
         Args:
             indexList: object like [NumberLiteralAST, NumberLiteralAST, ..]
         """
-        addOne = not self.targetDict["ElementAccess"]["ZeroIndexed"]
+        addOne = not self.targetDict["Element"]["ZeroIndexed"]
         translation = ""
         for idx, numberLiteral in enumerate(indexList):
             try:
