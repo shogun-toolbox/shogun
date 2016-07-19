@@ -33,7 +33,6 @@
 #define SMDMINIMIZER_H
 #include <shogun/optimization/FirstOrderStochasticMinimizer.h>
 #include <shogun/optimization/MappingFunction.h>
-#include <shogun/lib/config.h>
 namespace shogun
 {
 
@@ -61,38 +60,18 @@ public:
 	 */
 	virtual float64_t minimize();
 
+	/** returns the name of the class
+	 *
+	 * @return name SMDMinimizer
+	 */
+	virtual const char* get_name() const { return "SMDMinimizer"; }
+
 	/** Set projection function
 	 * @param mapping_fun mapping/projection function
 	 */
-	virtual void set_mapping_function(MappingFunction* mapping_fun)
-	{
-		REQUIRE(mapping_fun, "mapping/projection function must be set\n");
-		m_mapping_fun=mapping_fun;
-	}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		FirstOrderStochasticMinimizer::load_from_context(context);
-		REQUIRE(m_mapping_fun,"MappingFunction must set\n");
-		m_mapping_fun->load_from_context(context);
-	}
+	virtual void set_mapping_function(MappingFunction* mapping_fun);
 
 protected:
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		FirstOrderStochasticMinimizer::update_context(context);
-		REQUIRE(m_mapping_fun,"MappingFunction must set\n");
-		m_mapping_fun->update_context(context);
-	}
 	/**  init the minimization process */
 	virtual void init_minimization();
 

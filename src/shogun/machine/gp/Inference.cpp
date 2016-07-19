@@ -95,8 +95,7 @@ CInference::~CInference()
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
 	SG_UNREF(m_mean);
-	if (built_in_minimizer)
-		delete m_minimizer;
+	SG_UNREF(m_minimizer);
 }
 
 void CInference::init()
@@ -119,8 +118,8 @@ void CInference::init()
 	m_log_scale=0.0;
 	m_gradient_update=false;
 	m_minimizer=NULL;
-	built_in_minimizer=true;
 
+	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference", MS_NOT_AVAILABLE);
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition", MS_NOT_AVAILABLE);
 	SG_ADD(&m_E, "E", "the matrix used for multi classification", MS_NOT_AVAILABLE);
@@ -131,9 +130,8 @@ void CInference::register_minimizer(Minimizer* minimizer)
 	REQUIRE(minimizer, "Minimizer must set\n");
 	if(minimizer!=m_minimizer)
 	{
-		if (built_in_minimizer)
-			delete m_minimizer;
-		built_in_minimizer=false;
+		SG_REF(minimizer);
+		SG_UNREF(m_minimizer);
 		m_minimizer=minimizer;
 	}
 }

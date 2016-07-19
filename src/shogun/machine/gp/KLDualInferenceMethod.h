@@ -45,34 +45,29 @@ namespace shogun
 {
 
 /** @brief Build-in minimizer for KLDualInference */
-class KLDualInferenceMethodMinimizer: public LBFGSMinimizer
+class CKLDualInferenceMethodMinimizer: public CLBFGSMinimizer
 {
 public:
-	KLDualInferenceMethodMinimizer(): LBFGSMinimizer() { init(); }
+	CKLDualInferenceMethodMinimizer(): CLBFGSMinimizer() { init(); }
   
 	/** Constructor
 	 * @param fun a cost function
 	 */
-	KLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): LBFGSMinimizer(fun) { init(); }
+	CKLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): CLBFGSMinimizer(fun) { init(); }
   
-	virtual ~KLDualInferenceMethodMinimizer() {}
+	virtual ~CKLDualInferenceMethodMinimizer() {}
 
 	/** Do minimization and get the optimal value 
 	 *  
 	 * @return optimal value
 	 */
 	virtual float64_t minimize();
+
+	virtual const char* get_name() const { return "KLDualInferenceMethodMinimizer"; }
   
 protected:
 	/** Init before minimization */
-	virtual void init_minimization()
-	{
-		REQUIRE((m_linesearch == BACKTRACKING_ARMIJO) ||
-			(m_linesearch == BACKTRACKING_WOLFE) ||
-			(m_linesearch == BACKTRACKING_STRONG_WOLFE),
-			"The provided line search method is not supported. Please use backtracking line search methods\n");
-		LBFGSMinimizer::init_minimization();
-	}
+	virtual void init_minimization();
 
 private:
 	/** A helper function is used in the C-style LBFGS API

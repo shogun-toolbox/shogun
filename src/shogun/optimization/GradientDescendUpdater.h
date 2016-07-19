@@ -32,7 +32,6 @@
 #ifndef GRADIENTDESCENDUPDATER_H
 #define GRADIENTDESCENDUPDATER_H
 #include <shogun/optimization/DescendUpdaterWithCorrection.h>
-#include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
 /** @brief The class implements the gradient descend method.
@@ -53,6 +52,12 @@ public:
 
 	/* Destructor */
 	virtual ~GradientDescendUpdater();
+
+	/** returns the name of the class
+	 *
+	 * @return name GradientDescendUpdater
+	 */
+	virtual const char* get_name() const { return "GradientDescendUpdater"; }
 
 protected:
 	/** Get the negative descend direction given current variable and gradient

@@ -58,7 +58,7 @@ namespace shogun
 class CSingleFITCLaplaceInferenceMethod: public CSingleFITCInference
 {
 friend class CFITCPsiLine;
-friend class SingleFITCLaplaceNewtonOptimizer; 
+friend class CSingleFITCLaplaceNewtonOptimizer; 
 friend class SingleFITCLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
@@ -389,18 +389,24 @@ protected:
 };
 
 /** @brief The build-in minimizer for SingleFITCLaplaceInference */
-class SingleFITCLaplaceNewtonOptimizer: public Minimizer
+class CSingleFITCLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	CSingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual ~SingleFITCLaplaceNewtonOptimizer() {}
+	virtual const char* get_name() const { return "SingleFITCLaplaceNewtonOptimizer"; }
+
+	virtual ~CSingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
 
 	/** Set the inference method
 	 * @param obj the inference method
-	 *
 	 */
-	void set_target(CSingleFITCLaplaceInferenceMethod *obj) { m_obj=obj; }
+	void set_target(CSingleFITCLaplaceInferenceMethod *obj);
+
+	/** Unset the inference method
+	 * @param is_unref do we SG_UNREF the method
+	 */
+	void unset_target(bool is_unref);
 	
 	/** Do minimization and get the optimal value 
 	 * 
@@ -432,14 +438,7 @@ public:
 	 */
 	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 private:
-	void init()
-	{
-		m_obj=NULL;
-		m_iter=20;
-		m_tolerance=1e-6;
-		m_opt_tolerance=1e-10;
-		m_opt_max=10;
-	}
+	void init();
 
 	/** the inference method */
 	CSingleFITCLaplaceInferenceMethod *m_obj;

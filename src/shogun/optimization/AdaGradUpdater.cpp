@@ -30,7 +30,8 @@
  */
 
 #include <shogun/optimization/AdaGradUpdater.h>
-#include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 AdaGradUpdater::AdaGradUpdater()
@@ -61,38 +62,20 @@ void AdaGradUpdater::set_epsilon(float64_t epsilon)
 	m_epsilon=epsilon;
 }
 
-AdaGradUpdater::~AdaGradUpdater()
-{
-}
+AdaGradUpdater::~AdaGradUpdater() { }
 
 void AdaGradUpdater::init()
 {
 	m_epsilon=1e-6;
 	m_build_in_learning_rate=1.0;
 	m_gradient_accuracy=SGVector<float64_t>();
-}
 
-void AdaGradUpdater::update_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::update_context(context);
-	REQUIRE(context, "Context must set\n");
-	SGVector<float64_t> value(m_gradient_accuracy.vlen);
-	std::copy(m_gradient_accuracy.vector,
-		m_gradient_accuracy.vector+m_gradient_accuracy.vlen,
-		value.vector);
-	std::string key="AdaGradUpdater::m_gradient_accuracy";
-	context->save_data(key, value);
-}
-
-void AdaGradUpdater::load_from_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::load_from_context(context);
-	REQUIRE(context, "Context must set\n");
-	std::string key="AdaGradUpdater::m_gradient_accuracy";
-	SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-	m_gradient_accuracy=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_accuracy.vector);
+	SG_ADD(&m_epsilon, "AdaGradUpdater__m_epsilon",
+		"epsilon in AdaGradUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_build_in_learning_rate, "AdaGradUpdater__m_build_in_learning_rate",
+		"m_build_in_learning_rate in AdaGradUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_accuracy, "AdaGradUpdater__m_gradient_accuracy",
+		"gradient_accuracy in AdaGradUpdater", MS_NOT_AVAILABLE);
 }
 
 float64_t AdaGradUpdater::get_negative_descend_direction(float64_t variable,

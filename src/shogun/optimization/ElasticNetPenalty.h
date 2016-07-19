@@ -34,8 +34,6 @@
 #include <shogun/optimization/SparsePenalty.h>
 #include <shogun/optimization/L1Penalty.h>
 #include <shogun/optimization/L2Penalty.h>
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/Math.h>
 namespace shogun
 {
 /** @brief The is the base class for ElasticNet penalty/regularization within the FirstOrderMinimizer framework.
@@ -57,21 +55,19 @@ public:
 	ElasticNetPenalty()
 		:SparsePenalty() {init();}
 
-	virtual ~ElasticNetPenalty()
-	{
-		delete m_l1_penalty;
-		delete m_l2_penalty;
-	}
+	virtual ~ElasticNetPenalty();
+
+	/** returns the name of the class
+	 *
+	 * @return name ElasticNetPenalty
+	 */
+	virtual const char* get_name() const { return "ElasticNetPenalty"; }
 
 	/** set l1_ratio
 	 *
 	 * @param ratio ratio must be in (0.0,1.0)
 	 * */
-	virtual void set_l1_ratio(float64_t ratio)
-	{
-		REQUIRE(ratio>0.0 && ratio<1.0, "");
-		m_l1_ratio=ratio;
-	}
+	virtual void set_l1_ratio(float64_t ratio);
 
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 
@@ -79,13 +75,7 @@ public:
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable)
-	{
-		check_ratio();
-		float64_t penalty=m_l1_ratio*m_l1_penalty->get_penalty(variable);
-		penalty+=(1.0-m_l1_ratio)*m_l2_penalty->get_penalty(variable);
-		return penalty;
-	}
+	virtual float64_t get_penalty(float64_t variable);
 
 	/** Return the gradient of the penalty wrt a target variable
 	 *
@@ -94,13 +84,7 @@ public:
 	 * @return the gradient of the penalty wrt the variable
 	 */
 	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable)
-	{
-		check_ratio();
-		float64_t grad=m_l1_ratio*m_l1_penalty->get_penalty_gradient(variable, gradient_of_variable);
-		grad+=(1.0-m_l1_ratio)*m_l2_penalty->get_penalty_gradient(variable, gradient_of_variable);
-		return grad;
-	}
+		float64_t gradient_of_variable);
 
 	/** Set the rounding epsilon for L1 penalty
 	 *
@@ -117,53 +101,19 @@ public:
 	 * @param proximal_weight weight of the penalty
 	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight)
-	{
-		check_ratio();
-		m_l1_penalty->update_variable_for_proximity(variable, proximal_weight*m_l1_ratio);
-	}
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-		m_l1_penalty->update_context(context);
-		m_l2_penalty->update_context(context);
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-		m_l1_penalty->load_from_context(context);
-		m_l2_penalty->load_from_context(context);
-	}
+		float64_t proximal_weight);
 
 	/** Get the sparse variable
 	 * @param variable the raw variable
 	 * @param penalty_weight weight of the penalty
 	 * @return sparse value of the variable
 	 */
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
-	{
-		check_ratio();
-		return m_l1_penalty->get_sparse_variable(variable, penalty_weight*m_l1_ratio);
-	}
+	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight);
 
 protected:
 
 	/** check l1_ratio */
-	virtual void check_ratio()
-	{
-		REQUIRE(m_l1_ratio>0, "l1_ratio must set\n");
-	}
+	virtual void check_ratio();
 
 	/** l1_ratio for L1 penalty and (1.0-l1_ratio) for L2 penalty */
 	float64_t m_l1_ratio;
@@ -176,12 +126,7 @@ protected:
 
 private:
 	/**  init */
-	void init()
-	{
-		m_l1_ratio=0;
-		m_l1_penalty=new L1Penalty();
-		m_l2_penalty=new L2Penalty();
-	}
+	void init();
 };
 
 }

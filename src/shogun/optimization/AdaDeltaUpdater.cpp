@@ -30,7 +30,10 @@
  */
 
 #include <shogun/optimization/AdaDeltaUpdater.h>
-#include <shogun/lib/config.h>
+#include <shogun/optimization/MomentumCorrection.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 AdaDeltaUpdater::AdaDeltaUpdater()
@@ -81,44 +84,17 @@ void AdaDeltaUpdater::init()
 	m_build_in_learning_rate=1.0;
 	m_gradient_accuracy=SGVector<float64_t>();
 	m_gradient_delta_accuracy=SGVector<float64_t>();
-}
 
-void AdaDeltaUpdater::update_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::update_context(context);
-	REQUIRE(context, "Context must set\n");
-
-	SGVector<float64_t> value(m_gradient_accuracy.vlen);
-	std::copy(m_gradient_accuracy.vector,
-		m_gradient_accuracy.vector+m_gradient_accuracy.vlen,
-		value.vector);
-	std::string key="AdaDeltaUpdater::m_gradient_accuracy";
-	context->save_data(key, value);
-
-	value=SGVector<float64_t>(m_gradient_delta_accuracy.vlen);
-	std::copy(m_gradient_delta_accuracy.vector,
-		m_gradient_delta_accuracy.vector+m_gradient_delta_accuracy.vlen,
-		value.vector);
-	key="AdaDeltaUpdater::m_gradient_delta_accuracy";
-	context->save_data(key, value);
-}
-
-void AdaDeltaUpdater::load_from_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::load_from_context(context);
-	REQUIRE(context, "context must set\n");
-
-	std::string key="AdaDeltaUpdater::m_gradient_accuracy";
-	SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-	m_gradient_accuracy=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_accuracy.vector);
-
-	key="AdaDeltaUpdater::m_gradient_delta_accuracy";
-	value=context->get_data_sgvector_float64(key);
-	m_gradient_delta_accuracy=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_delta_accuracy.vector);
+	SG_ADD(&m_gradient_accuracy, "AdaDeltaUpdater__m_gradient_accuracy",
+		"gradient_accuracy in AdaDeltaUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_delta_accuracy, "AdaDeltaUpdater__m_gradient_delta_accuracy",
+		"gradient_delta_accuracy in AdaDeltaUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "AdaDeltaUpdater__m_epsilon",
+		"epsilon in AdaDeltaUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_decay_factor, "AdaDeltaUpdater__m_decay_factor",
+		"decay_factor in AdaDeltaUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_build_in_learning_rate, "AdaDeltaUpdater__m_build_in_learning_rate",
+		"m_build_in_learning_rate in AdaDeltaUpdater", MS_NOT_AVAILABLE);
 }
 
 float64_t AdaDeltaUpdater::get_negative_descend_direction(float64_t variable,

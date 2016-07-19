@@ -32,8 +32,7 @@
 #ifndef L1PENALTY_H
 #define L1PENALTY_H
 #include <shogun/optimization/SparsePenalty.h>
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/base/Parameter.h>
 namespace shogun
 {
 /** @brief The is the base class for L1 penalty/regularization within the FirstOrderMinimizer framework.
@@ -63,8 +62,13 @@ public:
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable) {return CMath::abs(variable);}
+	virtual float64_t get_penalty(float64_t variable);
 
+	/** returns the name of the class
+	 *
+	 * @return name L1Penalty
+	 */
+	virtual const char* get_name() const { return "L1Penalty"; }
 
 	/** Return the gradient of the penalty wrt a target variable
 	 *
@@ -84,75 +88,29 @@ public:
 	 * @param epsilon rounding epsilon
 	 *
 	 */
-	virtual void set_rounding_epsilon(float64_t epsilon)
-	{
-		REQUIRE(epsilon>=0,"Rounding epsilon (%f) should be non-negative\n", epsilon);
-		m_rounding_epsilon=epsilon;
-	}
+	virtual void set_rounding_epsilon(float64_t epsilon);
 
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable
 	 * @param proximal_weight weight of the penalty
 	 */
 	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight)
-	{
-		for(index_t idx=0; idx<variable.vlen; idx++)
-			variable[idx]=get_sparse_variable(variable[idx], proximal_weight);
-	}
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
+		float64_t proximal_weight);
 
 	/** Get the sparse variable
 	 * @param variable the raw variable
 	 * @param penalty_weight weight of the penalty
 	 * @return sparse value of the variable
 	 */
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight)
-	{
-	  if (variable>0.0)
-	  {
-		  variable-=penalty_weight;
-		  if (variable<0.0)
-			  variable=0.0;
-	  }
-	  else
-	  {
-		  variable+=penalty_weight;
-		  if (variable>0.0)
-			  variable=0.0;
-	  }
-	  if (CMath::abs(variable)<m_rounding_epsilon)
-		  variable=0.0;
-	  return variable;
-	}
+	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight);
+
 protected:
 	/** rounding epsilon */
 	float64_t m_rounding_epsilon;
 
 private:
 	/** init */
-	void init()
-	{
-		m_rounding_epsilon=1e-8;
-	}
+	void init();
 };
 
 }

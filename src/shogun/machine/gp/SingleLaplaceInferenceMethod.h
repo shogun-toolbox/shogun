@@ -39,7 +39,7 @@ namespace shogun
  */
 class CSingleLaplaceInferenceMethod: public CLaplaceInference
 {
-friend class SingleLaplaceNewtonOptimizer; 
+friend class CSingleLaplaceNewtonOptimizer; 
 friend class SingleLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
@@ -140,12 +140,12 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
 
+	  
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
 	virtual void register_minimizer(Minimizer* minimizer);
-
 protected:
 
 	/** initialize the update  */
@@ -248,17 +248,24 @@ protected:
 
 
 /** @brief The build-in minimizer for SingleLaplaceInference */
-class SingleLaplaceNewtonOptimizer: public Minimizer
+class CSingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	CSingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual ~SingleLaplaceNewtonOptimizer() {}
+	virtual const char* get_name() const { return "SingleLaplaceNewtonOptimizer"; }
+
+	virtual ~CSingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleLaplaceInferenceMethod *obj) { m_obj=obj; }
+	void set_target(CSingleLaplaceInferenceMethod *obj);
+
+	/** Unset the inference method
+	 * @param is_unref do we SG_UNREF the method
+	 */
+	void unset_target(bool is_unref);
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -291,14 +298,7 @@ public:
 	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
 private:
-	void init()
-	{
-	  m_obj=NULL;
-	  m_iter=20;
-	  m_tolerance=1e-6;
-	  m_opt_tolerance=1e-10;
-	  m_opt_max=10;
-	}
+	void init();
 
 	/** the inference method */
 	CSingleLaplaceInferenceMethod *m_obj;

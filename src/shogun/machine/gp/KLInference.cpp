@@ -48,11 +48,26 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~KLInferenceCostFunction() {}
+        virtual ~KLInferenceCostFunction() { SG_UNREF(m_obj); }
         void set_target(CKLInference *obj)
         {
-		m_obj=obj;
+		REQUIRE(obj,"Obj must set\n");
+		if(m_obj!=obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
         }
+        void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
+	}
+
         virtual float64_t get_cost()
         {
                 REQUIRE(m_obj,"Object not set\n");
@@ -75,12 +90,18 @@ public:
 		m_obj->get_gradient_of_nlml_wrt_parameters(m_derivatives);
                 return m_derivatives;
         }
+
+	virtual const char* get_name() const { return "KLInferenceCostFunction"; }
 private:
         SGVector<float64_t> m_derivatives;
         void init()
         {
                 m_obj=NULL;
                 m_derivatives = SGVector<float64_t>();
+		SG_ADD(&m_derivatives, "KLInferenceCostFunction__m_derivatives",
+			"derivatives in KLInferenceCostFunction", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_obj, "KLInferenceCostFunction__m_obj",
+			"obj in KLInferenceCostFunction", MS_NOT_AVAILABLE);
         }
         CKLInference *m_obj;
 };
@@ -133,7 +154,6 @@ void CKLInference::init()
 	SG_ADD(&m_min_coeff_kernel, "min_coeff_kernel",
 		"The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not",
 		MS_NOT_AVAILABLE);
-
 	SG_ADD(&m_s2, "s2",
 		"Variational parameter sigma2",
 		MS_NOT_AVAILABLE);
@@ -143,8 +163,7 @@ void CKLInference::init()
 	SG_ADD(&m_Sigma, "Sigma",
 		"Posterior covariance matrix Sigma",
 		MS_NOT_AVAILABLE);
-
-	this->register_minimizer(new LBFGSMinimizer());
+	register_minimizer(new CLBFGSMinimizer());
 }
 
 CKLInference::~CKLInference()
@@ -324,6 +343,9 @@ float64_t CKLInference::optimization()
 {
         KLInferenceCostFunction *cost_fun=new KLInferenceCostFunction();
         cost_fun->set_target(this);
+	bool cleanup=false;
+	if(this->ref_count()>1)
+		cleanup=true;
 
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 
@@ -332,8 +354,9 @@ float64_t CKLInference::optimization()
 
         float64_t nlml_opt = opt->minimize();
 	opt->unset_cost_function();
+	cost_fun->unset_target(cleanup);
 
-        delete cost_fun;
+        SG_UNREF(cost_fun);
 	return nlml_opt;
 }
 

@@ -32,7 +32,6 @@
 #ifndef CONSTLEARNINGRATE_H
 #define CONSTLEARNINGRATE_H
 #include <shogun/optimization/LearningRate.h>
-#include <shogun/lib/config.h>
 
 namespace shogun
 {
@@ -51,15 +50,18 @@ public:
 	/**  Destructor */
 	virtual ~ConstLearningRate() {}
 
+	/** returns the name of the class
+	 *
+	 * @return name ConstLearningRate
+	 */
+	virtual const char* get_name() const { return "ConstLearningRate"; }
+
+
 	/** Set the const learning rate
 	 *
 	 * @param learning_rate learning_rate must be positive and usually is not greater than 1.0
 	 */
-	virtual void set_const_learning_rate(float64_t learning_rate)
-	{
-		REQUIRE(learning_rate>0.0, "learning_rate (%f) must be positive",learning_rate);
-		m_const_learning_rate=learning_rate;
-	}
+	virtual void set_const_learning_rate(float64_t learning_rate);
 
 	/** Get the learning rate for descent direction
 	 * Note that the learning rate usually is positive
@@ -69,30 +71,7 @@ public:
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate(int32_t iter_counter)
-	{
-		REQUIRE(m_const_learning_rate>0.0,"learning_rate must set\n");
-		return m_const_learning_rate;
-	}
-
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "Context must set\n");
-	}
+	virtual float64_t get_learning_rate(int32_t iter_counter);
 
 protected:
 
@@ -101,10 +80,7 @@ protected:
 
 private:
 	/**  Init */
-	void init()
-	{
-		m_const_learning_rate=0.0;
-	}
+	void init();
 };
 
 }

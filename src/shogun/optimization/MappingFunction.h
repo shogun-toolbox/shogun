@@ -33,14 +33,17 @@
 #define MAPPINGFUNCTION_H
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/base/SGObject.h>
 namespace shogun
 {
 /** @brief The base mapping function for mirror descend 
  *
  */
-class MappingFunction
+class MappingFunction:public CSGObject
 {
 public:
+	virtual ~MappingFunction(){};
+
 	/** Get dual variable
 	 *
 	 * @param variable primal variable 
@@ -56,24 +59,6 @@ public:
 	 *
 	 */
 	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable)=0;
-
-	/** Update a context object to store mutable variables
-	 * used in learning rate
-	 *
-	 * This method will be called by
-	 * SMDMinimizer::update_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)=0;
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * SMDMinimizer::load_from_context(CMinimizerContext* context)
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)=0;
 };
 
 }

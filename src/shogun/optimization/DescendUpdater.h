@@ -31,9 +31,8 @@
 
 #ifndef DESCENDUPDATER_H
 #define DESCENDUPDATER_H
-#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/optimization/MinimizerContext.h>
+#include <shogun/base/SGObject.h>
 namespace shogun
 {
 /** @brief This is a base class for descend update.
@@ -46,9 +45,11 @@ namespace shogun
  * Note that an example of \f$g\f$ is to simply use the gradient wrt \f$w\f$. 
  *
  */
-class DescendUpdater
+class DescendUpdater: public CSGObject
 {
 public:
+	virtual ~DescendUpdater() {};
+
 	/** Update the target variable based on the given negative descend direction
 	 *
 	 * Note that this method will update the target variable in place.
@@ -61,24 +62,6 @@ public:
 	virtual void update_variable(SGVector<float64_t> variable_reference,
 		SGVector<float64_t> negative_descend_direction, float64_t learning_rate)=0;
 
-	/** Update a context object to store mutable variables
-	 * used in descend update
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::save_to_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)=0;
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)=0;
 };
 
 }

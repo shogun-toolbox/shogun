@@ -56,6 +56,13 @@ public:
 	/** Destructor */
 	virtual ~SGDMinimizer();
 
+	/** returns the name of the class
+	 *
+	 * @return name SGDMinimizer
+	 */
+	virtual const char* get_name() const { return "SGDMinimizer"; }
+
+
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value

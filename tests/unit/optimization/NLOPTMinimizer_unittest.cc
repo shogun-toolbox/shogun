@@ -28,9 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#ifdef USE_GPL_SHOGUN
- 
 #include "NLOPTMinimizer_unittest.h"
+#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <gtest/gtest.h>
 #include <shogun/base/Parameter.h>
@@ -249,7 +248,7 @@ SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 	return gradient;
 }
 
-TEST(NLOPTMinimizer,test1)
+TEST(CNLOPTMinimizer,test1)
 {
 	CPiecewiseQuadraticObject2 *obj=new CPiecewiseQuadraticObject2();
 	SGVector<float64_t> init_x(5);
@@ -273,16 +272,15 @@ TEST(NLOPTMinimizer,test1)
 	SG_REF(obj);
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=new NLOPTMinimizer(b);
+	FirstOrderMinimizer* opt=new CNLOPTMinimizer(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 2.0, 1e-6);
 
 	SG_UNREF(obj);
-	delete b;
 	delete opt;
 }
 
-TEST(NLOPTMinimizer,test2)
+TEST(CNLOPTMinimizer,test2)
 {
 	CPiecewiseQuadraticObject2 *obj=new CPiecewiseQuadraticObject2();
 	SGVector<float64_t> init_x(5);
@@ -306,7 +304,7 @@ TEST(NLOPTMinimizer,test2)
 	SG_REF(obj);
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=new NLOPTMinimizer(b);
+	FirstOrderMinimizer* opt=new CNLOPTMinimizer(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)
@@ -321,7 +319,6 @@ TEST(NLOPTMinimizer,test2)
 		}
 	}
 	SG_UNREF(obj);
-	delete b;
 	delete opt;
 }
 #endif /* HAVE_NLOPT */

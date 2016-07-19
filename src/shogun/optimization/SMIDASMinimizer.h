@@ -32,7 +32,6 @@
 #ifndef SMIDASMINIMIZER_H
 #define SMIDASMINIMIZER_H
 #include <shogun/optimization/SMDMinimizer.h>
-#include <shogun/lib/config.h>
 namespace shogun
 {
 
@@ -65,44 +64,18 @@ public:
 	 */
 	virtual float64_t minimize();
 
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
+	/** returns the name of the class
 	 *
-	 * @param context a context object
+	 * @return name ConstLearningRate
 	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		SMDMinimizer::load_from_context(context);
-		std::string key="SMIDASMinimizer::m_dual_variable";
-		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-		m_dual_variable=SGVector<float64_t>(value.vlen);
-		std::copy(value.vector, value.vector+value.vlen,
-			m_dual_variable.vector);
-	}
+	virtual const char* get_name() const { return "SMIDASMinimizer"; }
 
 protected:
-
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		SMDMinimizer::update_context(context);
-		SGVector<float64_t> value(m_dual_variable.vlen);
-		std::copy(m_dual_variable.vector,
-			m_dual_variable.vector+m_dual_variable.vlen,
-			value.vector);
-		std::string key="SMIDASMinimizer::m_dual_variable";
-		context->save_data(key, value);
-	}
-
 	/** init minimization  */
 	virtual void init_minimization();
 
 	/** dual variable */
 	SGVector<float64_t> m_dual_variable;
-
 private:
 	  /* Init */
 	void init();

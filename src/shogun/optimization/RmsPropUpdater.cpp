@@ -30,7 +30,8 @@
  */
 
 #include <shogun/optimization/RmsPropUpdater.h>
-#include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 RmsPropUpdater::RmsPropUpdater()
@@ -70,8 +71,7 @@ void RmsPropUpdater::set_decay_factor(float64_t decay_factor)
 	m_decay_factor=decay_factor;
 }
 
-RmsPropUpdater::~RmsPropUpdater()
-{}
+RmsPropUpdater::~RmsPropUpdater() { }
 
 void RmsPropUpdater::init()
 {
@@ -79,29 +79,15 @@ void RmsPropUpdater::init()
 	m_epsilon=1e-6;
 	m_build_in_learning_rate=1.0;
 	m_gradient_accuracy=SGVector<float64_t>();
-}
 
-void RmsPropUpdater::update_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::update_context(context);
-	REQUIRE(context, "Context must set\n");
-	SGVector<float64_t> value(m_gradient_accuracy.vlen);
-	std::copy(m_gradient_accuracy.vector,
-		m_gradient_accuracy.vector+m_gradient_accuracy.vlen,
-		value.vector);
-	std::string key="RmsPropUpdater::m_gradient_accuracy";
-	context->save_data(key, value);
-}
-
-void RmsPropUpdater::load_from_context(CMinimizerContext* context)
-{
-	DescendUpdaterWithCorrection::load_from_context(context);
-	REQUIRE(context, "Context must set\n");
-	std::string key="RmsPropUpdater::m_gradient_accuracy";
-	SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-	m_gradient_accuracy=SGVector<float64_t>(value.vlen);
-	std::copy(value.vector, value.vector+value.vlen,
-		m_gradient_accuracy.vector);
+	SG_ADD(&m_decay_factor, "RmsPropUpdater__m_decay_factor",
+		"decay_factor in RmsPropUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "RmsPropUpdater__m_epsilon",
+		"epsilon in RmsPropUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_build_in_learning_rate, "RmsPropUpdater__m_build_in_learning_rate",
+		"build_in_learning_rate in RmsPropUpdater", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gradient_accuracy, "RmsPropUpdater__m_gradient_accuracy",
+		"gradient_accuracy in RmsPropUpdater", MS_NOT_AVAILABLE);
 }
 
 float64_t RmsPropUpdater::get_negative_descend_direction(float64_t variable,

@@ -45,6 +45,7 @@ public:
 	virtual float64_t get_cost();
 	virtual SGVector<float64_t> obtain_variable_reference();
 	virtual SGVector<float64_t> get_gradient();
+	virtual const char* get_name() const { return "LBFGSTestCostFunction"; }
 private:
 	void init();
 	CPiecewiseQuadraticObject *m_obj;

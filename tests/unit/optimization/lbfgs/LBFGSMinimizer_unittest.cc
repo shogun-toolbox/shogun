@@ -184,7 +184,7 @@ SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
 	return SGVector<float64_t>();
 }
 
-TEST(LBFGSMinimizer,test1)
+TEST(CLBFGSMinimizer,test1)
 {
 	CPiecewiseQuadraticObject *obj=new CPiecewiseQuadraticObject();
 	SGVector<float64_t> init_x(5);
@@ -199,16 +199,15 @@ TEST(LBFGSMinimizer,test1)
 	SG_REF(obj);
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=new LBFGSMinimizer(b);
+	FirstOrderMinimizer* opt=new CLBFGSMinimizer(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 0.0, 1e-6);
 
 	SG_UNREF(obj);
-	delete b;
 	delete opt;
 }
 
-TEST(LBFGSMinimizer,test2)
+TEST(CLBFGSMinimizer,test2)
 {
 	CPiecewiseQuadraticObject *obj=new CPiecewiseQuadraticObject();
 	SGVector<float64_t> init_x(5);
@@ -223,7 +222,7 @@ TEST(LBFGSMinimizer,test2)
 	SG_REF(obj);
 	b->set_target(obj);
 
-	FirstOrderMinimizer* opt=new LBFGSMinimizer(b);
+	FirstOrderMinimizer* opt=new CLBFGSMinimizer(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)
@@ -232,6 +231,5 @@ TEST(LBFGSMinimizer,test2)
 	}
 
 	SG_UNREF(obj);
-	delete b;
 	delete opt;
 }

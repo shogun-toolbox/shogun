@@ -73,15 +73,29 @@ class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public: 
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplaceInferenceMethodCostFunction() {}
+	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
 	void set_target(CSingleLaplaceInferenceMethod *obj)
 	{
-		m_obj=obj;
+		REQUIRE(obj, "Obj must set\n");
+		if(m_obj != obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
 	}
 	virtual float64_t get_cost()
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		return m_obj->get_psi_wrt_alpha();
+	}
+	void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
 	}
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
@@ -95,11 +109,17 @@ public:
 		m_obj->get_gradient_wrt_alpha(m_derivatives);
 		return m_derivatives;
 	}
+	virtual const char* get_name() const { return "SingleLaplaceInferenceMethodCostFunction"; }
 private:
 	void init()
 	{
 		m_obj=NULL;
 		m_derivatives = SGVector<float64_t>();
+		SG_ADD(&m_derivatives, "SingleLaplaceInferenceMethodCostFunction__m_derivatives",
+			"derivatives in SingleLaplaceInferenceMethodCostFunction", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
+			"obj in SingleLaplaceInferenceMethodCostFunction", MS_NOT_AVAILABLE);
+
 	}
 
 	SGVector<float64_t> m_derivatives;
@@ -108,7 +128,48 @@ private:
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 
-float64_t SingleLaplaceNewtonOptimizer::minimize()
+void CSingleLaplaceNewtonOptimizer::set_target(CSingleLaplaceInferenceMethod *obj)
+{
+	REQUIRE(obj, "Obj must set\n");
+	if(m_obj != obj)
+	{
+		SG_REF(obj);
+		SG_UNREF(m_obj);
+		m_obj=obj;
+	}
+}
+
+void CSingleLaplaceNewtonOptimizer::unset_target(bool is_unref)
+{
+	if(is_unref)
+	{
+		SG_UNREF(m_obj);
+	}
+	m_obj=NULL;
+
+}
+
+void CSingleLaplaceNewtonOptimizer::init()
+{
+	m_obj=NULL;
+	m_iter=20;
+	m_tolerance=1e-6;
+	m_opt_tolerance=1e-6;
+	m_opt_max=10;
+
+	SG_ADD((CSGObject **)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
+		"obj in CSingleLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_iter, "CSingleLaplaceNewtonOptimizer__m_iter",
+		"iter in CSingleLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "CSingleLaplaceNewtonOptimizer__m_tolerance",
+		"tolerance in CSingleLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_tolerance, "CSingleLaplaceNewtonOptimizer__m_opt_tolerance",
+		"opt_tolerance in CSingleLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_max, "CSingleLaplaceNewtonOptimizer__m_opt_max",
+		"opt_max in CSingleLaplaceNewtonOptimizer", MS_NOT_AVAILABLE);
+}
+
+float64_t CSingleLaplaceNewtonOptimizer::minimize()
 {
 	REQUIRE(m_obj,"Object not set\n");
 	float64_t Psi_Old=CMath::INFTY;
@@ -220,7 +281,7 @@ void CSingleLaplaceInferenceMethod::init()
 	SG_ADD(&m_sW, "sW", "square root of W", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location", MS_NOT_AVAILABLE);
-	m_minimizer = new SingleLaplaceNewtonOptimizer();
+	register_minimizer(new CSingleLaplaceNewtonOptimizer());
 }
 
 SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
@@ -430,7 +491,7 @@ void CSingleLaplaceInferenceMethod::update_init()
 void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	if (!dynamic_cast<SingleLaplaceNewtonOptimizer*>(minimizer))
+	if (!dynamic_cast<CSingleLaplaceNewtonOptimizer*>(minimizer))
 	{
 		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
@@ -440,11 +501,15 @@ void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 
 void CSingleLaplaceInferenceMethod::update_alpha()
 {
-	SingleLaplaceNewtonOptimizer *opt=dynamic_cast<SingleLaplaceNewtonOptimizer*>(m_minimizer);
+	CSingleLaplaceNewtonOptimizer *opt=dynamic_cast<CSingleLaplaceNewtonOptimizer*>(m_minimizer);
+	bool cleanup=false;
 	if (opt)
 	{
 		opt->set_target(this);
+		if(this->ref_count()>1)
+			cleanup=true;
 		opt->minimize();
+		opt->unset_target(cleanup);
 	}
 	else
 	{
@@ -453,10 +518,13 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 
 		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
 		cost_fun->set_target(this);
+		if(this->ref_count()>1)
+			cleanup=true;
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function();
-		delete cost_fun;
+		cost_fun->unset_target(cleanup);
+		SG_UNREF(cost_fun);
 	}
 	// get mean vector and create eigen representation of it
 	Map<VectorXd> eigen_mean(m_mean_f.vector, m_mean_f.vlen);

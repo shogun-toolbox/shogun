@@ -34,8 +34,6 @@
 #include <shogun/optimization/FirstOrderStochasticCostFunction.h>
 #include <shogun/optimization/DescendUpdater.h>
 #include <shogun/optimization/LearningRate.h>
-#include <shogun/optimization/SparsePenalty.h>
-#include <shogun/optimization/ProximalPenalty.h>
 namespace shogun
 {
 
@@ -87,9 +85,15 @@ public:
 		init();
 	}
 
+	/** returns the name of the class
+	 *
+	 * @return name FirstOrderStochasticMinimizer
+	 */
+	virtual const char* get_name() const { return "FirstOrderStochasticMinimizer"; }
+
 	/** Destructor
 	 */
-	virtual ~FirstOrderStochasticMinimizer(){}
+	virtual ~FirstOrderStochasticMinimizer();
 
 	/** Does minimizer support batch update
 	 * 
@@ -101,11 +105,7 @@ public:
 	 *
 	 * @param gradient_updater the gradient_updater
 	 */
-	virtual void set_gradient_updater(DescendUpdater* gradient_updater)
-	{
-		REQUIRE(gradient_updater, "Gradient updater must set\n");
-		m_gradient_updater=gradient_updater;
-	}
+	virtual void set_gradient_updater(DescendUpdater* gradient_updater);
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -122,91 +122,32 @@ public:
 	 *
 	 * @param num_passes the number of times 
 	 */
-	virtual void set_number_passes(int32_t num_passes)
-	{
-		REQUIRE(num_passes>0, "The number (%d) to go through data must be positive\n", num_passes);
-		m_num_passes=num_passes;
-	}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context,"Context must set\n");
-		REQUIRE(m_gradient_updater,"Descend updater must set\n");
-		FirstOrderMinimizer::load_from_context(context);
-		m_gradient_updater->load_from_context(context);
-		if(m_learning_rate)
-			m_learning_rate->load_from_context(context);
-		std::string key="FirstOrderStochasticMinimizer::m_iter_counter";
-		m_iter_counter=context->get_data_int32(key);
-	}
+	virtual void set_number_passes(int32_t num_passes);
 
 	/** Set the learning rate of a minimizer
 	 * @param learning_rate learn rate or step size
 	 */
-	virtual void set_learning_rate(LearningRate *learning_rate)
-	{
-		m_learning_rate=learning_rate;
-	}
+	virtual void set_learning_rate(LearningRate *learning_rate);
 
 	/** How many samples/mini-batch does the minimizer use?
 	 *
 	 * @return the number of samples/mini-batches used in optimization
 	 */
 	virtual int32_t get_iteration_counter() {return m_iter_counter;}
+
 protected:
 	/** Do proximal update in place 
 	 *
 	 * @param variable_reference variable_reference to be updated
 	 *
 	 */
-	virtual void do_proximal_operation(SGVector<float64_t>variable_reference)
-	{
-		ProximalPenalty* proximal_penalty=dynamic_cast<ProximalPenalty*>(m_penalty_type);
-		if(proximal_penalty)
-		{
-			float64_t proximal_weight=m_penalty_weight;
-			SparsePenalty* sparse_penalty=dynamic_cast<SparsePenalty*>(m_penalty_type);
-			if(sparse_penalty)
-			{
-				REQUIRE(m_learning_rate, "Learning rate must set when Sparse Penalty (eg, L1) is used\n");
-				proximal_weight*=m_learning_rate->get_learning_rate(m_iter_counter);
-			}
-			proximal_penalty->update_variable_for_proximity(variable_reference,proximal_weight);
-		}
-	}
-
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context,"Context must set\n");
-		REQUIRE(m_gradient_updater,"Descend updater must set\n");
-		FirstOrderMinimizer::update_context(context);
-		m_gradient_updater->update_context(context);
-		if(m_learning_rate)
-			m_learning_rate->update_context(context);
-		std::string key="FirstOrderStochasticMinimizer::m_iter_counter";
-		context->save_data(key, m_iter_counter);
-	}
+	virtual void do_proximal_operation(SGVector<float64_t>variable_reference);
+	
+	/** init the minimization process*/
+	virtual void init_minimization();
 
 	/** the gradient update step */
 	DescendUpdater* m_gradient_updater;
-
-	/** init the minimization process*/
-	virtual void init_minimization()
-	{
-		REQUIRE(m_fun,"Cost function must set\n");
-		REQUIRE(m_gradient_updater,"Descend updater must set\n");
-		REQUIRE(m_num_passes>0, "The number to go through data must set\n");
-		m_cur_passes=0;
-	}
 
 	/**  iteration to go through data */
 	int32_t m_num_passes;
@@ -222,14 +163,7 @@ protected:
 	
 private:
 	/** Init */
-	void init()
-	{
-		m_gradient_updater=NULL;
-		m_learning_rate=NULL;
-		m_num_passes=0;
-		m_cur_passes=0;
-		m_iter_counter=0;
-	}
+	void init();
 };
 
 }

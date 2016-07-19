@@ -55,17 +55,26 @@ class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFu
 public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
         virtual ~SingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
+	virtual const char* get_name() const { return "SingleSparseInferenceCostFunction"; }
         void set_target(CSingleSparseInference *obj)
 	{
+		REQUIRE(obj,"Object not set\n");
 		if(obj!=m_obj)
 		{
 			SG_REF(obj);
 			SG_UNREF(m_obj);
 			m_obj=obj;
-			REQUIRE(m_obj,"Object not set\n");
 			m_obj->check_fully_sparse();
 			REQUIRE(m_obj->m_fully_sparse,"Can not compute gradient\n");
 		}
+	}
+        void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
 	}
         virtual float64_t get_cost()
 	{
@@ -99,8 +108,13 @@ public:
 		return m_obj->m_upper_bound;
 	}
 private:
-        void init() { m_obj=NULL; }
         CSingleSparseInference *m_obj;
+        void init()
+	{
+		m_obj=NULL;
+		SG_ADD((CSGObject **)&m_obj, "CSigleSparseInference__m_obj",
+			"m_obj in AdamUpdater", MS_NOT_AVAILABLE);
+	}
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
@@ -324,15 +338,17 @@ void CSingleSparseInference::optimize_inducing_features()
 		return;
 
 	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
-	SG_REF(this);
 	cost_fun->set_target(this);
+	bool cleanup=false;
+	if(this->ref_count()>1)
+		cleanup=true;
     
-	NLOPTMinimizer* opt=new NLOPTMinimizer(cost_fun);
+	CNLOPTMinimizer* opt=new CNLOPTMinimizer(cost_fun);
 	opt->set_nlopt_parameters(NLOPT_LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
 	opt->minimize();
 
-	delete cost_fun;
-	delete opt;
+	cost_fun->unset_target(cleanup);
+	SG_UNREF(opt);
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
 }

@@ -45,6 +45,8 @@ namespace shogun
 class FirstOrderBoundConstraintsCostFunction: public FirstOrderCostFunction
 {
 public:
+	virtual ~FirstOrderBoundConstraintsCostFunction() {};
+
 	/** Get the lower bound of variables 
 	 * 
 	 * Usually the length of the bound should equal to the length of target variables.
