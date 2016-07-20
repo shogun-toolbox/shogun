@@ -47,6 +47,7 @@ namespace internal
 {
 class KernelManager;
 class MaxMeasure;
+class MaxTestPower;
 }
 
 /**
@@ -61,6 +62,7 @@ class CMultiKernelQuadraticTimeMMD : public CSGObject
 {
 	friend class CQuadraticTimeMMD;
 	friend class internal::MaxMeasure;
+	friend class internal::MaxTestPower;
 private:
 	CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner);
 public:

@@ -34,6 +34,8 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/statistical_testing/StreamingMMD.h>
+#include <shogun/statistical_testing/QuadraticTimeMMD.h>
+#include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxTestPower.h>
 
@@ -56,17 +58,25 @@ void MaxTestPower::compute_measures()
 	const auto n=estimator->get_num_samples_q();
 	auto existing_kernel=estimator->get_kernel();
 	const size_t num_kernels=kernel_mgr.num_kernels();
-	auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
-	ASSERT(casted_estimator);
-	for (size_t i=0; i<num_kernels; ++i)
+	auto streaming_mmd=dynamic_cast<CStreamingMMD*>(estimator);
+	if (streaming_mmd)
 	{
-		auto kernel=kernel_mgr.kernel_at(i);
-		estimator->set_kernel(kernel);
-		auto estimates=casted_estimator->compute_statistic_variance();
-		auto var_est=estimates.first;
-		auto mmd_est=estimates.second*(m+n)/m/n;
-		measures[i]=var_est/CMath::sqrt(mmd_est+lambda);
-		estimator->cleanup();
+		for (size_t i=0; i<num_kernels; ++i)
+		{
+			auto kernel=kernel_mgr.kernel_at(i);
+			estimator->set_kernel(kernel);
+			auto estimates=streaming_mmd->compute_statistic_variance();
+			auto var_est=estimates.first;
+			auto mmd_est=estimates.second*(m+n)/m/n;
+			measures[i]=var_est/CMath::sqrt(mmd_est+lambda);
+			estimator->cleanup();
+		}
+	}
+	else
+	{
+		auto quadratictime_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+		ASSERT(quadratictime_mmd);
+		measures=quadratictime_mmd->multikernel()->test_power(kernel_mgr);
 	}
 	if (existing_kernel)
 		estimator->set_kernel(existing_kernel);
