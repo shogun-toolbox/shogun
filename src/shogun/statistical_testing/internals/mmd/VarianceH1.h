@@ -34,6 +34,9 @@
 #include <vector>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/statistical_testing/internals/Kernel.h>
 
 using std::vector;
 
@@ -54,21 +57,26 @@ struct VarianceH1
 
 	void init_terms()
 	{
-		m_sum_colwise_x.resize(m_n_x, 0);
-		m_sum_colwise_y.resize(m_n_y, 0);
-		m_sum_rowwise_xy.resize(m_n_y, 0);
-		m_sum_colwise_xy.resize(m_n_x, 0);
-		if (m_second_order_terms.rows()==m_n_x && m_second_order_terms.cols()==m_n_y)
-			m_second_order_terms.setZero();
-		else
-			m_second_order_terms=Eigen::MatrixXd::Zero(m_n_x, m_n_x);
-
 		m_sum_x=0;
 		m_sum_y=0;
 		m_sum_xy=0;
 		m_sum_sq_x=0;
 		m_sum_sq_y=0;
 		m_sum_sq_xy=0;
+
+		m_sum_colwise_x.resize(m_n_x);
+		m_sum_colwise_y.resize(m_n_y);
+		m_sum_rowwise_xy.resize(m_n_x);
+		m_sum_colwise_xy.resize(m_n_y);
+		std::fill(m_sum_colwise_x.begin(), m_sum_colwise_x.end(), 0);
+		std::fill(m_sum_colwise_y.begin(), m_sum_colwise_y.end(), 0);
+		std::fill(m_sum_rowwise_xy.begin(), m_sum_rowwise_xy.end(), 0);
+		std::fill(m_sum_colwise_xy.begin(), m_sum_colwise_xy.end(), 0);
+
+		if (m_second_order_terms.rows()==m_n_x && m_second_order_terms.cols()==m_n_x)
+			m_second_order_terms.setZero();
+		else
+			m_second_order_terms=Eigen::MatrixXd::Zero(m_n_x, m_n_x);
 	}
 
 	void free_terms()
@@ -168,6 +176,33 @@ struct VarianceH1
 		auto variance_estimate=compute_variance_estimate();
 		free_terms();
 		return variance_estimate;
+	}
+
+	SGVector<float64_t> operator()(const KernelManager& kernel_mgr)
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		ASSERT(m_n_x==m_n_y);
+		ASSERT(kernel_mgr.num_kernels()>0);
+
+		const index_t size=m_n_x+m_n_y;
+		SGVector<float64_t> result(kernel_mgr.num_kernels());
+		SelfAdjointPrecomputedKernel kernel_functor(SGVector<float32_t>(size*(size+1)/2));
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		{
+			auto kernel=kernel_mgr.kernel_at(k);
+			ASSERT(kernel);
+			kernel_functor.precompute(kernel);
+			init_terms();
+			for (auto i=0; i<size; ++i)
+			{
+				for (auto j=i+1; j<size; ++j)
+					add_terms(kernel_functor(i, j), i, j);
+			}
+			result[k]=compute_variance_estimate();
+		}
+
+		free_terms();
+		return result;
 	}
 
 	index_t m_n_x;

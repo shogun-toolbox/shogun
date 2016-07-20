@@ -39,6 +39,7 @@
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
+#include <shogun/statistical_testing/internals/mmd/VarianceH1.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 
 using namespace shogun;
@@ -56,6 +57,7 @@ struct CMultiKernelQuadraticTimeMMD::Self
 	EDistanceType m_dtype;
 	KernelManager m_kernel_mgr;
 	ComputeMMD statistic_job;
+	VarianceH1 variance_h1_job;
 	PermutationMMD permutation_job;
 };
 
@@ -132,8 +134,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h0()
 SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h1()
 {
 	ASSERT(self->m_owner);
-	SG_NOTIMPLEMENTED;
-	return SGVector<float64_t>();
+	return variance_h1(self->m_kernel_mgr);
 }
 
 SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null()
@@ -182,6 +183,29 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 
 	for (auto i=0; i<result.vlen; ++i)
 		result[i]=self->m_owner->normalize_statistic(result[i]);
+
+	SG_DEBUG("Leaving");
+	return result;
+}
+
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManager& kernel_mgr)
+{
+	SG_DEBUG("Entering");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
+
+	const auto nx=self->m_owner->get_num_samples_p();
+	const auto ny=self->m_owner->get_num_samples_q();
+
+	CDistance* distance=kernel_mgr.get_distance_instance();
+	self->update_pairwise_distance(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
+	SG_UNREF(distance);
+
+	self->variance_h1_job.m_n_x=nx;
+   	self->variance_h1_job.m_n_y=ny;
+	SGVector<float64_t> result=self->variance_h1_job(kernel_mgr);
+
+	kernel_mgr.unset_precomputed_distance();
 
 	SG_DEBUG("Leaving");
 	return result;

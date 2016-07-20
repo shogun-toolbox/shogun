@@ -57,6 +57,50 @@ private:
 	CKernel* m_kernel;
 };
 
+class SelfAdjointPrecomputedKernel
+{
+public:
+	SelfAdjointPrecomputedKernel() : m_num_feat_vec(0)
+	{
+	}
+	explicit SelfAdjointPrecomputedKernel(SGVector<float32_t> self_adjoint_kernel_matrix) : m_num_feat_vec(0)
+	{
+		REQUIRE(self_adjoint_kernel_matrix.size()>0, "Provided kernel matrix cannot be of size 0!\n");
+		m_self_adjoint_kernel_matrix=self_adjoint_kernel_matrix;
+	}
+	void precompute(CKernel* kernel)
+	{
+		REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
+		REQUIRE(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),
+			"Kernel instance is not symmetric (%dx%d)!\n", kernel->get_num_vec_lhs(), kernel->get_num_vec_rhs());
+		m_num_feat_vec=kernel->get_num_vec_lhs();
+		auto size=m_num_feat_vec*(m_num_feat_vec+1)/2;
+		if (m_self_adjoint_kernel_matrix.size()==0 || m_self_adjoint_kernel_matrix.size()!=size)
+			m_self_adjoint_kernel_matrix=SGVector<float32_t>(size);
+		for (auto i=0; i<m_num_feat_vec; ++i)
+		{
+			for (auto j=i; j<m_num_feat_vec; ++j)
+			{
+				auto index=i*m_num_feat_vec-i*(i+1)/2+j;
+				m_self_adjoint_kernel_matrix[index]=kernel->kernel(i, j);
+			}
+		}
+	}
+	inline float32_t operator()(int32_t i, int32_t j) const
+	{
+		ASSERT(m_num_feat_vec);
+		ASSERT(i>=0 && i<m_num_feat_vec);
+		ASSERT(j>=0 && j<m_num_feat_vec);
+		if (i>j)
+			std::swap(i, j);
+		auto index=i*m_num_feat_vec-i*(i+1)/2+j;
+		return m_self_adjoint_kernel_matrix[index];
+	}
+private:
+	SGVector<float32_t> m_self_adjoint_kernel_matrix;
+	index_t m_num_feat_vec;
+};
+
 }
 
 }

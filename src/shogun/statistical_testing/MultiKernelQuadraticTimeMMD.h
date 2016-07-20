@@ -82,6 +82,7 @@ private:
 	std::unique_ptr<Self> self;
 	void invalidate_precomputed_distance();
 	SGVector<float64_t> statistic(const internal::KernelManager& kernel_mgr);
+	SGVector<float64_t> variance_h1(const internal::KernelManager& kernel_mgr);
 	SGMatrix<float32_t> sample_null(const internal::KernelManager& kernel_mgr);
 	SGVector<float64_t> p_values(const internal::KernelManager& kernel_mgr);
 };
