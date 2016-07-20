@@ -31,6 +31,7 @@
  */
 
 #include <shogun/mathematics/linalg/LinalgBackendGPUBase.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaclKernels.h>
 
 #ifndef LINALG_BACKEND_VIENNACL_H__
 #define LINALG_BACKEND_VIENNACL_H__
@@ -95,6 +96,26 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_SUM
 
+	/** Implementation of @see LinalgBackendBase::colwise_sum */
+	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	{  \
+		return colwise_sum_impl(a); \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_COLWISE_SUM
+
+	/** Implementation of @see LinalgBackendBase::rowwise_sum */
+	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	{  \
+		return rowwise_sum_impl(a); \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_ROWWISE_SUM
+
 	/** Implementation of @see LinalgBackendBase::to_gpu */
 	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
 	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>& a) const \
@@ -155,6 +176,38 @@ private:
 	{
 		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 		return viennacl::linalg::sum(a_gpu->data(a.size()));
+	}
+
+	/** ViennaCL matrix colwise sum method */
+	template <typename T>
+	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat) const
+	{
+		GPUMemoryViennaCL<T>* mat_gpu = cast_to_viennacl(mat);
+		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(mat.num_cols);
+		viennacl::ocl::kernel& kernel = generate_colwise_sum_kernel<T>();
+		kernel.global_work_size(0, linalg::implementation::ocl::align_to_multiple_1d(mat.num_cols));
+
+		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat_gpu->m_offset),
+			result_gpu->data(mat.num_cols), cl_int(result_gpu->m_offset)));
+
+		return SGVector<T>(result_gpu, mat.num_cols);
+	}
+
+	/** ViennaCL matrix rowwise sum method */
+	template <typename T>
+	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat) const
+	{
+		GPUMemoryViennaCL<T>* mat_gpu = cast_to_viennacl(mat);
+		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(mat.num_rows);
+		viennacl::ocl::kernel& kernel = generate_rowwise_sum_kernel<T>();
+		kernel.global_work_size(0, linalg::implementation::ocl::align_to_multiple_1d(mat.num_rows));
+
+		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat_gpu->m_offset),
+			result_gpu->data(mat.num_rows), cl_int(result_gpu->m_offset)));
+
+		return SGVector<T>(result_gpu, mat.num_rows);
 	}
 
 	/** Transfers data to GPU with ViennaCL method. */

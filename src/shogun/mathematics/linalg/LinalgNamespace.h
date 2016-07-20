@@ -141,6 +141,30 @@ T sum(const Container<T>& a)
 }
 
 /**
+ * Method that computes colwise sum of co-efficients of a dense matrix
+ *
+ * @param mat a matrix whose colwise sum has to be computed
+ * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
+ */
+template <typename T>
+SGVector<T> colwise_sum(const SGMatrix<T>& mat)
+{
+	return infer_backend(mat)->colwise_sum(mat);
+}
+
+/**
+ * Method that computes rowwise sum of co-efficients of a dense matrix
+ *
+ * @param mat a matrix whose rowwise sum has to be computed
+ * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
+ */
+template <typename T>
+SGVector<T> rowwise_sum(const SGMatrix<T>& mat)
+{
+	return infer_backend(mat)->rowwise_sum(mat);
+}
+
+/**
  * Transfers data to GPU memory. Does nothing if no GPU backend registered.
  *
  * @param vector SGVector to be transferred
