@@ -545,7 +545,7 @@ float64_t CKLDualInferenceMethod::optimization()
 
 	minimizer->set_cost_function(cost_fun);
 	float64_t nlml_opt = minimizer->minimize();
-	minimizer->unset_cost_function();
+	minimizer->unset_cost_function(false);
 	cost_fun->unset_target(cleanup);
 	SG_UNREF(cost_fun);
 	return nlml_opt;

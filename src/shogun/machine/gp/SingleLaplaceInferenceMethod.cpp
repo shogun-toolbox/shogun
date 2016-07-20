@@ -522,7 +522,7 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 			cleanup=true;
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
-		minimizer->unset_cost_function();
+		minimizer->unset_cost_function(false);
 		cost_fun->unset_target(cleanup);
 		SG_UNREF(cost_fun);
 	}
