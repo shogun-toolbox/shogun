@@ -91,6 +91,26 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_SUM
 
+	/** Implementation of @see LinalgBackendBase::colwise_sum */
+	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	{  \
+		return colwise_sum_impl(a); \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_COLWISE_SUM
+	
+	/** Implementation of @see LinalgBackendBase::rowwise_sum */
+	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	{  \
+		return rowwise_sum_impl(a); \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_ROWWISE_SUM
+
 	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
@@ -126,6 +146,28 @@ private:
 	T sum_impl(const SGMatrix<T>& mat) const
 	{
 		return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).sum();
+	}
+
+	/** Eigen3 matrix colwise sum method */
+	template <typename T>
+	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat) const
+	{
+		SGVector<T> result(mat.num_cols);
+		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+		result_eig = mat_eig.colwise().sum();
+		return result;
+	}
+
+	/** Eigen3 matrix rowwise sum method */
+	template <typename T>
+	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat) const
+	{
+		SGVector<T> result(mat.num_rows);
+		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+		result_eig = mat_eig.rowwise().sum();
+		return result;
 	}
 
 };

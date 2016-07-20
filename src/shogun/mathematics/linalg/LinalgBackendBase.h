@@ -110,6 +110,34 @@ public:
 	#undef BACKEND_GENERIC_SUM
 
 	/**
+	 * Wrapper method of matrix rowwise sum that works with dense matrices.
+	 *
+	 * @see linalg::colwise_sum
+	 */
+	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_COLWISE_SUM
+	
+	/**
+	 * Wrapper method of matrix rowwise sum that works with dense matrices.
+	 *
+	 * @see linalg::rowwise_sum
+	 */
+	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_ROWWISE_SUM
+
+	/**
 	 * Wrapper method of Transferring data to GPU memory.
 	 * Does nothing if no GPU backend registered.
 	 *
