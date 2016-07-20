@@ -37,12 +37,13 @@ void AdaptMomentumCorrection::set_momentum_correction(MomentumCorrection* correc
 {
 	REQUIRE(correction,"MomentumCorrection must not NULL\n");
 	REQUIRE(correction != this, "MomentumCorrection can not be itself\n");
+	SG_REF(m_momentum_correction);
 	m_momentum_correction=correction;
 }
 
 AdaptMomentumCorrection::~AdaptMomentumCorrection()
 {
-	m_momentum_correction=NULL;
+	SG_UNREF(m_momentum_correction);
 };
 
 bool AdaptMomentumCorrection::is_initialized()

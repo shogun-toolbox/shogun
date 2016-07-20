@@ -353,7 +353,7 @@ float64_t CKLInference::optimization()
 	opt->set_cost_function(cost_fun);
 
         float64_t nlml_opt = opt->minimize();
-	opt->unset_cost_function();
+	opt->unset_cost_function(false);
 	cost_fun->unset_target(cleanup);
 
         SG_UNREF(cost_fun);

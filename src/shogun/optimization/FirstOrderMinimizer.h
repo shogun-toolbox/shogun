@@ -91,8 +91,12 @@ public:
 	/** Unset cost function used in the minimizer
 	 *
 	 */
-	virtual void unset_cost_function()
+	virtual void unset_cost_function(bool is_unref=true)
 	{
+		if(is_unref)
+		{
+			SG_UNREF(m_fun);
+		}
 		m_fun=NULL;
 	}
 
