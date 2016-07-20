@@ -156,7 +156,7 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 		GPUMemoryViennaCL<T>* c_gpu = new GPUMemoryViennaCL<T>(a.size());
 
-		c_gpu->data(a.size()) = alpha * a_gpu->data(a.size()) + beta * b_gpu->data(b.size());
+		c_gpu->data_vector(a.size()) = alpha * a_gpu->data_vector(a.size()) + beta * b_gpu->data_vector(b.size());
 		return SGVector<T>(c_gpu, a.size());
 	}
 
@@ -167,7 +167,7 @@ private:
 		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
-		return viennacl::linalg::inner_prod(a_gpu->data(a.size()), b_gpu->data(b.size()));
+		return viennacl::linalg::inner_prod(a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
 	}
 
 	/** ViennaCL sum method. */
@@ -175,7 +175,7 @@ private:
 	T sum_impl(const Container<T>& a) const
 	{
 		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
-		return viennacl::linalg::sum(a_gpu->data(a.size()));
+		return viennacl::linalg::sum(a_gpu->data_vector(a.size()));
 	}
 
 	/** ViennaCL matrix colwise sum method */
