@@ -72,6 +72,7 @@ public:
 	SGVector<float64_t> compute_statistic();
 	SGVector<float64_t> compute_variance_h0();
 	SGVector<float64_t> compute_variance_h1();
+	SGVector<float64_t> compute_test_power();
 	SGMatrix<float32_t> sample_null();
 	SGVector<float64_t> compute_p_value();
 	SGVector<bool> perform_test(float64_t alpha);
@@ -83,6 +84,7 @@ private:
 	void invalidate_precomputed_distance();
 	SGVector<float64_t> statistic(const internal::KernelManager& kernel_mgr);
 	SGVector<float64_t> variance_h1(const internal::KernelManager& kernel_mgr);
+	SGVector<float64_t> test_power(const internal::KernelManager& kernel_mgr);
 	SGMatrix<float32_t> sample_null(const internal::KernelManager& kernel_mgr);
 	SGVector<float64_t> p_values(const internal::KernelManager& kernel_mgr);
 };

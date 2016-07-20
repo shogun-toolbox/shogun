@@ -597,6 +597,45 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 		EXPECT_NEAR(var_est_multiple[i], var_est_single[i], 1E-4);
 }
 
+TEST(QuadraticTimeMMD, multikernel_compute_test_power)
+{
+	const index_t m=20;
+	const index_t n=20;
+	const index_t dim=1;
+	const index_t num_kernels=10;
+
+	float64_t difference=0.5;
+	sg_rand->set_seed(12345);
+
+	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
+
+	CFeatures* feat_p=gen_p->get_streamed_features(m);
+	CFeatures* feat_q=gen_q->get_streamed_features(n);
+
+	auto mmd=some<CQuadraticTimeMMD>(feat_p, feat_q);
+	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+	{
+		float64_t tau=pow(2, sigma);
+		mmd->multikernel()->add_kernel(new CGaussianKernel(10, tau));
+	}
+	SGVector<float64_t> test_power_multiple=mmd->multikernel()->compute_test_power();
+	mmd->multikernel()->cleanup();
+
+	SGVector<float64_t> test_power_single(num_kernels);
+	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
+	{
+		float64_t tau=pow(2, sigma);
+		mmd->set_kernel(new CGaussianKernel(10, tau));
+		test_power_single[i]=mmd->compute_variance_h1()/(mmd->compute_statistic()*(m+n)/m/n);
+	}
+
+	ASSERT_EQ(test_power_multiple.size(), test_power_single.size());
+	for (auto i=0; i<test_power_multiple.size(); ++i)
+		EXPECT_NEAR(test_power_multiple[i], test_power_single[i], 1E-4);
+}
+
 TEST(QuadraticTimeMMD, multikernel_perform_test)
 {
 	const index_t m=8;

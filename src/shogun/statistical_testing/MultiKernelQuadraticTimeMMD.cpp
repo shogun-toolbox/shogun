@@ -137,6 +137,12 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h1()
 	return variance_h1(self->m_kernel_mgr);
 }
 
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_test_power()
+{
+	ASSERT(self->m_owner);
+	return test_power(self->m_kernel_mgr);
+}
+
 SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null()
 {
 	ASSERT(self->m_owner);
@@ -204,6 +210,30 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManage
 	self->variance_h1_job.m_n_x=nx;
    	self->variance_h1_job.m_n_y=ny;
 	SGVector<float64_t> result=self->variance_h1_job(kernel_mgr);
+
+	kernel_mgr.unset_precomputed_distance();
+
+	SG_DEBUG("Leaving");
+	return result;
+}
+
+SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager& kernel_mgr)
+{
+	SG_DEBUG("Entering");
+	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
+	REQUIRE(self->m_owner->get_statistic_type()==EStatisticType::UNBIASED_FULL, "Only possible with UNBIASED_FULL!\n");
+
+	const auto nx=self->m_owner->get_num_samples_p();
+	const auto ny=self->m_owner->get_num_samples_q();
+
+	CDistance* distance=kernel_mgr.get_distance_instance();
+	self->update_pairwise_distance(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
+	SG_UNREF(distance);
+
+	self->variance_h1_job.m_n_x=nx;
+   	self->variance_h1_job.m_n_y=ny;
+	SGVector<float64_t> result=self->variance_h1_job.test_power(kernel_mgr);
 
 	kernel_mgr.unset_precomputed_distance();
 

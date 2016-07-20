@@ -76,7 +76,7 @@ struct ComputeMMD
 		for (auto i=0; i<size; ++i)
 		{
 			for (auto j=i; j<size; ++j)
-				add_term_lower(terms, kernel(i, j), i, j);
+				add_term_upper(terms, kernel(i, j), i, j);
 		}
 		return compute(terms);
 	}

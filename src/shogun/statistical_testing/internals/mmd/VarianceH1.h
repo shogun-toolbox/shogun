@@ -36,7 +36,9 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
+#include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 
 using std::vector;
 
@@ -199,6 +201,37 @@ struct VarianceH1
 					add_terms(kernel_functor(i, j), i, j);
 			}
 			result[k]=compute_variance_estimate();
+		}
+
+		free_terms();
+		return result;
+	}
+
+	SGVector<float64_t> test_power(const KernelManager& kernel_mgr)
+	{
+		ASSERT(m_n_x>0 && m_n_y>0);
+		ASSERT(m_n_x==m_n_y);
+		ASSERT(kernel_mgr.num_kernels()>0);
+		ComputeMMD compute_mmd_job;
+		compute_mmd_job.m_n_x=m_n_x;
+		compute_mmd_job.m_n_y=m_n_y;
+		compute_mmd_job.m_stype=EStatisticType::UNBIASED_FULL;
+
+		const index_t size=m_n_x+m_n_y;
+		SGVector<float64_t> result(kernel_mgr.num_kernels());
+		SelfAdjointPrecomputedKernel kernel_functor(SGVector<float32_t>(size*(size+1)/2));
+		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		{
+			auto kernel=kernel_mgr.kernel_at(k);
+			ASSERT(kernel);
+			kernel_functor.precompute(kernel);
+			init_terms();
+			for (auto i=0; i<size; ++i)
+			{
+				for (auto j=i+1; j<size; ++j)
+					add_terms(kernel_functor(i, j), i, j);
+			}
+			result[k]=compute_variance_estimate()/compute_mmd_job(kernel_functor);
 		}
 
 		free_terms();
