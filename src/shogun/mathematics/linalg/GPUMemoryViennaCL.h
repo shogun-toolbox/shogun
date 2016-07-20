@@ -37,6 +37,7 @@
 
 #ifdef HAVE_VIENNACL
 #include <viennacl/vector.hpp>
+#include <viennacl/matrix.hpp>
 #include <memory>
 
 namespace shogun
@@ -53,6 +54,11 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
+#if VIENNACL_VERSION >= 10600
+	typedef viennacl::matrix_base<T, std::size_t, std::ptrdiff_t> VCLMatrixBase;
+#else
+	typedef viennacl::matrix_base<T, viennacl::column_major, std::size_t, std::ptrdiff_t> VCLMatrixBase;
+#endif
 
 	/** Default constructor */
 	GPUMemoryViennaCL() : m_data(new VCLMemoryArray())
@@ -95,6 +101,16 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	VCLVectorBase data(index_t len)
 	{
 		return VCLVectorBase(*m_data, len, m_offset, 1);
+	}
+
+	/** ViennaCL Vector structure that saves the data */
+	VCLMatrixBase data_matrix(index_t nrows, index_t ncols)
+	{
+	#if VIENNACL_VERSION >= 10600
+		return VCLMatrixBase(*m_data, nrows, m_offset, 1, nrows, ncols, 0, 1, ncols, false);
+	#else
+		return VCLMatrixBase(*m_data, nrows, m_offset, 1, nrows, ncols, 0, 1, ncols);
+	#endif
 	}
 
 private:
