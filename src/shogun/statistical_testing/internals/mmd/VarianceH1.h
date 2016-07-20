@@ -48,7 +48,7 @@ namespace mmd
 
 struct VarianceH1
 {
-	VarianceH1() : m_should_free_terms(true)
+	VarianceH1() : m_free_terms(true)
 	{
 	}
 
@@ -73,7 +73,7 @@ struct VarianceH1
 
 	void free_terms()
 	{
-		if (m_should_free_terms)
+		if (m_free_terms)
 		{
 			m_sum_colwise_x.resize(0);
 			m_sum_colwise_y.resize(0);
@@ -186,7 +186,7 @@ struct VarianceH1
 	vector<float64_t> m_sum_colwise_xy;
 	Eigen::MatrixXd m_second_order_terms;
 
-	bool m_should_free_terms;
+	bool m_free_terms;
 };
 
 }

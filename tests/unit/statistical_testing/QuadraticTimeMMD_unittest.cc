@@ -310,6 +310,10 @@ TEST(QuadraticTimeMMD, compute_variance_h1)
 	mmd->set_kernel(kernel);
 	float64_t var=mmd->compute_variance_h1();
 	EXPECT_NEAR(var, 0.017511, 1E-6);
+
+	mmd->precompute_kernel_matrix(false);
+	var=mmd->compute_variance_h1();
+	EXPECT_NEAR(var, 0.017511, 1E-6);
 }
 
 TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)

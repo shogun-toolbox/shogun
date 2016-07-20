@@ -511,13 +511,23 @@ float64_t CQuadraticTimeMMD::compute_variance_h0()
 float64_t CQuadraticTimeMMD::compute_variance_h1()
 {
 	REQUIRE(get_kernel(), "Kernel is not set!\n");
-	REQUIRE(self->precompute,
-		"Computing variance estimate is not possible without precomputing the kernel matrix!\n");
-
 	self->init_kernel();
 	self->init_variance_h1_job();
-	SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
-	return self->variance_h1_job(kernel_matrix);
+	float64_t variance_estimate=0;
+	if (self->precompute)
+	{
+		SGMatrix<float32_t> kernel_matrix=self->get_kernel_matrix();
+		variance_estimate=self->variance_h1_job(kernel_matrix);
+	}
+	else
+	{
+		auto kernel=get_kernel();
+		if (kernel->get_kernel_type()==K_CUSTOM)
+			SG_INFO("Precompute is turned off, but provided kernel is already precomputed!\n");
+		auto kernel_functor=internal::Kernel(kernel);
+		variance_estimate=self->variance_h1_job(kernel_functor);
+	}
+	return variance_estimate;
 }
 
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
