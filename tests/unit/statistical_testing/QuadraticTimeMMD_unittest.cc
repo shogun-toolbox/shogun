@@ -248,14 +248,12 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 	for (index_t i=0; i<2*d*m; ++i)
 		data.matrix[i]=i;
 
-	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
 	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, m);
 	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
 
-	// normalise data
 	float64_t max_p=data_p.max_single();
 	float64_t max_q=data_q.max_single();
 
@@ -268,27 +266,15 @@ TEST(QuadraticTimeMMD, compute_variance_h0)
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
-	// shoguns kernel width is different
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance, convienience constructor
 	auto mmd=some<CQuadraticTimeMMD>(features_p, features_q);
 	mmd->set_kernel(kernel);
 
-	// assert local machine computed result
-	mmd->set_statistic_type(EStatisticType::UNBIASED_FULL);
 	float64_t var=mmd->compute_variance_h0();
-	EXPECT_NEAR(var, 0.0064888052500351456, 1E-10);
-
-	mmd->set_statistic_type(EStatisticType::BIASED_FULL);
-	var=mmd->compute_variance_h0();
-	EXPECT_NEAR(var, 0.0071464012090942663, 1E-10);
-
-	mmd->set_statistic_type(EStatisticType::UNBIASED_INCOMPLETE);
-	var=mmd->compute_variance_h0();
-	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
+	EXPECT_NEAR(var, 0.0042963027954101562, 1E-10);
 }
 
 TEST(QuadraticTimeMMD, compute_variance_h1)
