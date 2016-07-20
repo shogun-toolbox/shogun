@@ -33,7 +33,6 @@
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <shogun/optimization/NLOPTMinimizer.h>
-#include <shogun/features/DenseFeatures.h>
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
 
@@ -112,8 +111,10 @@ private:
         void init()
 	{
 		m_obj=NULL;
-		SG_ADD((CSGObject **)&m_obj, "CSigleSparseInference__m_obj",
-			"m_obj in AdamUpdater", MS_NOT_AVAILABLE);
+		//The existing implementation in CSGObject::get_parameter_incremental_hash()
+		//can NOT deal with circular reference when parameter_hash_changed() is called
+		//SG_ADD((CSGObject **)&m_obj, "CSigleSparseInference__m_obj",
+			//"m_obj in SingleSparseInferenceCostFunction", MS_NOT_AVAILABLE);
 	}
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
@@ -134,6 +135,7 @@ CSingleSparseInference::CSingleSparseInference(CKernel* kern, CFeatures* feat,
 void CSingleSparseInference::init()
 {
 	m_fully_sparse=false;
+	m_inducing_minimizer=NULL;
 	SG_ADD(&m_fully_sparse, "fully_Sparse",
 		"whether the kernel support sparse inference", MS_NOT_AVAILABLE);
 	m_lock=new CLock();
@@ -148,6 +150,10 @@ void CSingleSparseInference::init()
 		"tolearance used in inducing features optimization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_inducing_features,
 		"opt_inducing_features", "whether optimize inducing features", MS_NOT_AVAILABLE);
+
+	SG_ADD((CSGObject **)&m_inducing_minimizer,
+		"inducing_minimizer", "Minimizer used in optimize inducing features", MS_NOT_AVAILABLE);
+
 	m_max_ind_iterations=50;
 	m_ind_tolerance=1e-3;
 	m_opt_inducing_features=false;
@@ -163,6 +169,7 @@ void CSingleSparseInference::set_kernel(CKernel* kern)
 
 CSingleSparseInference::~CSingleSparseInference()
 {
+	SG_UNREF(m_inducing_minimizer);
 	delete m_lock;
 }
 
@@ -311,46 +318,67 @@ void CSingleSparseInference::set_tolearance_for_inducing_features(float64_t tol)
 	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
-void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization)
+void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer)
 {
 	m_opt_inducing_features=is_optmization;
-#ifdef USE_GPL_SHOGUN
-#ifdef HAVE_NLOPT
 	if (m_opt_inducing_features)
 	{
 		check_fully_sparse();
 		REQUIRE(m_fully_sparse,"Please use a kernel which has the functionality about optimizing inducing features\n");
 	}
+	if(minimizer)
+	{
+		if (minimizer!=m_inducing_minimizer)
+		{
+			SG_REF(minimizer);
+			SG_UNREF(m_inducing_minimizer);
+			m_inducing_minimizer=minimizer;
+		}
+	}
+	else
+	{
+
+		SG_UNREF(m_inducing_minimizer);
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
+		m_inducing_minimizer=new CNLOPTMinimizer();
+		SG_REF(m_inducing_minimizer);
 #else
-	SG_WARNING("For this functionality we require NLOPT library\n");
+		m_inducing_minimizer=NULL;
+		SG_WARNING("We require NLOPT library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)\n");
 #endif //HAVE_NLOPT
 #else 
-	SG_WARNING("For this functionality we require NLOPT (GPL License) library\n");
+		m_inducing_minimizer=NULL;
+		SG_WARNING("We require NLOPT (GPL License) library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)");
 #endif //USE_GPL_SHOGUN
-
+	}
 }
 
 void CSingleSparseInference::optimize_inducing_features()
 {
-#ifdef USE_GPL_SHOGUN
-#ifdef HAVE_NLOPT
 	if (!m_opt_inducing_features)
 		return;
 
+	REQUIRE(m_inducing_minimizer, "Please call enable_optimizing_inducing_features() first\n");
 	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
 	cost_fun->set_target(this);
 	bool cleanup=false;
 	if(this->ref_count()>1)
 		cleanup=true;
-    
-	CNLOPTMinimizer* opt=new CNLOPTMinimizer(cost_fun);
-	opt->set_nlopt_parameters(NLOPT_LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
-	opt->minimize();
 
-	cost_fun->unset_target(cleanup);
-	SG_UNREF(opt);
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
+	CNLOPTMinimizer* opt=dynamic_cast<CNLOPTMinimizer*>(m_inducing_minimizer);
+	if (opt)
+		opt->set_nlopt_parameters(NLOPT_LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
+
+	m_inducing_minimizer->set_cost_function(cost_fun);
+	m_inducing_minimizer->minimize();
+	m_inducing_minimizer->unset_cost_function(false);
+	cost_fun->unset_target(cleanup);
+	SG_UNREF(cost_fun);
 }
 
 }

@@ -35,6 +35,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/machine/gp/SparseInference.h>
+#include <shogun/optimization/FirstOrderMinimizer.h>
 #include <shogun/lib/Lock.h>
 
 namespace shogun
@@ -80,6 +81,7 @@ public:
 	virtual void set_kernel(CKernel* kern);
 
 	/** opitmize inducing features
+	 *
 	 */
 	virtual void optimize_inducing_features();
 
@@ -122,8 +124,9 @@ public:
 	/** whether enable to opitmize inducing features
 	 *
 	 * @param is_optmization enable optimization
+	 * @param minimizer minimizer used in optimization
 	 */
-	virtual void enable_optimizing_inducing_features(bool is_optmization);
+	virtual void enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer=NULL);
 
 protected:
 
@@ -222,6 +225,9 @@ protected:
 
 	/** a lock used to parallelly compute derivatives wrt hyperparameters */
 	CLock* m_lock;
+
+	/** minimizer used in finding optimal inducing features*/
+	FirstOrderMinimizer* m_inducing_minimizer;
 private:
 	/* init */
 	void init();
