@@ -52,6 +52,8 @@ void MaxTestPower::compute_measures()
 {
 	init_measures();
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
+	const auto m=estimator->get_num_samples_p();
+	const auto n=estimator->get_num_samples_q();
 	auto existing_kernel=estimator->get_kernel();
 	const size_t num_kernels=kernel_mgr.num_kernels();
 	auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
@@ -61,7 +63,9 @@ void MaxTestPower::compute_measures()
 		auto kernel=kernel_mgr.kernel_at(i);
 		estimator->set_kernel(kernel);
 		auto estimates=casted_estimator->compute_statistic_variance();
-		measures[i]=estimates.first/CMath::sqrt(estimates.second+lambda);
+		auto var_est=estimates.first;
+		auto mmd_est=estimates.second*(m+n)/m/n;
+		measures[i]=var_est/CMath::sqrt(mmd_est+lambda);
 		estimator->cleanup();
 	}
 	if (existing_kernel)

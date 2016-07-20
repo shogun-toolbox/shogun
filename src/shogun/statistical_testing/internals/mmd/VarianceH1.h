@@ -53,7 +53,7 @@ namespace mmd
 
 struct VarianceH1
 {
-	VarianceH1() : m_free_terms(true)
+	VarianceH1() : m_lambda(1E-5), m_free_terms(true)
 	{
 	}
 
@@ -231,7 +231,9 @@ struct VarianceH1
 				for (auto j=i+1; j<size; ++j)
 					add_terms(kernel_functor(i, j), i, j);
 			}
-			result[k]=compute_variance_estimate()/compute_mmd_job(kernel_functor);
+			auto var_est=compute_variance_estimate();
+			auto mmd_est=compute_mmd_job(kernel_functor);
+			result[k]=var_est/CMath::sqrt(mmd_est+m_lambda);
 		}
 
 		free_terms();
@@ -247,6 +249,7 @@ struct VarianceH1
 	float64_t m_sum_sq_x;
 	float64_t m_sum_sq_y;
 	float64_t m_sum_sq_xy;
+	float64_t m_lambda;
 
 	vector<float64_t> m_sum_colwise_x;
 	vector<float64_t> m_sum_colwise_y;
