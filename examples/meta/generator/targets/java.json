@@ -11,9 +11,29 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "$typeName $name = new $typeName($arguments)",
-        "Copy": "$typeName $name = $expr"
+        "Copy": "$typeName $name = $expr",
+        "BoolVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "CharVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ByteVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "WordVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "IntVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "LongIntVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ULongIntVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "RealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "LongRealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "BoolMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "CharMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ByteMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "WordMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "IntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "LongIntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ULongIntMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "ShortRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "RealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "LongRealMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",
         "Math": "org.shogun.Math",
@@ -59,9 +79,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier.get($indices)",
+            "Matrix": "$identifier.get($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier.put($indices, $expr)",
+            "Matrix": "$identifier.put($indices, $expr)"
+        },
         "ZeroIndexed": true
     },
     "Print": "System.out.println($expr)",

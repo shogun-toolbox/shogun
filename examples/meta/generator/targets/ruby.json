@@ -4,17 +4,39 @@
     "Comment": "#$comment\n",
     "Init": {
         "Construct": "$name = Modshogun::$typeName.new $arguments",
-        "Copy": "$name = $expr"
+        "Copy": "$name = $expr",
+        "BoolVector": "$name = NArray.byte($arguments)",
+        "CharVector": "$name = NArray.byte($arguments)",
+        "ByteVector": "$name = NArray.byte($arguments)",
+        "WordVector": "$name = NArray.byte($arguments)",
+        "IntVector": "$name = NArray.sint($arguments)",
+        "LongIntVector": "$name = NArray.int($arguments)",
+        "ULongIntVector": "$name = NArray.int($arguments)",
+        "ShortRealVector": "$name = NArray.sfloat($arguments)",
+        "RealVector": "$name = NArray.float($arguments)",
+        "LongRealVector": "$name = NArray.float($arguments)",
+        "ComplexVector": "$name = NArray.scomplex($arguments)",
+        "BoolMatrix": "$name = NMatrix.byte($arguments)",
+        "CharMatrix": "$name = NMatrix.float($arguments)",
+        "ByteMatrix": "$name = NMatrix.byte($arguments)",
+        "WordMatrix": "$name = NMatrix.byte($arguments)",
+        "IntMatrix": "$name = NMatrix.sint($arguments)",
+        "LongIntMatrix": "$name = NMatrix.int($arguments)",
+        "ULongIntMatrix": "$name = NMatrix.int($arguments)",
+        "ShortRealMatrix": "$name = NMatrix.sfloat($arguments)",
+        "RealMatrix": "$name = NMatrix.float($arguments)",
+        "LongRealMatrix": "$name = NMatrix.float($arguments)",
+        "ComplexMatrix": "$name = NMatrix.scomplex($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
         "BoolLiteral": {
-            "True": "true",
-            "False": "false"
+            "True": "1",
+            "False": "0"
         },
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
@@ -22,9 +44,15 @@
         "Identifier": "$identifier",
         "Enum":"Modshogun::$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "puts $expr",

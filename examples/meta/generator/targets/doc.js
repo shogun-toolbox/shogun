@@ -216,13 +216,24 @@
     },
 
     // Translation rules for access and assignment to SGVector/SGMatrix elements
-    "ElementAccess": {
-        /** Keywords:
-         * $identifier: name of vector/matrix object. 
-         * $indices: single index or pair of indices
-         */
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier($indices)",
+    "Element": {
+        "Access": {
+            /** Keywords:
+             * $identifier: name of vector/matrix object.
+             * $indices: single index or pair of indices
+             */
+            "Vector": "$identifier.get($indices)",
+            "Matrix": "$identifier.get($indices)"
+        },
+        "Assign": {
+            /** Keywords:
+             * $identifier: name of vector/matrix object.
+             * $indices: single index or pair of indices
+             * $expr: expression to assign to matrix/vector element
+             */
+            "Vector": "$identifier.put($indices, $expr)",
+            "Matrix": "$identifier.put($indices, $expr)"
+        },
 
         /** Is the target language zero-indexed?
          * Note that the meta-language is zero-indexed. If this value is set to

@@ -6,7 +6,7 @@
         "Construct": "$name <- $typeName($arguments)",
         "Copy": "$name <- $expr"
     },
-    "Assign": "$lhs <- $expr",
+    "Assign": "$identifier <- $expr",
     "Type": {
         "Default": "$typeName"
     },
@@ -22,9 +22,15 @@
         "Identifier": "$identifier",
         "Enum":"\"$value\""
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
         "ZeroIndexed": false
     },
     "Print": "print($expr)",

@@ -34,7 +34,7 @@
         "RealMatrix": "$name = np.zeros( ($arguments), dtype='float64')",
         "ComplexMatrix": "$name = np.zeros( ($arguments), dtype='complex128')"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName"
     },
@@ -50,9 +50,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier[$indices]",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "print $expr",

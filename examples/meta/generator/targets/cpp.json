@@ -10,9 +10,31 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "auto $name = some<C$typeName>($arguments)",
-        "Copy": "auto $name = $expr"
+        "Copy": "auto $name = $expr",
+        "BoolVector": "auto $name = SGVector<bool>($arguments)",
+        "CharVector": "auto $name = SGVector<char>($arguments)",
+        "ByteVector": "auto $name = SGVector<uint8_t>($arguments)",
+        "WordVector": "auto $name = SGVector<uint16_t>($arguments)",
+        "IntVector": "auto $name = SGVector<int32_t>($arguments)",
+        "LongIntVector": "auto $name = SGVector<int64_t>($arguments)",
+        "ULongIntVector": "auto $name = SGVector<uint64_t>($arguments)",
+        "ShortRealVector": "auto $name = SGVector<float32_t>($arguments)",
+        "RealVector": "auto $name = SGVector<float64_t>($arguments)",
+        "LongRealVector": "auto $name = SGVector<floatmax_t>($arguments)",
+        "ComplexVector": "auto $name = SGVector<complex128_t>($arguments)",
+        "BoolMatrix": "auto $name = SGMatrix<bool>($arguments)",
+        "CharMatrix": "auto $name = SGMatrix<char>($arguments)",
+        "ByteMatrix": "auto $name = SGMatrix<uint8_t>($arguments)",
+        "WordMatrix": "auto $name = SGMatrix<uint16_t>($arguments)",
+        "IntMatrix": "auto $name = SGMatrix<int32_t>($arguments)",
+        "LongIntMatrix": "auto $name = SGMatrix<int64_t>($arguments)",
+        "ULongIntMatrix": "auto $name = SGMatrix<uint64_t>($arguments)",
+        "ShortRealMatrix": "auto $name = SGMatrix<float32_t>($arguments)",
+        "RealMatrix": "auto $name = SGMatrix<float64_t>($arguments)",
+        "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
+        "ComplexMatrix": "auto $name = SGMatrix<complex128_t>($arguments)"
     },
-    "Assign": "$lhs = $expr",
+    "Assign": "$identifier = $expr",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
@@ -62,9 +84,15 @@
         "Identifier": "$identifier",
         "Enum":"$value"
     },
-    "ElementAccess": {
-        "Vector": "$identifier[$indices]",
-        "Matrix": "$identifier($indices)",
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier($indices) = $expr"
+        },
         "ZeroIndexed": true
     },
     "Print": "SG_SPRINT($expr)",
