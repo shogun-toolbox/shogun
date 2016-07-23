@@ -98,7 +98,7 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	}
 
 	/** ViennaCL Vector structure that saves the data */
-	VCLVectorBase data(index_t len)
+	VCLVectorBase data_vector(index_t len)
 	{
 		return VCLVectorBase(*m_data, len, m_offset, 1);
 	}
