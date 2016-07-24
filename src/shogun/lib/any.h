@@ -144,8 +144,8 @@ namespace shogun
          */
         bool equals(void** storage, void** other_storage) const
         {
-            int typed_storage = *(reinterpret_cast<int*>(*storage));
-            int typed_other_storage = *(reinterpret_cast<int*>(*other_storage));
+            T typed_storage = *(reinterpret_cast<T*>(*storage));
+            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
             return typed_storage == typed_other_storage;
         }
     };
