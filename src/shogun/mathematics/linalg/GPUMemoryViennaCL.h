@@ -54,6 +54,8 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
+
+/** @see <a href="http://viennacl.sourceforge.net/doc/changelog.html"> */
 #if VIENNACL_VERSION >= 10600
 	typedef viennacl::matrix_base<T, std::size_t, std::ptrdiff_t> VCLMatrixBase;
 #else
