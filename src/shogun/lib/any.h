@@ -42,275 +42,272 @@
 
 namespace shogun
 {
-    /** Converts compiler-dependent name of class to
-     * something human readable.
-     * @return human readable name of class
-     */
-    template <typename T>
-    std::string demangledType()
-    {
-        size_t length;
-        int status;
-        char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
-        std::string demangled_string(demangled);
-        free(demangled);
-        return demangled_string;
-    }
+	/** Converts compiler-dependent name of class to
+	 * something human readable.
+	 * @return human readable name of class
+	 */
+	template <typename T>
+	std::string demangledType()
+	{
+		size_t length;
+		int status;
+		char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
+		std::string demangled_string(demangled);
+		free(demangled);
+		return demangled_string;
+	}
 
-    /** @brief An interface for a policy to store a value.
-     * Value can be any data like primitive data-types, shogun objects, etc.
-     * Policy defines how to handle this data. It works with a
-     * provided memory region and is able to set value, clear it
-     * and return the type-name as string.
-     */
-    class BaseAnyPolicy
-    {
-    public:
-        /** Puts provided value pointed by v (untyped to be generic) to storage.
-         * @param storage pointer to a pointer to storage
-         * @param v pointer to value
-         */
-        virtual void set(void** storage, const void* v) const = 0;
-        
-        /** Clears storage.
-         * @param storage pointer to a pointer to storage
-         */
-        virtual void clear(void** storage) const = 0;
-        
-        /** Returns type-name as string.
-         * @return name of type class
-         */
-        virtual std::string type() const = 0;
-        
-        /** Compares type.
-         * @param ti type information
-         * @return true if type matches
-         */
-        virtual bool matches(const std::type_info& ti) const = 0;
+	/** @brief An interface for a policy to store a value.
+	 * Value can be any data like primitive data-types, shogun objects, etc.
+	 * Policy defines how to handle this data. It works with a
+	 * provided memory region and is able to set value, clear it
+	 * and return the type-name as string.
+	 */
+	class BaseAnyPolicy
+	{
+	public:
+		/** Puts provided value pointed by v (untyped to be generic) to storage.
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value
+		 */
+		virtual void set(void** storage, const void* v) const = 0;
 
-        /** Compares two storages.
-         * @param storage pointer to a pointer to storage
-         * @param other_storage pointer to a pointer to another storage
-         * @return true if both storages have same value
-         */
-        virtual bool equals(void** storage, void** other_storage) const = 0;
-    };
-    
-    /** @brief This is one concrete implementation of policy that
-     * uses void pointers to store values.
-     */
-    template <typename T>
-    class PointerValueAnyPolicy : public BaseAnyPolicy
-    {
-    public:
-        /** Puts provided value pointed by v (untyped to be generic) to storage.
-         * @param storage pointer to a pointer to storage
-         * @param v pointer to value
-         */
-        virtual void set(void** storage, const void* v) const
-        {
-            *(storage) = new T(*reinterpret_cast<T const*>(v));
-        }
-        
-        /** Clears storage.
-         * @param storage pointer to a pointer to storage
-         */
-        virtual void clear(void** storage) const
-        {
-            delete reinterpret_cast<T*>(*storage);
-        }
-        
-        /** Returns type-name as string.
-         * @return name of type class
-         */
-        virtual std::string type() const
-        {
-            return demangledType<T>();
-        }
-        
-        /** Compares type.
-         * @param ti type information
-         * @return true if type matches
-         */
-        virtual bool matches(const std::type_info& ti) const
-        {
-            return typeid(T) == ti;
-        }
+		/** Clears storage.
+		 * @param storage pointer to a pointer to storage
+		 */
+		virtual void clear(void** storage) const = 0;
 
-        /** Compares two storages.
-         * @param storage pointer to a pointer to storage
-         * @param other_storage pointer to a pointer to another storage
-         * @return true if both storages have same value
-         */
-        bool equals(void** storage, void** other_storage) const
-        {
-            int typed_storage = *(reinterpret_cast<int*>(*storage));
-            int typed_other_storage = *(reinterpret_cast<int*>(*other_storage));
-            return typed_storage == typed_other_storage;
-        }
-    };
+		/** Returns type-name as string.
+		 * @return name of type class
+		 */
+		virtual std::string type() const = 0;
 
-    /** @brief Allows to store objects of arbitrary types
-     * by using a BaseAnyPolicy and provides a type agnostic API.
-     * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
-     * and CSGObject::has().
-     * .
-     */
-    class Any
-    {
-    public:
-        /** Used to denote an empty Any object */
-        struct Empty;
+		/** Compares type.
+		 * @param ti type information
+		 * @return true if type matches
+		 */
+		virtual bool matches(const std::type_info& ti) const = 0;
 
-        /** Constructor */
-        Any() : policy(select_policy<Empty>()), storage(nullptr)
-        {
-        }
+		/** Compares two storages.
+		 * @param storage pointer to a pointer to storage
+		 * @param other_storage pointer to a pointer to another storage
+		 * @return true if both storages have same value
+		 */
+		virtual bool equals(void** storage, void** other_storage) const = 0;
+	};
 
-        /** Constructor to copy value */
-        template <typename T>
-        explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
-        {
-            policy->set(&storage, &v);
-        }
+	/** @brief This is one concrete implementation of policy that
+	 * uses void pointers to store values.
+	 */
+	template <typename T>
+	class PointerValueAnyPolicy : public BaseAnyPolicy
+	{
+	public:
+		/** Puts provided value pointed by v (untyped to be generic) to storage.
+		 * @param storage pointer to a pointer to storage
+		 * @param v pointer to value
+		 */
+		virtual void set(void** storage, const void* v) const
+		{
+			*(storage) = new T(*reinterpret_cast<T const*>(v));
+		}
 
-        /** Copy constructor */
-        Any(const Any& other) : policy(other.policy), storage(nullptr)
-        {
-            policy->set(&storage, other.storage);
-        }
+		/** Clears storage.
+		 * @param storage pointer to a pointer to storage
+		 */
+		virtual void clear(void** storage) const
+		{
+			delete reinterpret_cast<T*>(*storage);
+		}
 
-        /** Assignment operator
-         * @param other another Any object
-         * @return Any object
-         */
-        Any& operator=(const Any& other)
-        {
-            policy->clear(&storage);
-            policy = other.policy;
-            policy->set(&storage, other.storage);
-            return *(this);
-        }
+		/** Returns type-name as string.
+		 * @return name of type class
+		 */
+		virtual std::string type() const
+		{
+			return demangledType<T>();
+		}
 
-        /** Equality operator
-         * @param lhs Any object on left hand side
-         * @param rhs Any object on right hand side
-         * @return true if both are equal
-         */
-        friend inline bool operator==(const Any& lhs, const Any& rhs);
+		/** Compares type.
+		 * @param ti type information
+		 * @return true if type matches
+		 */
+		virtual bool matches(const std::type_info& ti) const
+		{
+			return typeid(T) == ti;
+		}
 
-        /** Inequality operator
-         * @param lhs Any object on left hand side
-         * @param rhs Any object on right hand side
-         * @return false if both are equal
-         */
-        friend inline bool operator!=(const Any& lhs, const Any& rhs);
+		/** Compares two storages.
+		 * @param storage pointer to a pointer to storage
+		 * @param other_storage pointer to a pointer to another storage
+		 * @return true if both storages have same value
+		 */
+		bool equals(void** storage, void** other_storage) const
+		{
+			int typed_storage = *(reinterpret_cast<int*>(*storage));
+			int typed_other_storage = *(reinterpret_cast<int*>(*other_storage));
+			return typed_storage == typed_other_storage;
+		}
+	};
 
-        /** Destructor */
-        ~Any()
-        {
-            policy->clear(&storage);
-        }
+	/** @brief Allows to store objects of arbitrary types
+	 * by using a BaseAnyPolicy and provides a type agnostic API.
+	 * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
+	 * and CSGObject::has().
+	 * .
+	 */
+	class Any
+	{
+	public:
+		/** Used to denote an empty Any object */
+		struct Empty;
 
-        /** Casts hidden value to provided type, fails otherwise.
-         * @return type-casted value
-         */
-        template <typename T>
-        T& as() const
-        {
-            if (same_type<T>())
-            {
-                return *(reinterpret_cast<T*>(storage));
-            } 
-            else 
-            {
-                throw std::logic_error("Bad cast to " + demangledType<T>() + 
-                        " but the type is " + policy->type());
-            }
-        }
+		/** Constructor */
+		Any() : policy(select_policy<Empty>()), storage(nullptr)
+		{
+		}
 
-        /** @return true if type is same. */
-        template <typename T>
-        inline bool same_type() const
-        {
-            return (policy == select_policy<T>()) || same_type_fallback<T>();
-        }
+		/** Constructor to copy value */
+		template <typename T>
+		explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
+		{
+			policy->set(&storage, &v);
+		}
 
-        /** @return true if type-id is same. */
-        template <typename T>
-        bool same_type_fallback() const
-        {
-            return policy->matches(typeid(T));
-        }
+		/** Copy constructor */
+		Any(const Any& other) : policy(other.policy), storage(nullptr)
+		{
+			policy->set(&storage, other.storage);
+		}
 
-        /** @return true if Any object is empty. */
-        bool empty() const
-        {
-            return same_type<Empty>();
-        }
-    private:
-        template <typename T>
-        static BaseAnyPolicy* select_policy()
-        {
-            typedef PointerValueAnyPolicy<T> Policy;
-            static Policy policy;
-            return &policy;
-        }
+		/** Assignment operator
+		 * @param other another Any object
+		 * @return Any object
+		 */
+		Any& operator=(const Any& other)
+		{
+			policy->clear(&storage);
+			policy = other.policy;
+			policy->set(&storage, other.storage);
+			return *(this);
+		}
 
-        BaseAnyPolicy* policy;
-        void* storage;
-    };
+		/** Equality operator
+		 * @param lhs Any object on left hand side
+		 * @param rhs Any object on right hand side
+		 * @return true if both are equal
+		 */
+		friend inline bool operator==(const Any& lhs, const Any& rhs);
 
-    inline bool operator==(const Any& lhs, const Any& rhs)
-    {
-        void* lhs_storage = lhs.storage;
-        void* rhs_storage = rhs.storage;        
-        return lhs.policy == rhs.policy and
-            lhs.policy->equals(&lhs_storage, &rhs_storage);
-    }
+		/** Inequality operator
+		 * @param lhs Any object on left hand side
+		 * @param rhs Any object on right hand side
+		 * @return false if both are equal
+		 */
+		friend inline bool operator!=(const Any& lhs, const Any& rhs);
 
-    inline bool operator!=(const Any& lhs, const Any& rhs)
-    {        
-        return !(lhs == rhs);
-    }
+		/** Destructor */
+		~Any()
+		{
+			policy->clear(&storage);
+		}
 
-    /** Used to denote an empty Any object */
-    struct Any::Empty
-    {
-        /** Equality operator */
-        bool operator==(const Empty& other) const
-        {
-            return true;
-        }
-    };
+		/** Casts hidden value to provided type, fails otherwise.
+		 * @return type-casted value
+		 */
+		template <typename T>
+		T& as() const
+		{
+			if (same_type<T>())
+				return *(reinterpret_cast<T*>(storage));
+			else
+				throw std::logic_error("Bad cast to " + demangledType<T>() +
+					" but the type is " + policy->type());
+		}
 
-    /** Erases value type i.e. converts it to Any
-     * For input object of any type, it returns an Any object
-     * which stores the input object's raw value. It saves the type
-     * information internally to be recalled later by using recall_type().
-     *
-     * @param v value
-     * @return Any object with the input value
-     */
-    template <typename T>
-    inline Any erase_type(const T& v)
-    {
-        return Any(v);
-    }
+		/** @return true if type is same. */
+		template <typename T>
+		inline bool same_type() const
+		{
+			return (policy == select_policy<T>()) || same_type_fallback<T>();
+		}
 
-    /** Tries to recall Any type, fails when type is wrong.
-     * Any stores type information of an object internally in a BaseAnyPolicy.
-     * This function returns type-casted value if the internal type information
-     * matches with the provided typename, otherwise throws std::logic_error.
-     *
-     * @param any object of Any
-     * @return type-casted value
-     */
-    template <typename T>
-    inline T recall_type(const Any& any)
-    {
-        return any.as<T>();
-    }
+		/** @return true if type-id is same. */
+		template <typename T>
+		bool same_type_fallback() const
+		{
+			return policy->matches(typeid(T));
+		}
+
+		/** @return true if Any object is empty. */
+		bool empty() const
+		{
+			return same_type<Empty>();
+		}
+
+	private:
+		template <typename T>
+		static BaseAnyPolicy* select_policy()
+		{
+			typedef PointerValueAnyPolicy<T> Policy;
+			static Policy policy;
+			return &policy;
+		}
+
+		BaseAnyPolicy* policy;
+		void* storage;
+	};
+
+	inline bool operator==(const Any& lhs, const Any& rhs)
+	{
+		void* lhs_storage = lhs.storage;
+		void* rhs_storage = rhs.storage;
+		return lhs.policy == rhs.policy and
+		    lhs.policy->equals(&lhs_storage, &rhs_storage);
+	}
+
+	inline bool operator!=(const Any& lhs, const Any& rhs)
+	{
+		return !(lhs == rhs);
+	}
+
+	/** Used to denote an empty Any object */
+	struct Any::Empty
+	{
+		/** Equality operator */
+		bool operator==(const Empty& other) const
+		{
+			return true;
+		}
+	};
+
+	/** Erases value type i.e. converts it to Any
+	 * For input object of any type, it returns an Any object
+	 * which stores the input object's raw value. It saves the type
+	 * information internally to be recalled later by using recall_type().
+	 *
+	 * @param v value
+	 * @return Any object with the input value
+	 */
+	template <typename T>
+	inline Any erase_type(const T& v)
+	{
+		return Any(v);
+	}
+
+	/** Tries to recall Any type, fails when type is wrong.
+	 * Any stores type information of an object internally in a BaseAnyPolicy.
+	 * This function returns type-casted value if the internal type information
+	 * matches with the provided typename, otherwise throws std::logic_error.
+	 *
+	 * @param any object of Any
+	 * @return type-casted value
+	 */
+	template <typename T>
+	inline T recall_type(const Any& any)
+	{
+		return any.as<T>();
+	}
 
 }
 

@@ -431,7 +431,7 @@ protected:
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by set() and retrieved by get().
 	 * Parameters can be registered in the constructor of the class.
-	 * 
+	 *
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
@@ -509,7 +509,7 @@ private:
 	 * @param any value without type information of the parameter
 	 */
 	void set_with_base_tag(const BaseTag& _tag, const Any& any);
-	
+
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
