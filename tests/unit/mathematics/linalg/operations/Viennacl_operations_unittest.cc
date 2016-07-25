@@ -9,7 +9,7 @@
 using namespace shogun;
 using namespace linalg;
 
-TEST(LinalgBackendViennaCL, add)
+TEST(LinalgBackendViennaCL, SGVector_add)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
@@ -34,7 +34,7 @@ TEST(LinalgBackendViennaCL, add)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
-TEST(LinalgBackendViennaCL, dot)
+TEST(LinalgBackendViennaCL, SGVector_dot)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
@@ -74,7 +74,7 @@ TEST(LinalgBackendViennaCL, SGMatrix_sum)
 		a[i] = i;
 
 	a_gpu = to_gpu(a);
-	
+
 	auto result = sum(a_gpu);
 	EXPECT_NEAR(result, 15, 1E-15);
 }

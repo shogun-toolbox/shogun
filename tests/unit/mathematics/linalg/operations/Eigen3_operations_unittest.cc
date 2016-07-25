@@ -6,7 +6,7 @@
 using namespace shogun;
 using namespace linalg;
 
-TEST(LinalgBackendEigen, add)
+TEST(LinalgBackendEigen, SGVector_add)
 {
 	const float64_t alpha = 0.3;
 	const float64_t beta = -1.5;
@@ -26,7 +26,7 @@ TEST(LinalgBackendEigen, add)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
-TEST(LinalgBackendEigen, dot)
+TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;
 	SGVector<int32_t> a(size), b(size);
