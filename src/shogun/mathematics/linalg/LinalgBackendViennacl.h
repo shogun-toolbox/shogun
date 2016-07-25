@@ -189,7 +189,7 @@ private:
 
 		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
 			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat_gpu->m_offset),
-			result_gpu->data(mat.num_cols), cl_int(result_gpu->m_offset)));
+			result_gpu->data_vector(mat.num_cols), cl_int(result_gpu->m_offset)));
 
 		return SGVector<T>(result_gpu, mat.num_cols);
 	}
@@ -205,7 +205,7 @@ private:
 
 		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
 			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat_gpu->m_offset),
-			result_gpu->data(mat.num_rows), cl_int(result_gpu->m_offset)));
+			result_gpu->data_vector(mat.num_rows), cl_int(result_gpu->m_offset)));
 
 		return SGVector<T>(result_gpu, mat.num_rows);
 	}
