@@ -252,8 +252,23 @@ void lars_n_less_than_d_feature_test_templated()
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);
 	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
+	SG_REF(lars)
+
 	lars->set_labels(labels);
-	lars->train(features);
+
+	//Catch exceptions thrown when training, clean up
+	try
+	{
+		lars->train(features);
+	}
+	catch(...)
+	{
+		SG_UNREF(lars);
+		SG_UNREF(features);
+		SG_UNREF(labels);
+
+		throw;
+	}
 
 	SGVector<float64_t> active2 = lars->get_w_for_var(2);
 	SGVector<float64_t> active1 = lars->get_w_for_var(1);

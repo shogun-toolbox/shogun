@@ -124,10 +124,9 @@ public:
 	
 	void switch_w(int32_t num_variable)
 	{
-		if (w.vlen <= 0)
-			SG_ERROR("Please train the model before updating its parameters")
-		if (size_t(num_variable) >= m_beta_idx.size() || num_variable < 0)
-			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable)
+		REQUIRE(w.vlen > 0,"Please train the model (i.e. run the model's train() method) before updating its weights.\n")
+		REQUIRE(size_t(num_variable) < m_beta_idx.size() && num_variable >= 0,
+			"Cannot switch to an estimator of %d non-zero coefficients.\n", num_variable)
 		if (w.vector == NULL)
 			w = SGVector<float64_t>(w.vlen);
 
@@ -188,13 +187,12 @@ public:
 
 protected:
 	/**
-	* An interface method to - this is called by the superclass's (CLinearMachine)
-	* train() method.  This method checks to see if data is a dense feature vector,
-	* and that it's elements are of type float64_t or float32_t.  It then calls 
-	* train_machine_templated with the appropriate template parameters (either float64_t or
-	* float32_t)
-	* @param data the data being passed to LARs to be trained on
-	* @see train
+	* An interface method used call train_machine_templated - 
+	* this is called by the superclass's train method (@see CLinearMachine::train).  
+	* Checks to see if data is a dense feature vector,
+	* and that it's elements are floating point types.  It then calls 
+	* train_machine_templated with the appropriate template parameters
+	* @param data training data
 	* @see train_machine_templated
 	*/
 	bool train_machine(CFeatures * data);
@@ -210,14 +208,16 @@ protected:
 	static void plane_rot(ST x0, ST x1,
 		ST &y0, ST &y1, SGMatrix<ST> &G);
 
+	#ifndef SWIG
 	template <typename ST>
 	static void find_max_abs(const std::vector<ST> &vec, const std::vector<bool> &ignore_mask,
 		int32_t &imax, ST& vmax);
+	#endif
 
 private:
 	/**
 	* A templated specialization of the train_machine method
-	* @param data the data being passed to LARs to be trained on
+	* @param data training data
 	* @see train_machine
 	*/
 	template <typename ST>
