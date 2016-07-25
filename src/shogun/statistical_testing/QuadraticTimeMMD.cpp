@@ -619,6 +619,16 @@ void CQuadraticTimeMMD::precompute_kernel_matrix(bool precompute)
 	self->precompute=precompute;
 }
 
+void CQuadraticTimeMMD::save_permutation_inds(bool save_inds)
+{
+	self->permutation_job.m_save_inds=save_inds;
+}
+
+SGMatrix<index_t> CQuadraticTimeMMD::get_permutation_inds() const
+{
+	return self->permutation_job.m_all_inds;
+}
+
 const char* CQuadraticTimeMMD::get_name() const
 {
 	return "QuadraticTimeMMD";

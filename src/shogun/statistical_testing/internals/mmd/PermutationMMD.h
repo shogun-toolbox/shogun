@@ -48,6 +48,10 @@ namespace mmd
 
 struct PermutationMMD : ComputeMMD
 {
+	PermutationMMD() : m_save_inds(false)
+	{
+	}
+
 	template <class Kernel>
 	SGVector<float32_t> operator()(const Kernel& kernel)
 	{
@@ -197,6 +201,11 @@ struct PermutationMMD : ComputeMMD
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
 			CMath::permute(sg_wrapper);
+			if (m_save_inds)
+			{
+				auto offset=n*m_num_null_samples;
+				std::copy(sg_wrapper.data(), sg_wrapper.data()+sg_wrapper.size(), &m_all_inds.matrix[offset]);
+			}
 			for (size_t i=0; i<m_permuted_inds.size(); ++i)
 				m_inverted_permuted_inds[n][m_permuted_inds[i]]=i;
 		}
@@ -223,11 +232,16 @@ struct PermutationMMD : ComputeMMD
 			if (m_inverted_permuted_inds[i].size()!=size_t(size))
 				m_inverted_permuted_inds[i].resize(size);
 		}
+
+		if (m_save_inds)
+			m_all_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
 	index_t m_num_null_samples;
+	bool m_save_inds;
 	std::vector<index_t> m_permuted_inds;
 	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
+	SGMatrix<index_t> m_all_inds;
 };
 
 }

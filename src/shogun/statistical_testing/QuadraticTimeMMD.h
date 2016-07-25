@@ -70,6 +70,8 @@ public:
 	index_t spectrum_get_num_eigenvalues() const;
 
 	void precompute_kernel_matrix(bool precompute);
+	void save_permutation_inds(bool save_inds);
+	SGMatrix<index_t> get_permutation_inds() const;
 
 	virtual const char* get_name() const;
 
