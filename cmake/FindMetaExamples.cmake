@@ -7,7 +7,10 @@ function(find_meta_examples)
 	ENDIF()
 	
 	IF(NOT USE_GPL_SHOGUN)
-		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/gaussian_processes/gaussian_process_regression.sg)
+		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS
+			${CMAKE_SOURCE_DIR}/examples/meta/src/gaussian_processes/gaussian_process_regression.sg
+			${CMAKE_SOURCE_DIR}/examples/meta/src/multiclass_classifier/multiclass_logisticregression.sg
+			)
 	ENDIF()
 	
 	IF(NOT HAVE_LAPACK)
