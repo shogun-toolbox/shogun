@@ -14,7 +14,10 @@ function(find_meta_examples)
 	ENDIF()
 	
 	IF(NOT HAVE_LAPACK)
-		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS ${CMAKE_SOURCE_DIR}/examples/meta/src/regression/linear_ridge_regression.sg)
+		LIST(REMOVE_ITEM META_EXAMPLE_LISTINGS
+			${CMAKE_SOURCE_DIR}/examples/meta/src/regression/linear_ridge_regression.sg
+			${CMAKE_SOURCE_DIR}/examples/meta/src/clustering/gmm.sg
+			)
 	ENDIF()
 
 	IF(NOT USE_SVMLIGHT)
