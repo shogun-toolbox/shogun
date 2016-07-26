@@ -9,7 +9,7 @@
 #   endif()
 
 find_program( CTAGS_EXECUTABLE
-    NAMES ctags exctags
+    NAMES exctags ctags
     DOC "ctags executable"
 )
 
