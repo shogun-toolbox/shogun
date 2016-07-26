@@ -43,6 +43,7 @@
 #endif // HAVE_VIENNACL
 
 #include <algorithm>
+#include <numeric>
 #include <gtest/gtest.h>
 
 using namespace shogun;

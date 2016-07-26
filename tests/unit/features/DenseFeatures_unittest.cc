@@ -10,6 +10,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_CXX11
+#include <numeric>
+#endif
+
 using namespace shogun;
 
 TEST(DenseFeaturesTest,create_merged_copy)
