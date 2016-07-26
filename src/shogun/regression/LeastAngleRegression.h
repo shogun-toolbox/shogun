@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <vector>
 #include <shogun/machine/LinearMachine.h>
 
@@ -253,5 +252,4 @@ private:
 
 } // namespace shogun
 
-#endif // HAVE_LAPACK
 #endif // LEASTANGLEREGRESSION_H__
