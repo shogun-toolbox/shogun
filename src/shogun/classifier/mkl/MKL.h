@@ -13,16 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef USE_GLPK
-#include <glpk.h>
-#endif
-
-#ifdef USE_CPLEX
-extern "C" {
-#include <ilcplex/cplex.h>
-}
-#endif
-
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 #include <shogun/features/Features.h>
@@ -409,43 +399,6 @@ class CMKL : public CSVM
 		/** initialize solver such as glpk or cplex */
 		void init_solver();
 
-#ifdef USE_CPLEX
-		/** init cplex
-		 *
-		 * @return if init was successful
-		 */
-		bool init_cplex();
-
-		/** set qnorm mkl constraints */
-		void set_qnorm_constraints(float64_t* beta, int32_t num_kernels);
-
-		/** cleanup cplex
-		 *
-		 * @return if cleanup was successful
-		 */
-		bool cleanup_cplex();
-#endif
-
-#ifdef USE_GLPK
-		/** init glpk
-		 *
-		 * @return if init was successful
-		 */
-		bool init_glpk();
-
-		/** cleanup glpk
-		 *
-		 * @return if cleanup was successful
-		 */
-		bool cleanup_glpk();
-
-		/** check glpk error status
-		 *
-		 * @return if in good status
-		 */
-		bool check_glp_status(glp_prob *lp);
-#endif
-
 	protected:
 		/** wrapper SVM */
 		CSVM* svm;
@@ -484,20 +437,10 @@ class CMKL : public CSVM
 		/** measures training time for use with get_max_train_time() */
 		CTime training_time_clock;
 
-#ifdef USE_CPLEX
-		/** env */
-		CPXENVptr     env;
-		/** lp */
-		CPXLPptr      lp_cplex;
-#endif
+		/** Opaque parameters of MKL */
+		class Self;
+		Unique<Self> self;
 
-#ifdef USE_GLPK
-		/** lp */
-		glp_prob* lp_glpk;
-
-		/** lp parameters */
-		glp_smcp* lp_glpk_parm;
-#endif
 		/** if lp is initialized */
 		bool lp_initialized ;
 };

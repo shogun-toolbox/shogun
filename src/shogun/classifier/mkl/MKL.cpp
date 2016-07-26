@@ -16,23 +16,236 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+#ifdef USE_GLPK
+#include <glpk.h>
+#endif
+
+#ifdef USE_CPLEX
+extern "C" {
+#include <ilcplex/cplex.h>
+}
+#endif
 
 using namespace shogun;
 
-CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
-		mkl_block_norm(1),beta_local(NULL), mkl_iterations(0), mkl_epsilon(1e-5),
-		interleaved_optimization(true), w_gap(1.0), rho(0)
+class CMKL::Self
 {
-	set_constraint_generator(s);
+public:
+	void init() {
 #ifdef USE_CPLEX
-	lp_cplex = NULL ;
-	env = NULL ;
+		lp_cplex = NULL ;
+		env = NULL ;
 #endif
 
 #ifdef USE_GLPK
-	lp_glpk = NULL;
-	lp_glpk_parm = NULL;
+		lp_glpk = NULL;
+		lp_glpk_parm = NULL;
 #endif
+	}
+
+#ifdef USE_CPLEX
+	/** init cplex
+	 *
+	 * @return if init was successful
+	 */
+	bool init_cplex()
+	{
+		while (env==NULL)
+		{
+			SG_INFO("trying to initialize CPLEX\n")
+
+			int status = 0; // calling external lib
+			env = CPXopenCPLEX (&status);
+
+			if ( env == NULL )
+			{
+				char  errmsg[1024];
+				SG_WARNING("Could not open CPLEX environment.\n")
+				CPXgeterrorstring (env, status, errmsg);
+				SG_WARNING("%s", errmsg)
+				SG_WARNING("retrying in 60 seconds\n")
+				sleep(60);
+			}
+			else
+			{
+				// select dual simplex based optimization
+				status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
+				if ( status )
+				{
+	            SG_ERROR("Failure to select dual lp optimization, error %d.\n", status)
+				}
+				else
+				{
+					status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+					if ( status )
+					{
+						SG_ERROR("Failure to turn on data checking, error %d.\n", status)
+					}
+					else
+					{
+						lp_cplex = CPXcreateprob (env, &status, "light");
+
+						if ( lp_cplex == NULL )
+							SG_ERROR("Failed to create LP.\n")
+						else
+							CPXchgobjsen (env, lp_cplex, CPX_MIN);  /* Problem is minimization */
+					}
+				}
+			}
+		}
+		return (lp_cplex != NULL) && (env != NULL);
+	}
+
+	/** set qnorm mkl constraints */
+	void set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
+	{
+		ASSERT(num_kernels>0)
+
+		float64_t* grad_beta=SG_MALLOC(float64_t, num_kernels);
+		float64_t* hess_beta=SG_MALLOC(float64_t, num_kernels+1);
+		float64_t* lin_term=SG_MALLOC(float64_t, num_kernels+1);
+		int* ind=SG_MALLOC(int, num_kernels+1);
+
+		//CMath::display_vector(beta, num_kernels, "beta");
+		double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);
+
+		//SG_PRINT("const=%f\n", const_term)
+		ASSERT(CMath::fequal(const_term, 0.0))
+
+		for (int32_t i=0; i<num_kernels; i++)
+		{
+			grad_beta[i]=mkl_norm * pow(beta[i], mkl_norm-1);
+			hess_beta[i]=0.5*mkl_norm*(mkl_norm-1) * pow(beta[i], mkl_norm-2);
+			lin_term[i]=grad_beta[i] - 2*beta[i]*hess_beta[i];
+			const_term+=grad_beta[i]*beta[i] - CMath::sq(beta[i])*hess_beta[i];
+			ind[i]=i;
+		}
+		ind[num_kernels]=2*num_kernels;
+		hess_beta[num_kernels]=0;
+		lin_term[num_kernels]=0;
+
+		int status=0;
+		int num=CPXgetnumqconstrs (env, lp_cplex);
+
+		if (num>0)
+		{
+			status = CPXdelqconstrs (env, lp_cplex, 0, 0);
+			ASSERT(!status)
+		}
+
+		status = CPXaddqconstr (env, lp_cplex, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
+				ind, ind, hess_beta, NULL);
+		ASSERT(!status)
+
+		//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
+		//CPXqpwrite (env, lp_cplex, "prob.qp");
+
+		SG_FREE(grad_beta);
+		SG_FREE(hess_beta);
+		SG_FREE(lin_term);
+		SG_FREE(ind);
+	}
+
+	/** cleanup cplex
+	 *
+	 * @return if cleanup was successful
+	 */
+	bool cleanup_cplex(bool& lp_init)
+	{
+		bool result=false;
+
+		if (lp_cplex)
+		{
+			int32_t status = CPXfreeprob(env, &lp_cplex);
+			lp_cplex = NULL;
+			lp_init = false;
+
+			if (status)
+				SG_WARNING("CPXfreeprob failed, error code %d.\n", status)
+			else
+				result = true;
+		}
+
+		if (env)
+		{
+			int32_t status = CPXcloseCPLEX (&env);
+			env=NULL;
+
+			if (status)
+			{
+				char  errmsg[1024];
+				SG_WARNING("Could not close CPLEX environment.\n")
+				CPXgeterrorstring (env, status, errmsg);
+				SG_WARNING("%s", errmsg)
+			}
+			else
+				result = true;
+		}
+		return result;
+	}
+
+	/** env */
+	CPXENVptr     env;
+	/** lp */
+	CPXLPptr      lp_cplex;
+#endif
+
+#ifdef USE_GLPK
+	bool init_glpk()
+	{
+		lp_glpk = glp_create_prob();
+		glp_set_obj_dir(lp_glpk, GLP_MIN);
+
+		lp_glpk_parm = SG_MALLOC(glp_smcp, 1);
+		glp_init_smcp(lp_glpk_parm);
+		lp_glpk_parm->meth = GLP_DUAL;
+		lp_glpk_parm->presolve = GLP_ON;
+
+		glp_term_out(GLP_OFF);
+		return (lp_glpk != NULL);
+	}
+
+	bool cleanup_glpk(bool& lp_init)
+	{
+		lp_init = false;
+		if (lp_glpk)
+			glp_delete_prob(lp_glpk);
+		lp_glpk = NULL;
+		SG_FREE(lp_glpk_parm);
+		return true;
+	}
+
+	bool check_glp_status()
+	{
+		int status = glp_get_status(lp_glpk);
+
+		if (status==GLP_INFEAS)
+		{
+			SG_SPRINT("solution is infeasible!\n")
+			return false;
+		}
+		else if(status==GLP_NOFEAS)
+		{
+			SG_SPRINT("problem has no feasible solution!\n")
+			return false;
+		}
+		return true;
+	}
+
+	/** lp */
+	glp_prob* lp_glpk;
+
+	/** lp parameters */
+	glp_smcp* lp_glpk_parm;
+#endif
+};
+
+CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
+		mkl_block_norm(1),beta_local(NULL), mkl_iterations(0), mkl_epsilon(1e-5),
+		interleaved_optimization(true), w_gap(1.0), rho(0), self()
+{
+	set_constraint_generator(s);
+	self->init();
 
 	SG_DEBUG("creating MKL object %p\n", this)
 	lp_initialized = false ;
@@ -52,147 +265,19 @@ CMKL::~CMKL()
 void CMKL::init_solver()
 {
 #ifdef USE_CPLEX
-	cleanup_cplex();
+	self->cleanup_cplex(lp_initialized);
 
 	if (get_solver_type()==ST_CPLEX)
-		init_cplex();
+		self->init_cplex();
 #endif
 
 #ifdef USE_GLPK
-	cleanup_glpk();
+	self->cleanup_glpk(lp_initialized);
 
 	if (get_solver_type() == ST_GLPK)
-		init_glpk();
+		self->init_glpk();
 #endif
 }
-
-#ifdef USE_CPLEX
-bool CMKL::init_cplex()
-{
-	while (env==NULL)
-	{
-		SG_INFO("trying to initialize CPLEX\n")
-
-		int status = 0; // calling external lib
-		env = CPXopenCPLEX (&status);
-
-		if ( env == NULL )
-		{
-			char  errmsg[1024];
-			SG_WARNING("Could not open CPLEX environment.\n")
-			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING("%s", errmsg)
-			SG_WARNING("retrying in 60 seconds\n")
-			sleep(60);
-		}
-		else
-		{
-			// select dual simplex based optimization
-			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
-			if ( status )
-			{
-            SG_ERROR("Failure to select dual lp optimization, error %d.\n", status)
-			}
-			else
-			{
-				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
-				if ( status )
-				{
-					SG_ERROR("Failure to turn on data checking, error %d.\n", status)
-				}
-				else
-				{
-					lp_cplex = CPXcreateprob (env, &status, "light");
-
-					if ( lp_cplex == NULL )
-						SG_ERROR("Failed to create LP.\n")
-					else
-						CPXchgobjsen (env, lp_cplex, CPX_MIN);  /* Problem is minimization */
-				}
-			}
-		}
-	}
-
-	return (lp_cplex != NULL) && (env != NULL);
-}
-
-bool CMKL::cleanup_cplex()
-{
-	bool result=false;
-
-	if (lp_cplex)
-	{
-		int32_t status = CPXfreeprob(env, &lp_cplex);
-		lp_cplex = NULL;
-		lp_initialized = false;
-
-		if (status)
-			SG_WARNING("CPXfreeprob failed, error code %d.\n", status)
-		else
-			result = true;
-	}
-
-	if (env)
-	{
-		int32_t status = CPXcloseCPLEX (&env);
-		env=NULL;
-
-		if (status)
-		{
-			char  errmsg[1024];
-			SG_WARNING("Could not close CPLEX environment.\n")
-			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING("%s", errmsg)
-		}
-		else
-			result = true;
-	}
-	return result;
-}
-#endif
-
-#ifdef USE_GLPK
-bool CMKL::init_glpk()
-{
-	lp_glpk = glp_create_prob();
-	glp_set_obj_dir(lp_glpk, GLP_MIN);
-
-	lp_glpk_parm = SG_MALLOC(glp_smcp, 1);
-	glp_init_smcp(lp_glpk_parm);
-	lp_glpk_parm->meth = GLP_DUAL;
-	lp_glpk_parm->presolve = GLP_ON;
-
-	glp_term_out(GLP_OFF);
-	return (lp_glpk != NULL);
-}
-
-bool CMKL::cleanup_glpk()
-{
-	lp_initialized = false;
-	if (lp_glpk)
-		glp_delete_prob(lp_glpk);
-	lp_glpk = NULL;
-	SG_FREE(lp_glpk_parm);
-	return true;
-}
-
-bool CMKL::check_glp_status(glp_prob *lp)
-{
-	int status = glp_get_status(lp);
-
-	if (status==GLP_INFEAS)
-	{
-		SG_PRINT("solution is infeasible!\n")
-		return false;
-	}
-	else if(status==GLP_NOFEAS)
-	{
-		SG_PRINT("problem has no feasible solution!\n")
-		return false;
-	}
-	return true;
-}
-#endif // USE_GLPK
 
 bool CMKL::train_machine(CFeatures* data)
 {
@@ -277,15 +362,15 @@ bool CMKL::train_machine(CFeatures* data)
 	svm->set_kernel(kernel);
 
 #ifdef USE_CPLEX
-	cleanup_cplex();
+	self->cleanup_cplex();
 
 	if (get_solver_type()==ST_CPLEX)
-		init_cplex();
+		self->init_cplex();
 #endif
 
 #ifdef USE_GLPK
 	if (get_solver_type()==ST_GLPK)
-		init_glpk();
+		self->init_glpk();
 #endif
 
 	mkl_iterations = 0;
@@ -351,10 +436,10 @@ bool CMKL::train_machine(CFeatures* data)
 		SG_FREE(sumw);
 	}
 #ifdef USE_CPLEX
-	cleanup_cplex();
+	self->cleanup_cplex(lp_initialized);
 #endif
 #ifdef USE_GLPK
-	cleanup_glpk();
+	self->cleanup_glpk(lp_initialized);
 #endif
 
 	int32_t nsv=svm->get_num_support_vectors();
@@ -1014,10 +1099,10 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		lb[2*num_kernels]=-CPX_INFBOUND ;
 		ub[2*num_kernels]=CPX_INFBOUND ;
 
-		int status = CPXnewcols (env, lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
+		int status = CPXnewcols (self->env, self->lp_cplex, NUMCOLS, obj, lb, ub, NULL, NULL);
 		if ( status ) {
 			char  errmsg[1024];
-			CPXgeterrorstring (env, status, errmsg);
+			CPXgeterrorstring (self->env, status, errmsg);
 			SG_ERROR("%s", errmsg)
 		}
 
@@ -1045,7 +1130,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			initial_rmatind[num_kernels]=2*num_kernels ; //number of non-zero elements
 			initial_rmatval[num_kernels]=0 ;
 
-			status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1,
+			status = CPXaddrows (self->env, self->lp_cplex, 0, 1, num_kernels+1,
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -1059,7 +1144,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			initial_rmatind[0]=2*num_kernels ;
 			initial_rmatval[0]=0 ;
 
-			status = CPXaddrows (env, lp_cplex, 0, 1, 1,
+			status = CPXaddrows (self->env, self->lp_cplex, 0, 1, 1,
 					initial_rhs, initial_sense, initial_rmatbeg,
 					initial_rmatind, initial_rmatval, NULL, NULL);
 
@@ -1074,7 +1159,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				initial_rmatind[num_kernels]=2*num_kernels ;
 				initial_rmatval[num_kernels]=0 ;
 
-				status = CPXaddqconstr (env, lp_cplex, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
+				status = CPXaddqconstr (self->env, self->lp_cplex, 0, num_kernels+1, 1.0, 'L', NULL, NULL,
 						initial_rmatind, initial_rmatind, initial_rmatval, NULL);
 			}
 		}
@@ -1106,7 +1191,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				rmatval[1]=-1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp_cplex, 0, 1, 3,
+				status = CPXaddrows (self->env, self->lp_cplex, 0, 1, 3,
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1121,7 +1206,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				rmatval[1]=1 ;
 				rmatind[2]=num_kernels+q ;
 				rmatval[2]=-1 ;
-				status = CPXaddrows (env, lp_cplex, 0, 1, 3,
+				status = CPXaddrows (self->env, self->lp_cplex, 0, 1, 3,
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
@@ -1158,7 +1243,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		rmatind[num_kernels]=2*num_kernels ;
 		rmatval[num_kernels]=-1 ;
 
-		int32_t status = CPXaddrows (env, lp_cplex, 0, 1, num_kernels+1,
+		int32_t status = CPXaddrows (self->env, self->lp_cplex, 0, 1, num_kernels+1,
 				rhs, sense, rmatbeg,
 				rmatind, rmatval, NULL, NULL);
 		if ( status )
@@ -1170,9 +1255,9 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 	{
 
 		if (mkl_norm==1) // optimize 1 norm MKL
-			status = CPXlpopt (env, lp_cplex);
+			status = CPXlpopt (self->env, self->lp_cplex);
 		else if (mkl_norm==2) // optimize 2-norm MKL
-			status = CPXbaropt(env, lp_cplex);
+			status = CPXbaropt(self->env, self->lp_cplex);
 		else // q-norm MKL
 		{
 			float64_t* beta=SG_MALLOC(float64_t, 2*num_kernels+1);
@@ -1191,13 +1276,13 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 				set_qnorm_constraints(beta, num_kernels);
 
-				status = CPXbaropt(env, lp_cplex);
+				status = CPXbaropt(self->env, self->lp_cplex);
 				if ( status )
 					SG_ERROR("Failed to optimize Problem.\n")
 
 				int solstat=0;
 				double objval=0;
-				status=CPXsolution(env, lp_cplex, &solstat, &objval,
+				status=CPXsolution(self->env, self->lp_cplex, &solstat, &objval,
 						(double*) beta, NULL, NULL, NULL);
 
 				if ( status )
@@ -1223,8 +1308,8 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			SG_ERROR("Failed to optimize Problem.\n")
 
 		// obtain solution
-		int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp_cplex);
-		int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp_cplex);
+		int32_t cur_numrows=(int32_t) CPXgetnumrows(self->env, self->lp_cplex);
+		int32_t cur_numcols=(int32_t) CPXgetnumcols(self->env, self->lp_cplex);
 		int32_t num_rows=cur_numrows;
 		ASSERT(cur_numcols<=2*num_kernels+1)
 
@@ -1237,12 +1322,12 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 		if (mkl_norm==1)
 		{
-			status=CPXsolution(env, lp_cplex, &solstat, &objval,
+			status=CPXsolution(self->env, self->lp_cplex, &solstat, &objval,
 					(double*) x, (double*) pi, (double*) slack, NULL);
 		}
 		else
 		{
-			status=CPXsolution(env, lp_cplex, &solstat, &objval,
+			status=CPXsolution(self->env, self->lp_cplex, &solstat, &objval,
 					(double*) x, NULL, (double*) slack, NULL);
 		}
 
@@ -1294,7 +1379,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 			{
 				//SG_INFO("-%i(%i,%i)",max_idx,start_row,num_rows)
-				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
+				status = CPXdelrows (self->env, self->lp_cplex, max_idx, max_idx) ;
 				if ( status )
 					SG_ERROR("Failed to remove an old row.\n")
 			}
@@ -1339,21 +1424,21 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		SG_INFO("creating LP\n")
 
 		//set obj function, note glpk indexing is 1-based
-		glp_add_cols(lp_glpk, NUMCOLS);
+		glp_add_cols(self->lp_glpk, NUMCOLS);
 		for (int i=1; i<=2*num_kernels; i++)
 		{
-			glp_set_obj_coef(lp_glpk, i, 0);
-			glp_set_col_bnds(lp_glpk, i, GLP_DB, 0, 1);
+			glp_set_obj_coef(self->lp_glpk, i, 0);
+			glp_set_col_bnds(self->lp_glpk, i, GLP_DB, 0, 1);
 		}
 		for (int i=num_kernels+1; i<=2*num_kernels; i++)
 		{
-			glp_set_obj_coef(lp_glpk, i, C_mkl);
+			glp_set_obj_coef(self->lp_glpk, i, C_mkl);
 		}
-		glp_set_obj_coef(lp_glpk, NUMCOLS, 1);
-		glp_set_col_bnds(lp_glpk, NUMCOLS, GLP_FR, 0,0); //unbound
+		glp_set_obj_coef(self->lp_glpk, NUMCOLS, 1);
+		glp_set_col_bnds(self->lp_glpk, NUMCOLS, GLP_FR, 0,0); //unbound
 
 		//add first row. sum[w]=1
-		int row_index = glp_add_rows(lp_glpk, 1);
+		int row_index = glp_add_rows(self->lp_glpk, 1);
 		int* ind = SG_MALLOC(int, num_kernels+2);
 		float64_t* val = SG_MALLOC(float64_t, num_kernels+2);
 		for (int i=1; i<=num_kernels; i++)
@@ -1363,8 +1448,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		}
 		ind[num_kernels+1] = NUMCOLS;
 		val[num_kernels+1] = 0;
-		glp_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
-		glp_set_row_bnds(lp_glpk, row_index, GLP_FX, 1, 1);
+		glp_set_mat_row(self->lp_glpk, row_index, num_kernels, ind, val);
+		glp_set_row_bnds(self->lp_glpk, row_index, GLP_FX, 1, 1);
 		SG_FREE(val);
 		SG_FREE(ind);
 
@@ -1376,26 +1461,26 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 			{
 				int mat_ind[4];
 				float64_t mat_val[4];
-				int mat_row_index = glp_add_rows(lp_glpk, 2);
+				int mat_row_index = glp_add_rows(self->lp_glpk, 2);
 				mat_ind[1] = q;
 				mat_val[1] = 1;
 				mat_ind[2] = q+1;
 				mat_val[2] = -1;
 				mat_ind[3] = num_kernels+q;
 				mat_val[3] = -1;
-				glp_set_mat_row(lp_glpk, mat_row_index, 3, mat_ind, mat_val);
-				glp_set_row_bnds(lp_glpk, mat_row_index, GLP_UP, 0, 0);
+				glp_set_mat_row(self->lp_glpk, mat_row_index, 3, mat_ind, mat_val);
+				glp_set_row_bnds(self->lp_glpk, mat_row_index, GLP_UP, 0, 0);
 				mat_val[1] = -1;
 				mat_val[2] = 1;
-				glp_set_mat_row(lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
-				glp_set_row_bnds(lp_glpk, mat_row_index+1, GLP_UP, 0, 0);
+				glp_set_mat_row(self->lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
+				glp_set_row_bnds(self->lp_glpk, mat_row_index+1, GLP_UP, 0, 0);
 			}
 		}
 	}
 
 	int* ind=SG_MALLOC(int,num_kernels+2);
 	float64_t* val=SG_MALLOC(float64_t, num_kernels+2);
-	int row_index = glp_add_rows(lp_glpk, 1);
+	int row_index = glp_add_rows(self->lp_glpk, 1);
 	for (int32_t i=1; i<=num_kernels; i++)
 	{
 		ind[i] = i;
@@ -1403,19 +1488,19 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	}
 	ind[num_kernels+1] = 2*num_kernels+1;
 	val[num_kernels+1] = -1;
-	glp_set_mat_row(lp_glpk, row_index, num_kernels+1, ind, val);
-	glp_set_row_bnds(lp_glpk, row_index, GLP_UP, 0, 0);
+	glp_set_mat_row(self->lp_glpk, row_index, num_kernels+1, ind, val);
+	glp_set_row_bnds(self->lp_glpk, row_index, GLP_UP, 0, 0);
 	SG_FREE(ind);
 	SG_FREE(val);
 
 	//optimize
-	glp_simplex(lp_glpk, lp_glpk_parm);
-	bool res = check_glp_status(lp_glpk);
+	glp_simplex(self->lp_glpk, self->lp_glpk_parm);
+	bool res = self->check_glp_status();
 	if (!res)
 		SG_ERROR("Failed to optimize Problem.\n")
 
-	int32_t cur_numrows = glp_get_num_rows(lp_glpk);
-	int32_t cur_numcols = glp_get_num_cols(lp_glpk);
+	int32_t cur_numrows = glp_get_num_rows(self->lp_glpk);
+	int32_t cur_numcols = glp_get_num_cols(self->lp_glpk);
 	int32_t num_rows=cur_numrows;
 	ASSERT(cur_numcols<=2*num_kernels+1)
 
@@ -1425,11 +1510,11 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 
 	for (int i=0; i<cur_numrows; i++)
 	{
-		row_primal[i] = glp_get_row_prim(lp_glpk, i+1);
-		row_dual[i] = glp_get_row_dual(lp_glpk, i+1);
+		row_primal[i] = glp_get_row_prim(self->lp_glpk, i+1);
+		row_dual[i] = glp_get_row_dual(self->lp_glpk, i+1);
 	}
 	for (int i=0; i<cur_numcols; i++)
-		col_primal[i] = glp_get_col_prim(lp_glpk, i+1);
+		col_primal[i] = glp_get_col_prim(self->lp_glpk, i+1);
 
 	obj = -col_primal[2*num_kernels];
 
@@ -1463,7 +1548,7 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		{
 			int del_rows[2];
 			del_rows[1] = max_idx+1;
-			glp_del_rows(lp_glpk, 1, del_rows);
+			glp_del_rows(self->lp_glpk, 1, del_rows);
 		}
 	}
 
@@ -1570,54 +1655,3 @@ float64_t CMKL::compute_mkl_dual_objective()
 
 	return -mkl_obj;
 }
-
-#ifdef USE_CPLEX
-void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
-{
-	ASSERT(num_kernels>0)
-
-	float64_t* grad_beta=SG_MALLOC(float64_t, num_kernels);
-	float64_t* hess_beta=SG_MALLOC(float64_t, num_kernels+1);
-	float64_t* lin_term=SG_MALLOC(float64_t, num_kernels+1);
-	int* ind=SG_MALLOC(int, num_kernels+1);
-
-	//CMath::display_vector(beta, num_kernels, "beta");
-	double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);
-
-	//SG_PRINT("const=%f\n", const_term)
-	ASSERT(CMath::fequal(const_term, 0.0))
-
-	for (int32_t i=0; i<num_kernels; i++)
-	{
-		grad_beta[i]=mkl_norm * pow(beta[i], mkl_norm-1);
-		hess_beta[i]=0.5*mkl_norm*(mkl_norm-1) * pow(beta[i], mkl_norm-2);
-		lin_term[i]=grad_beta[i] - 2*beta[i]*hess_beta[i];
-		const_term+=grad_beta[i]*beta[i] - CMath::sq(beta[i])*hess_beta[i];
-		ind[i]=i;
-	}
-	ind[num_kernels]=2*num_kernels;
-	hess_beta[num_kernels]=0;
-	lin_term[num_kernels]=0;
-
-	int status=0;
-	int num=CPXgetnumqconstrs (env, lp_cplex);
-
-	if (num>0)
-	{
-		status = CPXdelqconstrs (env, lp_cplex, 0, 0);
-		ASSERT(!status)
-	}
-
-	status = CPXaddqconstr (env, lp_cplex, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
-			ind, ind, hess_beta, NULL);
-	ASSERT(!status)
-
-	//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
-	//CPXqpwrite (env, lp_cplex, "prob.qp");
-
-	SG_FREE(grad_beta);
-	SG_FREE(hess_beta);
-	SG_FREE(lin_term);
-	SG_FREE(ind);
-}
-#endif // USE_CPLEX
