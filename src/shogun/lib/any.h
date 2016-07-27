@@ -39,9 +39,80 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <cxxabi.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
+	namespace serial
+	{
+		enum EnumContainerType
+		{
+			CT_UNDEFINED,
+			CT_PRIMITIVE,
+			CT_SGVECTOR,
+			CT_SGMATRIX
+		};
+
+		enum EnumPrimitiveType
+		{
+			PT_UNDEFINED,
+			PT_INT_32,
+			PT_FLOAT_64,
+		};
+
+		/** cast data type to EnumContainerType and EnumPrimitiveType */
+		template<typename T>
+		struct Type2Enum
+		{
+			static constexpr EnumContainerType e_containertype = CT_UNDEFINED;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_UNDEFINED;
+		};
+
+		template<>
+		struct Type2Enum<int32_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_INT_32;
+		};
+
+		template<>
+		struct Type2Enum<float64_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_FLOAT_64;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<int32_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVECTOR;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_INT_32;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<float64_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVECTOR;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_FLOAT_64;
+		};
+
+		/** @brief data structure that saves the EnumContainerType
+		 * and EnumPrimitiveType information of Any object
+		 */
+		struct DataType
+		{
+			EnumContainerType e_containertype;
+			EnumPrimitiveType e_primitivetype;
+
+			template<typename T>
+			void set()
+			{
+				e_containertype = Type2Enum<T>::e_containertype;
+				e_primitivetype = Type2Enum<T>::e_primitivetype;
+			}
+		};
+	}
+
 	/** Converts compiler-dependent name of class to
 	 * something human readable.
 	 * @return human readable name of class
@@ -172,12 +243,14 @@ namespace shogun
 		explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
 		{
 			policy->set(&storage, &v);
+			m_datatype.set<T>();
 		}
 
 		/** Copy constructor */
 		Any(const Any& other) : policy(other.policy), storage(nullptr)
 		{
 			policy->set(&storage, other.storage);
+			m_datatype = other.m_datatype;
 		}
 
 		/** Assignment operator
@@ -189,6 +262,7 @@ namespace shogun
 			policy->clear(&storage);
 			policy = other.policy;
 			policy->set(&storage, other.storage);
+			m_datatype = other.m_datatype;
 			return *(this);
 		}
 
@@ -210,6 +284,121 @@ namespace shogun
 		~Any()
 		{
 			policy->clear(&storage);
+		}
+
+		/** Cast storage data to selected type and save the data to Archive
+		 *
+		 * @param ar Archive type
+		 */
+		template <class Archive, class Type>
+		void cereal_save_helper(Archive& ar) const
+		{
+			ar(*(reinterpret_cast<Type*>(storage)));
+		}
+
+		/** save data with cereal save method
+		 *
+		 * @param ar Archive type
+		 */
+		template<class Archive>
+		void save(Archive& ar) const
+		{
+			ar (m_datatype.e_containertype);
+			ar (m_datatype.e_primitivetype);
+			switch (m_datatype.e_containertype) {
+			case serial::EnumContainerType::CT_PRIMITIVE:
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_save_helper<Archive, int32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_save_helper<Archive, float64_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
+					break;
+				}
+				break;
+			case serial::EnumContainerType::CT_SGVECTOR:
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_save_helper<Archive, SGVector<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_save_helper<Archive, SGVector<float64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
+					break;
+				}
+				break;
+			case serial::EnumContainerType::CT_SGMATRIX:
+				SG_SWARNING("SGMatrix serializatino method not implemented.\n");
+				break;
+			case serial::EnumContainerType::CT_UNDEFINED:
+				SG_SERROR("Type error: undefined container type cannot be serialized.\n");
+				break;
+			}
+		}
+
+		/** Load data from archive and cast to Any type
+		 *
+		 * @param ar Archive type
+		 */
+		template <class Archive, class Type>
+		void cereal_load_helper(Archive& ar)
+		{
+			Type temp;
+			ar(temp);
+			policy->clear(&storage);
+			policy->set(&storage, &temp);
+		}
+
+		/** load data from archive with cereal load method
+		 *
+		 * @param ar Archive type
+		 */
+		template<class Archive>
+		void load(Archive& ar)
+		{
+			ar(m_datatype.e_containertype);
+			ar(m_datatype.e_primitivetype);
+			switch (m_datatype.e_containertype) {
+			case serial::EnumContainerType::CT_PRIMITIVE:
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_load_helper<Archive, int32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_load_helper<Archive, float64_t>(ar);
+					break;
+				default:
+					SG_SERROR("Error: undefined data type cannot be loaded.\n");
+					break;
+				}
+				break;
+
+			case serial::EnumContainerType::CT_SGVECTOR:
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_load_helper<Archive, SGVector<int32_t>>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_load_helper<Archive, SGVector<float64_t>>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
+					break;
+				}
+				break;
+
+			case serial::EnumContainerType::CT_SGMATRIX:
+				SG_SWARNING("SGMatrix serializatino method not implemented.\n")
+
+			default:
+				SG_SERROR("Error: undefined container type cannot be serialize loaded.\n");
+				break;
+			}
 		}
 
 		/** Casts hidden value to provided type, fails otherwise.
@@ -256,6 +445,7 @@ namespace shogun
 
 		BaseAnyPolicy* policy;
 		void* storage;
+		serial::DataType m_datatype;
 	};
 
 	inline bool operator==(const Any& lhs, const Any& rhs)
