@@ -108,9 +108,7 @@ LinalgBackendBase* infer_backend(const Container<T>& a, const Container<T>& b)
 template <typename T, template <typename> class Container>
 Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta=1)
 {
-	REQUIRE(a.vlen == b.vlen, "Vectors should have same length! "
-			"a(%d) vs b(%d)\n", a.vlen, b.vlen);
-
+	REQUIRE(a.vlen == b.vlen, "Length of vector a(%d) doesn't match vector b(%d).\n", a.vlen, b.vlen);
 	return infer_backend(a, b)->add(a, b, alpha, beta);
 }
 
@@ -125,14 +123,15 @@ Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta
 template <typename T>
 T dot(const SGVector<T>& a, const SGVector<T>& b)
 {
+	REQUIRE(a.vlen == b.vlen, "Length of vector a(%d) doesn't match vector b(%d).\n", a.vlen, b.vlen);
 	return infer_backend(a, b)->dot(a, b);
 }
 
 /**
- * Method that computes the sum of vectors of matrices
+ * Method that computes the sum of vectors or matrices
  *
- * @param vec a vector whose sum has to be computed
- * @return the vector sum \f$\sum_i a_i\f$
+ * @param a the vector or matrix whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$ or matrix sum \f$\sum_{i,j}b_{i,j}\f$
  */
 template <typename T, template <typename> class Container>
 T sum(const Container<T>& a)

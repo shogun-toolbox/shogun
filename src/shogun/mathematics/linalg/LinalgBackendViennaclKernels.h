@@ -41,7 +41,9 @@
 
 namespace shogun
 {
-	/** Generates the colwise sum computation kernel */
+	/** Generates the colwise sum computation kernel
+	 * The OpenCL kernel that helps to calculate colwise sum of SGMatrix
+	 */
 	template <class T>
 	static viennacl::ocl::kernel& generate_colwise_sum_kernel()
 	{
@@ -82,7 +84,9 @@ namespace shogun
 		return kernel;
 	}
 
-	/** Generates the rowwise sum computation kernel */
+	/** Generates the rowwise sum computation kernel
+	 * The OpenCL kernel that helps to calculate rowwise sum of SGMatrix
+	 */
 	template <class T>
 	static viennacl::ocl::kernel& generate_rowwise_sum_kernel()
 	{
