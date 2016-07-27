@@ -3,8 +3,8 @@ ExternalProject_Add(
 	Cereal
 	PREFIX ${CMAKE_BINARY_DIR}/Cereal
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/Cereal
-    URL https://github.com/USCiLab/cereal/archive/v1.1.2.tar.gz
-	URL_MD5 34d4ad174acbff005c36d4d10e48cbb9
+	URL https://github.com/USCiLab/cereal/archive/v1.2.0.tar.gz
+	URL_MD5 e372c9814696481dbdb7d500e1410d2b
 	CMAKE_ARGS -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}${CMAKE_DEFINITIONS}
 		-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}${CMAKE_DEFINITIONS}
 	INSTALL_COMMAND ""
