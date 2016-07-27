@@ -677,6 +677,7 @@ CLabels* CCHAIDTree::apply_tree(CFeatures* data)
 
 CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current)
 {
+	REQUIRE(current != NULL, "The tree cannot be empty.\n");
 	int32_t num_vecs=fmat.num_cols;
 
 	SGVector<float64_t> labels(num_vecs);
