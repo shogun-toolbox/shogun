@@ -442,6 +442,24 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void save(CFile* saver);
 
+		template<class Archive>
+		void save(Archive & ar) const
+		{
+			ar(vlen);
+			for (index_t i = 0; i < vlen; ++i)
+				ar(vector[i]);
+		}
+
+		template<class Archive>
+		void load(Archive & ar)
+		{
+			unref();
+			ar(vlen);
+			vector = SG_MALLOC(T, vlen);
+			for (index_t i = 0; i < vlen; ++i)
+				ar(vector[i]);
+		}
+
 		/** Real part of a complex128_t vector */
 		SGVector<float64_t> get_real();
 
