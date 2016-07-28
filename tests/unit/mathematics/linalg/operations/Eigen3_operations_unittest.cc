@@ -38,6 +38,29 @@ TEST(LinalgBackendEigen, SGVector_dot)
 	EXPECT_NEAR(result, 5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_mean)
+{
+	const index_t size = 6;
+	SGVector<int32_t> vec(size);
+	vec.range_fill(0);
+
+	auto result = mean(vec);
+
+	EXPECT_NEAR(result, 2.5, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_mean)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	auto result = mean(mat);
+
+	EXPECT_NEAR(result, 2.5, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_sum)
 {
 	const index_t size = 10;
