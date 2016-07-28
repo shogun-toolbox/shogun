@@ -1,0 +1,15 @@
+{
+  "name": "shogun-ml",
+  "version": "4.2.0",
+  "private": false,
+  "description": "The Shogun Machine Learning Toolbox",
+  "main": "./index.js",
+  "scripts": {
+    "build": "rm -fr ./build && node_modules/.bin/ncmake -DJavascriptModular=ON -DJAVASCRIPT_EXTENSION=NODE --build ./build"
+  },
+  "author": "Shogun Team",
+  "license": "GPLv3",
+  "devDependencies": {
+    "node-cmake": "^1.2.0"
+  }
+}

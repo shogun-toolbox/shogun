@@ -48,22 +48,23 @@ Java, C#, Ruby, Lua and Python.
 The following table depicts the status of each interface available in SHOGUN:
 
 |    Interface     |     Status                                                |
-|:----------------:|-----------------------------------------------------------|
-|python\_modular   | *mature* (no known problems)                              |
-|octave\_modular   | *mature* (no known problems)                              |
-|java\_modular     | *stable* (no known problems; not all examples are ported) |
-|ruby\_modular     | *stable* (no known problems; only few examples ported)    |
-|csharp\_modular   | *stable* (no known problems; not all examples are ported) |
-|lua\_modular      | *alpha* (some examples work, string typemaps are unstable |
-|perl\_modular     | *pre-alpha* (work in progress quality)                    |
-|r\_modular        | *pre-alpha* (SWIG does not properly handle reference counting and thus only for the brave, <br/> --disable-reference-counting to get it to work, but beware that it will leak memory; disabled by default)           |
-|octave\_static    | *mature* (no known problems)                                |
-|matlab\_static    | *mature* (no known problems)                                |
-|python\_static    | *mature* (no known problems)                                |
-|r\_static         | *mature* (no known problems)                                |
-|libshogun\_static | *mature* (no known problems)                                |
-|cmdline\_static   | *stable* (but some data types incomplete)                 |
-|elwms\_static     | this is the eierlegendewollmilchsau interface, a chimera that in one file interfaces with python, octave, r, matlab and provides the run\_python command to run code in python using the in octave,r,matlab available variables, etc)    |
+|:------------------:|-----------------------------------------------------------|
+|python\_modular     | *mature* (no known problems)                              |
+|octave\_modular     | *mature* (no known problems)                              |
+|java\_modular       | *mature* (no known problems)                              |
+|ruby\_modular       | *mature* (no known problems)                              |
+|csharp\_modular     | *mature* (no known problems)                              |
+|lua\_modular        | *alpha* (some examples work, string typemaps are unstable |
+|perl\_modular       | *pre-alpha* (work in progress quality)                    |
+|r\_modular          | *mature* (no known problems)                              |
+|javascript\_modular | *alpha* (no known problems)                               |
+|octave\_static      | *mature* (no known problems)                                |
+|matlab\_static      | *mature* (no known problems)                                |
+|python\_static      | *mature* (no known problems)                                |
+|r\_static           | *mature* (no known problems)                                |
+|libshogun\_static   | *mature* (no known problems)                                |
+|cmdline\_static     | *stable* (but some data types incomplete)                 |
+|elwms\_static       | this is the eierlegendewollmilchsau interface, a chimera that in one file interfaces with python, octave, r, matlab and provides the run\_python command to run code in python using the in octave,r,matlab available variables, etc)    |
 
 Visit http://www.shogun-toolbox.org/doc/en/current for further information.
 
