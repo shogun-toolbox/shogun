@@ -85,6 +85,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::mean */
+	#define BACKEND_GENERIC_MEAN(Type, Container) \
+	virtual float64_t mean(const Container<Type>& a) const \
+	{  \
+		return mean_impl(a);  \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGMatrix)
+	#undef BACKEND_GENERIC_MEAN
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a) const \
@@ -168,6 +178,13 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
 		return viennacl::linalg::inner_prod(a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
+	}
+
+	/** Eigen3 vector and matrix mean method */
+	template <typename T, template <typename> class Container>
+	float64_t mean_impl(const Container<T>& a) const
+	{
+		return sum_impl(a)/float64_t(a.size());
 	}
 
 	/** ViennaCL sum method. */
