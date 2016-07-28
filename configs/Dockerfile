@@ -21,7 +21,7 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
-    exuberant-ctags
+    exuberant-ctags libv8-dev
 
 RUN pip install sphinxcontrib-bibtex
 

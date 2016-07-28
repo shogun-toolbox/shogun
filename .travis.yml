@@ -60,6 +60,12 @@ matrix:
         - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
         - CC=clang
         - CXX=clang++
+    - compiler: clang
+      services: docker
+      env:
+        - CMAKE_OPTIONS="-DJavascriptModular=ON -DJAVASCRIPT_EXTENSION=V8 -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON -DTRAVIS_DISABLE_META_INTEGRATION_TESTS=ON"
+        - CC=clang
+        - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
   - echo $CC; echo $CXX

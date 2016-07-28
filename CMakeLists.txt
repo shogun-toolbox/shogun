@@ -83,7 +83,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
 IF (
 	PythonModular OR LuaModular OR RModular OR
 	OctaveModular OR JavaModular OR PerlModular OR
-	RubyModular OR CSharpModular
+	RubyModular OR CSharpModular OR JavascriptModular
    )
 
 	SET(SWIG_VERSION_MINIMUM 2.0.4)
@@ -383,6 +383,7 @@ OPTION(JavaModular "Java Modular" OFF)
 OPTION(PerlModular "Perl Modular" OFF)
 OPTION(RubyModular "Ruby Modular" OFF)
 OPTION(CSharpModular "CSharp Modular" OFF)
+OPTION(JavascriptModular "Javascript Modular" OFF)
 
 OPTION(PythonStatic "Python Static" OFF)
 OPTION(RStatic "R Static" OFF)
@@ -1114,6 +1115,14 @@ IF (PerlModular)
 	ENDIF()
 ENDIF()
 
+SET_PROPERTY(CACHE JAVASCRIPT_EXTENSION PROPERTY STRINGS JSC V8 NODE)
+# javascript modular
+IF (JavascriptModular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/javascript_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/javascript_modular)
+	ENDIF()
+ENDIF()
+
 IF (MatlabStatic)
 	FIND_PACKAGE(Matlab REQUIRED)
 	IF(MATLAB_FOUND)
@@ -1227,6 +1236,7 @@ PrintInterfaceStatus("ruby modular" RubyModular)
 PrintInterfaceStatus("csharp modular" CSharpModular)
 PrintInterfaceStatus("R modular" RModular)
 PrintInterfaceStatus("lua modular" LuaModular)
+PrintInterfaceStatus("javascript modular" JavascriptModular)
 
 message(STATUS "")
 message(STATUS "")
