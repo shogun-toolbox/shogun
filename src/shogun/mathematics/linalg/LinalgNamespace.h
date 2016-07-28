@@ -128,6 +128,33 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 }
 
 /**
+ * Method that computes the mean of vectors or matrices composed of real numbers.
+ *
+ * @param a SGVector or SGMatrix
+ * @return the vector mean \f$\bar{a}_i\f$ or matrix mean \f$\bar{m}_{i,j}\f$
+ */
+template<typename T, template<typename> class Container>
+typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+mean(const Container<T>& a)
+{
+	REQUIRE(a.size() > 0, "Vector/Matrix cannot be empty!\n");
+	return infer_backend(a)->mean(a);
+}
+
+/**
+ * Method that computes the mean of vectors or matrices composed of complex numbers.
+ *
+ * @param a SGVector or SGMatrix
+ * @return the vector mean \f$\bar{a}_i\f$ or matrix mean \f$\bar{m}_{i,j}\f$
+ */
+template<template<typename> class Container>
+complex128_t mean(const Container<complex128_t>& a)
+{
+	REQUIRE(a.size() > 0, "Vector/Matrix cannot be empty!\n");
+	return infer_backend(a)->mean(a);
+}
+
+/**
  * Method that computes the sum of vectors or matrices
  *
  * @param a the vector or matrix whose sum has to be computed
