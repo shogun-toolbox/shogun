@@ -66,6 +66,21 @@ public:
 	METHODNAME(floatmax_t, Container); \
 	METHODNAME(complex128_t, Container); \
 
+	#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container) \
+	METHODNAME(bool, Container); \
+	METHODNAME(char, Container); \
+	METHODNAME(int8_t, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(int64_t, Container); \
+	METHODNAME(uint64_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container);
+
 	/**
 	 * Wrapper method of add operation the operation C = alpha*A + beta*B.
 	 *
@@ -91,6 +106,36 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
+
+	/**
+	* Wrapper method that computes mean of SGVectors and SGMatrices
+	* that are composed of real numbers.
+	*
+	* @see linalg::mean
+	*/
+	#define BACKEND_GENERIC_REAL_MEAN(Type, Container) \
+	virtual float64_t mean(const Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+	#undef BACKEND_GENERIC_REAL_MEAN
+
+	/**
+	* Wrapper method that computes mean of SGVectors and SGMatrices
+	* that are composed of complex numbers.
+	*
+	* @see linalg::mean
+	*/
+	#define BACKEND_GENERIC_COMPLEX_MEAN(Container) \
+	virtual complex128_t mean(const Container<complex128_t>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
+	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
+	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
 	/**
 	* Wrapper method of vector sum that works with generic vectors.
