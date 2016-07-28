@@ -60,6 +60,21 @@ public:
 	METHODNAME(floatmax_t, Container); \
 	METHODNAME(complex128_t, Container); \
 
+	#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container) \
+	METHODNAME(bool, Container); \
+	METHODNAME(char, Container); \
+	METHODNAME(int8_t, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(int64_t, Container); \
+	METHODNAME(uint64_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container);
+
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_ADD(Type, Container) \
 	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
@@ -77,6 +92,26 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
+
+	/** Implementation of @see LinalgBackendBase::mean */
+	#define BACKEND_GENERIC_REAL_MEAN(Type, Container) \
+	virtual float64_t mean(const Container<Type>& a) const \
+	{  \
+		return mean_impl(a);  \
+	}
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+	#undef BACKEND_GENERIC_REAL_MEAN
+
+	/** Implementation of @see LinalgBackendBase::mean */
+	#define BACKEND_GENERIC_COMPLEX_MEAN(Container) \
+	virtual complex128_t mean(const Container<complex128_t>& a) const \
+	{  \
+		return mean_impl(a);  \
+	}
+	BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
+	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
+	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
@@ -127,6 +162,21 @@ private:
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+	/** Real eigen3 vector and matrix mean method */
+	template <typename T, template <typename> class Container>
+	typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
+	mean_impl(const Container<T>& a) const
+	{
+		return sum_impl(a)/(float64_t(a.size()));
+	}
+
+	/** Complex eigen3 vector and matrix mean method */
+	template<template <typename> class Container>
+	complex128_t mean_impl(const Container<complex128_t>& a) const
+	{
+		return sum_impl(a)/(complex128_t(a.size()));
 	}
 
 	/** Eigen3 vector sum method */
