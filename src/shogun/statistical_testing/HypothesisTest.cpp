@@ -95,12 +95,6 @@ const char* CHypothesisTest::get_name() const
 	return "HypothesisTest";
 }
 
-CSGObject* CHypothesisTest::clone()
-{
-	SG_ERROR("Cloning CHypothesisTest instances is not supported!\n");
-	return nullptr;
-}
-
 DataManager& CHypothesisTest::get_data_mgr()
 {
 	return self->data_mgr;

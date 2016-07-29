@@ -68,7 +68,6 @@ public:
 	virtual SGVector<float64_t> sample_null()=0;
 
 	virtual const char* get_name() const;
-	virtual CSGObject* clone();
 protected:
 	internal::DataManager& get_data_mgr();
 	const internal::DataManager& get_data_mgr() const;
