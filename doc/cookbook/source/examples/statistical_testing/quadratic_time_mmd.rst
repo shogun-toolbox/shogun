@@ -17,7 +17,7 @@ See :cite:`gretton2012kernel` for a detailed introduction.
 Example
 -------
 
-Imagine we have samples from :math:`p` and :math:`q`, here in the form of :sgclass:`CStreamingFeatures`
+Imagine we have samples from :math:`p` and :math:`q`, here in the form of CDenseFeatures (here 64 bit floats aka RealFeatures).
 
 .. sgexample:: quadratic_time_mmd.sg:create_features
 
@@ -35,8 +35,19 @@ There are multiple ways to perform the actual hypothesis test, see :sgclass:`CQu
 .. sgexample:: quadratic_time_mmd.sg:perform_test
 
 ----------------
-Kernel selection
+Multiple kernels
 ----------------
+
+It is possible to perform all operations (computing statistics, performing test, etc) for multiple kernels at once, via the :sgclass:`CMultiKernelQuadraticTimeMMD` interface.
+
+.. sgexample:: quadratic_time_mmd.sg:multi_kernel
+
+Note that the results are now a vector with one entry per kernel.
+Also note that the kernels for single and multiple are kept separately.
+
+---------------
+Kernel learning
+---------------
 
 There are various options to learn a kernel.
 All options allow to learn a single kernel among a number of provided baseline kernels.

@@ -34,6 +34,17 @@ mmd.add_kernel(kernel2)
 mmd.add_kernel(kernel3)
 #![add_kernels]
 
+#![multi_kernel]
+MultiKernelQuadraticTimeMMD mk = mmd.multikernel()
+mk.add_kernel(kernel1)
+mk.add_kernel(kernel2)
+mk.add_kernel(kernel2)
+
+RealVector mk_statistic = mk.compute_statistic()
+RealVector mk_p_value = mmd.compute_p_value(statistic)
+#![multi_kernel]
+
+
 #![enable_train_test_mode]
 mmd.set_train_test_mode(true)
 mmd.set_train_test_ratio(1)
@@ -56,7 +67,6 @@ RealVector weights = learnt_kernel_combined.get_subkernel_weights()
 #![select_kernel_combined]
 
 #![perform_test_optimized]
-# TODO fix these lines execution
 real statistic_optimized = mmd.compute_statistic()
 real p_value_optimized = mmd.compute_p_value(statistic)
 #![perform_test_optimized]

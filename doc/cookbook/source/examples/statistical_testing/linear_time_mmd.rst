@@ -35,9 +35,9 @@ We can perform the hypothesis test via computing a test threshold for a given :m
 
 .. sgexample::linear_time_mmd.sg:perform_test_threshold
 
-----------------
-Kernel selection
-----------------
+---------------
+Kernel learning
+---------------
 
 There are various options to learn a kernel.
 All options allow to learn a single kernel among a number of provided baseline kernels.
