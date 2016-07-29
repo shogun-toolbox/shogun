@@ -143,7 +143,7 @@ public:
 	* @see linalg::sum
 	*/
 	#define BACKEND_GENERIC_SUM(Type, Container) \
-	virtual Type sum(const Container<Type>& a) const \
+	virtual Type sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
@@ -157,7 +157,7 @@ public:
 	 * @see linalg::colwise_sum
 	 */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
@@ -170,7 +170,7 @@ public:
 	 * @see linalg::rowwise_sum
 	 */
 	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}

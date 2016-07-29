@@ -115,9 +115,9 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
-	virtual Type sum(const Container<Type>& a) const \
+	virtual Type sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return sum_impl(a);  \
+		return sum_impl(a, no_diag);  \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
@@ -125,18 +125,18 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::colwise_sum */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return colwise_sum_impl(a); \
+		return colwise_sum_impl(a, no_diag); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_COLWISE_SUM
 
 	/** Implementation of @see LinalgBackendBase::rowwise_sum */
 	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return rowwise_sum_impl(a); \
+		return rowwise_sum_impl(a, no_diag); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_ROWWISE_SUM
@@ -181,37 +181,66 @@ private:
 
 	/** Eigen3 vector sum method */
 	template <typename T>
-	T sum_impl(const SGVector<T>& vec) const
+	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(vec)).sum();
 	}
 
 	/** Eigen3 matrix sum method */
 	template <typename T>
-	T sum_impl(const SGMatrix<T>& mat) const
+	T sum_impl(const SGMatrix<T>& mat, bool no_diag=false) const
 	{
-		return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).sum();
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat;
+		T sum = m.sum();
+		if (no_diag)
+			sum -= m.diagonal().sum();
+
+		return sum;
 	}
 
 	/** Eigen3 matrix colwise sum method */
 	template <typename T>
-	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat) const
+	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
 	{
 		SGVector<T> result(mat.num_cols);
+
 		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
 		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
 		result_eig = mat_eig.colwise().sum();
+
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
+				? mat_eig.rows() : mat_eig.cols();
+			for (index_t i = 0; i < len_major_diag; ++i)
+				result_eig[i] -= mat_eig(i,i);
+		}
+
 		return result;
 	}
 
 	/** Eigen3 matrix rowwise sum method */
 	template <typename T>
-	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat) const
+	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
 	{
 		SGVector<T> result(mat.num_rows);
+
 		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
 		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
 		result_eig = mat_eig.rowwise().sum();
+
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
+				? mat_eig.rows() : mat_eig.cols();
+			for (index_t i = 0; i < len_major_diag; ++i)
+				result_eig[i] -= mat_eig(i,i);
+		}
+
 		return result;
 	}
 
