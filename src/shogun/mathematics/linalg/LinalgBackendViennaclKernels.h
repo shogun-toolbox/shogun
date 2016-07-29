@@ -41,18 +41,85 @@
 
 namespace shogun
 {
-	/** Generates the colwise sum computation kernel
-	 * The OpenCL kernel that helps to calculate colwise sum of SGMatrix
+	/** Generates the sum computation kernel
+	 * The OpenCL kernel that helps to calculate the sum of SGMatrix
+	 *
+	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 */
 	template <class T>
-	static viennacl::ocl::kernel& generate_colwise_sum_kernel()
+	static viennacl::ocl::kernel& generate_sum_kernel(bool no_diag)
 	{
-		std::string kernel_name = "colwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
+		std::string kernel_name = "sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
 		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
+
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* mat, int nrows, int ncols, int offset,
+					__global DATATYPE* result)
+				{
+					__local DATATYPE buffer[WORK_GROUP_SIZE_1D];
+					int size = nrows*ncols;
+
+					int local_id = get_local_id(0);
+
+					DATATYPE thread_sum = 0;
+					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE_1D)
+					{
+					#ifdef NO_DIAG
+						if (!(i/nrows == i%nrows))
+					#endif
+						thread_sum += mat[i+offset];
+					}
+
+					buffer[local_id] = thread_sum;
+
+					for (int j = WORK_GROUP_SIZE_1D/2; j > 0; j = j>>1)
+					{
+						barrier(CLK_LOCAL_MEM_FENCE);
+						if (local_id < j)
+							buffer[local_id] += buffer[local_id + j];
+					}
+
+					barrier(CLK_LOCAL_MEM_FENCE);
+
+					if (get_global_id(0)==0)
+						*result = buffer[0];
+				}
+			)"
+		);
+
+		viennacl::ocl::kernel& kernel =
+			linalg::implementation::ocl::compile_kernel(kernel_name, source);
+
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+
+		return kernel;
+	}
+
+	/** Generates the colwise sum computation kernel
+	 * The OpenCL kernel that helps to calculate colwise sum of SGMatrix
+	 *
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 */
+	template <class T>
+	static viennacl::ocl::kernel& generate_colwise_sum_kernel(bool no_diag)
+	{
+		std::string kernel_name = "colwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
+
+		if (linalg::implementation::ocl::kernel_exists(kernel_name))
+			return linalg::implementation::ocl::get_kernel(kernel_name);
+
+		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
 
 		source.append(
 			R"(
@@ -68,6 +135,9 @@ namespace shogun
 					DATATYPE sum = 0;
 					for (int i=0; i<nrows; i++)
 					{
+					#ifdef NO_DIAG
+						if (i!=j)
+					#endif
 						sum += mat[offset+i+j*nrows];
 					}
 
@@ -86,16 +156,20 @@ namespace shogun
 
 	/** Generates the rowwise sum computation kernel
 	 * The OpenCL kernel that helps to calculate rowwise sum of SGMatrix
+	 *
+	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 */
 	template <class T>
-	static viennacl::ocl::kernel& generate_rowwise_sum_kernel()
+	static viennacl::ocl::kernel& generate_rowwise_sum_kernel(bool no_diag)
 	{
 		std::string kernel_name = "rowwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
 		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
 
 		source.append(
 			R"(
@@ -111,6 +185,9 @@ namespace shogun
 					DATATYPE sum = 0;
 					for (int j=0; j<ncols; j++)
 					{
+					#ifdef NO_DIAG
+						if (i!=j)
+					#endif
 						sum += mat[offset+i+j*nrows];
 					}
 

@@ -97,9 +97,9 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
-	virtual Type sum(const Container<Type>& a) const \
+	virtual Type sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return sum_impl(a);  \
+		return sum_impl(a, no_diag);  \
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
@@ -108,9 +108,9 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::colwise_sum */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return colwise_sum_impl(a); \
+		return colwise_sum_impl(a, no_diag); \
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
@@ -118,9 +118,9 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::rowwise_sum */
 	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const Container<Type>& a) const \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
-		return rowwise_sum_impl(a); \
+		return rowwise_sum_impl(a, no_diag); \
 	}
 
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
@@ -187,21 +187,43 @@ private:
 		return sum_impl(a)/float64_t(a.size());
 	}
 
-	/** ViennaCL sum method. */
-	template <typename T, template <typename> class Container>
-	T sum_impl(const Container<T>& a) const
+	/** ViennaCL vector sum method. */
+	template <typename T>
+	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
 	{
-		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
-		return viennacl::linalg::sum(a_gpu->data_vector(a.size()));
+		GPUMemoryViennaCL<T>* vec_gpu = cast_to_viennacl(vec);
+		return viennacl::linalg::sum(vec_gpu->data_vector(vec.size()));
+	}
+
+	/** ViennaCL matrix sum method. */
+	template <typename T>
+	T sum_impl(const SGMatrix<T>& mat, bool no_diag=false) const
+	{
+		typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
+
+		GPUMemoryViennaCL<T>* mat_gpu = cast_to_viennacl(mat);
+		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(1);
+
+		viennacl::ocl::kernel& kernel = generate_sum_kernel<T>(no_diag);
+		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat_gpu->m_offset),
+			result_gpu->data_vector(1)));
+
+		T* result;
+		result = reinterpret_cast<T*>(SG_MALLOC(aligned_t, 1));
+		viennacl::backend::memory_read(*(result_gpu->m_data),
+			result_gpu->m_offset*sizeof(T), sizeof(T), result);
+
+		return result[0];
 	}
 
 	/** ViennaCL matrix colwise sum method */
 	template <typename T>
-	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat) const
+	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
 	{
 		GPUMemoryViennaCL<T>* mat_gpu = cast_to_viennacl(mat);
 		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(mat.num_cols);
-		viennacl::ocl::kernel& kernel = generate_colwise_sum_kernel<T>();
+		viennacl::ocl::kernel& kernel = generate_colwise_sum_kernel<T>(no_diag);
 		kernel.global_work_size(0, linalg::implementation::ocl::align_to_multiple_1d(mat.num_cols));
 
 		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
@@ -213,11 +235,11 @@ private:
 
 	/** ViennaCL matrix rowwise sum method */
 	template <typename T>
-	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat) const
+	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
 	{
 		GPUMemoryViennaCL<T>* mat_gpu = cast_to_viennacl(mat);
 		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(mat.num_rows);
-		viennacl::ocl::kernel& kernel = generate_rowwise_sum_kernel<T>();
+		viennacl::ocl::kernel& kernel = generate_rowwise_sum_kernel<T>(no_diag);
 		kernel.global_work_size(0, linalg::implementation::ocl::align_to_multiple_1d(mat.num_rows));
 
 		viennacl::ocl::enqueue(kernel(mat_gpu->data_matrix(mat.num_rows, mat.num_cols),
