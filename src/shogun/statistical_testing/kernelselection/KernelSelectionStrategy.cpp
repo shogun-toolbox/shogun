@@ -34,6 +34,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/StreamingMMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
@@ -109,7 +110,11 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 	case EKernelSelectionMethod::MAXIMIZE_POWER:
 	{
 		if (weighted)
+		{
+			auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
+			REQUIRE(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!\n");
 			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
+		}
 		else
 			policy=std::unique_ptr<MaxTestPower>(new MaxTestPower(kernel_mgr, estimator));
 	}
