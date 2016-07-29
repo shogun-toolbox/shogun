@@ -19,6 +19,7 @@
 %rename(IndependenceTest) CIndependenceTest;
 %rename(TwoSampleTest) CTwoSampleTest;
 %rename(MMD) CMMD;
+%rename(StreamingMMD) CStreamingMMD;
 %rename(LinearTimeMMD) CLinearTimeMMD;
 %rename(BTestMMD) CBTestMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
@@ -32,6 +33,7 @@
 %include <shogun/statistical_testing/IndependenceTest.h>
 %include <shogun/statistical_testing/TwoSampleTest.h>
 %include <shogun/statistical_testing/MMD.h>
+%include <shogun/statistical_testing/StreamingMMD.h>
 %include <shogun/statistical_testing/LinearTimeMMD.h>
 %include <shogun/statistical_testing/BTestMMD.h>
 %include <shogun/statistical_testing/QuadraticTimeMMD.h>
