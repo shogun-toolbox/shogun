@@ -21,13 +21,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/statistical_testing/TestEnums.h>
 
 namespace shogun
 {
 
 template <typename T> class SGMatrix;
 template <typename T> class CGPUMatrix;
-enum class EStatisticType;
 
 namespace internal
 {

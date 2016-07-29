@@ -32,37 +32,39 @@
 #ifndef TEST_ENUMS_H_
 #define TEST_ENUMS_H_
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 
-enum class EStatisticType
+enum EStatisticType
 {
-	UNBIASED_FULL,
-	UNBIASED_INCOMPLETE,
-	BIASED_FULL
+	ST_UNBIASED_FULL,
+	ST_UNBIASED_INCOMPLETE,
+	ST_BIASED_FULL
 };
 
-enum class EVarianceEstimationMethod
+enum EVarianceEstimationMethod
 {
-	DIRECT,
-	PERMUTATION
+	VEM_DIRECT,
+	VEM_PERMUTATION
 };
 
-enum class ENullApproximationMethod
+enum ENullApproximationMethod
 {
-	PERMUTATION,
-	MMD1_GAUSSIAN,
-	MMD2_SPECTRUM,
-	MMD2_GAMMA
+	NAM_PERMUTATION,
+	NAM_MMD1_GAUSSIAN,
+	NAM_MMD2_SPECTRUM,
+	NAM_MMD2_GAMMA
 };
 
-enum class EKernelSelectionMethod
+enum EKernelSelectionMethod
 {
-	MEDIAN_HEURISTIC,
-	MAXIMIZE_MMD,
-	MAXIMIZE_POWER,
-	CROSS_VALIDATION,
-	AUTO = MAXIMIZE_POWER
+	KSM_MEDIAN_HEURISTIC,
+	KSM_MAXIMIZE_MMD,
+	KSM_MAXIMIZE_POWER,
+	KSM_CROSS_VALIDATION,
+	KSM_AUTO = KSM_MAXIMIZE_POWER
 };
 
 }

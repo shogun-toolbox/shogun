@@ -89,7 +89,7 @@ void MaxCrossValidation::compute_measures()
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
 	{
-		REQUIRE(estimator->get_null_approximation_method()==ENullApproximationMethod::PERMUTATION,
+		REQUIRE(estimator->get_null_approximation_method()==NAM_PERMUTATION,
 			"Only supported with PERMUTATION method for null distribution approximation!\n");
 
 		auto Nx=estimator->get_num_samples_p();

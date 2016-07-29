@@ -85,9 +85,9 @@ struct CStreamingMMD::Self
 
 CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
-	statistic_type(EStatisticType::UNBIASED_FULL),
-	variance_estimation_method(EVarianceEstimationMethod::DIRECT),
-	null_approximation_method(ENullApproximationMethod::PERMUTATION),
+	statistic_type(ST_UNBIASED_FULL),
+	variance_estimation_method(VEM_DIRECT),
+	null_approximation_method(NAM_PERMUTATION),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 }
@@ -121,10 +121,10 @@ void CStreamingMMD::Self::create_variance_job()
 {
 	switch (variance_estimation_method)
 	{
-		case EVarianceEstimationMethod::DIRECT:
+		case VEM_DIRECT:
 			variance_job=owner.get_direct_estimation_method();
 			break;
-		case EVarianceEstimationMethod::PERMUTATION:
+		case VEM_PERMUTATION:
 			variance_job=permutation_job;
 			break;
 		default : break;
@@ -215,7 +215,7 @@ std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance(
 				statistic_term_counter++;
 			}
 
-			if (variance_estimation_method==EVarianceEstimationMethod::DIRECT)
+			if (variance_estimation_method==VEM_DIRECT)
 			{
 				for (size_t i=0; i<mmds.size(); ++i)
 				{
@@ -242,7 +242,7 @@ std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance(
 
 	// normalize statistic and variance
 	statistic=owner.normalize_statistic(statistic);
-	if (variance_estimation_method==EVarianceEstimationMethod::PERMUTATION)
+	if (variance_estimation_method==VEM_PERMUTATION)
 		variance=owner.normalize_variance(variance);
 
 	return std::make_pair(statistic, variance);
@@ -461,7 +461,7 @@ const EStatisticType CStreamingMMD::get_statistic_type() const
 void CStreamingMMD::set_variance_estimation_method(EVarianceEstimationMethod vmethod)
 {
 	// TODO overload this
-/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && vmethod == EVarianceEstimationMethod::PERMUTATION)
+/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && vmethod == VEM_PERMUTATION)
 	{
 		std::cerr << "cannot use permutation method for quadratic time MMD" << std::endl;
 	}*/
@@ -476,12 +476,12 @@ const EVarianceEstimationMethod CStreamingMMD::get_variance_estimation_method() 
 void CStreamingMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
 {
 	// TODO overload this
-/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && nmethod == ENullApproximationMethod::MMD1_GAUSSIAN)
+/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && nmethod == NAM_MMD1_GAUSSIAN)
 	{
 		std::cerr << "cannot use gaussian method for quadratic time MMD" << std::endl;
 	}
 	else if ((std::is_same<Derived, CBTestMMD>::value || std::is_same<Derived, CLinearTimeMMD>::value) &&
-			(nmethod == ENullApproximationMethod::MMD2_SPECTRUM || nmethod == ENullApproximationMethod::MMD2_GAMMA))
+			(nmethod == NAM_MMD2_SPECTRUM || nmethod == NAM_MMD2_GAMMA))
 	{
 		std::cerr << "cannot use spectrum/gamma method for B-test/linear time MMD" << std::endl;
 	}*/

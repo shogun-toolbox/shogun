@@ -83,7 +83,7 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
 	terms.term[1]=2*(terms.term[1]-terms.diag[1]);
 	SG_SDEBUG("term_0 sum (without diagonal) = %f!\n", terms.term[0]);
 	SG_SDEBUG("term_1 sum (without diagonal) = %f!\n", terms.term[1]);
-	if (stype!=EStatisticType::BIASED_FULL)
+	if (stype!=ST_BIASED_FULL)
 	{
 		terms.term[0]/=n_x*(n_x-1);
 		terms.term[1]/=n_y*(n_y-1);
@@ -101,7 +101,7 @@ float32_t WithinBlockPermutation::operator()(const SGMatrix<float32_t>& km)
 	SG_SDEBUG("term_1 (normalized) = %f!\n", terms.term[1]);
 
 	SG_SDEBUG("term_2 sum (with diagonal) = %f!\n", terms.term[2]);
-	if (stype==EStatisticType::UNBIASED_INCOMPLETE)
+	if (stype==ST_UNBIASED_INCOMPLETE)
 	{
 		terms.term[2]-=terms.diag[2];
 		SG_SDEBUG("term_2 sum (without diagonal) = %f!\n", terms.term[2]);

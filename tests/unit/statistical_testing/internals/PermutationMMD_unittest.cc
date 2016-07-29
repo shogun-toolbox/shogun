@@ -62,7 +62,7 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	const index_t n=13;
 	const index_t m=7;
 	const index_t num_null_samples=5;
-	const auto stype=EStatisticType::BIASED_FULL;
+	const auto stype=ST_BIASED_FULL;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -142,7 +142,7 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	const index_t n=13;
 	const index_t m=7;
 	const index_t num_null_samples=5;
-	const auto stype=EStatisticType::UNBIASED_FULL;
+	const auto stype=ST_UNBIASED_FULL;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -221,7 +221,7 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	const index_t dim=2;
 	const index_t n=10;
 	const index_t num_null_samples=5;
-	const auto stype=EStatisticType::UNBIASED_INCOMPLETE;
+	const auto stype=ST_UNBIASED_INCOMPLETE;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -301,7 +301,7 @@ TEST(PermutationMMD, precomputed_vs_non_precomputed_single_kernel)
 	const index_t n=8;
 	const index_t m=8;
 	const index_t num_null_samples=5;
-	const auto stype=EStatisticType::BIASED_FULL;
+	const auto stype=ST_BIASED_FULL;
 
 	SGMatrix<float64_t> data_p(dim, n);
 	std::iota(data_p.matrix, data_p.matrix+dim*n, 1);
@@ -352,7 +352,7 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	const index_t num_kernels=4;
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
-	const auto stype=EStatisticType::BIASED_FULL;
+	const auto stype=ST_BIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -415,7 +415,7 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	const index_t num_kernels=4;
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
-	const auto stype=EStatisticType::UNBIASED_FULL;
+	const auto stype=ST_UNBIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -478,7 +478,7 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	const index_t num_kernels=4;
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
-	const auto stype=EStatisticType::UNBIASED_INCOMPLETE;
+	const auto stype=ST_UNBIASED_INCOMPLETE;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);

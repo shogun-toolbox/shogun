@@ -61,7 +61,7 @@ TEST(CrossValidationMMD, biased_full)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::BIASED_FULL;
+	const auto stype=ST_BIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -152,7 +152,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::UNBIASED_FULL;
+	const auto stype=ST_UNBIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -243,7 +243,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	const index_t cache_size=10;
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
-	const auto stype=EStatisticType::UNBIASED_INCOMPLETE;
+	const auto stype=ST_UNBIASED_INCOMPLETE;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);

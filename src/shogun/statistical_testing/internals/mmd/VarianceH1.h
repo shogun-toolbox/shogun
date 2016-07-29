@@ -215,7 +215,7 @@ struct VarianceH1
 		ComputeMMD compute_mmd_job;
 		compute_mmd_job.m_n_x=m_n_x;
 		compute_mmd_job.m_n_y=m_n_y;
-		compute_mmd_job.m_stype=EStatisticType::UNBIASED_FULL;
+		compute_mmd_job.m_stype=ST_UNBIASED_FULL;
 
 		const index_t size=m_n_x+m_n_y;
 		SGVector<float64_t> result(kernel_mgr.num_kernels());

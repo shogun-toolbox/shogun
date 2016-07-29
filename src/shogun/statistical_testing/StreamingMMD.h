@@ -35,6 +35,7 @@
 #include <memory>
 #include <functional>
 #include <shogun/statistical_testing/MMD.h>
+#include <shogun/statistical_testing/TestEnums.h>
 
 namespace shogun
 {
@@ -44,10 +45,6 @@ class CKernel;
 class CKernelSelectionStrategy;
 template <typename> class SGVector;
 template <typename> class SGMatrix;
-enum class EKernelSelectionMethod;
-enum class EStatisticType;
-enum class EVarianceEstimationMethod;
-enum class ENullApproximationMethod;
 
 namespace internal
 {

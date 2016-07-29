@@ -71,7 +71,7 @@ struct CKernelSelectionStrategy::Self
 	const static float64_t default_alpha;
 };
 
-const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=EKernelSelectionMethod::AUTO;
+const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
 const bool CKernelSelectionStrategy::Self::default_weighted=false;
 const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
 const index_t CKernelSelectionStrategy::Self::default_num_folds=3;
@@ -86,20 +86,20 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 {
 	switch (method)
 	{
-	case EKernelSelectionMethod::MEDIAN_HEURISTIC:
+	case KSM_MEDIAN_HEURISTIC:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
 		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
 	}
 	break;
-	case EKernelSelectionMethod::CROSS_VALIDATION:
+	case KSM_CROSS_VALIDATION:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
 		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
 			num_runs, num_folds, alpha));
 	}
 	break;
-	case EKernelSelectionMethod::MAXIMIZE_MMD:
+	case KSM_MAXIMIZE_MMD:
 	{
 		if (weighted)
 			policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(kernel_mgr, estimator));
@@ -107,7 +107,7 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 			policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(kernel_mgr, estimator));
 	}
 	break;
-	case EKernelSelectionMethod::MAXIMIZE_POWER:
+	case KSM_MAXIMIZE_POWER:
 	{
 		if (weighted)
 		{

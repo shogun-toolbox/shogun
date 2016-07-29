@@ -35,6 +35,7 @@
 #include <utility>
 #include <memory>
 #include <functional>
+#include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/TwoSampleTest.h>
 
 namespace shogun
@@ -43,9 +44,6 @@ namespace shogun
 class CKernel;
 class CKernelSelectionStrategy;
 template <typename> class SGVector;
-enum class EKernelSelectionMethod;
-enum class EStatisticType;
-enum class ENullApproximationMethod;
 
 class CMMD : public CTwoSampleTest
 {

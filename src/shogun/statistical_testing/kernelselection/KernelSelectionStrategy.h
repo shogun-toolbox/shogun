@@ -34,6 +34,7 @@
 
 #include <memory>
 #include <shogun/base/SGObject.h>
+#include <shogun/statistical_testing/TestEnums.h>
 
 namespace shogun
 {
@@ -43,7 +44,6 @@ class CMMD;
 class CQuadraticTimeMMD;
 template <class> class SGVector;
 template <class> class SGMatrix;
-enum class EKernelSelectionMethod;
 
 namespace internal
 {

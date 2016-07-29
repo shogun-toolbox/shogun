@@ -59,8 +59,8 @@ struct CMMD::Self
 	std::unique_ptr<CKernelSelectionStrategy> strategy;
 
 	static constexpr index_t DEFAULT_NUM_NULL_SAMPLES = 250;
-	static constexpr EStatisticType DEFAULT_STYPE = EStatisticType::UNBIASED_FULL;
-	static constexpr ENullApproximationMethod DEFAULT_NULL_APPROXIMATION_METHOD = ENullApproximationMethod::PERMUTATION;
+	static constexpr EStatisticType DEFAULT_STYPE = ST_UNBIASED_FULL;
+	static constexpr ENullApproximationMethod DEFAULT_NULL_APPROXIMATION_METHOD = NAM_PERMUTATION;
 };
 
 CMMD::CMMD() : CTwoSampleTest()

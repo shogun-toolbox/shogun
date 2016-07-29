@@ -71,7 +71,7 @@ TEST(MultiKernelMMD, biased_full)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
-	const EStatisticType stype=EStatisticType::BIASED_FULL;
+	const EStatisticType stype=ST_BIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -136,7 +136,7 @@ TEST(MultiKernelMMD, unbiased_full)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
-	const EStatisticType stype=EStatisticType::UNBIASED_FULL;
+	const EStatisticType stype=ST_UNBIASED_FULL;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -201,7 +201,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
-	const EStatisticType stype=EStatisticType::UNBIASED_INCOMPLETE;
+	const EStatisticType stype=ST_UNBIASED_INCOMPLETE;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);

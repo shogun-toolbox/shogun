@@ -40,14 +40,14 @@ mmd.set_train_test_ratio(1)
 #![enable_train_test_mode]
 
 #![select_kernel_single]
-mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.MAXIMIZE_POWER)
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER)
 mmd.select_kernel()
 GaussianKernel learnt_kernel_single = GaussianKernel:obtain_from_generic(mmd.get_kernel())
 real width = learnt_kernel_single.get_width()
 #![select_kernel_single]
 
 #![select_kernel_combined]
-mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.MAXIMIZE_POWER, true)
+mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER, true)
 mmd.select_kernel()
 CombinedKernel learnt_kernel_combined = CombinedKernel:obtain_from_generic(mmd.get_kernel())
 RealVector weights = learnt_kernel_combined.get_subkernel_weights()

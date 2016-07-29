@@ -415,7 +415,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 			float64_t eigenvalue_estimate=eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
 			eigenvalue_estimate/=(m+n);
 
-			if (owner.get_statistic_type()==EStatisticType::UNBIASED_FULL)
+			if (owner.get_statistic_type()==ST_UNBIASED_FULL)
 				multiple-=1;
 
 			null_sample+=eigenvalue_estimate*multiple;
@@ -433,7 +433,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::gamma_fit_null()
 
 	REQUIRE(owner.get_kernel(), "Kernel is not set!\n");
 	REQUIRE(precompute, "MMD2_GAMMA is not possible without precomputing the kernel matrix!\n");
-	REQUIRE(owner.get_statistic_type()==EStatisticType::BIASED_FULL, "Provided statistic has to be BIASED!\n");
+	REQUIRE(owner.get_statistic_type()==ST_BIASED_FULL, "Provided statistic has to be BIASED!\n");
 
 	index_t m=owner.get_num_samples_p();
 	index_t n=owner.get_num_samples_q();
@@ -536,7 +536,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD2_GAMMA:
+		case NAM_MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=self->gamma_fit_null();
 			result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
@@ -555,7 +555,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	float64_t result=0;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD2_GAMMA:
+		case NAM_MMD2_GAMMA:
 		{
 			SGVector<float64_t> params=self->gamma_fit_null();
 			result=CStatistics::gamma_inverse_cdf(alpha, params[0], params[1]);
@@ -574,10 +574,10 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	SGVector<float64_t> null_samples;
 	switch (get_null_approximation_method())
 	{
-		case ENullApproximationMethod::MMD2_SPECTRUM:
+		case NAM_MMD2_SPECTRUM:
 			null_samples=self->sample_null_spectrum();
 			break;
-		case ENullApproximationMethod::PERMUTATION:
+		case NAM_PERMUTATION:
 			null_samples=self->sample_null_permutation();
 			break;
 		default: break;
