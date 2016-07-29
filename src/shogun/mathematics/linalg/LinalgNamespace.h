@@ -158,12 +158,13 @@ complex128_t mean(const Container<complex128_t>& a)
  * Method that computes the sum of vectors or matrices
  *
  * @param a the vector or matrix whose sum has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
  * @return the vector sum \f$\sum_i a_i\f$ or matrix sum \f$\sum_{i,j}b_{i,j}\f$
  */
 template <typename T, template <typename> class Container>
-T sum(const Container<T>& a)
+T sum(const Container<T>& a, bool no_diag=false)
 {
-	return infer_backend(a)->sum(a);
+	return infer_backend(a)->sum(a, no_diag);
 }
 
 /**
@@ -173,9 +174,9 @@ T sum(const Container<T>& a)
  * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
  */
 template <typename T>
-SGVector<T> colwise_sum(const SGMatrix<T>& mat)
+SGVector<T> colwise_sum(const SGMatrix<T>& mat, bool no_diag=false)
 {
-	return infer_backend(mat)->colwise_sum(mat);
+	return infer_backend(mat)->colwise_sum(mat, no_diag);
 }
 
 /**
@@ -185,9 +186,9 @@ SGVector<T> colwise_sum(const SGMatrix<T>& mat)
  * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
  */
 template <typename T>
-SGVector<T> rowwise_sum(const SGMatrix<T>& mat)
+SGVector<T> rowwise_sum(const SGMatrix<T>& mat, bool no_diag=false)
 {
-	return infer_backend(mat)->rowwise_sum(mat);
+	return infer_backend(mat)->rowwise_sum(mat, no_diag);
 }
 
 /**

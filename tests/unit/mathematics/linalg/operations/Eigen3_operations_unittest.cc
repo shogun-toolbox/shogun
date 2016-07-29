@@ -85,6 +85,19 @@ TEST(LinalgBackendEigen, SGMatrix_sum)
 	EXPECT_NEAR(result, 15, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_sum_no_diag)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	auto result = sum(mat, true);
+
+	EXPECT_NEAR(result, 12, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_colwise_sum)
 {
 	const index_t nrows = 2, ncols = 3;
@@ -104,6 +117,21 @@ TEST(LinalgBackendEigen, SGMatrix_colwise_sum)
 	}
 }
 
+TEST(LinalgBackendEigen, SGMatrix_colwise_sum_no_diag)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	SGVector<int32_t> result = colwise_sum(mat, true);
+
+	EXPECT_NEAR(result[0], 1, 1E-15);
+	EXPECT_NEAR(result[1], 2, 1E-15);
+	EXPECT_NEAR(result[2], 9, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_rowwise_sum)
 {
 	const index_t nrows = 2, ncols = 3;
@@ -121,4 +149,18 @@ TEST(LinalgBackendEigen, SGMatrix_rowwise_sum)
 			sum += mat(i, j);
 		EXPECT_NEAR(sum, result[i], 1E-15);
 	}
+}
+
+TEST(LinalgBackendEigen, SGMatrix_rowwise_sum_no_diag)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	SGVector<int32_t> result = rowwise_sum(mat, true);
+
+	EXPECT_NEAR(result[0], 6, 1E-15);
+	EXPECT_NEAR(result[1], 6, 1E-15);
 }
