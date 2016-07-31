@@ -90,6 +90,7 @@ public:
 	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
@@ -103,6 +104,7 @@ public:
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
@@ -117,6 +119,7 @@ public:
 	virtual float64_t mean(const Container<Type>& a) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
 	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
@@ -132,6 +135,7 @@ public:
 	virtual complex128_t mean(const Container<complex128_t>& a) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
 	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
@@ -146,6 +150,7 @@ public:
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
@@ -160,6 +165,7 @@ public:
 	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_COLWISE_SUM
@@ -173,6 +179,7 @@ public:
 	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_ROWWISE_SUM
@@ -187,6 +194,7 @@ public:
 	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
+		return 0; \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
