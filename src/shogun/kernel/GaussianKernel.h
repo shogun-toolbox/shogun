@@ -173,10 +173,6 @@ protected:
 private:
 	/** register parameters and initialize with defaults */
 	void register_params();
-
-protected:
-	/** width */
-	float64_t m_log_width;
 };
 
 }

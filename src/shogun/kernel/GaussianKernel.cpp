@@ -93,12 +93,12 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 void CGaussianKernel::set_width(float64_t w)
 {
 	REQUIRE(w>0, "width (%f) must be positive\n",w);
-	m_log_width=CMath::log(w/2.0)/2.0;
+	set<float64_t>("log_width", CMath::log(w/2.0)/2.0);
 }
 
 float64_t CGaussianKernel::get_width() const
 {
-	return CMath::exp(m_log_width*2.0)*2.0;
+	return CMath::exp(get<float64_t>("log_width")*2.0)*2.0;
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const TParameter* param, index_t index)
@@ -148,13 +148,11 @@ float64_t CGaussianKernel::distance(int32_t idx_a, int32_t idx_b) const
 
 void CGaussianKernel::register_params()
 {
-	set_width(1.0);
+	register_param<float64_t>("log_width", 1.0);
 	set_cache_size(10);
 
 	CEuclideanDistance* dist=new CEuclideanDistance();
 	dist->set_disable_sqrt(true);
 	m_distance=dist;
 	SG_REF(m_distance);
-
-	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
