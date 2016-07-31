@@ -108,7 +108,7 @@ LinalgBackendBase* infer_backend(const Container<T>& a, const Container<T>& b)
 template <typename T, template <typename> class Container>
 Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta=1)
 {
-	REQUIRE(a.vlen == b.vlen, "Length of vector a(%d) doesn't match vector b(%d).\n", a.vlen, b.vlen);
+	REQUIRE(a.vlen == b.vlen, "Length of vector a (%d) doesn't match vector b (%d).\n", a.vlen, b.vlen);
 	return infer_backend(a, b)->add(a, b, alpha, beta);
 }
 
@@ -123,7 +123,7 @@ Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta
 template <typename T>
 T dot(const SGVector<T>& a, const SGVector<T>& b)
 {
-	REQUIRE(a.vlen == b.vlen, "Length of vector a(%d) doesn't match vector b(%d).\n", a.vlen, b.vlen);
+	REQUIRE(a.vlen == b.vlen, "Length of vector a (%d) doesn't match vector b (%d).\n", a.vlen, b.vlen);
 	return infer_backend(a, b)->dot(a, b);
 }
 
@@ -259,7 +259,7 @@ SGVector<T> from_gpu(const SGVector<T>& vec)
 			SG_SERROR("Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
-			return NULL;
+			return false;
 		}
 	}
 	else
@@ -296,7 +296,7 @@ SGMatrix<T> from_gpu(const SGMatrix<T>& mat)
 			SG_SERROR("Data memory on GPU but no GPU backend registered. \
 						This can happen if the GPU backend was de-activated \
 						after memory has been transferred to GPU.\n");
-			return NULL;
+			return false;
 		}
 	}
 	else
