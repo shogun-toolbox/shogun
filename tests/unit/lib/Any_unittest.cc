@@ -91,3 +91,13 @@ TEST(Any, recall_type)
 	EXPECT_THROW(recall_type<float64_t>(any), std::logic_error);
 	EXPECT_THROW(recall_type<int32_t>(empty_any), std::logic_error);
 }
+
+TEST(Any, non_owning)
+{
+	int32_t value = 783;
+	auto any = Any::non_owning(&value);
+	EXPECT_THROW(recall_type<bool>(any), std::logic_error);
+	EXPECT_EQ(recall_type<int32_t>(any), value);
+	value = 532;
+	EXPECT_EQ(recall_type<int32_t>(any), value);
+}
