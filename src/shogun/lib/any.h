@@ -95,7 +95,63 @@ namespace shogun
          */
         virtual bool equals(void** storage, void** other_storage) const = 0;
     };
-    
+
+    /** @brief This implementation of @ref BaseAnyPolicy uses external
+     * pointer in non-owning fashion. This means the pointer is never
+     * deleted and new values are stored directly by the provided pointer.
+     */
+    template <typename T>
+    class NonOwningValueAnyPolicy : public BaseAnyPolicy
+    {
+    public:
+        /** Puts provided value pointed by v (untyped to be generic) to storage.
+         * @param storage pointer to a pointer to storage
+         * @param v pointer to value
+         */
+        virtual void set(void** storage, const void* v) const
+        {
+            *(reinterpret_cast<T*>(storage)) = *reinterpret_cast<T const*>(v);
+        }
+
+        /** Clears storage. In this case does nothing as storage
+         * is considered external.
+         *
+         * @param storage pointer to a pointer to storage
+         */
+        virtual void clear(void** storage) const
+        {
+        }
+
+        /** Returns type-name as string.
+         * @return name of type class
+         */
+        virtual std::string type() const
+        {
+            return demangledType<T>();
+        }
+
+        /** Compares type.
+         * @param ti type information
+         * @return true if type matches
+         */
+        virtual bool matches(const std::type_info& ti) const
+        {
+            return typeid(T) == ti;
+        }
+
+        /** Compares two storages.
+         * @param storage pointer to a pointer to storage
+         * @param other_storage pointer to a pointer to another storage
+         * @return true if both storages have same value
+         */
+        bool equals(void** storage, void** other_storage) const
+        {
+            T typed_storage = *(reinterpret_cast<T*>(*storage));
+            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+            return typed_storage == typed_other_storage;
+        }
+    };
+
     /** @brief This is one concrete implementation of policy that
      * uses void pointers to store values.
      */
@@ -163,13 +219,21 @@ namespace shogun
         struct Empty;
 
         /** Constructor */
-        Any() : policy(select_policy<Empty>()), storage(nullptr)
+        Any() : policy(default_policy<Empty>()), storage(nullptr)
         {
+        }
+
+        template <typename T>
+        static Any non_owning(T* raw_ptr) {
+            Any any;
+            any.policy = non_owning_policy<T>();
+            any.storage = raw_ptr;
+            return any;
         }
 
         /** Constructor to copy value */
         template <typename T>
-        explicit Any(const T& v) : policy(select_policy<T>()), storage(nullptr)
+        explicit Any(const T& v) : policy(default_policy<T>()), storage(nullptr)
         {
             policy->set(&storage, &v);
         }
@@ -233,7 +297,7 @@ namespace shogun
         template <typename T>
         inline bool same_type() const
         {
-            return (policy == select_policy<T>()) || same_type_fallback<T>();
+            return (policy == default_policy<T>()) || same_type_fallback<T>();
         }
 
         /** @return true if type-id is same. */
@@ -250,9 +314,17 @@ namespace shogun
         }
     private:
         template <typename T>
-        static BaseAnyPolicy* select_policy()
+        static BaseAnyPolicy* default_policy()
         {
             typedef PointerValueAnyPolicy<T> Policy;
+            static Policy policy;
+            return &policy;
+        }
+
+        template <typename T>
+        static BaseAnyPolicy* non_owning_policy()
+        {
+            typedef NonOwningValueAnyPolicy<T> Policy;
             static Policy policy;
             return &policy;
         }
