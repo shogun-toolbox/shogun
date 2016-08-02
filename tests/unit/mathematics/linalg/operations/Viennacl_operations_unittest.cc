@@ -112,6 +112,21 @@ TEST(LinalgBackendViennaCL, SGMatrix_sum)
 	EXPECT_NEAR(result, 15, 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, SGMatrix_sum_no_diag)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> a(nrows, ncols), a_gpu(nrows, ncols);
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		a[i] = i;
+
+	a_gpu = to_gpu(a);
+
+	auto result = sum(a_gpu, true);
+	EXPECT_NEAR(result, 12, 1E-15);
+}
+
 TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -135,6 +150,25 @@ TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum)
 	}
 }
 
+TEST(LinalgBackendViennaCL, SGMatrix_colwise_sum_no_diag)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	mat_gpu = to_gpu(mat);
+	SGVector<int32_t> result_gpu = colwise_sum(mat_gpu, true);
+	SGVector<int32_t> result = from_gpu(result_gpu);
+
+	EXPECT_NEAR(result[0], 1, 1E-15);
+	EXPECT_NEAR(result[1], 2, 1E-15);
+	EXPECT_NEAR(result[2], 9, 1E-15);
+}
+
 TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -156,6 +190,24 @@ TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum)
 			sum += mat(i, j);
 		EXPECT_NEAR(sum, result[i], 1E-15);
 	}
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_rowwise_sum_no_diag)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols), mat_gpu;
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		mat[i] = i;
+
+	mat_gpu = to_gpu(mat);
+	SGVector<int32_t> result_gpu = rowwise_sum(mat_gpu, true);
+	SGVector<int32_t> result = from_gpu(result_gpu);
+
+	EXPECT_NEAR(result[0], 6, 1E-15);
+	EXPECT_NEAR(result[1], 6, 1E-15);
 }
 
 #endif // HAVE_VIENNACL
