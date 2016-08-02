@@ -325,7 +325,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T>
-	void set(const Tag<T>& _tag, const T& value)
+	void sets(const Tag<T>& _tag, const T& value)
 	{
 		if(has_with_base_tag(_tag))
 		{
@@ -351,10 +351,10 @@ public:
 	 * @param value value of the parameter along with type information
 	 */
 	template <typename T, typename U=void>
-	void set(const std::string& name, const T& value)
+	void sets(const std::string& name, const T& value)
 	{
 		Tag<T> tag(name);
-		set(tag, value);
+		sets(tag, value);
 	}
 
 	/** Getter for a class parameter, identified by a Tag.
@@ -364,7 +364,7 @@ public:
 	 * @return value of the parameter identified by the input tag
 	 */
 	template <typename T>
-	T get(const Tag<T>& _tag) const
+	T gets(const Tag<T>& _tag) const
 	{
 		const Any value = get_with_base_tag(_tag);
 		try
@@ -385,10 +385,10 @@ public:
 	 * @return value of the parameter corresponding to the input name and type
 	 */
 	template <typename T, typename U=void>
-	T get(const std::string& name) const
+	T gets(const std::string& name) const
 	{
 		Tag<T> tag(name);
-		return get(tag);
+		return gets(tag);
 	}
 
 protected:
@@ -429,7 +429,7 @@ protected:
 	virtual void save_serializable_post() throw (ShogunException);
 
 	/** Registers a class parameter which is identified by a tag.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by sets() and retrieved by gets().
 	 * Parameters can be registered in the constructor of the class.
 	 * 
 	 * @param _tag name and type information of parameter
@@ -442,7 +442,7 @@ protected:
 	}
 
 	/** Registers a class parameter which is identified by a name.
-	 * This enables the parameter to be modified by set() and retrieved by get().
+	 * This enables the parameter to be modified by sets() and retrieved by gets().
 	 * Parameters can be registered in the constructor of the class.
 	 *
 	 * @param name name of the parameter

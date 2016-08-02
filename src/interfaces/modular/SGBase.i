@@ -1,6 +1,7 @@
 /* base includes required by any module */
 %include "stdint.i"
 %include "exception.i"
+%include "std_string.i"
 
 %feature("ref")   shogun::CSGObject "SG_REF($this);"
 %feature("unref") shogun::CSGObject "SG_UNREF($this);"
@@ -107,6 +108,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
  #include <shogun/base/SGObject.h>
+
+#ifdef ENABLE_TESTING
+ #include "../tests/unit/base/MockObject.h"
+#endif
 
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
@@ -305,6 +310,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 
 %rename(SGObject) CSGObject;
+#ifdef ENABLE_TESTING
+    %rename(Obj) CMockObject;
+#endif
 
 %include <shogun/lib/common.h>
 
@@ -321,10 +329,15 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+%include <shogun/lib/basetag.h>
+%include <shogun/lib/tag.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
+#ifdef ENABLE_TESTING
+    %include "../tests/unit/base/MockObject.h"
+#endif
 
 #ifdef SWIGPYTHON
 namespace shogun
@@ -508,3 +521,7 @@ copy_reg._reconstructor=_sg_reconstructor
 
 
 #endif /* SWIGPYTHON  */
+
+#ifdef HAVE_JINJA2
+%include "shogun-base.i"
+#endif

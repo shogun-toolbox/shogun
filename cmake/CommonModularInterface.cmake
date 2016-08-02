@@ -4,6 +4,22 @@ if(SYSTEM_INCLUDES)
 endif()
 INCLUDE_DIRECTORIES(${INCLUDES})
 
+set(modular_files)
+
+# Generate automatic shogun-base.i from jinja2 templates
+IF(JINJA2_FOUND)
+	ADD_CUSTOM_COMMAND(OUTPUT shogun-base.i
+		COMMAND ${PYTHON_EXECUTABLE} ${COMMON_MODULAR_SRC_DIR}/shogun-base.i.py
+		${COMMON_MODULAR_SRC_DIR}shogun-base.i.jinja2
+		shogun-base.i
+		${COMMON_MODULAR_SRC_DIR}shogun-base-list.txt
+		DEPENDS ${COMMON_MODULAR_SRC_DIR}shogun-base.i.py
+		${COMMON_MODULAR_SRC_DIR}shogun-base.i.jinja2
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Generating shogun-base.i")
+	list(APPEND modular_files shogun-base.i)
+ENDIF()
+
 # transform defines to -D<definition> string
 
 # set compiler SWIG generated cxx compiler flags
@@ -18,7 +34,6 @@ if(${MODULAR_NAME} STREQUAL "python")
 	SET(PREPEND_TARGET "_")
 endif()
 
-set(modular_files)
 FILE(GLOB_RECURSE MODULAR_FILES ${COMMON_MODULAR_SRC_DIR}/*.i)
 FILE(GLOB_RECURSE CUSTOM_MODULAR_FILES ${MODULAR_DIR}/*.i)
 LIST(APPEND MODULAR_FILES ${CUSTOM_MODULAR_FILES})
