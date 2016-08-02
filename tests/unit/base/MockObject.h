@@ -1,5 +1,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
@@ -22,9 +23,12 @@ protected:
     void init_params()
     {
         float64_t decimal = 0.0;
-        register_param("vector", SGVector<float64_t>());
+        CKernel* kernel = NULL;
+        SGVector<float64_t> *vector = NULL;
+        register_param("vector", vector);
         register_param("int", m_integer);
         register_param("float", decimal);
+        register_param("gaussian", kernel);
     }
 
 private:

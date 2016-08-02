@@ -321,15 +321,15 @@ TEST(SGObject, tags_set_get_string_sgvector)
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 
-	obj->set("vector", vec);
-	EXPECT_THROW(obj->set("foo", vec), ShogunException);
+	obj->sets("vector", &vec);
+	EXPECT_THROW(obj->sets("foo", &vec), ShogunException);
 
-	auto retr = obj->get<SGVector<float64_t> >("vector");
+	auto retr = *(obj->gets<SGVector<float64_t>* >("vector"));
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
-	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t>* >("vector")), ShogunException);
+	EXPECT_THROW(obj->gets<SGVector<int32_t>* >("vector"), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_tag_sgvector)
@@ -339,32 +339,32 @@ TEST(SGObject, tags_set_get_tag_sgvector)
 	vec[0] = 1;
 	float64_t bar = 1.0;
 
-	obj->set(Tag<SGVector<float64_t> >("vector"), vec);
-	EXPECT_THROW(obj->set(Tag<SGVector<float64_t> >("foo"), vec), ShogunException);
-	EXPECT_THROW(obj->set(Tag<float64_t>("vector"), bar), ShogunException);
+	obj->sets(Tag<SGVector<float64_t>* >("vector"), &vec);
+	EXPECT_THROW(obj->sets(Tag<SGVector<float64_t>* >("foo"), &vec), ShogunException);
+	EXPECT_THROW(obj->sets(Tag<float64_t>("vector"), bar), ShogunException);
 
-	auto retr = obj->get<SGVector<float64_t> >("vector");
+	auto retr = *(obj->gets<SGVector<float64_t>* >("vector"));
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
-	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t>* >("vector")), ShogunException);
+	EXPECT_THROW(obj->gets<SGVector<int32_t>* >("vector"), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_int)
 {
 	auto obj = some<CMockObject>();
 
-	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
-	obj->set("int", 10);
-	EXPECT_EQ(obj->get(Tag<int32_t>("int")), 10);
-	EXPECT_THROW(obj->get<float64_t>("int"), ShogunException);
-	EXPECT_THROW(obj->get(Tag<float64_t>("int")), ShogunException);
-	EXPECT_EQ(obj->get<int>("int"), 10);
+	EXPECT_THROW(obj->gets<int32_t>("foo"), ShogunException);
+	obj->sets("int", 10);
+	EXPECT_EQ(obj->gets(Tag<int32_t>("int")), 10);
+	EXPECT_THROW(obj->gets<float64_t>("int"), ShogunException);
+	EXPECT_THROW(obj->gets(Tag<float64_t>("int")), ShogunException);
+	EXPECT_EQ(obj->gets<int>("int"), 10);
 }
 
 TEST(SGObject, tags_has)
-{	
+{
 	auto obj = some<CMockObject>();
 
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
@@ -373,7 +373,7 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has<float64_t>("int"), false);
 	EXPECT_EQ(obj->has<int32_t>("int"), true);
 	
-	obj->set("int", 10);
+	obj->sets("int", 10);
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
 	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
 	EXPECT_EQ(obj->has("int"), true);

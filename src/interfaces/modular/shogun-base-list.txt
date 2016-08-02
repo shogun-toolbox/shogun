@@ -1,0 +1,12 @@
+\\ Contains list of shogun base classes. The list format is
+\\ "'CLASS/TEMPLATE', 'new name for class/template', 'name or pointer of class/template in c++'",
+
+String, std::string
+Int, int32_t
+Float, float64_t
+Kernel, CKernel*
+Machine, CMachine*
+Labels, CLabels*
+Features, CFeatures*
+Obj, CMockObject*
+RealVector, SGVector<float64_t>*
