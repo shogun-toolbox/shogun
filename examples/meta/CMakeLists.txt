@@ -8,6 +8,7 @@
 # execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/get_type_list.sh > ${CMAKE_CURRENT_SOURCE_DIR}/generator/types/typelist)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser_files)
+include_directories(${CEREAL_INCLUDE_DIRS})
 
 # Run example generation script
 add_custom_target(meta_examples

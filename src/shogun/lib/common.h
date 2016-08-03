@@ -15,6 +15,19 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include <cereal/macros.hpp>
+#ifdef CEREAL_SAVE_FUNCTION_NAME
+#undef CEREAL_SAVE_FUNCTION_NAME
+#endif
+#define CEREAL_SAVE_FUNCTION_NAME cereal_save
+
+#ifdef CEREAL_LOAD_FUNCTION_NAME
+#undef CEREAL_LOAD_FUNCTION_NAME
+#endif
+#define CEREAL_LOAD_FUNCTION_NAME cereal_load
+#include <cereal/cereal.hpp>
+#include <cereal/types/polymorphic.hpp>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
