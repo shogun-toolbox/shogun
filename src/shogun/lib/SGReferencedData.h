@@ -10,12 +10,11 @@
 #define __SGREFERENCED_DATA_H__
 
 #include <shogun/lib/config.h>
-
 #include <shogun/lib/common.h>
+#include <shogun/lib/RefCount.h>
 
 namespace shogun
 {
-class RefCount;
 
 /** @brief shogun reference count managed data */
 class SGReferencedData
@@ -42,6 +41,31 @@ class SGReferencedData
 		 * @return reference count
 		 */
 		int32_t ref_count();
+
+		template<class Archive>
+		void cereal_save(Archive & ar) const
+		{
+			if (m_refcount != NULL)
+				ar(cereal::make_nvp("ref_counting", true), m_refcount->ref_count());
+			else
+				ar(cereal::make_nvp("ref_counting", false));
+		}
+
+		template<class Archive>
+		void cereal_load(Archive & ar)
+		{
+			bool ref_counting;
+			ar(ref_counting);
+
+			if (ref_counting)
+			{
+				int32_t temp;
+				ar(temp);
+				m_refcount = new RefCount(temp);
+			}
+			else
+				m_refcount = NULL;
+		}
 
 	protected:
 		/** copy refcount */
