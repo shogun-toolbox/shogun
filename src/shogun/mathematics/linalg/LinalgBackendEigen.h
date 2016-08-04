@@ -84,6 +84,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
 
+	/** Implementation of @see LinalgBackendBase::add */
+	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
+	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
+	{  \
+		add_impl(a, b, alpha, beta, result); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+	#undef BACKEND_GENERIC_IN_PLACE_ADD
+
 	/** Implementation of @see LinalgBackendBase::dot */
 	#define BACKEND_GENERIC_DOT(Type, Container) \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
@@ -182,6 +191,17 @@ private:
 
 		c_eig = alpha * a_eig + beta * b_eig;
 		return c;
+	}
+
+	/** Eigen3 vector result = alpha*A + beta*B method */
+	template <typename T>
+	void add_impl(SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
+	{
+		typename SGVector<T>::EigenVectorXtMap a_eig = a;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = alpha * a_eig + beta * b_eig;
 	}
 
 	/** Eigen3 vector dot-product method */
