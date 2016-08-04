@@ -97,6 +97,19 @@ public:
 	#undef BACKEND_GENERIC_ADD
 
 	/**
+	 * Wrapper method of add operation the operation result = alpha*a + beta*b.
+	 *
+	 * @see linalg::add
+	 */
+	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
+	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+	#undef BACKEND_GENERIC_IN_PLACE_ADD
+
+	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.
 	 *
 	 * @see linalg::dot
