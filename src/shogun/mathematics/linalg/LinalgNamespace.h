@@ -168,6 +168,19 @@ T sum(const Container<T>& a, bool no_diag=false)
 }
 
 /**
+ * Method that computes the sum of matrix blocks
+ *
+ * @param a the matrix-block whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
+ * @return the vector sum \f$\sum_i a_i\f$ or matrix sum \f$\sum_{i,j}b_{i,j}\f$
+ */
+template <typename T>
+T sum(const Block<SGMatrix<T>>& a, bool no_diag=false)
+{
+	return sg_linalg->get_cpu_backend()->sum(a, no_diag);
+}
+
+/**
  * Method that computes colwise sum of co-efficients of a dense matrix
  *
  * @param mat a matrix whose colwise sum has to be computed
@@ -180,6 +193,19 @@ SGVector<T> colwise_sum(const SGMatrix<T>& mat, bool no_diag=false)
 }
 
 /**
+ * Method that computes the colwise sum of matrix blocks
+ *
+ * @param a the matrix-block whose colwise sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
+ * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
+ */
+template <typename T>
+SGVector<T> colwise_sum(const Block<SGMatrix<T>>& a, bool no_diag=false)
+{
+	return sg_linalg->get_cpu_backend()->colwise_sum(a, no_diag);
+}
+
+/**
  * Method that computes rowwise sum of co-efficients of a dense matrix
  *
  * @param mat a matrix whose rowwise sum has to be computed
@@ -189,6 +215,19 @@ template <typename T>
 SGVector<T> rowwise_sum(const SGMatrix<T>& mat, bool no_diag=false)
 {
 	return infer_backend(mat)->rowwise_sum(mat, no_diag);
+}
+
+/**
+ * Method that computes the rowwise sum of matrix blocks
+ *
+ * @param a the matrix-block whose rowwise sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
+ * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
+ */
+template <typename T>
+SGVector<T> rowwise_sum(const Block<SGMatrix<T>>& a, bool no_diag=false)
+{
+	return sg_linalg->get_cpu_backend()->rowwise_sum(a, no_diag);
 }
 
 /**
