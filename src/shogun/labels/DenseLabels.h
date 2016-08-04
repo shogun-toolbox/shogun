@@ -122,8 +122,11 @@ class CDenseLabels : public CLabels
 		template<typename ST>
 		ST get_label_t(int32_t idx)
 		{
+			REQUIRE(idx<get_num_labels(), "The provided index (%d) is out of bounds (the last label has index (%d)).  "
+				"Please ensure that you're using a valid index number.", idx, get_num_labels())
+			REQUIRE(m_labels.vector, "You're attempting to get a label when there are in fact none!  "
+				"Please ensure that you initialized the labels correctly.")
 			int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-			ASSERT(m_labels.vector && idx<get_num_labels())
 			return m_labels.vector[real_num];
 		}
 
@@ -156,7 +159,7 @@ class CDenseLabels : public CLabels
 				return get_labels_copy_t<ST>();
 
 			SGVector<ST> labels_copy(m_labels.vlen);
-			for(int i = 0; i < m_labels.vlen; ++i)
+			for(index_t i = 0; i < m_labels.vlen; ++i)
 				labels_copy[i] = (ST) m_labels[i];
 
 			return labels_copy;
@@ -174,7 +177,7 @@ class CDenseLabels : public CLabels
 			if (!m_subset_stack->has_subsets())
 			{
 				SGVector<ST> labels_copy(m_labels.vlen);
-				for(int i = 0; i < m_labels.vlen; ++i)
+				for(index_t i = 0; i < m_labels.vlen; ++i)
 					labels_copy[i] = (ST) m_labels[i];
 
 				return labels_copy;

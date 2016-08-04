@@ -45,7 +45,7 @@ void CLeastAngleRegression::find_max_abs(const std::vector<ST> &vec, const std::
 {
 	imax = -1;
 	vmax = -1;
-	for (index_t i=0; i < vec.size(); ++i)
+	for (size_t i=0; i < vec.size(); ++i)
 	{
 		if (ignore_mask[i])
 			continue;
@@ -88,30 +88,23 @@ void CLeastAngleRegression::plane_rot(ST x0, ST x1,
 
 bool CLeastAngleRegression::train_machine(CFeatures* data)
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
-
-	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Provided labels (%s) are of type (%d) - they should be regression labels (%d) instead.\n",
-			m_labels->get_name(), m_labels->get_label_type(), LT_REGRESSION, m_labels->get_label_type())
+	REQUIRE(m_labels->get_label_type() == LT_REGRESSION, "Provided labels (%s) are of type (%d) - they should be regression labels (%d) instead.\n"
+		, m_labels->get_name(), m_labels->get_label_type(), LT_REGRESSION, m_labels->get_label_type())
 
 	if (!data)
 	{
-		if(!features)
-			SG_ERROR("No features provided.\n")
-
-		if(features->get_feature_class() != C_DENSE)
-			SG_ERROR("Feature-class (%d) must be of type C_DENSE (%d)\n", features->get_feature_class(), C_DENSE)
+		REQUIRE(features, "No features provided.\n")
+		REQUIRE(features->get_feature_class() == C_DENSE,
+			"Feature-class (%d) must be of type C_DENSE (%d)\n", features->get_feature_class(), C_DENSE)
 			
 		data = features;
 	}
 	else
-		if (data->get_feature_class() != C_DENSE)
-			SG_ERROR("Feature-class (%d) must be of type C_DENSE (%d)\n", features->get_feature_class(), C_DENSE)
+		REQUIRE(data->get_feature_class() == C_DENSE,
+			"Feature-class must be of type C_DENSE (%d)\n", data->get_feature_class(), C_DENSE)
 
-	if (data->get_num_vectors() != m_labels->get_num_labels())
-		SG_ERROR("Number of training vectors (%d) does not match number of labels (%d)\n", 
-			data->get_num_vectors(), m_labels->get_num_labels())
+	REQUIRE(data->get_num_vectors() == m_labels->get_num_labels(), "Number of training vectors (%d) does not match number of labels (%d)\n"
+		, data->get_num_vectors(), m_labels->get_num_labels())
 
 	//check for type of CFeatures, then call the appropriate template method
 	if(data->get_feature_type() == F_DREAL)
@@ -123,12 +116,13 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	else
 		SG_ERROR("Feature-type (%d) must be of type F_SHORTREAL (%d), F_DREAL (%d) or F_LONGREAL (%d).\n", 
 			data->get_feature_type(), F_SHORTREAL, F_DREAL, F_LONGREAL)
+
+	return false;
 }
 
 template <typename ST>
 bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 {
-
 	std::vector<std::vector<ST>> m_beta_path_t;		
 
 	int32_t n_fea = data->get_num_features();
@@ -200,7 +194,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 		map_corr = map_Xy - (map_Xr*map_mu);
 		
 		// corr_sign = sign(corr)
-		for (index_t i=0; i < corr.size(); ++i)
+		for (size_t i=0; i < corr.size(); ++i)
 			corr_sign[i] = CMath::sign(corr[i]);
 
 		// find max absolute correlation in inactive set
@@ -351,10 +345,10 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	}
 
 	//copy m_beta_path_t (of type ST) into m_beta_path
-	for(index_t i = 0; i < m_beta_path_t.size(); ++i)
+	for(size_t i = 0; i < m_beta_path_t.size(); ++i)
 	{
 		std::vector<float64_t> va;
-		for(index_t p = 0; p < m_beta_path_t[i].size(); ++p){
+		for(size_t p = 0; p < m_beta_path_t[i].size(); ++p){
 			va.push_back((float64_t) m_beta_path_t[i][p]);			
 		}
 		m_beta_path.push_back(va);
