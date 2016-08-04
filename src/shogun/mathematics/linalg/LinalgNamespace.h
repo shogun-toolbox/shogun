@@ -113,6 +113,29 @@ Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta
 }
 
 /**
+ * Performs the operation result = alpha*a + beta*b.
+ *
+ * @param a first vector
+ * @param b second vector
+ * @param result the vector that saves the result
+ * @param alpha constant to be multiplied by the first vector
+ * @param beta constant to be multiplied by the second vector
+ */
+template <typename T>
+void add(SGVector<T>& a, SGVector<T>& b, SGVector<T>& result, T alpha=1, T beta=1)
+{
+	REQUIRE(a.vlen == b.vlen, "Length of vector a (%d) doesn't match vector b (%d).\n", a.vlen, b.vlen);
+	REQUIRE(result.vlen == b.vlen, "Length of vector result (%d) doesn't match vector a (%d).\n", result.vlen, a.vlen);
+
+	REQUIRE(!(result.on_gpu()^a.on_gpu()),
+		"Cannot operate with vector result on_gpu (%d) and vector a on_gpu (%d).\n", result.on_gpu(), a.on_gpu());
+	REQUIRE(!(result.on_gpu()^b.on_gpu()),
+		"Cannot operate with vector result on_gpu (%d) and vector b on_gpu (%d).\n", result.on_gpu(), b.on_gpu());
+
+	infer_backend(a, b)->add(a, b, alpha, beta, result);
+}
+
+/**
  * Vector dot-product that works with generic vectors.
  *
  * @param a first vector

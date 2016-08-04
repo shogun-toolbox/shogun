@@ -26,6 +26,26 @@ TEST(LinalgBackendEigen, SGVector_add)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, add_in_place)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+
+	SGVector<float64_t> A(9), B(9), C(9);
+
+	for (index_t i = 0; i < 9; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+
+	add(A, B, A, alpha, beta);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;
