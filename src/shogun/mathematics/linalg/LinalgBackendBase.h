@@ -36,6 +36,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
+#include <shogun/mathematics/linalg/internal/Block.h>
 #include <memory>
 
 #ifndef LINALG_BACKEND_BASE_H__
@@ -157,6 +158,20 @@ public:
 	#undef BACKEND_GENERIC_SUM
 
 	/**
+	* Wrapper method of sum that works with matrix blocks.
+	*
+	* @see linalg::sum
+	*/
+	#define BACKEND_GENERIC_BLOCK_SUM(Type, Container) \
+	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_SUM
+
+	/**
 	 * Wrapper method of matrix rowwise sum that works with dense matrices.
 	 *
 	 * @see linalg::colwise_sum
@@ -171,6 +186,20 @@ public:
 	#undef BACKEND_GENERIC_COLWISE_SUM
 
 	/**
+	* Wrapper method of matrix colwise sum that works with dense matrices.
+	*
+	* @see linalg::colwise_sum
+	*/
+	#define BACKEND_GENERIC_BLOCK_COLWISE_SUM(Type, Container) \
+	virtual SGVector<Type> colwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_COLWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_COLWISE_SUM
+
+	/**
 	 * Wrapper method of matrix rowwise sum that works with dense matrices.
 	 *
 	 * @see linalg::rowwise_sum
@@ -183,6 +212,20 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_ROWWISE_SUM
+
+	/**
+	* Wrapper method of matrix rowwise sum that works with dense matrices.
+	*
+	* @see linalg::rowwise_sum
+	*/
+	#define BACKEND_GENERIC_BLOCK_ROWWISE_SUM(Type, Container) \
+	virtual SGVector<Type> rowwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
 	/**
 	 * Wrapper method of Transferring data to GPU memory.
