@@ -98,6 +98,19 @@ TEST(LinalgBackendEigen, SGMatrix_sum_no_diag)
 	EXPECT_NEAR(result, 12, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_block_sum)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = 0; j < n; ++j)
+			mat(i, j)=i * 10 + j + 1;
+
+	auto result = sum(linalg::block(mat, 0, 0, 2, 3));
+	EXPECT_NEAR(result, 42.0, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_colwise_sum)
 {
 	const index_t nrows = 2, ncols = 3;
@@ -132,6 +145,27 @@ TEST(LinalgBackendEigen, SGMatrix_colwise_sum_no_diag)
 	EXPECT_NEAR(result[2], 9, 1E-15);
 }
 
+
+TEST(LinalgBackendEigen, SGMatrix_block_colwise_sum)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float64_t> mat(nrows, ncols);
+
+	for (index_t i = 0; i < nrows; ++i)
+		for (index_t j = 0; j < ncols; ++j)
+			mat(i, j) = i * 10 + j + 1;
+
+	auto result = colwise_sum(linalg::block(mat, 0, 0, 2, 3));
+
+	for (index_t j = 0; j < ncols; ++j)
+	{
+		float64_t sum = 0;
+		for (index_t i = 0; i < nrows; ++i)
+			sum += mat(i, j);
+		EXPECT_NEAR(sum, result[j], 1E-15);
+	}
+}
+
 TEST(LinalgBackendEigen, SGMatrix_rowwise_sum)
 {
 	const index_t nrows = 2, ncols = 3;
@@ -163,4 +197,24 @@ TEST(LinalgBackendEigen, SGMatrix_rowwise_sum_no_diag)
 
 	EXPECT_NEAR(result[0], 6, 1E-15);
 	EXPECT_NEAR(result[1], 6, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_block_rowwise_sum)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float64_t> mat(nrows, ncols);
+
+	for (index_t i = 0; i < nrows; ++i)
+		for (index_t j = 0; j < ncols; ++j)
+			mat(i, j) = i * 10 + j + 1;
+
+	auto result = rowwise_sum(linalg::block(mat, 0, 0, 2, 3));
+
+	for (index_t i = 0; i < nrows; ++i)
+	{
+		float64_t sum = 0;
+		for (index_t j = 0; j < ncols; ++j)
+			sum += mat(i, j);
+		EXPECT_NEAR(sum, result[i], 1E-15);
+	}
 }
