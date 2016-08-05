@@ -474,6 +474,12 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return matrix
 		 */
 		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+
+		template<class Archive> void cereal_save(Archive & ar) const;
+
+		template<class Archive>
+		void cereal_load(Archive & ar);
+
 #endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
