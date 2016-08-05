@@ -34,6 +34,32 @@ TEST(LinalgBackendViennaCL, SGVector_add)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
+TEST(LinalgBackendViennaCL, add_in_place)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const float32_t alpha = 0.3;
+	const float32_t beta = -1.5;
+
+	SGVector<float32_t> A(9), B(9), C(9);
+	SGVector<float32_t> A_gpu, B_gpu;
+
+	for (index_t i = 0; i < 9; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+
+	add(A_gpu, B_gpu, A_gpu, alpha, beta);
+	A = from_gpu(A_gpu);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
+}
+
 TEST(LinalgBackendViennaCL, SGVector_dot)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
