@@ -93,6 +93,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::max */
+	#define BACKEND_GENERIC_MAX(Type, Container) \
+	virtual Type max(const Container<Type>& a) const \
+	{  \
+		return max_impl(a); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+	#undef BACKEND_GENERIC_MAX
+
 	/** Implementation of @see LinalgBackendBase::mean */
 	#define BACKEND_GENERIC_MEAN(Type, Container) \
 	virtual float64_t mean(const Container<Type>& a) const \
@@ -239,6 +249,26 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
 		return viennacl::linalg::inner_prod(a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
+	}
+
+	template <typename T, template<typename> class Container>
+	T max_impl(const Container<T>& a) const
+	{
+		typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type aligned_t;
+
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* result_gpu = new GPUMemoryViennaCL<T>(1);
+
+		viennacl::ocl::kernel& kernel = generate_max_kernel<T>();
+		viennacl::ocl::enqueue(kernel(a_gpu->data_vector(a.size()),
+			cl_int(a.size()), cl_int(a_gpu->m_offset),
+			result_gpu->data_vector(1)));
+
+		T* result = reinterpret_cast<T*>(SG_MALLOC(aligned_t, 1));
+		viennacl::backend::memory_read(*(result_gpu->m_data),
+			result_gpu->m_offset*sizeof(T), sizeof(T), result);
+
+		return result[0];
 	}
 
 	/** Eigen3 vector and matrix mean method */
