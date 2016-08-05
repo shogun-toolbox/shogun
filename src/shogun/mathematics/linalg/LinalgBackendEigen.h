@@ -123,6 +123,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_SUM
 
+	/** Implementation of @see LinalgBackendBase::sum */
+	#define BACKEND_GENERIC_BLOCK_SUM(Type, Container) \
+	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		return sum_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_SUM
+
 	/** Implementation of @see LinalgBackendBase::colwise_sum */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
 	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
@@ -132,6 +141,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_COLWISE_SUM
 
+	/** Implementation of @see LinalgBackendBase::colwise_sum */
+	#define BACKEND_GENERIC_BLOCK_COLWISE_SUM(Type, Container) \
+	virtual SGVector<Type> colwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		return colwise_sum_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_COLWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_COLWISE_SUM
+
 	/** Implementation of @see LinalgBackendBase::rowwise_sum */
 	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
 	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
@@ -140,6 +158,15 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_ROWWISE_SUM
+
+	/** Implementation of @see LinalgBackendBase::rowwise_sum */
+	#define BACKEND_GENERIC_BLOCK_ROWWISE_SUM(Type, Container) \
+	virtual SGVector<Type> rowwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		return rowwise_sum_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
 	#undef DEFINE_FOR_ALL_PTYPE
 
@@ -198,6 +225,21 @@ private:
 		return sum;
 	}
 
+	/** Eigen3 matrix block sum method */
+	template <typename T>
+	T sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag=false) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
+			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
+
+		T sum = m_block.sum();
+		if (no_diag)
+			sum -= m_block.diagonal().sum();
+
+		return sum;
+	}
+
 	/** Eigen3 matrix colwise sum method */
 	template <typename T>
 	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
@@ -216,6 +258,31 @@ private:
 				? mat_eig.rows() : mat_eig.cols();
 			for (index_t i = 0; i < len_major_diag; ++i)
 				result_eig[i] -= mat_eig(i,i);
+		}
+
+		return result;
+	}
+
+	/** Eigen3 matrix block colwise sum method */
+	template <typename T>
+	SGVector<T> colwise_sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
+	{
+		SGVector<T> result(mat.m_col_size);
+
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
+			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = m_block.colwise().sum();
+
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag = m_block.rows() < m_block.cols()
+				? m_block.rows() : m_block.cols();
+			for (index_t i = 0; i < len_major_diag; ++i)
+				result_eig[i] -= m_block(i,i);
 		}
 
 		return result;
@@ -244,6 +311,30 @@ private:
 		return result;
 	}
 
+	/** Eigen3 matrix block rowwise sum method */
+	template <typename T>
+	SGVector<T> rowwise_sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
+	{
+		SGVector<T> result(mat.m_row_size);
+
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
+			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = m_block.rowwise().sum();
+
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag = m_block.rows() < m_block.cols()
+				? m_block.rows() : m_block.cols();
+			for (index_t i = 0; i < len_major_diag; ++i)
+				result_eig[i] -= m_block(i,i);
+		}
+
+		return result;
+	}
 };
 
 }
