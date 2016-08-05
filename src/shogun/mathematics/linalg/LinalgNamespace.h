@@ -194,6 +194,18 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 }
 
 /**
+ * Returns the largest element in a vector or matrix
+ *
+ * @param a input vector or matrix
+ * @return largest value in the vector or matrix
+ */
+template <typename T, template <typename> class Container>
+T max(const Container<T>& a)
+{
+	return infer_backend(a)->max(a);
+}
+
+/**
  * Method that computes the mean of vectors or matrices composed of real numbers.
  *
  * @param a SGVector or SGMatrix

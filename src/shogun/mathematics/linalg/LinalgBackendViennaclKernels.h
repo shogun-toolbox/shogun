@@ -41,6 +41,55 @@
 
 namespace shogun
 {
+	/** Generates the max computation kernel
+	 * The OpenCL kernel that helps to calculate the max of SGVector or SGMatrix
+	 */
+	template <typename T>
+	static viennacl::ocl::kernel& generate_max_kernel()
+	{
+		std::string kernel_name = "max_" + linalg::implementation::ocl::get_type_string<T>();
+
+		if (linalg::implementation::ocl::kernel_exists(kernel_name))
+			return linalg::implementation::ocl::get_kernel(kernel_name);
+
+		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
+
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* vec, int size, int offset,
+					__global DATATYPE* result)
+				{
+					__local DATATYPE buffer[WORK_GROUP_SIZE_1D];
+					int local_id = get_local_id(0);
+					DATATYPE thread_max = -INFINITY;
+					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE_1D)
+					{
+						DATATYPE v = vec[i+offset];
+						thread_max = max(v, thread_max);
+					}
+					buffer[local_id] = thread_max;
+					for (int j = WORK_GROUP_SIZE_1D/2; j > 0; j = j>>1)
+					{
+						barrier(CLK_LOCAL_MEM_FENCE);
+						if (local_id < j)
+							buffer[local_id] = max(buffer[local_id], buffer[local_id + j]);
+					}
+					barrier(CLK_LOCAL_MEM_FENCE);
+					if (get_global_id(0)==0)
+						*result = buffer[0];
+				}
+			)"
+		);
+
+		viennacl::ocl::kernel& kernel = linalg::implementation::ocl::compile_kernel(kernel_name, source);
+
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+
+		return kernel;
+	}
+
 	/** Generates the sum computation kernel
 	 * The OpenCL kernel that helps to calculate the sum of SGMatrix
 	 *
