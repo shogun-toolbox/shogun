@@ -15,6 +15,20 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#ifndef CEREAL_MACROS_HPP_
+#define CEREAL_MACROS_HPP_
+
+#ifdef CEREAL_SAVE_FUNCTION_NAME
+#undef CEREAL_SAVE_FUNCTION_NAME
+#endif
+#define CEREAL_SAVE_FUNCTION_NAME cereal_save
+
+#ifdef CEREAL_LOAD_FUNCTION_NAME
+#undef CEREAL_LOAD_FUNCTION_NAME
+#endif
+#define CEREAL_LOAD_FUNCTION_NAME cereal_load
+#endif // CEREAL_MACROS_HPP_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>

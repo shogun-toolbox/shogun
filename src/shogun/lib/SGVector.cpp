@@ -15,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <cereal/cereal.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
@@ -25,6 +26,11 @@
 #include <algorithm>
 
 #include <shogun/mathematics/eigen3.h>
+
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -878,6 +884,55 @@ void SGVector<complex128_t>::save(CFile* saver)
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
 }
 
+template<class T>
+template<class Archive>
+void SGVector<T>::cereal_save(Archive & ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("length", vlen));
+	for (index_t i = 0; i < vlen; ++i)
+		ar(vector[i]);
+}
+
+template<>
+template<class Archive>
+void SGVector<complex128_t>::cereal_save(Archive & ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("length", vlen));
+
+	float64_t* temp = reinterpret_cast<float64_t*>(vector);
+	for (index_t i = 0; i < vlen * 2; ++i)
+		ar(temp[i]);
+}
+
+template<class T>
+template<class Archive>
+void SGVector<T>::cereal_load(Archive & ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(vlen);
+	vector = SG_MALLOC(T, vlen);
+	for (index_t i = 0; i < vlen; ++i)
+		ar(vector[i]);
+}
+
+template<>
+template<class Archive>
+void SGVector<complex128_t>::cereal_load(Archive & ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(vlen);
+	vector = SG_MALLOC(complex128_t, vlen);
+	float64_t* temp = reinterpret_cast<float64_t*>(vector);
+	for (index_t i = 0; i < vlen * 2; ++i)
+		ar(temp[i]);
+}
+
 template <class T> SGVector<float64_t> SGVector<T>::get_real()
 {
 	SGVector<float64_t> real(vlen);
@@ -971,20 +1026,31 @@ UNDEFINED(get_imag, float64_t)
 UNDEFINED(get_imag, floatmax_t)
 #undef UNDEFINED
 
-template class SGVector<bool>;
-template class SGVector<char>;
-template class SGVector<int8_t>;
-template class SGVector<uint8_t>;
-template class SGVector<int16_t>;
-template class SGVector<uint16_t>;
-template class SGVector<int32_t>;
-template class SGVector<uint32_t>;
-template class SGVector<int64_t>;
-template class SGVector<uint64_t>;
-template class SGVector<float32_t>;
-template class SGVector<float64_t>;
-template class SGVector<floatmax_t>;
-template class SGVector<complex128_t>;
+#define FILL_SGVECTOR(typetype) \
+template class SGVector<typetype>; \
+template void SGVector<typetype>::cereal_save(cereal::BinaryOutputArchive& ar) const; \
+template void SGVector<typetype>::cereal_save(cereal::JSONOutputArchive& ar) const; \
+template void SGVector<typetype>::cereal_save(cereal::XMLOutputArchive& ar) const; \
+template void SGVector<typetype>::cereal_load(cereal::BinaryInputArchive& ar); \
+template void SGVector<typetype>::cereal_load(cereal::JSONInputArchive& ar); \
+template void SGVector<typetype>::cereal_load(cereal::XMLInputArchive& ar);
+
+FILL_SGVECTOR(bool)
+FILL_SGVECTOR(char)
+FILL_SGVECTOR(int8_t)
+FILL_SGVECTOR(uint8_t)
+FILL_SGVECTOR(int16_t)
+FILL_SGVECTOR(uint16_t)
+FILL_SGVECTOR(int32_t)
+FILL_SGVECTOR(uint32_t)
+FILL_SGVECTOR(int64_t)
+FILL_SGVECTOR(uint64_t)
+FILL_SGVECTOR(float32_t)
+FILL_SGVECTOR(float64_t)
+FILL_SGVECTOR(floatmax_t)
+FILL_SGVECTOR(complex128_t)
+#undef FILL_SGVECTOR
+
 }
 
 #undef COMPLEX128_ERROR_NOARG
