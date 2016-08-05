@@ -72,6 +72,7 @@ public:
 		return add_impl(a, b, alpha, beta); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_ADD
 
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
@@ -80,6 +81,7 @@ public:
 		add_impl(a, b, alpha, beta, result); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_ADD
 
 	/** Implementation of @see LinalgBackendBase::dot */
@@ -171,6 +173,19 @@ private:
 		return SGVector<T>(c_gpu, a.size());
 	}
 
+	/** ViennaCL matrix C = alpha*A + beta*B method */
+	template <typename T>
+	SGMatrix<T> add_impl(const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
+		GPUMemoryViennaCL<T>* c_gpu = new GPUMemoryViennaCL<T>(a.size());
+
+		c_gpu->data_matrix(a.num_rows, a.num_cols) = alpha * a_gpu->data_matrix(a.num_rows, a.num_cols)
+			+ beta * b_gpu->data_matrix(b.num_rows, b.num_cols);
+		return SGMatrix<T>(c_gpu, a.num_rows, a.num_cols);
+	}
+
 	/** ViennaCL vector result = alpha*A + beta*B method */
 	template <typename T>
 	void add_impl(SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
@@ -181,6 +196,19 @@ private:
 
 		result_gpu->data_vector(a.size()) =
 			alpha * a_gpu->data_vector(a.size()) + beta * b_gpu->data_vector(b.size());
+	}
+
+	/** ViennaCL matrix result = alpha*A + beta*B method */
+	template <typename T>
+	void add_impl(SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		result_gpu->data_matrix(a.num_rows, a.num_cols) =
+			alpha * a_gpu->data_matrix(a.num_rows, a.num_cols)
+			+ beta * b_gpu->data_matrix(b.num_rows, b.num_cols);
 	}
 
 	/** ViennaCL vector dot-product method. */
