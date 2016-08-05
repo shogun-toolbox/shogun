@@ -105,10 +105,28 @@ LinalgBackendBase* infer_backend(const Container<T>& a, const Container<T>& b)
  * @param beta constant to be multiplied by the second vector
  * @return The result vector
  */
-template <typename T, template <typename> class Container>
-Container<T> add(const Container<T>& a, const Container<T>& b, T alpha=1, T beta=1)
+template <typename T>
+SGVector<T> add(const SGVector<T>& a, const SGVector<T>& b, T alpha=1, T beta=1)
 {
 	REQUIRE(a.vlen == b.vlen, "Length of vector a (%d) doesn't match vector b (%d).\n", a.vlen, b.vlen);
+	return infer_backend(a, b)->add(a, b, alpha, beta);
+}
+
+/**
+ * Performs the operation C = alpha*A + beta*B.
+ * @param a first matrix
+ * @param b second matrix
+ * @param alpha constant to be multiplied by the first matrix
+ * @param beta constant to be multiplied by the second matrix
+ * @return the result matrix
+ */
+template <typename T>
+SGMatrix<T> add(const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha=1, T beta=1)
+{
+	REQUIRE((a.num_rows == b.num_rows), "Number of rows of matrix a (%d) must match matrix b (%d).\n",
+			a.num_rows, b.num_rows);
+	REQUIRE((a.num_cols == b.num_cols), "Number of columns of matrix a (%d) must match matrix b (%d).\n",
+			a.num_cols, b.num_cols);
 	return infer_backend(a, b)->add(a, b, alpha, beta);
 }
 
@@ -131,6 +149,31 @@ void add(SGVector<T>& a, SGVector<T>& b, SGVector<T>& result, T alpha=1, T beta=
 		"Cannot operate with vector result on_gpu (%d) and vector a on_gpu (%d).\n", result.on_gpu(), a.on_gpu());
 	REQUIRE(!(result.on_gpu()^b.on_gpu()),
 		"Cannot operate with vector result on_gpu (%d) and vector b on_gpu (%d).\n", result.on_gpu(), b.on_gpu());
+
+	infer_backend(a, b)->add(a, b, alpha, beta, result);
+}
+
+/**
+ * Performs the operation result = alpha*a + beta*b.
+ *
+ * @param a first matrix
+ * @param b second matrix
+ * @param result the matrix that saves the result
+ * @param alpha constant to be multiplied by the first matrix
+ * @param beta constant to be multiplied by the second matrix
+ */
+template <typename T>
+void add(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, T alpha=1, T beta=1)
+{
+	REQUIRE((a.num_rows == b.num_rows), "Number of rows of matrix a (%d) must match matrix b (%d).\n",
+		a.num_rows, b.num_rows);
+	REQUIRE((a.num_cols == b.num_cols), "Number of columns of matrix a (%d) must match matrix b (%d).\n",
+		a.num_cols, b.num_cols);
+
+	REQUIRE(!(result.on_gpu()^a.on_gpu()),
+		"Cannot operate with matrix result on_gpu (%d) and matrix a on_gpu (%d).\n", result.on_gpu(), a.on_gpu());
+	REQUIRE(!(result.on_gpu()^b.on_gpu()),
+		"Cannot operate with matrix result on_gpu (%d) and matrix b on_gpu (%d).\n", result.on_gpu(), b.on_gpu());
 
 	infer_backend(a, b)->add(a, b, alpha, beta, result);
 }

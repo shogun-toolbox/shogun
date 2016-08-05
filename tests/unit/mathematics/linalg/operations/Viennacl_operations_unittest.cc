@@ -13,11 +13,11 @@ TEST(LinalgBackendViennaCL, SGVector_add)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-	const float64_t alpha = 0.3;
-	const float64_t beta = -1.5;
+	const float32_t alpha = 0.3;
+	const float32_t beta = -1.5;
 
-	SGVector<float64_t> A(9), A_gpu;
-	SGVector<float64_t> B(9), B_gpu;
+	SGVector<float32_t> A(9), A_gpu;
+	SGVector<float32_t> B(9), B_gpu;
 
 	for (index_t i = 0; i < 9; ++i)
 	{
@@ -28,13 +28,40 @@ TEST(LinalgBackendViennaCL, SGVector_add)
 	A_gpu = to_gpu(A);
 	B_gpu = to_gpu(B);
 
-	auto result = add(A, B, alpha, beta);
+	auto result_gpu = add(A_gpu, B_gpu, alpha, beta);
+	auto result = from_gpu(result_gpu);
 
 	for (index_t i = 0; i < 9; ++i)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
-TEST(LinalgBackendViennaCL, add_in_place)
+TEST(LinalgBackendViennaCL, SGMatrix_add)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const float32_t alpha = 0.3;
+	const float32_t beta = -1.5;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float32_t> A(nrows, ncols), A_gpu;
+	SGMatrix<float32_t> B(nrows, ncols), B_gpu;
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+
+	auto result_gpu = add(A_gpu, B_gpu, alpha, beta);
+	auto result = from_gpu(result_gpu);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGVector_add_in_place)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
@@ -57,6 +84,34 @@ TEST(LinalgBackendViennaCL, add_in_place)
 	A = from_gpu(A_gpu);
 
 	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_add_in_place)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const float32_t alpha = 0.3;
+	const float32_t beta = -1.5;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float32_t> A(nrows, ncols), A_gpu;
+	SGMatrix<float32_t> B(nrows, ncols), B_gpu;
+	SGMatrix<float32_t> C(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+
+	add(A_gpu, B_gpu, A_gpu, alpha, beta);
+	A = from_gpu(A_gpu);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
 }
 
