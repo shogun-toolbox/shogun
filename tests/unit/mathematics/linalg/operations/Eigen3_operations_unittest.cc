@@ -26,7 +26,28 @@ TEST(LinalgBackendEigen, SGVector_add)
 		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
 }
 
-TEST(LinalgBackendEigen, add_in_place)
+TEST(LinalgBackendEigen, SGMatrix_add)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGMatrix<float64_t> B(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	auto result = add(A, B, alpha, beta);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*A[i]+beta*B[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_add_in_place)
 {
 	const float64_t alpha = 0.3;
 	const float64_t beta = -1.5;
@@ -43,6 +64,29 @@ TEST(LinalgBackendEigen, add_in_place)
 	add(A, B, A, alpha, beta);
 
 	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_in_place)
+{
+	const float64_t alpha = 0.3;
+	const float64_t beta = -1.5;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGMatrix<float64_t> B(nrows, ncols);
+	SGMatrix<float64_t> C(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+
+	add(A, B, A, alpha, beta);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
 }
 
