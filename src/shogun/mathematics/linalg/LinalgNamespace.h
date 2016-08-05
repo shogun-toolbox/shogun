@@ -221,6 +221,50 @@ complex128_t mean(const Container<complex128_t>& a)
 }
 
 /**
+ * Performs the operation B = alpha * A on vectors or matrices
+ *
+ * @param a first vector/matrix
+ * @param alpha scale factor
+ * @return vector or matrix of alpha * A
+ */
+template<typename T, template<typename> class Container>
+Container<T> scale(const Container<T>& a, T alpha=1)
+{
+	return infer_backend(a)->scale(a, alpha);
+}
+
+/**
+ * Performs the operation result = alpha * A on vectors
+ *
+ * @param a first vector
+ * @param alpha scale factor
+ * @param result the vector of alpha * A
+ */
+template <typename T>
+void scale(SGVector<T>& a, SGVector<T>& result, T alpha=1)
+{
+	REQUIRE(result.vlen == a.vlen, "Length of vector result (%d) doesn't match vector a (%d).\n", result.vlen, a.vlen);
+	infer_backend(a, result)->scale(a, alpha, result);
+}
+
+/**
+ * Performs the operation result = alpha * A on matrices
+ *
+ * @param a first matrix
+ * @param alpha scale factor
+ * @param result the matrix of alpha * A
+ */
+template <typename T>
+void scale(SGMatrix<T>& a, SGMatrix<T>& result, T alpha=1)
+{
+	REQUIRE((a.num_rows == result.num_rows), "Numresulter of rows of matrix a (%d) must match matrix result (%d).\n",
+		a.num_rows, result.num_rows);
+	REQUIRE((a.num_cols == result.num_cols), "Numresulter of columns of matrix a (%d) must match matrix result (%d).\n",
+		a.num_cols, result.num_cols);
+	infer_backend(a, result)->scale(a, alpha, result);
+}
+
+/**
  * Method that computes the sum of vectors or matrices
  *
  * @param a the vector or matrix whose sum has to be computed

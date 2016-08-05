@@ -125,6 +125,63 @@ TEST(LinalgBackendEigen, SGMatrix_mean)
 	EXPECT_NEAR(result, 2.5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_scale)
+{
+	const index_t size = 5;
+	const float64_t alpha = 0.3;
+	SGVector<float64_t> a(size);
+	a.range_fill(0);
+
+	auto result = scale(a, alpha);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(alpha * a[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_scale)
+{
+	const float64_t alpha = 0.3;
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float64_t> A(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+
+	auto result = scale(A, alpha);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*A[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_scale_in_place)
+{
+	const index_t size = 5;
+	const float64_t alpha = 0.3;
+	SGVector<float64_t> a(size);
+	a.range_fill(0);
+
+	scale(a, a, alpha);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(alpha * i, a[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_scale_in_place)
+{
+	const float64_t alpha = 0.3;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+
+	scale(A, A, alpha);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*i, A[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_sum)
 {
 	const index_t size = 10;
