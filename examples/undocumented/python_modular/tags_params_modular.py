@@ -24,7 +24,7 @@ def Tag_params_modular():
         print err
 
     integer = random.randint(-100, 100)
-    obj.setsInt("int", integer)
+    obj.sets("int", integer)
     if integer != obj.getsInt("int") or integer != obj.gets(int_tag):
         sys.exit(1)
     integer = random.randint(-100, 100)
@@ -33,7 +33,7 @@ def Tag_params_modular():
         sys.exit(1)
 
     decimal = random.random()
-    obj.setsFloat("float", decimal)
+    obj.sets("float", decimal)
     if decimal != obj.getsFloat("float") or decimal != obj.gets(float_tag):
         sys.exit(1)
     decimal = random.random()
@@ -42,7 +42,7 @@ def Tag_params_modular():
         sys.exit(1)
 
     kernel = GaussianKernel(5)
-    obj.setsKernel("gaussian", kernel)
+    obj.sets("gaussian", kernel)
     if kernel != obj.getsKernel("gaussian") or kernel != obj.gets(kernel_tag):
         sys.exit(1)
     kernel = GaussianKernel(6)
@@ -54,7 +54,7 @@ def Tag_params_modular():
     real_vector = RealVector(size)
     for i in range(size):
         real_vector[i] = random.random()
-    obj.setsRealVector("vector", real_vector)
+    obj.sets("vector", real_vector)
     if real_vector != obj.getsRealVector("vector") or real_vector != obj.gets(vector_tag):
         sys.exit(1)
     for i in range(size):
