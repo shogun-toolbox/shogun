@@ -1,4 +1,8 @@
 # Finding Jinja2 involves calling the Python interpreter
+
+# detect PYTHON
+FIND_PACKAGE(PythonInterp REQUIRED)
+
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
 	"from jinja2 import Template; "
 	RESULT_VARIABLE JINJA2_SEARCH_SUCCESS

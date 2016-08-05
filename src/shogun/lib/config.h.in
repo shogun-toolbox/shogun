@@ -18,6 +18,7 @@
 #cmakedefine HAVE_LAPACK 1
 #cmakedefine HAVE_MVEC 1
 #cmakedefine HAVE_PROTOBUF 1
+#cmakedefine HAVE_JINJA2 1
 
 #cmakedefine HAVE_ARPACK 1
 #cmakedefine HAVE_VIENNACL 1
@@ -145,5 +146,7 @@
 /* random related defines */
 #cmakedefine HAVE_ARC4RANDOM 1
 #cmakedefine DEV_RANDOM "@DEV_RANDOM@"
+
+#cmakedefine ENABLE_TESTING "@ENABLE_TESTING@"
 
 #endif /* __SHOGUN_LIB_CONFIG_H__ */

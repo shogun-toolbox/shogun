@@ -1,0 +1,13 @@
+{{auto_generated_msg}}
+
+using namespace shogun;
+
+{% for class in classes %}
+	%template(Tag{{class[0]}}) Tag<{{class[1]}}>;
+	%template(sets) CSGObject::sets<{{class[1]}}>;
+	%template(sets{{class[0]}}) CSGObject::sets<{{class[1]}}, void>;
+	%template(gets) CSGObject::gets<{{class[1]}}>;
+	%template(gets{{class[0]}}) CSGObject::gets<{{class[1]}}, void>;
+	%template(has) CSGObject::has<{{class[1]}}>;
+	%template(has{{class[0]}}) CSGObject::has<{{class[1]}}, void>;
+{% endfor %}
