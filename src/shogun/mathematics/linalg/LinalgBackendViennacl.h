@@ -71,7 +71,6 @@ public:
 	{  \
 		return add_impl(a, b, alpha, beta); \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
 	#undef BACKEND_GENERIC_ADD
 
@@ -81,7 +80,6 @@ public:
 	{  \
 		return dot_impl(a, b);  \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
@@ -101,7 +99,6 @@ public:
 	{  \
 		return sum_impl(a, no_diag);  \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_SUM
@@ -112,7 +109,6 @@ public:
 	{  \
 		return colwise_sum_impl(a, no_diag); \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_COLWISE_SUM
 
@@ -122,7 +118,6 @@ public:
 	{  \
 		return rowwise_sum_impl(a, no_diag); \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_ROWWISE_SUM
 
@@ -132,7 +127,6 @@ public:
 	{  \
 		return to_gpu_impl(a);  \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_TO_GPU
@@ -143,7 +137,6 @@ public:
 	{  \
 		return from_gpu_impl(a, data);  \
 	}
-
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_FROM_GPU
