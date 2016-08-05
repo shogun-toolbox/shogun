@@ -126,6 +126,21 @@ public:
 	#undef BACKEND_GENERIC_DOT
 
 	/**
+	 * Wrapper method of max method. Return the largest element in a vector or matrix.
+	 *
+	 * @see linalg::max
+	 */
+	#define BACKEND_GENERIC_MAX(Type, Container) \
+	virtual Type max(const Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+	#undef BACKEND_GENERIC_MAX
+
+	/**
 	* Wrapper method that computes mean of SGVectors and SGMatrices
 	* that are composed of real numbers.
 	*

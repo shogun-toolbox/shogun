@@ -102,6 +102,31 @@ TEST(LinalgBackendEigen, SGVector_dot)
 	EXPECT_NEAR(result, 5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_max)
+{
+	SGVector<float64_t> A(9);
+
+	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
+
+	for (int32_t i=0; i<9; i++)
+		A[i] = a[i];
+
+	EXPECT_NEAR(8, max(A), 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_max)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float64_t> A(nrows, ncols);
+
+	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = a[i];
+
+	EXPECT_NEAR(8, max(A), 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_mean)
 {
 	const index_t size = 6;
