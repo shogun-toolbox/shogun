@@ -158,6 +158,35 @@ public:
 	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
 	/**
+	 * Wrapper method of scale operation the operation B = alpha*A.
+	 *
+	 * @see linalg::scale
+	 */
+	#define BACKEND_GENERIC_SCALE(Type, Container) \
+	virtual Container<Type> scale(const Container<Type>& a, Type alpha) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_SCALE
+
+	/**
+	 * Wrapper method of scale operation the operation result = alpha*A.
+	 *
+	 * @see linalg::scale
+	 */
+	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
+	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_SCALE
+
+	/**
 	* Wrapper method of vector sum that works with generic vectors.
 	*
 	* @see linalg::sum

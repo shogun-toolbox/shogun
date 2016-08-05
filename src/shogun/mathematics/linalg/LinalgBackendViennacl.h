@@ -103,6 +103,26 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGMatrix)
 	#undef BACKEND_GENERIC_MEAN
 
+	/** Implementation of @see linalg::scale */
+	#define BACKEND_GENERIC_SCALE(Type, Container) \
+	virtual Container<Type> scale(const Container<Type>& a, Type alpha) const \
+	{  \
+		return scale_impl(a, alpha); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_SCALE
+
+	/** Implementation of @see linalg::scale */
+	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
+	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
+	{  \
+		scale_impl(a, result, alpha); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_SCALE
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
@@ -226,6 +246,47 @@ private:
 	float64_t mean_impl(const Container<T>& a) const
 	{
 		return sum_impl(a)/float64_t(a.size());
+	}
+
+	/** ViennaCL vector scale method: B = alpha * A */
+	template <typename T>
+	SGVector<T> scale_impl(const SGVector<T>& a, T alpha) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = new GPUMemoryViennaCL<T>(a.size());
+		b_gpu->data_vector(a.size()) = alpha * a_gpu->data_vector(a.size());
+		return SGVector<T>(b_gpu, a.size());
+	}
+
+	/** ViennaCL matrix scale method: B = alpha * A */
+	template <typename T>
+	SGMatrix<T> scale_impl(const SGMatrix<T>& a, T alpha) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = new GPUMemoryViennaCL<T>(a.size());
+		b_gpu->data_matrix(a.num_rows, a.num_cols) = alpha * a_gpu->data_matrix(a.num_rows, a.num_cols);
+		return SGMatrix<T>(b_gpu, a.num_rows, a.num_cols);
+	}
+
+	/** ViennaCL vector inplace scale method: result = alpha * A */
+	template <typename T>
+	void scale_impl(SGVector<T>& a, SGVector<T>& result, T alpha) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		result_gpu->data_vector(a.size()) = alpha * a_gpu->data_vector(a.size());
+	}
+
+	/** ViennaCL vector inplace scale method: result = alpha * A */
+	template <typename T>
+	void scale_impl(SGMatrix<T>& a, SGMatrix<T>& result, T alpha) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		result_gpu->data_matrix(a.num_rows, a.num_cols) =
+			alpha * a_gpu->data_matrix(a.num_rows, a.num_cols);
 	}
 
 	/** ViennaCL vector sum method. */
