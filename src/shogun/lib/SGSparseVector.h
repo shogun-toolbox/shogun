@@ -19,6 +19,8 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGVector.h>
 
+#include <stdexcept>
+
 namespace shogun
 {
 	class CFile;
@@ -215,6 +217,12 @@ public:
 	SGSparseVectorEntry<T>* features;
 
 };
+
+template <typename S>
+bool equals(SGSparseVector<S>* lhs, SGSparseVector<S>* rhs)
+{
+    throw std::logic_error("Equals not supported by SGSparseVector");
+}
 
 }
 

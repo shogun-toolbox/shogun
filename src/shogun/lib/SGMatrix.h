@@ -15,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/equals.h>
 #include <shogun/lib/SGReferencedData.h>
 
 namespace Eigen
@@ -375,5 +376,12 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** number of columns of matrix  */
 		index_t num_cols;
 };
+
+template <typename S>
+bool equals(SGMatrix<S>* lhs, SGMatrix<S>* rhs)
+{
+	return lhs->equals(*rhs);
+}
+
 }
 #endif // __SGMATRIX_H__
