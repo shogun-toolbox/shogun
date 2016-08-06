@@ -4,7 +4,6 @@
         "IncludeAllClasses": true, 
         "IncludeEnums": true,
         "DependencyListElement": "import org.shogun.$typeName;",
-        "DependencyListElementEnum": "import static org.shogun.$typeName.$value;",
         "DependencyListSeparator": "\n"
     },
     "Statement": "$statement;\n",
@@ -77,7 +76,7 @@
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
-        "Enum":"$value"
+        "Enum":"$typeName.$value"
     },
     "Element": {
         "Access": {
