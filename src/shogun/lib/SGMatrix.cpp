@@ -14,6 +14,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
+#include <cereal/cereal.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
@@ -21,6 +22,11 @@
 #include <limits>
 
 #include <shogun/mathematics/eigen3.h>
+
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
 
 namespace shogun {
 
@@ -1081,6 +1087,60 @@ void SGMatrix<complex128_t>::save(CFile* saver)
 }
 
 template<class T>
+template<class Archive>
+void SGMatrix<T>::cereal_save(Archive & ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("num_rows", num_rows));
+	ar(cereal::make_nvp("num_cols", num_cols));
+
+	for (index_t i = 0; i < num_rows * num_cols; ++i)
+		ar(matrix[i]);
+}
+
+template<>
+template<class Archive>
+void SGMatrix<complex128_t>::cereal_save(Archive & ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("num_rows", num_rows));
+	ar(cereal::make_nvp("num_cols", num_cols));
+
+	float64_t* temp = reinterpret_cast<float64_t*>(matrix);
+	for (index_t i = 0; i < num_rows * num_cols * 2; ++i)
+		ar(temp[i]);
+}
+
+template<class T>
+template<class Archive>
+void SGMatrix<T>::cereal_load(Archive & ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(num_rows);
+	ar(num_cols);
+	matrix = SG_MALLOC(T, num_rows * num_cols);
+	for (index_t i = 0; i < num_rows * num_cols; ++i)
+		ar(matrix[i]);
+}
+
+template<>
+template<class Archive>
+void SGMatrix<complex128_t>::cereal_load(Archive & ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(num_rows);
+	ar(num_cols);
+	matrix = SG_MALLOC(complex128_t, num_rows * num_cols);
+	float64_t* temp = reinterpret_cast<float64_t*>(matrix);
+	for (index_t i = 0; i < num_rows * num_cols * 2; ++i)
+		ar(temp[i]);
+}
+
+template<class T>
 SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 {
 	SGVector<T> rowv(num_cols);
@@ -1105,18 +1165,28 @@ SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 	return diag;
 }
 
-template class SGMatrix<bool>;
-template class SGMatrix<char>;
-template class SGMatrix<int8_t>;
-template class SGMatrix<uint8_t>;
-template class SGMatrix<int16_t>;
-template class SGMatrix<uint16_t>;
-template class SGMatrix<int32_t>;
-template class SGMatrix<uint32_t>;
-template class SGMatrix<int64_t>;
-template class SGMatrix<uint64_t>;
-template class SGMatrix<float32_t>;
-template class SGMatrix<float64_t>;
-template class SGMatrix<floatmax_t>;
-template class SGMatrix<complex128_t>;
+#define FILL_SGMATRIX(typetype) \
+template class SGMatrix<typetype>; \
+template void SGMatrix<typetype>::cereal_save(cereal::BinaryOutputArchive& ar) const; \
+template void SGMatrix<typetype>::cereal_save(cereal::JSONOutputArchive& ar) const; \
+template void SGMatrix<typetype>::cereal_save(cereal::XMLOutputArchive& ar) const; \
+template void SGMatrix<typetype>::cereal_load(cereal::BinaryInputArchive& ar); \
+template void SGMatrix<typetype>::cereal_load(cereal::JSONInputArchive& ar); \
+template void SGMatrix<typetype>::cereal_load(cereal::XMLInputArchive& ar);
+
+FILL_SGMATRIX(bool)
+FILL_SGMATRIX(char)
+FILL_SGMATRIX(int8_t)
+FILL_SGMATRIX(uint8_t)
+FILL_SGMATRIX(int16_t)
+FILL_SGMATRIX(uint16_t)
+FILL_SGMATRIX(int32_t)
+FILL_SGMATRIX(uint32_t)
+FILL_SGMATRIX(int64_t)
+FILL_SGMATRIX(uint64_t)
+FILL_SGMATRIX(float32_t)
+FILL_SGMATRIX(float64_t)
+FILL_SGMATRIX(floatmax_t)
+FILL_SGMATRIX(complex128_t)
+#undef FILL_SGMATRIX
 }

@@ -3,6 +3,7 @@
 #include "CerealObject.h"
 
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <cereal/archives/json.hpp>
 
 #include <shogun/io/SGIO.h>
@@ -40,6 +41,43 @@ TEST(Cereal, Json_SGVector_float64_load_equals_saved)
 	EXPECT_EQ(a.size(), b.size());
 	EXPECT_EQ(a.ref_count(), b.ref_count());
 	for (index_t i = 0; i < size; i++)
+		EXPECT_NEAR(a[i], b[i], 1E-15);
+
+	remove(filename.c_str());
+}
+
+TEST(Cereal, Json_SGMatrix_float64_load_equals_saved)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float64_t> a(nrows, ncols);
+	SGMatrix<float64_t> b;
+
+	for (index_t i = 0; i < nrows * ncols; i++)
+		a[i] = i;
+
+	std::string filename = std::tmpnam(nullptr);
+
+	try
+	{
+		{
+			std::ofstream os(filename.c_str());
+			cereal::JSONOutputArchive archive(os);
+			archive(a);
+		}
+
+		{
+			std::ifstream is(filename.c_str());
+			cereal::JSONInputArchive archive(is);
+			archive(b);
+		}
+	}
+	catch (std::exception& e)
+		SG_SINFO("Error code: %s \n", e.what());
+
+	EXPECT_EQ(a.num_rows, b.num_rows);
+	EXPECT_EQ(a.num_cols, b.num_cols);
+	EXPECT_EQ(a.ref_count(), b.ref_count());
+	for (index_t i = 0; i < nrows * ncols; i++)
 		EXPECT_NEAR(a[i], b[i], 1E-15);
 
 	remove(filename.c_str());
