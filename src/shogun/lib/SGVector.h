@@ -17,6 +17,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/equals.h>
 #include <shogun/lib/SGReferencedData.h>
 
 namespace Eigen
@@ -491,6 +492,12 @@ template<class T> class SGVector : public SGReferencedData
 		/** length of vector  */
 		index_t vlen;
 };
+
+template <typename S>
+bool equals(SGVector<S>* lhs, SGVector<S>* rhs)
+{
+	return lhs->equals(*rhs);
+}
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template<> void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,

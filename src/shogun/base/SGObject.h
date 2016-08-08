@@ -69,12 +69,14 @@ template <class T> class SGStringList;
 
 #define SG_ADD4(param, name, description, ms_available) {\
 		m_parameters->add(param, name, description);\
+		register_member(name, param);\
 		if (ms_available)\
 			m_model_selection_parameters->add(param, name, description);\
 }
 
 #define SG_ADD5(param, name, description, ms_available, gradient_available) {\
 		m_parameters->add(param, name, description);\
+		register_member(name, param);\
 		if (ms_available)\
 			m_model_selection_parameters->add(param, name, description);\
 		if (gradient_available)\
@@ -453,6 +455,13 @@ protected:
 	{
 		BaseTag tag(name);
 		set_with_base_tag(tag, erase_type(value));
+	}
+
+	template <typename T>
+	void register_member(const std::string& name, T* pointer)
+	{
+		BaseTag tag(name);
+		set_with_base_tag(tag, Any::non_owning(pointer));
 	}
 
 public:

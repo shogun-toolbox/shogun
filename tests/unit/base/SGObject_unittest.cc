@@ -20,10 +20,11 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
-#include <../tests/unit/base/MockObject.h>
 #include <shogun/base/some.h>
 #include <pthread.h>
 #include <gtest/gtest.h>
+
+#include "MockObject.h"
 
 using namespace shogun;
 
@@ -321,15 +322,15 @@ TEST(SGObject, tags_set_get_string_sgvector)
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 
-	obj->sets("vector", &vec);
-	EXPECT_THROW(obj->sets("foo", &vec), ShogunException);
+	obj->sets("vector", vec);
+	EXPECT_THROW(obj->sets("foo", vec), ShogunException);
 
-	auto retr = *(obj->gets<SGVector<float64_t>* >("vector"));
+	auto retr = obj->gets<SGVector<float64_t> >("vector");
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t>* >("vector")), ShogunException);
-	EXPECT_THROW(obj->gets<SGVector<int32_t>* >("vector"), ShogunException);
+	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->gets<SGVector<int32_t> >("vector"), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_tag_sgvector)
@@ -339,16 +340,16 @@ TEST(SGObject, tags_set_get_tag_sgvector)
 	vec[0] = 1;
 	float64_t bar = 1.0;
 
-	obj->sets(Tag<SGVector<float64_t>* >("vector"), &vec);
-	EXPECT_THROW(obj->sets(Tag<SGVector<float64_t>* >("foo"), &vec), ShogunException);
+	obj->sets(Tag<SGVector<float64_t> >("vector"), vec);
+	EXPECT_THROW(obj->sets(Tag<SGVector<float64_t> >("foo"), vec), ShogunException);
 	EXPECT_THROW(obj->sets(Tag<float64_t>("vector"), bar), ShogunException);
 
-	auto retr = *(obj->gets<SGVector<float64_t>* >("vector"));
+	auto retr = obj->gets<SGVector<float64_t> >("vector");
 
 	EXPECT_EQ(retr.vlen, vec.vlen);
 	EXPECT_EQ(vec[0], retr[0]);
-	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t>* >("vector")), ShogunException);
-	EXPECT_THROW(obj->gets<SGVector<int32_t>* >("vector"), ShogunException);
+	EXPECT_THROW(obj->gets(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->gets<SGVector<int32_t> >("vector"), ShogunException);
 }
 
 TEST(SGObject, tags_set_get_int)
@@ -383,4 +384,62 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has("foo"), false);
 	EXPECT_EQ(obj->has<int32_t>("foo"), false);
 	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
+}
+
+TEST(SGObject, tags_and_member_getters)
+{
+    auto obj = some<CMockObject>();
+
+    EXPECT_TRUE(obj->has("int"));
+    EXPECT_TRUE(obj->has("float"));
+    EXPECT_TRUE(obj->has("vector"));
+    EXPECT_TRUE(obj->has("kernel"));
+
+    int32_t integer_value = 78;
+    obj->set_integer(integer_value);
+    EXPECT_EQ(obj->gets<int32_t>("int"), integer_value);
+
+    float64_t float_value = 3.14;
+    obj->set_float(float_value);
+    EXPECT_EQ(obj->gets<float64_t>("float"), float_value);
+
+    SGVector<float64_t> vector_value(3);
+    vector_value[0] = 1.1;
+    vector_value[1] = 2.2;
+    vector_value[2] = 3.3;
+    obj->set_vector(vector_value);
+    EXPECT_TRUE(obj->gets<SGVector<float64_t>>("vector").equals(vector_value));
+
+    CKernel* kernel_value = new CGaussianKernel();
+    obj->set_kernel(kernel_value);
+    EXPECT_TRUE(obj->gets<CSGObject*>("kernel")->equals(kernel_value));
+}
+
+TEST(SGObject, tags_and_member_setters)
+{
+    auto obj = some<CMockObject>();
+
+    EXPECT_TRUE(obj->has("int"));
+    EXPECT_TRUE(obj->has("float"));
+    EXPECT_TRUE(obj->has("vector"));
+    EXPECT_TRUE(obj->has("kernel"));
+
+    int32_t integer_value = 78;
+    obj->sets("int", integer_value);
+    EXPECT_EQ(obj->get_integer(), integer_value);
+
+    float64_t float_value = 3.14;
+    obj->sets("float", float_value);
+    EXPECT_EQ(obj->get_float(), float_value);
+
+    SGVector<float64_t> vector_value(3);
+    vector_value[0] = 1.1;
+    vector_value[1] = 2.2;
+    vector_value[2] = 3.3;
+    obj->sets("vector", vector_value);
+    EXPECT_TRUE(obj->get_vector().equals(vector_value));
+
+    CKernel* kernel_value = new CGaussianKernel();
+    obj->sets("kernel", (CSGObject*)kernel_value);
+    EXPECT_TRUE(obj->get_kernel()->equals(kernel_value));
 }

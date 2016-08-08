@@ -35,6 +35,8 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
+#include <shogun/lib/equals.h>
+
 #include <string.h>
 #include <stdexcept>
 #include <typeinfo>
@@ -42,6 +44,25 @@
 
 namespace shogun
 {
+
+    /** Empty object. Used by @ref Any to store nothing.
+     */
+    struct Empty
+    {
+    };
+
+    /** Equality function for @ref Empty. Always returns
+     * true as empty objects are all equal.
+     *
+     * @param lhs first object
+     * @param rhs second object
+     */
+    template <>
+    inline bool equals(Empty* lhs, Empty* rhs)
+    {
+        return true;
+    }
+
     /** Converts compiler-dependent name of class to
      * something human readable.
      * @return human readable name of class
@@ -71,7 +92,7 @@ namespace shogun
          * @param v pointer to value
          */
         virtual void set(void** storage, const void* v) const = 0;
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
@@ -88,12 +109,18 @@ namespace shogun
          */
         virtual bool matches(const std::type_info& ti) const = 0;
 
+        /** Returns type info.
+         *
+         * @return information about underlying type
+         */
+        virtual const std::type_info& type_info() const = 0;
+
         /** Compares two storages.
          * @param storage pointer to a pointer to storage
          * @param other_storage pointer to a pointer to another storage
          * @return true if both storages have same value
          */
-        virtual bool equals(void** storage, void** other_storage) const = 0;
+        virtual bool are_equal(void** storage, void** other_storage) const = 0;
     };
 
     /** @brief This implementation of @ref BaseAnyPolicy uses external
@@ -110,7 +137,7 @@ namespace shogun
          */
         virtual void set(void** storage, const void* v) const
         {
-            *(reinterpret_cast<T*>(storage)) = *reinterpret_cast<T const*>(v);
+            *(reinterpret_cast<T*>(*storage)) = *reinterpret_cast<T const*>(v);
         }
 
         /** Clears storage. In this case does nothing as storage
@@ -144,11 +171,20 @@ namespace shogun
          * @param other_storage pointer to a pointer to another storage
          * @return true if both storages have same value
          */
-        bool equals(void** storage, void** other_storage) const
+        bool are_equal(void** storage, void** other_storage) const
         {
-            T typed_storage = *(reinterpret_cast<T*>(*storage));
-            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-            return typed_storage == typed_other_storage;
+            T* typed_storage = (reinterpret_cast<T*>(*storage));
+            T* typed_other_storage = (reinterpret_cast<T*>(*other_storage));
+            return equals(typed_storage, typed_other_storage);
+        }
+
+        /** Returns type info.
+         *
+         * @return information about underlying type
+         */
+        virtual const std::type_info& type_info() const
+        {
+            return typeid(T);
         }
     };
 
@@ -167,7 +203,7 @@ namespace shogun
         {
             *(storage) = new T(*reinterpret_cast<T const*>(v));
         }
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
@@ -198,11 +234,20 @@ namespace shogun
          * @param other_storage pointer to a pointer to another storage
          * @return true if both storages have same value
          */
-        bool equals(void** storage, void** other_storage) const
+        bool are_equal(void** storage, void** other_storage) const
         {
-            T typed_storage = *(reinterpret_cast<T*>(*storage));
-            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-            return typed_storage == typed_other_storage;
+            T* typed_storage = (reinterpret_cast<T*>(*storage));
+            T* typed_other_storage = (reinterpret_cast<T*>(*other_storage));
+            return equals(typed_storage, typed_other_storage);
+        }
+
+        /** Returns type info.
+         *
+         * @return information about underlying type
+         */
+        virtual const std::type_info& type_info() const
+        {
+            return typeid(T);
         }
     };
 
@@ -216,18 +261,23 @@ namespace shogun
     {
     public:
         /** Used to denote an empty Any object */
-        struct Empty;
 
         /** Constructor */
         Any() : policy(default_policy<Empty>()), storage(nullptr)
         {
         }
 
+        /** Creates an instance from raw pointer
+         * in non-owning fashion. The pointer will be used
+         * by @ref Any and will never be deleted.
+         *
+         * @param raw_ptr pointer to use
+         */
         template <typename T>
         static Any non_owning(T* raw_ptr) {
             Any any;
             any.policy = non_owning_policy<T>();
-            any.storage = raw_ptr;
+            any.storage = static_cast<void*>(raw_ptr);
             return any;
         }
 
@@ -238,12 +288,6 @@ namespace shogun
             policy->set(&storage, &v);
         }
 
-        /** Copy constructor */
-        Any(const Any& other) : policy(other.policy), storage(nullptr)
-        {
-            policy->set(&storage, other.storage);
-        }
-
         /** Assignment operator
          * @param other another Any object
          * @return Any object
@@ -251,7 +295,10 @@ namespace shogun
         Any& operator=(const Any& other)
         {
             policy->clear(&storage);
-            policy = other.policy;
+            if (not policy->matches(other.policy->type_info())) {
+                policy = other.policy;
+                storage = other.storage;
+            }
             policy->set(&storage, other.storage);
             return *(this);
         }
@@ -338,23 +385,13 @@ namespace shogun
         void* lhs_storage = lhs.storage;
         void* rhs_storage = rhs.storage;        
         return lhs.policy == rhs.policy and
-            lhs.policy->equals(&lhs_storage, &rhs_storage);
+            lhs.policy->are_equal(&lhs_storage, &rhs_storage);
     }
 
     inline bool operator!=(const Any& lhs, const Any& rhs)
     {        
         return !(lhs == rhs);
     }
-
-    /** Used to denote an empty Any object */
-    struct Any::Empty
-    {
-        /** Equality operator */
-        bool operator==(const Empty& other) const
-        {
-            return true;
-        }
-    };
 
     /** Erases value type i.e. converts it to Any
      * For input object of any type, it returns an Any object
