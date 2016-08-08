@@ -38,7 +38,9 @@
             "True": "1",
             "False": "0"
         },
-        "NumberLiteral": "$number",
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
         "StaticCall": "Modshogun::$typeName.$method $arguments",
         "Identifier": "$identifier",

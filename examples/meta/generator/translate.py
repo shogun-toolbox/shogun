@@ -158,7 +158,7 @@ class Translator:
             "Expr": {"StringLiteral": "{}.dat".format(programName)}
         }
         # 'w'
-        storageFilemode = {"Expr": {"NumberLiteral": "119"}}
+        storageFilemode = {"Expr": {"IntLiteral": "119"}}
         storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
         storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
                                 {"Identifier": storage},
@@ -363,7 +363,7 @@ class Translator:
                 {"MethodCall": [identifierAST, identifierAST, argumentListAST]}
                 {"BoolLiteral": "False"}
                 {"StringLiteral": "train.dat"}
-                {"NumberLiteral": 4}
+                {"IntLiteral": 4}
                 {"Identifier": "feats_test"}
                 etc.
         """
@@ -410,8 +410,16 @@ class Translator:
             template = Template(self.targetDict["Expr"]["StringLiteral"])
             return template.substitute(literal=expr[key])
 
-        elif key == "NumberLiteral":
-            template = Template(self.targetDict["Expr"]["NumberLiteral"])
+        elif key == "IntLiteral":
+            template = Template(self.targetDict["Expr"]["IntLiteral"])
+            return template.substitute(number=expr[key])
+
+        elif key == "RealLiteral":
+            template = Template(self.targetDict["Expr"]["RealLiteral"])
+            return template.substitute(number=expr[key])
+
+        elif key == "FloatLiteral":
+            template = Template(self.targetDict["Expr"]["FloatLiteral"])
             return template.substitute(number=expr[key])
 
         elif key == "Identifier":
@@ -507,17 +515,12 @@ class Translator:
     def translateIndexList(self, indexList):
         """ Translate index list AST
         Args:
-            indexList: object like [NumberLiteralAST, NumberLiteralAST, ..]
+            indexList: object like [IntLiteralAST, IntLiteralAST, ..]
         """
         addOne = not self.targetDict["Element"]["ZeroIndexed"]
         translation = ""
-        for idx, numberLiteral in enumerate(indexList):
-            try:
-                index = int(numberLiteral["NumberLiteral"])
-            except ValueError:
-                raise TranslationFailure("Indices of element access must be "
-                                         "integers.\n Error in literal: " +
-                                         str(numberLiteral["NumberLiteral"]))
+        for idx, intLiteral in enumerate(indexList):
+            index = int(intLiteral["IntLiteral"])
 
             if addOne:
                 index += 1

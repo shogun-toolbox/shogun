@@ -43,7 +43,9 @@ class FastParser:
     # Lexer specification
     # ---------------------------------------
     tokens = (
-        "NUMERAL",
+        "INTLITERAL",
+        "REALLITERAL",
+        "FLOATLITERAL",
         "STRINGLITERAL",
         "BOOLLITERAL",
         "BASICTYPE",
@@ -99,7 +101,9 @@ class FastParser:
         'ComplexMatrix': 'SHOGUNSGTYPE'
     }
 
-    t_NUMERAL = "[0-9]+(\.[0-9]+)?"
+    t_INTLITERAL = "[0-9]+"
+    t_REALLITERAL = "[0-9]+\.[0-9]+"
+    t_FLOATLITERAL = "[0-9]+\.[0-9]+f"
     t_STRINGLITERAL = '"[^"\n]*"'
     t_COMMA = ","
     t_DOT = "\."
@@ -208,8 +212,8 @@ class FastParser:
 
     def p_indexList(self, p):
         """
-        indexList : numeral
-                   | numeral COMMA indexList
+        indexList : int
+                  | int COMMA indexList
         """
         p[0] = [p[1]]
         if len(p) > 2:
@@ -233,9 +237,17 @@ class FastParser:
         "bool : BOOLLITERAL"
         p[0] = {"BoolLiteral": p[1]}
 
-    def p_numeral(self, p):
-        "numeral : NUMERAL"
-        p[0] = {"NumberLiteral": p[1]}
+    def p_int(self, p):
+        "int : INTLITERAL"
+        p[0] = {"IntLiteral": p[1]}
+
+    def p_real(self, p):
+        "real : REALLITERAL"
+        p[0] = {"RealLiteral": p[1]}
+
+    def p_float(self, p):
+        "float : FLOATLITERAL"
+        p[0] = {"FloatLiteral": p[1][:-1]}
 
     def p_expr(self, p):
         """
@@ -245,7 +257,9 @@ class FastParser:
              | elementAccess
              | string
              | bool
-             | numeral
+             | int
+             | real
+             | float
              | identifier
         """
         p[0] = {"Expr": p[1]}

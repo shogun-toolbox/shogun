@@ -67,7 +67,9 @@
             "True": "true",
             "False": "false"
         },
-        "NumberLiteral": "$number",
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "${number}f",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
