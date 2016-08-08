@@ -11,7 +11,7 @@ MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-real C = 1
+real C = 1.0
 real epsilon = 0.0001
 GaussianKernel gauss_kernel(features_train, features_train, 15)
 #![set_parameters]
