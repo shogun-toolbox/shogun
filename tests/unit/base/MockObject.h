@@ -77,4 +77,11 @@ private:
     SGVector<float64_t> m_vector;
     CKernel* m_kernel;
 };
+
+template <>
+bool equals(CMockObject** lhs, CMockObject** rhs)
+{
+    return (*lhs)->equals(*rhs);
+}
+
 }
