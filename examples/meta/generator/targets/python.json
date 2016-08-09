@@ -44,7 +44,9 @@
             "True": "True",
             "False": "False"
         },
-        "NumberLiteral": "$number",
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
         "Identifier": "$identifier",
