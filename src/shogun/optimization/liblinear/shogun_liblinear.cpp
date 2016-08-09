@@ -43,8 +43,59 @@
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
+#include <omp.h>
 
 using namespace shogun;
+
+Reduce_Vectors::Reduce_Vectors(int size)
+{
+#ifdef HAVE_OPENMP	
+	nr_thread = omp_get_max_threads();
+#else
+	nr_thread = 1;
+#endif
+	this->size = size;
+	tmp_array = new double*[nr_thread];
+	for(int i = 0; i < nr_thread; i++)
+		tmp_array[i] = new double[size];
+}
+
+Reduce_Vectors::~Reduce_Vectors(void)
+{
+	for(int i = 0; i < nr_thread; i++)
+		delete[] tmp_array[i];
+	delete[] tmp_array;
+}
+
+void Reduce_Vectors::init(void)
+{
+#pragma omp parallel for schedule(static)
+	for(int i = 0; i < size; i++)
+		for(int j = 0; j < nr_thread; j++)
+			tmp_array[j][i] = 0.0;
+}
+
+void Reduce_Vectors::sum_scale_x(double scalar, CDotFeatures *x, int i, int n)
+{
+	int thread_id;
+#ifdef HAVE_OPENMP
+	thread_id = omp_get_thread_num();
+#else
+	thread_id = 0;
+#endif
+	x->add_to_dense_vec(scalar, i, tmp_array[thread_id], n);
+}
+
+void Reduce_Vectors::reduce_sum(double* v, int n)
+{
+#pragma omp parallel for schedule(static)
+	for(int i = 0; i < n; i++)
+	{
+		v[i] = 0;
+		for(int j = 0; j < nr_thread; j++)
+			v[i] += tmp_array[j][i];
+	}
+}
 
 l2r_lr_fun::l2r_lr_fun(const liblinear_problem *p, float64_t* Cs)
 {
@@ -54,6 +105,7 @@ l2r_lr_fun::l2r_lr_fun(const liblinear_problem *p, float64_t* Cs)
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
+	reduce_vectors = new Reduce_Vectors(get_nr_variable());
 	C = Cs;
 }
 
@@ -73,6 +125,8 @@ double l2r_lr_fun::fun(double *w)
 	int32_t n=m_prob->n;
 
 	Xv(w, z);
+
+#pragma omp parallel for private(i) reduction(+:f) schedule(static)
 	for(i=0;i<l;i++)
 	{
 		double yz = y[i]*z[i];
@@ -93,6 +147,7 @@ void l2r_lr_fun::grad(double *w, double *g)
 	int l=m_prob->l;
 	int w_size=get_nr_variable();
 
+#pragma omp parallel for private(i) schedule(static)	
 	for(i=0;i<l;i++)
 	{
 		z[i] = 1/(1 + exp(-y[i]*z[i]));
@@ -101,6 +156,7 @@ void l2r_lr_fun::grad(double *w, double *g)
 	}
 	XTv(z, g);
 
+#pragma omp parallel for private(i) schedule(static)	
 	for(i=0;i<w_size;i++)
 		g[i] = w[i] + g[i];
 }
@@ -118,10 +174,31 @@ void l2r_lr_fun::Hv(double *s, double *Hs)
 	double *wa = SG_MALLOC(double, l);
 
 	Xv(s, wa);
+	int n=w_size;
+	if (m_prob->use_bias)
+	{
+		n--;
+		Hs[n]=0;
+	}
+	reduce_vectors->init();
+
+#pragma omp parallel for private(i) schedule(guided)
 	for(i=0;i<l;i++)
+	{
 		wa[i] = C[i]*D[i]*wa[i];
 
-	XTv(wa, Hs);
+		reduce_vectors->sum_scale_x(wa[i], m_prob->x, i, n);
+		
+		if (m_prob->use_bias)
+		{
+#pragma omp atomic
+			Hs[n]+=wa[i];
+		}
+	}
+	
+	reduce_vectors->reduce_sum(Hs, n);
+
+#pragma omp parallel for private(i) schedule(static)
 	for(i=0;i<w_size;i++)
 		Hs[i] = s[i] + Hs[i];
 	SG_FREE(wa);
@@ -139,7 +216,7 @@ void l2r_lr_fun::Xv(double *v, double *res_Xv)
 		bias=v[n];
 	}
 
-	m_prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
+	m_prob->x->dense_dot_range_batch(res_Xv, 0, l, NULL, v, n, bias);
 }
 
 void l2r_lr_fun::XTv(double *v, double *res_XTv)
@@ -147,18 +224,26 @@ void l2r_lr_fun::XTv(double *v, double *res_XTv)
 	int l=m_prob->l;
 	int32_t n=m_prob->n;
 
-	memset(res_XTv, 0, sizeof(double)*m_prob->n);
-
 	if (m_prob->use_bias)
-		n--;
-
-	for (int32_t i=0;i<l;i++)
 	{
-		m_prob->x->add_to_dense_vec(v[i], i, res_XTv, n);
+		n--;
+		res_XTv[n]=0;
+	}
+	reduce_vectors->init();
+
+	int32_t i;
+#pragma omp parallel for private(i) schedule(guided)
+	for ( i=0;i<l;i++)
+	{
+		reduce_vectors->sum_scale_x(v[i], m_prob->x, i, n);
 
 		if (m_prob->use_bias)
+		{
+#pragma omp atomic
 			res_XTv[n]+=v[i];
+		}
 	}
+	reduce_vectors->reduce_sum(res_XTv, n);
 }
 
 l2r_l2_svc_fun::l2r_l2_svc_fun(const liblinear_problem *p, double* Cs)
@@ -171,7 +256,7 @@ l2r_l2_svc_fun::l2r_l2_svc_fun(const liblinear_problem *p, double* Cs)
 	D = SG_MALLOC(double, l);
 	I = SG_MALLOC(int, l);
 	C=Cs;
-
+	reduce_vectors = new Reduce_Vectors(get_nr_variable());
 }
 
 l2r_l2_svc_fun::~l2r_l2_svc_fun()
@@ -190,6 +275,8 @@ double l2r_l2_svc_fun::fun(double *w)
 	int w_size=get_nr_variable();
 
 	Xv(w, z);
+
+#pragma omp parallel for private(i) reduction(+:f) schedule(static)
 	for(i=0;i<l;i++)
 	{
 		z[i] = y[i]*z[i];
@@ -219,6 +306,7 @@ void l2r_l2_svc_fun::grad(double *w, double *g)
 		}
 	subXTv(z, g);
 
+#pragma omp parallel for private(i) schedule(static)
 	for(i=0;i<w_size;i++)
 		g[i] = w[i] + 2*g[i];
 }
@@ -236,10 +324,31 @@ void l2r_l2_svc_fun::Hv(double *s, double *Hs)
 	double *wa = SG_MALLOC(double, l);
 
 	subXv(s, wa);
+
+	int n=w_size;
+	if (m_prob->use_bias)
+	{
+		n--;
+		Hs[n]=0;
+	}
+	reduce_vectors->init();
+
+#pragma omp parallel for private(i) schedule(guided)	
 	for(i=0;i<sizeI;i++)
+	{
 		wa[i] = C[I[i]]*wa[i];
 
-	subXTv(wa, Hs);
+		reduce_vectors->sum_scale_x(wa[i], m_prob->x, I[i], n);
+
+		if (m_prob->use_bias)
+		{
+#pragma omp atomic
+			Hs[n]+=wa[i];
+		}
+	}
+
+	reduce_vectors->reduce_sum(Hs, n);
+#pragma omp parallel for private(i) schedule(static)
 	for(i=0;i<w_size;i++)
 		Hs[i] = s[i] + 2*Hs[i];
 	SG_FREE(wa);
@@ -271,7 +380,7 @@ void l2r_l2_svc_fun::subXv(double *v, double *res_Xv)
 		bias=v[n];
 	}
 
-	m_prob->x->dense_dot_range_subset(I, sizeI, res_Xv, NULL, v, n, bias);
+	m_prob->x->dense_dot_range_subset_batch(I, sizeI, res_Xv, NULL, v, n, bias);
 
 	/*for (int32_t i=0;i<sizeI;i++)
 	{
@@ -287,16 +396,25 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 	int32_t n=m_prob->n;
 
 	if (m_prob->use_bias)
-		n--;
-
-	memset(XTv, 0, sizeof(float64_t)*m_prob->n);
-	for (int32_t i=0;i<sizeI;i++)
 	{
-		m_prob->x->add_to_dense_vec(v[i], I[i], XTv, n);
+		n--;
+		XTv[n]=0;
+	}
+	reduce_vectors->init();
+
+	int32_t i;
+#pragma omp parallel for private(i) schedule(guided)
+	for ( i=0;i<sizeI;i++)
+	{
+		reduce_vectors->sum_scale_x(v[i], m_prob->x, I[i], n);
 
 		if (m_prob->use_bias)
+		{
+#pragma omp atomic
 			XTv[n]+=v[i];
+		}
 	}
+	reduce_vectors->reduce_sum(XTv, n);
 }
 
 l2r_l2_svr_fun::l2r_l2_svr_fun(const liblinear_problem *prob, double *Cs, double p):
@@ -316,9 +434,11 @@ double l2r_l2_svr_fun::fun(double *w)
 
 	Xv(w, z);
 
+#pragma omp parallel for private(i) reduction(+:f) schedule(static)
 	for(i=0;i<w_size;i++)
 		f += w[i]*w[i];
 	f /= 2;
+#pragma omp parallel for private(i) reduction(+:f) schedule(static)
 	for(i=0;i<l;i++)
 	{
 		d = z[i] - y[i];
@@ -361,6 +481,7 @@ void l2r_l2_svr_fun::grad(double *w, double *g)
 	}
 	subXTv(z, g);
 
+#pragma omp parallel for private(i) schedule(static)
 	for(i=0;i<w_size;i++)
 		g[i] = w[i] + 2*g[i];
 }

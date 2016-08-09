@@ -64,6 +64,31 @@ float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> ve
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
+void CDotFeatures::dense_dot_range_batch(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+{
+	ASSERT(output)
+	// write access is internally between output[start..stop] so the following
+	// line is necessary to write to output[0...(stop-start-1)]
+	output-=start;
+	ASSERT(start>=0)
+	ASSERT(start<stop)
+	ASSERT(stop<=get_num_vectors())
+	int32_t num_vectors=stop-start;
+	ASSERT(num_vectors>0)
+
+	int32_t num_threads=parallel->get_num_threads();
+	ASSERT(num_threads>0)
+	int32_t i; 
+#pragma omp parallel for private (i) schedule(guided)
+	for (i=start; i<stop; i++)
+	{
+		if (alphas)
+			output[i]=alphas[i]*this->dense_dot(i, vec, dim)+b;
+		else
+			output[i]=this->dense_dot(i, vec, dim)+b;
+	}
+}
+
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
 	ASSERT(output)
@@ -148,6 +173,22 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		if ( CSignal::cancel_computations() )
 			SG_INFO("prematurely stopped.           \n")
 #endif
+}
+
+void CDotFeatures::dense_dot_range_subset_batch(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
+{
+	ASSERT(sub_index)
+	ASSERT(output)
+
+	int32_t i;
+#pragma omp parallel for private (i) schedule(guided)
+	for (i=0; i<num; i++)
+	{
+		if (alphas)
+			output[i]=alphas[sub_index[i]]*this->dense_dot(sub_index[i], vec, dim)+b;
+		else
+			output[i]=this->dense_dot(sub_index[i], vec, dim)+b;
+	}
 }
 
 void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)

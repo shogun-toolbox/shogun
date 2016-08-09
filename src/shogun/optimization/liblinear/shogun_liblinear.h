@@ -104,6 +104,22 @@ void destroy_param(struct liblinear_parameter *param);
 }
 #endif
 
+class Reduce_Vectors
+{
+public:
+	Reduce_Vectors(int size);
+	~Reduce_Vectors();
+
+	void init(void);
+	void sum_scale_x(double scalar, CDotFeatures *x, int i, int n);
+	void reduce_sum(double* v, int n);
+
+private:
+	int nr_thread;
+	int size;
+	double **tmp_array;
+};
+
 /** class l2loss_svm_vun */
 class l2loss_svm_fun : public function
 {
@@ -200,6 +216,8 @@ private:
 	float64_t *C;
 	float64_t *z;
 	float64_t *D;
+	Reduce_Vectors *reduce_vectors;
+	
 	const liblinear_problem *m_prob;
 };
 
@@ -223,6 +241,8 @@ protected:
 	double *C;
 	double *z;
 	double *D;
+	Reduce_Vectors *reduce_vectors;
+	
 	int *I;
 	int sizeI;
 	const liblinear_problem *m_prob;

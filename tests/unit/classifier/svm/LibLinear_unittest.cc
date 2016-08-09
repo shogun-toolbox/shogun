@@ -719,29 +719,56 @@ TEST(LibLinear,simple_set_train_L2R_LR)
 	SG_UNREF(pred);
 }
 
+void generate_data_gaussian(CDenseFeatures<float64_t>* &train_feats,
+	   	CDenseFeatures<float64_t>* &test_feats, CBinaryLabels* &ground_truth)
+{
+	index_t num_samples = 300;
+	CMath::init_random(5);
+	SGMatrix<float64_t> data = CDataGenerator::generate_gaussians(num_samples, 2, 2);
+	CDenseFeatures<float64_t> features(data);
+
+	SGVector<index_t> train_idx(num_samples), test_idx(num_samples);
+	SGVector<float64_t> labels(num_samples);
+	for (index_t i = 0, j = 0; i < data.num_cols; ++i)
+	{
+		if (i % 2 == 0)
+			train_idx[j] = i;
+		else
+			test_idx[j++] = i;
+
+		labels[i/2] = (i < data.num_cols/2) ? 1.0 : -1.0;
+	}
+	
+	train_feats = (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
+	test_feats =  (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
+	ground_truth = new CBinaryLabels(labels);
+}
+
 TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 
 	SGVector<float64_t> t_w(2);
-	t_w[0] = -0.9523799021273924;
-	t_w[1] = -0.3809534312059407;
-
-	CDenseFeatures<float64_t>* train_feats = NULL;
+	t_w[0] = -0.081582;
+	t_w[1] = -0.234736;
+	
 	CDenseFeatures<float64_t>* test_feats = NULL;
-	CBinaryLabels* ground_truth = NULL;
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;	
+	
+	generate_data_gaussian(train_feats, test_feats, ground_truth);
 
-	generate_data_l2_simple(train_feats, test_feats, ground_truth);
-
-	CLibLinear* ll = new CLibLinear();
+	CLibLinear* ll = new CLibLinear(0.1, train_feats, ground_truth);
 
 	CBinaryLabels* pred = NULL;
 	float64_t liblin_accuracy;
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
+	ll->set_epsilon(0.1);
 	ll->set_bias_enabled(false);
 	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
+	ll->parallel->set_num_threads(1);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
@@ -749,15 +776,17 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL)
 	pred = ll->apply_binary(test_feats);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
+	float64_t dist = 0;
 	for(int i=0;i<t_w.vlen;i++)
-		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
+		dist+=((ll->get_w()[i] - t_w[i])*(ll->get_w()[i] - t_w[i]));
+
+	dist=CMath::sqrt(dist);
+	
+	EXPECT_NEAR(0, dist, 1e-2);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
 
 	SG_UNREF(ll);
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
-	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
@@ -810,25 +839,26 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL)
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 
 	SGVector<float64_t> t_w(2);
-	t_w[0] = -0.5;
-	t_w[1] = -0.1 ;
+	t_w[0] = -0.118927;
+	t_w[1] = -0.288049;
 
 	CDenseFeatures<float64_t>* train_feats = NULL;
 	CDenseFeatures<float64_t>* test_feats = NULL;
 	CBinaryLabels* ground_truth = NULL;
 
-	generate_data_l2_simple(train_feats, test_feats, ground_truth);
+	generate_data_gaussian(train_feats, test_feats, ground_truth);
 
-	CLibLinear* ll = new CLibLinear();
+	CLibLinear* ll = new CLibLinear(0.1, train_feats, ground_truth);
 
 	CBinaryLabels* pred = NULL;
 	float64_t liblin_accuracy;
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(false);
-	ll->set_C(0.1,0.1);
+	ll->set_epsilon(0.1);	
 	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
+	ll->parallel->set_num_threads(1);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
@@ -836,15 +866,17 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL)
 	pred = ll->apply_binary(test_feats);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
+	float64_t dist = 0;
 	for(int i=0;i<t_w.vlen;i++)
-		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
+		dist+=((ll->get_w()[i] - t_w[i])*(ll->get_w()[i] - t_w[i]));
+
+	dist=CMath::sqrt(dist);
+	
+	EXPECT_NEAR(0, dist, 1e-2);
 
 	EXPECT_NEAR(liblin_accuracy, 1, 1e-5);
 
 	SG_UNREF(ll);
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
-	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
@@ -1030,25 +1062,29 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 
 	SGVector<float64_t> t_w(3);
-	t_w[0] = -0.5153970026404913 ;
-	t_w[1] = -0.2463534232497313;
-	t_w[2] = 0.5737439568971296;
+	t_w[0] = -0.07688;
+	t_w[1] = -0.23126;
+	t_w[2] = 0.03619;
 
 	CDenseFeatures<float64_t>* train_feats = NULL;
 	CDenseFeatures<float64_t>* test_feats = NULL;
 	CBinaryLabels* ground_truth = NULL;
 
-	generate_data_l2_simple(train_feats, test_feats, ground_truth);
+	generate_data_gaussian(train_feats, test_feats, ground_truth);
 
-	CLibLinear* ll = new CLibLinear();
+	CLibLinear* ll = new CLibLinear(0.1, train_feats, ground_truth);
 
 	CBinaryLabels* pred = NULL;
 	float64_t liblin_accuracy;
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
+	ll->set_epsilon(0.1);	
 	ll->set_bias_enabled(true);
+	ll->set_bias(1);
 	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
+	ll->parallel->set_num_threads(3);
+	ll->set_compute_bias(false);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
@@ -1056,16 +1092,17 @@ TEST(LibLinear,simple_set_train_L2R_L2LOSS_SVC_DUAL_BIAS)
 	pred = ll->apply_binary(test_feats);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
+	float64_t dist = 0;
 	for(int i=0;i<t_w.vlen;i++)
-		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
-	EXPECT_NEAR(ll->get_bias(), t_w[2], 1e-5);
+		dist+=((ll->get_w()[i] - t_w[i])*(ll->get_w()[i] - t_w[i]));
+
+	dist=CMath::sqrt(dist);
+
+	EXPECT_NEAR(0, dist, 1e-2);	
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
 
 	SG_UNREF(ll);
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
-	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
@@ -1120,25 +1157,27 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 
 	SGVector<float64_t> t_w(3);
-	t_w[0] = -0.5714285446051303;
-	t_w[1] = -0.2857143192435871;
-	t_w[2] = 0.7142857276974349;
+	t_w[0] = -0.11101;
+	t_w[1] = -0.28132;
+	t_w[2] = 0.04839;
 
 	CDenseFeatures<float64_t>* train_feats = NULL;
 	CDenseFeatures<float64_t>* test_feats = NULL;
 	CBinaryLabels* ground_truth = NULL;
 
-	generate_data_l2_simple(train_feats, test_feats, ground_truth);
+	generate_data_gaussian(train_feats, test_feats, ground_truth);
 
-	CLibLinear* ll = new CLibLinear();
+	CLibLinear* ll = new CLibLinear(0.1, train_feats, ground_truth);
 
 	CBinaryLabels* pred = NULL;
 	float64_t liblin_accuracy;
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
+	ll->set_epsilon(0.1);
 	ll->set_bias_enabled(true);
 	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
+	ll->parallel->set_num_threads(1);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
@@ -1146,16 +1185,17 @@ TEST(LibLinear,simple_set_train_L2R_L1LOSS_SVC_DUAL_BIAS)
 	pred = ll->apply_binary(test_feats);
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
+	float64_t dist = 0;
 	for(int i=0;i<t_w.vlen;i++)
-		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
-	EXPECT_NEAR(ll->get_bias(), t_w[2], 1e-5);
+		dist+=((ll->get_w()[i] - t_w[i])*(ll->get_w()[i] - t_w[i]));
+
+	dist=CMath::sqrt(dist);
+
+	EXPECT_NEAR(0, dist, 1e-2);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
 
 	SG_UNREF(ll);
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
-	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
