@@ -20,11 +20,12 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/multiclass/tree/KDTree.h>
-
-//#define BENCHMARK_KNN
+#include <shogun/lib/external/falconn/lsh_nn_table.h>
+#include <shogun/mathematics/eigen3.h>
 //#define DEBUG_KNN
 
 using namespace shogun;
+using namespace Eigen;
 
 CKNN::CKNN()
 : CDistanceMachine()
@@ -59,6 +60,8 @@ void CKNN::init()
 	m_num_classes=0;
 	m_leaf_size=1;
 	m_knn_solver=KNN_BRUTE;
+	m_lsh_l = 0;
+	m_lsh_t = 0;
 
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
@@ -288,6 +291,62 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		SG_UNREF(query);
 		break;
 	}
+	case KNN_LSH:
+	{
+		CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_lhs());
+		std::vector<falconn::DenseVector<double>> feats;
+		for(int32_t i=0; i < features->get_num_vectors(); i++)
+		{
+			int32_t len;
+			bool free;
+			float64_t* vec = features->get_feature_vector(i, len, free);
+			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
+			feats.push_back(temp);
+		}
+
+		falconn::LSHConstructionParameters params 
+			= falconn::get_default_parameters<falconn::DenseVector<double>>(features->get_num_vectors(),
+                                   features->get_num_features(),
+                                   falconn::DistanceFunction::EuclideanSquared,
+                                   true);
+		SG_UNREF(features);
+		if (m_lsh_l && m_lsh_t)
+			params.l = m_lsh_l;
+
+		auto lsh_table = falconn::construct_table<falconn::DenseVector<double>>(feats, params);
+		if (m_lsh_t)
+			lsh_table->set_num_probes(m_lsh_t);
+
+		CDenseFeatures<float64_t>* query_features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_rhs());
+		std::vector<falconn::DenseVector<double>> query_feats;
+
+		SGMatrix<index_t> NN (m_k, query_features->get_num_vectors());
+		for(int32_t i=0; i < query_features->get_num_vectors(); i++)
+		{
+			int32_t len;
+			bool free;
+			float64_t* vec = query_features->get_feature_vector(i, len, free);
+			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
+			auto indices = new std::vector<int32_t> ();
+			lsh_table->find_k_nearest_neighbors(temp, (int_fast64_t)m_k, indices);
+			memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
+			delete indices;
+		}
+		
+		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+		{
+			//write the labels of the k nearest neighbors from theirs indices
+			for (int32_t j=0; j<m_k; j++)
+				train_lab[j] = m_train_labels[ NN(j,i) ];
+
+			//get the index of the 'nearest' class
+			int32_t out_idx = choose_class(classes, train_lab);
+			//write the label of 'nearest' in the output
+			output->set_label(i, out_idx + m_min_label);
+		}
+		SG_UNREF(query_features);
+		break;
+	}
 	}
 
 	SG_FREE(classes);
@@ -367,22 +426,6 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	
 	switch (m_knn_solver)
 	{
-	case KNN_BRUTE:
-	{
-		//get the k nearest neighbors of each example
-		SGMatrix<index_t> NN = nearest_neighbors();
-
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-				train_lab[j] = m_train_labels[ NN(j,i) ];
-
-			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
-		}
-
-		break;
-	}
 	case KNN_COVER_TREE: // Use cover tree
 	{
 		//allocation for distances to nearest neighbors
@@ -459,6 +502,22 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 		}
 		break;
 	}
+	default:
+	{
+		//get the k nearest neighbors of each example
+		SGMatrix<index_t> NN = nearest_neighbors();
+
+		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+		{
+			//write the labels of the k nearest neighbors from theirs indices
+			for (int32_t j=0; j<m_k; j++)
+				train_lab[j] = m_train_labels[ NN(j,i) ];
+
+			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
+		}
+
+	}
+
 	}
 
 	SG_FREE(train_lab);

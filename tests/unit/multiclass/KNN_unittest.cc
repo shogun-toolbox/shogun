@@ -63,6 +63,8 @@ TEST(KNN, brute_solver)
 
 	SG_UNREF(output);
 	SG_UNREF(knn);
+	SG_UNREF(features_test);
+	SG_UNREF(labels_test);
 }
 
 TEST(KNN, kdtree_solver)
@@ -106,7 +108,56 @@ TEST(KNN, kdtree_solver)
 
 	SG_UNREF(output);
 	SG_UNREF(knn);
+	SG_UNREF(features_test);
+	SG_UNREF(labels_test);
 }
+
+
+TEST(KNN, lsh_solver)
+{
+
+	int32_t num = 50;
+	int32_t feats = 2;
+	int32_t classes = 3;
+
+	SGVector< float64_t > lab(classes*num);
+	SGMatrix< float64_t > feat(feats, classes*num);
+	
+	generate_knn_data(feat, lab, num, classes, feats);
+	SGVector<index_t> train (int32_t(num*classes*0.75));
+	SGVector<index_t> test (int32_t(num*classes*0.25));
+	train.random(0, classes*num-1);
+	test.random(0, classes*num-1);
+
+	CMulticlassLabels* labels = new CMulticlassLabels(lab);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
+	CFeatures* features_test = (CFeatures*) features->clone();	
+	CLabels* labels_test = (CLabels*) labels->clone();
+
+	int32_t k=4;
+	CEuclideanDistance* distance = new CEuclideanDistance();	
+	CKNN* knn=new CKNN (k, distance, labels, KNN_LSH);
+	SG_REF(knn);
+
+	features->add_subset(train);
+	labels->add_subset(train);	
+	knn->train(features);
+
+	features_test->add_subset(test);
+	labels_test->add_subset(test);
+	CMulticlassLabels* output=CLabelsFactory::to_multiclass(knn->apply(features_test));
+	SG_REF(output);
+	features_test->remove_subset();
+
+	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
+		EXPECT_EQ(output->get_label(i), ((CMulticlassLabels*)labels_test)->get_label(i));
+
+	SG_UNREF(features_test);
+	SG_UNREF(labels_test);
+	SG_UNREF(output);
+	SG_UNREF(knn);
+}
+
 
 TEST(KNN, classify_multiple_kdtree)
 {
@@ -151,4 +202,6 @@ TEST(KNN, classify_multiple_kdtree)
 			EXPECT_EQ(out_mat(i, j), ((CMulticlassLabels*)labels_test)->get_label(i));
 
 	SG_UNREF(knn);
+	SG_UNREF(features_test);
+	SG_UNREF(labels_test);
 }
