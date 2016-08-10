@@ -29,9 +29,11 @@
  *
  */
 #include <shogun/base/SGObject.h>
+#include <shogun/base/some.h>
 #include <shogun/lib/any.h>
-#include <gtest/gtest.h>
+#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/lib/config.h>
+#include <gtest/gtest.h>
 #include <stdexcept>
 
 using namespace shogun;
@@ -100,4 +102,12 @@ TEST(Any, non_owning)
 	EXPECT_EQ(recall_type<int32_t>(any), value);
 	value = 532;
 	EXPECT_EQ(recall_type<int32_t>(any), value);
+}
+
+TEST(Any, equality_operator)
+{
+	auto gk = some<CGaussianKernel>(10);
+	auto another_gk = some<CGaussianKernel>(10);
+	EXPECT_THROW(Any(gk) == Any(another_gk), std::logic_error);
+	EXPECT_THROW(Any(gk) != Any(another_gk), std::logic_error);
 }
