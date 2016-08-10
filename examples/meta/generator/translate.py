@@ -11,6 +11,7 @@ try:
     set
 except NameError:
     from sets import Set as set
+import warnings
 
 
 def find(key, dictionary):
@@ -261,14 +262,30 @@ class Translator:
         translatedType = self.translateType({"ObjectType": type_})
         template_parameter_matcher = '\<[0-9a-zA-Z_]*\>'
         variants = [
-            translatedType,
             'C' + translatedType,
-            re.sub(template_parameter_matcher, '', translatedType),
-            'C' + re.sub(template_parameter_matcher, '', translatedType)
+            translatedType,
+            'C' + re.sub(template_parameter_matcher, '', translatedType),
+            re.sub(template_parameter_matcher, '', translatedType)
         ]
+
+        candidates = []
         for variant in variants:
             if variant in self.tags:
-                return self.tags[variant]
+                candidates.append(self.tags[variant])
+
+        unique_candidates = [path for i, path in enumerate(candidates)
+                                      if candidates.index(path) == i]
+
+        if len(unique_candidates) == 1:
+            return unique_candidates[0]
+
+        elif len(unique_candidates) > 1:
+            msg = "Several possible include paths for type {}.\n"\
+                  "Candidate paths: {}\nChosen: {}"
+            warnings.warn(msg.format(type_,
+                                     unique_candidates,
+                                     unique_candidates[0]))
+            return unique_candidates[0]
 
         raise TranslationFailure('Failed to obtain include path for %s' %
                                  (' or '.join(variants)))
