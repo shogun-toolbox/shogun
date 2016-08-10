@@ -116,3 +116,9 @@ IF(SWIG_SINGLE_THREADED)
 ENDIF(SWIG_SINGLE_THREADED)
 
 unset(CMAKE_DEFINITIONS)
+
+add_library(plugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/base/MockLibrary.cpp)
+target_link_libraries(plugin shogun)
+
+add_library(pluginwomanifest SHARED ${CMAKE_CURRENT_SOURCE_DIR}/base/MockLibraryWOManifest.cpp)
+target_link_libraries(pluginwomanifest shogun)

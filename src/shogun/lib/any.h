@@ -42,169 +42,212 @@
 
 namespace shogun
 {
-    /** Converts compiler-dependent name of class to
-     * something human readable.
-     * @return human readable name of class
-     */
-    template <typename T>
-    std::string demangledType()
+
+    namespace util
     {
-        size_t length;
-        int status;
-        char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
-        std::string demangled_string(demangled);
-        free(demangled);
-        return demangled_string;
+        /** Stores type information. **/
+        template<typename U> struct Type {};
+
+        /** Dummy struct used to check the presence of
+         * equality operator (operator==) for a class.
+         */
+        struct No {};
+
+        /** Dummy equality operator for classes that don't have their
+         * own implementation of operator==.
+         */
+        template<typename U, typename V> No operator== (const U&, const V&);
+
+        /** Converts compiler-dependent name of class to
+         * something human readable.
+         * @return human readable name of class
+         */
+        template <typename T>
+        std::string demangledType()
+        {
+            size_t length;
+            int status;
+            char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
+            std::string demangled_string(demangled);
+            free(demangled);
+            return demangled_string;
+        }
+
+        /** @brief An interface for a policy to store a value.
+         * Value can be any data like primitive data-types, shogun objects, etc.
+         * Policy defines how to handle this data. It works with a
+         * provided memory region and is able to set value, clear it
+         * and return the type-name as string.
+         */
+        class BaseAnyPolicy
+        {
+        public:
+            /** Puts provided value pointed by v (untyped to be generic) to storage.
+             * @param storage pointer to a pointer to storage
+             * @param v pointer to value
+             */
+            virtual void set(void** storage, const void* v) const = 0;
+            
+            /** Clears storage.
+             * @param storage pointer to a pointer to storage
+             */
+            virtual void clear(void** storage) const = 0;
+            
+            /** Returns type-name as string.
+             * @return name of type class
+             */
+            virtual std::string type() const = 0;
+            
+            /** Compares type.
+             * @param ti type information
+             * @return true if type matches
+             */
+            virtual bool matches(const std::type_info& ti) const = 0;
+
+            /** Compares two storages.
+             * @param storage pointer to a pointer to storage
+             * @param other_storage pointer to a pointer to another storage
+             * @return true if both storages have same value
+             */
+            virtual bool equals(void** storage, void** other_storage) const = 0;
+        };
+
+        /** @brief This implementation of @ref BaseAnyPolicy uses external
+         * pointer in non-owning fashion. This means the pointer is never
+         * deleted and new values are stored directly by the provided pointer.
+         */
+        template <typename T>
+        class NonOwningValueAnyPolicy : public BaseAnyPolicy
+        {
+        public:
+            /** Puts provided value pointed by v (untyped to be generic) to storage.
+             * @param storage pointer to a pointer to storage
+             * @param v pointer to value
+             */
+            virtual void set(void** storage, const void* v) const
+            {
+                *(reinterpret_cast<T*>(storage)) = *reinterpret_cast<T const*>(v);
+            }
+
+            /** Clears storage. In this case does nothing as storage
+             * is considered external.
+             *
+             * @param storage pointer to a pointer to storage
+             */
+            virtual void clear(void** storage) const
+            {
+            }
+
+            /** Returns type-name as string.
+             * @return name of type class
+             */
+            virtual std::string type() const
+            {
+                return demangledType<T>();
+            }
+
+            /** Compares type.
+             * @param ti type information
+             * @return true if type matches
+             */
+            virtual bool matches(const std::type_info& ti) const
+            {
+                return typeid(T) == ti;
+            }
+
+            /** Compares two storages.
+             * @param storage pointer to a pointer to storage
+             * @param other_storage pointer to a pointer to another storage
+             * @return true if both storages have same value
+             */
+            bool equals(void** storage, void** other_storage) const
+            {
+                return equals(storage, other_storage, Type<decltype(*(T*)(0) == *(T*)(0))>());
+            }
+
+        private:
+            template<typename U>
+            bool equals(void** storage, void** other_storage, Type<U>) const
+            {
+                T typed_storage = *(reinterpret_cast<T*>(*storage));
+                T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+                return typed_storage == typed_other_storage;
+            }
+
+            /** Function specialization to handle absence of equality operator. */
+            bool equals(void** storage, void** other_storage, Type<util::No>) const
+            {
+                throw std::logic_error("Equality operator does not exist.\n");
+            }
+        };
+
+        /** @brief This is one concrete implementation of policy that
+         * uses void pointers to store values.
+         */
+        template <typename T>
+        class PointerValueAnyPolicy : public BaseAnyPolicy
+        {
+        public:
+            /** Puts provided value pointed by v (untyped to be generic) to storage.
+             * @param storage pointer to a pointer to storage
+             * @param v pointer to value
+             */
+            virtual void set(void** storage, const void* v) const
+            {
+                *(storage) = new T(*reinterpret_cast<T const*>(v));
+            }
+            
+            /** Clears storage.
+             * @param storage pointer to a pointer to storage
+             */
+            virtual void clear(void** storage) const
+            {
+                delete reinterpret_cast<T*>(*storage);
+            }
+            
+            /** Returns type-name as string.
+             * @return name of type class
+             */
+            virtual std::string type() const
+            {
+                return demangledType<T>();
+            }
+            
+            /** Compares type.
+             * @param ti type information
+             * @return true if type matches
+             */
+            virtual bool matches(const std::type_info& ti) const
+            {
+                return typeid(T) == ti;
+            }
+
+            /** Compares two storages.
+             * @param storage pointer to a pointer to storage
+             * @param other_storage pointer to a pointer to another storage
+             * @return true if both storages have same value
+             */
+            bool equals(void** storage, void** other_storage) const
+            {
+                return equals(storage, other_storage, Type<decltype(*(T*)(0) == *(T*)(0))>());
+            }
+
+        private:
+            template<typename U>
+            bool equals(void** storage, void** other_storage, Type<U>) const
+            {
+                T typed_storage = *(reinterpret_cast<T*>(*storage));
+                T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
+                return typed_storage == typed_other_storage;
+            }
+
+            /** Function specialization to handle absence of equality operator. */
+            bool equals(void** storage, void** other_storage, Type<util::No>) const
+            {
+                throw std::logic_error("Equality operator does not exist.\n");
+            }
+        };
     }
-
-    /** @brief An interface for a policy to store a value.
-     * Value can be any data like primitive data-types, shogun objects, etc.
-     * Policy defines how to handle this data. It works with a
-     * provided memory region and is able to set value, clear it
-     * and return the type-name as string.
-     */
-    class BaseAnyPolicy
-    {
-    public:
-        /** Puts provided value pointed by v (untyped to be generic) to storage.
-         * @param storage pointer to a pointer to storage
-         * @param v pointer to value
-         */
-        virtual void set(void** storage, const void* v) const = 0;
-        
-        /** Clears storage.
-         * @param storage pointer to a pointer to storage
-         */
-        virtual void clear(void** storage) const = 0;
-        
-        /** Returns type-name as string.
-         * @return name of type class
-         */
-        virtual std::string type() const = 0;
-        
-        /** Compares type.
-         * @param ti type information
-         * @return true if type matches
-         */
-        virtual bool matches(const std::type_info& ti) const = 0;
-
-        /** Compares two storages.
-         * @param storage pointer to a pointer to storage
-         * @param other_storage pointer to a pointer to another storage
-         * @return true if both storages have same value
-         */
-        virtual bool equals(void** storage, void** other_storage) const = 0;
-    };
-
-    /** @brief This implementation of @ref BaseAnyPolicy uses external
-     * pointer in non-owning fashion. This means the pointer is never
-     * deleted and new values are stored directly by the provided pointer.
-     */
-    template <typename T>
-    class NonOwningValueAnyPolicy : public BaseAnyPolicy
-    {
-    public:
-        /** Puts provided value pointed by v (untyped to be generic) to storage.
-         * @param storage pointer to a pointer to storage
-         * @param v pointer to value
-         */
-        virtual void set(void** storage, const void* v) const
-        {
-            *(reinterpret_cast<T*>(storage)) = *reinterpret_cast<T const*>(v);
-        }
-
-        /** Clears storage. In this case does nothing as storage
-         * is considered external.
-         *
-         * @param storage pointer to a pointer to storage
-         */
-        virtual void clear(void** storage) const
-        {
-        }
-
-        /** Returns type-name as string.
-         * @return name of type class
-         */
-        virtual std::string type() const
-        {
-            return demangledType<T>();
-        }
-
-        /** Compares type.
-         * @param ti type information
-         * @return true if type matches
-         */
-        virtual bool matches(const std::type_info& ti) const
-        {
-            return typeid(T) == ti;
-        }
-
-        /** Compares two storages.
-         * @param storage pointer to a pointer to storage
-         * @param other_storage pointer to a pointer to another storage
-         * @return true if both storages have same value
-         */
-        bool equals(void** storage, void** other_storage) const
-        {
-            T typed_storage = *(reinterpret_cast<T*>(*storage));
-            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-            return typed_storage == typed_other_storage;
-        }
-    };
-
-    /** @brief This is one concrete implementation of policy that
-     * uses void pointers to store values.
-     */
-    template <typename T>
-    class PointerValueAnyPolicy : public BaseAnyPolicy
-    {
-    public:
-        /** Puts provided value pointed by v (untyped to be generic) to storage.
-         * @param storage pointer to a pointer to storage
-         * @param v pointer to value
-         */
-        virtual void set(void** storage, const void* v) const
-        {
-            *(storage) = new T(*reinterpret_cast<T const*>(v));
-        }
-        
-        /** Clears storage.
-         * @param storage pointer to a pointer to storage
-         */
-        virtual void clear(void** storage) const
-        {
-            delete reinterpret_cast<T*>(*storage);
-        }
-        
-        /** Returns type-name as string.
-         * @return name of type class
-         */
-        virtual std::string type() const
-        {
-            return demangledType<T>();
-        }
-        
-        /** Compares type.
-         * @param ti type information
-         * @return true if type matches
-         */
-        virtual bool matches(const std::type_info& ti) const
-        {
-            return typeid(T) == ti;
-        }
-
-        /** Compares two storages.
-         * @param storage pointer to a pointer to storage
-         * @param other_storage pointer to a pointer to another storage
-         * @return true if both storages have same value
-         */
-        bool equals(void** storage, void** other_storage) const
-        {
-            T typed_storage = *(reinterpret_cast<T*>(*storage));
-            T typed_other_storage = *(reinterpret_cast<T*>(*other_storage));
-            return typed_storage == typed_other_storage;
-        }
-    };
 
     /** @brief Allows to store objects of arbitrary types
      * by using a BaseAnyPolicy and provides a type agnostic API.
@@ -288,7 +331,7 @@ namespace shogun
             } 
             else 
             {
-                throw std::logic_error("Bad cast to " + demangledType<T>() + 
+                throw std::logic_error("Bad cast to " + util::demangledType<T>() + 
                         " but the type is " + policy->type());
             }
         }
@@ -314,22 +357,22 @@ namespace shogun
         }
     private:
         template <typename T>
-        static BaseAnyPolicy* default_policy()
+        static util::BaseAnyPolicy* default_policy()
         {
-            typedef PointerValueAnyPolicy<T> Policy;
+            typedef util::PointerValueAnyPolicy<T> Policy;
             static Policy policy;
             return &policy;
         }
 
         template <typename T>
-        static BaseAnyPolicy* non_owning_policy()
+        static util::BaseAnyPolicy* non_owning_policy()
         {
-            typedef NonOwningValueAnyPolicy<T> Policy;
+            typedef util::NonOwningValueAnyPolicy<T> Policy;
             static Policy policy;
             return &policy;
         }
 
-        BaseAnyPolicy* policy;
+        util::BaseAnyPolicy* policy;
         void* storage;
     };
 
