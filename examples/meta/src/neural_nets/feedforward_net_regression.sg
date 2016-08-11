@@ -30,7 +30,7 @@ network.initialize_neural_network()
 #![set_parameters]
 network.set_l2_coefficient(0.1)
 network.set_max_num_epochs(40)
-network.set_epsilon(0)
+network.set_epsilon(0.0)
 network.set_gd_learning_rate(0.1)
 network.set_gd_momentum(0.9)
 #![set_parameters]

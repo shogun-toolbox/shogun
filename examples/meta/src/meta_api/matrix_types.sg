@@ -24,8 +24,8 @@ long_int_matrix[1,0]=1
 long_int_matrix[0,0]=long_int_matrix[1,0]
 
 ShortRealMatrix short_real_matrix(2,1)
-short_real_matrix[0,0]=0
-short_real_matrix[1,0]=1
+short_real_matrix[0,0]=0.0f
+short_real_matrix[1,0]=1.0f
 short_real_matrix[0,0]=short_real_matrix[1,0]
 
 RealMatrix real_matrix(2,1)

@@ -12,7 +12,7 @@ MulticlassLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel_and_mean_function]
-GaussianKernel kernel(2)
+GaussianKernel kernel(2.0)
 ConstMean mean_function()
 #![create_appropriate_kernel_and_mean_function]
 

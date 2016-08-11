@@ -11,7 +11,7 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
-real width = 1
+real width = 1.0
 GaussianKernel kernel(features_train, features_train, width)
 #![create_appropriate_kernel]
 

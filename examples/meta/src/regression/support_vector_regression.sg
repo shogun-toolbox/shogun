@@ -11,12 +11,12 @@ RegressionLabels labels_test(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
-real width = 1
+real width = 1.0
 GaussianKernel kernel(width)
 #![create_appropriate_kernel]
 
 #![create_instance]
-real svm_c = 1
+real svm_c = 1.0
 real svr_param = 0.1
 LibSVR svr(svm_c, svr_param, kernel, labels_train, enum LIBSVR_SOLVER_TYPE.LIBSVR_EPSILON_SVR)
 #![create_instance]
