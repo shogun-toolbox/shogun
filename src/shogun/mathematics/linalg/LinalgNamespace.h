@@ -233,6 +233,17 @@ complex128_t mean(const Container<complex128_t>& a)
 }
 
 /**
+ * Range fill a vector or matrix with start...start+len-1
+ * @param a the vector or matrix to be filled
+ * @param start value to be assigned to first element of vector or matrix
+ */
+template <typename T, template<typename> class Container>
+void range_fill(Container<T>& a, const T start=0)
+{
+	infer_backend(a)->range_fill(a, start);
+}
+
+/**
  * Performs the operation B = alpha * A on vectors or matrices
  *
  * @param a first vector/matrix
