@@ -202,6 +202,20 @@ public:
 	#undef BACKEND_GENERIC_IN_PLACE_SCALE
 
 	/**
+	 * Wrapper method that sets const values to vectors or matrices.
+	 *
+	 * @see linalg::set_const
+	 */
+	#define BACKEND_GENERIC_SET_CONST(Type, Container) \
+	virtual void set_const(Container<Type>& a, const Type value) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
+	#undef BACKEND_GENERIC_SET_CONST
+	
+	/**
 	* Wrapper method of vector sum that works with generic vectors.
 	*
 	* @see linalg::sum
