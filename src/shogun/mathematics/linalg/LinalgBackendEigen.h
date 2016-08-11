@@ -124,6 +124,26 @@ public:
 	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
+	/** Implementation of @see linalg::scale */
+	#define BACKEND_GENERIC_SCALE(Type, Container) \
+	virtual Container<Type> scale(const Container<Type>& a, Type alpha) const \
+	{  \
+		return scale_impl(a, alpha); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_SCALE
+
+	/** Implementation of @see linalg::scale */
+	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
+	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
+	{  \
+		scale_impl(a, alpha, result); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_SCALE
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
@@ -250,6 +270,50 @@ private:
 	complex128_t mean_impl(const Container<complex128_t>& a) const
 	{
 		return sum_impl(a)/(complex128_t(a.size()));
+	}
+
+	/** Eigen3 vector scale method: B = alpha * A */
+	template <typename T>
+	SGVector<T> scale_impl(const SGVector<T>& a, T alpha) const
+	{
+		SGVector<T> b(a.vlen);
+		typename SGVector<T>::EigenVectorXtMap a_eig = a;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+
+		b_eig = alpha * a_eig;
+		return b;
+	}
+
+	/** Eigen3 matrix scale method: B = alpha * A */
+	template <typename T>
+	SGMatrix<T> scale_impl(const SGMatrix<T>& a, T alpha) const
+	{
+		SGMatrix<T> b(a.num_rows, a.num_cols);
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+
+		b_eig = alpha * a_eig;
+		return b;
+	}
+
+	/** Eigen3 vector inplace scale method: result = alpha * A */
+	template <typename T>
+	void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const
+	{
+		typename SGVector<T>::EigenVectorXtMap a_eig = a;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = alpha * a_eig;
+	}
+
+	/** Eigen3 matrix inplace scale method: result = alpha * A */
+	template <typename T>
+	void scale_impl(SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+		result_eig = alpha * a_eig;
 	}
 
 	/** Eigen3 vector sum method */

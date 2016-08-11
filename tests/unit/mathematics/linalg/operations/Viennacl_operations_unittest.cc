@@ -165,6 +165,82 @@ TEST(LinalgBackendViennaCL, SGMatrix_mean)
 	EXPECT_NEAR(result, 2.5, 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, SGVector_scale)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 5;
+	const float32_t alpha = 0.3;
+	SGVector<float32_t> a(size), a_gpu;
+	a.range_fill(0);
+
+	a_gpu = to_gpu(a);
+
+	SGVector<float32_t> result_gpu = scale(a_gpu, alpha);
+	SGVector<float32_t> result = from_gpu(result_gpu);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(alpha * a[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_scale)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const float32_t alpha = 0.3;
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float32_t> A(nrows, ncols), A_gpu;
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+
+	A_gpu = to_gpu(A);
+
+	auto result_gpu = scale(A_gpu, alpha);
+	auto result = from_gpu(result_gpu);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*A[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGVector_scale_in_place)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 5;
+	const float32_t alpha = 0.3;
+	SGVector<float32_t> a(size), a_gpu;
+	a.range_fill(0);
+
+	a_gpu = to_gpu(a);
+
+	scale(a_gpu, a_gpu, alpha);
+	a = from_gpu(a_gpu);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(alpha * i, a[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_scale_in_place)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const float32_t alpha = 0.3;
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<float32_t> A(nrows, ncols);
+	SGMatrix<float32_t> A_gpu;
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+
+	A_gpu = to_gpu(A);
+
+	scale(A_gpu, A_gpu, alpha);
+	A = from_gpu(A_gpu);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(alpha*i, A[i], 1e-15);
+}
+
 TEST(LinalgBackendViennaCL, SGVector_sum)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
