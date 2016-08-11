@@ -207,6 +207,30 @@ TEST(LinalgBackendEigen, SGMatrix_scale_in_place)
 		EXPECT_NEAR(alpha*i, A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_set_const)
+{
+	const index_t size = 5;
+	const float64_t value = 2;
+	SGVector<float64_t> a(size);
+
+	set_const(a, value);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(a[i], value, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_set_const)
+{
+	const index_t nrows = 2, ncols = 3;
+	const float64_t value = 2;
+	SGMatrix<float64_t> a(nrows, ncols);
+
+	set_const(a, value);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(a[i], value, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_sum)
 {
 	const index_t size = 10;
