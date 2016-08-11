@@ -56,11 +56,23 @@ namespace shogun
 		};
 
 		enum EnumPrimitiveType
-		{
-			PT_UNDEFINED,
-			PT_INT_32,
-			PT_FLOAT_64,
-		};
+	    {
+	        PT_UNDEFINED,
+	        PT_BOOL_TYPE,
+	        PT_CHAR_TYPE,
+	        PT_INT_8,
+	        PT_UINT_8,
+	        PT_INT_16,
+	        PT_UINT_16,
+	        PT_INT_32,
+	        PT_UINT_32,
+	        PT_INT_64,
+	        PT_UINT_64,
+	        PT_FLOAT_32,
+	        PT_FLOAT_64,
+	        PT_FLOAT_MAX,
+	        PT_COMPLEX_128,
+	    };
 
 		/** cast data type to EnumContainerType and EnumPrimitiveType */
 		template<typename T>
@@ -300,6 +312,14 @@ namespace shogun
 			ar(*(reinterpret_cast<Type*>(storage)));
 		}
 
+		template <class Archive>
+		void cereal_complex_save_helper(Archive& ar) const
+		{
+			float64_t* temp = reinterpret_cast<float64_t*>(storage);
+			ar(temp[0]);
+			ar(temp[1]);
+		}
+
 		/** save data with cereal save method
 		 *
 		 * @param ar Archive type
@@ -312,32 +332,152 @@ namespace shogun
 			switch (m_datatype.e_containertype) {
 			case serial::EnumContainerType::CT_PRIMITIVE:
 				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_save_helper<Archive, bool>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_save_helper<Archive, char>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_save_helper<Archive, int8_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_save_helper<Archive, uint8_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_save_helper<Archive, int16_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_save_helper<Archive, int32_t>(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_INT_32:
 					cereal_save_helper<Archive, int32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_save_helper<Archive, uint32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_save_helper<Archive, int64_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_save_helper<Archive, uint64_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_save_helper<Archive, float32_t>(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_FLOAT_64:
 					cereal_save_helper<Archive, float64_t>(ar);
 					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_save_helper<Archive, floatmax_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_complex_save_helper<Archive>(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
 					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
 					break;
 				}
 				break;
+
 			case serial::EnumContainerType::CT_SGVECTOR:
 				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_save_helper<Archive, SGVector<bool> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_save_helper<Archive, SGVector<char> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_save_helper<Archive, SGVector<int8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_save_helper<Archive, SGVector<uint8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_save_helper<Archive, SGVector<int16_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_save_helper<Archive, SGVector<int32_t> >(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_INT_32:
 					cereal_save_helper<Archive, SGVector<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_save_helper<Archive, SGVector<uint32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_save_helper<Archive, SGVector<int64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_save_helper<Archive, SGVector<uint64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_save_helper<Archive, SGVector<float32_t> >(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_FLOAT_64:
 					cereal_save_helper<Archive, SGVector<float64_t> >(ar);
 					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_save_helper<Archive, SGVector<floatmax_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_save_helper<Archive, SGVector<complex128_t> >(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
 					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
 					break;
 				}
 				break;
+
 			case serial::EnumContainerType::CT_SGMATRIX:
-				SG_SWARNING("SGMatrix serializatino method not implemented.\n");
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_save_helper<Archive, SGMatrix<bool> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_save_helper<Archive, SGMatrix<char> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_save_helper<Archive, SGMatrix<int8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_save_helper<Archive, SGMatrix<uint8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_save_helper<Archive, SGMatrix<int16_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_save_helper<Archive, SGMatrix<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_save_helper<Archive, SGMatrix<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_save_helper<Archive, SGMatrix<uint32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_save_helper<Archive, SGMatrix<int64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_save_helper<Archive, SGMatrix<uint64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_save_helper<Archive, SGMatrix<float32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_save_helper<Archive, SGMatrix<float64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_save_helper<Archive, SGMatrix<floatmax_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_save_helper<Archive, SGMatrix<complex128_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
+					break;
+				}
 				break;
 			case serial::EnumContainerType::CT_UNDEFINED:
 				SG_SERROR("Type error: undefined container type cannot be serialized.\n");
@@ -358,6 +498,17 @@ namespace shogun
 			policy->set(&storage, &temp);
 		}
 
+		template <class Archive>
+		void cereal_complex_load_helper(Archive& ar)
+		{
+			complex128_t data_temp;
+			float64_t* temp = reinterpret_cast<float64_t*>(&data_temp);
+			ar(temp[0]);
+			ar(temp[1]);
+			policy->clear(&storage);
+			policy->set(&storage, &data_temp);
+		}
+
 		/** load data from archive with cereal load method
 		 *
 		 * @param ar Archive type
@@ -370,37 +521,156 @@ namespace shogun
 			switch (m_datatype.e_containertype) {
 			case serial::EnumContainerType::CT_PRIMITIVE:
 				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_load_helper<Archive, bool>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_load_helper<Archive, char>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_load_helper<Archive, int8_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_load_helper<Archive, uint8_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_load_helper<Archive, int16_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_load_helper<Archive, int32_t>(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_INT_32:
 					cereal_load_helper<Archive, int32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_load_helper<Archive, uint32_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_load_helper<Archive, int64_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_load_helper<Archive, uint64_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_load_helper<Archive, float32_t>(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_FLOAT_64:
 					cereal_load_helper<Archive, float64_t>(ar);
 					break;
-				default:
-					SG_SERROR("Error: undefined data type cannot be loaded.\n");
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_load_helper<Archive, floatmax_t>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_complex_load_helper<Archive>(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Error: undefined container type cannot be loaded.\n");
 					break;
 				}
 				break;
 
 			case serial::EnumContainerType::CT_SGVECTOR:
 				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_load_helper<Archive, SGVector<bool> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_load_helper<Archive, SGVector<char> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_load_helper<Archive, SGVector<int8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_load_helper<Archive, SGVector<uint8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_load_helper<Archive, SGVector<int16_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_load_helper<Archive, SGVector<int32_t> >(ar);
+					break;
 				case serial::EnumPrimitiveType::PT_INT_32:
-					cereal_load_helper<Archive, SGVector<int32_t>>(ar);
+					cereal_load_helper<Archive, SGVector<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_load_helper<Archive, SGVector<uint32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_load_helper<Archive, SGVector<int64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_load_helper<Archive, SGVector<uint64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_load_helper<Archive, SGVector<float32_t> >(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_FLOAT_64:
-					cereal_load_helper<Archive, SGVector<float64_t>>(ar);
+					cereal_load_helper<Archive, SGVector<float64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_load_helper<Archive, SGVector<floatmax_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_load_helper<Archive, SGVector<complex128_t> >(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
-					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
+					SG_SERROR("Error: undefined container type cannot be loaded.\n");
 					break;
 				}
 				break;
 
 			case serial::EnumContainerType::CT_SGMATRIX:
-				SG_SWARNING("SGMatrix serializatino method not implemented.\n")
+				switch (m_datatype.e_primitivetype) {
+				case serial::EnumPrimitiveType::PT_BOOL_TYPE:
+					cereal_load_helper<Archive, SGMatrix<bool> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_CHAR_TYPE:
+					cereal_load_helper<Archive, SGMatrix<char> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_8:
+					cereal_load_helper<Archive, SGMatrix<int8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_8:
+					cereal_load_helper<Archive, SGMatrix<uint8_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_16:
+					cereal_load_helper<Archive, SGMatrix<int16_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_16:
+					cereal_load_helper<Archive, SGMatrix<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_32:
+					cereal_load_helper<Archive, SGMatrix<int32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_32:
+					cereal_load_helper<Archive, SGMatrix<uint32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_INT_64:
+					cereal_load_helper<Archive, SGMatrix<int64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UINT_64:
+					cereal_load_helper<Archive, SGMatrix<uint64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_32:
+					cereal_load_helper<Archive, SGMatrix<float32_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_64:
+					cereal_load_helper<Archive, SGMatrix<float64_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_FLOAT_MAX:
+					cereal_load_helper<Archive, SGMatrix<floatmax_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_COMPLEX_128:
+					cereal_load_helper<Archive, SGMatrix<complex128_t> >(ar);
+					break;
+				case serial::EnumPrimitiveType::PT_UNDEFINED:
+					SG_SERROR("Error: undefined container type cannot be loaded.\n");
+					break;
+				}
+				break;
 
 			default:
-				SG_SERROR("Error: undefined container type cannot be serialize loaded.\n");
+				SG_SERROR("Error: undefined container type cannot be loaded.\n");
 				break;
 			}
 		}

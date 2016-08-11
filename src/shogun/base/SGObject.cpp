@@ -20,6 +20,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/io/SerializableFile.h>
 
