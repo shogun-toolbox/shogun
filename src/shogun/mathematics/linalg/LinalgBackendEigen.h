@@ -82,6 +82,7 @@ public:
 		return add_impl(a, b, alpha, beta); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_ADD
 
 	/** Implementation of @see LinalgBackendBase::add */
@@ -91,6 +92,7 @@ public:
 		add_impl(a, b, alpha, beta, result); \
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
 
 	/** Implementation of @see LinalgBackendBase::dot */
@@ -193,6 +195,19 @@ private:
 		return c;
 	}
 
+	/** Eigen3 matrix C = alpha*A + beta*B method */
+	template <typename T>
+	SGMatrix<T> add_impl(const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta) const
+	{
+		SGMatrix<T> c(a.num_rows, a.num_cols);
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		c_eig = alpha * a_eig + beta * b_eig;
+		return c;
+	}
+
 	/** Eigen3 vector result = alpha*A + beta*B method */
 	template <typename T>
 	void add_impl(SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
@@ -200,6 +215,17 @@ private:
 		typename SGVector<T>::EigenVectorXtMap a_eig = a;
 		typename SGVector<T>::EigenVectorXtMap b_eig = b;
 		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = alpha * a_eig + beta * b_eig;
+	}
+
+	/** Eigen3 matrix result = alpha*A + beta*B method */
+	template <typename T>
+	void add_impl(SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = alpha * a_eig + beta * b_eig;
 	}
