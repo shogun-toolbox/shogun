@@ -203,7 +203,7 @@ struct PermutationMMD : ComputeMMD
 			CMath::permute(sg_wrapper);
 			if (m_save_inds)
 			{
-				auto offset=n*m_num_null_samples;
+				auto offset=n*sg_wrapper.size();
 				std::copy(sg_wrapper.data(), sg_wrapper.data()+sg_wrapper.size(), &m_all_inds.matrix[offset]);
 			}
 			for (size_t i=0; i<m_permuted_inds.size(); ++i)
