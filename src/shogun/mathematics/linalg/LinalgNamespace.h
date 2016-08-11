@@ -277,6 +277,18 @@ void scale(SGMatrix<T>& a, SGMatrix<T>& result, T alpha=1)
 }
 
 /**
+ * Set const value to vectors or matrices
+ *
+ * @param a vector or matrix to be set
+ * @param value the value to set the vector or matrix
+ */
+template <typename T, template<typename> class Container>
+void set_const(Container<T>& a, T value)
+{
+	infer_backend(a)->set_const(a, value);
+}
+
+/**
  * Method that computes the sum of vectors or matrices
  *
  * @param a the vector or matrix whose sum has to be computed

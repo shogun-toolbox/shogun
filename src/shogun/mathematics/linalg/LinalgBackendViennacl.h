@@ -133,6 +133,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_SCALE
 
+	/** Implementation of @see LinalgBackendBase::set_const */
+	#define BACKEND_GENERIC_SET_CONST(Type, Container) \
+	virtual void set_const(Container<Type>& a, const Type value) const \
+	{  \
+		set_const_impl(a, value); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
+	#undef BACKEND_GENERIC_SET_CONST
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
@@ -319,6 +329,15 @@ private:
 			alpha * a_gpu->data_matrix(a.num_rows, a.num_cols);
 	}
 
+	/** Set const to vector or matrix with ViennaCL. */
+	template <typename T, template <typename> class Container>
+	void set_const_impl(Container<T>& a, T value) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		typename GPUMemoryViennaCL<T>::VCLVectorBase vcl_vector = a_gpu->data_vector(a.size());
+		viennacl::linalg::vector_assign(vcl_vector, value);
+	}
+	
 	/** ViennaCL vector sum method. */
 	template <typename T>
 	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
