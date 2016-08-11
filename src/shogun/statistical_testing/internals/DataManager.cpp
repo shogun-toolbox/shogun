@@ -165,7 +165,10 @@ CFeatures* DataManager::samples_at(size_t i) const
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
-	return fetchers[i]->m_samples;
+	if (fetchers[i]!=nullptr)
+		return fetchers[i]->m_samples;
+	else
+		return nullptr;
 }
 
 index_t& DataManager::num_samples_at(size_t i)
@@ -185,7 +188,10 @@ const index_t DataManager::num_samples_at(size_t i) const
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
-	return fetchers[i]->get_num_samples();
+	if (fetchers[i]!=nullptr)
+		return fetchers[i]->get_num_samples();
+	else
+		return 0;
 }
 
 const index_t DataManager::blocksize_at(size_t i) const
@@ -195,7 +201,10 @@ const index_t DataManager::blocksize_at(size_t i) const
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
-	return fetchers[i]->m_block_details.m_blocksize;
+	if (fetchers[i]!=nullptr)
+		return fetchers[i]->m_block_details.m_blocksize;
+	else
+		return 0;
 }
 
 void DataManager::set_blockwise(bool blockwise)
