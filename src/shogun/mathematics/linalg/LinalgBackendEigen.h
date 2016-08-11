@@ -134,6 +134,20 @@ public:
 	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
+	/**
+	* Wrapper method that range fills a vector of matrix.
+	*
+	* @see linalg::range_fill
+	*/
+	#define BACKEND_GENERIC_RANGE_FILL(Type, Container) \
+	virtual void range_fill(Container<Type>& a, const Type start) const \
+	{  \
+		range_fill_impl(a, start); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
+	#undef BACKEND_GENERIC_RANGE_FILL
+
 	/** Implementation of @see linalg::scale */
 	#define BACKEND_GENERIC_SCALE(Type, Container) \
 	virtual Container<Type> scale(const Container<Type>& a, Type alpha) const \
@@ -304,6 +318,14 @@ private:
 	complex128_t mean_impl(const Container<complex128_t>& a) const
 	{
 		return sum_impl(a)/(complex128_t(a.size()));
+	}
+
+	/** Range fill a vector or matrix with start...start+len-1. */
+	template <typename T, template <typename> class Container>
+	void range_fill_impl(Container<T>& a, const T start) const
+	{
+		for (index_t i = 0; i < a.size(); ++i)
+			a[i] = start + T(i);
 	}
 
 	/** Eigen3 vector scale method: B = alpha * A */
