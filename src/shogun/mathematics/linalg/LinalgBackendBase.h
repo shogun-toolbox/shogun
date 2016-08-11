@@ -173,6 +173,20 @@ public:
 	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
 	/**
+	* Wrapper method that range fills a vector of matrix.
+	*
+	* @see linalg::range_fill
+	*/
+	#define BACKEND_GENERIC_RANGE_FILL(Type, Container) \
+	virtual void range_fill(Container<Type>& a, const Type start) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
+	#undef BACKEND_GENERIC_RANGE_FILL
+	
+	/**
 	 * Wrapper method of scale operation the operation B = alpha*A.
 	 *
 	 * @see linalg::scale
