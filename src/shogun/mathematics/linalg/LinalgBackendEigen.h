@@ -104,6 +104,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::max */
+	#define BACKEND_GENERIC_MAX(Type, Container) \
+	virtual Type max(const Container<Type>& a) const \
+	{  \
+		return max_impl(a); \
+	}
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+	#undef BACKEND_GENERIC_MAX
+
 	/** Implementation of @see LinalgBackendBase::mean */
 	#define BACKEND_GENERIC_REAL_MEAN(Type, Container) \
 	virtual float64_t mean(const Container<Type>& a) const \
@@ -255,6 +265,20 @@ private:
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+	/** Return the largest element in the vector with Eigen3 library */
+	template <typename T>
+	T max_impl(const SGVector<T>& vec) const
+	{
+		return (typename SGVector<T>::EigenVectorXtMap(vec)).maxCoeff();
+	}
+
+	/** Return the largest element in the matrix with Eigen3 library */
+	template <typename T>
+	T max_impl(const SGMatrix<T>& mat) const
+	{
+		return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).maxCoeff();
 	}
 
 	/** Real eigen3 vector and matrix mean method */
