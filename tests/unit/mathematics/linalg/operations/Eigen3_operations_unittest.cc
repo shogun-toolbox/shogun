@@ -150,6 +150,26 @@ TEST(LinalgBackendEigen, SGMatrix_mean)
 	EXPECT_NEAR(result, 2.5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_range_fill)
+{
+	const index_t size = 5;
+	SGVector<int32_t> vec(size);
+	range_fill(vec, 1);
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_NEAR(vec[i], i + 1, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_range_fill)
+{
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> mat(nrows, ncols);
+	range_fill(mat, 1);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(mat[i], i + 1, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_scale)
 {
 	const index_t size = 5;
