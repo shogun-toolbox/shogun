@@ -49,9 +49,14 @@ obj_load.load_json(filename);
  `CCerealObject` class defined in `tests/unit/io/CerealObject.h` is a `SGObject`-based class used for `Cereal` serialization unit tests. 
  We also use `CCerealObject` here to show how to serialize `SGObject` in SHOGUN.
  
- In `CCerealObject", we initialized a member `SGVector<float64_t> m_vector` and regisiter it to the parameter list in constructors:
+ In `CCerealObject`, we initialized a member `SGVector<float64_t> m_vector` and regisitered it to the parameter list in constructors:
  
  ```
+ #include <shogun/base/SGObject.h>
+ #include <shogun/lib/SGVector.h>
+ 
+ using namespace shogun;
+ 
  class CCerealObject : public CSGObject
  {
      public:
@@ -69,6 +74,8 @@ obj_load.load_json(filename);
             m_vector.set_const(0);
             init_params();
         }
+    
+        const char* get_name() const { return "CerealObject"; }
         
      protected:
         // Register m_vector to parameter list with name(tag) "test_vector"
@@ -80,11 +87,16 @@ obj_load.load_json(filename);
 
         SGVector<float64_t> m_vector;
  }
+```
  
- 
- `m_vector` will be archived if we call serialization methods on CCerealObject instance.
+ `m_vector` will be archived if we call serialization methods on `CCerealObject` instance.
   
  ```
+ #include "CerealObject.h"
+ #include <shogun/lib/SGVector.h>
+ 
+ using namespace shogun;
+ 
  // Create a CCerealObject instance with assigned SGVector values
  SGVector<float64_t> vec;
  vec.range_fill(1.0);
@@ -102,7 +114,7 @@ obj_load.load_json(filename);
  vec_load = obj_load.get<SGVector<float64_t>>("test_vector");
  ```
  
- The JSON file `serialization_test_json` will be:
+ The JSON file `serialization_test_json.cereal` will be:
  ```
 {
     "CerealObject": {                           // Class name
@@ -190,8 +202,3 @@ Both `SGVector` and `SGMatirx` are derived from `SGReferencedData` class.
 
 - `SGVector` and `SGMatrix` archive `ref_counting` value by calling base class load/save methods: `cereal::base_class<SGReferencedData>(this)` ([Introduction](http://uscilab.github.io/cereal/inheritance.html)).
 For `SGVector`, length and vector values are archived, while for `SGMatrix`, row number, column number, and matrix values in `T* matrix` are archived. Data of `complex128_t` type is casted to `float64_t` type before archiving.
-
-
-
-
-

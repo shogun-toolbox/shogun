@@ -81,12 +81,15 @@ shogun::linalg::operation(args)
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+using namesapce shogun;
+
+// Create SGVectors
 const index_t size = 3;
 SGVector<int32_t> a(size), b(size);
 a.range_fill(0);
 b.range_fill(0);
 
-auto result = dot(a, b);
+auto result = linalg::dot(a, b);
 ```
 
 ```
@@ -96,27 +99,31 @@ auto result = dot(a, b);
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
 
+using namesapce shogun;
+
 // Set gpu backend
 sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-// Create SGVector
+// Create SGVectors
 const index_t size = 3;
 SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
 a.range_fill(0);
 b.range_fill(0);
 
 // Transfer vectors to GPU
-a_gpu = to_gpu(a);
-b_gpu = to_gpu(b);
+a_gpu = linalg::to_gpu(a);
+b_gpu = linalg::to_gpu(b);
 
 // run dot operation
-auto result = dot(a_gpu, b_gpu);`
+auto result = linalg::dot(a_gpu, b_gpu);`
 ```
-If the result is a vector, it needs to be transferred back
+If the result is a vector or matrix, it needs to be transferred back
 ```
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+
+using namesapce shogun;
 
 // set gpu backend
 sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -126,11 +133,11 @@ SGVector<float32_t> a(5), a_gpu;
 a.range_fill(0);
 
 // Transfer the vector to gpu
-a_gpu = to_gpu(a);
+a_gpu = linalg::to_gpu(a);
 
 // Run sacle operation and transfer the result back to CPU
-auto result_gpu = scale(a_gpu, 0.3);
-auto result = from_gpu(result_gpu);
+auto result_gpu = linalg::scale(a_gpu, 0.3);
+auto result = linalg::from_gpu(result_gpu);
 ```
 
 
