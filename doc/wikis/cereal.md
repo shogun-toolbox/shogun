@@ -4,6 +4,7 @@
 
 - [Motivation](#motivation)
 - [For SHOGUN developers](#For SHOGUN developers)
+  - [Examples] (#Examples)
 - [For serialization framework developers] (#For serialization framework developers)
   - [Serialization interface] (#Serialization interface)
   - [Serialization methods in `SGObject`] (#Serialization methods in `SGObject`)
@@ -43,6 +44,89 @@ obj_load.load_json(filename);
 
 - Customized archives can be added as shown [here](http://uscilab.github.io/cereal/serialization_archives.html)
 
+#### Examples
+
+ `CCerealObject` class defined in `tests/unit/io/CerealObject.h` is a `SGObject`-based class used for `Cereal` serialization unit tests. 
+ We also use `CCerealObject` here to show how to serialize `SGObject` in SHOGUN.
+ 
+ In `CCerealObject", we initialized a member `SGVector<float64_t> m_vector` and regisiter it to the parameter list in constructors:
+ 
+ ```
+ class CCerealObject : public CSGObject
+ {
+     public:
+        // Construct CCerealObject from input SGVector
+        CCerealObject(SGVector<float64_t> vec) : CSGObject()
+        {
+            m_vector = vec;
+            init_params();
+        }
+        
+        // Default constructor
+        CCerealObject() : CSGObject()
+        {
+            m_vector = SGVector<float64_t>(5);
+            m_vector.set_const(0);
+            init_params();
+        }
+        
+     protected:
+        // Register m_vector to parameter list with name(tag) "test_vector"
+        void init_params()
+        {
+
+            register_param("test_vector", m_vector);
+        }
+
+        SGVector<float64_t> m_vector;
+ }
+ 
+ 
+ `m_vector` will be archived if we call serialization methods on CCerealObject instance.
+  
+ ```
+ // Create a CCerealObject instance with assigned SGVector values
+ SGVector<float64_t> vec;
+ vec.range_fill(1.0);
+ CCerealObject obj_save(vec);
+ 
+ // Serialization
+ obj_save.save_json("serialization_test_json.cereal");
+ 
+ // Create another CCerealObject instance for data loading
+ CCerealObject obj_load();
+ obj_load.load_json("serialization_test_json.cereal");
+ 
+ // We can extract the loaded parameter:
+ SGVector<float64_t> vec_load;
+ vec_load = obj_load.get<SGVector<float64_t>>("test_vector");
+ ```
+ 
+ The JSON file `serialization_test_json` will be:
+ ```
+{
+    "CerealObject": {                           // Class name
+        "test_vector": {                        // The tag of the parameter to be saved
+            "value0": 2,                        // Container type for internal use
+            "value1": 12,                       // Primitive type for internal use
+            "value2": {                         // Data to archive
+                "ReferencedData": {             // Reference Data
+                    "ref_counting": true,           
+                    "refcount number": 3        
+                },
+                "length": 5,                    // Length of the vector
+                "value1": 0,                    // values of the vector
+                "value2": 1,                    
+                "value3": 2,
+                "value4": 3,
+                "value5": 4
+            }
+        }
+    }
+}
+ ```
+ 
+ 
 ### For serialization framework developers
 
 The serialization framework has two components:
@@ -106,6 +190,7 @@ Both `SGVector` and `SGMatirx` are derived from `SGReferencedData` class.
 
 - `SGVector` and `SGMatrix` archive `ref_counting` value by calling base class load/save methods: `cereal::base_class<SGReferencedData>(this)` ([Introduction](http://uscilab.github.io/cereal/inheritance.html)).
 For `SGVector`, length and vector values are archived, while for `SGMatrix`, row number, column number, and matrix values in `T* matrix` are archived. Data of `complex128_t` type is casted to `float64_t` type before archiving.
+
 
 
 

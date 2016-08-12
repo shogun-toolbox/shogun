@@ -4,8 +4,9 @@
 
 - [Motivation](#motivation)
 - [For SHOGUN developers](#For SHOGUN developers)
-  - [Setting `linalg` backend] (# Setting `linalg` backend)
-  - [Using `linalg` operations] (# Using `linalg` operations)
+  - [Setting `linalg` backend] (#Setting `linalg` backend)
+  - [Using `linalg` operations] (#Using `linalg` operations)
+  - [Examples] (#Examples)
 - [For `linalg` developers] (#For `linalg` developers)
   - [Understanding operation interface `LinalgNameSpace.h`] (#Understanding operation interface `LinalgNameSpace.h`)
   - [Understanding backend interfaces] (#Understanding backend interfaces)
@@ -69,6 +70,69 @@ shogun::linalg::operation(args)
 - `linalg` will report errors if the data is on GPU but no GPU backend is available anymore. Errors will also occur when an operation requires multiple inputs but the inputs are not on the same backend. 
 
 - A warning will be generated if an operation is not available on specific backend.
+
+#### Examples
+
+ Here we show how to do vector dot with `linalg` library operations on CPU and GPU.
+ 
+```
+// CPU dot operation
+
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
+const index_t size = 3;
+SGVector<int32_t> a(size), b(size);
+a.range_fill(0);
+b.range_fill(0);
+
+auto result = dot(a, b);
+```
+
+```
+// GPU dot operation
+
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+
+// Set gpu backend
+sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+// Create SGVector
+const index_t size = 3;
+SGVector<int32_t> a(size), b(size), a_gpu, b_gpu;
+a.range_fill(0);
+b.range_fill(0);
+
+// Transfer vectors to GPU
+a_gpu = to_gpu(a);
+b_gpu = to_gpu(b);
+
+// run dot operation
+auto result = dot(a_gpu, b_gpu);`
+```
+If the result is a vector, it needs to be transferred back
+```
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+
+// set gpu backend
+sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+// Create a SGVector
+SGVector<float32_t> a(5), a_gpu;
+a.range_fill(0);
+
+// Transfer the vector to gpu
+a_gpu = to_gpu(a);
+
+// Run sacle operation and transfer the result back to CPU
+auto result_gpu = scale(a_gpu, 0.3);
+auto result = from_gpu(result_gpu);
+```
+
 
 ### For `linalg` developers
 The structure of `linalg` consists of three groups of components:
