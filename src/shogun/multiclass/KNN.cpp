@@ -20,8 +20,12 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/multiclass/tree/KDTree.h>
-#include <shogun/lib/external/falconn/lsh_nn_table.h>
 #include <shogun/mathematics/eigen3.h>
+
+#ifdef HAVE_CXX11
+#include <shogun/lib/external/falconn/lsh_nn_table.h>
+#endif
+
 //#define DEBUG_KNN
 
 using namespace shogun;
@@ -60,8 +64,10 @@ void CKNN::init()
 	m_num_classes=0;
 	m_leaf_size=1;
 	m_knn_solver=KNN_BRUTE;
+#ifdef HAVE_CXX11
 	m_lsh_l = 0;
 	m_lsh_t = 0;
+#endif
 
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
@@ -291,6 +297,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		SG_UNREF(query);
 		break;
 	}
+#ifdef HAVE_CXX11
 	case KNN_LSH:
 	{
 		CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_lhs());
@@ -347,6 +354,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		SG_UNREF(query_features);
 		break;
 	}
+#endif /* HAVE_CXX11 */
 	}
 
 	SG_FREE(classes);
