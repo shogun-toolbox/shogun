@@ -223,21 +223,21 @@ void CSGObject::save_binary(const char* filename) const
 {
 	std::ofstream os(filename);
 	cereal::BinaryOutputArchive archive(os);
-	archive(*this);
+	archive(cereal::make_nvp(this->get_name(), *this));
 }
 
 void CSGObject::save_json(const char* filename) const
 {
 	std::ofstream os(filename);
 	cereal::JSONOutputArchive archive(os);
-	archive(*this);
+	archive(cereal::make_nvp(this->get_name(), *this));
 }
 
 void CSGObject::save_xml(const char* filename) const
 {
 	std::ofstream os(filename);
 	cereal::XMLOutputArchive archive(os);
-	archive(*this);
+	archive(cereal::make_nvp(this->get_name(), *this));
 }
 
 void CSGObject::load_binary(const char* filename)

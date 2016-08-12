@@ -888,7 +888,7 @@ template<class T>
 template<class Archive>
 void SGVector<T>::cereal_save(Archive & ar) const
 {
-	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("ReferencedData", cereal::base_class<SGReferencedData>(this)));
 	ar(cereal::make_nvp("length", vlen));
 	for (index_t i = 0; i < vlen; ++i)
 		ar(vector[i]);

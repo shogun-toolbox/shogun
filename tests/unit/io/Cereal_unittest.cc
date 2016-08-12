@@ -190,15 +190,14 @@ TEST(Cereal, Json_AnyObject_load_equals_saved)
 
 TEST(Cereal, Json_CerealObject_load_equals_saved)
 {
-	CCerealObject obj_save;
-	CCerealObject obj_load;
 	SGVector<float64_t> A(5);
-	SGVector<float64_t> B(5);
 	A.range_fill(0);
+	SGVector<float64_t> B(5);
+	CCerealObject obj_save(A);
+	CCerealObject obj_load;
 
 	std::string filename = std::tmpnam(nullptr);
 
-	obj_save.set("test_vector", A);
 	obj_save.save_json(filename.c_str());
 
 	obj_load.load_json(filename.c_str());

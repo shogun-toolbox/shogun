@@ -123,7 +123,8 @@ template<class Archive>
 void SGReferencedData::cereal_save(Archive & ar) const
 {
 	if (m_refcount != NULL)
-		ar(cereal::make_nvp("ref_counting", true), m_refcount->ref_count());
+		ar(cereal::make_nvp("ref_counting", true),
+		   cereal::make_nvp("refcount number", m_refcount->ref_count()));
 	else
 		ar(cereal::make_nvp("ref_counting", false));
 }

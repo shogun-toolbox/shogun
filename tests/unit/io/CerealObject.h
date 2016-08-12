@@ -8,23 +8,27 @@ namespace shogun
 class CCerealObject : public CSGObject
 {
 public:
-	CCerealObject() : CSGObject()
+	// Construct CCerealObject from input SGVector
+	CCerealObject(SGVector<float64_t> vec) : CSGObject()
 	{
+		m_vector = vec;
 		init_params();
 	}
 
-	SGVector<float64_t> data()
+	// Default constructor
+	CCerealObject() : CSGObject()
 	{
-		return m_vector;
+		m_vector = SGVector<float64_t>(5);
+		m_vector.set_const(0);
+		init_params();
 	}
 
 	const char* get_name() const { return "CerealObject"; }
 
 protected:
+	// Register m_vector to parameter list with name(tag) "test_vector"
 	void init_params()
 	{
-		m_vector = SGVector<float64_t>(5);
-		m_vector.set_const(0);
 		register_param("test_vector", m_vector);
 	}
 
