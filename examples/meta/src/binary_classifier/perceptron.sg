@@ -11,7 +11,7 @@ BinaryLabels labels_test(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-real learn_rate = 1
+real learn_rate = 1.0
 real max_iter = 1000
 #![set_parameters]
 
