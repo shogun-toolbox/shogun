@@ -8,6 +8,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 void generate_knn_data(SGMatrix<float64_t>& feat, SGVector<float64_t>& lab,
 	   	int32_t num, int32_t classes, int32_t feats)
 {
@@ -205,3 +206,5 @@ TEST(KNN, classify_multiple_kdtree)
 	SG_UNREF(features_test);
 	SG_UNREF(labels_test);
 }
+#endif /* HAVE_LAPACK */
+

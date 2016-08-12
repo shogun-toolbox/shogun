@@ -29,7 +29,9 @@ namespace shogun
 		KNN_BRUTE,
 		KNN_KDTREE,
 		KNN_COVER_TREE,
+#ifdef HAVE_CXX11
 		KNN_LSH
+#endif
 	};
 
 class CDistanceMachine;
@@ -197,6 +199,7 @@ class CKNN : public CDistanceMachine
 			m_knn_solver = knn_solver;
 		}
 
+#ifdef HAVE_CXX11
 		/** set parameters for LSH solver
 		  * @param l number of hash tables for LSH
 		  * @param t number of probes per query for LSH
@@ -206,6 +209,7 @@ class CKNN : public CDistanceMachine
 			m_lsh_l = l;
 			m_lsh_t = t;
 		}
+#endif
 
 	protected:
 		/** Stores feature data of underlying model.
@@ -285,11 +289,13 @@ class CKNN : public CDistanceMachine
 
 		int32_t m_leaf_size;
 
+#ifdef HAVE_CXX11
 		/* Number of hash tables for LSH */
 		int32_t m_lsh_l;
 
 		/* Number of probes per query for LSH */
 		int32_t m_lsh_t;
+#endif
 };
 
 }
