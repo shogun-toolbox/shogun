@@ -22,9 +22,7 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/Random.h>
 #include <shogun/lib/SGVector.h>
@@ -33,10 +31,9 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-
 #include <math.h>
-#include <float.h>
-#include <sys/types.h>
+#include <cfloat>
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -128,7 +125,6 @@ namespace shogun
 {
 	/** random number generator */
 	extern CRandom* sg_rand;
-	class CSGObject;
 /** @brief Class which collects generic mathematical functions
  */
 class CMath : public CSGObject
@@ -355,13 +351,12 @@ class CMath : public CSGObject
 				else
 					comp = CMath::F_MIN_NORM_VAL64;
 
-				if (a==b)
+				if (a == b)
 					return true;
 
 				// both a and b are 0 and relative error is less meaningful
-				else if ( (a==0) || (b==0) || (diff < comp) )
-					return (diff<(eps * comp));
-
+				else if ((a == 0) || (b == 0) || (diff < comp))
+					return (diff < (eps * comp));
 				// use max(relative error, diff) to handle large eps
 				else
 				{
@@ -1101,13 +1096,13 @@ class CMath : public CSGObject
 			float32_t rand_s;
 			do
 			{
-				rand_u = CMath::random(-1.0, 1.0);
-				rand_v = CMath::random(-1.0, 1.0);
+				rand_u = static_cast<float32_t>(CMath::random(-1.0, 1.0));
+				rand_v = static_cast<float32_t>(CMath::random(-1.0, 1.0));
 				rand_s = rand_u*rand_u + rand_v*rand_v;
 			} while ((rand_s == 0) || (rand_s >= 1));
 
 			// the meat & potatos, and then the mean & standard deviation shifting...
-			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
+			ret = static_cast<float32_t>(rand_u*CMath::sqrt(-2.0*CMath::log(rand_s)/rand_s));
 			ret = std_dev*ret + mean;
 			return ret;
 		}
@@ -1124,7 +1119,7 @@ class CMath : public CSGObject
 		/// Float: Mean = 0 and Standard Deviation = 1
 		static inline float32_t randn_float()
 		{
-			return normal_random(0.0, 1.0);
+			return static_cast<float32_t>(normal_random(0.0, 1.0));
 		}
 
 		/// Convenience method for generating Standard Normal random numbers
