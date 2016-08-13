@@ -105,7 +105,7 @@ float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 	REQUIRE(num_param==1,"number of parameters in mixture model is 1"
 	" (i.e. number of components). num_components should be 1. %d supplied\n",num_param)
 
-	return CMath::log(get_num_components());
+	return CMath::log(static_cast<float64_t>(get_num_components()));
 }
 
 float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)

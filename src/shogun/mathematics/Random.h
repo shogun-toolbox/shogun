@@ -148,7 +148,7 @@ namespace shogun
 			 */
 			inline float32_t random(float32_t min_value, float32_t max_value)
 			{
-				return min_value + ((max_value-min_value) * random_close());
+				return min_value + ((max_value-min_value) * static_cast<float32_t>(random_close()));
 			}
 
 			/** generate an 64bit floating point number in the range
