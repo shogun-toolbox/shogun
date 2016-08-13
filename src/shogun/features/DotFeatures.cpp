@@ -245,7 +245,7 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	if (sub_index)
 	{
 #ifdef WIN32
-		for (int32_t i=start; i<stop i++)
+		for (int32_t i=start; i<stop; i++)
 #else
 		for (int32_t i=start; i<stop &&
 				!CSignal::cancel_computations(); i++)
@@ -263,7 +263,7 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	else
 	{
 #ifdef WIN32
-		for (int32_t i=start; i<stop i++)
+		for (int32_t i=start; i<stop; i++)
 #else
 		for (int32_t i=start; i<stop &&
 				!CSignal::cancel_computations(); i++)
