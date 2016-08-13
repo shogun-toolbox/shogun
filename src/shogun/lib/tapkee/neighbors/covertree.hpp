@@ -21,6 +21,10 @@
 #include <stdio.h>
 #include <assert.h>
 
+#ifdef _WIN32
+#undef far
+#undef near
+#endif
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com
    Adaptation to Shogun by Fernando José Iglesias García
