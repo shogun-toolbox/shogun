@@ -12,8 +12,13 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <tchar.h>
+#include <strsafe.h>
+#include <vector>
+#else
 #include <unistd.h>
-
+#endif
 
 namespace shogun
 {
@@ -793,7 +798,39 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 
 	SG_DEBUG("dirname '%s'\n", dirname)
 
+#ifdef _WIN32
+	TCHAR search_dir[MAX_PATH];
+	WIN32_FIND_DATA ffd;
+	LARGE_INTEGER filesize;
+	HANDLE h_find = INVALID_HANDLE_VALUE;
+
+	StringCchCopy(search_dir, MAX_PATH, dirname);
+	StringCchCat(search_dir, MAX_PATH, TEXT("\\*"));
+
+	h_find = FindFirstFile(search_dir, &ffd);
+	if (INVALID_HANDLE_VALUE == h_find)
+	{
+		SG_ERROR("Error finding finds in %s\n", dirname)
+		return false;
+	}
+
+	std::vector<struct dirent*> files;
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_NORMAL)
+		{
+			struct dirent* d = SG_MALLOC(struct dirent, 1);
+			StringCchCopy(d->d_name, MAX_PATH, ffd.cFileName);
+			files.push_back(d);
+			n++;
+		}
+	}
+	while (FindNextFile(h_find, &ffd) != 0);
+	namelist = &files[0];
+	FindClose(h_find);
+#else
 	n=scandir(dirname, &namelist, &SGIO::filter, alphasort);
+#endif
 	if (n <= 0)
 	{
 		SG_ERROR("error calling scandir - no files found\n")
@@ -849,6 +886,7 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 			return true;
 		}
 	}
+
 	return false;
 }
 
