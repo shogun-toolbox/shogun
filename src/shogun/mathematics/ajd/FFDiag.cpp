@@ -89,17 +89,11 @@ void getW(float64_t *C, int *ptN, int *ptK, float64_t *W)
 	int N=*ptN;
 	int K=*ptK;
 	int auxij,auxji,auxii,auxjj;
-	float64_t z[N][N];
-	float64_t y[N][N];
+	SGMatrix<float64_t> z(N, N);
+	SGMatrix<float64_t> y(N, N);
 
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			z[i][j] = 0;
-			y[i][j] = 0;
-		}
-	}
+	z.zero();
+	y.zero();
 
 	for (int i = 0; i < N; i++)
 	{
@@ -111,8 +105,8 @@ void getW(float64_t *C, int *ptN, int *ptK, float64_t *W)
 				auxji = N*N*k+N*j+i;
 				auxii = N*N*k+N*i+i;
 				auxjj = N*N*k+N*j+j;
-				z[i][j] += C[auxii]*C[auxjj];
-				y[i][j] += 0.5*C[auxjj]*(C[auxij]+C[auxji]);
+				z(i, j) += C[auxii]*C[auxjj];
+				y(i, j) += 0.5*C[auxjj]*(C[auxij]+C[auxji]);
 			}
 		}
 	}
@@ -123,8 +117,8 @@ void getW(float64_t *C, int *ptN, int *ptK, float64_t *W)
 		{
 			auxij = N*i+j;
 			auxji = N*j+i;
-			W[auxij] = (z[j][i]*y[j][i] - z[i][i]*y[i][j])/(z[j][j]*z[i][i]-z[i][j]*z[i][j]);
-			W[auxji] = (z[i][j]*y[i][j] - z[j][j]*y[j][i])/(z[j][j]*z[i][i]-z[i][j]*z[i][j]);
+			W[auxij] = (z(j, i)*y(j, i) - z(i, i)*y(i, j))/(z(j, j)*z(i, i)-z(i, j)*z(i, j));
+			W[auxji] = (z(i, j)*y(i, j) - z(j, j)*y(j, i))/(z(j, j)*z(i, i)-z(i, j)*z(i, j));
 		}
 	}
 
