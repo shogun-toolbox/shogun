@@ -60,8 +60,20 @@ template <class T> class SGStringList;
  * Macros for registering parameters/model selection parameters
  ******************************************************************************/
 
+#ifdef _MSC_VER
+
+#define VA_NARGS(...)  INTERNAL_EXPAND_ARGS_PRIVATE(INTERNAL_ARGS_AUGMENTER(__VA_ARGS__))
+#define INTERNAL_ARGS_AUGMENTER(...) unused, __VA_ARGS__
+#define INTERNAL_EXPAND(x) x
+#define INTERNAL_EXPAND_ARGS_PRIVATE(...) INTERNAL_EXPAND(INTERNAL_GET_ARG_COUNT_PRIVATE(__VA_ARGS__, 5, 4, 3, 2, 1, 0))
+#define INTERNAL_GET_ARG_COUNT_PRIVATE(_0_, _1_, _2_, _3_, _4_, _5_, count, ...) count
+
+#else
+
 #define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
 #define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
+
+#endif
 
 #define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
 #define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
@@ -431,7 +443,7 @@ protected:
 	/** Registers a class parameter which is identified by a tag.
 	 * This enables the parameter to be modified by set() and retrieved by get().
 	 * Parameters can be registered in the constructor of the class.
-	 * 
+	 *
 	 * @param _tag name and type information of parameter
 	 * @param value value of the parameter
 	 */
@@ -509,7 +521,7 @@ private:
 	 * @param any value without type information of the parameter
 	 */
 	void set_with_base_tag(const BaseTag& _tag, const Any& any);
-	
+
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
 	 *
