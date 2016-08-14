@@ -456,7 +456,11 @@ class SGIO
 		 */
 		static inline void set_dirname(const char* dirname)
 		{
+#ifdef _MSC_VER
+			strncpy_s(directory_name, FBUFSIZE, dirname, strlen(dirname));
+#else
 			strncpy(directory_name, dirname, FBUFSIZE);
+#endif
 		}
 
 		/** concatenate directory and filename
