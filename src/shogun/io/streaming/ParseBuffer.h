@@ -12,11 +12,19 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#ifdef HAVE_PTHREAD
+#if defined(HAVE_CXX11) || defined(HAVE_PTHREAD)
 
+#include <shogun/lib/common.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
+#ifdef HAVE_CXX11
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <vector>
+#elif HAVE_PTHREAD
 #include <pthread.h>
+#endif
 
 namespace shogun
 {
@@ -90,6 +98,14 @@ public:
 	 */
 	Example<T>* get_free_example()
 	{
+#ifdef HAVE_CXX11
+		std::unique_lock<std::mutex> write_lk(*write_mutex, std::defer_lock);
+		std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_write_index], std::defer_lock);
+		std::lock(write_lk, current_ex_lock);
+		while (ex_used[ex_write_index] == E_NOT_USED)
+			ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
+		Example<T>* ex=&ex_ring[ex_write_index];
+#elif HAVE_PTHREAD
 		pthread_mutex_lock(write_lock);
 		pthread_mutex_lock(&ex_in_use_mutex[ex_write_index]);
 		while (ex_used[ex_write_index] == E_NOT_USED)
@@ -97,6 +113,7 @@ public:
 		Example<T>* ex=&ex_ring[ex_write_index];
 		pthread_mutex_unlock(&ex_in_use_mutex[ex_write_index]);
 		pthread_mutex_unlock(write_lock);
+#endif
 
 		return ex;
 	}
@@ -207,6 +224,16 @@ protected:
 
 	/// Enum used for representing used/unused/empty state of example
 	E_IS_EXAMPLE_USED* ex_used;
+#ifdef HAVE_CXX11
+	/// Lock on state of example - used or unused
+	std::vector<std::shared_ptr<std::mutex> > ex_in_use_mutex;
+	/// Condition variable triggered when example is being/not being used
+	std::vector<std::shared_ptr<std::condition_variable> > ex_in_use_cond;
+	/// Lock for reading examples from the ring
+	std::shared_ptr<std::mutex> read_mutex;
+	/// Lock for writing new examples
+	std::shared_ptr<std::mutex> write_mutex;
+#elif HAVE_PTHREAD
 	/// Lock on state of example - used or unused
 	pthread_mutex_t* ex_in_use_mutex;
 	/// Condition variable triggered when example is being/not being used
@@ -215,6 +242,7 @@ protected:
 	pthread_mutex_t* read_lock;
 	/// Lock for writing new examples
 	pthread_mutex_t* write_lock;
+#endif
 
 	/// Write position for next example
 	int32_t ex_write_index;
@@ -242,10 +270,15 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	ring_size = size;
 	ex_ring = SG_CALLOC(Example<T>, ring_size);
 	ex_used = SG_MALLOC(E_IS_EXAMPLE_USED, ring_size);
+#ifdef HAVE_CXX11
+	read_mutex = std::make_shared<std::mutex>();
+	write_mutex = std::make_shared<std::mutex>();
+#elif HAVE_PTHREAD
 	ex_in_use_mutex = SG_MALLOC(pthread_mutex_t, ring_size);
 	ex_in_use_cond = SG_MALLOC(pthread_cond_t, ring_size);
 	read_lock = SG_MALLOC(pthread_mutex_t, 1);
 	write_lock = SG_MALLOC(pthread_mutex_t, 1);
+#endif
 
 	SG_SINFO("Initialized with ring size: %d.\n", ring_size)
 
@@ -260,11 +293,18 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 		ex_ring[i].length = 1;
 		ex_ring[i].label = FLT_MAX;
 
+#ifdef HAVE_CXX11
+		ex_in_use_mutex.push_back(std::make_shared<std::mutex>());
+		ex_in_use_cond.push_back(std::make_shared<std::condition_variable>());
+#elif defined(HAVE_PTHREAD)
 		pthread_cond_init(&ex_in_use_cond[i], NULL);
 		pthread_mutex_init(&ex_in_use_mutex[i], NULL);
+#endif
 	}
+#if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
 	pthread_mutex_init(read_lock, NULL);
 	pthread_mutex_init(write_lock, NULL);
+#endif
 
 	free_vectors_on_destruct = true;
 }
@@ -279,16 +319,25 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 					get_name(), get_name(), i, ex_ring[i].fv);
 			delete ex_ring[i].fv;
 		}
+#if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
 		pthread_mutex_destroy(&ex_in_use_mutex[i]);
 		pthread_cond_destroy(&ex_in_use_cond[i]);
+#endif
 	}
 	SG_FREE(ex_ring);
 	SG_FREE(ex_used);
+#ifdef HAVE_CXX11
+	ex_in_use_mutex.clear();
+	ex_in_use_cond.clear();
+	read_mutex.reset();
+	write_mutex.reset();
+#elif HAVE_PTHREAD
 	SG_FREE(ex_in_use_mutex);
 	SG_FREE(ex_in_use_cond);
 
 	SG_FREE(read_lock);
 	SG_FREE(write_lock);
+#endif
 }
 
 template <class T>
@@ -315,42 +364,65 @@ Example<T>* CParseBuffer<T>::return_example_to_read()
 template <class T>
 Example<T>* CParseBuffer<T>::get_unused_example()
 {
+#ifdef HAVE_CXX11
+	std::lock_guard<std::mutex> read_lk(*read_mutex);
+#elif HAVE_PTHREAD
 	pthread_mutex_lock(read_lock);
+#endif
 
 	Example<T> *ex;
 	int32_t current_index = ex_read_index;
 	// Because read index will change after return_example_to_read
 
+#ifdef HAVE_CXX11
+	std::lock_guard<std::mutex> current_ex_lk(*ex_in_use_mutex[current_index]);
+#elif HAVE_PTHREAD
 	pthread_mutex_lock(&ex_in_use_mutex[current_index]);
+#endif
 
 	if (ex_used[current_index] == E_NOT_USED)
 		ex = return_example_to_read();
 	else
 		ex = NULL;
 
+#if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
 	pthread_mutex_unlock(&ex_in_use_mutex[current_index]);
-
 	pthread_mutex_unlock(read_lock);
+#endif
 	return ex;
 }
 
 template <class T>
 int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 {
+#ifdef HAVE_CXX11
+	std::lock_guard<std::mutex> write_lk(*write_mutex);
+#elif HAVE_PTHREAD
 	pthread_mutex_lock(write_lock);
+#endif
 	int32_t ret;
 	int32_t current_index = ex_write_index;
 
+#ifdef HAVE_CXX11
+	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[current_index]);
+#elif HAVE_PTHREAD
 	pthread_mutex_lock(&ex_in_use_mutex[current_index]);
+#endif
 	while (ex_used[ex_write_index] == E_NOT_USED)
 	{
+#ifdef HAVE_CXX11
+		ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
+#elif HAVE_PTHREAD
 		pthread_cond_wait(&ex_in_use_cond[ex_write_index], &ex_in_use_mutex[ex_write_index]);
+#endif
 	}
 
 	ret = write_example(ex);
 
+#if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
 	pthread_mutex_unlock(&ex_in_use_mutex[current_index]);
 	pthread_mutex_unlock(write_lock);
+#endif
 
 	return ret;
 }
@@ -358,8 +430,13 @@ int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 template <class T>
 void CParseBuffer<T>::finalize_example(bool free_after_release)
 {
+#ifdef HAVE_CXX11
+	std::lock_guard<std::mutex> read_lk(*read_mutex);
+	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_read_index]);
+#elif HAVE_PTHREAD
 	pthread_mutex_lock(read_lock);
 	pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
+#endif
 	ex_used[ex_read_index] = E_USED;
 
 	if (free_after_release)
@@ -371,13 +448,20 @@ void CParseBuffer<T>::finalize_example(bool free_after_release)
 		ex_ring[ex_read_index].fv=NULL;
 	}
 
+#ifdef HAVE_CXX11
+	ex_in_use_cond[ex_read_index]->notify_one();
+	current_ex_lock.unlock();
+#elif HAVE_PTHREAD
 	pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 	pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);
+#endif
 	inc_read_index();
 
+#if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
 	pthread_mutex_unlock(read_lock);
+#endif
 }
 
 }
-#endif // HAVE_PTHREAD
+#endif // defined(HAVE_CXX11) || defined(HAVE_PTHREAD)
 #endif // __PARSEBUFFER_H__
