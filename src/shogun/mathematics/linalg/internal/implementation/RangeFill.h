@@ -49,7 +49,7 @@ namespace implementation
 /**
  * @brief Generic class which is specialized for different backends to perform the Range fill operation
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct range_fill
 {
 	/**Scalar type */

@@ -55,7 +55,7 @@ namespace implementation
 /** Generic class which is specialized for different backends to perform
  * the set_rows_const operation
  */
-template <enum Backend, class Matrix, class Vector>
+template <Backend backend, class Matrix, class Vector>
 struct set_rows_const
 {
 	/** Scalar type */

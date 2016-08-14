@@ -65,7 +65,7 @@ namespace implementation
  * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct sum
 {
 	/** Scalar type */
@@ -95,7 +95,7 @@ struct sum
  * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct sum_symmetric
 {
 	/** Scalar type */
@@ -125,7 +125,7 @@ struct sum_symmetric
  * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct colwise_sum
 {
 	/** Scalar type */
@@ -174,7 +174,7 @@ struct colwise_sum
  * is specialized for different types of matrices and backend, providing a means
  * to deal with various matrices directly without having to convert
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct rowwise_sum
 {
 	/** Scalar type */

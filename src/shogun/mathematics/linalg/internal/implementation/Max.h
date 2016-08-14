@@ -59,7 +59,7 @@ namespace implementation
  * @brief Generic class which is specialized for different backends to perform
  * the max operation
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct max
 {
 	/** Scalar type */

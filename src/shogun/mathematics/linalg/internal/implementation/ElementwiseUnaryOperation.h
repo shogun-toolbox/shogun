@@ -58,7 +58,7 @@ namespace implementation
  * computing element-wise operations for both matrices and vectors of CPU
  * (SGMatrix/SGVector) or GPU (CGPUMatrix/CGPUVector).
  */
-template <enum Backend, class Operand, class ReturnType, class UnaryOp>
+template <Backend backend, class Operand, class ReturnType, class UnaryOp>
 struct elementwise_unary_operation
 {
 };

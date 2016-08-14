@@ -53,7 +53,7 @@ namespace implementation
 /** Generic class which is specialized for different backends to perform
  * elementwise multiplication
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct elementwise_product
 {
 	/** Scalar type */

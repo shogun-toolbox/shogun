@@ -54,7 +54,7 @@ namespace implementation
 /** Generic class which is specialized for different backends to compute matrix
  * products
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct matrix_product
 {
 	/** Scalar type */

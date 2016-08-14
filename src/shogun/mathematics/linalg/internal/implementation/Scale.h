@@ -54,7 +54,7 @@ namespace implementation
 {
 
 /** Generic class which is specialized for different backends to perform scaling */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct scale
 {
 	/** Scalar type */

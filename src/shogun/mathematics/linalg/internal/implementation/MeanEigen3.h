@@ -83,7 +83,7 @@ struct int2float<int64_t>
 /**
  * @brief Generic class mean which provides a static compute method.
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct mean
 {
 	/** Scalar type */
@@ -113,7 +113,7 @@ struct mean
 /**
  * @brief Generic class rowwise_mean which provides a static compute method.
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct rowwise_mean
 {
 	/** Scalar type */
