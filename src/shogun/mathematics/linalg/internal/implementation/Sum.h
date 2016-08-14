@@ -328,7 +328,7 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
 
-		const MatrixXt& m=map.template block(b.m_row_begin, b.m_col_begin,
+		const MatrixXt& m=map.block(b.m_row_begin, b.m_col_begin,
 				b.m_row_size, b.m_col_size);
 
 		REQUIRE(m.rows()==m.cols(), "Matrix is not square!\n");
