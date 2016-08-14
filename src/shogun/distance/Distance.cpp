@@ -22,7 +22,9 @@
 #include <shogun/features/Features.h>
 
 #include <string.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -347,7 +349,11 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 		result=SG_MALLOC(T, total_num);
 
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	if (num_threads < 2)
 	{
 		D_THREAD_PARAM<T> params;
@@ -365,6 +371,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	}
 	else
 	{
+#ifdef HAVE_PTHREAD
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
 		int64_t step= total_num/num_threads;
@@ -417,6 +424,9 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 		SG_FREE(params);
 		SG_FREE(threads);
+#else
+		SG_SERROR("Cannot parallelize without pthread");
+#endif
 	}
 
 	SG_DONE()

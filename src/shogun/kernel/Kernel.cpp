@@ -29,7 +29,9 @@
 #include <shogun/classifier/svm/SVM.h>
 
 #include <string.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
