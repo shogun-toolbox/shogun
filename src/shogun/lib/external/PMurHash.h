@@ -16,7 +16,12 @@
 
 /* First look for special cases */
 #if defined(_MSC_VER)
-  #define MH_UINT32 unsigned long
+  #if _MSC_VER < 1700
+    #define MH_UINT32 unsigned long
+  #else
+    #include <stdint.h>
+    #define MH_UINT32 uint32_t
+  #endif
 #endif
 
 /* If the compiler says it's C99 then take its word for it */
