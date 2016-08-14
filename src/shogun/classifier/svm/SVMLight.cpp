@@ -37,7 +37,9 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include <shogun/base/Parallel.h>
 #include <shogun/labels/BinaryLabels.h>

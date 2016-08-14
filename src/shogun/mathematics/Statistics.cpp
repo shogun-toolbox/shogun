@@ -12,7 +12,6 @@
  * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
  */
 
-#include <cmath>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>

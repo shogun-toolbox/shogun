@@ -14,6 +14,7 @@
 #define __SGIO_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #include <dirent.h>
 #include <string.h>
@@ -23,8 +24,6 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-
-#include <shogun/lib/common.h>
 
 namespace shogun
 {

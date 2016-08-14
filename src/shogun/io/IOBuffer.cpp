@@ -16,7 +16,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <stdio.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #include <shogun/io/IOBuffer.h>
 #include <shogun/io/SGIO.h>
@@ -120,7 +124,11 @@ void CIOBuffer::flush()
 			SG_ERROR("Error, failed to write example!\n")
 	}
 	space.end = space.begin;
+#ifdef _WIN32
+	_commit(working_file);
+#else
 	fsync(working_file);
+#endif
 }
 
 bool CIOBuffer::close_file()

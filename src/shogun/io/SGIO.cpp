@@ -22,8 +22,16 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
+
+#ifdef _WIN32
+#define R_OK 4
+#endif
 
 using namespace shogun;
 

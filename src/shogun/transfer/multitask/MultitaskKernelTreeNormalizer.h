@@ -16,6 +16,7 @@
 #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <algorithm>
+#include <iterator>
 #include <map>
 #include <set>
 #include <deque>
