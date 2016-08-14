@@ -22,6 +22,11 @@
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <windows.h>
+
+// Visual C++ accepts but does not implement when
+// function is declared using exception specification
+// this pragma is suppressing the compiler warning
+#pragma warning( disable : 4290 )
 #endif
 
 #include <shogun/lib/config.h>
