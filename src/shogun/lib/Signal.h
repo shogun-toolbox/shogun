@@ -13,6 +13,33 @@
 
 #include <shogun/lib/config.h>
 
+#if defined(__MINGW64__) || defined(_MSC_VER)
+typedef unsigned long sigset_t;
+#endif
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+typedef int sigset_t;
+#endif
+
+#ifndef SIGURG
+#define SIGURG  -16
+#endif
+
+#if defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__)
+typedef void Sigfunc (int);
+
+struct sigaction {
+	Sigfunc *sa_handler;
+	sigset_t sa_mask;
+	int sa_flags;
+};
+
+#define sigemptyset(ptr) (*(ptr) = 0)
+#define sigfillset(ptr) ( *(ptr) = ~(sigset_t)0,0)
+
+int sigaddset(sigset_t*, int);
+int sigaction(int signo, const struct sigaction *act, struct sigaction *oact);
+#endif
+
 #ifndef DISABLE_CANCEL_CALLBACK
 namespace shogun
 {
@@ -20,12 +47,10 @@ extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 }
 #endif
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/base/SGObject.h>
 
-#ifndef WIN32
-#include <signal.h>
+#include <csignal>
 #define NUMTRAPPEDSIGS 2
 
 namespace shogun
@@ -115,5 +140,4 @@ class CSignal : public CSGObject
 		static bool cancel_immediately;
 };
 }
-#endif // WIN32
 #endif // __SIGNAL__H_
