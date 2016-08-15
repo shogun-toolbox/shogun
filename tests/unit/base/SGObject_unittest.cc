@@ -20,9 +20,11 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
-#include <../tests/unit/base/MockObject.h>
+#include "MockObject.h"
 #include <shogun/base/some.h>
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
+#endif
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -364,7 +366,7 @@ TEST(SGObject, tags_set_get_int)
 }
 
 TEST(SGObject, tags_has)
-{	
+{
 	auto obj = some<CMockObject>();
 
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
@@ -372,7 +374,7 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has("int"), true);
 	EXPECT_EQ(obj->has<float64_t>("int"), false);
 	EXPECT_EQ(obj->has<int32_t>("int"), true);
-	
+
 	obj->set("int", 10);
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
 	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);

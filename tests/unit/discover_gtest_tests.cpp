@@ -6,7 +6,20 @@
 #include <fstream>
 #include <iterator>
 #include <iostream>
+#ifndef _WIN32
 #include <libgen.h>
+#endif
+
+#if _MSC_VER >= 1600
+#include <algorithm>
+
+std::string basename(const std::string& pathname)
+{
+	return { std::find_if(pathname.rbegin(), pathname.rend(),
+		[](char c) { return c == '/' || c == '\\'; }).base(),
+		pathname.end() };
+}
+#endif
 
 using namespace std;
 
@@ -31,8 +44,12 @@ int main (int argc, char **argv)
 	}
 
 	ofstream testfilecmake;
+#ifdef _MSC_VER
+	string gtestName = basename(argv[1]);
+#else
 	char *base = basename (argv[1]);
 	string gtestName (base);
+#endif
 
 	testfilecmake.open (string (gtestName + "_test.cmake").c_str (), ios::out | ios::trunc);
 
