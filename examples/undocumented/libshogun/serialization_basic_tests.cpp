@@ -12,7 +12,12 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/features/DenseFeatures.h>
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#else
 #include <unistd.h>
+#endif
 
 using namespace shogun;
 
@@ -78,7 +83,13 @@ public:
 void test_test_class_serial()
 {
 	char filename_tmp[] = "serialization_test.XXXXXX";
+#ifdef _WIN32
+	int err = _mktemp_s(filename_tmp, strlen(filename_tmp) + 1);
+	ASSERT(err == 0);
+	int fd = open(filename_tmp, O_CREAT | O_RDWR);
+#else
 	int fd = mkstemp(filename_tmp);
+#endif
 	ASSERT(fd != -1);
 	int retval = close(fd);
 	ASSERT(retval != -1);

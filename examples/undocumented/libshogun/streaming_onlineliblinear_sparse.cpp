@@ -21,6 +21,10 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 using namespace shogun;
 
@@ -32,7 +36,13 @@ int main(int argc, char* argv[])
     char *train_file_name = (char*)"../data/train_sparsereal.light";
     char *test_file_name = (char*)"../data/test_sparsereal.light";
     char filename_tmp[] = "test_sparsereal.light.labels.XXXXXX";
+#ifdef _WIN32
+    int err = _mktemp_s(filename_tmp, strlen(filename_tmp)+1);
+    ASSERT(err == 0);
+    int fd = open(filename_tmp, O_CREAT|O_RDWR);
+#else
     int fd = mkstemp(filename_tmp);
+#endif
     ASSERT(fd != -1);
     int retval = close(fd);
     ASSERT(retval != -1);
