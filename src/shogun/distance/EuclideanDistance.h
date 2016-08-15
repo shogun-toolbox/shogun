@@ -20,6 +20,7 @@ namespace shogun
 
 class CFeatures;
 class CDotFeatures;
+template <typename T> class CDenseFeatures;
 template <typename T> class SGVector;
 
 /** @brief class EuclideanDistance
@@ -174,11 +175,15 @@ public:
 	 */
 	virtual CFeatures* replace_lhs(CFeatures* lhs);
 
+	virtual SGMatrix<float64_t> get_distance_matrix();
+
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+
+	template <class T> SGMatrix<float64_t> compute_distance_matrix(CDenseFeatures<T>* lhs, CDenseFeatures<T>* rhs);
 
 	/** if application of sqrt on matrix computation is disabled */
 	bool disable_sqrt;
