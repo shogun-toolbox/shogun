@@ -2,7 +2,7 @@
 Multi-class Support Vector Machine
 ==================================
 
-The multi-class support vector machine is a multi-class classifier which uses :sgclass:`CLibSVM` to do one vs one classification. See :doc:`kernel_svm` for more details.
+The multi-class support vector machine is a multi-class classifier which uses :sgclass:`CLibSVM` to do one vs one classification. See :doc:`../binary_classifier/kernel_svm` for more details.
 
 -------
 Example
