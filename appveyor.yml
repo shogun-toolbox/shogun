@@ -28,5 +28,5 @@ build:
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build
-  - ctest --output-on-failure -j 2
+  - ctest --output-on-failure -C %CONFIGURATION%
   - cd ..
