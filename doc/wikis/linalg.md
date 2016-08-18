@@ -3,15 +3,15 @@
 #### Table of Contents
 
 - [Motivation](#motivation)
-- [For SHOGUN developers](#For SHOGUN developers)
-  - [Setting `linalg` backend] (#Setting `linalg` backend)
-  - [Using `linalg` operations] (#Using `linalg` operations)
+- [For SHOGUN developers](#for-shogub-developers)
+  - [Setting `linalg` backend] (#setting-linalg-backend)
+  - [Using `linalg` operations] (#using-linalg-operations)
   - [Examples] (#Examples)
-- [For `linalg` developers] (#For `linalg` developers)
-  - [Understanding operation interface `LinalgNameSpace.h`] (#Understanding operation interface `LinalgNameSpace.h`)
+- [For `linalg` developers] (#for-linalg-developers)
+  - [Understanding operation interface `LinalgNameSpace.h`] (#understanding-operation-interface-linalgnamespace.h)
   - [Understanding backend interfaces] (#Understanding backend interfaces)
-  - [Understanding operation implementations of different backends] (#Understanding operation implementations of different backends)
-  - [Extend external libraries] (#Extend external libraries)
+  - [Understanding operation implementations of different backends] (#understanding-operation-implementations-of-different-backends)
+  - [Extend external libraries] (#extend-external-libraries)
 
 ### Motivation
 
@@ -135,7 +135,7 @@ a.range_fill(0);
 // Transfer the vector to gpu
 a_gpu = linalg::to_gpu(a);
 
-// Run sacle operation and transfer the result back to CPU
+// Run scale operation and transfer the result back to CPU
 auto result_gpu = linalg::scale(a_gpu, 0.3);
 auto result = linalg::from_gpu(result_gpu);
 ```

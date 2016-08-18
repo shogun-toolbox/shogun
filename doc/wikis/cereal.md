@@ -3,38 +3,41 @@
 #### Table of Contents
 
 - [Motivation](#motivation)
-- [For SHOGUN developers](#For SHOGUN developers)
-  - [Examples] (#Examples)
-- [For serialization framework developers] (#For serialization framework developers)
-  - [Serialization interface] (#Serialization interface)
-  - [Serialization methods in `SGObject`] (#Serialization methods in `SGObject`)
-  - [Serialization methods in `Any`] (#Serialization methods in `Any`)
-  - [Serialization methods in `SGVector`, `SGMatirx` and `SGReferencedData`] (#Serialization methods in `SGVector`, `SGMatirx` and `SGReferencedData`)
+- [For SHOGUN developers](#for-shogun-developers)
+  - [Examples] (#examples)
+- [For serialization framework developers] (#for-serialization-framework-developers)
+  - [Serialization interface] (#serialization-interface)
+  - [Serialization methods in `SGObject`] (#serialization-methods-in-sgobject)
+  - [Serialization methods in `Any`] (#serialization-methods-in-any)
+  - [Serialization methods in `SGVector`, `SGMatirx` and `SGReferencedData`] (#serialization-methods-in-sgvector-sgmatrix-and-sgreferenceddata)
 
 
 ### Motivation
 
 [`Cereal`](http://uscilab.github.io/cereal/) is a header-only C++11 serialization library that is fast, light-weight, and easy to extend. 
 
-The `Cereal` serialization framework in SHOGUN uses the new tag parameter framework, which allows the easy and readable archive of `SGObject` data.
+The `Cereal` serialization framework in SHOGUN uses the new tag parameter framework, which allows easy and readable archive of `SGObject` class data.
 
 ### For SHOGUN developers
 
-- `Cereal` serialization library is required for SHOGUN compilation. If no `Cereal` is found, SHOGUN will automatically download the library to `third_party/`.
+- `Cereal` serialization library is required for SHOGUN compilation. If `Cereal` is not found, SHOGUN will automatically download the library to `third_party/`.
 
 - SHOGUN now supports the serialization of data into 3 formats: binary, XML, and JSON archives. The 3 pairs of save/load methods can be called by:
-```
+
+```cpp
 save_binary(filename);
-save_json(filename);
-save_xml(filename);
 load_binary(filename);
+
+save_json(filename);
 load_json(filename);
+
+save_xml(filename);
 load_xml(filename);
 ```
 
 - All parameters saved in tag parameter list for one `SGObject` can be saved and load by:
 
-```
+```cpp
 SGObject obj_save;
 obj_save.save_json(filename);
 
@@ -46,12 +49,13 @@ obj_load.load_json(filename);
 
 #### Examples
 
- `CCerealObject` class defined in `tests/unit/io/CerealObject.h` is a `SGObject`-based class used for `Cereal` serialization unit tests. 
+ `CCerealObject` class defined in [`CerealObject.h`](https://github.com/shogun-toolbox/shogun/blob/feature/cereal/tests/unit/io/CerealObject.h) 
+ is derived from CSGObject and used for `Cereal` serialization unit tests. 
  We also use `CCerealObject` here to show how to serialize `SGObject` in SHOGUN.
  
- In `CCerealObject`, we initialized a member `SGVector<float64_t> m_vector` and regisitered it to the parameter list in constructors:
+ In `CCerealObject` class, we initialize a member `SGVector<float64_t> m_vector` and register it to the parameter list in constructors:
  
- ```
+ ```cpp
  #include <shogun/base/SGObject.h>
  #include <shogun/lib/SGVector.h>
  
@@ -82,7 +86,7 @@ obj_load.load_json(filename);
         void init_params()
         {
 
-            register_param("test_vector", m_vector);
+            register_member("test_vector", m_vector);
         }
 
         SGVector<float64_t> m_vector;
@@ -91,7 +95,7 @@ obj_load.load_json(filename);
  
  `m_vector` will be archived if we call serialization methods on `CCerealObject` instance.
   
- ```
+ ```cpp
  #include "CerealObject.h"
  #include <shogun/lib/SGVector.h>
  
@@ -143,9 +147,9 @@ obj_load.load_json(filename);
 
 The serialization framework has two components:
 
-- serialization interfaces implemented in `SGObejct`, and
+- Serialization interfaces implemented in `SGObject`, and
 
-- serialization (load/save) methods implemented in `SGObject` and non-`SGObject` based data structrues.
+- Serialization (load/save) methods implemented in `SGObject` and non-`SGObject` based data structrues.
 
 #### Serialization interface
 
@@ -155,7 +159,7 @@ The serialization framework has two components:
 
 - `cereal_save()` method iterates through the parameter list of `SGObject` registered as `self::map`, archives the [`name value pair`](https://uscilab.github.io/cereal/assets/doxygen/classcereal_1_1NameValuePair.html), with name as `basetag.name()` and value by calling `any.cereal_save()`.
 
-- `cereal_load()` method iterates through the parameter list and reset the parameter by calling `any.cereal_load()`
+- `cereal_load()` method iterates through the parameter list and resets the parameter by calling `any.cereal_load()`
 
 #### Serialization methods in `Any`
 
@@ -200,5 +204,5 @@ Both `SGVector` and `SGMatirx` are derived from `SGReferencedData` class.
 
 - `SGReferencedData` archives whether `ref_counting` is on by saving `true`/`false`, and the `ref_counting` value if `m_refcount != NULL`, i.e. `ref_counting` is on.
 
-- `SGVector` and `SGMatrix` archive `ref_counting` value by calling base class load/save methods: `cereal::base_class<SGReferencedData>(this)` ([Introduction](http://uscilab.github.io/cereal/inheritance.html)).
+- `SGVector` and `SGMatrix` archive `ref_counting` value by calling base class load/save methods: `cereal::base_class<SGReferencedData>(this)` ([See introduction](http://uscilab.github.io/cereal/inheritance.html)).
 For `SGVector`, length and vector values are archived, while for `SGMatrix`, row number, column number, and matrix values in `T* matrix` are archived. Data of `complex128_t` type is casted to `float64_t` type before archiving.
