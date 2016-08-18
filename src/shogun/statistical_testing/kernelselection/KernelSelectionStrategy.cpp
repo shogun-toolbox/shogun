@@ -193,6 +193,31 @@ CKernelSelectionStrategy& CKernelSelectionStrategy::use_weighted(bool weighted)
 	return *this;
 }
 
+EKernelSelectionMethod CKernelSelectionStrategy::get_method() const
+{
+	return self->method;
+}
+
+index_t CKernelSelectionStrategy::get_num_runs() const
+{
+	return self->num_runs;
+}
+
+index_t CKernelSelectionStrategy::get_num_folds() const
+{
+	return self->num_folds;
+}
+
+float64_t CKernelSelectionStrategy::get_alpha() const
+{
+	return self->alpha;
+}
+
+bool CKernelSelectionStrategy::get_weighted() const
+{
+	return self->weighted;
+}
+
 void CKernelSelectionStrategy::add_kernel(CKernel* kernel)
 {
 	self->kernel_mgr.push_back(kernel);

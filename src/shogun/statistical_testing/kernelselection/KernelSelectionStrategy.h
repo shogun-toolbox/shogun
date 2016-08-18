@@ -71,6 +71,12 @@ public:
 	CKernelSelectionStrategy& use_alpha(float64_t alpha);
 	CKernelSelectionStrategy& use_weighted(bool weighted);
 
+	EKernelSelectionMethod get_method() const;
+	index_t get_num_runs() const;
+	index_t get_num_folds() const;
+	float64_t get_alpha() const;
+	bool get_weighted() const;
+
 	void add_kernel(CKernel* kernel);
 	CKernel* select_kernel(CMMD* estimator);
 	virtual const char* get_name() const;
