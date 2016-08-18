@@ -27,6 +27,7 @@
 %rename(KernelSelectionStrategy) CKernelSelectionStrategy;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/statistical_testing/TestEnums.h>
 %include <shogun/statistical_testing/HypothesisTest.h>
 %include <shogun/statistical_testing/OneDistributionTest.h>
 %include <shogun/statistical_testing/TwoDistributionTest.h>

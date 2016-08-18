@@ -1,4 +1,5 @@
 %{
+ #include <shogun/statistical_testing/TestEnums.h>
  #include <shogun/statistical_testing/HypothesisTest.h>
  #include <shogun/statistical_testing/OneDistributionTest.h>
  #include <shogun/statistical_testing/TwoDistributionTest.h>
