@@ -68,7 +68,7 @@ void MaxTestPower::compute_measures()
 			auto estimates=streaming_mmd->compute_statistic_variance();
 			auto var_est=estimates.first;
 			auto mmd_est=estimates.second*(m+n)/m/n;
-			measures[i]=var_est/CMath::sqrt(mmd_est+lambda);
+			measures[i]=mmd_est/CMath::sqrt(var_est+lambda);
 			estimator->cleanup();
 		}
 	}

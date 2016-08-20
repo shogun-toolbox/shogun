@@ -208,7 +208,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.0625, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
 }
 
 TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
