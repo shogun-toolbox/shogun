@@ -233,6 +233,9 @@ struct VarianceH1
 			}
 			auto var_est=compute_variance_estimate();
 			auto mmd_est=compute_mmd_job(kernel_functor);
+			// TODO comfirm the theory
+			if (mmd_est<0)
+				mmd_est=0;
 			result[k]=var_est/CMath::sqrt(mmd_est+m_lambda);
 		}
 
