@@ -35,7 +35,7 @@
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/multiclass/tree/RRCARTree.h>
-#include <iostream>
+
 using namespace Eigen;
 using namespace shogun;
 
@@ -63,13 +63,15 @@ bool CRRCARTree::train_machine(CFeatures* data)
 	Map<MatrixXd> map_rotation_matrix (m_rotation_matrix.matrix, num_features, num_features);
 
 	SGMatrix<float64_t> new_mat = SGMatrix<float64_t>(num_features, num_vectors);
-	new_mat.zero();
 	Map<MatrixXd> map_new_mat(new_mat.matrix, num_features, num_vectors);
  
 	MatrixXd temp = map_feats.transpose()*map_rotation_matrix;
 	map_new_mat = temp.transpose();
 	CFeatures* new_data = new CDenseFeatures<float64_t>(new_mat);
-	return CRandomCARTree::train_machine(new_data);
+	bool result = CRandomCARTree::train_machine(new_data);
+
+	SG_UNREF(new_data);
+	return result;
 }
 
 SGMatrix<float64_t> CRRCARTree::generate_rotation_matrix(int32_t n)
@@ -81,7 +83,7 @@ SGMatrix<float64_t> CRRCARTree::generate_rotation_matrix(int32_t n)
 	
 	for (int32_t i=0; i<n; ++i)
 		for (int32_t j=0; j<n; ++j)
-			A(i, j) = CMath::random(0.0, 1.0);
+			A(i, j) = sg_rand->std_normal_distrib();
 	
 	const HouseholderQR<MatrixXd> qr(A);
 	const MatrixXd Q = qr.householderQ();
@@ -111,7 +113,10 @@ CMulticlassLabels* CRRCARTree::apply_multiclass(CFeatures* data)
 	MatrixXd temp = map_feats.transpose()*map_rotation_matrix;
 	map_new_mat = temp.transpose();
 	CFeatures* new_data = new CDenseFeatures<float64_t>(new_mat);
-	return CRandomCARTree::apply_multiclass(new_data);
+	CMulticlassLabels* result = CRandomCARTree::apply_multiclass(new_data);
+
+	SG_UNREF(new_data);
+	return result;
 }
 
 CRegressionLabels* CRRCARTree::apply_regression(CFeatures* data)
@@ -131,5 +136,8 @@ CRegressionLabels* CRRCARTree::apply_regression(CFeatures* data)
 	MatrixXd temp = map_feats.transpose()*map_rotation_matrix;
 	map_new_mat = temp.transpose();
 	CFeatures* new_data = new CDenseFeatures<float64_t>(new_mat);
-	return CRandomCARTree::apply_regression(new_data);
+	CRegressionLabels* result = CRandomCARTree::apply_regression(new_data);
+
+	SG_UNREF(new_data);
+	return result;
 }
