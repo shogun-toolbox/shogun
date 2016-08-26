@@ -16,8 +16,12 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/mathematics/linalg/GPUMemoryBase.h>
+
+#include <memory>
 
 namespace Eigen
 {
@@ -42,7 +46,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
 		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
-	
+
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
@@ -59,8 +63,23 @@ template<class T> class SGVector : public SGReferencedData
 		/** Constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
 
+		/** Constructor from GPU Vector */
+		/** TEMP: @param bool ref_counting leads to ambiguous in gist:
+		 * https://gist.github.com/OXPHOS/b07673fd736a66cf01a8e1ba9c6ef72f
+		 */
+		SGVector(GPUMemoryBase<T>* vector, index_t len);
+
 		/** Copy constructor */
 		SGVector(const SGVector &orig);
+
+		/** Check whether data is stored on GPUMemoryBase
+		 *
+		 * @return true is vector is on GPU
+		 */
+		bool on_gpu() const
+		{
+			return (gpu_vector != NULL);
+		}
 
 #ifndef SWIG // SWIG should skip this part
 #if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
@@ -115,6 +134,10 @@ template<class T> class SGVector : public SGReferencedData
 		/** Data pointer */
 		inline T* data() const
 		{
+			if (gpu_vector != NULL)
+			{
+				SG_SERROR("Cannot return data from GPU.\n")
+			}
 			return vector;
 		}
 
@@ -189,6 +212,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint64_t index) const
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -199,6 +223,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int64_t index) const
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -209,6 +234,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint32_t index) const
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -219,6 +245,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int32_t index) const
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -229,6 +256,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint64_t index)
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -239,6 +267,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int64_t index)
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -249,6 +278,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint32_t index)
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -259,6 +289,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int32_t index)
 		{
+			on_gpu_check();
 			return vector[index];
 		}
 
@@ -485,11 +516,20 @@ template<class T> class SGVector : public SGReferencedData
 		/** needs to be overridden to free data */
 		virtual void free_data();
 
+	private:
+		void on_gpu_check() const
+		{
+			if (on_gpu())
+				SG_SERROR("You called a direct memory access method when data is in GPU memory.\n");
+		}
+
 	public:
 		/** vector  */
 		T* vector;
 		/** length of vector  */
 		index_t vlen;
+		/** GPU Vector structure */
+		std::shared_ptr<GPUMemoryBase<T>> gpu_vector;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
