@@ -1,6 +1,8 @@
 # The SHOGUN machine learning toolbox
 -------------------------------------
 
+[![Join the chat at https://gitter.im/shogun-toolbox/shogun](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/shogun-toolbox/shogun?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Develop branch build status:
 
 [![Build Status](https://travis-ci.org/shogun-toolbox/shogun.png?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
