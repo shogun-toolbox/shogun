@@ -58,7 +58,6 @@ CModelSelectionParameters::~CModelSelectionParameters()
 {
 	SG_UNREF(m_child_nodes);
 	SG_UNREF(m_sgobject);
-
 	delete_values();
 }
 
