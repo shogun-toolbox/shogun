@@ -1,0 +1,66 @@
+{
+    "Program": "var shogun = require('shogun-node');\nvar ndarray = require('ndarray');\n\n$dependencies\n\n$program",
+    "Dependencies": {
+        "IncludeAllClasses": true,
+        "IncludeEnums": true,
+        "DependencyListElement": "var $typeName = shogun.$typeName;",
+        "DependencyListSeparator": "\n"
+    },
+    "Statement": "$statement;\n",
+    "Comment": "// $comment\n",
+    "Init": {
+        "Construct": "var $name = new $typeName($arguments)",
+        "Copy": "var $name = $expr",
+        "BoolVector": "var $name = new Array($arguments)",
+        "CharVector": "var $name = new UInt8Array($arguments)",
+        "ByteVector": "var $name = new UInt8Array($arguments)",
+        "WordVector": "var $name = new UInt16Array($arguments)",
+        "IntVector": "var $name = new Int32Array($arguments)",
+        "LongIntVector": "var $name = new Array($arguments)",
+        "ULongIntVector": "var $name = new Array($arguments)",
+        "ShortRealVector": "var $name = new Float32Array($arguments)",
+        "RealVector": "var $name = new Float64Array($arguments)",
+
+        "BoolMatrix": "var $name = ndarray(new Array($n*$m), [$n, $m])",
+        "CharMatrix": "var $name = ndarray(new UInt8Array($n*$m), [$n, $m])",
+        "ByteMatrix": "var $name = ndarray(new UInt8Array($n*$m), [$n, $m])",
+        "WordMatrix": "var $name = ndarray(new UInt16Array($n*$m), [$n, $m])",
+        "IntMatrix": "var $name = ndarray(new Int32Array($n*$m), [$n, $m])",
+        "LongIntMatrix": "var $name = ndarray(new Array($n*$m), [$n, $m])",
+        "ULongIntMatrix": "var $name = ndarray(new Array($n*$m), [$n, $m])",
+        "ShortRealMatrix": "var $name = ndarray(new Float32Array($n*$m), [$n, $m])",
+        "RealMatrix": "var $name = ndarray(new Float64Array($n*$m), [$n, $m])"
+    },
+    "Assign": "$identifier = $expr",
+    "Type": {
+        "Default": "$typeName"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum": "$typeName.$value"
+    },
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier.get($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier.set($indices, $expr)"
+        },
+        "ZeroIndexed": true
+    },
+    "Print": "console.log($expr)",
+    "OutputDirectoryName": "javascript",
+    "FileExtension": ".js"
+}

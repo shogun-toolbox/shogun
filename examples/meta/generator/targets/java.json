@@ -21,7 +21,7 @@
         "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "RealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "LongRealVector": "DoubleMatrix $name = new DoubleMatrix($arguments)",
-        "BoolMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
+        "BoolMatrix": "DoubleMatrix $name = new DoubleMatrix($n, $m)",
         "CharMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "ByteMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "WordMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
