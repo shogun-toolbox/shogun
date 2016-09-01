@@ -8,3 +8,31 @@ examples can then be found in the "documented" directory.
 
 Note that in the (un)documented directories a symbolic link to a number of data
 sets contained "data" is required to run the examples.
+
+
+---
+
+What do I need to install to develop examples/meta on OSX?
+
+```
+
+# install the following packages
+brew install cmake ccache ctags swig eigen homebrew/science/nlopt
+
+# change dir to shogun
+cd /path/to/shogun-toolbox/shogun/
+
+# make sure you're on develop branch
+git checkout develop
+
+# create build dir and cd
+mkdir build && cd build/
+
+# cmake
+cmake ..
+
+# ctags and meta_examples
+make ctags
+make meta_examples
+
+```

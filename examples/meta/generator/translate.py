@@ -123,6 +123,7 @@ class Translator:
                                    varsToStore)
 
         targetProgram = ""
+
         for line in program["Program"]:
             try:
                 if "Statement" in line:
@@ -343,7 +344,16 @@ class Translator:
             # Optional custom SGType construction
             if typeKey == "ShogunSGType"\
                and init[0][typeKey] in self.targetDict["Init"]:
-                template = Template(self.targetDict["Init"][init[0][typeKey]])
+                origExpr = self.targetDict["Init"][init[0][typeKey]]
+                template = Template(origExpr)
+
+                if 'Matrix' in typeString\
+                    and '$n' in origExpr and '$m' in origExpr:
+                    argsList = initialisation["ArgumentList"]
+                    return template.substitute(name=nameString,
+                                               typeName=typeString,
+                                               n=self.translateArgumentList(argsList[0]),
+                                               m=self.translateArgumentList(argsList[1]))
 
             argsString = self.translateArgumentList(initialisation["ArgumentList"])
             return template.substitute(name=nameString,
@@ -576,7 +586,7 @@ if __name__ == "__main__":
     parser.add_argument("-t",
                         "--target",
                         nargs='?',
-                        help="Translation target. Possible values: cpp, python, java, r, octave, csharp, ruby, lua. (default: python)")
+                        help="Translation target. Possible values: cpp, python, java, javascript, r, octave, csharp, ruby, lua. (default: python)")
     parser.add_argument("path",
                         nargs='?',
                         help="Path to input file. If not specified input is read from stdin")

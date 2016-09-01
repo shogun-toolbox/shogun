@@ -109,13 +109,14 @@ if __name__ == "__main__":
                         action='store_true')
     available_targets = [
         'cpp',
-        'python',
-        'java',
-        'r',
-        'octave',
         'csharp',
-        'ruby',
+        'java',
+        'javascript',
         'lua',
+        'octave',
+        'python',
+        'r',
+        'ruby'
     ]
     parser.add_argument('targets', nargs='*', help="Targets to include (one or more of: %s). If not specified all targets are produced." % (' '.join(available_targets)))
     parser.add_argument("--parser_files_dir", nargs='?', help='Path to directory where generated parser and lexer files should be stored.')
