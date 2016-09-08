@@ -16,6 +16,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 using namespace shogun;
 
 CEuclideanDistance::CEuclideanDistance() : CDistance()

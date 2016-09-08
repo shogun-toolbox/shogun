@@ -33,6 +33,7 @@
 #define BLOCK_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -70,6 +71,8 @@ struct Block
 		: m_matrix(matrix), m_row_begin(row_begin), m_col_begin(col_begin),
 		m_row_size(row_size), m_col_size(col_size)
 	{
+		if (matrix.on_gpu())
+			SG_SERROR("Matrix block is currently not supported for GPU matrices.\n");
 	}
 
 	/** the matrix on which the block is defined */
