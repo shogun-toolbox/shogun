@@ -272,7 +272,7 @@ protected:
 	 */
 	virtual int32_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CLabels* labels,
 		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, int32_t &num_missing,
-		int32_t &count_left, int32_t &count_right, int32_t subset_size=0, const SGVector<int32_t>& active_indices=SGVector<index_t>());
+		int32_t &count_left, int32_t &count_right, int32_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 
 
 	/** handles missing values through surrogate splits

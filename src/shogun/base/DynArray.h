@@ -41,7 +41,7 @@ template <class T> class DynArray
 		 * @param p_resize_granularity resize granularity
 		 * @param tracable
 		 */
-		DynArray(int32_t p_resize_granularity=128, bool tracable=true)
+		DynArray(index_t p_resize_granularity=128, bool tracable=true)
 		{
 			resize_granularity=p_resize_granularity;
 			free_array=true;
@@ -64,7 +64,7 @@ template <class T> class DynArray
 		 * @param p_copy_array if array must be copied
 		 * @param tracable
 		 */
-		DynArray(T* p_array, int32_t p_array_size, bool p_free_array, bool p_copy_array, bool tracable=true)
+		DynArray(T* p_array, index_t p_array_size, bool p_free_array, bool p_copy_array, bool tracable=true)
 		{
 			resize_granularity=p_array_size;
 			free_array=false;
@@ -80,7 +80,7 @@ template <class T> class DynArray
 		 * @param p_array_size array's size
 		 * @param tracable
 		 */
-		DynArray(const T* p_array, int32_t p_array_size, bool tracable=true)
+		DynArray(const T* p_array, index_t p_array_size, bool tracable=true)
 		{
 			resize_granularity=p_array_size;
 			free_array=false;
@@ -107,9 +107,9 @@ template <class T> class DynArray
 		 * @param g new granularity
 		 * @return what has been set (minimum is 128)
 		 */
-		inline int32_t set_granularity(int32_t g)
+		inline index_t set_granularity(index_t g)
 		{
-			g=CMath::max(g,1);
+			g=CMath::max(g, (index_t)1);
 			this->resize_granularity = g;
 			return g;
 		}
@@ -118,7 +118,7 @@ template <class T> class DynArray
 		 *
 		 * @return total array size (including granularity buffer)
 		 */
-		inline int32_t get_array_size() const
+		inline index_t get_array_size() const
 		{
 			return num_elements;
 		}
@@ -127,7 +127,7 @@ template <class T> class DynArray
 		 *
 		 * @return number of elements
 		 */
-		inline int32_t get_num_elements() const
+		inline index_t get_num_elements() const
 		{
 			return current_num_elements;
 		}
@@ -139,7 +139,7 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element(int32_t index) const
+		inline T get_element(index_t index) const
 		{
 			return array[index];
 		}
@@ -160,7 +160,7 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T* get_element_ptr(int32_t index)
+		inline T* get_element_ptr(index_t index)
 		{
 			return &array[index];
 		}
@@ -172,7 +172,7 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element_safe(int32_t index) const
+		inline T get_element_safe(index_t index) const
 		{
 			if (index>=get_num_elements())
 			{
@@ -188,7 +188,7 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T element, int32_t index)
+		inline bool set_element(T element, index_t index)
 		{
 			if (index < 0)
 			{
@@ -220,11 +220,11 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(T element, int32_t index)
+		inline bool insert_element(T element, index_t index)
 		{
 			if (append_element(get_element(current_num_elements-1)))
 			{
-				for (int32_t i=current_num_elements-2; i>index; i--)
+				for (index_t i=current_num_elements-2; i>index; i--)
 				{
 					array[i]=array[i-1];
 				}
@@ -289,12 +289,12 @@ template <class T> class DynArray
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		int32_t find_element(T element) const
+		index_t find_element(T element) const
 		{
-			int32_t idx=-1;
-			int32_t num=get_num_elements();
+			index_t idx=-1;
+			index_t num=get_num_elements();
 
-			for (int32_t i=0; i<num; i++)
+			for (index_t i=0; i<num; i++)
 			{
 				if (array[i] == element)
 				{
@@ -312,11 +312,11 @@ template <class T> class DynArray
 		 * @param idx index
 		 * @return if deleting was successful
 		 */
-		inline bool delete_element(int32_t idx)
+		inline bool delete_element(index_t idx)
 		{
 			if (idx>=0 && idx<=current_num_elements-1)
 			{
-				for (int32_t i=idx; i<current_num_elements-1; i++)
+				for (index_t i=idx; i<current_num_elements-1; i++)
 					array[i]=array[i+1];
 
 				current_num_elements--;
@@ -337,9 +337,9 @@ template <class T> class DynArray
 		 * @param exact_resize resize exactly to size n
 		 * @return if resizing was successful
 		 */
-		bool resize_array(int32_t n, bool exact_resize=false)
+		bool resize_array(index_t n, bool exact_resize=false)
 		{
-			int32_t new_num_elements=n;
+			index_t new_num_elements=n;
 
 			if (!exact_resize)
 			{
@@ -382,8 +382,8 @@ template <class T> class DynArray
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		inline void set_array(T* p_array, int32_t p_num_elements,
-				int32_t p_array_size, bool p_free_array, bool p_copy_array)
+		inline void set_array(T* p_array, index_t p_num_elements,
+				index_t p_array_size, bool p_free_array, bool p_copy_array)
 		{
 			if (array!=NULL && free_array)
 				SG_FREE(array);
@@ -410,8 +410,8 @@ template <class T> class DynArray
 		 * @param p_num_elements last element index + 1
 		 * @param p_array_size number of elements in array
 		 */
-		inline void set_array(const T* p_array, int32_t p_num_elements,
-							  int32_t p_array_size)
+		inline void set_array(const T* p_array, index_t p_num_elements,
+							  index_t p_array_size)
 		{
 			if (array!=NULL && free_array)
 				SG_FREE(array);
@@ -432,7 +432,7 @@ template <class T> class DynArray
 		{
 			if (current_num_elements-1 >= 0)
 			{
-				for (int32_t i=0; i<current_num_elements; i++)
+				for (index_t i=0; i<current_num_elements; i++)
 					array[i]=value;
 			}
 		}
@@ -461,7 +461,7 @@ template <class T> class DynArray
 		/** set array with a constant */
 		void set_const(const T& const_element)
 		{
-			for (int32_t i=0; i<num_elements; i++)
+			for (index_t i=0; i<num_elements; i++)
 				array[i]=const_element;
 		}
 
@@ -474,7 +474,7 @@ template <class T> class DynArray
 		 * @param index index
 		 * @return element at index
 		 */
-		inline T operator[](int32_t index) const
+		inline T operator[](index_t index) const
 		{
 			return array[index];
 		}
@@ -512,16 +512,16 @@ template <class T> class DynArray
 
 	protected:
 		/** shrink/grow step size */
-		int32_t resize_granularity;
+		index_t resize_granularity;
 
 		/** memory for dynamic array */
 		T* array;
 
 		/** the number of potentially used elements in array */
-		int32_t num_elements;
+		index_t num_elements;
 
 		/** the number of currently used elements */
-		int32_t current_num_elements;
+		index_t current_num_elements;
 
 		/** whether SG_MALLOC or just malloc etc shall be used */
 		bool use_sg_mallocs;
