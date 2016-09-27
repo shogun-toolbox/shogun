@@ -70,15 +70,15 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 	SG_REF(pos_model);
 	SG_REF(neg_model);
 
-	int32_t* pos_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
-	int32_t* neg_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
+	index_t* pos_indizes=SG_MALLOC(index_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
+	index_t* neg_indizes=SG_MALLOC(index_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
 
 	ASSERT(m_labels->get_num_labels()==features->get_num_vectors())
 
-	int32_t pos_idx=0;
-	int32_t neg_idx=0;
+	index_t pos_idx=0;
+	index_t neg_idx=0;
 
-	for (int32_t i=0; i<m_labels->get_num_labels(); i++)
+	for (index_t i=0; i<m_labels->get_num_labels(); i++)
 	{
 		if (((CBinaryLabels*) m_labels)->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;
@@ -112,17 +112,17 @@ CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
 	ASSERT(features)
 	SGVector<float64_t> result(features->get_num_vectors());
 
-	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
+	for (index_t vec=0; vec<features->get_num_vectors(); vec++)
 		result[vec] = apply_one(vec);
 
 	return new CBinaryLabels(result);
 }
 
-float64_t CPluginEstimate::apply_one(int32_t vec_idx)
+float64_t CPluginEstimate::apply_one(index_t vec_idx)
 {
 	ASSERT(features)
 
-	int32_t len;
+	index_t len;
 	bool free_vec;
 	uint16_t* vector=features->get_feature_vector(vec_idx, len, free_vec);
 

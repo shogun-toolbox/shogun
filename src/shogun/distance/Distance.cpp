@@ -182,7 +182,7 @@ CFeatures* CDistance::replace_lhs(CFeatures* l)
 	return tmp;
 }
 
-float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
+float64_t CDistance::distance(index_t idx_a, index_t idx_b)
 {
 	REQUIRE(idx_a < lhs->get_num_vectors() && idx_b < rhs->get_num_vectors() && \
 			idx_a >= 0 && idx_b >= 0,
@@ -194,7 +194,7 @@ float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
 
 	if (lhs==rhs)
 	{
-		int32_t num_vectors = lhs->get_num_vectors();
+		index_t num_vectors = lhs->get_num_vectors();
 
 		if (idx_a>=num_vectors)
 			idx_a=2*num_vectors-1-idx_a;
@@ -232,13 +232,13 @@ void CDistance::run_distance_lhs(SGVector<float64_t>& result, const index_t idx_
 
 void CDistance::do_precompute_matrix()
 {
-	int32_t num_left=lhs->get_num_vectors();
-	int32_t num_right=rhs->get_num_vectors();
+	index_t num_left=lhs->get_num_vectors();
+	index_t num_right=rhs->get_num_vectors();
 	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right)
 
 	ASSERT(num_left==num_right)
 	ASSERT(lhs==rhs)
-	int32_t num=num_left;
+	index_t num=num_left;
 
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=SG_MALLOC(float32_t, num*(num+1)/2);
@@ -272,8 +272,8 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 	REQUIRE(has_features(), "no features assigned to distance\n")
 
-	int32_t m=get_num_vec_lhs();
-	int32_t n=get_num_vec_rhs();
+	index_t m=get_num_vec_lhs();
+	index_t n=get_num_vec_rhs();
 
 	int64_t total_num = int64_t(m)*n;
 	int64_t total=0;
@@ -306,17 +306,17 @@ SGMatrix<T> CDistance::get_distance_matrix()
 #endif
 		bool verbose=(thread_num == 0);
 
-		int32_t start=compute_row_start(thread_num*step, n, symmetric);
-		int32_t end=(thread_num==num_threads) ? m : compute_row_start((thread_num+1)*step, n, symmetric);
+		index_t start=compute_row_start(thread_num*step, n, symmetric);
+		index_t end=(thread_num==num_threads) ? m : compute_row_start((thread_num+1)*step, n, symmetric);
 
-		for (int32_t i=start; i<end; i++)
+		for (index_t i=start; i<end; i++)
 		{
-			int32_t j_start=0;
+			index_t j_start=0;
 
 			if (symmetric)
 				j_start=i;
 
-			for (int32_t j=j_start; j<n; j++)
+			for (index_t j=j_start; j<n; j++)
 			{
 				float64_t v=this->distance(i,j);
 				result[i+j*m]=v;

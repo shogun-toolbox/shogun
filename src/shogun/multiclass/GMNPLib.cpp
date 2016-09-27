@@ -99,8 +99,8 @@ CGMNPLib::CGMNPLib()
 }
 
 CGMNPLib::CGMNPLib(
-	float64_t* vector_y, CKernel* kernel, int32_t num_data,
-	int32_t num_virt_data, int32_t num_classes, float64_t reg_const)
+	float64_t* vector_y, CKernel* kernel, index_t num_data,
+	index_t num_virt_data, index_t num_classes, float64_t reg_const)
 : CSGObject()
 {
   m_num_classes=num_classes;
@@ -120,7 +120,7 @@ CGMNPLib::CGMNPLib(
   kernel_columns = SG_MALLOC(float64_t*, Cache_Size);
   cache_index = SG_MALLOC(float64_t, Cache_Size);
 
-  for(int32_t i = 0; i < Cache_Size; i++ )
+  for(index_t i = 0; i < Cache_Size; i++ )
   {
     kernel_columns[i] = SG_MALLOC(float64_t, num_data);
     cache_index[i] = -2;
@@ -129,7 +129,7 @@ CGMNPLib::CGMNPLib(
 
 
 
-  for(int32_t i = 0; i < 3; i++ )
+  for(index_t i = 0; i < 3; i++ )
   {
     virt_columns[i] = SG_MALLOC(float64_t, num_virt_data);
   }
@@ -137,16 +137,16 @@ CGMNPLib::CGMNPLib(
 
   diag_H = SG_MALLOC(float64_t, num_virt_data);
 
-  for(int32_t i = 0; i < num_virt_data; i++ )
+  for(index_t i = 0; i < num_virt_data; i++ )
 	  diag_H[i] = kernel_fce(i,i);
 }
 
 CGMNPLib::~CGMNPLib()
 {
-	for(int32_t i = 0; i < Cache_Size; i++ )
+	for(index_t i = 0; i < Cache_Size; i++ )
 		SG_FREE(kernel_columns[i]);
 
-	for(int32_t i = 0; i < 3; i++ )
+	for(index_t i = 0; i < 3; i++ )
 		SG_FREE(virt_columns[i]);
 
 	SG_FREE(cache_index);
@@ -159,11 +159,11 @@ CGMNPLib::~CGMNPLib()
   Returns pointer at a-th column of the kernel matrix.
   This function maintains FIFO cache of kernel columns.
 ------------------------------------------------------------ */
-float64_t* CGMNPLib::get_kernel_col( int32_t a )
+float64_t* CGMNPLib::get_kernel_col( index_t a )
 {
   float64_t *col_ptr;
-  int32_t i;
-  int32_t inx;
+  index_t i;
+  index_t inx;
 
   inx = -1;
   for( i=0; i < Cache_Size; i++ ) {
@@ -192,7 +192,7 @@ float64_t* CGMNPLib::get_kernel_col( int32_t a )
   Computes index of input example and its class label from
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
-void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
+void CGMNPLib::get_indices2( index_t *index, int32_t *c, int32_t i )
 {
    *index = i / (m_num_classes-1);
 

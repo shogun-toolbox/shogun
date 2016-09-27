@@ -93,14 +93,14 @@ public:
 	 *
 	 * @param num_classes number of (binary) class assignment per label
 	 */
-	CMultilabelSOLabels(int32_t num_classes);
+	CMultilabelSOLabels(index_t num_classes);
 
 	/** constructor
 	 *
 	 * @param num_labels number of labels
 	 * @param num_classes number of (binary) class assignment per label
 	 */
-	CMultilabelSOLabels(int32_t num_labels, int32_t num_classes);
+	CMultilabelSOLabels(index_t num_labels, index_t num_classes);
 
 	/** constructor
 	 *
@@ -118,10 +118,10 @@ public:
 	}
 
 	/** @return number of stored labels */
-	virtual int32_t get_num_labels() const;
+	virtual index_t get_num_labels() const;
 
 	/** @return number of classes (per label) */
-	virtual int32_t get_num_classes() const;
+	virtual index_t get_num_classes() const;
 
 	/** @return multilabel-labels object */
 	virtual CMultilabelLabels * get_multilabel_labels();
@@ -137,14 +137,14 @@ public:
 	 * @param j label index
 	 * @param label sparse label
 	 */
-	virtual void set_sparse_label(int32_t j, SGVector<int32_t> label);
+	virtual void set_sparse_label(index_t j, SGVector<int32_t> label);
 
 	/** set assignment for j-th label
 	 *
 	 * @param j label index
 	 * @param label sparse label
 	 */
-	virtual bool set_label(int32_t j, CStructuredData * label);
+	virtual bool set_label(index_t j, CStructuredData * label);
 
 	/** add a new label to the vector of labels.
 	 * This method should be used when inserting labels for the first time.
@@ -157,13 +157,13 @@ public:
 	 *
 	 * @param j label index
 	 */
-	virtual SGVector<int32_t> get_sparse_label(int32_t j);
+	virtual SGVector<int32_t> get_sparse_label(index_t j);
 
 	/** get label for j-th index
 	 *
 	 * @param j label index
 	 */
-	virtual CStructuredData * get_label(int32_t j);
+	virtual CStructuredData * get_label(index_t j);
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR
 	 *
@@ -183,11 +183,11 @@ public:
 	 * @return SGVector<float64_t> dense vector of dimension dense_dim
 	 */
 	static SGVector<float64_t> to_dense(CStructuredData * label,
-	                                    int32_t dense_dim, float64_t d_true, float64_t d_false);
+	                                    index_t dense_dim, float64_t d_true, float64_t d_false);
 
 private:
 	CMultilabelLabels * m_multilabel_labels;
-	int32_t m_last_set_label;
+	index_t m_last_set_label;
 
 private:
 	void init();

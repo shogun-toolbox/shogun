@@ -49,7 +49,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	}
 
 	// init kernels for all sub-machines
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (index_t i=0; i<m_machines->get_num_elements(); i++)
 	{
 		CSVM *machine = (CSVM*)m_machines->get_element(i);
 		CKernel *kernel = machine->get_kernel();
@@ -62,7 +62,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 
 	CMulticlassLabels *lab = new CMulticlassLabels(m_feats->get_num_vectors());
 	SG_REF(lab);
-	for (int32_t i=0; i < lab->get_num_labels(); ++i)
+	for (index_t i=0; i < lab->get_num_labels(); ++i)
 	{
 		lab->set_int_label(i, int32_t(apply_one(i)));
 	}
@@ -70,10 +70,10 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	return lab;
 }
 
-float64_t CRelaxedTree::apply_one(int32_t idx)
+float64_t CRelaxedTree::apply_one(index_t idx)
 {
 	bnode_t *node = (bnode_t*) m_root;
-	int32_t klass = -1;
+	index_t klass = -1;
 	while (node != NULL)
 	{
 		CSVM *svm = (CSVM *)m_machines->get_element(node->machine());
@@ -88,7 +88,7 @@ float64_t CRelaxedTree::apply_one(int32_t idx)
 			}
 			else // stop here
 			{
-				for (int32_t i=0; i < node->data.mu.vlen; ++i)
+				for (index_t i=0; i < node->data.mu.vlen; ++i)
 				{
 					if (node->data.mu[i] <= 0 && node->data.mu[i] > -2)
 					{

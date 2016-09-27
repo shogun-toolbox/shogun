@@ -27,7 +27,7 @@ CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(EProbHeuristicType pr
 
 SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 {
-	for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
+	for (index_t i=0; i < m_orig_labels->get_num_labels(); ++i)
 	{
 		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(i)==m_train_iter)
 			((CBinaryLabels*) m_train_labels)->set_label(i, +1.0);

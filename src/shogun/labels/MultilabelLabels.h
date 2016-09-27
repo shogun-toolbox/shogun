@@ -58,14 +58,14 @@ public:
 	 *
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int32_t num_classes);
+	CMultilabelLabels(index_t num_classes);
 
 	/** constructor
 	 *
 	 * @param num_labels  number of labels
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int32_t num_labels, int32_t num_classes);
+	CMultilabelLabels(index_t num_labels, index_t num_classes);
 
 	/** destructor */
 	~CMultilabelLabels();
@@ -97,13 +97,13 @@ public:
 	 *
 	 * @return the number of labels
 	 */
-	virtual int32_t get_num_labels() const;
+	virtual index_t get_num_labels() const;
 
 	/** return number of classes (per label)
 	 *
 	 * @return number of classes
 	 */
-	virtual int32_t  get_num_classes() const;
+	virtual index_t get_num_classes() const;
 
 	/** set labels
 	 *
@@ -127,7 +127,7 @@ public:
 	 *
 	 * @return sparse label
 	 */
-	SGVector<int32_t> get_label(int32_t j);
+	SGVector<int32_t> get_label(index_t j);
 
 	/** Convert sparse label vector to dense.  The dense vector
 	 * will be {d_true; d_false}^dense_dim.  Indices in sparse
@@ -141,14 +141,14 @@ public:
 	 * @return dense vector of dimension dense_len
 	 */
 	template <class S, class D>
-	static SGVector<D> to_dense(SGVector<S> * sparse, int32_t dense_len, D d_true, D d_false);
+	static SGVector<D> to_dense(SGVector<S> * sparse, index_t dense_len, D d_true, D d_false);
 
 	/** set sparse assignment for j-th label
 	 *
 	 * @param j     label index
 	 * @param label sparse label
 	 */
-	void set_label(int32_t j, SGVector<int32_t> label);
+	void set_label(index_t j, SGVector<int32_t> label);
 
 	/** assigning class labels */
 	void set_class_labels(SGVector <int32_t> ** labels_list);
@@ -161,10 +161,10 @@ private:
 
 protected:
 	/** Number of labels */
-	int32_t m_num_labels;
+	index_t m_num_labels;
 
 	/** Number of classes */
-	int32_t m_num_classes;
+	index_t m_num_classes;
 
 	/** Labels themselves */
 	SGVector<int32_t>* m_labels;

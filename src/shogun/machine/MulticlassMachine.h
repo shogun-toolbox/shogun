@@ -87,7 +87,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param num number of feature vector
 		 * @return output
 		 */
-		virtual float64_t get_submachine_output(int32_t i, int32_t num);
+		virtual float64_t get_submachine_output(int32_t i, index_t num);
 
 		/** classify all examples
 		 *
@@ -105,7 +105,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param vec_idx
 		 * @return label
 		 */
-		virtual float64_t apply_one(int32_t vec_idx);
+		virtual float64_t apply_one(index_t vec_idx);
 
 		/** get the type of multiclass'ness
 		 *

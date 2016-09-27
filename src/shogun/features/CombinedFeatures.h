@@ -74,7 +74,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t get_num_vectors() const
+		virtual index_t get_num_vectors() const
 		{
 			return m_subset_stack->has_subsets()
 					? m_subset_stack->get_size() : num_vec;
@@ -101,7 +101,7 @@ class CCombinedFeatures : public CFeatures
 		* @param idx index of feature object
 		* @return the feature object at index idx
 		*/
-		CFeatures* get_feature_obj(int32_t idx);
+		CFeatures* get_feature_obj(index_t idx);
 
 		/** get last feature object
 		 *
@@ -116,7 +116,7 @@ class CCombinedFeatures : public CFeatures
 		 * @param idx the index where to insert the feature object
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CFeatures* obj, int32_t idx);
+		bool insert_feature_obj(CFeatures* obj, index_t idx);
 
 		/** append feature object to the end of this CombinedFeatures object array
 		 *
@@ -130,13 +130,13 @@ class CCombinedFeatures : public CFeatures
 		 * @param idx the index of the feature object to delete
 		 * @return if deleting was successful
 		 */
-		bool delete_feature_obj(int32_t idx);
+		bool delete_feature_obj(index_t idx);
 
 		/** get number of feature objects
 		 *
 		 * @return number of feature objects
 		 */
-		int32_t get_num_feature_obj();
+		index_t get_num_feature_obj();
 
 		/** Takes another feature instance and returns a new instance which is
 		 * a concatenation of a copy if this instace's data and the given
@@ -195,7 +195,7 @@ class CCombinedFeatures : public CFeatures
 		/** number of vectors
 		 * must match between sub features
 		 */
-		int32_t num_vec;
+		index_t num_vec;
 };
 }
 #endif

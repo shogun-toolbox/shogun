@@ -43,12 +43,12 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	CDynamicObjectArray* all_combinations=
 			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
-	int32_t n_all_combinations=all_combinations->get_num_elements();
+	index_t n_all_combinations=all_combinations->get_num_elements();
 	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
 
 	CDynamicObjectArray* combinations=new CDynamicObjectArray();
 
-	for (int32_t i=0; i<combinations_indices.vlen; i++)
+	for (index_t i=0; i<combinations_indices.vlen; i++)
 		combinations->append_element(all_combinations->get_element(i));
 
 	CCrossValidationResult* best_result=new CCrossValidationResult();

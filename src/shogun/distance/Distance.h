@@ -106,7 +106,7 @@ class CDistance : public CSGObject
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
+		virtual float64_t distance(index_t idx_a, index_t idx_b);
 
 		/** get distance function for lhs feature vector a
 		 *  and rhs feature vector b. The computation of the
@@ -121,7 +121,7 @@ class CDistance : public CSGObject
 		 *  halts
 		 *  @return distance value or upper_bound
 		 */
-		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+		virtual float64_t distance_upper_bounded(index_t idx_a, index_t idx_b, float64_t upper_bound)
 		{
 			return distance(idx_a, idx_b);
 		}
@@ -170,14 +170,14 @@ class CDistance : public CSGObject
 		 * @param n number of columns
 		 * @param symmetric whether matrix is symmetric
 		 */
-		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
+		index_t compute_row_start(int64_t offs, index_t n, bool symmetric)
 		{
-			int32_t i_start;
+			index_t i_start;
 
 			if (symmetric)
-				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+				i_start=(index_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
 			else
-				i_start=(int32_t) (offs/int64_t(n));
+				i_start=(index_t) (offs/int64_t(n));
 
 			return i_start;
 		}
@@ -303,7 +303,7 @@ class CDistance : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return num_lhs;
 		}
@@ -312,7 +312,7 @@ class CDistance : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return num_rhs;
 		}
@@ -365,7 +365,7 @@ class CDistance : public CSGObject
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)=0;
+		virtual float64_t compute(index_t idx_a, index_t idx_b)=0;
 
 		/// matrix precomputation
 		void do_precompute_matrix();
@@ -399,9 +399,9 @@ class CDistance : public CSGObject
 		CFeatures* rhs;
 
 		/** number of feature vectors on the left hand side */
-		int32_t num_lhs;
+		index_t num_lhs;
 		/** number of feature vectors on the right hand side */
-		int32_t num_rhs;
+		index_t num_rhs;
 
 };
 } // namespace shogun

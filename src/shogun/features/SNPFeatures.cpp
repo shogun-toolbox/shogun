@@ -81,12 +81,12 @@ CSNPFeatures::~CSNPFeatures()
 	SG_UNREF(strings);
 }
 
-int32_t CSNPFeatures::get_dim_feature_space() const
+index_t CSNPFeatures::get_dim_feature_space() const
 {
 	return w_dim;
 }
 
-int32_t CSNPFeatures::get_nnz_features_for_vector(int32_t num)
+index_t CSNPFeatures::get_nnz_features_for_vector(index_t num)
 {
 	return w_dim/3;
 }
@@ -101,7 +101,7 @@ EFeatureClass CSNPFeatures::get_feature_class() const
 	return C_WD;
 }
 
-int32_t CSNPFeatures::get_num_vectors() const
+index_t CSNPFeatures::get_num_vectors() const
 {
 	return num_strings;
 }
@@ -131,14 +131,14 @@ char* CSNPFeatures::get_major_base_string()
 	return (char*) m_str_maj;
 }
 
-float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
+float64_t CSNPFeatures::dot(index_t idx_a, CDotFeatures* df, index_t idx_b)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 	CSNPFeatures* sf=(CSNPFeatures*) df;
 
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_avec, free_bvec;
 
 	uint8_t* avec = strings->get_feature_vector(idx_a, alen, free_avec);
@@ -152,7 +152,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 
 	float64_t total=0;
 
-	for (int32_t i = 0; i<alen-1; i+=2)
+	for (index_t i = 0; i<alen-1; i+=2)
 	{
 		int32_t sumaa=0;
 		int32_t sumbb=0;
@@ -189,20 +189,20 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 	return total;
 }
 
-float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CSNPFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	float64_t sum=0;
-	int32_t len;
+	index_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	int32_t offs=0;
+	index_t offs=0;
 
-	for (int32_t i=0; i<len; i+=2)
+	for (index_t i=0; i<len; i+=2)
 	{
-		int32_t dim=0;
+		index_t dim=0;
 
 		char a1=vec[i];
 		char a2=vec[i+1];
@@ -228,22 +228,22 @@ float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32
 	return sum/normalization_const;
 }
 
-void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CSNPFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
-	int32_t len;
+	index_t len;
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
-	int32_t offs=0;
+	index_t offs=0;
 
 	if (abs_val)
 		alpha=CMath::abs(alpha);
 
-	for (int32_t i=0; i<len; i+=2)
+	for (index_t i=0; i<len; i+=2)
 	{
-		int32_t dim=0;
+		index_t dim=0;
 
 		char a1=vec[i];
 		char a2=vec[i+1];
@@ -269,14 +269,14 @@ void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t
 
 void CSNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 {
-	for (int32_t i=0; i<num_strings; i++)
+	for (index_t i=0; i<num_strings; i++)
 	{
-		int32_t len;
+		index_t len;
 		bool free_vec;
 		uint8_t* vec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(i, len, free_vec);
 		ASSERT(string_length==len)
 
-		for (int32_t j=0; j<len; j++)
+		for (index_t j=0; j<len; j++)
 		{
 			// skip sequencing errors
 			if (vec[j]=='0')
@@ -306,7 +306,7 @@ void CSNPFeatures::obtain_base_strings(CSNPFeatures* snp)
 	if (snp)
 		snp->find_minor_major_strings(m_str_min, m_str_maj);
 
-	for (int32_t j=0; j<string_length; j++)
+	for (index_t j=0; j<string_length; j++)
 	{
         // if only one symbol occurs use 0
 		if (m_str_min[j]==0)
@@ -332,12 +332,12 @@ void CSNPFeatures::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
-void* CSNPFeatures::get_feature_iterator(int32_t vector_index)
+void* CSNPFeatures::get_feature_iterator(index_t vector_index)
 {
 	return NULL;
 }
 
-bool CSNPFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool CSNPFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
 {
 	return false;
 }
@@ -358,16 +358,16 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 
 	float64_t* h_normalizer=SG_MALLOC(float64_t, string_length/2);
 	memset(h_normalizer, 0, string_length/2*sizeof(float64_t));
-	int32_t num_str=get_num_vectors();
-	for (int32_t i=0; i<num_str; i++)
+	index_t num_str=get_num_vectors();
+	for (index_t i=0; i<num_str; i++)
 	{
-		int32_t len;
+		index_t len;
 		bool free_vec;
 		uint8_t* vec = strings->get_feature_vector(i, len, free_vec);
 
-		for (int32_t j=0; j<len; j+=2)
+		for (index_t j=0; j<len; j+=2)
 		{
-			int32_t dim=0;
+			index_t dim=0;
 
 			char a1=vec[j];
 			char a2=vec[j+1];
@@ -394,7 +394,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 
 	if (normalize)
 	{
-		for (int32_t i=0; i<string_length/2; i++)
+		for (index_t i=0; i<string_length/2; i++)
 		{
 			for (int32_t j=0; j<nsym; j++)
 			{
@@ -412,7 +412,7 @@ SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures*
 {
 
 	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length())
-	int32_t len=pos->strings->get_max_vector_length();
+	index_t len=pos->strings->get_max_vector_length();
 
 	float64_t* table=SG_MALLOC(float64_t, 3*2*len/2);
 
@@ -420,7 +420,7 @@ SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures*
 	SGMatrix<float64_t> n_hist=neg->get_histogram(false);
 
 
-	for (int32_t i=0; i<3*len/2; i++)
+	for (index_t i=0; i<3*len*0.5; i++)
 	{
 		table[2*i]=p_hist.matrix[i];
 		table[2*i+1]=n_hist.matrix[i];

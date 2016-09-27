@@ -154,7 +154,7 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 	}
 	else
 	{
-		for (int32_t i=0;i<idx.vlen;i++)
+		for (index_t i=0;i<idx.vlen;i++)
 			weights[i]=m_weights[idx[i]];
 	}
 

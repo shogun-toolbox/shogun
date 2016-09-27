@@ -89,7 +89,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, index_t idx_lhs, index_t idx_rhs)
 		{
 			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
 			return value/sqrt_both;
@@ -99,7 +99,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 		{
 			return value/sqrtdiag_lhs[idx_lhs];
 		}
@@ -108,7 +108,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 		{
 			return value/sqrtdiag_rhs[idx_rhs];
 		}
@@ -118,12 +118,12 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, index_t num)
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
 
-			for (int32_t i=0; i<num; i++)
+			for (index_t i=0; i<num; i++)
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
@@ -150,13 +150,13 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		float64_t* sqrtdiag_lhs;
 
 		/** num sqrt diagonal left-hand side */
-		int32_t num_sqrtdiag_lhs;
+		index_t num_sqrtdiag_lhs;
 
 		/** sqrt diagonal right-hand side */
 		float64_t* sqrtdiag_rhs;
 
 		/** num sqrt diagonal right-hand side */
-		int32_t num_sqrtdiag_rhs;
+		index_t num_sqrtdiag_rhs;
 
 		/** f optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;

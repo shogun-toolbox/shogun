@@ -75,19 +75,19 @@ class CKernelNormalizer : public CSGObject
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)=0;
+			float64_t value, index_t idx_lhs, index_t idx_rhs)=0;
 
 		/** normalize only the left hand side vector
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)=0;
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)=0;
 
 		/** normalize only the right hand side vector
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)=0;
 
 		/** register the parameters
 		 */

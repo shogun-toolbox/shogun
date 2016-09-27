@@ -63,7 +63,7 @@ void CEuclideanDistance::cleanup()
 	reset_precompute();
 }
 
-float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CEuclideanDistance::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t result=0;
 	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
@@ -142,7 +142,7 @@ void CEuclideanDistance::register_params()
 	SG_ADD(&m_lhs_squared_norms, "m_lhs_squared_norms", "Squared norms from features of left hand side", MS_NOT_AVAILABLE);
 }
 
-float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+float64_t CEuclideanDistance::distance_upper_bounded(index_t idx_a, index_t idx_b, float64_t upper_bound)
 {
 	REQUIRE(lhs->get_feature_class()==C_DENSE,
 		"Left hand side (was %s) has to be CDenseFeatures instance!\n", lhs->get_name());
@@ -165,7 +165,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	REQUIRE(avec.vlen==bvec.vlen, "The vector lengths are not equal (%d vs %d)!\n", avec.vlen, bvec.vlen);
 
 	float64_t result=0;
-	for (int32_t i=0; i<avec.vlen; i++)
+	for (index_t i=0; i<avec.vlen; i++)
 	{
 		result+=CMath::sq(avec[i]-bvec[i]);
 		if (result>upper_bound)

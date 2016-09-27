@@ -77,7 +77,7 @@ CBinaryLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 	return output;
 }
 
-float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
+float64_t CMulticlassMachine::get_submachine_output(int32_t i, index_t num)
 {
 	CMachine *machine = get_machine(i);
 	float64_t output = 0.0;
@@ -204,7 +204,7 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 	if (is_ready())
 	{
 		/* num vectors depends on whether data is provided */
-		int32_t num_vectors=data ? data->get_num_vectors() :
+		index_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
 
 		int32_t num_machines=m_machines->get_num_elements();
@@ -215,19 +215,19 @@ CMultilabelLabels* CMulticlassMachine::apply_multilabel_output(CFeatures* data, 
 		CMultilabelLabels* result=new CMultilabelLabels(num_vectors, n_outputs);
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
 
-		for (int32_t i=0; i < num_machines; ++i)
+		for (index_t i=0; i < num_machines; ++i)
 			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
-		for (int32_t i=0; i<num_vectors; i++)
+		for (index_t i=0; i<num_vectors; i++)
 		{
-			for (int32_t j=0; j<num_machines; j++)
+			for (index_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_value(i);
 
 			result->set_label(i, m_multiclass_strategy->decide_label_multiple_output(output_for_i, n_outputs));
 		}
 
-		for (int32_t i=0; i < num_machines; ++i)
+		for (index_t i=0; i < num_machines; ++i)
 			SG_UNREF(outputs[i]);
 
 		SG_FREE(outputs);
@@ -280,14 +280,14 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CMulticlassMachine::apply_one(int32_t vec_idx)
+float64_t CMulticlassMachine::apply_one(index_t vec_idx)
 {
 	init_machines_for_apply(NULL);
 
 	ASSERT(m_machines->get_num_elements()>0)
 	SGVector<float64_t> outputs(m_machines->get_num_elements());
 
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (index_t i=0; i<m_machines->get_num_elements(); i++)
 		outputs[i] = get_submachine_output(i, vec_idx);
 
 	float64_t result = m_multiclass_strategy->decide_label(outputs);

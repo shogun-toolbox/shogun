@@ -28,7 +28,7 @@ CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
 
 	if (d->lhs_equals_rhs())
 	{
-		int32_t cols=d->get_num_vec_lhs();
+		index_t cols=d->get_num_vec_lhs();
 		SG_DEBUG("using custom distance of size %dx%d\n", cols,cols)
 
 		dmatrix= SG_MALLOC(float32_t, int64_t(cols)*(cols+1)/2);
@@ -37,25 +37,25 @@ CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
 		num_rows=cols;
 		num_cols=cols;
 
-		for (int32_t row=0; row<num_rows; row++)
+		for (index_t row=0; row<num_rows; row++)
 		{
-			for (int32_t col=row; col<num_cols; col++)
+			for (index_t col=row; col<num_cols; col++)
 				dmatrix[int64_t(row) * num_cols - int64_t(row)*(row+1)/2 + col]=d->distance(row,col);
 		}
 	}
 	else
 	{
-		int32_t rows=d->get_num_vec_lhs();
-		int32_t cols=d->get_num_vec_rhs();
+		index_t rows=d->get_num_vec_lhs();
+		index_t cols=d->get_num_vec_rhs();
 		dmatrix= SG_MALLOC(float32_t, int64_t(rows)*cols);
 
 		upper_diagonal=false;
 		num_rows=rows;
 		num_cols=cols;
 
-		for (int32_t row=0; row<num_rows; row++)
+		for (index_t row=0; row<num_rows; row++)
 		{
-			for (int32_t col=0; col<num_cols; col++)
+			for (index_t col=0; col<num_cols; col++)
 				dmatrix[int64_t(row) * num_cols + col]=d->distance(row,col);
 		}
 	}
@@ -72,14 +72,14 @@ CCustomDistance::CCustomDistance(const SGMatrix<float64_t> distance_matrix)
 	                                   distance_matrix.num_cols);
 }
 
-CCustomDistance::CCustomDistance(const float64_t* dm, int32_t rows, int32_t cols)
+CCustomDistance::CCustomDistance(const float64_t* dm, index_t rows, index_t cols)
 : CDistance()
 {
 	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);
 }
 
-CCustomDistance::CCustomDistance(const float32_t* dm, int32_t rows, int32_t cols)
+CCustomDistance::CCustomDistance(const float32_t* dm, index_t rows, index_t cols)
 : CDistance()
 {
 	init();
@@ -91,7 +91,7 @@ CCustomDistance::~CCustomDistance()
 	cleanup();
 }
 
-bool CCustomDistance::dummy_init(int32_t rows, int32_t cols)
+bool CCustomDistance::dummy_init(index_t rows, index_t cols)
 {
 	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
 }
@@ -134,7 +134,7 @@ void CCustomDistance::cleanup()
 	cleanup_custom();
 }
 
-float64_t CCustomDistance::compute(int32_t row, int32_t col)
+float64_t CCustomDistance::compute(index_t row, index_t col)
 {
 	ASSERT(dmatrix)
 

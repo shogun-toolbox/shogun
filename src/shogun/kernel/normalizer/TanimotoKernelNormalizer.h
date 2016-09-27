@@ -78,7 +78,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, index_t idx_lhs, index_t idx_rhs)
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return value/(diag_sum-value);
@@ -88,7 +88,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
@@ -98,7 +98,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 		{
 			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
@@ -117,12 +117,12 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, index_t num)
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
 
-			for (int32_t i=0; i<num; i++)
+			for (index_t i=0; i<num; i++)
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{

@@ -18,7 +18,7 @@ CLatentLabels::CLatentLabels()
 	init();
 }
 
-CLatentLabels::CLatentLabels(int32_t num_samples)
+CLatentLabels::CLatentLabels(index_t num_samples)
 	: CLabels()
 {
 	init();
@@ -60,7 +60,7 @@ CDynamicObjectArray* CLatentLabels::get_latent_labels() const
 	return m_latent_labels;
 }
 
-CData* CLatentLabels::get_latent_label(int32_t idx)
+CData* CLatentLabels::get_latent_label(index_t idx)
 {
 	ASSERT(m_latent_labels != NULL)
 	if (idx < 0 || idx >= get_num_labels())
@@ -75,7 +75,7 @@ void CLatentLabels::add_latent_label(CData* label)
 	m_latent_labels->push_back(label);
 }
 
-bool CLatentLabels::set_latent_label(int32_t idx, CData* label)
+bool CLatentLabels::set_latent_label(index_t idx, CData* label)
 {
 	if (idx < get_num_labels())
 	{
@@ -93,7 +93,7 @@ void CLatentLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid LatentLabels in %s", context)
 }
 
-int32_t CLatentLabels::get_num_labels() const
+index_t CLatentLabels::get_num_labels() const
 {
 	if (!m_latent_labels || !m_labels)
 		return 0;

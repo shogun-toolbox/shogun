@@ -62,8 +62,8 @@ public:
 		k->rhs=old_rhs;
 
 		ASSERT(k)
-		int32_t num_lhs = k->get_num_vec_lhs();
-		int32_t num_rhs = k->get_num_vec_rhs();
+		index_t num_lhs = k->get_num_vec_lhs();
+		index_t num_rhs = k->get_num_vec_rhs();
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
@@ -77,7 +77,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -87,7 +87,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -99,19 +99,19 @@ public:
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
-	virtual float64_t get_beta(int32_t idx) = 0;
+	virtual float64_t get_beta(index_t idx) = 0;
 
 	/**
 	 *  @param idx index of MKL weight to set
 	 *  @param weight MKL weight to set
 	 */
-	virtual void set_beta(int32_t idx, float64_t weight) = 0;
+	virtual void set_beta(index_t idx, float64_t weight) = 0;
 
 
 	/**
 	 * @return number of sub-kernel weights for MKL
 	 */
-	virtual int32_t get_num_betas() = 0;
+	virtual index_t get_num_betas() = 0;
 
 
 	/** @return object name */

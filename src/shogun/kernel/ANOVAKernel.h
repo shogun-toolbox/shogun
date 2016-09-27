@@ -87,26 +87,26 @@ public:
 	/** getter for degree parameter
 	 *  @return kernel parameter cardinality
 	 */
-	inline int32_t get_cardinality() { return this->cardinality; }
+	inline index_t get_cardinality() { return this->cardinality; }
 
 	/** setter for degree parameter
 	 *  @param value kernel parameter cardinality
 	 */
-	inline void set_cardinality(int32_t value) { this->cardinality = value; }
+	inline void set_cardinality(index_t value) { this->cardinality = value; }
 
 	/** compute rec 1
 	 * @param idx_a
 	 * @param idx_b
 	 * @return rec1
 	 */
-	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+	float64_t compute_rec1(index_t idx_a, index_t idx_b);
 
 	/** computer rec 2
 	 * @param idx_a
 	 * @param idx_b
 	 * @return rec2
 	 */
-	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
+	float64_t compute_rec2(index_t idx_a, index_t idx_b);
 
 	/** Casts the given kernel to CANOVAKernel.
 	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
@@ -122,18 +122,18 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 	/** register params */
 	void register_params();
 
 private:
-	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len);
-	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len);
+	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, index_t len);
+	float64_t compute_recursive2(float64_t* avec, float64_t* bvec, index_t len);
 
 protected:
 	/// degree parameter of kernel
-	int32_t cardinality;
+	index_t cardinality;
 };
 }
 

@@ -46,7 +46,7 @@ public:
 	 *
 	 * @param task_vector task vector with containing task_id for each example
 	 */
-	CMultitaskKernelNormalizer(std::vector<int32_t> task_vector)
+	CMultitaskKernelNormalizer(std::vector<index_t> task_vector)
 		: CKernelNormalizer(), scale(1.0)
 	{
 
@@ -103,16 +103,16 @@ public:
 	 * @param vec vector with containing task_id for each example
 	 * @return number of unique task ids
 	 */
-	int32_t get_num_unique_tasks(std::vector<int32_t> vec) {
+	index_t get_num_unique_tasks(std::vector<index_t> vec) {
 
 		//sort
 		std::sort(vec.begin(), vec.end());
 
 		//reorder tasks with unique prefix
-		std::vector<int32_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
+		std::vector<index_t>::iterator endLocation = std::unique(vec.begin(), vec.end());
 
 		//count unique tasks
-		int32_t num_vec = std::distance(vec.begin(), endLocation);
+		index_t num_vec = std::distance(vec.begin(), endLocation);
 
 		return num_vec;
 
@@ -123,13 +123,13 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs)
+	virtual float64_t normalize(float64_t value, index_t idx_lhs,
+			index_t idx_rhs)
 	{
 
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		index_t task_idx_lhs = task_vector_lhs[idx_lhs];
+		index_t task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
 		float64_t task_similarity = get_task_similarity(task_idx_lhs,
@@ -147,7 +147,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -157,7 +157,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -166,31 +166,31 @@ public:
 public:
 
 	/** @return vec task vector with containing task_id for each example on left hand side */
-	std::vector<int32_t> get_task_vector_lhs() const
+	std::vector<index_t> get_task_vector_lhs() const
 	{
 		return task_vector_lhs;
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_lhs(std::vector<int32_t> vec)
+	void set_task_vector_lhs(std::vector<index_t> vec)
 	{
 		task_vector_lhs = vec;
 	}
 
 	/** @return vec task vector with containing task_id for each example on right hand side */
-	std::vector<int32_t> get_task_vector_rhs() const
+	std::vector<index_t> get_task_vector_rhs() const
 	{
 		return task_vector_rhs;
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector_rhs(std::vector<int32_t> vec)
+	void set_task_vector_rhs(std::vector<index_t> vec)
 	{
 		task_vector_rhs = vec;
 	}
 
 	/** @param vec task vector with containing task_id for each example */
-	void set_task_vector(std::vector<int32_t> vec)
+	void set_task_vector(std::vector<index_t> vec)
 	{
 		task_vector_lhs = vec;
 		task_vector_rhs = vec;
@@ -201,7 +201,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_task_similarity(index_t task_lhs, index_t task_rhs)
 	{
 
 		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
@@ -216,7 +216,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @param similarity similarity between tasks
 	 */
-	void set_task_similarity(int32_t task_lhs, int32_t task_rhs,
+	void set_task_similarity(index_t task_lhs, index_t task_rhs,
 			float64_t similarity)
 	{
 
@@ -249,13 +249,13 @@ protected:
 	std::vector<float64_t> similarity_matrix;
 
 	/** number of tasks **/
-	int32_t num_tasks;
+	index_t num_tasks;
 
 	/** task vector indicating to which task each example on the left hand side belongs **/
-	std::vector<int32_t> task_vector_lhs;
+	std::vector<index_t> task_vector_lhs;
 
 	/** task vector indicating to which task each example on the right hand side belongs **/
-	std::vector<int32_t> task_vector_rhs;
+	std::vector<index_t> task_vector_rhs;
 
 	/** scale constant obtained from k(0,0) **/
 	float64_t scale;

@@ -72,7 +72,7 @@ class CPluginEstimate: public CMachine
 		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		float64_t apply_one(int32_t vec_idx);
+		float64_t apply_one(index_t vec_idx);
 
 		/** obsolete posterior log odds
 		 *
@@ -81,7 +81,7 @@ class CPluginEstimate: public CMachine
 		 * @return something floaty
 		 */
 		inline float64_t posterior_log_odds_obsolete(
-			uint16_t* vector, int32_t len)
+			uint16_t* vector, index_t len)
 		{
 			return pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 		}
@@ -93,7 +93,7 @@ class CPluginEstimate: public CMachine
 		 * @return log odd at position
 		 */
 		inline float64_t get_parameterwise_log_odds(
-			uint16_t obs, int32_t position)
+			uint16_t obs, index_t position)
 		{
 			return pos_model->get_positional_log_parameter(obs, position) - neg_model->get_positional_log_parameter(obs, position);
 		}
@@ -104,7 +104,7 @@ class CPluginEstimate: public CMachine
 		 * @param pos position
 		 * @return positive log derivative
 		 */
-		inline float64_t log_derivative_pos_obsolete(uint16_t obs, int32_t pos)
+		inline float64_t log_derivative_pos_obsolete(uint16_t obs, index_t pos)
 		{
 			return pos_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -115,7 +115,7 @@ class CPluginEstimate: public CMachine
 		 * @param pos position
 		 * @return negative log derivative
 		 */
-		inline float64_t log_derivative_neg_obsolete(uint16_t obs, int32_t pos)
+		inline float64_t log_derivative_neg_obsolete(uint16_t obs, index_t pos)
 		{
 			return neg_model->get_log_derivative_obsolete(obs, pos);
 		}
@@ -130,7 +130,7 @@ class CPluginEstimate: public CMachine
 		 */
 		inline bool get_model_params(
 			float64_t*& pos_params, float64_t*& neg_params,
-			int32_t &seq_length, int32_t &num_symbols)
+			index_t &seq_length, index_t &num_symbols)
 		{
 			if ((!pos_model) || (!neg_model))
 			{
@@ -158,9 +158,9 @@ class CPluginEstimate: public CMachine
 		 */
 		inline void set_model_params(
 			float64_t* pos_params, float64_t* neg_params,
-			int32_t seq_length, int32_t num_symbols)
+			index_t seq_length, index_t num_symbols)
 		{
-			int32_t num_params;
+			index_t num_params;
 
 			SG_UNREF(pos_model);
 			pos_model=new CLinearHMM(seq_length, num_symbols);
@@ -183,7 +183,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return number of parameters
 		 */
-		inline int32_t get_num_params()
+		inline index_t get_num_params()
 		{
 			return pos_model->get_num_model_parameters()+neg_model->get_num_model_parameters();
 		}

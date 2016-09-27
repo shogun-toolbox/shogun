@@ -67,21 +67,21 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 		m_kernel->init(data, data);
 	}
 
-	int32_t num_data = m_labels->get_num_labels();
-	int32_t num_classes = m_multiclass_strategy->get_num_classes();
-	int32_t num_virtual_data= num_data*(num_classes-1);
+	index_t num_data = m_labels->get_num_labels();
+	index_t num_classes = m_multiclass_strategy->get_num_classes();
+	index_t num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO("%d trainlabels, %d classes\n", num_data, num_classes)
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
-	for (int32_t i=0; i<num_data; i++)
+	for (index_t i=0; i<num_data; i++)
 	{
 		vector_y[i] = ((CMulticlassLabels*) m_labels)->get_label(i)+1;
 
 	}
 
 	float64_t C = get_C();
-	int32_t tmax = 1000000000;
+	index_t tmax = 1000000000;
 	float64_t tolabs = 0;
 	float64_t tolrel = get_epsilon();
 
@@ -95,9 +95,9 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	memset(vector_c, 0, num_virtual_data*sizeof(float64_t));
 
 	float64_t thlb = 10000000000.0;
-	int32_t t = 0;
+	index_t t = 0;
 	float64_t* History = NULL;
-	int32_t verb = 0;
+	index_t verb = 0;
 
 	CGMNPLib mnp(vector_y,m_kernel,num_data, num_virtual_data, num_classes, reg_const);
 
@@ -113,12 +113,12 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	memset(all_bs,0,num_classes*sizeof(float64_t));
 
 	/* compute alpha/b from virt_data */
-	for(int32_t i=0; i < num_classes; i++ )
+	for(index_t i=0; i < num_classes; i++ )
 	{
-		for(int32_t j=0; j < num_virtual_data; j++ )
+		for(index_t j=0; j < num_virtual_data; j++ )
 		{
-			int32_t inx1=0;
-			int32_t inx2=0;
+			index_t inx1=0;
+			index_t inx2=0;
 
 			mnp.get_indices2( &inx1, &inx2, j );
 
@@ -130,10 +130,10 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 
 	create_multiclass_svm(num_classes);
 
-	for (int32_t i=0; i<num_classes; i++)
+	for (index_t i=0; i<num_classes; i++)
 	{
-		int32_t num_sv=0;
-		for (int32_t j=0; j<num_data; j++)
+		index_t num_sv=0;
+		for (index_t j=0; j<num_data; j++)
 		{
 			if (all_alphas[j*num_classes+i] != 0)
 				num_sv++;
@@ -143,8 +143,8 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 
 		CSVM* svm=new CSVM(num_sv);
 
-		int32_t k=0;
-		for (int32_t j=0; j<num_data; j++)
+		index_t k=0;
+		for (index_t j=0; j<num_data; j++)
 		{
 			if (all_alphas[j*num_classes+i] != 0)
 			{

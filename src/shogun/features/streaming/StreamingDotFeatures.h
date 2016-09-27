@@ -58,7 +58,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, index_t size)
 	{
 		SG_NOTIMPLEMENTED;
 	}
@@ -92,7 +92,7 @@ public:
 	 * @param vec2 real valued vector
 	 * @param vec2_len length of vector
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len)=0;
+	virtual float32_t dense_dot(const float32_t* vec2, index_t vec2_len)=0;
 
 	/** Compute the dot product for all vectors. This function makes use of dense_dot
 	 * alphas[i] * sparse[i]^T * w + b
@@ -112,7 +112,7 @@ public:
 	 * except when num_vec = 0
 	 */
 	virtual void dense_dot_range(float32_t* output, float32_t* alphas,
-			float32_t* vec, int32_t dim, float32_t b, int32_t num_vec=0);
+			float32_t* vec, index_t dim, float32_t b, index_t num_vec=0);
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
@@ -122,7 +122,7 @@ public:
 	 * @param abs_val if true add the absolute value
 	 */
 	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			int32_t vec2_len, bool abs_val=false)=0;
+			index_t vec2_len, bool abs_val=false)=0;
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -132,7 +132,7 @@ public:
 	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	virtual void expand_if_required(float32_t*& vec, int32_t &len);
+	virtual void expand_if_required(float32_t*& vec, index_t &len);
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -142,7 +142,7 @@ public:
 	 * @param vec float64_t* vector
 	 * @param len length of the vector
 	 */
-	virtual void expand_if_required(float64_t*& vec, int32_t &len);
+	virtual void expand_if_required(float64_t*& vec, index_t &len);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -151,7 +151,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const=0;
+	virtual index_t get_dim_feature_space() const=0;
 
 	/** iterate over the non-zero features
 	 *
@@ -167,7 +167,7 @@ public:
 	 *
 	 * @return number of sparse features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector();
+	virtual index_t get_nnz_features_for_vector();
 
 	/** iterate over the non-zero features
 	 *
@@ -179,7 +179,7 @@ public:
 	 * @param iterator as returned by get_first_feature
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float32_t& value, void* iterator);
+	virtual bool get_next_feature(index_t& index, float32_t& value, void* iterator);
 
 	/** clean up iterator
 	 * call this function with the iterator returned by get_first_feature

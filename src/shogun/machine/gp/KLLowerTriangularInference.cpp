@@ -45,6 +45,10 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+#endif
+
 using namespace Eigen;
 
 namespace shogun
@@ -114,9 +118,13 @@ void CKLLowerTriangularInference::update_init()
 	m_log_det_Kernel=2.0*eigen_Kernel_LsD.diagonal().array().abs().log().sum();
 
 	m_Kernel_P=SGVector<index_t>(m_ktrtr.num_rows);
-	for (index_t i=0; i<m_Kernel_P.vlen; i++)
-		m_Kernel_P[i]=i;
-	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
+#ifdef HAVE_LINALG_LIB
+	linalg::range_fill(m_Kernel_P, 0);
+#else
+	for (index_t i = 0; i < m_Kernel_P.vlen; ++i)
+		m_Kernel_P[i] = i;
+#endif
+	Map<IndexVector> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
 	eigen_Kernel_P=ldlt.transpositionsP()*eigen_Kernel_P;
 
 	m_mean_vec=m_mean->get_mean_vector(m_features);
@@ -124,7 +132,7 @@ void CKLLowerTriangularInference::update_init()
 
 MatrixXd CKLLowerTriangularInference::solve_inverse(MatrixXd eigen_A)
 {
-	Map<VectorXi> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
+	Map<IndexVector> eigen_Kernel_P(m_Kernel_P.vector, m_Kernel_P.vlen);
 	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
 
 	//re-construct the Permutation Matrix

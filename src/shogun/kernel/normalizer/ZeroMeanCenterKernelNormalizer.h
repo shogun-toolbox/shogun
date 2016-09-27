@@ -89,7 +89,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 
 			/* compute train kernel matrix mean */
 			ktrain_mean=0;
-			for (int32_t i=0;i<num_lhs;i++)
+			for (index_t i=0;i<num_lhs;i++)
 				ktrain_mean += (ktrain_row_means[i]/num_lhs);
 
 			k->lhs=old_lhs;
@@ -104,7 +104,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-				float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+				float64_t value, index_t idx_lhs, index_t idx_rhs)
 		{
 			value += (-ktrain_row_means[idx_lhs] - ktest_row_means[idx_rhs] + ktrain_mean);
 			return value;
@@ -114,7 +114,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 		{
 			SG_ERROR("normalize_lhs not implemented")
 			return 0;
@@ -124,7 +124,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 		{
 			SG_ERROR("normalize_rhs not implemented")
 			return 0;
@@ -134,15 +134,15 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the row margins of all rows
 		 * for a kernel matrix.
 		 */
-		bool alloc_and_compute_row_means(CKernel* k, float64_t* &v, int32_t num_lhs, int32_t num_rhs)
+		bool alloc_and_compute_row_means(CKernel* k, float64_t* &v, index_t num_lhs, index_t num_rhs)
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num_rhs);
 
-			for (int32_t i=0; i<num_rhs; i++)
+			for (index_t i=0; i<num_rhs; i++)
 			{
 				v[i]=0;
-				for (int32_t j=0; j<num_lhs; j++)
+				for (index_t j=0; j<num_lhs; j++)
 					v[i] += ( k->compute(j,i)/num_lhs );
 			}
 			return (v!=NULL);
@@ -156,13 +156,13 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		float64_t* ktrain_row_means;
 
 		/** num k train */
-		int32_t num_ktrain;
+		index_t num_ktrain;
 
 		/** test row means */
 		float64_t* ktest_row_means;
 
 		/** num k test */
-		int32_t num_ktest;
+		index_t num_ktest;
 
 		/** train mean */
 		float64_t ktrain_mean;

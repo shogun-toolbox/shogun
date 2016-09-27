@@ -134,7 +134,7 @@ public:
 	/** Connects layer i as input to layer j. In order for forward and
 	 * backpropagation to work correctly, i must be less that j
 	 */
-	virtual void connect(int32_t i, int32_t j);
+	virtual void connect(index_t i, index_t j);
 
 	/** Connects each layer to the layer after it. That is, connects layer i to
 	 * as input to layer i+1 for all i.
@@ -142,7 +142,7 @@ public:
 	virtual void quick_connect();
 
 	/** Disconnects layer i from layer j */
-	virtual void disconnect(int32_t i, int32_t j);
+	virtual void disconnect(index_t i, index_t j);
 
 	/** Removes all connections in the network */
 	virtual void disconnect_all();
@@ -212,7 +212,7 @@ public:
 	 *
 	 * @param i index of the layer
 	 */
-	SGVector<float64_t>* get_layer_parameters(int32_t i);
+	SGVector<float64_t>* get_layer_parameters(index_t i);
 
 	/** returns the totat number of parameters in the network */
 	int32_t get_num_parameters() { return m_total_num_parameters; }
@@ -221,10 +221,10 @@ public:
 	SGVector<float64_t> get_parameters() { return m_params; }
 
 	/** returns the number of inputs the network takes*/
-	int32_t get_num_inputs() { return m_num_inputs; }
+	index_t get_num_inputs() { return m_num_inputs; }
 
 	/** returns the number of neurons in the output layer */
-	int32_t get_num_outputs();
+	index_t get_num_outputs();
 
 	/** Returns an array holding the network's layers */
 	CDynamicObjectArray* get_layers();
@@ -369,13 +369,13 @@ public:
 	 * default value is 0
 	 * @param gd_mini_batch_size mini batch size
 	 */
-	void set_gd_mini_batch_size(int32_t gd_mini_batch_size)
+	void set_gd_mini_batch_size(index_t gd_mini_batch_size)
 	{
 		m_gd_mini_batch_size = gd_mini_batch_size;
 	}
 
 	/** Returns mini batch size */
-	int32_t get_gd_mini_batch_size() const
+	index_t get_gd_mini_batch_size() const
 	{
 		return m_gd_mini_batch_size;
 	}
@@ -582,10 +582,10 @@ private:
 
 protected:
 	/** number of neurons in the input layer */
-	int32_t m_num_inputs;
+	index_t m_num_inputs;
 
 	/** number of layer */
-	int32_t m_num_layers;
+	index_t m_num_layers;
 
 	/** network's layers */
 	CDynamicObjectArray* m_layers;
@@ -596,7 +596,7 @@ protected:
 	SGMatrix<bool> m_adj_matrix;
 
 	/** total number of parameters in the network */
-	int32_t m_total_num_parameters;
+	index_t m_total_num_parameters;
 
 	/** array where all the parameters of the network are stored */
 	SGVector<float64_t> m_params;
@@ -615,7 +615,7 @@ protected:
 	/** number of train/test cases the network is expected to deal with.
 	 * Default value is 1
 	 */
-	int32_t m_batch_size;
+	index_t m_batch_size;
 
 	/** True if the network is currently being trained
 	 * initial value is false

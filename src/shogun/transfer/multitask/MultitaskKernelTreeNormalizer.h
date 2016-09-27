@@ -77,7 +77,7 @@ public:
             CNode *current_node = grey_nodes.front();
             grey_nodes.pop_front();
 
-            for(int32_t i = 0; i!=int32_t(current_node->children.size()); i++){
+            for(index_t i = 0; i!=index_t(current_node->children.size()); i++){
                 grey_nodes.push_back(current_node->children[i]);
             }
 
@@ -162,7 +162,7 @@ public:
 
 	virtual ~CTaxonomy()
 	{
-		for (size_t i = 0; i < nodes.size(); i++)
+		for (index_t i = 0; i < (index_t)nodes.size(); i++)
 			delete nodes[i];
 		nodes.clear();
 		name2id.clear();
@@ -250,7 +250,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t compute_node_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t compute_node_similarity(index_t task_lhs, index_t task_rhs)
 	{
 
 		CNode* node_lhs = get_node(task_lhs);
@@ -300,17 +300,17 @@ public:
 	}
 
 	/** @return number of nodes */
-	int32_t get_num_nodes()
+	index_t get_num_nodes()
 	{
-		return (int32_t)(nodes.size());
+		return (index_t)(nodes.size());
 	}
 
 	/** @return number of leaves */
-	int32_t get_num_leaves()
+	index_t get_num_leaves()
 	{
-		int32_t num_leaves = 0;
+		index_t num_leaves = 0;
 
-		for (int32_t i=0; i!=get_num_nodes(); i++)
+		for (index_t i=0; i!=get_num_nodes(); i++)
 		{
 			if (get_node(i)->is_leaf()==true)
 			{
@@ -322,7 +322,7 @@ public:
 	}
 
 	/** @return weight of node with identifier idx */
-	float64_t get_node_weight(int32_t idx)
+	float64_t get_node_weight(index_t idx)
 	{
 		CNode* node = get_node(idx);
 		return node->beta;
@@ -332,7 +332,7 @@ public:
 	 *  @param idx node id
 	 *  @param weight weight to set
 	 */
-	void set_node_weight(int32_t idx, float64_t weight)
+	void set_node_weight(index_t idx, float64_t weight)
 	{
 		CNode* node = get_node(idx);
 		node->beta = weight;
@@ -421,9 +421,9 @@ public:
 	{
 
 
-		for (int32_t i=0; i!=num_nodes; i++)
+		for (index_t i=0; i!=num_nodes; i++)
 		{
-			for (int32_t j=0; j!=num_nodes; j++)
+			for (index_t j=0; j!=num_nodes; j++)
 			{
 
 				float64_t similarity = taxonomy.compute_node_similarity(i, j);
@@ -441,11 +441,11 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+	virtual float64_t normalize(float64_t value, index_t idx_lhs, index_t idx_rhs)
 	{
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		index_t task_idx_lhs = task_vector_lhs[idx_lhs];
+		index_t task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
 		float64_t task_similarity = get_node_similarity(task_idx_lhs, task_idx_rhs);
@@ -462,7 +462,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -472,7 +472,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -485,7 +485,7 @@ public:
 
 		task_vector_lhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (index_t i = 0; i != (index_t)(vec.size()); ++i)
 		{
 			task_vector_lhs.push_back(taxonomy.get_id(vec[i]));
 		}
@@ -501,7 +501,7 @@ public:
 
 		task_vector_rhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (index_t i = 0; i != (index_t)(vec.size()); ++i)
 		{
 			task_vector_rhs.push_back(taxonomy.get_id(vec[i]));
 		}
@@ -516,7 +516,7 @@ public:
 	}
 
 	/** @return number of parameters/weights */
-	int32_t get_num_betas()
+	index_t get_num_betas()
 	{
 
 		return taxonomy.get_num_nodes();
@@ -526,7 +526,7 @@ public:
 	/**
 	 * @param idx id of weight
 	 * @return weight of node with given id */
-	float64_t get_beta(int32_t idx)
+	float64_t get_beta(index_t idx)
 	{
 
 		return taxonomy.get_node_weight(idx);
@@ -536,7 +536,7 @@ public:
 	/**
 	 * @param idx id of weight
 	 * @param weight weight of node with given id */
-	void set_beta(int32_t idx, float64_t weight)
+	void set_beta(index_t idx, float64_t weight)
 	{
 
 		taxonomy.set_node_weight(idx, weight);
@@ -551,7 +551,7 @@ public:
 	 * @param node_rhs node_id on right hand side
 	 * @return similarity between nodes
 	 */
-	float64_t get_node_similarity(int32_t node_lhs, int32_t node_rhs)
+	float64_t get_node_similarity(index_t node_lhs, index_t node_rhs)
 	{
 
 		ASSERT(node_lhs < num_nodes && node_lhs >= 0)
@@ -566,7 +566,7 @@ public:
 	 * @param node_rhs node_id on right hand side
 	 * @param similarity similarity between nodes
 	 */
-	void set_node_similarity(int32_t node_lhs, int32_t node_rhs,
+	void set_node_similarity(index_t node_lhs, index_t node_rhs,
 			float64_t similarity)
 	{
 
@@ -596,7 +596,7 @@ protected:
 	CTaxonomy taxonomy;
 
 	/** number of tasks **/
-	int32_t num_nodes;
+	index_t num_nodes;
 
 	/** task vector indicating to which task each example on the left hand side belongs **/
 	std::vector<int32_t> task_vector_lhs;

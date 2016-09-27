@@ -19,7 +19,7 @@ CMulticlassSOLabels::CMulticlassSOLabels()
 	init();
 }
 
-CMulticlassSOLabels::CMulticlassSOLabels(int32_t num_labels)
+CMulticlassSOLabels::CMulticlassSOLabels(index_t num_labels)
 : CStructuredLabels(), m_labels_vector(num_labels)
 {
 	init();
@@ -33,7 +33,7 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 	m_num_classes = CMath::max(src.vector, src.vlen) + 1;
 	m_labels_vector.resize_vector(src.vlen);
 
-	for ( int32_t i = 0 ; i < src.vlen ; ++i )
+	for ( index_t i = 0 ; i < src.vlen ; ++i )
 	{
 		if ( src[i] < 0 || src[i] >= m_num_classes )
 			SG_ERROR("Found label out of {0, 1, 2, ..., num_classes-1}")
@@ -48,9 +48,9 @@ CMulticlassSOLabels::~CMulticlassSOLabels()
 {
 }
 
-CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
+CStructuredData* CMulticlassSOLabels::get_label(index_t idx)
 {
-	// ensure_valid("CMulticlassSOLabels::get_label(int32_t)");
+	// ensure_valid("CMulticlassSOLabels::get_label(index_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
@@ -74,14 +74,14 @@ void CMulticlassSOLabels::add_label(CStructuredData* label)
 	m_num_labels_set++;
 }
 
-bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
+bool CMulticlassSOLabels::set_label(index_t idx, CStructuredData* label)
 {
         SG_REF(label);
         float64_t value = CRealNumber::obtain_from_generic(label)->value;
         SG_UNREF(label);
 
 	// ensure_valid_sdt(label);
-	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
+	index_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
 	{
@@ -94,7 +94,7 @@ bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CMulticlassSOLabels::get_num_labels() const
+index_t CMulticlassSOLabels::get_num_labels() const
 {
 	return m_num_labels_set;
 }

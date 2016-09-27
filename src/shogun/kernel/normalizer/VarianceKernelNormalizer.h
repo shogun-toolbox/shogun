@@ -49,7 +49,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k)
-			int32_t n=k->get_num_vec_lhs();
+			index_t n=k->get_num_vec_lhs();
 			ASSERT(n>0)
 
 			CFeatures* old_lhs=k->lhs;
@@ -59,11 +59,11 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 
 			float64_t diag_mean=0;
 			float64_t overall_mean=0;
-			for (int32_t i=0; i<n; i++)
+			for (index_t i=0; i<n; i++)
 			{
 				diag_mean+=k->compute(i, i);
 
-				for (int32_t j=0; j<n; j++)
+				for (index_t j=0; j<n; j++)
 					overall_mean+=k->compute(i, j);
 			}
 			diag_mean/=n;
@@ -84,7 +84,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, index_t idx_lhs, index_t idx_rhs)
 		{
 			return value*meandiff;
 		}
@@ -93,7 +93,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 		{
 			return value*sqrt_meandiff;
 		}
@@ -102,7 +102,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 		{
 			return value*sqrt_meandiff;
 		}

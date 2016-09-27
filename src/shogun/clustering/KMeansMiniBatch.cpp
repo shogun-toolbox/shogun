@@ -40,13 +40,13 @@ CKMeansMiniBatch::~CKMeansMiniBatch()
 {
 }
 
-void CKMeansMiniBatch::set_batch_size(int32_t b)
+void CKMeansMiniBatch::set_batch_size(index_t b)
 {
 	REQUIRE(b>0, "Parameter bach size should be > 0");
 	batch_size=b;
 }
 
-int32_t CKMeansMiniBatch::get_batch_size() const
+index_t CKMeansMiniBatch::get_batch_size() const
 {
 	return batch_size;
 }
@@ -62,7 +62,7 @@ int32_t CKMeansMiniBatch::get_mb_iter() const
 	return minib_iter;
 }
 
-void CKMeansMiniBatch::set_mb_params(int32_t b, int32_t t)
+void CKMeansMiniBatch::set_mb_params(index_t b, int32_t t)
 {
 	REQUIRE(b>0, "Parameter bach size should be > 0");
 	REQUIRE(t>0, "Parameter number of iterations should be > 0");
@@ -79,19 +79,20 @@ void CKMeansMiniBatch::minibatch_KMeans()
 
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+
 	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(mus);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
-	int32_t XSize=lhs->get_num_vectors();
-	int32_t dims=lhs->get_num_features();
+	index_t XSize=lhs->get_num_vectors();
+	index_t dims=lhs->get_num_features();
 
 	SGVector<float64_t> v=SGVector<float64_t>(k);
 	v.zero();
 
-	for (int32_t i=0; i<minib_iter; i++)
+	for (index_t i=0; i<minib_iter; i++)
 	{
 		SGVector<int32_t> M=mbchoose_rand(batch_size,XSize);
 		SGVector<int32_t> ncent=SGVector<int32_t>(batch_size);
-		for (int32_t j=0; j<batch_size; j++)
+		for (index_t j=0; j<batch_size; j++)
 		{
 			SGVector<float64_t> dists=SGVector<float64_t>(k);
 			for (int32_t p=0; p<k; p++)
@@ -109,7 +110,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 			}
 			ncent[j]=imin;
 		}
-		for (int32_t j=0; j<batch_size; j++)
+		for (index_t j=0; j<batch_size; j++)
 		{
 			int32_t near=ncent[j];
 			SGVector<float64_t> c_alive=rhs_mus->get_feature_vector(near);
@@ -127,7 +128,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 	delete rhs_mus;
 }
 
-SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
+SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(index_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
@@ -135,7 +136,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 	int32_t ch=0;
 	while (ch<b)
 	{
-		const int32_t n=CMath::random(0,num-1);
+		const index_t n=CMath::random(0,num-1);
 		if (chosen[n]==0)
 		{
 			chosen[n]+=1;

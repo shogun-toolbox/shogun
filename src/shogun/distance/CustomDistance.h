@@ -57,7 +57,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		CCustomDistance(
-			const float64_t* dm, int32_t rows, int32_t cols);
+			const float64_t* dm, index_t rows, index_t cols);
 
 		/** constructor
 		 *
@@ -70,7 +70,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		CCustomDistance(
-			const float32_t* dm, int32_t rows, int32_t cols);
+			const float32_t* dm, index_t rows, index_t cols);
 
 		virtual ~CCustomDistance();
 
@@ -84,7 +84,7 @@ class CCustomDistance: public CDistance
 		 * @param cols features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool dummy_init(int32_t rows, int32_t cols);
+		virtual bool dummy_init(index_t rows, index_t cols);
 
 		/** initialize distance
 		 *
@@ -132,7 +132,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		bool set_triangle_distance_matrix_from_triangle(
-			const float64_t* dm, int32_t len)
+			const float64_t* dm, index_t len)
 		{
 			return set_triangle_distance_matrix_from_triangle_generic(dm, len);
 		}
@@ -148,7 +148,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		bool set_triangle_distance_matrix_from_triangle(
-			const float32_t* dm, int32_t len)
+			const float32_t* dm, index_t len)
 		{
 			return set_triangle_distance_matrix_from_triangle_generic(dm, len);
 		}
@@ -210,7 +210,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		inline bool set_triangle_distance_matrix_from_full(
-			const float64_t* dm, int32_t rows, int32_t cols)
+			const float64_t* dm, index_t rows, index_t cols)
 		{
 			return set_triangle_distance_matrix_from_full_generic(dm, rows, cols);
 		}
@@ -226,7 +226,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		inline bool set_triangle_distance_matrix_from_full(
-			const float32_t* dm, int32_t rows, int32_t cols)
+			const float32_t* dm, index_t rows, index_t cols)
 		{
 			return set_triangle_distance_matrix_from_full_generic(dm, rows, cols);
 		}
@@ -241,7 +241,7 @@ class CCustomDistance: public CDistance
 		 */
 		template <class T>
 		bool set_triangle_distance_matrix_from_full_generic(
-			const T* dm, int32_t rows, int32_t cols)
+			const T* dm, index_t rows, index_t cols)
 		{
 			ASSERT(rows==cols)
 
@@ -276,7 +276,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		bool set_full_distance_matrix_from_full(
-			const float64_t* dm, int32_t rows, int32_t cols)
+			const float64_t* dm, index_t rows, index_t cols)
 		{
 			return set_full_distance_matrix_from_full_generic(dm, rows, cols);
 		}
@@ -291,7 +291,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		bool set_full_distance_matrix_from_full(
-			const float32_t* dm, int32_t rows, int32_t cols)
+			const float32_t* dm, index_t rows, index_t cols)
 		{
 			return set_full_distance_matrix_from_full_generic(dm, rows, cols);
 		}
@@ -304,7 +304,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		template <class T>
-		bool set_full_distance_matrix_from_full_generic(const T* dm, int32_t rows, int32_t cols)
+		bool set_full_distance_matrix_from_full_generic(const T* dm, index_t rows, index_t cols)
 		{
 			cleanup_custom();
 			SG_DEBUG("using custom distance of size %dx%d\n", rows,cols)
@@ -315,9 +315,9 @@ class CCustomDistance: public CDistance
 			num_rows=rows;
 			num_cols=cols;
 
-			for (int32_t row=0; row<num_rows; row++)
+			for (index_t row=0; row<num_rows; row++)
 			{
-				for (int32_t col=0; col<num_cols; col++)
+				for (index_t col=0; col<num_cols; col++)
 				{
 					dmatrix[row * num_cols + col]=dm[col*num_rows+row];
 				}
@@ -331,7 +331,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return num_rows;
 		}
@@ -340,7 +340,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return num_cols;
 		}
@@ -361,7 +361,7 @@ class CCustomDistance: public CDistance
 		 * @param col col
 		 * @return computed distance function
 		 */
-		virtual float64_t compute(int32_t row, int32_t col);
+		virtual float64_t compute(index_t row, index_t col);
 
 	private:
 		void init();
@@ -373,9 +373,9 @@ class CCustomDistance: public CDistance
 		/** distance matrix */
 		float32_t* dmatrix;
 		/** number of rows */
-		int32_t num_rows;
+		index_t num_rows;
 		/** number of columns */
-		int32_t num_cols;
+		index_t num_cols;
 		/** upper diagonal */
 		bool upper_diagonal;
 };

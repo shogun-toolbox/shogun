@@ -32,7 +32,7 @@ class CFactorGraphFeatures : public CFeatures
 		 *
 		 * @param num_samples the number of examples the object will contain
 		 */
-		CFactorGraphFeatures(int32_t num_samples);
+		CFactorGraphFeatures(index_t num_samples);
 
 		virtual ~CFactorGraphFeatures();
 
@@ -58,7 +58,7 @@ class CFactorGraphFeatures : public CFeatures
 		 *
 		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
-		virtual int32_t get_num_vectors() const;
+		virtual index_t get_num_vectors() const;
 
 		/** Returns the name of the SGSerializable instance.
 		 *

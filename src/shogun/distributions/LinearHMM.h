@@ -55,7 +55,7 @@ class CLinearHMM : public CDistribution
 		 * @param p_num_features number of features
 		 * @param p_num_symbols number of symbols in features
 		 */
-		CLinearHMM(int32_t p_num_features, int32_t p_num_symbols);
+		CLinearHMM(index_t p_num_features, index_t p_num_symbols);
 
 		virtual ~CLinearHMM();
 
@@ -77,7 +77,7 @@ class CLinearHMM : public CDistribution
 		 * @return if training was successful
 		 */
 		bool train(
-			const int32_t* indizes, int32_t num_indizes,
+			const index_t* indizes, index_t num_indizes,
 			float64_t pseudo_count);
 
 		/** get logarithm of one example's likelihood
@@ -86,7 +86,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return logarithm of likelihood
 		 */
-		float64_t get_log_likelihood_example(uint16_t* vector, int32_t len);
+		float64_t get_log_likelihood_example(uint16_t* vector, index_t len);
 
 		/** get one example's likelihood
 		 *
@@ -94,21 +94,21 @@ class CLinearHMM : public CDistribution
 		 * @param len length of vector
 		 * @return likelihood
 		 */
-		float64_t get_likelihood_example(uint16_t* vector, int32_t len);
+		float64_t get_likelihood_example(uint16_t* vector, index_t len);
 
 		/** compute likelihood for example
 		 *
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		float64_t get_likelihood_example(int32_t num_example);
+		float64_t get_likelihood_example(index_t num_example);
 
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example
 		 * @return logarithm of example's likelihood
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(index_t num_example);
 
 		/** get logarithm of one example's derivative's likelihood
 		 *
@@ -117,7 +117,7 @@ class CLinearHMM : public CDistribution
 		 * @return logarithm of example's derivative
 		 */
 		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+			index_t num_param, index_t num_example);
 
 		/** obsolete get logarithm of one example's derivative's
 		 *  likelihood
@@ -126,7 +126,7 @@ class CLinearHMM : public CDistribution
 		 * @param pos position
 		 */
 		virtual float64_t get_log_derivative_obsolete(
-			uint16_t obs, int32_t pos)
+			uint16_t obs, index_t pos)
 		{
 			return 1.0/transition_probs[pos*num_symbols+obs];
 		}

@@ -77,7 +77,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @param num_labels size of label vector
 		 */
-		CMulticlassSOLabels(int32_t num_labels);
+		CMulticlassSOLabels(index_t num_labels);
 
 		/** constructor
 		 *
@@ -92,7 +92,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @return number of classes
 		 */
-		inline int32_t get_num_classes() { return m_num_classes; }
+		inline index_t get_num_classes() { return m_num_classes; }
 
 		/**
 		 * add a new label to the vector of labels, effectively
@@ -110,7 +110,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual CStructuredData* get_label(index_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -122,13 +122,13 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(index_t idx, CStructuredData* label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		virtual index_t get_num_labels() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassSOLabels"; }
@@ -138,10 +138,10 @@ class CMulticlassSOLabels : public CStructuredLabels
 
 	private:
 		/** number of classes */
-		int32_t m_num_classes;
+		index_t m_num_classes;
 
 		SGVector< float64_t > m_labels_vector;
-		int32_t m_num_labels_set;
+		index_t m_num_labels_set;
 
 }; /* CMulticlassSOLabels */
 

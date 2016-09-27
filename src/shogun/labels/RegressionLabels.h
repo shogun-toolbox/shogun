@@ -43,7 +43,7 @@ class CRegressionLabels : public CDenseLabels
 		 *
 		 * @param num_labels number of labels
 		 */
-		CRegressionLabels(int32_t num_labels);
+		CRegressionLabels(index_t num_labels);
 
 		/** constructor
 		 *
