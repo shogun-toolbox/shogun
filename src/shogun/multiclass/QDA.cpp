@@ -152,10 +152,6 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 		for (int i = 0; i < num_vecs; i++)
 			norm2(i + k*num_vecs) = A.row(i).array().square().sum();
 
-#ifdef DEBUG_QDA
-	SG_PRINT("\n>>> Displaying A ...\n")
-	SGMatrix< float64_t >::display_matrix(A.data(), num_vecs, m_dim);
-#endif
 	}
 
 	for (int i = 0; i < num_vecs; i++)
@@ -165,10 +161,6 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
-#ifdef DEBUG_QDA
-	SG_PRINT("\n>>> Displaying norm2 ...\n")
-	SGMatrix< float64_t >::display_matrix(norm2.data(), num_vecs, m_num_classes);
-#endif
 
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
@@ -341,28 +333,6 @@ bool CQDA::train_machine(CFeatures* data)
 			}
 	}
 
-#ifdef DEBUG_QDA
-	SG_PRINT(">>> QDA machine trained with %d classes\n", m_num_classes)
-
-	SG_PRINT("\n>>> Displaying means ...\n")
-	SGMatrix< float64_t >::display_matrix(m_means.matrix, m_dim, m_num_classes);
-
-	SG_PRINT("\n>>> Displaying scalings ...\n")
-	SGMatrix< float64_t >::display_matrix(scalings.matrix, m_dim, m_num_classes);
-
-	SG_PRINT("\n>>> Displaying rotations ... \n")
-	for (int k = 0; k < m_num_classes; k++)
-		SGMatrix< float64_t >::display_matrix(rotations.get_matrix(k), m_dim, m_dim);
-
-	SG_PRINT("\n>>> Displaying sinvsqrt ... \n")
-	sinvsqrt.display_vector();
-
-	SG_PRINT("\n>>> Diplaying m_M matrices ... \n")
-	for (int k = 0; k < m_num_classes; k++)
-		SGMatrix< float64_t >::display_matrix(m_M.get_matrix(k), m_dim, m_dim);
-
-	SG_PRINT("\n>>> Exit DEBUG_QDA\n")
-#endif
 
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
