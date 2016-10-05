@@ -19,12 +19,16 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <string.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
+
 
 #ifndef WIN32
 #include <pthread.h>
 #endif
 
 using namespace shogun;
+using namespace Eigen;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_COMBINED_KERNEL
@@ -63,8 +67,31 @@ CCombinedKernel::~CCombinedKernel()
 	SG_INFO("Combined kernel deleted (%p).\n", this)
 }
 
+void CCombinedKernel::init_subkernel_weights()
+{
+	weight_update=true;
+	ASSERT(subkernel_log_weights.vlen>0);
+	SGVector<float64_t> wt(subkernel_log_weights.vlen);
+
+	Map<VectorXd> eigen_wt(wt.vector, wt.vlen);
+	Map<VectorXd> eigen_log_wt(subkernel_log_weights.vector, subkernel_log_weights.vlen);
+
+	// log_sum_exp trick
+	float64_t max_coeff=eigen_log_wt.maxCoeff();
+	VectorXd tmp = eigen_log_wt.array() - max_coeff;
+	float64_t sum = CMath::log(tmp.array().exp().sum());
+	eigen_wt = tmp.array() - sum;
+	eigen_wt = eigen_wt.array().exp();
+	set_subkernel_weights(wt);
+}
+
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 {
+	if(enable_subkernel_weight_opt && !weight_update)
+	{
+		init_subkernel_weights();
+	}
+
 	/* if the specified features are not combined features, but a single other
 	 * feature type, assume that the caller wants to use all kernels on these */
 	if (l && r && l->get_feature_class()==r->get_feature_class() &&
@@ -681,12 +708,19 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 
 SGVector<float64_t> CCombinedKernel::get_subkernel_weights()
 {
+	if (enable_subkernel_weight_opt && !weight_update)
+	{
+		ASSERT(subkernel_log_weights.vlen>0);
+		init_subkernel_weights();
+	}
+
 	int32_t num=0;
 	const float64_t* w=get_subkernel_weights(num);
 
 	float64_t* weights = SG_MALLOC(float64_t, num);
 	for (int32_t i=0; i<num; i++)
 		weights[i] = w[i];
+
 
 	return SGVector<float64_t>(weights, num);
 }
@@ -779,6 +813,32 @@ void CCombinedKernel::init()
 	    "If subkernel weights are appended.", MS_AVAILABLE);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
 	    MS_NOT_AVAILABLE);
+
+	enable_subkernel_weight_opt=false;
+	subkernel_log_weights = SGVector<float64_t>(1);
+	subkernel_log_weights[0] = 0;
+	SG_ADD(&subkernel_log_weights, "subkernel_log_weights",
+	    "subkernel weights", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&enable_subkernel_weight_opt, "enable_subkernel_weight_opt",
+	    "enable subkernel weight opt", MS_NOT_AVAILABLE);
+
+	weight_update = false;
+	SG_ADD(&weight_update, "weight_update",
+	    "weight update", MS_NOT_AVAILABLE);
+}
+
+void CCombinedKernel::enable_subkernel_weight_learning()
+{
+	weight_update = false;
+	enable_subkernel_weight_opt=false;
+	subkernel_log_weights=get_subkernel_weights();
+	enable_subkernel_weight_opt=true;
+	ASSERT(subkernel_log_weights.vlen>0);
+	for(index_t idx=0; idx<subkernel_log_weights.vlen; idx++)
+	{
+		ASSERT(subkernel_log_weights[idx]>0);//weight should be positive
+		subkernel_log_weights[idx]=CMath::log(subkernel_log_weights[idx]);//in log domain
+	}
 }
 
 SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
@@ -816,39 +876,74 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 	}
 	else
 	{
-		float64_t coeff;
-		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
+		if (!strcmp(param->m_name, "subkernel_log_weights"))
 		{
-			CKernel* k=get_kernel(k_idx);
-			SGMatrix<float64_t> derivative=
+			if(enable_subkernel_weight_opt)
+			{
+				ASSERT(index>=0 && index<subkernel_log_weights.vlen);
+				CKernel* k=get_kernel(index);
+				result=k->get_kernel_matrix();
+				SG_UNREF(k);
+				if (weight_update)
+					weight_update = false;
+				float64_t factor = 1.0;
+				Map<VectorXd> eigen_log_wt(subkernel_log_weights.vector, subkernel_log_weights.vlen);
+				// log_sum_exp trick
+				float64_t max_coeff = eigen_log_wt.maxCoeff();
+				VectorXd tmp = eigen_log_wt.array() - max_coeff;
+				float64_t log_sum = CMath::log(tmp.array().exp().sum());
+
+				factor = subkernel_log_weights[index] - max_coeff - log_sum;
+				factor = CMath::exp(factor) - CMath::exp(factor*2.0);
+
+				Map<MatrixXd> eigen_res(result.matrix, result.num_rows, result.num_cols);
+				eigen_res = eigen_res * factor;
+			}
+			else
+			{
+				CKernel* k=get_kernel(0);
+				result=k->get_kernel_matrix();
+				SG_UNREF(k);
+				result.zero();
+			}
+			return result;
+		}
+		else
+		{
+			float64_t coeff;
+			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
+			{
+				CKernel* k=get_kernel(k_idx);
+				SGMatrix<float64_t> derivative=
 					k->get_parameter_gradient(param, index);
 
-			coeff=1.0;
+				coeff=1.0;
 
-			if (!append_subkernel_weights)
-				coeff=k->get_combined_kernel_weight();
+				if (!append_subkernel_weights)
+					coeff=k->get_combined_kernel_weight();
 
-			for (index_t g=0; g<derivative.num_rows; g++)
-			{
-				for (index_t h=0; h<derivative.num_cols; h++)
-					derivative(g,h)*=coeff;
-			}
-
-			if (derivative.num_cols*derivative.num_rows>0)
-			{
-				if (result.num_cols==0 && result.num_rows==0)
-					result=derivative;
-				else
+				for (index_t g=0; g<derivative.num_rows; g++)
 				{
-					for (index_t g=0; g<derivative.num_rows; g++)
+					for (index_t h=0; h<derivative.num_cols; h++)
+						derivative(g,h)*=coeff;
+				}
+
+				if (derivative.num_cols*derivative.num_rows>0)
+				{
+					if (result.num_cols==0 && result.num_rows==0)
+						result=derivative;
+					else
 					{
-						for (index_t h=0; h<derivative.num_cols; h++)
-							result(g,h)+=derivative(g,h);
+						for (index_t g=0; g<derivative.num_rows; g++)
+						{
+							for (index_t h=0; h<derivative.num_cols; h++)
+								result(g,h)+=derivative(g,h);
+						}
 					}
 				}
-			}
 
-			SG_UNREF(k);
+				SG_UNREF(k);
+			}
 		}
 	}
 
