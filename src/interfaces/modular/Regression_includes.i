@@ -4,6 +4,7 @@
  #include <shogun/machine/KernelMachine.h>
  #include <shogun/regression/GaussianProcessRegression.h>
  #include <shogun/regression/KernelRidgeRegression.h>
+ #include <shogun/regression/KRRNystrom.h>
  #include <shogun/regression/LinearRidgeRegression.h>
  #include <shogun/regression/LeastSquaresRegression.h>
  #include <shogun/regression/LeastAngleRegression.h>
