@@ -103,6 +103,7 @@ class Translator:
     def __init__(self, targetDict, tags={}):
         self.targetDict = targetDict
         self.tags = tags
+        self.variableTypes = {}
 
     def translateProgram(self, program, programName=None, storeVars=False):
         """ Translate program AST
@@ -325,10 +326,13 @@ class Translator:
             init: object like [typeAST, identifierAST, exprAST],
                   [typeAST, identifierAST, argumentListAST], etc.
         """
-        typeString = self.translateType(init[0])
+        typeDict = init[0]
+        typeString = self.translateType(typeDict)
         nameString = init[1]["Identifier"]
         initialisation = init[2]
-        typeKey = list(init[0].keys())[0]
+        typeKey = list(typeDict.keys())[0]
+
+        self.variableTypes[nameString] = typeDict
 
         # python2/3 safe dictionary keys
         if list(initialisation.keys())[0] == "Expr":
@@ -360,6 +364,9 @@ class Translator:
 
         if firstElementKey == "Identifier":
             identifier = assign[0][firstElementKey]
+
+            assert identifier in self.variableTypes, \
+                "Variable {} not initialised".format(identifier)
 
             template = Template(self.targetDict["Assign"])
             exprString = self.translateExpr(expr)
@@ -397,6 +404,9 @@ class Translator:
             except IndexError:
                 pass
             translatedArgsList = self.translateArgumentList(argsList)
+
+            assert object in self.variableTypes, \
+                "Variable {} not initialised".format(identifier)
 
             return template.substitute(object=object,
                                        method=method,
@@ -509,14 +519,22 @@ class Translator:
         indexList = elementAccess[1]["IndexList"]
         indexListTranslation = self.translateIndexList(indexList)
 
+        assert identifier in self.variableTypes,\
+            "Variable {} not initialised".format(identifier)
+        assert self.variableTypes[identifier].keys()[0] == "ShogunSGType",\
+            "Variable {} is not a vector or matrix type". format(identifier)
+
+        type = self.variableTypes[identifier]["ShogunSGType"]
+
         exprString = None
         targetDict = self.targetDict["Element"]["Access"]
         if expr is not None:
             targetDict = self.targetDict["Element"]["Assign"]
             exprString = self.translateExpr(expr)
 
-        template = None
-        if len(indexList) == 1:
+        if type in targetDict:
+            template = Template(targetDict[type])
+        elif len(indexList) == 1:
             template = Template(targetDict["Vector"])
         elif len(indexList) == 2:
             template = Template(targetDict["Matrix"])

@@ -5,7 +5,6 @@
     "Init": {
         "Construct": "$typeName $name = new $typeName($arguments)",
         "Copy": "$typeName $name = $expr",
-        "BoolVector": "var $name = new bool[$arguments]",
         "CharVector": "var $name = new char[$arguments]",
         "ByteVector": "var $name = new byte[$arguments]",
         "WordVector": "var $name = new ushort[$arguments]",
@@ -36,7 +35,6 @@
         "int": "int",
         "float": "float",
         "real": "double",
-        "BoolVector": "bool[]",
         "CharVector": "char[]",
         "ByteVector": "byte[]",
         "WordVector": "ushort[]",
@@ -78,11 +76,13 @@
     "Element": {
         "Access": {
             "Vector": "$identifier[$indices]",
-            "Matrix": "$identifier[$indices]"
+            "Matrix": "$identifier[$indices]",
+            "BoolVector": "$identifier.get_element($indices)"
         },
         "Assign": {
             "Vector": "$identifier[$indices] = $expr",
-            "Matrix": "$identifier[$indices] = $expr"
+            "Matrix": "$identifier[$indices] = $expr",
+            "BoolVector": "$identifier.set_element($expr, $indices)"
         },
         "ZeroIndexed": true
     },
