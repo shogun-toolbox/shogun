@@ -18,6 +18,7 @@ using namespace shogun;
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel()
 : CDotKernel(), width(1), degree(1), weights(0)
 {
+	register_params();
 }
 
 
@@ -25,6 +26,7 @@ CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(int32_t size, float64_t w, in
 : CDotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();
+	register_params();
 }
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(
@@ -32,6 +34,7 @@ CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(
 : CDotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();
+	register_params();
 	init(l,r);
 }
 
@@ -106,4 +109,10 @@ float64_t CWeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 
 	return result;
+}
+
+void CWeightedDegreeRBFKernel::register_params()
+{
+	SG_ADD(&width, "width", "Kernel width", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "Kernel degree", MS_AVAILABLE);
 }
