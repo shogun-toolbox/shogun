@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
+ARCH=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+
+ifeq ($(ARCH),$(filter $(ARCH),powerpc mips mipsel))
+CC=/usr/bin/clang
+CXX=/usr/bin/clang++
+else
+CC=/usr/bin/gcc
+CXX=/usr/bin/g++
+endif
+
+ifeq ($(ARCH),$(filter $(ARCH),i386 hurd-i386 kfreebsd-i386))
+	DISABLE_SSE="-DDISABLE_SSE=ON"
+endif
+
+all:
+	echo ${CXX}
+
+%:
+	dh $@ --buildsystem=cmake
+#dh $@ --buildsystem=cmake --builddirectory=$(BUILDDIR) --with python2,python3
+
+override_dh_auto_configure:
+	ln -s /usr/include/shogun shogun
+	dh_auto_configure -- -DENABLE_CCACHE=FALSE -DCMAKE_SKIP_RPATH=TRUE \
+		-DBUILD_EXAMPLES=OFF -DUSE_SVMLIGHT=OFF -DRubyModular=ON \
+		-DCMAKE_C_COMPILER=$(CC) -DCMAKE_CXX_COMPILER=$(CXX) -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+		$(DISABLE_SSE)
+
+override_dh_usrlocal:
+override_dh_install:
+	dh_install
+
+override_dh_strip:
+	dh_strip --dbg-package=ruby-shogun-dbg

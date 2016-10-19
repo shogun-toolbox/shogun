@@ -1,0 +1,692 @@
+ruby-shogun (3.2.0-5.3) unstable; urgency=medium
+
+  * Rewrite packaging to include Ruby interface.
+
+ -- Ariane Paola Gomes <arianepaola@users.noreply.github.com>  Wed, 22 June 2016 15:17:32 +0200
+
+python-shogun (3.2.0-5.2build2) yakkety; urgency=medium
+
+  * No-change rebuild against glpk 4.60
+
+ -- Graham Inggs <ginggs@ubuntu.com>  Wed, 25 May 2016 20:45:21 +0200
+
+python-shogun (3.2.0-5.2build1) yakkety; urgency=medium
+
+  * Rebuild against libjson-c3.
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Thu, 28 Apr 2016 00:33:24 +0200
+
+python-shogun (3.2.0-5.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Build-depend on clang (not clang-3.4) on [mips mipsel powerpc].
+    Patch by Dejan Latinovic <Dejan.Latinovic@imgtec.com>.
+    Closes: #766022.
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Mon, 20 Oct 2014 10:42:32 +0100
+
+python-shogun (3.2.0-5.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Build depend on libjson-c-dev instead of libjson-c2-dev (Closes: #745012,
+  #758010).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 17 Sep 2014 23:30:19 +0200
+
+python-shogun (3.2.0-5) unstable; urgency=low
+
+  * Build depend on libjson-c2-dev instead of libjson-c-dev (Closes: #745012)
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 08 Jul 2014 19:35:49 +0200
+
+python-shogun (3.2.0-4) unstable; urgency=low
+
+  * Build depend on libarpack,libcolpack and use the same sse disable tactics
+  for i386 archs as for the shogun package.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 08 Jul 2014 19:16:41 +0200
+
+python-shogun (3.2.0-3) unstable; urgency=low
+
+  * Build depend on libjson-c-dev instead of libjson0-dev (Closes: #745012)
+  * Add build-dependency on colpack.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sat, 05 Jul 2014 20:55:00 +0200
+
+python-shogun (3.2.0-2) unstable; urgency=low
+
+  * Require swig version >= 3.0
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sat, 05 Jul 2014 07:57:11 +0200
+
+python-shogun (3.2.0-1) unstable; urgency=low
+
+  * New upstream version
+  * Update watch file
+  * Require new libshogun version to build
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 28 Feb 2014 06:18:12 +0100
+
+python-shogun (3.1.1-7) unstable; urgency=low
+
+  * fix typo clang3.4 -> clang-3.4
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 28 Feb 2014 05:50:03 +0100
+
+python-shogun (3.1.1-6) unstable; urgency=low
+
+  * Use clang 3.4 instead of (non-available) clang 3.5.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 28 Feb 2014 00:07:48 +0100
+
+python-shogun (3.1.1-5) unstable; urgency=low
+
+  * Use clang to build on mips, mipsel, powerpc
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 23 Feb 2014 19:30:07 +0100
+
+python-shogun (3.1.1-4) unstable; urgency=low
+
+  * Drop ghostscript, graphviz and doxygen-latex dependencies since
+  documentation is already built in the libshogun pkg.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 23 Feb 2014 12:32:23 +0100
+
+python-shogun (3.1.1-3) unstable; urgency=low
+
+  * Disable ccache to fix FTBS with ccache-swig
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 23 Feb 2014 11:57:03 +0100
+
+python-shogun (3.1.1-2) unstable; urgency=low
+
+  * Move package to section python (fixes a lintian warning).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sat, 01 Feb 2014 22:15:01 +0100
+
+python-shogun (3.1.1-1) unstable; urgency=low
+
+  * New upstream version
+  * Rewrite packaging
+    - use separate source file for python interface to ensure that python is
+    not blocking core libshogun and other interfaces
+    - convert package to use dh
+    - include static and modular python interfaces
+    - add package for debug symbols
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 05 Jan 2014 09:35:46 +0100
+
+shogun (3.1.0-1) unstable; urgency=low
+
+  * New upstream version
+  * Bump standards version to 3.9.5 (no changes required).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 05 Jan 2014 08:34:52 +0100
+
+shogun (3.0.1~git20131115.557741b-2) unstable; urgency=low
+
+  * Depend on libglpk-dev.
+  * Bump compat version to 9.
+  * Replace shogun-dbg with libshogun-dbg (Closes: #729705).
+  * Fix minor typo in documentation.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 15 Nov 2013 17:32:52 +0100
+
+shogun (3.0.1~git20131115.557741b-1) unstable; urgency=low
+
+  * New upstream version (+additional bugfixes from current git)
+  * Rewrite packaging to use debhelper and cmake: Drop all static and modular
+  interfaces from this source package and do these later for each individual
+  interface with separate source packages to keep shogun in debian.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 15 Nov 2013 14:28:11 +0100
+
+shogun (1.1.0-6) unstable; urgency=low
+
+  * Fix error occurring on package upgrades (Closes: #682166)
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sat, 30 Jun 2012 22:52:04 +0200
+
+shogun (1.1.0-5) unstable; urgency=low
+
+  * Disable 'libatlas-base-dev' build dependency for armhf builds. Thanks
+  Hector Oron for the patch. (Closes: #667468)
+  * Add temporary workaround for FTBFS with ld --as-needed. Thanks Leo Iannacone
+  for the patch. (Closes: #657434)
+  * Upload to unstable. (Closes: #669005)
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 24 Jan 2012 20:19:47 +0100
+
+shogun (1.1.0-4) unstable; urgency=low
+
+  [ Jo Shields ]
+  * debian/rules:
+    + Include workaround for CDBS throwing away vital packaging data
+      required by dh_clideps to resolve dependencies.
+  * debian/control:
+    + Scrap unneeded manual dependencies on libmono-corlib4.0-cil and 
+      libshogun11 (Closes: #657096).
+
+  [ Soeren Sonnenburg ]
+  * Build depend on libhdf5-dev (>= 1.8.8~) | libhdf5-serial-dev instead of
+  just libhdf5-dev.
+  * Temporarily drop octave build dependencies from debian/control.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 24 Jan 2012 17:05:48 +0100
+
+shogun (1.1.0-3) unstable; urgency=low
+
+  * Make csharp package depend on libmono-corlib4.0-cil; remove csharp:Depends
+  or csharp:Provides and use cli:Depends in debian/control (Closes: #656757).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Mon, 23 Jan 2012 09:05:31 +0100
+
+shogun (1.1.0-2) unstable; urgency=low
+
+  * Build depend on libhdf5-dev instead of libhdf5-serial-dev to accommodate
+  hdf5 transition.
+  * Build depend on mono-devel and cli-common-dev instead of mono2.0-devel and
+  use include cli.make in debian rules. (Closes: #656757).
+  * Use dmcs instead of gmcs (Closes: #656756).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 22 Jan 2012 19:26:12 +0100
+
+shogun (1.1.0-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements.
+   - This fixes liblzma5 transition (Closes: #647753)
+   - Require clang to compile package as gcc/g++ require >3GB to compile the
+   package (Closes: #645249).
+   - Remove patches integrated upstream.
+   - Since octave is failing to compile with clang - temporarily disable
+   shogun's octave interface.
+  * Really replace doxygen and texlive-* build dependencies with
+    doxygen-latex (Closes: #616279).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Wed, 14 Dec 2011 10:04:55 +0100
+
+shogun (1.0.0-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements.
+    - Add various upstream patches to fix installation
+    - Rename static interface packages to shogun-interface-static
+    - Create new modular interface packages for java, lua, ruby, c#
+    - Install libshogun examples also for libshogun-dev package
+    - Convert package to use dh_python2 (Closes: #632249).
+    - Enable python packaging for multiple python versions.
+    - Update copyright file to match new contributions.
+    - Bump standards version to 3.9.2 (no changes required).
+  * Replace doxygen and texlive-* build dependencies with
+    doxygen-latex (Closes: #616279)
+  * Acknowledging non-maintainer upload fixing FTBS with newer gcc's (How
+    could this ever compile??!)
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 11 Oct 2011 21:04:30 +0200
+
+shogun (0.10.0-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Apply upstream patch to fix FTBFS with new gcc (closes: #625115).  Thanks,
+    Sebastian Ramacher!
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 24 Jun 2011 20:30:58 +0200
+
+shogun (0.10.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Mon, 14 Feb 2011 11:10:50 +0100
+
+shogun (0.10.0-1) experimental; urgency=low
+
+  * New upstream version with major feature enhancements.
+    - Fix build with ld --as-needed thanks Matthias Klose
+      for the patch. (Closes:  #606018)
+    - Cherry pick patches from upstream svn-trunk to fix build failure.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Wed, 12 Jan 2011 17:29:40 +0100
+
+shogun (0.9.3-4) unstable; urgency=high
+
+  * Workaround cdbs problem and hopefully only create doxygen doc once.
+    - This should be a workaround for the FTBS caused by doxygen bugs.
+    - Therefore increasing urgency to high.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 17 Aug 2010 21:16:30 +0200
+
+shogun (0.9.3-3) unstable; urgency=low
+
+  * Do not call make doc on arch-dep targets but on indep only avoiding
+    doxygen doc builds more than once.
+  * Convert package to pysupport and call dh_numpy manually upon install
+    (Closes: #590731).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 30 Jul 2010 21:16:49 +0200
+
+shogun (0.9.3-2) unstable; urgency=low
+
+  * Bump standards version to 3.9.1.0 (no changes required).
+  * Use different logic to workaround FTBS with newer doxygen versions
+  (Closes: #590422)
+  * Add upstream patches to 
+    - tolerate column vectors in hdf5 (hdf5_tolerate_column_vectors.patch)
+    - fix a invalid free in ocas (ocas_free.patch)
+    - add swig 2.0 support (swig2.0.patch)
+    - wrap python files within the python-modular interface
+      (swig_file_support.patch)
+    - to add further safety checks for the linear kernel
+      (linear_kernel_parameters.patch)
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 27 Jul 2010 09:24:22 +0200
+
+shogun (0.9.3-1) unstable; urgency=low
+
+  * New upstream version with feature enhancements, cleanups and bugfixes.
+    - soname change requires package renames to libshogun8 and libshogunui5.
+    - Drop patches included upstream.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Mon, 31 May 2010 15:43:45 +0200
+
+shogun (0.9.2-1) unstable; urgency=low
+
+  * New upstream version with feature enhancements, cleanups and bugfixes.
+    - Switch to dpkg-source 3.0 (quilt) format.
+    - Update copyright.
+    - Drop patches included upstream.
+    - Build depend on libhdf5-serial-dev to support hdf5 based i/o.
+    - Apply patch from svn to fix libshogunui static file.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Mon, 05 Apr 2010 15:33:33 +0200
+
+shogun (0.9.1-2) unstable; urgency=low
+
+  * Add support fro Renesas SH (thanks Nobuhiro Iwamatsu for the patch
+  configure.diff): (Closes: #568825)
+  * Workaround doxygen FTBS (patch doxygen.diff) (Closes: #568612)
+  * Apply upstream patches to limit training time in libsvm and mc svm
+  (patches libsvm_mc_time_limit.diff, libsvm_time_limit.diff)
+  * Apply upstream patch to fix get_kernel_matrix etc for custom kernels
+  (custom_kernel_init.diff)
+  * Apply upstream patch improving error message (hmm_observations.diff)
+  * Apply upstream patch correcting a wrong liblinear sign flip
+  (sign_flip_liblinear.diff)
+  * Bump standards version (no changes required).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 09 Feb 2010 09:27:18 +0100
+
+shogun (0.9.1-1) unstable; urgency=low
+
+  * New upstream version with feature enhancements, cleanups and bugfixes.
+  * Drop configure patch to workaround FTBS (included upstream).
+  * Build depend on liblzo2-dev, zlib1g-dev, liblzma-dev to support
+  shoguns compressed files.
+  * Add patch from upstream svn to fix get_w() and set_w() for linear
+  classifiers.
+  * Use publicly available svn url for debian sources (Closes: #556096).
+  * Rename shogun-doc package to shogun-doc-en and build chinese documentation
+  and include it in package shogun-doc-cn.
+  * Update copyright.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Thu, 19 Nov 2009 15:14:36 +0100
+
+shogun (0.9.0-2) unstable; urgency=low
+
+  * Add glpk to build depends to enable multiple kerel learning.
+  * Include configure patch to workaround FTBS.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 27 Oct 2009 14:54:10 +0100
+
+shogun (0.9.0-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements, cleanups
+  and documentation updates.
+  * Build depend on libreadline-dev | libreadline5-dev.
+  * Build depend on doxygen (>= 1.6.0).
+  * Build depend on swig (>= 1.3.40).
+  * Drop octave3.0 support and compile for octave3.2.
+  * Update copyright.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Fri, 23 Oct 2009 18:40:05 +0200
+
+shogun (0.8.0-2) unstable; urgency=low
+
+  * Fix override disparity (put libs in section lib).
+  * Fix linitian warning, shogun-dbg now depends on
+  libshogun and libshogunui.
+  * Build depend on libreadline-dev instead of libreadline5-dev.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 13 Sep 2009 16:01:04 +0200
+
+shogun (0.8.0-1) unstable; urgency=low
+
+  [ Torsten Werner ]
+  * Remove myself from Uploaders as discussed with Sören
+
+  [ Soeren Sonnenburg ]
+  * New upstream version with major feature enhancements, cleanups
+  and documentation updates.
+  * Bump standards version (no changes required).
+  * Minor updates to debian/copyright.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 16 Aug 2009 10:22:23 +0200
+
+shogun (0.7.3-1) unstable; urgency=low
+
+  * New upstream bugfix version.
+  * Bump standards version (no changes required).
+  * Remove quilt build-dependency.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sat, 02 May 2009 22:31:09 +0200
+
+shogun (0.7.2-1) unstable; urgency=low
+
+  * New upstream version with improved python support.
+  * Move shogun-dbg into section debug.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Thu, 09 Apr 2009 20:11:35 +0200
+
+shogun (0.7.1-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements and code
+  re-organization.
+  * Re-organize packaging, split shogun into libshogun0, libshogun0-dev,
+  libshogunui0, libshogunui-dev, shogun-{octave,r,python,cmdline,elwms},
+  shogun-{octave,python}-modular.
+  * Mention license of .relpath.py.
+  * Include patches from svn-trunk to fix installation.
+  * Mention /usr/share/common-licenses/LGPL-2.1 in copyright.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Sun, 22 Mar 2009 18:50:48 +0100
+
+shogun (0.6.7-1) unstable; urgency=low
+
+  * New upstream version with code cleanups and bugfixes.
+  * Remove R installation patch (now included upstream).
+  * Add patch from svn-trunk to work around a swig bug, causing
+  a compile failure on 64bit archs.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Wed, 26 Nov 2008 08:23:55 +0100
+
+shogun (0.6.6-2) unstable; urgency=low
+
+  [ Torsten Werner ]
+  * Add a lintian override for shogun-dbg.
+
+  [ Soeren Sonnenburg ]
+  * Fix R installation script to avoid problem with update.packages.
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Thu, 16 Oct 2008 20:27:02 +0200
+
+shogun (0.6.6-1) unstable; urgency=low
+
+  [ Soeren Sonnenburg ]
+  * New upstream version with several bugfixes and improved documentation.
+
+  [ Torsten Werner ]
+  * Remove all patches because they have been applied upstream.
+
+ -- Torsten Werner <twerner@debian.org>  Sun, 12 Oct 2008 01:19:35 +0200
+
+shogun (0.6.4-3) unstable; urgency=low
+
+  * Add build dependency on swig 1.3.36 (Closes: #494335).
+  * Update my email address to sonne@debian.org.
+  * Update copyright.
+  * Version dependency on debhelper (>=5).
+
+ -- Soeren Sonnenburg <sonne@debian.org>  Tue, 23 Sep 2008 20:03:32 +0200
+
+shogun (0.6.4-2) unstable; urgency=low
+
+  * Add patch from svn to fix data-loading in cmdline interface (transpose).
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sun, 17 Aug 2008 21:33:18 +0200
+
+shogun (0.6.4-1) unstable; urgency=low
+
+  * New upstream version with much improved documentation.
+  * Remove patches as they have been applied upstream.
+  * Add patch from svn to fix running octave test-suite.
+  * Add patch from svn to fix build failure w/o lapack/atlas.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sat, 16 Aug 2008 11:38:21 +0200
+
+shogun (0.6.3-1) unstable; urgency=low
+
+  * New upstream bugfix version.
+  * Adapt for new directory layout.
+  * Run tests for all interfaces on make install.
+  * Add doc-base file.
+  * Add patch target and bump Standards Version to 3.8.0.
+  * Add fix from trunk to fix return values in R interface.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Wed, 18 Jun 2008 12:04:16 +0200
+
+shogun (0.6.2-1) unstable; urgency=low
+
+  * New upstream version with much improved static cmdline,r,python,octave
+  interfaces and several bugfixes.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Fri, 16 May 2008 00:17:04 +0200
+
+shogun (0.6.1-2) unstable; urgency=low
+
+  * Add README.source documenting we are using quilt for additional patches.
+  * Call dh_pycentral on install not build for shogun-python (fixes FTBS on
+  mips and mipsel with debhelper 7.0.2).
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Tue, 29 Apr 2008 08:57:18 +0200
+
+shogun (0.6.1-1) unstable; urgency=low
+
+  * New upstream version with new octave-modular interface and python-modular
+  speedups
+  * Build depend on swig >= 1.3.35-3 as it contains octave fixes.
+  * Add examples for octave-modular.
+  * Add ghostscript to build-depends which is used to generate .png's from the
+  generated .ps formulas.
+  * Use correct DESTDIR when running tests.
+  * Disable atlas also for arm and armel and fall back to lapack and blas.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sun, 20 Apr 2008 14:25:25 +0200
+
+shogun (0.6.0-2) unstable; urgency=low
+
+  [ Torsten Werner ]
+  * Fix output of debian/orig-tar.sh.
+
+  [ Soeren Sonnenburg ]
+  * Run the python tests after make install.
+  * Include texlive-latex-base to build depends as doxygen requires it to
+    generate images from latex formulas (and does not pull latex in either).
+  * Disable atlas for powerpc and alpha as they FTBFS on these archs.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Tue, 15 Apr 2008 10:12:08 +0200
+
+shogun (0.6.0-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements, providing same
+  functionality for all static interfaces and improved user documentation
+  * Pull in atlas dependency whenever available, otherwise fall back to
+  blas and lapack.
+  * Drop sqrtl patch (included upstream).
+  * Don't compress R, octave or python examples
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sun, 13 Apr 2008 11:38:49 +0200
+
+shogun (0.5.1-2) unstable; urgency=high
+
+  [ Soeren Sonnenburg ]
+  * Add patch from trunk to fix FTBS on mips,mipsel,etc caused by sqrtl not
+  being available for these archs
+  * Add quilt to Build-Depends again
+  * Temporarily remove atlas from Build-Depends for powerpc and alpha and add
+  liblapack-dev to the Build-Depends for these archs
+
+  [ Torsten Werner ]
+  * Increase urgency because we are fixing FTBFS bugs only.
+
+ -- Torsten Werner <twerner@debian.org>  Thu, 20 Mar 2008 13:00:53 +0100
+
+shogun (0.5.1-1) unstable; urgency=low
+
+  [ Soeren Sonnenburg ]
+  * New upstream version
+  * Get watch file to work
+  * Update build depends for gfortran transition (Closes: #466335)
+
+  [ Torsten Werner ]
+  * Remove Build-Depends: quilt.
+
+ -- Torsten Werner <twerner@debian.org>  Sat, 23 Feb 2008 21:17:20 +0100
+
+shogun (0.5.0-1) unstable; urgency=low
+
+  * New upstream version with major feature enhancements.
+  * Add !armel ann  ameb to atlas3-base-dev build depends (Closes: #460096)
+  * Remove python-numpy-{ext,dev} from build depends and use python-numpy
+    instead (Closes: #463211)
+  * Project switched license to GPLv3, update debian/copyright accordingly
+  * Include missing copyright holders in debian/copyright (Closes: #461616)
+  * Remove depends on xutils-dev as now gcc is used to generate build
+    dependencies
+  * Generate shogun-doc package; add doxygen and graphviz to build depends
+  * Remove patch to fix gcc4.3 compile failure (included upstream)
+  * Enable building of debug package shogun-dbg (Closes: #461614)
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Fri, 08 Feb 2008 23:43:33 +0100
+
+shogun (0.4.4-2) unstable; urgency=low
+
+  [ Soeren Sonnenburg ]
+  * Depend on octave 3.0, thanks Thomas Weber (Closes: #457979)
+  * Fix FTBS for gcc-4.3 (Closes: #458192)
+
+  [ Torsten Werner ]
+  * Change Depends: liblapack3-dev [arm].
+  * Support newer versions of dpkg-shlibdeps.
+  * Change XS-Vcs to Vcs in debian/control.
+
+ -- Torsten Werner <twerner@debian.org>  Wed, 02 Jan 2008 20:31:20 +0100
+
+shogun (0.4.4-1) unstable; urgency=low
+
+  * New upstream version contains major bug fixes.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Fri, 23 Nov 2007 13:05:05 +0200
+
+shogun (0.4.3-1) unstable; urgency=low
+
+  * New upstream allows to disable custom cpu settings which allows
+    for a workaround the gcc-4.2 build failure on alpha.
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Fri, 28 Sep 2007 09:53:35 +0200
+
+shogun (0.4.2-1) unstable; urgency=low
+
+  [Soeren Sonnenburg]
+  * New upstream version (Closes: #442990)
+  * Build R package in a separate directory (Closes: #442730)
+
+  [Torsten Werner]
+  * minor fixes in debian/rules
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Wed, 19 Sep 2007 09:08:42 +0200
+
+shogun (0.4.1-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sat, 01 Sep 2007 09:56:50 +0200
+
+shogun (0.4.0-3) unstable; urgency=low
+
+  * add manpage for shogun-readline interface
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Sun, 05 Aug 2007 13:49:06 +0200
+
+shogun (0.4.0-2) unstable; urgency=low
+
+  * remove build dependency on octave2.1-forge, but rather make it a Recommends
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Thu, 02 Aug 2007 08:25:20 +0200
+
+shogun (0.4.0-1) unstable; urgency=low
+
+  * new upstream version
+  * also add include matlab examples in the octave examples
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Tue, 31 Jul 2007 17:33:47 +0200
+
+shogun (0.3.2-3) unstable; urgency=low
+
+  * Change Build-Depends: r-base-core from r-base-dev.
+
+ -- Torsten Werner <twerner@debian.org>  Sun,  3 Jun 2007 10:50:29 +0200
+
+shogun (0.3.2-2) unstable; urgency=low
+
+  * support for python 2.5
+  * bump compat to 5, pycompat to 2
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Wed, 09 May 2007 19:49:26 +0200
+
+shogun (0.3.2-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Torsten Werner <twerner@debian.org>  Wed,  7 Mar 2007 19:05:03 +0100
+
+shogun (0.3.1-1) unstable; urgency=low
+
+  * new upstream release, fixes a build problem
+
+ -- Torsten Werner <twerner@debian.org>  Tue, 20 Feb 2007 21:01:14 +0100
+
+shogun (0.3.0-1) unstable; urgency=low
+
+  * new upstream release
+  * Remove Build-Depends: atlas3-base-dev for arm architecture.
+  * Updated debian/python*.examples to reflect upstream changes.
+
+ -- Torsten Werner <twerner@debian.org>  Wed, 14 Feb 2007 20:49:23 +0100
+
+shogun (0.2.1+svn1952-1) unstable; urgency=low
+
+  * new upstream version that builds on more platforms
+
+ -- Torsten Werner <twerner@debian.org>  Sun, 11 Feb 2007 16:41:54 +0100
+
+shogun (0.2.1+svn1923-1) unstable; urgency=low
+
+  * new upstream version
+  * new upstream URL
+  * updated to new build system, renaming the packages to
+  shogun-python-modular and shogun-python
+
+ -- Soeren Sonnenburg <debian@nn7.de>  Wed, 24 Jan 2007 10:38:50 +0100
+
+shogun (0.2.1+svn1880-2) unstable; urgency=low
+
+  * NOT RELEASED YET
+  * Add more python examples.
+
+ -- Torsten Werner <twerner@debian.org>  Wed, 10 Jan 2007 22:02:45 +0100
+
+shogun (0.2.1+svn1880-1) unstable; urgency=low
+
+  [ Torsten Werner ]
+  * new upstream version
+  * Fixed debian/copyright as requested by ftp-master Jörg Jaspert.
+
+  [ Sören Sonnenburg ]
+  * Removed non-free code completely.
+  * Switch to svn revisions instead of dates.
+
+ -- Torsten Werner <twerner@debian.org>  Wed, 10 Jan 2007 20:24:13 +0100
+
+shogun (0.2.1-1) unstable; urgency=low
+
+  [ Torsten Werner ]
+  * Initial Release, closes: #388148.
+
+ -- Torsten Werner <twerner@debian.org>  Thu, 30 Nov 2006 20:20:39 +0100

@@ -1,0 +1,26 @@
+Files: *
+Copyright: 1999-2009 Fraunhofer Institute FIRST
+Copyright: 1999-2011 Max Planck Society
+Copyright: 2009-2011 Berlin Institute of Technology
+Copyright: 2011-2013 Soeren Sonnenburg, Fernando J. Iglesias, Heiko Strathmann, Sergey Lisitsyn
+Copyright: 2012 Chiyuan Zhang
+Copyright: 2012-2013 Viktor Gal, Engeniy Andreev
+Copyright: 2013 Shell Hu, Zhengyang Liu
+License: GPL-3+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+  . 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  . 
+  On Debian systems, you can find the GPL license in:
+  `/usr/share/common-licenses/GPL'.
+
+
+Files: debian/*
+Copyright: 2007-2013 Soeren Sonnenburg, Torsten Werner
+License: GPL-3+
