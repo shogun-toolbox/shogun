@@ -42,6 +42,7 @@
         "Default": "$typeName",
         "bool": "bool",
         "string": "char*",
+        "char": "char",
         "int": "int32_t",
         "float": "float32_t",
         "real": "float64_t",
@@ -74,6 +75,7 @@
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
         "BoolLiteral": {
             "True": "true",
             "False": "false"

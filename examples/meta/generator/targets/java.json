@@ -41,6 +41,7 @@
         "float": "float",
         "real": "double",
         "string": "String",
+        "char": "char",
         "BoolVector": "DoubleMatrix",
         "CharVector": "DoubleMatrix",
         "ByteVector": "DoubleMatrix",
@@ -68,6 +69,7 @@
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
         "BoolLiteral": {
             "True": "true",
             "False": "false"

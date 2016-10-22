@@ -12,6 +12,7 @@
     },
     "Expr": {
         "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
         "BoolLiteral": {
             "True": "TRUE",
             "False": "FALSE"

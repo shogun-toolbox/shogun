@@ -153,8 +153,12 @@ class Translator:
                 elif "Comment" in line:
                     targetProgram += self.translateComment(line["Comment"])
             except Exception as e:
-                print("Translation failed on line {}".format(line["__PARSER_INFO_LINE_NO"]))
-                raise
+                print "Translation failed on line\n%s\n" % line
+                try:
+                    print("Failed on line {}".format(line["__PARSER_INFO_LINE_NO"]))
+                except KeyError as e2:
+                    pass
+                raise e
 
         allClasses, interfacedClasses, enums = getDependencies(program)
         try:
@@ -182,7 +186,7 @@ class Translator:
             "Expr": {"StringLiteral": "{}.dat".format(programName)}
         }
         # 'w'
-        storageFilemode = {"Expr": {"IntLiteral": "119"}}
+        storageFilemode = {"Expr": {"CharLiteral": 'w'}}
         storageComment = {"Comment": " Serialize output for integration testing (automatically generated)"}
         storageInit = {"Init": [{"ObjectType": "WrappedObjectArray"},
                                 {"Identifier": storage},
@@ -419,6 +423,7 @@ class Translator:
                 {"MethodCall": [identifierAST, identifierAST, argumentListAST]}
                 {"BoolLiteral": "False"}
                 {"StringLiteral": "train.dat"}
+                {"Char": 'w'}
                 {"IntLiteral": 4}
                 {"Identifier": "feats_test"}
                 etc.
@@ -467,6 +472,10 @@ class Translator:
 
         elif key == "StringLiteral":
             template = Template(self.targetDict["Expr"]["StringLiteral"])
+            return template.substitute(literal=expr[key])
+        
+        elif key == "CharLiteral":
+            template = Template(self.targetDict["Expr"]["CharLiteral"])
             return template.substitute(literal=expr[key])
 
         elif key == "IntLiteral":

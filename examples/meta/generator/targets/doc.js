@@ -182,7 +182,9 @@
     "Expr": {
         // Keywords: $literal
         "StringLiteral": "\"$literal\"",
-
+        
+        "CharLiteral": "'$literal'",
+        
         "BoolLiteral": {
             "True": "true",
             "False": "false"
