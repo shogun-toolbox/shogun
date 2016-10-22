@@ -105,7 +105,7 @@ public:
 
 	APPEND_WRAPPED_TEMPLATE(real, float64_t)
 	APPEND_WRAPPED_TEMPLATE(float, float32_t)
-	APPEND_WRAPPED_TEMPLATE(int, float64_t)
+	APPEND_WRAPPED_TEMPLATE(int, int32_t)
 	APPEND_WRAPPED_TEMPLATE(real_vector, SGVector<float64_t>)
 	APPEND_WRAPPED_TEMPLATE(float_vector, SGVector<float32_t>)
 	APPEND_WRAPPED_TEMPLATE(real_matrix, SGMatrix<float64_t>)
