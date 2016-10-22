@@ -132,7 +132,7 @@ public:
 	 *  halts
 	 *  @return distance value or upper_bound
 	 */
-	virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
+	virtual float64_t distance_upper_bounded(index_t idx_a, index_t idx_b, float64_t upper_bound);
 
 	/**
 	 * Precomputation of squared norms for features of right hand side
@@ -178,7 +178,7 @@ protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(index_t idx_a, index_t idx_b);
 
 	/** if application of sqrt on matrix computation is disabled */
 	bool disable_sqrt;

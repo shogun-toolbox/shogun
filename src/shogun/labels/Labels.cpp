@@ -64,14 +64,14 @@ CSubsetStack* CLabels::get_subset_stack()
 	return m_subset_stack;
 }
 
-float64_t CLabels::get_value(int32_t idx)
+float64_t CLabels::get_value(index_t idx)
 {
 	ASSERT(m_current_values.vector && idx < get_num_labels())
-	int32_t real_num = m_subset_stack->subset_idx_conversion(idx);
+	index_t real_num = m_subset_stack->subset_idx_conversion(idx);
 	return m_current_values.vector[real_num];
 }
 
-void CLabels::set_value(float64_t value, int32_t idx)
+void CLabels::set_value(float64_t value, index_t idx)
 {
 
 	REQUIRE(m_current_values.vector, "%s::set_value(%f, %d): No values vector"
@@ -79,7 +79,7 @@ void CLabels::set_value(float64_t value, int32_t idx)
 	REQUIRE(get_num_labels(), "%s::set_value(%f, %d): Number of values is "
 	        "zero!\n", get_name(), value, idx);
 
-	int32_t real_num = m_subset_stack->subset_idx_conversion(idx);
+	index_t real_num = m_subset_stack->subset_idx_conversion(idx);
 	m_current_values.vector[real_num] = value;
 }
 

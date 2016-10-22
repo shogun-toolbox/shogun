@@ -28,11 +28,11 @@ CStreamingDotFeatures::~CStreamingDotFeatures()
 }
 
 void CStreamingDotFeatures::dense_dot_range(float32_t* output, float32_t* alphas,
-		float32_t* vec, int32_t dim, float32_t b, int32_t num_vec)
+		float32_t* vec, index_t dim, float32_t b, index_t num_vec)
 {
 	ASSERT(num_vec>=0)
 
-	int32_t counter=0;
+	index_t counter=0;
 	start_parser();
 	while (get_next_example())
 	{
@@ -50,9 +50,9 @@ void CStreamingDotFeatures::dense_dot_range(float32_t* output, float32_t* alphas
 	end_parser();
 }
 
-void CStreamingDotFeatures::expand_if_required(float32_t*& vec, int32_t &len)
+void CStreamingDotFeatures::expand_if_required(float32_t*& vec, index_t &len)
 {
-	int32_t dim = get_dim_feature_space();
+	index_t dim = get_dim_feature_space();
 	if (dim > len)
 	{
 		vec = SG_REALLOC(float32_t, vec, len, dim);
@@ -61,9 +61,9 @@ void CStreamingDotFeatures::expand_if_required(float32_t*& vec, int32_t &len)
 	}
 }
 
-void CStreamingDotFeatures::expand_if_required(float64_t*& vec, int32_t &len)
+void CStreamingDotFeatures::expand_if_required(float64_t*& vec, index_t &len)
 {
-	int32_t dim = get_dim_feature_space();
+	index_t dim = get_dim_feature_space();
 	if (dim > len)
 	{
 		vec = SG_REALLOC(float64_t, vec, len, dim);
@@ -78,13 +78,13 @@ void* CStreamingDotFeatures::get_feature_iterator()
 	return NULL;
 }
 
-int32_t CStreamingDotFeatures::get_nnz_features_for_vector()
+index_t CStreamingDotFeatures::get_nnz_features_for_vector()
 {
 	SG_NOTIMPLEMENTED
 	return -1;
 }
 
-bool CStreamingDotFeatures::get_next_feature(int32_t& index, float32_t& value, void* iterator)
+bool CStreamingDotFeatures::get_next_feature(index_t& index, float32_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;

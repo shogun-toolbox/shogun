@@ -65,8 +65,8 @@ public:
 	virtual bool init(CKernel* k)
 	{
 		ASSERT(k)
-		int32_t num_lhs = k->get_num_vec_lhs();
-		int32_t num_rhs = k->get_num_vec_rhs();
+		index_t num_lhs = k->get_num_vec_lhs();
+		index_t num_rhs = k->get_num_vec_rhs();
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
@@ -100,12 +100,12 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+	virtual float64_t normalize(float64_t value, index_t idx_lhs, index_t idx_rhs)
 	{
 
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		index_t task_idx_lhs = task_vector_lhs[idx_lhs];
+		index_t task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
 		float64_t task_similarity = get_similarity(task_idx_lhs, task_idx_rhs);
@@ -122,7 +122,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -132,7 +132,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -192,12 +192,12 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t get_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_similarity(index_t task_lhs, index_t task_rhs)
 	{
 
 		float64_t similarity = 0.0;
 
-		for (int32_t i=0; i!=static_cast<int>(active_pairs.size()); i++)
+		for (index_t i=0; i!=static_cast<int>(active_pairs.size()); i++)
 		{
 			std::pair<int32_t, int32_t> block = active_pairs[i];
 

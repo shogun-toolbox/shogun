@@ -30,8 +30,8 @@ struct S_THREAD_PARAM_KERNEL_MACHINE
 {
 	CKernelMachine* kernel_machine;
 	float64_t* result;
-	int32_t start;
-	int32_t end;
+	index_t start;
+	index_t end;
 
 	/* if non-null, start and end correspond to indices in this vector */
 	index_t* indices;
@@ -50,7 +50,7 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
 {
     init();
 
-    int32_t num_sv=svs.vlen;
+    index_t num_sv=svs.vlen;
     ASSERT(num_sv == alphas.vlen)
     create_new_model(num_sv);
     set_alphas(alphas);
@@ -68,7 +68,7 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 	float64_t bias = machine->get_bias();
 	CKernel* ker = machine->get_kernel();
 
-	int32_t num_sv = svs.vlen;
+	index_t num_sv = svs.vlen;
 	create_new_model(num_sv);
 	set_alphas(alphas);
 	set_support_vectors(svs);
@@ -136,13 +136,13 @@ void CKernelMachine::set_bias(float64_t bias)
     m_bias=bias;
 }
 
-int32_t CKernelMachine::get_support_vector(int32_t idx)
+index_t CKernelMachine::get_support_vector(index_t idx)
 {
     ASSERT(m_svs.vector && idx<m_svs.vlen)
     return m_svs.vector[idx];
 }
 
-float64_t CKernelMachine::get_alpha(int32_t idx)
+float64_t CKernelMachine::get_alpha(index_t idx)
 {
     if (!m_alpha.vector)
         SG_ERROR("No alphas set\n")
@@ -151,7 +151,7 @@ float64_t CKernelMachine::get_alpha(int32_t idx)
     return m_alpha.vector[idx];
 }
 
-bool CKernelMachine::set_support_vector(int32_t idx, int32_t val)
+bool CKernelMachine::set_support_vector(index_t idx, int32_t val)
 {
     if (m_svs.vector && idx<m_svs.vlen)
         m_svs.vector[idx]=val;
@@ -161,7 +161,7 @@ bool CKernelMachine::set_support_vector(int32_t idx, int32_t val)
     return true;
 }
 
-bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
+bool CKernelMachine::set_alpha(index_t idx, float64_t val)
 {
     if (m_alpha.vector && idx<m_alpha.vlen)
         m_alpha.vector[idx]=val;
@@ -171,7 +171,7 @@ bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
     return true;
 }
 
-int32_t CKernelMachine::get_num_support_vectors()
+index_t CKernelMachine::get_num_support_vectors()
 {
     return m_svs.vlen;
 }
@@ -196,7 +196,7 @@ SGVector<float64_t> CKernelMachine::get_alphas()
 	return m_alpha;
 }
 
-bool CKernelMachine::create_new_model(int32_t num)
+bool CKernelMachine::create_new_model(index_t num)
 {
     m_alpha=SGVector<float64_t>();
     m_svs=SGVector<int32_t>();
@@ -215,14 +215,14 @@ bool CKernelMachine::create_new_model(int32_t num)
 
 bool CKernelMachine::init_kernel_optimization()
 {
-	int32_t num_sv=get_num_support_vectors();
+	index_t num_sv=get_num_support_vectors();
 
 	if (kernel && kernel->has_property(KP_LINADD) && num_sv>0)
 	{
-		int32_t * sv_idx    = SG_MALLOC(int32_t, num_sv);
+		index_t * sv_idx    = SG_MALLOC(index_t, num_sv);
 		float64_t* sv_weight = SG_MALLOC(float64_t, num_sv);
 
-		for(int32_t i=0; i<num_sv; i++)
+		for(index_t i=0; i<num_sv; i++)
 		{
 			sv_idx[i]    = get_support_vector(i) ;
 			sv_weight[i] = get_alpha(i) ;
@@ -288,7 +288,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	 * TODO Heiko Strathmann
 	 */
 	CFeatures* rhs=kernel->get_rhs();
-	int32_t num_vectors=rhs ? rhs->get_num_vectors() : kernel->get_num_vec_rhs();
+	index_t num_vectors=rhs ? rhs->get_num_vectors() : kernel->get_num_vec_rhs();
 	SG_UNREF(rhs)
 
 	SGVector<float64_t> output(num_vectors);
@@ -309,15 +309,15 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 			SG_DEBUG("Batch evaluation enabled\n")
 			if (get_num_support_vectors()>0)
 			{
-				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
+				index_t* sv_idx=SG_MALLOC(index_t, get_num_support_vectors());
 				float64_t* sv_weight=SG_MALLOC(float64_t, get_num_support_vectors());
-				int32_t* idx=SG_MALLOC(int32_t, num_vectors);
+				index_t* idx=SG_MALLOC(index_t, num_vectors);
 
 				//compute output for all vectors v[0]...v[num_vectors-1]
-				for (int32_t i=0; i<num_vectors; i++)
+				for (index_t i=0; i<num_vectors; i++)
 					idx[i]=i;
 
-				for (int32_t i=0; i<get_num_support_vectors(); i++)
+				for (index_t i=0; i<get_num_support_vectors(); i++)
 				{
 					sv_idx[i]    = get_support_vector(i) ;
 					sv_weight[i] = get_alpha(i) ;
@@ -330,7 +330,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				SG_FREE(idx);
 			}
 
-			for (int32_t i=0; i<num_vectors; i++)
+			for (index_t i=0; i<num_vectors; i++)
 				output[i] = get_bias() + output[i];
 
 		}
@@ -489,7 +489,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	/* we are working on a custom kernel here */
 	ASSERT(m_custom_kernel==kernel)
 
-	int32_t num_inds=indices.vlen;
+	index_t num_inds=indices.vlen;
 	SGVector<float64_t> output(num_inds);
 
 	if (io->get_show_progress())
@@ -503,6 +503,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	int64_t step;
 #pragma omp parallel shared(num_threads, step)
 	{
+
 #ifdef HAVE_OPENMP
 #pragma omp single
 		{

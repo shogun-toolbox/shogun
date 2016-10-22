@@ -24,13 +24,13 @@ CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures()
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K)
+	CDotFeatures* dataset, index_t K)
 {
 	init(dataset, K);
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K, SGMatrix<float64_t> coeff)
+	CDotFeatures* dataset, index_t K, SGMatrix<float64_t> coeff)
 {
 	init(dataset, K);
 	random_coeff = coeff;
@@ -70,7 +70,7 @@ CRandomKitchenSinksDotFeatures::~CRandomKitchenSinksDotFeatures()
 }
 
 void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
-	int32_t K)
+	index_t K)
 {
 	feats = dataset;
 	SG_REF(feats);
@@ -82,13 +82,13 @@ void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
 	m_parameters->add(&random_coeff, "random_coeff", "Random function parameters");
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const
+index_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const
 {
 	return num_samples;
 }
 
-float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
-	int32_t vec_idx2)
+float64_t CRandomKitchenSinksDotFeatures::dot(index_t vec_idx1, CDotFeatures* df,
+	index_t vec_idx2)
 {
 	ASSERT(typeid(*this) == typeid(*df));
 	CRandomKitchenSinksDotFeatures* other = (CRandomKitchenSinksDotFeatures* ) df;
@@ -108,7 +108,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df
 }
 
 float64_t CRandomKitchenSinksDotFeatures::dense_dot(
-	int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	SG_DEBUG("entering dense_dot()\n");
 	ASSERT(vec2_len == get_dim_feature_space());
@@ -125,7 +125,7 @@ float64_t CRandomKitchenSinksDotFeatures::dense_dot(
 }
 
 void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
-	int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+	index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
 {
 	SG_DEBUG("Entering add_to_dense()\n");
 	ASSERT(vec2_len == get_dim_feature_space());
@@ -142,18 +142,18 @@ void CRandomKitchenSinksDotFeatures::add_to_dense_vec(float64_t alpha,
 	SG_DEBUG("Leaving add_to_dense()\n");
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num)
+index_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(index_t num)
 {
 	return num_samples;
 }
 
-void* CRandomKitchenSinksDotFeatures::get_feature_iterator(int32_t vector_index)
+void* CRandomKitchenSinksDotFeatures::get_feature_iterator(index_t vector_index)
 {
 	SG_NOTIMPLEMENTED;
 	return NULL;
 }
 
-bool CRandomKitchenSinksDotFeatures::get_next_feature(int32_t& index,
+bool CRandomKitchenSinksDotFeatures::get_next_feature(index_t& index,
 	float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
@@ -175,7 +175,7 @@ EFeatureClass CRandomKitchenSinksDotFeatures::get_feature_class() const
 	return C_DENSE;
 }
 
-int32_t CRandomKitchenSinksDotFeatures::get_num_vectors() const
+index_t CRandomKitchenSinksDotFeatures::get_num_vectors() const
 {
 	return feats->get_num_vectors();
 }

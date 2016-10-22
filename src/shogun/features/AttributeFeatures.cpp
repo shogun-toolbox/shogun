@@ -21,7 +21,7 @@ CAttributeFeatures::CAttributeFeatures()
 
 CFeatures* CAttributeFeatures::get_attribute(char* attr_name)
 {
-	int32_t idx=find_attr_index(attr_name);
+	index_t idx=find_attr_index(attr_name);
 	if (idx>=0)
 	{
 		CFeatures* f=features[idx].attr_obj;
@@ -42,7 +42,7 @@ void CAttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name,
 
 bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 {
-	int32_t idx=find_attr_index(attr_name);
+	index_t idx=find_attr_index(attr_name);
 	if (idx==-1)
 		idx=features.get_num_elements();
 
@@ -57,7 +57,7 @@ bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 
 bool CAttributeFeatures::del_attribute(char* attr_name)
 {
-	int32_t idx=find_attr_index(attr_name);
+	index_t idx=find_attr_index(attr_name);
 
 	if (idx>=0)
 	{
@@ -69,15 +69,15 @@ bool CAttributeFeatures::del_attribute(char* attr_name)
 	return false;
 }
 
-int32_t CAttributeFeatures::get_num_attributes()
+index_t CAttributeFeatures::get_num_attributes()
 {
 	return features.get_num_elements();
 }
 
-int32_t CAttributeFeatures::find_attr_index(char* attr_name)
+index_t CAttributeFeatures::find_attr_index(char* attr_name)
 {
-	int32_t n=features.get_num_elements();
-	for (int32_t i=0; i<n; i++)
+	index_t n=features.get_num_elements();
+	for (index_t i=0; i<n; i++)
 	{
 		if (!strcmp(features[n].attr_name, attr_name))
 			return i;
@@ -88,7 +88,7 @@ int32_t CAttributeFeatures::find_attr_index(char* attr_name)
 
 CAttributeFeatures::~CAttributeFeatures()
 {
-	int32_t n=features.get_num_elements();
-	for (int32_t i=0; i<n; i++)
+	index_t n=features.get_num_elements();
+	for (index_t i=0; i<n; i++)
 		SG_UNREF_NO_NULL(features[i].attr_obj);
 }

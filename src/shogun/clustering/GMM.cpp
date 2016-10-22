@@ -131,7 +131,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		SG_ERROR("No features to train on.\n")
 
 	CDotFeatures* dotdata=(CDotFeatures *) features;
-	int32_t num_vectors=dotdata->get_num_vectors();
+	index_t num_vectors=dotdata->get_num_vectors();
 
 	SGMatrix<float64_t> alpha;
 
@@ -163,7 +163,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		log_likelihood_prev=log_likelihood_cur;
 		log_likelihood_cur=0;
 
-		for (int32_t i=0; i<num_vectors; i++)
+		for (index_t i=0; i<num_vectors; i++)
 		{
 			logPx[i]=0;
 			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
@@ -206,7 +206,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n")
 
 	CDotFeatures* dotdata=(CDotFeatures *) features;
-	int32_t num_vectors=dotdata->get_num_vectors();
+	index_t num_vectors=dotdata->get_num_vectors();
 
 	float64_t cur_likelihood=train_em(min_cov, max_em_iter, min_change);
 
@@ -219,15 +219,15 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	float64_t* logPostSumSum=SG_MALLOC(float64_t, m_components.size()*(m_components.size()-1)/2);
 	float64_t* split_crit=SG_MALLOC(float64_t, m_components.size());
 	float64_t* merge_crit=SG_MALLOC(float64_t, m_components.size()*(m_components.size()-1)/2);
-	int32_t* split_ind=SG_MALLOC(int32_t, m_components.size());
-	int32_t* merge_ind=SG_MALLOC(int32_t, m_components.size()*(m_components.size()-1)/2);
+	index_t* split_ind=SG_MALLOC(index_t, m_components.size());
+	index_t* merge_ind=SG_MALLOC(index_t, m_components.size()*(m_components.size()-1)/2);
 
 	while (iter<max_iter)
 	{
 		memset(logPostSum, 0, m_components.size()*sizeof(float64_t));
 		memset(logPostSum2, 0, m_components.size()*sizeof(float64_t));
 		memset(logPostSumSum, 0, (m_components.size()*(m_components.size()-1)/2)*sizeof(float64_t));
-		for (int32_t i=0; i<num_vectors; i++)
+		for (index_t i=0; i<num_vectors; i++)
 		{
 			logPx[i]=0;
 			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
@@ -263,7 +263,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 			logPostSum[i]=CMath::log(logPostSum[i]);
 			split_crit[i]=0;
 			split_ind[i]=i;
-			for (int32_t j=0; j<num_vectors; j++)
+			for (index_t j=0; j<num_vectors; j++)
 			{
 				split_crit[i]+=(logPost[j*m_components.size()+i]-logPostSum[i]-logPxy[j*m_components.size()+i]+CMath::log(m_coefficients[i]))*
 								(CMath::exp(logPost[j*m_components.size()+i])/CMath::exp(logPostSum[i]));

@@ -42,7 +42,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @param num_labels number of labels
 		 */
-		CDenseLabels(int32_t num_labels);
+		CDenseLabels(index_t num_labels);
 
 		/** constructor
 		 *
@@ -85,7 +85,7 @@ class CDenseLabels : public CLabels
 		 * @param label value of label
 		 * @return if setting was successful
 		 */
-		bool set_label(int32_t idx, float64_t label);
+		bool set_label(index_t idx, float64_t label);
 
 		/** set INT label
 		 *
@@ -95,7 +95,7 @@ class CDenseLabels : public CLabels
 		 * @param label INT value of label
 		 * @return if setting was successful
 		 */
-		bool set_int_label(int32_t idx, int32_t label);
+		bool set_int_label(index_t idx, int32_t label);
 
 		/** Getter for labels
 		 *
@@ -110,7 +110,7 @@ class CDenseLabels : public CLabels
 		 * @param idx index of label to get
 		 * @return value of label
 		 */
-		float64_t get_label(int32_t idx);
+		float64_t get_label(index_t idx);
 
 		/** get label
 		 *
@@ -120,7 +120,7 @@ class CDenseLabels : public CLabels
 		 * @return value of label
 		 */
 		template<typename ST>
-		ST get_label_t(int32_t idx)
+		ST get_label_t(index_t idx)
 		{
 			REQUIRE(idx<get_num_labels(), "The provided index (%d) is out of bounds (the last label has index (%d)).  "
 				"Please ensure that you're using a valid index number.", idx, get_num_labels())
@@ -137,7 +137,7 @@ class CDenseLabels : public CLabels
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		int32_t get_int_label(int32_t idx);
+		int32_t get_int_label(index_t idx);
 
 		/** Gets a copy of the labels.
 		 *
@@ -254,7 +254,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		virtual index_t get_num_labels() const;
 
 		/** get label type
 		 *

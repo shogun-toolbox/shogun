@@ -87,7 +87,7 @@ public:
 	 *
 	 * @return number of attributes
 	 */
-	int32_t get_num_attributes();
+	index_t get_num_attributes();
 
 	/** @return object name */
 	virtual const char* get_name() const { return "AttributeFeatures"; }
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @return number of examples/vectors
 	 */
-	virtual int32_t get_num_vectors() const=0;
+	virtual index_t get_num_vectors() const=0;
 
 protected:
 	/** find the index of the attribute matching attribute name
@@ -130,7 +130,7 @@ protected:
 	 * @param attr_name attribute name
 	 * @return index (if found), otherwise -1
 	 */
-	inline int32_t find_attr_index(char* attr_name);
+	inline index_t find_attr_index(char* attr_name);
 
 protected:
 	///list of attributes (sorted)

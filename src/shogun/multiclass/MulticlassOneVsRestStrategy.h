@@ -70,7 +70,7 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 * @param n_outputs number of outputs
 	 */
-	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs);
+	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, index_t n_outputs);
 
 	/** get number of machines used in this strategy.
 	 */

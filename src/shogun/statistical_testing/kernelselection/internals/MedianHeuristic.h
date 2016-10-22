@@ -62,7 +62,7 @@ protected:
 	virtual void compute_measures() override;
 	std::shared_ptr<CCustomDistance> distance;
 	SGVector<float64_t> measures;
-	int32_t n;
+	index_t n;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

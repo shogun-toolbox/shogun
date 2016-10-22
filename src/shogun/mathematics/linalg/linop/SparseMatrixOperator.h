@@ -40,7 +40,7 @@ struct SparsityStructure
 	SparsityStructure(index_t* row_offsets, index_t* column_indices,
 		index_t num_rows)
 	: m_num_rows(num_rows),
-		m_ptr(new int32_t*[num_rows]())
+		m_ptr(new index_t*[num_rows]())
 	{
 		for (index_t i=0; i<m_num_rows; ++i)
 		{
@@ -48,7 +48,7 @@ struct SparsityStructure
 			index_t new_index=row_offsets[i+1];
 			index_t length_row=(new_index-current_index);
 
-			m_ptr[i]=new int32_t[length_row+1]();
+			m_ptr[i]=new index_t[length_row+1]();
 			m_ptr[i][0]=length_row;
 
 			for (index_t j=1; j<=length_row; ++j)
@@ -85,7 +85,7 @@ struct SparsityStructure
 	index_t m_num_rows;
 
 	/** the pointer that stores the nnz entries */
-	int32_t **m_ptr;
+	index_t **m_ptr;
 };
 
 

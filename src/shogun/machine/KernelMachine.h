@@ -226,7 +226,7 @@ class CKernelMachine : public CMachine
 		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t apply_one(int32_t num);
+		virtual float64_t apply_one(index_t num);
 
 #ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is

@@ -62,7 +62,7 @@ public:
 		set_task_vector_rhs(task_rhs);
 
 		// set active tasks
-		for (int32_t i = 0; i != (int32_t)(active_tasks_vec.size()); ++i)
+		for (index_t i = 0; i != (index_t)(active_tasks_vec.size()); ++i)
 		{
 			active_tasks.insert(active_tasks_vec[i]);
 		}
@@ -80,8 +80,8 @@ public:
 	virtual bool init(CKernel* k)
 	{
 		ASSERT(k)
-		int32_t num_lhs = k->get_num_vec_lhs();
-		int32_t num_rhs = k->get_num_vec_rhs();
+		index_t num_lhs = k->get_num_vec_lhs();
+		index_t num_rhs = k->get_num_vec_rhs();
 		ASSERT(num_lhs>0)
 		ASSERT(num_rhs>0)
 
@@ -114,12 +114,12 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+	virtual float64_t normalize(float64_t value, index_t idx_lhs, index_t idx_rhs)
 	{
 
 		//lookup tasks
-		int32_t task_idx_lhs = task_vector_lhs[idx_lhs];
-		int32_t task_idx_rhs = task_vector_rhs[idx_rhs];
+		index_t task_idx_lhs = task_vector_lhs[idx_lhs];
+		index_t task_idx_rhs = task_vector_rhs[idx_rhs];
 
 		//lookup similarity
 		float64_t task_similarity = get_similarity(task_idx_lhs, task_idx_rhs);
@@ -136,7 +136,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+	virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 	{
 		SG_ERROR("normalize_lhs not implemented")
 		return 0;
@@ -146,7 +146,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+	virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 	{
 		SG_ERROR("normalize_rhs not implemented")
 		return 0;
@@ -165,7 +165,7 @@ public:
 
 		task_vector_lhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (index_t i = 0; i != (index_t)(vec.size()); ++i)
 		{
 			task_vector_lhs.push_back(vec[i]);
 		}
@@ -186,7 +186,7 @@ public:
 
 		task_vector_rhs.clear();
 
-		for (int32_t i = 0; i != (int32_t)(vec.size()); ++i)
+		for (index_t i = 0; i != (index_t)(vec.size()); ++i)
 		{
 			task_vector_rhs.push_back(vec[i]);
 		}
@@ -206,7 +206,7 @@ public:
 	 * @param task_rhs task_id on right hand side
 	 * @return similarity between tasks
 	 */
-	float64_t get_similarity(int32_t task_lhs, int32_t task_rhs)
+	float64_t get_similarity(index_t task_lhs, index_t task_rhs)
 	{
 
 		const bool lhs_is_in = active_tasks.find(task_lhs) != active_tasks.end();

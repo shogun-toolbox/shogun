@@ -18,7 +18,7 @@ CSplittingStrategy::CSplittingStrategy()
 	init();
 }
 
-CSplittingStrategy::CSplittingStrategy(CLabels* labels, int32_t num_subsets)
+CSplittingStrategy::CSplittingStrategy(CLabels* labels, index_t num_subsets)
 {
 	init();
 

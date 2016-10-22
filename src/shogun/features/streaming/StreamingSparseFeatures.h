@@ -68,7 +68,7 @@ public:
 	 */
 	CStreamingSparseFeatures(CStreamingFile* file,
 				 bool is_labelled,
-				 int32_t size);
+				 index_t size);
 
 	/**
 	 * Destructor.
@@ -129,7 +129,7 @@ public:
 	 *
 	 * @return sum of features that match dimension index and 0 if none is found
 	 */
-	T get_feature(int32_t index);
+	T get_feature(index_t index);
 
 	/**
 	 * Return the current feature vector as an SGSparseVector<T>.
@@ -172,7 +172,7 @@ public:
 	 *        than the current number of features
 	 * @return previous number of features
 	 */
-	int32_t set_num_features(int32_t num);
+	index_t set_num_features(index_t num);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -181,7 +181,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	virtual index_t get_dim_feature_space() const;
 
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -205,7 +205,7 @@ public:
 	 * @param blen bvec's length
 	 * @return dot product between the two sparse feature vectors
 	 */
-	static T sparse_dot(T alpha, SGSparseVectorEntry<T>* avec, int32_t alen, SGSparseVectorEntry<T>* bvec, int32_t blen);
+	static T sparse_dot(T alpha, SGSparseVectorEntry<T>* avec, index_t alen, SGSparseVectorEntry<T>* bvec, index_t blen);
 
 	/** compute the dot product between dense weights and a sparse feature vector
 	 * alpha * sparse^T * w + b
@@ -216,7 +216,7 @@ public:
 	 * @param b bias
 	 * @return dot product between dense weights and a sparse feature vector
 	 */
-	T dense_dot(T alpha, T* vec, int32_t dim, T b);
+	T dense_dot(T alpha, T* vec, index_t dim, T b);
 
 	/**
 	 * Dot product with another float64_t type dense vector.
@@ -226,7 +226,7 @@ public:
 	 *
 	 * @return Dot product as a float64_t.
 	 */
-	virtual float64_t dense_dot(const float64_t* vec2, int32_t vec2_len);
+	virtual float64_t dense_dot(const float64_t* vec2, index_t vec2_len);
 
 	/**
 	 * Dot product with another dense vector.
@@ -236,7 +236,7 @@ public:
 	 *
 	 * @return Dot product as a float32_t.
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	virtual float32_t dense_dot(const float32_t* vec2, index_t vec2_len);
 
 	/**
 	 * Add alpha*current_vector to another float64_t type dense vector.
@@ -247,7 +247,7 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, index_t vec2_len, bool abs_val=false);
 
 	/**
 	 * Add alpha*current_vector to another dense vector.
@@ -258,14 +258,14 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false);
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val=false);
 
 	/**
 	 * Get number of non-zero entries in current sparse vector
 	 *
 	 * @return number of features explicity set in the sparse vector
 	 */
-	int64_t get_num_nonzero_entries();
+	index_t get_num_nonzero_entries();
 
 	/**
 	 * Compute sum of squares of features on current vector.
@@ -286,14 +286,14 @@ public:
 	 *
 	 * @return number of features as int
 	 */
-	virtual int32_t get_num_features();
+	virtual index_t get_num_features();
 
 	/**
 	 * Return the number of non-zero features in vector
 	 *
 	 * @return number of sparse features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector();
+	virtual index_t get_nnz_features_for_vector();
 
 	/**
 	 * Return the feature type, depending on T.
@@ -321,7 +321,7 @@ public:
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	virtual index_t get_num_vectors() const;
 
 private:
 	/**
@@ -337,7 +337,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	virtual void init(CStreamingFile *file, bool is_labelled, index_t size);
 
 protected:
 	/// The parser object, which reads from input and returns parsed example objects.
@@ -353,7 +353,7 @@ protected:
 	float64_t current_label;
 
 	/// Number of features in current vector (as seen so far upto the current vector)
-	int32_t current_num_features;
+	index_t current_num_features;
 };
 
 }

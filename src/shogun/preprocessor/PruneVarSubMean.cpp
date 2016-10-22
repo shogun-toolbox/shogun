@@ -39,16 +39,16 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		ASSERT(features->get_feature_type()==F_DREAL)
 
 		CDenseFeatures<float64_t>* simple_features=(CDenseFeatures<float64_t>*) features;
-		int32_t num_examples = simple_features->get_num_vectors();
-		int32_t num_features = simple_features->get_num_features();
+		index_t num_examples = simple_features->get_num_vectors();
+		index_t num_features = simple_features->get_num_features();
 
 		m_mean = SGVector<float64_t>();
-		m_idx = SGVector<int32_t>();
+		m_idx = SGVector<index_t>();
 		m_std = SGVector<float64_t>();;
 
 		m_mean.resize_vector(num_features);
 		float64_t* var=SG_MALLOC(float64_t, num_features);
-		int32_t i,j;
+		index_t i,j;
 
 		memset(var, 0, num_features*sizeof(float64_t));
 		m_mean.zero();
@@ -72,8 +72,8 @@ bool CPruneVarSubMean::init(CFeatures* features)
 				var[j]+=CMath::sq(m_mean[j]-feature_matrix.matrix[i*num_features+j]);
 		}
 
-		int32_t num_ok=0;
-		int32_t* idx_ok=SG_MALLOC(int32_t, num_features);
+		index_t num_ok=0;
+		index_t* idx_ok=SG_MALLOC(index_t, num_features);
 
 		for (j=0; j<num_features; j++)
 		{
@@ -113,7 +113,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 /// clean up allocated memory
 void CPruneVarSubMean::cleanup()
 {
-	m_idx=SGVector<int32_t>();
+	m_idx=SGVector<index_t>();
 	m_mean=SGVector<float64_t>();
 	m_std=SGVector<float64_t>();
 	m_initialized = false;
@@ -126,25 +126,25 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 {
 	ASSERT(m_initialized)
 
-	int32_t num_vectors=0;
-	int32_t num_features=0;
+	index_t num_vectors=0;
+	index_t num_features=0;
 	float64_t* m=((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 	SG_INFO("Preprocessing feature matrix\n")
-	for (int32_t vec=0; vec<num_vectors; vec++)
+	for (index_t vec=0; vec<num_vectors; vec++)
 	{
 		float64_t* v_src=&m[num_features*vec];
 		float64_t* v_dst=&m[m_num_idx*vec];
 
 		if (m_divide_by_std)
 		{
-			for (int32_t feat=0; feat<m_num_idx; feat++)
+			for (index_t feat=0; feat<m_num_idx; feat++)
 				v_dst[feat]=(v_src[m_idx[feat]]-m_mean[feat])/m_std[feat];
 		}
 		else
 		{
-			for (int32_t feat=0; feat<m_num_idx; feat++)
+			for (index_t feat=0; feat<m_num_idx; feat++)
 				v_dst[feat]=(v_src[m_idx[feat]]-m_mean[feat]);
 		}
 	}
@@ -168,19 +168,19 @@ SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t
 
 		if (m_divide_by_std)
 		{
-			for (int32_t i=0; i<m_num_idx; i++)
+			for (index_t i=0; i<m_num_idx; i++)
 				ret[i]=(vector.vector[m_idx[i]]-m_mean[i])/m_std[i];
 		}
 		else
 		{
-			for (int32_t i=0; i<m_num_idx; i++)
+			for (index_t i=0; i<m_num_idx; i++)
 				ret[i]=(vector.vector[m_idx[i]]-m_mean[i]);
 		}
 	}
 	else
 	{
 		ret=SG_MALLOC(float64_t, vector.vlen);
-		for (int32_t i=0; i<vector.vlen; i++)
+		for (index_t i=0; i<vector.vlen; i++)
 			ret[i]=vector.vector[i];
 	}
 
@@ -192,7 +192,7 @@ void CPruneVarSubMean::init()
 	m_initialized = false;
 	m_divide_by_std = false;
 	m_num_idx = 0;
-	m_idx = SGVector<int32_t>();
+	m_idx = SGVector<index_t>();
 	m_mean = SGVector<float64_t>();
 	m_std = SGVector<float64_t>();
 }

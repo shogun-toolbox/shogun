@@ -134,8 +134,8 @@ SGVector<float64_t> CStatistics::matrix_std_deviation(
 SGMatrix<float64_t> CStatistics::covariance_matrix(
 		SGMatrix<float64_t> observations, bool in_place)
 {
-	int32_t D = observations.num_rows;
-	int32_t N = observations.num_cols;
+	index_t D = observations.num_rows;
+	index_t N = observations.num_cols;
 	SG_SDEBUG("%d observations in %d dimensions\n", N, D)
 
 	REQUIRE(N>1, "Number of observations (%d) must be at least 2.\n", N);
@@ -168,10 +168,10 @@ SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
 		SGMatrix<float64_t> tables)
 {
 	SGMatrix<float64_t> table(NULL, 2, 3, false);
-	int32_t len=tables.num_cols/3;
+	index_t len=tables.num_cols/3;
 
 	SGVector<float64_t> v(len);
-	for (int32_t i=0; i<len; i++)
+	for (index_t i=0; i<len; i++)
 	{
 		table.matrix=&tables.matrix[2*3*i];
 		v.vector[i]=fishers_exact_test_for_2x3_table(table);

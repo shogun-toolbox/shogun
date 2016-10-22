@@ -161,7 +161,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 * @param max_vec_num Maximum number of vectors to calibrate using
 		 * (optional) if set to -1, tries to calibrate using all vectors
 		 * */
-		void calibrate(int32_t max_vec_num=1000);
+		void calibrate(index_t max_vec_num=1000);
 
 	private:
 		void init();
@@ -174,8 +174,8 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		float64_t wscale;
 		float64_t bscale;
 		int32_t epochs;
-		int32_t skip;
-		int32_t count;
+		index_t skip;
+		index_t count;
 
 		bool use_bias;
 		bool use_regularized_bias;

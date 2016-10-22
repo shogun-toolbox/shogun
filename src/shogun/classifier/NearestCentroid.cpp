@@ -62,9 +62,9 @@ namespace shogun{
 		{
 			data = distance->get_lhs();
 		}
-		int32_t num_vectors = data->get_num_vectors();
-		int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
-		int32_t num_feats = ((CDenseFeatures<float64_t>*) data)->get_num_features();
+		index_t num_vectors = data->get_num_vectors();
+		index_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+		index_t num_feats = ((CDenseFeatures<float64_t>*) data)->get_num_features();
 		SGMatrix<float64_t> centroids(num_feats,num_classes);
 		centroids.zero();
 
@@ -72,16 +72,16 @@ namespace shogun{
 		m_centroids->set_num_vectors(num_classes);
 
 		int64_t* num_per_class = new int64_t[num_classes];
-		for (int32_t i=0 ; i<num_classes ; i++)
+		for (index_t i=0 ; i<num_classes ; i++)
 		{
 			num_per_class[i]=0;
 		}
 
-		for (int32_t idx=0 ; idx<num_vectors ; idx++)
+		for (index_t idx=0 ; idx<num_vectors ; idx++)
 		{
-			int32_t current_len;
+			index_t current_len;
 			bool current_free;
-			int32_t current_class = ((CMulticlassLabels*) m_labels)->get_label(idx);
+			index_t current_class = ((CMulticlassLabels*) m_labels)->get_label(idx);
 			float64_t* target = centroids.matrix + num_feats*current_class;
 			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
 			SGVector<float64_t>::add(target,1.0,target,1.0,current,current_len);
@@ -90,10 +90,10 @@ namespace shogun{
 		}
 
 
-		for (int32_t i=0 ; i<num_classes ; i++)
+		for (index_t i=0 ; i<num_classes ; i++)
 		{
 			float64_t* target = centroids.matrix + num_feats*i;
-			int32_t total = num_per_class[i];
+			index_t total = num_per_class[i];
 			float64_t scale = 0;
 			if(total>1)
 				scale = 1.0/((float64_t)(total-1));

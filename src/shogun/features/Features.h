@@ -120,9 +120,9 @@ class CFeatures : public CSGObject
 		 * @endcode
 		 *
 		 */
-		virtual Range<int32_t> index_iterator() const
+		virtual Range<index_t> index_iterator() const
 		{
-			return range(0, get_num_vectors());
+			return range(index_t(0), get_num_vectors());
 		}
 #endif
 
@@ -186,7 +186,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
-		virtual int32_t get_num_vectors() const=0;
+		virtual index_t get_num_vectors() const=0;
 
 		/** in case there is a feature matrix allow for reshaping
 		 *
@@ -196,7 +196,7 @@ class CFeatures : public CSGObject
 		 * @param num_vectors new number of vectors
 		 * @return if reshaping was successful
 		 */
-		virtual bool reshape(int32_t num_features, int32_t num_vectors);
+		virtual bool reshape(index_t num_features, index_t num_vectors);
 
 		/** list feature object */
 		void list_feature_obj() const;

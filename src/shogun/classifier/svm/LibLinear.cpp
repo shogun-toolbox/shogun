@@ -92,9 +92,9 @@ bool CLibLinear::train_machine(CFeatures* data)
 	ASSERT(features)
 
 
-	int32_t num_train_labels=m_labels->get_num_labels();
-	int32_t num_feat=features->get_dim_feature_space();
-	int32_t num_vec=features->get_num_vectors();
+	index_t num_train_labels=m_labels->get_num_labels();
+	index_t num_feat=features->get_dim_feature_space();
+	index_t num_vec=features->get_num_vectors();
 
 	if (liblinear_solver_type == L1R_L2LOSS_SVC ||
 			(liblinear_solver_type == L1R_LR) )
@@ -146,7 +146,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	double Cp=C1;
 	double Cn=C2;
 
-	for (int32_t i=0; i<prob.l; i++)
+	for (index_t i=0; i<prob.l; i++)
 	{
 		prob.y[i]=((CBinaryLabels*) m_labels)->get_int_label(i);
 		if (prob.y[i] == +1)
@@ -814,10 +814,10 @@ void CLibLinear::solve_l1r_lr(
 	double Cp, double Cn)
 {
 	int l = prob_col->l;
-	int w_size = prob_col->n;
-	int j, s, iter = 0;
-	int active_size = w_size;
-	int max_num_linesearch = 20;
+	index_t w_size = prob_col->n;
+	index_t j, s, iter = 0;
+	index_t active_size = w_size;
+	index_t max_num_linesearch = 20;
 
 	double x_min = 0;
 	double sigma = 0.01;
@@ -829,7 +829,7 @@ void CLibLinear::solve_l1r_lr(
 	double sum2, appxcond2;
 	double cond;
 
-	int *index = SG_MALLOC(int, w_size);
+	index_t *index = SG_MALLOC(index_t, w_size);
 	int32_t *y = SG_MALLOC(int32_t, l);
 	double *exp_wTx = SG_MALLOC(double, l);
 	double *exp_wTx_new = SG_MALLOC(double, l);
@@ -840,7 +840,7 @@ void CLibLinear::solve_l1r_lr(
 
 	CDotFeatures* x = prob_col->x;
 	void* iterator;
-	int ind;
+	index_t ind;
 	double val;
 
 	double C[3] = {Cn,0,Cp};
@@ -1351,7 +1351,7 @@ void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n")
 
-	int32_t num_labels=m_labels->get_num_labels();
+	index_t num_labels=m_labels->get_num_labels();
 
 	if (num_labels!=linear_term.vlen)
 	{

@@ -548,6 +548,21 @@ class CMath : public CSGObject
 
 		/**
 		 * @param x base (decimal)
+		 * @param n exponent (complex)
+		 */
+		static inline index_t pow(index_t x, int32_t n)
+		{
+			if (x == 2)
+				return x << n;
+			index_t result=1;
+			while (n--)
+				result*=x;
+
+			return result;
+		}
+
+		/**
+		 * @param x base (decimal)
 		 * @param n exponent (integer)
 		 */
 		static inline float64_t pow(float64_t x, int32_t n)

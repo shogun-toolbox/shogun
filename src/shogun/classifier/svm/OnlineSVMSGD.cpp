@@ -105,8 +105,8 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	int32_t vec_count;
-	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
+	index_t vec_count;
+	for (index_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		vec_count=0;
 		count = skip;
@@ -162,13 +162,13 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	return true;
 }
 
-void COnlineSVMSGD::calibrate(int32_t max_vec_num)
+void COnlineSVMSGD::calibrate(index_t max_vec_num)
 {
-	int32_t c_dim=1;
+	index_t c_dim=1;
 	float32_t* c=SG_CALLOC(float32_t, c_dim);
 
 	// compute average gradient size
-	int32_t n = 0;
+	index_t n = 0;
 	float64_t m = 0;
 	float64_t r = 0;
 
@@ -196,7 +196,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	bscale = 0.5*m/n;
 
 	// compute weight decay skip
-	skip = (int32_t) ((16 * n * c_dim) / r);
+	skip = (index_t) ((16 * n * c_dim) / r);
 
 	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale)
 

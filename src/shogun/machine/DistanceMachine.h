@@ -94,7 +94,7 @@ class CDistanceMachine : public CMachine
 		 * @param num which example to apply machine to
 		 * @return cluster label nearest to example
 		 */
-		virtual float64_t apply_one(int32_t num);
+		virtual float64_t apply_one(index_t num);
 
 	protected:
 		/** Ensures cluster centers are in lhs of underlying distance

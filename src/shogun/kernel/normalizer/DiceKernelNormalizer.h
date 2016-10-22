@@ -85,7 +85,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
+			float64_t value, index_t idx_lhs, index_t idx_rhs)
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return 2*value/diag_sum;
@@ -95,7 +95,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, index_t idx_lhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n")
 			return 0;
@@ -105,7 +105,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, index_t idx_rhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n")
 			return 0;
@@ -124,12 +124,12 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num)
+		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, index_t num)
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
 
-			for (int32_t i=0; i<num; i++)
+			for (index_t i=0; i<num; i++)
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
@@ -152,12 +152,12 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		/** diagonal left-hand side */
 		float64_t* diag_lhs;
 		/** num diag lhs */
-		int32_t num_diag_lhs;
+		index_t num_diag_lhs;
 
 		/** diagonal right-hand side */
 		float64_t* diag_rhs;
 		/** num diag rhs */
-		int32_t num_diag_rhs;
+		index_t num_diag_rhs;
 
 		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;

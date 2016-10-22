@@ -37,7 +37,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param num_labels number of labels to pre-allocate
 		 */
-		CStructuredLabels(int32_t num_labels);
+		CStructuredLabels(index_t num_labels);
 
 		/** destructor */
 		virtual ~CStructuredLabels();
@@ -74,7 +74,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual CStructuredData* get_label(index_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -86,13 +86,13 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(index_t idx, CStructuredData* label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		virtual index_t get_num_labels() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredLabels"; }

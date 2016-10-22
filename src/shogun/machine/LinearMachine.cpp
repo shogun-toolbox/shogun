@@ -56,7 +56,7 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
-float64_t CLinearMachine::apply_one(int32_t vec_idx)
+float64_t CLinearMachine::apply_one(index_t vec_idx)
 {
 	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;
 }

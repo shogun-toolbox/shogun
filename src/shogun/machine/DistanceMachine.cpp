@@ -131,11 +131,11 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 	return NULL;
 }
 
-float64_t CDistanceMachine::apply_one(int32_t num)
+float64_t CDistanceMachine::apply_one(index_t num)
 {
 	/* number of clusters */
 	CFeatures* lhs=distance->get_lhs();
-	int32_t num_clusters=lhs->get_num_vectors();
+	index_t num_clusters=lhs->get_num_vectors();
 	SG_UNREF(lhs);
 
 	/* (multiple threads) calculate distances to all cluster centers */

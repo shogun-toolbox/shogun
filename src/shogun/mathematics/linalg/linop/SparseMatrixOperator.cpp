@@ -178,7 +178,7 @@ void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
 		REQUIRE(diag.vector, "Diagonal not initialized!\n");
 
-		const int32_t diag_size=m_operator.num_vectors>m_operator.num_features ?
+		const index_t diag_size=m_operator.num_vectors>m_operator.num_features ?
 			m_operator.num_features : m_operator.num_vectors;
 
 		REQUIRE(diag_size==diag.vlen, "Dimension mismatch!\n");

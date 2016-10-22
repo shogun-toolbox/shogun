@@ -42,9 +42,9 @@ void CAttenuatedEuclideanDistance::cleanup()
 {
 }
 
-float64_t CAttenuatedEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CAttenuatedEuclideanDistance::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 	float64_t result=0;
 
@@ -54,7 +54,7 @@ float64_t CAttenuatedEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
-	for (int32_t i=0; i<alen; i++)
+	for (index_t i=0; i<alen; i++)
 		result+=(CMath::abs(avec[i])*CMath::abs(bvec[i]))*CMath::pow(avec[i] - bvec[i],2);
 
 	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);

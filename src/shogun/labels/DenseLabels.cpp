@@ -27,7 +27,7 @@ CDenseLabels::CDenseLabels()
 	init();
 }
 
-CDenseLabels::CDenseLabels(int32_t num_lab)
+CDenseLabels::CDenseLabels(index_t num_lab)
 : CLabels()
 {
 	init();
@@ -160,9 +160,9 @@ void CDenseLabels::save(CFile* writer)
 	m_labels.save(writer);
 }
 
-bool CDenseLabels::set_label(int32_t idx, float64_t label)
+bool CDenseLabels::set_label(index_t idx, float64_t label)
 {
-	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
+	index_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (m_labels.vector && real_num<get_num_labels())
 	{
 		m_labels.vector[real_num]=label;
@@ -172,9 +172,9 @@ bool CDenseLabels::set_label(int32_t idx, float64_t label)
 		return false;
 }
 
-bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
+bool CDenseLabels::set_int_label(index_t idx, int32_t label)
 {
-	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
+	index_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (m_labels.vector && real_num<get_num_labels())
 	{
 		m_labels.vector[real_num] = (float64_t)label;
@@ -184,14 +184,14 @@ bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 		return false;
 }
 
-float64_t CDenseLabels::get_label(int32_t idx)
+float64_t CDenseLabels::get_label(index_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())
 	return m_labels.vector[real_num];
 }
 
-int32_t CDenseLabels::get_int_label(int32_t idx)
+int32_t CDenseLabels::get_int_label(index_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())

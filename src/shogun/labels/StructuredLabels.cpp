@@ -18,7 +18,7 @@ CStructuredLabels::CStructuredLabels()
 	init();
 }
 
-CStructuredLabels::CStructuredLabels(int32_t num_labels)
+CStructuredLabels::CStructuredLabels(index_t num_labels)
 : CLabels()
 {
 	init();
@@ -43,7 +43,7 @@ CDynamicObjectArray* CStructuredLabels::get_labels() const
 	return m_labels;
 }
 
-CStructuredData* CStructuredLabels::get_label(int32_t idx)
+CStructuredData* CStructuredLabels::get_label(index_t idx)
 {
 	ensure_valid("CStructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
@@ -58,10 +58,10 @@ void CStructuredLabels::add_label(CStructuredData* label)
 	m_labels->push_back(label);
 }
 
-bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
+bool CStructuredLabels::set_label(index_t idx, CStructuredData* label)
 {
 	ensure_valid_sdt(label);
-	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
+	index_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
 	{
@@ -73,7 +73,7 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CStructuredLabels::get_num_labels() const
+index_t CStructuredLabels::get_num_labels() const
 {
 	if ( m_labels == NULL )
 		return 0;

@@ -33,7 +33,7 @@ namespace shogun
 			 *
 			 * @param num_samples the number of labels
 			 */
-			CLatentLabels(int32_t num_samples);
+			CLatentLabels(index_t num_samples);
 
 			/** constructor
 			 *
@@ -55,7 +55,7 @@ namespace shogun
 			 * @param idx index of the label
 			 * @return the user defined latent label
 			 */
-			CData* get_latent_label(int32_t idx);
+			CData* get_latent_label(index_t idx);
 
 			/** append the latent label
 			 *
@@ -69,7 +69,7 @@ namespace shogun
 			 * @param label the latent label
 			 * @return TRUE if success, FALSE otherwise
 			 */
-			bool set_latent_label(int32_t idx, CData* label);
+			bool set_latent_label(index_t idx, CData* label);
 
 			/** Make sure the label is valid, otherwise raise SG_ERROR.
 			 *
@@ -95,7 +95,7 @@ namespace shogun
 			 *
 			 * @return the number of labels
 			 */
-			virtual int32_t get_num_labels() const;
+			virtual index_t get_num_labels() const;
 
 			/** set labels
 			 *

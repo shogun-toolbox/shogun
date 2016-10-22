@@ -33,9 +33,9 @@ class CEvaluationResult : public CSGObject
 {
 public:
 	/** default constructor */
-	CEvaluationResult() : CSGObject() { }
+	CEvaluationResult();
 
-	virtual ~CEvaluationResult() { }
+	virtual ~CEvaluationResult();
 
 	/** return what type of result we are.
 	 *

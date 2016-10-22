@@ -61,7 +61,7 @@ public:
 	 *
 	 * @return number of labels
 	 */
-	virtual int32_t get_num_labels() const = 0;
+	virtual index_t get_num_labels() const = 0;
 
 	/** get label type
 	 *
@@ -106,14 +106,14 @@ public:
 	 * @param value value to set
 	 * @param idx label index whose conf. value is to be changed
 	 */
-	virtual void set_value(float64_t value, int32_t idx);
+	virtual void set_value(float64_t value, index_t idx);
 
 	/** get confidence value for a particular label
 	 *
 	 * @param idx label index
 	 * @return confidence value of label with index idx
 	 */
-	virtual float64_t get_value(int32_t idx);
+	virtual float64_t get_value(index_t idx);
 
 	/** set confidence vector
 	 *

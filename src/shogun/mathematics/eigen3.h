@@ -57,6 +57,7 @@ template<typename T> class EigenSparseUtil
 	static Eigen::SparseMatrix<T> toEigenSparse(SGSparseMatrix<T> sg_matrix);
 };
 
+typedef Eigen::Matrix<index_t, Eigen::Dynamic, 1> IndexVector;
 }
 
 

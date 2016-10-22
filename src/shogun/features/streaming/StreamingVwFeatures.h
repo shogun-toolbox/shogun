@@ -60,7 +60,7 @@ public:
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
 	CStreamingVwFeatures(CStreamingVwFile* file,
-			     bool is_labelled, int32_t size);
+			     bool is_labelled, index_t size);
 
 	/**
 	 * Constructor used when initialized
@@ -71,7 +71,7 @@ public:
 	 * @param size Number of example objects to be stored in the parser at a time
 	 */
 	CStreamingVwFeatures(CStreamingVwCacheFile* file,
-			     bool is_labelled, int32_t size);
+			     bool is_labelled, index_t size);
 
 	/**
 	 * Destructor.
@@ -177,7 +177,7 @@ public:
 	 * @param vec float32_t* vector
 	 * @param len length of the vector
 	 */
-	virtual void expand_if_required(float32_t*& vec, int32_t& len);
+	virtual void expand_if_required(float32_t*& vec, index_t& len);
 
 	/**
 	 * Expand the vector passed so that it its length is equal to
@@ -187,7 +187,7 @@ public:
 	 * @param vec float64_t* vector
 	 * @param len length of the vector
 	 */
-	virtual void expand_if_required(float64_t*& vec, int32_t& len);
+	virtual void expand_if_required(float64_t*& vec, index_t& len);
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -196,7 +196,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	virtual index_t get_dim_feature_space() const;
 
 	/**
 	 * Reduce element 'w' to max(w-gravity, 0)
@@ -239,7 +239,7 @@ public:
 	 *
 	 * @return dot product
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	virtual float32_t dense_dot(const float32_t* vec2, index_t vec2_len);
 
 	/**
 	 * Dot product between a dense weight vector and a sparse feature vector.
@@ -275,7 +275,7 @@ public:
 	 * @param abs_val true if abs of example's vector should be taken
 	 */
 	virtual void add_to_dense_vec(float32_t alpha, VwExample* &ex,
-			float32_t* vec2, int32_t vec2_len, bool abs_val = false);
+			float32_t* vec2, index_t vec2_len, bool abs_val = false);
 
 	/**
 	 * Add alpha*current_vector to another dense vector.
@@ -287,20 +287,20 @@ public:
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
 	virtual void add_to_dense_vec(float32_t alpha,
-			float32_t* vec2, int32_t vec2_len, bool abs_val = false);
+			float32_t* vec2, index_t vec2_len, bool abs_val = false);
 
 	/** get number of non-zero features in vector
 	 *
 	 * @return number of non-zero features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector();
+	virtual index_t get_nnz_features_for_vector();
 
 	/**
 	 * Return the number of features in the current example.
 	 *
 	 * @return number of features as int
 	 */
-	virtual int32_t get_num_features();
+	virtual index_t get_num_features();
 
 	/**
 	 * Return the feature type, depending on T.
@@ -328,7 +328,7 @@ public:
 	 *
 	 * @return 1 if current_example exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	virtual index_t get_num_vectors() const;
 
 private:
 	/**

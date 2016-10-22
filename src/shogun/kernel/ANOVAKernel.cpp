@@ -48,14 +48,14 @@ bool CANOVAKernel::init(CFeatures* l, CFeatures* r)
 	return result;
 }
 
-float64_t CANOVAKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CANOVAKernel::compute(index_t idx_a, index_t idx_b)
 {
 	return compute_rec1(idx_a, idx_b);
 }
 
-float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
+float64_t CANOVAKernel::compute_rec1(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
@@ -72,9 +72,9 @@ float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
+float64_t CANOVAKernel::compute_rec2(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=
@@ -97,28 +97,28 @@ void CANOVAKernel::register_params()
 }
 
 
-float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
+float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, index_t len)
 {
-	int32_t DP_len=(cardinality+1)*(len+1);
+	index_t DP_len=(cardinality+1)*(len+1);
 	float64_t* DP = SG_MALLOC(float64_t, DP_len);
 
 	ASSERT(DP)
-	int32_t d=cardinality;
-	int32_t offs=cardinality+1;
+	index_t d=cardinality;
+	index_t offs=cardinality+1;
 
 	ASSERT(DP_len==(len+1)*offs)
 
-	for (int32_t j=0; j < len+1; j++)
+	for (index_t j=0; j < len+1; j++)
 		DP[j] = 1.0;
 
-	for (int32_t k=1; k < d+1; k++)
+	for (index_t k=1; k < d+1; k++)
 	{
 		// TRAP d>len case
 		if (k-1>=len)
 			return 0.0;
 
 		DP[k*offs+k-1] = 0;
-		for (int32_t j=k; j < len+1; j++)
+		for (index_t j=k; j < len+1; j++)
 			DP[k*offs+j]=DP[k*offs+j-1]+avec[j-1]*bvec[j-1]*DP[(k-1)*offs+j-1];
 	}
 
@@ -129,7 +129,7 @@ float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int
 	return result;
 }
 
-float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
+float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, index_t len)
 {
 	float64_t* KD = SG_MALLOC(float64_t, cardinality+1);
 	float64_t* KS = SG_MALLOC(float64_t, cardinality+1);
@@ -139,14 +139,14 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 	ASSERT(KS)
 	ASSERT(KD)
 
-	int32_t d=cardinality;
-	for (int32_t i=0; i < len; i++)
+	index_t d=cardinality;
+	for (index_t i=0; i < len; i++)
 		vec_pow[i] = 1;
 
-	for (int32_t k=1; k < d+1; k++)
+	for (index_t k=1; k < d+1; k++)
 	{
 		KS[k] = 0;
-		for (int32_t i=0; i < len; i++)
+		for (index_t i=0; i < len; i++)
 		{
 			vec_pow[i] *= avec[i]*bvec[i];
 			KS[k] += vec_pow[i];
@@ -154,10 +154,10 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 	}
 
 	KD[0] = 1;
-	for (int32_t k=1; k < d+1; k++)
+	for (index_t k=1; k < d+1; k++)
 	{
 		float64_t sum = 0;
-		for (int32_t s=1; s < k+1; s++)
+		for (index_t s=1; s < k+1; s++)
 		{
 			float64_t sign = 1.0;
 			if (s % 2 == 0)

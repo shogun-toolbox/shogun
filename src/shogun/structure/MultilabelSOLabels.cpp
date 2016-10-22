@@ -17,14 +17,14 @@ CMultilabelSOLabels::CMultilabelSOLabels() : CStructuredLabels()
 	m_multilabel_labels = NULL;
 }
 
-CMultilabelSOLabels::CMultilabelSOLabels(int32_t num_classes)
+CMultilabelSOLabels::CMultilabelSOLabels(index_t num_classes)
 	: CStructuredLabels()
 {
 	init();
 	m_multilabel_labels = new CMultilabelLabels(num_classes);
 }
 
-CMultilabelSOLabels::CMultilabelSOLabels(int32_t num_labels, int32_t num_classes)
+CMultilabelSOLabels::CMultilabelSOLabels(index_t num_labels, index_t num_classes)
 	: CStructuredLabels()
 {
 	init();
@@ -54,7 +54,7 @@ CMultilabelSOLabels::~CMultilabelSOLabels()
 	SG_UNREF(m_multilabel_labels);
 }
 
-void CMultilabelSOLabels::set_sparse_label(int32_t j, SGVector<int32_t> label)
+void CMultilabelSOLabels::set_sparse_label(index_t j, SGVector<int32_t> label)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
@@ -74,7 +74,7 @@ void CMultilabelSOLabels::set_sparse_labels(SGVector<int32_t> * labels)
 	m_multilabel_labels->set_labels(labels);
 }
 
-int32_t CMultilabelSOLabels::get_num_labels() const
+index_t CMultilabelSOLabels::get_num_labels() const
 {
 	if (m_multilabel_labels == NULL)
 	{
@@ -84,7 +84,7 @@ int32_t CMultilabelSOLabels::get_num_labels() const
 	return m_multilabel_labels->get_num_labels();
 }
 
-int32_t CMultilabelSOLabels::get_num_classes() const
+index_t CMultilabelSOLabels::get_num_classes() const
 {
 	if (m_multilabel_labels == NULL)
 	{
@@ -99,7 +99,7 @@ CMultilabelLabels * CMultilabelSOLabels::get_multilabel_labels()
 	return m_multilabel_labels;
 }
 
-bool CMultilabelSOLabels::set_label(int32_t j, CStructuredData * label)
+bool CMultilabelSOLabels::set_label(index_t j, CStructuredData * label)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
@@ -111,14 +111,14 @@ bool CMultilabelSOLabels::set_label(int32_t j, CStructuredData * label)
 	return true;
 }
 
-CStructuredData * CMultilabelSOLabels::get_label(int32_t j)
+CStructuredData * CMultilabelSOLabels::get_label(index_t j)
 {
 	CSparseMultilabel * slabel = new CSparseMultilabel(m_multilabel_labels->get_label(j));
 	SG_REF(slabel);
 	return (CStructuredData *)slabel;
 }
 
-SGVector<int32_t> CMultilabelSOLabels::get_sparse_label(int32_t j)
+SGVector<int32_t> CMultilabelSOLabels::get_sparse_label(index_t j)
 {
 	return m_multilabel_labels->get_label(j);
 }
@@ -129,7 +129,7 @@ void CMultilabelSOLabels::ensure_valid(const char * context)
 }
 
 SGVector<float64_t> CMultilabelSOLabels::to_dense(CStructuredData * label,
-                int32_t dense_dim, float64_t d_true, float64_t d_false)
+                index_t dense_dim, float64_t d_true, float64_t d_false)
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(label);
 	SGVector<int32_t> slabel_data = slabel->get_data();

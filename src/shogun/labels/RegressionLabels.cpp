@@ -7,7 +7,7 @@ CRegressionLabels::CRegressionLabels() : CDenseLabels()
 {
 }
 
-CRegressionLabels::CRegressionLabels(int32_t num_labels) : CDenseLabels(num_labels)
+CRegressionLabels::CRegressionLabels(index_t num_labels) : CDenseLabels(num_labels)
 {
 }
 

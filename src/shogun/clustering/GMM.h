@@ -103,14 +103,14 @@ class CGMM : public CDistribution
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters();
+		virtual index_t get_num_model_parameters();
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic) if num_param < m_dim returns
 		 * an element from the mean, else return an element from the covariance
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param);
+		virtual float64_t get_log_model_parameter(index_t num_param);
 
 		/** @return number of mixture components */
 		index_t get_num_components() const;
@@ -128,7 +128,7 @@ class CGMM : public CDistribution
 		 * @return derivative of likelihood (logarithmic)
 		 */
 		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+			index_t num_param, index_t num_example);
 
 		/** compute log likelihood for example
 		 *
@@ -137,7 +137,7 @@ class CGMM : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(index_t num_example);
 
 		/** compute likelihood for example
 		 *
@@ -146,7 +146,7 @@ class CGMM : public CDistribution
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		virtual float64_t get_likelihood_example(int32_t num_example);
+		virtual float64_t get_likelihood_example(index_t num_example);
 
 		/** get nth mean
 		 *
@@ -154,14 +154,14 @@ class CGMM : public CDistribution
 		 *
 		 * @return mean
 		 */
-		virtual SGVector<float64_t> get_nth_mean(int32_t num);
+		virtual SGVector<float64_t> get_nth_mean(index_t num);
 
 		/** set nth mean
 		 *
 		 * @param mean new mean
 		 * @param num index mean to set
 		 */
-		virtual void set_nth_mean(SGVector<float64_t> mean, int32_t num);
+		virtual void set_nth_mean(SGVector<float64_t> mean, index_t num);
 
 		/** get nth covariance
 		 *
@@ -169,14 +169,14 @@ class CGMM : public CDistribution
 		 *
 		 * @return covariance
 		 */
-		virtual SGMatrix<float64_t> get_nth_cov(int32_t num);
+		virtual SGMatrix<float64_t> get_nth_cov(index_t num);
 
 		/** set nth covariance
 		 *
 		 * @param cov new covariance
 		 * @param num index of covariance to set
 		 */
-		virtual void set_nth_cov(SGMatrix<float64_t> cov, int32_t num);
+		virtual void set_nth_cov(SGMatrix<float64_t> cov, index_t num);
 
 		/** get coefficients
 		 *
@@ -239,7 +239,7 @@ class CGMM : public CDistribution
 		 * @param max_em_iter maximum iterations for EM
 		 * @param min_change minimum change in log likelihood
 		 */
-		void partial_em(int32_t comp1, int32_t comp2, int32_t comp3,
+		void partial_em(index_t comp1, index_t comp2, index_t comp3,
 				float64_t min_cov, int32_t max_em_iter, float64_t min_change);
 
 	protected:

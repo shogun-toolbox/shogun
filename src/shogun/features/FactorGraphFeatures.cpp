@@ -19,7 +19,7 @@ CFactorGraphFeatures::CFactorGraphFeatures()
 	SG_REF(m_samples);
 }
 
-CFactorGraphFeatures::CFactorGraphFeatures(int32_t num_samples)
+CFactorGraphFeatures::CFactorGraphFeatures(index_t num_samples)
 {
 	init();
 	m_samples = new CDynamicObjectArray(num_samples);
@@ -47,7 +47,7 @@ EFeatureClass CFactorGraphFeatures::get_feature_class() const
 }
 
 
-int32_t CFactorGraphFeatures::get_num_vectors() const
+index_t CFactorGraphFeatures::get_num_vectors() const
 {
 	if (m_samples == NULL)
 		return 0;

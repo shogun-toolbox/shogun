@@ -155,7 +155,7 @@ public:
 	 *
 	 * @return number of features in current example
 	 */
-	virtual int32_t get_num_features()=0;
+	virtual index_t get_num_features()=0;
 
 	/**
 	 * Return whether the examples are labelled or not.
