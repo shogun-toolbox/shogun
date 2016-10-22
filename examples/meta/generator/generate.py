@@ -70,8 +70,7 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
             try:
                 translation = translate(ast, targetDict=target,
                                         tags=tags,
-                                        # TODO: enable storeVars for other targets
-                                        storeVars=storeVars if target['FileExtension'] == ".cpp" else False)
+                                        storeVars=storeVars)
             except Exception as e:
                 print("Could not translate file {} to {}.".format(filePath,
                                                                   target['FileExtension']))

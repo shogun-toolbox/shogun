@@ -92,7 +92,24 @@ public:
 	/** @return name of the CSGObject, without C prefix */
 	virtual const char* get_name() const { return "WrappedObjectArray"; }
 
+#define APPEND_WRAPPED_TEMPLATE(META_TYPE, SG_TYPE) \
+		/** Explicit instantiation of append_wrapped \
+		 * \
+		 * @param data Data element to append, after being wrapped. \
+		 * @param data_name Name of wrapped data element. \
+		 */ \
+		bool append_wrapped_##META_TYPE(SG_TYPE data, const char* data_name="") \
+{ \
+	return this->append_wrapped(data, data_name); \
+}
 
+	APPEND_WRAPPED_TEMPLATE(real, float64_t)
+	APPEND_WRAPPED_TEMPLATE(float, float32_t)
+	APPEND_WRAPPED_TEMPLATE(int, float64_t)
+	APPEND_WRAPPED_TEMPLATE(real_vector, SGVector<float64_t>)
+	APPEND_WRAPPED_TEMPLATE(float_vector, SGVector<float32_t>)
+	APPEND_WRAPPED_TEMPLATE(real_matrix, SGMatrix<float64_t>)
+	APPEND_WRAPPED_TEMPLATE(float_matrix, SGMatrix<float32_t>)
 };
 }
 #endif // WRAPPED_OBJECT_ARRAY_H__

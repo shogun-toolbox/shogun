@@ -64,6 +64,31 @@ def getDependencies(program):
     return allClasses, interfaceClasses, enums
 
 
+def getBasicTypesToStore():
+    """ Returns all basic types which will be serialized """
+    return ("real", "float", "int")
+
+def getSGTypesToStore():
+    """ Returns all SG* types which will be serialized """
+    return ("RealVector","RealMatrix","FloatVector","FloatMatrix")
+
+def getSGTypeToStoreMethodName(sgType):
+    """ Translates given SG* type into meta language type """
+    assert sgType in getSGTypesToStore()
+    
+    if sgType=="RealVector":
+        return "real_vector"
+    elif sgType=="FloatVector":
+        return "float_vector"
+    elif sgType=="RealMatrix":
+        return "real_matrix"
+    elif sgType=="FloatMatrix":
+        return "float_matrix"
+    
+    else:
+        raise RuntimeError("Given Shogun type \"%s\" cannot be translated to meta type", sgType)
+        
+
 def getVarsToStore(program):
     """ Extracts all variables in program that should be stored """
     varsToStore = []
@@ -75,14 +100,11 @@ def getVarsToStore(program):
 
         append_store = False
         if "ShogunSGType" in init[0]:
-            if init[0]["ShogunSGType"] in ("RealVector",
-                                           "RealMatrix",
-                                           "FloatVector",
-                                           "FloatMatrix"):
+            if init[0]["ShogunSGType"] in getSGTypesToStore():
                 append_store = True
 
         elif "BasicType" in init[0]:
-            if init[0]["BasicType"] in ("real", "float", "int"):
+            if init[0]["BasicType"] in getBasicTypesToStore():
                 append_store = True
 
         if append_store:
@@ -184,9 +206,19 @@ class Translator:
             varnameExpr = {"Expr": {"StringLiteral": varname}}
             varnameIdentifierExpr = {"Expr": {"Identifier": varname}}
 
+            # extract SWIG type name, we know that vartypeAST is a dict of the form {"BasicType": "real"}
+            # i.e. one key
+            sgType = vartypeAST[vartypeAST.keys()[0]]
+
+            assert sgType in getBasicTypesToStore() or sgType in getSGTypesToStore()
+            if sgType in getBasicTypesToStore():
+                methodNameSuffix = sgType
+            elif sgType in getSGTypesToStore():
+                methodNameSuffix = getSGTypeToStoreMethodName(sgType)
+            
             methodCall = {
                 "MethodCall": [{"Identifier": storage},
-                               {"Identifier": "append_wrapped"},
+                               {"Identifier": "append_wrapped_%s" % methodNameSuffix},
                                {"ArgumentList": [varnameIdentifierExpr,
                                                  varnameExpr]}]
             }
