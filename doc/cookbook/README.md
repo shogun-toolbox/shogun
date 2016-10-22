@@ -52,14 +52,22 @@ We automatically upload the cookbook to our webserver in the [PR build on buildb
 This can be done as running
 
 ```
+cd path/to/shogun/
+mkdir build && cd build
+cmake ..
 make cookbook
 ```
 
 which is also part of ```make doc```. Note that the meta examples need to be enabled an sphinx needs to be installed, otherwise the ```cookbook``` target is not available. See dependencies below.
 
+```
+pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme
+```
+
 This generates a ```doc/cookbook/html``` folder in your build folder. To see the results, run
 
 ```
+cd 
 python -m SimpleHTTPServer
 ```
 
@@ -71,6 +79,8 @@ The cookbook is automatically built if these dependencies are met:
  * `cmake` switch `-DBUILD_META_EXAMPLES`
  * [sphinx](http://www.sphinx-doc.org/)
  * [python-ply](http://www.dabeaz.com/ply/)
+ * [sphinx_bootstrap_theme](https://github.com/ryan-roemer/sphinx-bootstrap-theme)
 
 In addition this python module needs to be installed to enable bibtex citations.
  * [sphinxcontrib-bibtex](https://sphinxcontrib-bibtex.readthedocs.org/)
+

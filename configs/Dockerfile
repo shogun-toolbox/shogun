@@ -23,7 +23,7 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
     exuberant-ctags
 
-RUN pip install sphinxcontrib-bibtex
+RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme
 
 RUN gem install narray
 RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig
