@@ -189,7 +189,17 @@
         },
 
         // Keywords: $number
-        "NumberLiteral": "$number",
+        "IntLiteral": "$number",
+
+        /** 64bit float. Keywords:
+         * $number
+         */
+        "RealLiteral": "$number",
+
+        /** 32bit float. Keywords:
+         * $number
+         */
+        "FloatLiteral": "${number}f",
 
         /** Keywords:
          * $object: name of the object
@@ -223,7 +233,10 @@
              * $indices: single index or pair of indices
              */
             "Vector": "$identifier.get($indices)",
-            "Matrix": "$identifier.get($indices)"
+            "Matrix": "$identifier.get($indices)",
+
+            // Rules for specific vector/matrix types can also be specified
+            "BoolVector": "$identifier.bool_getter($indices)"
         },
         "Assign": {
             /** Keywords:
@@ -232,7 +245,10 @@
              * $expr: expression to assign to matrix/vector element
              */
             "Vector": "$identifier.put($indices, $expr)",
-            "Matrix": "$identifier.put($indices, $expr)"
+            "Matrix": "$identifier.put($indices, $expr)",
+
+            // Rules for specific vector/matrix types can also be specified
+            "BoolVector": "$identifier.bool_setter($indices, $expr)"
         },
 
         /** Is the target language zero-indexed?
