@@ -159,6 +159,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Random vector */
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
+#endif // SWIG // SWIG should skip this part
 
 		/** Get vector element at index
 		 *
@@ -175,6 +176,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void set_element(const T& p_element, index_t index);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Resize vector
 		 *
 		 * @param n new size
