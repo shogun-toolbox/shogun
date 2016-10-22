@@ -10,7 +10,7 @@
     "Comment": "//$comment\n",
     "Init": {
         "Construct": "auto $name = some<C$typeName>($arguments)",
-        "Copy": "auto $name = $expr",
+        "Copy": "auto $name = wrap($expr)",
         "BoolVector": "auto $name = SGVector<bool>($arguments)",
         "CharVector": "auto $name = SGVector<char>($arguments)",
         "ByteVector": "auto $name = SGVector<uint8_t>($arguments)",
@@ -34,7 +34,7 @@
         "LongRealMatrix": "auto $name = SGMatrix<floatmax_t>($arguments)",
         "ComplexMatrix": "auto $name = SGMatrix<complex128_t>($arguments)"
     },
-    "Assign": "$identifier = $expr",
+    "Assign": "$identifier = wrap($expr)",
     "Type": {
         "RealFeatures": "DenseFeatures<float64_t>",
         "RealSubsetFeatures": "DenseSubsetFeatures<float64_t>",
