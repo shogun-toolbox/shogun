@@ -3,12 +3,11 @@
 {% if pagename[:"examples"|length] == "examples" %}
 <div class="container-fluid">
 <div role="tabpanel">
-
   <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs" role="tablist" id="tabs">
     {% for lang in target_languages %}
     <li role="presentation" {% if loop.index==1 %}class="active"{% endif %}>
-        <a id="{{lang}}-tab" href="#{{lang}}-tab" role="tab" data-toggle="tab" {% if loop.index==1 %}class="active" aria-expanded="true"{% endif %} >{{target_languages_tab_titles[lang]|title}}</a>
+        <a id="{{lang}}-tab" href="#{{lang}}-tab" role="tab" data-toggle="tab" {% if loop.index==1 %}class="active" aria-expanded="true"{% endif %} data-target=".{{ lang }}-tabpane" >{{target_languages_tab_titles[lang]|title}}</a>
     </li>
     {% endfor %}
   </ul>
@@ -19,11 +18,9 @@
 {{ body }}
 
 <script>
-{% for lang in target_languages %}
-$('#{{lang}}-tab').on('show.bs.tab', function (e) {
-    $('ul[id^=tabs] a[href^=#{{lang}}]').tab('show');
-    });
-{% endfor %}
+jQuery(document).ready(function ($) {
+    $('ul[id^=tabs]').tab();
+});
 </script>
 
 {% else %}
