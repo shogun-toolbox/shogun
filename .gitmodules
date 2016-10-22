@@ -5,3 +5,6 @@
 [submodule "doc/tutorial"]
 	path = doc/tutorial
 	url = git://github.com/shogun-toolbox/shogun-tutorial.git
+[submodule "debian"]
+	path = debian
+	url = git://github.com/shogun-toolbox/shogun-debian.git
