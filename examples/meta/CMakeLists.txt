@@ -35,7 +35,7 @@ IF(ENABLE_TESTING)
                                                               
 
     # c++
-    IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+    IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${TRAVIS_DISABLE_META_CPP})
         IF(HAVE_CXX0X OR HAVE_CXX11)
             add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
         ELSE()
