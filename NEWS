@@ -1,3 +1,14 @@
+2016-10-23 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
+
+	* SHOGUN Release version 5.0.0 (libshogun 17.2, data 0.11, parameter 1)
+	* Features:
+	    - Shogun cookbook deployed and online [Heiko Strathmann, Viktor Gal, Gergely Varga]
+	    - TODO: GSoC projects (including many new cookbooks)
+	* Bugfixes:
+	
+	* Cleanup, efficiency updates, and API Changes:
+	    - Static interfaces have been removed [Viktor Gal]
+	 
 2016-02-17 Björn Esser <me@besser82.io>
 
 	* SHOGUN Release version 4.2.0 (libshogun 17.2, data 0.11, parameter 1)
