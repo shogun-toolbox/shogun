@@ -61,7 +61,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	            AddMetaIntegrationTest(python PythonModular)
 	            AddMetaIntegrationTest(java JavaModular)
 	            AddMetaIntegrationTest(r RModular)
-	            AddMetaIntegrationTest(octave OctaveModular)
+	            #AddMetaIntegrationTest(octave OctaveModular) # currently broken due to octave 1-element-vector is treated as a float which causes trouble in integration testing
 	            AddMetaIntegrationTest(csharp CSharpModular)
 	            AddMetaIntegrationTest(ruby RobyModular)
 	            #AddMetaIntegrationTest(lua LuaModular) # currently doesn't have meta examples
