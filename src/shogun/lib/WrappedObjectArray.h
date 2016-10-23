@@ -110,6 +110,12 @@ public:
 	APPEND_WRAPPED_TEMPLATE(float_vector, SGVector<float32_t>)
 	APPEND_WRAPPED_TEMPLATE(real_matrix, SGMatrix<float64_t>)
 	APPEND_WRAPPED_TEMPLATE(float_matrix, SGMatrix<float32_t>)
+
+	// in case a single-element vector/matrix is treated as number
+	APPEND_WRAPPED_TEMPLATE(real_vector, float64_t)
+	APPEND_WRAPPED_TEMPLATE(float_vector, float32_t)
+	APPEND_WRAPPED_TEMPLATE(real_matrix, float64_t)
+	APPEND_WRAPPED_TEMPLATE(float_matrix, float32_t)
 };
 }
 #endif // WRAPPED_OBJECT_ARRAY_H__
