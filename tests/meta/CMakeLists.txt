@@ -60,7 +60,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	        IF (NOT ${DISABLE_META_INTEGRATION_TESTS})
 	            AddMetaIntegrationTest(python PythonModular)
 	            AddMetaIntegrationTest(java JavaModular)
-	            AddMetaIntegrationTest(r RModular)
+	            #AddMetaIntegrationTest(r RModular) # currently we have the r meta examples disabled, so no generated results that can be tested
 	            AddMetaIntegrationTest(octave OctaveModular)
 	            AddMetaIntegrationTest(csharp CSharpModular)
 	            AddMetaIntegrationTest(ruby RobyModular)
