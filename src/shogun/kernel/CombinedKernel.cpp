@@ -160,8 +160,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		return false;
 	}
 
-	if ( (f_idx!=((CCombinedFeatures*) l)->get_num_feature_obj()) ||
-			(f_idx!=((CCombinedFeatures*) r)->get_num_feature_obj()) )
+	if ( ((CCombinedFeatures*) l)->get_num_feature_obj()<=0 ||
+		((CCombinedFeatures*) l)->get_num_feature_obj() != ((CCombinedFeatures*) r)->get_num_feature_obj() )
 		SG_ERROR("CombinedKernel: Number of features/kernels does not match - bailing out\n")
 
 	init_normalizer();
