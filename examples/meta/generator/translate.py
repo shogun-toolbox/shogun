@@ -563,7 +563,7 @@ class Translator:
 
         assert identifier in self.variableTypes,\
             "Variable {} not initialised".format(identifier)
-        assert self.variableTypes[list(identifier].keys())[0] == "ShogunSGType",\
+        assert list(self.variableTypes[identifier].keys())[0] == "ShogunSGType",\
             "Variable {} is not a vector or matrix type". format(identifier)
 
         type = self.variableTypes[identifier]["ShogunSGType"]
