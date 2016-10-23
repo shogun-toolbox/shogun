@@ -111,11 +111,19 @@ public:
 	APPEND_WRAPPED_TEMPLATE(real_matrix, SGMatrix<float64_t>)
 	APPEND_WRAPPED_TEMPLATE(float_matrix, SGMatrix<float32_t>)
 
-	// in case a single-element vector/matrix is treated as number
-	APPEND_WRAPPED_TEMPLATE(real_vector, float64_t)
-	APPEND_WRAPPED_TEMPLATE(float_vector, float32_t)
-	APPEND_WRAPPED_TEMPLATE(real_matrix, float64_t)
-	APPEND_WRAPPED_TEMPLATE(float_matrix, float32_t)
+	/** Explicit instantiation of append_wrapped, for single element containers
+	 * (Octave converts single element arrays to scalars and our typemaps take
+	 * that for real)
+	 *
+	 * @param data Data element to append, after being wrapped.
+	 * @param data_name Name of wrapped data element.
+	 */
+	bool append_wrapped_real_vector(float64_t data, const char* data_name="")
+	{
+		SGVector<float64_t> wrap(1);
+		wrap[0] = data;
+		return this->append_wrapped(wrap, data_name);
+	}
 };
 }
 #endif // WRAPPED_OBJECT_ARRAY_H__
