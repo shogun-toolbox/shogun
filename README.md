@@ -49,23 +49,20 @@ The following table depicts the status of each interface available in SHOGUN:
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
-|python\_modular   | *mature* (no known problems)                              |
-|octave\_modular   | *mature* (no known problems)                              |
-|java\_modular     | *stable* (no known problems; not all examples are ported) |
-|ruby\_modular     | *stable* (no known problems; only few examples ported)    |
-|csharp\_modular   | *stable* (no known problems; not all examples are ported) |
-|lua\_modular      | *alpha* (some examples work, string typemaps are unstable |
-|perl\_modular     | *pre-alpha* (work in progress quality)                    |
-|r\_modular        | *pre-alpha* (SWIG does not properly handle reference counting and thus only for the brave, <br/> --disable-reference-counting to get it to work, but beware that it will leak memory; disabled by default)           |
-|octave\_static    | *mature* (no known problems)                                |
-|matlab\_static    | *mature* (no known problems)                                |
-|python\_static    | *mature* (no known problems)                                |
-|r\_static         | *mature* (no known problems)                                |
-|libshogun\_static | *mature* (no known problems)                                |
-|cmdline\_static   | *stable* (but some data types incomplete)                 |
-|elwms\_static     | this is the eierlegendewollmilchsau interface, a chimera that in one file interfaces with python, octave, r, matlab and provides the run\_python command to run code in python using the in octave,r,matlab available variables, etc)    |
+|python            | *mature* (no known problems)                              |
+|octave            | *mature* (no known problems)                              |
+|java              | *stable* (no known problems)                              |
+|ruby              | *stable* (no known problems)                              |
+|csharp            | *stable* (no known problems)                              |
+|r                 | *stable*                                                  |
+|lua               | *beta* (many examples work, string typemaps are unstable, |
+                   |         overloaded methods unavailable)                   |
+|perl              | *pre-alpha* (work in progress quality)                    |
+|js                | *pre-alpha* (work in progress quality)                    |
 
-Visit http://www.shogun-toolbox.org/doc/en/current for further information.
+
+
+Visit http://www.shogun-toolbox.org for further information.
 
 
 ## Platforms
