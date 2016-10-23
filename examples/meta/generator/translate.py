@@ -153,7 +153,7 @@ class Translator:
                 elif "Comment" in line:
                     targetProgram += self.translateComment(line["Comment"])
             except Exception as e:
-                print "Translation failed on line\n%s\n" % line
+                print("Translation failed on line\n%s\n" % line)
                 try:
                     print("Failed on line {}".format(line["__PARSER_INFO_LINE_NO"]))
                 except KeyError as e2:
