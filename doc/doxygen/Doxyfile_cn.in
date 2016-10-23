@@ -854,7 +854,6 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = @LIBSHOGUN_SRC_DIR@ \
                          @DOXYGEN_PAGES@ \
                          @DOXYGEN_GENERATED_PAGES@ \
-                         @DOCUMENTED_EXAMPLES@ \
                          @MARKDOWN_DOCS@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
@@ -862,18 +861,7 @@ EXAMPLE_PATH           = @LIBSHOGUN_SRC_DIR@ \
 # *.h) to filter out the source-files in the directories. If left blank all
 # files are included.
 
-EXAMPLE_PATTERNS       = *.cpp \
-                         *.sg \
-                         *.py \
-                         *.R \
-                         *.m \
-                         *.cs \
-                         *.java \
-                         *.lua \
-                         *.rb \
-                         *.generated \
-                         LICENSE* \
-                         *_soname.md
+# EXAMPLE_PATTERNS       = 
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude commands
