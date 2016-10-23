@@ -1,3 +1,4 @@
+
 INCLUDE(PythonEnvironment)
 GET_PYTHON_ENV()
 
@@ -60,7 +61,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 			IF (NOT ${DISABLE_META_INTEGRATION_TESTS})
 				AddMetaIntegrationTest(python INTERFACE_PYTHON)
 				AddMetaIntegrationTest(java INTERFACE_JAVA)
-				#AddMetaIntegrationTest(r INTERFACE_R) # currently we have the r meta examples disabled, so no generated results that can be tested
+				AddMetaIntegrationTest(r INTERFACE_R)
 				AddMetaIntegrationTest(octave INTERFACE_OCTAVE)
 				AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
 				AddMetaIntegrationTest(ruby INTERFACE_RUBY)

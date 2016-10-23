@@ -112,10 +112,6 @@ ENDIF()
 
 ########### test all the enabled interfaces & install their files to examples
 
-# FIXME: these are the interfaces which has various problems
-# hence need to disable their testing
-# temporarily disabled as R and static calls has to be fixed
-LIST(APPEND DISABLED_INTERFACES INTERFACE_R)
 # temporarily removed since lua modular currently
 # does not support overloaded c++ methods
 # see https://github.com/shogun-toolbox/shogun/issues/3018
