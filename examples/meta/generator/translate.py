@@ -212,7 +212,8 @@ class Translator:
 
             # extract SWIG type name, we know that vartypeAST is a dict of the form {"BasicType": "real"}
             # i.e. one key
-            sgType = vartypeAST[vartypeAST.keys()[0]]
+            # python2/3 compatible key accessing
+            sgType = vartypeAST[list(vartypeAST.keys())[0]]
 
             assert sgType in getBasicTypesToStore() or sgType in getSGTypesToStore()
             if sgType in getBasicTypesToStore():
