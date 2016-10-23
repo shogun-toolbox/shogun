@@ -2,6 +2,7 @@ bool true_literal = True
 bool false_literal = False
 
 string str_literal = "This is a string literal."
+char char_literal = 'w'
 
 int int_literal = 3
 
