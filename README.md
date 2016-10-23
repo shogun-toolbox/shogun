@@ -54,8 +54,8 @@ The following table depicts the status of each interface available in SHOGUN:
 |java              | *stable* (no known problems)                              |
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
-|r                 | *stable*                                                  |
-|lua               | *beta* (many examples work, string typemaps are unstable, |
+|r                 | *beta*   (most examples work, static calls unavailable    |
+|lua               | *alpha* (many examples work, string typemaps are unstable,|
                    |         overloaded methods unavailable)                   |
 |perl              | *pre-alpha* (work in progress quality)                    |
 |js                | *pre-alpha* (work in progress quality)                    |
