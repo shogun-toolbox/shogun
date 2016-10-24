@@ -33,6 +33,7 @@
  *
  * Authors: Heiko Strathmann
  */
+#ifdef USE_META_INTEGRATION_TESTS
 #ifndef WRAPPED_BASIC_H__
 #define WRAPPED_BASIC_H__
 
@@ -121,3 +122,4 @@ template class CWrappedBasic<floatmax_t>;
 
 };
 #endif // WRAPPED_BASIC_H__
+#endif // USE_META_INTEGRATION_TESTS

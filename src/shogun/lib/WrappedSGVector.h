@@ -33,6 +33,7 @@
  *
  * Authors: Heiko Strathmann
  */
+#ifdef USE_META_INTEGRATION_TESTS
 #ifndef WRAPPED_SGVECTOR_H__
 #define WRAPPED_SGVECTOR_H__
 
@@ -107,3 +108,4 @@ template class CWrappedSGVector<floatmax_t>;
 
 };
 #endif // WRAPPED_SGVECTOR_H__
+#endif // USE_META_INTEGRATION_TESTS

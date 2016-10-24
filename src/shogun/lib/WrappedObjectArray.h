@@ -33,6 +33,8 @@
  *
  * Authors: Heiko Strathmann
  */
+#ifdef USE_META_INTEGRATION_TESTS
+
 #ifndef WRAPPED_OBJECT_ARRAY_H__
 #define WRAPPED_OBJECT_ARRAY_H__
 
@@ -127,3 +129,4 @@ public:
 };
 }
 #endif // WRAPPED_OBJECT_ARRAY_H__
+#endif // USE_META_INTEGRATION_TESTS

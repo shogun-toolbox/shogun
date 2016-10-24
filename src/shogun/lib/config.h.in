@@ -33,6 +33,7 @@
 #cmakedefine USE_CPLEX 1
 #cmakedefine HAVE_COLPACK 1
 #cmakedefine HAVE_ARPREC 1
+#cmakedefine USE_META_INTEGRATION_TESTS
 
 #cmakedefine HAVE_POWL 1
 #cmakedefine HAVE_LGAMMAL 1
