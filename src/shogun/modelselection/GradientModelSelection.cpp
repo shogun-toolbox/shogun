@@ -1,35 +1,111 @@
-/*
- * This program is free software; you can redistribute it and/or modify
+/* * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2016 Wu Lin
  * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
-
 #include <shogun/modelselection/GradientModelSelection.h>
-#ifdef USE_GPL_SHOGUN
-
-#ifdef HAVE_NLOPT
 
 #include <shogun/evaluation/GradientResult.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/machine/Machine.h>
-#include <nlopt.h>
+#include <shogun/optimization/FirstOrderCostFunction.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+#include <shogun/mathematics/Math.h>
+
+
 
 using namespace shogun;
 
+namespace shogun
+{
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+class GradientModelSelectionCostFunction: public FirstOrderCostFunction
+{
+public:
+	GradientModelSelectionCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~GradientModelSelectionCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CGradientModelSelection *obj)
+	{
+		REQUIRE(obj,"Obj must set\n");
+		if(m_obj!=obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+	void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
+	}
+
+	virtual float64_t get_cost()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->get_cost(m_val, m_grad, m_func_data);
+	}
+
+	virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_val;
+	}
+	virtual SGVector<float64_t> get_gradient()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_grad;
+	}
+
+	virtual const char* get_name() const { return "GradientModelSelectionCostFunction"; }
+
+	virtual void set_func_data(void *func_data)
+	{
+		REQUIRE(func_data != NULL, "func_data must set\n");
+		m_func_data = func_data;
+	}
+
+	virtual void set_variables(SGVector<float64_t> val)
+	{
+		m_val = SGVector<float64_t>(val.vlen);
+		m_grad = SGVector<float64_t>(val.vlen);
+		std::copy(val.vector,val.vector+val.vlen,m_val.vector);
+	}
+private:
+	void init()
+	{
+		m_obj=NULL;
+		SG_ADD((CSGObject **)&m_obj, "GradientModelSelectionCostFunction__m_obj",
+			"obj in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
+		m_func_data = NULL;
+		m_val = SGVector<float64_t>();
+		SG_ADD(m_val, "GradientModelSelectionCostFunction__m_val",
+			"val in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
+		m_grad = SGVector<float64_t>();
+		SG_ADD(m_grad, "GradientModelSelectionCostFunction__m_grad",
+			"grad in GradientModelSelectionCostFunction", MS_NOT_AVAILABLE);
+	}
+
+	CGradientModelSelection *m_obj;
+	void* m_func_data;
+	SGVector<float64_t> m_val;
+	SGVector<float64_t> m_grad;
+};
+
 
 /** structure used for NLopt callback function */
 struct nlopt_params
 {
-	/** pointer to machine evaluation */
-	CMachineEvaluation* machine_eval;
-
 	/** pointer to current combination */
 	CParameterCombination* current_combination;
 
@@ -40,28 +116,21 @@ struct nlopt_params
 	bool print_state;
 };
 
-/** NLopt callback function wrapper
- *
- * @param n number of parameters
- * @param x vector of parameter values
- * @param grad vector of gradient values with respect to parameter
- * @param func_data data needed for the callback function. In this case, its a
- * nlopt_params
- *
- * @return function value
- */
-double nlopt_function(unsigned n, const double* x, double* grad, void* func_data)
+float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data)
 {
+	REQUIRE(func_data!=NULL, "func_data must set\n");
+	REQUIRE(model_vars.vlen==model_grads.vlen, "length of variable (%d) and gradient (%d) must equal\n",
+		model_vars.vlen, model_grads.vlen);
+
 	nlopt_params* params=(nlopt_params*)func_data;
 
-	CMachineEvaluation* machine_eval=params->machine_eval;
 	CParameterCombination* current_combination=params->current_combination;
 	CMap<TParameter*, CSGObject*>* parameter_dictionary=params->parameter_dictionary;
 	bool print_state=params->print_state;
 
 	index_t offset=0;
 
-	// set parameters from vector x
+	// set parameters from vector model_vars
 	for (index_t i=0; i<parameter_dictionary->get_num_elements(); i++)
 	{
 		CMapNode<TParameter*, CSGObject*>* node=parameter_dictionary->get_node_ptr(i);
@@ -79,7 +148,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 			{
 
 				bool result=current_combination->set_parameter(param->m_name,
-						(float64_t)x[offset++],	parent, j);
+						model_vars[offset++],	parent, j);
 				 REQUIRE(result, "Parameter %s not found in combination tree\n",
 						 param->m_name)
 			}
@@ -87,14 +156,14 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 		else
 		{
 			bool result=current_combination->set_parameter(param->m_name,
-					(float64_t)x[offset++], parent);
+					model_vars[offset++], parent);
 			REQUIRE(result, "Parameter %s not found in combination tree\n",
 					param->m_name)
 		}
 	}
 
 	// apply current combination to the machine
-	CMachine* machine=machine_eval->get_machine();
+	CMachine* machine=m_machine_eval->get_machine();
 	current_combination->apply_to_machine(machine);
 	if (print_state)
 	{
@@ -104,7 +173,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 	SG_UNREF(machine);
 
 	// evaluate the machine
-	CEvaluationResult* evaluation_result=machine_eval->evaluate();
+	CEvaluationResult* evaluation_result=m_machine_eval->evaluate();
 	CGradientResult* gradient_result=CGradientResult::obtain_from_generic(
 			evaluation_result);
 	SG_UNREF(evaluation_result);
@@ -117,6 +186,17 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 
 	// get value of the function, gradients and parameter dictionary
 	SGVector<float64_t> value=gradient_result->get_value();
+
+	float64_t cost = SGVector<float64_t>::sum(value);
+
+	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+	{
+		if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
+			return cost;
+		else
+			return -cost;
+	}
+
 	CMap<TParameter*, SGVector<float64_t> >* gradient=gradient_result->get_gradient();
 	CMap<TParameter*, CSGObject*>* gradient_dictionary=
 		gradient_result->get_paramter_dictionary();
@@ -146,7 +226,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 		REQUIRE(derivative.vlen, "Can't find gradient wrt %s parameter!\n",
 				node->key->m_name);
 
-		memcpy(grad+offset, derivative.vector, sizeof(double)*derivative.vlen);
+		memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
 
 		offset+=derivative.vlen;
 	}
@@ -154,10 +234,27 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 	SG_UNREF(gradient);
 	SG_UNREF(gradient_dictionary);
 
-	return (double)(SGVector<float64_t>::sum(value));
+	if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
+	{
+		return cost;
+	}
+	else
+	{
+		model_grads.scale(-1);
+		return -cost;
+	}
+
+}
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+void CGradientModelSelection::set_minimizer(FirstOrderMinimizer* minimizer)
+{
+	REQUIRE(minimizer!=NULL, "Minimizer must set\n");
+	SG_REF(minimizer);
+	SG_UNREF(m_mode_minimizer);
+	m_mode_minimizer=minimizer;
 }
 
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CGradientModelSelection::CGradientModelSelection() : CModelSelection()
 {
@@ -173,17 +270,17 @@ CGradientModelSelection::CGradientModelSelection(CMachineEvaluation* machine_eva
 
 CGradientModelSelection::~CGradientModelSelection()
 {
+	SG_UNREF(m_mode_minimizer);
 }
 
 void CGradientModelSelection::init()
 {
-	m_max_evaluations=1000;
-	m_grad_tolerance=1e-6;
+	m_mode_minimizer = new CLBFGSMinimizer();
+	SG_REF(m_mode_minimizer);
 
-	SG_ADD(&m_grad_tolerance, "gradient_tolerance",	"Gradient tolerance",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_evaluations, "max_evaluations", "Maximum number of evaluations",
-			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject **)&m_mode_minimizer,
+		"mode_minimizer", "Minimizer used in mode selection", MS_NOT_AVAILABLE);
+
 }
 
 CParameterCombination* CGradientModelSelection::select_model(bool print_state)
@@ -210,79 +307,57 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		current_combination->build_parameter_values_map(argument);
 
 		//  unroll current parameter combination into vector
-		SGVector<double> x(total_variables);
+		SGVector<float64_t> model_vars = SGVector<float64_t>(total_variables);
+
 		index_t offset=0;
 
 		for (index_t i=0; i<argument->get_num_elements(); i++)
 		{
 			CMapNode<TParameter*, SGVector<float64_t> >* node=argument->get_node_ptr(i);
-			memcpy(x.vector+offset, node->data.vector, sizeof(double)*node->data.vlen);
+			memcpy(model_vars.vector+offset, node->data.vector, sizeof(float64_t)*node->data.vlen);
 			offset+=node->data.vlen;
 		}
 
 		SG_UNREF(argument);
-
-		// create nlopt object and choose MMA (Method of Moving Asymptotes)
-		// optimization algorithm
-		nlopt_opt opt=nlopt_create(NLOPT_LD_MMA, total_variables);
-
-		// currently we assume all parameters are positive
-		// (this is NOT true when inducing points and Full Matrix GaussianARDKernel are optimized)
-		// create lower bound vector (lb=-inf)
-		//SGVector<double> lower_bound(total_variables);
-		//lower_bound.set_const(1e-6);
-
-		// create upper bound vector (ub=inf)
-		//SGVector<double> upper_bound(total_variables);
-		//upper_bound.set_const(HUGE_VAL);
-
-		// set upper and lower bound
-		//nlopt_set_lower_bounds(opt, lower_bound.vector);
-		//nlopt_set_upper_bounds(opt, upper_bound.vector);
-
-		// set maximum number of evaluations
-		nlopt_set_maxeval(opt, m_max_evaluations);
-
-		// set absolute argument tolearance
-		nlopt_set_xtol_abs1(opt, m_grad_tolerance);
-		nlopt_set_ftol_abs(opt, m_grad_tolerance);
 
 		// build parameter->sgobject map from current parameter combination
 		CMap<TParameter*, CSGObject*>* parameter_dictionary=
 			new CMap<TParameter*, CSGObject*>();
 		current_combination->build_parameter_parent_map(parameter_dictionary);
 
-		// nlopt parameters
+		//data for computing the gradient
 		nlopt_params params;
 
 		params.current_combination=current_combination;
-		params.machine_eval=m_machine_eval;
 		params.print_state=print_state;
 		params.parameter_dictionary=parameter_dictionary;
 
 		// choose evaluation direction (minimize or maximize objective function)
-		if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
+		if (print_state)
 		{
-			if (print_state)
+			if (m_machine_eval->get_evaluation_direction()==ED_MINIMIZE)
+			{
 				SG_PRINT("Minimizing objective function:\n");
-
-			nlopt_set_min_objective(opt, nlopt_function, &params);
-		}
-		else
-		{
-			if (print_state)
+			}
+			else
+			{
 				SG_PRINT("Maximizing objective function:\n");
-
-			nlopt_set_max_objective(opt, nlopt_function, &params);
+			}
 		}
 
-		// the minimum objective value, upon return
-		double minf;
+		GradientModelSelectionCostFunction *cost_fun=new GradientModelSelectionCostFunction();
+		cost_fun->set_target(this);
+		cost_fun->set_variables(model_vars);
+		cost_fun->set_func_data(&params);
+		bool cleanup=false;
+		if(this->ref_count()>1)
+			cleanup=true;
 
-		// optimize our function
-		nlopt_result result=nlopt_optimize(opt, x.vector, &minf);
-
-		REQUIRE(result>0, "NLopt failed while optimizing objective function!\n");
+		m_mode_minimizer->set_cost_function(cost_fun);
+		m_mode_minimizer->minimize();
+		m_mode_minimizer->unset_cost_function(false);
+		cost_fun->unset_target(cleanup);
+		SG_UNREF(cost_fun);
 
 		if (print_state)
 		{
@@ -290,8 +365,6 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			current_combination->print_tree();
 		}
 
-		// clean up
-		nlopt_destroy(opt);
 		SG_UNREF(machine);
 		SG_UNREF(parameter_dictionary);
 
@@ -304,6 +377,4 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	}
 }
 
-#endif /* HAVE_NLOPT */
-
-#endif //USE_GPL_SHOGUN
+}

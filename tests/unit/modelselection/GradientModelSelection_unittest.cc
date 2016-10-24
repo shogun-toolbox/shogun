@@ -7,11 +7,9 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/config.h>
 
-#if defined HAVE_NLOPT
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -113,6 +111,9 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	SG_UNREF(best_comb);
 }
 
+
+#ifdef USE_GPL_SHOGUN
+#if defined HAVE_NLOPT
 TEST(GradientModelSelection,select_model_ep_inference)
 {
 	// create some easy random classification data

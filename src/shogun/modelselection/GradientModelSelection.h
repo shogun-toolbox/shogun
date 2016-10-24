@@ -13,9 +13,7 @@
 #define CGRADIENTMODELSELECTION_H_
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
-
-#ifdef HAVE_NLOPT
+#include <shogun/optimization/FirstOrderMinimizer.h>
 
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/modelselection/ParameterCombination.h>
@@ -23,11 +21,15 @@
 namespace shogun
 {
 
+class GradientModelSelectionCostFunction;
+
 /** @brief Model selection class which searches for the best model by a
  * gradient-search.
  */
 class CGradientModelSelection : public CModelSelection
 {
+friend class GradientModelSelectionCostFunction;
+
 public:
 	/** default constructor */
 	CGradientModelSelection();
@@ -59,50 +61,29 @@ public:
 	 */
 	virtual const char* get_name() const { return "GradientModelSelection"; }
 
-	/** set the maximum number of evaluations used in the optimization algorithm
+	/** set minimizer
 	 *
-	 * @param max_evaluations maximum number of evaluations
+	 * @param minimizer minimizer used in model selection
 	 */
-	void set_max_evaluations(uint32_t max_evaluations)
-	{
-		m_max_evaluations=max_evaluations;
-	}
-
-	/** get the maximum number evaluations used in the optimization algorithm
-	 *
-	 * @return number of maximum evaluations
-	 */
-	uint32_t get_max_evaluations() const { return m_max_evaluations; }
-
-	/** set the minimum level of gradient tolerance used in the optimization
-	 * algorithm
-	 *
-	 * @param grad_tolerance tolerance level
-	 */
-	void set_grad_tolerance(float64_t grad_tolerance)
-	{
-		m_grad_tolerance=grad_tolerance;
-	}
-
-	/** get the minimum level of gradient tolerance used in the optimization
-	 * algorithm
-	 *
-	 * @return tolerance level
-	 */
-	float64_t get_grad_tolerance() const { return m_grad_tolerance; }
+	virtual void set_minimizer(FirstOrderMinimizer* minimizer);
 
 private:
 	/** initialize object */
 	void init();
 
 protected:
-	/** maximum number of evaluations used in optimization algorithm */
-	uint32_t m_max_evaluations;
 
-	/** gradient tolerance used in optimization algorithm */
-	float64_t m_grad_tolerance;
+	/** minimizer */
+	FirstOrderMinimizer* m_mode_minimizer;
+
+	/** get the cost given current model parameter
+	 * Note that this function will compute the gradient
+	 *
+	 * @param model_vals model parameters
+	 * @param model_grads grad of the model parameters
+	 * @param func_data data needed for the callback function
+	 */
+	virtual float64_t get_cost(SGVector<float64_t> model_vars, SGVector<float64_t> model_grads, void* func_data);
 };
 }
-#endif /* HAVE_NLOPT */
-#endif //USE_GPL_SHOGUN
 #endif /* CGRADIENTMODELSELECTION_H_ */
