@@ -15,6 +15,23 @@ configure_file(
     "${BINARY_BUILD_DIR}/conf.py"
     @ONLY)
 
+add_custom_target(cookbook_copy_source
+    ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/source"
+    "${BINARY_BUILD_DIR}"
+    COMMENT "Copying cookbook Sphinx source to ${BINARY_BUILD_DIR}")
+
+add_custom_target(cookbook_make_quickstart_dir
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${BINARY_BUILD_DIR}/quickstart
+    COMMENT "Creating Quickstart folder at ${BINARY_BUILD_DIR}/quickstart")
+
+SET(interface_rst ${BINARY_BUILD_DIR}/quickstart/interfaces.rst)
+ADD_CUSTOM_COMMAND(OUTPUT ${interface_rst}
+        COMMAND COMMAND ${PANDOC_EXECUTABLE} -f markdown -t rst -o ${interface_rst}
+        ${CMAKE_SOURCE_DIR}/INTERFACES.md
+        DEPENDS cookbook_copy_source
+        WORKING_DIRECTORY ${BINARY_BUILD_DIR})
+
 add_custom_target(cookbook_sphinx_extensions
     ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/extensions"
@@ -32,17 +49,18 @@ add_custom_target(cookbook_sphinx_static
     "${CMAKE_CURRENT_SOURCE_DIR}/source/static"
     "${BINARY_BUILD_DIR}/static"
     COMMENT "Copying cookbook Sphinx static overrides to ${BINARY_BUILD_DIR}")
-    
+
 add_custom_target(cookbook_sphinx_linkcheck
     ${SPHINX_EXECUTABLE}
     -q -b linkcheck
     -c "${BINARY_BUILD_DIR}"
     -d "${SPHINX_CACHE_DIR}"
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source"
+    "${BINARY_BUILD_DIR}"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx validating external links"
-    DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
+    DEPENDS cookbook_copy_source
+            cookbook_sphinx_extensions cookbook_sphinx_templates
             cookbook_sphinx_static meta_examples)
 
 add_custom_target(cookbook
@@ -51,10 +69,11 @@ add_custom_target(cookbook
     -c "${BINARY_BUILD_DIR}"
     -d "${SPHINX_CACHE_DIR}"
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source"
+    "${BINARY_BUILD_DIR}"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx building HTML"
-    DEPENDS cookbook_sphinx_extensions cookbook_sphinx_templates
+    DEPENDS cookbook_copy_source
+            cookbook_sphinx_extensions cookbook_sphinx_templates
             cookbook_sphinx_static meta_examples
-            #cookbook_sphinx_linkcheck
+            ${interface_rst}
             )
