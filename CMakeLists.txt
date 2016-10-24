@@ -734,9 +734,10 @@ ENDIF(BUILD_META_EXAMPLES)
 
 # add meta example dir below after tests have been defined
 
-# cookbook and dependencies
-find_package(Sphinx)
-IF(BUILD_META_EXAMPLES AND SPHINX_FOUND)
+# cookbook and dependencies (note there are in fact more, see its requirements.txt)
+FIND_PACKAGE(Sphinx)
+FIND_PACKAGE(Pandoc)
+IF(BUILD_META_EXAMPLES AND SPHINX_FOUND AND PANDOC_FOUND)
     SET(BUILD_COOKBOOK 1)
 ENDIF()
 

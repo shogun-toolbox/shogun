@@ -1,4 +1,4 @@
-# Talen from https://llvm.org/svn/llvm-project/llvm/trunk/cmake/modules/FindSphinx.cmake
+# Taken from https://llvm.org/svn/llvm-project/llvm/trunk/cmake/modules/FindSphinx.cmake
 # under "UIUC" BSD-Style license.
 # CMake find_package() Module for Sphinx documentation generator
 # http://sphinx-doc.org/
