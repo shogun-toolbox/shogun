@@ -1,24 +1,14 @@
 2016-10-23 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
 	* SHOGUN Release version 5.0.0 (libshogun 17.2, data 0.11, parameter 1)
-	* Features:
-	    - Shogun cookbook deployed and online [Heiko Strathmann, Viktor Gal, Gergely Varga]
-	    - TODO: GSoC projects (including many new cookbooks)
-	* Bugfixes:
 	
-	* Cleanup, efficiency updates, and API Changes:
-	    - Static interfaces have been removed [Viktor Gal]
-	 
-2016-02-17 Björn Esser <me@besser82.io>
-
-	* SHOGUN Release version 4.2.0 (libshogun 17.2, data 0.11, parameter 1)
 	* NOTE: This version contains a new CMake option USE_GPL_SHOGUN, which
 	        when set to OFF will exclude all GPL codes from Shogun, resulting in
 	        a BSD3 compatible build. See LICENSE for details. [Heiko Strathmann]
 	* Features:
+	    - TODO: describe GSoC 2016 projects (including many new cookbooks)
 	    - Add new Shogun cookbook for documentation and testing across all 
-	      target languages [Heiko Strathmann, Sergey Lisitsyn].
-           - Add multi thread support for unlocked cross-validation [Saurabh Mahindre]
+	      target languages [Heiko Strathmann, Sergey Lisitsyn, Esben Sorig, Viktor Gal].
 	* Bugfixes:
 		- Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 		- Make Java and CSharp install-dir configurable [Björn Esser].
@@ -27,6 +17,7 @@
 	    - Make Eigen3 a hard requirement. Bundle if not found on system. [Heiko Strathmann]
 	    - Drop ALGLIB (GPL) dependency in CStatistics and ship CDFLIB (public domain) instead [Heiko Strathmann]
 	    - Drop p-value estimation in model-selection [Heiko Strathmann]
+	    - Static interfaces have been removed [Viktor Gal]
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
