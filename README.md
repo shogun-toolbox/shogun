@@ -10,14 +10,14 @@ Develop branch build status:
 
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
- * See [ABOUT.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for a project description.
- * See [INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for installation instructions.
- * See [INTERFACES.md](https://github.com/shogun-toolbox/docs/blob/master/INTERFACE.md) for calling Shogun from its interfaces.
+ * See [doc/readme/ABOUT.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for a project description.
+ * See [doc/readme/INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for installation instructions.
+ * See [doc/readme/INTERFACES.md](https://github.com/shogun-toolbox/docs/blob/master/INTERFACE.md) for calling Shogun from its interfaces.
  * See [the cookbook](http://shogun.ml/cookbook/latest/) for API examples for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for developer information.
-   * [README.developer](https://github.com/shogun-toolbox/shogun/wiki/README_developer)
-   * [README.data](https://github.com/shogun-toolbox/shogun/wiki/README_data)
-   * See [README.cmake](https://github.com/shogun-toolbox/shogun/wiki/README_cmake)
+   * [doc/wiki/README.developer](https://github.com/shogun-toolbox/shogun/wiki/README_developer)
+   * [doc/wiki/README.data](https://github.com/shogun-toolbox/shogun/wiki/README_data)
+   * [doc/wiki/README.cmake](https://github.com/shogun-toolbox/shogun/wiki/README_cmake)
 
 Quick links for this file:
 * [Introduction](#introduction)
