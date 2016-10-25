@@ -11,3 +11,6 @@
 [submodule "doc/wiki"]
 	path = doc/wiki
 	url = git://github.com/shogun-toolbox/shogun-wiki.git
+[submodule "doc/readme"]
+	path = doc/readme
+	url = git://github.com/shogun-toolbox/docs.git

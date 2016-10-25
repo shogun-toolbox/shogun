@@ -27,9 +27,9 @@ add_custom_target(cookbook_make_quickstart_dir
 
 SET(interface_rst ${BINARY_BUILD_DIR}/quickstart/interfaces.rst)
 ADD_CUSTOM_COMMAND(OUTPUT ${interface_rst}
-        COMMAND COMMAND ${PANDOC_EXECUTABLE} -f markdown -t rst -o ${interface_rst}
-        ${CMAKE_SOURCE_DIR}/INTERFACES.md
-        DEPENDS cookbook_copy_source
+        COMMAND ${PANDOC_EXECUTABLE} -f markdown -t rst -o ${interface_rst}
+        ${CMAKE_SOURCE_DIR}/doc/readme/INTERFACES.md
+        DEPENDS cookbook_copy_source cookbook_make_quickstart_dir
         WORKING_DIRECTORY ${BINARY_BUILD_DIR})
 
 add_custom_target(cookbook_sphinx_extensions
