@@ -55,9 +55,6 @@ cpplint.py
 /src/configure-*-*.c*
 /src/build-local
 
-# static interfaces
-/src/interfaces/cmdline_static/shogun
-
 # modular interfaces
 /src/interfaces/*_modular/*.doxy
 /src/interfaces/*_modular/Evaluation.i

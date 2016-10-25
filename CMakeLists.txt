@@ -263,7 +263,7 @@ ENDIF()
 
 # this has been only fixed in swig 2.0.12 or later.
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE
-	AND SWIG_VERSION VERSION_LESS "2.0.12") OR MatlabStatic))
+	AND SWIG_VERSION VERSION_LESS "2.0.12")))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)
@@ -383,6 +383,13 @@ OPTION(JavaModular "Java Modular" OFF)
 OPTION(PerlModular "Perl Modular" OFF)
 OPTION(RubyModular "Ruby Modular" OFF)
 OPTION(CSharpModular "CSharp Modular" OFF)
+
+SET(STATIC_INTERFACES PythonStatic;OctaveStatic;RStatic;MatlabStatic;CmdLineStatic)
+FOREACH(static_interface ${STATIC_INTERFACES})
+	if(${static_interface})
+		MESSAGE(FATAL_ERROR "Static interfaces are deprecated, use the corresponding modular interface!")
+	endif()
+ENDFOREACH()
 
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
@@ -958,7 +965,7 @@ IF(REDUCE_SWIG_DEBUG)
 ENDIF(REDUCE_SWIG_DEBUG)
 
 # python modular
-IF (PythonModular OR PythonStatic)
+IF (PythonModular)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
 	FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
@@ -997,12 +1004,6 @@ IF (PythonModular OR PythonStatic)
 
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-		ENDIF()
-	ENDIF()
-
-	IF(PythonStatic)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
 		ENDIF()
 	ENDIF()
 ENDIF()
@@ -1055,7 +1056,7 @@ IF (RubyModular)
 ENDIF()
 
 # octave modular
-IF (OctaveModular OR OctaveStatic)
+IF (OctaveModular)
 	FIND_PACKAGE(Octave 3.6 REQUIRED)
 	SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
 
@@ -1063,12 +1064,6 @@ IF (OctaveModular OR OctaveStatic)
 		UNSET(TARGET_SWIGFLAGS)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
-		ENDIF()
-	ENDIF()
-
-	IF(OctaveStatic)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_static)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_static)
 		ENDIF()
 	ENDIF()
 ENDIF()
@@ -1083,19 +1078,13 @@ IF (CSharpModular)
 ENDIF()
 
 # r modular
-IF (RModular OR RStatic)
+IF (RModular)
 	FIND_PACKAGE(R REQUIRED)
 
 	IF (RModular)
 		UNSET(TARGET_SWIGFLAGS)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
-		ENDIF()
-	ENDIF()
-
-	IF (RStatic)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_static)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_static)
 		ENDIF()
 	ENDIF()
 ENDIF()
@@ -1106,23 +1095,6 @@ IF (PerlModular)
 	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
 		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
-	ENDIF()
-ENDIF()
-
-IF (MatlabStatic)
-	FIND_PACKAGE(Matlab REQUIRED)
-	IF(MATLAB_FOUND)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
-		ENDIF()
-	ELSE()
-		MESSAGE(FATAL_ERROR "Could not find Matlab, which is required for compiling matlab_static interface. Try setting MATLAB_ROOT enviroment variable to the right path")
-	ENDIF()
-ENDIF()
-
-IF (CmdLineStatic)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/cmdline_static)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/cmdline_static)
 	ENDIF()
 ENDIF()
 
@@ -1143,7 +1115,6 @@ ENDIF()
 OPTION(ENABLE_TESTING "Enable testing" OFF)
 OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
 OPTION(TRAVIS_DISABLE_LIBSHOGUN_TESTS "Disable libshogun tests to speed up jobs on travis-ci" OFF)
-OPTION(INTEGRATION_TESTS_ENABLED "Enable integration testing (legacy)" OFF)
 OPTION(TRAVIS_DISABLE_META_CPP "Disable cpp meta examples and integration testing to speed up jobs on travis-ci" OFF)
 OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed up build" OFF)
 
@@ -1155,10 +1126,6 @@ IF(ENABLE_TESTING)
 	ENDIF()
 
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
-		if (INTEGRATION_TESTS_ENABLED AND EXISTS ${CMAKE_SOURCE_DIR}/tests/integration)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/integration)
-		ENDIF()
-
 		IF (NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
 		ENDIF()
