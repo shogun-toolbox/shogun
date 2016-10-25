@@ -1,9 +1,0 @@
-% sigmoid
-print Sigmoid
-set_kernel SIGMOID REAL 10 1.2 1.3
-
-set_features TRAIN ../data/fm_train_real.dat
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_real.dat
-km_test.txt = get_kernel_matrix TEST

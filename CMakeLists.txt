@@ -384,12 +384,6 @@ OPTION(PerlModular "Perl Modular" OFF)
 OPTION(RubyModular "Ruby Modular" OFF)
 OPTION(CSharpModular "CSharp Modular" OFF)
 
-OPTION(PythonStatic "Python Static" OFF)
-OPTION(RStatic "R Static" OFF)
-OPTION(CmdLineStatic "CmdLine Static" OFF)
-OPTION(MatlabStatic "Matlab Static" OFF)
-OPTION(OctaveStatic "Octave Static" OFF)
-
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
 
@@ -1223,14 +1217,14 @@ message(STATUS "Enabled Interfaces")
 
 message(STATUS "  libshogun is ON")
 
-PrintInterfaceStatus("python modular" PythonModular)
-PrintInterfaceStatus("octave modular" OctaveModular)
-PrintInterfaceStatus("java modular" JavaModular)
-PrintInterfaceStatus("perl modular" PerlModular)
-PrintInterfaceStatus("ruby modular" RubyModular)
-PrintInterfaceStatus("csharp modular" CSharpModular)
-PrintInterfaceStatus("R modular" RModular)
-PrintInterfaceStatus("lua modular" LuaModular)
+PrintInterfaceStatus("python" PythonModular)
+PrintInterfaceStatus("octave" OctaveModular)
+PrintInterfaceStatus("java" JavaModular)
+PrintInterfaceStatus("perl" PerlModular)
+PrintInterfaceStatus("ruby" RubyModular)
+PrintInterfaceStatus("csharp" CSharpModular)
+PrintInterfaceStatus("R   " RModular)
+PrintInterfaceStatus("lua" LuaModular)
 
 message(STATUS "")
 message(STATUS "")
@@ -1242,14 +1236,6 @@ ELSE()
 ENDIF()
 message(STATUS "------------------------------------")
 message(STATUS "")
-
-message(STATUS "")
-message(STATUS "Enabled legacy interfaces")
-PrintInterfaceStatus("cmdline static" CmdLineStatic)
-PrintInterfaceStatus("python static" PythonStatic)
-PrintInterfaceStatus("octave static" OctaveStatic)
-PrintInterfaceStatus("matlab static" MatlabStatic)
-PrintInterfaceStatus("R static" RStatic)
 
 message(STATUS "===================================================================================================================")
 

@@ -1,7 +1,0 @@
-The Weighted Degree Position String kernel (Weighted Degree kernel with shifts).
-
-The WD-shift kernel of order d compares two sequences X and
-Y of length L by summing all contributions of k-mer matches of
-lengths k in 1...d, weighted by coefficients beta_k
-allowing for a positional tolerance of up to shift s.
-

@@ -1,2 +1,0 @@
-In this example a hidden markov model with 3 states and 6 transitions is trained
-on a string data set.

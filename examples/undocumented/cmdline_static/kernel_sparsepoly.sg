@@ -1,9 +1,0 @@
-% Sparse Poly
-print SparsePoly
-set_kernel POLY SPARSEREAL 10 3 1 1
-
-set_features TRAIN ../data/fm_train_sparsereal.dat
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_sparsereal.dat
-km_test.txt = get_kernel_matrix TEST
