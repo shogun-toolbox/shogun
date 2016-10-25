@@ -3,6 +3,9 @@ The Shogun API cookbook
 
 This is a collection of cookbook-style examples for using Shogun.
 Every example contains code listings in all of Shogun's supported target languages.
+All code is executable and part of our test builds, all interfaces produce exactly the same results.
+
+Check the quickstart for how to run examples, to see full listings, and to access more examples which are not part of the cookbook yet.
 
 Quickstart
 ----------
