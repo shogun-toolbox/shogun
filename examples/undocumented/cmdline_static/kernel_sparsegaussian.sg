@@ -1,9 +1,0 @@
-% Sparse Gaussian
-print SparseGaussian
-set_kernel GAUSSIAN SPARSEREAL 10 1.4
-
-set_features TRAIN ../data/fm_train_sparsereal.dat
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_sparsereal.dat
-km_test.txt = get_kernel_matrix TEST

@@ -1,9 +1,0 @@
-% Linear String
-print LinearString
-set_kernel LINEAR CHAR 10
-
-set_features TRAIN ../data/fm_train_dna.dat DNA
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_dna.dat DNA
-km_test.txt = get_kernel_matrix TEST

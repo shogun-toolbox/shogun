@@ -1,2 +1,0 @@
-In this example the Histogram algorithm object computes a histogram over all
-16bit unsigned integers in the features.

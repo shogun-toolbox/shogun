@@ -1,3 +1,0 @@
-This is an example for the initialization of the diag-kernel.
-The diag kernel has all kernel matrix entries but those on
-the main diagonal set to zero.

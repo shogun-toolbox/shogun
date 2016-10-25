@@ -1,3 +1,0 @@
-The constant kernel gives a trivial kernel matrix with all entries set to the same value
-defined by the argument 'c'.
-
