@@ -56,9 +56,17 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
                 print("Error loading file: {}\n{}".format(translate_file, err))
                 raise
 
+    if os.path.isdir(inputDir):
+        files = subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg'))
+    elif inputDir.endswith(".sg"):
+        files = [(os.path.basename(os.path.dirname(inputDir)), os.path.basename(inputDir))]
+        inputDir = os.path.dirname(os.path.dirname(inputDir))
+    else:
+        raise RuntimeError("Given input %s is neither an .sg file nor a directory" % inputDir)
+
     # Translate each example
-    for dirRelative, filename in subfilesRelative(inputDir, filter_by=lambda x: x.lower().endswith('.sg')):
-        print("Translating {}".format(os.sep.join([dirRelative, filename])))
+    for dirRelative, filename in files:
+        # print("Translating {}".format(os.sep.join([dirRelative, filename])))
 
         # Parse the example file
         filePath = os.path.join(dirRelative, filename)
@@ -100,7 +108,7 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output", help="path to output directory")
-    parser.add_argument("-i", "--input", help="path to examples directory (input)")
+    parser.add_argument("-i", "--input", help="path to examples directory (input), can be a single file")
     parser.add_argument("-t", "--targetsfolder", help="path to directory with target JSON files")
     parser.add_argument("-g", "--ctags", help="path to ctags file")
     parser.add_argument("--store-vars",
