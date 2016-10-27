@@ -163,6 +163,15 @@ class CLDA : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	   	/**
+		 * A templated specialization of the train_machine method
+		 * @param features training data
+		 * @param labels labels for training data
+		 * @see train_machine
+		 */
+		template <typename ST>
+		bool train_machine_templated(SGVector<int32_t> train_labels, CFeatures * features);
+
 	protected:
 
 		void init();
