@@ -617,6 +617,13 @@ IF(NOT EIGEN3_FOUND)
 	include(external/Eigen3)
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ELSE()
+    # eigen3 bug related to aliasing operators and self-storing.
+    # TODO put in proper reference and version from when this is fixed
+    IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90)
+        MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} is buggy, manually bundling.")
+        include(external/Eigen3)
+    ENDIF()
+
 	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ENDIF()
 
