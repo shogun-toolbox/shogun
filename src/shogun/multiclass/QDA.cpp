@@ -253,9 +253,9 @@ bool CQDA::train_machine(CFeatures* data)
 
 	m_means.zero();
 
-	int32_t vlen;
+	SGVector<int32_t> vlen;
 	bool vfree;
-	float64_t* vec;
+	SGVector<float64_t> vec;
 	for (int k = 0; k < m_num_classes; k++)
 	{
 		MatrixXd buffer(class_nums[k], m_dim);
