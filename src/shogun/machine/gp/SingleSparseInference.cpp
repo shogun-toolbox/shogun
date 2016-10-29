@@ -370,7 +370,7 @@ void CSingleSparseInference::optimize_inducing_features()
 #ifdef HAVE_NLOPT
 	CNLOPTMinimizer* opt=dynamic_cast<CNLOPTMinimizer*>(m_inducing_minimizer);
 	if (opt)
-		opt->set_nlopt_parameters(NLOPT_LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
+		opt->set_nlopt_parameters(LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
 #endif //HAVE_NLOPT
 #endif //USE_GPL_SHOGUN
 

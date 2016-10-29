@@ -83,12 +83,12 @@ public:
 	/* Set parameters used in NLOPT
 	 * For details please see http://ab-initio.mit.edu/wiki/index.php/NLopt_C-plus-plus_Reference
 	 *
-	 * @param algorithm provided by NLOPT for minimization
+	 * @param algorithm provided by NLOPT for minimization (e.g. LD_LBFGS denotes NLOPT_LD_LBFGS)
 	 * @param max_iterations the number of cost function evaluations 
 	 * @param variable_tolerance absolute tolerance on optimization parameters 
 	 * @param function_tolerance absolute tolerance on function value.
 	 */
-	virtual void set_nlopt_parameters(nlopt_algorithm algorithm=NLOPT_LD_LBFGS,
+	virtual void set_nlopt_parameters(ENLOPTALGORITHM algorithm=LD_LBFGS,
 		float64_t max_iterations=1000,
 		float64_t variable_tolerance=1e-6,
 		float64_t function_tolerance=1e-6);
@@ -99,6 +99,15 @@ private:
 	 * */
 	static double nlopt_function(unsigned dim, const double* variable,
 		double* gradient, void* func_data);
+
+	static int16_t get_nlopt_algorithm_id(ENLOPTALGORITHM method);
+
+	static nlopt_algorithm get_nlopt_algorithm(int16_t method_id)
+	{
+		REQUIRE(method_id>=0 && method_id<(int16_t)NLOPT_NUM_ALGORITHMS,
+			"Unsupported method id (%d)\n", method_id);
+		return (nlopt_algorithm) method_id;
+	}
 
 protected:
 

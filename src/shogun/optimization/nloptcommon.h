@@ -14,22 +14,41 @@ namespace shogun
 {
 
 #ifdef HAVE_NLOPT
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct NLOPTAlgorithmHelper
+enum ENLOPTALGORITHM
 {
-	static int16_t get_nlopt_algorithm_id(nlopt_algorithm method)
-	{
-		return (int16_t) method;
-	}
-
-	static nlopt_algorithm get_nlopt_algorithm(int16_t method_id)
-	{
-		REQUIRE(method_id>=0 && method_id<(int16_t)NLOPT_NUM_ALGORITHMS,
-			"Unsupported method id (%d)\n", method_id);
-		return (nlopt_algorithm) method_id;
-	}
+	GN_DIRECT=1,
+	GN_DIRECT_L,
+	GN_DIRECT_L_RAND,
+	GN_DIRECT_NOSCAL,
+	GN_DIRECT_L_NOSCAL,
+	GN_DIRECT_L_RAND_NOSCAL,
+	GN_ORIG_DIRECT,
+	GN_ORIG_DIRECT_L,
+	GN_CRS2_LM,
+	GN_ISRES,
+	LD_MMA,
+	LD_LBFGS,
+	LD_LBFGS_NOCEDAL,
+	LD_VAR1,
+	LD_VAR2,
+	LD_TNEWTON,
+	LD_TNEWTON_RESTART,
+	LD_TNEWTON_PRECOND,
+	LD_TNEWTON_PRECOND_RESTART,
+	LD_SLSQP,
+	LN_PRAXIS,
+	LN_COBYLA,
+	LN_NEWUOA,
+	LN_NEWUOA_BOUND,
+	LN_NELDERMEAD, 
+	LN_SBPLX,
+	LN_BOBYQA,
+	AUGLAG,
+	AUGLAG_EQ,
+	G_MLSL,
+	G_MLSL_LDS
 };
-#endif
+
 #endif //HAVE_NLOPT
 
 } // namespace shogun

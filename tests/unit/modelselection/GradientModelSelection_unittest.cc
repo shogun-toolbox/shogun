@@ -10,6 +10,8 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -27,6 +29,7 @@
 #include <shogun/evaluation/GradientCriterion.h>
 #include <shogun/modelselection/GradientModelSelection.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/optimization/NLOPTMinimizer.h>
 
 #include <gtest/gtest.h>
 
@@ -84,6 +87,10 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	// specify gradient search
 	CGradientModelSelection* grad_search=new CGradientModelSelection(grad_eval);
 
+	CNLOPTMinimizer *minimizer = new CNLOPTMinimizer();
+	minimizer->set_nlopt_parameters(LD_MMA);
+	grad_search->set_minimizer(minimizer);
+
 	// find best parameter combination
 	CParameterCombination* best_comb=grad_search->select_model(false);
 	best_comb->apply_to_machine(gpr);
@@ -112,8 +119,6 @@ TEST(GradientModelSelection,select_model_exact_inference)
 }
 
 
-#ifdef USE_GPL_SHOGUN
-#if defined HAVE_NLOPT
 TEST(GradientModelSelection,select_model_ep_inference)
 {
 	// create some easy random classification data
@@ -168,6 +173,9 @@ TEST(GradientModelSelection,select_model_ep_inference)
 
 	// specify gradient search
 	CGradientModelSelection* grad_search=new CGradientModelSelection(grad_eval);
+	CNLOPTMinimizer *minimizer = new CNLOPTMinimizer();
+	minimizer->set_nlopt_parameters(LD_MMA);
+	grad_search->set_minimizer(minimizer);
 
 	// find best parameter combination
 	CParameterCombination* best_comb=grad_search->select_model(false);
@@ -182,5 +190,5 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	SG_UNREF(best_comb);
 }
 
-#endif /* defined HAVE_NLOPT */
+#endif //HAVE_NLOPT 
 #endif //USE_GPL_SHOGUN

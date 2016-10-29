@@ -108,7 +108,8 @@ public:
 	 * Default value is 1.
 	 */
 	virtual void set_lbfgs_parameters(int32_t m = 100,
-		int32_t max_linesearch = 1000, ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
+		int32_t max_linesearch = 1000,
+		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE,
 		int32_t max_iterations = 1000,
 		float64_t delta = 0.0,
 		int32_t past = 0,
