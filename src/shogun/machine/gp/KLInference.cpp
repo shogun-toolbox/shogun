@@ -344,9 +344,10 @@ float64_t CKLInference::optimization()
         KLInferenceCostFunction *cost_fun=new KLInferenceCostFunction();
         cost_fun->set_target(this);
 	bool cleanup=false;
+#ifdef USE_REFERENCE_COUNTING
 	if(this->ref_count()>1)
 		cleanup=true;
-
+#endif
 	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
 
 	REQUIRE(opt, "FirstOrderMinimizer is required\n")
