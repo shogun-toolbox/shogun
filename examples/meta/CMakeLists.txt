@@ -103,4 +103,9 @@ IF(ENABLE_TESTING)
         # see https://github.com/shogun-toolbox/shogun/issues/3018
         #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lua)
     ENDIF()
+    
+    # java
+    IF (JavaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/java)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/java)
+    ENDIF()
 ENDIF()
