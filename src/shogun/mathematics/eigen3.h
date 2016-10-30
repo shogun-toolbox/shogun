@@ -68,6 +68,14 @@
 	// until this is not fixed we need to copy the matrix and calculate the log
 	#define EIGEN_WITH_LOG_BUG_1229 1
 #endif
+
+#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
+	((EIGEN_MINOR_VERSION >= 91)))
+	// Eigen operator bug that was introduced somewhere in 3.3+
+	// TODO put reference and version when it got fixed
+	// c.f. github isse #3486
+	#define EIGEN_WITH_OPERATOR_BUG 1
+#endif
 namespace shogun
 {
 template<class T> class SGSparseMatrix;
