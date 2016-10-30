@@ -205,10 +205,7 @@ target_languages = (
         ('java', 'java'),
         ('ruby', 'rb'),
         ('r', 'R'),
-        # temporarily removed since lua modular currently
-        # does not support overloaded c++ methods
-        # see https://github.com/shogun-toolbox/shogun/issues/3018
-        #('lua', 'lua'),
+        ('lua', 'lua'),
         ('csharp', 'cs'),
         ('cpp', 'cpp'),
         )
