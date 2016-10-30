@@ -3,10 +3,8 @@
 	* SHOGUN Release version 5.0.0 (libshogun 17.2, data 0.11, parameter 1)
 	
 	* NOTE: This version contains a new CMake option USE_GPL_SHOGUN, which
-	        when set to OFF will exclude all GPL codes from Shogun, resulting in
-	        a BSD3 compatible build. See LICENSE for details. [Heiko Strathmann]
+	        when set to OFF will exclude all GPL codes from Shogun [Heiko Strathmann].
 	* Features:
-	    - TODO: describe GSoC 2016 projects (including many new cookbooks)
 	    - Add new Shogun cookbook for documentation and testing across all 
 	      target languages [Heiko Strathmann, Sergey Lisitsyn, Esben Sorig, Viktor Gal].
 	* Bugfixes:
