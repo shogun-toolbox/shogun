@@ -540,8 +540,10 @@ float64_t CKLDualInferenceMethod::optimization()
 	cost_fun->set_target(this);
 	bool cleanup=false;
 
+#ifdef USE_REFERENCE_COUNTING
 	if(this->ref_count()>1)
 		cleanup=true;
+#endif
 
 	minimizer->set_cost_function(cost_fun);
 	float64_t nlml_opt = minimizer->minimize();

@@ -350,8 +350,10 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		cost_fun->set_variables(model_vars);
 		cost_fun->set_func_data(&params);
 		bool cleanup=false;
+#ifdef USE_REFERENCE_COUNTING
 		if(this->ref_count()>1)
 			cleanup=true;
+#endif
 
 		m_mode_minimizer->set_cost_function(cost_fun);
 		m_mode_minimizer->minimize();
