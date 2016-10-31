@@ -172,6 +172,7 @@ namespace shogun
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>
 %include <shogun/kernel/AUCKernel.h>
+%include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/BesselKernel.h>
 %include <shogun/kernel/CauchyKernel.h>
 %include <shogun/kernel/CircularKernel.h>
@@ -183,7 +184,6 @@ namespace shogun
 %include <shogun/kernel/ConstKernel.h>
 %include <shogun/kernel/CustomKernel.h>
 %include <shogun/kernel/DiagKernel.h>
-%include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/string/DistantSegmentsKernel.h>
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/string/FixedDegreeStringKernel.h>
