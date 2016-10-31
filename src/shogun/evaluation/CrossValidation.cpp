@@ -343,7 +343,6 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
-			}
 
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
