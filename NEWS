@@ -8,6 +8,7 @@
 	    - Add new Shogun cookbook for documentation and testing across all 
 	      target languages [Heiko Strathmann, Sergey Lisitsyn, Esben Sorig, Viktor Gal].
 	    - Added option to learn CombinedKernel weights with GP approximate inference [Wu Lin].
+	    - LARS now supports 32, 64, and 128 bit floating point numbers [Chris Goldsworthy].
 	* Bugfixes:
 	    - Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 	    - Make Java and CSharp install-dir configurable [Björn Esser].
