@@ -192,7 +192,7 @@ class CKNN : public CDistanceMachine
 
 		/** set the KNN algorithm
 		 *
-		 * @param knn_solver the liblinear solver
+		 * @param knn_solver Used solver
 		 */
 		inline void set_knn_solver_type(KNN_SOLVER knn_solver)
 		{
