@@ -250,6 +250,15 @@ public:
 	 * @param minimizer minimizer used in inference method
 	 */
 	virtual void register_minimizer(Minimizer* minimizer);
+
+	/** Specify behavious when EP does not converge: failure or warning
+	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning
+	 */
+	void set_fail_on_non_convergence(bool fail_on_non_convergence)
+	{
+		m_fail_on_non_convergence = fail_on_non_convergence;
+	}
+
 protected:
 	/** update gradients */
 	virtual void compute_gradient();
@@ -313,14 +322,6 @@ protected:
 	 */
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
-
-	/** Specify behavious when EP does not converge: failure or warning
-	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning
-	 */
-	void set_fail_on_non_convergence(bool fail_on_non_convergence)
-	{
-		m_fail_on_non_convergence = fail_on_non_convergence;
-	}
 
 private:
 	void init();
