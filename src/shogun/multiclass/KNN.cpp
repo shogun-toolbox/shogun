@@ -131,6 +131,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	SGMatrix<index_t> NN(m_k, n);
 
 	distance->precompute_lhs();
+	distance->precompute_rhs();
 
 	//for each test example
 	for (int32_t i=0; i<n && (!CSignal::cancel_computations()); i++)
