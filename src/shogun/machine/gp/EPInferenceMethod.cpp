@@ -85,6 +85,7 @@ void CEPInferenceMethod::init()
 	m_max_sweep=15;
 	m_min_sweep=2;
 	m_tol=1e-4;
+	m_fail_on_non_convergence=true;
 }
 
 CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
@@ -295,9 +296,12 @@ void CEPInferenceMethod::update()
 
 	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
 	{
-		SG_ERROR("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
-				"not yet reached. You can manually set maximum number of sweeps "
-				"or tolerance to fix this problem.\n", m_max_sweep, m_tol);
+		SG_WARNING("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
+				"not yet reached. You can increase or decrease both.\n",
+				m_max_sweep, m_tol);
+
+		if (m_fail_on_non_convergence)
+			SG_ERROR("EP did not converge. This error can be explicitly disabled.\n")
 	}
 
 	// update vector alpha

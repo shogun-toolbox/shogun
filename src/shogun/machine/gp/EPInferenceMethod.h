@@ -314,6 +314,14 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param);
 
+	/** Specify behavious when EP does not converge: failure or warning
+	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning
+	 */
+	void set_fail_on_non_convergence(bool fail_on_non_convergence)
+	{
+		m_fail_on_non_convergence = fail_on_non_convergence;
+	}
+
 private:
 	void init();
 
@@ -348,6 +356,9 @@ private:
 
 	/** maximum number of sweeps over all variables */
 	uint32_t m_max_sweep;
+
+	/** flag whether to show error or warning when not-converging */
+	bool m_fail_on_non_convergence;
 
 	SGMatrix<float64_t> m_F;
 };
