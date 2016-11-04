@@ -13,12 +13,19 @@
 	    - Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
 	    - Make Java and CSharp install-dir configurable [Björn Esser].
 	    - Autogenerate modshogun.rb with correct module-suffix [Björn Esser].
+	    - Fix KMeans++ initialization [Saurabh Mahindre].
 	* Cleanup, efficiency updates, and API Changes:
 	    - Make Eigen3 a hard requirement. Bundle if not found on system. [Heiko Strathmann]
 	    - Drop ALGLIB (GPL) dependency in CStatistics and ship CDFLIB (public domain) instead [Heiko Strathmann]
 	    - Drop p-value estimation in model-selection [Heiko Strathmann]
 	    - Static interfaces have been removed [Viktor Gal]
 	    - New base class ShiftInvariantKernel of which GaussianKernel inherits [Rahul De].
+	    - Major efficiency improvements and parallel computations for KMeans. [Saurabh Mahindre]
+	    - Efficiency improvements and eigenized LARS. [Saurabh Mahindre]
+	    - Major efficiency improvements, adding optional precomputations for decision
+	      trees, random forest. [Saurabh Mahindre]
+	    - Parallel computations for bagging machine. [Saurabh Mahindre]
+	    - Efficiency improvements and LSH based solvers for KNN. [Saurabh Mahindre]
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
