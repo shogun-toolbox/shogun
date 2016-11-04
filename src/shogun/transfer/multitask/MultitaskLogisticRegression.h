@@ -7,18 +7,18 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #ifndef  MULTITASKLOGISTICREGRESSION_H_
 #define  MULTITASKLOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/transfer/multitask/TaskGroup.h>
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/transfer/multitask/Task.h>
 
-
-using namespace std;
 
 namespace shogun
 {
@@ -127,4 +127,6 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif
+

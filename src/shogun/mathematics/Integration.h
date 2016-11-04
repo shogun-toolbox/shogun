@@ -26,7 +26,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>
@@ -115,8 +114,8 @@ public:
 	 * Gauss-Hermite formula respectively.
 	 *
 	 * @param f integrable function of one variable
-	 * @param x the provided array of nodes
-	 * @param w the provided array of weights
+	 * @param xgh the provided array of nodes
+	 * @param wgh the provided array of weights
 	 *
 	 * @return approximate value of the
 	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
@@ -241,5 +240,4 @@ private:
 	static float64_t evaluate_quadgh64(CFunction* f);
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _INTEGRATION_H_ */

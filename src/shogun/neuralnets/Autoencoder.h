@@ -165,6 +165,44 @@ public:
 
 	virtual const char* get_name() const { return "Autoencoder"; }
 
+	/** Sets noise type for denoising autoencoders.
+	 *
+	 * If set to AENT_DROPOUT, inputs are randomly set to zero during each
+	 * iteration of training with probability noise_parameter.
+	 *
+	 * If set to AENT_GAUSSIAN, gaussian noise with zero mean and noise_parameter
+	 * standard deviation is added to the inputs.
+	 *
+	 * Default value is AENT_NONE
+	 * @param noise_type noise type for denoising autoencoders
+	 */
+	void set_noise_type(EAENoiseType noise_type)
+	{
+		m_noise_type = noise_type;
+	}
+
+	/** Returns noise type for denoising autoencoders */
+	EAENoiseType get_noise_type()
+	{
+		return m_noise_type;
+	}
+
+	/** Sets noise parameter
+	 * Controls the strength of the noise, depending on noise_type
+	 *
+	 * @param noise_parameter controls the strength of noise
+	 */
+	void set_noise_parameter(float64_t noise_parameter)
+	{
+		m_noise_parameter = noise_parameter;
+	}
+
+	/** Returns noise parameter */
+	float64_t get_noise_parameter()
+	{
+		return m_noise_parameter;
+	}
+
 protected:
 	/** Computes the error between the output layer's activations and the given
 	 * target activations.
@@ -181,22 +219,6 @@ private:
 	template<class T>
 	SGVector<T> get_section(SGVector<T> v, int32_t i);
 
-public:
-	/** Noise type for denoising autoencoders.
-	 *
-	 * If set to AENT_DROPOUT, inputs are randomly set to zero during each
-	 * iteration of training with probability noise_parameter.
-	 *
-	 * If set to AENT_GAUSSIAN, gaussian noise with zero mean and noise_parameter
-	 * standard deviation is added to the inputs.
-	 *
-	 * Default value is AENT_NONE
-	 */
-	EAENoiseType noise_type;
-
-	/** Controls the strength of the noise, depending on noise_type */
-	float64_t noise_parameter;
-
 protected:
 	/** For contractive autoencoders [Rifai, 2011], a term:
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
@@ -208,6 +230,21 @@ protected:
 	 * Default value is 0.0.
 	 */
 	float64_t m_contraction_coefficient;
+
+	/** Noise type for denoising autoencoders.
+	 *
+	 * If set to AENT_DROPOUT, inputs are randomly set to zero during each
+	 * iteration of training with probability noise_parameter.
+	 *
+	 * If set to AENT_GAUSSIAN, gaussian noise with zero mean and noise_parameter
+	 * standard deviation is added to the inputs.
+	 *
+	 * Default value is AENT_NONE
+	 */
+	EAENoiseType m_noise_type;
+
+	/** Controls the strength of the noise, depending on noise_type */
+	float64_t m_noise_parameter;
 };
 }
 #endif

@@ -121,6 +121,10 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 */
 		float64_t* weights;
 
+	private:
+		/** register parameters */
+		void register_params();
+
 };
 }
 #endif /* _WEIGHTEDDEGREERBFKERNEL_H__ */

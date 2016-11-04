@@ -31,7 +31,6 @@
 
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/mathematics/Statistics.h>
@@ -129,4 +128,3 @@ void CLogitDVGLikelihood::init()
 }
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */

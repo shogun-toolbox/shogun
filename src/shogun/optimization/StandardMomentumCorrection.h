@@ -31,7 +31,6 @@
 
 #ifndef STANDARDMOMENTUMCORRECTION_H
 #define STANDARDMOMENTUMCORRECTION_H
-#include <shogun/lib/config.h>
 #include <shogun/optimization/MomentumCorrection.h>
 namespace shogun
 {
@@ -69,9 +68,14 @@ public:
 		init();
 	}
 
+	/** returns the name of the class
+	 *
+	 * @return name StandardMomentumCorrection
+	 */
+	virtual const char* get_name() const { return "StandardMomentumCorrection"; }
+
 	/*  Destructor */
 	virtual ~StandardMomentumCorrection() {}
-
 
 	/** Get corrected descend direction
 	 *
@@ -80,20 +84,10 @@ public:
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
 	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx)
-	{
-		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,"The index (%d) is invalid\n", idx);
-		DescendPair pair;
-		m_previous_descend_direction[idx]=
-			m_weight*m_previous_descend_direction[idx]-negative_descend_direction;
-		pair.delta=m_previous_descend_direction[idx];
-		pair.descend_direction=m_previous_descend_direction[idx];
-		return pair;
-	}
-
+		index_t idx);
 private:
 	/*  Init */
-	void init() { m_weight=0.9; }
+	void init();
 };
 
 }

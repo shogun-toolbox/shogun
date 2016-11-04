@@ -11,7 +11,6 @@
 #ifndef NEIGHBORHOODPRESERVINGEMBEDDING_H_
 #define NEIGHBORHOODPRESERVINGEMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/LocallyLinearEmbedding.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -59,5 +58,4 @@ public:
 };
 }
 
-#endif /* HAVE_EIGEN3 */
 #endif /* NEIGHBORHOODPRESERVINGEMBEDDING_H_ */

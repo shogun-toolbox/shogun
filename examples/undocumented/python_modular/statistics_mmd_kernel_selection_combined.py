@@ -18,8 +18,17 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	from modshogun import GaussianBlobsDataGenerator
 	from modshogun import GaussianKernel, CombinedKernel
 	from modshogun import LinearTimeMMD
-	from modshogun import MMDKernelSelectionCombMaxL2
-	from modshogun import MMDKernelSelectionCombOpt
+	try:
+		from modshogun import MMDKernelSelectionCombMaxL2
+	except ImportError:
+		print("MMDKernelSelectionCombMaxL2 not available")
+		exit(0)
+	try:
+		from modshogun import MMDKernelSelectionCombOpt
+	except ImportError:
+		print("MMDKernelSelectionCombOpt not available")
+		exit(0)
+		
 	from modshogun import PERMUTATION, MMD1_GAUSSIAN
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math

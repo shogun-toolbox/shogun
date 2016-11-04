@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/base/Parameter.h>
@@ -85,4 +84,3 @@ void CIndividualJobResultAggregator::finalize()
 }
 
 }
-#endif // HAVE_EIGEN3

@@ -20,6 +20,9 @@
 #include <sys/sysctl.h>
 #endif
 
+#ifdef HAVE_OPENMP
+#include <omp.h>
+#endif
 
 using namespace shogun;
 
@@ -27,12 +30,20 @@ Parallel::Parallel()
 {
 	num_threads=get_num_cpus();
 	m_refcount = new RefCount();
+#ifdef HAVE_OPENMP
+	omp_set_dynamic(0);
+	omp_set_num_threads(num_threads);
+#endif
 }
 
 Parallel::Parallel(const Parallel& orig)
 {
 	num_threads=orig.get_num_threads();
 	m_refcount = new RefCount();
+#ifdef HAVE_OPENMP
+	omp_set_dynamic(0);
+	omp_set_num_threads(num_threads);
+#endif
 }
 
 Parallel::~Parallel()
@@ -43,14 +54,14 @@ Parallel::~Parallel()
 int32_t Parallel::get_num_cpus() const
 {
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
-		return sysconf( _SC_NPROCESSORS_ONLN );
+	return sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined(DARWIN)
-		int num; /* for calling external lib */
-		size_t size=sizeof(num);
-		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
-			return num;
+	int num; /* for calling external lib */
+	size_t size=sizeof(num);
+	if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
+		return num;
 #endif
-		return 1;
+	return 1;
 }
 
 void Parallel::set_num_threads(int32_t n)
@@ -59,6 +70,9 @@ void Parallel::set_num_threads(int32_t n)
 	ASSERT(n==1)
 #endif
 	num_threads=n;
+#ifdef HAVE_OPENMP
+	omp_set_num_threads(num_threads);
+#endif
 }
 
 int32_t Parallel::get_num_threads() const

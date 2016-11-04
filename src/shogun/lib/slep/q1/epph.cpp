@@ -14,11 +14,13 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#include <shogun/lib/slep/q1/epph.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <shogun/lib/slep/q1/epph.h>
 
 #define delta 1e-8
 
@@ -685,3 +687,4 @@ void epp(double *x, double * c, int * iter_step, double * v, int n, double rho, 
 				eppO(x, c, iter_step, v,  n, rho, p);
 }
 
+#endif //USE_GPL_SHOGUN

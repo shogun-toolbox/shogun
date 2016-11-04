@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
 #include <shogun/lib/SGMatrix.h>
@@ -129,6 +128,5 @@ TEST(LanczosEigenSolver, set_eigenvalues_externally)
 	SG_UNREF(eig_solver);
 	SG_UNREF(A);
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 

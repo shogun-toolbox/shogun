@@ -37,9 +37,7 @@
 
 #include <shogun/io/SGIO.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -84,7 +82,6 @@ struct convolve
 		bool overwrite, int32_t stride_x, int32_t stride_y);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Partial specialization of convolve for the Eigen3 backend */
 template <class Matrix>
@@ -152,7 +149,6 @@ struct convolve<Backend::EIGEN3, Matrix>
 		}
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

@@ -15,9 +15,10 @@
 #ifndef QPBSVMLIB_H__
 #define QPBSVMLIB_H__
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -148,4 +149,5 @@ class CQPBSVMLib: public CSGObject
 		E_QPB_SOLVER m_solver;
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif //QPBSVMLIB_H__

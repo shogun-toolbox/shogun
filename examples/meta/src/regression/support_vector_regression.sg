@@ -1,0 +1,39 @@
+CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_appropriate_kernel]
+real width = 1.0
+GaussianKernel kernel(width)
+#![create_appropriate_kernel]
+
+#![create_instance]
+real svm_c = 1.0
+real svr_param = 0.1
+LibSVR svr(svm_c, svr_param, kernel, labels_train, enum LIBSVR_SOLVER_TYPE.LIBSVR_EPSILON_SVR)
+#![create_instance]
+
+#![train_and_apply]
+svr.train(features_train)
+RegressionLabels labels_predict = svr.apply_regression(features_test)
+#![train_and_apply]
+
+#![extract_alpha]
+RealVector alpha = svr.get_alphas()
+#![extract_alpha]
+
+#![evaluate_error]
+MeanSquaredError eval()
+real mse = eval.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()

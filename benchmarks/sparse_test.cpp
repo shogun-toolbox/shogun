@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/Time.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
@@ -208,4 +207,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-#endif // HAVE_EIGEN3

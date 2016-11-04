@@ -36,13 +36,13 @@ namespace shogun
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
 {
-	typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
-	typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
-
-	typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
-	typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
-
 	public:
+		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
+		typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
+
+		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
+		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
+	
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
@@ -70,7 +70,6 @@ template<class T> class SGVector : public SGReferencedData
 
 #endif // define (HAVE_CXX0X) || defined(HAVE_CXX11)
 
-#ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 column vector */
 		SGVector(EigenVectorXt& vec);
 
@@ -82,7 +81,6 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Wraps an Eigen3 row vector around the data of this matrix */
 		operator EigenRowVectorXtMap() const;
-#endif // HAVE_EIGEN3
 #endif // SWIG
 
 		/** Set vector to a constant
@@ -161,6 +159,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Random vector */
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
+#endif // SWIG // SWIG should skip this part
 
 		/** Get vector element at index
 		 *
@@ -177,6 +176,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void set_element(const T& p_element, index_t index);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Resize vector
 		 *
 		 * @param n new size

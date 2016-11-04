@@ -83,4 +83,3 @@ TEST(LaRank,train)
 	SG_UNREF(output_test);
 	SG_UNREF(svm);
 }
-

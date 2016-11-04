@@ -1,1 +1,0 @@
-The HistogramWordString computes the TOP kernel on inhomogeneous Markov Chains.

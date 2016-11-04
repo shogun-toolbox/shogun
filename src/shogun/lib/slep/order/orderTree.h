@@ -14,12 +14,14 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  ORDERTREE_SLEP
 #define  ORDERTREE_SLEP
 
 #define IGNORE_IN_CLASSLIST
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -1005,4 +1007,5 @@ void orderTreeDepth1(double *x, double *u, int n){
 	*/
 	deleteTree(root);
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef ORDERTREE_SLEP  ----- */

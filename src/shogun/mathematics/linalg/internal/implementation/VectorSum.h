@@ -40,9 +40,7 @@
 #include <shogun/lib/GPUMatrix.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #include <numeric>
 
@@ -79,41 +77,6 @@ struct vector_sum
 };
 
 /**
- * @brief Specialization of generic vector_sum for the Native backend
- */
-template <class Vector>
-struct vector_sum<Backend::NATIVE, Vector>
-{
-	/** Scalar type */
-	typedef typename Vector::Scalar T;
-
-	/**
-	 * Method that computes the sum of SGVectors
-	 *
-	 * @param vec a vector whose sum has to be computed
-	 * @return the vector sum \f$\sum_i a_i\f$
-	 */
-	static T compute(SGVector<T> vec)
-	{
-		REQUIRE(vec.vlen > 0, "Vector can not be empty!\n");
-		return compute(vec.vector,vec.vlen);
-	}
-
-	/**
-	 * Method that computes the sum of SGVectors
-	 *
-	 * @param vec a vector whose sum has to be computed
-	 * @param len the length of the vector
-	 * @return the vector sum \f$\sum_i a_i\f$
-	 */
-	static T compute(T* vec, index_t len)
-	{
-		return std::accumulate(vec,vec+len,0);
-	}
-};
-
-#ifdef HAVE_EIGEN3
-/**
  * @brief Specialization of generic vector_sum for the Eigen3 backend
  */
 template <class Vector>
@@ -136,7 +99,6 @@ struct vector_sum<Backend::EIGEN3, Vector>
 	}
 };
 
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

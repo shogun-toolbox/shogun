@@ -1,9 +1,0 @@
-% Weighted Degree Position String
-print WeightedDegreePositionString
-set_kernel WEIGHTEDDEGREEPOS CHAR 10 20
-
-set_features TRAIN ../data/fm_train_dna.dat DNA
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_dna.dat DNA
-km_test.txt = get_kernel_matrix TEST

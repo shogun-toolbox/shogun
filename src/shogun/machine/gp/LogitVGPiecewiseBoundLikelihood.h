@@ -39,7 +39,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
@@ -174,5 +173,4 @@ private:
 	SGMatrix<float64_t> m_weighted_pdf_diff;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_ */

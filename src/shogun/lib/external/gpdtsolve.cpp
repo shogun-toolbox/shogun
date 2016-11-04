@@ -68,6 +68,9 @@
  ***                                                                        ***
  *** SHOGUN adaptions  Written (W) 2006-2009 Soeren Sonnenburg              ***
  ******************************************************************************/
+
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1574,3 +1577,4 @@ void quick_s3(int32_t a[], int32_t n, int32_t ia[])
 /******************************************************************************/
 /*** End of gpdtsolve.cpp file                                              ***/
 /******************************************************************************/
+#endif //USE_GPL_SHOGUN

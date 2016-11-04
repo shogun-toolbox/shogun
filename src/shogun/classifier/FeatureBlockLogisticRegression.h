@@ -11,6 +11,7 @@
 #define  FEATUREBLOCKLOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/machine/LinearMachine.h>
 
@@ -136,4 +137,5 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif

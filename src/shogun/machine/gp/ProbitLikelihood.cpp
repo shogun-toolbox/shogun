@@ -30,7 +30,6 @@
  */
 #include <shogun/machine/gp/ProbitLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/eigen3.h>
@@ -272,4 +271,3 @@ float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	return Var;
 }
 
-#endif /* HAVE_EIGEN3 */

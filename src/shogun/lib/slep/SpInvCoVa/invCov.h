@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+
 #ifndef  INVCOV_SLEP
 #define  INVCOV_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 /*
  * A:    n x n
@@ -39,4 +41,6 @@ void invCov(double *Theta, double *W, double *S, double lambda,
             double xGap, /*for the Lasso (inner iteration)*/
             int maxIter, double xtol);  /*for the outer iteration*/
 
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef INVCOV_SLEP  ----- */
+

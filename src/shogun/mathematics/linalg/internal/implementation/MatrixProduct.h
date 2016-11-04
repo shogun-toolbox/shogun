@@ -34,9 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
@@ -76,7 +74,6 @@ struct matrix_product
 		bool transpose_A, bool transpose_B, bool overwrite);
 };
 
-#ifdef HAVE_EIGEN3
 
 /** Specialization of matrix_product for the Eigen3 backend */
 template <class Matrix>
@@ -160,7 +157,6 @@ struct matrix_product<Backend::EIGEN3, Matrix>
 		}
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 

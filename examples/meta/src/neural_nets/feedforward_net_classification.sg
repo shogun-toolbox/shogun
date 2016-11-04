@@ -1,0 +1,55 @@
+CSVFile f_feats_train("../../data/classifier_binary_2d_nonlinear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_binary_2d_nonlinear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_binary_2d_nonlinear_labels_test.dat")
+
+Math:init_random(1)
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+BinaryLabels labels_train(f_labels_train)
+BinaryLabels labels_test(f_labels_test)
+#![create_features]
+
+#![add_layers]
+int num_feats = features_train.get_num_features()
+NeuralLayers layers() 
+layers = layers.input(num_feats)
+layers = layers.rectified_linear(10)
+layers = layers.softmax(2)
+DynamicObjectArray all_layers = layers.done()
+#![add_layers]
+
+#![create_instance]
+NeuralNetwork network(all_layers)
+network.quick_connect()
+network.initialize_neural_network()
+#![create_instance]
+
+#![set_parameters]
+network.set_l2_coefficient(0.01)
+network.set_dropout_hidden(0.5)
+network.set_max_num_epochs(50)
+network.set_gd_mini_batch_size(num_feats)
+network.set_gd_learning_rate(0.1)
+network.set_gd_momentum(0.9)
+#![set_parameters]
+
+#![train_and_apply]
+network.set_labels(labels_train)
+network.train(features_train)
+BinaryLabels labels_predict = network.apply_binary(features_test)
+#![train_and_apply]
+
+#![get_params]
+RealVector parameters = network.get_parameters()
+#![get_params]
+
+#![evaluate_accuracy]
+AccuracyMeasure am()
+real accuracy = am.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()

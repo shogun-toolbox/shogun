@@ -301,11 +301,25 @@ namespace shogun
 
 
 	/** @brief the LaRank multiclass SVM machine
-	 *
+	 This implementation uses LaRank algorithm from 
+	 Bordes, Antoine, et al., 2007.
+	 "Solving multiclass support vector machines with LaRank."
+
+	 Excellent results are usually obtained by performing
+	 just one or two training iterations.
+	 Stopping criterion here is the dual gap as in the original paper,
+	 with an arbitrary max_iteration (default: 1000)
+	 to safeguard against morbid training sets. This upper limit
+	 of training iterations is sufficient for most cases
+	 but can be adjusted with set_max_iteration() method.
+	 The current value of the upper limit can be queried
+	 with get_max_iteration() method.
 	 */
 	class CLaRank:  public CMulticlassSVM
 	{
 		public:
+                        /** Default constructor
+                         */
 			CLaRank ();
 
 			/** constructor
@@ -378,6 +392,16 @@ namespace shogun
 			 * @return tau
 			 */
 			float64_t get_tau() { return tau; };
+
+			/** Set max number of iterations before training is stopped
+			 * @param max_iter
+			 */
+			void set_max_iteration(int32_t max_iter);
+
+			/** Get max number of iterations before training is stopped
+			 * @return max_iter
+			 */
+			int32_t get_max_iteration() { return max_iteration; }
 
 		protected:
 			/** train machine */
@@ -485,6 +509,9 @@ namespace shogun
 
 			/// progess output
 			int32_t step;
+
+			/// Max number of iterations before training is stopped
+			int32_t max_iteration;
 	};
 }
 #endif // LARANK_H

@@ -33,7 +33,6 @@
  */
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -43,13 +42,13 @@
 using namespace shogun;
 using namespace Eigen;
 
-CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
+CExactInferenceMethod::CExactInferenceMethod() : CInference()
 {
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
-		CInferenceMethod(kern, feat, m, lab, mod)
+		CInference(kern, feat, m, lab, mod)
 {
 }
 
@@ -57,9 +56,14 @@ CExactInferenceMethod::~CExactInferenceMethod()
 {
 }
 
+void CExactInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+}
+
 void CExactInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -75,7 +79,7 @@ void CExactInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_chol();
 	update_alpha();
 	m_gradient_update=false;
@@ -86,7 +90,7 @@ void CExactInferenceMethod::update()
 
 void CExactInferenceMethod::check_members() const
 {
-	CInferenceMethod::check_members();
+	CInference::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 		"Exact inference method can only use Gaussian likelihood function\n")
@@ -301,7 +305,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 }
 
 CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -396,4 +400,3 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-#endif /* HAVE_EIGEN3 */

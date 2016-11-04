@@ -24,7 +24,6 @@ using namespace shogun;
 
 void test()
 {
-#ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
@@ -54,7 +53,6 @@ void test()
 	SG_UNREF(output);
 	SG_UNREF(qda);
 #endif // HAVE_LAPACK
-#endif // HAVE_EIGEN3
 }
 
 int main(int argc, char ** argv)

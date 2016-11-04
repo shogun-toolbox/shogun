@@ -10,7 +10,7 @@
 import numpy as np
 from math import pi
 
-parameter_list = [[250,3,3]]
+parameter_list = [[150,3,3]]
 
 def statistics_hsic (n, difference, angle):
 	from modshogun import RealFeatures
@@ -48,13 +48,13 @@ def statistics_hsic (n, difference, angle):
 	dist=EuclideanDistance(features_x, features_x)
 	distances=dist.get_distance_matrix()
 	features_x.remove_subset()
-	median_distance=Statistics.matrix_median(distances, True)
+	median_distance=np.median(distances)
 	sigma_x=median_distance**2
 	features_y.add_subset(subset)
 	dist=EuclideanDistance(features_y, features_y)
 	distances=dist.get_distance_matrix()
 	features_y.remove_subset()
-	median_distance=Statistics.matrix_median(distances, True)
+	median_distance=np.median(distances)
 	sigma_y=median_distance**2
 	#print "median distance for Gaussian kernel on x:", sigma_x
 	#print "median distance for Gaussian kernel on y:", sigma_y

@@ -14,11 +14,13 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
+#include <shogun/lib/slep/q1/eppMatrix.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <shogun/lib/slep/q1/eppMatrix.h>
 
 void eppMatrix(double *X, double * V, int k, int n, double rho, double p)
 {
@@ -53,3 +55,5 @@ void eppMatrix(double *X, double * V, int k, int n, double rho, double p)
     free(x);
     free(iter_step);
 };
+
+#endif //USE_GPL_SHOGUN

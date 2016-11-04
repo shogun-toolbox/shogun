@@ -12,6 +12,7 @@
 #define BMRM_RETURN_VALUE_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SerializableFile.h>
@@ -92,4 +93,5 @@ struct BmrmStatistics
 };
 
 }
+#endif //USE_GPL_SHOGUN
 #endif

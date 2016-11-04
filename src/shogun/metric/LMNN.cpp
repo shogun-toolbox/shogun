@@ -10,7 +10,6 @@
 
 #include <shogun/metric/LMNN.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/mathematics/Math.h>
@@ -350,4 +349,3 @@ void CLMNNStatistics::init()
 			MS_NOT_AVAILABLE);
 }
 
-#endif /* HAVE_EIGEN3 */

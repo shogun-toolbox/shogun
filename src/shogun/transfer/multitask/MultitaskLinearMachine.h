@@ -11,6 +11,7 @@
 #define  MULTITASKMACHINE_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/transfer/multitask/TaskGroup.h>
@@ -19,8 +20,6 @@
 
 #include <vector>
 #include <set>
-
-using namespace std;
 
 namespace shogun
 {
@@ -146,8 +145,9 @@ class CMultitaskLinearMachine : public CLinearMachine
 		SGVector<float64_t> m_tasks_c;
 
 		/** vector of sets of indices */
-		vector< set<index_t> > m_tasks_indices;
+		std::vector< std::set<index_t> > m_tasks_indices;
 
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif

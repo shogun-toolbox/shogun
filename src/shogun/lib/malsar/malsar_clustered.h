@@ -11,7 +11,7 @@
 #ifndef  MALSAR_CLUSTERED_H_
 #define  MALSAR_CLUSTERED_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -32,5 +32,5 @@ malsar_result_t malsar_clustered(
 		const malsar_options& options);
 
 };
-#endif
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef MALSAR_CLUSTERED_H_  ----- */

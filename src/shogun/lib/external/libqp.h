@@ -22,6 +22,7 @@
 #define libqp_h
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <math.h>
 
@@ -85,4 +86,5 @@ libqp_state_T libqp_gsmo_solver(const float64_t* (*get_col)(uint32_t),
             void (*print_state)(libqp_state_T state));
 
 }
+#endif //USE_GPL_SHOGUN
 #endif /* libqp_h */

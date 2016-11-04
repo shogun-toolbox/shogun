@@ -12,6 +12,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/JacobiEllipticFunctions.h>
+#include <shogun/lib/config.h>
 
 using namespace shogun;
 
@@ -20,13 +21,13 @@ void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 	REQUIRE(L>=0.0,
 		"CJacobiEllipticFunctions::ellipKKp(): \
 		Parameter L should be non-negative\n");
-#ifdef HAVE_ARPREC
+#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
 	const Real eps=Real(std::numeric_limits<float64_t>::epsilon());
 	const Real pi=mp_real::_pi;
 #else
 	const Real eps=std::numeric_limits<Real>::epsilon();
 	const Real pi=M_PI;
-#endif //HAVE_ARPREC
+#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
 	if (L>10.0)
 	{
 		K=pi*0.5;
@@ -61,14 +62,14 @@ void CJacobiEllipticFunctions
 		"CJacobiEllipticFunctions::ellipJC(): \
 		Parameter m should be >=0 and <=1\n");
 
-#ifdef HAVE_ARPREC
+#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
 	const Real eps=sqrt(mp_real::_eps);
 #else
 	const Real eps=sqrt(std::numeric_limits<Real>::epsilon());
-#endif //HAVE_ARPREC
+#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
 	if (m>=(1.0-eps))
 	{
-#ifdef HAVE_ARPREC
+#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
 		complex128_t _u(dble(u.real),dble(u.imag));
 		complex128_t t=CMath::tanh(_u);
 		complex128_t b=CMath::cosh(_u);
@@ -91,7 +92,7 @@ void CJacobiEllipticFunctions
 		ai*=t*phi;
 		cn=phi-ai*(twon-u);
 		dn=phi+ai*(twon+u);
-#endif //HAVE_ARPREC
+#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
 	}
 	else
 	{

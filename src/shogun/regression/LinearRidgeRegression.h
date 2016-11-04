@@ -37,7 +37,7 @@ namespace shogun
  * {\bf w} = \left(\tau {\bf I}+ \sum_{i=1}^N{\bf x}_i{\bf x}_i^T\right)^{-1}\left(\sum_{i=1}^N y_i{\bf x}_i\right)
  * \f]
  *
- * The expressed solution is a linear method with bias 0 (cf. CLinearMachine).
+ * The expressed solution is a linear method with bias b (cf. CLinearMachine).
  */
 class CLinearRidgeRegression : public CLinearMachine
 {

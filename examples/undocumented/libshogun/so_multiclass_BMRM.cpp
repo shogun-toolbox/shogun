@@ -8,6 +8,8 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DenseFeatures.h>
@@ -29,8 +31,8 @@ using namespace shogun;
 
 #define	DIMS		2
 #define EPSILON	10e-5
-#define	NUM_SAMPLES	100
-#define NUM_CLASSES	10
+#define	NUM_SAMPLES	30
+#define NUM_CLASSES	3
 
 char FNAME[] = "data.svmlight";
 
@@ -255,3 +257,9 @@ int main(int argc, char * argv[])
 
 	return 0;
 }
+#else //USE_GPL_SHOGUN
+int main(int argc, char * argv[])
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

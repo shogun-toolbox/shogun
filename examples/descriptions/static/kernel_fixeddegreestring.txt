@@ -1,1 +1,0 @@
-The FixedDegree String kernel takes as input two strings of same size and counts the number of matches of length d.

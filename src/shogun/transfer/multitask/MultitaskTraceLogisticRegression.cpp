@@ -7,7 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_low_rank.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/IndexBlockGroup.h>
@@ -64,17 +66,11 @@ bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<ind
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = tasks;
 
-#ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_low_rank(
 		features, y.vector, m_rho, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
-#else
-	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
-	m_tasks_c = SGVector<float64_t>(options.n_tasks);
-#endif
 	return true;
 }
 
@@ -98,17 +94,11 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 
-#ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_low_rank(
 		features, y.vector, m_rho, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
-#else
-	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
-	m_tasks_c = SGVector<float64_t>(options.n_tasks);
-#endif
 
 	SG_FREE(options.tasks_indices);
 
@@ -116,3 +106,5 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 }
 
 }
+
+#endif //USE_GPL_SHOGUN

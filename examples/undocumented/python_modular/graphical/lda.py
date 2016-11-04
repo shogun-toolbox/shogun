@@ -1,6 +1,5 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
 from modshogun import *
-from modshogun import *
 import util
 
 util.set_title('LDA')
@@ -25,10 +24,9 @@ lda.train()
 # compute output plot iso-lines
 x, y, z=util.compute_output_plot_isolines(lda)
 
-c=pcolor(x, y, z, shading='interp')
+c=pcolor(x, y, z)
 contour(x, y, z, linewidths=1, colors='black', hold=True)
 colorbar(c)
 
 connect('key_press_event', util.quit)
 show()
-

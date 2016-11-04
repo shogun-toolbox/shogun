@@ -10,7 +10,6 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_COLPACK
-#ifdef HAVE_EIGEN3
 
 #include <vector>
 #include <string>
@@ -212,5 +211,4 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // HAVE_COLPACK

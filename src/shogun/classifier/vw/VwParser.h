@@ -72,7 +72,6 @@ public:
 	 */
 	CVwEnvironment* get_env()
 	{
-		SG_REF(env);
 		return env;
 	}
 
@@ -83,8 +82,12 @@ public:
 	 */
 	void set_env(CVwEnvironment* env_to_use)
 	{
-		env = env_to_use;
-		SG_REF(env);
+		if(env_to_use != env)
+		{
+			SG_REF(env_to_use);
+			SG_UNREF(env);
+			env = env_to_use;
+		}
 	}
 
 	/**

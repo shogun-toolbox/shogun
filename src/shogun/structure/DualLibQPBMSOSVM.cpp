@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/structure/libbmrm.h>
 #include <shogun/structure/libppbm.h>
 #include <shogun/structure/libp3bm.h>
@@ -137,3 +138,4 @@ EMachineType CDualLibQPBMSOSVM::get_classifier_type()
 	return CT_LIBQPSOSVM;
 }
 
+#endif //USE_GPL_SHOGUN

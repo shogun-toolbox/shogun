@@ -101,7 +101,7 @@ void test_cross_validation()
 			splitting, eval_crit);
 
 	cross->set_num_runs(5);
-	cross->set_conf_int_alpha(0.05);
+//	cross->set_conf_int_alpha(0.05);
 
 	CCrossValidationResult* tmp;
 	/* no locking */

@@ -31,7 +31,6 @@
 
 #include <shogun/statistics/NOCCO.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -267,4 +266,3 @@ SGVector<float64_t> CNOCCO::sample_null()
 	SG_DEBUG("Leaving!\n")
 	return null_samples;
 }
-#endif // HAVE_EIGEN3

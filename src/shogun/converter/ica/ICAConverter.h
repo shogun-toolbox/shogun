@@ -11,7 +11,6 @@
 #define ICACONVERTER_H_
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/Converter.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/SGMatrix.h>
@@ -89,5 +88,4 @@ class CICAConverter: public CConverter
 		float64_t tol;
 };
 }
-#endif // HAVE_EIGEN3
 #endif // ICACONVERTER

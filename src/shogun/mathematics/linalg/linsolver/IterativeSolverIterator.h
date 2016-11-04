@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
@@ -122,5 +121,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // ITERATIVE_SOLVER_ITERATOR_H_

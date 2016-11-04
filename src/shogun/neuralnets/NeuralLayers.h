@@ -47,6 +47,9 @@ namespace shogun
  * Uses builder-style syntax to describe layers
  * one by one.
  *
+ * While adding method for a new layer, also add its prototype
+ * in NeuralNets.i prefixed by "%newobject" since these methods return
+ * a reference to the same object.
  *
  */
 class CNeuralLayers : public CSGObject

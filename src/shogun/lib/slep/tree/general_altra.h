@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  GENERAL_ALTRA_SLEP
 #define  GENERAL_ALTRA_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 
 /*
@@ -190,5 +192,6 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
  *
  */
 double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind, int nodes);
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef GENERAL_ALTRA_SLEP  ----- */
 

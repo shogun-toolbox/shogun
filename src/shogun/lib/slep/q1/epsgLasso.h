@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  EPSGLASSO_SLEP
 #define  EPSGLASSO_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -196,5 +198,6 @@ void epsgLasso(double *X, double * normx, double * V, int k, int n, double lambd
     free(x);
     free(iter_step);    
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EPSGLASSO_SLEP  ----- */
 

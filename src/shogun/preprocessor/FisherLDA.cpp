@@ -32,7 +32,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
@@ -356,4 +355,3 @@ SGVector<float64_t> CFisherLDA::get_mean()
 {
 	return m_mean_vector;
 }
-#endif//HAVE_EIGEN3

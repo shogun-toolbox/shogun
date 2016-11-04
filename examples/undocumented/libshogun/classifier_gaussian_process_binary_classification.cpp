@@ -7,10 +7,9 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
-// Eigen3 is required for working with this example
-#ifdef HAVE_EIGEN3
+#include <shogun/lib/config.h>
 
 #include <shogun/base/init.h>
 #include <shogun/labels/BinaryLabels.h>
@@ -120,12 +119,9 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-
-#else
-
-int main(int argc, char **argv)
+#else //USE_GPL_SHOGUN
+int main(int argc, char** argv)
 {
 	return 0;
 }
-
-#endif /* HAVE_EIGEN3 */
+#endif //USE_GPL_SHOGUN

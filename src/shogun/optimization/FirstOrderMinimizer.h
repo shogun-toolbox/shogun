@@ -31,9 +31,8 @@
 
 #ifndef FIRSTORDERMINIMIZER_H
 #define FIRSTORDERMINIMIZER_H
-#include <shogun/lib/config.h>
 #include <shogun/optimization/FirstOrderCostFunction.h>
-#include <shogun/optimization/MinimizerContext.h>
+#include <shogun/optimization/Minimizer.h>
 #include <shogun/optimization/Penalty.h>
 namespace shogun
 {
@@ -48,14 +47,13 @@ namespace shogun
  * A minimizer requires the following objects as input:
  * a supported cost function object (eg, FirstOrderCostFunction )
  * a penalty object if regularization is enabled (eg, Penalty )
- * a context object to restore mutable variables if deserialization is actived (eg, CMinimizerContext )
  *
  */
-class FirstOrderMinimizer
+class FirstOrderMinimizer: public Minimizer
 {
 public: 
 	/** Default constructor */
-	FirstOrderMinimizer()
+	FirstOrderMinimizer():Minimizer()
 	{
 		init();
 	}
@@ -69,15 +67,14 @@ public:
 		set_cost_function(fun);
 	}
 
-	/** Destructor */
-	virtual ~FirstOrderMinimizer()
-	{}
-
-	/** Do minimization and get the optimal value 
-	 * 
-	 * @return optimal value
+	/** returns the name of the class
+	 *
+	 * @return name FirstOrderMinimizer
 	 */
-	virtual float64_t minimize()=0;
+	virtual const char* get_name() const { return "FirstOrderMinimizer"; }
+
+	/** Destructor */
+	virtual ~FirstOrderMinimizer();
 
 	/** Does minimizer support batch update?
 	 * 
@@ -89,68 +86,34 @@ public:
 	 *
 	 * @param fun the cost function
 	 */
-	virtual void set_cost_function(FirstOrderCostFunction *fun)
-	{
-		REQUIRE(fun,"The cost function must be not NULL\n");
-		m_fun=fun;
-	}
+	virtual void set_cost_function(FirstOrderCostFunction *fun);
 
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
+	/** Unset cost function used in the minimizer
 	 *
-	 * @return a context object
 	 */
-	virtual CMinimizerContext* save_to_context()
+	virtual void unset_cost_function(bool is_unref=true)
 	{
-		CMinimizerContext* result=new CMinimizerContext();
-		update_context(result);
-		return result;
-	}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context,"Context must set\n");
-		if(m_penalty_type)
-			m_penalty_type->load_from_context(context);
+		if(is_unref)
+		{
+			SG_UNREF(m_fun);
+		}
+		m_fun=NULL;
 	}
 
 	/** Set the weight of penalty
 	 *
 	 * @param penalty_weight the weight of penalty, which is positive
 	 */
-	virtual void set_penalty_weight(float64_t penalty_weight)
-	{
-		REQUIRE(penalty_weight>0,"The weight of penalty must be positive\n");
-		m_penalty_weight=penalty_weight;
-	}
+	virtual void set_penalty_weight(float64_t penalty_weight);
 
 	/** Set the type of penalty
 	 * For example, L2 penalty
 	 *
 	 * @param penalty_type the type of penalty. If NULL is given, regularization is not enabled.
 	 */
-	virtual void set_penalty_type(Penalty* penalty_type)
-	{
-		m_penalty_type=penalty_type;
-	}
+	virtual void set_penalty_type(Penalty* penalty_type);
+
 protected:
-
-	/** Update a context object to store mutable variables
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context,"Context must set\n");
-		if(m_penalty_type)
-			m_penalty_type->update_context(context);
-	}
-
 	/** Get the penalty given target variables
 	 * For L2 penalty,
 	 * the target variable is \f$w\f$
@@ -161,17 +124,7 @@ protected:
 	 *
 	 * @param var the variable used in regularization
 	 */
-	virtual float64_t get_penalty(SGVector<float64_t> var)
-	{
-		float64_t penalty=0.0;
-		if(m_penalty_type)
-		{
-			REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
-			for(index_t idx=0; idx<var.vlen; idx++)
-				penalty+=m_penalty_weight*m_penalty_type->get_penalty(var[idx]);
-		}
-		return penalty;
-	}
+	virtual float64_t get_penalty(SGVector<float64_t> var);
 
 	/** Add gradient of the penalty wrt target variables to unpenalized gradient
 	 * For least sqaure with L2 penalty,
@@ -187,19 +140,7 @@ protected:
 	 * @param gradient unpenalized gradient wrt its target variable
 	 * @param var the target variable
 	 */
-	virtual void update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var)
-	{
-		if(m_penalty_type)
-		{
-			REQUIRE(m_penalty_weight>0,"The weight of penalty must be set first\n");
-			for(index_t idx=0; idx<var.vlen; idx++)
-			{
-				float64_t grad=gradient[idx];
-				float64_t variable=var[idx];
-				gradient[idx]+=m_penalty_weight*m_penalty_type->get_penalty_gradient(variable,grad);
-			}
-		}
-	}
+	virtual void update_gradient(SGVector<float64_t> gradient, SGVector<float64_t> var);
 
 	/** Cost function */
 	FirstOrderCostFunction *m_fun;
@@ -212,12 +153,7 @@ protected:
 
 private:
 	/**  init */
-	void init()
-	{
-		m_fun=NULL;
-		m_penalty_type=NULL;
-		m_penalty_weight=0;
-	}
+	void init();
 };
 
 }

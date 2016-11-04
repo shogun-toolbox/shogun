@@ -11,22 +11,22 @@
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#endif
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
+#include <../tests/unit/base/MockObject.h>
+#include <shogun/base/some.h>
 #include <pthread.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_same)
 {
 	CGaussianKernel* kernel=new CGaussianKernel();
@@ -50,7 +50,6 @@ TEST(SGObject,equals_NULL_parameter)
 	SG_UNREF(mmd);
 	SG_UNREF(mmd2);
 }
-#endif //HAVE_EIGEN3
 
 #ifdef USE_REFERENCE_COUNTING
 TEST(SGObject,DISABLED_ref_copy_constructor)
@@ -113,7 +112,6 @@ TEST(SGObject,equals_DynamicObjectArray_equal)
 	SG_UNREF(array2);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
@@ -144,6 +142,7 @@ TEST(SGObject,equals_DynamicObjectArray_different)
 	SG_UNREF(array2);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,equals_complex_equal)
 {
 	/* create some easy regression data: 1d noisy sine wave */
@@ -212,7 +211,7 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(file);
 
 	/* now compare */
-	floatmax_t accuracy=1E-15;
+	floatmax_t accuracy=1E-10;
 	EXPECT_TRUE(predictions->equals(predictions_copy, accuracy));
 	EXPECT_TRUE(gpr->equals(gpr_copy, accuracy));
 
@@ -221,7 +220,9 @@ TEST(SGObject,equals_complex_equal)
 	SG_UNREF(gpr);
 	SG_UNREF(gpr_copy);
 }
+#endif //USE_GPL_SHOGUN
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,update_parameter_hash)
 {
 	index_t n=3;
@@ -266,7 +267,9 @@ TEST(SGObject,update_parameter_hash)
 
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN
 
+#ifdef USE_GPL_SHOGUN
 TEST(SGObject,parameter_hash_changed)
 {
 	index_t n=3;
@@ -310,4 +313,74 @@ TEST(SGObject,parameter_hash_changed)
 
 	SG_UNREF(inf);
 }
-#endif //HAVE_EIGEN3
+#endif //USE_GPL_SHOGUN
+
+TEST(SGObject, tags_set_get_string_sgvector)
+{
+	auto obj = some<CMockObject>();
+	auto vec = SGVector<float64_t>(1);
+	vec[0] = 1;
+
+	obj->set("vector", vec);
+	EXPECT_THROW(obj->set("foo", vec), ShogunException);
+
+	auto retr = obj->get<SGVector<float64_t> >("vector");
+
+	EXPECT_EQ(retr.vlen, vec.vlen);
+	EXPECT_EQ(vec[0], retr[0]);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+}
+
+TEST(SGObject, tags_set_get_tag_sgvector)
+{
+	auto obj = some<CMockObject>();
+	auto vec = SGVector<float64_t>(1);
+	vec[0] = 1;
+	float64_t bar = 1.0;
+
+	obj->set(Tag<SGVector<float64_t> >("vector"), vec);
+	EXPECT_THROW(obj->set(Tag<SGVector<float64_t> >("foo"), vec), ShogunException);
+	EXPECT_THROW(obj->set(Tag<float64_t>("vector"), bar), ShogunException);
+
+	auto retr = obj->get<SGVector<float64_t> >("vector");
+
+	EXPECT_EQ(retr.vlen, vec.vlen);
+	EXPECT_EQ(vec[0], retr[0]);
+	EXPECT_THROW(obj->get(Tag<SGVector<int32_t> >("vector")), ShogunException);
+	EXPECT_THROW(obj->get<SGVector<int32_t> >("vector"), ShogunException);
+}
+
+TEST(SGObject, tags_set_get_int)
+{
+	auto obj = some<CMockObject>();
+
+	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
+	obj->set("int", 10);
+	EXPECT_EQ(obj->get(Tag<int32_t>("int")), 10);
+	EXPECT_THROW(obj->get<float64_t>("int"), ShogunException);
+	EXPECT_THROW(obj->get(Tag<float64_t>("int")), ShogunException);
+	EXPECT_EQ(obj->get<int>("int"), 10);
+}
+
+TEST(SGObject, tags_has)
+{	
+	auto obj = some<CMockObject>();
+
+	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
+	EXPECT_EQ(obj->has("int"), true);
+	EXPECT_EQ(obj->has<float64_t>("int"), false);
+	EXPECT_EQ(obj->has<int32_t>("int"), true);
+	
+	obj->set("int", 10);
+	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
+	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
+	EXPECT_EQ(obj->has("int"), true);
+	EXPECT_EQ(obj->has<float64_t>("int"), false);
+	EXPECT_EQ(obj->has<int32_t>("int"), true);
+
+	EXPECT_EQ(obj->has("foo"), false);
+	EXPECT_EQ(obj->has<int32_t>("foo"), false);
+	EXPECT_EQ(obj->has(Tag<int32_t>("foo")), false);
+}

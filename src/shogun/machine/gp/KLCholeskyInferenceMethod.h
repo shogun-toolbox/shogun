@@ -43,8 +43,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+#include <shogun/machine/gp/KLLowerTriangularInference.h>
 
 namespace shogun
 {
@@ -70,7 +69,7 @@ namespace shogun
  * Note that "Cholesky" means Cholesky represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLCholeskyInferenceMethod: public CKLLowerTriangularInferenceMethod
+class CKLCholeskyInferenceMethod: public CKLLowerTriangularInference
 {
 public:
 	/** default constructor */
@@ -106,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCholeskyInferenceMethod object
 	 */
-	static CKLCholeskyInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CKLCholeskyInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *
@@ -132,7 +131,7 @@ protected:
 	 */
 	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
 
-	/** pre-compute the information for lbfgs optimization.
+	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
 	 * get_negative_log_marginal_likelihood_wrt_parameters()
 	 * and/or
@@ -141,7 +140,7 @@ protected:
 	 * @return true if precomputed parameters are valid
 	 *
 	 */
-	virtual bool lbfgs_precompute();
+	virtual bool precompute();
 
 	/** compute posterior Sigma matrix*/
 	virtual void update_Sigma();
@@ -169,5 +168,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLCHOLESKYINFERENCEMETHOD_H_ */

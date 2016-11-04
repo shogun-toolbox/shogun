@@ -16,7 +16,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 using namespace Eigen;
 
 TEST(DenseMatrixOperator, apply)
@@ -134,4 +133,3 @@ TEST(DenseMatrixOperator, asymmetric_clone)
 	SG_UNREF(op);
 	SG_UNREF(op_cloned);
 }
-#endif // HAVE_EIGEN3

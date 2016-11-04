@@ -1,0 +1,54 @@
+CSVFile f_feats_train("../../data/regression_1d_sinc_features_train_with_9d_noise.dat")
+CSVFile f_feats_test("../../data/regression_1d_sinc_features_test_with_9d_noise.dat")
+CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+
+Math:init_random(1)
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![add_layers]
+int dimensions = features_train.get_num_features()
+NeuralLayers layers() 
+layers = layers.input(dimensions)
+layers = layers.rectified_linear(20)
+layers = layers.linear(1)
+DynamicObjectArray all_layers = layers.done()
+#![add_layers]
+
+#![create_instance]
+NeuralNetwork network(all_layers)
+network.quick_connect()
+network.initialize_neural_network()
+#![create_instance]
+
+#![set_parameters]
+network.set_l2_coefficient(0.1)
+network.set_max_num_epochs(40)
+network.set_epsilon(0.0)
+network.set_gd_learning_rate(0.1)
+network.set_gd_momentum(0.9)
+#![set_parameters]
+
+#![train_and_apply]
+network.set_labels(labels_train)
+network.train(features_train)
+RegressionLabels labels_predict = network.apply_regression(features_test)
+#![train_and_apply]
+
+#![get_params]
+RealVector parameters = network.get_parameters()
+#![get_params]
+
+#![evaluate_error]
+MeanSquaredError err()
+real mse = err.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()

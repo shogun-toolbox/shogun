@@ -7,7 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 #include <vector>
@@ -224,3 +226,5 @@ void CMultitaskLogisticRegression::set_q(float64_t q)
 }
 
 }
+
+#endif //USE_GPL_SHOGUN

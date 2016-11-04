@@ -1,0 +1,13 @@
+bool true_literal = True
+bool false_literal = False
+
+string str_literal = "This is a string literal."
+char char_literal = 'w'
+
+int int_literal = 3
+
+# float is 32 bit and value has 'f' at the end.
+float float32_literal = 3.0f
+
+# real is 64 bit.
+real float64_literal = 3.0

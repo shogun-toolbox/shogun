@@ -40,7 +40,6 @@
 
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
@@ -51,27 +50,185 @@ using namespace Eigen;
 
 namespace shogun
 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
+{
+friend class CKLDualInferenceMethodMinimizer;
+public:
+	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
+	virtual ~KLDualInferenceMethodCostFunction() { SG_UNREF(m_obj); }
+	void set_target(CKLDualInferenceMethod *obj)
+	{
+		REQUIRE(obj, "Obj must set\n");
+		if(m_obj != obj)
+		{
+			SG_REF(obj);
+			SG_UNREF(m_obj);
+			m_obj=obj;
+		}
+	}
+	void unset_target(bool is_unref)
+	{
+		if(is_unref)
+		{
+			SG_UNREF(m_obj);
+		}
+		m_obj=NULL;
+	}
+	virtual float64_t get_cost()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		bool status=m_obj->precompute();
+		if (status)
+		{
+			float64_t nlml=m_obj->get_dual_objective_wrt_parameters();
+			return nlml;
+		}
+		return CMath::NOT_A_NUMBER;
+	}
+	virtual SGVector<float64_t> obtain_variable_reference()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_derivatives = SGVector<float64_t>((m_obj->m_W).vlen);
+		return m_obj->m_W;
+	}
+	virtual SGVector<float64_t> get_gradient()
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		m_obj->get_gradient_of_dual_objective_wrt_parameters(m_derivatives);
+		return m_derivatives;
+	}
+	virtual const char* get_name() const { return "KLDualInferenceMethodCostFunction"; }
+private:
+	SGVector<float64_t> m_derivatives;
+	void init()
+	{
+		m_obj=NULL;
+		m_derivatives = SGVector<float64_t>();
+		SG_ADD(&m_derivatives, "KLDualInferenceMethodCostFunction__m_derivatives",
+			"derivatives in KLDualInferenceMethodCostFunction", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject **)&m_obj, "KLDualInferenceMethodCostFunction__m_obj",
+			"obj in KLDualInferenceMethodCostFunction", MS_NOT_AVAILABLE);
+	}
+	CKLDualInferenceMethod *m_obj;
+	CDualVariationalGaussianLikelihood* get_dual_variational_likelihood() const
+	{
+		REQUIRE(m_obj,"Object not set\n");
+		return m_obj->get_dual_variational_likelihood();
+	}
+};
+#endif //DOXYGEN_SHOULD_SKIP_THIS
 
-CKLDualInferenceMethod::CKLDualInferenceMethod() : CKLInferenceMethod()
+void CKLDualInferenceMethodMinimizer::init_minimization()
+{
+	ELBFGSLineSearch linesearch=LBFGSLineSearchHelper::get_lbfgs_linear_search(m_linesearch_id);
+	REQUIRE((linesearch == BACKTRACKING_ARMIJO) ||
+		(linesearch == BACKTRACKING_WOLFE) ||
+		(linesearch == BACKTRACKING_STRONG_WOLFE),
+		"The provided line search method is not supported. Please use backtracking line search methods\n");
+	CLBFGSMinimizer::init_minimization();
+}
+
+float64_t CKLDualInferenceMethodMinimizer::minimize()
+{
+	lbfgs_parameter_t lbfgs_param;
+	lbfgs_param.m = m_m;
+	lbfgs_param.max_linesearch = m_max_linesearch;
+	lbfgs_param.linesearch = LBFGSLineSearchHelper::get_lbfgs_linear_search(m_linesearch_id);
+	lbfgs_param.max_iterations = m_max_iterations;
+	lbfgs_param.delta = m_delta;
+	lbfgs_param.past = m_past;
+	lbfgs_param.epsilon = m_epsilon;
+	lbfgs_param.min_step = m_min_step;
+	lbfgs_param.max_step = m_max_step;
+	lbfgs_param.ftol = m_ftol;
+	lbfgs_param.wolfe = m_wolfe;
+	lbfgs_param.gtol = m_gtol;
+	lbfgs_param.xtol = m_xtol;
+	lbfgs_param.orthantwise_c = m_orthantwise_c;
+	lbfgs_param.orthantwise_start = m_orthantwise_start;
+	lbfgs_param.orthantwise_end = m_orthantwise_end;
+
+	init_minimization();
+
+	float64_t cost=0.0;
+	int error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
+		&cost, CKLDualInferenceMethodMinimizer::evaluate,
+		NULL, this, &lbfgs_param, CKLDualInferenceMethodMinimizer::adjust_step);
+
+	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
+	{
+	  SG_SWARNING("Error(s) happened during L-BFGS optimization (error code:%d)\n",
+		  error_code);
+	}
+	return cost;
+}
+
+float64_t CKLDualInferenceMethodMinimizer::evaluate(void *obj, const float64_t *variable,
+	float64_t *gradient, const int dim, const float64_t step)
+{
+	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
+	CKLDualInferenceMethodMinimizer * obj_prt
+		= static_cast<CKLDualInferenceMethodMinimizer *>(obj);
+
+	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
+
+	float64_t cost=obj_prt->m_fun->get_cost();
+	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+			return cost;
+	//get the gradient wrt variable_new
+	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
+	REQUIRE(grad.vlen==dim,
+		"The length of gradient (%d) and the length of variable (%d) do not match\n",
+		grad.vlen,dim);
+
+	std::copy(grad.vector,grad.vector+dim,gradient);
+	return cost;
+}
+
+float64_t CKLDualInferenceMethodMinimizer::adjust_step(void *obj, const float64_t *parameters,
+	const float64_t *direction, const int dim, const float64_t step)
+{
+	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
+	CKLDualInferenceMethodMinimizer * obj_prt
+		= static_cast<CKLDualInferenceMethodMinimizer *>(obj);
+
+	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
+
+	float64_t *non_const_direction=const_cast<float64_t *>(direction);
+	SGVector<float64_t> sg_direction(non_const_direction, dim, false);
+
+	KLDualInferenceMethodCostFunction* fun=dynamic_cast<KLDualInferenceMethodCostFunction*>(obj_prt->m_fun);
+	REQUIRE(fun, "The cost function must be KLDualInferenceMethodCostFunction\n");
+
+	CDualVariationalGaussianLikelihood* lik=fun->get_dual_variational_likelihood();
+
+	float64_t adjust_stp=lik->adjust_step_wrt_dual_parameter(sg_direction, step);
+	return adjust_stp;
+}
+
+CKLDualInferenceMethod::CKLDualInferenceMethod() : CKLInference()
 {
 	init();
 }
 
 CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
 CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DUAL)
-		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n")
+	{
+		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n");
+	}
 
 	SG_REF(inference);
 	return (CKLDualInferenceMethod*)inference;
@@ -100,7 +257,7 @@ void CKLDualInferenceMethod::check_dual_inference(CLikelihoodModel* mod) const
 void CKLDualInferenceMethod::set_model(CLikelihoodModel* mod)
 {
 	check_dual_inference(mod);
-	CKLInferenceMethod::set_model(mod);
+	CKLInference::set_model(mod);
 }
 
 CDualVariationalGaussianLikelihood* CKLDualInferenceMethod::get_dual_variational_likelihood() const
@@ -109,6 +266,14 @@ CDualVariationalGaussianLikelihood* CKLDualInferenceMethod::get_dual_variational
 	CDualVariationalGaussianLikelihood * lik=dynamic_cast<CDualVariationalGaussianLikelihood *>(m_model);
 	return lik;
 }
+
+void CKLDualInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	CKLDualInferenceMethodMinimizer* opt=dynamic_cast<CKLDualInferenceMethodMinimizer*>(minimizer);
+	REQUIRE(opt,"The minimizer must be an instance of CKLDualInferenceMethodMinimizer\n"); 
+	CInference::register_minimizer(minimizer);
+}
+
 
 void CKLDualInferenceMethod::init()
 {
@@ -127,10 +292,12 @@ void CKLDualInferenceMethod::init()
 	SG_ADD(&m_is_dual_valid, "is_dual_valid",
 		"whether the lambda (m_W) is valid or not",
 		MS_NOT_AVAILABLE);
+
 	m_is_dual_valid=false;
+	register_minimizer(new CKLDualInferenceMethodMinimizer());
 }
 
-bool CKLDualInferenceMethod::lbfgs_precompute()
+bool CKLDualInferenceMethod::precompute()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
@@ -210,8 +377,7 @@ void CKLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVec
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
-
-	eigen_gradient=-eigen_mu-0.5*eigen_s2+eigen_d_lambda;
+eigen_gradient=-eigen_mu-0.5*eigen_s2+eigen_d_lambda;
 }
 
 float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SGVector<float64_t> mu, SGMatrix<float64_t> L)
@@ -354,10 +520,11 @@ void CKLDualInferenceMethod::update_alpha()
 		m_mu=SGVector<float64_t>(len);
 		m_s2=SGVector<float64_t>(len);
 		m_Sigma=SGMatrix<float64_t>(len, len);
+		m_Sigma.zero();
 		m_V=SGMatrix<float64_t>(len, len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 	m_dv=lik->get_variational_first_derivative(s2_param);
@@ -365,75 +532,24 @@ void CKLDualInferenceMethod::update_alpha()
 	m_df=lik->get_variational_first_derivative(mu_param);
 }
 
-float64_t CKLDualInferenceMethod::adjust_step(void *obj,
-	const float64_t *parameters, const float64_t *direction,
-	const int dim, const float64_t step)
+float64_t CKLDualInferenceMethod::optimization()
 {
-	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CKLDualInferenceMethod * obj_prt
-		= static_cast<CKLDualInferenceMethod *>(obj);
+	CKLDualInferenceMethodMinimizer *minimizer=dynamic_cast<CKLDualInferenceMethodMinimizer*>(m_minimizer);
+	REQUIRE(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer\n"); 
+        KLDualInferenceMethodCostFunction* cost_fun=new  KLDualInferenceMethodCostFunction();
+	cost_fun->set_target(this);
+	bool cleanup=false;
 
-	ASSERT(obj_prt != NULL);
+#ifdef USE_REFERENCE_COUNTING
+	if(this->ref_count()>1)
+		cleanup=true;
+#endif
 
-	float64_t *non_const_direction=const_cast<float64_t *>(direction);
-	SGVector<float64_t> sg_direction(non_const_direction, dim, false);
-
-	CDualVariationalGaussianLikelihood* lik= obj_prt->get_dual_variational_likelihood();
-
-	float64_t adjust_stp=lik->adjust_step_wrt_dual_parameter(sg_direction, step);
-	return adjust_stp;
-}
-
-float64_t CKLDualInferenceMethod::evaluate(void *obj, const float64_t *parameters,
-	float64_t *gradient, const int dim, const float64_t step)
-{
-	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CKLDualInferenceMethod * obj_prt
-		= static_cast<CKLDualInferenceMethod *>(obj);
-
-	ASSERT(obj_prt != NULL);
-
-	bool status=obj_prt->lbfgs_precompute();
-	if (status)
-	{
-		float64_t nlml=obj_prt->get_dual_objective_wrt_parameters();
-
-		SGVector<float64_t> sg_gradient(gradient, dim, false);
-		Map<VectorXd> eigen_g(sg_gradient.vector, sg_gradient.vlen);
-		obj_prt->get_gradient_of_dual_objective_wrt_parameters(sg_gradient);
-
-		return nlml;
-	}
-	return CMath::NOT_A_NUMBER;
-}
-
-float64_t CKLDualInferenceMethod::lbfgs_optimization()
-{
-	lbfgs_parameter_t lbfgs_param;
-	lbfgs_param.m = m_m;
-	lbfgs_param.max_linesearch = m_max_linesearch;
-	lbfgs_param.linesearch = m_linesearch;
-	lbfgs_param.max_iterations = m_max_iterations;
-	lbfgs_param.delta = m_delta;
-	lbfgs_param.past = m_past;
-	lbfgs_param.epsilon = m_epsilon;
-	lbfgs_param.min_step = m_min_step;
-	lbfgs_param.max_step = m_max_step;
-	lbfgs_param.ftol = m_ftol;
-	lbfgs_param.wolfe = m_wolfe;
-	lbfgs_param.gtol = m_gtol;
-	lbfgs_param.xtol = m_xtol;
-	lbfgs_param.orthantwise_c = m_orthantwise_c;
-	lbfgs_param.orthantwise_start = m_orthantwise_start;
-	lbfgs_param.orthantwise_end = m_orthantwise_end;
-
-	float64_t nlml_opt=0;
-	void * obj_prt = static_cast<void *>(this);
-
-	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
-	lbfgs(m_W.vlen, m_W.vector, &nlml_opt,
-		CKLDualInferenceMethod::evaluate,
-		NULL, obj_prt, &lbfgs_param, CKLDualInferenceMethod::adjust_step);
+	minimizer->set_cost_function(cost_fun);
+	float64_t nlml_opt = minimizer->minimize();
+	minimizer->unset_cost_function(false);
+	cost_fun->unset_target(cleanup);
+	SG_UNREF(cost_fun);
 	return nlml_opt;
 }
 
@@ -466,4 +582,3 @@ void CKLDualInferenceMethod::update_approx_cov()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

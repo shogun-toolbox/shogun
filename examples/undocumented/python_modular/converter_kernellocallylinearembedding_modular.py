@@ -4,8 +4,13 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_kernellocallylinearembedding_modular (data_fname,k):
 	try:
-		from modshogun import RealFeatures, KernelLocallyLinearEmbedding, LinearKernel, CSVFile
-
+		from modshogun import RealFeatures, LinearKernel, CSVFile
+		try:
+			from modshogun import KernelLocallyLinearEmbedding
+		except ImportError:
+			print("KernelLocallyLinearEmbedding not available")
+			exit(0)
+			
 		features = RealFeatures(CSVFile(data_fname))
 
 		kernel = LinearKernel()

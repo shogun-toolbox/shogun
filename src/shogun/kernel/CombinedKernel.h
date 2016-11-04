@@ -169,6 +169,10 @@ class CCombinedKernel : public CKernel
 
 			int n = get_num_kernels();
 			kernel_array->push_back(k);
+
+			if(enable_subkernel_weight_opt && n+1==get_num_kernels())
+				enable_subkernel_weight_learning();
+
 			return n+1==get_num_kernels();
 		}
 
@@ -187,6 +191,9 @@ class CCombinedKernel : public CKernel
 				num_lhs=0;
 				num_rhs=0;
 			}
+
+			if(enable_subkernel_weight_opt && succesful_deletion && get_num_kernels()>0)
+				enable_subkernel_weight_learning();
 
 			return succesful_deletion;
 		}
@@ -398,7 +405,13 @@ class CCombinedKernel : public CKernel
 		*/
 		static CList* combine_kernels(CList* kernel_list);
 
+		/** Enable to find weight for subkernels during model selection
+		 */
+		virtual void enable_subkernel_weight_learning();
+
 	protected:
+		virtual void init_subkernel_weights();
+		
 		/** compute kernel function
 		 *
 		 * @param x x
@@ -469,6 +482,14 @@ class CCombinedKernel : public CKernel
 		bool append_subkernel_weights;
 		/** whether kernel is ready to be used */
 		bool initialized;
+
+		/** weight for subkernels (in log domain) */
+		SGVector<float64_t> subkernel_log_weights;
+
+		/** enable to find weight for subkernels during model selection */
+		bool enable_subkernel_weight_opt;
+		/** update the weight for subkernels */
+		bool weight_update;
 };
 }
 #endif /* _COMBINEDKERNEL_H__ */

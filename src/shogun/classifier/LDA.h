@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -74,9 +73,9 @@ template <class ST> class CDenseFeatures;
  * solution \f${\bf w}\f$ to be expressed in this basis.
  * \f[{\bf W} := {\bf Q} {\bf{W^\prime}}\f]
  * The between class Matrix is replaced with:
- * \f[{\bf S_b^\prime} \equiv {{\bf Q^T}{\bf S_b } {\bf Q}\f]
+ * \f[{\bf S_b^\prime} \equiv {\bf Q^T}{\bf S_b}{\bf Q}\f]
  * The within class Matrix is replaced with:
- * \f[{\bf S_w^\prime} \equiv {{\bf Q^T}{\bf S_w} {\bf Q}\f]
+ * \f[{\bf S_w^\prime} \equiv {\bf Q^T}{\bf S_w}{\bf Q}\f]
  * In this case {\bf S_w^\prime} is guranteed invertible since {\bf S_w} has
  * been projected down to the basis that spans the data.
  * see: Bayesian Reasoning and Machine Learning, section 16.3.1.
@@ -174,5 +173,4 @@ class CLDA : public CLinearMachine
 		ELDAMethod m_method;
 };
 }
-#endif//HAVE_EIGEN3
 #endif//ifndef

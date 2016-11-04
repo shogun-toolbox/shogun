@@ -35,7 +35,6 @@
 #define __RBM_H__
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
@@ -149,7 +148,7 @@ public:
 	/** Adds a group of visible units to the RBM
 	 *
 	 * @param num_units Number of visible units
-	 * @param visible_unit_type Type of the visible units
+	 * @param unit_type Type of the visible units
 	 */
 	virtual void add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type);
 
@@ -302,7 +301,7 @@ public:
 	 * during computation. If not given, a new matrix is allocated and used as
 	 * a buffer.
 	 *
-	 * @param return Approximation to the average pseudo-likelihood over the
+	 * @return Approximation to the average pseudo-likelihood over the
 	 * given batch
 	 */
 	virtual float64_t pseudo_likelihood(SGMatrix<float64_t> visible,
@@ -463,5 +462,4 @@ protected:
 };
 
 }
-#endif
 #endif

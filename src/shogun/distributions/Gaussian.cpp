@@ -15,6 +15,7 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/lapack.h>
 
 using namespace shogun;
 

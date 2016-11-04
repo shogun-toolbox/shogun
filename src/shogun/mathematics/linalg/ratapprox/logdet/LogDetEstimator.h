@@ -35,7 +35,7 @@ public:
 	/** Default constructor */
 	CLogDetEstimator();
 
-#if defined HAVE_EIGEN3 && HAVE_LAPACK
+#ifdef HAVE_LAPACK
 	/**
 	 * Convenient constructor for SGSparseMatrix<float64_t>. Works only when
 	 * Eigen3 and LAPACK libraries are available.
@@ -52,7 +52,7 @@ public:
 	 * @param sparse_mat the input sparse matrix
 	 */
 	CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
-#endif // HAVE_LAPACK && HAVE_EIGEN3
+#endif
 
 	/**
 	 * Constructor

@@ -29,10 +29,9 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+
+ 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ConstMean.h>
@@ -44,7 +43,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
-#include <shogun/machine/gp/SparseVGInferenceMethod.h>
+#include <shogun/machine/gp/VarDTCInferenceMethod.h>
 
 using namespace shogun;
 
@@ -490,7 +489,7 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	SG_UNREF(gpr);
 }
 
-TEST(GaussianProcessRegression,sparse_vg_regression)
+TEST(GaussianProcessRegression,var_dtc_regression)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -545,7 +544,7 @@ TEST(GaussianProcessRegression,sparse_vg_regression)
 	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
 
 	// specify GP regression with FITC inference
-	CSparseVGInferenceMethod* inf=new CSparseVGInferenceMethod(kernel, features_train,
+	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -611,6 +610,7 @@ TEST(GaussianProcessRegression,sparse_vg_regression)
 	
 	// clean up
 	SG_UNREF(gpr);
+	SG_UNREF(inducing_features_train);
 }
 
 #ifdef HAVE_LINALG_LIB
@@ -735,8 +735,7 @@ TEST(GaussianProcessRegression,fitc_regression)
 	EXPECT_NEAR(var_vector[3], 4.354657330167651, 1E-10);
 
 	// clean up
+	SG_UNREF(latent_features_train);
 	SG_UNREF(gpr);
 }
 #endif /* HAVE_LINALG_LIB */
-
-#endif /* HAVE_EIGEN3 */

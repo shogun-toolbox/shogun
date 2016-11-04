@@ -11,7 +11,6 @@
 #define JADE_H_
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/ica/ICAConverter.h>
 #include <shogun/features/Features.h>
 
@@ -68,5 +67,4 @@ class CJade: public CICAConverter
 		SGMatrix<float64_t> m_cumulant_matrix;
 };
 }
-#endif // HAVE_EIGEN3
 #endif // JADE

@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -58,4 +57,3 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	SG_UNREF(A);
 	SG_UNREF(cocg_linear_solver);
 }
-#endif //HAVE_EIGEN3

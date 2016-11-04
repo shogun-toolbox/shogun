@@ -46,10 +46,11 @@
  *
 -------------------------------------------------------------------- */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <string.h>
 #include <limits.h>
 
-#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Cplex.h>
 #include <shogun/mathematics/Math.h>
@@ -683,3 +684,4 @@ int32_t CQPBSVMLib::qpbsvm_cplex(float64_t *x,
 	return 0;
 }
 #endif
+#endif //USE_GPL_SHOGUN

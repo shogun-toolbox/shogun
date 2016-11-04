@@ -3,9 +3,8 @@
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
+
 
 using namespace shogun;
 
@@ -272,8 +271,6 @@ TEST(SGVectorTest, convert_to_matrix)
 	}
 }
 
-#ifdef HAVE_EIGEN3
-
 TEST(SGVectorTest, to_eigen3_column_vector)
 {
 	const int n = 9;
@@ -329,5 +326,3 @@ TEST(SGVectorTest, from_eigen3_row_vector)
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }
-
-#endif

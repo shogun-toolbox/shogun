@@ -34,7 +34,6 @@
 
 #include <shogun/machine/gp/MatrixOperations.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/eigen3.h>
@@ -140,4 +139,3 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
 }
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */

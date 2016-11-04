@@ -10,7 +10,6 @@
 
 #include <shogun/base/init.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/config.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/preprocessor/FisherLDA.h>
@@ -62,4 +61,3 @@ int main(int argc, char ** argv)
 	exit_shogun();
 	return 0;
 }
-#endif

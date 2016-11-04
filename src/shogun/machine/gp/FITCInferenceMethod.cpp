@@ -29,10 +29,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+
 #include <shogun/machine/gp/FITCInferenceMethod.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -41,14 +39,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCLaplacianBase()
+CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCInference()
 {
 	init();
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CSingleFITCLaplacianBase(kern, feat, m, lab, mod, lat)
+		: CSingleFITCInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
@@ -62,7 +60,7 @@ CFITCInferenceMethod::~CFITCInferenceMethod()
 }
 void CFITCInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -76,7 +74,7 @@ void CFITCInferenceMethod::update()
 {
 	SG_DEBUG("entering\n");
 
-	CInferenceMethod::update();
+	CInference::update();
 	update_chol();
 	update_alpha();
 	m_gradient_update=false;
@@ -86,7 +84,7 @@ void CFITCInferenceMethod::update()
 }
 
 CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -100,7 +98,7 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 
 void CFITCInferenceMethod::check_members() const
 {
-	CSingleFITCLaplacianBase::check_members();
+	CSingleFITCInference::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 			"FITC inference method can only use Gaussian likelihood function\n")
@@ -133,7 +131,7 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	//time complexity of the following operations is O(m*n)
 
 	// create eigen representations of chol_utr, dg, r, be
-    Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
+	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 			m_chol_utr.num_cols);
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
 	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
@@ -170,7 +168,7 @@ void CFITCInferenceMethod::update_chol()
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // inducing features Luu (m_chol_uu and eigen_chol_uu)
+	// inducing features Luu (m_chol_uu and eigen_chol_uu)
 	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
 	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
@@ -201,7 +199,7 @@ void CFITCInferenceMethod::update_chol()
 			V.adjoint()+MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
-    // training features Luu (m_chol_utr and eigen_chol_utr)
+	// training features Luu (m_chol_utr and eigen_chol_utr)
 	m_chol_utr=SGMatrix<float64_t>(Lu.rows(), Lu.cols());
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 		m_chol_utr.num_cols);
@@ -248,7 +246,7 @@ void CFITCInferenceMethod::update_chol()
 void CFITCInferenceMethod::update_alpha()
 {
 	//time complexity O(m^2) since triangular.solve is O(m^2)
-    Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
+	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
 		m_chol_uu.num_cols);
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 		m_chol_utr.num_cols);
@@ -429,4 +427,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	return result;
 }
 
-#endif /* HAVE_EIGEN3 */
+void CFITCInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+}

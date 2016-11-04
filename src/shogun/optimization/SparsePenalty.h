@@ -46,6 +46,8 @@ namespace shogun
 class SparsePenalty: public ProximalPenalty
 {
 public:
+	virtual ~SparsePenalty() {};
+
 	/** Get the sparse variable
 	 * @param variable the raw variable
 	 * @param penalty_weight weight of the penalty

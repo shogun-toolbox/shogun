@@ -12,10 +12,8 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
+
 #include <shogun/regression/GaussianProcessRegression.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/io/SGIO.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
@@ -26,7 +24,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 {
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* method)
+CGaussianProcessRegression::CGaussianProcessRegression(CInference* method)
 		: CGaussianProcessMachine(method)
 {
 	// set labels
@@ -152,5 +150,3 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 
 	return s2;
 }
-
-#endif

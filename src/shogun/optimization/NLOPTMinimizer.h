@@ -29,12 +29,14 @@
  *
  */
 
-#ifndef NLOPTMINIMIZER_H
-#define NLOPTMINIMIZER_H
+
+#ifndef CNLOPTMINIMIZER_H
+#define CNLOPTMINIMIZER_H
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
+#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-#include <nlopt.h>
+#include <shogun/optimization/nloptcommon.h>
 #endif 
 namespace shogun
 {
@@ -44,19 +46,26 @@ namespace shogun
  * and unconstrainted minimization using the NLOPT library
  *
  */
-class NLOPTMinimizer:public FirstOrderMinimizer
+class CNLOPTMinimizer: public FirstOrderMinimizer
 {
 public:
 	/** Default constructor */
-	NLOPTMinimizer();
+	CNLOPTMinimizer();
 
 	/** Constructor
 	 * @param fun cost function
 	 */
-	NLOPTMinimizer(FirstOrderCostFunction *fun);
+	CNLOPTMinimizer(FirstOrderCostFunction *fun);
+
+	/** returns the name of the class
+	 *
+	 * @return name CNLOPTMinimizer
+	 */
+	virtual const char* get_name() const { return "NLOPTMinimizer"; }
+
 
 	/** Destructor */
-	virtual ~NLOPTMinimizer();
+	virtual ~CNLOPTMinimizer();
 
 	/** Do minimization and get the optimal value 
 	 * 
@@ -70,30 +79,16 @@ public:
 	 */
 	virtual bool supports_batch_update() const {return true;}
 
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * @return a context object
-	 */
-	virtual CMinimizerContext* save_to_context() {return new CMinimizerContext();}
-
-	/** Load the given context object to restores mutable variables
-	 * Usually it is used in deserialization.
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context) {}
-
 #ifdef HAVE_NLOPT
 	/* Set parameters used in NLOPT
 	 * For details please see http://ab-initio.mit.edu/wiki/index.php/NLopt_C-plus-plus_Reference
 	 *
-	 * @param algorithm provided by NLOPT for minimization
+	 * @param algorithm provided by NLOPT for minimization (e.g. LD_LBFGS denotes NLOPT_LD_LBFGS)
 	 * @param max_iterations the number of cost function evaluations 
 	 * @param variable_tolerance absolute tolerance on optimization parameters 
 	 * @param function_tolerance absolute tolerance on function value.
 	 */
-	virtual void set_nlopt_parameters(nlopt_algorithm algorithm=NLOPT_LD_LBFGS,
+	virtual void set_nlopt_parameters(ENLOPTALGORITHM algorithm=LD_LBFGS,
 		float64_t max_iterations=1000,
 		float64_t variable_tolerance=1e-6,
 		float64_t function_tolerance=1e-6);
@@ -104,6 +99,15 @@ private:
 	 * */
 	static double nlopt_function(unsigned dim, const double* variable,
 		double* gradient, void* func_data);
+
+	static int16_t get_nlopt_algorithm_id(ENLOPTALGORITHM method);
+
+	static nlopt_algorithm get_nlopt_algorithm(int16_t method_id)
+	{
+		REQUIRE(method_id>=0 && method_id<(int16_t)NLOPT_NUM_ALGORITHMS,
+			"Unsupported method id (%d)\n", method_id);
+		return (nlopt_algorithm) method_id;
+	}
 
 protected:
 
@@ -123,7 +127,7 @@ protected:
 	float64_t m_function_tolerance;
 
 	/** algorithm provided by NLOPT for minimization  */
-	nlopt_algorithm m_nlopt_algorithm;
+	int16_t m_nlopt_algorithm_id;
 #endif /* HAVE_NLOPT */
 
 private:
@@ -132,4 +136,6 @@ private:
 };
 
 }
-#endif /* NLOPTMINIMIZER_H */
+#endif //USE_GPL_SHOGUN
+#endif /* CNLOPTMINIMIZER_H */
+

@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/distance/RealDistance.h>
 #include <shogun/features/DenseFeatures.h>
@@ -82,6 +81,5 @@ class CCustomMahalanobisDistance : public CRealDistance
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */
 
 #endif /* CUSTOM_MAHALANOBIS_DISTANCE_ */

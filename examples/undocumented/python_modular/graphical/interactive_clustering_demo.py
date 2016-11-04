@@ -11,10 +11,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import matplotlib
-from matplotlib import mpl
 from matplotlib.colorbar import make_axes, Colorbar
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from modshogun import *

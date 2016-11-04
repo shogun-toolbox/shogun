@@ -14,6 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #ifndef  TESLA_PROJ_SLEP
 #define  TESLA_PROJ_SLEP
 
@@ -187,3 +189,4 @@ switch( flag )
 	}
 #endif   /* ----- #ifndef TESLA_PROJ_SLEP  ----- */
 
+#endif //USE_GPL_SHOGUN

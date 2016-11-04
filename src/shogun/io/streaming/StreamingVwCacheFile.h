@@ -53,7 +53,7 @@ public:
 	 * @param rw read/write mode
 	 * @param cache_type type of cache - C_NATIVE or C_PROTOBUF
 	 */
-	CStreamingVwCacheFile(char* fname, char rw='r', EVwCacheType cache_type = C_NATIVE);
+	CStreamingVwCacheFile(const char* fname, char rw='r', EVwCacheType cache_type = C_NATIVE);
 
 	/**
 	 * Destructor

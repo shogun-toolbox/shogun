@@ -35,7 +35,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/lib/SGVector.h>
@@ -144,5 +143,4 @@ protected:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // GAUSSIANDISTRIBUTION_H

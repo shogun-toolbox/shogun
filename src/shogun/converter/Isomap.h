@@ -11,7 +11,6 @@
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/MultidimensionalScaling.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
@@ -96,5 +95,4 @@ protected:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* ISOMAP_H_ */

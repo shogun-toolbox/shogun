@@ -42,9 +42,7 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUVector.h>
@@ -62,20 +60,7 @@ TEST(DotProduct, SGVector_default_backend)
 	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
-TEST(DotProduct, SGVector_explicit_native_backend)
-{
-	const index_t size=10;
-	SGVector<float64_t> a(size), b(size);
-	a.set_const(1.0);
-	b.set_const(2.0);
-
-	float64_t result=linalg::dot<linalg::Backend::NATIVE>(a, b);
-
-	EXPECT_NEAR(result, 20.0, 1E-15);
-}
-
 #ifdef HAVE_LINALG_LIB
-#ifdef HAVE_EIGEN3
 TEST(DotProduct, SGVector_explicit_eigen3_backend)
 {
 	const index_t size=10;
@@ -116,10 +101,6 @@ TEST(DotProduct, Eigen3_dynamic_explicit_viennacl_backend)
 	EXPECT_NEAR(linalg::dot<linalg::Backend::VIENNACL>(a, b), 20.0, 1E-6);
 }
 
-#endif // HAVE_VIENNACL
-#endif // HAVE_EIGEN3
-
-#ifdef HAVE_VIENNACL
 TEST(DotProduct, SGVector_explicit_viennacl_backend)
 {
 	const index_t size=10;
@@ -154,7 +135,6 @@ TEST(DotProduct, ViennaCL_explicit_viennacl_backend)
 	EXPECT_NEAR(result, 20.0, 1E-15);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(DotProduct, ViennaCL_explicit_eigen3_backend)
 {
 	const index_t size=10;
@@ -168,7 +148,6 @@ TEST(DotProduct, ViennaCL_explicit_eigen3_backend)
 }
 #endif // HAVE_LINALG_LIB
 
-#endif // HAVE_EIGEN3
 #endif // HAVE_VIENNACL
 
 #endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)

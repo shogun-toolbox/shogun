@@ -1,0 +1,70 @@
+{
+    "Program": "import numpy as np\n$dependencies\n\n$program",
+    "Dependencies": {
+        "IncludeAllClasses": false,
+        "IncludeInterfacedClasses": true, 
+        "IncludeEnums": true,
+        "DependencyListElement": "from modshogun import $typeName",
+        "DependencyListElementEnum": "from modshogun import $value",
+        "DependencyListSeparator": "\n"
+    },
+    "Statement": "$statement\n",
+    "Comment": "#$comment\n",
+    "Init": {
+        "Construct": "$name = $typeName($arguments)",
+        "Copy": "$name = $expr",
+        "BoolVector": "$name = np.zeros( ($arguments), dtype='bool')",
+        "CharVector": "$name = np.zeros( ($arguments), dtype='|S1')",
+        "ByteVector": "$name = np.zeros( ($arguments), dtype='uint8')",
+        "WordVector": "$name = np.zeros( ($arguments), dtype='uint16')",
+        "IntVector": "$name = np.zeros( ($arguments), dtype='int32')",
+        "LongIntVector": "$name = np.zeros( ($arguments), dtype='int64')",
+        "ULongIntVector": "$name = np.zeros( ($arguments), dtype='uint64')",
+        "ShortRealVector": "$name = np.zeros( ($arguments), dtype='float32')",
+        "RealVector": "$name = np.zeros( ($arguments), dtype='float64')",
+        "ComplexVector": "$name = np.zeros( ($arguments), dtype='complex128)'",
+        "BoolMatrix": "$name = np.zeros( ($arguments), dtype='bool')",
+        "CharMatrix": "$name = np.zeros( ($arguments), dtype='|S1')",
+        "ByteMatrix": "$name = np.zeros( ($arguments), dtype='uint8')",
+        "WordMatrix": "$name = np.zeros( ($arguments), dtype='uint16')",
+        "IntMatrix": "$name = np.zeros( ($arguments), dtype='int32')",
+        "LongIntMatrix": "$name = np.zeros( ($arguments), dtype='int64')",
+        "ULongIntMatrix": "$name = np.zeros( ($arguments), dtype='uint64')",
+        "ShortRealMatrix": "$name = np.zeros( ($arguments), dtype='float32')",
+        "RealMatrix": "$name = np.zeros( ($arguments), dtype='float64')",
+        "ComplexMatrix": "$name = np.zeros( ($arguments), dtype='complex128')"
+    },
+    "Assign": "$identifier = $expr",
+    "Type": {
+        "Default": "$typeName"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
+        "BoolLiteral": {
+            "True": "True",
+            "False": "False"
+        },
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
+        "ZeroIndexed": true
+    },
+    "Print": "print $expr",
+    "OutputDirectoryName": "python",
+    "FileExtension": ".py"
+}

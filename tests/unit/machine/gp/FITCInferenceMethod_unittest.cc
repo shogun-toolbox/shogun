@@ -30,10 +30,8 @@
  *
  */
 
+
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -152,6 +150,7 @@ TEST(FITCInferenceMethod,get_cholesky)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_cholesky_sparse)
@@ -222,6 +221,7 @@ TEST(FITCInferenceMethod,get_cholesky_sparse)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_alpha)
@@ -294,6 +294,7 @@ TEST(FITCInferenceMethod,get_alpha)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_alpha_sparse)
@@ -356,6 +357,7 @@ TEST(FITCInferenceMethod,get_alpha_sparse)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
@@ -419,6 +421,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
@@ -480,6 +483,7 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
 
 	// clean up
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
@@ -567,6 +571,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
@@ -654,9 +659,9 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(inducing_features_train);
 }
 #ifdef HAVE_LINALG_LIB
-//bug
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 {
 	index_t n=6;
@@ -788,6 +793,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
@@ -945,6 +951,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_features)
@@ -1061,7 +1068,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	SG_UNREF(gradient);
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
+	SG_UNREF(latent_features_train);
 }
-#endif /* HAVE_LINALG_LIB */
 
-#endif /* HAVE_EIGEN3 */
+#endif /* HAVE_LINALG_LIB */

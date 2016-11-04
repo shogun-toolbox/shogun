@@ -30,8 +30,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
 #include <gtest/gtest.h>
 
@@ -521,5 +519,3 @@ TEST(SoftMaxLikelihood,get_log_derivatives_third)
 	SG_UNREF(sml);
 	SG_UNREF(labels);
 }
-
-#endif /* HAVE_EIGEN3 */

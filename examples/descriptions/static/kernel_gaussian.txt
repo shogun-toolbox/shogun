@@ -1,1 +1,0 @@
-The well known Gaussian kernel (swiss army knife for SVMs) on dense real valued features.

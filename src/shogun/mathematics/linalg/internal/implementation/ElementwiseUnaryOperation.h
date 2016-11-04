@@ -104,7 +104,6 @@ struct elementwise_unary_operation<Backend::NATIVE, Operand, ReturnType, UnaryOp
 	}
 };
 
-#ifdef HAVE_EIGEN3
 /**
  * @brief Specialization for elementwise_unary_operation with EIGEN3 backend.
  * The operand types MUST be of CPU types (SGMatrix/SGVector).
@@ -139,7 +138,6 @@ struct elementwise_unary_operation<Backend::EIGEN3, Operand, ReturnType, UnaryOp
 		std::copy(eigen_result.data(), eigen_result.data()+eigen_result.size(), result.data());
 	}
 };
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

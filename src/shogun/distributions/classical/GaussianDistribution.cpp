@@ -9,7 +9,6 @@
 
 #include <shogun/distributions/classical/GaussianDistribution.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
@@ -173,4 +172,3 @@ void CGaussianDistribution::init()
 			"depending on the factorization type.", MS_NOT_AVAILABLE);
 }
 
-#endif // HAVE_EIGEN3

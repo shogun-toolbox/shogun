@@ -7,7 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/transfer/multitask/TaskGroup.h>
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/lib/slep/slep_solver.h>
@@ -178,3 +180,5 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 }
 
 }
+
+#endif //USE_GPL_SHOGUN

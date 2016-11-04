@@ -10,7 +10,6 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_LAPACK
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/lapack.h>
@@ -169,5 +168,4 @@ void CLanczosEigenSolver::compute()
 }
 
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK

@@ -8,8 +8,6 @@
  * Copyright (C) 2013 Fernando J. Iglesias Garcia
  */
 
-#ifdef HAVE_EIGEN3
-
 #include <gtest/gtest.h>
 
 #include <shogun/distance/CustomMahalanobisDistance.h>
@@ -43,5 +41,3 @@ TEST(Distance, custom_mahalanobis)
 
 	SG_UNREF(distance)
 }
-
-#endif /* HAVE_EIGEN3 */

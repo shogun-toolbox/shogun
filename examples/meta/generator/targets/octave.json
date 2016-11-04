@@ -1,0 +1,62 @@
+{
+    "Program": "modshogun\n\n$program",
+    "Statement": "$statement;\n",
+    "Comment": "%$comment\n",
+    "Init": {
+        "Construct": "$name = $typeName($arguments)",
+        "Copy": "$name = $expr",
+        "BoolVector": "$name = zeros(1, $arguments, 'int8')",
+        "CharVector": "$name = zeros(1, $arguments, 'char')",
+        "ByteVector": "$name = zeros(1, $arguments, 'int8')",
+        "WordVector": "$name = zeros(1, $arguments, 'int16')",
+        "IntVector": "$name = zeros(1, $arguments, 'int32')",
+        "LongIntVector": "$name = zeros(1, $arguments, 'int64')",
+        "ULongIntVector": "$name = zeros(1, $arguments, 'uint64')",
+        "ShortRealVector": "$name = zeros(1, $arguments, 'float32')",
+        "RealVector": "$name = zeros(1, $arguments, 'float64')",
+        "LongRealVector": "$name = zeros(1, $arguments, 'float64')",
+        "BoolMatrix": "$name = zeros($arguments, 'int8')",
+        "CharMatrix": "$name = zeros($arguments, 'char')",
+        "ByteMatrix": "$name = zeros($arguments, 'int8')",
+        "WordMatrix": "$name = zeros($arguments, 'int16')",
+        "IntMatrix": "$name = zeros($arguments, 'int32')",
+        "LongIntMatrix": "$name = zeros($arguments, 'int64')",
+        "ULongIntMatrix": "$name = zeros($arguments, 'uint64')",
+        "ShortRealMatrix": "$name = zeros($arguments, 'float64')",
+        "RealMatrix": "$name = zeros($arguments, 'float64')",
+        "LongRealMatrix": "$name = zeros($arguments, 'float64')"
+    },
+    "Assign": "$identifier = $expr",
+    "Type": {
+        "Default": "$typeName"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
+        "BoolLiteral": {
+            "True": "true",
+            "False": "false"
+        },
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "StaticCall": "$typeName.$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"$value"
+    },
+    "Element": {
+        "Access": {
+            "Vector": "$identifier($indices)",
+            "Matrix": "$identifier($indices)"
+        },
+        "Assign": {
+            "Vector": "$identifier($indices) = $expr",
+            "Matrix": "$identifier($indices) = $expr"
+        },
+        "ZeroIndexed": false
+    },
+    "Print": "disp($expr)",
+    "OutputDirectoryName": "octave",
+    "FileExtension": ".m"
+}

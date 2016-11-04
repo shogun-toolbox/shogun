@@ -9,7 +9,6 @@
  */
 
 #include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 #include <shogun/features/DenseFeatures.h>
 
@@ -73,4 +72,3 @@ CFeatures* CTDistributedStochasticNeighborEmbedding::apply(CFeatures* features)
 	return embedding;
 }
 
-#endif /* HAVE_EIGEN */

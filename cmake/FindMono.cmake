@@ -87,7 +87,7 @@ if( WIN32 )
       # Set interpreter
       if (EXISTS "${csharp_mono_bin_dir}/mono.exe")
         set( CSHARP_MONO_INTERPRETER_${csharp_mono_version_temp} "${csharp_mono_bin_dir}/mono.exe" CACHE STRING "C# Mono interpreter ${csharp_mono_version_temp}" FORCE )
-        mark_as_advanced( CSHARP_MONO_INTERPRETER_${csharp_mono_version_temp} )
+        mark_as_advanced( CSHARP_MONO_INTERPRETER )
       endif (EXISTS "${csharp_mono_bin_dir}/mono.exe")
     endif( csharp_mono_valid )
 
@@ -132,8 +132,8 @@ else( UNIX )
         OUTPUT_VARIABLE csharp_mono_version_string
       )
       string( REGEX MATCH "([0-9]*)([.])([0-9]*)([.]*)([0-9]*)" csharp_mono_version_temp ${csharp_mono_version_string} )
-      set( CSHARP_MONO_INTERPRETER_${CSHARP_MONO_VERSION} ${csharp_mono_interpreter} CACHE STRING "C# Mono interpreter ${csharp_mono_version_temp}" FORCE )
-      mark_as_advanced( CSHARP_MONO_INTERPRETER_${CSHARP_MONO_VERSION} )
+      set( CSHARP_MONO_INTERPRETER ${csharp_mono_interpreter} CACHE STRING "C# Mono interpreter ${csharp_mono_version_temp}" FORCE)
+      mark_as_advanced(CSHARP_MONO_INTERPRETER)
     endif ( EXISTS ${csharp_mono_interpreter} )
     unset( csharp_mono_interpreter CACHE )
 

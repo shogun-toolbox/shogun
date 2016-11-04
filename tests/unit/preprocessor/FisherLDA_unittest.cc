@@ -29,7 +29,6 @@
 */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <gtest/gtest.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DenseFeatures.h>
@@ -275,4 +274,3 @@ TEST(FLDATesti, CANVAR_FLDA_for_D_greater_than_N )
 	SG_UNREF(labels);
 	SG_UNREF(dense_feat);
 }
-#endif//HAVE_EIGEN3

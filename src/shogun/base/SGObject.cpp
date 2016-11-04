@@ -15,7 +15,6 @@
 #include <shogun/lib/RefCount.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/DynArray.h>
@@ -28,10 +27,44 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+
+#ifdef HAVE_CXX11
+#include <unordered_map>
+#else
+#include <map>
+#endif
 
 namespace shogun
 {
+#ifdef HAVE_CXX11
+	typedef std::unordered_map<BaseTag, Any> ParametersMap;
+#else
+	typedef std::map<BaseTag, Any> ParametersMap;
+#endif
+
+	class CSGObject::Self
+	{
+	public:
+		void set(const BaseTag& tag, const Any& any)
+		{
+			map[tag] = any;
+		}
+
+		Any get(const BaseTag& tag) const
+		{
+			if(!has(tag))
+				return Any();
+			return map.at(tag);
+		}
+
+		bool has(const BaseTag& tag) const
+		{
+			return map.find(tag) != map.end();
+		}
+
+		ParametersMap map;
+	};
+
 	class Parallel;
 
 	extern Parallel* sg_parallel;
@@ -117,7 +150,7 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject()
+CSGObject::CSGObject() : self()
 {
 	init();
 	set_global_objects();
@@ -127,7 +160,7 @@ CSGObject::CSGObject()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-:io(orig.io), parallel(orig.parallel), version(orig.version)
+: self(), io(orig.io), parallel(orig.parallel), version(orig.version)
 {
 	init();
 	set_global_objects();
@@ -740,4 +773,25 @@ CSGObject* CSGObject::clone()
 
 	SG_DEBUG("leaving %s::clone(): Clone successful\n", get_name());
 	return copy;
+}
+
+void CSGObject::set_with_base_tag(const BaseTag& _tag, const Any& any)
+{
+	self->set(_tag, any);
+}
+
+Any CSGObject::get_with_base_tag(const BaseTag& _tag) const
+{
+	Any any = self->get(_tag);
+	if(any.empty())
+	{
+		SG_ERROR("There is no parameter called \"%s\" in %s",
+			_tag.name().c_str(), get_name());
+	}
+	return any;
+}
+
+bool CSGObject::has_with_base_tag(const BaseTag& _tag) const
+{
+	return self->has(_tag);
 }

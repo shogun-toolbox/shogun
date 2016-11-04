@@ -32,8 +32,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -491,5 +489,3 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	// clean up
 	SG_UNREF(inf);
 }
-
-#endif /* HAVE_EIGEN3 */

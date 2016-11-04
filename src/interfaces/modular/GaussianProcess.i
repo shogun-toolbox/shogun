@@ -8,23 +8,21 @@
  */
 
 /* Remove C Prefix */
-#ifdef HAVE_EIGEN3
 %rename(MeanFunction) CMeanFunction;
 %rename(ZeroMean) CZeroMean;
 %rename(ConstMean) CConstMean;
 
-%rename(InferenceMethod) CInferenceMethod;
+%rename(Inference) CInference;
 %rename(ExactInferenceMethod) CExactInferenceMethod;
-%rename(LaplacianInferenceBase) CLaplacianInferenceBase;
-%rename(SparseInferenceBase) CSparseInferenceBase;
-%rename(SingleSparseInferenceBase) CSingleSparseInferenceBase;
-%rename(SingleFITCLaplacianBase) CSingleFITCLaplacianBase;
-%rename(SingleLaplacianInferenceMethod) CSingleLaplacianInferenceMethod;
-%rename(MultiLaplacianInferenceMethod) CMultiLaplacianInferenceMethod;
-%rename(SingleLaplacianInferenceMethodWithLBFGS) CSingleLaplacianInferenceMethodWithLBFGS;
+%rename(LaplaceInference) CLaplaceInference;
+%rename(SparseInference) CSparseInference;
+%rename(SingleSparseInference) CSingleSparseInference;
+%rename(SingleFITCInference) CSingleFITCInference;
+%rename(SingleLaplaceInferenceMethod) CSingleLaplaceInferenceMethod;
+%rename(MultiLaplaceInferenceMethod) CMultiLaplaceInferenceMethod;
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
-%rename(SingleFITCLaplacianInferenceMethod) CSingleFITCLaplacianInferenceMethod;
-%rename(SingleFITCLaplacianInferenceMethodWithLBFGS) CSingleFITCLaplacianInferenceMethodWithLBFGS;
+%rename(SingleFITCLaplaceInferenceMethod) CSingleFITCLaplaceInferenceMethod;
+%rename(VarDTCInferenceMethod) CVarDTCInferenceMethod;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
 %rename(LikelihoodModel) CLikelihoodModel;
@@ -44,23 +42,23 @@
 %rename(ProbitVGLikelihood) CProbitVGLikelihood;
 %rename(StudentsTVGLikelihood) CStudentsTVGLikelihood;
 
-%rename(KLInferenceMethod) CKLInferenceMethod;
-%rename(KLLowerTriangularInferenceMethod) CKLLowerTriangularInferenceMethod;
+%rename(KLInference) CKLInference;
+%rename(KLLowerTriangularInference) CKLLowerTriangularInference;
 %rename(KLCovarianceInferenceMethod) CKLCovarianceInferenceMethod;
-%rename(KLApproxDiagonalInferenceMethod) CKLApproxDiagonalInferenceMethod;
+%rename(KLDiagonalInferenceMethod) CKLDiagonalInferenceMethod;
 %rename(KLCholeskyInferenceMethod) CKLCholeskyInferenceMethod;
 %rename(KLDualInferenceMethod) CKLDualInferenceMethod;
+
+%rename(KLDualInferenceMethodMinimizer) CKLDualInferenceMethodMinimizer;
 
 %rename(GaussianProcessMachine) CGaussianProcessMachine;
 %rename(GaussianProcessClassification) CGaussianProcessClassification;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
 
-#endif //HAVE_EIGEN3
 
 /* These functions return new Objects */
 
 /* Include Class Headers to make them visible from within the target language */
-#ifdef HAVE_EIGEN3
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/machine/gp/LikelihoodModel.h>
 %include <shogun/machine/gp/ProbitLikelihood.h>
@@ -83,29 +81,26 @@
 %include <shogun/machine/gp/ZeroMean.h>
 %include <shogun/machine/gp/ConstMean.h>
 
-%include <shogun/machine/gp/InferenceMethod.h>
-%include <shogun/machine/gp/LaplacianInferenceBase.h>
-%include <shogun/machine/gp/SparseInferenceBase.h>
-%include <shogun/machine/gp/SingleSparseInferenceBase.h>
-%include <shogun/machine/gp/SingleFITCLaplacianBase.h>
-%include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
-%include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
+%include <shogun/machine/gp/Inference.h>
+%include <shogun/machine/gp/LaplaceInference.h>
+%include <shogun/machine/gp/SparseInference.h>
+%include <shogun/machine/gp/SingleSparseInference.h>
+%include <shogun/machine/gp/SingleFITCInference.h>
+%include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
+%include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
 %include <shogun/machine/gp/ExactInferenceMethod.h>
-%include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
-%include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
-%include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
+%include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
+%include <shogun/machine/gp/VarDTCInferenceMethod.h>
 %include <shogun/machine/gp/EPInferenceMethod.h>
 
-%include <shogun/machine/gp/KLInferenceMethod.h>
-%include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
+%include <shogun/machine/gp/KLInference.h>
+%include <shogun/machine/gp/KLLowerTriangularInference.h>
 %include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
-%include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+%include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
 %include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
 %include <shogun/machine/gp/KLDualInferenceMethod.h>
 
 %include <shogun/machine/GaussianProcessMachine.h>
 %include <shogun/classifier/GaussianProcessClassification.h>
 %include <shogun/regression/GaussianProcessRegression.h>
-
-#endif //HAVE_EIGEN3

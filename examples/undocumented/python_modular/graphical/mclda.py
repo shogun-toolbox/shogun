@@ -53,7 +53,7 @@ dense_labels = lda.apply(dense).get_labels()
 
 z = dense_labels.reshape((size, size))
 
-pcolor(x, y, z, shading = 'interp')
+pcolor(x, y, z)
 contour(x, y, z, linewidths = 1, colors = 'black', hold = True)
 
 axis([x1_min, x1_max, x2_min, x2_max])

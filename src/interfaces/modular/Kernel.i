@@ -58,7 +58,9 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(VarianceKernelNormalizer) CVarianceKernelNormalizer;
 %rename(DistanceKernel) CDistanceKernel;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
+%rename(ShiftInvariantKernel) CShiftInvariantKernel;
 %rename(GaussianKernel) CGaussianKernel;
+%rename(GaussianCompactKernel) CGaussianCompactKernel;
 %rename(DirectorKernel) CDirectorKernel;
 %rename(WaveletKernel) CWaveletKernel;
 %rename(GaussianShiftKernel) CGaussianShiftKernel;
@@ -106,10 +108,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(ExponentialARDKernel) CExponentialARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 
-#ifdef HAVE_EIGEN3 
 %rename(GaussianARDSparseKernel) CGaussianARDSparseKernel;
-#endif
-
 #endif
 
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
@@ -173,6 +172,7 @@ namespace shogun
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>
 %include <shogun/kernel/AUCKernel.h>
+%include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/BesselKernel.h>
 %include <shogun/kernel/CauchyKernel.h>
 %include <shogun/kernel/CircularKernel.h>
@@ -184,10 +184,10 @@ namespace shogun
 %include <shogun/kernel/ConstKernel.h>
 %include <shogun/kernel/CustomKernel.h>
 %include <shogun/kernel/DiagKernel.h>
-%include <shogun/kernel/DistanceKernel.h>
 %include <shogun/kernel/string/DistantSegmentsKernel.h>
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/string/FixedDegreeStringKernel.h>
+%include <shogun/kernel/ShiftInvariantKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
 %include <shogun/kernel/DirectorKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
@@ -230,11 +230,7 @@ namespace shogun
 #ifdef HAVE_LINALG_LIB
 %include <shogun/kernel/ExponentialARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
-
-#ifdef HAVE_EIGEN3 
 %include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
-
 #endif
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
 %include <shogun/kernel/PeriodicKernel.h>

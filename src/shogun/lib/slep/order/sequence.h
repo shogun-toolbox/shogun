@@ -19,6 +19,8 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef USE_GPL_SHOGUN
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -218,5 +220,6 @@ void sequence_topdown(double *x, double *u, int n){
 
 	free(location);
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef SEQUENCE_SLEP  ----- */
 

@@ -1,5 +1,8 @@
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+
 
 namespace shogun
 {
@@ -9,3 +12,5 @@ namespace shogun
 
 #define INDEX2(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 }
+
+#endif //USE_GPL_SHOGUN

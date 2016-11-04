@@ -68,9 +68,10 @@ void CStreamingVwFile::get_vector_and_label(VwExample* &ex, int32_t &len, float6
 void CStreamingVwFile::init()
 {
 	parser = new CVwParser();
+	SG_REF(parser);
 	env = parser->get_env();
+	SG_REF(env);
 
 	set_parser_type(T_VW);
 	write_to_cache = false;
-	SG_REF(env);
 }

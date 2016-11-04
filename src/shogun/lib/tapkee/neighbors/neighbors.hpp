@@ -8,7 +8,7 @@
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/defines.hpp>
-#ifdef TAPKEE_USE_LGPL_COVERTREE
+#ifdef USE_GPL_SHOGUN
 	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
 #endif
 #include <shogun/lib/tapkee/neighbors/connected.hpp>
@@ -73,7 +73,7 @@ struct PlainDistance
 	Callback callback;
 };
 
-#ifdef TAPKEE_USE_LGPL_COVERTREE
+#ifdef USE_GPL_SHOGUN
 template <class RandomAccessIterator, class Callback>
 Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end,
                          Callback callback, IndexType k)
@@ -186,7 +186,7 @@ Neighbors find_neighbors(NeighborsMethod method, const RandomAccessIterator& beg
 	{
 		case Brute: neighbors = find_neighbors_bruteforce_impl(begin,end,callback,k); break;
 		case VpTree: neighbors = find_neighbors_vptree_impl(begin,end,callback,k); break;
-#ifdef TAPKEE_USE_LGPL_COVERTREE
+#ifdef USE_GPL_SHOGUN
 		case CoverTree: neighbors = find_neighbors_covertree_impl(begin,end,callback,k); break;
 #endif
 		default: break;

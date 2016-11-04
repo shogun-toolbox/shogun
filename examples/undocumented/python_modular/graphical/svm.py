@@ -1,8 +1,6 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect,axis
 from numpy.random import randn
 from modshogun import *
-from modshogun import *
-from modshogun import *
 import util
 
 util.set_title('SVM')
@@ -26,10 +24,9 @@ svm = LibSVM(10.0, gk, labels)
 svm.train()
 
 x, y, z=util.compute_output_plot_isolines(svm, gk, train)
-pcolor(x, y, z, shading='interp')
+pcolor(x, y, z)
 contour(x, y, z, linewidths=1, colors='black', hold=True)
 axis('tight')
 
 connect('key_press_event', util.quit)
 show()
-

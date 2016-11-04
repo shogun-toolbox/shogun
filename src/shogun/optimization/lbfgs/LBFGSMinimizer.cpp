@@ -28,40 +28,82 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
-#include <shogun/lib/config.h>
-#include <algorithm>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+#include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
+#include <shogun/base/Parameter.h>
 
-using namespace shogun;
-
-LBFGSMinimizer::LBFGSMinimizer()
+namespace shogun
+{
+CLBFGSMinimizer::CLBFGSMinimizer()
 	:FirstOrderMinimizer()
 {
 	init();
 }
 
-LBFGSMinimizer::~LBFGSMinimizer()
+CLBFGSMinimizer::~CLBFGSMinimizer()
 {
 }
 
-LBFGSMinimizer::LBFGSMinimizer(FirstOrderCostFunction *fun)
+CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
 	:FirstOrderMinimizer(fun)
 {
+	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
+		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
+	if(m_fun && bound_constraints_fun)
+	{
+		SG_SWARNING("The minimizer does not support constrained minimization. All constraints will be ignored.\n")
+	}
 	init();
 }
 
-void LBFGSMinimizer::init()
+void CLBFGSMinimizer::init()
 {
 	set_lbfgs_parameters();
+	m_min_step=1e-6;
+	m_xtol=1e-6;
+	SG_ADD(&m_linesearch_id, "CLBFGSMinimizer__m_linesearch_id",
+		"linesearch_id in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_m, "CLBFGSMinimizer__m_m",
+		"m in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_linesearch, "CLBFGSMinimizer__m_max_linesearch",
+		"max_linesearch in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iterations, "CLBFGSMinimizer__m_max_iterations",
+		"max_iterations in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_delta, "CLBFGSMinimizer__m_delta",
+		"delta in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_past, "CLBFGSMinimizer__m_past",
+		"past in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "CLBFGSMinimizer__m_epsilon",
+		"epsilon in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_min_step, "CLBFGSMinimizer__m_min_step",
+		"min_step in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_step, "CLBFGSMinimizer__m_max_step",
+		"max_step in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_ftol, "CLBFGSMinimizer__m_ftol",
+		"ftol in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_wolfe, "CLBFGSMinimizer__m_wolfe",
+		"wolfe in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_gtol, "CLBFGSMinimizer__m_gtol",
+		"gtol in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_xtol, "CLBFGSMinimizer__m_xtol",
+		"xtol in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_c, "CLBFGSMinimizer__m_orthantwise_c",
+		"orthantwise_c in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_start, "CLBFGSMinimizer__m_orthantwise_start",
+		"orthantwise_start in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_orthantwise_end, "CLBFGSMinimizer__m_orthantwise_end",
+		"orthantwise_end in CLBFGSMinimizer", MS_NOT_AVAILABLE);
+	SG_ADD(&m_target_variable, "CLBFGSMinimizer__m_target_variable",
+		"m_target_variable in CLBFGSMinimizer", MS_NOT_AVAILABLE);
 }
 
-void LBFGSMinimizer::set_lbfgs_parameters(
-		int m,
-		int max_linesearch,
+void CLBFGSMinimizer::set_lbfgs_parameters(
+		int32_t m,
+		int32_t max_linesearch,
 		ELBFGSLineSearch linesearch,
-		int max_iterations,
+		int32_t max_iterations,
 		float64_t delta,
-		int past,
+		int32_t past,
 		float64_t epsilon,
 		float64_t min_step,
 		float64_t max_step,
@@ -70,12 +112,12 @@ void LBFGSMinimizer::set_lbfgs_parameters(
 		float64_t gtol,
 		float64_t xtol,
 		float64_t orthantwise_c,
-		int orthantwise_start,
-		int orthantwise_end)
+		int32_t orthantwise_start,
+		int32_t orthantwise_end)
 {
 	m_m = m;
 	m_max_linesearch = max_linesearch;
-	m_linesearch = linesearch;
+	m_linesearch_id = LBFGSLineSearchHelper::get_lbfgs_linear_search_id(linesearch);
 	m_max_iterations = max_iterations;
 	m_delta = delta;
 	m_past = past;
@@ -91,19 +133,19 @@ void LBFGSMinimizer::set_lbfgs_parameters(
 	m_orthantwise_end = orthantwise_end;
 }
 
-void LBFGSMinimizer::init_minimization()
+void CLBFGSMinimizer::init_minimization()
 {
 	REQUIRE(m_fun, "Cost function not set!\n");
 	m_target_variable=m_fun->obtain_variable_reference();
 	REQUIRE(m_target_variable.vlen>0,"Target variable from cost function must not empty!\n");
 }
 
-float64_t LBFGSMinimizer::minimize()
+float64_t CLBFGSMinimizer::minimize()
 {
 	lbfgs_parameter_t lbfgs_param;
 	lbfgs_param.m = m_m;
 	lbfgs_param.max_linesearch = m_max_linesearch;
-	lbfgs_param.linesearch = m_linesearch;
+	lbfgs_param.linesearch = LBFGSLineSearchHelper::get_lbfgs_linear_search(m_linesearch_id);
 	lbfgs_param.max_iterations = m_max_iterations;
 	lbfgs_param.delta = m_delta;
 	lbfgs_param.past = m_past;
@@ -121,8 +163,8 @@ float64_t LBFGSMinimizer::minimize()
 	init_minimization();
 
 	float64_t cost=0.0;
-	int error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
-		&cost, LBFGSMinimizer::evaluate,
+	int32_t error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
+		&cost, CLBFGSMinimizer::evaluate,
 		NULL, this, &lbfgs_param);
 
 	if(error_code!=0 && error_code!=LBFGS_ALREADY_MINIMIZED)
@@ -134,14 +176,19 @@ float64_t LBFGSMinimizer::minimize()
 	return cost;
 }
 
-float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
-	float64_t *gradient, const int dim, const float64_t step)
+float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
+	float64_t *gradient, const int32_t dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	LBFGSMinimizer * obj_prt
-		= static_cast<LBFGSMinimizer *>(obj);
+	CLBFGSMinimizer * obj_prt
+		= static_cast<CLBFGSMinimizer *>(obj);
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
+
+	float64_t cost=obj_prt->m_fun->get_cost();
+
+	if (CMath::is_nan(cost) || CMath::is_infinity(cost))
+		return cost;
 
 	//get the gradient wrt variable_new
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
@@ -150,7 +197,7 @@ float64_t LBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
-
-	float64_t cost=obj_prt->m_fun->get_cost();
 	return cost;
+}
+
 }

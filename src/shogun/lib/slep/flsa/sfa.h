@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  SFA_SLEP
 #define  SFA_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 /* 
    Revision History
@@ -368,5 +370,6 @@ int sfa_one(double *x,     double *gap, int * activeS,
 		double lambda, int nn,       int maxStep,
 		double *s,     double *g,
 		double tol,    int tau);
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef SFA_SLEP  ----- */
 

@@ -5,6 +5,7 @@
 #include <shogun/kernel/PyramidChi2.h>
 #include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/kernel/AUCKernel.h>
+#include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/BesselKernel.h>
 #include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
 #include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
@@ -23,8 +24,8 @@
 #include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
 #include <shogun/kernel/normalizer/VarianceKernelNormalizer.h>
-#include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/string/FixedDegreeStringKernel.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/DirectorKernel.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
@@ -78,10 +79,6 @@
 #ifdef HAVE_LINALG_LIB
 #include <shogun/kernel/ExponentialARDKernel.h>
 #include <shogun/kernel/GaussianARDKernel.h>
-
-#ifdef HAVE_EIGEN3 
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
-
 #endif
 %}

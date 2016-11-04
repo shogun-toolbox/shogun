@@ -27,7 +27,7 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 	{
 		ST c=s[i];
 
-		if (c == '\n')
+		if ((char) c == '\n')
 		{
 			ST* line=&s[offs];
 			len=i-offs;

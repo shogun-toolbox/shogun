@@ -1,6 +1,5 @@
 #include <shogun/mathematics/ajd/UWedge.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/init.h>
 
@@ -120,4 +119,3 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 
 }
 
-#endif //HAVE_EIGEN3

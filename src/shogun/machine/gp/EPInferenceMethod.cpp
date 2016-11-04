@@ -33,7 +33,6 @@
  */
 #include <shogun/machine/gp/EPInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -67,7 +66,7 @@ CEPInferenceMethod::CEPInferenceMethod()
 
 CEPInferenceMethod::CEPInferenceMethod(CKernel* kernel, CFeatures* features,
 		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
-		: CInferenceMethod(kernel, features, mean, labels, model)
+		: CInference(kernel, features, mean, labels, model)
 {
 	init();
 }
@@ -76,15 +75,21 @@ CEPInferenceMethod::~CEPInferenceMethod()
 {
 }
 
+void CEPInferenceMethod::register_minimizer(Minimizer* minimizer)
+{
+        SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
+}
+
 void CEPInferenceMethod::init()
 {
 	m_max_sweep=15;
 	m_min_sweep=2;
 	m_tol=1e-4;
+	m_fail_on_non_convergence=true;
 }
 
 CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -144,7 +149,7 @@ SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 
 void CEPInferenceMethod::compute_gradient()
 {
-	CInferenceMethod::compute_gradient();
+	CInference::compute_gradient();
 
 	if (!m_gradient_update)
 	{
@@ -160,7 +165,7 @@ void CEPInferenceMethod::update()
 	SG_DEBUG("entering\n");
 
 	// update kernel and feature matrix
-	CInferenceMethod::update();
+	CInference::update();
 
 	// get number of labels (trainig examples)
 	index_t n=m_labels->get_num_labels();
@@ -291,9 +296,12 @@ void CEPInferenceMethod::update()
 
 	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
 	{
-		SG_ERROR("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
-				"not yet reached. You can manually set maximum number of sweeps "
-				"or tolerance to fix this problem.\n", m_max_sweep, m_tol);
+		SG_WARNING("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
+				"not yet reached. You can increase or decrease both.\n",
+				m_max_sweep, m_tol);
+
+		if (m_fail_on_non_convergence)
+			SG_ERROR("EP did not converge. This error can be explicitly disabled.\n")
 	}
 
 	// update vector alpha
@@ -526,4 +534,3 @@ SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_mean(
 	return SGVector<float64_t>();
 }
 
-#endif /* HAVE_EIGEN3 */

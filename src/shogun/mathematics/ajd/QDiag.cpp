@@ -1,6 +1,5 @@
 #include <shogun/mathematics/ajd/QDiag.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/init.h>
 
@@ -43,8 +42,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	for (int i = 0; i < N; i++)
 		P(i,N-1-i) = 1;
 
-	std::vector<bool> issymmetric;
-	issymmetric.reserve(T);
+	std::vector<bool> issymmetric(T);
 	for (int l = 0; l < T; l++)
 	{
 		Map<MatrixXd> Ci(C.get_matrix(l),N,N);
@@ -174,4 +172,3 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 
 	return V;
 }
-#endif //HAVE_EIGEN3

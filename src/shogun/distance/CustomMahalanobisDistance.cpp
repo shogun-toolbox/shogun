@@ -10,7 +10,6 @@
 
 #include <shogun/distance/CustomMahalanobisDistance.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <Eigen/Dense>
 
@@ -75,4 +74,3 @@ float64_t CCustomMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	return dvec.transpose()*M*dvec;
 }
 
-#endif /* HAVE_EIGEN3 */

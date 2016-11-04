@@ -10,7 +10,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/multiclass/QDA.h>
 #include <shogun/machine/NativeMulticlassMachine.h>
@@ -24,19 +23,55 @@
 using namespace shogun;
 using namespace Eigen;
 
-CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_tolerance(tolerance),
-	m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+CQDA::CQDA() : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 }
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+CQDA::CQDA(float64_t tolerance, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	m_tolerance = tolerance;
+	m_store_covs = store_covs;
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
 	set_labels(trainlab);
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_tolerance = tolerance;
+}
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_store_covs = store_covs;
+}
+
+
+
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
+: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+{
+	init();
+	set_features(traindat);
+	set_labels(trainlab);
+	m_tolerance = tolerance;
+	m_store_covs = store_covs;
 }
 
 CQDA::~CQDA()
@@ -48,6 +83,8 @@ CQDA::~CQDA()
 
 void CQDA::init()
 {
+	m_tolerance = 1e-4;
+	m_store_covs = false;
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", MS_AVAILABLE);
 	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
@@ -115,10 +152,6 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 		for (int i = 0; i < num_vecs; i++)
 			norm2(i + k*num_vecs) = A.row(i).array().square().sum();
 
-#ifdef DEBUG_QDA
-	SG_PRINT("\n>>> Displaying A ...\n")
-	SGMatrix< float64_t >::display_matrix(A.data(), num_vecs, m_dim);
-#endif
 	}
 
 	for (int i = 0; i < num_vecs; i++)
@@ -128,10 +161,6 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
-#ifdef DEBUG_QDA
-	SG_PRINT("\n>>> Displaying norm2 ...\n")
-	SGMatrix< float64_t >::display_matrix(norm2.data(), num_vecs, m_num_classes);
-#endif
 
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
@@ -259,7 +288,6 @@ bool CQDA::train_machine(CFeatures* data)
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(class_nums[k]-1), col, m_dim);
-		rotations.transpose_matrix(k);
 
 		if (m_store_covs)
 		{
@@ -305,32 +333,8 @@ bool CQDA::train_machine(CFeatures* data)
 			}
 	}
 
-#ifdef DEBUG_QDA
-	SG_PRINT(">>> QDA machine trained with %d classes\n", m_num_classes)
-
-	SG_PRINT("\n>>> Displaying means ...\n")
-	SGMatrix< float64_t >::display_matrix(m_means.matrix, m_dim, m_num_classes);
-
-	SG_PRINT("\n>>> Displaying scalings ...\n")
-	SGMatrix< float64_t >::display_matrix(scalings.matrix, m_dim, m_num_classes);
-
-	SG_PRINT("\n>>> Displaying rotations ... \n")
-	for (int k = 0; k < m_num_classes; k++)
-		SGMatrix< float64_t >::display_matrix(rotations.get_matrix(k), m_dim, m_dim);
-
-	SG_PRINT("\n>>> Displaying sinvsqrt ... \n")
-	sinvsqrt.display_vector();
-
-	SG_PRINT("\n>>> Diplaying m_M matrices ... \n")
-	for (int k = 0; k < m_num_classes; k++)
-		SGMatrix< float64_t >::display_matrix(m_M.get_matrix(k), m_dim, m_dim);
-
-	SG_PRINT("\n>>> Exit DEBUG_QDA\n")
-#endif
 
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	return true;
 }
-
-#endif /* HAVE_EIGEN3 */

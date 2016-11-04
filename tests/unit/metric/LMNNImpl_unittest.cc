@@ -14,8 +14,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
-
 TEST(LMNNImpl,find_target_nn)
 {
 	// create features, each column is a feature vector
@@ -190,5 +188,3 @@ TEST(LMNNImpl,find_impostors_exact)
 	SG_UNREF(features)
 	SG_UNREF(labels)
 }
-
-#endif /* HAVE_EIGEN3 */

@@ -215,6 +215,25 @@ public:
 		return "ParameterCombination";
 	}
 
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param param_combination its dynamic type must be CParameterCombination
+	 */
+	static CParameterCombination* obtain_from_generic(
+			CSGObject* param_combination)
+	{
+		if (param_combination)
+		{
+			CParameterCombination* casted = dynamic_cast<CParameterCombination*>(param_combination);
+			REQUIRE(casted, "Error, provided object of class \"%s\" is not a subclass of"
+					" CParameterCombination!\n",
+					param_combination->get_name());
+			return casted;
+		}
+		else
+			return NULL;
+	}
+
 	/** returns total length of the parameters in combination
 	 *
 	 * @return total length of the parameters in combination

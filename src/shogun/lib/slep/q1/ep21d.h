@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  EP21D_SLEP
 #define  EP21D_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,5 +91,6 @@ void ep21d(double * x, double *root, int * steps, double * v, int n, int k, doub
 	free(vproj);
 
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EP21D_SLEP  ----- */
 

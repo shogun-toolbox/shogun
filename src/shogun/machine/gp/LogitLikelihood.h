@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LikelihoodModel.h>
 
@@ -188,5 +187,4 @@ public:
 	virtual bool supports_binary() const { return true; }
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _LOGITLIKELIHOOD_H_ */

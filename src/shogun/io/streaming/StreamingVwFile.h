@@ -95,7 +95,6 @@ public:
 	 */
 	CVwEnvironment* get_env()
 	{
-		SG_REF(env);
 		return env;
 	}
 

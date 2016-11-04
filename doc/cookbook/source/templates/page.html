@@ -1,0 +1,29 @@
+{%- extends "layout.html" %}
+{% block body %}
+{% if pagename[:"examples"|length] == "examples" %}
+<div class="container-fluid">
+<div role="tabpanel">
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist" id="tabs">
+    {% for lang in target_languages %}
+    <li role="presentation" {% if loop.index==1 %}class="active"{% endif %}>
+        <a id="{{lang}}-tab" href="#{{lang}}-tab" role="tab" data-toggle="tab" {% if loop.index==1 %}class="active" aria-expanded="true"{% endif %} data-target=".{{ lang }}-tabpane" >{{target_languages_tab_titles[lang]|title}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+
+</div><!--div role="tabpanel"-->
+</div><!--div class="container-fluid"-->
+
+{{ body }}
+
+<script>
+jQuery(document).ready(function ($) {
+    $('ul[id^=tabs]').tab();
+});
+</script>
+
+{% else %}
+{{ body }}
+{% endif %}
+{% endblock %}

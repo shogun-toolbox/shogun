@@ -1,0 +1,51 @@
+CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_kernel]
+PolyKernel poly_kernel(10,2)
+GaussianKernel gauss_kernel_1(2.0)
+GaussianKernel gauss_kernel_2(3.0)
+#![create_kernel]
+
+#![create_combined_train]
+CombinedKernel combined_kernel()
+combined_kernel.append_kernel(poly_kernel)
+combined_kernel.append_kernel(gauss_kernel_1)
+combined_kernel.append_kernel(gauss_kernel_2)
+combined_kernel.init(features_train, features_train)
+#![create_combined_train]
+
+#![train_mkl]
+SVRLight binary_svm_solver()
+MKLRegression mkl(binary_svm_solver)
+mkl.set_kernel(combined_kernel)
+mkl.set_labels(labels_train)
+mkl.train()
+#![train_mkl]
+
+#![extract_weights]
+RealVector beta = combined_kernel.get_subkernel_weights()
+RealVector alpha = mkl.get_alphas()
+#![extract_weights]
+
+#![mkl_apply]
+combined_kernel.init(features_train, features_test)
+RegressionLabels labels_predict = mkl.apply_regression()
+#![mkl_apply]
+
+#![evaluate_error]
+MeanSquaredError error()
+real mse = error.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# additional integration testing variables
+RealVector output = labels_predict.get_labels()

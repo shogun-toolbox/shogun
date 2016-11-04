@@ -39,7 +39,6 @@
 
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/eigen3.h>
@@ -346,4 +345,3 @@ SGVector<float64_t> CSoftMaxLikelihood::get_predictive_variances(
 	return predictive_helper(mu, s2, lab, MC_Variance);
 }
 
-#endif /* HAVE_EIGEN3 */

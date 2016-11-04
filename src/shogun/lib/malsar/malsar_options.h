@@ -10,6 +10,9 @@
 #ifndef  MALSAR_OPTIONS_H_
 #define  MALSAR_OPTIONS_H_
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #define IGNORE_IN_CLASSLIST
 
 #include <stdlib.h>
@@ -62,4 +65,5 @@ IGNORE_IN_CLASSLIST struct malsar_result_t
 };
 #endif
 }
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef MALSAR_OPTIONS_H_  ----- */

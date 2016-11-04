@@ -1,4 +1,0 @@
-In this example a kernelized version of ridge regression (KRR) is trained on a
-real-valued data set. The KRR is trained with regularization parameter tau=1e-6
-and a gaussian kernel with width=0.8. The labels of both the train and the test
-data can be fetched via krr.classify().get_labels().

@@ -37,14 +37,57 @@
 #define _KLDUALINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLInference.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
 namespace shogun
 {
 
+/** @brief Build-in minimizer for KLDualInference */
+class CKLDualInferenceMethodMinimizer: public CLBFGSMinimizer
+{
+public:
+	CKLDualInferenceMethodMinimizer(): CLBFGSMinimizer() { init(); }
+  
+	/** Constructor
+	 * @param fun a cost function
+	 */
+	CKLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): CLBFGSMinimizer(fun) { init(); }
+  
+	virtual ~CKLDualInferenceMethodMinimizer() {}
+
+	/** Do minimization and get the optimal value 
+	 *  
+	 * @return optimal value
+	 */
+	virtual float64_t minimize();
+
+	virtual const char* get_name() const { return "KLDualInferenceMethodMinimizer"; }
+  
+protected:
+	/** Init before minimization */
+	virtual void init_minimization();
+
+private:
+	/** A helper function is used in the C-style LBFGS API
+	 * Note that this function should be static and
+	 * private. */
+	static float64_t evaluate(void *obj, const float64_t *variable,
+		float64_t *gradient, const int dim, const float64_t step);
+
+	/** A helper function is passed to the LBFGS API
+	 * to adjust step size based on the feasible set S
+	 * defined in dual variational likelihood.
+	 * Note that this function should be static
+	 * */
+	static float64_t adjust_step(void *obj, const float64_t *parameters,
+		const float64_t *direction, const int dim, const float64_t step);
+
+	/** Init */
+	void init() { }
+};
+ 
 /** @brief The dual KL approximation inference method class.
  *
  * This inference process is described in the reference paper
@@ -62,8 +105,9 @@ namespace shogun
  *
  * For detailed information, please refer to the paper.
  */
-class CKLDualInferenceMethod: public CKLInferenceMethod
+class CKLDualInferenceMethod: public CKLInference
 {
+friend class KLDualInferenceMethodCostFunction;
 public:
 	/** default constructor */
 	CKLDualInferenceMethod();
@@ -98,7 +142,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLDualInferenceMethod object
 	 */
-	static CKLDualInferenceMethod * obtain_from_generic(CInferenceMethod* inference);
+	static CKLDualInferenceMethod * obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *
@@ -130,6 +174,12 @@ public:
 	 * @param mod model to set
 	 */
 	void set_model(CLikelihoodModel* mod);
+
+	/** Set a minimizer
+	 *
+	 * @param minimizer minimizer used in inference method
+	 */
+	virtual void register_minimizer(Minimizer* minimizer);
 protected:
 
 	/** compute the gradient wrt variational parameters
@@ -172,7 +222,7 @@ protected:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood_helper();
 
-	/** pre-compute the information for lbfgs optimization.
+	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
 	 * get_negative_log_marginal_likelihood_wrt_parameters()
 	 * and/or
@@ -180,7 +230,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool lbfgs_precompute();
+	virtual bool precompute();
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -190,14 +240,14 @@ protected:
 	 * get_derivative_wrt_kernel(const TParameter* param)
 	 * will call this function
 	 *
-	 * @param the gradient related to cov
+	 * @param dK the gradient related to cov
 	 *
 	 * @return the gradient wrt hyperparameter related to cov
 	 */
 	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
 
 	/** Using L-BFGS to estimate posterior parameters */
-	virtual float64_t lbfgs_optimization();
+	virtual float64_t optimization();
 
 	/** compute the objective value for LBFGS optimizer
 	 *
@@ -258,6 +308,7 @@ private:
 	 * Note that L' is a lower triangular matrix
 	 */
 	SGMatrix<float64_t> m_V;
+
 	/**
 	 * whether the lambda (m_W) is valid or not.
 	 * In other word, whether it is feasible or not
@@ -274,29 +325,7 @@ private:
 	 *
 	 * @return negative log marginal likelihood
 	 */
-
 	float64_t get_nlml_wrapper(SGVector<float64_t> alpha, SGVector<float64_t> mu, SGMatrix<float64_t> L);
-
-	/** helper function is passed to the LBFGS API
-	 * to compute objective value and gradient
-	 * Note that this function should be static
-	 * */
-	static float64_t evaluate(void *obj,
-		const float64_t *parameters,
-		float64_t *gradient, const int dim,
-		const float64_t step);
-
-	/** helper function is passed to the LBFGS API
-	 * to adjust step size based on the feasible set S
-	 * defined in dual variational likelihood.
-	 * Note that this function should be static
-	 * */
-	static float64_t adjust_step(void *obj,
-		const float64_t *parameters,
-		const float64_t *direction,
-		const int dim, const float64_t step);
-
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLDUALINFERENCEMETHOD_H_ */

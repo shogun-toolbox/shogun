@@ -31,13 +31,12 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
+ 
 #include <shogun/lib/config.h>
-
 #ifdef HAVE_LINALG_LIB
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
 #endif
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -46,24 +45,25 @@
 #include <shogun/machine/gp/ConstMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
-#include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethod.h>
-#include <shogun/machine/gp/SingleFITCLaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/MultiLaplaceInferenceMethod.h>
+#include <shogun/machine/gp/SingleFITCLaplaceInferenceMethod.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
-#include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLDiagonalInferenceMethod.h>
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
+#include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
+
+#include <shogun/optimization/NLOPTMinimizer.h>
 
 using namespace shogun;
 
@@ -132,8 +132,8 @@ TEST(GaussianProcessClassification,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
@@ -237,8 +237,8 @@ TEST(GaussianProcessClassification,get_variance_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -342,8 +342,8 @@ TEST(GaussianProcessClassification,get_probabilities)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -500,7 +500,7 @@ TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 	SG_UNREF(prediction);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_mean_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -567,9 +567,9 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-	= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+	= new CSingleLaplaceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -577,21 +577,21 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train Gaussian process binary classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -682,7 +682,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_variance_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -749,9 +749,9 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf
-		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+		= new CSingleLaplaceInferenceMethod(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -759,21 +759,21 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -864,7 +864,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vec
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilities)
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithLBFGS,get_probabilities)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -931,27 +931,27 @@ TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilitie
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with SingleLaplacian inference
-	CSingleLaplacianInferenceMethodWithLBFGS* inf=new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train, mean, labels_train, likelihood);
 
 	int m = 100;
 	int max_linesearch = 1000;
-	int linesearch = 0;
 	int max_iterations = 1000;
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	bool enable_newton_if_fail = false;
-	inf->set_lbfgs_parameters(m,
+	ELBFGSLineSearch linesearch=BACKTRACKING_STRONG_WOLFE;
+	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
 		max_iterations,
 		delta,
 		past,
-		epsilon,
-		enable_newton_if_fail
+		epsilon
 		);
+	inf->register_minimizer(opt);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -2023,7 +2023,7 @@ TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLDiagonal,get_mean_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2090,8 +2090,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -2187,7 +2187,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLDiagonal, get_variance_vector)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2254,8 +2254,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -2350,7 +2350,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLDiagonal, get_probabilities)
 {
 	float64_t abs_tolerance;
 	float64_t rel_tolerance=1e-2;
@@ -2417,8 +2417,8 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	CKLApproxDiagonalInferenceMethod* inf
-	= new CKLApproxDiagonalInferenceMethod(kernel,
+	CKLDiagonalInferenceMethod* inf
+	= new CKLDiagonalInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -2511,7 +2511,7 @@ TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 	EXPECT_NEAR(probabilities[24],  0.510305138487094,  abs_tolerance);
 
 	SG_UNREF(gpc);
-	}
+}
 
 TEST(GaussianProcessClassificationUsingKLDual,get_mean_vector)
 {
@@ -2838,7 +2838,7 @@ TEST(GaussianProcessClassificationUsingKLDual, get_variance_vector)
 	EXPECT_NEAR(variance_vector[24],  0.999699376743977,  abs_tolerance);
 
 	SG_UNREF(gpc);
-	}
+}
 
 TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 {
@@ -3000,9 +3000,9 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 	EXPECT_NEAR(probabilities[24],  0.508669245296206,  abs_tolerance);
 
 	SG_UNREF(gpc);
-	}
+}
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace,get_mean_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3082,7 +3082,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
@@ -3146,7 +3146,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
+TEST(GaussianProcessClassificationUsingMultiLaplace,get_variance_vector)
 {
 
 	float64_t abs_tolerance;
@@ -3226,7 +3226,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(497.3965463400368);
@@ -3291,7 +3291,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
+TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
 {
 	index_t n=5;
 
@@ -3338,7 +3338,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 	CZeroMean* mean=new CZeroMean();
 
 	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
-	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale=CMath::sqrt(5.114014937226176);
@@ -3360,9 +3360,351 @@ TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
 	SG_UNREF(prediction);
 }
 
+#ifdef USE_GPL_SHOGUN
+#if defined HAVE_NLOPT
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_mean_vector)
+{
+	float64_t abs_tolerance;
+	float64_t rel_tolerance=1e-2;
+	// create some easy random classification data
+	index_t n=10, m1=25, i=0;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+	SGMatrix<float64_t> feat_test(2, m1);
+
+	feat_train(0, 0)=0.0919736;
+	feat_train(0, 1)=-0.3813827;
+	feat_train(0, 2)=-1.8011128;
+	feat_train(0, 3)=-1.4603061;
+	feat_train(0, 4)=-0.1386884;
+	feat_train(0, 5)=0.7827657;
+	feat_train(0, 6)=-0.1369808;
+	feat_train(0, 7)=0.0058596;
+	feat_train(0, 8)=0.1059573;
+	feat_train(0, 9)=-1.3059609;
+
+	feat_train(1, 0)=1.4186892;
+	feat_train(1, 1)=0.2271813;
+	feat_train(1, 2)=0.3451326;
+	feat_train(1, 3)=0.4495962;
+	feat_train(1, 4)=1.2066144;
+	feat_train(1, 5)=-0.5425118;
+	feat_train(1, 6)=1.3479000;
+	feat_train(1, 7)=0.7181545;
+	feat_train(1, 8)=0.4036014;
+	feat_train(1, 9)=0.8928408;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=-1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+	lab_train[5]=1.0;
+	lab_train[6]=-1.0;
+	lab_train[7]=1.0;
+	lab_train[8]=1.0;
+	lab_train[9]=-1.0;
+
+	// create test features
+	for (index_t x1=-2; x1<=2; x1++)
+	{
+		for (index_t x2=-2; x2<=2; x2++)
+		{
+			feat_test(0, i)=(float64_t)x1;
+			feat_test(1, i)=(float64_t)x2;
+			i++;
+		}
+	}
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+	= new CSingleLaplaceInferenceMethod(kernel,
+		features_train,
+		mean,
+		labels_train,
+		likelihood);
+
+	FirstOrderMinimizer* opt=new CNLOPTMinimizer();
+	inf->register_minimizer(opt);
+
+	// train Gaussian process binary classifier
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	gpc->train();
+
+	// compare mean vector with result form GPML with the minfunc function
+	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
+
+	/*mean =
+		-0.023547066779433
+		-0.164420972889231
+		-0.447812356229495
+		-0.472428809447940
+		-0.205391227282142
+		-0.011335213830652
+		-0.131012850981580
+		-0.427259580375569
+		-0.527281189501774
+		-0.274684117023014
+		0.055529455358847
+		0.152023871056183
+		0.174282413372574
+		0.010823181344098
+		-0.072772631266962
+		0.090191676357209
+		0.288417744414623
+		0.409275122823904
+		0.281220920795101
+		0.088382525159406
+		0.043796091667543
+		0.130461505967524
+		0.170564691797896
+		0.113006930991411
+		0.041654120309486
+	*/
+
+	abs_tolerance = CMath::get_abs_tolerance(-0.023547066779433, rel_tolerance);
+	EXPECT_NEAR(mean_vector[0], -0.023547066779433, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.164420972889231, rel_tolerance);
+	EXPECT_NEAR(mean_vector[1], -0.164420972889231, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.447812356229495, rel_tolerance);
+	EXPECT_NEAR(mean_vector[2], -0.447812356229495, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.472428809447940, rel_tolerance);
+	EXPECT_NEAR(mean_vector[3], -0.472428809447940, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.205391227282142, rel_tolerance);
+	EXPECT_NEAR(mean_vector[4], -0.205391227282142, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.011335213830652, rel_tolerance);
+	EXPECT_NEAR(mean_vector[5], -0.011335213830652, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.131012850981580, rel_tolerance);
+	EXPECT_NEAR(mean_vector[6], -0.131012850981580, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.427259580375569, rel_tolerance);
+	EXPECT_NEAR(mean_vector[7], -0.427259580375569, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.527281189501774, rel_tolerance);
+	EXPECT_NEAR(mean_vector[8], -0.527281189501774, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.274684117023014, rel_tolerance);
+	EXPECT_NEAR(mean_vector[9], -0.274684117023014, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.055529455358847, rel_tolerance);
+	EXPECT_NEAR(mean_vector[10], 0.055529455358847, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.152023871056183, rel_tolerance);
+	EXPECT_NEAR(mean_vector[11], 0.152023871056183, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.174282413372574, rel_tolerance);
+	EXPECT_NEAR(mean_vector[12], 0.174282413372574, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.010823181344098, rel_tolerance);
+	EXPECT_NEAR(mean_vector[13], 0.010823181344098, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.072772631266962, rel_tolerance);
+	EXPECT_NEAR(mean_vector[14], -0.072772631266962, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.090191676357209, rel_tolerance);
+	EXPECT_NEAR(mean_vector[15], 0.090191676357209, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.288417744414623, rel_tolerance);
+	EXPECT_NEAR(mean_vector[16], 0.288417744414623, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.409275122823904, rel_tolerance);
+	EXPECT_NEAR(mean_vector[17], 0.409275122823904, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.281220920795101, rel_tolerance);
+	EXPECT_NEAR(mean_vector[18], 0.281220920795101, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.088382525159406, rel_tolerance);
+	EXPECT_NEAR(mean_vector[19], 0.088382525159406, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.043796091667543, rel_tolerance);
+	EXPECT_NEAR(mean_vector[20], 0.043796091667543, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.130461505967524, rel_tolerance);
+	EXPECT_NEAR(mean_vector[21], 0.130461505967524, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.170564691797896, rel_tolerance);
+	EXPECT_NEAR(mean_vector[22], 0.170564691797896, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.113006930991411, rel_tolerance);
+	EXPECT_NEAR(mean_vector[23], 0.113006930991411, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.041654120309486, rel_tolerance);
+	EXPECT_NEAR(mean_vector[24], 0.041654120309486, abs_tolerance);
+
+	SG_UNREF(gpc);
+}
+
+TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_variance_vector)
+{
+	float64_t abs_tolerance;
+	float64_t rel_tolerance=1e-2;
+	// create some easy random classification data
+	index_t n=10, m1=25, i=0;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+	SGMatrix<float64_t> feat_test(2, m1);
+
+	feat_train(0, 0)=0.0919736;
+	feat_train(0, 1)=-0.3813827;
+	feat_train(0, 2)=-1.8011128;
+	feat_train(0, 3)=-1.4603061;
+	feat_train(0, 4)=-0.1386884;
+	feat_train(0, 5)=0.7827657;
+	feat_train(0, 6)=-0.1369808;
+	feat_train(0, 7)=0.0058596;
+	feat_train(0, 8)=0.1059573;
+	feat_train(0, 9)=-1.3059609;
+
+	feat_train(1, 0)=1.4186892;
+	feat_train(1, 1)=0.2271813;
+	feat_train(1, 2)=0.3451326;
+	feat_train(1, 3)=0.4495962;
+	feat_train(1, 4)=1.2066144;
+	feat_train(1, 5)=-0.5425118;
+	feat_train(1, 6)=1.3479000;
+	feat_train(1, 7)=0.7181545;
+	feat_train(1, 8)=0.4036014;
+	feat_train(1, 9)=0.8928408;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=-1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+	lab_train[5]=1.0;
+	lab_train[6]=-1.0;
+	lab_train[7]=1.0;
+	lab_train[8]=1.0;
+	lab_train[9]=-1.0;
+
+	// create test features
+	for (index_t x1=-2; x1<=2; x1++)
+	{
+		for (index_t x2=-2; x2<=2; x2++)
+		{
+			feat_test(0, i)=(float64_t)x1;
+			feat_test(1, i)=(float64_t)x2;
+			i++;
+		}
+	}
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with SingleLaplace inference
+	CSingleLaplaceInferenceMethod* inf
+		= new CSingleLaplaceInferenceMethod(kernel,
+			features_train,
+			mean,
+			labels_train,
+			likelihood);
+
+	FirstOrderMinimizer* opt=new CNLOPTMinimizer();
+	inf->register_minimizer(opt);
+
+	// train gaussian process classifier
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	gpc->train();
+
+	// compare variance vector with result form GPML with the minfunc function
+	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
+	/*variance =
+		0.999445535646085
+		0.972965743674159
+		0.799464093608188
+		0.776811020003602
+		0.957814443755535
+		0.999871512927413
+		0.982835632877678
+		0.817449250977293
+		0.721974547197594
+		0.924548635855287
+		0.996916479587550
+		0.976888742629093
+		0.969625640389031
+		0.999882858745593
+		0.994704144138483
+		0.991865461515876
+		0.916815204706781
+		0.832493873837478
+		0.920914793707155
+		0.992188529246447
+		0.998081902354648
+		0.982979795460686
+		0.970907685911889
+		0.987229433547902
+		0.998264934261243
+	*/
+
+	abs_tolerance = CMath::get_abs_tolerance(0.999445535646085, rel_tolerance);
+	EXPECT_NEAR(variance_vector[0],  0.999445535646085,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.972965743674159, rel_tolerance);
+	EXPECT_NEAR(variance_vector[1],  0.972965743674159,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.799464093608188, rel_tolerance);
+	EXPECT_NEAR(variance_vector[2],  0.799464093608188,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.776811020003602, rel_tolerance);
+	EXPECT_NEAR(variance_vector[3],  0.776811020003602,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.957814443755535, rel_tolerance);
+	EXPECT_NEAR(variance_vector[4],  0.957814443755535,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.999871512927413, rel_tolerance);
+	EXPECT_NEAR(variance_vector[5],  0.999871512927413,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.982835632877678, rel_tolerance);
+	EXPECT_NEAR(variance_vector[6],  0.982835632877678,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.817449250977293, rel_tolerance);
+	EXPECT_NEAR(variance_vector[7],  0.817449250977293,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.721974547197594, rel_tolerance);
+	EXPECT_NEAR(variance_vector[8],  0.721974547197594,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.924548635855287, rel_tolerance);
+	EXPECT_NEAR(variance_vector[9],  0.924548635855287,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.996916479587550, rel_tolerance);
+	EXPECT_NEAR(variance_vector[10], 0.996916479587550, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.976888742629093, rel_tolerance);
+	EXPECT_NEAR(variance_vector[11], 0.976888742629093, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.969625640389031, rel_tolerance);
+	EXPECT_NEAR(variance_vector[12], 0.969625640389031, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.999882858745593, rel_tolerance);
+	EXPECT_NEAR(variance_vector[13], 0.999882858745593, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.994704144138483, rel_tolerance);
+	EXPECT_NEAR(variance_vector[14], 0.994704144138483, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.991865461515876, rel_tolerance);
+	EXPECT_NEAR(variance_vector[15], 0.991865461515876, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.916815204706781, rel_tolerance);
+	EXPECT_NEAR(variance_vector[16], 0.916815204706781, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.832493873837478, rel_tolerance);
+	EXPECT_NEAR(variance_vector[17], 0.832493873837478, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.920914793707155, rel_tolerance);
+	EXPECT_NEAR(variance_vector[18], 0.920914793707155, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.992188529246447, rel_tolerance);
+	EXPECT_NEAR(variance_vector[19], 0.992188529246447, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.998081902354648, rel_tolerance);
+	EXPECT_NEAR(variance_vector[20], 0.998081902354648, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.982979795460686, rel_tolerance);
+	EXPECT_NEAR(variance_vector[21], 0.982979795460686, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.970907685911889, rel_tolerance);
+	EXPECT_NEAR(variance_vector[22], 0.970907685911889, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.987229433547902, rel_tolerance);
+	EXPECT_NEAR(variance_vector[23], 0.987229433547902, abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.998264934261243, rel_tolerance);
+	EXPECT_NEAR(variance_vector[24], 0.998264934261243, abs_tolerance);
+
+
+	SG_UNREF(gpc);
+}
+
+
+
+#endif //HAVE_NLOPT
+#endif //USE_GPL_SHOGUN
+
+
 
 #ifdef HAVE_LINALG_LIB
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3429,7 +3771,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -3474,9 +3816,10 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_mean_vector)
 
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_variance_vector)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3543,7 +3886,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -3587,9 +3930,10 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_variance_vector)
 	EXPECT_NEAR(var_vector[3],  0.747898784171351,  abs_tolorance);
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
-TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
+TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 {
 	index_t n=6;
 	index_t dim=2;
@@ -3656,7 +4000,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplacianInferenceMethod* inf=new CSingleFITCLaplacianInferenceMethod(kernel, features_train,
+	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -3700,9 +4044,7 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplacian,get_probabilities)
 
 	// clean up
 	SG_UNREF(gpc);
+	SG_UNREF(latent_features_train);
 }
 
 #endif /* HAVE_LINALG_LIB */
-
-
-#endif /* HAVE_EIGEN3 */

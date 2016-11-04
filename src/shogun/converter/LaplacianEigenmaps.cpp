@@ -10,7 +10,6 @@
 
 #include <shogun/converter/LaplacianEigenmaps.h>
 #include <shogun/converter/EmbeddingConverter.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
@@ -90,4 +89,3 @@ CDenseFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distan
 	parameters.distance = distance;
 	return tapkee_embed(parameters);
 }
-#endif /* HAVE_EIGEN3 */

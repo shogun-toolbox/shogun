@@ -32,7 +32,6 @@
 #ifndef ADADELTAUPDATER_H
 #define ADADELTAUPDATER_H
 #include <shogun/optimization/DescendUpdaterWithCorrection.h>
-#include <shogun/optimization/LearningRate.h>
 namespace shogun
 {
 /** @brief The class implements the AdaDelta method.
@@ -68,6 +67,14 @@ public:
 	 * @param decay_factor decay_factor 
 	 */
 	AdaDeltaUpdater(float64_t learning_rate,float64_t epsilon,float64_t decay_factor);
+
+	/** returns the name of the class
+	 *
+	 * @return name AdaDeltaUpdater
+	 *
+	 */
+	virtual const char* get_name() const { return "AdaDeltaUpdater"; }
+
 	
 	/* Destructor */
 	virtual ~AdaDeltaUpdater();
@@ -89,25 +96,6 @@ public:
 	 * @param decay_factor decay factor
 	 */
 	virtual void set_decay_factor(float64_t decay_factor);
-
-	/** Update a context object to store mutable variables
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::save_to_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context);
-
-	/** Return a context object which stores mutable variables
-	 * Usually it is used in serialization.
-	 *
-	 * This method will be called by
-	 * FirstOrderMinimizer::load_from_context(CMinimizerContext* context)
-	 *
-	 * @return a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context);
 
 	/** Update the target variable based on the given negative descend direction
 	 *

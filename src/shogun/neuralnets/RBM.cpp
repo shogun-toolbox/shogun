@@ -33,7 +33,6 @@
 
 #include <shogun/neuralnets/RBM.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
@@ -664,4 +663,3 @@ void CRBM::init()
 	SG_ADD(&m_params, "params", "Parameters", MS_NOT_AVAILABLE);
 }
 
-#endif

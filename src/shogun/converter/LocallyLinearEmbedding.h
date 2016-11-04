@@ -11,7 +11,6 @@
 #ifndef LOCALLYLINEAREMBEDDING_H_
 #define LOCALLYLINEAREMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -113,5 +112,4 @@ protected:
 };
 }
 
-#endif /* HAVE_EIGEN3 */
 #endif /* LOCALLYLINEAREMBEDDING_H_ */

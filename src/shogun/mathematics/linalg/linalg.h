@@ -55,7 +55,6 @@ namespace linalg
  * Developer's Note :
  * - Changing the default backend would just require to change it in the
  *   Backend enum
- * - Please use the same names as HAVE_<BACKEND> macros (e.g. HAVE_EIGEN3)
  * - Please refer to the developer's wiki (link) for the design and structure
  *   of internal linalg module
  */
@@ -74,9 +73,7 @@ namespace linalg
  */
 enum class Backend
 {
-#ifdef HAVE_EIGEN3
 	EIGEN3,
-#endif
 #ifdef HAVE_VIENNACL
 	VIENNACL,
 #endif

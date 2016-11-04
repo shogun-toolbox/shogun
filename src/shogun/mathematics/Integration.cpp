@@ -22,7 +22,6 @@
 
 #include <shogun/mathematics/Integration.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
@@ -909,4 +908,3 @@ float64_t CIntegration::evaluate_quadgh64(CFunction* f)
 }
 }
 
-#endif /* HAVE_EIGEN3 */

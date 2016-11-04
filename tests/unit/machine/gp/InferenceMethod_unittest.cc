@@ -11,12 +11,11 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplaceInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
@@ -45,7 +44,7 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 	CGaussianKernel* kernel=new CGaussianKernel(10, 8);
 	CZeroMean* mean=new CZeroMean();
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
-	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
+	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 	inf->set_scale(2.0);
 
@@ -152,4 +151,3 @@ TEST(InferenceMethod, compute_gradient)
 
 	SG_UNREF(inf);
 }
-#endif // HAVE_EIGEN3

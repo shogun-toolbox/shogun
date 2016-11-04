@@ -31,9 +31,7 @@
 
 #ifndef MOMEMTUMCORRECTION_H
 #define MOMEMTUMCORRECTION_H
-#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/optimization/MinimizerContext.h>
 #include <shogun/optimization/DescendCorrection.h>
 namespace shogun
 {
@@ -46,7 +44,6 @@ namespace shogun
 class MomentumCorrection: public DescendCorrection
 {
 public:
-
 	/*  Constructor */
 	MomentumCorrection()
 		:DescendCorrection()
@@ -70,12 +67,7 @@ public:
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
-	virtual void initialize_previous_direction(index_t len)
-	{
-		REQUIRE(len>0, "The length (%d) must be positive\n", len);
-		m_previous_descend_direction=SGVector<float64_t>(len);
-		m_previous_descend_direction.set_const(0.0);
-	}
+	virtual void initialize_previous_direction(index_t len);
 
 	/** Get corrected descend direction
 	 *
@@ -87,41 +79,6 @@ public:
 	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
 		index_t idx)=0;
 
-	/** Update a context object to store mutable variables
-	 * used in descend update
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::update_context()
-	 *
-	 * @param context a context object
-	 */
-	virtual void update_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "context must set\n");
-		SGVector<float64_t> value(m_previous_descend_direction.vlen);
-		std::copy(m_previous_descend_direction.vector,
-			m_previous_descend_direction.vector+m_previous_descend_direction.vlen,
-			value.vector);
-		std::string key="MomentumCorrection::m_previous_descend_direction";
-		context->save_data(key, value);
-	}
-
-	/** Load the given context object to restore mutable variables
-	 *
-	 * This method will be called by
-	 * DescendUpdaterWithCorrection::load_from_context(CMinimizerContext* context)
-	 *
-	 * @param context a context object
-	 */
-	virtual void load_from_context(CMinimizerContext* context)
-	{
-		REQUIRE(context, "context must set\n");
-		std::string key="MomentumCorrection::m_previous_descend_direction";
-		SGVector<float64_t> value=context->get_data_sgvector_float64(key);
-		m_previous_descend_direction=SGVector<float64_t>(value.vlen);
-		std::copy(value.vector, value.vector+value.vlen,
-			m_previous_descend_direction.vector);
-	}
 
 	/** Get the previous descend direction (velocity) given the index
 	 *
@@ -129,12 +86,7 @@ public:
 	 *
 	 * @return the previous descend direction
 	 */
-	virtual float64_t get_previous_descend_direction(index_t idx)
-	{
-		REQUIRE(idx>=0 && idx<m_previous_descend_direction.vlen,
-			"Index (%d) is invalid\n", idx);
-		return m_previous_descend_direction[idx];
-	}
+	virtual float64_t get_previous_descend_direction(index_t idx);
 
 	/** Get the length of the previous descend direction (velocity)
 	 *
@@ -144,16 +96,14 @@ public:
 	{
 		return m_previous_descend_direction.vlen;
 	}
+
 protected:
 	/**  used in momentum methods */
 	SGVector<float64_t> m_previous_descend_direction;
 
 private:
 	/* Init */
-	void init()
-	{
-		m_previous_descend_direction=SGVector<float64_t>();
-	}
+	void init();
 };
 
 }

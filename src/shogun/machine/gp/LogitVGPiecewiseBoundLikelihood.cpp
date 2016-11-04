@@ -40,7 +40,6 @@
 
 #include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
@@ -527,4 +526,3 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_first_derivative_wrt_h
 }
 
 } /* namespace shogun */
-#endif /* HAVE_EIGEN3 */

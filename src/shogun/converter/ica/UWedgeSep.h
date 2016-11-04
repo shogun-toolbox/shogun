@@ -11,7 +11,6 @@
 #define UWEDGESEP_H_
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/features/Features.h>
 #include <shogun/converter/ica/ICAConverter.h>
@@ -79,5 +78,4 @@ class CUWedgeSep: public CICAConverter
 		SGNDArray<float64_t> m_covs;
 };
 }
-#endif // HAVE_EIGEN3
 #endif // UWEDGESEP

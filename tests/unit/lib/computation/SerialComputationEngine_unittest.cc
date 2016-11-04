@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -41,7 +40,12 @@ TEST(SerialComputationEngine, dense_log_det)
 	mat(1,1)=3.0;
 	Map<MatrixXd> m(mat.matrix, mat.num_rows, mat.num_cols);
 	Map<MatrixXd> log_m(log_mat.matrix, log_mat.num_rows, log_mat.num_cols);
+#if EIGEN_WITH_LOG_BUG_1229
+	MatrixXd tmp = m;
+	log_m=tmp.log();
+#else
 	log_m=m.log();
+#endif
 
 	// create linear operator and aggregator
 	CDenseMatrixOperator<float64_t>* log_op=new CDenseMatrixOperator<float64_t>(log_mat);
@@ -77,4 +81,4 @@ TEST(SerialComputationEngine, dense_log_det)
 	SG_UNREF(agg);
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
-#endif // HAVE_EIGEN3
+

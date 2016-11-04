@@ -148,13 +148,13 @@ def evaluation(labels_pr, labels_gt, model):
 
     return ave_loss
 
-def graphcuts_sosvm(num_train_samples = 20, len_label = 10, len_feat = 40, num_test_samples = 10):
+def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_test_samples = 5):
     """ Graph cuts as approximate inference in structured output SVM framework.
 
         Args:
             num_train_samples: number of training samples
             len_label: number of classes, i.e., size of label space
-            len_feat: the dimention of the feature vector
+            len_feat: the dimension of the feature vector
             num_test_samples: number of testing samples
     """
     import time
@@ -268,4 +268,3 @@ def structure_graphcuts(test_general=True, test_sosvm=True):
 if __name__ == '__main__':
     print("Graph cuts")
     structure_graphcuts(*parameter_list[0])
-

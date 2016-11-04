@@ -7,6 +7,8 @@
  * Written (W) 2014 Thoralf Klein
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <gtest/gtest.h>
 
 #include <shogun/lib/SGVector.h>
@@ -138,3 +140,4 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 INSTANTIATE_TEST_CASE_P(IterateAllBMSOSolvers,
                         DualLibQPBMSOSVMTestLoopSolvers,
                         ::testing::Values(BMRM, PPBMRM, P3BMRM, NCBM));
+#endif //USE_GPL_SHOGUN

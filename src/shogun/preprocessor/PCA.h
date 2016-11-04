@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
@@ -179,7 +178,7 @@ class CPCA: public CDimensionReductionPreprocessor
 		EPCAMemoryMode get_memory_mode() const;
 
 		/** set PCA memory mode to be used
-		 * @param choice between MEM_REALLOCATE and MEM_IN_PLACE
+		 * @param e hoice between MEM_REALLOCATE and MEM_IN_PLACE
 		 */
 		void set_memory_mode(EPCAMemoryMode e);
 
@@ -228,5 +227,4 @@ class CPCA: public CDimensionReductionPreprocessor
 		float64_t m_eigenvalue_zero_tolerance;
 };
 }
-#endif // HAVE_EIGEN3
 #endif // PCA_H_

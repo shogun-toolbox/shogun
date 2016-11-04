@@ -12,7 +12,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
@@ -382,4 +381,3 @@ float64_t CPCA::get_eigenvalue_zero_tolerance() const
 	return m_eigenvalue_zero_tolerance;
 }
 
-#endif // HAVE_EIGEN3

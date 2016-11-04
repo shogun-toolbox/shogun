@@ -37,8 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -201,5 +199,3 @@ TEST(LogitDVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	SG_UNREF(lab);
 	SG_UNREF(lik);
 }
-
-#endif /* HAVE_EIGEN3 */

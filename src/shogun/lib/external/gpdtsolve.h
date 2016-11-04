@@ -26,6 +26,9 @@
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/base/SGObject.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -169,3 +172,4 @@ private:
 };
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+#endif //USE_GPL_SHOGUN

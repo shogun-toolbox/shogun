@@ -13,7 +13,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 
-#ifdef HAVE_EIGEN3
 
 namespace shogun
 {
@@ -70,5 +69,4 @@ public:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // DENSE_MATRIX_EXACT_LOG_H_

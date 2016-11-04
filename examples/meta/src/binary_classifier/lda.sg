@@ -1,0 +1,34 @@
+CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_binary_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_binary_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+BinaryLabels labels_train(f_labels_train)
+BinaryLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_instance]
+LDA lda()
+lda.set_features(features_train)
+lda.set_labels(labels_train)
+#![create_instance]
+
+#![train_and_apply]
+lda.train()
+BinaryLabels labels_predict = lda.apply_binary(features_test)
+#![train_and_apply]
+
+#![extract_weights]
+RealVector w = lda.get_w()
+#![extract_weights]
+
+#![evaluate_accuracy]
+AccuracyMeasure eval()
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+#additional integration testing variables
+RealVector output = labels_predict.get_labels()

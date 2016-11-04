@@ -10,7 +10,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/LinearMachine.h>
@@ -174,10 +173,20 @@ bool CLDA::train_machine(CFeatures *data)
 			cen_neg.col(i)=fmatrix.col(classidx_neg[i]);
 
 		//+ve covariance matrix
+#if EIGEN_WITH_OPERATOR_BUG
+		cen_pos=cen_pos*cen_pos.transpose()
+		cen_pos/=float64_t(num_pos-1);
+#else
 		cen_pos=cen_pos*cen_pos.transpose()/(float64_t(num_pos-1));
+#endif
 
 		//-ve covariance matrix
+#if EIGEN_WITH_OPERATOR_BUG
+		cen_neg=cen_neg=cen_neg*cen_neg.transpose()
+		cen_neg/=float64_t(num_neg-1);
+#else
 		cen_neg=cen_neg*cen_neg.transpose()/(float64_t(num_neg-1));
+#endif
 
 		//within class matrix
 		MatrixXd Sw= num_pos*cen_pos+num_neg*cen_neg;
@@ -226,4 +235,3 @@ bool CLDA::train_machine(CFeatures *data)
 	}
 	return true;
 }
-#endif//HAVE_EIGEN3

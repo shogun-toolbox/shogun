@@ -12,6 +12,9 @@
  *  Implementation of SVM-Ocas solver.
  *-------------------------------------------------------------------- */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/common.h>
 
 #ifndef libocas_h
@@ -132,4 +135,5 @@ ocas_return_value_T svm_ocas_solver_nnw(
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif /* libocas_h */
+#endif // USE_GPL_SHOGUN
 

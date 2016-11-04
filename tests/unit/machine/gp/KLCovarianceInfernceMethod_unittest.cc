@@ -31,8 +31,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -1357,5 +1355,3 @@ TEST(KLCovarianceInferenceMethod,get_marginal_likelihood_derivatives_probit_like
 	SG_UNREF(inf);
 }
 
-
-#endif /* HAVE_EIGEN3 */

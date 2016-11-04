@@ -7,6 +7,9 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/statistics/MMDKernelSelectionCombMaxL2.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -68,3 +71,4 @@ SGVector<float64_t> CMMDKernelSelectionCombMaxL2::compute_measures()
 
 	return result;
 }
+#endif //USE_GPL_SHOGUN

@@ -38,7 +38,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
 using namespace Eigen;
 
 /** tests the nocco statistic for a single fixed data case and ensures
@@ -182,4 +181,3 @@ TEST(NOCCO, sample_null)
 
 	SG_UNREF(nocco);
 }
-#endif // HAVE_EIGEN3

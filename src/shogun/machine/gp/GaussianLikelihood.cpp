@@ -31,7 +31,6 @@
  */
 #include <shogun/machine/gp/GaussianLikelihood.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/eigen3.h>
@@ -313,4 +312,3 @@ float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
 	return Var;
 }
 
-#endif /* HAVE_EIGEN3 */

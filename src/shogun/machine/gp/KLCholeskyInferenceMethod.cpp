@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
@@ -52,14 +51,14 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInferenceMethod()
+CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInference()
 {
 	init();
 }
 
 CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLLowerTriangularInferenceMethod(kern, feat, m, lab, mod)
+		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
 }
@@ -75,7 +74,7 @@ void CKLCholeskyInferenceMethod::init()
 }
 
 CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -114,7 +113,7 @@ CKLCholeskyInferenceMethod::~CKLCholeskyInferenceMethod()
 {
 }
 
-bool CKLCholeskyInferenceMethod::lbfgs_precompute()
+bool CKLCholeskyInferenceMethod::precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -274,7 +273,7 @@ void CKLCholeskyInferenceMethod::update_alpha()
 		m_s2=SGVector<float64_t>(len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 }
 
 void CKLCholeskyInferenceMethod::update_C()
@@ -331,4 +330,3 @@ void CKLCholeskyInferenceMethod::update_InvK_Sigma()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */

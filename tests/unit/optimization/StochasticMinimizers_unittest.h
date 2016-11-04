@@ -29,7 +29,7 @@
  *
  */
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+
 #ifndef STOCHASTICMINIMIZERS_UNITTEST_H
 #define STOCHASTICMINIMIZERS_UNITTEST_H
 #include <shogun/optimization/FirstOrderSAGCostFunction.h>
@@ -53,6 +53,7 @@ public:
 	virtual int32_t get_sample_size();
 	virtual void begin_sample();
 	virtual bool next_sample();
+	virtual const char* get_name() const { return "RegressionForTestCostFunction"; }
 private:
 	index_t m_idx;
 	void init();
@@ -73,7 +74,7 @@ public:
 	virtual bool next_sample();
 	virtual int32_t get_sample_size();
 	virtual SGVector<float64_t> get_average_gradient();
-
+	virtual const char* get_name() const { return "ClassificationForTestCostFunction"; }
 protected:
 	index_t m_sample_idx;
 	SGVector<int32_t> m_sample_sequences;
@@ -94,6 +95,7 @@ public:
 	virtual ~ClassificationForTestCostFunction2(){};
 	virtual void begin_sample();
 	virtual bool next_sample();
+	virtual const char* get_name() const { return "ClassificationForTestCostFunction2"; }
 };
 
 class CRegressionExample: public CSGObject
@@ -118,4 +120,3 @@ private:
 	void init();
 };
 #endif
-#endif /*  HAVE_EIGEN3 */

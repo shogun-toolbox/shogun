@@ -1,0 +1,57 @@
+#ifndef NLOPTCOMMON_H
+#define NLOPTCOMMON_H
+
+#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
+#include <shogun/io/SGIO.h>
+
+#ifdef USE_GPL_SHOGUN
+#ifdef HAVE_NLOPT
+#include <nlopt.h>
+#endif 
+
+namespace shogun
+{
+
+#ifdef HAVE_NLOPT
+enum ENLOPTALGORITHM
+{
+	GN_DIRECT=1,
+	GN_DIRECT_L,
+	GN_DIRECT_L_RAND,
+	GN_DIRECT_NOSCAL,
+	GN_DIRECT_L_NOSCAL,
+	GN_DIRECT_L_RAND_NOSCAL,
+	GN_ORIG_DIRECT,
+	GN_ORIG_DIRECT_L,
+	GN_CRS2_LM,
+	GN_ISRES,
+	LD_MMA,
+	LD_LBFGS,
+	LD_LBFGS_NOCEDAL,
+	LD_VAR1,
+	LD_VAR2,
+	LD_TNEWTON,
+	LD_TNEWTON_RESTART,
+	LD_TNEWTON_PRECOND,
+	LD_TNEWTON_PRECOND_RESTART,
+	LD_SLSQP,
+	LN_PRAXIS,
+	LN_COBYLA,
+	LN_NEWUOA,
+	LN_NEWUOA_BOUND,
+	LN_NELDERMEAD, 
+	LN_SBPLX,
+	LN_BOBYQA,
+	AUGLAG,
+	AUGLAG_EQ,
+	G_MLSL,
+	G_MLSL_LDS
+};
+
+#endif //HAVE_NLOPT
+
+} // namespace shogun
+
+#endif //USE_GPL_SHOGUN
+#endif //NLOPTCOMMON_H

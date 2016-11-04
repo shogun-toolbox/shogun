@@ -38,9 +38,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/internal/opencl_util.h>
@@ -220,7 +218,6 @@ struct rowwise_sum
 	static void compute(Block<SGMatrix<T> > b, SGVector<T> result, bool no_diag);
 };
 
-#ifdef HAVE_EIGEN3
 /**
  * @brief Specialization of generic sum which works with SGMatrix and uses Eigen3
  * as backend for computing sum.
@@ -237,7 +234,7 @@ struct sum<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the sum of co-efficients of SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose sum of co-efficients has to be computed
+	 * @param mat the matrix whose sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
@@ -295,7 +292,7 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the sum of co-efficients of symmetric SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose sum of co-efficients has to be computed
+	 * @param mat the matrix whose sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
@@ -403,7 +400,7 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose colwise sum of co-efficients has to be computed
+	 * @param mat the matrix whose colwise sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @param result Pre-allocated vector for the result of the computation
 	 */
@@ -503,7 +500,7 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
 	 *
-	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param mat the matrix whose rowwise sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @param result Pre-allocated vector for the result of the computation
 	 */
@@ -552,7 +549,6 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	}
 };
 
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

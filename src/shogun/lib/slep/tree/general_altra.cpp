@@ -15,6 +15,8 @@
  */
 
 #include <shogun/lib/slep/tree/general_altra.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/mathematics/Math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -399,3 +401,5 @@ double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind,
 	free(v);
 	return lambdaMax;
 }
+
+#endif //USE_GPL_SHOGUN

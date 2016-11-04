@@ -15,6 +15,8 @@
  */
 
 #include <shogun/lib/slep/flsa/flsa.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/flsa/sfa.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -246,3 +248,4 @@ void flsa(double *x, double *z, double *infor,
 	}
 }
 
+#endif //USE_GPL_SHOGUN

@@ -5,6 +5,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
@@ -49,4 +50,5 @@ TEST(SVMOcasTest,train)
 	SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK
+#endif //USE_GPL_SHOGUN
 

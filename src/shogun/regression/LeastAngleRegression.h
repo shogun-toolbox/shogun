@@ -13,12 +13,12 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <vector>
 #include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {
+
 class CFeatures;
 
 /** @brief Class for Least Angle Regression, can be used to solve LASSO.
@@ -72,6 +72,7 @@ class CFeatures;
 class CLeastAngleRegression: public CLinearMachine
 {
 public:
+
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
@@ -79,7 +80,7 @@ public:
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
 	 * */
-	CLeastAngleRegression(bool lasso=true);
+	CLeastAngleRegression(bool lasso = true);
 
 	/** default destructor */
 	virtual ~CLeastAngleRegression();
@@ -120,14 +121,15 @@ public:
 	 *
 	 * @param num_variable number of non-zero coefficients
 	 */
+	
 	void switch_w(int32_t num_variable)
 	{
-		if (w.vlen <= 0)
-			SG_ERROR("cannot swith estimator before training")
-		if (size_t(num_variable) >= m_beta_idx.size() || num_variable < 0)
-			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable)
+		REQUIRE(w.vlen > 0,"Please train the model (i.e. run the model's train() method) before updating its weights.\n")
+		REQUIRE(size_t(num_variable) < m_beta_idx.size() && num_variable >= 0,
+			"Cannot switch to an estimator of %d non-zero coefficients.\n", num_variable)
 		if (w.vector == NULL)
 			w = SGVector<float64_t>(w.vlen);
+
 		std::copy(m_beta_path[m_beta_idx[num_variable]].begin(),
 			m_beta_path[m_beta_idx[num_variable]].end(), w.vector);
 	}
@@ -168,30 +170,73 @@ public:
 		return CT_LARS;
 	}
 
+	/** Set epsilon used for early stopping */
+	void set_epsilon(float64_t epsilon)
+	{
+		m_epsilon = epsilon;
+	}
+
+	/** Get epsilon used for early stopping */
+	float64_t get_epsilon()
+	{
+		return m_epsilon;
+	}
+
 	/** @return object name */
 	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
-	virtual bool train_machine(CFeatures* data=NULL);
+	/**
+	* An interface method used call train_machine_templated - 
+	* this is called by the superclass's train method (@see CLinearMachine::train).  
+	* Checks to see if data is a dense feature vector,
+	* and that it's elements are floating point types.  It then calls 
+	* train_machine_templated with the appropriate template parameters
+	* @param data training data
+	* @see train_machine_templated
+	*/
+	bool train_machine(CFeatures * data);
+
+	template <typename ST>
+	SGMatrix<ST> cholesky_insert(const SGMatrix<ST>& X, 
+			const SGMatrix<ST>& X_active, SGMatrix<ST>& R, int32_t i_max_corr, int32_t num_active);
+
+	template <typename ST>
+	SGMatrix<ST> cholesky_delete(SGMatrix<ST>& R, int32_t i_kick);
+
+	template <typename ST>
+	static void plane_rot(ST x0, ST x1,
+		ST &y0, ST &y1, SGMatrix<ST> &G);
+
+	#ifndef SWIG
+	template <typename ST>
+	static void find_max_abs(const std::vector<ST> &vec, const std::vector<bool> &ignore_mask,
+		int32_t &imax, ST& vmax);
+	#endif
 
 private:
+	/**
+	* A templated specialization of the train_machine method
+	* @param data training data
+	* @see train_machine
+	*/
+	template <typename ST>
+	bool train_machine_templated(CDenseFeatures<ST> * data);
+
 	void activate_variable(int32_t v)
 	{
 		m_num_active++;
 		m_active_set.push_back(v);
 		m_is_active[v] = true;
 	}
+
 	void deactivate_variable(int32_t v_idx)
 	{
 		m_num_active--;
 		m_is_active[m_active_set[v_idx]] = false;
 		m_active_set.erase(m_active_set.begin() + v_idx);
 	}
-
-	SGMatrix<float64_t> cholesky_insert(SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr);
-	SGMatrix<float64_t> cholesky_delete(SGMatrix<float64_t> R, int32_t i_kick);
-
-
+	
 	bool m_lasso; //!< enable lasso modification
 
 	int32_t m_max_nonz;  //!< max number of non-zero variables for early stopping
@@ -199,13 +244,12 @@ private:
 
 	std::vector<std::vector<float64_t> > m_beta_path;
 	std::vector<int32_t> m_beta_idx;
-
 	std::vector<int32_t> m_active_set;
 	std::vector<bool> m_is_active;
 	int32_t m_num_active;
+	float64_t m_epsilon;
 }; // class LARS
 
 } // namespace shogun
 
-#endif // HAVE_LAPACK
 #endif // LEASTANGLEREGRESSION_H__

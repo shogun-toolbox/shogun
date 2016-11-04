@@ -36,13 +36,19 @@ traindat = '%s/fm_train_real.dat'%path
 testdat = '%s/fm_test_real.dat'%path
 label_binary_traindat = '%s/label_train_twoclass.dat'%path
 
+try:
+	from modshogun import GaussianProcessClassification
+except ImportError:
+	print("GaussianProcessClassification is not available")
+	exit(0)
+
 from modshogun import *
 parameter_list=[
 	[KLCholeskyInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
 	[KLCovarianceInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
-	[KLApproxDiagonalInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
+	[KLDiagonalInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
 	[KLDualInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
-	[SingleLaplacianInferenceMethod,traindat,testdat,label_binary_traindat,0,0],
+	[SingleLaplaceInferenceMethod,traindat,testdat,label_binary_traindat,0,0],
 ]
 def variational_classifier_modular(kl_inference,train_fname=traindat,test_fname=testdat,
 	label_fname=label_binary_traindat,kernel_log_sigma=0,kernel_log_scale=0,noise_factor=1e-5,

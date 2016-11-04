@@ -4,7 +4,7 @@ ExternalProject_Get_Property(GoogleMock source_dir)
 if(SYSTEM_INCLUDES)
 	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
 endif()
-include_directories(${source_dir}/include ${INCLUDES} ${source_dir}/gtest/include ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include ${CMAKE_CURRENT_SOURCE_DIR})
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 # Generate automatic unittest from jinja2 templates
@@ -85,6 +85,20 @@ target_link_libraries(shogun-unit-test shogun gmock gtest ${SANITIZER_LIBRARY})
 IF (SANITIZER_FLAGS)
 	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()
+
+# In some cases gTest segfaults with GCC >= 6.0.0.  This is a dirty fix.
+# TODO: Update to gTest-release with proper support for GCC >= 6.0.0.
+# See:  https://github.com/google/googletest/issues/705
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	# in order to support cmake 2.8.7 and older
+	IF(NOT CMAKE_CXX_COMPILER_VERSION)
+		include(CheckCompiler)
+	ENDIF(NOT CMAKE_CXX_COMPILER_VERSION)
+	IF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
+		target_compile_options(shogun-unit-test
+			PUBLIC -fno-delete-null-pointer-checks)
+	ENDIF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 ADD_CUSTOM_TARGET(unit-tests
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test

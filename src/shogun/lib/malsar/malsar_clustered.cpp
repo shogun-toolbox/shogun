@@ -9,7 +9,8 @@
  */
 
 #include <shogun/lib/malsar/malsar_clustered.h>
-#ifdef HAVE_EIGEN3
+#ifdef USE_GPL_SHOGUN
+
 #ifndef HAVE_CXX11
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -314,4 +315,4 @@ malsar_result_t malsar_clustered(
 };
 };
 #endif
-#endif
+#endif //USE_GPL_SHOGUN

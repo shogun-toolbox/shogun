@@ -11,6 +11,8 @@
 #ifndef _JL_COVERTREE_POINT_H_
 #define _JL_COVERTREE_POINT_H_
 
+#ifdef USE_GPL_SHOGUN
+
 /* Tapkee includes */
 #include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
@@ -171,4 +173,5 @@ void print(const CoverTreePoint<RandomAccessIterator>&)
 
 }
 }
+#endif //USE_GPL_SHOGUN
 #endif /* _JL_COVERTREE_POINT_H_*/

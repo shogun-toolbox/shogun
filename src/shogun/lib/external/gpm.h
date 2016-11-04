@@ -26,6 +26,8 @@
  *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -49,3 +51,4 @@ int32_t gpm_solver(
 	float64_t c, float64_t e, int32_t *iy, float64_t *x, float64_t tol,
 	int32_t *ls = 0, int32_t *proj = 0);
 }
+#endif //USE_GPL_SHOGUN

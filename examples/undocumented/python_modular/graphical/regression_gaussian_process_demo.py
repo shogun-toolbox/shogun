@@ -7,9 +7,6 @@
 from numpy import *
 from numpy.random import randn
 from modshogun import *
-from modshogun import *
-from modshogun import *
-from modshogun import *
 import pylab as PL
 import matplotlib
 import logging as LG
@@ -17,8 +14,6 @@ import scipy as SP
 from modshogun import GradientModelSelection
 from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
 from modshogun import ParameterCombination
-
-
 
 def plot_training_data(x, y,
                        shift=None,

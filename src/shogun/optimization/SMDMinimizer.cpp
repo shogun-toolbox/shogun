@@ -1,5 +1,4 @@
- /*
- * Copyright (c) The Shogun Machine Learning Toolbox
+ /* * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2015 Wu Lin
  * All rights reserved.
  *
@@ -29,8 +28,7 @@
  *
  */
 #include <shogun/optimization/SMDMinimizer.h>
-#include <shogun/optimization/GradientDescendUpdater.h>
-#include <shogun/lib/config.h>
+#include <shogun/base/Parameter.h>
 using namespace shogun;
 
 SMDMinimizer::SMDMinimizer()
@@ -41,6 +39,7 @@ SMDMinimizer::SMDMinimizer()
 
 SMDMinimizer::~SMDMinimizer()
 {
+	SG_UNREF(m_mapping_fun);
 }
 
 SMDMinimizer::SMDMinimizer(FirstOrderStochasticCostFunction *fun)
@@ -80,6 +79,19 @@ float64_t SMDMinimizer::minimize()
 void SMDMinimizer::init()
 {
 	m_mapping_fun=NULL;
+	SG_ADD((CSGObject **)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
+		"m_mapping_fun in SMDMinimizer", MS_NOT_AVAILABLE);
+}
+
+void SMDMinimizer::set_mapping_function(MappingFunction* mapping_fun)
+{
+	REQUIRE(mapping_fun, "mapping/projection function must be set\n");
+	if(m_mapping_fun!=mapping_fun)
+	{
+		SG_REF(mapping_fun);
+		SG_UNREF(m_mapping_fun);
+		m_mapping_fun=mapping_fun;
+	}
 }
 
 void SMDMinimizer::init_minimization()

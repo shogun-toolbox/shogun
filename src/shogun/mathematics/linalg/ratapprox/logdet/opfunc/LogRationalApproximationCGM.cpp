@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -102,4 +101,3 @@ CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 }
 
 }
-#endif // HAVE_EIGEN3

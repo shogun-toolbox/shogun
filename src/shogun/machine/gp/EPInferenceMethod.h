@@ -36,9 +36,8 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/machine/gp/Inference.h>
 
 namespace shogun
 {
@@ -50,7 +49,7 @@ namespace shogun
  * Approximate Bayesian Inference. PhD thesis, Massachusetts Institute of
  * Technology
  */
-class CEPInferenceMethod : public CInferenceMethod
+class CEPInferenceMethod : public CInference
 {
 public:
 	/** default constructor */
@@ -86,7 +85,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CEPInferenceMethod object
 	 */
-	static CEPInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CEPInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *
@@ -246,6 +245,20 @@ public:
 	/** update all matrices Expect gradients*/
 	virtual void update();
 
+	/** Set a minimizer
+	 *
+	 * @param minimizer minimizer used in inference method
+	 */
+	virtual void register_minimizer(Minimizer* minimizer);
+
+	/** Specify behavious when EP does not converge: failure or warning
+	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning
+	 */
+	void set_fail_on_non_convergence(bool fail_on_non_convergence)
+	{
+		m_fail_on_non_convergence = fail_on_non_convergence;
+	}
+
 protected:
 	/** update gradients */
 	virtual void compute_gradient();
@@ -271,9 +284,9 @@ protected:
 	virtual void update_deriv();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
-	 * CInferenceMethod class
+	 * CInference class
 	 *
-	 * @param param parameter of CInferenceMethod class
+	 * @param param parameter of CInference class
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
@@ -345,8 +358,10 @@ private:
 	/** maximum number of sweeps over all variables */
 	uint32_t m_max_sweep;
 
+	/** flag whether to show error or warning when not-converging */
+	bool m_fail_on_non_convergence;
+
 	SGMatrix<float64_t> m_F;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _EPINFERENCEMETHOD_H_ */

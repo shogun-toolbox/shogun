@@ -1,7 +1,5 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,legend, connect
 from modshogun import *
-from modshogun import *
-from modshogun import *
 import util
 
 util.set_title('SVR on Sinus')

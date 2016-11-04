@@ -13,13 +13,9 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <gtest/gtest.h>
-
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
-
-#endif // HAVE_EIGEN3
 
 using namespace shogun;
 
@@ -58,7 +54,6 @@ TEST(SubsequenceStringKernel, compute)
 	SG_UNREF(kernel);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(SubsequenceStringKernel, psd_random_feat)
 {
 	const index_t num_strings=10;
@@ -89,4 +84,4 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 
 	SG_UNREF(kernel);
 }
-#endif // HAVE_EIGEN3
+

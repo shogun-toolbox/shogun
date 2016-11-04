@@ -99,18 +99,18 @@ bool CAutoencoder::train(CFeatures* data)
 
 	SGMatrix<float64_t> inputs = features_to_matrix(data);
 
-	if (noise_type==AENT_DROPOUT)
-		dropout_input = noise_parameter;
-	if (noise_type==AENT_GAUSSIAN)
+	if (m_noise_type==AENT_DROPOUT)
+		m_dropout_input = m_noise_parameter;
+	if (m_noise_type==AENT_GAUSSIAN)
 	{
 		CNeuralInputLayer* input_layer = (CNeuralInputLayer*)get_layer(0);
-		input_layer->gaussian_noise = noise_parameter;
+		input_layer->gaussian_noise = m_noise_parameter;
 	}
 
 	for (int32_t i=0; i<m_num_layers-1; i++)
 	{
 		get_layer(i)->dropout_prop =
-			get_layer(i)->is_input() ? dropout_input : dropout_hidden;
+			get_layer(i)->is_input() ? m_dropout_input : m_dropout_hidden;
 	}
 	get_layer(m_num_layers-1)->dropout_prop = 0.0;
 
@@ -119,16 +119,16 @@ bool CAutoencoder::train(CFeatures* data)
 		get_layer(i)->is_training = true;
 
 	bool result = false;
-	if (optimization_method==NNOM_GRADIENT_DESCENT)
+	if (m_optimization_method==NNOM_GRADIENT_DESCENT)
 		result = train_gradient_descent(inputs, inputs);
-	else if (optimization_method==NNOM_LBFGS)
+	else if (m_optimization_method==NNOM_LBFGS)
 		result = train_lbfgs(inputs, inputs);
 
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = false;
 	m_is_training = false;
 
-	if (noise_type==AENT_GAUSSIAN)
+	if (m_noise_type==AENT_GAUSSIAN)
 	{
 		CNeuralInputLayer* input_layer = (CNeuralInputLayer*)get_layer(0);
 		input_layer->gaussian_noise = 0;
@@ -171,13 +171,13 @@ SGVector<T> CAutoencoder::get_section(SGVector<T> v, int32_t i)
 
 void CAutoencoder::init()
 {
-	noise_type = AENT_NONE;
-	noise_parameter = 0.0;
+	m_noise_type = AENT_NONE;
+	m_noise_parameter = 0.0;
 	m_contraction_coefficient = 0.0;
 
-	SG_ADD((machine_int_t*)&noise_type, "noise_type",
+	SG_ADD((machine_int_t*)&m_noise_type, "noise_type",
 		"Noise Type", MS_NOT_AVAILABLE);
-	SG_ADD(&noise_parameter, "noise_parameter",
+	SG_ADD(&m_noise_parameter, "noise_parameter",
 		"Noise Parameter", MS_NOT_AVAILABLE);
 	SG_ADD(&m_contraction_coefficient, "contraction_coefficient",
 	       "Contraction Coefficient", MS_NOT_AVAILABLE);

@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -38,12 +37,38 @@ class CQDA : public CNativeMulticlassMachine
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
+		/** default constructor */
+		CQDA();
+
 		/** constructor
 		 *
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(float64_t tolerance = 1e-4, bool store_covs = false);
+		CQDA(float64_t tolerance, bool store_covs);
+
+		/** constructor
+		 *
+		 * @param traindat training features
+		 * @param trainlab labels for training features
+		 */
+		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab);
+
+		/** constructor
+		 *
+		 * @param traindat training features
+		 * @param trainlab labels for training features
+		 * @param tolerance tolerance used in training
+		 */
+		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance);
+
+		/** constructor
+		 *
+		 * @param traindat training features
+		 * @param trainlab labels for training features
+		 * @param store_covs whether to store the within class covariances
+		 */
+		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_covs);
 
 		/** constructor
 		 *
@@ -52,7 +77,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance = 1e-4, bool store_covs = false);
+		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs);
 
 		virtual ~CQDA();
 
@@ -139,6 +164,8 @@ class CQDA : public CNativeMulticlassMachine
 		 */
 		inline SGMatrix< float64_t > get_cov(int32_t c) const
 		{
+			REQUIRE(m_store_covs, "Covariance matrices were not stored. "
+					"Please activate to access them subsequently.\n");
 			return SGMatrix< float64_t >(m_covs.get_matrix(c), m_dim, m_dim, false);
 		}
 
@@ -189,5 +216,4 @@ class CQDA : public CNativeMulticlassMachine
 }; /* class QDA */
 }  /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */
 #endif /* _QDA_H__ */

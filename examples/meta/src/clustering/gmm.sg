@@ -1,0 +1,33 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+
+Math:init_random(1)
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+#![create_features]
+
+#![create_gmm_instance]
+int num_components = 3
+GMM gmm(num_components)
+#![create_gmm_instance]
+
+#![train_sample]
+gmm.set_features(features_train)
+gmm.train_em()
+RealVector output = gmm.sample()
+#![train_sample]
+
+#![training_smem]
+gmm.train_smem()
+#![training_smem]
+
+#![extract_params]
+int component_num = 1
+RealVector nth_mean = gmm.get_nth_mean(component_num)
+RealMatrix nth_cov = gmm.get_nth_cov(component_num)
+RealVector coef = gmm.get_coef()
+#![extract_params]
+
+#![cluster_output]
+RealVector log_likelihoods = gmm.cluster(nth_mean)
+#![cluster_output]

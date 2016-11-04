@@ -15,6 +15,7 @@
 #define libbmrm_h
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/structure/BmrmStatistics.h>
@@ -162,5 +163,5 @@ BmrmStatistics svm_bmrm_solver(
 		);
 
 }
-
+#endif //USE_GPL_SHOGUN
 #endif /* libbmrm_h */

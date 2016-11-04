@@ -12,6 +12,9 @@
  */
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/base/init.h>
+
 
 #include <shogun/io/streaming/StreamingVwFile.h>
 #include <shogun/features/streaming/StreamingVwFeatures.h>
@@ -36,7 +39,6 @@ int main()
 	sgd->set_lambda(0.1);
 	sgd->train();
 
-	train_file->close();
 
 	// Now we want to test on other data
 	const char* test_file_name = "../data/fm_test_sparsereal.dat";
@@ -44,7 +46,7 @@ int main()
 	test_file->set_parser_type(T_SVMLIGHT);
 	SG_REF(test_file);
 
-	// Similar, but 'false' since the file contains unlabelled examples
+	//Similar, but 'false' since the file contains unlabelled examples
 	CStreamingVwFeatures* test_features = new CStreamingVwFeatures(test_file, false, 1024);
 	SG_REF(test_features);
 
@@ -55,12 +57,10 @@ int main()
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));
 
 	SG_UNREF(test_features);
-	SG_UNREF(test_file);
-	SG_UNREF(train_features);
-	SG_UNREF(train_file);
 	SG_UNREF(sgd);
+	SG_UNREF(train_features);
+	SG_UNREF(test_labels);
 
 	exit_shogun();
-
 	return 0;
 }

@@ -9,7 +9,8 @@
  */
 
 #include <shogun/lib/slep/slep_mc_plain_lr.h>
-#ifdef HAVE_EIGEN3
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -230,4 +231,5 @@ slep_result_t slep_mc_plain_lr(
 	return slep_result_t(r_w, r_c);
 };
 };
-#endif
+
+#endif //USE_GPL_SHOGUN

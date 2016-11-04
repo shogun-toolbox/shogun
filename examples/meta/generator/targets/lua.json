@@ -1,0 +1,42 @@
+{
+    "Program": "require 'modshogun'\n\n$program",
+    "Statement": "$statement\n",
+    "Comment": "--$comment\n",
+    "Init": {
+        "Construct": "$name = modshogun.$typeName($arguments)",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$identifier = $expr",
+    "Type": {
+        "Default": "$typeName"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "CharLiteral": "'$literal'",
+        "BoolLiteral": {
+            "True": "True",
+            "False": "False"
+        },
+        "IntLiteral": "$number",
+        "RealLiteral": "$number",
+        "FloatLiteral": "$number",
+        "MethodCall": "$object:$method($arguments)",
+        "StaticCall": "$typeName:$method($arguments)",
+        "Identifier": "$identifier",
+        "Enum":"modshogun.$value"
+    },
+    "Element": {
+        "Access": {
+            "Vector": "$identifier[$indices]",
+            "Matrix": "$identifier[$indices]"
+        },
+        "Assign": {
+            "Vector": "$identifier[$indices] = $expr",
+            "Matrix": "$identifier[$indices] = $expr"
+        },
+        "ZeroIndexed": false
+    },
+    "Print": "print($expr)",
+    "OutputDirectoryName": "lua",
+    "FileExtension": ".lua"
+}

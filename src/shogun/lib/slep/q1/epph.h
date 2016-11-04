@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef EPPHQ1_SLEP
 #define EPPHQ1_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 /* -------------------------- Function eplb -----------------------------
 
@@ -150,5 +152,6 @@ void  eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rh
    -------------------------- Function epp -----------------------------
    */
 void epp(double *x, double * c, int * iter_step, double * v, int n, double rho, double p, double c0);
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef EPPHQ1_SLEP  ----- */
 

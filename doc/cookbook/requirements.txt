@@ -1,0 +1,4 @@
+pandoc==1.0.0b2
+sphinx
+sphinxcontrib-bibtex
+sphinx_bootstrap_theme

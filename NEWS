@@ -1,16 +1,39 @@
-2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org >
+2016-11-04 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
+	* SHOGUN Release version 5.0.0 (libshogun 17.2, data 0.11, parameter 1)
+	
+	* NOTE: This version contains a new CMake option USE_GPL_SHOGUN, which
+	        when set to OFF will exclude all GPL codes from Shogun [Heiko Strathmann].
+	* GSoC 2016 project of Saurabh Mahindre: Major efficiency improvements for KMeans, LARS, Random Forests, Bagging, KNN.
+	* Features:
+	    - Add new Shogun cookbook for documentation and testing across all 
+	      target languages [Heiko Strathmann, Sergey Lisitsyn, Esben Sorig, Viktor Gal].
+	    - Added option to learn CombinedKernel weights with GP approximate inference [Wu Lin].
+	    - LARS now supports 32, 64, and 128 bit floating point numbers [Chris Goldsworthy].
+	* Bugfixes:
+	    - Fix gTest segfaults with GCC >= 6.0.0 [Björn Esser].
+	    - Make Java and CSharp install-dir configurable [Björn Esser].
+	    - Autogenerate modshogun.rb with correct module-suffix [Björn Esser].
+	    - Fix KMeans++ initialization [Saurabh Mahindre].
+	* Cleanup, efficiency updates, and API Changes:
+	    - Make Eigen3 a hard requirement. Bundle if not found on system. [Heiko Strathmann]
+	    - Drop ALGLIB (GPL) dependency in CStatistics and ship CDFLIB (public domain) instead [Heiko Strathmann]
+	    - Drop p-value estimation in model-selection [Heiko Strathmann]
+	    - Static interfaces have been removed [Viktor Gal]
+	    - New base class ShiftInvariantKernel of which GaussianKernel inherits [Rahul De].
+
+2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
 	* SHOGUN Release version 4.1.0 (libshogun 17.1, data 0.10, parameter 1)
 	* This is a new feature and cleanup release:
 	* Features:
 		- Added GEMPLP for approximate inference to the structured output framework [Jiaolong Xu].
-		- Effeciency improvements of the FITC framework for GP inference [Wu Lin].
+		- Effeciency improvements of the FITC framework for GP inference (FITC_Laplce, FITC, VarDTC) [Wu Lin].
 		- Added optimisation of inducing variables in sparse GP inference [Wu Lin].
-		- Added optimisation methods for GP inference (Newton, Cholesky, ...) [Wu Lin].
+		- Added optimisation methods for GP inference (Newton, Cholesky, LBFGS, ...) [Wu Lin].
 		- Added Automatic Relevance Determination (ARD) kernel functionality for variational GP inference [Wu Lin].
-		- Added BFGS based optimisation for GP inference [Wu Lin].
 		- Updated Notebook for variational GP inference [Wu Lin].
-		- New framework for stochastic optimisation (l1/2 loss, mirror descent, proximal gradients, adagrad) [Wu Lin].
+		- New framework for stochastic optimisation (l1/2 loss, mirror descent, proximal gradients, adagrad, SVRG, RMSProp, adadelta, ...) [Wu Lin].
 		- New Shogun meta-language for automatically generating code listings in all target languages [Esben Sörig].
 		- Added periodic kernel [Esben Sörig].
 		- Add gradient output functionality in Neural Nets [Sanuj Sharma].

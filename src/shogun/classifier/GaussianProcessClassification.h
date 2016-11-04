@@ -38,10 +38,8 @@
 #ifndef _GAUSSIANPROCESSCLASSIFICATION_H_
 #define _GAUSSIANPROCESSCLASSIFICATION_H_
 
+
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/machine/Machine.h>
 
@@ -64,7 +62,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessClassification(CInferenceMethod* method);
+	CGaussianProcessClassification(CInference* method);
 
 	virtual ~CGaussianProcessClassification();
 
@@ -136,5 +134,4 @@ protected:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */

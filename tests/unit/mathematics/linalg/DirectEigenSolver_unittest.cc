@@ -9,7 +9,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
 #include <shogun/lib/SGMatrix.h>
@@ -40,4 +39,3 @@ TEST(DirectEigenSolver, compute)
 
 	SG_UNREF(A);
 }
-#endif //HAVE_EIGEN3

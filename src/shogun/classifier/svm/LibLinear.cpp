@@ -56,6 +56,8 @@ void CLibLinear::init()
 	C2=1;
 	set_max_iterations();
 	epsilon=1e-5;
+	/** Prevent default bias computation*/
+	set_compute_bias(false);
 
 	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
 	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);

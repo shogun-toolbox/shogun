@@ -7,10 +7,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #ifndef  MULTITASKCLUSTEREDLOGISTICREGRESSION_H_
 #define  MULTITASKCLUSTEREDLOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
@@ -114,4 +116,6 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		int32_t m_num_clusters;
 };
 }
+#endif //USE_GPL_SHOGUN
 #endif
+

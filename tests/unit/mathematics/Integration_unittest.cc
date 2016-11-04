@@ -31,8 +31,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Function.h>
@@ -773,4 +771,3 @@ TEST(Integration, generate_gauher20)
 	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[19],  0.000000000000126,  abs_tolerance);
 }
-#endif /* HAVE_EIGEN3 */

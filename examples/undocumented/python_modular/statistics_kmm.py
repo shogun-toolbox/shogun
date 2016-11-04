@@ -8,7 +8,11 @@ def statistics_kmm (n,d):
 	from modshogun import RealFeatures
 	from modshogun import DataGenerator
 	from modshogun import GaussianKernel, MSG_DEBUG
-	from modshogun import KernelMeanMatching
+	try:
+		from modshogun import KernelMeanMatching
+	except ImportError:
+		print("KernelMeanMatching not available")
+		exit(0)
 	from modshogun import Math
 
 	# init seed for reproducability

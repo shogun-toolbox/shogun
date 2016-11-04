@@ -9,7 +9,6 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
@@ -171,4 +170,3 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	SG_UNREF(A);
 	SG_UNREF(B);
 }
-#endif //HAVE_EIGEN3

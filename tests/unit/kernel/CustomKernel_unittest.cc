@@ -17,9 +17,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
-#ifdef HAVE_EIGEN3
 using namespace Eigen;
-#endif
 
 TEST(CustomKernelTest,add_row_subset)
 {
@@ -191,7 +189,6 @@ TEST(CustomKernelTest,index_features_subset)
 	SG_UNREF(feat_c_idx);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(CustomKernelTest, sum_symmetric_block)
 {
 	const index_t m=17;
@@ -639,4 +636,3 @@ TEST(CustomKernelTest, row_col_wise_sum_block_no_diag)
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
 }
-#endif // HAVE_EIGEN3

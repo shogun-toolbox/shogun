@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
 #include <shogun/mathematics/Math.h>
@@ -77,5 +76,4 @@ class CUWedge : public CApproxJointDiagonalizer
 		virtual const char* get_name() const { return "UWedge"; }
 };
 }
-#endif //HAVE_EIGEN3
 #endif //UWEDGE_H_

@@ -43,8 +43,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLInference.h>
 
 namespace shogun
 {
@@ -70,7 +69,7 @@ namespace shogun
  * https://gist.github.com/yorkerlin/b64a015491833562d11a
  *
  */
-class CKLCovarianceInferenceMethod: public CKLInferenceMethod
+class CKLCovarianceInferenceMethod: public CKLInference
 {
 public:
 	/** default constructor */
@@ -106,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCovarianceInferenceMethod object
 	 */
-	static CKLCovarianceInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+	static CKLCovarianceInferenceMethod* obtain_from_generic(CInference* inference);
 
 	/** get alpha vector
 	 *
@@ -162,7 +161,7 @@ protected:
 	 */
 	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
 
-	/** pre-compute the information for lbfgs optimization.
+	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
 	 * get_negative_log_marginal_likelihood_wrt_parameters()
 	 * and/or
@@ -170,7 +169,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool lbfgs_precompute();
+	virtual bool precompute();
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -180,7 +179,7 @@ protected:
 	 * get_derivative_wrt_kernel(const TParameter* param)
 	 * will call this function
 	 *
-	 * @param the gradient wrt hyperparameter related to cov
+	 * @param dK the gradient wrt hyperparameter related to cov
 	 */
 
 	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
@@ -212,5 +211,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _KLCOVARIANCEINFERENCEMETHOD_H_ */

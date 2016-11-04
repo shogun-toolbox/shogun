@@ -40,7 +40,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/NumericalVGLikelihood.h>
 
 namespace shogun
@@ -59,6 +58,11 @@ class CStudentsTVGLikelihood : public CNumericalVGLikelihood
 public:
 	CStudentsTVGLikelihood();
 
+        /** constructor
+         *
+         * @param sigma noise variance
+         * @param df degrees of freedom
+         */
 	CStudentsTVGLikelihood(float64_t sigma, float64_t df);
 
 	virtual ~CStudentsTVGLikelihood();
@@ -92,5 +96,4 @@ private:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _STUDENTSTVGLIKELIHOOD_H_ */

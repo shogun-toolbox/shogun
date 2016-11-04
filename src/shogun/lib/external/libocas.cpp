@@ -11,6 +11,9 @@
  *                    Soeren Sonnenburg, soeren.sonnenburg@first.fraunhofer.de
  *-------------------------------------------------------------------- */
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1969,4 +1972,4 @@ cleanup:
 }
 }
 
-
+#endif //USE_GPL_SHOGUN

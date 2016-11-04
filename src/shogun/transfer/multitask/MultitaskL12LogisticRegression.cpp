@@ -7,7 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>
@@ -87,17 +89,11 @@ bool CMultitaskL12LogisticRegression::train_locked_implementation(SGVector<index
 	options.max_iter = m_max_iter;
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = tasks;
-#ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_joint_feature_learning(
 		features, y.vector, self->m_rho1, self->m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
-#else
-	SG_WARNING("Please install Eigen3 to use MultitaskL12LogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
-	m_tasks_c = SGVector<float64_t>(options.n_tasks);
-#endif
 
 	return true;
 }
@@ -122,17 +118,11 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 
-#ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_joint_feature_learning(
 		features, y.vector, self->m_rho1, self->m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
-#else
-	SG_WARNING("Please install Eigen3 to use MultitaskL12LogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
-	m_tasks_c = SGVector<float64_t>(options.n_tasks);
-#endif
 
 	SG_FREE(options.tasks_indices);
 
@@ -140,3 +130,5 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 }
 
 }
+
+#endif //USE_GPL_SHOGUN

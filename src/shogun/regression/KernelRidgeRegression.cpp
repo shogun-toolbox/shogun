@@ -11,13 +11,13 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/regression/KernelRidgeRegression.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CKernelRidgeRegression::CKernelRidgeRegression()
 : CKernelMachine()
@@ -25,7 +25,7 @@ CKernelRidgeRegression::CKernelRidgeRegression()
 	init();
 }
 
-CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m)
+CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab)
 : CKernelMachine()
 {
 	init();
@@ -33,7 +33,6 @@ CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabel
 	m_tau=tau;
 	set_labels(lab);
 	set_kernel(k);
-	m_train_func=m;
 }
 
 void CKernelRidgeRegression::init()
@@ -43,82 +42,27 @@ void CKernelRidgeRegression::init()
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 
-bool CKernelRidgeRegression::train_machine_pinv()
+bool CKernelRidgeRegression::solve_krr_system()
 {
-	// Get kernel matrix
-	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
-	int32_t n = kernel_matrix.num_cols;
-	int32_t m = kernel_matrix.num_rows;
-	ASSERT(kernel_matrix.matrix && m>0 && n>0)
+	SGMatrix<float64_t> kernel_matrix(kernel->get_kernel_matrix());
+	int32_t n = kernel_matrix.num_rows;
+	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
 
-	for(int32_t i=0; i < n; i++)
-		kernel_matrix.matrix[i+i*n]+=m_tau;
+	for(index_t i=0; i<n; i++)
+		kernel_matrix(i,i) += m_tau;
 
-	/* re-set alphas of kernel machine */
-	m_alpha=((CRegressionLabels*) m_labels)->get_labels_copy();
+	Map<MatrixXd> eigen_kernel_matrix(kernel_matrix.matrix, n, n);
+	Map<VectorXd> eigen_alphas(m_alpha.vector, n);
+	Map<VectorXd> eigen_y(y.vector, n);
 
-	/* tell kernel machine that all alphas are needed as'support vectors' */
-	m_svs=SGVector<index_t>(m_alpha.vlen);
-	m_svs.range_fill();
-
-	if (get_alphas().vlen!=n)
+	LLT<MatrixXd> llt;
+	llt.compute(eigen_kernel_matrix);
+	if (llt.info() != Eigen::Success)
 	{
-		SG_ERROR("Number of labels does not match number of kernel"
-				" columns (num_labels=%d cols=%d\n", m_alpha.vlen, n);
+		SG_WARNING("Features covariance matrix was not positive definite\n");
+		return false;
 	}
-
-	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n,
-			m_alpha.vector, n);
-
-	return true;
-}
-
-bool CKernelRidgeRegression::train_machine_gs()
-{
-	int32_t n = kernel->get_num_vec_rhs();
-	int32_t m = kernel->get_num_vec_lhs();
-	ASSERT(m>0 && n>0)
-
-	// re-set alphas of kernel machine
-	SGVector<float64_t> b;
-	float64_t alpha_old;
-
-	b=((CRegressionLabels*) m_labels)->get_labels_copy();
-	m_alpha=((CRegressionLabels*) m_labels)->get_labels_copy();
-	m_alpha.zero();
-
-	// tell kernel machine that all alphas are needed as 'support vectors'
-	m_svs=SGVector<index_t>(m_alpha.vlen);
-	m_svs.range_fill();
-
-	if (get_alphas().vlen!=n)
-	{
-		SG_ERROR("Number of labels does not match number of kernel"
-				" columns (num_labels=%d cols=%d\n", m_alpha.vlen, n);
-	}
-
-	// Gauss-Seidel iterative method
-	float64_t sigma, err, d;
-	bool flag=true;
-	while(flag)
-	{
-		err=0.0;
-		for(int32_t i=0; i<n; i++)
-		{
-			sigma=b[i];
-			for(int32_t j=0; j<n; j++)
-				if (i!=j)
-					sigma-=kernel->kernel(j, i)*m_alpha[j];
-			alpha_old=m_alpha[i];
-			m_alpha[i]=sigma/(kernel->kernel(i, i)+m_tau);
-			d=fabs(alpha_old-m_alpha[i]);
-			if(d>err)
-				err=d;
-		}
-		if (err<=m_epsilon)
-			flag=false;
-	}
-
+	eigen_alphas = llt.solve(eigen_y);
 	return true;
 }
 
@@ -138,18 +82,22 @@ bool CKernelRidgeRegression::train_machine(CFeatures *data)
 	}
 	ASSERT(kernel && kernel->has_features())
 
-	switch (m_train_func)
+	if (m_labels->get_num_labels() != kernel->get_num_vec_rhs())
 	{
-		case PINV:
-			return train_machine_pinv();
-			break;
-		case GS:
-			return train_machine_gs();
-			break;
-		default:
-			return train_machine_pinv();
-			break;
+		SG_ERROR("Number of labels does not match number of kernel"
+			" columns (num_labels=%d cols=%d\n", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
 	}
+
+	// allocate alpha vector
+	set_alphas(SGVector<float64_t>(m_labels->get_num_labels()));
+
+	if(!solve_krr_system())
+		return false;
+
+	/* tell kernel machine that all alphas are needed as'support vectors' */
+	m_svs = SGVector<index_t>(m_alpha.vlen);
+	m_svs.range_fill();
+	return true;
 }
 
 bool CKernelRidgeRegression::load(FILE* srcfile)
@@ -165,4 +113,3 @@ bool CKernelRidgeRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
-#endif

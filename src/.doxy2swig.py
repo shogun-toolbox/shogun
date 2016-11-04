@@ -29,6 +29,7 @@ output will be written (the file will be clobbered).
 ######################################################################
 
 from xml.dom import minidom
+import sys
 import re
 import textwrap
 import sys
@@ -378,18 +379,21 @@ class Doxy2SWIG:
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir,  fname)
             if not self.quiet:
-                print ("parsing file: %s", fname)
+                print("parsing file: %s", fname)
             p = Doxy2SWIG(fname, self.include_function_definition, self.quiet)
             p.generate()
             self.pieces.extend(self.clean_pieces(p.pieces))
 
     def write(self, fname):
         o = my_open_write(fname)
-        if self.multi:
-            o.write("".join(self.pieces))
-        else:
-            o.write("".join(self.clean_pieces(self.pieces)))
-        o.close()
+        try:
+            data = self.pieces if self.multi else self.clean_pieces(self.pieces)
+            if sys.version_info >= (3, 0):
+                o.write("".join(data))
+            else:
+                o.write(u"".join(data).encode('utf-8'))
+        finally:
+            o.close()
 
     def clean_pieces(self, pieces):
         """Cleans the list of strings given as `pieces`.  It replaces

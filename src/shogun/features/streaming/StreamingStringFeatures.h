@@ -257,9 +257,6 @@ protected:
 	/// If remapping is enabled, this is the target alphabet
 	CAlphabet* alpha_bin;
 
-	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
-
 	/// The current example's string as an SGString<T>
 	SGString<T> current_sgstring;
 

@@ -41,9 +41,9 @@
 
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
+
+#include <type_traits>
 
 namespace shogun
 {
@@ -89,7 +89,6 @@ CGPUVector<T>::CGPUVector(const SGVector<T>& cpu_vec) : vector(new VCLMemoryArra
 		cpu_vec.vector);
 }
 
-#ifdef HAVE_EIGEN3
 template <class T>
 CGPUVector<T>::CGPUVector(const EigenVectorXt& cpu_vec)
 : vector(new VCLMemoryArray())
@@ -139,7 +138,6 @@ CGPUVector<T>::operator EigenRowVectorXt() const
 
 	return cpu_vec;
 }
-#endif
 
 template <class T>
 CGPUVector<T>::operator SGVector<T>() const
@@ -155,7 +153,7 @@ CGPUVector<T>::operator SGVector<T>() const
 template <class T>
 typename CGPUVector<T>::VCLVectorBase CGPUVector<T>::vcl_vector()
 {
-	return VCLVectorBase(*vector,vlen, offset, 1);
+	return VCLVectorBase(*vector, vlen, offset, 1);
 }
 
 template <class T>
@@ -196,14 +194,17 @@ void CGPUVector<T>::init()
 	offset = 0;
 }
 
+template<typename T> struct dummy {};
+template<typename T> class CGPUVector<dummy<T> > {};
+
 template class CGPUVector<char>;
 template class CGPUVector<uint8_t>;
 template class CGPUVector<int16_t>;
 template class CGPUVector<uint16_t>;
 template class CGPUVector<int32_t>;
 template class CGPUVector<uint32_t>;
-template class CGPUVector<int64_t>;
-template class CGPUVector<uint64_t>;
+template class CGPUVector<std::conditional<viennacl::is_primitive_type<int64_t>::value, int64_t, dummy<int64_t> >::type>;
+template class CGPUVector<std::conditional<viennacl::is_primitive_type<uint64_t>::value, uint64_t, dummy<uint64_t> >::type>;
 template class CGPUVector<float32_t>;
 template class CGPUVector<float64_t>;
 }

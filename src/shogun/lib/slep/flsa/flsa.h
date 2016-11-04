@@ -14,10 +14,12 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
+
 #ifndef  FLSA_SLEP
 #define  FLSA_SLEP
 
 #include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 
 /*
 
@@ -116,4 +118,6 @@ void flsa(double *x, double *z, double *infor,
 		double * v, double *z0, 
 		double lambda1, double lambda2, int n, 
 		int maxStep, double tol, int tau, int flag);
+#endif //USE_GPL_SHOGUN
 #endif   /* ----- #ifndef FLSA_SLEP  ----- */
+

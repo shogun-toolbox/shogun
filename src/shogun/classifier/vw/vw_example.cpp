@@ -29,6 +29,7 @@ VwExample::~VwExample()
 {
 	if (ld)
 		delete ld;
+	reset_members();
 }
 
 void VwExample::reset_members()

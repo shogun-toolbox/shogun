@@ -161,7 +161,6 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 }
 
 #ifdef HAVE_LINALG_LIB
-#ifdef HAVE_EIGEN3
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
@@ -366,7 +365,6 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 
 	return sum;
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LINALG_LIB
 
 void CCustomKernel::cleanup_custom()

@@ -31,7 +31,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <gtest/gtest.h>
@@ -284,5 +283,3 @@ TEST(lbfgs, lbfgs_with_adjust_step_test2)
 	EXPECT_PRED_FORMAT2(::testing::DoubleLE, strict_scale, x[3]);
 	EXPECT_PRED_FORMAT2(::testing::DoubleLE, strict_scale, x[4]);
 }
-
-#endif /* HAVE_EIGEN3 */

@@ -1,9 +1,0 @@
-% Poly
-print Poly
-set_kernel POLY REAL 10 4 0 1
-
-set_features TRAIN ../data/fm_train_real.dat
-km_train.txt = get_kernel_matrix TRAIN
-
-set_features TEST ../data/fm_test_real.dat
-km_test.txt = get_kernel_matrix TEST

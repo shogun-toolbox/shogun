@@ -7,8 +7,10 @@
  * Written (W) 2012 Jacob Walker
  */
 
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/config.h>
-#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
+#if defined(HAVE_NLOPT)
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -303,9 +305,16 @@ int main(int argc, char **argv)
 	return 0;
 
 }
-#else // HAVE_EIGEN3 && HAVE_NLOPT
+#else // HAVE_NLOPT
 int main(int argc, char **argv)
 {
 	return 0;
 }
-#endif // HAVE_EIGEN3 && HAVE_NLOPT
+#endif // HAVE_NLOPT
+
+#else //USE_GPL_SHOGUN
+int main(int argc, char **argv)
+{
+	return 0;
+}
+#endif //USE_GPL_SHOGUN

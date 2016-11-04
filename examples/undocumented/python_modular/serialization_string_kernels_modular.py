@@ -10,7 +10,11 @@ from modshogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatu
 from modshogun import MSG_DEBUG
 from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
 from modshogun import WeightedDegreeStringKernel, GaussianKernel
-from modshogun import SVMLight
+try:
+	from modshogun import SVMLight
+except ImportError:
+	print("SVMLight is not available")
+	exit(0)
 from numpy import concatenate, ones
 from numpy.random import randn, seed
 import numpy

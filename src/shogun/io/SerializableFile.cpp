@@ -15,20 +15,20 @@
 using namespace shogun;
 
 CSerializableFile::CSerializableFile()
-	: CSGObject(), m_filename(NULL)
+	: CSGObject(), m_fstream(NULL), m_filename(NULL)
 {
 	init(NULL, 0, "(file)");
 }
 
 CSerializableFile::CSerializableFile(FILE* fstream, char rw)
-	:CSGObject(), m_filename(NULL)
+	:CSGObject(), m_fstream(NULL), m_filename(NULL)
 {
 	REQUIRE(fstream != NULL, "Provided fstream should be != NULL\n");
 	init(fstream, rw, "(file)");
 }
 
 CSerializableFile::CSerializableFile(const char* fname, char rw)
-	:CSGObject(), m_filename(NULL)
+	:CSGObject(), m_fstream(NULL), m_filename(NULL)
 {
 	const char mode[3] = {rw, 'b', '\0'};
 

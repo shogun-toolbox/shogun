@@ -40,8 +40,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 #include <shogun/mathematics/Math.h>
@@ -287,4 +285,3 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	SG_UNREF(lik);
 }
 
-#endif /* HAVE_EIGEN3 */

@@ -33,7 +33,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LikelihoodModel.h>
 
@@ -191,5 +190,4 @@ public:
 
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* _PROBITLIKELIHOOD_H_ */

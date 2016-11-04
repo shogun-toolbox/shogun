@@ -6,7 +6,6 @@
  *
  * Copyright (C) 2012 Soeren Sonnenburg
  */
-
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
@@ -14,8 +13,10 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CLinearRidgeRegression::CLinearRidgeRegression()
 : CLinearMachine()
@@ -42,58 +43,60 @@ void CLinearRidgeRegression::init()
 
 bool CLinearRidgeRegression::train_machine(CFeatures* data)
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
+    REQUIRE(m_labels,"No labels set\n");
 
-	if (!data)
-		data=features;
+    if (!data)
+    	data=features;
 
-	if (!data)
-		SG_ERROR("No features set\n")
+    REQUIRE(data,"No features provided and no featured previously set\n");
 
-	if (m_labels->get_num_labels() != data->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n")
+    REQUIRE(m_labels->get_num_labels() == data->get_num_vectors(),
+    	"Number of training vectors (%d) does not match number of labels (%d)\n",
+    	m_labels->get_num_labels(), data->get_num_vectors());
 
-	if (data->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Dense Features\n")
+    REQUIRE(data->get_feature_class() == C_DENSE,
+    	"Expected Dense Features (%d) but got (%d)\n",
+    	C_DENSE, data->get_feature_class());
 
-	if (data->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n")
+    REQUIRE(data->get_feature_type() == F_DREAL,
+    	"Expected Real Features (%d) but got (%d)\n",
+    	F_DREAL, data->get_feature_type());
 
-	CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
-	int32_t num_feat=feats->get_num_features();
-	int32_t num_vec=feats->get_num_vectors();
+    CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
+    int32_t num_feat=feats->get_num_features();
+    int32_t num_vec=feats->get_num_vectors();
 
-	// Get kernel matrix
-	SGMatrix<float64_t> kernel_matrix(num_feat,num_feat);
-	SGVector<float64_t> y(num_feat);
+    SGMatrix<float64_t> kernel_matrix(num_feat,num_feat);
+    SGMatrix<float64_t> feats_matrix(feats->get_feature_matrix());
+    SGVector<float64_t> y(num_feat);
+    SGVector<float64_t> tau_vector(num_feat);
 
-	// init
-	kernel_matrix.zero();
-	y.zero();
+    tau_vector.zero();
+    tau_vector.add(m_tau);
 
-	for (int32_t i=0; i<num_feat; i++)
-		kernel_matrix.matrix[i+i*num_feat]+=m_tau;
+    Map<MatrixXd> eigen_kernel_matrix(kernel_matrix.matrix, num_feat,num_feat);
+    Map<MatrixXd> eigen_feats_matrix(feats_matrix.matrix, num_feat,num_vec);
+    Map<VectorXd> eigen_y(y.vector, num_feat);
+    Map<VectorXd> eigen_labels(((CRegressionLabels*)m_labels)->get_labels(),num_vec);
+    Map<VectorXd> eigen_tau(tau_vector.vector, num_feat);
 
-	for (int32_t i=0; i<num_vec; i++)
-	{
-		SGVector<float64_t> v = feats->get_feature_vector(i);
-		ASSERT(v.vlen==num_feat)
+    eigen_kernel_matrix = eigen_feats_matrix*eigen_feats_matrix.transpose();
 
-		cblas_dger(CblasColMajor, num_feat,num_feat, 1.0, v.vector,1,
-				v.vector,1, kernel_matrix.matrix, num_feat);
+    eigen_kernel_matrix.diagonal() += eigen_tau;
 
-		cblas_daxpy(num_feat, ((CRegressionLabels*) m_labels)->get_label(i), v.vector, 1, y.vector, 1);
+    eigen_y = eigen_feats_matrix*eigen_labels ;
 
-		feats->free_feature_vector(v, i);
-	}
+    LLT<MatrixXd> llt;
+    llt.compute(eigen_kernel_matrix);
+    if(llt.info() != Eigen::Success)
+    {
+    	SG_WARNING("Features covariance matrix was not positive definite\n");
+    	return false;
+    }
+    eigen_y = llt.solve(eigen_y);
 
-	clapack_dposv(CblasRowMajor,CblasUpper, num_feat, 1, kernel_matrix.matrix, num_feat,
-			y.vector, num_feat);
-
-	set_w(y);
-
-	return true;
+    set_w(y);
+    return true;
 }
 
 bool CLinearRidgeRegression::load(FILE* srcfile)

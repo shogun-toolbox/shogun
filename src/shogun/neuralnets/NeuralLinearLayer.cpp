@@ -35,9 +35,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
 
 using namespace shogun;
 
@@ -79,7 +77,6 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 {
 	float64_t* biases = parameters.vector;
 
-#ifdef HAVE_EIGEN3
 	typedef Eigen::Map<Eigen::MatrixXd> EMappedMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EMappedVector;
 
@@ -87,15 +84,6 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	EMappedVector  B(biases, m_num_neurons);
 
 	A.colwise() = B;
-#else
-	for (int32_t i=0; i<m_num_neurons; i++)
-	{
-		for (int32_t j=0; j<m_batch_size; j++)
-		{
-			m_activations[i+j*m_num_neurons] = biases[i];
-		}
-	}
-#endif
 
 	int32_t weights_index_offset = m_num_neurons;
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
@@ -106,28 +94,11 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 		float64_t* weights = parameters.vector + weights_index_offset;
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
 
-#ifdef HAVE_EIGEN3
 		EMappedMatrix W(weights, m_num_neurons, layer->get_num_neurons());
 		EMappedMatrix X(layer->get_activations().matrix,
 				layer->get_num_neurons(), m_batch_size);
 
 		A += W*X;
-#else
-		// activations = weights*previous_layer_activations
-		for (int32_t i=0; i<m_num_neurons; i++)
-		{
-			for (int32_t j=0; j<m_batch_size; j++)
-			{
-				float64_t sum = 0;
-				for (int32_t k=0; k<layer->get_num_neurons(); k++)
-				{
-					sum += weights[i+k*m_num_neurons]*
-						layer->get_activations()(k,j);
-				}
-				m_activations[i+j*m_num_neurons] += sum;
-			}
-		}
-#endif
 		SG_UNREF(layer);
 	}
 }
@@ -142,7 +113,6 @@ void CNeuralLinearLayer::compute_gradients(
 
 	// compute bias gradients
 	float64_t* bias_gradients = parameter_gradients.vector;
-#ifdef HAVE_EIGEN3
 	typedef Eigen::Map<Eigen::MatrixXd> EMappedMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EMappedVector;
 
@@ -150,17 +120,6 @@ void CNeuralLinearLayer::compute_gradients(
 	EMappedMatrix LG(m_local_gradients.matrix, m_num_neurons, m_batch_size);
 
 	BG = LG.rowwise().sum();
-#else
-	for (int32_t i=0; i<m_num_neurons; i++)
-	{
-		float64_t sum = 0;
-		for (int32_t j=0; j<m_batch_size; j++)
-		{
-			sum += m_local_gradients[i+j*m_num_neurons];
-		}
-		bias_gradients[i] = sum;
-	}
-#endif
 
 	// apply dropout to the local gradients
 	if (dropout_prop>0.0)
@@ -182,7 +141,6 @@ void CNeuralLinearLayer::compute_gradients(
 
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
 
-#ifdef HAVE_EIGEN3
 		EMappedMatrix X(layer->get_activations().matrix,
 				layer->get_num_neurons(), m_batch_size);
 		EMappedMatrix  W(weights, m_num_neurons, layer->get_num_neurons());
@@ -197,39 +155,6 @@ void CNeuralLinearLayer::compute_gradients(
 		// compute input gradients
 		if (!layer->is_input())
 			IG += W.transpose()*LG;
-#else
-		// weight_gradients=local_gradients*previous_layer_activations.T
-		for (int32_t i=0; i<m_num_neurons; i++)
-		{
-			for (int32_t j=0; j<layer->get_num_neurons(); j++)
-			{
-				float64_t sum = 0;
-				for (int32_t k=0; k<m_batch_size; k++)
-				{
-					sum += m_local_gradients(i,k)*layer->get_activations()(j,k);
-				}
-				weight_gradients[i+j*m_num_neurons] = sum;
-			}
-		}
-
-		if (!layer->is_input())
-		{
-			// input_gradients = weights.T*local_gradients
-			for (int32_t i=0; i<layer->get_num_neurons(); i++)
-			{
-				for (int32_t j=0; j<m_batch_size; j++)
-				{
-					float64_t sum = 0;
-					for (int32_t k=0; k<m_num_neurons; k++)
-					{
-						sum += weights[k+i*m_num_neurons]*
-							m_local_gradients[k+j*m_num_neurons];
-					}
-					layer->get_activation_gradients()(i,j) += sum;
-				}
-			}
-		}
-#endif
 		SG_UNREF(layer);
 	}
 

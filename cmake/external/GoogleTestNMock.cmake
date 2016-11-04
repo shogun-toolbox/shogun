@@ -8,8 +8,8 @@ SET (GMOCK_REVISION 443)
 include(ExternalProject)
 ExternalProject_Add(
 	GoogleMock
-	URL http://googlemock.googlecode.com/files/gmock-1.7.0.zip
-	URL_MD5 073b984d8798ea1594f5e44d85b20d66
+	URL https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+	URL_MD5 16877098823401d1bf2ed7891d7dce36
     TIMEOUT 10
 	PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock

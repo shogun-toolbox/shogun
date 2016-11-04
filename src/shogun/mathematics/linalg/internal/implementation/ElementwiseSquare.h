@@ -36,9 +36,7 @@
 #include <shogun/mathematics/linalg/internal/Block.h>
 #include <shogun/io/SGIO.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 #include <shogun/mathematics/linalg/internal/opencl_util.h>
@@ -84,7 +82,6 @@ struct elementwise_square
 	static Matrix compute(Block<Matrix> b);
 };
 
-#ifdef HAVE_EIGEN3
 /**
  * @brief Partial specialization of generic elementwise_square for the Eigen3 backend
  */
@@ -131,7 +128,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
 	 *
-	 * @param m the matrix whose squared co-efficients matrix has to be computed
+	 * @param mat the matrix whose squared co-efficients matrix has to be computed
 	 * @param result Pre-allocated matrix for the result of the computation
 	 */
 	static void compute(SGMatrix<T> mat, SGMatrix<T> result)
@@ -161,7 +158,6 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 	}
 };
 
-#endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**

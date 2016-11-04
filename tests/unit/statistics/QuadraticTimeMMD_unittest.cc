@@ -18,10 +18,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
-
-#ifdef HAVE_EIGEN3
 using namespace Eigen;
-#endif
 
 TEST(QuadraticTimeMMD,test_quadratic_mmd_biased)
 {
@@ -521,7 +518,6 @@ TEST(QuadraticTimeMMD,compute_variance_alternative)
 	SG_UNREF(features_q);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(QuadraticTimeMMD, null_approximation_spectrum_different_num_samples)
 {
 	const index_t m=20;
@@ -635,7 +631,6 @@ TEST(QuadraticTimeMMD, null_approximation_spectrum_different_num_samples_DEPRECA
 	SG_UNREF(gen_p);
 	SG_UNREF(gen_q);
 }
-#endif // HAVE_EIGEN3
 
 TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 {
@@ -711,7 +706,6 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	SG_UNREF(p_and_q);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel_DEPRECATED)
 {
 	/* number of examples kept low in order to make things fast */
@@ -842,4 +836,3 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel_DEPRECATED)
 	SG_UNREF(feat_p);
 	SG_UNREF(feat_q);
 }
-#endif // HAVE_EIGEN3

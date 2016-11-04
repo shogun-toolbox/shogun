@@ -20,8 +20,8 @@
 #cmakedefine HAVE_PROTOBUF 1
 
 #cmakedefine HAVE_ARPACK 1
-#cmakedefine HAVE_EIGEN3 1
 #cmakedefine HAVE_VIENNACL 1
+#cmakedefine VIENNACL_VERSION @VIENNACL_ENCODED_VERSION@
 #cmakedefine HAVE_OPENCV 1
 #cmakedefine HAVE_CATLAS 1
 #cmakedefine HAVE_ATLAS 1
@@ -29,9 +29,11 @@
 #cmakedefine HAVE_NLOPT 1
 #cmakedefine USE_LPSOLVE 1
 #cmakedefine HAVE_PTHREAD 1
+#cmakedefine HAVE_OPENMP 1
 #cmakedefine USE_CPLEX 1
 #cmakedefine HAVE_COLPACK 1
 #cmakedefine HAVE_ARPREC 1
+#cmakedefine USE_META_INTEGRATION_TESTS
 
 #cmakedefine HAVE_POWL 1
 #cmakedefine HAVE_LGAMMAL 1
@@ -112,6 +114,7 @@
 
 #cmakedefine USE_SVMLIGHT 1
 #cmakedefine USE_MOSEK 1
+#cmakedefine USE_GPL_SHOGUN 1
 
 #cmakedefine USE_GLPK 1
 #cmakedefine USE_LZO 1

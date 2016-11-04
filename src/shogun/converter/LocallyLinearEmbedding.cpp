@@ -10,7 +10,6 @@
 
 #include <shogun/converter/LocallyLinearEmbedding.h>
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/io/SGIO.h>
@@ -93,4 +92,3 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	return embedding;
 }
 
-#endif /* HAVE_EIGEN3 */

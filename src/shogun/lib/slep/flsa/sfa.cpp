@@ -15,6 +15,8 @@
  */
 
 #include <shogun/lib/slep/flsa/sfa.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -1886,3 +1888,5 @@ int sfa_one(double *x,     double *gap, int * activeS,
 	*activeS=numS;
 	return(iterStep);
 }
+
+#endif //USE_GPL_SHOGUN

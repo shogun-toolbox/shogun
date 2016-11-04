@@ -1,0 +1,40 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
+Math:init_random(1)
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_appropriate_kernel_and_mean_function]
+GaussianKernel kernel(2.0)
+ConstMean mean_function()
+#![create_appropriate_kernel_and_mean_function]
+
+#![create_instance]
+SoftMaxLikelihood gauss_likelihood()
+MultiLaplaceInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood)
+GaussianProcessClassification gp_classifier(inference_method)
+#![create_instance]
+
+#![train_and_apply]
+gp_classifier.train()
+MulticlassLabels labels_predict = gp_classifier.apply_multiclass(features_test)
+#![train_and_apply]
+
+#![extract_the_probabilities]
+RealVector prob = gp_classifier.get_probabilities(features_train)
+#![extract_the_probabilities]
+
+#![evaluate_accuracy]
+MulticlassAccuracy evals()
+real accuracy = evals.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()

@@ -10,6 +10,10 @@
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_CXX11
+#include <numeric>
+#endif
+
 using namespace shogun;
 
 TEST(DenseFeaturesTest,create_merged_copy)
@@ -118,4 +122,35 @@ TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 
 	SG_UNREF(features);
 	SG_UNREF(f_reduced);
+}
+
+TEST(DenseFeaturesTest, shallow_copy_subset_data)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+#ifdef HAVE_CXX11
+	std::iota(data.data(), data.data()+data.size(), 1);
+#else
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i]=i+1;
+#endif
+	SGVector<index_t> inds(n/2);
+	inds.random(0, n-1);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	features->add_subset(inds);
+	CFeatures* features_copy = features->shallow_subset_copy();
+
+	SGMatrix<float64_t> orig_matrix=features->get_feature_matrix();
+	SGMatrix<float64_t> copy_matrix=static_cast<CDenseFeatures<float64_t>*>(features_copy)->get_feature_matrix();
+	
+
+	for (index_t i=0; i<dim; ++i)
+		for (index_t j=0; j<inds.size(); ++j)	
+			EXPECT_EQ(orig_matrix(i,j), copy_matrix(i,j));
+	
+	SG_UNREF(features_copy);
+	SG_UNREF(features);
 }

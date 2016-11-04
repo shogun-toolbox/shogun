@@ -1,0 +1,27 @@
+.bs-sidenav {
+    background-color: #f5f5f5 !important;
+    padding-top: 0;
+    margin-top: 20pt;
+}
+
+.footer {
+    margin-top: 30pt !important;
+}
+
+#tabs {
+    margin-top: 25pt !important;
+}
+
+#sidebar > ul > p.caption {
+    background-color: #cecece;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#sidebar li.toctree-l1:last-child {
+    margin-bottom: 10px;
+}
+
+div.toctree-wrapper > p.caption {
+    display: none;
+}

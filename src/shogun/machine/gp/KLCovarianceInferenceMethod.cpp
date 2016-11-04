@@ -41,7 +41,6 @@
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
@@ -52,14 +51,14 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInferenceMethod()
+CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInference()
 {
 	init();
 }
 
 CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
@@ -115,7 +114,7 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 }
 
 CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
-		CInferenceMethod* inference)
+		CInference* inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -127,7 +126,7 @@ CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
 	return (CKLCovarianceInferenceMethod*)inference;
 }
 
-bool CKLCovarianceInferenceMethod::lbfgs_precompute()
+bool CKLCovarianceInferenceMethod::precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -331,7 +330,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 		m_A=SGMatrix<float64_t>(len, len);
 	}
 
-	nlml_new=lbfgs_optimization();
+	nlml_new=optimization();
 }
 
 SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
@@ -367,4 +366,3 @@ void CKLCovarianceInferenceMethod::update_approx_cov()
 
 } /* namespace shogun */
 
-#endif /* HAVE_EIGEN3 */
