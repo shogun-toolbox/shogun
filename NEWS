@@ -4,6 +4,7 @@
 	
 	* NOTE: This version contains a new CMake option USE_GPL_SHOGUN, which
 	        when set to OFF will exclude all GPL codes from Shogun [Heiko Strathmann].
+	* GSoC 2016 project of Saurabh Mahindre: Major efficiency improvements for KMeans, LARS, Random Forests, Bagging, KNN.
 	* Features:
 	    - Add new Shogun cookbook for documentation and testing across all 
 	      target languages [Heiko Strathmann, Sergey Lisitsyn, Esben Sorig, Viktor Gal].
@@ -20,12 +21,6 @@
 	    - Drop p-value estimation in model-selection [Heiko Strathmann]
 	    - Static interfaces have been removed [Viktor Gal]
 	    - New base class ShiftInvariantKernel of which GaussianKernel inherits [Rahul De].
-	    - Major efficiency improvements and parallel computations for KMeans. [Saurabh Mahindre]
-	    - Efficiency improvements and eigenized LARS. [Saurabh Mahindre]
-	    - Major efficiency improvements, adding optional precomputations for decision
-	      trees, random forest. [Saurabh Mahindre]
-	    - Parallel computations for bagging machine. [Saurabh Mahindre]
-	    - Efficiency improvements and LSH based solvers for KNN. [Saurabh Mahindre]
 
 2016-02-09 Heiko Strathmann <heiko.strathmann@shogun-toolbox.org>
 
