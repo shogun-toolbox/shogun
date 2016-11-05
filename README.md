@@ -2,6 +2,7 @@
 -------------------------------------
 
 Unified and efficient Machine Learning since 1999.
+[![DOI](https://zenodo.org/badge/1555094.svg)](https://zenodo.org/badge/latestdoi/1555094)
 
 Develop branch build status:
 
