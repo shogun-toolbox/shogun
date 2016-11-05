@@ -10833,8 +10833,8 @@ S20:
 }
 //**************************************************************************80
 
-void timestamp ( )
-
+//void timestamp ( )
+//
 //**************************************************************************80
 //
 //  Purpose:
@@ -10857,17 +10857,17 @@ void timestamp ( )
 //
 //    None
 //
-{
-# define TIME_SIZE 40
-
-  static char time_buffer[TIME_SIZE];
-  time_t now;
-
-  now = time ( NULL );
-
-
-  cout << time_buffer << "\n";
-
-  return;
-# undef TIME_SIZE
-}
+//{
+//# define TIME_SIZE 40
+//
+//  static char time_buffer[TIME_SIZE];
+//  time_t now;
+//
+//  now = time ( NULL );
+//
+//
+//  cout << time_buffer << "\n";
+//
+//  return;
+//# undef TIME_SIZE
+//}
