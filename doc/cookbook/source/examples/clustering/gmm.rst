@@ -22,11 +22,11 @@ We start by creating CDenseFeatures (here 64 bit floats aka RealFeatures) as
 
 .. sgexample:: gmm.sg:create_features
 
-We initialize :sgclass:`GMM`, passing the desired number of mixture components.
+We initialize :sgclass:`CGMM`, passing the desired number of mixture components.
 
 .. sgexample:: gmm.sg:create_gmm_instance
 
-We provide training features to the :sgclass:`GMM` object, train it by using EM algorithm and sample data-points from the trained model.
+We provide training features to the :sgclass:`CGMM` object, train it by using EM algorithm and sample data-points from the trained model.
 
 .. sgexample:: gmm.sg:train_sample
 
