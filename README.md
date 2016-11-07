@@ -3,6 +3,10 @@
 
 Unified and efficient Machine Learning since 1999.
 
+Latest release:
+
+[![Release](https://img.shields.io/github/release/shogun-toolbox/shogun.svg)](https://github.com/shogun-toolbox/shogun/releases/latest)
+
 Cite Shogun:
 
 [![DOI](https://zenodo.org/badge/1555094.svg)](https://zenodo.org/badge/latestdoi/1555094)
