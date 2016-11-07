@@ -67,17 +67,35 @@ bool CLDA::train_machine(CFeatures *data)
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
+	else
+	{
+		data = get_features();
+		REQUIRE(data, "Features have not been provided.\n")
+	}
 
-	REQUIRE(features, "Features are not provided!\n")
 	SGVector<int32_t>train_labels=((CBinaryLabels *)m_labels)->get_int_labels();
 	REQUIRE(train_labels.vector,"Provided Labels are empty!\n")
 
-	SGMatrix<float64_t>feature_matrix=((CDenseFeatures<float64_t>*)features)
+	REQUIRE(data->get_num_vectors() == train_labels.vlen,"Number of training examples(%d) should be "
+		"equal to number of labels (%d)!\n", data->get_num_vectors(), train_labels.vlen);
+
+	if(data->get_feature_type() == F_SHORTREAL)
+		return CLDA::train_machine_templated<float32_t>(train_labels, data);
+	else if(data->get_feature_type() == F_DREAL)
+		return CLDA::train_machine_templated<float64_t>(train_labels, data);
+	else if(data->get_feature_type() == F_LONGREAL)
+		return CLDA::train_machine_templated<floatmax_t>(train_labels, data);
+
+	return false;
+}
+
+template <typename ST>
+bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *data)
+{	
+	SGMatrix<ST>feature_matrix=((CDenseFeatures<ST>*)features)
 										->get_feature_matrix();
 	int32_t num_feat=feature_matrix.num_rows;
 	int32_t num_vec=feature_matrix.num_cols;
-	REQUIRE(num_vec==train_labels.vlen,"Number of training examples(%d) should be "
-		"equal to number of labels specified(%d)!\n", num_vec, train_labels.vlen);
 
 	SGVector<int32_t> classidx_neg(num_vec);
 	SGVector<int32_t> classidx_pos(num_vec);
@@ -95,18 +113,18 @@ bool CLDA::train_machine(CFeatures *data)
 			classidx_pos[num_pos++]=i;
 	}
 
-	w=SGVector<float64_t>(num_feat);
-	w.zero();
-	MatrixXd fmatrix=Map<MatrixXd>(feature_matrix.matrix, num_feat, num_vec);
-	VectorXd mean_neg(num_feat);
-	mean_neg=VectorXd::Zero(num_feat);
-	VectorXd mean_pos(num_feat);
-	mean_pos=VectorXd::Zero(num_feat);
+	SGVector<ST> w_st(num_feat);
+	w_st.zero();
+	typename SGMatrix<ST>::EigenMatrixXt fmatrix=typename SGMatrix<ST>::EigenMatrixXtMap(feature_matrix.matrix, num_feat, num_vec);
+	typename SGVector<ST>::EigenVectorXt mean_neg(num_feat);
+	mean_neg.setZero();
+	typename SGVector<ST>::EigenVectorXt mean_pos(num_feat);
+	mean_pos.setZero();
 
 	//mean neg
 	for(i=0; i<num_neg; i++)
 		mean_neg+=fmatrix.col(classidx_neg[i]);
-	mean_neg/=(float64_t)num_neg;
+	mean_neg/=(ST)num_neg;
 
 	// get m(-ve) - mean(-ve)
 	for(i=0; i<num_neg; i++)
@@ -115,25 +133,25 @@ bool CLDA::train_machine(CFeatures *data)
 	//mean pos
 	for(i=0; i<num_pos; i++)
 		mean_pos+=fmatrix.col(classidx_pos[i]);
-	mean_pos/=(float64_t)num_pos;
+	mean_pos/=(ST)num_pos;
 
 	// get m(+ve) - mean(+ve)
 	for(i=0; i<num_pos; i++)
 		fmatrix.col(classidx_pos[i])-=mean_pos;
 
-	SGMatrix<float64_t>scatter_matrix(num_feat, num_feat);
-	Map<MatrixXd> scatter(scatter_matrix.matrix, num_feat, num_feat);
+	SGMatrix<ST>scatter_matrix(num_feat, num_feat);
+	typename SGMatrix<ST>::EigenMatrixXtMap scatter(scatter_matrix.matrix, num_feat, num_feat);
 
 	if (m_method == FLD_LDA || (m_method==AUTO_LDA && num_vec>num_feat))
 	{
 		// covariance matrix.
-		MatrixXd cov_mat(num_feat, num_feat);
+		typename SGMatrix<ST>::EigenMatrixXt cov_mat(num_feat, num_feat);
 		cov_mat=fmatrix*fmatrix.transpose();
 		scatter=cov_mat/(num_vec-1);
-		float64_t trace=scatter.trace();
-		double s=1.0-m_gamma;
-		scatter *=s;
-		scatter.diagonal()+=VectorXd::Constant(num_feat, trace*m_gamma/num_feat);
+		ST trace=scatter.trace();
+		ST s=1.0-((ST) m_gamma);
+		scatter*=s;
+		scatter.diagonal()+=Eigen::DenseBase<typename SGVector<ST>::EigenVectorXt>::Constant(num_feat, trace*((ST)m_gamma)/num_feat);
 
 		// the usual way
 		// we need to find a Basic Linear Solution of A.x=b for 'x'.
@@ -142,29 +160,28 @@ bool CLDA::train_machine(CFeatures *data)
 		// MatrixXd A=scatter;
 		// VectorXd b=mean_pos-mean_neg;
 		// VectorXd x=w;
-		Map<VectorXd> x(w.vector, num_feat);
-		LLT<MatrixXd> decomposition(scatter);
+		typename SGVector<ST>::EigenVectorXtMap x(w_st.vector, num_feat);
+		LLT<typename SGMatrix<ST>::EigenMatrixXt> decomposition(scatter);
 		x=decomposition.solve(mean_pos-mean_neg);
 
 		// get the weights w_neg(for -ve class) and w_pos(for +ve class)
-		VectorXd w_neg=decomposition.solve(mean_neg);
-		VectorXd w_pos=decomposition.solve(mean_pos);
+		typename SGVector<ST>::EigenVectorXt w_neg=decomposition.solve(mean_neg);
+		typename SGVector<ST>::EigenVectorXt w_pos=decomposition.solve(mean_pos);
 
 		// get the bias.
-		bias=0.5*(w_neg.dot(mean_neg)-w_pos.dot(mean_pos));
+		bias=((float64_t)(0.5*(w_neg.dot(mean_neg)-w_pos.dot(mean_pos))));
 	}
-
 	else
 	{
 		//for algorithmic detail, please refer to section 16.3.1. of Bayesian
 		//Reasoning and Machine Learning by David Barber.
 
 		//we will perform SVD here.
-		MatrixXd fmatrix1=Map<MatrixXd>(feature_matrix.matrix, num_feat, num_vec);
+		typename SGMatrix<ST>::EigenMatrixXtMap fmatrix1(feature_matrix.matrix, num_feat, num_vec);
 
 		// to hold the centered positive and negative class data
-		MatrixXd cen_pos(num_feat,num_pos);
-		MatrixXd cen_neg(num_feat,num_neg);
+		typename SGMatrix<ST>::EigenMatrixXt cen_pos(num_feat,num_pos);
+		typename SGMatrix<ST>::EigenMatrixXt cen_neg(num_feat,num_neg);
 
 		for(i=0; i<num_pos;i++)
 			cen_pos.col(i)=fmatrix.col(classidx_pos[i]);
@@ -175,38 +192,38 @@ bool CLDA::train_machine(CFeatures *data)
 		//+ve covariance matrix
 #if EIGEN_WITH_OPERATOR_BUG
 		cen_pos=cen_pos*cen_pos.transpose()
-		cen_pos/=float64_t(num_pos-1);
+		cen_pos/=(ST)(num_pos-1);
 #else
-		cen_pos=cen_pos*cen_pos.transpose()/(float64_t(num_pos-1));
+		cen_pos=cen_pos*cen_pos.transpose()/((ST)(num_pos-1));
 #endif
 
 		//-ve covariance matrix
 #if EIGEN_WITH_OPERATOR_BUG
 		cen_neg=cen_neg=cen_neg*cen_neg.transpose()
-		cen_neg/=float64_t(num_neg-1);
+		cen_neg/=(ST)(num_neg-1);
 #else
-		cen_neg=cen_neg*cen_neg.transpose()/(float64_t(num_neg-1));
+		cen_neg=cen_neg*cen_neg.transpose()/((ST)(num_neg-1));
 #endif
 
 		//within class matrix
-		MatrixXd Sw= num_pos*cen_pos+num_neg*cen_neg;
-		float64_t trace=Sw.trace();
-		double s=1.0-m_gamma;
+		typename SGMatrix<ST>::EigenMatrixXt Sw= num_pos*cen_pos+num_neg*cen_neg;
+		ST trace=Sw.trace();
+		ST s=1.0-((ST)m_gamma);
 		Sw *=s;
-		Sw.diagonal()+=VectorXd::Constant(num_feat, trace*m_gamma/num_feat);
+		Sw.diagonal()+=Eigen::DenseBase<typename SGVector<ST>::EigenVectorXt>::Constant(num_feat, trace*((ST)m_gamma)/num_feat);
 
 		//total mean
-		VectorXd mean_total=(num_pos*mean_pos+num_neg*mean_neg)/(float64_t)num_vec;
+		typename SGVector<ST>::EigenVectorXt mean_total=(num_pos*mean_pos+num_neg*mean_neg)/(ST)num_vec;
 
 		//between class matrix
-		MatrixXd Sb(num_feat,2);
+		typename SGMatrix<ST>::EigenMatrixXt Sb(num_feat,2);
 		Sb.col(0)=sqrt(num_pos)*(mean_pos-mean_total);
 		Sb.col(1)=sqrt(num_neg)*(mean_neg-mean_total);
 
-		JacobiSVD<MatrixXd> svd(fmatrix1, ComputeThinU);
+		JacobiSVD<typename SGMatrix<ST>::EigenMatrixXt> svd(fmatrix1, ComputeThinU);
 
 		// basis to represent the solution
-		MatrixXd Q=svd.matrixU();
+		typename SGMatrix<ST>::EigenMatrixXt Q=svd.matrixU();
 		// modified between class scatter
 		Sb=Q.transpose()*(Sb*(Sb.transpose()))*Q;
 
@@ -216,22 +233,30 @@ bool CLDA::train_machine(CFeatures *data)
 		// to find SVD((inverse(Chol(Sw)))' * Sb * (inverse(Chol(Sw))))
 		//1.get Cw=Chol(Sw)
 		//find the decomposition of Cw'.
-		HouseholderQR<MatrixXd> decomposition(Sw.llt().matrixU().transpose());
+		HouseholderQR<typename SGMatrix<ST>::EigenMatrixXt> decomposition(Sw.llt().matrixU().transpose());
 
 		//2.get P=inv(Cw')*Sb_new
 		//MatrixXd P=decomposition.solve(Sb);
 		//3. final value to be put in SVD will be therefore:
 		// final_ output =(inv(Cw')*(P'))'
-		JacobiSVD<MatrixXd> svd2(decomposition.solve((decomposition.solve(Sb))
+		JacobiSVD<typename SGMatrix<ST>::EigenMatrixXt> svd2(decomposition.solve((decomposition.solve(Sb))
 					.transpose()).transpose(), ComputeThinU);
 
 		// Since this is a linear classifier, with only binary classes,
 		// we need to keep only the 1st eigenvector.
-		Map<VectorXd> x(w.vector, num_feat);
+		Map<typename SGVector<ST>::EigenVectorXt> x(w_st.vector, num_feat);
 		x=Q*(svd2.matrixU().col(0));
 		// get the bias
-		bias=(x.transpose()*mean_total);
+		bias=((float64_t)(x.transpose()*mean_total));
 		bias=bias*(-1);
 	}
+
+ 	w=SGVector<float64_t>(num_feat);
+	w.zero();
+
+	//copy w_st into w
+	for(i = 0; i < w.size(); ++i)
+		w[i] = (float64_t) w_st[i];
+
 	return true;
 }
