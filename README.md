@@ -3,6 +3,8 @@
 
 Unified and efficient Machine Learning since 1999.
 
+Cite Shogun:
+
 [![DOI](https://zenodo.org/badge/1555094.svg)](https://zenodo.org/badge/latestdoi/1555094)
 
 Develop branch build status:
@@ -40,8 +42,8 @@ Shogun is implemented in C++ and interfaces to Python, octave, java, ruby, C#, R
 |java              | *stable* (no known problems)                              |
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
-|r                 | *beta*   (most examples work, static calls unavailable    |
-|lua               | *alpha* (many examples work, string typemaps are unstable,
+|r                 | *beta*   (most examples work, static calls unavailable)   |
+|lua               | *alpha*  (many examples work, string typemaps are unstable,
                              overloaded methods unavailable)                   |
 |perl              | *pre-alpha* (work in progress quality)                    |
 |js                | *pre-alpha* (work in progress quality)                    |
