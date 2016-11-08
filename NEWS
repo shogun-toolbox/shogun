@@ -3,7 +3,7 @@
         * SHOGUN Release version 5.1.0 (libshogun 17.2, data 0.11, parameter 1)
 
         * Features:
-            - ...
+            - LDA now supports 32, 64 and 128 bit floating poitn numbers [Chris Goldsworthy]
         * Bugfixes:
             - ...
         * Cleanup, efficiency updates, and API Changes:
