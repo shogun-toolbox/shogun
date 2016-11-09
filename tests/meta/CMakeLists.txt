@@ -58,13 +58,13 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	            AddMetaIntegrationTest(cpp 1)
 	        ENDIF()
 	        IF (NOT ${DISABLE_META_INTEGRATION_TESTS})
-	            AddMetaIntegrationTest(python PythonModular)
-	            AddMetaIntegrationTest(java JavaModular)
-	            #AddMetaIntegrationTest(r RModular) # currently we have the r meta examples disabled, so no generated results that can be tested
-	            AddMetaIntegrationTest(octave OctaveModular)
-	            AddMetaIntegrationTest(csharp CSharpModular)
-	            AddMetaIntegrationTest(ruby RobyModular)
-	            #AddMetaIntegrationTest(lua LuaModular) # currently doesn't have meta examples
+	            AddMetaIntegrationTest(python INTERFACE_PYTHON)
+	            AddMetaIntegrationTest(java INTERFACE_JAVA)
+	            #AddMetaIntegrationTest(r INTERFACE_R) # currently we have the r meta examples disabled, so no generated results that can be tested
+	            AddMetaIntegrationTest(octave INTERFACE_OCTAVE)
+	            AddMetaIntegrationTest(csharp INTERFACE_CSHARP)
+	            AddMetaIntegrationTest(ruby INTERFACE_RUBY)
+	            #AddMetaIntegrationTest(lua INTERFACE_LUA) # currently doesn't have meta examples
 	        ENDIF()
 		ELSE()
 			MESSAGE(WARNING "Skipping C++ meta integration tests; requires a c++11 compatible compiler.")
