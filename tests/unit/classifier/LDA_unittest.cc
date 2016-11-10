@@ -36,7 +36,7 @@
 using namespace shogun;
 
 template <typename ST>
-void generate_test_data(CBinaryLabels*& labels, CDenseFeatures<float64_t>*& features)
+void generate_test_data(SGVector<float64_t>& lab, SGMatrix<float64_t>& feat)
 {
 
 	const int num=5;
@@ -44,8 +44,8 @@ void generate_test_data(CBinaryLabels*& labels, CDenseFeatures<float64_t>*& feat
 	const int classes=2;
 
 	//Prepare the data for binary classification using LDA
-	SGVector<float64_t> lab(classes*num);
-	SGMatrix<float64_t> feat(dims, classes*num);
+	lab = SGVector<float64_t>(classes*num);
+	feat = SGMatrix<float64_t>(dims, classes*num);
 
 	feat(0, 0)= (ST) -2.81337943903340859;
 	feat(0, 1)= (ST) -5.75992432468645088;
@@ -86,18 +86,24 @@ void generate_test_data(CBinaryLabels*& labels, CDenseFeatures<float64_t>*& feat
 				lab[i*num+j]=-1;
 			else
 				lab[i*num+j]=+1;
-
-	labels = new CBinaryLabels(lab);
-	features = new CDenseFeatures<float64_t>(feat);
 }
 
 template <typename ST>
 void FLD_test(SGVector<ST> &projection_FLD, SGVector<ST> &w_FLD)
 {
+	SGVector<float64_t> lab;
+	SGMatrix<float64_t> feat;
+
 	CBinaryLabels* labels;
 	CDenseFeatures<float64_t>* features;
 
-	generate_test_data<float64_t>(labels, features);
+	generate_test_data<float64_t>(lab, feat);
+
+	labels = new CBinaryLabels(lab);
+	features = new CDenseFeatures<float64_t>(feat);
+
+	SG_REF(labels);
+	SG_REF(features);
 
 	CLDA lda_FLD(0, features, labels, FLD_LDA);
 	lda_FLD.train();
@@ -107,15 +113,27 @@ void FLD_test(SGVector<ST> &projection_FLD, SGVector<ST> &w_FLD)
 	projection_FLD=results_FLD->get_labels();
 	w_FLD = lda_FLD.get_w();
 	SG_UNREF(results_FLD);
+
+	SG_UNREF(features);
+	SG_UNREF(labels);
 }
 
 template <typename ST>
 void SVD_test(SGVector<ST> &projection_SVD, SGVector<ST> &w_SVD)
 {
+	SGVector<float64_t> lab;
+	SGMatrix<float64_t> feat;
+
 	CBinaryLabels* labels;
 	CDenseFeatures<float64_t>* features;
 
-	generate_test_data<float64_t>(labels, features);
+	generate_test_data<float64_t>(lab, feat);
+
+	labels = new CBinaryLabels(lab);
+	features = new CDenseFeatures<float64_t>(feat);
+
+	SG_REF(labels);
+	SG_REF(features);
 
 	CLDA lda_SVD(0, features, labels, SVD_LDA);
 	lda_SVD.train();
@@ -125,6 +143,9 @@ void SVD_test(SGVector<ST> &projection_SVD, SGVector<ST> &w_SVD)
 	projection_SVD=results_SVD->get_labels();
 	w_SVD=lda_SVD.get_w();
 	SG_UNREF(results_SVD);
+	
+	SG_UNREF(features);
+	SG_UNREF(labels);
 }
 
 template <typename ST>
