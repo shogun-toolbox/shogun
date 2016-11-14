@@ -19,7 +19,7 @@ Develop branch build status:
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
  * See [doc/readme/ABOUT.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for a project description.
- * See [doc/readme/INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for installation instructions.
+ * See [doc/readme/INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/INSTALL.md) for installation instructions.
  * See [doc/readme/INTERFACES.md](https://github.com/shogun-toolbox/docs/blob/master/INTERFACE.md) for calling Shogun from its interfaces.
  * See [the cookbook](http://shogun.ml/cookbook/latest/) for API examples for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for developer information.
