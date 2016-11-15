@@ -25,14 +25,14 @@ using namespace Eigen;
 
 //function can generate both sparse and dense matrix accroding to sparse convention
 template<class MatrixType>
-void GenerateMatrix(float64_t sparseLevel, int32_t m, int32_t n, int32_t randSeed, MatrixType* matrix)
+void GenerateMatrix(float64_t sparse_level, int32_t m, int32_t n, int32_t randSeed, MatrixType* matrix)
 {
 	CRandom randGenerator(randSeed);
 	for (index_t i=0; i<m; ++i)
 		for (index_t j=0; j<n; ++j)
 		{
 			float64_t randomNumber=randGenerator.random(0.0,1.0);
-			if (randomNumber<=sparseLevel)
+			if (randomNumber<=sparse_level)
 				(*matrix)(i,j)=randomNumber*100;
 		}
 }
@@ -179,18 +179,18 @@ TEST(SGSparseMatrix, io_libsvm)
 
 TEST(SGSparseMatrix, access_by_index_non_square)
 {
-	const float64_t sparseLevel=0.1;
+	const float64_t sparse_level=0.1;
 	const index_t numberOfFeatures=50;
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
 	//generate a sparse and dense matrix and compare this entries
 	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
+	GenerateMatrix<SGSparseMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
 
 	SGMatrix<float64_t> denseMatrix(numberOfFeatures, numberOfVectors);
 	denseMatrix.zero();
-	GenerateMatrix<SGMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &denseMatrix);
+	GenerateMatrix<SGMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &denseMatrix);
 
 	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
@@ -199,13 +199,13 @@ TEST(SGSparseMatrix, access_by_index_non_square)
 
 TEST(SGSparseMatrix, get_transposed_more_features)
 {
-	const float64_t sparseLevel=0.1;
+	const float64_t sparse_level=0.1;
 	const index_t numberOfFeatures=100;
 	const index_t numberOfVectors=50;
 	const index_t randSeed=0;
 
 	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
+	GenerateMatrix<SGSparseMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
@@ -221,13 +221,13 @@ TEST(SGSparseMatrix, get_transposed_more_features)
 
 TEST(SGSparseMatrix, get_transposed_more_vectors)
 {
-	const float64_t sparseLevel=0.1;
+	const float64_t sparse_level=0.1;
 	const index_t numberOfFeatures=50;
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
 	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
+	GenerateMatrix<SGSparseMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
@@ -244,14 +244,14 @@ TEST(SGSparseMatrix, get_transposed_more_vectors)
 TEST(SGSparseMatrix, from_dense)
 {
 
-	const float64_t sparseLevel=0.1;
+	const float64_t sparse_level=0.1;
 	const index_t numberOfFeatures=50;
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
 	SGMatrix<float64_t> denseMatrix(numberOfFeatures, numberOfVectors);
 	denseMatrix.zero();
-	GenerateMatrix<SGMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &denseMatrix);
+	GenerateMatrix<SGMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &denseMatrix);
 
 	SGSparseMatrix<float64_t> sparseMatrix;
 	sparseMatrix.from_dense(denseMatrix);
@@ -269,13 +269,13 @@ TEST(SGSparseMatrix, from_dense)
 TEST(SGSparseMatrix, transposed_square_matrix)
 {
 
-	const float64_t sparseLevel=0.1;
+	const float64_t sparse_level=0.1;
 	const index_t numberOfFeatures=100;
 	const index_t numberOfVectors=100;
 	const index_t randSeed=0;
 
 	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
-	GenerateMatrix<SGSparseMatrix<float64_t> >(sparseLevel, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
+	GenerateMatrix<SGSparseMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
