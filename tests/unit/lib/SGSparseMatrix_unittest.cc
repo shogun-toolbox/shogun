@@ -266,10 +266,9 @@ TEST(SGSparseMatrix, from_dense)
 			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), denseMatrix(featIndex,vecIndex));
 }
 
-TEST(SGSparseMatrix, test_transposed_square_matrix)
+TEST(SGSparseMatrix, transposed_square_matrix)
 {
-	//Test for transposing Sparse Matrix.
-	//number_of_features = number_of_vectors.
+
 	const float64_t sparseLevel=0.1;
 	const index_t numberOfFeatures=100;
 	const index_t numberOfVectors=100;
@@ -280,10 +279,13 @@ TEST(SGSparseMatrix, test_transposed_square_matrix)
 
 	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
 
+	//check dimension
 	EXPECT_EQ(sparseMatrix.num_features, sparseMatrixT.num_vectors);
 	EXPECT_EQ(sparseMatrix.num_vectors, sparseMatrixT.num_features);
 
-	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
+	//check contents
+	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex){
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
 			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), sparseMatrixT(vecIndex,featIndex));
+	}
 }
