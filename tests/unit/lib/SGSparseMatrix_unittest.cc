@@ -265,3 +265,25 @@ TEST(SGSparseMatrix, from_dense)
 		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
 			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), denseMatrix(featIndex,vecIndex));
 }
+
+TEST(SGSparseMatrix, transposed_square_matrix)
+{
+	const float64_t sparse_level=0.1;
+	const index_t numberOfFeatures=100;
+	const index_t numberOfVectors=100;
+	const index_t randSeed=0;
+
+	SGSparseMatrix<float64_t> sparseMatrix(numberOfFeatures, numberOfVectors);
+	GenerateMatrix<SGSparseMatrix<float64_t> >(sparse_level, numberOfFeatures, numberOfVectors, randSeed, &sparseMatrix);
+
+	SGSparseMatrix<float64_t> sparseMatrixT=sparseMatrix.get_transposed();
+
+	//check dimension
+	EXPECT_EQ(sparseMatrix.num_features, sparseMatrixT.num_vectors);
+	EXPECT_EQ(sparseMatrix.num_vectors, sparseMatrixT.num_features);
+
+	//check contents
+	for (index_t featIndex=0; featIndex<numberOfFeatures; ++featIndex)
+		for (index_t vecIndex=0; vecIndex<numberOfVectors; ++vecIndex)
+			EXPECT_EQ(sparseMatrix(featIndex,vecIndex), sparseMatrixT(vecIndex,featIndex));
+}
