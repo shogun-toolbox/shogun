@@ -161,20 +161,25 @@ template<class T> class SGVector : public SGReferencedData
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
 #endif // SWIG // SWIG should skip this part
 
-		/** Get vector element at index
+		/** Get element at index
 		 *
 		 * @param index index
-		 * @return vector element at index
+		 * @return element at index
 		 */
-		const T& get_element(index_t index);
+		const T& get_element(index_t index)
+		{
+			return (*this)[index];
+		}
 
-		/** Set vector element at index 'index' return false in case of trouble
+		/** Set element at index
 		 *
-		 * @param p_element vector element to set
+		 * @param el element to set
 		 * @param index index
-		 * @return if setting was successful
 		 */
-		void set_element(const T& p_element, index_t index);
+		void set_element(const T& el, index_t index)
+		{
+			(*this)[index]=el;
+		}
 
 #ifndef SWIG // SWIG should skip this part
 		/** Resize vector

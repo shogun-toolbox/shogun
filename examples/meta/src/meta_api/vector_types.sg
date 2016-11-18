@@ -1,7 +1,8 @@
 BoolVector bool_vector(2)
-#bool_vector[0]=False
-#bool_vector[1]=True
-bool_vector[0]=bool_vector[1]
+bool_vector[0]=False
+bool_vector[1]=True
+bool bool_element=bool_vector[1]
+bool_vector[0]=bool_element
 
 ByteVector byte_vector(2)
 byte_vector[0]=0
