@@ -285,7 +285,7 @@ TEST(SGSparseMatrix, transposed_square_matrix)
 	//check contents
 	for (index_t feat_index=0; feat_index<number_of_features; ++feat_index){
 		for (index_t vec_index=0; vec_index<number_of_vectors; ++vec_index){
-			EXPECT_EQ(sparse_matrix(feat_index,vec_index), sparse_matrix_t(vecIndex,featIndex));
+			EXPECT_EQ(sparse_matrix(feat_index,vec_index), sparse_matrix_t(vec_index,feat_index));
 		}
 	}
 }
