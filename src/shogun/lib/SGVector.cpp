@@ -240,20 +240,6 @@ void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 }
 
 template<class T>
-const T& SGVector<T>::get_element(index_t index)
-{
-	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
-	return vector[index];
-}
-
-template<class T>
-void SGVector<T>::set_element(const T& p_element, index_t index)
-{
-	REQUIRE(vector && (index>=0) && (index<vlen), "Provided index (%d) must be between 0 and %d.\n", index, vlen);
-	vector[index]=p_element;
-}
-
-template<class T>
 void SGVector<T>::resize_vector(int32_t n)
 {
 	vector=SG_REALLOC(T, vector, vlen, n);
