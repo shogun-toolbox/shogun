@@ -81,6 +81,7 @@ add_executable (discover_gtest_tests
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
 ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST})
+add_dependencies(shogun-unit-test GoogleMock)
 target_link_libraries(shogun-unit-test shogun gmock gtest ${SANITIZER_LIBRARY})
 IF (SANITIZER_FLAGS)
 	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})

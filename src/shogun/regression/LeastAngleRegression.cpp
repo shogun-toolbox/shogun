@@ -425,3 +425,5 @@ SGMatrix<ST> CLeastAngleRegression::cholesky_delete(SGMatrix<ST>& R, int32_t i_k
 
 template bool CLeastAngleRegression::train_machine_templated<float64_t>(CDenseFeatures<float64_t> * data);
 template bool CLeastAngleRegression::train_machine_templated<float32_t>(CDenseFeatures<float32_t> * data);
+template SGMatrix<float32_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
+template SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
