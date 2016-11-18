@@ -11,7 +11,6 @@
     "Init": {
         "Construct": "$typeName $name = new $typeName($arguments)",
         "Copy": "$typeName $name = $expr",
-        "BoolVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "CharVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "ByteVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "WordVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
@@ -21,7 +20,6 @@
         "ShortRealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "RealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
         "LongRealVector": "DoubleMatrix $name = new DoubleMatrix(1, $arguments)",
-        "BoolMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "CharMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "ByteMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
         "WordMatrix": "DoubleMatrix $name = new DoubleMatrix($arguments)",
@@ -42,7 +40,6 @@
         "real": "double",
         "string": "String",
         "char": "char",
-        "BoolVector": "DoubleMatrix",
         "CharVector": "DoubleMatrix",
         "ByteVector": "DoubleMatrix",
         "WordVector": "DoubleMatrix",
@@ -54,7 +51,6 @@
         "RealVector": "DoubleMatrix",
         "LongRealVector": "DoubleMatrix",
         "ComplexVector": "DoubleMatrix",
-        "BoolMatrix": "DoubleMatrix",
         "CharMatrix": "DoubleMatrix",
         "ByteMatrix": "DoubleMatrix",
         "WordMatrix": "DoubleMatrix",
@@ -85,11 +81,15 @@
     "Element": {
         "Access": {
             "Vector": "$identifier.get($indices)",
-            "Matrix": "$identifier.get($indices)"
+            "Matrix": "$identifier.get($indices)",
+            "BoolVector": "$identifier.get_element($indices)",
+            "BoolMatrix": "$identifier.get_element($indices)"
         },
         "Assign": {
             "Vector": "$identifier.put($indices, $expr)",
-            "Matrix": "$identifier.put($indices, $expr)"
+            "Matrix": "$identifier.put($indices, $expr)",
+            "BoolVector": "$identifier.set_element($expr, $indices)",
+            "BoolMatrix": "$identifier.set_element($expr, $indices)"
         },
         "ZeroIndexed": true
     },

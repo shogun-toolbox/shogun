@@ -7,6 +7,14 @@
  * Written (W) 2011 Baozeng Ding
  *
  */
+ 
+/*
+ * NOTE: Disabled boolean vector and matrix typemaps due to jblas is not able
+ * to represent them.
+ * Once we use a proper matrix library, can re-enable them again.
+ * See github issue 3554
+ * Heiko Strathmann
+ */
 
 %include <java/enums.swg>
 
@@ -148,7 +156,7 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGVector macros */
-TYPEMAP_SGVECTOR(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+//TYPEMAP_SGVECTOR(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGVECTOR(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGVECTOR(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGVECTOR(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
@@ -282,7 +290,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGVECTOR macros */
-TYPEMAP_SGVECTOR(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
+//TYPEMAP_SGVECTOR(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR(char, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR(uint8_t, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR(int16_t, short, Short, jshort, "toShortArray", "()[[S", "org/ujmp/core/shortmatrix/impl/DefaultDenseShortMatrix2D", "([SII)V")
@@ -377,7 +385,7 @@ TYPEMAP_SGVECTOR(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGVECTOR_REF macros */
-TYPEMAP_SGVECTOR_REF(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
+//TYPEMAP_SGVECTOR_REF(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR_REF(char, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR_REF(uint8_t, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGVECTOR_REF(int16_t, short, Short, jshort, "toShortArray", "()[[S", "org/ujmp/core/shortmatrix/impl/DefaultDenseShortMatrix2D", "([SII)V")
@@ -491,7 +499,7 @@ TYPEMAP_SGVECTOR_REF(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
-TYPEMAP_SGMATRIX(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
+//TYPEMAP_SGMATRIX(bool, boolean, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGMATRIX(char, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGMATRIX(uint8_t, byte, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
 TYPEMAP_SGMATRIX(int16_t, short, Double, jdouble, "()[D", "org/jblas/DoubleMatrix", "(II[D)V")
@@ -608,7 +616,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "()[D", "org/jblas/DoubleMa
 %enddef
 
 /*Define concrete examples of the TYPEMAP_SGMATRIX macros */
-TYPEMAP_SGMATRIX(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
+//TYPEMAP_SGMATRIX(bool, boolean, Boolean, jboolean, "toBooleanArray", "()[[Z", "org/ujmp/core/booleanmatrix/impl/DefaultDenseBooleanMatrix2D", "([BII)V")
 TYPEMAP_SGMATRIX(char, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGMATRIX(uint8_t, byte, Byte, jbyte, "toByteArray", "()[[B", "org/ujmp/core/bytematrix/impl/DefaultDenseByteMatrix2D", "([BII)V")
 TYPEMAP_SGMATRIX(int16_t, short, Short, jshort, "toShortArray", "()[[S", "org/ujmp/core/shortmatrix/impl/DefaultDenseShortMatrix2D", "([SII)V")

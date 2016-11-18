@@ -165,6 +165,32 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
+#endif // SWIG should skip this part
+
+		/** Get element at index
+		 *
+		 * @param row row index
+		 * @param col column index
+		 * @return element at index
+		 */
+		const T& get_element(index_t row, index_t col)
+		{
+			return (*this)(row, col);
+		}
+
+		/** Set element at index
+		 *
+		 * @param el element to set
+		 * @param row row index
+		 * @param col column index
+		 */
+		void set_element(const T& el, index_t row, index_t col)
+		{
+			(*this)(row, col)=el;
+		}
+
+#ifndef SWIG // SWIG should skip this part
+
 		/**
 		 * Get the matrix (no copying is done here)
 		 *

@@ -15,7 +15,6 @@
         "RealVector": "var $name = new double[$arguments]",
         "LongRealVector": "var $name = new double[$arguments]",
         "ComplexVector": "var $name = new Complex[$arguments]",
-        "BoolMatrix": "var $name = new bool[$arguments]",
         "CharMatrix": "var $name = new char[$arguments]",
         "ByteMatrix": "var $name = new byte[$arguments]",
         "WordMatrix": "var $name = new ushort[$arguments]",
@@ -47,7 +46,6 @@
         "RealVector": "double[]",
         "LongRealVector": "double[]",
         "ComplexVector": "Complex[]",
-        "BoolMatrix": "bool[,]",
         "CharMatrix": "char[,]",
         "ByteMatrix": "byte[,]",
         "WordMatrix": "ushort[,]",
@@ -79,12 +77,14 @@
         "Access": {
             "Vector": "$identifier[$indices]",
             "Matrix": "$identifier[$indices]",
-            "BoolVector": "$identifier.get_element($indices)"
+            "BoolVector": "$identifier.get_element($indices)",
+            "BoolMatrix": "$identifier.get_element($indices)"
         },
         "Assign": {
             "Vector": "$identifier[$indices] = $expr",
             "Matrix": "$identifier[$indices] = $expr",
-            "BoolVector": "$identifier.set_element($expr, $indices)"
+            "BoolVector": "$identifier.set_element($expr, $indices)",
+            "BoolMatrix": "$identifier.set_element($expr, $indices)"
         },
         "ZeroIndexed": true
     },
