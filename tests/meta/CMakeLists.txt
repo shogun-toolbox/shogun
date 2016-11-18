@@ -4,7 +4,7 @@ GET_PYTHON_ENV()
 # working directory of tester should be binary dir so link data folders
 IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/reference_results)
 	IF (NOT EXISTS ${CMAKE_SOURCE_DIR}/data/testsuite/meta/)
-		MESSAGE(FATAL_ERROR "Test suite for meta examples does not exist!")
+		MESSAGE(FATAL_ERROR "Test suite for meta examples does not exist! Please initialise and/or update the data submodule.")
 	ENDIF()
 	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/data/testsuite/meta/" "${CMAKE_CURRENT_BINARY_DIR}/reference_results")
 ENDIF()
