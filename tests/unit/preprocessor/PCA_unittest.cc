@@ -184,30 +184,30 @@ TEST(PCA, PCA_N_less_D_EVD)
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
 	SGVector<float64_t> eigvec=pca->get_eigenvalues();
 
-	float64_t epsilon = 0.00000000000001;
+	float64_t epsilon = 1E-13;
 
 	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(0,eigvec[0],epsilon);
-	EXPECT_NEAR(2.327794822241147,eigvec[1],epsilon);
-	EXPECT_NEAR(2.759160840481412,eigvec[2],epsilon);
+	EXPECT_NEAR(2.327794822241147,std::abs(eigvec[1]),epsilon);
+	EXPECT_NEAR(2.759160840481412,std::abs(eigvec[2]),epsilon);
 
-	EXPECT_NEAR(0.258049566055304,transmat(0,0),epsilon);
-	EXPECT_NEAR(0.257746561935451,transmat(0,1),epsilon);
-	EXPECT_NEAR(0.349092719192590,transmat(1,0),epsilon);
-	EXPECT_NEAR(-0.129544636386834,transmat(1,1),epsilon);
-	EXPECT_NEAR(-0.630860251575450,transmat(2,0),epsilon);
-	EXPECT_NEAR(0.648487498866225,transmat(2,1),epsilon);
-	EXPECT_NEAR(0.374280965623520,transmat(3,0),epsilon);
-	EXPECT_NEAR(0.647067522254220,transmat(3,1),epsilon);
-	EXPECT_NEAR(-0.522947221638548,transmat(4,0),epsilon);
-	EXPECT_NEAR(-0.278482463454826,transmat(4,1),epsilon);
+	EXPECT_NEAR(0.258049566055304,std::abs(transmat(0,0)),epsilon);
+	EXPECT_NEAR(0.257746561935451,std::abs(transmat(0,1)),epsilon);
+	EXPECT_NEAR(0.349092719192590,std::abs(transmat(1,0)),epsilon);
+	EXPECT_NEAR(0.129544636386834,std::abs(transmat(1,1)),epsilon);
+	EXPECT_NEAR(0.630860251575450,std::abs(transmat(2,0)),epsilon);
+	EXPECT_NEAR(0.648487498866225,std::abs(transmat(2,1)),epsilon);
+	EXPECT_NEAR(0.374280965623520,std::abs(transmat(3,0)),epsilon);
+	EXPECT_NEAR(0.647067522254220,std::abs(transmat(3,1)),epsilon);
+	EXPECT_NEAR(0.522947221638548,std::abs(transmat(4,0)),epsilon);
+	EXPECT_NEAR(0.278482463454826,std::abs(transmat(4,1)),epsilon);
 
-	EXPECT_NEAR(-0.511467003751085,finalmat(0,0),epsilon);
-	EXPECT_NEAR(1.715732114990145,finalmat(0,1),epsilon);
-	EXPECT_NEAR(-1.204265111239059,finalmat(0,2),epsilon);
-	EXPECT_NEAR(1.835430614937060,finalmat(1,0),epsilon);
-	EXPECT_NEAR(-0.435473994643473,finalmat(1,1),epsilon);
-	EXPECT_NEAR(-1.39995662029358,finalmat(1,2),epsilon);
+	EXPECT_NEAR(0.511467003751085,std::abs(finalmat(0,0)),epsilon);
+	EXPECT_NEAR(1.715732114990145,std::abs(finalmat(0,1)),epsilon);
+	EXPECT_NEAR(1.204265111239059,std::abs(finalmat(0,2)),epsilon);
+	EXPECT_NEAR(1.835430614937060,std::abs(finalmat(1,0)),epsilon);
+	EXPECT_NEAR(0.435473994643473,std::abs(finalmat(1,1)),epsilon);
+	EXPECT_NEAR(1.39995662029358,std::abs(finalmat(1,2)),epsilon);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
