@@ -40,30 +40,116 @@ namespace shogun
 class CDistance;
 class CCustomDistance;
 
+/**
+ * @brief Class TwoDistributionTest is the base class for the statistical
+ * hypothesis testing with samples from two distributions, \f$mathbf{P}\f$
+ * and \f$\mathbf{Q}\f$.
+ *
+ * \sa {CTwoSampleTest}
+ */
 class CTwoDistributionTest : public CHypothesisTest
 {
 public:
+	/** Default constructor */
 	CTwoDistributionTest();
+
+	/** Destrutor */
 	virtual ~CTwoDistributionTest();
 
+	/**
+	 * Method that initializes the samples from \f$\mathbf{P}\f$. This method
+	 * is kept virtual for the sub-classes to perform additional initialization
+	 * tasks that have to be performed every time features are set/updated.
+	 *
+	 * @param samples_from_p The CFeatures instance representing the samples
+	 * from \f$\mathbf{P}\f$.
+	 */
 	virtual void set_p(CFeatures* samples_from_p);
+
+	/** @return The samples from \f$\mathbf{P}\f$. */
 	CFeatures* get_p() const;
 
+	/**
+	 * Method that initializes the samples from \f$\mathbf{Q}\f$. This method
+	 * is kept virtual for the sub-classes to perform additional initialization
+	 * tasks that have to be performed every time features are set/updated.
+	 *
+	 * @param samples_from_q The CFeatures instance representing the samples
+	 * from \f$\mathbf{Q}\f$.
+	 */
 	virtual void set_q(CFeatures* samples_from_q);
+
+	/** @return The samples from \f$\mathbf{Q}\f$. */
 	CFeatures* get_q() const;
 
+	/**
+	 * Method that initializes the number of samples to be drawn from distribution
+	 * \f$\mathbf{P}\f$. Please ensure to call this method if you are intending to
+	 * use streaming data generators that generate the samples on the fly. For
+	 * other types of features, the number of samples is set internally from the
+	 * features object itself, therefore this method should not be used.
+	 *
+	 * @param num_samples_from_p The CFeatures instance representing the samples
+	 * from \f$\mathbf{P}\f$.
+	 */
 	void set_num_samples_p(index_t num_samples_from_p);
+
+	/** @return The number of samples from \f$\mathbf{P}\f$. */
 	const index_t get_num_samples_p() const;
 
+	/**
+	 * Method that initializes the number of samples to be drawn from distribution
+	 * \f$\mathbf{Q}\f$. Please ensure to call this method if you are intending to
+	 * use streaming data generators that generate the samples on the fly. For
+	 * other types of features, the number of samples is set internally from the
+	 * features object itself, therefore this method should not be used.
+	 *
+	 * @param num_samples_from_q The CFeatures instance representing the samples
+	 * from \f$\mathbf{Q}\f$.
+	 */
 	void set_num_samples_q(index_t num_samples_from_q);
+
+	/** @return The number of samples from \f$\mathbf{Q}\f$. */
 	const index_t get_num_samples_q() const;
 
+	/**
+	 * Method that pre-computes the pair-wise distance between the samples using
+	 * the provided distance instance.
+	 *
+	 * @param distance The distance instance used for pre-computing the pair-wise
+	 * distance.
+	 * @return A newly created CCustomDistance instance representing the
+	 * pre-computed pair-wise distance between the samples.
+	 */
 	CCustomDistance* compute_distance(CDistance* distance);
+
+	/**
+	 * Method that pre-computes the pair-wise distance between the joint samples using
+	 * the provided distance instance. A temporary object appending the samples from
+	 * both the distributions is created in order to perform the task.
+	 *
+	 * @param distance The distance instance used for pre-computing the pair-wise
+	 * distance.
+	 * @return A newly created CCustomDistance instance representing the
+	 * pre-computed pair-wise distance between the joint samples.
+	 */
 	CCustomDistance* compute_joint_distance(CDistance* distance);
 
+	/**
+	 * Interface for computing the test-statistic for the hypothesis test.
+	 *
+	 * @return test statistic for the given data/parameters/methods
+	 */
 	virtual float64_t compute_statistic()=0;
+
+	/**
+	 * Interface for computing the samples under the null-hypothesis.
+	 *
+	 * @return vector of all statistics
+	 */
 	virtual SGVector<float64_t> sample_null()=0;
 
+	/** @return The name of the class */
 	virtual const char* get_name() const;
 };
 
