@@ -41,9 +41,8 @@ mk.add_kernel(kernel2)
 mk.add_kernel(kernel2)
 
 RealVector mk_statistic = mk.compute_statistic()
-RealVector mk_p_value = mmd.compute_p_value(statistic)
+RealVector mk_p_value = mk.compute_p_value()
 #![multi_kernel]
-
 
 #![enable_train_test_mode]
 mmd.set_train_test_mode(True)
