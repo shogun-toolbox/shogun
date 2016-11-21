@@ -18,6 +18,8 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/SGObject.h>
+
+#include <string>
 #include <stdlib.h>
 #include <string.h>
 
@@ -201,5 +203,22 @@ namespace shogun
 				io->set_loglevel(MSG_ERROR);
 		}
 		SG_UNREF(io);
+
+#ifdef HAVE_CXX11
+		char* env_thread_val = NULL;
+		Parallel* parallel = get_global_parallel();
+		env_thread_val = getenv("SHOGUN_NUM_THREADS");
+		if (env_thread_val)
+		{
+
+			try {
+				int32_t num_threads = std::stoi(std::string(env_thread_val));
+				parallel->set_num_threads(num_threads);
+			} catch (...) {
+				SG_WARNING("The specified SHOGUN_NUM_THREADS environment (%s)"
+				"variable could not be parsed as integer!\n", env_thread_val);
+			}
+		}
+#endif
 	}
 }
