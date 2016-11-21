@@ -32,10 +32,6 @@
 #include <unistd.h>
 #include <shogun/mathematics/Math.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 using namespace shogun;
 
 CKernel::CKernel() : CSGObject()
@@ -375,23 +371,19 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 // Fills cache for the rows in key
 void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 {
-#ifdef HAVE_PTHREAD
 	int32_t nthreads=parallel->get_num_threads();
 
 	if (nthreads<2)
 	{
-#endif
 		for(int32_t i=0;i<num_rows;i++)
 			cache_kernel_row(rows[i]);
-#ifdef HAVE_PTHREAD
 	}
 	else
 	{
 		// fill up kernel cache
 		int32_t* uncached_rows = SG_MALLOC(int32_t, num_rows);
 		KERNELCACHE_ELEM** cache = SG_MALLOC(KERNELCACHE_ELEM*, num_rows);
-		pthread_t* threads = SG_MALLOC(pthread_t, nthreads-1);
-		S_KTHREAD_PARAM* params = SG_MALLOC(S_KTHREAD_PARAM, nthreads-1);
+		S_KTHREAD_PARAM params;
 		int32_t num_threads=nthreads-1;
 		int32_t num_vec=get_num_vec_lhs();
 		ASSERT(num_vec>0)
@@ -423,7 +415,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 		if (num>0)
 		{
-			step= num/nthreads;
+			step = num/nthreads;
 
 			if (step<1)
 			{
@@ -431,30 +423,21 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 				step=1;
 			}
 
+			#pragma omp parallel for private(params)
 			for (int32_t t=0; t<num_threads; t++)
 			{
-				params[t].kernel = this;
-				params[t].kernel_cache = &kernel_cache;
-				params[t].cache = cache;
-				params[t].uncached_rows = uncached_rows;
-				params[t].needs_computation = needs_computation;
-				params[t].num_uncached = num;
-				params[t].start = t*step;
-				params[t].end = (t+1)*step;
-				params[t].num_vectors = get_num_vec_lhs();
-				end=params[t].end;
+				params.kernel = this;
+				params.kernel_cache = &kernel_cache;
+				params.cache = cache;
+				params.uncached_rows = uncached_rows;
+				params.needs_computation = needs_computation;
+				params.num_uncached = num;
+				params.start = t*step;
+				params.end = (t+1)*step;
+				params.num_vectors = get_num_vec_lhs();
+				end=params.end;
 
-				int code=pthread_create(&threads[t], NULL,
-						CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
-
-				if (code != 0)
-				{
-					SG_WARNING("Thread creation failed (thread %d of %d) "
-							"with error:'%s'\n",t, num_threads, strerror(code));
-					num_threads=t;
-					end=t*step;
-					break;
-				}
+				cache_multiple_kernel_row_helper(&params);
 			}
 		}
 		else
@@ -474,20 +457,10 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 
 		cache_multiple_kernel_row_helper(&last_param);
 
-
-		for (int32_t t=0; t<num_threads; t++)
-		{
-			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-		}
-
 		SG_FREE(needs_computation);
-		SG_FREE(params);
-		SG_FREE(threads);
 		SG_FREE(cache);
 		SG_FREE(uncached_rows);
 	}
-#endif
 }
 
 // remove numshrink columns in the cache
@@ -1043,7 +1016,7 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 	// since the block is symmetric with main diagonal inside, we can save half
 	// the computation with using only the upper triangular part.
 	// this can be done in parallel
-#pragma omp parallel for
+	#pragma omp parallel for reduction(+:sum)
 	for (index_t i=0; i<block_size; ++i)
 	{
 		// compute the kernel values on the upper triangular part of the kernel
@@ -1051,7 +1024,6 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 		for (index_t j=i+1; j<block_size; ++j)
 		{
 			float64_t k=kernel(i+block_begin, j+block_begin);
-#pragma omp atomic
 			sum+=k;
 		}
 	}
@@ -1063,11 +1035,10 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 	// outside of the loop to save cycles
 	if (!no_diag)
 	{
-#pragma omp parallel for
+		#pragma omp parallel for reduction(+:sum)
 		for (index_t i=0; i<block_size; ++i)
 		{
 			float64_t diag=kernel(i+block_begin, i+block_begin);
-#pragma omp atomic
 			sum+=diag;
 		}
 	}
@@ -1105,7 +1076,7 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 	float64_t sum=0.0;
 
 	// this can be done in parallel for the rows/cols
-#pragma omp parallel for
+	#pragma omp parallel for reduction(+:sum)
 	for (index_t i=0; i<block_size_row; ++i)
 	{
 		// compute the kernel values and compute sum on the fly
@@ -1113,7 +1084,6 @@ float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
 		{
 			float64_t k=no_diag && i==j ? 0 :
 				kernel(i+block_begin_row, j+block_begin_col);
-#pragma omp atomic
 			sum+=k;
 		}
 	}
@@ -1144,7 +1114,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 	// since the block is symmetric with main diagonal inside, we can save half
 	// the computation with using only the upper triangular part.
 	// this can be done in parallel for the rows/cols
-#pragma omp parallel for
+	#pragma omp parallel for
 	for (index_t i=0; i<block_size; ++i)
 	{
 		// compute the kernel values on the upper triangular part of the kernel
@@ -1152,7 +1122,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 		for (index_t j=i+1; j<block_size; ++j)
 		{
 			float64_t k=kernel(i+block_begin, j+block_begin);
-#pragma omp critical
+			#pragma omp critical
 			{
 				row_sum[i]+=k;
 				row_sum[j]+=k;
@@ -1164,7 +1134,7 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 	// outside of the loop to save cycles
 	if (!no_diag)
 	{
-#pragma omp parallel for
+		#pragma omp parallel for
 		for (index_t i=0; i<block_size; ++i)
 		{
 			float64_t diag=kernel(i+block_begin, i+block_begin);
@@ -1360,75 +1330,38 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	result=SG_MALLOC(T, total_num);
 
 	int32_t num_threads=parallel->get_num_threads();
-	if (num_threads < 2)
+	K_THREAD_PARAM<T> params;
+	int64_t step = total_num/num_threads;
+	index_t t = 0;
+	#pragma omp parallel for lastprivate(t) private(params)
+	for (t = 0; t < num_threads; ++t)
 	{
-		K_THREAD_PARAM<T> params;
-		params.kernel=this;
-		params.result=result;
-		params.start=0;
-		params.end=m;
-		params.total_start=0;
+		params.kernel = this;
+		params.result = result;
+		params.start = compute_row_start(t*step, n, symmetric);
+		params.end = compute_row_start((t+1)*step, n, symmetric);
+		params.total_start=t*step;
+		params.total_end=(t+1)*step;
+		params.n=n;
+		params.m=m;
+		params.symmetric=symmetric;
+		params.verbose=false;
+		CKernel::get_kernel_matrix_helper<T>((void*)&params);
+	}
+
+	if (total_num % num_threads != 0)
+	{
+		params.kernel = this;
+		params.result = result;
+		params.start = compute_row_start(t*step, n, symmetric);
+		params.end = m;
+		params.total_start=t*step;
 		params.total_end=total_num;
 		params.n=n;
 		params.m=m;
 		params.symmetric=symmetric;
-		params.verbose=true;
-		get_kernel_matrix_helper<T>((void*) &params);
-	}
-	else
-	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		K_THREAD_PARAM<T>* params = SG_MALLOC(K_THREAD_PARAM<T>, num_threads);
-		int64_t step= total_num/num_threads;
-
-		int32_t t;
-
-		num_threads--;
-		for (t=0; t<num_threads; t++)
-		{
-			params[t].kernel = this;
-			params[t].result = result;
-			params[t].start = compute_row_start(t*step, n, symmetric);
-			params[t].end = compute_row_start((t+1)*step, n, symmetric);
-			params[t].total_start=t*step;
-			params[t].total_end=(t+1)*step;
-			params[t].n=n;
-			params[t].m=m;
-			params[t].symmetric=symmetric;
-			params[t].verbose=false;
-
-			int code=pthread_create(&threads[t], NULL,
-					CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
-
-			if (code != 0)
-			{
-				SG_WARNING("Thread creation failed (thread %d of %d) "
-						"with error:'%s'\n",t, num_threads, strerror(code));
-				num_threads=t;
-				break;
-			}
-		}
-
-		params[t].kernel = this;
-		params[t].result = result;
-		params[t].start = compute_row_start(t*step, n, symmetric);
-		params[t].end = m;
-		params[t].total_start=t*step;
-		params[t].total_end=total_num;
-		params[t].n=n;
-		params[t].m=m;
-		params[t].symmetric=symmetric;
-		params[t].verbose=true;
-		get_kernel_matrix_helper<T>(&params[t]);
-
-		for (t=0; t<num_threads; t++)
-		{
-			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-		}
-
-		SG_FREE(params);
-		SG_FREE(threads);
+		params.verbose=false;
+		CKernel::get_kernel_matrix_helper<T>((void*)&params);
 	}
 
 	SG_DONE()
