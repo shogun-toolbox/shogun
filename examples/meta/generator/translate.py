@@ -559,7 +559,6 @@ class Translator:
         """
         identifier = elementAccess[0]["Identifier"]
         indexList = elementAccess[1]["IndexList"]
-        indexListTranslation = self.translateIndexList(indexList)
 
         assert identifier in self.variableTypes,\
             "Variable {} not initialised".format(identifier)
@@ -574,8 +573,10 @@ class Translator:
             targetDict = self.targetDict["Element"]["Assign"]
             exprString = self.translateExpr(expr)
 
+        indexOffsetRequired=True
         if type in targetDict:
             template = Template(targetDict[type])
+            indexOffsetRequired=False
         elif len(indexList) == 1:
             template = Template(targetDict["Vector"])
         elif len(indexList) == 2:
@@ -585,16 +586,21 @@ class Translator:
                                      "(vector) or 2 indices (matrix). Given "
                                      " " + str(len(indexList)) + " indices")
 
+        # only potentially offset index lists if native Vector or Matrix assignment is used
+        # otherwise, it is not possible to call native shogun vector/matrix methods
+        # (which are zero indexed)
+        indexListTranslation = self.translateIndexList(indexList, indexOffsetRequired)
+
         return template.substitute(identifier=identifier,
                                    indices=indexListTranslation,
                                    expr=exprString)
 
-    def translateIndexList(self, indexList):
+    def translateIndexList(self, indexList, indexOffsetRequired):
         """ Translate index list AST
         Args:
             indexList: object like [IntLiteralAST, IntLiteralAST, ..]
         """
-        addOne = not self.targetDict["Element"]["ZeroIndexed"]
+        addOne = not self.targetDict["Element"]["ZeroIndexed"] and indexOffsetRequired
         translation = ""
         for idx, intLiteral in enumerate(indexList):
             index = int(intLiteral["IntLiteral"])
