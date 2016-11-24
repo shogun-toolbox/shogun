@@ -37,7 +37,6 @@
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
 #include <shogun/mathematics/linalg/internal/implementation/Apply.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
-#include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 #include <shogun/mathematics/linalg/internal/implementation/Convolve.h>
 
 namespace shogun
@@ -86,20 +85,6 @@ Matrix add(Matrix A, Matrix B, typename Matrix::Scalar alpha=1.0,
 		typename Matrix::Scalar beta=1.0)
 {
 	return implementation::add<backend, Matrix>::compute(A, B, alpha, beta);
-}
-
-/** Performs the operation B = alpha*A. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
-{
-	implementation::scale<backend, Matrix>::compute(A, B, alpha);
-}
-
-/** Performs the operation A = alpha*A. Works for both matrices and vectors */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void scale(Matrix A, typename Matrix::Scalar alpha)
-{
-	implementation::scale<backend, Matrix>::compute(A, A, alpha);
 }
 
 #ifdef HAVE_LINALG_LIB
