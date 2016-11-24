@@ -1,4 +1,3 @@
-extern "C" {
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
@@ -7,7 +6,6 @@ extern "C" {
 #include <Rinterface.h>
 #include <R_ext/RS.h>
 #include <R_ext/Error.h>
-}
 
 #include <stdio.h>
 
