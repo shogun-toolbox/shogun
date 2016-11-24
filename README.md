@@ -24,12 +24,6 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
  * See [the cookbook](http://shogun.ml/examples) for API examples for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for developer information.
 
-Quick links for this file:
-* [Interfaces](#interfaces)
-* [Platforms](#platforms)
-* [License](#license)
-
-
 ## Interfaces
 -------------
 
