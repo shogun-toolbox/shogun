@@ -34,7 +34,6 @@
 
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
-#include <shogun/mathematics/linalg/internal/implementation/Max.h>
 #include <shogun/mathematics/linalg/internal/implementation/MeanEigen3.h>
 #include <shogun/mathematics/linalg/internal/implementation/Cholesky.h>
 
@@ -43,16 +42,6 @@ namespace shogun
 
 namespace linalg
 {
-/** Returns the largest element in a matrix or vector
- * @param m the matrix or the vector
- * @return the value of the largest element
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
-typename Matrix::Scalar max(Matrix m)
-{
-	return implementation::max<backend,Matrix>::compute(m);
-}
-
 /**
  * Wrapper method for internal implementation of vector sum of values that works
  * with generic dense vectors
@@ -196,7 +185,7 @@ typename implementation::int2float<typename Matrix::Scalar>::floatType mean(
 }
 
 /**
- * Wrapper method for internal implementation of matrix rowwise mean of values 
+ * Wrapper method for internal implementation of matrix rowwise mean of values
  * that works with generic dense matrices
  *
  * @param m the matrix whose rowwise mean has to be computed
@@ -204,7 +193,7 @@ typename implementation::int2float<typename Matrix::Scalar>::floatType mean(
  * @return the rowwise mean computed as \f$\1/N \sum_{j=1}^N m_{i,j}\f$
  */
 template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
-SGVector<typename implementation::rowwise_mean<backend,Matrix>::ReturnDataType> 
+SGVector<typename implementation::rowwise_mean<backend,Matrix>::ReturnDataType>
 	rowwise_mean(Matrix m, bool no_diag=false)
 {
 	return implementation::rowwise_mean<backend,Matrix>::compute(m, no_diag);
