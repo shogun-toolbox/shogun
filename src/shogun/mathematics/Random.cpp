@@ -279,9 +279,10 @@ float64_t CRandom::std_normal_distrib() const
 float64_t CRandom::sample_tail() const
 {
 	float64_t x, y;
+	float64_t m_R_reciprocal = 1.0 / m_R;
 	do
 	{
-	    x = -CMath::log(random_half_open()) / m_R;
+	    x = -CMath::log(random_half_open()) * m_R_reciprocal;
 	    y = -CMath::log(random_half_open());
 	} while(y+y < x*x);
 	return m_R + x;
@@ -289,7 +290,7 @@ float64_t CRandom::sample_tail() const
 
 float64_t CRandom::GaussianPdfDenorm(float64_t x) const
 {
-	return CMath::exp(-(x*x / 2.0));
+	return CMath::exp(-(x*x * 0.5));
 }
 
 float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
