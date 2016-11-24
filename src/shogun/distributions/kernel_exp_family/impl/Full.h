@@ -77,7 +77,8 @@ class Base;
 class Full : public Base
 {
 public :
-	Full(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda);
+	Full(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
+			float64_t q0_scale);
 	virtual ~Full() {};
 
 	virtual std::pair<SGMatrix<float64_t>, SGVector<float64_t>> build_system() const;
@@ -91,6 +92,14 @@ public :
 	using Base::log_pdf;
 	using Base::grad;
 	using Base::hessian;
+
+	virtual float64_t gaussian_log_pdf(const SGVector<float64_t>& x) const;
+	virtual SGMatrix<float64_t> gaussian_score(const SGMatrix<float64_t>& X) const;
+    virtual SGMatrix<float64_t> gaussian_second_score() const;
+
+private :
+	SGMatrix<float64_t> cov;
+	SGVector<float64_t> mean;
 };
 };
 

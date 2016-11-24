@@ -44,8 +44,8 @@ CKernelExpFamily::CKernelExpFamily() : CSGObject()
 	m_impl=NULL;
 }
 
-CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, float memory_limit_gib) : CSGObject()
+CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data, float64_t sigma,
+	float64_t lambda, float64_t q0_scale, float memory_limit_gib) : CSGObject()
 {
 	REQUIRE(data.matrix, "Given observations cannot be empty\n");
 	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
@@ -54,7 +54,7 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 
 	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
-	m_impl = new kernel_exp_family_impl::Full(data, kernel, lambda);
+	m_impl = new kernel_exp_family_impl::Full(data, kernel, lambda, q0_scale);
 
 	auto N =  m_impl->get_num_lhs();
 	auto D = m_impl->get_num_dimensions();

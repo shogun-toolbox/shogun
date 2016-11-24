@@ -53,7 +53,8 @@ class Base;
 class Base
 {
 public :
-	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda);
+	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
+			float64_t q0_scale);
 	virtual ~Base();
 
 	// for evaluation
@@ -84,6 +85,7 @@ protected:
 
 	kernel::Base* m_kernel;
 	float64_t m_lambda;
+	float64_t m_q0_scale;
 
 	SGVector<float64_t> m_alpha_beta;
 };

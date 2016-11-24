@@ -56,6 +56,9 @@ public :
 	virtual void set_rhs(SGVector<float64_t> rhs);
 	virtual void set_lhs(SGMatrix<float64_t> lhs);
 	virtual void set_lhs(SGVector<float64_t> lhs);
+	virtual SGMatrix<float64_t> get_lhs(); // ugly ugly
+    virtual void get_lhs(index_t idx, SGVector<float64_t>& dst);
+	virtual void get_rhs(index_t idx, SGVector<float64_t>& dst); // ....
 	index_t get_num_dimensions() const;
 	index_t get_num_lhs() const;
 	index_t get_num_rhs() const;

@@ -43,7 +43,7 @@ using namespace Eigen;
 
 Nystrom::Nystrom(SGMatrix<float64_t> data,
 		kernel::Base* kernel, float64_t lambda, SGVector<index_t> rkhs_basis_inds)  :
-		Base(data, kernel, lambda)
+		Base(data, kernel, lambda, 1.0)
 {
 	m_rkhs_basis_inds = rkhs_basis_inds;
 
@@ -53,7 +53,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data,
 
 Nystrom::Nystrom(SGMatrix<float64_t> data,
 		kernel::Base* kernel, float64_t lambda,
-		index_t num_rkhs_basis)  : Base(data, kernel, lambda)
+		index_t num_rkhs_basis)  : Base(data, kernel, lambda, 1.0)
 {
 	sub_sample_rkhs_basis(num_rkhs_basis);
 }

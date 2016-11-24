@@ -71,6 +71,23 @@ void Base::set_lhs(SGVector<float64_t> lhs)
 	set_lhs(SGMatrix<float64_t>(lhs));
 }
 
+SGMatrix<float64_t> Base::get_lhs()
+{
+	return m_lhs;
+}
+
+void Base::get_lhs(index_t idx, SGVector<float64_t>& dst)
+{
+	auto D = get_num_dimensions();
+	memcpy(dst.vector, m_lhs.get_column_vector(idx), D*sizeof(float64_t));
+}
+
+void Base::get_rhs(index_t idx, SGVector<float64_t>& dst)
+{
+	auto D = get_num_dimensions();
+	memcpy(dst.vector, m_rhs.get_column_vector(idx), D*sizeof(float64_t));
+}
+
 index_t Base::get_num_rhs() const
 {
 	return m_rhs.num_cols;

@@ -48,7 +48,8 @@ class CKernelExpFamily : public CSGObject
 public:
 	CKernelExpFamily();
 	CKernelExpFamily(SGMatrix<float64_t> data,
-			float64_t sigma, float64_t lambda, float memory_limit_gib=4.0);
+			float64_t sigma, float64_t lambda, float64_t q0_scale=1.0,
+			float memory_limit_gib=4.0);
 	virtual ~CKernelExpFamily();
 
 	virtual void fit();

@@ -34,6 +34,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <iostream>
 
 #include "Full.h"
 #include "kernel/Base.h"
@@ -43,9 +44,43 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Full::Full(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda) :
-		Base(data, kernel, lambda)
+		kernel::Base* kernel, float64_t lambda, float64_t q0_scale) :
+		Base(data, kernel, lambda, q0_scale)
 {
+	// Compute empirical mean and covariance
+	auto D = get_num_dimensions();
+	auto N = get_num_lhs();
+
+	cov = SGMatrix<float64_t>(D,D);
+	mean = SGVector<float64_t>(D);
+
+	Map<MatrixXd> eigen_data(data.matrix, D, N);
+	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
+	Map<VectorXd> eigen_mean(mean.vector, D);
+
+	eigen_mean = eigen_data.rowwise().mean();
+	MatrixXd centered = eigen_data.colwise() - eigen_mean;
+	eigen_cov = (centered * centered.transpose()) / double(N - 1);
+	eigen_cov.array() *= m_q0_scale;
+
+	LLT<MatrixXd> lltOfCov(eigen_cov);
+	if(lltOfCov.info() == Eigen::NumericalIssue)
+	{
+		throw std::runtime_error("Emprical covariance is not PSD!");
+	}
+
+	// TESTING 
+	/*
+	SGMatrix<float64_t> t(D, 2);
+	for (int i = 0; i < D*2; i++)
+		t[i] = i;
+
+	t.display_matrix();
+
+	Map<VectorXd> eigen_t(t.matrix, D*2);
+
+	std::cout << "HELLO EHASD"<< std::endl; 
+	std::cout << "HELLO\n" << eigen_t << std::endl; */
 }
 
 SGVector<float64_t> Full::compute_h() const
@@ -102,16 +137,24 @@ std::pair<SGMatrix<float64_t>, SGVector<float64_t>> Full::build_system() const
 
 	// TODO all this can be done using a single pass over all data
 
-	SG_SINFO("Computing h.\n");
-	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, ND);
-
 	SG_SINFO("Computing all kernel Hessians.\n");
 	auto all_hessians = m_kernel->dx_dy_all();
 	auto eigen_all_hessians = Map<MatrixXd>(all_hessians.matrix, ND, ND);
 
+	SGMatrix<float64_t> data = m_kernel->get_lhs();
+	SGMatrix<float64_t> q0_scores = gaussian_score(data);
+
+	Map<VectorXd> eigen_q0_scores(q0_scores.matrix, ND); // check ordering
+	VectorXd all_hessians_dot_q0_scores = eigen_all_hessians*eigen_q0_scores;
+
+	SG_SINFO("Computing h.\n");
+	auto h = compute_h();
+	auto eigen_h=Map<VectorXd>(h.vector, ND);
+	eigen_h += all_hessians_dot_q0_scores/N;
+
 	SG_SINFO("Computing xi norm.\n");
 	auto xi_norm_2 = compute_xi_norm_2();
+	xi_norm_2 += 2.0*eigen_h.dot(eigen_q0_scores)/N;
 
 	SG_SINFO("Populating A matrix.\n");
 	// A[0, 0] = np.dot(h, h) / n + lmbda * xi_norm_2
@@ -139,6 +182,8 @@ float64_t Full::log_pdf(index_t idx_test) const
 	float64_t xi = 0;
 	float64_t beta_sum = 0;
 
+	SGMatrix<float64_t> q0_scores = gaussian_score(m_kernel->get_lhs());
+
 	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
 	for (auto idx_a=0; idx_a<N; idx_a++)
 	{
@@ -153,8 +198,15 @@ float64_t Full::log_pdf(index_t idx_test) const
 		// note: sign flip as different argument order compared to Python code
 		beta_sum -= eigen_grad_x_xa.transpose()*eigen_alpha_beta.segment(1+idx_a*D, D);
 
+		Map<VectorXd> q0_score_xa(q0_scores.get_column_vector(idx_a), D);
+		xi -= eigen_grad_x_xa.dot(q0_score_xa) / N;
 	}
-	return m_alpha_beta[0]*xi + beta_sum;
+
+	SGVector<float64_t> test_point(D);
+	m_kernel->get_rhs(idx_test, test_point);
+
+	float64_t log_q0 = gaussian_log_pdf(test_point);
+	return m_alpha_beta[0]*xi + beta_sum + log_q0;
 }
 
 SGVector<float64_t> Full::grad(index_t idx_test) const
@@ -168,6 +220,10 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
 	eigen_xi_grad = VectorXd::Zero(D);
 	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
+
+	SGMatrix<float64_t> q0_scores = gaussian_score(m_kernel->get_lhs());
+	SGMatrix<float64_t> q0_second_score = gaussian_second_score();
+	Map<MatrixXd> eigen_q0_second_score(q0_second_score.matrix, D, D);
 
 	Map<VectorXd> eigen_alpha_beta(m_alpha_beta.vector, N*D+1);
 	for (auto a=0; a<N; a++)
@@ -183,11 +239,26 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
 		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_alpha_beta.segment(1+a*D, D).matrix();
+
+		Map<VectorXd> q0_score_xa(q0_scores.get_column_vector(a), D);
+		eigen_xi_grad += eigen_left_arg_hessian*q0_score_xa;
+
+		auto left_arg_grad = m_kernel->dx(a, idx_test);
+		Map<VectorXd> eigen_left_arg_grad(left_arg_grad.vector, D);
+
+		eigen_xi_grad += eigen_q0_second_score*eigen_left_arg_grad;
 	}
 
 	// return alpha * xi_grad + betasum_grad
 	eigen_xi_grad *= m_alpha_beta[0] / N;
-	return xi_grad + beta_sum_grad;
+
+	SGVector<float64_t> test_point(D);
+	m_kernel->get_rhs(idx_test, test_point);
+	SGMatrix<float64_t> q0_test_score = gaussian_score(SGMatrix<float64_t>(test_point));
+	SGVector<float64_t> q0_test_score_vector(D);
+	memcpy(q0_test_score_vector.vector, q0_test_score.matrix, D*sizeof(float64_t));
+
+	return xi_grad + beta_sum_grad + q0_test_score_vector;
 }
 
 SGMatrix<float64_t> Full::hessian(index_t idx_test) const
@@ -234,6 +305,54 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
 	eigen_result = eigen_xi_hessian + eigen_beta_sum_hessian;
+
+	return result;
+}
+
+float64_t Full::gaussian_log_pdf(const SGVector<float64_t>& x) const
+{
+	auto D = get_num_dimensions();
+
+	Map<VectorXd> eigen_mean(mean.vector, D);
+	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
+	Map<VectorXd> eigen_x(x.vector, D);
+
+	VectorXd centered_x = eigen_x - eigen_mean;
+
+
+	return -0.5 * centered_x.dot(eigen_cov.ldlt().solve(centered_x));
+}
+
+SGMatrix<float64_t> Full::gaussian_score(const SGMatrix<float64_t>& X) const
+{
+	auto D = get_num_dimensions();
+	auto N = X.num_cols;
+
+	REQUIRE(X.num_rows == D, "Dimension of given observations (%d) must be %d.\n", X.num_rows, D);
+
+
+	Map<VectorXd> eigen_mean(mean.vector, D);
+	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
+	Map<MatrixXd> eigen_X(X.matrix, D, N);
+
+	MatrixXd centered_x = eigen_X.colwise() - eigen_mean;
+
+	SGMatrix<float64_t> result(D, N);
+	Map<MatrixXd> eigen_result(result.matrix, D, N);
+
+	eigen_result = -eigen_cov.ldlt().solve(centered_x);
+
+	return result;
+}
+
+SGMatrix<float64_t> Full::gaussian_second_score() const
+{
+	auto D = get_num_dimensions();
+	SGMatrix<float64_t> result(D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+
+	Map<MatrixXd> eigen_cov(cov.matrix, D, D);
+	eigen_result = -eigen_cov.inverse();
 
 	return result;
 }

@@ -68,12 +68,13 @@ index_t Base::get_num_rhs() const
 }
 
 Base::Base(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda)
+		kernel::Base* kernel, float64_t lambda, float64_t q0_scale)
 {
 	m_kernel = kernel;
 	m_kernel->set_lhs(data);
 	m_kernel->set_rhs(data);
 	m_lambda = lambda;
+	m_q0_scale = q0_scale;
 
 	SG_SINFO("Problem size is N=%d, D=%d.\n", get_num_lhs(), get_num_dimensions());
 	m_kernel->precompute();
