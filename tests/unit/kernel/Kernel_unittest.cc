@@ -37,6 +37,18 @@
 
 using namespace shogun;
 
+static SGMatrix<float64_t>
+generate_std_norm_matrix(const index_t num_feats, const index_t dim)
+{
+	SGMatrix<float64_t> data(dim, num_feats);
+	for (index_t i=0; i<num_feats; ++i)
+	{
+		for (index_t j=0; j<dim; ++j)
+			data(j, i)=CMath::randn_double();
+	}
+	return data;
+}
+
 TEST(Kernel, sum_symmetric_block_no_diag)
 {
 	const index_t num_feats=10;
@@ -44,12 +56,7 @@ TEST(Kernel, sum_symmetric_block_no_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -78,12 +85,7 @@ TEST(Kernel, sum_symmetric_block_with_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -114,20 +116,8 @@ TEST(Kernel, sum_block_with_diag)
 	// create random data
 	CMath::init_random(100);
 
-	SGMatrix<float64_t> data_p(dim, num_feats_p);
-	for (index_t i=0; i<num_feats_p; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_p(j, i)=CMath::randn_double();
-	}
-
-	SGMatrix<float64_t> data_q(dim, num_feats_q);
-	for (index_t i=0; i<num_feats_q; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_q(j, i)=CMath::randn_double();
-	}
-
+	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
+	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
 
@@ -159,20 +149,8 @@ TEST(Kernel, sum_block_no_diag)
 	// create random data
 	CMath::init_random(100);
 
-	SGMatrix<float64_t> data_p(dim, num_feats_p);
-	for (index_t i=0; i<num_feats_p; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_p(j, i)=CMath::randn_double();
-	}
-
-	SGMatrix<float64_t> data_q(dim, num_feats_q);
-	for (index_t i=0; i<num_feats_q; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_q(j, i)=CMath::randn_double();
-	}
-
+	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
+	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
 
@@ -202,12 +180,7 @@ TEST(Kernel, row_wise_sum_symmetric_block_no_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -236,12 +209,7 @@ TEST(Kernel, row_wise_sum_symmetric_block_with_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -270,12 +238,7 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_no_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -310,12 +273,7 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_with_diag)
 
 	// create random data
 	CMath::init_random(100);
-	SGMatrix<float64_t> data(dim, num_feats);
-	for (index_t i=0; i<num_feats; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// initialize a Gaussian kernel of width 1
@@ -351,20 +309,8 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 
 	// create random data
 	CMath::init_random(100);
-
-	SGMatrix<float64_t> data_p(dim, num_feats_p);
-	for (index_t i=0; i<num_feats_p; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_p(j, i)=CMath::randn_double();
-	}
-
-	SGMatrix<float64_t> data_q(dim, num_feats_q);
-	for (index_t i=0; i<num_feats_q; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_q(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
+	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 
 	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
@@ -404,20 +350,8 @@ TEST(Kernel, row_col_wise_sum_block_no_diag)
 
 	// create random data
 	CMath::init_random(100);
-
-	SGMatrix<float64_t> data_p(dim, num_feats_p);
-	for (index_t i=0; i<num_feats_p; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_p(j, i)=CMath::randn_double();
-	}
-
-	SGMatrix<float64_t> data_q(dim, num_feats_q);
-	for (index_t i=0; i<num_feats_q; ++i)
-	{
-		for (index_t j=0; j<dim; ++j)
-			data_q(j, i)=CMath::randn_double();
-	}
+	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
+	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 
 	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
@@ -455,5 +389,26 @@ TEST(Kernel, gaussian_kernel_width_constructor)
 	CGaussianKernel* kernel=new CGaussianKernel(width);
 	EXPECT_EQ(kernel->get_cache_size(), 10);
 	EXPECT_EQ(kernel->get_width(), width);
+	SG_UNREF(kernel);
+}
+
+TEST(Kernel, gaussian_get_kernel_matrix)
+{
+	const index_t num_feats_p=100;
+	const index_t num_feats_q=100;
+	const index_t dim=3;
+
+	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
+	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
+	CDenseFeatures<float64_t>* feats_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* feats_q=new CDenseFeatures<float64_t>(data_q);
+
+	// initialize a Gaussian kernel of width 1
+	CGaussianKernel* kernel=new CGaussianKernel(feats_p, feats_q, 2);
+	SGMatrix<float64_t> km=kernel->get_kernel_matrix();
+	for (index_t i=0; i<km.num_rows; i++)
+		for (index_t j=0; j<km.num_cols; ++j)
+			EXPECT_NEAR(kernel->kernel(i,j), km(i, j), 1E-15);
+
 	SG_UNREF(kernel);
 }
