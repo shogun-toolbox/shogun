@@ -89,7 +89,7 @@ void CEuclideanDistance::precompute_lhs()
 		m_lhs_squared_norms=SGVector<float64_t>(num_vec);
 
 	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
-#pragma omp parallel for
+#pragma omp parallel for schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(index_t i =0; i<num_vec; ++i)
 		m_lhs_squared_norms[i]=casted_lhs->dot(i, casted_lhs, i);
 }
@@ -103,7 +103,7 @@ void CEuclideanDistance::precompute_rhs()
 		m_rhs_squared_norms=SGVector<float64_t>(num_vec);
 
 	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
-#pragma omp parallel for
+#pragma omp parallel for schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(index_t i =0; i<num_vec; ++i)
 		m_rhs_squared_norms[i]=casted_rhs->dot(i, casted_rhs, i);
 }
