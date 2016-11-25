@@ -13,7 +13,11 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
+#ifdef HAVE_CXX11
+#include <thread>
+#endif
+
+#if defined(LINUX)
 #include <unistd.h>
 #elif defined(DARWIN)
 #include <sys/types.h>
@@ -53,15 +57,30 @@ Parallel::~Parallel()
 
 int32_t Parallel::get_num_cpus() const
 {
+	int32_t num_cpus = 1;
+#if HAVE_CXX11
+	num_cpus = std::thread::hardware_concurrency();
+	// it can return 0, hence only the value
+	// if it's correct, else continue with detection
+	// of cpus
+	if (num_cpus > 0)
+		return num_cpus;
+#endif
+
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
-	return sysconf( _SC_NPROCESSORS_ONLN );
+	return sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined(DARWIN)
-	int num; /* for calling external lib */
+	int32_t num; /* for calling external lib */
 	size_t size=sizeof(num);
 	if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
-		return num;
+		num_cpus = num;
+#elif defined(_MSC_VER)
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	num_cpus = sysinfo.dwNumberOfProcessors;
 #endif
-	return 1;
+
+	return num_cpus;
 }
 
 void Parallel::set_num_threads(int32_t n)
