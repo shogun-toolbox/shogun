@@ -21,8 +21,11 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
  * See [doc/readme/ABOUT.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for a project description.
  * See [doc/readme/INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/INSTALL.md) for installation instructions.
  * See [doc/readme/INTERFACES.md](https://github.com/shogun-toolbox/docs/blob/master/INTERFACES.md) for calling Shogun from its interfaces.
- * See [the cookbook](http://shogun.ml/examples) for API examples for all interfaces.
- * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for developer information.
+ * See [doc/readme/EXAMPLES.md](https://github.com/shogun-toolbox/docs/blob/master/EXAMPLES.md) for details on creating API examples.
+ * See [doc/readme/DEVELOPING.md](https://github.com/shogun-toolbox/docs/blob/master/DEVELOPING.md) for how to hack Shogun.
+ 
+ * See [API examples](http://shogun.ml/examples) for API examples for all interfaces.
+ * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for extended developer information.
 
 ## Interfaces
 -------------
