@@ -7,7 +7,7 @@
         * Features:
             - LDA now supports 32, 64 and 128 bit floating poitn numbers [Chris Goldsworthy]
         * Bugfixes:
-            - ...
+            - Fix build error of R interface for R>=3.3.0, #3460 [Heiko Strathmann]
         * Cleanup, efficiency updates, and API Changes:
             - ...
 
