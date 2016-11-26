@@ -220,10 +220,13 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 	{
 		res=SGMatrix<float64_t>(m_weights_cols,1);
 		index_t offset=0;
+		// TODO: investigate a better way to make this
+		// block thread-safe
+		SGVector<float64_t> log_weights = m_log_weights.clone();
 		//can be done it in parallel
-		for (int i=0;i<m_weights_rows && i<m_weights_cols;i++)
+		for (index_t i=0;i<m_weights_rows && i<m_weights_cols;i++)
 		{
-			SGMatrix<float64_t> weights(m_log_weights.vector+offset,1,m_weights_rows-i,false);
+			SGMatrix<float64_t> weights(log_weights.vector+offset,1,m_weights_rows-i,false);
 			weights[0]=CMath::exp(weights[0]);
 			SGMatrix<float64_t> rtmp(vec.vector+i,vec.vlen-i,1,false);
 			SGMatrix<float64_t> s=linalg::matrix_product(weights,rtmp);
