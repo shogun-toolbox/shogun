@@ -57,17 +57,62 @@ template <typename> class SGVector;
  * +\textbf{E}_{y,y'}\left[ k(y,y')\right]
  * \f]
  *
- * where \f$x,x'\sim p\f$ and \f$y,y'\sim q\f$. Subclasses implement various
- * estimators for this expression, and therefore in this class compute_statistic()
- * method is still  undefined.
+ * where \f$x,x'\sim p\f$ and \f$y,y'\sim q\f$.
+ *
+ * Given two sets of samples \f$\{x_i\}_{i=1}^{n_x}\sim p\f$ and
+ * \f$\{y_i\}_{i=1}^{n_y}\sim q\f$, \f$n_x+n_y=n\f$,
+ * the unbiased estimate of the above statistic is computed as
+ * \f[
+ * 	\hat{\eta}_{k,U}=\frac{1}{n_x(n_x-1)}\sum_{i=1}^{n_x}\sum_{j\neq i}
+ * 	k(x_i,x_j)+\frac{1}{n_y(n_y-1)}\sum_{i=1}^{n_y}\sum_{j\neq i}k(y_i,y_j)
+ * 	-\frac{2}{n_xn_y}\sum_{i=1}^{n_x}\sum_{j=1}^{n_y}k(x_i,y_j)
+ * \f]
+ *
+ * A biased version is
+ * \f[
+ * 	\hat{\eta}_{k,V}=\frac{1}{n_x^2}\sum_{i=1}^{n_x}\sum_{j=1}^{n_x}
+ * 	k(x_i,x_j)+\frac{1}{n_y^2}\sum_{i=1}^{n_y}\sum_{j=1}^{n_y}k(y_i,y_j)
+ * 	-\frac{2}{n_xn_y}\sum_{i=1}^{n_x}\sum_{j=1}^{n_y}k(x_i,y_j)
+ * \f]
+ *
+ * When \f$n_x=n_y=\frac{n}{2}\f$, an incomplete version can also be computed
+ * as the following
+ * \f[
+ * 	\hat{\eta}_{k,U^-}=\frac{1}{\frac{n}{2}(\frac{n}{2}-1)}\sum_{i\neq j}
+ * 	h(z_i,z_j)
+ * \f]
+ * where for each pair \f$z=(x,y)\f$, \f$h(z,z')=k(x,x')+k(y,y')-k(x,y')-
+ * k(x',y)\f$.
+ *
+ * The type (biased/unbiased/incomplete) can be selected via set_statistic_type()
+ * via the enum values from EStatisticType, ST_BIASED, ST_UNBIASED and ST_INCOMPLETE,
+ * respectively. The estimate returned by compute_statistic()
+ * is \f$\frac{n_xn_y}{n_x+n_y}\hat{\eta}_k\f$.
  *
  * This class provides an interface for adding multiple kernels and then
  * selecting the best kernel based on specified strategies. To know more in details
  * about various learning algorithms for optimal kernel selection, please refer to [2].
  *
+ * Along with the statistic comes a method to compute a p-value based on
+ * different methods. Permutation test is possible. If unsure which one to
+ * use, sampling with 250 permutation iterations usually always is correct.
+ *
+ * To choose, use set_null_approximation_method() and choose from.
+ *
+ * NAM_MMD2_SPECTRUM: For a fast, consistent test based on the spectrum of
+ * the kernel matrix, as described in [2]. Only supported if Eigen3 is installed.
+ * Only applicable for CQuadraticTimeMMD.
+ *
+ * NAM_MMD2_GAMMA: for a very fast, but not consistent test based on moment matching
+ * of a Gamma distribution, as described in [2].
+ * Only applicable for CQuadraticTimeMMD.
+ *
+ * NAM_PERMUTATION: For permuting available samples to sample null-distribution
+ *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., &
  * Smola, A. (2012). A Kernel Two-Sample Test. Journal of Machine Learning
  * Research, 13, 671-721.
+ *
  * [2] Arthur Gretton, Bharath K. Sriperumbudur, Dino Sejdinovic, Heiko Strathmann,
  * Sivaraman Balakrishnan, Massimiliano Pontil, Kenji Fukumizu: Optimal kernel choice
  * for large-scale two-sample tests. NIPS 2012: 1214-1222.
@@ -150,7 +195,18 @@ public:
 	 */
 	CKernelSelectionStrategy const * get_kernel_selection_strategy() const;
 
+	/**
+	 * Interface for computing the test-statistic for the hypothesis test.
+	 *
+	 * @return test statistic for the given data/parameters/methods
+	 */
 	virtual float64_t compute_statistic() = 0;
+
+	/**
+	 * Interface for computing the samples under the null-hypothesis.
+	 *
+	 * @return vector of all statistics
+	 */
 	virtual SGVector<float64_t> sample_null() = 0;
 
 	/** Method that releases the pre-computed kernel that is used in the computation. */
