@@ -32,6 +32,7 @@
 #define PERMUTATION_MMD_H_
 
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>

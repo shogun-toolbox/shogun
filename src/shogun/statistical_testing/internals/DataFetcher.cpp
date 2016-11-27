@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include <numeric>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
 #include <shogun/statistical_testing/internals/FeaturesUtil.h>

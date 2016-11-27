@@ -10,6 +10,8 @@
 
 #include <functional>
 #include <algorithm>
+#include <numeric>
+#include <vector>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>

@@ -30,6 +30,7 @@
  */
 
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>

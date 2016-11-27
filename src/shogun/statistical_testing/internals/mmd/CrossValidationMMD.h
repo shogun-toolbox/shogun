@@ -33,6 +33,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/labels/BinaryLabels.h>

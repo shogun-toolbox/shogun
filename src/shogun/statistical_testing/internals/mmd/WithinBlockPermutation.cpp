@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
+#include <numeric>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/GPUMatrix.h>

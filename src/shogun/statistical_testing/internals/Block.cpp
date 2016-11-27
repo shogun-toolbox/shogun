@@ -29,6 +29,7 @@
  */
 
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/Block.h>
