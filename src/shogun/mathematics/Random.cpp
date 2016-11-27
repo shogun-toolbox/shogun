@@ -129,12 +129,18 @@ void CRandom::init()
 
 uint32_t CRandom::random_32() const
 {
-	return sfmt_genrand_uint32(m_sfmt_32);
+	m_state_lock.lock();
+	uint32_t v = sfmt_genrand_uint32(m_sfmt_32);
+	m_state_lock.unlock();
+	return v;
 }
 
 uint64_t CRandom::random_64() const
 {
-	return sfmt_genrand_uint64(m_sfmt_64);
+	m_state_lock.lock();
+	uint64_t v = sfmt_genrand_uint64(m_sfmt_64);
+	m_state_lock.unlock();
+	return v;
 }
 
 void CRandom::fill_array(uint32_t* array, int32_t size) const
@@ -142,7 +148,9 @@ void CRandom::fill_array(uint32_t* array, int32_t size) const
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= sfmt_get_min_array_size32(m_sfmt_32)) && (size % 4) == 0)
 	{
+		m_state_lock.lock();
 		sfmt_fill_array32(m_sfmt_32, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
@@ -155,7 +163,9 @@ void CRandom::fill_array(uint64_t* array, int32_t size) const
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= sfmt_get_min_array_size64(m_sfmt_64)) && (size % 2) == 0)
 	{
+		m_state_lock.lock();
 		sfmt_fill_array64(m_sfmt_64, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
@@ -165,69 +175,90 @@ void CRandom::fill_array(uint64_t* array, int32_t size) const
 
 void CRandom::fill_array_oc(float64_t* array, int32_t size) const
 {
+	m_state_lock.lock();
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= dsfmt_get_min_array_size()) && (size % 2) == 0)
 	{
 		dsfmt_fill_array_open_close(m_dsfmt, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
 	for (int32_t i=0; i < size; i++)
 		array[i] = dsfmt_genrand_open_close(m_dsfmt);
+	m_state_lock.unlock();
 }
 
 void CRandom::fill_array_co(float64_t* array, int32_t size) const
 {
+	m_state_lock.lock();
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= dsfmt_get_min_array_size()) && (size % 2) == 0)
 	{
 		dsfmt_fill_array_close_open(m_dsfmt, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
 	for (int32_t i=0; i < size; i++)
 		array[i] = dsfmt_genrand_close_open(m_dsfmt);
+	m_state_lock.unlock();
 }
 
 void CRandom::fill_array_oo(float64_t* array, int32_t size) const
 {
+	m_state_lock.lock();
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= dsfmt_get_min_array_size()) && (size % 2) == 0)
 	{
 		dsfmt_fill_array_open_open(m_dsfmt, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
 	for (int32_t i=0; i < size; i++)
 		array[i] = dsfmt_genrand_open_open(m_dsfmt);
+	m_state_lock.unlock();
 }
 
 void CRandom::fill_array_c1o2(float64_t* array, int32_t size) const
 {
+	m_state_lock.lock();
 #if defined(USE_ALIGNED_MEMORY) || defined(DARWIN)
 	if ((size >= dsfmt_get_min_array_size()) && (size % 2) == 0)
 	{
 		dsfmt_fill_array_close1_open2(m_dsfmt, array, size);
+		m_state_lock.unlock();
 		return;
 	}
 #endif
 	for (int32_t i=0; i < size; i++)
 		array[i] = dsfmt_genrand_close1_open2(m_dsfmt);
+	m_state_lock.unlock();
 }
 
 float64_t CRandom::random_close() const
 {
-	return sfmt_genrand_real1(m_sfmt_32);
+	m_state_lock.lock();
+	float64_t v = sfmt_genrand_real1(m_sfmt_32);
+	m_state_lock.unlock();
+	return v;
 }
 
 float64_t CRandom::random_open() const
 {
-	return dsfmt_genrand_open_open(m_dsfmt);
+	m_state_lock.lock();
+	float64_t v =  dsfmt_genrand_open_open(m_dsfmt);
+	m_state_lock.unlock();
+	return v;
 }
 
 float64_t CRandom::random_half_open() const
 {
-	return dsfmt_genrand_close_open(m_dsfmt);
+	m_state_lock.lock();
+	float64_t v = dsfmt_genrand_close_open(m_dsfmt);
+	m_state_lock.unlock();
+	return v;
 }
 
 float64_t CRandom::normal_distrib(float64_t mu, float64_t sigma) const

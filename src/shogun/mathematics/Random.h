@@ -340,7 +340,7 @@ namespace shogun
 			uint32_t* m_xComp;
 
 			/** state lock */
-			CLock m_state_lock;
+			mutable CLock m_state_lock;
 	};
 }
 
