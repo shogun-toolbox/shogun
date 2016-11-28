@@ -34,7 +34,7 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class WithinBlockPermutation
 {
 	typedef float32_t return_type;
@@ -57,7 +57,7 @@ private:
 	};
 	terms_t terms;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

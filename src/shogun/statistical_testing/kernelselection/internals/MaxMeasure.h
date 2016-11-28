@@ -45,7 +45,7 @@ template <typename T> class SGMatrix;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class MaxMeasure : public KernelSelection
 {
 public:
@@ -61,7 +61,7 @@ protected:
 	virtual void compute_measures();
 	SGVector<float64_t> measures;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

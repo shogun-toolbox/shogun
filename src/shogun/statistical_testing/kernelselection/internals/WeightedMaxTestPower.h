@@ -44,7 +44,7 @@ template <typename T> class SGVector;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class WeightedMaxTestPower : public WeightedMaxMeasure
 {
 public:
@@ -57,7 +57,7 @@ protected:
 	virtual void compute_measures();
 	float64_t lambda;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

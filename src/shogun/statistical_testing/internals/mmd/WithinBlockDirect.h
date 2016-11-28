@@ -32,14 +32,14 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct WithinBlockDirect
 {
 	typedef float32_t return_type;
 	return_type operator()(const SGMatrix<return_type>& kernel_matrix);
 //	return_type operator()(const CGPUMatrix<return_type>& kernel_matrix);
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

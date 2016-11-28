@@ -43,7 +43,7 @@ template <typename T> class SGMatrix;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class OptimizationSolver
 {
 public:
@@ -56,7 +56,7 @@ private:
 	struct Self;
 	std::unique_ptr<Self> self;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

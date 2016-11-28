@@ -45,7 +45,7 @@ namespace internal
 {
 
 class DataManager;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class DataFetcher
 {
 	friend class DataManager;
@@ -102,7 +102,7 @@ private:
 	BlockwiseDetails last_blockwise_details;
 	void allocate_active_subset();
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

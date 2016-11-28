@@ -29,7 +29,7 @@ class CKernel;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class InitPerKernel
 {
 	friend class KernelManager;
@@ -42,7 +42,7 @@ public:
 private:
 	std::shared_ptr<CKernel>& m_kernel;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -32,7 +32,7 @@ namespace internal
 
 class DataFetcher;
 class DataManager;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class InitPerFeature
 {
 	friend class DataManager;
@@ -45,7 +45,7 @@ public:
 private:
 	std::unique_ptr<DataFetcher>& m_fetcher;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

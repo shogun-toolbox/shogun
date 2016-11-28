@@ -44,7 +44,7 @@ template <typename T> class SGVector;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class MaxCrossValidation : public KernelSelection
 {
 public:
@@ -64,7 +64,7 @@ protected:
 	SGMatrix<float64_t> rejections;
 	SGVector<float64_t> measures;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -30,7 +30,7 @@ template <typename T> class SGMatrix;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class ComputationManager
 {
 public:
@@ -54,6 +54,7 @@ private:
 	std::vector<std::function<float32_t(const SGMatrix<float32_t>&)> > job_array;
 	std::vector<std::vector<float32_t> > result_array;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 } // namespace internal
 

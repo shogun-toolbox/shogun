@@ -31,7 +31,7 @@ namespace internal
 {
 
 class DataFetcher;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct DataFetcherFactory
 {
 	DataFetcherFactory() = delete;
@@ -41,7 +41,7 @@ struct DataFetcherFactory
 
 	static DataFetcher* get_instance(CFeatures* feats);
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

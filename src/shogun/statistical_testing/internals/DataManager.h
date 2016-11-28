@@ -188,7 +188,7 @@ public:
 	 * can be then 10 such blocks.
 	 */
 	index_t get_min_blocksize() const;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	void set_blockwise(bool blockwise);
 	const bool is_blockwise() const;
 
@@ -216,6 +216,7 @@ public:
 	NextSamples next();
 	void end();
 	void reset();
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 private:
 	std::vector<std::unique_ptr<DataFetcher> > fetchers;
 

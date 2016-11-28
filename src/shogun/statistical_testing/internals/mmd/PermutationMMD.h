@@ -46,7 +46,7 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct PermutationMMD : ComputeMMD
 {
 	PermutationMMD() : m_save_inds(false)
@@ -244,7 +244,7 @@ struct PermutationMMD : ComputeMMD
 	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
 	SGMatrix<index_t> m_all_inds;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

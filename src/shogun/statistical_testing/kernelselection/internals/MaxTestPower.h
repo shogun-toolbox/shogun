@@ -43,7 +43,7 @@ class CMMD;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class MaxTestPower : public MaxMeasure
 {
 public:
@@ -55,7 +55,7 @@ protected:
 	virtual void compute_measures();
 	float64_t lambda;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

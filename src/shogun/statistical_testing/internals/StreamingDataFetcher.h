@@ -32,7 +32,7 @@ namespace internal
 {
 
 class DataManager;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class StreamingDataFetcher : public DataFetcher
 {
 	friend class DataManager;
@@ -61,7 +61,7 @@ private:
 	std::shared_ptr<CStreamingFeatures> m_samples;
 	bool parser_running;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

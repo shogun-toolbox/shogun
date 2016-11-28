@@ -43,7 +43,7 @@ class CMMD;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class WeightedMaxMeasure : public MaxMeasure
 {
 public:
@@ -57,7 +57,7 @@ protected:
 	virtual void compute_measures();
 	SGMatrix<float64_t> Q;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

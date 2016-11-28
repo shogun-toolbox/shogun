@@ -51,7 +51,7 @@ namespace internal
 class KernelManager;
 
 }
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class CKernelSelectionStrategy : public CSGObject
 {
 	friend class CMMD;
@@ -90,6 +90,6 @@ private:
 	void init();
 	const internal::KernelManager& get_kernel_mgr() const;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif // KERNEL_SELECTION_STRAGERY_H_

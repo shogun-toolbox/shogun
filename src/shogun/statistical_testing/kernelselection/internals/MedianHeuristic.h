@@ -46,7 +46,7 @@ template <typename T> class SGMatrix;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class MedianHeuristic : public KernelSelection
 {
 public:
@@ -64,7 +64,7 @@ protected:
 	SGVector<float64_t> measures;
 	int32_t n;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

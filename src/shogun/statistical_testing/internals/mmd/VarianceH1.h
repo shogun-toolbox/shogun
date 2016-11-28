@@ -50,7 +50,7 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct VarianceH1
 {
 	VarianceH1() : m_lambda(1E-5), m_free_terms(true)
@@ -259,7 +259,7 @@ struct VarianceH1
 
 	bool m_free_terms;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

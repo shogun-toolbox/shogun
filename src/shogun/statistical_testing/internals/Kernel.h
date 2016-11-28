@@ -41,7 +41,7 @@ class CKernel;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class Kernel
 {
 public:
@@ -100,7 +100,7 @@ private:
 	SGVector<float32_t> m_self_adjoint_kernel_matrix;
 	index_t m_num_feat_vec;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -46,7 +46,7 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct VarianceH0
 {
 	template <typename T>
@@ -71,7 +71,7 @@ struct VarianceH0
 		return variance_estimate;
 	}
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -57,7 +57,7 @@ struct terms_t
 	std::array<float64_t, 3> term{};
 	std::array<float64_t, 3> diag{};
 };
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /**
  * @brief Class Compute blah blah.
  */
@@ -252,7 +252,7 @@ struct ComputeMMD
 	index_t m_n_y;
 	EStatisticType m_stype;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

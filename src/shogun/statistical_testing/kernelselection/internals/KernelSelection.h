@@ -46,7 +46,7 @@ namespace internal
 {
 
 class KernelManager;
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class KernelSelection
 {
 public:
@@ -63,7 +63,7 @@ protected:
 	virtual void init_measures()=0;
 	virtual void compute_measures()=0;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -46,7 +46,7 @@ class CCustomKernel;
 
 namespace internal
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class KernelManager
 {
 public:
@@ -72,7 +72,7 @@ private:
 	std::vector<std::shared_ptr<CKernel> > m_kernels;
 	std::vector<std::shared_ptr<CCustomKernel> > m_precomputed_kernels;
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }

@@ -51,7 +51,7 @@ namespace internal
 
 namespace mmd
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct CrossValidationMMD : PermutationMMD
 {
 	CrossValidationMMD(index_t n_x, index_t n_y, index_t num_folds, index_t num_null_samples)
@@ -232,7 +232,7 @@ struct CrossValidationMMD : PermutationMMD
 		std::copy(y_inds.data(), y_inds.data()+y_inds.size(), m_xy_inds.data()+x_inds.size());
 	}
 };
-
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 }
