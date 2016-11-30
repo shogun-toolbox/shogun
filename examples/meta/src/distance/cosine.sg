@@ -1,0 +1,20 @@
+CSVFile f_feats_a("../../data/fm_train_real.dat")
+CSVFile f_feats_b("../../data/fm_test_real.dat")
+
+#![create_features]
+RealFeatures features_a(f_feats_a)
+RealFeatures features_b(f_feats_b)
+#![create_features]
+
+#![create_instance]
+CosineDistance distance(features_a, features_a)
+#![create_instance]
+
+#![extract_distance]
+RealMatrix distance_matrix_aa = distance.get_distance_matrix()
+#![extract_distance]
+
+#![refresh_distance]
+distance.init(features_a, features_b)
+RealMatrix distance_matrix_ab = distance.get_distance_matrix()
+#![refresh_distance]
