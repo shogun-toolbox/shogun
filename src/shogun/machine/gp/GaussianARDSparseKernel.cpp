@@ -30,10 +30,7 @@
  */
 
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
