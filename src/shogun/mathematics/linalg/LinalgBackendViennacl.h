@@ -143,6 +143,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
 	#undef BACKEND_GENERIC_SET_CONST
 
+	/** Implementation of @see LinalgBackendBase::set_rows_const */
+	#define BACKEND_GENERIC_SET_ROWS_CONST(Type, Container) \
+	virtual void set_rows_const(Container<Type>& a, const SGVector<Type>& b) const \
+	{  \
+		set_rows_const_impl(a, b); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_ROWS_CONST, SGMatrix)
+	#undef BACKEND_GENERIC_SET_ROWS_CONST
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
@@ -337,7 +346,22 @@ private:
 		typename GPUMemoryViennaCL<T>::VCLVectorBase vcl_vector = a_gpu->data_vector(a.size());
 		viennacl::linalg::vector_assign(vcl_vector, value);
 	}
-	
+
+	/** Set rows const from vector to matrix with ViennaCL. */
+	template <typename T, template <typename> class Container>
+	void set_rows_const_impl(Container<T>& A, const SGVector<T>& v) const
+	{
+		GPUMemoryViennaCL<T>* A_gpu = cast_to_viennacl(A);
+		GPUMemoryViennaCL<T>* v_gpu = cast_to_viennacl(v);
+		viennacl::ocl::kernel& kernel = generate_set_rows_const_kernel<T>();
+		kernel.global_work_size(0, linalg::implementation::ocl::align_to_multiple_2d(A.num_rows));
+		kernel.global_work_size(1, linalg::implementation::ocl::align_to_multiple_2d(A.num_cols));
+
+		viennacl::ocl::enqueue(kernel(A_gpu->data_matrix(A.num_rows, A.num_cols),
+			cl_int(A.num_rows), cl_int(A.num_cols), cl_int(A_gpu->m_offset),
+			v_gpu->data_vector(v.vlen), cl_int(v_gpu->m_offset)));
+	}
+
 	/** ViennaCL vector sum method. */
 	template <typename T>
 	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const

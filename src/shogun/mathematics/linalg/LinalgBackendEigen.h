@@ -178,6 +178,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
 	#undef BACKEND_GENERIC_SET_CONST
 
+	/** Implementation of @see LinalgBackendBase::set_rows_const */
+	#define BACKEND_GENERIC_SET_ROWS_CONST(Type, Container) \
+	virtual void set_rows_const(Container<Type>& a, const SGVector<Type>& b) const \
+	{  \
+		set_rows_const_impl(a, b); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_ROWS_CONST, SGMatrix)
+	#undef BACKEND_GENERIC_SET_ROWS_CONST
+
 	/** Implementation of @see LinalgBackendBase::sum */
 	#define BACKEND_GENERIC_SUM(Type, Container) \
 	virtual Type sum(const Container<Type>& a, bool no_diag) const \
@@ -378,6 +387,16 @@ private:
 	{
 		for (index_t i = 0; i < a.size(); ++i)
 			a[i] = value;
+	}
+
+	/** Set rows const method */
+	template <typename T>
+	void set_rows_const_impl(SGMatrix<T>& A, const SGVector<T>& v) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGVector<T>::EigenVectorXtMap v_eig = v;
+
+		A_eig.colwise() = v_eig;
 	}
 
 	/** Eigen3 vector sum method */

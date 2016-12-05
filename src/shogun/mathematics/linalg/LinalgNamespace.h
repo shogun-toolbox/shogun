@@ -299,6 +299,18 @@ void set_const(Container<T>& a, T value)
 	infer_backend(a)->set_const(a, value);
 }
 
+/** Sets each row of a matrix to some constant value. That is, perfoms the
+ * operation A[i,j] = v[i], for all i and j
+ *
+ * @param a matrix to be set
+ * @param the vector to set the matrix
+ */
+template <typename T>
+void set_rows_const(SGMatrix<T>& a, const SGVector<T>& b)
+{
+	infer_backend(a, SGMatrix<T>(b))->set_rows_const(a, b);
+}
+
 /**
  * Method that computes the sum of vectors or matrices
  *

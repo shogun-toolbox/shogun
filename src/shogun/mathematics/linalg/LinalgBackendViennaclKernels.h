@@ -90,6 +90,47 @@ namespace shogun
 		return kernel;
 	}
 
+	/** Generates the set_rows_const computation kernel
+	 * The OpenCL kernel that helps to set rows const to SGMatrix from SGVector
+	 */
+	template <class T>
+	static viennacl::ocl::kernel& generate_set_rows_const_kernel()
+	{
+		std::string kernel_name = "set_rows_const_" +
+			linalg::implementation::ocl::get_type_string<T>();
+
+		if (linalg::implementation::ocl::kernel_exists(kernel_name))
+			return linalg::implementation::ocl::get_kernel(kernel_name);
+
+		std::string source = linalg::implementation::ocl::
+			generate_kernel_preamble<T>(kernel_name);
+
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* mat, int nrows, int ncols, int offset,
+					__global DATATYPE* vec, int vec_offset)
+				{
+					int i = get_global_id(0);
+					int j = get_global_id(1);
+
+					if (i>=nrows || j>=ncols)
+						return;
+
+					mat[offset + i+j*nrows] = vec[i+offset];
+				}
+			)"
+		);
+
+		viennacl::ocl::kernel& kernel =
+			linalg::implementation::ocl::compile_kernel(kernel_name, source);
+
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_2D);
+		kernel.local_work_size(1, OCL_WORK_GROUP_SIZE_2D);
+
+		return kernel;
+	}
+
 	/** Generates the sum computation kernel
 	 * The OpenCL kernel that helps to calculate the sum of SGMatrix
 	 *
