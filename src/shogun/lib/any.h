@@ -35,7 +35,8 @@
 #ifndef _ANY_H_
 #define _ANY_H_
 
-#include <string.h>
+#include <string>
+#include <cstdlib>
 #include <stdexcept>
 #include <typeinfo>
 #include <cxxabi.h>
