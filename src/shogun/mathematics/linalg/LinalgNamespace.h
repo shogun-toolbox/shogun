@@ -193,6 +193,58 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 	return infer_backend(a, b)->dot(a, b);
 }
 
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+ *
+ * This version returns the result in-place.
+ * User should pass an appropriately allocate memory matrix
+ * Or pass one of the operands arguments (A or B) as a result
+ *
+ * @param a First matrix
+ * @param b Second matrix
+ * @param c Result matrix
+ */
+template <typename T>
+void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)
+{
+	REQUIRE(a.num_rows == b.num_rows && a.num_cols == b.num_cols,
+			"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+			a.num_rows, a.num_cols, b.num_rows, b.num_cols);
+	REQUIRE(a.num_rows == result.num_rows && a.num_cols == result.num_cols,
+			"Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
+			a.num_rows, a.num_cols, result.num_rows, result.num_cols);
+
+	REQUIRE(!(result.on_gpu()^a.on_gpu()),
+			"Cannot operate with matrix result on_gpu (%d) and \
+			 matrix A on_gpu (%d).\n", result.on_gpu(), a.on_gpu());
+	REQUIRE(!(result.on_gpu()^b.on_gpu()),
+			"Cannot operate with matrix result on_gpu (%d) and \
+			 matrix B on_gpu (%d).\n", result.on_gpu(), b.on_gpu());
+	infer_backend(a, b)->element_prod(a, b, result);
+}
+
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+ *
+ * This version returns the result in a newly created matrix.
+ *
+ * @param A First matrix
+ * @param B Second matrix
+ * @return The result of the operation
+ */
+template <typename T>
+SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
+{
+	REQUIRE(a.num_rows == b.num_rows && a.num_cols == b.num_cols,
+			"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+			a.num_rows, a.num_cols, b.num_rows, b.num_cols);
+
+	SGMatrix<T> result;
+	result = a.clone();
+
+	element_prod(a, b, result);
+
+	return result;
+}
+
 /**
  * Returns the largest element in a vector or matrix
  *

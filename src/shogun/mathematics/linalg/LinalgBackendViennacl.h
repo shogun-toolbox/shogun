@@ -40,6 +40,7 @@
 
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
+#include <viennacl/linalg/matrix_operations.hpp>
 #include <viennacl/linalg/sum.hpp>
 #include <shogun/mathematics/linalg/GPUMemoryViennaCL.h>
 
@@ -92,6 +93,16 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
+
+	/** Implementation of @see LinalgBackendBase::element_prod */
+	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
+	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
+		Container<Type>& result) const \
+	{  \
+		element_prod_impl(a, b, result); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
 	/** Implementation of @see LinalgBackendBase::max */
 	#define BACKEND_GENERIC_MAX(Type, Container) \
@@ -259,6 +270,18 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
 		return viennacl::linalg::inner_prod(a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
+	}
+
+	/** ViennaCL matrix in-place elementwise product method */
+	template <typename T>
+	void element_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		result_gpu->data_matrix(a.num_rows, a.num_cols) = viennacl::linalg::element_prod(
+			a_gpu->data_matrix(a.num_rows, a.num_cols), b_gpu->data_matrix(a.num_rows, a.num_cols));
 	}
 
 	template <typename T, template<typename> class Container>

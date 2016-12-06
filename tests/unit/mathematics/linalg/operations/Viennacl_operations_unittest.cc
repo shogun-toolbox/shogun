@@ -132,6 +132,54 @@ TEST(LinalgBackendViennaCL, SGVector_dot)
 	EXPECT_NEAR(result, 5, 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+	SGMatrix<float64_t> A_gpu, B_gpu;
+
+	for (index_t i = 0; i < 9; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+	auto result_gpu = element_prod(A_gpu, B_gpu);
+	auto result = from_gpu(result_gpu);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(A[i]*B[i], result[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+	SGMatrix<float64_t> C(3,3);
+	SGMatrix<float64_t> A_gpu, B_gpu;
+
+	for (index_t i = 0; i < 9; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+
+	A_gpu = to_gpu(A);
+	B_gpu = to_gpu(B);
+	element_prod(A_gpu, B_gpu, A_gpu);
+	A = from_gpu(A_gpu);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+}
+
 TEST(LinalgBackendViennaCL, SGVector_mean)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
