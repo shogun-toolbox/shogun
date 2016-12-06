@@ -104,6 +104,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 	#undef BACKEND_GENERIC_DOT
 
+	/** Implementation of @see LinalgBackendBase::element_prod */
+	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
+	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
+		Container<Type>& result) const \
+	{  \
+		element_prod_impl(a, b, result); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+
 	/** Implementation of @see LinalgBackendBase::max */
 	#define BACKEND_GENERIC_MAX(Type, Container) \
 	virtual Type max(const Container<Type>& a) const \
@@ -289,6 +299,17 @@ private:
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 	{
 		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
+	}
+
+	/** Eigen3 matrix in-place elementwise product method */
+	template <typename T>
+	void element_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+		result_eig = a_eig.array() * b_eig.array();
 	}
 
 	/** Return the largest element in the vector with Eigen3 library */

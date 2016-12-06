@@ -102,6 +102,46 @@ TEST(LinalgBackendEigen, SGVector_dot)
 	EXPECT_NEAR(result, 5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_elementwise_product)
+{
+	const index_t nrows = 3;
+	const index_t ncols = 3;
+	SGMatrix<float64_t> A(nrows,ncols);
+	SGMatrix<float64_t> B(nrows,ncols);
+	SGMatrix<float64_t> C(nrows,ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+	}
+
+	C = element_prod(A, B);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(A[i]*B[i], C[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
+{
+	const index_t nrows = 3;
+	const index_t ncols = 3;
+	SGMatrix<float64_t> A(nrows,ncols);
+	SGMatrix<float64_t> B(nrows,ncols);
+	SGMatrix<float64_t> C(nrows,ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+	{
+		A[i] = i;
+		B[i] = 0.5*i;
+		C[i] = i;
+	}
+
+	element_prod(A, B, A);
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_max)
 {
 	SGVector<float64_t> A(9);
