@@ -126,6 +126,20 @@ public:
 	#undef BACKEND_GENERIC_DOT
 
 	/**
+	 * Wrapper method of in-place matrix elementwise product.
+	 *
+	 * @see linalg::element_prod
+	 */
+	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
+	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
+		Container<Type>& result) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+
+	/**
 	 * Wrapper method of max method. Return the largest element in a vector or matrix.
 	 *
 	 * @see linalg::max
