@@ -511,6 +511,33 @@ class CMath : public CSGObject
 			x = x*(1.5f - xhalf*x*x); // One round of Newton's method
 			return x;
 		}
+		
+		/** Range fill a vector with start...start+len-1
+		 *
+		 * @param v the vector to be filled
+		 * @param len length of the vector v
+		 * @param start - value to be assigned to first element of vector
+		 */
+		template <class T>
+			static void range_fill(SGVector<T> v, int32_t len, T start=0)
+			{
+				REQUIRE(len>0 && len<=v.size(),"Vector length is out of bounds.\n");
+				range_fill(v.vector,len,start);
+			}
+
+		/** Range fill a vector with start...start+len-1
+		 *
+		 * @param v the vector to be filled
+		 * @param len length of the vector v
+		 * @param start - value to be assigned to first element of vector
+		 */
+		template <class T>
+			static void range_fill(T* v, int32_t len, T start=0)
+			{
+
+				for(index_t i=0; i<len; ++i)
+					v[i]=i+start;
+			}
 
 		/**
 		 * @name Exponential methods (x^n)
@@ -2323,6 +2350,14 @@ inline float64_t* CMath::linspace<complex128_t>(complex128_t start, complex128_t
 {
 	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
 	return NULL;
+}
+
+/// range_fill not implemented for complex128_t
+template <>
+inline void CMath::range_fill<complex128_t>(complex128_t* vec,int32_t len, complex128_t start)
+{
+	SG_SERROR("CMath::range_fill():: \
+		Not supported for complex128_t\n");
 }
 
 #define COMPLEX128_ERROR_ONEVECARG_RETURNS_T(function, return_type, return_statement) \
