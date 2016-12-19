@@ -83,4 +83,51 @@ TEST(LinalgBackendViennaCL, SGMatrix_from_gpu_viennacl_values_check)
 		EXPECT_NEAR(a[i], c[i], 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, SGVector_clone)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 10;
+	SGVector<int32_t> a(size);
+	a.range_fill(0);
+
+	auto b = to_gpu(a);
+	ASSERT_EQ(a.size(), b.size());
+
+	auto d = b.clone();
+	ASSERT_EQ(b.size(), d.size());
+
+	auto c = from_gpu(d);
+	ASSERT_EQ(c.size(), d.size());
+
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_EQ(a[i], c[i]);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_clone)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t nrows = 2, ncols = 3;
+	SGMatrix<int32_t> a(nrows, ncols);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		a[i] = i;
+
+	auto b = to_gpu(a);
+	ASSERT_EQ(a.num_cols, b.num_cols);
+	ASSERT_EQ(a.num_rows, b.num_rows);
+
+	auto d = b.clone();
+	ASSERT_EQ(b.num_cols, d.num_cols);
+	ASSERT_EQ(b.num_rows, d.num_rows);
+
+	auto c = from_gpu(d);
+	ASSERT_EQ(c.num_cols, d.num_cols);
+	ASSERT_EQ(c.num_rows, d.num_rows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_EQ(a[i], c[i]);
+}
+
 #endif // HAVE_VIENNACL
