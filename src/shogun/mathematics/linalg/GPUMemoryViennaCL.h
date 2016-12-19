@@ -92,11 +92,17 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 	};
 
 	/** Clone GPU vector */
-	GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector) const
+	GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector, index_t vlen) const
 	{
-		std::shared_ptr<GPUMemoryViennaCL<T>> temp_vector;
-		temp_vector = std::shared_ptr<GPUMemoryViennaCL<T>>(new GPUMemoryViennaCL<T>(vector));
-		return temp_vector.get();
+		GPUMemoryViennaCL<T>* src_ptr = static_cast<GPUMemoryViennaCL<T>*>(vector);
+		GPUMemoryViennaCL<T>* gpu_ptr = new GPUMemoryViennaCL<T>();
+
+		viennacl::backend::memory_create(*(gpu_ptr->m_data), sizeof(T)*vlen,
+			viennacl::context());
+		viennacl::backend::memory_copy(*(src_ptr->m_data), *(gpu_ptr->m_data),
+			0, 0, vlen*sizeof(T));
+
+		return gpu_ptr;
 	}
 
 	/** ViennaCL Vector structure that saves the data */

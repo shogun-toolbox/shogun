@@ -264,8 +264,12 @@ complex128_t SGMatrix<complex128_t>::max_single()
 template <class T>
 SGMatrix<T> SGMatrix<T>::clone()
 {
-	return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
-			num_rows, num_cols);
+	if (on_gpu())
+		return SGMatrix<T>(gpu_ptr->clone_vector(gpu_ptr.get(),
+						   num_rows*num_cols), num_rows, num_cols);
+	else
+		return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
+						   num_rows, num_cols);
 }
 
 template <class T>
