@@ -224,7 +224,7 @@ template<class T>
 SGVector<T> SGVector<T>::clone() const
 {
 	if (on_gpu())
-		return SGVector<T>(gpu_ptr->clone_vector(gpu_ptr.get()), vlen);
+		return SGVector<T>(gpu_ptr->clone_vector(gpu_ptr.get(), vlen), vlen);
 	else
 		return SGVector<T>(clone_vector(vector, vlen), vlen);
 }
