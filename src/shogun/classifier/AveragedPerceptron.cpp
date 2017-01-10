@@ -11,6 +11,7 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -59,9 +60,11 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0/num_feat;
 
+	CSignal::clear_cancel();
+
 	//loop till we either get everything classified right or reach max_iter
 
-	while (!converged && iter<max_iter)
+	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
 	{
 		converged=true;
 		for (int32_t i=0; i<num_vec; i++)
