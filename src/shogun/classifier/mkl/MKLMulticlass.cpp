@@ -17,6 +17,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 
 #include <vector>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -369,7 +370,9 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 
 	int32_t numberofsilpiterations=0;
 	bool final=false;
-	while (!final)
+	CSignal::clear_cancel();
+
+	while (!(CSignal::cancel_computations()) && !final)
 	{
 
 		//curweights.clear();

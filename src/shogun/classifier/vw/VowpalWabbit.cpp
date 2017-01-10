@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 #include <fcntl.h>
+#include <shogun/lib/Signal.h>
 
 using namespace std;
 using namespace shogun;
@@ -158,8 +159,9 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 			  "loss", "last", "counter", "weight", "label", "predict", "features");
 	}
 
+	CSignal::clear_cancel();
 	features->start_parser();
-	while (env->passes_complete < env->num_passes)
+	while (!(CSignal::cancel_computations()) && (env->passes_complete < env->num_passes))
 	{
 		while (features->get_next_example())
 		{
