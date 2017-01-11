@@ -81,13 +81,13 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
 
 # check whether any of the modular interfaces are turned ON
 IF (
-	PythonModular OR LuaModular OR RModular OR
-	OctaveModular OR JavaModular OR PerlModular OR
-	RubyModular OR CSharpModular
+	INTERFACE_PYTHON OR INTERFACE_LUA OR INTERFACE_R OR
+	INTERFACE_OCTAVE OR INTERFACE_JAVA OR INTERFACE_PERL OR
+	INTERFACE_RUBY OR INTERFACE_CSHARP
    )
 
 	SET(SWIG_VERSION_MINIMUM 2.0.4)
-	IF(CSharpModular)
+	IF(INTERFACE_CSHARP)
 		# We require SWIG 3.0.7 to support functions with a few SGVector or
 		# SGMatrix arguments. The required SWIG feature is called
 		# "Support for special variable expansion in typemap attributes."
@@ -98,7 +98,7 @@ IF (
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(RModular)
+	ELSEIF(INTERFACE_R)
 		SET(SWIG_VERSION_MINIMUM 2.0.5)
 	ENDIF()
 	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
@@ -375,14 +375,14 @@ ENDIF()
 OPTION(OpenCV "OpenCV Integration" OFF)
 
 #interfaces
-OPTION(PythonModular "Python Modular" OFF)
-OPTION(LuaModular "Lua Modular" OFF)
-OPTION(RModular "R Modular" OFF)
-OPTION(OctaveModular "Octave Modular" OFF)
-OPTION(JavaModular "Java Modular" OFF)
-OPTION(PerlModular "Perl Modular" OFF)
-OPTION(RubyModular "Ruby Modular" OFF)
-OPTION(CSharpModular "CSharp Modular" OFF)
+OPTION(INTERFACE_PYTHON "Python Modular" OFF)
+OPTION(INTERFACE_LUA "Lua Modular" OFF)
+OPTION(INTERFACE_R "R Modular" OFF)
+OPTION(INTERFACE_OCTAVE "Octave Modular" OFF)
+OPTION(INTERFACE_JAVA "Java Modular" OFF)
+OPTION(INTERFACE_PERL "Perl Modular" OFF)
+OPTION(INTERFACE_RUBY "Ruby Modular" OFF)
+OPTION(INTERFACE_CSHARP "CSharp Modular" OFF)
 
 SET(STATIC_INTERFACES PythonStatic;OctaveStatic;RStatic;MatlabStatic;CmdLineStatic)
 FOREACH(static_interface ${STATIC_INTERFACES})
@@ -541,12 +541,12 @@ FIND_PACKAGE(PkgConfig)
 OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
 
 FIND_PACKAGE(LAPACK)
-IF(DARWIN AND RModular)
+IF(DARWIN AND INTERFACE_R)
 	MESSAGE(WARNING "Turning OFF LAPACK support because of RModular on interface, see issue #3022")
 ENDIF()
 # Cannot use Accelerate.framework and R at the same time on OSX
 # because there's a redefinition of COMPLEX, see issue #3022
-IF (LAPACK_FOUND AND NOT (DARWIN AND RModular))
+IF (LAPACK_FOUND AND NOT (DARWIN AND INTERFACE_R))
 	# find out whether it is Accelerate.framework we found for LaPack/BLAS
 	IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
 		SET(HAVE_MVEC 1)
@@ -971,7 +971,7 @@ IF(REDUCE_SWIG_DEBUG)
 ENDIF(REDUCE_SWIG_DEBUG)
 
 # python modular
-IF (PythonModular)
+IF (INTERFACE_PYTHON)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
 	FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
@@ -979,7 +979,7 @@ IF (PythonModular)
 
 	SET(HAVE_PYTHON 1)
 
-	IF(PythonModular)
+	IF(INTERFACE_PYTHON)
 		#custom swig flags for python modular interface
 		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
 			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
@@ -1015,7 +1015,7 @@ IF (PythonModular)
 ENDIF()
 
 # lua modular
-IF (LuaModular)
+IF (INTERFACE_LUA)
 	#FIND_PACKAGE(Lua51 REQUIRED)
 	pkg_search_module(LUA REQUIRED lua lua5.1)
 	IF (NOT LUA_FOUND)
@@ -1030,7 +1030,7 @@ IF (LuaModular)
 ENDIF()
 
 # java modular
-IF (JavaModular)
+IF (INTERFACE_JAVA)
 	FIND_PACKAGE(Java REQUIRED)
 	FIND_PACKAGE(JNI REQUIRED)
 
@@ -1053,7 +1053,7 @@ IF (JavaModular)
 ENDIF()
 
 # ruby modular
-IF (RubyModular)
+IF (INTERFACE_RUBY)
 	FIND_PACKAGE(Ruby REQUIRED)
 	FIND_PACKAGE(RubyNArray REQUIRED)
 	SET(NARRAY_LIB ${RUBY_NARRAY_LIBRARY})
@@ -1062,11 +1062,11 @@ IF (RubyModular)
 ENDIF()
 
 # octave modular
-IF (OctaveModular)
+IF (INTERFACE_OCTAVE)
 	FIND_PACKAGE(Octave 3.6 REQUIRED)
 	SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
 
-	IF(OctaveModular)
+	IF(INTERFACE_OCTAVE)
 		UNSET(TARGET_SWIGFLAGS)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
@@ -1075,7 +1075,7 @@ IF (OctaveModular)
 ENDIF()
 
 # csharp modular
-IF (CSharpModular)
+IF (INTERFACE_CSHARP)
 	FIND_PACKAGE(CSharp REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
@@ -1084,10 +1084,10 @@ IF (CSharpModular)
 ENDIF()
 
 # r modular
-IF (RModular)
+IF (INTERFACE_R)
 	FIND_PACKAGE(R REQUIRED)
 
-	IF (RModular)
+	IF (INTERFACE_R)
 		UNSET(TARGET_SWIGFLAGS)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
@@ -1096,7 +1096,7 @@ IF (RModular)
 ENDIF()
 
 # perl modular
-IF (PerlModular)
+IF (INTERFACE_PERL)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
@@ -1190,14 +1190,14 @@ message(STATUS "Enabled Interfaces")
 
 message(STATUS "  libshogun is ON")
 
-PrintInterfaceStatus("python" PythonModular)
-PrintInterfaceStatus("octave" OctaveModular)
-PrintInterfaceStatus("java" JavaModular)
-PrintInterfaceStatus("perl" PerlModular)
-PrintInterfaceStatus("ruby" RubyModular)
-PrintInterfaceStatus("csharp" CSharpModular)
-PrintInterfaceStatus("R   " RModular)
-PrintInterfaceStatus("lua" LuaModular)
+PrintInterfaceStatus("python" INTERFACE_PYTHON)
+PrintInterfaceStatus("octave" INTERFACE_OCTAVE)
+PrintInterfaceStatus("java" INTERFACE_JAVA)
+PrintInterfaceStatus("perl" INTERFACE_PERL)
+PrintInterfaceStatus("ruby" INTERFACE_RUBY)
+PrintInterfaceStatus("csharp" INTERFACE_CSHARP)
+PrintInterfaceStatus("R   " INTERFACE_R)
+PrintInterfaceStatus("lua" INTERFACE_LUA)
 
 message(STATUS "")
 message(STATUS "")

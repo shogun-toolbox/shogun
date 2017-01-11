@@ -66,38 +66,38 @@ IF(ENABLE_TESTING)
     ENDIF()
 
     # Python
-    IF (PythonModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/python)
+    IF (INTERFACE_PYTHON AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/python)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/python)
     ENDIF()
 
     # java
-    IF (JavaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/java)
+    IF (INTERFACE_JAVA AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/java)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/java)
     ENDIF()
 
     # octave
-    IF (OctaveModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/octave)
+    IF (INTERFACE_OCTAVE AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/octave)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/octave)
     ENDIF()
 
     # r
-    IF (RModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/r)
+    IF (INTERFACE_R AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/r)
         # temporarily disabled as R and static calls has to be fixed
         #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/r)
     ENDIF()
     
     # csharp
-    IF (CSharpModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/csharp)
+    IF (INTERFACE_CSHARP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/csharp)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/csharp)
     ENDIF()
     
     # ruby
-    IF (RubyModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
+    IF (INTERFACE_RUBY AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ruby)
     ENDIF()
 
     # lua
-    IF (LuaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lua)
+    IF (INTERFACE_LUA AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lua)
         # temporarily removed since lua modular currently
         # does not support overloaded c++ methods
         # see https://github.com/shogun-toolbox/shogun/issues/3018
