@@ -67,6 +67,8 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
 	{
 		converged=true;
+		SG_INFO("Iteration Number : %d of max %d\n", iter, max_iter);
+		
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			output[i]=apply_one(i);
