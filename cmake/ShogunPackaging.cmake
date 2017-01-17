@@ -88,6 +88,7 @@ else()
 	set(CPACK_COMPONENT_java_DISPLAY_NAME "Java interface")
 	set(CPACK_COMPONENT_octave_DISPLAY_NAME "OCTAVE interface")
 	set(CPACK_COMPONENT_lua_DISPLAY_NAME "Lua interface")
+	set(CPACK_COMPONENT_scala_DISPLAY_NAME "Scala interface")
 endif()
 
 set(CPACK_COMPONENT_libraries_DESCRIPTION "Shogun Machine Learning Toolbox")
@@ -130,6 +131,10 @@ set(CPACK_COMPONENT_octave_DEPENDS libraries)
 set(CPACK_COMPONENT_lua_DESCRIPTION "Lua modular interface of Shogun")
 set(CPACK_COMPONENT_lua_GROUP "Runtime")
 set(CPACK_COMPONENT_lua_DEPENDS libraries)
+
+set(CPACK_COMPONENT_scala_DESCRIPTION "Scala modular interface of Shogun")
+set(CPACK_COMPONENT_scala_GROUP "Runtime")
+set(CPACK_COMPONENT_scala_DEPENDS libraries)
 
 set(CPACK_COMPONENT_cmdline_DISPLAY_NAME "Command Line Interface")
 set(CPACK_COMPONENT_cmdline_DESCRIPTION "Command Line interface of Shogun")

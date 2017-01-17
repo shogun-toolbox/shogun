@@ -9,6 +9,7 @@
 		- LDA now supports 32, 64 and 128 bit floating point numbers [Chris Goldsworthy]
 		- Add SHOGUN_NUM_THREADS enviroment variable to control the number of threads
 		used by the models in runtime [Viktor Gal]
+		- Added Scala Interface to the build [Abhinav Rai]
 	* Bugfixes:
 		- Fix build error of R interface for R>=3.3.0, #3460 [Heiko Strathmann]
 		- Make the code compatible with Eigen 3.3.0 [Viktor Gal]
