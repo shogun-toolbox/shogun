@@ -208,6 +208,7 @@ target_languages = (
         ('lua', 'lua'),
         ('csharp', 'cs'),
         ('cpp', 'cpp'),
+        ('scala', 'sc')
         )
 
 target_languages_tab_titles = {
@@ -219,6 +220,7 @@ target_languages_tab_titles = {
                 'ruby': 'Ruby',
                 'cpp': 'Native C++',
                 'lua': 'Lua',
+                'scala': 'Scala'
         }
 
 generated_examples_path = None
