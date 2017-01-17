@@ -97,7 +97,7 @@ TEST(ShiftInvariantKernel, precompute_distance_asymmetric)
 	for (auto i=0; i<N; ++i)
 	{
 		for (auto j=0; j<M; ++j)
-			EXPECT_NEAR(kernel_1->get_distance(i, j), kernel_1->get_distance(i, j), 1E-6);
+			EXPECT_NEAR(kernel_1->get_distance(i, j), kernel_2->get_distance(i, j), 1E-6);
 	}
 }
 
@@ -122,7 +122,7 @@ TEST(ShiftInvariantKernel, precompute_distance_symmetric)
 	for (auto i=0; i<N; ++i)
 	{
 		for (auto j=0; j<N; ++j)
-			EXPECT_NEAR(kernel_1->get_distance(i, j), kernel_1->get_distance(i, j), 1E-6);
+			EXPECT_NEAR(kernel_1->get_distance(i, j), kernel_2->get_distance(i, j), 1E-6);
 	}
 }
 #endif // HAVE_CXX11
