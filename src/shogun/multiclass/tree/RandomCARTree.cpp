@@ -62,7 +62,7 @@ int32_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, c
 	
 	// if subset size is not set choose sqrt(num_feats) by default
 	if (m_randsubset_size==0)
-		m_randsubset_size=CMath::sqrt(mat.num_rows-0.f);
+		m_randsubset_size=CMath::sqrt((float64_t)num_feats);
 	subset_size=m_randsubset_size;
 	
 	REQUIRE(subset_size<=num_feats, "The Feature subset size(set %d) should be less than"

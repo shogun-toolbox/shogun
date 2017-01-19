@@ -16,15 +16,12 @@ MeanRule mean_rule()
 #![create_combination_rule]
 
 #![create_instance]
-int num_rand_feats = 1
-int num_trees = 10
-RandomForest rand_forest(num_rand_feats, num_trees)
+RandomForest rand_forest(features_train, labels_train, 5)
 rand_forest.set_combination_rule(mean_rule)
-rand_forest.set_labels(labels_train)
 #![create_instance]
 
 #![train_and_apply]
-rand_forest.train(features_train)
+rand_forest.train()
 RegressionLabels labels_predict = rand_forest.apply_regression(features_test)
 #![train_and_apply]
 

@@ -207,23 +207,26 @@ public:
 	 */
 	void set_min_node_size(int32_t nsize);
 
-	/** apply cross validation pruning */
-	void set_cv_pruning() { m_apply_cv_pruning=true; }
-
-	/** do not apply cross validation pruning */
-	void unset_cv_pruning() { m_apply_cv_pruning=false; }
+	/** Set cross validation pruning parameter
+	 *
+	 * @param cv_pruning allow CV pruning
+	 */
+	void set_cv_pruning(bool cv_pruning)
+	{
+		m_apply_cv_pruning = cv_pruning;
+	}
 
 	/** get label epsilon
 	 *
 	 * @return equality range for regression labels
 	 */
-	 float64_t get_label_epsilon() { return m_label_epsilon; }
+	float64_t get_label_epsilon() { return m_label_epsilon; }
 
 	/** set label epsilon
 	 *
 	 * @param epsilon equality range for regression labels
 	 */
-	 void set_label_epsilon(float64_t epsilon);
+	void set_label_epsilon(float64_t epsilon);
 
 	void pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 	 

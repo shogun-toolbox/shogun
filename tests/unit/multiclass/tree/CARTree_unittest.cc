@@ -629,7 +629,7 @@ TEST(CARTree,cv_prune_simple)
 	EXPECT_EQ(2.0,root->data.weight_minus_branch);
 
 	c->set_num_folds(2);
-	c->set_cv_pruning();
+	c->set_cv_pruning(true);
 	c->train(feats);
 
 	SG_UNREF(root);
