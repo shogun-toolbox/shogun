@@ -62,7 +62,7 @@ CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32
 	set_machine_problem_type(prob_type);
 	set_num_folds(num_folds);
 	if (cv_prune)
-		set_cv_pruning();
+		set_cv_pruning(cv_prune);
 }
 
 CCARTree::~CCARTree()

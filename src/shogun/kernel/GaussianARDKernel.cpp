@@ -62,7 +62,7 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 		result=compute_helper(avec, avec);
 	}
 #endif /* HAVE_LINALG_LIB */
-	return result/2.0;
+	return result * 0.5;
 }
 
 #ifdef HAVE_LINALG_LIB

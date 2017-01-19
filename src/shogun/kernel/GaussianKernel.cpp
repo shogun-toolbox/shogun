@@ -86,7 +86,6 @@ bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	cleanup();
 	CShiftInvariantKernel::init(l, r);
-	m_distance->init(l, r);
 	return init_normalizer();
 }
 

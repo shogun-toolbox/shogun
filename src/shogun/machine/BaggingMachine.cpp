@@ -128,16 +128,16 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	SG_UNREF(m_oob_indices);
 	m_oob_indices = new CDynamicObjectArray();
 
-	/*
-	  TODO: enable multi-threaded learning. This requires views support
-		on CFeatures*/
-	#pragma omp parallel for	
+	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
+	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
+		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
+
+	#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());
 		ASSERT(c != NULL);
-		SGVector<index_t> idx(get_bag_size());
-		idx.random(0, m_features->get_num_vectors()-1);
+		SGVector<index_t> idx(rnd_indicies.get_column_vector(i), m_bag_size, false);
 
 		CFeatures* features;
 		CLabels* labels;
