@@ -14,10 +14,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
-
 using namespace shogun;
 
 CGaussianARDKernel::CGaussianARDKernel() : CExponentialARDKernel()
@@ -31,19 +27,15 @@ CGaussianARDKernel::~CGaussianARDKernel()
 
 void CGaussianARDKernel::init()
 {
-
-#ifdef HAVE_LINALG_LIB
 	m_sq_lhs=SGVector<float64_t>();
 	m_sq_rhs=SGVector<float64_t>();
 	SG_ADD(&m_sq_lhs, "sq_lhs", "squared left-hand side", MS_NOT_AVAILABLE);
 	SG_ADD(&m_sq_rhs, "sq_rhs", "squared right-hand side", MS_NOT_AVAILABLE);
-#endif
 }
 
 float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=0.0;
-#ifdef HAVE_LINALG_LIB
 	REQUIRE(lhs, "Left features (lhs) not set!\n")
 	REQUIRE(rhs, "Right features (rhs) not set!\n")
 
@@ -62,11 +54,9 @@ float64_t CGaussianARDKernel::distance(int32_t idx_a, int32_t idx_b)
 		avec=linalg::add(avec, bvec, 1.0, -1.0);
 		result=compute_helper(avec, avec);
 	}
-#endif /* HAVE_LINALG_LIB */
 	return result * 0.5;
 }
 
-#ifdef HAVE_LINALG_LIB
 CGaussianARDKernel::CGaussianARDKernel(int32_t size)
 		: CExponentialARDKernel(size)
 {
@@ -143,7 +133,7 @@ float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<
 	else
 		SG_ERROR("Unsupported ARD type\n");
 	SGMatrix<float64_t> right=compute_right_product(bvec, scalar_weight);
-	SGMatrix<float64_t> res=linalg::matrix_product(left, right);
+	SGMatrix<float64_t> res=linalg::matrix_prod(left, right);
 	return res[0]*scalar_weight;
 }
 
@@ -162,7 +152,7 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 		{
 			SGMatrix<float64_t> left(avec.vector,1,avec.vlen,false);
 			SGMatrix<float64_t> right(bvec.vector,bvec.vlen,1,false);
-			res=linalg::matrix_product(left, right);
+			res=linalg::matrix_prod(left, right);
 			result=2.0*res[0]*CMath::exp(2.0*m_log_weights[0]);
 		}
 		else if(m_ARD_type==KT_FULL)
@@ -186,13 +176,13 @@ float64_t CGaussianARDKernel::compute_gradient_helper(SGVector<float64_t> avec,
 			SGMatrix<float64_t> row_vec_r(row_vec.vector,row_vec.vlen,1,false);
 			SGMatrix<float64_t> left(avec.vector+row_index,1,avec.vlen-row_index,false);
 
-			res=linalg::matrix_product(left, row_vec_r);
+			res=linalg::matrix_prod(left, row_vec_r);
 			result=res[0]*bvec[col_index];
 
 			SGMatrix<float64_t> row_vec_l(row_vec.vector,1,row_vec.vlen,false);
 			SGMatrix<float64_t> right(bvec.vector+row_index,bvec.vlen-row_index,1,false);
 
-			res=linalg::matrix_product(row_vec_l, right);
+			res=linalg::matrix_prod(row_vec_l, right);
 			result+=res[0]*avec[col_index];
 
 			if(row_index==col_index)
@@ -311,4 +301,3 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
 		return SGMatrix<float64_t>();
 	}
 }
-#endif /* HAVE_LINALG_LIB */

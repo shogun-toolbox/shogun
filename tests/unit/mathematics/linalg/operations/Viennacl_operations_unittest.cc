@@ -131,7 +131,7 @@ TEST(LinalgBackendViennaCL, SGVector_dot)
 
 	EXPECT_NEAR(result, 5, 1E-15);
 }
-
+/*
 TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -178,6 +178,57 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
 
 	for (index_t i = 0; i < 9; ++i)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+}
+*/
+TEST(LinalgBackendViennaCL, SGMatrix_matrix_product)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim2, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 2*i;
+
+	SGMatrix<float64_t> A_gpu = to_gpu(A);
+	SGMatrix<float64_t> B_gpu = to_gpu(B);
+	auto cal_gpu = matrix_prod(A_gpu, B_gpu);
+	auto cal = from_gpu(cal_gpu);
+
+	int32_t ref[] = {56, 68, 152, 196, 248, 324};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_matrix_product_in_place)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim2, dim3);
+	SGMatrix<float64_t> cal(dim1, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 2*i;
+	cal.zero();
+
+	SGMatrix<float64_t> A_gpu = to_gpu(A);
+	SGMatrix<float64_t> B_gpu = to_gpu(B);
+	SGMatrix<float64_t>  cal_gpu = to_gpu(cal);
+	linalg::matrix_prod(A_gpu, B_gpu, cal_gpu);
+	cal = from_gpu(cal_gpu);
+
+	int32_t ref[] = {14, 17, 38, 49, 62, 81};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
 }
 
 TEST(LinalgBackendViennaCL, SGVector_mean)

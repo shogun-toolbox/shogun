@@ -42,6 +42,7 @@
 #include <shogun/lib/GPUVector.h>
 #include <viennacl/linalg/matrix_operations.hpp>
 #include <viennacl/linalg/vector_operations.hpp>
+#include <viennacl/matrix.hpp>
 #endif // HAVE_VIENNACL
 
 #include <type_traits>
