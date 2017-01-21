@@ -33,7 +33,6 @@
 #define CORE_H_
 
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
-#include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Apply.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 
@@ -76,44 +75,6 @@ template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector
 Vector apply(Matrix A, Vector b, bool transpose=false)
 {
 	return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
-}
-
-/** Performs matrix multiplication. This version should be used for backend specific
- * code requirements. For example, use this with CGPUMatrix and explicitly set
- * ViennaCL backend, or SGMatrix and explicitly set Eigen3 backend. If matrix-type/
- * backend-type independent code is desired, use the version that does not support
- * preallocated result matrix but returns the result in a newly created matrix instead.
- *
- * @param A First matrix
- * @param B Second matrix
- * @param C Result of the operation
- * @param transpose_A Whether to the transpose of A should be used instead of A
- * @param transpose_B Whether to the transpose of B should be used instead of B
- * @param overwrite If true, the values in C are overwritten with the result,
- * otherwise, the result is added to the existing values
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void matrix_product(Matrix A, Matrix B, Matrix C,
-	bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
-{
-	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
-}
-
-/** Performs matrix multiplication. This version returns the result in a newly
- * created matrix. If matrix-product is desired that will work irrespective of the
- * backend and the matrix type used, then this method should be used.
- *
- * @param A First matrix
- * @param B Second matrix
- * @param transpose_A Whether to the transpose of A should be used instead of A
- * @param transpose_B Whether to the transpose of B should be used instead of B
- * @return Result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-typename implementation::matrix_product<backend,Matrix>::ReturnType matrix_product(Matrix A, Matrix B,
-	bool transpose_A=false, bool transpose_B=false)
-{
-	return implementation::matrix_product<backend, Matrix>::compute(A, B, transpose_A, transpose_B);
 }
 
 /** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.

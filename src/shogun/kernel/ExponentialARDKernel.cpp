@@ -13,6 +13,7 @@
 #include <shogun/kernel/ExponentialARDKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
@@ -229,7 +230,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 			SGMatrix<float64_t> weights(log_weights.vector+offset,1,m_weights_rows-i,false);
 			weights[0]=CMath::exp(weights[0]);
 			SGMatrix<float64_t> rtmp(vec.vector+i,vec.vlen-i,1,false);
-			SGMatrix<float64_t> s=linalg::matrix_product(weights,rtmp);
+			SGMatrix<float64_t> s=linalg::matrix_prod(weights,rtmp);
 			weights[0]=CMath::log(weights[0]);
 			res[i]=s[0];
 			offset+=m_weights_rows-i;
