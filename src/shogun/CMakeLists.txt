@@ -26,6 +26,9 @@ IF (PROTOBUF_FOUND)
 	ENDFOREACH()
 ENDIF()
 
+list(SORT LIBSHOGUN_SRC)
+list(SORT LIBSHOGUN_HEADERS)
+
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp)
 set_target_properties(libshogun PROPERTIES
