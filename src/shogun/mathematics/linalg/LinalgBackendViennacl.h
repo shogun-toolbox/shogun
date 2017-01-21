@@ -104,6 +104,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
+	/** Implementation of @see LinalgBackendBase::matrix_prod */
+	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
+	virtual void matrix_prod(Container<Type>& a, Container<Type>& b,\
+		Container<Type>& result, bool transpose_A, bool transpose_B) const \
+	{  \
+		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
+
 	/** Implementation of @see LinalgBackendBase::max */
 	#define BACKEND_GENERIC_MAX(Type, Container) \
 	virtual Type max(const Container<Type>& a) const \
@@ -282,6 +292,38 @@ private:
 
 		result_gpu->data_matrix(a.num_rows, a.num_cols) = viennacl::linalg::element_prod(
 			a_gpu->data_matrix(a.num_rows, a.num_cols), b_gpu->data_matrix(a.num_rows, a.num_cols));
+	}
+
+	/** ViennaCL matrix in-place product method */
+	template <typename T>
+	void matrix_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		bool transpose_A, bool transpose_B) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		if (transpose_A && transpose_B)
+			result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				viennacl::linalg::prod(viennacl::trans(a_gpu->data_matrix(
+				a.num_rows, a.num_cols)), viennacl::trans(b_gpu->data_matrix(
+				b.num_rows, b.num_cols)));
+
+		else if (transpose_A)
+			result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				viennacl::linalg::prod(viennacl::trans(a_gpu->data_matrix(
+				a.num_rows, a.num_cols)), b_gpu->data_matrix(b.num_rows,
+				b.num_cols));
+
+		else if (transpose_B)
+			result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				viennacl::linalg::prod(a_gpu->data_matrix(a.num_rows, a.num_cols),
+				viennacl::trans(b_gpu->data_matrix(b.num_rows, b.num_cols)));
+
+		else
+			result_gpu->data_matrix(result.num_rows, result.num_cols) =
+				viennacl::linalg::prod(a_gpu->data_matrix(a.num_rows, a.num_cols),
+				b_gpu->data_matrix(b.num_rows, b.num_cols));
 	}
 
 	template <typename T, template<typename> class Container>

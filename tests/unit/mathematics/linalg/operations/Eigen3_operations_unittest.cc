@@ -142,6 +142,182 @@ TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_matrix_product)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim2, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+
+	auto cal = linalg::matrix_prod(A, B);
+
+	float64_t ref[] = {14, 17, 38, 49, 62, 81};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_transpose_A)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim2, dim1);
+	SGMatrix<float64_t> B(dim2, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+
+	auto cal = linalg::matrix_prod(A, B, true);
+
+	float64_t ref[] = {7, 19, 19, 63, 31, 107};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_transpose_B)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim3, dim2);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+
+	auto cal = linalg::matrix_prod(A, B, false, true);
+
+	float64_t ref[] = {42, 51, 48, 59, 54, 67};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_transpose_A_B)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim2, dim1);
+	SGMatrix<float64_t> B(dim3, dim2);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+
+	auto cal = linalg::matrix_prod(A, B, true, true);
+
+	float64_t ref[] = {21, 57, 24, 68, 27, 79};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_in_place)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim2, dim3);
+	SGMatrix<float64_t> cal(dim1, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+	cal.zero();
+
+	linalg::matrix_prod(A, B, cal);
+
+	float64_t ref[] = {14, 17, 38, 49, 62, 81};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_in_place_transpose_A)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim2, dim1);
+	SGMatrix<float64_t> B(dim2, dim3);
+	SGMatrix<float64_t> cal(dim1, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+	cal.zero();
+
+	linalg::matrix_prod(A, B, cal, true);
+
+	float64_t ref[] = {7, 19, 19, 63, 31, 107};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_in_place_transpose_B)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim1, dim2);
+	SGMatrix<float64_t> B(dim3, dim2);
+	SGMatrix<float64_t> cal(dim1, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+	cal.zero();
+
+	linalg::matrix_prod(A, B, cal, false, true);
+
+	float64_t ref[] = {42, 51, 48, 59, 54, 67};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_matrix_product_in_place_transpose_A_B)
+{
+	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
+	SGMatrix<float64_t> A(dim2, dim1);
+	SGMatrix<float64_t> B(dim3, dim2);
+	SGMatrix<float64_t> cal(dim1, dim3);
+
+	for (index_t i = 0; i < dim1*dim2; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < dim2*dim3; ++i)
+		B[i] = 0.5*i;
+	cal.zero();
+
+	linalg::matrix_prod(A, B, cal, true, true);
+
+	float64_t ref[] = {21, 57, 24, 68, 27, 79};
+
+	EXPECT_EQ(dim1, cal.num_rows);
+	EXPECT_EQ(dim3, cal.num_cols);
+	for (index_t i = 0; i < dim1*dim3; ++i)
+		EXPECT_EQ(ref[i], cal[i]);
+}
+
 TEST(LinalgBackendEigen, SGVector_max)
 {
 	SGVector<float64_t> A(9);
