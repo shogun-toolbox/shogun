@@ -324,7 +324,7 @@ TEST(LinalgBackendEigen, SGVector_max)
 
 	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
 
-	for (int32_t i=0; i<9; i++)
+	for (index_t i = 0; i < A.size(); ++i)
 		A[i] = a[i];
 
 	EXPECT_NEAR(8, max(A), 1e-15);
@@ -335,7 +335,7 @@ TEST(LinalgBackendEigen, SGMatrix_max)
 	const index_t nrows = 2, ncols = 3;
 	SGMatrix<float64_t> A(nrows, ncols);
 
-	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
+	float64_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 12};
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		A[i] = a[i];

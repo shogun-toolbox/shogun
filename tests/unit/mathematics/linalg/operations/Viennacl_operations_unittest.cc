@@ -255,7 +255,7 @@ TEST(LinalgBackendViennaCL, SGVector_max)
 	SGVector<float32_t> A_gpu;
 
 	float32_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	for (index_t i = 0; i < 9; ++i)
+	for (index_t i = 0; i < A.size(); ++i)
 		A[i] = a[i];
 
 	A_gpu = to_gpu(A);
@@ -270,8 +270,8 @@ TEST(LinalgBackendViennaCL, SGMatrix_max)
 	SGMatrix<float32_t> A(nrows, ncols);
 	SGMatrix<float32_t> A_gpu;
 
-	float32_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 4};
-	for (index_t i = 0; i < 9; ++i)
+	float32_t a[] = {1, 2, 5, 8, 3, 1, 0, -1, 12};
+	for (index_t i = 0; i < nrows*ncols; ++i)
 		A[i] = a[i];
 
 	A_gpu = to_gpu(A);
