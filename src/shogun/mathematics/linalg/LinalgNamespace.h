@@ -361,6 +361,124 @@ SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
 	return result;
 }
 
+/** Performs the operation C = A * B where "*" denotes matrix multiplication.
+ *
+ * This version returns the result in-place.
+ * User should pass an appropriately allocate memory matrix
+ *
+ * @param A First matrix
+ * @param B Second matrix
+ * @param result Result matrix
+ * @param transpose_A whether to transpose matrix A
+ * @param transpose_B whether to transpose matrix B
+ */
+template <typename T>
+void matrix_prod(SGMatrix<T>& A, SGMatrix<T>& B, SGMatrix<T>& result,
+	bool transpose_A=false, bool transpose_B=false)
+{
+	REQUIRE(!(result.on_gpu()^A.on_gpu()),
+			"Cannot operate with matrix result on_gpu (%d) and \
+			 matrix A on_gpu (%d).\n", result.on_gpu(), A.on_gpu());
+	REQUIRE(!(result.on_gpu()^B.on_gpu()),
+			"Cannot operate with matrix result on_gpu (%d) and \
+			 matrix B on_gpu (%d).\n", result.on_gpu(), B.on_gpu());
+
+	if (transpose_A)
+	{
+		REQUIRE(A.num_cols == result.num_rows, "Number of columns for A (%d) and "
+				"number of rows for result (%d) should be equal!\n", A.num_cols, result.num_rows);
+		if (transpose_B)
+		{
+			REQUIRE(A.num_rows == B.num_cols, "Number of rows for A (%d) and "
+					"number of columns for B (%d) should be equal!\n", A.num_rows, B.num_cols);
+			REQUIRE(B.num_rows == result.num_cols, "Number of rows for B (%d) and "
+					"number of columns for result (%d) should be equal!\n",
+					B.num_rows, result.num_cols);
+		}
+		else
+		{
+			REQUIRE(A.num_rows == B.num_rows, "Number of rows for A (%d) and "
+					"number of rows for B (%d) should be equal!\n", A.num_rows, B.num_rows);
+			REQUIRE(B.num_cols == result.num_cols, "Number of columns for B (%d) and "
+					"number of columns for result (%d) should be equal!\n",
+					B.num_cols, result.num_cols);
+		}
+	}
+	else
+	{
+		REQUIRE(A.num_rows == result.num_rows, "Number of rows for A (%d) and "
+				"number of rows for result (%d) should be equal!\n", A.num_rows, result.num_rows);
+		if (transpose_B)
+		{
+			REQUIRE(A.num_cols == B.num_cols, "Number of columns for A (%d) and "
+					"number of columns for B (%d) should be equal!\n", A.num_cols, B.num_cols);
+			REQUIRE(B.num_rows == result.num_cols, "Number of rows for B (%d) and "
+					"number of columns for result (%d) should be equal!\n",
+					B.num_rows, result.num_cols);
+		}
+		else
+		{
+			REQUIRE(A.num_cols == B.num_rows, "Number of columns for A (%d) and "
+					"number of rows for B (%d) should be equal!\n", A.num_cols, B.num_rows);
+			REQUIRE(B.num_cols == result.num_cols, "Number of columns for B (%d) and "
+					"number of columns for result (%d) should be equal!\n",
+					B.num_cols, result.num_cols);
+		}
+	}
+
+	infer_backend(A, B)->matrix_prod(A, B, result, transpose_A, transpose_B);
+}
+
+/** Performs the operation C = A * B where "*" denotes matrix multiplication.
+ *
+ * This version returns the result in a newly created matrix.
+ *
+ * @param A First matrix
+ * @param B Second matrix
+ * @param transpose_A whether to transpose matrix A
+ * @param transpose_B whether to transpose matrix B
+ *
+ * @return The result of the operation
+ */
+template <typename T>
+SGMatrix<T> matrix_prod(SGMatrix<T>& A, SGMatrix<T>& B,
+	bool transpose_A=false, bool transpose_B=false)
+{
+	SGMatrix<T> result;
+
+	if (transpose_A & transpose_B)
+	{
+		REQUIRE(A.num_rows == B.num_cols, "Number of rows for A (%d) and "
+				"number of columns for B (%d) should be equal!\n", A.num_rows, B.num_cols);
+		result = SGMatrix<T>(A.num_cols, B.num_rows);
+	}
+	else if (transpose_A)
+	{
+		REQUIRE(A.num_rows == B.num_rows, "Number of rows for A (%d) and "
+				"number of rows for B (%d) should be equal!\n", A.num_rows, B.num_rows);
+		result = SGMatrix<T>(A.num_cols, B.num_cols);
+	}
+	else if (transpose_B)
+	{
+		REQUIRE(A.num_cols == B.num_cols, "Number of columns for A (%d) and "
+				"number of columns for B (%d) should be equal!\n", A.num_cols, B.num_cols);
+		result = SGMatrix<T>(A.num_rows, B.num_rows);
+	}
+	else
+	{
+		REQUIRE(A.num_cols == B.num_rows, "Number of columns for A (%d) and "
+				"number of rows for B (%d) should be equal!\n", A.num_cols, B.num_rows);
+		result = SGMatrix<T>(A.num_rows, B.num_cols);
+	}
+
+	if (A.on_gpu())
+		result = to_gpu(result);
+
+	matrix_prod(A, B, result, transpose_A, transpose_B);
+
+	return result;
+}
+
 /**
  * Returns the largest element in a vector or matrix
  *

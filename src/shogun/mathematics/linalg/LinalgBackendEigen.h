@@ -114,6 +114,16 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
+	/** Implementation of @see LinalgBackendBase::matrix_prod */
+	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
+	virtual void matrix_prod(Container<Type>& a, Container<Type>& b,\
+		Container<Type>& result, bool transpose_A, bool transpose_B) const \
+	{  \
+		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
+
 	/** Implementation of @see LinalgBackendBase::max */
 	#define BACKEND_GENERIC_MAX(Type, Container) \
 	virtual Type max(const Container<Type>& a) const \
@@ -310,6 +320,28 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = a_eig.array() * b_eig.array();
+	}
+
+	/** Eigen3 matrix in-place product method */
+	template <typename T>
+	void matrix_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		bool transpose_A, bool transpose_B) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+		if (transpose_A && transpose_B)
+			result_eig = a_eig.transpose() * b_eig.transpose();
+
+		else if (transpose_A)
+			result_eig = a_eig.transpose() * b_eig;
+
+		else if (transpose_B)
+			result_eig = a_eig * b_eig.transpose();
+
+		else
+			result_eig = a_eig * b_eig;
 	}
 
 	/** Return the largest element in the vector with Eigen3 library */
