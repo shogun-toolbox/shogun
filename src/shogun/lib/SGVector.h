@@ -14,6 +14,9 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
+#define CEREAL_SAVE_FUNCTION_NAME cereal_save
+#define CEREAL_LOAD_FUNCTION_NAME cereal_load
+
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
@@ -42,7 +45,7 @@ template<class T> class SGVector : public SGReferencedData
 
 		typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
 		typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
-	
+
 		/** The scalar type of the vector */
 		typedef T Scalar;
 
@@ -481,6 +484,25 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return matrix
 		 */
 		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+
+		template<class Archive>
+		void cereal_save(Archive & ar) const
+		{
+			ar(vlen);
+			for (index_t i = 0; i < vlen; ++i)
+				ar(vector[i]);
+		}
+
+		template<class Archive>
+		void cereal_load(Archive & ar)
+		{
+			unref();
+			ar(vlen);
+			vector = SG_MALLOC(T, vlen);
+			for (index_t i = 0; i < vlen; ++i)
+				ar(vector[i]);
+		}
+
 #endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
@@ -507,4 +529,5 @@ template<> void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1
 				const float32_t scalar, const float32_t* vec2, int32_t n);
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
+
 #endif // __SGVECTOR_H__
