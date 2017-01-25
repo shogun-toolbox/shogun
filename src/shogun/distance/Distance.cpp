@@ -349,6 +349,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 		result=SG_MALLOC(T, total_num);
 
+	// TODO: port this to use OpenMP
 #ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
 #else

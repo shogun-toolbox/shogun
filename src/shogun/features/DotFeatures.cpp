@@ -77,15 +77,18 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
 
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
-#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
-#endif
 		DF_THREAD_PARAM params;
 		params.df=this;
 		params.sub_index=NULL;
@@ -98,8 +101,8 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		params.bias=b;
 		params.progress=false; //true;
 		dense_dot_range_helper((void*) &params);
-#ifdef HAVE_PTHREAD
 	}
+#ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -155,15 +158,18 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	ASSERT(sub_index)
 	ASSERT(output)
 
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
-#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
-#endif
 		DF_THREAD_PARAM params;
 		params.df=this;
 		params.sub_index=sub_index;
@@ -176,8 +182,8 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		params.bias=b;
 		params.progress=false; //true;
 		dense_dot_range_helper((void*) &params);
-#ifdef HAVE_PTHREAD
 	}
+#ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

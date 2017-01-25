@@ -333,7 +333,12 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 		else
 		{
+			// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 			int32_t num_threads=parallel->get_num_threads();
+#else
+			int32_t num_threads=1;
+#endif
 			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
@@ -548,7 +553,12 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		io->disable_progress();
 
 	/* custom kernel never has batch evaluation property so dont do this here */
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 
 	if (num_threads<2)

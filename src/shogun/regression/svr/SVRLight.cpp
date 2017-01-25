@@ -428,7 +428,13 @@ void CSVRLight::update_linear_component(
 
 			if (num_working>0)
 			{
-				if (parallel->get_num_threads() < 2)
+			// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
+				int32_t num_threads=parallel->get_num_threads();
+#else
+				int32_t num_threads=1;
+#endif
+				if (num_threads < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
@@ -440,13 +446,13 @@ void CSVRLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-					S_THREAD_PARAM_SVRLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVRLIGHT, parallel->get_num_threads()-1);
+					pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+					S_THREAD_PARAM_SVRLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVRLIGHT, num_threads-1);
 					int32_t start = 0 ;
-					int32_t step = num_elem/parallel->get_num_threads() ;
+					int32_t step = num_elem/num_threads ;
 					int32_t end = step ;
 
-					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+					for (int32_t t=0; t<num_threads-1; t++)
 					{
 						params[t].kernel = kernel ;
 						params[t].lin = lin ;
@@ -461,11 +467,11 @@ void CSVRLight::update_linear_component(
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for(jj=params[parallel->get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for(jj=params[num_threads-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(regression_fix_index(docs[j]));
 					}
 					void* ret;
-					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+					for (int32_t t=0; t<num_threads-1; t++)
 						pthread_join(threads[t], &ret) ;
 
 					SG_FREE(params);

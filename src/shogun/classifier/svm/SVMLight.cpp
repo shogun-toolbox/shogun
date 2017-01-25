@@ -1049,7 +1049,13 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
 	float64_t *aicache, QP *qp)
 {
-	if (parallel->get_num_threads()<=1)
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
+	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
+	if (num_threads < 2)
 	{
 		compute_matrices_for_optimization(docs, label, exclude_from_eq_const, eq_target,
 												   chosen, active2dnum, key, a, lin, c,
@@ -1079,7 +1085,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			qp->opt_g0[i]=lin[key[i]];
 		}
 
-		ASSERT(parallel->get_num_threads()>1)
+		ASSERT(num_threads>1)
 		int32_t *KI=SG_MALLOC(int32_t, varnum*varnum);
 		int32_t *KJ=SG_MALLOC(int32_t, varnum*varnum);
 		int32_t Knum=0 ;
@@ -1099,11 +1105,11 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		}
 		ASSERT(Knum<=varnum*(varnum+1)/2)
 
-		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-		S_THREAD_PARAM_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_KERNEL, parallel->get_num_threads()-1);
-		int32_t step= Knum/parallel->get_num_threads();
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		S_THREAD_PARAM_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_KERNEL, num_threads-1);
+		int32_t step= Knum/num_threads;
 		//SG_DEBUG("\nkernel-step size: %i\n", step)
-		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+		for (int32_t t=0; t<num_threads-1; t++)
 		{
 			params[t].svmlight = this;
 			params[t].start = t*step;
@@ -1113,10 +1119,10 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 			params[t].Kval=Kval ;
 			pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
 		}
-		for (i=params[parallel->get_num_threads()-2].end; i<Knum; i++)
+		for (i=params[num_threads-2].end; i<Knum; i++)
 			Kval[i]=compute_kernel(KI[i],KJ[i]) ;
 
-		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+		for (int32_t t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
 		SG_FREE(params);
@@ -1458,7 +1464,13 @@ void CSVMLight::update_linear_component(
 
 			if (num_working>0)
 			{
-				if (parallel->get_num_threads() < 2)
+				// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
+				int32_t num_threads=parallel->get_num_threads();
+#else
+				int32_t num_threads=1;
+#endif
+				if (num_threads < 2)
 				{
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(docs[j]);
@@ -1470,13 +1482,13 @@ void CSVMLight::update_linear_component(
 					int32_t num_elem = 0 ;
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-					S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, parallel->get_num_threads()-1);
+					pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+					S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, num_threads-1);
 					int32_t start = 0 ;
-					int32_t step = num_elem/parallel->get_num_threads();
+					int32_t step = num_elem/num_threads;
 					int32_t end = step ;
 
-					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+					for (int32_t t=0; t<num_threads-1; t++)
 					{
 						params[t].kernel = kernel ;
 						params[t].lin = lin ;
@@ -1489,11 +1501,11 @@ void CSVMLight::update_linear_component(
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for (jj=params[parallel->get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for (jj=params[num_threads-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=kernel->compute_optimized(docs[j]);
 					}
 					void* ret;
-					for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+					for (int32_t t=0; t<num_threads-1; t++)
 						pthread_join(threads[t], &ret) ;
 
 					SG_FREE(params);
@@ -1631,8 +1643,14 @@ void CSVMLight::update_linear_component_mkl_linadd(
 			kernel->add_to_normal(docs[i], (a[i]-a_old[i])*(float64_t)label[i]);
 		}
 	}
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
+	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 
-	if (parallel->get_num_threads() < 2)
+	if (num_threads < 2)
 	{
 		// determine contributions of different kernels
 		for (int32_t i=0; i<num; i++)
@@ -1641,11 +1659,11 @@ void CSVMLight::update_linear_component_mkl_linadd(
 #ifdef HAVE_PTHREAD
 	else
 	{
-		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-		S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, parallel->get_num_threads()-1);
-		int32_t step= num/parallel->get_num_threads();
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, num_threads-1);
+		int32_t step= num/num_threads;
 
-		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+		for (int32_t t=0; t<num_threads-1; t++)
 		{
 			params[t].kernel = kernel;
 			params[t].W = W;
@@ -1654,10 +1672,10 @@ void CSVMLight::update_linear_component_mkl_linadd(
 			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
 		}
 
-		for (int32_t i=params[parallel->get_num_threads()-2].end; i<num; i++)
+		for (int32_t i=params[num_threads-2].end; i<num; i++)
 			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 
-		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
+		for (int32_t t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
 		SG_FREE(params);
@@ -2128,7 +2146,12 @@ void CSVMLight::reactivate_inactive_examples(
 
 		  if (num_modified>0)
 		  {
-			  int32_t num_threads=parallel->get_num_threads();
+		  		// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
+				int32_t num_threads=parallel->get_num_threads();
+#else
+				int32_t num_threads=1;
+#endif
 			  ASSERT(num_threads>0)
 			  if (num_threads < 2)
 			  {

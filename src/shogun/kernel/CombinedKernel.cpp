@@ -446,7 +446,12 @@ void CCombinedKernel::emulate_compute_batch(
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
+			// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 			int32_t num_threads=parallel->get_num_threads();
+#else
+			int32_t num_threads=1;
+#endif
 			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
@@ -503,7 +508,12 @@ void CCombinedKernel::emulate_compute_batch(
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
+			// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 			int32_t num_threads=parallel->get_num_threads();
+#else
+			int32_t num_threads=1;
+#endif
 			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
