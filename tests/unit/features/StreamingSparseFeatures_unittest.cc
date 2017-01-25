@@ -78,6 +78,5 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   SG_FREE(data);
   SG_FREE(labels);
 
-  int delete_success = unlink(fname);
-  ASSERT_EQ(0, delete_success);
+  std::remove(fname);
 }
