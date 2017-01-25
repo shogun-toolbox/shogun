@@ -11,6 +11,10 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef HAVE_CXX11_ATOMIC
+#include <atomic>
+#endif
+
 namespace shogun
 {
 /** @brief Class Lock used for synchronization in concurrent programs. */
@@ -29,7 +33,11 @@ public:
 
 private:
 	/** lock object */
+#ifdef HAVE_CXX11_ATOMIC
+	std::atomic_flag m_flag = ATOMIC_FLAG_INIT;
+#else
 	void* lock_object;
+#endif	
 };
 }
 #endif // __LOCK_H__
