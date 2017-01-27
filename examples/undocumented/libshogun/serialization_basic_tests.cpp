@@ -86,13 +86,12 @@ void test_test_class_serial()
 #ifdef _WIN32
 	int err = _mktemp_s(filename_tmp, strlen(filename_tmp) + 1);
 	ASSERT(err == 0);
-	int fd = open(filename_tmp, O_CREAT | O_RDWR);
 #else
 	int fd = mkstemp(filename_tmp);
-#endif
 	ASSERT(fd != -1);
 	int retval = close(fd);
 	ASSERT(retval != -1);
+#endif
 	char* filename = filename_tmp;
 
 	CTestClass* to_save=new CTestClass(10, 0, 0);
