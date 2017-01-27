@@ -24,6 +24,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <omp.h>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -365,13 +367,8 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	}
 	else
 	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
-		int64_t step= total_num/num_threads;
 
-		int32_t t;
-
-		num_threads--;
+		#pragma omp for
 		for (t=0; t<num_threads; t++)
 		{
 			params[t].distance = this;
@@ -385,38 +382,9 @@ SGMatrix<T> CDistance::get_distance_matrix()
 			params[t].symmetric=symmetric;
 			params[t].verbose=false;
 
-			int code=pthread_create(&threads[t], NULL,
-					CDistance::get_distance_matrix_helper<T>, (void*)&params[t]);
-
-			if (code != 0)
-			{
-				SG_WARNING("Thread creation failed (thread %d of %d) "
-						"with error:'%s'\n",t, num_threads, strerror(code));
-				num_threads=t;
-				break;
-			}
+			CDistance::get_distance_matrix_helper<T>(&params[t]);
 		}
 
-		params[t].distance = this;
-		params[t].result = result;
-		params[t].start = compute_row_start(t*step, n, symmetric);
-		params[t].end = m;
-		params[t].total_start=t*step;
-		params[t].total_end=total_num;
-		params[t].n=n;
-		params[t].m=m;
-		params[t].symmetric=symmetric;
-		params[t].verbose=true;
-		get_distance_matrix_helper<T>(&params[t]);
-
-		for (t=0; t<num_threads; t++)
-		{
-			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-		}
-
-		SG_FREE(params);
-		SG_FREE(threads);
 	}
 
 	SG_DONE()
