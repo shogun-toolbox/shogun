@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
-	FILE* fin=fopen("io_linereader.cpp", "r");
+	FILE* fin=fopen("../data/label_train_multiclass_digits.dat", "r");
 
 	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters['\n']=1;
