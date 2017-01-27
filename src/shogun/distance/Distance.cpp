@@ -24,12 +24,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <omp.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 using namespace shogun;
 
 /** distance thread parameters */
@@ -350,51 +344,32 @@ SGMatrix<T> CDistance::get_distance_matrix()
 		result=SG_MALLOC(T, total_num);
 
 	int32_t num_threads=parallel->get_num_threads();
-	if (num_threads < 2)
-	{
-		D_THREAD_PARAM<T> params;
-		params.distance=this;
-		params.result=result;
-		params.start=0;
-		params.end=m;
-		params.total_start=0;
-		params.total_end=total_num;
-		params.n=n;
-		params.m=m;
-		params.symmetric=symmetric;
-		params.verbose=true;
-		get_distance_matrix_helper<T>((void*) &params);
-	}
-	else
-	{
-		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
-		int64_t step= total_num/num_threads;
 
+
+	
+	D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
+	int64_t step= total_num/num_threads;
 		int32_t t;
- 
-		num_threads--;
 
-		#pragma omp for
-		for (t=0; t<num_threads; t++)
-		{
-			params[t].distance = this;
-			params[t].result = result;
-			params[t].start = compute_row_start(t*step, n, symmetric);
-			params[t].end = compute_row_start((t+1)*step, n, symmetric);
-			params[t].total_start=t*step;
-			params[t].total_end=(t+1)*step;
-			params[t].n=n;
-			params[t].m=m;
-			params[t].symmetric=symmetric;
-			params[t].verbose=false;
+	num_threads--;
+	#pragma omp for
+	for (t=0; t<num_threads; t++)
+	{
+		params[t].distance = this;
+		params[t].result = result;
+		params[t].start = compute_row_start(t*step, n, symmetric);
+		params[t].end = compute_row_start((t+1)*step, n, symmetric);
+		params[t].total_start=t*step;
+		params[t].total_end=(t+1)*step;
+		params[t].n=n;
+		params[t].m=m;
+		params[t].symmetric=symmetric;
+		params[t].verbose=false;
 
-			CDistance::get_distance_matrix_helper<T>(&params[t]);
-		}
-
-		SG_FREE(params);
-
+		CDistance::get_distance_matrix_helper<T>((void*) &params[t]);
 	}
 
+	SG_FREE(params);
 	SG_DONE()
 
 	return SGMatrix<T>(result,m,n,true);
