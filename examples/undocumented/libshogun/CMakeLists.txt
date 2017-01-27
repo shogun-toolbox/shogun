@@ -30,6 +30,7 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 	"random_conditional_probability_tree.cpp"
 	"random_fourier_features.cpp"
 	"serialization_file_formats.cpp"
+	"so_fg_multilabel.cpp"
 	"so_hmsvm_mosek_simple.cpp"
 	"splitting_LOO_crossvalidation.cpp"
 	"streaming_onlinesvmsgd.cpp"
