@@ -367,6 +367,12 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	}
 	else
 	{
+		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
+		int64_t step= total_num/num_threads;
+
+		int32_t t;
+ 
+		num_threads--;
 
 		#pragma omp for
 		for (t=0; t<num_threads; t++)
@@ -384,6 +390,8 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 			CDistance::get_distance_matrix_helper<T>(&params[t]);
 		}
+
+		SG_FREE(params);
 
 	}
 
