@@ -48,8 +48,6 @@ FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
 	add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-	set_property(TEST libshogun-${EXAMPLE} PROPERTY
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 	
 	# Add examples to the dependencies of modular interfaces to make sure
