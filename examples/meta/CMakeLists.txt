@@ -36,18 +36,25 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
         endif()
     ENDFOREACH()
 
+	# Set generate.py flags
+	SET(GENERATOR_FLAGS
+		-i ${META_EXAMPLE}
+		-o ${CMAKE_CURRENT_BINARY_DIR}
+		-t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
+		-g ${CTAGS_FILE}
+		--parser_files_dir=${CMAKE_CURRENT_BINARY_DIR}/parser_files)
+
+	# Enable variable storing only if we have enabled testing
+	IF(ENABLE_TESTING)
+		LIST(APPEND GENERATOR_FLAGS --store-vars)
+	ENDIF()
+
     # Run example generation script
     SET(TEMP ${CMAKE_CURRENT_BINARY_DIR}/python/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.py)
     add_custom_command(OUTPUT ${EXAMPLE_LISTINGS}
         COMMAND ${PYTHON_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py
-        -i ${META_EXAMPLE}
-        -o ${CMAKE_CURRENT_BINARY_DIR}
-        -t ${CMAKE_CURRENT_SOURCE_DIR}/generator/targets
-        -g ${CTAGS_FILE}
-        --store-vars
-        --parser_files_dir=${CMAKE_CURRENT_BINARY_DIR}/parser_files
-        COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
+        ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py ${GENERATOR_FLAGS}
+		COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
         DEPENDS ctags ${META_EXAMPLE})
 
     LIST(APPEND TRANSLATED_META_EXAMPLES ${EXAMPLE_LISTINGS})
@@ -64,19 +71,17 @@ INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cpp
     PATTERN "CMakeFiles*" EXCLUDE
     )
 
-IF(ENABLE_TESTING)
-    IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-        # copy data symlink to cmake binary dir so that we can execute meta examples in there
-        CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
-    ENDIF()
+IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
+    # copy data symlink to cmake binary dir so that we can execute meta examples in there
+    CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
+ENDIF()
 
-    # c++
-    IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${TRAVIS_DISABLE_META_CPP})
-        IF(HAVE_CXX0X OR HAVE_CXX11)
-            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
-        ELSE()
-            MESSAGE(WARNING "Skipping C++ meta examples; requires a c++11 compatible compiler.")
-        ENDIF()
+# c++
+IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${TRAVIS_DISABLE_META_CPP})
+    IF(HAVE_CXX0X OR HAVE_CXX11)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+    ELSE()
+        MESSAGE(WARNING "Skipping C++ meta examples; requires a c++11 compatible compiler.")
     ENDIF()
 ENDIF()
 
@@ -104,8 +109,7 @@ FOREACH(interface ${AVAILABLE_INTERFACES})
             PATTERN "CMakeFiles*" EXCLUDE
             )
 
-        if (ENABLE_TESTING)
-            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY})
-        endif()
-    endif()
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY})
+
+	endif()
 ENDFOREACH()
