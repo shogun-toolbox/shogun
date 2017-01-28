@@ -18,11 +18,13 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <sys/mman.h>
+#include <unistd.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <unistd.h>
 
 namespace shogun
 {
@@ -69,6 +71,42 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			last_written_byte=0;
 			rw=flag;
 
+#ifdef _MSC_VER
+			DWORD open_flags = GENERIC_READ;
+			DWORD share_mode = FILE_SHARE_READ;
+			DWORD create_disp = OPEN_EXISTING;
+			DWORD mmap_prot = PAGE_READONLY;
+			DWORD mmap_flags = FILE_MAP_READ;
+			if (rw=='w')
+			{
+				open_flags |= GENERIC_WRITE;
+				share_mode |= FILE_SHARE_WRITE;
+				create_disp = OPEN_ALWAYS;
+				mmap_prot = PAGE_READWRITE;
+				mmap_flags = FILE_MAP_ALL_ACCESS;
+			}
+
+			fd = CreateFile(fname, open_flags, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL);
+			if (rw=='w' && fsize)
+			{
+				LARGE_INTEGER desired_len;
+				desired_len.QuadPart = fsize;
+				uint8_t byte=0;
+				DWORD bytes_written;
+				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (WriteFile(fd, &byte, 1, &bytes_written, NULL) == 0))
+					SG_ERROR("Error creating file of size %ld bytes\n", fsize)
+			}
+
+			DWORD length = GetFileSize(fd, NULL);
+			if (length == INVALID_FILE_SIZE)
+				SG_ERROR("Error determining file size\n")
+
+			mapping = CreateFileMapping(fd, 0, mmap_prot, 0, 0, 0);
+
+			address = MapViewOfFile(mapping, mmap_flags, 0, 0, length);
+			if (address == NULL)
+				SG_ERROR("Error mapping file")
+#else
 			int open_flags=O_RDONLY;
 			int mmap_prot=PROT_READ;
 			int mmap_flags=MAP_PRIVATE;
@@ -99,13 +137,27 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = mmap(NULL, length, mmap_prot, mmap_flags, fd, 0);
 			if (address == MAP_FAILED)
 				SG_ERROR("Error mapping file")
-
-				set_generic<T>();
+#endif
+			set_generic<T>();
 		}
 
 		/** destructor */
 		virtual ~CMemoryMappedFile()
 		{
+#ifdef _MSC_VER
+			UnmapViewOfFile(address);
+			CloseHandle(mapping);
+			if (rw=='w' && last_written_byte)
+			{
+				LARGE_INTEGER desired_len;
+				desired_len.QuadPart = last_written_byte;
+				if ((SetFilePointerEx(fd, desired_len, NULL, FILE_BEGIN) == 0) || (SetEndOfFile(fd) == 0)) {
+					CloseHandle(fd);
+					SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
+				}
+			}
+			CloseHandle(fd);
+#else
 			munmap(address, length);
 			if (rw=='w' && last_written_byte && ftruncate(fd, last_written_byte) == -1)
 
@@ -114,6 +166,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte)
 			}
 			close(fd);
+#endif
 		}
 
 		/** get the mapping address
@@ -264,7 +317,12 @@ template <class T> class CMemoryMappedFile : public CSGObject
 
 	protected:
 		/** file descriptor */
+#ifdef _MSC_VER
+		HANDLE fd;
+		HANDLE mapping;
+#else
 		int fd;
+#endif
 		/** size of file */
 		uint64_t length;
 		/** mapping address */

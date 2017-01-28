@@ -269,7 +269,12 @@ public:
 
 	void compute_Q_parallel(Qfloat* data, float64_t* lab, int32_t i, int32_t start, int32_t len) const
 	{
+    	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 		int32_t num_threads=sg_parallel->get_num_threads();
+#else
+		int32_t num_threads=1;
+#endif
 		if (num_threads < 2)
 		{
 			Q_THREAD_PARAM params;
@@ -281,9 +286,9 @@ public:
 			params.q=this;
 			compute_Q_parallel_helper((void*) &params);
 		}
+#ifdef HAVE_PTHREAD
 		else
 		{
-#ifdef HAVE_PTHREAD
 			int32_t total_num=(len-start);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 			Q_THREAD_PARAM* params = SG_MALLOC(Q_THREAD_PARAM, num_threads);
@@ -329,8 +334,8 @@ public:
 
 			SG_FREE(params);
 			SG_FREE(threads);
-#endif /* HAVE_PTHREAD */
 		}
+#endif /* HAVE_PTHREAD */
 	}
 
 	inline float64_t kernel_function(int32_t i, int32_t j) const

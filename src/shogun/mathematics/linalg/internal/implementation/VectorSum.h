@@ -61,7 +61,7 @@ namespace implementation
  * is specialized for different types of vectors and backend, providing a mean
  * to deal with various vectors directly without having to convert
  */
-template <enum Backend, class Vector>
+template <Backend backend, class Vector>
 struct vector_sum
 {
 	/** Scalar type */

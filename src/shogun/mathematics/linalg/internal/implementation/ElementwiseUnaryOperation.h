@@ -58,7 +58,7 @@ namespace implementation
  * computing element-wise operations for both matrices and vectors of CPU
  * (SGMatrix/SGVector) or GPU (CGPUMatrix/CGPUVector).
  */
-template <enum Backend, class Operand, class ReturnType, class UnaryOp>
+template <Backend backend, class Operand, class ReturnType, class UnaryOp>
 struct elementwise_unary_operation
 {
 };
@@ -99,7 +99,11 @@ struct elementwise_unary_operation<Backend::NATIVE, Operand, ReturnType, UnaryOp
 			"result must be the same!\n");
 
 #pragma omp parallel for
+#ifdef _WIN32
+		for (std::make_signed<decltype(operand.size())>::type i=0; i<operand.size(); ++i)
+#else
 		for (decltype(operand.size()) i=0; i<operand.size(); ++i)
+#endif
 			result.data()[i]=unary_op(operand.data()[i]);
 	}
 };

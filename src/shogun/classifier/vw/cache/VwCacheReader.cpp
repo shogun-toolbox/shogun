@@ -15,6 +15,9 @@
 
 #include <shogun/classifier/vw/cache/VwCacheReader.h>
 #include <fcntl.h>
+#ifdef _WIN32
+#include <io.h>
+#endif
 
 using namespace shogun;
 

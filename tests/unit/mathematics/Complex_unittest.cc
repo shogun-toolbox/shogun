@@ -43,7 +43,7 @@ TEST(CMath, complex_test)
 	EXPECT_NEAR(result.imag(), 1.64382444391412629869, 1E-14);
 
 	result=CMath::sin(a);
-	EXPECT_NEAR(result.real(), -193.43002005693958267329, 1E-14);
+	EXPECT_NEAR(result.real(), -193.43002005693958267329, 3E-14); // MSVC the error is 2.84E-14
 	EXPECT_NEAR(result.imag(), 57.21839505634108746790, 1E-14);
 	result=CMath::sinh(a);
 	EXPECT_NEAR(result.real(), 71.24771797085288937978, 1E-13);

@@ -382,7 +382,7 @@ int main(int argc, char * argv[])
 	if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", FNAME_TRAIN);
-		return 0;
+		return -1;
 	}
 
 	fclose(pfile);
@@ -392,7 +392,7 @@ int main(int argc, char * argv[])
 	if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", FNAME_TEST);
-		return 0;
+		return -1;
 	}
 
 	fclose(pfile);

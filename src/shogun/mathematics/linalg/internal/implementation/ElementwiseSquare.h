@@ -60,7 +60,7 @@ namespace implementation
  * is specialized for different types of matrices and backend, providing a mean
  * to deal with various matrices directly without having to convert
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct elementwise_square
 {
 	/**
@@ -136,7 +136,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 		Eigen::Map<MatrixXt> m = mat;
 		Eigen::Map<MatrixXt> r = result;
 
-		r = m.array().template square();
+		r = m.array().square();
 	}
 
 	/**
@@ -154,7 +154,7 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
-		r = m.array().template square();
+		r = m.array().square();
 	}
 };
 

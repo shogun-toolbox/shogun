@@ -16,6 +16,7 @@
 #include <cfloat>
 #include <deque>
 #include <set>
+#include <iterator>
 
 namespace tapkee
 {

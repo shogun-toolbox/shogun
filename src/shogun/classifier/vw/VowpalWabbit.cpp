@@ -12,11 +12,15 @@
  * Adaptation of Vowpal Wabbit v5.1.
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
+#include <shogun/classifier/vw/VowpalWabbit.h>
 
 #include <algorithm>
-#include <shogun/classifier/vw/VowpalWabbit.h>
 #include <fcntl.h>
 #include <shogun/lib/Signal.h>
+
+#ifdef _WIN32
+#include <io.h>
+#endif
 
 using namespace std;
 using namespace shogun;

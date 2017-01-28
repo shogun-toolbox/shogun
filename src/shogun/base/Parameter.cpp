@@ -10,6 +10,7 @@
  */
 
 #include <string.h>
+#include <cctype>
 
 #include <shogun/base/Parameter.h>
 #include <shogun/base/class_list.h>

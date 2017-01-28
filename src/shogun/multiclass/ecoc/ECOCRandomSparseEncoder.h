@@ -74,7 +74,7 @@ public:
      */
     int32_t get_default_code_length(int32_t num_classes) const
     {
-        return static_cast<int32_t>(CMath::round(15 * CMath::log(num_classes)));
+        return static_cast<int32_t>(CMath::round(15 * CMath::log(static_cast<float64_t>(num_classes))));
     }
 
     /** init codebook.

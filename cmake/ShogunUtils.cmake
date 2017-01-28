@@ -40,13 +40,14 @@ ENDMACRO()
 # based on compiz_discover_tests
 function (shogun_discover_tests EXECUTABLE)
 
-        add_dependencies (${EXECUTABLE}
-			discover_gtest_tests)
+        add_dependencies (${EXECUTABLE} discover_gtest_tests)
 
         add_custom_command (TARGET ${EXECUTABLE}
             POST_BUILD
-            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE} --gtest_list_tests | ${CMAKE_BINARY_DIR}/tests/unit/discover_gtest_tests ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -D UNIT_TEST_CMD=${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
+                     -D DISCOVER_CMD=${CMAKE_BINARY_DIR}/bin/discover_gtest_tests
+                     -D WORKING_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                     -P ${CMAKE_MODULE_PATH}/discover_unit_tests.cmake
             COMMENT "Discovering Tests in ${EXECUTABLE}"
             DEPENDS
             VERBATIM)

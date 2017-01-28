@@ -7,6 +7,10 @@
  * Written (W) 2013 Viktor Gal
  * Copyright (C) 2013 Viktor Gal
  */
+#ifdef _WIN32
+#define _CRT_RAND_S
+#include <stdlib.h>
+#endif
 
 #include <shogun/mathematics/Random.h>
 #include <shogun/base/Parameter.h>
@@ -17,11 +21,6 @@
 
 #ifdef DEV_RANDOM
 #include <fcntl.h>
-#endif
-
-#ifdef _WIN32
-#define _CRT_RAND_S
-#include <stdlib.h>
 #endif
 
 using namespace shogun;

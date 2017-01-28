@@ -12,6 +12,11 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 
+#ifdef _WIN32
+#undef far
+#undef near
+#endif
+
 using namespace shogun;
 
 namespace shogun
@@ -152,8 +157,8 @@ bool CKMeansMiniBatch::train_machine(CFeatures* data)
 {
 	initialize_training(data);
 	minibatch_KMeans();
-	compute_cluster_variances();	
-	return true;	
+	compute_cluster_variances();
+	return true;
 }
 
 }

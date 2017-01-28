@@ -30,11 +30,6 @@
 
 #include <assert.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
-
 using namespace shogun;
 
 CSpectrumRBFKernel::CSpectrumRBFKernel()

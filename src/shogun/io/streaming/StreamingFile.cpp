@@ -12,6 +12,9 @@
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/classifier/vw/vw_common.h>
 #include <fcntl.h>
+#ifdef _WIN32
+#include <io.h>
+#endif
 
 namespace shogun
 {

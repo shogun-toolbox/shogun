@@ -49,7 +49,7 @@ namespace implementation
 /**
  * @brief Generic class which is specialized for different backends to compute the cholesky decomposition of a dense matrix
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct cholesky
 {
 

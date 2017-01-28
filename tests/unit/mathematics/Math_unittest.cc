@@ -63,6 +63,7 @@ TEST(CMath, qsort_backward_index_test)
 	SG_FREE(i1);
 }
 
+#ifdef HAVE_PTHREAD
 TEST(CMath, parallel_qsort_index_test)
 {
 	// testing parallel_qsort_index on list of zero elements
@@ -75,6 +76,7 @@ TEST(CMath, parallel_qsort_index_test)
 	SG_FREE(v1);
 	SG_FREE(i1);
 }
+#endif
 
 TEST(CMath, float64_tests)
 {

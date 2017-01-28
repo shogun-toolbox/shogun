@@ -22,12 +22,20 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef __GNUC__
+#define PACKED( class_to_pack ) class_to_pack __attribute__((__packed__))
+#else
+#define PACKED( class_to_pack ) __pragma( pack(push, 1) ) class_to_pack __pragma( pack(pop) )
+#endif
+
 // Packed structure for efficient storage
+PACKED(
 struct one_float
 {
 	// The float to store
 	float32_t f;
-} __attribute__((packed));
+}
+);
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 

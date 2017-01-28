@@ -10,10 +10,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifndef WIN32
-
 #include <stdlib.h>
-#include <signal.h>
 #include <string.h>
 
 #include <shogun/io/SGIO.h>
@@ -75,7 +72,7 @@ bool CSignal::set_handler()
 		for (int32_t i=0; i<NUMTRAPPEDSIGS; i++)
 			sigaddset(&st, signals[i]);
 
-#ifndef __INTERIX
+#if !(defined(__INTERIX) || defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__))
 		act.sa_sigaction=NULL; //just in case
 #endif
 		act.sa_handler=CSignal::handler;
@@ -146,4 +143,36 @@ void CSignal::clear()
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
 }
-#endif //WIN32
+
+#if defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__)
+#define SIGBAD(signo) ( (signo) <=0 || (signo) >=NSIG)
+Sigfunc *handlers[NSIG]={0};
+
+int sigaddset(sigset_t *set, int signo)
+{
+	if (SIGBAD(signo)) {
+		errno = EINVAL;
+		return -1;
+	}
+	*set |= 1 << (signo-1);
+	return 0;
+}
+
+int sigaction(int signo, const struct sigaction *act, struct sigaction *oact)
+{
+	if (SIGBAD(signo)) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	if(oact){
+			oact->sa_handler = handlers[signo];
+			oact->sa_mask = 0;
+			oact->sa_flags =0;
+	}
+	if (act)
+		handlers[signo]=act->sa_handler;
+
+	return 0;
+}
+#endif

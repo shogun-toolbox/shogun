@@ -51,7 +51,12 @@ void CDistanceMachine::init()
 
 void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
 {
+    // TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
     int32_t num_threads=parallel->get_num_threads();
+#else
+    int32_t num_threads=1;
+#endif
     ASSERT(num_threads>0)
 
     ASSERT(result)
@@ -113,7 +118,12 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
 
 void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a)
 {
+    // TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
     int32_t num_threads=parallel->get_num_threads();
+#else
+    int32_t num_threads=1;
+#endif
     ASSERT(num_threads>0)
 
     ASSERT(result)
@@ -130,7 +140,7 @@ void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t id
 
         run_distance_thread_rhs((void*) &param);
     }
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
     else
     {
         pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

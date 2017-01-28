@@ -21,7 +21,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -875,18 +875,19 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 	int32_t num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0)
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
 
 	if (num_threads < 2)
 	{
-#ifdef CYGWIN
-		for (int32_t j=0; j<num_feat; j++)
-#else
         CSignal::clear_cancel();
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-#endif
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM_WD params;

@@ -30,6 +30,7 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 	"random_conditional_probability_tree.cpp"
 	"random_fourier_features.cpp"
 	"serialization_file_formats.cpp"
+	"so_fg_multilabel.cpp"
 	"so_hmsvm_mosek_simple.cpp"
 	"splitting_LOO_crossvalidation.cpp"
 	"streaming_onlinesvmsgd.cpp"
@@ -48,8 +49,6 @@ FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
 	add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-	set_property(TEST libshogun-${EXAMPLE} PROPERTY
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 	
 	# Add examples to the dependencies of modular interfaces to make sure

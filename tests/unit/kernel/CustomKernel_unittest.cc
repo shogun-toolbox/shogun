@@ -292,8 +292,8 @@ TEST(CustomKernelTest, sum_block)
 	float64_t sum3=kernel->sum_block(m, 0, n, m);
 	float64_t sum4=precomputed_kernel->sum_block(m, 0, n, m);
 
-	EXPECT_NEAR(sum3, sum4, 1E-4);
-	EXPECT_NEAR(sum1, sum3, 1E-4);
+	EXPECT_NEAR(sum3, sum4, 1E-3);
+	EXPECT_NEAR(sum1, sum3, 1E-3);
 
 	SG_UNREF(precomputed_kernel);
 	SG_UNREF(kernel);

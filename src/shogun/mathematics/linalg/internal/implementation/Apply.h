@@ -58,7 +58,7 @@ namespace implementation
 /**
  * @brief Generic class which is specialized for different backends to perform apply
  */
-template <enum Backend, class Matrix, class Vector>
+template <Backend backend, class Matrix, class Vector>
 struct apply
 {
 };

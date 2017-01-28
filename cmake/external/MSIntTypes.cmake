@@ -1,9 +1,9 @@
-SET (MSINTTYPES_REVISION 29)
+SET (MSINTTYPES_COMMIT f9e7c5758ed9e3b9f4b2394de1881c704dd79de0)
 include(ExternalProject)
 ExternalProject_Add(
 	MSIntTypes
-	SVN_REPOSITORY http://msinttypes.googlecode.com/svn/trunk/
-	SVN_REVISION -r ${MSINTTYPES_REVISION}
+	GIT_REPOSITORY https://github.com/chemeris/msinttypes.git
+	GIT_TAG ${MSINTTYPES_COMMIT}
 	UPDATE_COMMAND ""
     TIMEOUT 10
 	PREFIX ${CMAKE_BINARY_DIR}/MSIntTypes

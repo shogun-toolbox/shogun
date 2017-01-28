@@ -22,8 +22,16 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
+
+#ifdef _WIN32
+#define R_OK 4
+#endif
 
 using namespace shogun;
 
@@ -374,7 +382,11 @@ uint32_t SGIO::ss_length(substring s)
 
 char* SGIO::concat_filename(const char* filename)
 {
+#ifdef WIN32
+	if (snprintf(file_buffer, FBUFSIZE, "%s\\%s", directory_name, filename) > FBUFSIZE)
+#else
 	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+#endif
 		SG_SERROR("filename too long")
 
 	SG_SDEBUG("filename=\"%s\"\n", file_buffer)

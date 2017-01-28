@@ -15,10 +15,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

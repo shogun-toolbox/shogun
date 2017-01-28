@@ -9,17 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
-#include <cmath>
+
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 
 #include <stdlib.h>
-#include <float.h>
 
 #ifndef NAN
 #include <stdlib.h>
@@ -239,9 +233,9 @@ int CMath::is_nan(double f)
 #else
   return ((f != f) ? 1 : 0);
 #endif // #if (HAVE_DECL_ISNAN == 1) || defined(HAVE_ISNAN)
+#else
+  return std::isnan(f);
 #endif // #ifndef HAVE_STD_ISNAN
-
-	return std::isnan(f);
 }
 
 int CMath::is_infinity(double f)
@@ -256,11 +250,10 @@ int CMath::is_infinity(double f)
 #else
   if ((f == f) && ((f - f) != 0.0)) return (f < 0.0 ? -1 : 1);
   else return 0;
-}
 #endif // #if (HAVE_DECL_ISINF == 1) || defined(HAVE_ISINF)
+#else
+  return std::isinf(f);
 #endif // #ifndef HAVE_STD_ISINF
-
-	return std::isinf(f);
 }
 
 int CMath::is_finite(double f)
@@ -271,11 +264,11 @@ int CMath::is_finite(double f)
 #elif defined(HAVE_FINITE)
   return ::finite(f);
 #else
-  return ((!std::isnan(f) && !std::isinf(f)) ? 1 : 0);
+  return ((!CMath::is_nan(f) && !CMath::is_infinity(f)) ? 1 : 0);
 #endif // #if (HAVE_DECL_ISFINITE == 1) || defined(HAVE_ISFINITE)
-#endif // #ifndef HAVE_STD_ISFINITE
-
+#else
   return std::isfinite(f);
+#endif // #ifndef HAVE_STD_ISFINITE
 }
 
 bool CMath::strtof(const char* str, float32_t* float_result)

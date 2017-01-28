@@ -33,7 +33,9 @@ class StdVectorPrefetcher<
 
   void prefetch(const std::vector<PointType>& points,
                 int_fast64_t prefetch_index) {
+#ifdef __GNUC__
     __builtin_prefetch((points[prefetch_index]).data(), 0, 1);
+#endif
   }
 };
 

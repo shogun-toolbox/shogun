@@ -97,6 +97,9 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
 ENDFOREACH()
 
 # add target for dynamic
+if(MSVC)
+  SET(POSTLINKFLAGS ${POSTLINKFLAGS} winmm)
+endif()
 add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> lib/config.h)
 set_target_properties(shogun PROPERTIES
                       VERSION ${LIBSHOGUNVER}
@@ -113,6 +116,9 @@ endif()
 if (BUILD_STATIC)
   add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> lib/config.h)
   set_target_properties(shogun-static PROPERTIES OUTPUT_NAME shogun)
+  if(MSVC)
+    target_link_libraries(shogun winmm.lib)
+  endif()
 ENDIF()
 
 IF (CTAGS_FOUND)

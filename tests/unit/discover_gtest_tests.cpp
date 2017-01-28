@@ -6,7 +6,22 @@
 #include <fstream>
 #include <iterator>
 #include <iostream>
+#ifndef _WIN32
 #include <libgen.h>
+#else
+#include <regex>
+#endif
+
+#if _MSC_VER >= 1600
+#include <algorithm>
+
+std::string basename(const std::string& pathname)
+{
+	return { std::find_if(pathname.rbegin(), pathname.rend(),
+		[](char c) { return c == '/' || c == '\\'; }).base(),
+		pathname.end() };
+}
+#endif
 
 using namespace std;
 
@@ -16,7 +31,7 @@ int main (int argc, char **argv)
 
 	if (argc < 2)
 	{
-		cout << "Usage: PATH_TO_TEST_BINARY --gtest_list_tests | ./build_test_cases PATH_TO_TEST_BINARY";
+		cout << "Usage: PATH_TO_TEST_BINARY --gtest_list_tests | ./discover_gtest_tests PATH_TO_TEST_BINARY";
 		return 1;
 	}
 
@@ -27,12 +42,16 @@ int main (int argc, char **argv)
 	while (getline (cin, line))
 	{
 		if ((line.find (" ") != 0) && (line[0] != '0'))
-			testCases.push_back(line.substr(0, line.size()-1));
+			testCases.push_back(line.substr(0, line.rfind('.')));
 	}
 
 	ofstream testfilecmake;
+#ifdef _MSC_VER
+	string gtestName = basename(argv[1]);
+#else
 	char *base = basename (argv[1]);
 	string gtestName (base);
+#endif
 
 	testfilecmake.open (string (gtestName + "_test.cmake").c_str (), ios::out | ios::trunc);
 
@@ -44,6 +63,11 @@ int main (int argc, char **argv)
 			{
 				string addTest ("ADD_TEST (unit-");
 				string testExec (" \"" + string (argv[1]) + "\"");
+#ifdef _WIN32
+				// escape backslash in path
+				std::regex e ("(\\\\)");
+				testExec = std::regex_replace (testExec, e, "\\\\");
+#endif
 				string gTestFilter (" \"--gtest_filter=");
 				string endParen (".*\")");
 

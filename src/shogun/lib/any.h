@@ -38,7 +38,9 @@
 #include <string.h>
 #include <stdexcept>
 #include <typeinfo>
+#ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
+#endif
 
 namespace shogun
 {
@@ -49,11 +51,15 @@ namespace shogun
     template <typename T>
     std::string demangledType()
     {
-        size_t length;
-        int status;
-        char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
-        std::string demangled_string(demangled);
-        free(demangled);
+#ifdef HAVE_CXA_DEMANGLE
+		size_t length;
+		int status;
+		char* demangled = abi::__cxa_demangle(typeid(T).name(), nullptr, &length, &status);
+		std::string demangled_string(demangled);
+		free(demangled);
+#else
+		std::string demangled_string(typeid(T).name());
+#endif
         return demangled_string;
     }
 
@@ -71,17 +77,17 @@ namespace shogun
          * @param v pointer to value
          */
         virtual void set(void** storage, const void* v) const = 0;
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
         virtual void clear(void** storage) const = 0;
-        
+
         /** Returns type-name as string.
          * @return name of type class
          */
         virtual std::string type() const = 0;
-        
+
         /** Compares type.
          * @param ti type information
          * @return true if type matches
@@ -95,7 +101,7 @@ namespace shogun
          */
         virtual bool equals(void** storage, void** other_storage) const = 0;
     };
-    
+
     /** @brief This is one concrete implementation of policy that
      * uses void pointers to store values.
      */
@@ -111,7 +117,7 @@ namespace shogun
         {
             *(storage) = new T(*reinterpret_cast<T const*>(v));
         }
-        
+
         /** Clears storage.
          * @param storage pointer to a pointer to storage
          */
@@ -119,7 +125,7 @@ namespace shogun
         {
             delete reinterpret_cast<T*>(*storage);
         }
-        
+
         /** Returns type-name as string.
          * @return name of type class
          */
@@ -127,7 +133,7 @@ namespace shogun
         {
             return demangledType<T>();
         }
-        
+
         /** Compares type.
          * @param ti type information
          * @return true if type matches
@@ -221,10 +227,10 @@ namespace shogun
             if (same_type<T>())
             {
                 return *(reinterpret_cast<T*>(storage));
-            } 
-            else 
+            }
+            else
             {
-                throw std::logic_error("Bad cast to " + demangledType<T>() + 
+                throw std::logic_error("Bad cast to " + demangledType<T>() +
                         " but the type is " + policy->type());
             }
         }
@@ -264,13 +270,13 @@ namespace shogun
     inline bool operator==(const Any& lhs, const Any& rhs)
     {
         void* lhs_storage = lhs.storage;
-        void* rhs_storage = rhs.storage;        
-        return lhs.policy == rhs.policy and
+        void* rhs_storage = rhs.storage;
+        return lhs.policy == rhs.policy &&
             lhs.policy->equals(&lhs_storage, &rhs_storage);
     }
 
     inline bool operator!=(const Any& lhs, const Any& rhs)
-    {        
+    {
         return !(lhs == rhs);
     }
 

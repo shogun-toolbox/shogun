@@ -91,3 +91,15 @@ float64_t CTime::stop(bool verbose)
 		SG_PRINT("stop %ld\n", (int64_t) stop_time)
 	return stop_time;
 }
+
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+int gettimeofday(struct timeval* tp, void* tzp)
+{
+    DWORD t;
+    t = timeGetTime();
+    tp->tv_sec = t / 1000;
+    tp->tv_usec = t % 1000;
+    /* 0 indicates that the call succeeded. */
+    return 0;
+}
+#endif

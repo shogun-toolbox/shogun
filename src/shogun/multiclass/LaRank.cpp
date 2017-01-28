@@ -46,11 +46,15 @@
  * $Id: kcache.c,v 1.9 2007/01/25 22:42:09 leonb Exp $
  **********************************************************************/
 
+#include <shogun/lib/config.h>
+
 #include <vector>
 #include <algorithm>
 #include <ctime>
 #include <algorithm>
+#ifndef _MSC_VER
 #include <sys/time.h>
+#endif
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
