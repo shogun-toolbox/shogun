@@ -138,7 +138,7 @@ template<class T> class SGVector : public SGReferencedData
 		/** Data pointer */
 		inline T* data() const
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector;
 		}
 
@@ -213,7 +213,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint64_t index) const
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -224,7 +224,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int64_t index) const
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -235,7 +235,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](uint32_t index) const
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -246,7 +246,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline const T& operator[](int32_t index) const
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -257,7 +257,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint64_t index)
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -268,7 +268,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int64_t index)
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -279,7 +279,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](uint32_t index)
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -290,7 +290,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		inline T& operator[](int32_t index)
 		{
-			assert_on_gpu();
+			assert_on_cpu();
 			return vector[index];
 		}
 
@@ -521,7 +521,7 @@ template<class T> class SGVector : public SGReferencedData
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */
-		void assert_on_gpu() const
+		void assert_on_cpu() const
 		{
 			if (on_gpu())
 				SG_SERROR("Direct memory access not possible when data is in GPU memory.\n");
