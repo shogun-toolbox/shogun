@@ -13,6 +13,7 @@
 #ifndef __SGMATRIX_H__
 #define __SGMATRIX_H__
 
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
@@ -136,6 +137,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		T* get_column_vector(index_t col) const
 		{
+			assert_on_cpu();
 			const int64_t c = col;
 			return &matrix[c*num_rows];
 		}
@@ -159,6 +161,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline const T& operator()(index_t i_row, index_t i_col) const
 		{
+			assert_on_cpu();
 		    const int64_t c = i_col;
 		    return matrix[c*num_rows + i_row];
 		}
@@ -168,6 +171,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline const T& operator[](index_t index) const
 		{
+			assert_on_cpu();
 			return matrix[index];
 		}
 
@@ -177,6 +181,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline T& operator()(index_t i_row, index_t i_col)
 		{
+			assert_on_cpu();
 		    const int64_t c = i_col;
 		    return matrix[c*num_rows + i_row];
 		}
@@ -186,6 +191,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline T& operator[](index_t index)
 		{
+			assert_on_cpu();
 			return matrix[index];
 		}
 
@@ -416,6 +422,16 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** overridden to free data */
 		virtual void free_data();
+
+        private:
+		/** Assert whether the data is on GPU
+		 * and raise error if the data is on GPU
+		 */
+		void assert_on_cpu() const
+		{
+			if (on_gpu())
+				SG_SERROR("Direct memory access not possible when data is in GPU memory.\n");
+		}
 
 	public:
 		/** matrix  */
