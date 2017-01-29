@@ -130,21 +130,21 @@ SGVector<T>::SGVector(EigenRowVectorXt& vec)
 template <class T>
 SGVector<T>::operator EigenVectorXtMap() const
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	return EigenVectorXtMap(vector, vlen);
 }
 
 template <class T>
 SGVector<T>::operator EigenRowVectorXtMap() const
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	return EigenRowVectorXtMap(vector, vlen);
 }
 
 template<class T>
 void SGVector<T>::zero()
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	if (vector && vlen)
 		set_const(0);
 }
@@ -152,7 +152,7 @@ void SGVector<T>::zero()
 template <>
 void SGVector<complex128_t>::zero()
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	if (vector && vlen)
 		set_const(complex128_t(0.0));
 }
@@ -160,7 +160,7 @@ void SGVector<complex128_t>::zero()
 template<class T>
 void SGVector<T>::set_const(T const_elem)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	for (index_t i=0; i<vlen; i++)
 		vector[i]=const_elem ;
 }
@@ -169,14 +169,14 @@ void SGVector<T>::set_const(T const_elem)
 template<>
 void SGVector<float64_t>::set_const(float64_t const_elem)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	catlas_dset(vlen, const_elem, vector, 1);
 }
 
 template<>
 void SGVector<float32_t>::set_const(float32_t const_elem)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	catlas_sset(vlen, const_elem, vector, 1);
 }
 #endif // HAVE_CATLAS
@@ -184,7 +184,7 @@ void SGVector<float32_t>::set_const(float32_t const_elem)
 template<class T>
 void SGVector<T>::range_fill(T start)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	range_fill_vector(vector, vlen, start);
 }
 
@@ -193,7 +193,7 @@ COMPLEX128_ERROR_ONEARG(range_fill)
 template<class T>
 void SGVector<T>::random(T min_value, T max_value)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	random_vector(vector, vlen, min_value, max_value);
 }
 
@@ -202,7 +202,7 @@ COMPLEX128_ERROR_TWOARGS(random)
 template <class T>
 index_t SGVector<T>::find_position_to_insert(T element)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	index_t i;
 	for (i=0; i<vlen; ++i)
 	{
@@ -262,7 +262,7 @@ void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
 template<class T>
 void SGVector<T>::resize_vector(int32_t n)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	vector=SG_REALLOC(T, vector, vlen, n);
 
 	if (n > vlen)
@@ -274,7 +274,7 @@ void SGVector<T>::resize_vector(int32_t n)
 template<class T>
 SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
 	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
@@ -286,7 +286,7 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const SGVector<T> x)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	REQUIRE(x.vector && vector, "Addition possible for only non-null vectors.\n");
 	REQUIRE(x.vlen == vlen, "Length of the two vectors to be added should be same. [V(%d) + V(%d)]\n", vlen, x.vlen);
 
@@ -297,7 +297,7 @@ void SGVector<T>::add(const SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const T x)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	REQUIRE(vector, "Addition possible for only non-null vectors.\n");
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x;
@@ -306,7 +306,7 @@ void SGVector<T>::add(const T x)
 template<class T>
 void SGVector<T>::add(const SGSparseVector<T>& x)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	if (x.features)
 	{
 		for (int32_t i=0; i < x.num_feat_entries; i++)
@@ -321,7 +321,7 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 template<class T>
 void SGVector<T>::display_size() const
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen)
 }
 
@@ -353,7 +353,7 @@ void SGVector<T>::free_data()
 template<class T>
 bool SGVector<T>::equals(SGVector<T>& other)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	if (other.vlen!=vlen)
 		return false;
 
@@ -822,7 +822,7 @@ int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 template <class T>
 SGVector<index_t> SGVector<T>::find(T elem)
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	SGVector<index_t> idx(vlen);
 	index_t k=0;
 
@@ -868,6 +868,7 @@ template<class T> void SGVector<T>::load(CFile* loader)
 	SG_SET_LOCALE_C;
 	SGVector<T> vec;
 	loader->get_vector(vec.vector, vec.vlen);
+	vec.gpu_ptr = nullptr;
 	copy_data(vec);
 	copy_refcount(vec);
 	ref();
@@ -884,6 +885,7 @@ template<class T> void SGVector<T>::save(CFile* saver)
 {
 	REQUIRE(saver, "Requires a valid 'c FILE pointer'\n");
 
+	assert_on_cpu();
 	SG_SET_LOCALE_C;
 	saver->set_vector(vector, vlen);
 	SG_RESET_LOCALE;
@@ -897,7 +899,7 @@ void SGVector<complex128_t>::save(CFile* saver)
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	SGVector<float64_t> real(vlen);
 	for (int32_t i=0; i<vlen; i++)
 		real[i]=CMath::real(vector[i]);
@@ -906,7 +908,7 @@ template <class T> SGVector<float64_t> SGVector<T>::get_real()
 
 template <class T> SGVector<float64_t> SGVector<T>::get_imag()
 {
-	assert_on_gpu();
+	assert_on_cpu();
 	SGVector<float64_t> imag(vlen);
 	for (int32_t i=0; i<vlen; i++)
 		imag[i]=CMath::imag(vector[i]);
