@@ -98,6 +98,7 @@ SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 template <class T>
 SGMatrix<T>::operator EigenMatrixXtMap() const
 {
+	assert_on_cpu();
 	return EigenMatrixXtMap(matrix, num_rows, num_cols);
 }
 
@@ -113,7 +114,9 @@ bool SGMatrix<T>::operator==(SGMatrix<T>& other)
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
-	if (matrix!=other.matrix)
+	if (on_gpu() && gpu_ptr!=other.gpu_ptr)
+		return false;
+	else if (matrix!=other.matrix)
 		return false;
 
 	return true;
@@ -122,6 +125,8 @@ bool SGMatrix<T>::operator==(SGMatrix<T>& other)
 template <class T>
 bool SGMatrix<T>::equals(SGMatrix<T>& other)
 {
+	assert_on_cpu();
+	REQUIRE(!other.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
@@ -137,6 +142,7 @@ bool SGMatrix<T>::equals(SGMatrix<T>& other)
 template <class T>
 void SGMatrix<T>::set_const(T const_elem)
 {
+	assert_on_cpu();
 	for (int64_t i=0; i<int64_t(num_rows)*num_cols; i++)
 		matrix[i]=const_elem ;
 }
@@ -144,6 +150,7 @@ void SGMatrix<T>::set_const(T const_elem)
 template <class T>
 void SGMatrix<T>::zero()
 {
+	assert_on_cpu();
 	if (matrix && (int64_t(num_rows)*num_cols))
 		set_const(0);
 }
@@ -151,6 +158,7 @@ void SGMatrix<T>::zero()
 template <>
 void SGMatrix<complex128_t>::zero()
 {
+	assert_on_cpu();
 	if (matrix && (int64_t(num_rows)*num_cols))
 		set_const(complex128_t(0.0));
 }
@@ -158,6 +166,7 @@ void SGMatrix<complex128_t>::zero()
 template <class T>
 bool SGMatrix<T>::is_symmetric()
 {
+	assert_on_cpu();
 	if (num_rows!=num_cols)
 		return false;
 	for (int i=0; i<num_rows; ++i)
@@ -174,6 +183,7 @@ bool SGMatrix<T>::is_symmetric()
 template <>
 bool SGMatrix<float32_t>::is_symmetric()
 {
+	assert_on_cpu();
 	if (num_rows!=num_cols)
 		return false;
 	for (int i=0; i<num_rows; ++i)
@@ -191,6 +201,7 @@ bool SGMatrix<float32_t>::is_symmetric()
 template <>
 bool SGMatrix<float64_t>::is_symmetric()
 {
+	assert_on_cpu();
 	if (num_rows!=num_cols)
 		return false;
 	for (int i=0; i<num_rows; ++i)
@@ -208,6 +219,7 @@ bool SGMatrix<float64_t>::is_symmetric()
 template <>
 bool SGMatrix<floatmax_t>::is_symmetric()
 {
+	assert_on_cpu();
 	if (num_rows!=num_cols)
 		return false;
 	for (int i=0; i<num_rows; ++i)
@@ -225,6 +237,7 @@ bool SGMatrix<floatmax_t>::is_symmetric()
 template <>
 bool SGMatrix<complex128_t>::is_symmetric()
 {
+	assert_on_cpu();
 	if (num_rows!=num_cols)
 		return false;
 	for (int i=0; i<num_rows; ++i)
@@ -244,6 +257,7 @@ bool SGMatrix<complex128_t>::is_symmetric()
 template <class T>
 T SGMatrix<T>::max_single()
 {
+	assert_on_cpu();
 	T max=matrix[0];
 	for (int64_t i=1; i<int64_t(num_rows)*num_cols; ++i)
 	{
@@ -303,6 +317,7 @@ void SGMatrix<T>::transpose_matrix(
 template <class T>
 void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 {
+	/* Need assert v.size() */
 	for(int64_t i=0;i<size;i++)
 	{
 		for(int64_t j=0;j<size;j++)
@@ -325,6 +340,7 @@ float64_t SGMatrix<T>::trace(
 	return trace;
 }
 
+/* Already in linalg */
 template <class T>
 T* SGMatrix<T>::get_row_sum(T* matrix, int32_t m, int32_t n)
 {
@@ -338,6 +354,7 @@ T* SGMatrix<T>::get_row_sum(T* matrix, int32_t m, int32_t n)
 	return rowsums;
 }
 
+/* Already in linalg */
 template <class T>
 T* SGMatrix<T>::get_column_sum(T* matrix, int32_t m, int32_t n)
 {
@@ -354,6 +371,7 @@ T* SGMatrix<T>::get_column_sum(T* matrix, int32_t m, int32_t n)
 template <class T>
 void SGMatrix<T>::center()
 {
+	assert_on_cpu();
 	center_matrix(matrix, num_rows, num_cols);
 }
 
@@ -385,6 +403,8 @@ void SGMatrix<T>::center_matrix(T* matrix, int32_t m, int32_t n)
 template <class T>
 void SGMatrix<T>::remove_column_mean()
 {
+	assert_on_cpu();
+
 	/* compute "row" sums (which I would call column sums), i.e. sum of all
 	 * elements in a fixed column */
 	T* means=get_row_sum(matrix, num_rows, num_cols);
@@ -402,6 +422,7 @@ void SGMatrix<T>::remove_column_mean()
 
 template<class T> void SGMatrix<T>::display_matrix(const char* name) const
 {
+	assert_on_cpu();
 	display_matrix(matrix, num_rows, num_cols, name);
 }
 
@@ -893,6 +914,7 @@ float64_t* SGMatrix<T>::pinv(
 template <class T>
 void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 {
+	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	ASSERT(matrix.num_cols==matrix.num_rows)
 	int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
 	clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
@@ -903,6 +925,7 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 template <class T>
 SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
 {
+	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	if (matrix.num_rows!=matrix.num_cols)
 	{
 		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
@@ -952,11 +975,15 @@ void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues
 
 #endif //HAVE_LAPACK
 
+/* Already in linalg */
 template <class T>
 SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 		SGMatrix<float64_t> A, SGMatrix<float64_t> B,
 		bool transpose_A, bool transpose_B, float64_t scale)
 {
+	REQUIRE((!A.on_gpu()) && (!B.on_gpu()),
+		"Operation is not possible when data is in GPU memory.\n");
+
 	/* these variables store size of transposed matrices*/
 	index_t cols_A=transpose_A ? A.num_rows : A.num_cols;
 	index_t rows_A=transpose_A ? A.num_cols : A.num_rows;
@@ -1009,7 +1036,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 	SGMatrix<T> result;
 
 	/* evtl use pre-allocated space */
-	if (pre_allocated.matrix)
+	if (pre_allocated.matrix || pre_allocated.gpu_ptr)
 	{
 		result=pre_allocated;
 
@@ -1068,6 +1095,7 @@ void SGMatrix<T>::load(CFile* loader)
 	SG_SET_LOCALE_C;
 	SGMatrix<T> mat;
 	loader->get_matrix(mat.matrix, mat.num_rows, mat.num_cols);
+	mat.gpu_ptr = nullptr;
 	copy_data(mat);
 	copy_refcount(mat);
 	ref();
@@ -1083,6 +1111,7 @@ void SGMatrix<complex128_t>::load(CFile* loader)
 template<class T>
 void SGMatrix<T>::save(CFile* writer)
 {
+	assert_on_cpu();
 	ASSERT(writer)
 	SG_SET_LOCALE_C;
 	writer->set_matrix(matrix, num_rows, num_cols);
@@ -1098,6 +1127,7 @@ void SGMatrix<complex128_t>::save(CFile* saver)
 template<class T>
 SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 {
+	assert_on_cpu();
 	SGVector<T> rowv(num_cols);
 	for (int64_t i = 0; i < num_cols; i++)
 	{
@@ -1109,6 +1139,7 @@ SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 template<class T>
 SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 {
+	assert_on_cpu();
 	index_t diag_vlen=CMath::min(num_cols, num_rows);
 	SGVector<T> diag(diag_vlen);
 

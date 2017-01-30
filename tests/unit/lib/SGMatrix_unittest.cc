@@ -2,8 +2,13 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/mathematics/eigen3.h>
+
+#ifdef HAVE_VIENNACL
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+#endif
 
 using namespace shogun;
 
@@ -165,6 +170,35 @@ TEST(SGMatrixTest,equals_different_size)
 
 	EXPECT_FALSE(a.equals(b));
 }
+
+#ifdef HAVE_VIENNACL
+TEST(SGMatrixTest,pointer_equal_equal)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> a(3,2);
+	a.zero();
+	auto a_gpu = linalg::to_gpu(a);
+	SGMatrix<float64_t> b_gpu(a_gpu);
+
+	EXPECT_TRUE(a_gpu == b_gpu);
+}
+
+TEST(SGMatrixTest,pointer_equal_different)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> a(3,2);
+	a.zero();
+	auto a_gpu = linalg::to_gpu(a);
+
+	SGMatrix<float64_t> b(3,2);
+	b.zero();
+	auto b_gpu = linalg::to_gpu(b);
+
+	EXPECT_FALSE(a_gpu == b_gpu);
+}
+#endif
 
 TEST(SGMatrixTest,get_diagonal_vector_square_matrix)
 {
