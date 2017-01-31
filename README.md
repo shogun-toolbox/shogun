@@ -13,7 +13,7 @@ Cite Shogun:
 
 Develop branch build status:
 
-[![Build Status](https://travis-ci.org/shogun-toolbox/shogun.png?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
+[![Build Status](https://travis-ci.org/shogun-toolbox/shogun.svg?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
 [![Build status](https://ci.appveyor.com/api/projects/status/jx095rnr9qhg8dcv/branch/develop?svg=true)](https://ci.appveyor.com/project/vigsterkr/shogun/branch/develop)
 [![Coverage Status](https://coveralls.io/repos/shogun-toolbox/shogun/badge.png?branch=develop)](https://coveralls.io/r/shogun-toolbox/shogun?branch=develop)
 
