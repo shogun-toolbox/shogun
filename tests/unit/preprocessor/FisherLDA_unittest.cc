@@ -33,7 +33,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include<shogun/preprocessor/FisherLDA.h>
+#include <shogun/preprocessor/FisherLDA.h>
 
 using namespace shogun;
 
@@ -157,10 +157,10 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 	// comparing eigenvectors from the transformation_matrix with that from the
 	// 'CannonVar' implementation.
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
-	EXPECT_NEAR(-0.576749097670396393, transformy[0], epsilon);
-	EXPECT_NEAR(+0.158373354160231516, transformy[1], epsilon);
-	EXPECT_NEAR(-0.47693388209865617, transformy[2], epsilon);
-	EXPECT_NEAR(+0.64405933820939687, transformy[3], epsilon);
+	EXPECT_NEAR(0.576749097670396393, std::abs(transformy[0]), epsilon);
+	EXPECT_NEAR(0.158373354160231516, std::abs(transformy[1]), epsilon);
+	EXPECT_NEAR(0.47693388209865617, std::abs(transformy[2]), epsilon);
+	EXPECT_NEAR(0.64405933820939687, std::abs(transformy[3]), epsilon);
 
 	SG_UNREF(dense_feat);
 	SG_UNREF(labels);
@@ -179,71 +179,71 @@ TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 	float64_t epsilon=0.00000000001;
 
 	// comparing projection outputs against OpenCV's LDA implementation
-	EXPECT_NEAR(-2.320638860636734, y(0,0), epsilon);
-	EXPECT_NEAR(-17.1971943875009,	y(0,1), epsilon);
-	EXPECT_NEAR(-21.37035944868713, y(0,2), epsilon);
-	EXPECT_NEAR(-14.00799864614085, y(0,3), epsilon);
-	EXPECT_NEAR( 0.000000000000000, y(0,4), epsilon);
-	EXPECT_NEAR(-12.17552228293873, y(0,5), epsilon);
-	EXPECT_NEAR(-45.63707656856615, y(0,6), epsilon);
-	EXPECT_NEAR(-50.59105059954445, y(0,7), epsilon);
-	EXPECT_NEAR( -31.59115995427943,y(0,8), epsilon);
-	EXPECT_NEAR(-44.37699306363105, y(0,9), epsilon);
-	EXPECT_NEAR(-10.12764069879628, y(0,10),epsilon);
-	EXPECT_NEAR(-50.84827819267112, y(0,11),epsilon);
+	EXPECT_NEAR(2.320638860636734, std::abs(y(0,0)), epsilon);
+	EXPECT_NEAR(17.1971943875009,	std::abs(y(0,1)), epsilon);
+	EXPECT_NEAR(21.37035944868713, std::abs(y(0,2)), epsilon);
+	EXPECT_NEAR(14.00799864614085, std::abs(y(0,3)), epsilon);
+	EXPECT_NEAR(0.0, std::abs(y(0,4)), epsilon);
+	EXPECT_NEAR(12.17552228293873, std::abs(y(0,5)), epsilon);
+	EXPECT_NEAR(45.63707656856615, std::abs(y(0,6)), epsilon);
+	EXPECT_NEAR(50.59105059954445, std::abs(y(0,7)), epsilon);
+	EXPECT_NEAR(31.59115995427943, std::abs(y(0,8)), epsilon);
+	EXPECT_NEAR(44.37699306363105, std::abs(y(0,9)), epsilon);
+	EXPECT_NEAR(10.12764069879628, std::abs(y(0,10)),epsilon);
+	EXPECT_NEAR(50.84827819267112, std::abs(y(0,11)),epsilon);
 
 	// comparing eigenvectors from the transformation_matrix with that from the
 	// 'opencv LDA' implementation.
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
-	EXPECT_NEAR(-0.3103745435554874, transformy[0], epsilon);
-	EXPECT_NEAR(+0.5334735522056344, transformy[1], epsilon);
-	EXPECT_NEAR(-0.6885872352166886, transformy[2], epsilon);
-	EXPECT_NEAR(+0.3806852128812753, transformy[3], epsilon);
+	EXPECT_NEAR(0.3103745435554874, std::abs(transformy[0]), epsilon);
+	EXPECT_NEAR(0.5334735522056344, std::abs(transformy[1]), epsilon);
+	EXPECT_NEAR(0.6885872352166886, std::abs(transformy[2]), epsilon);
+	EXPECT_NEAR(0.3806852128812753, std::abs(transformy[3]), epsilon);
 
 	SG_UNREF(dense_feat);
 	SG_UNREF(labels);
 }
 
 
-TEST(FLDATesti, CANVAR_FLDA_for_D_greater_than_N )
+TEST_F(FLDATest, CANVAR_FLDA_for_D_greater_than_N )
 {
-	SGMatrix<float64_t> test_matrix(6,5);
+	SGMatrix<float64_t> tm(6,5);
 	SGVector<float64_t> labels_vector(5);
 
-	test_matrix(0,0)=50.6060;
-	test_matrix(1,0)=11.3334;
-	test_matrix(2,0)=36.3943;
-	test_matrix(3,0)=53.9095;
-	test_matrix(4,0)=47.2621;
-	test_matrix(5,0)=40.0941;
+	tm(0,0)=50.6060;
+	tm(1,0)=11.3334;
+	tm(2,0)=36.3943;
+	tm(3,0)=53.9095;
+	tm(4,0)=47.2621;
+	tm(5,0)=40.0941;
 
-	test_matrix(0,1)=53.6064;
-	test_matrix(1,1)=38.0054;
-	test_matrix(2,1)=31.1771;
-	test_matrix(3,1)=65.3217;
-	test_matrix(4,1)=73.6402;
-	test_matrix(5,1)=93.0575;
+	tm(0,1)=53.6064;
+	tm(1,1)=38.0054;
+	tm(2,1)=31.1771;
+	tm(3,1)=65.3217;
+	tm(4,1)=73.6402;
+	tm(5,1)=93.0575;
 
-	test_matrix(0,2)=87.8634;
-	test_matrix(1,2)=25.5605;
-	test_matrix(2,2)=67.2183;
-	test_matrix(3,2)=96.8582;
-	test_matrix(4,2)=85.6729;
-	test_matrix(5,2)=85.5027;
+	tm(0,2)=87.8634;
+	tm(1,2)=25.5605;
+	tm(2,2)=67.2183;
+	tm(3,2)=96.8582;
+	tm(4,2)=85.6729;
+	tm(5,2)=85.5027;
 
-	test_matrix(0,3)=82.4306;
-	test_matrix(1,3)=41.2554;
-	test_matrix(2,3)=51.4481;
-	test_matrix(3,3)=94.6800;
-	test_matrix(4,3)=98.0661;
-	test_matrix(5,3)=108.5917;
+	tm(0,3)=82.4306;
+	tm(1,3)=41.2554;
+	tm(2,3)=51.4481;
+	tm(3,3)=94.6800;
+	tm(4,3)=98.0661;
+	tm(5,3)=108.5917;
 
-	test_matrix(0,4)=109.0127;
-	test_matrix(1,4)=30.9425;
-	test_matrix(2,4)=77.7320;
-	test_matrix(3,4)=118.4820;
-	test_matrix(4,4)=107.3717;
-	test_matrix(5,4)=99.9955;
+	tm(0,4)=109.0127;
+	tm(1,4)=30.9425;
+	tm(2,4)=77.7320;
+	tm(3,4)=118.4820;
+	tm(4,4)=107.3717;
+	tm(5,4)=99.9955;
 
 	labels_vector[0]=0;
 	labels_vector[1]=0;
@@ -251,26 +251,26 @@ TEST(FLDATesti, CANVAR_FLDA_for_D_greater_than_N )
 	labels_vector[3]=1;
 	labels_vector[4]=1;
 
-	CMulticlassLabels* labels=new CMulticlassLabels(labels_vector);
-	CDenseFeatures<float64_t>* dense_feat=new CDenseFeatures<float64_t>(test_matrix);
+	CMulticlassLabels* l=new CMulticlassLabels(labels_vector);
+	CDenseFeatures<float64_t>* df=new CDenseFeatures<float64_t>(tm);
 
-	SG_REF(labels);
-	SG_REF(dense_feat);
+	SG_REF(l);
+	SG_REF(df);
 
 	CFisherLDA fisherlda(CANVAR_FLDA);
-	fisherlda.fit(dense_feat, labels, 1);
+	fisherlda.fit(df, l, 1);
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
 
 	// comparing eigenvectors from the transformation_matrix with that from the
 	// 'CannonVar' implementation.
 	float64_t epsilon=0.00000000001;
-	EXPECT_NEAR(-0.338514731928807433, transformy[0], epsilon);
-	EXPECT_NEAR(-0.106942313169695741, transformy[1], epsilon);
-	EXPECT_NEAR( 0.61367409029250708,  transformy[2], epsilon);
-	EXPECT_NEAR(-0.162039434021644224, transformy[3], epsilon);
-	EXPECT_NEAR(-0.600331522116284155, transformy[4], epsilon);
-	EXPECT_NEAR( 0.332746922149909308, transformy[5], epsilon);
+	EXPECT_NEAR(0.338514731928807433, std::abs(transformy[0]), epsilon);
+	EXPECT_NEAR(0.106942313169695741, std::abs(transformy[1]), epsilon);
+	EXPECT_NEAR(0.61367409029250708,  std::abs(transformy[2]), epsilon);
+	EXPECT_NEAR(0.162039434021644224, std::abs(transformy[3]), epsilon);
+	EXPECT_NEAR(0.600331522116284155, std::abs(transformy[4]), epsilon);
+	EXPECT_NEAR(0.332746922149909308, std::abs(transformy[5]), epsilon);
 
-	SG_UNREF(labels);
-	SG_UNREF(dense_feat);
+	SG_UNREF(l);
+	SG_UNREF(df);
 }

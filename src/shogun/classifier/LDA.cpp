@@ -191,7 +191,7 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 
 		//+ve covariance matrix
 #if EIGEN_WITH_OPERATOR_BUG
-		cen_pos=cen_pos*cen_pos.transpose()
+		cen_pos=cen_pos*cen_pos.transpose();
 		cen_pos/=(ST)(num_pos-1);
 #else
 		cen_pos=cen_pos*cen_pos.transpose()/((ST)(num_pos-1));
@@ -199,7 +199,7 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 
 		//-ve covariance matrix
 #if EIGEN_WITH_OPERATOR_BUG
-		cen_neg=cen_neg=cen_neg*cen_neg.transpose()
+		cen_neg=cen_neg*cen_neg.transpose();
 		cen_neg/=(ST)(num_neg-1);
 #else
 		cen_neg=cen_neg*cen_neg.transpose()/((ST)(num_neg-1));
