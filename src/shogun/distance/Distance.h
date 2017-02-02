@@ -182,12 +182,6 @@ class CDistance : public CSGObject
 			return i_start;
 		}
 
-		/** helper for computing the kernel matrix in a parallel way
-		 *
-		 * @param p thread parameters
-		 */
-		template <class T> static void* get_distance_matrix_helper(void* p);
-
 		/** init distance
 		 *
 		 *  make sure to check that your distance can deal with the
