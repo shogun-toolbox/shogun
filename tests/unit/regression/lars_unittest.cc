@@ -451,11 +451,16 @@ TEST(LeastAngleRegression, ols_equivalence)
 	Map<MatrixXd> feat(mat.matrix, mat.num_rows, mat.num_cols);
 	Map<VectorXd> l(lab.vector, lab.size());
 	// OLS
+#if EIGEN_WITH_TRANSPOSITION_BUG
+	MatrixXd feat_t = feat.transpose().eval();
+	VectorXd solve=feat_t.colPivHouseholderQr().solve(l);
+#else
 	VectorXd solve=feat.transpose().colPivHouseholderQr().solve(l);
+#endif
 
 	// Check if full LAR model is equivalent to OLS
 	EXPECT_EQ( w.size(), n_feat);
-	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);	
+	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);
 	
 
 	SG_UNREF(proc1);
