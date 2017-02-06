@@ -81,17 +81,17 @@ def extract_class_name(lines, line_nr, line, blacklist):
     return c[1:]
 
 
-def get_includes(classes):
+def get_includes(classes, basedir="."):
     class_headers = []
     for c, t in classes:
         class_headers.append(c+".h")
 
     import os
     result = []
-    for root, dirs, files in os.walk("."):
+    for root, dirs, files in os.walk(basedir):
         for f in files:
             if f in class_headers:
-                result.append(os.path.join(root, f))
+                result.append(os.path.join(os.path.relpath(root, basedir), f))
 
     includes = []
     for o in result:
@@ -286,6 +286,12 @@ def get_blacklist():
             blacklist[cfg] = 1
     return blacklist
 
+
+def get_base_src_dir(headers):
+    import os.path
+    return os.path.commonprefix(headers)
+
+
 if __name__ == '__main__':
     import sys
     TEMPL_FILE = sys.argv[1]
@@ -300,10 +306,11 @@ if __name__ == '__main__':
 
     blacklist = get_blacklist()
 
+    base_src_dir = get_base_src_dir(HEADERS)
     classes = extract_classes(HEADERS, False, blacklist, False)
     template_classes = extract_classes(HEADERS, True, blacklist, False)
     complex_template_classes = extract_classes(HEADERS, True, blacklist, True)
-    includes = get_includes(classes+template_classes+complex_template_classes)
+    includes = get_includes(classes+template_classes+complex_template_classes, basedir=base_src_dir)
     definitions = get_definitions(classes)
     template_definitions = get_template_definitions(template_classes, False)
     complex_template_definitions = get_template_definitions(complex_template_classes, True)

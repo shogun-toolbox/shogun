@@ -56,7 +56,7 @@ ENDIF()
 ADD_CUSTOM_TARGET(
     version
     ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
-                     -D DST=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h
+                     -D DST=${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h
                      -D ROOT_DIR=${CMAKE_SOURCE_DIR}
                      -D PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
                      -P ${CMAKE_MODULE_PATH}/version.cmake
@@ -67,6 +67,7 @@ add_dependencies(libshogun version)
 # generate source files from templates
 FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_SRC_CPP} generated_cpp "${template}")
+  STRING(REGEX REPLACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} generated_cpp "${generated_cpp}")
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
@@ -78,16 +79,16 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
     ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
         COMMAND ${CMAKE_COMMAND} -E copy ${template} ${generated_cpp}
         COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        DEPENDS ${template} ${generator_script} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating ${generated_cpp}"
     )
   ELSE()
     ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
         COMMAND ${CMAKE_COMMAND} -E copy ${template} ${generated_cpp}
         COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${LIBSHOGUN_HEADERS}
-        DEPENDS ${template} ${generator_script} ${LIBSHOGUN_HEADERS}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating ${generated_cpp}"
     )
   ENDIF()
@@ -100,7 +101,7 @@ ENDFOREACH()
 if(MSVC)
   SET(POSTLINKFLAGS ${POSTLINKFLAGS} winmm)
 endif()
-add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> lib/config.h)
+add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_target_properties(shogun PROPERTIES
                       VERSION ${LIBSHOGUNVER}
                       SOVERSION ${LIBSHOGUNSO})
@@ -114,7 +115,7 @@ endif()
 
 # add target for static library if enabled
 if (BUILD_STATIC)
-  add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> lib/config.h)
+  add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
   set_target_properties(shogun-static PROPERTIES OUTPUT_NAME shogun)
   if(MSVC)
     target_link_libraries(shogun winmm.lib)
@@ -132,13 +133,13 @@ IF (CTAGS_FOUND)
     SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
 ENDIF()
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+LIST(APPEND LIBSHOGUN_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+LIST(APPEND LIBSHOGUN_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/lib/versionstring.h)
 
-INSTALL(DIRECTORY ./
+INSTALL(FILES ${LIBSHOGUN_HEADERS}
         DESTINATION include/shogun
-        COMPONENT headers
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
-        PATTERN ".settings" EXCLUDE)
+        COMPONENT headers)
 
 IF (LIB_INSTALL_DIR)
   SET(SHOGUN_LIB_INSTALL ${LIB_INSTALL_DIR})
