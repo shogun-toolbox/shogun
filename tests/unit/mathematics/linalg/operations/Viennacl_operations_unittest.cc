@@ -131,7 +131,7 @@ TEST(LinalgBackendViennaCL, SGVector_dot)
 
 	EXPECT_NEAR(result, 5, 1E-15);
 }
-/*
+
 TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
@@ -179,7 +179,121 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
 	for (index_t i = 0; i < 9; ++i)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
 }
-*/
+
+TEST(LinalgBackendViennaCL, SGMatrix_SGVector_matrix_prod)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(rows, cols), A_gpu;
+	SGVector<float64_t> b(cols), b_gpu;
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(j, i) = i * rows + j;
+		b[i] = 0.5 * i;
+	}
+
+	A_gpu = to_gpu(A);
+	b_gpu = to_gpu(b);
+	auto x_gpu = matrix_prod(A_gpu, b_gpu);
+	auto x = from_gpu(x_gpu);
+
+	float64_t ref[] = {10, 11.5, 13, 14.5};
+
+	EXPECT_EQ(x.vlen, A.num_rows);
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_SGVector_matrix_prod_transpose)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(cols, rows), A_gpu;
+	SGVector<float64_t> b(cols), b_gpu;
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(i, j) = i * cols + j;
+		b[i] = 0.5 * i;
+	}
+
+	A_gpu = to_gpu(A);
+	b_gpu = to_gpu(b);
+	auto x_gpu = matrix_prod(A_gpu, b_gpu, true);
+	auto x = from_gpu(x_gpu);
+
+	float64_t ref[] = {7.5, 9, 10.5, 14.5};
+
+	EXPECT_EQ(x.vlen, A.num_cols);
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_SGVector_matrix_prod_in_place)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(rows, cols), A_gpu;
+	SGVector<float64_t> b(cols), b_gpu;
+	SGVector<float64_t> x(rows), x_gpu;
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(j, i) = i * rows + j;
+		b[i] = 0.5 * i;
+	}
+	x.zero();
+	x_gpu = to_gpu(x);
+
+	A_gpu = to_gpu(A);
+	b_gpu = to_gpu(b);
+	matrix_prod(A_gpu, b_gpu, x_gpu);
+	x = from_gpu(x_gpu);
+
+	float64_t ref[] = {10, 11.5, 13, 14.5};
+
+	EXPECT_EQ(x.vlen, A.num_rows);
+	for (index_t i=0; i<cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, SGMatrix_SGVector_matrix_prod_in_place_transpose)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(cols, rows), A_gpu;
+	SGVector<float64_t> b(cols), b_gpu;
+	SGVector<float64_t> x(rows), x_gpu;
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(i, j) = i * cols + j;
+		b[i] = 0.5 * i;
+	}
+
+	x.zero();
+	x_gpu = to_gpu(x);
+
+	A_gpu = to_gpu(A);
+	b_gpu = to_gpu(b);
+	matrix_prod(A_gpu, b_gpu, x_gpu, true);
+	x = from_gpu(x_gpu);
+
+	float64_t ref[] = {7.5, 9, 10.5, 14.5};
+
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
 TEST(LinalgBackendViennaCL, SGMatrix_matrix_product)
 {
 	const index_t dim1 = 2, dim2 = 4, dim3 = 3;
