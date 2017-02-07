@@ -244,7 +244,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 			{
 			return CMath::exp(value);
 			});
-		res=linalg::elementwise_product(weights, rtmp);
+		res=linalg::element_prod(weights, rtmp);
 	}
 	return res;
 }

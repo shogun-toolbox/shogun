@@ -33,8 +33,6 @@
 #define CORE_H_
 
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
-#include <shogun/mathematics/linalg/internal/implementation/Apply.h>
-#include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 
 namespace shogun
 {
@@ -43,74 +41,6 @@ namespace linalg
 {
 
 #ifdef HAVE_LINALG_LIB
-/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
- *
- * This version should be used for backend specific code requirements. For example,
- * use this with CGPUMatrix, CGPUVector and explicitly set ViennaCL backend, or
- * SGMatrix, SGVector and explicitly set Eigen3 backend. If matrix-type/backend-type
- * independent code is desired, use the version that does not support preallocated
- * result vector but returns the result in a newly created vector instead.
- *
- * @param A The matrix
- * @param b The vector
- * @param x Result vector
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
-void apply(Matrix A, Vector b, Vector x, bool transpose=false)
-{
-	implementation::apply<backend,Matrix,Vector>::compute(A, b, x, transpose);
-}
-
-/** Performs the operation of matrix applied to a vector \f$x = Ab\f$.
- *
- * This version returns the result in a newly created vector. If apply is desired
- * that will work irrespective of the backend and the matrix/vector type used,
- * then this method should be used.
- *
- * @param A The matrix
- * @param b The vector
- * @param x Result vector
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix,class Vector>
-Vector apply(Matrix A, Vector b, bool transpose=false)
-{
-	return implementation::apply<backend,Matrix,Vector>::compute(A, b, transpose);
-}
-
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
- *
- * This version should be used for backend specific code requirements. For example,
- * use this with CGPUMatrix and explicitly set ViennaCL backend, or SGMatrix and
- * explicitly set Eigen3 backend. If matrix-type/backend-type independent code is
- * desired, use the version that does not support preallocated result matrix but
- * returns the result in a newly created matrix instead.
- *
- * @param A First matrix
- * @param B Second matrix
- * @param C Result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-void elementwise_product(Matrix A, Matrix B, Matrix C)
-{
-	implementation::elementwise_product<backend, Matrix>::compute(A, B, C);
-}
-
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
- *
- * This version returns the result in a newly created matrix. If elementwise-product
- * is desired that will work irrespective of the backend and the matrix type used,
- * then this method should be used.
- *
- * @param A First matrix
- * @param B Second matrix
- * @return The result of the operation
- */
-template <Backend backend=linalg_traits<Core>::backend,class Matrix>
-typename implementation::elementwise_product<backend,Matrix>::ReturnType elementwise_product(Matrix A, Matrix B)
-{
-	return implementation::elementwise_product<backend,Matrix>::compute(A, B);
-}
-
 /**
  * Wrapper method for internal implementation of square of co-efficients that works
  * with generic dense matrices.
