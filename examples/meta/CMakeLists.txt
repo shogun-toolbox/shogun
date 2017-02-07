@@ -1,3 +1,14 @@
+# Meta dependencies
+FIND_PACKAGE(PLY REQUIRED)
+IF(NOT PLY_FOUND)
+    message(FATAL_ERROR "Python module ply required for meta examples. Disable meta examples or install python-ply")
+ENDIF()
+
+FIND_PACKAGE(Ctags)
+IF(NOT CTAGS_FOUND)
+    message(FATAL_ERROR "Ctags required for meta examples.")
+ENDIF()
+
 # get list of meta examples that can be built
 INCLUDE(FindMetaExamples)
 find_meta_examples()
@@ -52,7 +63,7 @@ add_custom_target(meta_examples
 IF(ENABLE_TESTING)
     IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
         # copy data symlink to cmake binary dir so that we can execute meta examples in there
-        EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/data" "${CMAKE_CURRENT_BINARY_DIR}/data")
+        CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
     ENDIF()
                                                               
 

@@ -20,6 +20,11 @@
 	* Cleanup, efficiency updates, and API Changes:
 		- Port multi-threading to use OpenMP backend in Kernel [Viktor Gal]
 		- Fix false sharing in EuclideanDistance [Viktor Gal]
+		- Fix out of source build of the whole project [Viktor Gal]
+		- Add LIBSHOGUN cmake flag to turn off libshogun compilation [Viktor Gal]
+		- Export Shogun target with cmake to enable to build modular interfaces to a
+		pre-compiled libshogun on the system without requiring to compile 
+		libshogun itself [Viktor Gal]
 
 2016-11-04 Viktor Gal <viktor.gal@shogun-toolbox.org>
 

@@ -356,7 +356,7 @@ TEST(LeastAngleRegression, lars_template_test_floatmax)
 	lars_n_less_than_d_feature_test_templated<floatmax_t>();
 }
 
-#ifndef USE_VIENNACL
+#ifndef USE_VIENNACL_GLOBAL
 TEST(LeastAngleRegression, cholesky_insert)
 {
 	class lars_helper: public CLeastAngleRegression

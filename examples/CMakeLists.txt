@@ -13,10 +13,4 @@ ELSE()
     add_custom_target(examples)
 ENDIF()
 
-# symlinks for windows does not work, not even cmake's create_symlink.
-# make sure that the data directories are populated everywhere
-IF(WIN32)
-	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/data/toy" "${CMAKE_CURRENT_BINARY_DIR}/undocumented/data")
-ELSE()
-	EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/data/toy" "${CMAKE_CURRENT_BINARY_DIR}/undocumented/data")
-ENDIF()
+CREATE_DATA_SYMLINK(${CMAKE_SOURCE_DIR}/data/toy ${CMAKE_CURRENT_BINARY_DIR}/undocumented/data)

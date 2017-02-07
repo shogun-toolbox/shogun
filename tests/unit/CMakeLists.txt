@@ -1,10 +1,9 @@
+FIND_PACKAGE(Jinja2)
+
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
 ExternalProject_Get_Property(GoogleMock source_dir)
-if(SYSTEM_INCLUDES)
-	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
-endif()
-include_directories(${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 # Generate automatic unittest from jinja2 templates
@@ -83,8 +82,9 @@ set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
 ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST})
-add_dependencies(shogun-unit-test GoogleMock)
-target_link_libraries(shogun-unit-test shogun gmock gtest ${SANITIZER_LIBRARY})
+add_dependencies(shogun-unit-test GoogleMock shogun::shogun)
+target_include_directories(shogun-unit-test PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
+target_link_libraries(shogun-unit-test PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
 IF (SANITIZER_FLAGS)
 	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()

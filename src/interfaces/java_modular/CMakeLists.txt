@@ -1,3 +1,20 @@
+FIND_PACKAGE(Java REQUIRED)
+FIND_PACKAGE(JNI REQUIRED)
+
+#find jblas
+INCLUDE(UseJava)
+FIND_JAR(JBLAS NAMES jblas jblas-1.2.0
+		PATHS /usr/lib/java /opt/local/share/java
+			  ENV JBLAS_PATH)
+IF(JBLAS)
+	SET(HAVE_JBLAS 1)
+ELSE()
+	MESSAGE(FATAL_ERROR "JBlas could not be found!\n"
+		"It is required for java modular interface!!!")
+ENDIF()
+
+SET(TARGET_SWIGFLAGS "-package\;org.shogun")
+
 include(CommonModularInterface)
 include_directories(${JNI_INCLUDE_DIRS})
 

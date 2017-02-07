@@ -1,7 +1,6 @@
 MergeCFLAGS()
 GetCompilers()
 
-SET (GMOCK_REVISION 443)
 include(ExternalProject)
 
 IF (MSVC)
@@ -34,23 +33,6 @@ ExternalProject_Add(
 	INSTALL_COMMAND ""
 	CMAKE_ARGS ${CUSTOM_CMAKE_ARGS}
 )
-
-# only when using svn repository
-#ExternalProject_Get_Property(GoogleMock STAMP_DIR)
-#ExternalProject_Get_Property(GoogleMock SOURCE_DIR)
-
-#ExternalProject_Add_Step(
-#	GoogleMock check_revision
-#	COMMAND ${CMAKE_COMMAND} -D STAMP_DIR=${STAMP_DIR}
-#		 -D SRC_DIR=${SOURCE_DIR}
-#		 -D SVN_EXEC=${Subversion_SVN_EXECUTABLE}
-#		 -D REVISION=${GMOCK_REVISION}
-#		 -D PROJECT_NAME=GoogleMock
-#		 -P ${CMAKE_MODULE_PATH}/CheckSVNRevision.cmake
-#	COMMENT "Checking Google Mock checked out revision"
-#	DEPENDERS download
-#	DEPENDEES mkdir
-#)
 
 UNSET(C_COMPILER)
 UNSET(CXX_COMPILER)

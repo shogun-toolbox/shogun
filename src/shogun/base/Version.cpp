@@ -53,14 +53,6 @@ void Version::print_version()
 	SG_SPRINT("This is free software; see the source for copying conditions.  There is NO\n")
 	SG_SPRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n")
 #endif
-
-#ifdef LINKFLAGS
-	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n",
-		CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS)
-#else
-	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: None )\n",
-		CONFIGURE_OPTIONS, COMPFLAGS_CPP)
-#endif
 }
 
 const char* Version::get_version_extra()

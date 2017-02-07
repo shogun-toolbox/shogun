@@ -2,9 +2,6 @@
 #define __SHOGUN_LIB_CONFIG_H__
 
 #cmakedefine MACHINE "@MACHINE@"
-#cmakedefine CONFIGURE_OPTIONS "@CONFIGURE_OPTIONS@"
-#cmakedefine COMPFLAGS_CPP "@COMPFLAGS_CPP@"
-#cmakedefine LINKFLAGS "@LINKFLAGS@"
 
 #cmakedefine SFMT_MEXP @SFMT_MEXP@
 #cmakedefine DSFMT_MEXP @DSFMT_MEXP@
@@ -48,8 +45,8 @@
 /* for linear algebra global backend setups */
 #cmakedefine HAVE_LINALG_LIB 1
 
-#cmakedefine USE_EIGEN3 1
-#cmakedefine USE_VIENNACL 1
+#cmakedefine USE_EIGEN3_GLOBAL 1
+#cmakedefine USE_VIENNACL_GLOBAL 1
 
 #cmakedefine USE_EIGEN3_CORE 1
 #cmakedefine USE_VIENNACL_CORE 1
@@ -126,7 +123,6 @@
 
 #cmakedefine HAVE_SSE2 1
 #cmakedefine HAVE_BUILTIN_VECTOR 1
-#cmakedefine OCTAVE_APIVERSION @OCTAVE_APIVERSION@
 
 #cmakedefine DARWIN 1
 #cmakedefine FREEBSD 1
@@ -135,8 +131,6 @@
 #cmakedefine USE_SWIG_DIRECTORS 1
 #cmakedefine TRACE_MEMORY_ALLOCS 1
 #cmakedefine USE_JEMALLOC 1
-
-#cmakedefine NARRAY_LIB "@NARRAY_LIB@"
 
 #cmakedefine HAVE_CXX0X 1
 #cmakedefine HAVE_CXX11 1

@@ -122,9 +122,9 @@ struct MODULE \
 #endif // SET_GLOBAL_BACKEND
 
 /** set global backend for all modules if a particular backend is specified */
-#ifdef USE_EIGEN3
+#ifdef USE_EIGEN3_GLOBAL
 	SET_GLOBAL_BACKEND(EIGEN3)
-#elif USE_VIENNACL
+#elif USE_VIENNACL_GLOBAL
 	SET_GLOBAL_BACKEND(VIENNACL)
 #else
 

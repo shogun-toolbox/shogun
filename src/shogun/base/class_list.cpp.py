@@ -94,6 +94,7 @@ def get_includes(classes, basedir="."):
                 result.append(os.path.join(os.path.relpath(root, basedir), f))
 
     includes = []
+    result.sort()
     for o in result:
         includes.append('#include <shogun/%s>' % o.strip().lstrip('./'))
     return includes
