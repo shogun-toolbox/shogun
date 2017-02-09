@@ -142,6 +142,102 @@ TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(rows, cols);
+	SGVector<float64_t> b(cols);
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(j, i) = i * rows + j;
+		b[i]=0.5 * i;
+	}
+
+	auto x = matrix_prod(A, b);
+
+	float64_t ref[] = {10, 11.5, 13, 14.5};
+
+	EXPECT_EQ(x.vlen, A.num_rows);
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod_transpose)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(cols, rows);
+	SGVector<float64_t> b(cols);
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(i, j) = i * cols + j;
+		b[i] = 0.5 * i;
+	}
+
+	auto x = matrix_prod(A, b, true);
+
+	float64_t ref[] = {7.5, 9, 10.5, 14.5};
+
+	EXPECT_EQ(x.vlen, A.num_cols);
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod_in_place)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(rows, cols);
+	SGVector<float64_t> b(cols);
+	SGVector<float64_t> x(rows);
+
+	for (index_t i = 0; i<cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(j, i) = i * rows + j;
+		b[i] = 0.5 * i;
+	}
+
+	matrix_prod(A, b, x);
+
+	float64_t ref[] = {10, 11.5, 13, 14.5};
+
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod_in_place_transpose)
+{
+	const index_t rows=4;
+	const index_t cols=3;
+
+	SGMatrix<float64_t> A(cols, rows);
+	SGVector<float64_t> b(cols);
+	SGVector<float64_t> x(rows);
+
+	for (index_t i = 0; i < cols; ++i)
+	{
+		for (index_t j = 0; j < rows; ++j)
+			A(i, j) = i * cols + j;
+		b[i] = 0.5 * i;
+	}
+
+	matrix_prod(A, b, x, true);
+
+	float64_t ref[] = {7.5, 9, 10.5, 14.5};
+
+	for (index_t i = 0; i < cols; ++i)
+		EXPECT_NEAR(x[i], ref[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_matrix_product)
 {
 	const index_t dim1 = 2, dim2 = 4, dim3 = 3;

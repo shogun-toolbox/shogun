@@ -116,11 +116,12 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::matrix_prod */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
-	virtual void matrix_prod(Container<Type>& a, Container<Type>& b,\
+	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
 		Container<Type>& result, bool transpose_A, bool transpose_B) const \
 	{  \
 		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
 	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
 
@@ -320,6 +321,21 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = a_eig.array() * b_eig.array();
+	}
+
+	/** Eigen3 matrix * vector in-place product method */
+	template <typename T>
+	void matrix_prod_impl(SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result,
+		bool transpose, bool transpose_B=false) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		if (transpose)
+			result_eig = a_eig.transpose() * b_eig;
+		else
+			result_eig = a_eig * b_eig;
 	}
 
 	/** Eigen3 matrix in-place product method */

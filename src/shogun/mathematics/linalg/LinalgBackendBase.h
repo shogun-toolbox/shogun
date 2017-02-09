@@ -145,11 +145,12 @@ public:
 	 * @see linalg::matrix_prod
 	 */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
-	virtual void matrix_prod(Container<Type>& a, Container<Type>& b,\
+	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
 		Container<Type>& result, bool transpose_A, bool transpose_B) const \
 	{  \
 		SG_SNOTIMPLEMENTED; \
 	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
 

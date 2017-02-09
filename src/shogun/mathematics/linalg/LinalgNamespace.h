@@ -361,6 +361,75 @@ SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
 	return result;
 }
 
+/** Performs the operation of matrix multiply a vector \f$x = Ab\f$.
+ *
+ * This version returns the result in-place.
+ * User should pass an appropriately allocate memory matrix.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param transpose Whether to transpose the matrix. Default false
+ * @param result Result vector
+ */
+template <typename T>
+void matrix_prod(SGMatrix<T>& A, SGVector<T>& b, SGVector<T>& result, bool transpose = false)
+{
+	if (transpose)
+	{
+		REQUIRE(A.num_rows == b.vlen, "Row number of Matrix A (%d) doesn't match \
+		length of vector b (%d).\n", A.num_rows, b.vlen);
+		REQUIRE(result.vlen == A.num_cols, "Length of vector result (%d) doesn't match \
+		column number of Matrix A (%d).\n", result.vlen, A.num_cols);
+	}
+	else
+	{
+		REQUIRE(A.num_cols == b.vlen, "Column number of Matrix A (%d) doesn't match \
+		length of vector b (%d).\n", A.num_cols, b.vlen);
+		REQUIRE(result.vlen == A.num_rows, "Length of vector result (%d) doesn't match \
+		row number of Matrix A (%d).\n", result.vlen, A.num_rows);
+	}
+
+	REQUIRE(!(result.on_gpu()^A.on_gpu()),
+		"Cannot operate with vector result on_gpu (%d) and vector a on_gpu (%d).\n", result.on_gpu(), A.on_gpu());
+	REQUIRE(!(result.on_gpu()^b.on_gpu()),
+		"Cannot operate with vector result on_gpu (%d) and vector b on_gpu (%d).\n", result.on_gpu(), b.on_gpu());
+
+	infer_backend(A, SGMatrix<T>(b))->matrix_prod(A, b, result, transpose, false);
+}
+
+/** Performs the operation of matrix multiply a vector \f$x = Ab\f$.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param transpose Whether to transpose a matrix. Default false
+ * @return result Result vector
+ */
+template <typename T>
+SGVector<T> matrix_prod(SGMatrix<T>& A, SGVector<T>& b, bool transpose = false)
+{
+	SGVector<T> result;
+	if (transpose)
+	{
+		REQUIRE(A.num_rows == b.vlen, "Row number of Matrix A (%d) doesn't match \
+		length of vector b (%d).\n", A.num_rows, b.vlen);
+
+		result.resize_vector(A.num_cols);
+	}
+	else
+	{
+		REQUIRE(A.num_cols == b.vlen, "Column number of Matrix A (%d) doesn't match \
+		length of vector b (%d).\n", A.num_cols, b.vlen);
+
+		result.resize_vector(A.num_rows);
+	}
+
+	if (A.on_gpu())
+		result = to_gpu(result);
+
+	matrix_prod(A, b, result, transpose);
+	return result;
+}
+
 /** Performs the operation C = A * B where "*" denotes matrix multiplication.
  *
  * This version returns the result in-place.
