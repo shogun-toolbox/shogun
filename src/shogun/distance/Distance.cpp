@@ -26,36 +26,11 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
+#ifdef HAVE_OPENMP
+#include <omp.h>
 #endif
 
 using namespace shogun;
-
-/** distance thread parameters */
-template <class T> struct D_THREAD_PARAM
-{
-	/** distance */
-	CDistance* distance;
-	/** start (unit row) */
-	int32_t start;
-	/** end (unit row) */
-	int32_t end;
-	/** start (unit number of elements) */
-	int32_t total_start;
-	/** end (unit number of elements) */
-	int32_t total_end;
-	/** m */
-	int32_t m;
-	/** n */
-	int32_t n;
-	/** result */
-	T* result;
-	/** distance matrix k(i,j)=k(j,i) */
-	bool symmetric;
-	/** output progress */
-	bool verbose;
-};
 
 CDistance::CDistance() : CSGObject()
 {
@@ -280,56 +255,6 @@ void CDistance::init()
 					  "Feature vectors to occur on right hand side.");
 }
 
-template <class T> void* CDistance::get_distance_matrix_helper(void* p)
-{
-	D_THREAD_PARAM<T>* params= (D_THREAD_PARAM<T>*) p;
-	int32_t i_start=params->start;
-	int32_t i_end=params->end;
-	CDistance* k=params->distance;
-	T* result=params->result;
-	bool symmetric=params->symmetric;
-	int32_t n=params->n;
-	int32_t m=params->m;
-	bool verbose=params->verbose;
-	int64_t total_start=params->total_start;
-	int64_t total_end=params->total_end;
-	int64_t total=total_start;
-
-	for (int32_t i=i_start; i<i_end; i++)
-	{
-		int32_t j_start=0;
-
-		if (symmetric)
-			j_start=i;
-
-		for (int32_t j=j_start; j<n; j++)
-		{
-			float64_t v=k->distance(i,j);
-			result[i+j*m]=v;
-
-			if (symmetric && i!=j)
-				result[j+i*m]=v;
-
-			if (verbose)
-			{
-				total++;
-
-				if (symmetric && i!=j)
-					total++;
-
-				if (total%100 == 0)
-					SG_OBJ_PROGRESS(k, total, total_start, total_end)
-
-				if (CSignal::cancel_computations())
-					break;
-			}
-		}
-
-	}
-
-	return NULL;
-}
-
 template <class T>
 SGMatrix<T> CDistance::get_distance_matrix()
 {
@@ -341,93 +266,69 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	int32_t n=get_num_vec_rhs();
 
 	int64_t total_num = int64_t(m)*n;
+	int64_t total=0;
+	int64_t total_start=0;
+	int64_t total_end=total_num;
 
 	// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 	bool symmetric= (lhs && lhs==rhs && m==n);
 
 	SG_DEBUG("returning distance matrix of size %dx%d\n", m, n)
 
-		result=SG_MALLOC(T, total_num);
+	result=SG_MALLOC(T, total_num);
 
-	// TODO: port this to use OpenMP
-#ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
-#else
-	int32_t num_threads=1;
-#endif
-	if (num_threads < 2)
+	int32_t num_threads;
+	int64_t step;
+	#pragma omp parallel shared(num_threads, step)
 	{
-		D_THREAD_PARAM<T> params;
-		params.distance=this;
-		params.result=result;
-		params.start=0;
-		params.end=m;
-		params.total_start=0;
-		params.total_end=total_num;
-		params.n=n;
-		params.m=m;
-		params.symmetric=symmetric;
-		params.verbose=true;
-		get_distance_matrix_helper<T>((void*) &params);
-	}
-	else
-	{
-#ifdef HAVE_PTHREAD
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
-		int64_t step= total_num/num_threads;
-
-		int32_t t;
-
-		num_threads--;
-		for (t=0; t<num_threads; t++)
+#ifdef HAVE_OPENMP
+		#pragma opm single
 		{
-			params[t].distance = this;
-			params[t].result = result;
-			params[t].start = compute_row_start(t*step, n, symmetric);
-			params[t].end = compute_row_start((t+1)*step, n, symmetric);
-			params[t].total_start=t*step;
-			params[t].total_end=(t+1)*step;
-			params[t].n=n;
-			params[t].m=m;
-			params[t].symmetric=symmetric;
-			params[t].verbose=false;
+			num_threads=omp_get_num_threads();
+			step=total_num/num_threads;
+			num_threads--;
+		}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step=total_num;
+		int32_t thread_num=0;
+#endif
+		bool verbose=(thread_num == 0);
 
-			int code=pthread_create(&threads[t], NULL,
-					CDistance::get_distance_matrix_helper<T>, (void*)&params[t]);
+		int32_t start=compute_row_start(thread_num*step, n, symmetric);
+		int32_t end=(thread_num==num_threads) ? m : compute_row_start((thread_num+1)*step, n, symmetric);
 
-			if (code != 0)
+		for (int32_t i=start; i<end; i++)
+		{
+			int32_t j_start=0;
+
+			if (symmetric)
+				j_start=i;
+
+			for (int32_t j=j_start; j<n; j++)
 			{
-				SG_WARNING("Thread creation failed (thread %d of %d) "
-						"with error:'%s'\n",t, num_threads, strerror(code));
-				num_threads=t;
-				break;
+				float64_t v=this->distance(i,j);
+				result[i+j*m]=v;
+
+				if (symmetric && i!=j)
+					result[j+i*m]=v;
+
+				if (verbose)
+				{
+					total++;
+
+					if (symmetric && i!=j)
+						total++;
+
+					if (total%100 == 0)
+					SG_OBJ_PROGRESS(this, total, total_start, total_end)
+
+					if (CSignal::cancel_computations())
+						break;
+				}
 			}
 		}
-
-		params[t].distance = this;
-		params[t].result = result;
-		params[t].start = compute_row_start(t*step, n, symmetric);
-		params[t].end = m;
-		params[t].total_start=t*step;
-		params[t].total_end=total_num;
-		params[t].n=n;
-		params[t].m=m;
-		params[t].symmetric=symmetric;
-		params[t].verbose=true;
-		get_distance_matrix_helper<T>(&params[t]);
-
-		for (t=0; t<num_threads; t++)
-		{
-			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-		}
-
-		SG_FREE(params);
-		SG_FREE(threads);
-#else
-		SG_SERROR("Cannot parallelize without pthread");
-#endif
 	}
 
 	SG_DONE()
@@ -437,6 +338,3 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 template SGMatrix<float64_t> CDistance::get_distance_matrix<float64_t>();
 template SGMatrix<float32_t> CDistance::get_distance_matrix<float32_t>();
-
-template void* CDistance::get_distance_matrix_helper<float64_t>(void* p);
-template void* CDistance::get_distance_matrix_helper<float32_t>(void* p);

@@ -16,27 +16,11 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
+#ifdef HAVE_OPENMP
+#include <omp.h>
 #endif
 
 using namespace shogun;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct DF_THREAD_PARAM
-{
-	CDotFeatures* df;
-	int32_t* sub_index;
-	float64_t* output;
-	int32_t start;
-	int32_t stop;
-	float64_t* alphas;
-	float64_t* vec;
-	int32_t dim;
-	float64_t bias;
-	bool progress;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 
 CDotFeatures::CDotFeatures(int32_t size)
@@ -77,75 +61,45 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
 
-	// TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
-#else
-	int32_t num_threads=1;
-#endif
-	ASSERT(num_threads>0)
-
 	CSignal::clear_cancel();
 
-	if (num_threads < 2)
+	int32_t num_threads;
+	int32_t step;
+	#pragma omp parallel shared(num_threads, step)
 	{
-		DF_THREAD_PARAM params;
-		params.df=this;
-		params.sub_index=NULL;
-		params.output=output;
-		params.start=start;
-		params.stop=stop;
-		params.alphas=alphas;
-		params.vec=vec;
-		params.dim=dim;
-		params.bias=b;
-		params.progress=false; //true;
-		dense_dot_range_helper((void*) &params);
-	}
-#ifdef HAVE_PTHREAD
-	else
-	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		DF_THREAD_PARAM* params = SG_MALLOC(DF_THREAD_PARAM, num_threads);
-		int32_t step= num_vectors/num_threads;
-
-		int32_t t;
-
-		for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+		#pragma omp single
 		{
-			params[t].df = this;
-			params[t].sub_index=NULL;
-			params[t].output = output;
-			params[t].start = start+t*step;
-			params[t].stop = start+(t+1)*step;
-			params[t].alphas=alphas;
-			params[t].vec=vec;
-			params[t].dim=dim;
-			params[t].bias=b;
-			params[t].progress = false;
-			pthread_create(&threads[t], NULL,
-					CDotFeatures::dense_dot_range_helper, (void*)&params[t]);
+			num_threads=omp_get_num_threads();
+			step=num_vectors/num_threads;
+			num_threads--;
 		}
-
-		params[t].df = this;
-		params[t].output = output;
-		params[t].sub_index=NULL;
-		params[t].start = start+t*step;
-		params[t].stop = stop;
-		params[t].alphas=alphas;
-		params[t].vec=vec;
-		params[t].dim=dim;
-		params[t].bias=b;
-		params[t].progress = false; //true;
-		dense_dot_range_helper((void*) &params[t]);
-
-		for (t=0; t<num_threads-1; t++)
-			pthread_join(threads[t], NULL);
-
-		SG_FREE(params);
-		SG_FREE(threads);
-	}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step=num_vectors;
+		int32_t thread_num=0;
 #endif
+		bool progress=false; // (thread_num == 0);
+
+		int32_t t_start=thread_num*step;
+		int32_t t_stop=(thread_num==num_threads) ? stop : (thread_num+1)*step;
+
+#ifdef WIN32
+		for (int32_t i=t_start; i<t_stop; i++)
+#else
+		for (int32_t i=t_start; i<t_stop &&
+				!CSignal::cancel_computations(); i++)
+#endif
+		{
+			if (alphas)
+				output[i]=alphas[i]*this->dense_dot(i, vec, dim)+b;
+			else
+				output[i]=this->dense_dot(i, vec, dim)+b;
+			if (progress)
+				this->display_progress(t_start, t_stop, i);
+		}
+	}
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
@@ -158,133 +112,50 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	ASSERT(sub_index)
 	ASSERT(output)
 
-	// TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-	int32_t num_threads=parallel->get_num_threads();
-#else
-	int32_t num_threads=1;
-#endif
-	ASSERT(num_threads>0)
-
 	CSignal::clear_cancel();
 
-	if (num_threads < 2)
+	int32_t num_threads;
+	int32_t step;
+	#pragma omp parallel shared(num_threads, step)
 	{
-		DF_THREAD_PARAM params;
-		params.df=this;
-		params.sub_index=sub_index;
-		params.output=output;
-		params.start=0;
-		params.stop=num;
-		params.alphas=alphas;
-		params.vec=vec;
-		params.dim=dim;
-		params.bias=b;
-		params.progress=false; //true;
-		dense_dot_range_helper((void*) &params);
-	}
-#ifdef HAVE_PTHREAD
-	else
-	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		DF_THREAD_PARAM* params = SG_MALLOC(DF_THREAD_PARAM, num_threads);
-		int32_t step= num/num_threads;
-
-		int32_t t;
-
-		for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+		#pragma omp single
 		{
-			params[t].df = this;
-			params[t].sub_index=sub_index;
-			params[t].output = output;
-			params[t].start = t*step;
-			params[t].stop = (t+1)*step;
-			params[t].alphas=alphas;
-			params[t].vec=vec;
-			params[t].dim=dim;
-			params[t].bias=b;
-			params[t].progress = false;
-			pthread_create(&threads[t], NULL,
-					CDotFeatures::dense_dot_range_helper, (void*)&params[t]);
+			num_threads=omp_get_num_threads();
+			step=num/num_threads;
+			num_threads--;
 		}
-
-		params[t].df = this;
-		params[t].sub_index=sub_index;
-		params[t].output = output;
-		params[t].start = t*step;
-		params[t].stop = num;
-		params[t].alphas=alphas;
-		params[t].vec=vec;
-		params[t].dim=dim;
-		params[t].bias=b;
-		params[t].progress = false; //true;
-		dense_dot_range_helper((void*) &params[t]);
-
-		for (t=0; t<num_threads-1; t++)
-			pthread_join(threads[t], NULL);
-
-		SG_FREE(params);
-		SG_FREE(threads);
-	}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step = num;
+		int32_t thread_num=0;
 #endif
+		bool progress=false; // (thread_num == 0);
+
+		int32_t t_start=thread_num*step;
+		int32_t t_stop=(thread_num==num_threads) ? num : (thread_num+1)*step;
+
+#ifdef WIN32
+		for (int32_t i=t_start; i<t_stop; i++)
+#else
+		for (int32_t i=t_start; i<t_stop &&
+				!CSignal::cancel_computations(); i++)
+#endif
+		{
+			if (alphas)
+				output[i]=alphas[sub_index[i]]*this->dense_dot(sub_index[i], vec, dim)+b;
+			else
+				output[i]=this->dense_dot(sub_index[i], vec, dim)+b;
+			if (progress)
+				this->display_progress(t_start, t_stop, i);
+		}
+	}
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
 			SG_INFO("prematurely stopped.           \n")
 #endif
-}
-
-void* CDotFeatures::dense_dot_range_helper(void* p)
-{
-	DF_THREAD_PARAM* par=(DF_THREAD_PARAM*) p;
-	CDotFeatures* df=par->df;
-	int32_t* sub_index=par->sub_index;
-	float64_t* output=par->output;
-	int32_t start=par->start;
-	int32_t stop=par->stop;
-	float64_t* alphas=par->alphas;
-	float64_t* vec=par->vec;
-	int32_t dim=par->dim;
-	float64_t bias=par->bias;
-	bool progress=par->progress;
-
-	if (sub_index)
-	{
-#ifdef WIN32
-		for (int32_t i=start; i<stop; i++)
-#else
-		for (int32_t i=start; i<stop &&
-				!CSignal::cancel_computations(); i++)
-#endif
-		{
-			if (alphas)
-				output[i]=alphas[sub_index[i]]*df->dense_dot(sub_index[i], vec, dim)+bias;
-			else
-				output[i]=df->dense_dot(sub_index[i], vec, dim)+bias;
-			if (progress)
-				df->display_progress(start, stop, i);
-		}
-
-	}
-	else
-	{
-#ifdef WIN32
-		for (int32_t i=start; i<stop; i++)
-#else
-		for (int32_t i=start; i<stop &&
-				!CSignal::cancel_computations(); i++)
-#endif
-		{
-			if (alphas)
-				output[i]=alphas[i]*df->dense_dot(i, vec, dim)+bias;
-			else
-				output[i]=df->dense_dot(i, vec, dim)+bias;
-			if (progress)
-				df->display_progress(start, stop, i);
-		}
-	}
-
-	return NULL;
 }
 
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
