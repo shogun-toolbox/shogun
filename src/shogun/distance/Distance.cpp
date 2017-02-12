@@ -26,7 +26,9 @@
 #include <unistd.h>
 #endif
 
+#ifdef HAVE_OPENMP
 #include <omp.h>
+#endif
 
 using namespace shogun;
 
@@ -279,18 +281,23 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	int64_t step;
 	#pragma omp parallel shared(num_threads, step)
 	{
-		#pragma omp single
+#ifdef HAVE_OPENMP
+		#pragma opm single
 		{
-			num_threads = omp_get_num_threads();
-			step = total_num/num_threads;
+			num_threads=omp_get_num_threads();
+			step=total_num/num_threads;
 			num_threads--;
 		}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step=total_num;
+		int32_t thread_num=0;
+#endif
+		bool verbose=(thread_num == 0);
 
-		int32_t thread_num = omp_get_thread_num();
-		bool verbose = (thread_num == 0);
-
-		int32_t start = compute_row_start(thread_num*step, n, symmetric);
-		int32_t end = (thread_num==num_threads) ? m : compute_row_start((thread_num+1)*step, n, symmetric);
+		int32_t start=compute_row_start(thread_num*step, n, symmetric);
+		int32_t end=(thread_num==num_threads) ? m : compute_row_start((thread_num+1)*step, n, symmetric);
 
 		for (int32_t i=start; i<end; i++)
 		{

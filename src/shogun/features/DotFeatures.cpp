@@ -16,7 +16,9 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
+#ifdef HAVE_OPENMP
 #include <omp.h>
+#endif
 
 using namespace shogun;
 
@@ -65,18 +67,23 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t step;
 	#pragma omp parallel shared(num_threads, step)
 	{
+#ifdef HAVE_OPENMP
 		#pragma omp single
 		{
-			num_threads = omp_get_num_threads();
-			step = num_vectors/num_threads;
+			num_threads=omp_get_num_threads();
+			step=num_vectors/num_threads;
 			num_threads--;
 		}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step=num_vectors;
+		int32_t thread_num=0;
+#endif
+		bool progress=false; // (thread_num == 0);
 
-		int32_t thread_num = omp_get_thread_num();
-		bool progress = false; // (thread_num == 0);
-
-		int32_t t_start = thread_num*step;
-		int32_t t_stop = (thread_num==num_threads) ? stop : (thread_num+1)*step;
+		int32_t t_start=thread_num*step;
+		int32_t t_stop=(thread_num==num_threads) ? stop : (thread_num+1)*step;
 
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
@@ -111,18 +118,23 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	int32_t step;
 	#pragma omp parallel shared(num_threads, step)
 	{
+#ifdef HAVE_OPENMP
 		#pragma omp single
 		{
-			num_threads = omp_get_num_threads();
-			step = num/num_threads;
+			num_threads=omp_get_num_threads();
+			step=num/num_threads;
 			num_threads--;
 		}
+		int32_t thread_num=omp_get_thread_num();
+#else
+		num_threads=0;
+		step = num;
+		int32_t thread_num=0;
+#endif
+		bool progress=false; // (thread_num == 0);
 
-		int32_t thread_num = omp_get_thread_num();
-		bool progress = false; // (thread_num == 0);
-
-		int32_t t_start = thread_num*step;
-		int32_t t_stop = (thread_num==num_threads) ? num : (thread_num+1)*step;
+		int32_t t_start=thread_num*step;
+		int32_t t_stop=(thread_num==num_threads) ? num : (thread_num+1)*step;
 
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
