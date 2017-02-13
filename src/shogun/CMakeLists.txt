@@ -479,6 +479,7 @@ endif()
 
 include(LTO)
 if (ENABLE_LTO AND LTO_FOUND)
+  MESSAGE(STATUS "Link-time optimisation enabled")
   SET_LTO(shogun shogun-static shogun_deps libshogun)
 endif()
 
