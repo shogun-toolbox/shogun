@@ -1,3 +1,5 @@
+include(ShogunUtils)
+
 # Meta dependencies
 FIND_PACKAGE(PLY REQUIRED)
 IF(NOT PLY_FOUND)
@@ -16,27 +18,23 @@ find_meta_examples()
 # parser output
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser_files)
 
+# list of interfaces for which we dont generate meta examples
+SET(DISABLED_INTERFACES PerlModular)
+
 FOREACH(META_EXAMPLE ${META_EXAMPLES})
     # assume a structure <target_language>/<category>/listing.sg
-	get_filename_component(EXAMPLE_NAME ${META_EXAMPLE} NAME_WE)
-	IF(${CMAKE_VERSION} VERSION_LESS 2.8.12)
-	    get_filename_component(FULL_DIR ${META_EXAMPLE} PATH)
-	ELSE()
-	    # only supported from >2.8.11
-	    get_filename_component(FULL_DIR ${META_EXAMPLE} DIRECTORY)
-	ENDIF()
-	get_filename_component(EXAMPLE_REL_DIR ${FULL_DIR} NAME)
-	set(EXAMPLE_NAME_WITH_DIR "${EXAMPLE_REL_DIR}-${EXAMPLE_NAME}")
+    GET_META_EXAMPLE_VARS(${META_EXAMPLE} EXAMPLE_NAME EXAMPLE_REL_DIR EXAMPLE_NAME_WITH_DIR)
 
     SET(EXAMPLE_LISTINGS)
     SET(BASENAME ${EXAMPLE_REL_DIR}/${EXAMPLE_NAME})
     LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/cpp/${BASENAME}.cpp)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/python/${BASENAME}.py)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/octave/${BASENAME}.m)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/ruby/${BASENAME}.rb)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/csharp/${BASENAME}.cs)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/r/${BASENAME}.R)
-    LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/lua/${BASENAME}.lua)
+    FOREACH(interface ${AVAILABLE_INTERFACES})
+        list(FIND DISABLED_INTERFACES ${interface} disabled)
+        if (${disabled} STREQUAL "-1")
+            GET_INTERFACE_VARS(${interface} DIRECTORY EXTENSION)
+            LIST(APPEND EXAMPLE_LISTINGS ${CMAKE_CURRENT_BINARY_DIR}/${DIRECTORY}/${BASENAME}.${EXTENSION})
+        endif()
+    ENDFOREACH()
 
     # Run example generation script
     SET(TEMP ${CMAKE_CURRENT_BINARY_DIR}/python/${EXAMPLE_REL_DIR}/${EXAMPLE_NAME}.py)
@@ -59,13 +57,18 @@ SET_SOURCE_FILES_PROPERTIES(${TRANSLATED_META_EXAMPLES} PROPERTIES GENERATED TRU
 add_custom_target(meta_examples
     DEPENDS ${TRANSLATED_META_EXAMPLES})
 
-# If testing is enabled we run the examples
+INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cpp
+    DESTINATION share/shogun/examples
+    COMPONENT ${DIRECTORY}-examples
+    FILES_MATCHING PATTERN "*.cpp"
+    PATTERN "CMakeFiles*" EXCLUDE
+    )
+
 IF(ENABLE_TESTING)
     IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
         # copy data symlink to cmake binary dir so that we can execute meta examples in there
         CREATE_DATA_SYMLINK(${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data)
     ENDIF()
-                                                              
 
     # c++
     IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cpp AND NOT ${TRAVIS_DISABLE_META_CPP})
@@ -75,43 +78,34 @@ IF(ENABLE_TESTING)
             MESSAGE(WARNING "Skipping C++ meta examples; requires a c++11 compatible compiler.")
         ENDIF()
     ENDIF()
-
-    # Python
-    IF (PythonModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/python)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/python)
-    ENDIF()
-
-    # java
-    IF (JavaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/java)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/java)
-    ENDIF()
-
-    # octave
-    IF (OctaveModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/octave)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/octave)
-    ENDIF()
-
-    # r
-    IF (RModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/r)
-        # temporarily disabled as R and static calls has to be fixed
-        #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/r)
-    ENDIF()
-    
-    # csharp
-    IF (CSharpModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/csharp)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/csharp)
-    ENDIF()
-    
-    # ruby
-    IF (RubyModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ruby)
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ruby)
-    ENDIF()
-
-    # lua
-    IF (LuaModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lua)
-        # temporarily removed since lua modular currently
-        # does not support overloaded c++ methods
-        # see https://github.com/shogun-toolbox/shogun/issues/3018
-        #add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lua)
-    ENDIF()
 ENDIF()
+
+########### test all the enabled interfaces & install their files to examples
+
+# FIXME: these are the interfaces which has various problems
+# hence need to disable their testing
+# temporarily disabled as R and static calls has to be fixed
+LIST(APPEND DISABLED_INTERFACES RModular)
+# temporarily removed since lua modular currently
+# does not support overloaded c++ methods
+# see https://github.com/shogun-toolbox/shogun/issues/3018
+LIST(APPEND DISABLED_INTERFACES LuaModular)
+
+
+FOREACH(interface ${AVAILABLE_INTERFACES})
+    list(FIND DISABLED_INTERFACES ${interface} disabled)
+    if (${interface} AND ${disabled} STREQUAL "-1")
+        GET_INTERFACE_VARS(${interface} DIRECTORY EXTENSION)
+
+        INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${DIRECTORY}
+            DESTINATION share/shogun/examples
+            COMPONENT ${DIRECTORY}-examples
+            FILES_MATCHING PATTERN "*.${EXTENSION}"
+            PATTERN "CMakeFiles*" EXCLUDE
+            )
+
+        if (ENABLE_TESTING)
+            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY})
+        endif()
+    endif()
+ENDFOREACH()
