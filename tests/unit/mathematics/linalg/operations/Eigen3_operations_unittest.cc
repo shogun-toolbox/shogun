@@ -142,6 +142,33 @@ TEST(LinalgBackendEigen, SGMatrix_elementwise_product_in_place)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
+{
+	const index_t nrows = 2;
+	const index_t ncols = 3;
+
+	SGMatrix<float64_t> A(nrows,ncols);
+	SGMatrix<float64_t> B(ncols,nrows);
+
+	for (index_t i = 0; i < nrows; ++i)
+		for (index_t j = 0; j < ncols; ++j)
+		{
+			A(i, j) = i * 10 + j + 1;
+			B(j, i) = i + j;
+		}
+
+	auto A_block = linalg::block(A, 0, 0, 2, 2);
+	auto B_block = linalg::block(B, 0, 0, 2, 2);
+	auto result = element_prod(A_block, B_block);
+
+	ASSERT_EQ(result.num_rows, 2);
+	ASSERT_EQ(result.num_cols, 2);
+
+	for (index_t i = 0; i < 2; ++i)
+		for (index_t j = 0; j < 2; ++j)
+			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod)
 {
 	const index_t rows=4;
