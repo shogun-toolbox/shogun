@@ -309,15 +309,64 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 	return infer_backend(a, b)->dot(a, b);
 }
 
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication
+ * on matrix blocks.
+ *
+ * This version returns the result in-place.
+ * User should pass an appropriately pre-allocated memory matrix
+ *
+ * @param a First matrix block
+ * @param b Second matrix block
+ * @param c Result matrix
+ */
+template <typename T>
+void element_prod(Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b, SGMatrix<T>& result)
+{
+	REQUIRE(a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
+			"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+			a.m_row_size, a.m_col_size, b.m_row_size, b.m_col_size);
+	REQUIRE(a.m_row_size == result.num_rows && a.m_col_size == result.num_cols,
+			"Dimension mismatch! A(%d x %d) vs result(%d x %d)\n",
+			a.m_row_size, a.m_col_size, result.num_rows, result.num_cols);
+
+	REQUIRE(!result.on_gpu(), "Cannot operate with matrix result on_gpu (%d) \
+	 		as matrix blocks are on CPU.\n", result.on_gpu());
+	sg_linalg->get_cpu_backend()->element_prod(a, b, result);
+}
+
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication
+ * on matrix blocks.
+ *
+ * This version returns the result in a newly created matrix.
+ *
+ * @param A First matrix block
+ * @param B Second matrix block
+ * @return The result of the operation
+ */
+template <typename T>
+SGMatrix<T> element_prod(Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b)
+{
+	REQUIRE(a.m_row_size == b.m_row_size && a.m_col_size == b.m_col_size,
+			"Dimension mismatch! A(%d x %d) vs B(%d x %d)\n",
+			a.m_row_size, a.m_col_size, b.m_row_size, b.m_col_size);
+
+	SGMatrix<T> result(a.m_row_size, a.m_col_size);
+	result.zero();
+
+	element_prod(a, b, result);
+
+	return result;
+}
+
 /** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
  *
  * This version returns the result in-place.
- * User should pass an appropriately allocate memory matrix
+ * User should pass an appropriately pre-allocated memory matrix
  * Or pass one of the operands arguments (A or B) as a result
  *
  * @param a First matrix
  * @param b Second matrix
- * @param c Result matrix
+ * @param result Result matrix
  */
 template <typename T>
 void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)

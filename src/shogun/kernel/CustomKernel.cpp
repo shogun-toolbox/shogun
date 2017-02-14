@@ -15,6 +15,7 @@
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -293,9 +294,9 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	SGVector<float32_t> sum=rowwise_sum<Backend::EIGEN3>(block(kmatrix,
 				block_begin, block_begin, block_size, block_size), no_diag);
 
+	auto kmatrix_block = block(kmatrix, block_begin, block_begin, block_size, block_size);
 	SGVector<float32_t> sq_sum=rowwise_sum<Backend::EIGEN3>(
-		elementwise_square<Backend::EIGEN3>(block(kmatrix,
-		block_begin, block_begin, block_size, block_size)), no_diag);
+		element_prod(kmatrix_block, kmatrix_block), no_diag);
 
 	for (index_t i=0; i<sum.vlen; ++i)
 		row_sum(i, 0)=sum[i];
