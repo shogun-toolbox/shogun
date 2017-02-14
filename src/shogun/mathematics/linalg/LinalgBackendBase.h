@@ -140,6 +140,20 @@ public:
 	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
 	/**
+	 * Wrapper method of in-place matrix block elementwise product.
+	 *
+	 * @see linalg::element_prod
+	 */
+	#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container) \
+	virtual void element_prod(linalg::Block<Container<Type>>& a, \
+		linalg::Block<Container<Type>>& b, Container<Type>& result) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
+	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
+
+	/**
 	 * Wrapper method of matrix product method.
 	 *
 	 * @see linalg::matrix_prod

@@ -178,8 +178,6 @@ struct MODULE \
 
 /** include all the modules here */
 
-/** Core and Util are both part of the same module 'Core' */
-#include <shogun/mathematics/linalg/internal/modules/Core.h>
 #include <shogun/mathematics/linalg/internal/modules/Util.h>
 
 #include <shogun/mathematics/linalg/internal/modules/Redux.h>
