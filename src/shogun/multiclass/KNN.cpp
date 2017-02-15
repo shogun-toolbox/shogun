@@ -307,8 +307,8 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		{
 			int32_t len;
 			bool free;
-			float64_t* vec = features->get_feature_vector(i, len, free);
-			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
+			SGVector< float64_t > vec = features->get_feature_vector(i);
+			falconn::DenseVector<double> temp = Map<VectorXd> (vec, vec.len);
 			feats.push_back(temp);
 		}
 
@@ -333,8 +333,8 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		{
 			int32_t len;
 			bool free;
-			float64_t* vec = query_features->get_feature_vector(i, len, free);
-			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
+			SGVector< float64_t > vec = query_features->get_feature_vector(i);
+			falconn::DenseVector<double> temp = Map<VectorXd> (vec, vec.len);
 			auto indices = new std::vector<int32_t> ();
 			lsh_table->find_k_nearest_neighbors(temp, (int_fast64_t)m_k, indices);
 			memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
