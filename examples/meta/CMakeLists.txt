@@ -15,6 +15,14 @@ ENDIF()
 INCLUDE(FindMetaExamples)
 find_meta_examples()
 
+# get parser and target languages needed to build the meta examples
+SET(GENERATOR_DEPENDENCIES)
+LIST(APPEND GENERATOR_DEPENDENCIES ${CMAKE_SOURCE_DIR}/examples/meta/generator/generate.py)
+LIST(APPEND GENERATOR_DEPENDENCIES ${CMAKE_SOURCE_DIR}/examples/meta/generator/parse.py)
+LIST(APPEND GENERATOR_DEPENDENCIES ${CMAKE_SOURCE_DIR}/examples/meta/generator/translate.py)
+FILE(GLOB TARGET_LANGUAGES ${CMAKE_SOURCE_DIR}/examples/meta/generator/targets/*.json)
+LIST(APPEND GENERATOR_DEPENDENCIES ${TARGET_LANGUAGES})
+
 # parser output
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/parser_files)
 
@@ -55,7 +63,7 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
         COMMAND ${PYTHON_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/generator/generate.py ${GENERATOR_FLAGS}
 		COMMENT "Generating example ${EXAMPLE_NAME_WITH_DIR}"
-        DEPENDS ctags ${META_EXAMPLE})
+        DEPENDS ctags ${META_EXAMPLE} ${GENERATOR_DEPENDENCIES})
 
     LIST(APPEND TRANSLATED_META_EXAMPLES ${EXAMPLE_LISTINGS})
 ENDFOREACH()
