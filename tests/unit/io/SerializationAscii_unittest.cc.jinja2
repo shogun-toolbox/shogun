@@ -6,6 +6,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/class_list.h>
 #include <shogun/io/SerializableAsciiFile.h>
+#include "utils/Utils.h"
 #include <unistd.h>
 #include <gtest/gtest.h>
 
@@ -22,7 +23,7 @@ TEST(SerializationAscii, {{class}})
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/shogun-unittest-serialization-ascii-" + class_name + ".XXXXXX";
-	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
+	char* filename = mktemp_cst(const_cast<char*>(file_template.c_str()));
 	CSGObject* object = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
 
@@ -64,7 +65,7 @@ TEST(SerializationAscii,{{class}}_{{type}})
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/shogun-unittest-serialization-ascii-" + class_name + "_{{type}}" + ".XXXXXX";
-	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
+	char* filename = mktemp_cst(const_cast<char*>(file_template.c_str()));
 	CSGObject* object = new_sgserializable(class_name.c_str(), {{type}});
 	ASSERT_TRUE(object != NULL);
 
@@ -96,4 +97,3 @@ TEST(SerializationAscii,{{class}}_{{type}})
 }
 {% endfor %}
 {% endfor %}
-
