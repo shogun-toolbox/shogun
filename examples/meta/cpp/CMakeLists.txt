@@ -45,10 +45,6 @@ FOREACH(META_EXAMPLE ${META_EXAMPLES})
 
 ENDFOREACH()
 
-IF (NOT ENABLE_TESTING)
-	MESSAGE( WARNING "The -Wno-unused-variable flag has been set on C++ meta examples")
-ENDIF()
-
 add_custom_target(build_cpp_meta_examples ALL
     DEPENDS ${GENERATED_CPP_EXAMPLES}
     COMMENT "Compiled generated cpp examples")
