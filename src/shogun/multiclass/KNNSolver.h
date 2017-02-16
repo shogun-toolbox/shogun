@@ -90,6 +90,7 @@ class CKNNSolver : public CDistanceMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "KNNSolver"; }
 
+	private:
 		void init();
 
 	protected:

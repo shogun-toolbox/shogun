@@ -27,9 +27,7 @@ class CCoverTreeKNNSolver : public CKNNSolver
 	public:
 		/** default constructor */
 		CCoverTreeKNNSolver() : CKNNSolver()
-		{ 
-			CKNNSolver::init(); 
-		}
+		{ /* nothing to do */ }
 
 		/** deconstructor */
 		virtual ~CCoverTreeKNNSolver() { /* nothing to do */ }
