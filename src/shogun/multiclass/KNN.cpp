@@ -11,25 +11,16 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <shogun/lib/Time.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/multiclass/KNN.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/JLCoverTree.h>
-#include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/multiclass/tree/KDTree.h>
-#include <shogun/mathematics/eigen3.h>
-
-#ifdef HAVE_CXX11
-#include <shogun/lib/external/falconn/lsh_nn_table.h>
-#endif
 
 //#define DEBUG_KNN
 
 using namespace shogun;
-using namespace Eigen;
 
 CKNN::CKNN()
 : CDistanceMachine()
@@ -64,6 +55,7 @@ void CKNN::init()
 	m_num_classes=0;
 	m_leaf_size=1;
 	m_knn_solver=KNN_BRUTE;
+	solver=NULL;
 #ifdef HAVE_CXX11
 	m_lsh_l = 0;
 	m_lsh_t = 0;
@@ -184,8 +176,6 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs())
 
-	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
-
 	//labels of the k nearest neighbors
 	int32_t* train_lab=SG_MALLOC(int32_t, m_k);
 
@@ -195,169 +185,11 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	//histogram of classes and returned output
 	float64_t* classes=SG_MALLOC(float64_t, m_num_classes);
 
-	switch (m_knn_solver)
-	{
-	case KNN_BRUTE:
-	{
-		//get the k nearest neighbors of each example
-		SGMatrix<index_t> NN = nearest_neighbors();
+	init_solver(m_knn_solver);
 
-		//from the indices to the nearest neighbors, compute the class labels
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-				train_lab[j] = m_train_labels[ NN(j,i) ];
+	CMulticlassLabels* output = solver->classify_objects(distance, num_lab, train_lab, classes);
 
-			//get the index of the 'nearest' class
-			int32_t out_idx = choose_class(classes, train_lab);
-			//write the label of 'nearest' in the output
-			output->set_label(i, out_idx + m_min_label);
-		}
-
-		break;
-	}
-	case KNN_COVER_TREE: // Use cover tree
-	{
-		// m_q != 1.0 not supported with cover tree because the neighbors
-		// are not retrieved in increasing order of distance to the query
-		float64_t old_q = m_q;
-		if ( old_q != 1.0 )
-			SG_INFO("q != 1.0 not supported with cover tree, using q = 1\n")
-
-		// From the sets of features (lhs and rhs) stored in distance,
-		// build arrays of cover tree points
-		v_array< CJLCoverTreePoint > set_of_points  =
-			parse_points(distance, FC_LHS);
-		v_array< CJLCoverTreePoint > set_of_queries =
-			parse_points(distance, FC_RHS);
-
-		// Build the cover trees, one for the test vectors (rhs features)
-		// and another for the training vectors (lhs features)
-		CFeatures* r = distance->replace_rhs( distance->get_lhs() );
-		node< CJLCoverTreePoint > top = batch_create(set_of_points);
-		CFeatures* l = distance->replace_lhs(r);
-		distance->replace_rhs(r);
-		node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
-
-		// Get the k nearest neighbors to all the test vectors (batch method)
-		distance->replace_lhs(l);
-		v_array< v_array< CJLCoverTreePoint > > res;
-		k_nearest_neighbor(top, top_query, res, m_k);
-
-#ifdef DEBUG_KNN
-		SG_PRINT("\nJL Results:\n")
-		for ( int32_t i = 0 ; i < res.index ; ++i )
-		{
-			for ( int32_t j = 0 ; j < res[i].index ; ++j )
-			{
-				printf("%d ", res[i][j].m_index);
-			}
-			printf("\n");
-		}
-		SG_PRINT("\n")
-#endif
-
-		for ( int32_t i = 0 ; i < res.index ; ++i )
-		{
-			// Translate from indices to labels of the nearest neighbors
-			for ( int32_t j = 0; j < m_k; ++j )
-				// The first index in res[i] points to the test vector
-				train_lab[j] = m_train_labels.vector[ res[i][j+1].m_index ];
-
-			// Get the index of the 'nearest' class
-			int32_t out_idx = choose_class(classes, train_lab);
-			output->set_label(res[i][0].m_index, out_idx+m_min_label);
-		}
-
-		m_q = old_q;
-
-		break;
-	}
-	case KNN_KDTREE:
-	{
-		CFeatures* lhs = distance->get_lhs();
-		CKDTree* kd_tree = new CKDTree(m_leaf_size);
-		kd_tree->build_tree(dynamic_cast<CDenseFeatures<float64_t>*>(lhs));
-		SG_UNREF(lhs);
-
-		CFeatures* query = distance->get_rhs();
-		kd_tree->query_knn(dynamic_cast<CDenseFeatures<float64_t>*>(query), m_k);
-		SGMatrix<index_t> NN = kd_tree->get_knn_indices();
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-				train_lab[j] = m_train_labels[ NN(j,i) ];
-
-			//get the index of the 'nearest' class
-			int32_t out_idx = choose_class(classes, train_lab);
-			//write the label of 'nearest' in the output
-			output->set_label(i, out_idx + m_min_label);
-		}
-		SG_UNREF(query);
-		break;
-	}
-#ifdef HAVE_CXX11
-	case KNN_LSH:
-	{
-		CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_lhs());
-		std::vector<falconn::DenseVector<double>> feats;
-		for(int32_t i=0; i < features->get_num_vectors(); i++)
-		{
-			int32_t len;
-			bool free;
-			float64_t* vec = features->get_feature_vector(i, len, free);
-			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
-			feats.push_back(temp);
-		}
-
-		falconn::LSHConstructionParameters params 
-			= falconn::get_default_parameters<falconn::DenseVector<double>>(features->get_num_vectors(),
-                                   features->get_num_features(),
-                                   falconn::DistanceFunction::EuclideanSquared,
-                                   true);
-		SG_UNREF(features);
-		if (m_lsh_l && m_lsh_t)
-			params.l = m_lsh_l;
-
-		auto lsh_table = falconn::construct_table<falconn::DenseVector<double>>(feats, params);
-		if (m_lsh_t)
-			lsh_table->set_num_probes(m_lsh_t);
-
-		CDenseFeatures<float64_t>* query_features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_rhs());
-		std::vector<falconn::DenseVector<double>> query_feats;
-
-		SGMatrix<index_t> NN (m_k, query_features->get_num_vectors());
-		for(int32_t i=0; i < query_features->get_num_vectors(); i++)
-		{
-			int32_t len;
-			bool free;
-			float64_t* vec = query_features->get_feature_vector(i, len, free);
-			falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
-			auto indices = new std::vector<int32_t> ();
-			lsh_table->find_k_nearest_neighbors(temp, (int_fast64_t)m_k, indices);
-			memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
-			delete indices;
-		}
-		
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-				train_lab[j] = m_train_labels[ NN(j,i) ];
-
-			//get the index of the 'nearest' class
-			int32_t out_idx = choose_class(classes, train_lab);
-			//write the label of 'nearest' in the output
-			output->set_label(i, out_idx + m_min_label);
-		}
-		SG_UNREF(query_features);
-		break;
-	}
-#endif /* HAVE_CXX11 */
-	}
-
+	SG_UNREF(solver);
 	SG_FREE(classes);
 	SG_FREE(train_lab);
 
@@ -422,8 +254,6 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=num_lab)
 
-	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
-
 	//working buffer of m_train_labels
 	int32_t* train_lab=SG_MALLOC(int32_t, m_k);
 
@@ -432,103 +262,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
-	
-	switch (m_knn_solver)
-	{
-	case KNN_COVER_TREE: // Use cover tree
-	{
-		//allocation for distances to nearest neighbors
-		float64_t* dists=SG_MALLOC(float64_t, m_k);
 
-		// From the sets of features (lhs and rhs) stored in distance,
-		// build arrays of cover tree points
-		v_array< CJLCoverTreePoint > set_of_points  =
-			parse_points(distance, FC_LHS);
-		v_array< CJLCoverTreePoint > set_of_queries =
-			parse_points(distance, FC_RHS);
+	init_solver(m_knn_solver);
 
-		// Build the cover trees, one for the test vectors (rhs features)
-		// and another for the training vectors (lhs features)
-		CFeatures* r = distance->replace_rhs( distance->get_lhs() );
-		node< CJLCoverTreePoint > top = batch_create(set_of_points);
-		CFeatures* l = distance->replace_lhs(r);
-		distance->replace_rhs(r);
-		node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
+	int32_t* output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
-		// Get the k nearest neighbors to all the test vectors (batch method)
-		distance->replace_lhs(l);
-		v_array< v_array< CJLCoverTreePoint > > res;
-		k_nearest_neighbor(top, top_query, res, m_k);
-
-		for ( int32_t i = 0 ; i < res.index ; ++i )
-		{
-			// Handle the fact that cover tree doesn't return neighbors
-			// ordered by distance
-
-			for ( int32_t j = 0 ; j < m_k ; ++j )
-			{
-				// The first index in res[i] points to the test vector
-				dists[j]     = distance->distance(res[i][j+1].m_index,
-							res[i][0].m_index);
-				train_lab[j] = m_train_labels.vector[
-							res[i][j+1].m_index ];
-			}
-
-			// Now we get the indices to the neighbors sorted by distance
-			CMath::qsort_index(dists, train_lab, m_k);
-
-			choose_class_for_multiple_k(output+res[i][0].m_index, classes,
-					train_lab, num_lab);
-		}
-
-		SG_FREE(dists);
-		break;
-	}
-	case KNN_KDTREE:
-	{
-		//allocation for distances to nearest neighbors
-		float64_t* dists=SG_MALLOC(float64_t, m_k);
-
-		CFeatures* lhs = distance->get_lhs();
-		CKDTree* kd_tree = new CKDTree(m_leaf_size);
-		kd_tree->build_tree(dynamic_cast<CDenseFeatures<float64_t>*>(lhs));
-		SG_UNREF(lhs);
-
-		CFeatures* data = distance->get_rhs();
-		kd_tree->query_knn(dynamic_cast<CDenseFeatures<float64_t>*>(data), m_k);
-		SGMatrix<index_t> NN = kd_tree->get_knn_indices();
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-			{
-				train_lab[j] = m_train_labels[ NN(j,i) ];
-				dists[j] = distance->distance(i, NN(j,i));
-			}
-			CMath::qsort_index(dists, train_lab, m_k);
-
-			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
-		}
-		break;
-	}
-	default:
-	{
-		//get the k nearest neighbors of each example
-		SGMatrix<index_t> NN = nearest_neighbors();
-
-		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
-		{
-			//write the labels of the k nearest neighbors from theirs indices
-			for (int32_t j=0; j<m_k; j++)
-				train_lab[j] = m_train_labels[ NN(j,i) ];
-
-			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
-		}
-
-	}
-
-	}
-
+	SG_UNREF(solver);
 	SG_FREE(train_lab);
 	SG_FREE(classes);
 
@@ -575,55 +314,36 @@ void CKNN::store_model_features()
 	SG_UNREF(d_rhs);
 }
 
-int32_t CKNN::choose_class(float64_t* classes, int32_t* train_lab)
+void CKNN::init_solver(KNN_SOLVER knn_solver)
 {
-	memset(classes, 0, sizeof(float64_t)*m_num_classes);
-
-	float64_t multiplier = m_q;
-	for (int32_t j=0; j<m_k; j++)
+	switch (knn_solver)
 	{
-		classes[train_lab[j]]+= multiplier;
-		multiplier*= multiplier;
+	case KNN_BRUTE:
+	{
+		SGMatrix<index_t> NN = nearest_neighbors();
+		solver = new CBruteKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
+		SG_REF(solver);
+		break;
 	}
-
-	//choose the class that got 'outputted' most often
-	int32_t out_idx=0;
-	float64_t out_max=0;
-
-	for (int32_t j=0; j<m_num_classes; j++)
+	case KNN_KDTREE:
 	{
-		if (out_max< classes[j])
-		{
-			out_idx= j;
-			out_max= classes[j];
-		}
+		solver = new CKDTREEKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
+		SG_REF(solver);
+		break;
 	}
-
-	return out_idx;
-}
-
-void CKNN::choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step)
-{
-	//compute histogram of class outputs of the first k nearest neighbours
-	memset(classes, 0, sizeof(int32_t)*m_num_classes);
-
-	for (int32_t j=0; j<m_k; j++)
+	case KNN_COVER_TREE:
 	{
-		classes[train_lab[j]]++;
-
-		//choose the class that got 'outputted' most often
-		int32_t out_idx=0;
-		int32_t out_max=0;
-
-		for (int32_t c=0; c<m_num_classes; c++)
-		{
-			if (out_max< classes[c])
-			{
-				out_idx= c;
-				out_max= classes[c];
-			}
-		}
-
-		output[j*step]=out_idx+m_min_label;
+		solver = new CCoverTreeKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
+		SG_REF(solver);
+		break;
+	}
+#ifdef HAVE_CXX11
+	case KNN_LSH:
+	{
+		solver = new CLSHKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
+		SG_REF(solver);
+		break;
+	}
+#endif
 	}
 }
