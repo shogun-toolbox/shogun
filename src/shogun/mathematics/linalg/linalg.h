@@ -177,9 +177,6 @@ struct MODULE \
 }
 
 /** include all the modules here */
-
-#include <shogun/mathematics/linalg/internal/modules/Util.h>
-
 #include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
