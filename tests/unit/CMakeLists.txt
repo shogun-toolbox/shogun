@@ -81,7 +81,7 @@ set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_
 # collect the unittests
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
-ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST})
+ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST} utils/Utils.cpp)
 add_dependencies(shogun-unit-test GoogleMock shogun::shogun)
 target_include_directories(shogun-unit-test PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
 target_link_libraries(shogun-unit-test PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
@@ -107,7 +107,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 ADD_CUSTOM_TARGET(unit-tests
-	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test
+	COMMAND ${CMAKE_BINARY_DIR}/bin/shogun-unit-test
 	DEPENDS shogun-unit-test)
 
 shogun_discover_tests(shogun-unit-test)

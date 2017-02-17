@@ -7,13 +7,15 @@
  * Written (W) 2013 Viktor Gal
  */
 
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/io/CSVFile.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
 #ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <gtest/gtest.h>
+
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/io/CSVFile.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include "../utils/Utils.h"
 
 using namespace shogun;
 
@@ -22,7 +24,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	index_t n=20;
 	index_t dim=2;
 	std::string tmp_name = "StreamingDenseFeatures_reading.XXXXXX";
-	char* fname = mktemp(const_cast<char*>(tmp_name.c_str()));
+	char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
 
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
