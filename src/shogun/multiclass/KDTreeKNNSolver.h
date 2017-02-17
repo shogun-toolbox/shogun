@@ -16,10 +16,9 @@ namespace shogun
 {
 
 /**
- * The KDTREEKNNSolver class is a solver class which inherit from KNNSolver class.
- * It use a k-d tree (short for k-dimensional tree) to delivery the nearest neighbor searches
- * involving the multidimensional search key.
- * Check https://en.wikipedia.org/wiki/K-d_tree for more detail about K-D tree.
+ * KD-tree solver. It uses k-d tree (short for k-dimensional tree) to speed up the 
+ * nearest neighbour computation. 
+ * For more information, see https://en.wikipedia.org/wiki/K-d_tree
  *
  */
 class CKDTREEKNNSolver : public CKNNSolver

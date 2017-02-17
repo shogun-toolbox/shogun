@@ -15,11 +15,7 @@
 
 namespace shogun
 {
-/**
- * The KNNSolver class is the virtual base class of BruteKNNSolcer, CoverTreeKNNSolver, KDTreeKNNsolver, LSHKNNSolver. 
- * The KNNSolver class will include most of Variables which been used all the other Solver and methods been used to choose 
- * the index of the most frequent class.
- */
+/* Virtual base class for all KNN solvers */
 
 class CDistanceMachine;
 class CKNNSolver : public CDistanceMachine

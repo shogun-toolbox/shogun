@@ -15,10 +15,7 @@
 namespace shogun
 {
 
-/**
- * The BruteKNNSolver class is a solver class which inherit from KNNSolver class. It will use brute way
- * to classify the object which mean compare the object against all training objects for each prediction.
- */
+/* Standard KNN solver. Test points are compared to all training data for each prediction. */
 class CBruteKNNSolver : public CKNNSolver
 {
 	public:

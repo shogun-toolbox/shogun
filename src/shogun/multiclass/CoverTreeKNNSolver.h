@@ -17,9 +17,8 @@ namespace shogun
 {
 
 /**
- * The CoverTreeKNNSolver class is a solver class which inherit from KNNSolver class. 
- * It use the cover tree to speed up the nearest neighbor search and you can find more
- * detail information on https://en.wikipedia.org/wiki/Cover_tree
+ * Cover tree solver. It uses cover trees to speed up the nearest neighbour computation.
+ * For more information, see https://en.wikipedia.org/wiki/Cover_tree
  *
  */
 class CCoverTreeKNNSolver : public CKNNSolver
