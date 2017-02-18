@@ -31,13 +31,13 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 ## Interfaces
 -------------
 
-Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, Scala, and Matlab.
+Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java / Scala, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, and Matlab.
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
 |python            | *mature* (no known problems)                              |
 |octave            | *mature* (no known problems)                              |
-|java              | *stable* (no known problems)                              |
+|java/scala        | *stable* (no known problems)                              |
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
 |r                 | *beta*   (most examples work, static calls unavailable)   |
