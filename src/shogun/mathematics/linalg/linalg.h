@@ -33,6 +33,10 @@
 #define LINALG_H_
 
 #include <shogun/lib/config.h>
+#ifdef HAVE_VIENNACL
+#include <shogun/lib/GPUMatrix.h>
+#include <shogun/lib/GPUVector.h>
+#endif
 
 /**
  * Just include this file to use in your applications (in the cpp). Only available
