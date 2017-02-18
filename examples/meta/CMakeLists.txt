@@ -3,12 +3,12 @@ include(ShogunUtils)
 # Meta dependencies
 FIND_PACKAGE(PLY REQUIRED)
 IF(NOT PLY_FOUND)
-    message(FATAL_ERROR "Python module ply required for meta examples. Disable meta examples or install python-ply")
+	message(FATAL_ERROR "Python module ply required for meta examples. Install or set BUILD_META_EXAMPLES=OFF")
 ENDIF()
 
 FIND_PACKAGE(Ctags)
 IF(NOT CTAGS_FOUND)
-    message(FATAL_ERROR "Ctags required for meta examples.")
+	message(FATAL_ERROR "Ctags required for meta examples. Install or set BUILD_META_EXAMPLES=OFF.")
 ENDIF()
 
 # get list of meta examples that can be built
