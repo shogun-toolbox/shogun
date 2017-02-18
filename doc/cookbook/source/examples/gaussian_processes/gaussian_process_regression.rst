@@ -38,6 +38,10 @@ Then we can train the model and evaluate the predictive distribution. We get pre
 
 .. sgexample:: gaussian_process_regression.sg:train_and_apply
 
+We can compute the predictive variances as
+
+.. sgexample:: gaussian_process_regression.sg:compute_variance
+
 The prediction above is based on arbitrarily set hyperparameters :math:`\boldsymbol{\theta}`: kernel width :math:`\tau`, kernel scaling :math:`\gamma` and observation noise :math:`\sigma^2`. We can also learn these parameters by optimizing the marginal likelihood :math:`p(\mathbf{y}|\mathbf{X}, \boldsymbol{\theta})` w.r.t. :math:`\boldsymbol{\theta}`.
 To do this, we define a :sgclass:`CGradientModelSelection`, passing to it a :sgclass:`CGradientEvaluation` with its own :sgclass:`CGradientCriterion`, specifying the gradient scheme and direction. Then we can follow the gradient and apply the chosen :math:`\boldsymbol{\theta}` back to the CGaussianProcessRegression instance.
 
