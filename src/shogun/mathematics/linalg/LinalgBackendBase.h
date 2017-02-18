@@ -83,21 +83,6 @@ public:
 	METHODNAME(floatmax_t, Container);
 
 	/**
-	 * Wrapper method of add operation the operation C = alpha*A + beta*B.
-	 *
-	 * @see linalg::add
-	 */
-	#define BACKEND_GENERIC_ADD(Type, Container) \
-	virtual Container<Type> add(const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD, SGMatrix)
-	#undef BACKEND_GENERIC_ADD
-
-	/**
 	 * Wrapper method of add operation the operation result = alpha*a + beta*b.
 	 *
 	 * @see linalg::add
@@ -228,21 +213,6 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
 	#undef BACKEND_GENERIC_RANGE_FILL
-	
-	/**
-	 * Wrapper method of scale operation the operation B = alpha*A.
-	 *
-	 * @see linalg::scale
-	 */
-	#define BACKEND_GENERIC_SCALE(Type, Container) \
-	virtual Container<Type> scale(const Container<Type>& a, Type alpha) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SCALE, SGMatrix)
-	#undef BACKEND_GENERIC_SCALE
 
 	/**
 	 * Wrapper method of scale operation the operation result = alpha*A.
