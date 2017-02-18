@@ -243,7 +243,7 @@ public:
 	#undef BACKEND_GENERIC_SET_CONST
 	
 	/**
-	* Wrapper method of vector sum that works with generic vectors.
+	* Wrapper method of sum that works with generic vectors or matrices.
 	*
 	* @see linalg::sum
 	*/
@@ -270,6 +270,34 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_BLOCK_SUM
+
+	/**
+	* Wrapper method of sum that works with symmetric matrices.
+	*
+	* @see linalg::sum_symmetric
+	*/
+	#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container) \
+	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SYMMETRIC_SUM
+
+	/**
+	* Wrapper method of sum that works with symmetric matrix blocks.
+	*
+	* @see linalg::sum
+	*/
+	#define BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM(Type, Container) \
+	virtual Type sum_symmetric(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM
 
 	/**
 	 * Wrapper method of matrix rowwise sum that works with dense matrices.
