@@ -706,12 +706,40 @@ T sum(const Container<T>& a, bool no_diag=false)
  *
  * @param a the matrix-block whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum
- * @return the vector sum \f$\sum_i a_i\f$ or matrix sum \f$\sum_{i,j}b_{i,j}\f$
+ * @return matrix-block sum \f$\sum_{i,j}b_{i,j}\f$
  */
 template <typename T>
 T sum(const Block<SGMatrix<T>>& a, bool no_diag=false)
 {
 	return sg_linalg->get_cpu_backend()->sum(a, no_diag);
+}
+
+/**
+ * Method that computes the sum of symmetric matrices
+ *
+ * @param a the symmetric matrix whose sum has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
+ * @return the matrix sum \f$\sum_{i,j}b_{i,j}\f$
+ */
+template <typename T, template <typename> class SGMatrix>
+T sum_symmetric(const SGMatrix<T>& a, bool no_diag=false)
+{
+	REQUIRE(a.num_rows == a.num_cols, "Matrix is not square!\n");
+	return infer_backend(a)->sum_symmetric(a, no_diag);
+}
+
+/**
+ * Method that computes the sum of symmetric matrix blocks
+ *
+ * @param a the symmetric matrix-block whose sum has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum
+ * @return symmetric matrix-block sum \f$\sum_{i,j}b_{i,j}\f$
+ */
+template <typename T>
+T sum_symmetric(const Block<SGMatrix<T>>& a, bool no_diag=false)
+{
+	REQUIRE(a.m_row_size == a.m_col_size, "Matrix is not square!\n");
+	return sg_linalg->get_cpu_backend()->sum_symmetric(a, no_diag);
 }
 
 /**

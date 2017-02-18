@@ -208,6 +208,24 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_BLOCK_SUM
 
+	/** Implementation of @see LinalgBackendBase::sum_symmetric */
+	#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container) \
+	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const \
+	{  \
+		return sum_symmetric_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SYMMETRIC_SUM
+
+	/** Implementation of @see LinalgBackendBase::sum_symmetric */
+	#define BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM(Type, Container) \
+	virtual Type sum_symmetric(const linalg::Block<Container<Type>>& a, bool no_diag) const \
+	{  \
+		return sum_symmetric_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM
+
 	/** Implementation of @see LinalgBackendBase::colwise_sum */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
 	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
@@ -437,6 +455,44 @@ private:
 		if (no_diag)
 			sum -= m_block.diagonal().sum();
 
+		return sum;
+	}
+
+	/** Eigen3 symmetric matrix sum method */
+	template <typename T>
+	T sum_symmetric_impl(const SGMatrix<T>& mat, bool no_diag=false) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat;
+
+		// since the matrix is symmetric with main diagonal inside, we can save half
+		// the computation with using only the upper triangular part.
+		typename SGMatrix<T>::EigenMatrixXt m_upper =
+			m.template triangularView<Eigen::StrictlyUpper>();
+		T sum = m_upper.sum();
+		sum += sum;
+
+		if (!no_diag)
+			sum += m.diagonal().sum();
+		return sum;
+	}
+
+	/** Eigen3 symmetric matrix block sum method */
+	template <typename T>
+	T sum_symmetric_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag=false) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
+			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
+
+		// since the matrix is symmetric with main diagonal inside, we can save half
+		// the computation with using only the upper triangular part.
+		typename SGMatrix<T>::EigenMatrixXt m_upper =
+			m_block.template triangularView<Eigen::StrictlyUpper>();
+		T sum = m_upper.sum();
+		sum += sum;
+
+		if (!no_diag)
+			sum += m_block.diagonal().sum();
 		return sum;
 	}
 
