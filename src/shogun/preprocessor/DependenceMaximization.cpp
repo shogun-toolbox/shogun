@@ -31,7 +31,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/statistics/IndependenceTest.h>
+#include <shogun/statistical_testing/IndependenceTest.h>
 #include <shogun/preprocessor/DependenceMaximization.h>
 #include <shogun/mathematics/Math.h>
 

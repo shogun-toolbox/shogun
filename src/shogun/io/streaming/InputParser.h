@@ -428,6 +428,7 @@ template <class T>
     else
         example_type = E_UNLABELLED;
 
+	SG_UNREF(examples_ring);
     examples_ring = new CParseBuffer<T>(size);
     SG_REF(examples_ring);
 
@@ -466,7 +467,8 @@ template <class T>
     }
 
     SG_SDEBUG("creating parse thread\n")
-    examples_ring->init_vector();
+    if (examples_ring)
+		examples_ring->init_vector();
 #ifdef HAVE_CXX11
 	parse_thread.reset(new std::thread(&parse_loop_entry_point, this));
 #elif defined(HAVE_PTHREAD)

@@ -70,6 +70,7 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 		parser.exit_parser();
 		parser.init(working_file, has_labels, 1);
 		parser.set_free_vector_after_release(false);
+		parser.set_free_vectors_on_destruct(false);
 		parser.start_parser();
 	}
 }
