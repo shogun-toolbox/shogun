@@ -2,14 +2,17 @@
 
 	* SHOGUN Release version 5.1.0 (libshogun 17.2, data 0.11, parameter 1)
 
-	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann]
-	* Add native MS Windows support [Viktor Gal]
+	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann]	
 
 	* Features:
+		- Add native MS Windows support [Viktor Gal]
 		- LDA now supports 32, 64 and 128 bit floating point numbers [Chris Goldsworthy]
 		- Add SHOGUN_NUM_THREADS enviroment variable to control the number of threads
 		used by the models in runtime [Viktor Gal]
 		- Added Scala Interface to the build [Abhinav Rai]
+		- Major re-writing and API changes in kernel statistical hypothesis 
+		testing framework, significant speed up in permutation test for
+		quadratic time MMD, new kernel selection algorithms for quadratic time MMD [Soumyajit De]
 	* Bugfixes:
 		- Fix build error of R interface for R>=3.3.0, #3460 [Heiko Strathmann]
 		- Make the code compatible with Eigen 3.3.0 [Viktor Gal]
