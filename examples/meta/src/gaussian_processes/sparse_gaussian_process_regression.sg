@@ -1,5 +1,5 @@
 CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
-CSVFile f_feats_ind("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_inducing("../../data/regression_1d_sinc_features_train.dat")
 CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
 CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
 CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
@@ -22,7 +22,8 @@ IntVector inducing_points(3)
 inducing_points[0]=0
 inducing_points[1]=1
 inducing_points[2]=2
-RealFeatures inducing_features = features_train.copy_subset(inducing_points)
+RealFeatures inducing_features(f_feats_inducing)
+inducing_features.add_subset(inducing_points)
 
 GaussianLikelihood gauss_likelihood()	
 FITCInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood, inducing_features)
