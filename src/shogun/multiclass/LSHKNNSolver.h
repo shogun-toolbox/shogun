@@ -16,9 +16,8 @@ namespace shogun
 {
 
 /**
- * The LSHKNNSolver class is a solver class which inherit from KNNSolver class.
- * It use LSH(short for Locality-sensitive hashing) to do the nearest neighbor search.
- * More detail information can be found in https://en.wikipedia.org/wiki/Locality-sensitive_hashing.
+ * LSH solver. It uses LSH (short for Locality-sensitive hashing) to do the nearest neighbour computation.
+ * For more information, see https://en.wikipedia.org/wiki/Locality-sensitive_hashing.
  *
  */
 #ifdef HAVE_CXX11
