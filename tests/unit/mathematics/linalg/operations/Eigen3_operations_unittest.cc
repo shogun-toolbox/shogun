@@ -1,7 +1,7 @@
 #include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <gtest/gtest.h>
+#include <shogun/lib/ShogunException.h>
 
 using namespace shogun;
 using namespace linalg;
@@ -627,6 +627,54 @@ TEST(LinalgBackendEigen, SGMatrix_sum_no_diag)
 	EXPECT_NEAR(result, 12, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_symmetric_with_diag)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	EXPECT_NEAR(sum_symmetric(mat), 39.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_symmetric_no_diag)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	EXPECT_NEAR(sum_symmetric(mat, true), 36.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_symmetric_exception)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n + 1);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	EXPECT_THROW(sum_symmetric(mat), ShogunException);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_block_sum)
 {
 	const index_t n = 3;
@@ -638,6 +686,56 @@ TEST(LinalgBackendEigen, SGMatrix_block_sum)
 
 	auto result = sum(linalg::block(mat, 0, 0, 2, 3));
 	EXPECT_NEAR(result, 42.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_symmetric_block_with_diag)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	float64_t sum = sum_symmetric(linalg::block(mat,1,1,2,2));
+	EXPECT_NEAR(sum, 28.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_symmetric_block_no_diag)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	float64_t sum = sum_symmetric(linalg::block(mat,1,1,2,2), true);
+	EXPECT_NEAR(sum, 26.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_symmetric_block_exception)
+{
+	const index_t n = 3;
+	SGMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = i + 1; j < n; ++j)
+		{
+			mat(i, j) = i * 10 + j + 1;
+			mat(j, i) = mat(i, j);
+		}
+
+	EXPECT_THROW(sum_symmetric(linalg::block(mat,1,1,2,3)), ShogunException);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_colwise_sum)

@@ -32,8 +32,6 @@
 #ifndef REDUX_H_
 #define REDUX_H_
 
-#include <shogun/mathematics/linalg/internal/implementation/Sum.h>
-#include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Cholesky.h>
 
 namespace shogun
@@ -41,121 +39,6 @@ namespace shogun
 
 namespace linalg
 {
-/**
- * Wrapper method for internal implementation of vector sum of values that works
- * with generic dense vectors
-
- * @param a vector whose sum has to be computed
- * @return the vector sum \f$\sum_i a_i\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Vector>
-typename Vector::Scalar vector_sum(Vector a)
-{
-	return implementation::vector_sum<backend,Vector>::compute(a);
-}
-
-#ifdef HAVE_LINALG_LIB
-/**
- * Wrapper method for internal implementation of matrix sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
-typename Matrix::Scalar sum(Matrix m, bool no_diag=false)
-{
-	return implementation::sum<backend,Matrix>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of symmetric matrix sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
-typename Matrix::Scalar sum_symmetric(Matrix m, bool no_diag=false)
-{
-	return implementation::sum_symmetric<backend,Matrix>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matrix blocks
- *
- * @param b the matrix-block whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
-typename Matrix::Scalar sum_symmetric(Block<Matrix> b, bool no_diag=false)
-{
-	return implementation::sum_symmetric<backend,Matrix>
-		::compute(b, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix colwise sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose colwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
-typename implementation::colwise_sum<backend,Matrix>::ReturnType colwise_sum(
-	Matrix m, bool no_diag=false)
-{
-	return implementation::colwise_sum<backend,Matrix>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix colwise sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose colwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @param result Pre-allocated vector for the result of the computation
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vector>
-void colwise_sum(Matrix m, Vector result, bool no_diag=false)
-{
-	implementation::colwise_sum<backend,Matrix>::compute(m, result, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix rowwise sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
- */
-template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
-typename implementation::rowwise_sum<backend,Matrix>::ReturnType rowwise_sum(
-	Matrix m, bool no_diag=false)
-{
-	return implementation::rowwise_sum<backend,Matrix>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix rowwise sum of values that works
- * with generic dense matrices
- *
- * @param m the matrix whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @param result Pre-allocated vector for the result of the computation
- */
-template <Backend backend=linalg_traits<Redux>::backend, class Matrix, class Vector>
-void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
-{
-	implementation::rowwise_sum<backend,Matrix>::compute(m, result, no_diag);
-}
-
 /**Wrapper method for internal implementation of cholesky decomposition of a Hermitian positive definite matrix
 *
 * @param A - the matrix whose cholesky decomposition is to be computed
@@ -167,8 +50,6 @@ typename implementation::cholesky<backend,Matrix>::ReturnType cholesky(Matrix m,
 {
 	return implementation::cholesky<backend,Matrix>::compute(m, lower);
 }
-
-#endif // HAVE_LINALG_LIB
 
 }
 

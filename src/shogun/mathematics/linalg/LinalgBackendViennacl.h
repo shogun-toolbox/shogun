@@ -155,6 +155,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_SUM
 
+	/** Implementation of @see LinalgBackendBase::sum_symmetric */
+	#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container) \
+	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const \
+	{  \
+		return sum_symmetric_impl(a, no_diag); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
+	#undef BACKEND_GENERIC_SYMMETRIC_SUM
+
 	/** Implementation of @see LinalgBackendBase::colwise_sum */
 	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
 	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
@@ -385,6 +394,13 @@ private:
 			result_gpu->m_offset*sizeof(T), sizeof(T), result);
 
 		return result[0];
+	}
+
+	/** ViennaCL matrix sum method. */
+	template <typename T>
+	T sum_symmetric_impl(const SGMatrix<T>& mat, bool no_diag=false) const
+	{
+		return sum_impl(mat, no_diag);
 	}
 
 	/** ViennaCL matrix colwise sum method */
