@@ -746,9 +746,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 
 CSGObject* CSGObject::clone()
 {
-	SG_DEBUG("entering %s::clone()\n", get_name());
-
-	SG_DEBUG("constructing an empty instance of %s\n", get_name());
+	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
 	CSGObject* copy=new_sgserializable(get_name(), this->m_generic);
 
 	SG_REF(copy);
@@ -758,21 +756,48 @@ CSGObject* CSGObject::clone()
 			"wrong, or that a class has a wrongly set generic type.\n",
 			get_name());
 
-	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	SG_DEBUG("Cloning all parameters of %s\n", get_name());
+	if (!copy->clone_parameters(this))
 	{
-		SG_DEBUG("cloning parameter \"%s\" at index %d\n",
-				m_parameters->get_parameter(i)->m_name, i);
+		SG_WARNING("Cloning parameters failed.\n");
+	}
+	else
+	{
+		SG_DEBUG("Done cloning.\n");
+	}
 
-		if (!m_parameters->get_parameter(i)->copy(copy->m_parameters->get_parameter(i)))
+	return copy;
+}
+
+bool CSGObject::clone_parameters(CSGObject* other)
+{
+	REQUIRE(other, "Provided instance must be non-empty.\n");
+	index_t num_parameters = m_parameters->get_num_parameters();
+	
+	REQUIRE(other->m_parameters->get_num_parameters() == num_parameters,
+		"Number of parameters of provided instance (%d) must match this instance (%d).\n",
+		other->m_parameters->get_num_parameters(), num_parameters);
+	REQUIRE(!strcmp(other->get_name(), get_name()),
+		"Name of provided instance (%s) must match this instance (%s).\n",
+		other->get_name(), get_name());
+
+	for (index_t i=0; i<num_parameters; ++i)
+	{
+		SG_DEBUG("Cloning parameter \"%s\" at index %d into this instance\n",
+				other->m_parameters->get_parameter(i)->m_name, i);
+
+		if (!other->m_parameters->get_parameter(i)->copy(m_parameters->get_parameter(i)))
 		{
-			SG_DEBUG("leaving %s::clone(): Clone failed. Returning NULL\n",
-					get_name());
-			return NULL;
+			SG_WARNING("Cloning parameter \"%s\" (at index %d) of provided instance %s"
+				" into parameter \"%s\" of this instance %s failed.\n",
+				other->m_parameters->get_parameter(i)->m_name, i,
+				other->get_name(), m_parameters->get_parameter(i)->m_name,
+				get_name());
+			return false;
 		}
 	}
 
-	SG_DEBUG("leaving %s::clone(): Clone successful\n", get_name());
-	return copy;
+	return true;
 }
 
 void CSGObject::set_with_base_tag(const BaseTag& _tag, const Any& any)

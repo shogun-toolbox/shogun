@@ -500,6 +500,16 @@ public:
 	 */
 	virtual CSGObject* clone();
 
+protected:
+	/* Iteratively clones all parameters of the provided instance into this instance.
+	 * This will fail if the objects have different sets of registered parameters,
+	 * or if they have a different type as defined by get_name().
+	 *
+	 * @param other object whose parameters are to be cloned into this instance
+	 * @return true if cloning was successful
+	 */
+	bool clone_parameters(CSGObject* other);
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
