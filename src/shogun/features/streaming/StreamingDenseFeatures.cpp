@@ -49,7 +49,6 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 	init(file, is_labelled, size);
 	set_read_functions();
 	parser.set_free_vector_after_release(false);
-	parser.set_free_vectors_on_destruct(false);
 	seekable=true;
 }
 
