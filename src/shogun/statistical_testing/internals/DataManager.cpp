@@ -80,12 +80,8 @@ index_t DataManager::get_min_blocksize() const
 	else
 	{
 		index_t divisor=0;
-		std::function<index_t(index_t, index_t)> gcd=[&gcd](index_t m, index_t n)
-		{
-			return n==0?m:gcd(n, m%n);
-		};
 		for (size_t i=0; i<fetchers.size(); ++i)
-			divisor=gcd(divisor, fetchers[i]->m_num_samples);
+			divisor=CMath::gcd(divisor, fetchers[i]->m_num_samples);
 		min_blocksize=get_num_samples()/divisor;
 	}
 	SG_SDEBUG("min blocksize is %d!", min_blocksize);
