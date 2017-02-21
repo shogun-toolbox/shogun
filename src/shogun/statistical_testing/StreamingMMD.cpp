@@ -87,7 +87,7 @@ CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
 	statistic_type(ST_UNBIASED_FULL),
 	variance_estimation_method(VEM_DIRECT),
-	null_approximation_method(NAM_PERMUTATION),
+	null_approximation_method(NAM_MMD1_GAUSSIAN),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 }
