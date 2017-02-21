@@ -30,7 +30,7 @@ if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
 endif()
 
 # add target to compile the libshogun sources
-add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (SANITIZER_FLAGS)
   set_property(libshogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})

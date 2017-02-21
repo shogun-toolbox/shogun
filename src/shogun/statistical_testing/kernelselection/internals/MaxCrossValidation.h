@@ -53,11 +53,11 @@ public:
 	~MaxCrossValidation();
 	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
 	virtual CKernel* select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
+	virtual SGVector<float64_t> get_measure_vector() override;
+	virtual SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void init_measures();
-	virtual void compute_measures();
+	virtual void init_measures() override;
+	virtual void compute_measures() override;
 	const index_t num_runs;
 	const index_t num_folds;
 	const float64_t alpha;
