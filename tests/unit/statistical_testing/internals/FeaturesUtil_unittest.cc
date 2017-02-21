@@ -29,6 +29,7 @@
  */
 
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>

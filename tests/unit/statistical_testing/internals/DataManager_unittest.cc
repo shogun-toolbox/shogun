@@ -30,6 +30,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
