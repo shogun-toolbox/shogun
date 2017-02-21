@@ -66,6 +66,8 @@ void CStreamingVwFeatures::reset_stream()
 	if (working_file->is_seekable())
 	{
 		working_file->reset_stream();
+		if (parser.is_running())
+			parser.end_parser();
 		parser.exit_parser();
 		parser.init(working_file, has_labels, parser.get_ring_size());
 		parser.set_free_vector_after_release(false);
