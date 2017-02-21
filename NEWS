@@ -1,9 +1,10 @@
 2016-11-05 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
-	* SHOGUN Release version 5.1.0 (libshogun 17.2, data 0.11, parameter 1)
+	* SHOGUN Release version 6.0.0 (libshogun 18.0, data 0.11, parameter 1)
 
 	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann]	
 	* Add native MS Windows support [Viktor Gal]
+	* Shogun requires the compiler to support C++11 features
 
 	* Features:
 		- LDA now supports 32, 64 and 128 bit floating point numbers [Chris Goldsworthy]
