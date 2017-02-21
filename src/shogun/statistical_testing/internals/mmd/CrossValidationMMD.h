@@ -75,7 +75,7 @@ struct CrossValidationMMD : PermutationMMD
 		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
 			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
 			m_rejections.num_rows, m_num_runs, m_num_folds, m_num_runs*m_num_folds);
-		REQUIRE(size_t(m_rejections.num_cols)==kernel_mgr.num_kernels(),
+		REQUIRE(m_rejections.num_cols==kernel_mgr.num_kernels(),
 			"Number of columns in the measure matrix (was %d), has to equal to the nunber of kernels (%d)!\n",
 			m_rejections.num_cols, kernel_mgr.num_kernels());
 
@@ -85,7 +85,7 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<float64_t> null_samples(m_num_null_samples);
 		SGVector<float32_t> precomputed_km(size*(size+1)/2);
 
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			for (auto i=0; i<size; ++i)

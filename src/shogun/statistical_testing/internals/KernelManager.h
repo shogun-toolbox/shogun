@@ -54,14 +54,14 @@ public:
 	explicit KernelManager(index_t num_kernels);
 	~KernelManager();
 
-	InitPerKernel kernel_at(size_t i);
-	CKernel* kernel_at(size_t i) const;
+	InitPerKernel kernel_at(index_t i);
+	CKernel* kernel_at(index_t i) const;
 
 	void push_back(CKernel* kernel);
-	const size_t num_kernels() const;
+	const index_t num_kernels() const;
 
-	void precompute_kernel_at(size_t i);
-	void restore_kernel_at(size_t i);
+	void precompute_kernel_at(index_t i);
+	void restore_kernel_at(index_t i);
 
 	void clear();
 	bool same_distance_type() const;

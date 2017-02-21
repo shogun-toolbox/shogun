@@ -68,7 +68,7 @@ public:
 	 *
 	 * @param num_distributions number of data sources (i.e. CFeature objects)
 	 */
-	DataManager(size_t num_distributions);
+	DataManager(index_t num_distributions);
 
 	/**
 	 * Disabled copy constructor
@@ -130,7 +130,7 @@ public:
 	 * @return An initializer for the specified data source (that sets up a fetcher
 	 * for this feature), to be used as lvalue.
 	 */
-	InitPerFeature samples_at(size_t i);
+	InitPerFeature samples_at(index_t i);
 
 	/**
 	 * Getter for feature object at a give data source index.
@@ -138,7 +138,7 @@ public:
 	 * @param i The data source index, from which the feature object is to be obtained
 	 * @return The underlying CFeatures object at the specified data source.
 	 */
-	CFeatures* samples_at(size_t i) const;
+	CFeatures* samples_at(index_t i) const;
 
 	/**
 	 * Setter for the number of samples. Setting this number is mandatory for
@@ -158,7 +158,7 @@ public:
 	 * @return A reference for the number of samples for the specified data source
 	 * to be used as lvalue.
 	 */
-	index_t& num_samples_at(size_t i);
+	index_t& num_samples_at(index_t i);
 
 	/**
 	 * Getter for the number of samples.
@@ -166,7 +166,7 @@ public:
 	 * @param i The data source index, from which the number of samples is to be obtained.
 	 * @return The number of samples for the specified data source.
 	 */
-	const index_t num_samples_at(size_t i) const;
+	const index_t num_samples_at(index_t i) const;
 
 	/**
 	 * Getter for the number of samples from a specified data source in a block.
@@ -174,7 +174,7 @@ public:
 	 * @param i The data source index.
 	 * @return The number of samples from i-th data source in a block.
 	 */
-	const index_t blocksize_at(size_t i) const;
+	const index_t blocksize_at(index_t i) const;
 
 	/**
 	 * @return Total number of samples that can be fetched from all the data sources.

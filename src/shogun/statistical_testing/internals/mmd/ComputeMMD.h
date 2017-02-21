@@ -118,7 +118,7 @@ struct ComputeMMD
 		{
 			for (auto i=j; i<size; ++i)
 			{
-				for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+				for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 				{
 					auto kernel=kernel_mgr.kernel_at(k)->kernel(i, j);
 					add_term_lower(terms[k], kernel, i, j);
@@ -127,7 +127,7 @@ struct ComputeMMD
 		}
 
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			result[k]=compute(terms[k]);
 			SG_SDEBUG("result[%d] = %f!\n", k, result[k]);

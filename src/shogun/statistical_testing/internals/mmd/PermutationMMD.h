@@ -94,7 +94,7 @@ struct PermutationMMD : ComputeMMD
 		const index_t size=m_n_x+m_n_y;
 		SGMatrix<float32_t> null_samples(m_num_null_samples, kernel_mgr.num_kernels());
 		SGVector<float32_t> km(size*(size+1)/2);
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			terms_t terms;
@@ -150,7 +150,7 @@ struct PermutationMMD : ComputeMMD
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
 
 		SGVector<float32_t> km(size*(size+1)/2);
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			terms_t terms;

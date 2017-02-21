@@ -105,7 +105,7 @@ TEST(MultiKernelMMD, biased_full)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
@@ -170,7 +170,7 @@ TEST(MultiKernelMMD, unbiased_full)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
@@ -235,7 +235,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);

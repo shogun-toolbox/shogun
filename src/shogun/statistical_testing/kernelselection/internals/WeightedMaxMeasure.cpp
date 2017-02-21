@@ -52,11 +52,11 @@ WeightedMaxMeasure::~WeightedMaxMeasure()
 void WeightedMaxMeasure::compute_measures()
 {
 	MaxMeasure::compute_measures();
-	const size_t num_kernels=kernel_mgr.num_kernels();
+	const auto num_kernels=kernel_mgr.num_kernels();
 	if (Q.num_rows!=num_kernels || Q.num_cols!=num_kernels)
 		Q=SGMatrix<float64_t>(num_kernels, num_kernels);
 	std::fill(Q.data(), Q.data()+Q.size(), 0);
-	for (size_t i=0; i<num_kernels; ++i)
+	for (auto i=0; i<num_kernels; ++i)
 		Q(i, i)=1;
 }
 

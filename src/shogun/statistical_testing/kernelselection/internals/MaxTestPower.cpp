@@ -57,11 +57,11 @@ void MaxTestPower::compute_measures()
 	const auto m=estimator->get_num_samples_p();
 	const auto n=estimator->get_num_samples_q();
 	auto existing_kernel=estimator->get_kernel();
-	const size_t num_kernels=kernel_mgr.num_kernels();
+	const auto num_kernels=kernel_mgr.num_kernels();
 	auto streaming_mmd=dynamic_cast<CStreamingMMD*>(estimator);
 	if (streaming_mmd)
 	{
-		for (size_t i=0; i<num_kernels; ++i)
+		for (auto i=0; i<num_kernels; ++i)
 		{
 			auto kernel=kernel_mgr.kernel_at(i);
 			estimator->set_kernel(kernel);

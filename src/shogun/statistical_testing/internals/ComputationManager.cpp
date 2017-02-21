@@ -60,7 +60,7 @@ void ComputationManager::compute_data_parallel_jobs()
 	else
 	{
 #pragma omp parallel for
-		for (size_t i=0; i<data_array.size(); ++i)
+		for (index_t i=0; i<(index_t)data_array.size(); ++i)
 		{
 			// using a temporary vector to hold the result, because it is
 			// cache friendly, since the original result matrix would lead
