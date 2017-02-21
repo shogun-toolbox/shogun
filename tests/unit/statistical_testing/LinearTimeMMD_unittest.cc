@@ -311,7 +311,7 @@ TEST(LinearTimeMMD, compute_variance_null)
 	EXPECT_NEAR(var, 0.0022330284118652344, 1E-10);
 }
 
-TEST(LinearTimeMMD, DISABLED_perform_test_permutation_biased_full)
+TEST(LinearTimeMMD, perform_test_permutation_biased_full)
 {
 	const index_t m=20;
 	const index_t n=30;
@@ -387,7 +387,7 @@ TEST(LinearTimeMMD, perform_test_permutation_unbiased_full)
 	EXPECT_NEAR(p_value, 0.0, 1E-10);
 }
 
-TEST(LinearTimeMMD, DISABLED_perform_test_permutation_unbiased_incomplete)
+TEST(LinearTimeMMD, perform_test_permutation_unbiased_incomplete)
 {
 	const index_t m=20;
 	const index_t n=20;
