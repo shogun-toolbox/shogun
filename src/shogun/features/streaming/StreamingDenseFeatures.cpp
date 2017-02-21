@@ -67,6 +67,8 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 	if (seekable)
 	{
 		((CStreamingFileFromDenseFeatures<T>*)working_file)->reset_stream();
+		if (parser.is_running())
+			parser.end_parser();
 		parser.exit_parser();
 		parser.init(working_file, has_labels, 1);
 		parser.set_free_vector_after_release(false);
