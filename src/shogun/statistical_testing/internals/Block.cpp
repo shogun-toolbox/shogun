@@ -48,7 +48,9 @@ Block::Block(CFeatures* feats, index_t index, index_t size) : m_feats(feats)
 
 	// create a shallow copy and subset current block separately
 	CFeatures* block=FeaturesUtil::create_shallow_copy(feats);
+#ifdef USE_REFERENCE_COUNTING
 	ASSERT(block->ref_count()==0);
+#endif // USE_REFERENCE_COUNTING
 
 	SGVector<index_t> inds(size);
 	std::iota(inds.vector, inds.vector+inds.vlen, index*size);
