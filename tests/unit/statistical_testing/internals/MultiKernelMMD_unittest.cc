@@ -88,6 +88,7 @@ TEST(MultiKernelMMD, biased_full)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -153,6 +154,7 @@ TEST(MultiKernelMMD, unbiased_full)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -218,6 +220,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
 	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;

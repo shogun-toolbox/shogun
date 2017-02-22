@@ -130,6 +130,7 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 
 CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distance)
 {
+	REQUIRE(distance!=nullptr, "Distance instance cannot be NULL!\n");
 	auto& data_mgr=get_data_mgr();
 	bool is_blockwise=data_mgr.is_blockwise();
 	data_mgr.set_blockwise(false);
