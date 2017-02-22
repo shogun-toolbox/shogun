@@ -109,7 +109,7 @@ CKernel* MedianHeuristic::select_kernel()
 		measures[i]=CMath::abs(kernel->get_width()-median_distance);
 	}
 
-	auto kernel_idx=(index_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));
+	auto kernel_idx=(int64_t)std::distance(measures.data(), std::min_element(measures.data(), measures.data()+measures.size()));
 	SG_SDEBUG("Selected kernel at %d position!\n", kernel_idx);
 	return kernel_mgr.kernel_at(kernel_idx);
 }

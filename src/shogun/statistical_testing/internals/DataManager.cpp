@@ -147,7 +147,7 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 InitPerFeature DataManager::samples_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<(index_t)fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -157,7 +157,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 CFeatures* DataManager::samples_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<(index_t)fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -170,7 +170,7 @@ CFeatures* DataManager::samples_at(index_t i) const
 index_t& DataManager::num_samples_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<(index_t)fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -180,7 +180,7 @@ index_t& DataManager::num_samples_at(index_t i)
 const index_t DataManager::num_samples_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<(index_t)fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -193,7 +193,7 @@ const index_t DataManager::num_samples_at(index_t i) const
 const index_t DataManager::blocksize_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<(index_t)fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");

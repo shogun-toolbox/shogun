@@ -135,7 +135,7 @@ void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFe
 {
 	blocks.resize(next_burst.num_blocks());
 #pragma omp parallel for
-	for (index_t i=0; i<(index_t)blocks.size(); ++i)
+	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
 		auto block_p=next_burst[0][i].get();
 		auto block_q=next_burst[1][i].get();
@@ -150,7 +150,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
 #pragma omp parallel for
-	for (index_t i=0; i<(index_t)blocks.size(); ++i)
+	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
 		try
 		{
