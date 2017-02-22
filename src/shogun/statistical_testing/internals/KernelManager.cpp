@@ -207,7 +207,6 @@ void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
 		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=distance;
-		SG_REF(shift_inv_kernel->m_precomputed_distance);
 		shift_inv_kernel->num_lhs=distance->get_num_vec_lhs();
 		shift_inv_kernel->num_rhs=distance->get_num_vec_rhs();
 	}
@@ -220,7 +219,6 @@ void KernelManager::unset_precomputed_distance() const
 		CKernel* kernel=kernel_at(i);
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
 		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
-		SG_UNREF(shift_inv_kernel->m_precomputed_distance);
 		shift_inv_kernel->m_precomputed_distance=nullptr;
 		shift_inv_kernel->num_lhs=0;
 		shift_inv_kernel->num_rhs=0;
