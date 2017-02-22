@@ -241,7 +241,20 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
 	#undef BACKEND_GENERIC_SET_CONST
-	
+
+	/**
+	 * Wrapper method that sets const values to vectors or matrices.
+	 *
+	 * @see linalg::set_rows_const
+	 */
+	#define BACKEND_GENERIC_SET_ROWS_CONST(Type, Container) \
+	virtual void set_rows_const(Container<Type>& a, const SGVector<Type>& b) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_ROWS_CONST, SGMatrix)
+	#undef BACKEND_GENERIC_SET_ROWS_CONST
+
 	/**
 	* Wrapper method of sum that works with generic vectors or matrices.
 	*

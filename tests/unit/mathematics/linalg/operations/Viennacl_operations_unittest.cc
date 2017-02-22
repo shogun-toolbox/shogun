@@ -502,6 +502,28 @@ TEST(LinalgBackendViennaCL, SGVector_set_const)
 		EXPECT_NEAR(a[i], value, 1E-15);
 }
 
+TEST(LinalgBackendViennaCL, SGMatrix_set_rows_const)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<int32_t> A(3, 4), A_gpu;
+	SGVector<int32_t> v(A.num_rows), v_gpu;
+
+	set_const(A, 0);
+	range_fill(v, 0);
+	A_gpu = to_gpu(A);
+	v_gpu = to_gpu(v);
+
+	set_rows_const(A_gpu, v_gpu);
+
+	A = from_gpu(A_gpu);
+	v = from_gpu(v_gpu);
+
+	for (index_t i = 0; i < A.num_rows; ++i)
+		for (index_t j = 0; j < A.num_cols; ++j)
+			EXPECT_EQ(A(i,j), v[i]);
+}
+
 TEST(LinalgBackendViennaCL, SGMatrix_set_const)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());

@@ -590,6 +590,21 @@ TEST(LinalgBackendEigen, SGMatrix_set_const)
 		EXPECT_NEAR(a[i], value, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_set_rows_const)
+{
+	SGMatrix<int32_t> A(3, 4);
+	SGVector<int32_t> v(A.num_rows);
+
+	set_const(A, 0);
+	range_fill(v, 0);
+
+	set_rows_const(A, v);
+
+	for (index_t i = 0; i < A.num_rows; ++i)
+		for (index_t j = 0; j < A.num_cols; ++j)
+			EXPECT_EQ(A(i,j), v[i]);
+}
+
 TEST(LinalgBackendEigen, SGVector_sum)
 {
 	const index_t size = 10;
