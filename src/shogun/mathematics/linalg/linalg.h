@@ -113,14 +113,12 @@ struct MODULE \
  * Set global backend should define all the module types with same backend.
  * Currently supported modules are
  * Core         - For basic linear algebra operations (e.g. matrix multiplication, addition)
- * Redux        - For reduction to a scalar from vector or matrix (e.g. norm, sum, dot)
  * Linsolver    - Solvers for linear systems (SVD, Cholesky, QR etc)
  * Eigsolver    - Different eigensolvers
  */
 #ifndef SET_GLOBAL_BACKEND
 #define SET_GLOBAL_BACKEND(BACKEND) \
 	SET_MODULE_BACKEND(Core, BACKEND) \
-	SET_MODULE_BACKEND(Redux, BACKEND) \
 	SET_MODULE_BACKEND(Linsolver, BACKEND) \
 	SET_MODULE_BACKEND(Eigsolver, BACKEND)
 #endif // SET_GLOBAL_BACKEND
@@ -141,15 +139,6 @@ struct MODULE \
 	SET_MODULE_BACKEND(Core, VIENNACL)
 #else // the default case
 	SET_MODULE_BACKEND(Core, DEFAULT)
-#endif
-
-/** Reduction module */
-#ifdef USE_EIGEN3_REDUX
-	SET_MODULE_BACKEND(Redux, EIGEN3)
-#elif USE_VIENNACL_REDUX
-	SET_MODULE_BACKEND(Redux, VIENNACL)
-#else // the default case
-	SET_MODULE_BACKEND(Redux, DEFAULT)
 #endif
 
 /** Linear solver module */
@@ -181,7 +170,6 @@ struct MODULE \
 }
 
 /** include all the modules here */
-#include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
 #include <shogun/mathematics/linalg/internal/modules/ElementwiseOperations.h>
