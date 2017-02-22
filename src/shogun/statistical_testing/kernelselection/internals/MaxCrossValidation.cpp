@@ -35,6 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
@@ -106,10 +107,12 @@ void MaxCrossValidation::compute_measures()
 		if (kernel_mgr.same_distance_type())
 		{
 			CDistance* distance=kernel_mgr.get_distance_instance();
-			kernel_mgr.set_precomputed_distance(estimator->compute_joint_distance(distance));
+			auto precomputed_distance=estimator->compute_joint_distance(distance);
+			kernel_mgr.set_precomputed_distance(precomputed_distance);
 			SG_UNREF(distance);
 			compute(kernel_mgr);
 			kernel_mgr.unset_precomputed_distance();
+			SG_UNREF(precomputed_distance);
 		}
 		else
 		{
