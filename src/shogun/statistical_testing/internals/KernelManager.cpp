@@ -104,6 +104,9 @@ void KernelManager::push_back(CKernel* kernel)
 
 const index_t KernelManager::num_kernels() const
 {
+	// TODO in case there is an underflow, at least it is not silent
+	// a better handling is to use index_t based Shogun data structures
+	ASSERT((index_t)m_kernels.size()>=0);
 	return (index_t)m_kernels.size();
 }
 
