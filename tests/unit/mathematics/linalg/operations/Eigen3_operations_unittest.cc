@@ -5,6 +5,7 @@
 
 using namespace shogun;
 using namespace linalg;
+using namespace Eigen;
 
 TEST(LinalgBackendEigen, SGVector_add)
 {
@@ -88,6 +89,75 @@ TEST(LinalgBackendEigen, SGMatrix_add_in_place)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_lower)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+
+	m(0,0)=2.0;
+	m(0,1)=1.0;
+	m(1,0)=1.0;
+	m(1,1)=2.5;
+
+	//lower triangular cholesky decomposition
+	SGMatrix<float64_t> L = cholesky_factor(m);
+
+	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
+	Map<MatrixXd> map_L(L.matrix,L.num_rows,L.num_cols);
+	EXPECT_NEAR((map_A-map_L*map_L.transpose()).norm(),
+		0.0, 1E-15);
+	EXPECT_EQ(m.num_rows, L.num_rows);
+	EXPECT_EQ(m.num_cols, L.num_cols);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+
+	m(0,0)=2.0;
+	m(0,1)=1.0;
+	m(1,0)=1.0;
+	m(1,1)=2.5;
+
+	//upper triangular cholesky decomposition
+	SGMatrix<float64_t> U = cholesky_factor(m,false);
+
+	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
+	Map<MatrixXd> map_U(U.matrix,U.num_rows,U.num_cols);
+	EXPECT_NEAR((map_A-map_U.transpose()*map_U).norm(),
+		0.0, 1E-15);
+	EXPECT_EQ(m.num_rows, U.num_rows);
+	EXPECT_EQ(m.num_cols, U.num_cols);
+}
+
+// Temporarily disabled because Travis fails to calculate:
+// Eigen::TriangularView.solve(vector)
+TEST(LinalgBackendEigen, DISABLED_SGMatrix_cholesky_solver)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0)=2.0;
+	A(0,1)=1.0;
+	A(1,0)=1.0;
+	A(1,1)=2.5;
+
+	SGVector<float64_t> b(size);
+	b[0] = 10;
+	b[1] = 13;
+
+	SGVector<float64_t> x_ref(size);
+	x_ref[0] = 3;
+	x_ref[1] = 4;
+
+	SGMatrix<float64_t> L = cholesky_factor(A);
+	SGVector<float64_t> x_cal = cholesky_solver(L, b);
+
+	EXPECT_NEAR(x_ref[0], x_cal[0], 1E-15);
+	EXPECT_NEAR(x_ref[1], x_cal[1], 1E-15);
+	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
 TEST(LinalgBackendEigen, SGVector_dot)

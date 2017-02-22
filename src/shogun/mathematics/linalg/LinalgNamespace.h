@@ -278,6 +278,38 @@ Container<T> add(Container<T>& a, Container<T>& b, T alpha=1, T beta=1)
 }
 
 /**
+ * Compute the cholesky decomposition \f$A = L L^{*}\f$ or \f$A = U^{*} U\f$
+ * of a Hermitian positive definite matrix
+ *
+ * @param A - the matrix whose cholesky decomposition is to be computed
+ * @param lower - whether to compute the upper or lower triangular
+ *  Cholesky factorization (default:lower)
+ * @return the upper or lower triangular Cholesky factorization
+ */
+template <typename T>
+SGMatrix<T> cholesky_factor(const SGMatrix<T>& A, const bool lower=true)
+{
+	return infer_backend(A)->cholesky_factor(A, lower);
+}
+
+/**
+ * Solve the linear equations \f$Ax=b\f$, given the Cholesky factorization of A,
+ * where \f$A\f$ is a Hermitian positive definite matrix
+ *
+ * @param L - triangular matrix, Cholesky factorization of A
+ * @param b - right-hand side array
+ * @param lower - whether to use L as the upper or lower triangular
+ *  Cholesky factorization (default:lower)
+ * @return \f$\x\f$
+ */
+template <typename T>
+SGVector<T> cholesky_solver(const SGMatrix<T>& L, const SGVector<T>& b,
+	const bool lower=true)
+{
+	return infer_backend(L, SGMatrix<T>(b))->cholesky_solver(L, b, lower);
+}
+
+/**
  * Vector dot-product that works with generic vectors.
  *
  * @param a first vector
