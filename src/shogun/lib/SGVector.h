@@ -182,10 +182,9 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 #ifndef SWIG // SWIG should skip this part
-		/** Resize vector
+		/** Resize vector, with zero padding
 		 *
 		 * @param n new size
-		 * @return if resizing was successful
 		 */
 		void resize_vector(int32_t n);
 

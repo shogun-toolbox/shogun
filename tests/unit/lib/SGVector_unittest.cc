@@ -326,3 +326,28 @@ TEST(SGVectorTest, from_eigen3_row_vector)
 	for (int32_t i=0; i<n; i++)
 		EXPECT_EQ(eigen_vec[i], sg_vec[i]);
 }
+
+TEST(SGVectorTest, resize_vector_larger)
+{
+	index_t len = 3;
+	SGVector<index_t> m(len);
+	SGVector<index_t> m_ref(len);
+
+	for (index_t i=0; i<len; i++)
+	{
+		m[i]=i;
+		m_ref[i]=i;
+	}
+
+	index_t new_len = 5;
+	m.resize_vector(new_len);
+	EXPECT_EQ(m.vlen, new_len);
+
+	// check for "old" block to be intact
+	for (index_t i=0; i<len; i++)
+		EXPECT_EQ(m[i], m_ref[i]);
+
+	// check zero padding of added elements
+	for (index_t i=len; i<new_len; i++)
+		EXPECT_EQ(m[i], 0);
+}
