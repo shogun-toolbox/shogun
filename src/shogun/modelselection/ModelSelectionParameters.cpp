@@ -92,17 +92,6 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 	m_child_nodes->append_element(child);
 }
 
-template <class T>
-void CModelSelectionParameters::set_values(const SGVector<T>& values,
-		EMSParamType value_type)
-{
-	/* possibly delete old range values */
-	delete_values();
-	m_values=values.vector;
-	m_values_length=values.vlen;
-	m_value_type=value_type;
-}
-
 void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 		ERangeType type, float64_t step, float64_t type_base)
 {
