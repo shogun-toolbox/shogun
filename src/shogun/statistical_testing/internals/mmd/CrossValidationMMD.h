@@ -111,14 +111,13 @@ struct CrossValidationMMD : PermutationMMD
 					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
 					m_stack->add_subset(xy_wrapper);
 
-					m_permuted_inds.resize(m_xy_inds.size());
-					SGVector<index_t> permutation_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
+					m_permuted_inds.resize_vector(m_xy_inds.size());
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(permutation_wrapper);
+						CMath::permute(m_permuted_inds);
 
-						m_stack->add_subset(permutation_wrapper);
+						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
 						m_stack->remove_subset();
 
@@ -194,7 +193,7 @@ struct CrossValidationMMD : PermutationMMD
 	unique_ptr<CCrossValidationSplitting> m_kfold_y;
 	unique_ptr<CSubsetStack> m_stack;
 
-	std::vector<index_t> m_xy_inds;
+	SGVector<index_t> m_xy_inds;
 	SGVector<index_t> m_inverted_inds;
 	SGMatrix<float64_t> m_rejections;
 
@@ -227,7 +226,7 @@ struct CrossValidationMMD : PermutationMMD
 		m_n_x=x_inds.size();
 		m_n_y=y_inds.size();
 
-		m_xy_inds.resize(x_inds.size()+y_inds.size());
+		m_xy_inds.resize_vector(x_inds.size()+y_inds.size());
 		std::copy(x_inds.data(), x_inds.data()+x_inds.size(), m_xy_inds.data());
 		std::copy(y_inds.data(), y_inds.data()+y_inds.size(), m_xy_inds.data()+x_inds.size());
 	}

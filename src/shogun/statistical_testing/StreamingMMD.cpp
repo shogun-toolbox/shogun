@@ -264,7 +264,8 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	std::fill(statistic.data(), statistic.data()+statistic.size(), 0);
 	std::fill(Q.data(), Q.data()+Q.size(), 0);
 
-	std::vector<index_t> term_counters_statistic(num_kernels, 1);
+	SGVector<index_t> term_counters_statistic(num_kernels);
+	term_counters_statistic.set_const(1);
 	SGMatrix<index_t> term_counters_Q(num_kernels, num_kernels);
 	std::fill(term_counters_Q.data(), term_counters_Q.data()+term_counters_Q.size(), 1);
 
@@ -332,7 +333,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
-	std::vector<index_t> term_counters(num_null_samples);
+	SGVector<index_t> term_counters(num_null_samples);
 
 	std::fill(statistic.vector, statistic.vector+statistic.vlen, 0);
 	std::fill(term_counters.data(), term_counters.data()+term_counters.size(), 1);

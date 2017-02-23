@@ -197,17 +197,16 @@ struct PermutationMMD : ComputeMMD
 	{
 		ASSERT(m_num_null_samples>0);
 		allocate_permutation_inds();
-		SGVector<index_t> sg_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-			CMath::permute(sg_wrapper);
+			CMath::permute(m_permuted_inds);
 			if (m_save_inds)
 			{
-				auto offset=n*sg_wrapper.size();
-				std::copy(sg_wrapper.data(), sg_wrapper.data()+sg_wrapper.size(), &m_all_inds.matrix[offset]);
+				auto offset=n*m_permuted_inds.size();
+				std::copy(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), &m_all_inds.matrix[offset]);
 			}
-			for (size_t i=0; i<m_permuted_inds.size(); ++i)
+			for (index_t i=0; i<m_permuted_inds.size(); ++i)
 				m_inverted_permuted_inds[n][m_permuted_inds[i]]=i;
 		}
 	}
@@ -222,8 +221,8 @@ struct PermutationMMD : ComputeMMD
 	inline void allocate_permutation_inds()
 	{
 		const index_t size=m_n_x+m_n_y;
-		if (m_permuted_inds.size()!=size_t(size))
-			m_permuted_inds.resize(size);
+		if (m_permuted_inds.size()!=size)
+			m_permuted_inds.resize_vector(size);
 
 		if (m_inverted_permuted_inds.size()!=size_t(m_num_null_samples))
 			m_inverted_permuted_inds.resize(m_num_null_samples);
@@ -240,7 +239,7 @@ struct PermutationMMD : ComputeMMD
 
 	index_t m_num_null_samples;
 	bool m_save_inds;
-	std::vector<index_t> m_permuted_inds;
+	SGVector<index_t> m_permuted_inds;
 	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
 	SGMatrix<index_t> m_all_inds;
 };
