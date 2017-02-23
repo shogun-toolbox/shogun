@@ -104,7 +104,14 @@ public:
 	 * @param value_type type of the provided vector
 	 */
 	template <class T>
-	void set_values(const SGVector<T>& values, EMSParamType value_type);
+	void set_values(const SGVector<T>& values, EMSParamType value_type)
+	{
+	    /* possibly delete old range values */
+	    delete_values();
+	    m_values=values.vector;
+	    m_values_length=values.vlen;
+	    m_value_type=value_type;
+	}
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *
