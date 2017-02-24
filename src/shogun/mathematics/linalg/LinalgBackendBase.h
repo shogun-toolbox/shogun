@@ -82,6 +82,12 @@ public:
 	METHODNAME(float64_t, Container); \
 	METHODNAME(floatmax_t, Container);
 
+	#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container); \
+	METHODNAME(complex128_t, Container);
+
 	/**
 	 * Wrapper method of add operation the operation result = alpha*a + beta*b.
 	 *
@@ -95,6 +101,36 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
+
+	/**
+	 * Wrapper Cholesky decomposition.
+	 *
+	 * @see linalg::cholesky_factor
+	 */
+	#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container) \
+	virtual Container<Type> cholesky_factor(const Container<Type>& A, \
+		const bool lower) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
+	#undef BACKEND_GENERIC_CHOLESKY_FACTOR
+
+	/**
+	 * Wrapper triangular solver with Choleksy decomposition.
+	 *
+	 * @see linalg::cholesky_solver
+	 */
+	#define BACKEND_GENERIC_CHOLESKY_SOLVER(Type, Container) \
+	virtual SGVector<Type> cholesky_solver(const Container<Type>& L, \
+		const SGVector<Type>& b, const bool lower) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.
@@ -241,7 +277,7 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
 	#undef BACKEND_GENERIC_SET_CONST
-	
+
 	/**
 	* Wrapper method of sum that works with generic vectors or matrices.
 	*

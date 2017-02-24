@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
+#include <numeric>
 
 #ifndef LINALG_BACKEND_EIGEN_H__
 #define LINALG_BACKEND_EIGEN_H__
@@ -75,6 +76,12 @@ public:
 	METHODNAME(float64_t, Container); \
 	METHODNAME(floatmax_t, Container);
 
+	#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container); \
+	METHODNAME(complex128_t, Container);
+
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
 	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
@@ -84,6 +91,26 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
+
+	/** Implementation of @see LinalgBackendBase::cholesky_factor */
+	#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container) \
+	virtual Container<Type> cholesky_factor(const Container<Type>& A, \
+		const bool lower) const \
+	{  \
+		return cholesky_factor_impl(A, lower); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
+	#undef BACKEND_GENERIC_CHOLESKY_FACTOR
+
+	/** Implementation of @see LinalgBackendBase::cholesky_solver */
+	#define BACKEND_GENERIC_CHOLESKY_SOLVER(Type, Container) \
+	virtual SGVector<Type> cholesky_solver(const Container<Type>& L, \
+		const SGVector<Type>& b, const bool lower) const \
+	{  \
+		return cholesky_solver_impl(L, b, lower); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 	/** Implementation of @see LinalgBackendBase::dot */
 	#define BACKEND_GENERIC_DOT(Type, Container) \
@@ -285,6 +312,61 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = alpha * a_eig + beta * b_eig;
+	}
+
+	/** Eigen3 Cholesky decomposition */
+	template <typename T>
+	SGMatrix<T> cholesky_factor_impl(const SGMatrix<T>& A, const bool lower) const
+	{
+		SGMatrix<T> c(A.num_rows, A.num_cols);
+		set_const_impl<T>(c, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		Eigen::LLT<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > llt(A_eig);
+
+		//compute matrix L or U
+		if(lower==false)
+			c_eig = llt.matrixU();
+		else
+			c_eig = llt.matrixL();
+
+		/*
+		 * checking for success
+		 *
+		 * 0: Eigen::Success. Decomposition was successful
+		 * 1: Eigen::NumericalIssue. The provided data did not satisfy the prerequisites.
+		 */
+		REQUIRE(llt.info()!=Eigen::NumericalIssue, "Matrix is not Hermitian positive definite!\n");
+
+		return c;
+	}
+
+	/** Eigen3 Cholesky solver */
+	template <typename T>
+	SGVector<T> cholesky_solver_impl(const SGMatrix<T>& L, const SGVector<T>& b,
+		const bool lower) const
+	{
+		SGVector<T> x(b.size());
+		set_const_impl<T>(x, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap x_eig = x;
+
+		if (lower == false)
+		{
+			Eigen::TriangularView<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>,
+				Eigen::Upper> tlv(L_eig);
+			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+		}
+		else
+		{
+			Eigen::TriangularView<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>,
+				Eigen::Lower> tlv(L_eig);
+			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+		}
+
+		return x;
 	}
 
 	/** Eigen3 vector dot-product method */
