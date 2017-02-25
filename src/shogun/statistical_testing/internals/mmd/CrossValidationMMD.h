@@ -108,11 +108,13 @@ struct CrossValidationMMD : PermutationMMD
 					for (index_t idx=0; idx<m_xy_inds.size(); ++idx)
 						m_inverted_inds[m_xy_inds[idx]]=idx;
 
-					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
-					m_stack->add_subset(xy_wrapper);
+					m_stack->add_subset(m_xy_inds);
 
-					m_permuted_inds.resize_vector(m_xy_inds.size());
+					if (m_permuted_inds.size()!=m_xy_inds.size())
+						m_permuted_inds=SGVector<index_t>(m_xy_inds.size());
+
 					m_inverted_permuted_inds.set_const(-1);
+
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
@@ -220,14 +222,18 @@ struct CrossValidationMMD : PermutationMMD
 	{
 		SGVector<index_t> x_inds=m_kfold_x->generate_subset_inverse(current_fold);
 		SGVector<index_t> y_inds=m_kfold_y->generate_subset_inverse(current_fold);
-		std::for_each(y_inds.data(), y_inds.data()+y_inds.size(), [this](index_t& val) { val += m_n_x; });
 
 		m_n_x=x_inds.size();
 		m_n_y=y_inds.size();
+		auto size=m_n_x+m_n_y;
 
-		m_xy_inds.resize_vector(x_inds.size()+y_inds.size());
-		std::copy(x_inds.data(), x_inds.data()+x_inds.size(), m_xy_inds.data());
-		std::copy(y_inds.data(), y_inds.data()+y_inds.size(), m_xy_inds.data()+x_inds.size());
+		if (m_xy_inds.size()!=size)
+			m_xy_inds=SGVector<index_t>(size);
+
+		std::copy(x_inds.data(), x_inds.data()+m_n_x, m_xy_inds.data());
+
+		std::for_each(y_inds.data(), y_inds.data()+m_n_y, [this](index_t& val) { val += m_n_x; });
+		std::copy(y_inds.data(), y_inds.data()+y_inds.size(), m_xy_inds.data()+m_n_x);
 	}
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

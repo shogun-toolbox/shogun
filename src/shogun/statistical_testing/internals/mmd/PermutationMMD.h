@@ -224,12 +224,12 @@ struct PermutationMMD : ComputeMMD
 	{
 		const index_t size=m_n_x+m_n_y;
 		if (m_permuted_inds.size()!=size)
-			m_permuted_inds.resize_vector(size);
+			m_permuted_inds=SGVector<index_t>(size);
 
-		if (m_inverted_permuted_inds.num_cols!=m_num_null_samples && m_inverted_permuted_inds.num_rows!=size)
+		if (m_inverted_permuted_inds.num_cols!=m_num_null_samples || m_inverted_permuted_inds.num_rows!=size)
 			m_inverted_permuted_inds=SGMatrix<index_t>(size, m_num_null_samples);
 
-		if (m_save_inds && m_all_inds.num_cols!=m_num_null_samples && m_all_inds.num_rows!=size)
+		if (m_save_inds && (m_all_inds.num_cols!=m_num_null_samples || m_all_inds.num_rows!=size))
 			m_all_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
