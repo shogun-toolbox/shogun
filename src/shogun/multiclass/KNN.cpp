@@ -218,14 +218,14 @@ CMulticlassLabels* CKNN::classify_NN()
 
 		// assuming 0th train examples as nearest to i-th test example
 		int32_t out_idx = 0;
-		float64_t min_dist = distances[0];
+		float64_t min_dist = distances.vector[0];
 
 		// searching for nearest neighbor by comparing distances
 		for (j=0; j<m_train_labels.vlen; j++)
 		{
-			if (distances[j]<min_dist)
+			if (distances.vector[j]<min_dist)
 			{
-				min_dist = distances[j];
+				min_dist = distances.vector[j];
 				out_idx = j;
 			}
 		}

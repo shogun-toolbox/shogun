@@ -12,19 +12,11 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/base/Parameter.h>
 
-using namespace shogun;
+#ifdef HAVE_OPENMP
+#include <omp.h>
+#endif
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct D_THREAD_PARAM
-{
-    CDistance* d;
-    float64_t* r;
-    int32_t idx_r_start;
-    int32_t idx_start;
-    int32_t idx_stop;
-    int32_t idx_comp;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
+using namespace shogun;
 
 CDistanceMachine::CDistanceMachine()
 : CMachine()
@@ -49,170 +41,68 @@ void CDistanceMachine::init()
 	m_parameters->add((CSGObject**)&distance, "distance", "Distance to use");
 }
 
-void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
+void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
 {
-    // TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-    int32_t num_threads=parallel->get_num_threads();
-#else
-    int32_t num_threads=1;
-#endif
-    ASSERT(num_threads>0)
+    int32_t num_threads;
+    int32_t num_vec;
+    int32_t step;
 
     ASSERT(result)
 
-    if (num_threads < 2)
+    #pragma omp parallel shared(num_threads, step)
     {
-        D_THREAD_PARAM param;
-        param.d=distance;
-        param.r=result;
-        param.idx_r_start=idx_a1;
-        param.idx_start=idx_a1;
-        param.idx_stop=idx_a2+1;
-        param.idx_comp=idx_b;
-
-        run_distance_thread_lhs((void*) &param);
-    }
-#ifdef HAVE_PTHREAD
-    else
-    {
-        pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-        D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
-        int32_t num_vec=idx_a2-idx_a1+1;
-        int32_t step= num_vec/num_threads;
-        int32_t t;
-
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-        for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+        #pragma omp single
         {
-            params[t].d = distance;
-            params[t].r = result;
-            params[t].idx_r_start=t*step;
-            params[t].idx_start = (t*step)+idx_a1;
-            params[t].idx_stop = ((t+1)*step)+idx_a1;
-            params[t].idx_comp=idx_b;
-
-            pthread_create(&threads[t], &attr, CDistanceMachine::run_distance_thread_lhs, (void*)&params[t]);
+            num_threads=omp_get_num_threads();
+            num_vec=idx_a2-idx_a1+1;
+            step=num_vec/num_threads;
         }
-        params[t].d = distance;
-        params[t].r = result;
-        params[t].idx_r_start=t*step;
-        params[t].idx_start = (t*step)+idx_a1;
-        params[t].idx_stop = idx_a2+1;
-        params[t].idx_comp=idx_b;
+        int32_t thread_num=omp_get_thread_num();
 
-        run_distance_thread_lhs(&params[t]);
-
-        for (t=0; t<num_threads-1; t++)
-            pthread_join(threads[t], NULL);
-
-        pthread_attr_destroy(&attr);
-        SG_FREE(params);
-        SG_FREE(threads);
-    }
+        index_t idx_r_start = thread_num * step;
+        index_t idx_start = (thread_num * step) + idx_a1;
+        index_t idx_stop = (thread_num==(num_threads - 1)) ? (idx_a2 + 1) : ((thread_num + 1) * step) + idx_a1;
+        distance->run_distance_lhs(result, idx_r_start, idx_start, idx_stop, idx_b);
+#else
+        index_t idx_r_start = idx_a1;
+        index_t idx_start = idx_a1;
+        index_t idx_stop = idx_a2  + 1;
+        distance->run_distance_lhs(result, idx_r_start, idx_start, idx_stop, idx_b);
 #endif
+    }
 }
 
-void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a)
+void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2, index_t idx_a)
 {
-    // TODO: port to use OpenMP backend instead of pthread
-#ifdef HAVE_PTHREAD
-    int32_t num_threads=parallel->get_num_threads();
-#else
-    int32_t num_threads=1;
-#endif
-    ASSERT(num_threads>0)
+    int32_t num_threads;
+    int32_t num_vec;
+    int32_t step;
 
     ASSERT(result)
 
-    if (num_threads < 2)
+    #pragma omp parallel shared(num_threads, step)
     {
-        D_THREAD_PARAM param;
-        param.d=distance;
-        param.r=result;
-        param.idx_r_start=idx_b1;
-        param.idx_start=idx_b1;
-        param.idx_stop=idx_b2+1;
-        param.idx_comp=idx_a;
-
-        run_distance_thread_rhs((void*) &param);
-    }
-#ifdef HAVE_PTHREAD
-    else
-    {
-        pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-        D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
-        int32_t num_vec=idx_b2-idx_b1+1;
-        int32_t step= num_vec/num_threads;
-        int32_t t;
-
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-        for (t=0; t<num_threads-1; t++)
+#ifdef HAVE_OPENMP
+        #pragma omp single
         {
-            params[t].d = distance;
-            params[t].r = result;
-            params[t].idx_r_start=t*step;
-            params[t].idx_start = (t*step)+idx_b1;
-            params[t].idx_stop = ((t+1)*step)+idx_b1;
-            params[t].idx_comp=idx_a;
-
-            pthread_create(&threads[t], &attr, CDistanceMachine::run_distance_thread_rhs, (void*)&params[t]);
+            num_threads=omp_get_num_threads();
+            num_vec=idx_b2-idx_b1+1;
+            step=num_vec/num_threads;
         }
-        params[t].d = distance;
-        params[t].r = result;
-        params[t].idx_r_start=t*step;
-        params[t].idx_start = (t*step)+idx_b1;
-        params[t].idx_stop = idx_b2+1;
-        params[t].idx_comp=idx_a;
+        int32_t thread_num=omp_get_thread_num();
 
-        run_distance_thread_rhs(&params[t]);
-
-        for (t=0; t<num_threads-1; t++)
-            pthread_join(threads[t], NULL);
-
-        pthread_attr_destroy(&attr);
-        SG_FREE(params);
-        SG_FREE(threads);
-    }
+        index_t idx_r_start = thread_num * step;
+        index_t idx_start = (thread_num * step) + idx_b1;
+        index_t idx_stop = (thread_num==(num_threads - 1)) ? (idx_b2 + 1) : ((thread_num + 1) * step) + idx_b1;
+        distance->run_distance_rhs(result, idx_r_start, idx_start, idx_stop, idx_a);
+#else
+        index_t idx_r_start = idx_b1;
+        index_t idx_start = idx_b1;
+        index_t idx_stop = idx_b2  + 1;
+        distance->run_distance_rhs(result, idx_r_start, idx_start, idx_stop, idx_a);
 #endif
-}
-
-void* CDistanceMachine::run_distance_thread_lhs(void* p)
-{
-    D_THREAD_PARAM* params= (D_THREAD_PARAM*) p;
-    CDistance* distance=params->d;
-    float64_t* res=params->r;
-    int32_t idx_res_start=params->idx_r_start;
-    int32_t idx_act=params->idx_start;
-    int32_t idx_stop=params->idx_stop;
-    int32_t idx_c=params->idx_comp;
-
-    for (int32_t i=idx_res_start; idx_act<idx_stop; i++,idx_act++)
-        res[i] =distance->distance(idx_act,idx_c);
-
-    return NULL;
-}
-
-void* CDistanceMachine::run_distance_thread_rhs(void* p)
-{
-    D_THREAD_PARAM* params= (D_THREAD_PARAM*) p;
-    CDistance* distance=params->d;
-    float64_t* res=params->r;
-    int32_t idx_res_start=params->idx_r_start;
-    int32_t idx_act=params->idx_start;
-    int32_t idx_stop=params->idx_stop;
-    int32_t idx_c=params->idx_comp;
-
-    for (int32_t i=idx_res_start; idx_act<idx_stop; i++,idx_act++)
-        res[i] =distance->distance(idx_c,idx_act);
-
-    return NULL;
+    }
 }
 
 CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
@@ -249,11 +139,11 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	SG_UNREF(lhs);
 
 	/* (multiple threads) calculate distances to all cluster centers */
-	float64_t* dists=SG_MALLOC(float64_t, num_clusters);
+    SGVector<float64_t> dists(num_clusters);
 	distances_lhs(dists, 0, num_clusters-1, num);
 
 	/* find cluster index with smallest distance */
-	float64_t result=dists[0];
+	float64_t result=dists.vector[0];
 	index_t best_index=0;
 	for (index_t i=1; i<num_clusters; ++i)
 	{
@@ -263,8 +153,6 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 			best_index=i;
 		}
 	}
-
-	SG_FREE(dists);
 
 	/* implicit cast */
 	return best_index;
