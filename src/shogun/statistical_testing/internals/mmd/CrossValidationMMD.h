@@ -105,13 +105,14 @@ struct CrossValidationMMD : PermutationMMD
 				{
 					generate_inds(current_fold);
 					std::fill(m_inverted_inds.data(), m_inverted_inds.data()+m_inverted_inds.size(), -1);
-					for (size_t idx=0; idx<m_xy_inds.size(); ++idx)
+					for (index_t idx=0; idx<m_xy_inds.size(); ++idx)
 						m_inverted_inds[m_xy_inds[idx]]=idx;
 
 					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
 					m_stack->add_subset(xy_wrapper);
 
 					m_permuted_inds.resize_vector(m_xy_inds.size());
+					m_inverted_permuted_inds.set_const(-1);
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
@@ -121,22 +122,22 @@ struct CrossValidationMMD : PermutationMMD
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
 						m_stack->remove_subset();
 
-						std::fill(m_inverted_permuted_inds[n].data(), m_inverted_permuted_inds[n].data()+size, -1);
 						for (int idx=0; idx<inds.size(); ++idx)
-							m_inverted_permuted_inds[n][inds[idx]]=idx;
+							m_inverted_permuted_inds(inds[idx], n)=idx;
 					}
 					m_stack->remove_subset();
 
 					terms_t terms;
 					for (auto i=0; i<size; ++i)
 					{
+						auto inverted_row=m_inverted_inds[i];
+						auto idx_base=i*size-i*(i+1)/2;
 						for (auto j=i; j<size; ++j)
 						{
-							auto inverted_row=m_inverted_inds[i];
 							auto inverted_col=m_inverted_inds[j];
 							if (inverted_row!=-1 && inverted_col!=-1)
 							{
-								auto idx=i*size-i*(i+1)/2+j;
+								auto idx=idx_base+j;
 								add_term_upper(terms, precomputed_km[idx], inverted_row, inverted_col);
 							}
 						}
@@ -149,13 +150,14 @@ struct CrossValidationMMD : PermutationMMD
 						terms_t null_terms;
 						for (auto i=0; i<size; ++i)
 						{
+							auto inverted_row=m_inverted_permuted_inds(i, n);
+							auto idx_base=i*size-i*(i+1)/2;
 							for (auto j=i; j<size; ++j)
 							{
-								auto inverted_row=m_inverted_permuted_inds[n][i];
-								auto inverted_col=m_inverted_permuted_inds[n][j];
+								auto inverted_col=m_inverted_permuted_inds(j, n);
 								if (inverted_row!=-1 && inverted_col!=-1)
 								{
-									auto idx=i*size-i*(i+1)/2+j;
+									auto idx=idx_base+j;
 									if (inverted_row<=inverted_col)
 										add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
 									else
@@ -211,10 +213,7 @@ struct CrossValidationMMD : PermutationMMD
 
 		const index_t size=m_n_x+m_n_y;
 		m_inverted_inds=SGVector<index_t>(size);
-
-		m_inverted_permuted_inds.resize(m_num_null_samples);
-		for (auto i=0; i<m_num_null_samples; ++i)
-			m_inverted_permuted_inds[i].resize(size);
+		m_inverted_permuted_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
 	void generate_inds(index_t current_fold)

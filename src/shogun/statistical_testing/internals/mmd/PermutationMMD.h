@@ -68,10 +68,10 @@ struct PermutationMMD : ComputeMMD
 			terms_t terms;
 			for (auto j=0; j<size; ++j)
 			{
+				auto inverted_col=m_inverted_permuted_inds(j, n);
 				for (auto i=j; i<size; ++i)
 				{
-					auto inverted_row=m_inverted_permuted_inds[n][i];
-					auto inverted_col=m_inverted_permuted_inds[n][j];
+					auto inverted_row=m_inverted_permuted_inds(i, n);
 
 					if (inverted_row>=inverted_col)
 						add_term_lower(terms, kernel(i, j), inverted_row, inverted_col);
@@ -113,11 +113,12 @@ struct PermutationMMD : ComputeMMD
 				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
+					auto inverted_row=m_inverted_permuted_inds(i, n);
+					auto index_base=i*size-i*(i+1)/2;
 					for (auto j=i; j<size; ++j)
 					{
-						auto index=i*size-i*(i+1)/2+j;
-						auto inverted_row=m_inverted_permuted_inds[n][i];
-						auto inverted_col=m_inverted_permuted_inds[n][j];
+						auto index=index_base+j;
+						auto inverted_col=m_inverted_permuted_inds(j, n);
 
 						if (inverted_row<=inverted_col)
 							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
@@ -172,11 +173,12 @@ struct PermutationMMD : ComputeMMD
 				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
+					auto inverted_row=m_inverted_permuted_inds(i, n);
+					auto index_base=i*size-i*(i+1)/2;
 					for (auto j=i; j<size; ++j)
 					{
-						auto index=i*size-i*(i+1)/2+j;
-						auto inverted_row=m_inverted_permuted_inds[n][i];
-						auto inverted_col=m_inverted_permuted_inds[n][j];
+						auto index=index_base+j;
+						auto inverted_col=m_inverted_permuted_inds(j, n);
 
 						if (inverted_row<=inverted_col)
 							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
@@ -207,7 +209,7 @@ struct PermutationMMD : ComputeMMD
 				std::copy(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), &m_all_inds.matrix[offset]);
 			}
 			for (index_t i=0; i<m_permuted_inds.size(); ++i)
-				m_inverted_permuted_inds[n][m_permuted_inds[i]]=i;
+				m_inverted_permuted_inds(m_permuted_inds[i], n)=i;
 		}
 	}
 
@@ -224,23 +226,17 @@ struct PermutationMMD : ComputeMMD
 		if (m_permuted_inds.size()!=size)
 			m_permuted_inds.resize_vector(size);
 
-		if (m_inverted_permuted_inds.size()!=size_t(m_num_null_samples))
-			m_inverted_permuted_inds.resize(m_num_null_samples);
+		if (m_inverted_permuted_inds.num_cols!=m_num_null_samples && m_inverted_permuted_inds.num_rows!=size)
+			m_inverted_permuted_inds=SGMatrix<index_t>(size, m_num_null_samples);
 
-		for (auto i=0; i<m_num_null_samples; ++i)
-		{
-			if (m_inverted_permuted_inds[i].size()!=size_t(size))
-				m_inverted_permuted_inds[i].resize(size);
-		}
-
-		if (m_save_inds)
+		if (m_save_inds && m_all_inds.num_cols!=m_num_null_samples && m_all_inds.num_rows!=size)
 			m_all_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
 	index_t m_num_null_samples;
 	bool m_save_inds;
 	SGVector<index_t> m_permuted_inds;
-	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
+	SGMatrix<index_t> m_inverted_permuted_inds;
 	SGMatrix<index_t> m_all_inds;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
