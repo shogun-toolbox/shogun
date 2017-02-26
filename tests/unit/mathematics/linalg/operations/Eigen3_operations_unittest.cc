@@ -133,9 +133,7 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_upper)
 	EXPECT_EQ(m.num_cols, U.num_cols);
 }
 
-// Temporarily disabled because Travis fails to calculate:
-// Eigen::TriangularView.solve(vector)
-TEST(LinalgBackendEigen, DISABLED_SGMatrix_cholesky_solver)
+TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> A(size, size);
