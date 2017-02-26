@@ -30,6 +30,9 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#ifndef LINALG_BACKEND_BASE_H__
+#define LINALG_BACKEND_BASE_H__
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
@@ -38,9 +41,6 @@
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
 #include <memory>
-
-#ifndef LINALG_BACKEND_BASE_H__
-#define LINALG_BACKEND_BASE_H__
 
 namespace shogun
 {
@@ -103,7 +103,7 @@ public:
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
 
 	/**
-	 * Wrapper Cholesky decomposition.
+	 * Wrapper method of Cholesky decomposition.
 	 *
 	 * @see linalg::cholesky_factor
 	 */

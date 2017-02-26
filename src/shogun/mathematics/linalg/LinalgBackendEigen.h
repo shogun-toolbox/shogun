@@ -30,18 +30,18 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#ifndef LINALG_BACKEND_EIGEN_H__
+#define LINALG_BACKEND_EIGEN_H__
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <numeric>
 
-#ifndef LINALG_BACKEND_EIGEN_H__
-#define LINALG_BACKEND_EIGEN_H__
-
 namespace shogun
 {
 
-/** @brief linalg methods with Eigen3 backend */
+/** @brief Linalg methods with Eigen3 backend */
 class LinalgBackendEigen : public LinalgBackendBase
 {
 public:
@@ -84,7 +84,8 @@ public:
 
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
+	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, \
+		Type beta, Container<Type>& result) const \
 	{  \
 		add_impl(a, b, alpha, beta, result); \
 	}
@@ -182,11 +183,7 @@ public:
 	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 	#undef BACKEND_GENERIC_COMPLEX_MEAN
 
-	/**
-	* Wrapper method that range fills a vector of matrix.
-	*
-	* @see linalg::range_fill
-	*/
+	/** Implementation of @see LinalgBackendBase::range_fill */
 	#define BACKEND_GENERIC_RANGE_FILL(Type, Container) \
 	virtual void range_fill(Container<Type>& a, const Type start) const \
 	{  \
@@ -403,7 +400,7 @@ private:
 
 		result_eig = a_block.array() * b_block.array();
 	}
-	
+
 	/** Eigen3 matrix * vector in-place product method */
 	template <typename T>
 	void matrix_prod_impl(SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result,
@@ -498,7 +495,7 @@ private:
 		result_eig = alpha * a_eig;
 	}
 
-	/** Set const method */
+	/** Eigen3 set const method */
 	template <typename T, template <typename> class Container>
 	void set_const_impl(Container<T>& a, T value) const
 	{
