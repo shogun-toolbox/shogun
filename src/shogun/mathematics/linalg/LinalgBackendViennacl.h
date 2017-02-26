@@ -30,11 +30,11 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#include <shogun/mathematics/linalg/LinalgBackendGPUBase.h>
-#include <shogun/mathematics/linalg/LinalgBackendViennaclKernels.h>
-
 #ifndef LINALG_BACKEND_VIENNACL_H__
 #define LINALG_BACKEND_VIENNACL_H__
+
+#include <shogun/mathematics/linalg/LinalgBackendGPUBase.h>
+#include <shogun/mathematics/linalg/LinalgBackendViennaclKernels.h>
 
 #ifdef HAVE_VIENNACL
 
@@ -66,8 +66,10 @@ public:
 	METHODNAME(float32_t, Container); \
 	METHODNAME(float64_t, Container); \
 
+	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
+	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, \
+		Type beta, Container<Type>& result) const \
 	{  \
 		add_impl(a, b, alpha, beta, result); \
 	}
@@ -125,7 +127,7 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MEAN, SGMatrix)
 	#undef BACKEND_GENERIC_MEAN
 
-	/** Implementation of @see linalg::scale */
+	/** Implementation of @see LinalgBackendBase::scale */
 	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
 	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
 	{  \
@@ -205,14 +207,14 @@ public:
 	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
-	/** static cast GPUMemoryBase class to GPUMemoryViennaCL */
+	/** Static cast @see GPUMemoryBase class to @see GPUMemoryViennaCL */
 	template <typename T, template<typename> class Container>
 	GPUMemoryViennaCL<T>* cast_to_viennacl(const Container<T> &a) const
 	{
 		return static_cast<GPUMemoryViennaCL<T>*>(a.gpu_ptr.get());
 	}
 
-	/** ViennaCL vector result = alpha*A + beta*B method */
+	/** ViennaCL vector result = alpha * A + beta * B method */
 	template <typename T>
 	void add_impl(SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
 	{
@@ -224,7 +226,7 @@ private:
 			alpha * a_gpu->data_vector(a.size()) + beta * b_gpu->data_vector(b.size());
 	}
 
-	/** ViennaCL matrix result = alpha*A + beta*B method */
+	/** ViennaCL matrix result = alpha * A + beta * B method */
 	template <typename T>
 	void add_impl(SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
 	{
@@ -244,7 +246,8 @@ private:
 		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 
-		return viennacl::linalg::inner_prod(a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
+		return viennacl::linalg::inner_prod(
+			a_gpu->data_vector(a.size()), b_gpu->data_vector(b.size()));
 	}
 
 	/** ViennaCL matrix in-place elementwise product method */
@@ -255,8 +258,9 @@ private:
 		GPUMemoryViennaCL<T>* b_gpu = cast_to_viennacl(b);
 		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
 
-		result_gpu->data_matrix(a.num_rows, a.num_cols) = viennacl::linalg::element_prod(
-			a_gpu->data_matrix(a.num_rows, a.num_cols), b_gpu->data_matrix(a.num_rows, a.num_cols));
+		result_gpu->data_matrix(a.num_rows, a.num_cols) =
+			viennacl::linalg::element_prod(a_gpu->data_matrix(a.num_rows,
+				a.num_cols), b_gpu->data_matrix(a.num_rows, a.num_cols));
 	}
 
 	/** ViennaCL matrix * vector in-place product method */
@@ -277,7 +281,7 @@ private:
 				a_gpu->data_matrix(a.num_rows, a.num_cols), b_gpu->data_vector(b.vlen));
 	}
 
-	/** ViennaCL matrix in-place product method */
+	/** ViennaCL matrices in-place product method */
 	template <typename T>
 	void matrix_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
 		bool transpose_A, bool transpose_B) const
@@ -309,6 +313,7 @@ private:
 				b_gpu->data_matrix(b.num_rows, b.num_cols));
 	}
 
+	/** ViennaCL max method */
 	template <typename T, template<typename> class Container>
 	T max_impl(const Container<T>& a) const
 	{
@@ -329,7 +334,7 @@ private:
 		return result[0];
 	}
 
-	/** Eigen3 vector and matrix mean method */
+	/** ViennaCL vectors or matrices mean method */
 	template <typename T, template <typename> class Container>
 	float64_t mean_impl(const Container<T>& a) const
 	{
@@ -362,10 +367,11 @@ private:
 	void set_const_impl(Container<T>& a, T value) const
 	{
 		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
-		typename GPUMemoryViennaCL<T>::VCLVectorBase vcl_vector = a_gpu->data_vector(a.size());
+		typename GPUMemoryViennaCL<T>::VCLVectorBase vcl_vector =
+			a_gpu->data_vector(a.size());
 		viennacl::linalg::vector_assign(vcl_vector, value);
 	}
-	
+
 	/** ViennaCL vector sum method. */
 	template <typename T>
 	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
@@ -435,7 +441,7 @@ private:
 		return SGVector<T>(result_gpu, mat.num_rows);
 	}
 
-	/** Transfers data to GPU with ViennaCL method. */
+	/** Transfer data to GPU with ViennaCL method. */
 	template <typename T, template<typename> class Container>
 	GPUMemoryBase<T>* to_gpu_impl(const Container<T>& a) const
 	{
@@ -449,7 +455,7 @@ private:
 		return gpu_ptr;
 	}
 
-	/** Fetches data from GPU with ViennaCL method. */
+	/** Fetch data from GPU with ViennaCL method. */
 	template <typename T, template<typename> class Container>
 	void from_gpu_impl(const Container<T>& a, T* data) const
 	{
