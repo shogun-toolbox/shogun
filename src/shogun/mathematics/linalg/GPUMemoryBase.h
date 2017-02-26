@@ -36,7 +36,7 @@
 namespace shogun
 {
 
-/** @brief interface for GPU memory libraries */
+/** @brief Interface for GPU memory libraries */
 template <typename T>
 struct GPUMemoryBase
 {
@@ -48,7 +48,7 @@ struct GPUMemoryBase
 	/** Clone GPU memory, i.e. vector or matrix
 	 *
 	 * @param GPUMemoryBase structure pointer
-	 * @return a deep-copy of GPUMemoryBase structure pointer
+	 * @return A deep-copy of GPUMemoryBase structure pointer
 	 */
 	virtual GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* gpu_ptr,
 		index_t vlen) const = 0;

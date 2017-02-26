@@ -38,12 +38,6 @@
 #include <shogun/lib/GPUVector.h>
 #endif
 
-/**
- * Just include this file to use in your applications (in the cpp). Only available
- * if a C++11 compatible compiler found.
- */
-
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 namespace shogun
 {
 
@@ -118,7 +112,6 @@ struct MODULE \
  */
 #ifndef SET_GLOBAL_BACKEND
 #define SET_GLOBAL_BACKEND(BACKEND) \
-	SET_MODULE_BACKEND(Core, BACKEND) \
 	SET_MODULE_BACKEND(Linsolver, BACKEND) \
 	SET_MODULE_BACKEND(Eigsolver, BACKEND)
 #endif // SET_GLOBAL_BACKEND
@@ -131,15 +124,6 @@ struct MODULE \
 #else
 
 /** set module specific backends */
-
-/** Core module */
-#ifdef USE_EIGEN3_CORE
-	SET_MODULE_BACKEND(Core, EIGEN3)
-#elif USE_VIENNACL_CORE
-	SET_MODULE_BACKEND(Core, VIENNACL)
-#else // the default case
-	SET_MODULE_BACKEND(Core, DEFAULT)
-#endif
 
 /** Linear solver module */
 #ifdef USE_EIGEN3_LINSLV
@@ -171,8 +155,6 @@ struct MODULE \
 
 /** include all the modules here */
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
-
 #include <shogun/mathematics/linalg/internal/modules/ElementwiseOperations.h>
 
-#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #endif // LINALG_H_

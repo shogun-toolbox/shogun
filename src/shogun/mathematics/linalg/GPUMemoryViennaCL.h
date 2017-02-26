@@ -68,9 +68,9 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		init();
 	};
 
-	/** Creates a new vector
+	/** Create a new vector
 	 *
-	 * @param length Number of elements
+	 * @param len Number of elements
 	 */
 	GPUMemoryViennaCL(index_t len): m_data(new VCLMemoryArray())
 	{
@@ -79,9 +79,9 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 			viennacl::context());
 	}
 
-	/** Wraps a vector around an existing memory segment
+	/** Wrap a vector around an existing memory segment
 	 *
-	 * @param vector GPUMemoryBase pointer
+	 * @param gpu_ptr GPUMemoryBase pointer
 	 */
 	GPUMemoryViennaCL(GPUMemoryBase<T>* gpu_ptr) : m_data(new VCLMemoryArray())
 	{
@@ -91,7 +91,11 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		m_offset = temp_ptr->m_offset;
 	};
 
-	/** Clone GPU vector */
+	/** Clone GPU vector
+	 *
+	 * @param vector GPUMemoryBase pointer
+	 * @param vlen Length of the vector
+	 */
 	GPUMemoryBase<T>* clone_vector(GPUMemoryBase<T>* vector, index_t vlen) const
 	{
 		GPUMemoryViennaCL<T>* src_ptr = static_cast<GPUMemoryViennaCL<T>*>(vector);
@@ -105,13 +109,20 @@ struct GPUMemoryViennaCL : public GPUMemoryBase<T>
 		return gpu_ptr;
 	}
 
-	/** ViennaCL Vector structure that saves the data */
+	/** ViennaCL Vector structure that saves the data
+	 *
+	 * @param len Number of elements
+	 */
 	VCLVectorBase data_vector(index_t len)
 	{
 		return VCLVectorBase(*m_data, len, m_offset, 1);
 	}
 
-	/** ViennaCL Vector structure that saves the data */
+	/** ViennaCL Vector structure that saves the data
+	 *
+	 * @param nrows Row number of the matrix
+	 * @param ncols Column number of the matrix
+	 */
 	VCLMatrixBase data_matrix(index_t nrows, index_t ncols)
 	{
 	#if VIENNACL_VERSION >= 10600

@@ -30,6 +30,9 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#ifndef SG_LINALG_H__
+#define SG_LINALG_H__
+
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/memory.h>
@@ -39,9 +42,6 @@
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
 
 #include <memory>
-
-#ifndef SG_LINALG_H__
-#define SG_LINALG_H__
 
 namespace shogun
 {
@@ -72,7 +72,7 @@ public:
 
 	/** Set CPU backend
 	 *
-	 * @return pointer of LinalgBackendBase type
+	 * @return Pointer of LinalgBackendBase type
 	 */
 	LinalgBackendBase* const get_cpu_backend() const
 	{
@@ -89,7 +89,7 @@ public:
 
 	/** Set GPU backend
 	 *
-	 * @return pointer of LinalgBackendBase type
+	 * @return Pointer of LinalgBackendBase type
 	 */
 	LinalgBackendBase* const get_gpu_backend() const
 	{

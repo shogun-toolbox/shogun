@@ -30,15 +30,15 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
+#ifndef LINALG_BACKEND_GPU_BASE_H__
+#define LINALG_BACKEND_GPU_BASE_H__
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <memory>
-
-#ifndef LINALG_BACKEND_GPU_BASE_H__
-#define LINALG_BACKEND_GPU_BASE_H__
 
 namespace shogun
 {
