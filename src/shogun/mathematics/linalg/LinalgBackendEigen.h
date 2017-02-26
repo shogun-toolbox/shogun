@@ -82,14 +82,28 @@ public:
 	METHODNAME(floatmax_t, Container); \
 	METHODNAME(complex128_t, Container);
 
+	#define DEFINE_FOR_NUMERIC_PTYPE(METHODNAME, Container) \
+	METHODNAME(char, Container); \
+	METHODNAME(int8_t, Container); \
+	METHODNAME(uint8_t, Container); \
+	METHODNAME(int16_t, Container); \
+	METHODNAME(uint16_t, Container); \
+	METHODNAME(int32_t, Container); \
+	METHODNAME(uint32_t, Container); \
+	METHODNAME(int64_t, Container); \
+	METHODNAME(uint64_t, Container); \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+	METHODNAME(floatmax_t, Container);
+
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
 	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
 	{  \
 		add_impl(a, b, alpha, beta, result); \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
+	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
 
 	/** Implementation of @see LinalgBackendBase::cholesky_factor */
@@ -355,14 +369,15 @@ private:
 
 		if (lower == false)
 		{
-			Eigen::TriangularView<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>,
-				Eigen::Upper> tlv(L_eig);
+			Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt,
+				0, Eigen::Stride<0,0> >, Eigen::Upper> tlv(L_eig);
+
 			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
 		}
 		else
 		{
-			Eigen::TriangularView<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>,
-				Eigen::Lower> tlv(L_eig);
+			Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt,
+				0, Eigen::Stride<0,0> >, Eigen::Lower> tlv(L_eig);
 			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
 		}
 
@@ -403,7 +418,7 @@ private:
 
 		result_eig = a_block.array() * b_block.array();
 	}
-	
+
 	/** Eigen3 matrix * vector in-place product method */
 	template <typename T>
 	void matrix_prod_impl(SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result,
