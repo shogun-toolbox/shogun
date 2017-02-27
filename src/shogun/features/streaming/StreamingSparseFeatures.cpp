@@ -220,12 +220,6 @@ void CStreamingSparseFeatures<T>::sort_features()
 }
 
 template <class T>
-CFeatures* CStreamingSparseFeatures<T>::duplicate() const
-{
-	return new CStreamingSparseFeatures<T>(*this);
-}
-
-template <class T>
 int32_t CStreamingSparseFeatures<T>::get_num_vectors() const
 {
 	if (current_sgvector.features)

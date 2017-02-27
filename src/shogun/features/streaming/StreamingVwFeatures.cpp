@@ -46,11 +46,6 @@ CStreamingVwFeatures::~CStreamingVwFeatures()
 	SG_UNREF(env);
 }
 
-CFeatures* CStreamingVwFeatures::duplicate() const
-{
-	return new CStreamingVwFeatures(*this);
-}
-
 void CStreamingVwFeatures::set_vector_reader()
 {
 	parser.set_read_vector(&CStreamingFile::get_vector);

@@ -140,11 +140,6 @@ template<class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vecto
 	return current_vector.vlen;
 }
 
-template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
-{
-	return new CStreamingDenseFeatures<T>(*this);
-}
-
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 {
 	return 1;

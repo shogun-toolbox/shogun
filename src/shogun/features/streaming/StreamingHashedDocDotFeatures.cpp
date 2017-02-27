@@ -124,11 +124,6 @@ const char* CStreamingHashedDocDotFeatures::get_name() const
 	return "StreamingHashedDocDotFeatures";
 }
 
-CFeatures* CStreamingHashedDocDotFeatures::duplicate() const
-{
-	return new CStreamingHashedDocDotFeatures(*this);
-}
-
 EFeatureType CStreamingHashedDocDotFeatures::get_feature_type() const
 {
 	return F_UINT;
