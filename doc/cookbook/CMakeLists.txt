@@ -1,5 +1,7 @@
 #PROJECT(sphinxdoc)
 #cmake_minimum_required(VERSION 2.8.8)
+include(FindMetaExamples)
+find_excluded_cookbook_pages()
 
 # configured documentation tools and intermediate build results
 set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
@@ -56,6 +58,7 @@ add_custom_target(cookbook_sphinx_linkcheck
     -c "${BINARY_BUILD_DIR}"
     -d "${SPHINX_CACHE_DIR}"
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
+    -D exclude_patterns="${EXCLUDED_COOKBOOK_PAGES}"
     "${BINARY_BUILD_DIR}"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx validating external links"
@@ -69,6 +72,7 @@ add_custom_target(cookbook
     -c "${BINARY_BUILD_DIR}"
     -d "${SPHINX_CACHE_DIR}"
     -D generated_examples_path="${CMAKE_BINARY_DIR}/examples/meta/"
+    -D exclude_patterns="${EXCLUDED_COOKBOOK_PAGES}"
     "${BINARY_BUILD_DIR}"
     "${SPHINX_HTML_DIR}"
     COMMENT "Cookbook Sphinx building HTML"
