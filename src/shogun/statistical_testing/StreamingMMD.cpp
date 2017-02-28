@@ -87,7 +87,7 @@ CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
 	statistic_type(ST_UNBIASED_FULL),
 	variance_estimation_method(VEM_DIRECT),
-	null_approximation_method(NAM_PERMUTATION),
+	null_approximation_method(NAM_MMD1_GAUSSIAN),
 	statistic_job(nullptr), variance_job(nullptr)
 {
 }
@@ -135,7 +135,7 @@ void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFe
 {
 	blocks.resize(next_burst.num_blocks());
 #pragma omp parallel for
-	for (size_t i=0; i<blocks.size(); ++i)
+	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
 		auto block_p=next_burst[0][i].get();
 		auto block_q=next_burst[1][i].get();
@@ -150,7 +150,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
 #pragma omp parallel for
-	for (size_t i=0; i<blocks.size(); ++i)
+	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
 		try
 		{
@@ -257,14 +257,15 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	REQUIRE(kernel_selection_mgr.num_kernels()>0, "No kernels specified for kernel learning! "
 		"Please add kernels using add_kernel() method!\n");
 
-	const size_t num_kernels=kernel_selection_mgr.num_kernels();
+	const auto num_kernels=kernel_selection_mgr.num_kernels();
 	SGVector<float64_t> statistic(num_kernels);
 	SGMatrix<float64_t> Q(num_kernels, num_kernels);
 
 	std::fill(statistic.data(), statistic.data()+statistic.size(), 0);
 	std::fill(Q.data(), Q.data()+Q.size(), 0);
 
-	std::vector<index_t> term_counters_statistic(num_kernels, 1);
+	SGVector<index_t> term_counters_statistic(num_kernels);
+	term_counters_statistic.set_const(1);
 	SGMatrix<index_t> term_counters_Q(num_kernels, num_kernels);
 	std::fill(term_counters_Q.data(), term_counters_Q.data()+term_counters_Q.size(), 1);
 
@@ -279,19 +280,19 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	std::vector<std::vector<float32_t> > mmds(num_kernels);
 	while (!next_burst.empty())
 	{
-		const size_t num_blocks=next_burst.num_blocks();
+		const auto num_blocks=next_burst.num_blocks();
 		REQUIRE(num_blocks%2==0,
 				"The number of blocks per burst (%d this burst) has to be even!\n",
 				num_blocks);
 		merge_samples(next_burst, blocks);
 		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_REF(ptr); });
-		for (size_t k=0; k<num_kernels; ++k)
+		for (auto k=0; k<num_kernels; ++k)
 		{
 			CKernel* kernel=kernel_selection_mgr.kernel_at(k);
 			compute_kernel(cm, blocks, kernel);
 			compute_jobs(cm);
 			mmds[k]=cm.result(0);
-			for (size_t i=0; i<num_blocks; ++i)
+			for (auto i=0; i<num_blocks; ++i)
 			{
 				auto delta=mmds[k][i]-statistic[k];
 				statistic[k]+=delta/term_counters_statistic[k]++;
@@ -299,11 +300,11 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 		}
 		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_UNREF(ptr); });
 		blocks.resize(0);
-		for (size_t i=0; i<num_kernels; ++i)
+		for (auto i=0; i<num_kernels; ++i)
 		{
-			for (size_t j=0; j<=i; ++j)
+			for (auto j=0; j<=i; ++j)
 			{
-				for (size_t k=0; k<num_blocks-1; k+=2)
+				for (auto k=0; k<num_blocks-1; k+=2)
 				{
 					auto term=(mmds[i][k]-mmds[i][k+1])*(mmds[j][k]-mmds[j][k+1]);
 					Q(i, j)+=(term-Q(i, j))/term_counters_Q(i, j)++;
@@ -332,7 +333,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 	REQUIRE(kernel != nullptr, "Kernel is not set!\n");
 
 	SGVector<float64_t> statistic(num_null_samples);
-	std::vector<index_t> term_counters(num_null_samples);
+	SGVector<index_t> term_counters(num_null_samples);
 
 	std::fill(statistic.vector, statistic.vector+statistic.vlen, 0);
 	std::fill(term_counters.data(), term_counters.data()+term_counters.size(), 1);
@@ -444,7 +445,7 @@ bool CStreamingMMD::use_gpu() const
 
 void CStreamingMMD::cleanup()
 {
-	for (size_t i=0; i<get_kernel_mgr().num_kernels(); ++i)
+	for (auto i=0; i<get_kernel_mgr().num_kernels(); ++i)
 		get_kernel_mgr().restore_kernel_at(i);
 }
 

@@ -61,4 +61,6 @@ TEST(DataFetcherFactory, get_instance)
 
 	std::unique_ptr<DataFetcher> streaming_fetcher(DataFetcherFactory::get_instance(streaming_p));
 	ASSERT_TRUE(strcmp(streaming_fetcher->get_name(), "StreamingDataFetcher")==0);
+
+	SG_UNREF(streaming_p);
 }

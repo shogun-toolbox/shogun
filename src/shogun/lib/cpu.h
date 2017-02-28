@@ -1,7 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2013 Heiko Strathmann
- * Written (w) 2014 - 2016 Soumyajit De
+ * Written (w) 2017 - Viktor Gal
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,44 +28,18 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef MAX_CROSS_VALIDATION_H__
-#define MAX_CROSS_VALIDATION_H__
+#ifndef __CPU_INFO_H__
+#define __CPU_INFO_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/statistical_testing/kernelselection/internals/KernelSelection.h>
 
-namespace shogun
+SG_FORCED_INLINE static void CpuRelax()
 {
-
-class CKernel;
-class CMMD;
-template <typename T> class SGVector;
-
-namespace internal
-{
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-class MaxCrossValidation : public KernelSelection
-{
-public:
-	MaxCrossValidation(KernelManager&, CMMD*, const index_t&, const index_t&, const float64_t&);
-	MaxCrossValidation(const MaxCrossValidation& other)=delete;
-	~MaxCrossValidation();
-	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
-	virtual CKernel* select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector() override;
-	virtual SGMatrix<float64_t> get_measure_matrix() override;
-protected:
-	virtual void init_measures() override;
-	virtual void compute_measures() override;
-	const index_t num_runs;
-	const index_t num_folds;
-	const float64_t alpha;
-	SGMatrix<float64_t> rejections;
-	SGVector<float64_t> measures;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
+#ifdef _MSC_VER
+        _mm_pause();
+#else
+        asm("pause");
+#endif
 }
 
-}
-
-#endif // MAX_CROSS_VALIDATION_H__
+#endif /* __CPU_INFO_H__ */

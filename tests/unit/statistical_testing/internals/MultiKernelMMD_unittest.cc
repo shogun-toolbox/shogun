@@ -87,7 +87,9 @@ TEST(MultiKernelMMD, biased_full)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
-	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	auto precomputed_distance=test->compute_joint_distance(distance);
+	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -95,6 +97,7 @@ TEST(MultiKernelMMD, biased_full)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
+	SG_UNREF(precomputed_distance);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
@@ -105,7 +108,7 @@ TEST(MultiKernelMMD, biased_full)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
@@ -152,7 +155,9 @@ TEST(MultiKernelMMD, unbiased_full)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
-	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	auto precomputed_distance=test->compute_joint_distance(distance);
+	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -160,6 +165,7 @@ TEST(MultiKernelMMD, unbiased_full)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
+	SG_UNREF(precomputed_distance);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
@@ -170,7 +176,7 @@ TEST(MultiKernelMMD, unbiased_full)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);
@@ -217,7 +223,9 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 		kernel_mgr.kernel_at(i)=new CGaussianKernel(10, pow(2, sigma));
 	auto distance=kernel_mgr.get_distance_instance();
-	kernel_mgr.set_precomputed_distance(test->compute_joint_distance(distance));
+	auto precomputed_distance=test->compute_joint_distance(distance);
+	kernel_mgr.set_precomputed_distance(precomputed_distance);
+	SG_UNREF(distance);
 
 	ComputeMMD tester;
 	tester.m_n_x=m;
@@ -225,6 +233,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	tester.m_stype=stype;
 	SGVector<float64_t> values=tester(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
+	SG_UNREF(precomputed_distance);
 
 	auto data_p=static_cast<CDenseFeatures<float64_t>*>(feats_p)->get_feature_matrix();
 	auto data_q=static_cast<CDenseFeatures<float64_t>*>(feats_q)->get_feature_matrix();
@@ -235,7 +244,7 @@ TEST(MultiKernelMMD, unbiased_incomplete)
 	SG_REF(feats_p_and_q);
 
 	SGVector<float64_t> ref(kernel_mgr.num_kernels());
-	for (size_t i=0; i<kernel_mgr.num_kernels(); ++i)
+	for (auto i=0; i<kernel_mgr.num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(i);
 		kernel->init(feats_p_and_q, feats_p_and_q);

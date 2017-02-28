@@ -55,11 +55,11 @@ public:
 	~MedianHeuristic();
 	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
 	virtual CKernel* select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
+	virtual SGVector<float64_t> get_measure_vector() override;
+	virtual SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void init_measures();
-	virtual void compute_measures();
+	virtual void init_measures() override;
+	virtual void compute_measures() override;
 	std::shared_ptr<CCustomDistance> distance;
 	SGVector<float64_t> measures;
 	int32_t n;

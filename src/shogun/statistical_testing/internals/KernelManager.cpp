@@ -67,7 +67,7 @@ void KernelManager::clear()
 	m_precomputed_kernels.resize(0);
 }
 
-InitPerKernel KernelManager::kernel_at(size_t i)
+InitPerKernel KernelManager::kernel_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
@@ -77,7 +77,7 @@ InitPerKernel KernelManager::kernel_at(size_t i)
 	return InitPerKernel(m_kernels[i]);
 }
 
-CKernel* KernelManager::kernel_at(size_t i) const
+CKernel* KernelManager::kernel_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
@@ -102,12 +102,15 @@ void KernelManager::push_back(CKernel* kernel)
 	SG_SDEBUG("Leaving!\n");
 }
 
-const size_t KernelManager::num_kernels() const
+const index_t KernelManager::num_kernels() const
 {
-	return m_kernels.size();
+	// TODO in case there is an underflow, at least it is not silent
+	// a better handling is to use index_t based Shogun data structures
+	ASSERT((index_t)m_kernels.size()>=0);
+	return (index_t)m_kernels.size();
 }
 
-void KernelManager::precompute_kernel_at(size_t i)
+void KernelManager::precompute_kernel_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
@@ -127,7 +130,7 @@ void KernelManager::precompute_kernel_at(size_t i)
 	SG_SDEBUG("Leaving!\n");
 }
 
-void KernelManager::restore_kernel_at(size_t i)
+void KernelManager::restore_kernel_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
@@ -143,7 +146,7 @@ bool KernelManager::same_distance_type() const
 	ASSERT(num_kernels()>0);
 	bool same=false;
 	EDistanceType distance_type=D_UNKNOWN;
-	for (size_t i=0; i<num_kernels(); ++i)
+	for (auto i=0; i<num_kernels(); ++i)
 	{
 		CShiftInvariantKernel* shift_invariant_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_at(i));
 		if (shift_invariant_kernel!=nullptr)
@@ -200,7 +203,8 @@ CDistance* KernelManager::get_distance_instance() const
 
 void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
 {
-	for (size_t i=0; i<num_kernels(); ++i)
+	REQUIRE(distance!=nullptr, "Distance instance cannot be null!\n");
+	for (auto i=0; i<num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_at(i);
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
@@ -213,7 +217,7 @@ void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
 
 void KernelManager::unset_precomputed_distance() const
 {
-	for (size_t i=0; i<num_kernels(); ++i)
+	for (auto i=0; i<num_kernels(); ++i)
 	{
 		CKernel* kernel=kernel_at(i);
 		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);

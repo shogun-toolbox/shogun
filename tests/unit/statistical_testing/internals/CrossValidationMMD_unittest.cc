@@ -138,6 +138,9 @@ TEST(CrossValidationMMD, biased_full)
 			}
 		}
 	}
+
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 }
 
 TEST(CrossValidationMMD, unbiased_full)
@@ -229,6 +232,9 @@ TEST(CrossValidationMMD, unbiased_full)
 			}
 		}
 	}
+
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 }
 
 TEST(CrossValidationMMD, unbiased_incomplete)
@@ -320,4 +326,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 			}
 		}
 	}
+
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 }

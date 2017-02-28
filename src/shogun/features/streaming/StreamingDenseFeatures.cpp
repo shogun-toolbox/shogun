@@ -67,6 +67,8 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 	if (seekable)
 	{
 		((CStreamingFileFromDenseFeatures<T>*)working_file)->reset_stream();
+		if (parser.is_running())
+			parser.end_parser();
 		parser.exit_parser();
 		parser.init(working_file, has_labels, 1);
 		parser.set_free_vector_after_release(false);
@@ -136,11 +138,6 @@ template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 template<class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vector()
 {
 	return current_vector.vlen;
-}
-
-template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
-{
-	return new CStreamingDenseFeatures<T>(*this);
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const

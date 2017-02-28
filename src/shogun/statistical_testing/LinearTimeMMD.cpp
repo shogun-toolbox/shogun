@@ -116,6 +116,12 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
 			break;
 		}
+		case NAM_PERMUTATION:
+		{
+			SG_SERROR("Null approximation via permutation does not make sense "
+					"for linear time MMD. Use the Gaussian approximation instead.\n");
+			break;
+		}
 		default:
 		{
 			result = CHypothesisTest::compute_p_value(statistic);

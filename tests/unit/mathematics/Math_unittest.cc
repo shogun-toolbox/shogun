@@ -513,3 +513,17 @@ TEST(CMath, dot)
 	float64_t sgdot_val = CMath::dot(a.vector,a.vector, a.vlen);
 	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
 }
+
+TEST(CMath, gcd)
+{
+	EXPECT_EQ(CMath::gcd(12,8), 4);
+	EXPECT_EQ(CMath::gcd(18,27), 9);
+	EXPECT_EQ(CMath::gcd(1,1), 1);
+	EXPECT_EQ(CMath::gcd(1,2), 1);
+	EXPECT_EQ(CMath::gcd(1,0), 1);
+	EXPECT_EQ(CMath::gcd(0,1), 1);
+	EXPECT_THROW(CMath::gcd(0,0), ShogunException);
+	EXPECT_THROW(CMath::gcd(1,-1), ShogunException);
+	EXPECT_THROW(CMath::gcd(-1,1), ShogunException);
+
+}

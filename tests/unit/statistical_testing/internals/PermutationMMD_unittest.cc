@@ -361,6 +361,8 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 	auto feats_q=gen_q->get_streamed_features(m);
 	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
 	SG_REF(merged_feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
@@ -424,6 +426,8 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 	auto feats_q=gen_q->get_streamed_features(m);
 	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
 	SG_REF(merged_feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
@@ -487,6 +491,8 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 	auto feats_q=gen_q->get_streamed_features(m);
 	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
 	SG_REF(merged_feats);
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)

@@ -41,7 +41,7 @@
 using namespace shogun;
 using namespace internal;
 
-DataManager::DataManager(size_t num_distributions)
+DataManager::DataManager(index_t num_distributions)
 {
 	SG_SDEBUG("Data manager instance initialized with %d data sources!\n", num_distributions);
 	fetchers.resize(num_distributions);
@@ -80,12 +80,8 @@ index_t DataManager::get_min_blocksize() const
 	else
 	{
 		index_t divisor=0;
-		std::function<index_t(index_t, index_t)> gcd=[&gcd](index_t m, index_t n)
-		{
-			return n==0?m:gcd(n, m%n);
-		};
 		for (size_t i=0; i<fetchers.size(); ++i)
-			divisor=gcd(divisor, fetchers[i]->m_num_samples);
+			divisor=CMath::gcd(divisor, fetchers[i]->m_num_samples);
 		min_blocksize=get_num_samples()/divisor;
 	}
 	SG_SDEBUG("min blocksize is %d!", min_blocksize);
@@ -148,20 +144,20 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	SG_SDEBUG("Leaving!\n");
 }
 
-InitPerFeature DataManager::samples_at(size_t i)
+InitPerFeature DataManager::samples_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
 	return InitPerFeature(fetchers[i]);
 }
 
-CFeatures* DataManager::samples_at(size_t i) const
+CFeatures* DataManager::samples_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -171,20 +167,20 @@ CFeatures* DataManager::samples_at(size_t i) const
 		return nullptr;
 }
 
-index_t& DataManager::num_samples_at(size_t i)
+index_t& DataManager::num_samples_at(index_t i)
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
 	return fetchers[i]->m_num_samples;
 }
 
-const index_t DataManager::num_samples_at(size_t i) const
+const index_t DataManager::num_samples_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");
@@ -194,10 +190,10 @@ const index_t DataManager::num_samples_at(size_t i) const
 		return 0;
 }
 
-const index_t DataManager::blocksize_at(size_t i) const
+const index_t DataManager::blocksize_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
-	REQUIRE(i<fetchers.size(),
+	REQUIRE(i<(int64_t)fetchers.size(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, fetchers.size()-1);
 	SG_SDEBUG("Leaving!\n");

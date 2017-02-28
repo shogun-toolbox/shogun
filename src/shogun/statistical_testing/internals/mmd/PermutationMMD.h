@@ -68,10 +68,10 @@ struct PermutationMMD : ComputeMMD
 			terms_t terms;
 			for (auto j=0; j<size; ++j)
 			{
+				auto inverted_col=m_inverted_permuted_inds(j, n);
 				for (auto i=j; i<size; ++i)
 				{
-					auto inverted_row=m_inverted_permuted_inds[n][i];
-					auto inverted_col=m_inverted_permuted_inds[n][j];
+					auto inverted_row=m_inverted_permuted_inds(i, n);
 
 					if (inverted_row>=inverted_col)
 						add_term_lower(terms, kernel(i, j), inverted_row, inverted_col);
@@ -94,7 +94,7 @@ struct PermutationMMD : ComputeMMD
 		const index_t size=m_n_x+m_n_y;
 		SGMatrix<float32_t> null_samples(m_num_null_samples, kernel_mgr.num_kernels());
 		SGVector<float32_t> km(size*(size+1)/2);
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			terms_t terms;
@@ -113,11 +113,12 @@ struct PermutationMMD : ComputeMMD
 				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
+					auto inverted_row=m_inverted_permuted_inds(i, n);
+					auto index_base=i*size-i*(i+1)/2;
 					for (auto j=i; j<size; ++j)
 					{
-						auto index=i*size-i*(i+1)/2+j;
-						auto inverted_row=m_inverted_permuted_inds[n][i];
-						auto inverted_col=m_inverted_permuted_inds[n][j];
+						auto index=index_base+j;
+						auto inverted_col=m_inverted_permuted_inds(j, n);
 
 						if (inverted_row<=inverted_col)
 							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
@@ -150,7 +151,7 @@ struct PermutationMMD : ComputeMMD
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
 
 		SGVector<float32_t> km(size*(size+1)/2);
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			terms_t terms;
@@ -172,11 +173,12 @@ struct PermutationMMD : ComputeMMD
 				terms_t null_terms;
 				for (auto i=0; i<size; ++i)
 				{
+					auto inverted_row=m_inverted_permuted_inds(i, n);
+					auto index_base=i*size-i*(i+1)/2;
 					for (auto j=i; j<size; ++j)
 					{
-						auto index=i*size-i*(i+1)/2+j;
-						auto inverted_row=m_inverted_permuted_inds[n][i];
-						auto inverted_col=m_inverted_permuted_inds[n][j];
+						auto index=index_base+j;
+						auto inverted_col=m_inverted_permuted_inds(j, n);
 
 						if (inverted_row<=inverted_col)
 							add_term_upper(null_terms, km[index], inverted_row, inverted_col);
@@ -197,18 +199,17 @@ struct PermutationMMD : ComputeMMD
 	{
 		ASSERT(m_num_null_samples>0);
 		allocate_permutation_inds();
-		SGVector<index_t> sg_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-			CMath::permute(sg_wrapper);
+			CMath::permute(m_permuted_inds);
 			if (m_save_inds)
 			{
-				auto offset=n*sg_wrapper.size();
-				std::copy(sg_wrapper.data(), sg_wrapper.data()+sg_wrapper.size(), &m_all_inds.matrix[offset]);
+				auto offset=n*m_permuted_inds.size();
+				std::copy(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), &m_all_inds.matrix[offset]);
 			}
-			for (size_t i=0; i<m_permuted_inds.size(); ++i)
-				m_inverted_permuted_inds[n][m_permuted_inds[i]]=i;
+			for (index_t i=0; i<m_permuted_inds.size(); ++i)
+				m_inverted_permuted_inds(m_permuted_inds[i], n)=i;
 		}
 	}
 
@@ -222,26 +223,20 @@ struct PermutationMMD : ComputeMMD
 	inline void allocate_permutation_inds()
 	{
 		const index_t size=m_n_x+m_n_y;
-		if (m_permuted_inds.size()!=size_t(size))
-			m_permuted_inds.resize(size);
+		if (m_permuted_inds.size()!=size)
+			m_permuted_inds=SGVector<index_t>(size);
 
-		if (m_inverted_permuted_inds.size()!=size_t(m_num_null_samples))
-			m_inverted_permuted_inds.resize(m_num_null_samples);
+		if (m_inverted_permuted_inds.num_cols!=m_num_null_samples || m_inverted_permuted_inds.num_rows!=size)
+			m_inverted_permuted_inds=SGMatrix<index_t>(size, m_num_null_samples);
 
-		for (auto i=0; i<m_num_null_samples; ++i)
-		{
-			if (m_inverted_permuted_inds[i].size()!=size_t(size))
-				m_inverted_permuted_inds[i].resize(size);
-		}
-
-		if (m_save_inds)
+		if (m_save_inds && (m_all_inds.num_cols!=m_num_null_samples || m_all_inds.num_rows!=size))
 			m_all_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
 	index_t m_num_null_samples;
 	bool m_save_inds;
-	std::vector<index_t> m_permuted_inds;
-	std::vector<std::vector<index_t> > m_inverted_permuted_inds;
+	SGVector<index_t> m_permuted_inds;
+	SGMatrix<index_t> m_inverted_permuted_inds;
 	SGMatrix<index_t> m_all_inds;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

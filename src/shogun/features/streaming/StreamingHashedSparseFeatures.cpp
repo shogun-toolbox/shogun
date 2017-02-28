@@ -137,12 +137,6 @@ int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
 }
 
 template <class ST>
-CFeatures* CStreamingHashedSparseFeatures<ST>::duplicate() const
-{
-	return new CStreamingHashedSparseFeatures<ST>(*this);
-}
-
-template <class ST>
 void CStreamingHashedSparseFeatures<ST>::set_vector_reader()
 {
 	SG_DEBUG("called inside set_vector_reader\n");

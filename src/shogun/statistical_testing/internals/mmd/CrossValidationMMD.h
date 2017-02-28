@@ -75,7 +75,7 @@ struct CrossValidationMMD : PermutationMMD
 		REQUIRE(m_rejections.num_rows==m_num_runs*m_num_folds,
 			"Number of rows in the measure matrix (was %d), has to be >= %d*%d = %d!\n",
 			m_rejections.num_rows, m_num_runs, m_num_folds, m_num_runs*m_num_folds);
-		REQUIRE(size_t(m_rejections.num_cols)==kernel_mgr.num_kernels(),
+		REQUIRE(m_rejections.num_cols==kernel_mgr.num_kernels(),
 			"Number of columns in the measure matrix (was %d), has to equal to the nunber of kernels (%d)!\n",
 			m_rejections.num_cols, kernel_mgr.num_kernels());
 
@@ -85,7 +85,7 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<float64_t> null_samples(m_num_null_samples);
 		SGVector<float32_t> precomputed_km(size*(size+1)/2);
 
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			for (auto i=0; i<size; ++i)
@@ -105,39 +105,41 @@ struct CrossValidationMMD : PermutationMMD
 				{
 					generate_inds(current_fold);
 					std::fill(m_inverted_inds.data(), m_inverted_inds.data()+m_inverted_inds.size(), -1);
-					for (size_t idx=0; idx<m_xy_inds.size(); ++idx)
+					for (index_t idx=0; idx<m_xy_inds.size(); ++idx)
 						m_inverted_inds[m_xy_inds[idx]]=idx;
 
-					SGVector<index_t> xy_wrapper(m_xy_inds.data(), m_xy_inds.size(), false);
-					m_stack->add_subset(xy_wrapper);
+					m_stack->add_subset(m_xy_inds);
 
-					m_permuted_inds.resize(m_xy_inds.size());
-					SGVector<index_t> permutation_wrapper(m_permuted_inds.data(), m_permuted_inds.size(), false);
+					if (m_permuted_inds.size()!=m_xy_inds.size())
+						m_permuted_inds=SGVector<index_t>(m_xy_inds.size());
+
+					m_inverted_permuted_inds.set_const(-1);
+
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(permutation_wrapper);
+						CMath::permute(m_permuted_inds);
 
-						m_stack->add_subset(permutation_wrapper);
+						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
 						m_stack->remove_subset();
 
-						std::fill(m_inverted_permuted_inds[n].data(), m_inverted_permuted_inds[n].data()+size, -1);
 						for (int idx=0; idx<inds.size(); ++idx)
-							m_inverted_permuted_inds[n][inds[idx]]=idx;
+							m_inverted_permuted_inds(inds[idx], n)=idx;
 					}
 					m_stack->remove_subset();
 
 					terms_t terms;
 					for (auto i=0; i<size; ++i)
 					{
+						auto inverted_row=m_inverted_inds[i];
+						auto idx_base=i*size-i*(i+1)/2;
 						for (auto j=i; j<size; ++j)
 						{
-							auto inverted_row=m_inverted_inds[i];
 							auto inverted_col=m_inverted_inds[j];
 							if (inverted_row!=-1 && inverted_col!=-1)
 							{
-								auto idx=i*size-i*(i+1)/2+j;
+								auto idx=idx_base+j;
 								add_term_upper(terms, precomputed_km[idx], inverted_row, inverted_col);
 							}
 						}
@@ -150,13 +152,14 @@ struct CrossValidationMMD : PermutationMMD
 						terms_t null_terms;
 						for (auto i=0; i<size; ++i)
 						{
+							auto inverted_row=m_inverted_permuted_inds(i, n);
+							auto idx_base=i*size-i*(i+1)/2;
 							for (auto j=i; j<size; ++j)
 							{
-								auto inverted_row=m_inverted_permuted_inds[n][i];
-								auto inverted_col=m_inverted_permuted_inds[n][j];
+								auto inverted_col=m_inverted_permuted_inds(j, n);
 								if (inverted_row!=-1 && inverted_col!=-1)
 								{
-									auto idx=i*size-i*(i+1)/2+j;
+									auto idx=idx_base+j;
 									if (inverted_row<=inverted_col)
 										add_term_upper(null_terms, precomputed_km[idx], inverted_row, inverted_col);
 									else
@@ -183,21 +186,6 @@ struct CrossValidationMMD : PermutationMMD
 		}
 	}
 
-	index_t m_num_runs;
-	index_t m_num_folds;
-	static constexpr index_t DEFAULT_NUM_RUNS=10;
-
-	float64_t m_alpha;
-	static constexpr float64_t DEFAULT_ALPHA=0.05;
-
-	unique_ptr<CCrossValidationSplitting> m_kfold_x;
-	unique_ptr<CCrossValidationSplitting> m_kfold_y;
-	unique_ptr<CSubsetStack> m_stack;
-
-	std::vector<index_t> m_xy_inds;
-	SGVector<index_t> m_inverted_inds;
-	SGMatrix<float64_t> m_rejections;
-
 	void init()
 	{
 		SGVector<int64_t> dummy_labels_x(m_n_x);
@@ -212,10 +200,7 @@ struct CrossValidationMMD : PermutationMMD
 
 		const index_t size=m_n_x+m_n_y;
 		m_inverted_inds=SGVector<index_t>(size);
-
-		m_inverted_permuted_inds.resize(m_num_null_samples);
-		for (auto i=0; i<m_num_null_samples; ++i)
-			m_inverted_permuted_inds[i].resize(size);
+		m_inverted_permuted_inds=SGMatrix<index_t>(size, m_num_null_samples);
 	}
 
 	void generate_inds(index_t current_fold)
@@ -227,10 +212,28 @@ struct CrossValidationMMD : PermutationMMD
 		m_n_x=x_inds.size();
 		m_n_y=y_inds.size();
 
-		m_xy_inds.resize(x_inds.size()+y_inds.size());
+		if (m_xy_inds.size()!=m_n_x+m_n_y)
+			m_xy_inds=SGVector<index_t>(m_n_x+m_n_y);
+
 		std::copy(x_inds.data(), x_inds.data()+x_inds.size(), m_xy_inds.data());
 		std::copy(y_inds.data(), y_inds.data()+y_inds.size(), m_xy_inds.data()+x_inds.size());
 	}
+
+	index_t m_num_runs;
+	index_t m_num_folds;
+	static constexpr index_t DEFAULT_NUM_RUNS=10;
+
+	float64_t m_alpha;
+	static constexpr float64_t DEFAULT_ALPHA=0.05;
+
+	unique_ptr<CCrossValidationSplitting> m_kfold_x;
+	unique_ptr<CCrossValidationSplitting> m_kfold_y;
+	unique_ptr<CSubsetStack> m_stack;
+
+	SGVector<index_t> m_xy_inds;
+	SGVector<index_t> m_inverted_inds;
+	SGMatrix<float64_t> m_rejections;
+
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

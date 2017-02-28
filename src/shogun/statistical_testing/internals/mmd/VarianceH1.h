@@ -189,7 +189,7 @@ struct VarianceH1
 		const index_t size=m_n_x+m_n_y;
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
 		SelfAdjointPrecomputedKernel kernel_functor(SGVector<float32_t>(size*(size+1)/2));
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			ASSERT(kernel);
@@ -220,7 +220,7 @@ struct VarianceH1
 		const index_t size=m_n_x+m_n_y;
 		SGVector<float64_t> result(kernel_mgr.num_kernels());
 		SelfAdjointPrecomputedKernel kernel_functor(SGVector<float32_t>(size*(size+1)/2));
-		for (size_t k=0; k<kernel_mgr.num_kernels(); ++k)
+		for (auto k=0; k<kernel_mgr.num_kernels(); ++k)
 		{
 			auto kernel=kernel_mgr.kernel_at(k);
 			ASSERT(kernel);

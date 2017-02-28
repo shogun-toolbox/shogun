@@ -35,6 +35,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/distance/CustomDistance.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
@@ -85,7 +86,7 @@ void MaxCrossValidation::init_measures()
 void MaxCrossValidation::compute_measures()
 {
 	SG_SDEBUG("Performing %d fold cross-validattion!\n", num_folds);
-	const size_t num_kernels=kernel_mgr.num_kernels();
+	const auto num_kernels=kernel_mgr.num_kernels();
 
 	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
 	if (quadratic_time_mmd)
@@ -106,17 +107,19 @@ void MaxCrossValidation::compute_measures()
 		if (kernel_mgr.same_distance_type())
 		{
 			CDistance* distance=kernel_mgr.get_distance_instance();
-			kernel_mgr.set_precomputed_distance(estimator->compute_joint_distance(distance));
+			auto precomputed_distance=estimator->compute_joint_distance(distance);
+			kernel_mgr.set_precomputed_distance(precomputed_distance);
 			SG_UNREF(distance);
 			compute(kernel_mgr);
 			kernel_mgr.unset_precomputed_distance();
+			SG_UNREF(precomputed_distance);
 		}
 		else
 		{
 			auto samples_p_and_q=quadratic_time_mmd->get_p_and_q();
 			SG_REF(samples_p_and_q);
 
-			for (size_t k=0; k<num_kernels; ++k)
+			for (auto k=0; k<num_kernels; ++k)
 			{
 				CKernel* kernel=kernel_mgr.kernel_at(k);
 				kernel->init(samples_p_and_q, samples_p_and_q);
@@ -124,7 +127,7 @@ void MaxCrossValidation::compute_measures()
 
 			compute(kernel_mgr);
 
-			for (size_t k=0; k<num_kernels; ++k)
+			for (auto k=0; k<num_kernels; ++k)
 			{
 				CKernel* kernel=kernel_mgr.kernel_at(k);
 				kernel->remove_lhs_and_rhs();
@@ -141,7 +144,7 @@ void MaxCrossValidation::compute_measures()
 			for (auto j=0; j<num_folds; ++j)
 			{
 				SG_SDEBUG("Running fold %d\n", j);
-				for (size_t k=0; k<num_kernels; ++k)
+				for (auto k=0; k<num_kernels; ++k)
 				{
 					auto kernel=kernel_mgr.kernel_at(k);
 					estimator->set_kernel(kernel);

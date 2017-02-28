@@ -282,7 +282,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	#pragma omp parallel shared(num_threads, step)
 	{
 #ifdef HAVE_OPENMP
-		#pragma opm single
+		#pragma omp single
 		{
 			num_threads=omp_get_num_threads();
 			step=total_num/num_threads;

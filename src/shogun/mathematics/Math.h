@@ -1130,6 +1130,32 @@ class CMath : public CSGObject
 		}
 		//@}
 
+		/** Implements the greatest common divisor (gcd) via modulo operations.
+		 * Requires that either a>0 and b>=0 or vice versa.
+		 *
+		 * @param a first number
+		 * @param b second number
+		 * @return gcd between the two numbers
+		 */
+		static int32_t gcd(int32_t a, int32_t b)
+		{
+			REQUIRE((a>=0 && b>0) || (b>=0 && a>0), "gcd(%d,%d) is not defined.\n",
+					a, b);
+
+			if (1 == a || 1 == b)
+				return 1;
+
+			while (0 < a && 0 < b)
+			{
+				if (a > b)
+					a %= b;
+				else
+					b %= a;
+			}
+
+			return 0 == a ? b : a;
+		}
+
 		/** Permute randomly the elements of the vector. If provided, use the
 		 * random object to generate the permutations.
 		 * @param v the vector to permute.
