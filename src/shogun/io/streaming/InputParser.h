@@ -357,7 +357,7 @@ protected:
 	std::condition_variable examples_state_changed;
 
 	/// Flag that indicate that the parsing thread should continue reading
-	std::atomic<bool> keep_running;
+	alignas(CPU_CACHE_LINE_SIZE) std::atomic_bool keep_running;
 
 };
 

@@ -23,20 +23,30 @@ public:
 	 *
 	 * @return the new reference count
 	 */
-	int32_t ref();
+	SG_FORCED_INLINE int32_t ref()
+	{
+		return rc.fetch_add(1, std::memory_order_relaxed)+1;
+	}
 
 	/** Decrease reference count
 	 *
 	 * @return the new reference count
 	 */
-	int32_t unref();
+	SG_FORCED_INLINE int32_t unref()
+	{
+		return rc.fetch_sub(1, std::memory_order_acquire)-1;
+	}
 
 	/** Get the reference count
 	 *
 	 * @return the reference count
 	 */
-	int32_t ref_count();
+	SG_FORCED_INLINE int32_t ref_count()
+	{
+		return rc.load(std::memory_order_acquire);
+	}
 
+private:
 	/** reference count */
     std::atomic<int32_t> rc;
 };

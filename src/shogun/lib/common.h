@@ -76,11 +76,19 @@ typedef int32_t index_t;
 
 typedef std::complex<float64_t> complex128_t;
 
-#define CPU_CACHE_LINE_SIZE_BYTES 8
+/** CPU cache line size */
+constexpr size_t CPU_CACHE_LINE_SIZE = 64;
+constexpr size_t CPU_CACHE_LINE_SIZE_BYTES = CPU_CACHE_LINE_SIZE/8;
 
 #ifdef _WIN32
 #include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
+#endif
+
+#ifdef _MSC_VER
+#define SG_FORCED_INLINE __forceinline
+#else
+#define SG_FORCED_INLINE inline __attribute__((always_inline))
 #endif
 
 #include <shogun/lib/memory.h>
