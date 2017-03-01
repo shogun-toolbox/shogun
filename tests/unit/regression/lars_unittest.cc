@@ -396,7 +396,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 	
 	MatrixXd XX=mat_old.transpose()*mat_old;
 	// Compute matrix R which has to be updated
-	SGMatrix<float64_t> R_old=linalg::cholesky(XX, false);
+	SGMatrix<float64_t> R_old=linalg::cholesky_factor(SGMatrix<float64_t>(XX), false);
 
 	// Update cholesky decomposition matrix R
 	lars_helper lars = lars_helper();
@@ -405,7 +405,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 
 	// Compute true cholesky decomposition		
 	MatrixXd XX_new=mat_new.transpose()*mat_new;
-	SGMatrix<float64_t> R_true=linalg::cholesky(XX_new, false);
+	SGMatrix<float64_t> R_true=linalg::cholesky_factor(SGMatrix<float64_t>(XX_new), false);
 
 	Map<MatrixXd> map_R_true(R_true.matrix, num_feats, num_feats);	
 	EXPECT_NEAR( (map_R_true - map_R_new).norm(), 0.0, 1E-12);	
