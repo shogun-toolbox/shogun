@@ -40,7 +40,7 @@ CMulticlassLabels* CKDTREEKNNSolver::classify_objects(CDistance* distance, const
 		output->set_label(i, out_idx + m_min_label);
 	}
 	SG_UNREF(query);
-
+	SG_UNREF(kd_tree);
 	return output;
 }
 
@@ -49,7 +49,7 @@ int32_t* CKDTREEKNNSolver::classify_objects_k(CDistance* distance, const int32_t
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
 	//allocation for distances to nearest neighbors
-	float64_t* dists=SG_MALLOC(float64_t, m_k);
+	SGVector<float64_t> dists(m_k);
 
 	CFeatures* lhs = distance->get_lhs();
 	CKDTree* kd_tree = new CKDTree(m_leaf_size);
@@ -65,12 +65,15 @@ int32_t* CKDTREEKNNSolver::classify_objects_k(CDistance* distance, const int32_t
 		for (index_t j=0; j<m_k; j++)
 		{
 			train_lab[j] = m_train_labels[ NN(j,i) ];
-			dists[j] = distance->distance(i, NN(j,i));
+			dists[j] = distance->distance(NN(j,i), i);
 		}
-		CMath::qsort_index(dists, train_lab, m_k);
+		CMath::qsort_index(dists.vector, train_lab, m_k);
 
 		choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
 	}
 
+	SG_UNREF(data);
+	SG_UNREF(kd_tree);
+	
 	return output;
 }
