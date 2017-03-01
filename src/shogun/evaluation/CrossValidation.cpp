@@ -51,6 +51,8 @@ void CCrossValidation::init()
 {
 	m_num_runs=1;
 
+	m_shared_features=false;
+
 	/* do reference counting for output objects */
 	m_xval_outputs=new CList(true);
 
@@ -296,6 +298,8 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			if (get_global_parallel()->get_num_threads()==1)
 				features=m_features;
+			else if (m_shared_features)
+				features=m_features->shallow_subset_copy();
 			else
 				features=(CFeatures*)m_features->clone();
 

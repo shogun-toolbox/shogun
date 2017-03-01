@@ -149,6 +149,16 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);
 
+	void set_shared_features(bool shared_features)
+	{
+		m_shared_features = shared_features;
+	}
+
+	bool get_shared_features()
+	{
+		return m_shared_features;
+	}
+
 	/** evaluate */
 	virtual CEvaluationResult* evaluate();
 
@@ -185,6 +195,8 @@ protected:
 
 	/** xval output listeners */
 	CList* m_xval_outputs;
+
+	bool m_shared_features;
 };
 
 }
