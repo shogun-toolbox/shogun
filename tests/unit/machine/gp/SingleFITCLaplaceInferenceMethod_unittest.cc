@@ -31,7 +31,6 @@
 
 
 #include <shogun/lib/config.h>
-#if defined(HAVE_LINALG_LIB)
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -472,5 +471,3 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(latent_features_train);
 	SG_UNREF(inf);
 }
-
-#endif /* HAVE_LINALG_LIB */

@@ -30,7 +30,6 @@
  */
 
 #include <shogun/lib/config.h>
-#if defined(HAVE_LINALG_LIB)
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -209,4 +208,3 @@ TEST(SingleFITCInference,set_kernel)
 
 	SG_UNREF(inf);
 }
-#endif /* HAVE_LINALG_LIB */

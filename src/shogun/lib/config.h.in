@@ -43,16 +43,8 @@
 #cmakedefine VIENNACL_WITH_OPENCL 1
 
 /* for linear algebra global backend setups */
-#cmakedefine HAVE_LINALG_LIB 1
-
 #cmakedefine USE_EIGEN3_GLOBAL 1
 #cmakedefine USE_VIENNACL_GLOBAL 1
-
-#cmakedefine USE_EIGEN3_CORE 1
-#cmakedefine USE_VIENNACL_CORE 1
-
-#cmakedefine USE_EIGEN3_REDUX 1
-#cmakedefine USE_VIENNACL_REDUX 1
 
 #cmakedefine USE_EIGEN3_LINSLV 1
 #cmakedefine USE_VIENNACL_LINSLV 1

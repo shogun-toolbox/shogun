@@ -231,22 +231,10 @@ SHOGUN_DEPENDENCIES(
   VERSION ${VIENNACL_VERSION_MINIMUM}
   CONFIG_FLAG HAVE_VIENNACL)
 
-# Check if supported linear algebra backend is found
-IF (HAVE_CXX0X OR HAVE_CXX11)
-  SET(HAVE_LINALG_LIB 1)
-ELSE ()
-  MESSAGE (STATUS "LINALG uses c++11 features. Please use a supported compiler")
-ENDIF ()
-
 # Linear algebra default global backend setups
 SET_LINALG_BACKEND(LINALG_DEFAULT_BACKEND GLOBAL)
 
 # Linear algebra default module specific backend setup
-# Core module
-SET_LINALG_BACKEND(LINALG_CORE_LIB CORE)
-# Reduction module
-SET_LINALG_BACKEND(LINALG_REDUX_LIB REDUX)
-
 # Linear solver module
 SET_LINALG_BACKEND(LINALG_LINEAR_SOLVER_LIB LINSLV)
 

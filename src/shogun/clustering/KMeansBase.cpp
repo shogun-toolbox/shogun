@@ -18,10 +18,6 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/eigen3.h>
 
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
-
 using namespace shogun;
 using namespace Eigen;
 
@@ -160,13 +156,7 @@ void CKMeansBase::initialize_training(CFeatures* data)
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)
-	{
-#ifdef HAVE_LINALG_LIB
 		mus_initial=kmeanspp();
-#else
-		SG_WARNING("LINALG library not available for KMeans++, resorting to random initialisation");
-#endif
-	}
 
 	R=SGVector<float64_t>(k);
 

@@ -18,12 +18,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
-
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-
 using namespace linalg;
-#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::init()
 {
@@ -161,7 +156,6 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-#ifdef HAVE_LINALG_LIB
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
@@ -366,7 +360,6 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 
 	return sum;
 }
-#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::cleanup_custom()
 {
