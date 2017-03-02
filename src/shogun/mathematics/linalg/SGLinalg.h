@@ -37,6 +37,7 @@
 
 #include <shogun/lib/memory.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/Lock.h>
 
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
@@ -50,6 +51,9 @@ namespace shogun
 class SGLinalg
 {
 public:
+	/** Mutex of GPU transfer methods */
+	CLock m_gpu_transfer;
+
 	/** Default constructor */
 	SGLinalg()
 	{

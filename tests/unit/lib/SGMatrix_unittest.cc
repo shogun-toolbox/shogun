@@ -176,9 +176,9 @@ TEST(SGMatrixTest,pointer_equal_equal)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-	SGMatrix<float64_t> a(3,2);
+	SGMatrix<float64_t> a(3,2), a_gpu;
 	a.zero();
-	auto a_gpu = linalg::to_gpu(a);
+	linalg::to_gpu(a, a_gpu);
 	SGMatrix<float64_t> b_gpu(a_gpu);
 
 	EXPECT_TRUE(a_gpu == b_gpu);
@@ -188,13 +188,13 @@ TEST(SGMatrixTest,pointer_equal_different)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
 
-	SGMatrix<float64_t> a(3,2);
+	SGMatrix<float64_t> a(3,2), a_gpu;
 	a.zero();
-	auto a_gpu = linalg::to_gpu(a);
+	linalg::to_gpu(a, a_gpu);
 
-	SGMatrix<float64_t> b(3,2);
+	SGMatrix<float64_t> b(3,2), b_gpu;
 	b.zero();
-	auto b_gpu = linalg::to_gpu(b);
+	linalg::to_gpu(b, b_gpu);
 
 	EXPECT_FALSE(a_gpu == b_gpu);
 }
