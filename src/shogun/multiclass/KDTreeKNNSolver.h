@@ -44,9 +44,9 @@ class CKDTREEKNNSolver : public CKNNSolver
 		 */
 		CKDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t leaf_size);
 
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, int32_t* train_lab, float64_t* classes) const;
+		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
 
-		virtual int32_t* classify_objects_k(CDistance* d, const int32_t num_lab, int32_t* train_lab, int32_t* classes) const;
+		virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
 
 		/** @return object name */
 		const char* get_name() const { return "KDTREEKNNSolver"; }

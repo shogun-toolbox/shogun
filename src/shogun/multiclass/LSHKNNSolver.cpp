@@ -23,10 +23,10 @@ CKNNSolver(k, q, num_classes, min_label, train_labels)
 	m_lsh_t=lsh_t;
 }
 
-CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* distance, const int32_t num_lab, int32_t* train_lab, float64_t* classes) const
+CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
-	CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_lhs());
+	CDenseFeatures<float64_t>* features = dynamic_cast<CDenseFeatures<float64_t>*>(knn_distance->get_lhs());
 	std::vector<falconn::DenseVector<double>> feats;
 	for(int32_t i=0; i < features->get_num_vectors(); i++)
 	{
@@ -50,7 +50,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* distance, const in
 	if (m_lsh_t)
 		lsh_table->set_num_probes(m_lsh_t);
 
-	CDenseFeatures<float64_t>* query_features = dynamic_cast<CDenseFeatures<float64_t>*>(distance->get_rhs());
+	CDenseFeatures<float64_t>* query_features = dynamic_cast<CDenseFeatures<float64_t>*>(knn_distance->get_rhs());
 	std::vector<falconn::DenseVector<double>> query_feats;
 
 	SGMatrix<index_t> NN (m_k, query_features->get_num_vectors());
@@ -73,7 +73,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* distance, const in
 			train_lab[j] = m_train_labels[ NN(j,i) ];
 
 		//get the index of the 'nearest' class
-		index_t out_idx = choose_class(classes, train_lab);
+		index_t out_idx = choose_class(classes.vector, train_lab.vector);
 		//write the label of 'nearest' in the output
 		output->set_label(i, out_idx + m_min_label);
 	}
@@ -82,7 +82,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* distance, const in
 	return output;
 }
 
-int32_t* CLSHKNNSolver::classify_objects_k(CDistance* d, const int32_t num_lab, int32_t* train_lab, int32_t* classes) const
+SGVector<int32_t> CLSHKNNSolver::classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
 {
 	SG_NOTIMPLEMENTED
 	return 0;

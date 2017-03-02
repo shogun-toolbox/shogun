@@ -71,7 +71,7 @@ class CKNNSolver : public CDistanceMachine
 		 * @param classes vector used to store the histogram
 		 * @return the classified labels
 		 */
-		virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, int32_t* train_lab, float64_t* classes) const = 0;
+		 virtual CMulticlassLabels* classify_objects(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const = 0;
 
 		/**
 		 * classify all objects, and the implementation will depended on which knn solver been choosen.
@@ -81,7 +81,7 @@ class CKNNSolver : public CDistanceMachine
 		 * @param classes vector used to store the histogram
 		 * @return the classified labels
 		 */
-		virtual int32_t* classify_objects_k(CDistance* d, const int32_t num_lab, int32_t* train_lab, int32_t* classes) const = 0;
+		 virtual SGVector<int32_t> classify_objects_k(CDistance* d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const = 0;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KNNSolver"; }
