@@ -270,17 +270,27 @@ float64_t CCrossValidation::evaluate_one_run()
 			CMachine* machine;
 			CFeatures* features;
 			CLabels* labels;
+			CEvaluation* evaluation_criterion;
 
 			if (get_global_parallel()->get_num_threads()==1)
+			{
 				machine=m_machine;
+				features=m_features;
+				evaluation_criterion=m_evaluation_criterion;
+			}
 			else
+			{
 				machine=(CMachine*)m_machine->clone();
+				features=(CFeatures*)m_features->clone();
+				evaluation_criterion=(CEvaluation*)m_evaluation_criterion->clone();
+			}
 
 			/* evtl. update xvalidation output class */
-			CCrossValidationOutput* current=(CCrossValidationOutput*)
-					m_xval_outputs->get_first_element();
+			CCrossValidationOutput* current;
 			#pragma omp critical
 			{
+			current=(CCrossValidationOutput*)
+					m_xval_outputs->get_first_element();
 			while (current)
 			{
 				current->update_fold_index(i);
@@ -293,11 +303,6 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
-
-			if (get_global_parallel()->get_num_threads()==1)
-				features=m_features;
-			else
-				features=(CFeatures*)m_features->clone();
 
 			features->add_subset(inverse_subset_indices);
 
@@ -361,7 +366,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			SG_REF(result_labels);
 
 			/* evaluate */
-			results[i]=m_evaluation_criterion->evaluate(result_labels, labels);
+			results[i]=evaluation_criterion->evaluate(result_labels, labels);
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
@@ -388,6 +393,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				SG_UNREF(machine);
 				SG_UNREF(features);
 				SG_UNREF(labels);
+				SG_UNREF(evaluation_criterion);
 			}
 			SG_UNREF(result_labels);
 		}
