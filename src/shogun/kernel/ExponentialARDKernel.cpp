@@ -14,10 +14,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-
-#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
-#endif
 
 using namespace shogun;
 
@@ -67,7 +64,6 @@ SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeat
 
 }
 
-#ifdef HAVE_LINALG_LIB
 
 void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 {
@@ -169,7 +165,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 	m_ARD_type=KT_FULL;
 	index_t len=(2*m_weights_rows+1-m_weights_cols)*m_weights_cols/2;
 	m_log_weights=SGVector<float64_t>(len);
-		
+
 	index_t offset=0;
 	for (int i=0; i<weights.num_cols && i<weights.num_rows; i++)
 	{
@@ -280,4 +276,3 @@ void CExponentialARDKernel::check_weight_gradient_index(index_t index)
 			index, m_log_weights.vlen);
 	}
 }
-#endif //HAVE_LINALG_LIB

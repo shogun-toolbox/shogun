@@ -104,12 +104,10 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(MultiquadricKernel) CMultiquadricKernel;
 %rename(JensenShannonKernel) CJensenShannonKernel;
 
-#ifdef HAVE_LINALG_LIB
 %rename(ExponentialARDKernel) CExponentialARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
 
 %rename(GaussianARDSparseKernel) CGaussianARDSparseKernel;
-#endif
 
 %rename(SubsequenceStringKernel) CSubsequenceStringKernel;
 %rename(PeriodicKernel) CPeriodicKernel;
@@ -227,11 +225,9 @@ namespace shogun
 %include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
 %include <shogun/kernel/JensenShannonKernel.h>
-#ifdef HAVE_LINALG_LIB
 %include <shogun/kernel/ExponentialARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
 %include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
 %include <shogun/kernel/string/SubsequenceStringKernel.h>
 %include <shogun/kernel/PeriodicKernel.h>
 
