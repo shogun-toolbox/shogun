@@ -32,8 +32,6 @@
 #ifndef SPECIAL_PURPOSE_H_
 #define SPECIAL_PURPOSE_H_
 
-#ifdef HAVE_LINALG_LIB
-
 #include <shogun/mathematics/linalg/internal/implementation/SpecialPurpose.h>
 
 namespace shogun
@@ -108,5 +106,4 @@ typename Matrix::Scalar squared_error(Matrix P, Matrix Q)
 }
 
 }
-#endif // HAVE_LINALG_LIB
 #endif // SPECIAL_PURPOSE_H_

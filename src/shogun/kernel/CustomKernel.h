@@ -318,8 +318,6 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
-#ifdef HAVE_LINALG_LIB
-
 		/**
 		 * Overrides the sum_symmetric_block method of CKernel to compute the
 		 * sum directly from the precomputed kernel matrix.
@@ -439,7 +437,6 @@ class CCustomKernel: public CKernel
 				index_t block_begin_row, index_t block_begin_col,
 				index_t block_size_row, index_t block_size_col,
 				bool no_diag=false);
-#endif // HAVE_LINALG_LIB
 
 		/** Adds a row subset of indices on top of the current subsets (possibly
 		 * subset of subset). Every call causes a new active index vector
