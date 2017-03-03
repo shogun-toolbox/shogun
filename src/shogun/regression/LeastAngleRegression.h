@@ -124,6 +124,7 @@ public:
 	
 	void switch_w(int32_t num_variable)
 	{
+		SGVector<float64_t> w = get_w();
 		REQUIRE(w.vlen > 0,"Please train the model (i.e. run the model's train() method) before updating its weights.\n")
 		REQUIRE(size_t(num_variable) < m_beta_idx.size() && num_variable >= 0,
 			"Cannot switch to an estimator of %d non-zero coefficients.\n", num_variable)
@@ -158,6 +159,7 @@ public:
 	 */
 	SGVector<float64_t> get_w_for_var(int32_t num_var)
 	{
+		SGVector<float64_t> w = get_w();
 		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w.vlen, false);
 	}
 

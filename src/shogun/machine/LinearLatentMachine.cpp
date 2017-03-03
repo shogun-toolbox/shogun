@@ -28,8 +28,10 @@ CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 	set_model(model);
 
 	index_t feat_dim = m_model->get_dim();
+	SGVector<float64_t> w;
 	w.resize_vector(feat_dim);
 	w.zero();
+	set_w(w);
 }
 
 CLinearLatentMachine::~CLinearLatentMachine()
@@ -99,7 +101,7 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 
 		/* find argmaxH */
 		SG_DEBUG("Find and set h_i = argmax_h (w, psi(x_i,h))\n")
-		m_model->argmax_h(w);
+		m_model->argmax_h(get_w());
 
 		SG_DEBUG("Recalculating PSI (x,h) with the new h variables\n")
 		m_model->cache_psi_features();

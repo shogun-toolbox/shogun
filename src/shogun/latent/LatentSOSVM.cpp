@@ -53,8 +53,7 @@ float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 	so->train();
 
 	/* copy the resulting w */
-	SGVector<float64_t> cur_w = so->get_w();
-	sg_memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
+	set_w(so->get_w().clone());
 
 	/* get the primal objective value */
 	float64_t po = so->get_result().Fp;

@@ -145,9 +145,10 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 
 	SG_FREE(prob.y);
 
-	w = SGVector<float64_t>(num_feat);
+	SGVector<float64_t> w(num_feat);
 	for (int32_t i=0; i<num_feat; i++)
 		w[i] = training_w[i];
+	set_w(w);
 
 	return true;
 }

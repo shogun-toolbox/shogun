@@ -76,6 +76,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 				num_vec, num_train_labels);
 	}
 
+	SGVector<float64_t> w;
 	if (m_use_bias)
 		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
@@ -113,15 +114,17 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 
 		}
 		case L2R_L1LOSS_SVR_DUAL:
-			solve_l2r_l1l2_svr(&prob);
+			solve_l2r_l1l2_svr(w, &prob);
 			break;
 		case L2R_L2LOSS_SVR_DUAL:
-			solve_l2r_l1l2_svr(&prob);
+			solve_l2r_l1l2_svr(w, &prob);
 			break;
 		default:
 			SG_ERROR("Error: unknown regression type\n")
 			break;
 	}
+
+	set_w(w);
 
 	return true;
 }
@@ -154,7 +157,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 #define GETI(i) (0)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinearRegression::solve_l2r_l1l2_svr(const liblinear_problem *prob)
+void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const liblinear_problem *prob)
 {
 	int l = prob->l;
 	double C = m_C;
