@@ -98,6 +98,11 @@ target_include_directories(shogun PUBLIC
   $<INSTALL_INTERFACE:include/shogun>
 )
 
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "dir='${dir}'")
+endforeach()
+
 # create shogun_deps meta target to store all the
 # dependencies of shogun itself, this is used in unit test
 add_library(shogun_deps INTERFACE)

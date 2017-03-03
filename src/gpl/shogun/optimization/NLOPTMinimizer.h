@@ -34,7 +34,6 @@
 #define CNLOPTMINIMIZER_H
 #include <shogun/optimization/FirstOrderMinimizer.h>
 
-#ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
 #include <shogun/optimization/nloptcommon.h>
 #endif 
@@ -136,6 +135,5 @@ private:
 };
 
 }
-#endif //USE_GPL_SHOGUN
 #endif /* CNLOPTMINIMIZER_H */
 

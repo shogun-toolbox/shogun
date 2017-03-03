@@ -60,7 +60,9 @@
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
 #include <shogun/optimization/lbfgs/LBFGSMinimizer.h>
 
+#ifdef USE_GPL_SHOGUN
 #include <shogun/optimization/NLOPTMinimizer.h>
+#endif
 
 using namespace shogun;
 

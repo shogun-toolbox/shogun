@@ -53,7 +53,9 @@
 %rename(ECOCLLBDecoder) CECOCLLBDecoder;
 
 %rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
+#ifdef USE_GPL_SHOGUN
 %rename(MulticlassLogisticRegression) CMulticlassLogisticRegression;
+#endif //USE_GPL_SHOGUN
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
 %rename(MulticlassOCAS) CMulticlassOCAS;
 %rename(MulticlassSVM) CMulticlassSVM;

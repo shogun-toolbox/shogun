@@ -35,7 +35,6 @@
 #include <algorithm> 
 
 using namespace shogun;
-#ifdef USE_GPL_SHOGUN
 CNLOPTMinimizer::CNLOPTMinimizer()
 	:FirstOrderMinimizer()
 {
@@ -284,4 +283,3 @@ void CNLOPTMinimizer::init_minimization()
 }
 #endif
 
-#endif //USE_GPL_SHOGUN
