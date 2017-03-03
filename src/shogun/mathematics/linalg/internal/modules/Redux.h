@@ -38,6 +38,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/Max.h>
 #include <shogun/mathematics/linalg/internal/implementation/MeanEigen3.h>
 #include <shogun/mathematics/linalg/internal/implementation/Cholesky.h>
+#include <shogun/mathematics/linalg/internal/implementation/Variance.h>
 
 namespace shogun
 {
@@ -225,6 +226,52 @@ SGVector<typename implementation::rowwise_mean<backend,Matrix>::ReturnDataType>
 	rowwise_mean(Matrix m, bool no_diag=false)
 {
 	return implementation::rowwise_mean<backend,Matrix>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of the elementwise unbiased empirical  
+ * variance estimate of a matrix that works with generic dense matrices
+ *
+ * @param m the matrix whose variance has to be computed
+ * @return Given a matrix \f$x\f$ with entries \f$\{x_{11}, ..., x_{mn}\}\f$, return
+ * \f$\frac{1}{m*n-1}\sum_{i=1}^m\sum_{j=1}^n (x_{ij}-\bar{x})^2\f$ where
+ * \f$\bar x=\frac{1}{mn}\sum_{i=1}^m\sum_{j=1}^n x_{ij}\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar variance(Matrix m)
+{
+	return implementation::variance<backend, Matrix>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of the unbiased empirical  
+ * variance estimate of a vector that works with generic dense vectors
+ *
+ * @param x the vector whose variance has to be computed
+ * @return Given  \f$\{x_1, ..., x_m\}\f$, this is
+ * \f$\frac{1}{m-1}\sum_{i=1}^m (x_i-\bar{x})^2\f$ where
+ * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_variance(Vector x)
+{
+	return implementation::vector_variance<backend, Vector>::compute(x);
+}
+
+/**
+ * Wrapper method for internal implementation of the unbiased empirical  
+ * variance estimate of the row vectors in a matrix that works with generic
+ * dense matricies
+ *
+ * @param m the matrix whose rowwise variance has to be computed
+ * @return Given a single row \f$k\f$ with entries \f$\{x_{k1}, ..., x_{kn}\}\f$ 
+ * from matrix \f$x\f$, this is \f$\frac{1}{n-1}\sum_{i=1}^n (k_i-\bar{k})^2\f$ where
+ * \f$\bar k=\frac{1}{n}\sum_{i=1}^n k_i\f$.  This is computed for each row \f$n\f$.
+ */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+SGVector<typename Matrix::Scalar> rowwise_variance(Matrix m)
+{
+	return implementation::rowwise_variance<backend, Matrix>::compute(m);
 }
 
 /**Wrapper method for internal implementation of cholesky decomposition of a Hermitian positive definite matrix
