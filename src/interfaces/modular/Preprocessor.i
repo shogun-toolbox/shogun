@@ -31,7 +31,6 @@
 /* Feature selection framework */
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
-#%rename(BAHSIC) CBAHSIC;
 
 %newobject shogun::CFeatureSelection::apply;
 %newobject shogun::CFeatureSelection::remove_feats;
