@@ -832,6 +832,14 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
+CSGObject * CAlphabet::clone()
+{
+	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone();
+	alph_clone->init_map_table();
+	alph_clone->copy_histogram(this);
+	return alph_clone;
+}
+
 template <class ST>
 void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
