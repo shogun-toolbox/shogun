@@ -22,6 +22,7 @@
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 #include <memory>
+#include <atomic>
 
 namespace Eigen
 {
@@ -59,8 +60,7 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector(T* v, index_t len, bool ref_counting=true);
 
 		/** Wraps a vector around an existing memory segment with an offset */
-		SGVector(T* m, index_t len, index_t offset)
-			: SGReferencedData(false), vector(m+offset), vlen(len) { }
+		SGVector(T* m, index_t len, index_t offset);
 
 		/** Constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
@@ -141,6 +141,8 @@ template<class T> class SGVector : public SGReferencedData
 			assert_on_cpu();
 			return vector;
 		}
+
+		SGVector<T>& operator=(const SGVector<T>&);
 
 		/** Cast to pointer */
 		operator T*() { return vector; }
@@ -524,6 +526,9 @@ template<class T> class SGVector : public SGReferencedData
 		virtual void free_data();
 
 	private:
+		/** Atomic variable of vector on_gpu status */
+		std::atomic<bool> m_on_gpu;
+
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */
