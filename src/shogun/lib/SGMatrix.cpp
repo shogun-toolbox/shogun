@@ -39,13 +39,25 @@ SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
 template <class T>
 SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), matrix(m),
-	num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr) { }
+	num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
+{
+	m_on_gpu.store(false, std::memory_order_release);
+}
+
+template <class T>
+SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
+	: SGReferencedData(false), matrix(m+offset),
+	num_rows(nrows), num_cols(ncols)
+{
+	m_on_gpu.store(false, std::memory_order_release);
+}
 
 template <class T>
 SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
 {
 	matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
@@ -56,6 +68,7 @@ SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
 	num_rows=vec.vlen;
 	num_cols=1;
 	gpu_ptr = vec.gpu_ptr;
+	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
 }
 
 template <class T>
@@ -72,6 +85,7 @@ SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 	num_rows=nrows;
 	num_cols=ncols;
 	gpu_ptr = vec.gpu_ptr;
+	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
 }
 
 template<class T>
@@ -79,6 +93,7 @@ SGMatrix<T>::SGMatrix(GPUMemoryBase<T>* mat, index_t nrows, index_t ncols)
 	: SGReferencedData(true), matrix(NULL), num_rows(nrows), num_cols(ncols),
 	gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(mat))
 {
+	m_on_gpu.store(true, std::memory_order_release);
 }
 
 template <class T>
@@ -92,7 +107,7 @@ SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 : SGReferencedData(false), matrix(mat.data()),
 	num_rows(mat.rows()), num_cols(mat.cols()), gpu_ptr(nullptr)
 {
-
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
@@ -100,6 +115,19 @@ SGMatrix<T>::operator EigenMatrixXtMap() const
 {
 	assert_on_cpu();
 	return EigenMatrixXtMap(matrix, num_rows, num_cols);
+}
+
+template<class T>
+SGMatrix<T>& SGMatrix<T>::operator=(const SGMatrix<T>& other)
+{
+	if(&other == this)
+	return *this;
+
+	unref();
+	copy_data(other);
+	copy_refcount(other);
+	ref();
+	return *this;
 }
 
 template <class T>
@@ -1066,6 +1094,8 @@ void SGMatrix<T>::copy_data(const SGReferencedData &orig)
 	matrix=((SGMatrix*)(&orig))->matrix;
 	num_rows=((SGMatrix*)(&orig))->num_rows;
 	num_cols=((SGMatrix*)(&orig))->num_cols;
+	m_on_gpu.store(((SGMatrix*)(&orig))->m_on_gpu.load(
+		std::memory_order_acquire), std::memory_order_release);
 }
 
 template<class T>
@@ -1075,6 +1105,7 @@ void SGMatrix<T>::init_data()
 	num_rows=0;
 	num_cols=0;
 	gpu_ptr=nullptr;
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template<class T>

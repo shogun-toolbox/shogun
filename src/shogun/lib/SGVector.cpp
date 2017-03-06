@@ -79,6 +79,14 @@ template<class T>
 SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vector(v), vlen(len), gpu_ptr(NULL)
 {
+	m_on_gpu.store(false, std::memory_order_release);
+}
+
+template<class T>
+SGVector<T>::SGVector(T* m, index_t len, index_t offset)
+: SGReferencedData(false), vector(m+offset), vlen(len)
+{
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template<class T>
@@ -86,6 +94,7 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
 	vector=SG_MALLOC(T, len);
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template<class T>
@@ -93,12 +102,26 @@ SGVector<T>::SGVector(GPUMemoryBase<T>* vector, index_t len)
  : SGReferencedData(true), vector(NULL), vlen(len),
    gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(vector))
 {
+	m_on_gpu.store(true, std::memory_order_release);
 }
 
 template<class T>
 SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 {
 	copy_data(orig);
+}
+
+template<class T>
+SGVector<T>& SGVector<T>::operator=(const SGVector<T>& other)
+{
+	if(&other == this)
+	return *this;
+
+	unref();
+	copy_data(other);
+	copy_refcount(other);
+	ref();
+	return *this;
 }
 
 template<class T>
@@ -117,14 +140,14 @@ template <class T>
 SGVector<T>::SGVector(EigenVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
-
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
 SGVector<T>::SGVector(EigenRowVectorXt& vec)
 : SGReferencedData(false), vector(vec.data()), vlen(vec.size()), gpu_ptr(NULL)
 {
-
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
@@ -331,6 +354,8 @@ void SGVector<T>::copy_data(const SGReferencedData &orig)
 	gpu_ptr=std::shared_ptr<GPUMemoryBase<T>>(((SGVector*)(&orig))->gpu_ptr);
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
+	m_on_gpu.store(((SGVector*)(&orig))->m_on_gpu.load(
+		std::memory_order_acquire), std::memory_order_release);
 }
 
 template<class T>
@@ -339,6 +364,7 @@ void SGVector<T>::init_data()
 	vector=NULL;
 	vlen=0;
 	gpu_ptr=NULL;
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template<class T>

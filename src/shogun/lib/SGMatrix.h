@@ -19,6 +19,7 @@
 #include <shogun/lib/SGReferencedData.h>
 
 #include <memory>
+#include <atomic>
 
 namespace Eigen
 {
@@ -56,9 +57,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
 
 		/** Wraps a matrix around an existing memory segment with an offset */
-		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
-			: SGReferencedData(false), matrix(m+offset),
-			num_rows(nrows), num_cols(ncols) { }
+		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset);
 
 		/** Constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
@@ -122,6 +121,9 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Wraps an Eigen3 matrix around the data of this matrix */
 		operator EigenMatrixXtMap() const;
+
+		/** Copy assign operator */
+		SGMatrix<T>& operator=(const SGMatrix<T>&);
 #endif // SWIG
 
 		/** Copy constructor */
@@ -423,7 +425,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** overridden to free data */
 		virtual void free_data();
 
-        private:
+  private:
+		/** Atomic variable of vector on_gpu status */
+		std::atomic<bool> m_on_gpu;
+
 		/** Assert whether the data is on GPU
 		 * and raise error if the data is on GPU
 		 */
