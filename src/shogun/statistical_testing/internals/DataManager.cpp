@@ -35,7 +35,6 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/DataFetcherFactory.h>
 
 using namespace shogun;
@@ -385,10 +384,6 @@ NextSamples DataManager::next()
 		auto feats=fetchers[i]->next();
 		if (feats!=nullptr)
 		{
-#ifdef USE_REFERENCE_COUNTING
-			ASSERT(feats->ref_count()==0);
-#endif // USE_REFERENCE_COUNTING
-
 			auto blocksize=fetchers[i]->m_block_details.m_blocksize;
 			auto num_blocks_curr_burst=feats->get_num_vectors()/blocksize;
 
@@ -399,6 +394,7 @@ NextSamples DataManager::next()
 				ASSERT(next_samples.m_num_blocks==num_blocks_curr_burst);
 
 			next_samples[i]=Block::create_blocks(feats, num_blocks_curr_burst, blocksize);
+			SG_UNREF(feats);
 		}
 	}
 	SG_SDEBUG("Leaving!\n");

@@ -987,7 +987,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 
 	/* first, check other features and count number of elements */
 	CSGObject* other=others->get_first_element();
-	index_t num_vectors_merged=num_vectors;
+	index_t num_vectors_merged=get_num_vectors();
 	while (other)
 	{
 		CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
@@ -1024,12 +1024,21 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	SGMatrix<ST> data(num_features, num_vectors_merged);
 
 	/* copy data of this instance */
-	SG_DEBUG("copying matrix of this instance\n")
-	memcpy(data.matrix, feature_matrix.matrix,
-			num_features*num_vectors*sizeof(ST));
+	SG_DEBUG("copying matrix of this instance\n");
+	if (m_subset_stack->has_subsets())
+	{
+		SGMatrix<ST> active_feats_mat=get_feature_matrix();
+		memcpy(data.matrix, active_feats_mat.matrix,
+			active_feats_mat.size()*sizeof(ST));
+	}
+	else
+	{
+		memcpy(data.matrix, feature_matrix.matrix,
+			feature_matrix.size()*sizeof(ST));
+	}
 
 	/* count number of vectors (not elements) processed so far */
-	index_t num_processed=num_vectors;
+	index_t num_processed=get_num_vectors();
 
 	/* now copy data of other features block wise */
 	other=others->get_first_element();
@@ -1037,11 +1046,12 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	{
 		/* cast is safe due to above check */
 		CDenseFeatures<ST>* casted=(CDenseFeatures<ST>*)other;
+		SGMatrix<ST> other_mat=casted->get_feature_matrix();
 
 		SG_DEBUG("copying matrix of provided instance\n")
 		memcpy(&(data.matrix[num_processed*num_features]),
-				casted->get_feature_matrix().matrix,
-				num_features*casted->get_num_vectors()*sizeof(ST));
+				other_mat.matrix,
+				other_mat.size()*sizeof(ST));
 
 		/* update counting */
 		num_processed+=casted->get_num_vectors();

@@ -484,6 +484,7 @@ public:
 	/** Takes a list of feature instances and returns a new instance which is
 	 * a concatenation of a copy if this instace's data and the given
 	 * instancess data. Note that the feature types have to be equal.
+	 * This method respects the subsets for all the feature instances involved.
 	 *
 	 * @param other feature object to append
 	 * @return new feature object which contains copy of data of this

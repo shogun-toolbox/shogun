@@ -28,7 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/statistical_testing/internals/BlockwiseDetails.h>

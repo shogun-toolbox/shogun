@@ -34,7 +34,6 @@
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/TestTypes.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 
 using namespace shogun;
 using namespace internal;
@@ -107,10 +106,8 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 	auto samples=data_mgr.next();
 	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
 
-	CFeatures *samples_p=samples[0][0].get();
-	CFeatures *samples_q=samples[1][0].get();
-	SG_REF(samples_p);
-	SG_REF(samples_q);
+	CFeatures *samples_p=samples[0][0];
+	CFeatures *samples_q=samples[1][0];
 
 	distance->cleanup();
 	distance->remove_lhs_and_rhs();
@@ -139,9 +136,9 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 	auto samples=data_mgr.next();
 	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
 
-	CFeatures *samples_p=samples[0][0].get();
-	CFeatures *samples_q=samples[1][0].get();
-	auto p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+	CFeatures *samples_p=samples[0][0];
+	CFeatures *samples_q=samples[1][0];
+	auto p_and_q=samples_p->create_merged_copy(samples_q);
 
 	samples.clear();
 	data_mgr.end();

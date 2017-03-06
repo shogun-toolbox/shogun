@@ -20,7 +20,6 @@
 #include <numeric>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 
 using namespace shogun;
 using namespace internal;
@@ -192,7 +191,7 @@ CFeatures* DataFetcher::next()
 	if (num_more_samples>0)
 	{
 		// create a shallow copy and add proper index subset
-		next_samples=FeaturesUtil::create_shallow_copy(m_samples);
+		next_samples=m_samples->shallow_subset_copy();
 		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
 		if (num_samples_this_burst<next_samples->get_num_vectors())
 		{

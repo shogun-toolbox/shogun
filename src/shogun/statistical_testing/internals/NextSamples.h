@@ -19,7 +19,6 @@
 #ifndef NEXT_SAMPLES_H__
 #define NEXT_SAMPLES_H__
 
-#include <memory>
 #include <vector>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/Block.h>

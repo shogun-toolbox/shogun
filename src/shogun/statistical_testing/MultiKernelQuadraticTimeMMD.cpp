@@ -36,7 +36,6 @@
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/VarianceH1.h>

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <memory>
 #include <shogun/lib/config.h>
 
 #ifndef DATA_FETCHER_FACTORY_H__

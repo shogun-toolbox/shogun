@@ -33,7 +33,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
 #include <shogun/statistical_testing/internals/Block.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 
 using namespace shogun;
 using namespace internal;
@@ -47,21 +46,18 @@ Block::Block(CFeatures* feats, index_t index, index_t size) : m_feats(feats)
 	SG_REF(m_feats);
 
 	// create a shallow copy and subset current block separately
-	CFeatures* block=FeaturesUtil::create_shallow_copy(feats);
-#ifdef USE_REFERENCE_COUNTING
-	ASSERT(block->ref_count()==0);
-#endif // USE_REFERENCE_COUNTING
+	CFeatures* block=feats->shallow_subset_copy();
 
 	SGVector<index_t> inds(size);
 	std::iota(inds.vector, inds.vector+inds.vlen, index*size);
 	block->add_subset(inds);
 
-	// since this block object is internal, we simply use a shared_ptr
-	m_block=std::shared_ptr<CFeatures>(block);
+	m_block=block;
 }
 
 Block::Block(const Block& other) : m_block(other.m_block), m_feats(other.m_feats)
 {
+	SG_REF(m_block);
 	SG_REF(m_feats);
 }
 
@@ -69,12 +65,14 @@ Block& Block::operator=(const Block& other)
 {
 	m_block=other.m_block;
 	m_feats=other.m_feats;
+	SG_REF(m_block);
 	SG_REF(m_feats);
 	return *this;
 }
 
 Block::~Block()
 {
+	SG_UNREF(m_block);
 	SG_UNREF(m_feats);
 }
 

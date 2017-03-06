@@ -42,7 +42,6 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/mmd/CrossValidationMMD.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxCrossValidation.h>
 
