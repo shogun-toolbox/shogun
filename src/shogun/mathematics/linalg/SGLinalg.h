@@ -59,6 +59,7 @@ public:
 	{
 		cpu_backend = std::unique_ptr<LinalgBackendBase>(new LinalgBackendEigen());
 		gpu_backend = nullptr;
+		linalg_warnings = true;
 	}
 
 	/** Default destructor */
@@ -100,6 +101,26 @@ public:
 		return gpu_backend.get();
 	}
 
+	/** Set linalg library warnings display option
+	 * The warnings are default on.
+	 */
+	void set_linalg_warnings(bool enable_warnings=true)
+	{
+		if (enable_warnings)
+			linalg_warnings = true;
+		else
+			linalg_warnings = false;
+	}
+
+	/** Get linalg library warnings display option
+	 *
+	 * @return Whether to display linalg library warnings
+	 */
+	bool const get_linalg_warnings() const
+	{
+		return linalg_warnings;
+	}
+
 private:
 	/** Pointer to CPU backend. CPU backend is always available
 	 * with EIGEN3 or other default/complete implementation.
@@ -110,6 +131,9 @@ private:
 	 * NULL utill assigned.
 	 */
 	std::unique_ptr<LinalgBackendBase> gpu_backend;
+
+	/** Variable saves the options of linalg library warnings display */
+	bool linalg_warnings;
 };
 }
 

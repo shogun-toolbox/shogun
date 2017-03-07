@@ -213,6 +213,15 @@ namespace shogun
 		}
 		SG_UNREF(io);
 
+		char* env_warnings_val = NULL;
+		SGLinalg* linalg = get_global_linalg();
+		env_warnings_val = getenv("SHOGUN_GPU_WARNINGS");
+		if (env_warnings_val)
+		{
+			if (strncmp(env_warnings_val, "off", 3) == 0)
+				linalg->set_linalg_warnings(false);
+		}
+
 #ifdef HAVE_CXX11
 		char* env_thread_val = NULL;
 		Parallel* parallel = get_global_parallel();
