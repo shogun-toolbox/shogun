@@ -115,7 +115,8 @@ void to_gpu(SGVector<T>& a, SGVector<T>& b)
 
 	if (a.on_gpu())
 	{
-		SG_SWARNING("The vector is already on GPU.\n");
+		if (sg_linalg->get_linalg_warnings())
+			SG_SWARNING("The vector is already on GPU.\n");
 	}
 	else
 	{
@@ -125,7 +126,9 @@ void to_gpu(SGVector<T>& a, SGVector<T>& b)
 			b = SGVector<T>(gpu_backend->to_gpu(a), a.vlen);
 		else
 		{
-			SG_SWARNING("Trying to access GPU memory without GPU backend registered.\n");
+			if (sg_linalg->get_linalg_warnings())
+				SG_SWARNING("Trying to access GPU memory\
+				 	without GPU backend registered.\n");
 			b = a;
 		}
 	}
@@ -147,7 +150,8 @@ void to_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
 
 	if (a.on_gpu())
 	{
-		SG_SWARNING("The matrix is already on GPU.\n");
+		if (sg_linalg->get_linalg_warnings())
+			SG_SWARNING("The matrix is already on GPU.\n");
 	}
 	else
 	{
@@ -157,7 +161,9 @@ void to_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
 			b = SGMatrix<T>(gpu_backend->to_gpu(a), a.num_rows, a.num_cols);
 		else
 		{
-			SG_SWARNING("Trying to access GPU memory without GPU backend registered.\n");
+			if (sg_linalg->get_linalg_warnings())
+				SG_SWARNING("Trying to access GPU memory\
+				 	without GPU backend registered.\n");
 			b = a;
 		}
 	}
@@ -205,7 +211,8 @@ void from_gpu(SGVector<T>& a, SGVector<T>& b)
 	}
 	else
 	{
-		SG_SWARNING("The data is already on CPU.\n");
+		if (sg_linalg->get_linalg_warnings())
+			SG_SWARNING("The data is already on CPU.\n");
 		b = a;
 	}
 
@@ -241,7 +248,8 @@ void from_gpu(SGMatrix<T>& a, SGMatrix<T>& b)
 	}
 	else
 	{
-		SG_SWARNING("The data is already on CPU.\n");
+		if (sg_linalg->get_linalg_warnings())
+			SG_SWARNING("The data is already on CPU.\n");
 		b = a;
 	}
 
