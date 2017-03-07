@@ -180,27 +180,26 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 	 * in memory */
 	SG_WARNING("Heiko Strathmann: FIXME, unefficient!\n")
 
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name())
+	SG_DEBUG("entering create_merged_copy()\n")
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
 	{
-		SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
-				get_name());
+		SG_ERROR("Features are of different type!\n");
 	}
 
 	CCombinedFeatures* casted=dynamic_cast<CCombinedFeatures*>(other);
 
 	if (!casted)
 	{
-		SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
-				"same type as %s\n",get_name(), other->get_name(), get_name());
+		SG_ERROR("Could not cast object of %s to "
+				"same type as %s\n", other->get_name(), get_name());
 	}
 
 	if (get_num_feature_obj()!=casted->get_num_feature_obj())
 	{
-		SG_ERROR("%s::create_merged_copy(): Only possible if both instances "
-				"have the same number of sub-feature-objects\n", get_name());
+		SG_ERROR("Only possible if both instances "
+				"have the same number of sub-feature-objects\n");
 	}
 
 	CCombinedFeatures* result=new CCombinedFeatures();
@@ -215,13 +214,13 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 		SG_UNREF(current_other);
 	}
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
+	SG_DEBUG("leaving create_merged_copy()\n")
 	return result;
 }
 
 void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 {
-	SG_DEBUG("entering %s::add_subset()\n", get_name())
+	SG_DEBUG("entering add_subset()\n")
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -244,12 +243,12 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::add_subset()\n", get_name())
+	SG_DEBUG("leaving add_subset()\n")
 }
 
 void CCombinedFeatures::remove_subset()
 {
-	SG_DEBUG("entering %s::remove_subset()\n", get_name())
+	SG_DEBUG("entering remove_subset()\n")
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -271,12 +270,12 @@ void CCombinedFeatures::remove_subset()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::remove_subset()\n", get_name())
+	SG_DEBUG("leaving remove_subset()\n")
 }
 
 void CCombinedFeatures::remove_all_subsets()
 {
-	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name())
+	SG_DEBUG("entering remove_all_subsets()\n")
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
@@ -298,7 +297,7 @@ void CCombinedFeatures::remove_all_subsets()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name())
+	SG_DEBUG("leaving remove_all_subsets()\n")
 }
 
 CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)

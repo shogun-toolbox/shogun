@@ -35,7 +35,7 @@ CBeliefPropagation::~CBeliefPropagation()
 
 float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 {
-	SG_ERROR("%s::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
+	SG_ERROR("please use TreeMaxProduct or LoopyMaxProduct!\n");
 	return 0;
 }
 
@@ -120,7 +120,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	if (!dset->get_connected())
 	{
 		SG_UNREF(dset);
-		SG_ERROR("%s::get_root_indicators(): run connect_components() first!\n", get_name());
+		SG_ERROR("run connect_components() first!\n");
 	}
 
 	int32_t num_vars = m_fg->get_cardinalities().size();
@@ -212,8 +212,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-		"%s::inference(): the output assignment should be prepared as"
-		"the same size as variables!\n", get_name());
+		"The output assignment should be prepared as the same size as variables!\n");
 
 	bottom_up_pass();
 	top_down_pass();

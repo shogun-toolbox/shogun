@@ -63,16 +63,16 @@ void CCrossValidation::init()
 
 CEvaluationResult* CCrossValidation::evaluate()
 {
-	SG_DEBUG("entering %s::evaluate()\n", get_name())
+	SG_DEBUG("entering evaluate()\n")
 
-	REQUIRE(m_machine, "%s::evaluate() is only possible if a machine is "
-			"attached\n", get_name());
+	REQUIRE(m_machine, "evaluate() is only possible if a machine is "
+			"attached\n");
 
-	REQUIRE(m_features, "%s::evaluate() is only possible if features are "
-			"attached\n", get_name());
+	REQUIRE(m_features, "evaluate() is only possible if features are "
+			"attached\n");
 
-	REQUIRE(m_labels, "%s::evaluate() is only possible if labels are "
-			"attached\n", get_name());
+	REQUIRE(m_labels, "evaluate() is only possible if labels are "
+			"attached\n");
 
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
@@ -98,7 +98,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 		}
 		else
 		{
-			SG_WARNING("%s does not support locking. Autolocking is skipped. "
+			SG_WARNING("oes not support locking. Autolocking is skipped. "
 					"Set autolock flag to false to get rid of warning.\n",
 					m_machine->get_name());
 		}
@@ -155,7 +155,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 		m_do_unlock=false;
 	}
 
-	SG_DEBUG("leaving %s::evaluate()\n", get_name())
+	SG_DEBUG("leaving evaluate()\n")
 
 	SG_REF(result);
 	return result;
@@ -171,7 +171,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 
 float64_t CCrossValidation::evaluate_one_run()
 {
-	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
+	SG_DEBUG("entering evaluate_one_run()\n")
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
 
 	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets)
@@ -185,7 +185,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
-		SG_DEBUG("starting locked evaluation\n", get_name())
+		SG_DEBUG("starting locked evaluation\n")
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
@@ -404,7 +404,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* build arithmetic mean of results */
 	float64_t mean=CStatistics::mean(results);
 
-	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
+	SG_DEBUG("leaving evaluate_one_run()\n", get_name())
 	return mean;
 }
 

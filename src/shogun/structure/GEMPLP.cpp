@@ -190,8 +190,7 @@ int32_t CGEMPLP::find_intersection_index(SGVector<int32_t> region_A, SGVector<in
 float64_t CGEMPLP::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-	        "%s::inference(): the output assignment should be prepared as"
-	        "the same size as variables!\n", get_name());
+	        "The output assignment should be prepared as the same size as variables!\n");
 
 	// iterate over message loop
 	SG_SDEBUG("Running MPLP for %d iterations\n",  m_param.m_max_iter);

@@ -57,8 +57,7 @@ void CFactorGraphModel::init()
 
 void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 {
-	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n",
-		get_name());
+	REQUIRE(ftype->get_w_dim() > 0, "Number of parameters can't be 0!\n");
 
 	// check whether this ftype has been added
 	int32_t id = ftype->get_type_id();
@@ -68,8 +67,7 @@ void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 		if (id == ft->get_type_id())
 		{
 			SG_UNREF(ft);
-			SG_PRINT("%s::add_factor_type(): factor_type (id = %d) has been added!\n",
-				get_name(), id);
+			SG_PRINT("Factor_type (id = %d) has been added!\n", id);
 
 			return;
 		}
@@ -174,7 +172,7 @@ int32_t CFactorGraphModel::get_dim() const
 
 SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 {
-	REQUIRE(m_factor_types != NULL, "%s::fparams_to_w(): no factor types!\n", get_name());
+	REQUIRE(m_factor_types != NULL, "no factor types!\n");
 
 	if (m_w_cache.size() != get_dim())
 		m_w_cache.resize_vector(get_dim());
@@ -414,7 +412,7 @@ void CFactorGraphModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
-	REQUIRE(m_factor_types != NULL, "%s::init_primal_opt(): no factor types!\n", get_name());
+	REQUIRE(m_factor_types != NULL, "no factor types!\n");
 
 	int32_t dim_w = get_dim();
 

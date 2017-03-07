@@ -102,7 +102,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 		param.svm_type=NU_SVR;
 		break;
 	default:
-		SG_ERROR("%s::train_machine(): Unknown solver type!\n", get_name());
+		SG_ERROR("Unknown solver type!\n");
 		break;
 	}
 

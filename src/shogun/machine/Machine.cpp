@@ -41,15 +41,14 @@ bool CMachine::train(CFeatures* data)
 	/* not allowed to train on locked data */
 	if (m_data_locked)
 	{
-		SG_ERROR("%s::train data_lock() was called, only train_locked() is"
-				" possible. Call data_unlock if you want to call train()\n",
-				get_name());
+		SG_ERROR("train data_lock() was called, only train_locked() is"
+				" possible. Call data_unlock if you want to call train()\n");
 	}
 
 	if (train_require_labels())
 	{
 		if (m_labels == NULL)
-			SG_ERROR("%s@%p: No labels given", get_name(), this)
+			SG_ERROR("%p: No labels given", this)
 
 		m_labels->ensure_valid(get_name());
 	}
@@ -111,19 +110,17 @@ void CMachine::set_store_model_features(bool store_model)
 
 void CMachine::data_lock(CLabels* labs, CFeatures* features)
 {
-	SG_DEBUG("entering %s::data_lock\n", get_name())
+	SG_DEBUG("entering data_lock\n")
 	if (!supports_locking())
 	{
 		{
-			SG_ERROR("%s::data_lock(): Machine does not support data locking!\n",
-					get_name());
+			SG_ERROR("Machine does not support data locking!\n");
 		}
 	}
 
 	if (!labs)
 	{
-		SG_ERROR("%s::data_lock() is not possible will NULL labels!\n",
-				get_name());
+		SG_ERROR("data_lock() is not possible will NULL labels!\n");
 	}
 
 	/* first set labels */
@@ -131,28 +128,27 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 
 	if (m_data_locked)
 	{
-		SG_ERROR("%s::data_lock() was already called. Dont lock twice!",
-				get_name());
+		SG_ERROR("data_lock() was already called. Dont lock twice!");
 	}
 
 	m_data_locked=true;
 	post_lock(labs,features);
-	SG_DEBUG("leaving %s::data_lock\n", get_name())
+	SG_DEBUG("leaving data_lock\n")
 }
 
 void CMachine::data_unlock()
 {
-	SG_DEBUG("entering %s::data_lock\n", get_name())
+	SG_DEBUG("entering data_lock\n")
 	if (m_data_locked)
 		m_data_locked=false;
 
-	SG_DEBUG("leaving %s::data_lock\n", get_name())
+	SG_DEBUG("leaving data_lock\n")
 }
 
 CLabels* CMachine::apply(CFeatures* data)
 {
-	SG_DEBUG("entering %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("entering apply(%s at %p)\n",
+			data ? data->get_name() : "NULL", data);
 
 	CLabels* result=NULL;
 
@@ -178,8 +174,8 @@ CLabels* CMachine::apply(CFeatures* data)
 			break;
 	}
 
-	SG_DEBUG("leaving %s::apply(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("leaving apply(%s at %p)\n",
+			data ? data->get_name() : "NULL", data);
 
 	return result;
 }

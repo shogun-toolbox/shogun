@@ -29,10 +29,10 @@ CFWSOSVM::CFWSOSVM(
 : CLinearStructuredOutputMachine(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL,
-		"%s::CFWSOSVM(): model and labels cannot be NULL!\n", get_name());
+		"model and labels cannot be NULL!\n");
 
 	REQUIRE(labs->get_num_labels() > 0,
-		"%s::CFWSOSVM(): number of labels should be greater than 0!\n", get_name());
+		"number of labels should be greater than 0!\n");
 
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();

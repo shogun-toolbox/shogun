@@ -90,8 +90,8 @@ void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBina
 
 	if (predicted->get_num_labels()!=ground_truth->get_num_labels())
 	{
-		SG_ERROR("%s::compute_scores(): Number of predicted labels (%d) is not "
-				"equal to number of ground truth labels (%d)!\n", get_name(),
+		SG_ERROR("Number of predicted labels (%d) is not "
+				"equal to number of ground truth labels (%d)!\n",
 				predicted->get_num_labels(), ground_truth->get_num_labels());
 	}
 	m_TP = 0.0;

@@ -315,8 +315,8 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 	{
 		if (ex_ring[i].fv != NULL && free_vectors_on_destruct)
 		{
-			SG_DEBUG("%s::~%s(): destroying examples ring vector %d at %p\n",
-					get_name(), get_name(), i, ex_ring[i].fv);
+			SG_DEBUG("Destroying examples ring vector %d at %p\n",
+					i, ex_ring[i].fv);
 			delete ex_ring[i].fv;
 		}
 #if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)

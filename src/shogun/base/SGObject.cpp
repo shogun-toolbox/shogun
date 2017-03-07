@@ -354,17 +354,16 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::save_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+		SG_SWARNING("%s: ShogunException: "
+				   "%s\n", prefix, e.get_exception_string());
 		return false;
 	}
 
 	if (!m_save_pre_called)
 	{
-		SG_SWARNING("%s%s::save_serializable_pre(): Implementation "
+		SG_SWARNING("%s: Implementation "
 				   "error: BASE_CLASS::SAVE_SERIALIZABLE_PRE() not "
-				   "called!\n", prefix, get_name());
+				   "called!\n", prefix);
 		return false;
 	}
 
@@ -377,17 +376,16 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::save_serializable_post(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+		SG_SWARNING("%s: ShogunException: "
+				   "%s\n", prefix, e.get_exception_string());
 		return false;
 	}
 
 	if (!m_save_post_called)
 	{
-		SG_SWARNING("%s%s::save_serializable_post(): Implementation "
+		SG_SWARNING("%s: Implementation "
 				   "error: BASE_CLASS::SAVE_SERIALIZABLE_POST() not "
-				   "called!\n", prefix, get_name());
+				   "called!\n", prefix);
 		return false;
 	}
 
@@ -411,16 +409,15 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::load_serializable_pre(): ShogunException: "
-				   "%s\n", prefix, get_name(),
-				   e.get_exception_string());
+		SG_SWARNING("%s: ShogunException: "
+				   "%s\n", prefix, e.get_exception_string());
 		return false;
 	}
 	if (!m_load_pre_called)
 	{
-		SG_SWARNING("%s%s::load_serializable_pre(): Implementation "
+		SG_SWARNING("%s: Implementation "
 				   "error: BASE_CLASS::LOAD_SERIALIZABLE_PRE() not "
-				   "called!\n", prefix, get_name());
+				   "called!\n", prefix);
 		return false;
 	}
 
@@ -433,17 +430,16 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	}
 	catch (ShogunException& e)
 	{
-		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
-		            "%s\n", prefix, get_name(),
-		            e.get_exception_string());
+		SG_SWARNING("%s: ShogunException: "
+		            "%s\n", prefix, e.get_exception_string());
 		return false;
 	}
 
 	if (!m_load_post_called)
 	{
-		SG_SWARNING("%s%s::load_serializable_post(): Implementation "
+		SG_SWARNING("%s: Implementation "
 		            "error: BASE_CLASS::LOAD_SERIALIZABLE_POST() not "
-		            "called!\n", prefix, get_name());
+		            "called!\n", prefix);
 		return false;
 	}
 	SG_DEBUG("DONE LOADING CSGObject '%s' (%p)\n", get_name(), this)
@@ -650,17 +646,17 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 
 bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 {
-	SG_DEBUG("entering %s::equals()\n", get_name());
+	SG_DEBUG("entering equals()\n");
 
 	if (other==this)
 	{
-		SG_DEBUG("leaving %s::equals(): other object is me\n", get_name());
+		SG_DEBUG("leaving other object is me\n");
 		return true;
 	}
 
 	if (!other)
 	{
-		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
+		SG_DEBUG("leaving other object is NULL\n");
 		return false;
 	}
 
@@ -669,7 +665,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 	/* a crude type check based on the get_name */
 	if (strcmp(other->get_name(), get_name()))
 	{
-		SG_INFO("leaving %s::equals(): name of other object differs\n", get_name());
+		SG_INFO("leaving name of other object differs\n");
 		return false;
 	}
 
@@ -677,8 +673,8 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 	 * Will assume that parameters are in same order with same name from here */
 	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
 	{
-		SG_INFO("leaving %s::equals(): number of parameters of other object "
-				"differs\n", get_name());
+		SG_INFO("leaving equals(): number of parameters of other object "
+				"differs\n");
 		return false;
 	}
 
@@ -696,15 +692,15 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 
 		if (!this_param && other_param)
 		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is NULL where other's "
-					"parameter \"%s\" is not\n", get_name(), other_param->m_name);
+			SG_DEBUG("leaving equals(): parameter %d is NULL where other's "
+					"parameter \"%s\" is not\n", other_param->m_name);
 			return false;
 		}
 
 		if (this_param && !other_param)
 		{
-			SG_DEBUG("leaving %s::equals(): parameter %d is \"%s\" where other's "
-						"parameter is NULL\n", get_name(), this_param->m_name);
+			SG_DEBUG("leaving equals(): parameter %d is \"%s\" where other's "
+						"parameter is NULL\n", this_param->m_name);
 			return false;
 		}
 
@@ -732,15 +728,15 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 		/* use equals method of TParameter from here */
 		if (!this_param->equals(other_param, accuracy, tolerant))
 		{
-			SG_INFO("leaving %s::equals(): parameters at position %d with name"
+			SG_INFO("leaving equals(): parameters at position %d with name"
 					" \"%s\" differs from other object parameter with name "
 					"\"%s\"\n",
-					get_name(), i, this_param->m_name, other_param->m_name);
+					i, this_param->m_name, other_param->m_name);
 			return false;
 		}
 	}
 
-	SG_DEBUG("leaving %s::equals(): object are equal\n", get_name());
+	SG_DEBUG("leaving object are equal\n");
 	return true;
 }
 

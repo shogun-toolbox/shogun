@@ -38,8 +38,7 @@ void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 		SGVector<float64_t> confidences)
 {
 	REQUIRE(confidences.size()==m_multiclass_confidences.num_rows,
-			"%s::set_multiclass_confidences(): Length of confidences should "
-			"match size of the matrix", get_name());
+			"Length of confidences should match size of the matrix");
 
 	for (index_t j=0; j<confidences.size(); j++)
 		m_multiclass_confidences(j,i) = confidences[j];
@@ -57,8 +56,7 @@ SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
 void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 {
 	int32_t n_labels = m_labels.size();
-	REQUIRE(n_labels!=0,"%s::allocate_confidences_for(): There should be "
-			"labels to store confidences", get_name());
+	REQUIRE(n_labels!=0,"There should be labels to store confidences");
 
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
 }

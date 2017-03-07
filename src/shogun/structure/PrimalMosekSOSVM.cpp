@@ -87,10 +87,10 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_model->init_primal_opt(m_regularization, A, a, B, b, lb, ub, C);
 
 	REQUIRE(lb.vlen == 0 || lb.vlen == M,
-		"%s::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
+		"lb.vlen can only be 0 or w.vlen!\n");
 
 	REQUIRE(ub.vlen == 0 || ub.vlen == M,
-		"%s::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
+		"ub.vlen can only be 0 or w.vlen!\n");
 
 	if (lb.vlen == M)
 		set_lower_bounds(lb);

@@ -85,24 +85,21 @@ void CBinaryLabels::ensure_valid(const char * context)
 		else
 		{
 			SG_ERROR(
-			        "%s%s%s::ensure_valid(): Not a two class labeling label[%d]=%f (only +1/-1 "
-			        "allowed)\n", context ? context : "",
-			        context ? ": " : "", get_name(), i, m_labels[real_i]);
+			        "Not a two class labeling label[%d]=%f (only +1/-1 "
+			        "allowed)\n", i, m_labels[real_i]);
 		}
 	}
 
 	if (!found_plus_one)
 	{
 		SG_WARNING(
-		        "%s%s%s::ensure_valid(): Not a two class labeling - no positively labeled examples found\n",
-		        context ? context : "", context ? ": " : "", get_name());
+		        "Not a two class labeling - no positively labeled examples found\n");
 	}
 
 	if (!found_minus_one)
 	{
 		SG_WARNING(
-		        "%s%s%s::ensure_valid): Not a two class labeling - no negatively labeled examples found\n",
-		        context ? context : "", context ? ": " : "", get_name());
+		        "Not a two class labeling - no negatively labeled examples found\n");
 	}
 }
 
@@ -115,8 +112,8 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
 	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
 
-	REQUIRE(m_current_values.vector, "%s::scores_to_probabilities() requires "
-	        "values vector!\n", get_name());
+	REQUIRE(m_current_values.vector, "Requires "
+	        "values vector!\n");
 
 	if (a == 0 && b == 0)
 	{

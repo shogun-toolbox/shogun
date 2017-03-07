@@ -207,8 +207,8 @@ class CKernel : public CSGObject
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
 			REQUIRE(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
-				"%s::kernel(): index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
-				get_name(), idx_a,num_lhs, idx_b,num_rhs);
+				"Index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
+				idx_a,num_lhs, idx_b,num_rhs);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
@@ -245,8 +245,8 @@ class CKernel : public CSGObject
 			else
 			{
 				REQUIRE(preallocated.vlen==length,
-						"%s::get_kernel_diagonal(): Preallocated vector has"
-						" wrong size!\n", get_name());
+						"Preallocated vector has"
+						" wrong size!\n");
 			}
 
 			for (index_t i=0; i<preallocated.vlen; ++i)

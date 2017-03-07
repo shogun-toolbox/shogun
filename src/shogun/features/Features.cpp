@@ -339,16 +339,15 @@ CSubsetStack* CFeatures::get_subset_stack()
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 {
-	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "
+	SG_ERROR("Copy_subset and therefore model storage of "
 			"CMachine (required for cross-validation and model-selection is "
-			"not yet implemented yet. Ask developers!\n", get_name());
+			"not yet implemented yet. Ask developers!\n");
 	return NULL;
 }
 
 CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims)
 {
-	SG_WARNING("%s::copy_dimension_subset():: Is not yet implemented!\n",
-			get_name());
+	SG_WARNING("copy_dimension_subset():: Is not yet implemented!\n");
 	return NULL;
 }
 

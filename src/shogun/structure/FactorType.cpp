@@ -288,7 +288,7 @@ void CTableFactorType::compute_gradients(
 	}
 	else if (m_w.size() == 0)
 	{
-		SG_ERROR("%s::compute_gradients(): no parameters for this factor type.\n", get_name());
+		SG_ERROR("no parameters for this factor type.\n");
 	}
 	else
 	{
@@ -322,7 +322,7 @@ void CTableFactorType::compute_gradients(
 	}
 	else if (m_w.size() == 0)
 	{
-		SG_ERROR("%s::compute_gradients(): no parameters for this factor type.\n", get_name());
+		SG_ERROR("no parameters for this factor type.\n");
 	}
 	else
 	{
