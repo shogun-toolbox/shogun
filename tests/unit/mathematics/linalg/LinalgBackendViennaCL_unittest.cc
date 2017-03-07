@@ -35,6 +35,22 @@ TEST(LinalgBackendViennaCL, SGVector_to_gpu_viennacl)
 	EXPECT_TRUE(b.on_gpu());
 }
 
+TEST(LinalgBackendViennaCL, SGVector_to_gpu_inplace_viennacl)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	const index_t size = 10;
+	SGVector<int32_t> a(size), b(size);
+	a.range_fill(0);
+	to_gpu(a, a);
+	from_gpu(a, b);
+
+	EXPECT_TRUE(a.on_gpu());
+	ASSERT_FALSE(b.on_gpu());
+	for (index_t i = 0; i < size; ++i)
+		EXPECT_EQ(b[i], i);
+}
+
 TEST(LinalgBackendViennaCL, SGMatrix_to_gpu_viennacl)
 {
 	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
