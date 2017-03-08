@@ -29,6 +29,26 @@ if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
     CACHE BOOL "Build libshogun static library" FORCE)
 endif()
 
+# Allow to hide non-bsd compatible codes
+OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
+IF (LICENSE_GPL_SHOGUN)
+        SET(USE_GPL_SHOGUN 1)
+        SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
+
+        FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
+        FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
+        LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
+        LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
+        INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
+ELSE()
+        SET(USE_GPL_SHOGUN 0)
+ENDIF()
+
+OPTION(USE_SVMLIGHT "SVMLight" ON)
+IF(USE_SVMLIGHT AND NOT USE_GPL_SHOGUN)
+	MESSAGE(FATAL_ERROR "Can only use SVMLight when GPL codes are included")
+ENDIF()
+
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
