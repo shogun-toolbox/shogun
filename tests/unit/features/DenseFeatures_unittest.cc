@@ -13,6 +13,24 @@
 #include <shogun/features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
+namespace shogun
+{
+
+class CDenseFeaturesMock : public CDenseFeatures<float64_t>
+{
+public:
+	CDenseFeaturesMock(SGMatrix<float64_t> data) : CDenseFeatures<float64_t>(data)
+	{
+	}
+
+	SGMatrix<float64_t> deep_copy_feature_matrix_public(SGMatrix<float64_t> target, index_t column_offset)
+	{
+		return deep_copy_feature_matrix(target, column_offset);
+	}
+};
+
+}
+
 using namespace shogun;
 
 TEST(DenseFeaturesTest,create_merged_copy)
@@ -194,4 +212,145 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 
 	SG_UNREF(features_copy);
 	SG_UNREF(features);
+}
+
+TEST(DenseFeaturesTest, deep_copy_feature_matrix_without_realloc)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	std::iota(data.data(), data.data()+data.size(), 1);
+	SGVector<index_t> inds(n/2);
+	inds.random(0, n-1);
+
+	auto features=some<CDenseFeaturesMock>(data);
+	features->add_subset(inds);
+
+	index_t offset=3;
+	SGMatrix<float64_t> copy(dim, inds.vlen+offset);
+	auto data_ptr=copy.matrix;
+	std::fill(copy.data(), copy.data()+copy.size(), 0);
+	features->deep_copy_feature_matrix_public(copy, offset);
+
+	EXPECT_EQ(copy.num_rows, dim);
+	EXPECT_EQ(copy.num_cols, inds.vlen+offset);
+	EXPECT_EQ(copy.matrix, data_ptr);
+
+	for (index_t j=0; j<offset; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j), 0, 1E-15);
+	}
+
+	for (index_t j=0; j<inds.vlen; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
+	}
+}
+
+TEST(DenseFeaturesTest, deep_copy_feature_matrix_with_realloc_uninitialized_matrix)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	std::iota(data.data(), data.data()+data.size(), 1);
+	SGVector<index_t> inds(n/2);
+	inds.random(0, n-1);
+
+	auto features=some<CDenseFeaturesMock>(data);
+	features->add_subset(inds);
+
+	index_t offset=3;
+	SGMatrix<float64_t> copy;
+	auto data_ptr=copy.matrix;
+	copy=features->deep_copy_feature_matrix_public(copy, offset);
+
+	EXPECT_EQ(copy.num_rows, dim);
+	EXPECT_EQ(copy.num_cols, inds.vlen+offset);
+	EXPECT_NE(copy.matrix, data_ptr);
+
+	for (index_t j=0; j<offset; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j), 0, 1E-15);
+	}
+
+	for (index_t j=0; j<inds.vlen; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
+	}
+}
+
+TEST(DenseFeaturesTest, deep_copy_feature_matrix_with_realloc_rows_mismatch)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	std::iota(data.data(), data.data()+data.size(), 1);
+	SGVector<index_t> inds(n/2);
+	inds.random(0, n-1);
+
+	auto features=some<CDenseFeaturesMock>(data);
+	features->add_subset(inds);
+
+	index_t offset=3;
+	SGMatrix<float64_t> copy(3, inds.vlen+offset);
+	auto data_ptr=copy.matrix;
+	copy=features->deep_copy_feature_matrix_public(copy, offset);
+
+	EXPECT_EQ(copy.num_rows, dim);
+	EXPECT_EQ(copy.num_cols, inds.vlen+offset);
+	EXPECT_NE(copy.matrix, data_ptr);
+
+	for (index_t j=0; j<offset; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j), 0, 1E-15);
+	}
+
+	for (index_t j=0; j<inds.vlen; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
+	}
+}
+
+TEST(DenseFeaturesTest, deep_copy_feature_matrix_with_realloc_cols_mismatch)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	std::iota(data.data(), data.data()+data.size(), 1);
+	SGVector<index_t> inds(n/2);
+	inds.random(0, n-1);
+
+	auto features=some<CDenseFeaturesMock>(data);
+	features->add_subset(inds);
+
+	index_t offset=3;
+	SGMatrix<float64_t> copy(dim, inds.vlen);
+	auto data_ptr=copy.matrix;
+	copy=features->deep_copy_feature_matrix_public(copy, offset);
+
+	EXPECT_EQ(copy.num_rows, dim);
+	EXPECT_EQ(copy.num_cols, inds.vlen+offset);
+	EXPECT_NE(copy.matrix, data_ptr);
+
+	for (index_t j=0; j<offset; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j), 0, 1E-15);
+	}
+
+	for (index_t j=0; j<inds.vlen; ++j)
+	{
+		for (index_t i=0; i<dim; ++i)
+			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
+	}
 }

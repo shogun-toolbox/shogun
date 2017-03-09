@@ -7,17 +7,19 @@
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2014-2017 Soumyajit De
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
+#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-
+#include <algorithm>
 #include <string.h>
 
 namespace shogun {
@@ -265,23 +267,51 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 	}
 }
 
-template<class ST> SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
+template <class ST>
+SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
 {
 	if (!m_subset_stack->has_subsets())
 		return feature_matrix;
 
-	SGMatrix<ST> submatrix(num_features, get_num_vectors());
+	return deep_copy_feature_matrix(SGMatrix<ST>(), 0);
+}
 
-	/* copy a subset vector wise */
-	for (int32_t i=0; i<submatrix.num_cols; ++i)
+template <class ST>
+SGMatrix<ST> CDenseFeatures<ST>::deep_copy_feature_matrix(SGMatrix<ST> target, index_t column_offset)
+{
+	REQUIRE(column_offset>=0, "Column offset (%d) cannot be negative!\n", column_offset);
+
+	index_t num_vecs=get_num_vectors();
+	index_t num_cols=num_vecs+column_offset;
+
+	if (target.matrix==nullptr || target.num_rows!=num_features || target.num_cols<num_cols)
 	{
-		int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-		memcpy(&submatrix.matrix[i*int64_t(num_features)],
-				&feature_matrix.matrix[real_i * int64_t(num_features)],
-				num_features * sizeof(ST));
+		SG_DEBUG("Provided matrix does not have sufficient memory allocated. "
+				"Reallocated it to a %d X %d matrix.\n", num_features, num_cols);
+		target=SGMatrix<ST>(num_features, num_cols);
+		std::fill(target.matrix, target.matrix+int64_t(num_features)*column_offset, static_cast<ST>(0));
 	}
 
-	return submatrix;
+	if (!m_subset_stack->has_subsets())
+	{
+		auto input_begin=feature_matrix.matrix;
+		auto input_end=input_begin+feature_matrix.size();
+		auto output_begin=target.matrix+int64_t(num_features)*column_offset;
+		std::copy(input_begin, input_end, output_begin);
+	}
+	else
+	{
+		for (int32_t i=0; i<num_vecs; ++i)
+		{
+			auto real_i=m_subset_stack->subset_idx_conversion(i);
+			auto input_begin=feature_matrix.matrix+real_i*int64_t(num_features);
+			auto input_end=input_begin+num_features;
+			auto output_begin=target.matrix+int64_t(num_features)*(column_offset+i);
+			std::copy(input_begin, input_end, output_begin);
+		}
+	}
+
+	return target;
 }
 
 template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
@@ -977,111 +1007,66 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 	return true;
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
-		CList* others)
+template <class ST>
+CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("Entering.\n");
 
-	if (!others)
-		return NULL;
+	REQUIRE(others!=nullptr, "The list of feature instances cannot be null!\n");
 
-	/* first, check other features and count number of elements */
-	CSGObject* other=others->get_first_element();
-	index_t num_vectors_merged=get_num_vectors();
-	while (other)
+	auto current=others->get_first_element();
+	auto total_num_vectors=get_num_vectors();
+	auto unref_required=others->get_delete_data();
+
+	while (current!=nullptr)
 	{
-		CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
+		auto casted=dynamic_cast<CDenseFeatures<ST>*>(current);
 
-		if (!casted)
-		{
-			SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
-					"same type as %s\n",get_name(), other->get_name(), get_name());
-		}
+		REQUIRE(casted!=nullptr, "Could not cast object of %s to same type as %s!\n",
+				current->get_name(), get_name());
+		REQUIRE(num_features==casted->num_features,
+				"Provided feature object has different dimension (%d) than this one (%d)!\n",
+				casted->num_features, num_features);
 
-		if (get_feature_type()!=casted->get_feature_type() ||
-				get_feature_class()!=casted->get_feature_class() ||
-				strcmp(get_name(), casted->get_name()))
-		{
-			SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
-					get_name());
-		}
+		total_num_vectors+=casted->get_num_vectors();
 
-		if (num_features!=casted->num_features)
-		{
-			SG_ERROR("%s::create_merged_copy(): Provided feature object has "
-					"different dimension than this one\n");
-		}
+		if (unref_required)
+			SG_UNREF(current);
 
-		num_vectors_merged+=casted->get_num_vectors();
-
-		/* check if reference counting is used */
-		if (others->get_delete_data())
-			SG_UNREF(other);
-		other=others->get_next_element();
+		current=others->get_next_element();
 	}
 
-	/* create new feature matrix and copy both instances data into it */
-	SGMatrix<ST> data(num_features, num_vectors_merged);
+	SGMatrix<ST> data(num_features, total_num_vectors);
+	index_t num_copied=0;
+	deep_copy_feature_matrix(data, num_copied);
+	num_copied+=get_num_vectors();
 
-	/* copy data of this instance */
-	SG_DEBUG("copying matrix of this instance\n");
-	if (m_subset_stack->has_subsets())
+	current=others->get_first_element();
+
+	while (current!=nullptr)
 	{
-		SGMatrix<ST> active_feats_mat=get_feature_matrix();
-		memcpy(data.matrix, active_feats_mat.matrix,
-			active_feats_mat.size()*sizeof(ST));
-	}
-	else
-	{
-		memcpy(data.matrix, feature_matrix.matrix,
-			feature_matrix.size()*sizeof(ST));
-	}
+		auto casted=static_cast<CDenseFeatures<ST>*>(current);
+		casted->deep_copy_feature_matrix(data, num_copied);
+		num_copied+=casted->get_num_vectors();
 
-	/* count number of vectors (not elements) processed so far */
-	index_t num_processed=get_num_vectors();
+		if (unref_required)
+			SG_UNREF(current);
 
-	/* now copy data of other features block wise */
-	other=others->get_first_element();
-	while (other)
-	{
-		/* cast is safe due to above check */
-		CDenseFeatures<ST>* casted=(CDenseFeatures<ST>*)other;
-		SGMatrix<ST> other_mat=casted->get_feature_matrix();
-
-		SG_DEBUG("copying matrix of provided instance\n")
-		memcpy(&(data.matrix[num_processed*num_features]),
-				other_mat.matrix,
-				other_mat.size()*sizeof(ST));
-
-		/* update counting */
-		num_processed+=casted->get_num_vectors();
-
-		/* check if reference counting is used */
-		if (others->get_delete_data())
-			SG_UNREF(other);
-		other=others->get_next_element();
+		current=others->get_next_element();
 	}
 
-	/* create new instance and return */
-	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
+	auto result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("Leaving.\n");
 	return result;
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
-		CFeatures* other)
+template <class ST>
+CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
-
-	/* create list with one element and call general method */
-	CList* list=new CList();
+	auto list=some<CList>();
 	list->append_element(other);
-	CFeatures* result=create_merged_copy(list);
-	SG_UNREF(list);
-
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
-	return result;
+	return create_merged_copy(list);
 }
 
 template<class ST>

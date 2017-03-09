@@ -7,6 +7,7 @@
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2014-2017 Soumyajit De
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -531,6 +532,23 @@ private:
 	void init();
 
 protected:
+	/*
+	 * Helper method which copies the working feature matrix into the pre-allocated
+	 * target matrix passed to this method. If the size of the pre-allocated matrix is
+	 * not sufficient to copy all the feature vectors, it reallocates the memory to fit
+	 * the required size, with the column_offset. It then copies into the target
+	 * matrix, starting from base + (colum_offset * num_features) location.
+	 *
+	 * In case reallocation happens, it initializes the memory till the offset location
+	 * with 0, in order to avoid leaving it uninitialized. However, if reallocation
+	 * does not happen within this method, it is assumed that it is the responsilibity
+	 * of the caller to initialize the offsetted part.
+	 *
+	 * Please note that this method always does a deep copy, irrespective of whether
+	 * subsets are present or not.
+	 */
+	SGMatrix<ST> deep_copy_feature_matrix(SGMatrix<ST> target, index_t column_offset=0);
+
 	/// number of vectors in cache
 	int32_t num_vectors;
 
