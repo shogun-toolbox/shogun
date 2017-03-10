@@ -341,18 +341,6 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 	return fm;
 }
 
-template<class ST> void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> src)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call copy_feature_matrix\n")
-
-	free_feature_matrix();
-	feature_matrix = src.clone();
-	num_features = src.num_rows;
-	num_vectors = src.num_cols;
-	initialize_cache();
-}
-
 template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 {
 	m_subset_stack->remove_all_subsets();

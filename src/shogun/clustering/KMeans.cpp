@@ -43,7 +43,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 {
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-	
+
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
 
@@ -71,7 +71,8 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				   	Terminating. \n", iter)
 
 		changed=0;
-		rhs_mus->copy_feature_matrix(centers);
+		rhs_mus->set_feature_matrix(centers.clone());
+		rhs_mus->initialize_cache();
 
 		distance->precompute_rhs();
 
@@ -80,11 +81,11 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 		reduction(+:changed) if (!fixed_centers)
 		/* Assigment step : Assign each point to nearest cluster */
 		for (int32_t i=0; i<lhs_size; i++)
-		{ 
+		{
 			const int32_t cluster_assignments_i=cluster_assignments[i];
 			int32_t min_cluster, j;
 			float64_t min_dist, dist;
-			
+
 			min_cluster=0;
 		   	min_dist=distance->distance(i,0);
 			for (j=1; j<num_centers; j++)
@@ -110,7 +111,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 					SGVector<float64_t>vec=lhs->get_feature_vector(i);
 					float64_t temp_min = 1.0 / weights_set[min_cluster];
 
-					/* mu_new = mu_old + (x - mu_old)/(w) */					
+					/* mu_new = mu_old + (x - mu_old)/(w) */
 					for (j=0; j<dim; j++)
 					{
 						centers(j, min_cluster)+=
@@ -139,7 +140,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 						for (j=0; j<dim; j++)
 							centers(j, cluster_assignments_i)=0;
 					}
-					
+
 				}
 
 				cluster_assignments[i] = min_cluster;
@@ -154,19 +155,19 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 			/* mus=zeros(dim, num_centers) ; */
 			centers.zero();
 			Map<MatrixXd> map_centers(centers.matrix, centers.num_rows, centers.num_cols);
-			
+
 			for (int32_t i=0; i<lhs_size; i++)
 			{
 				int32_t cluster_i=cluster_assignments[i];
 
 				SGVector<float64_t>vec=lhs->get_feature_vector(i);
 				Map<VectorXd> map_vec(vec.vector, vec.size());
-				
+
 				map_centers.col(cluster_i) += map_vec;
 
 				lhs->free_feature_vector(vec, i);
 			}
-		
+
 			for (int32_t i=0; i<num_centers; i++)
 			{
 				if (weights_set[i]!=0)
@@ -186,7 +187,7 @@ bool CKMeans::train_machine(CFeatures* data)
 {
 	initialize_training(data);
 	Lloyd_KMeans(mus, k);
-	compute_cluster_variances();	
+	compute_cluster_variances();
 	return true;
 }
 

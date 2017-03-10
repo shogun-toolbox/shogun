@@ -260,17 +260,6 @@ public:
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec);
 
-	/** copy feature matrix
-	 * store copy of feature_matrix, where num_features is the
-	 * column offset, and columns are linear in memory
-	 * see below for definition of feature_matrix
-	 *
-	 * not possible with subset
-	 *
-	 * @param src feature matrix to copy
-	 */
-	virtual void copy_feature_matrix(SGMatrix<ST> src);
-
 	/** obtain dense features from other dotfeatures
 	 *
 	 * removes any subset before
