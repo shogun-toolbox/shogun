@@ -273,45 +273,44 @@ SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
 	if (!m_subset_stack->has_subsets())
 		return feature_matrix;
 
-	return deep_copy_feature_matrix(SGMatrix<ST>(), 0);
+	SGMatrix<ST> target(num_features, get_num_vectors());
+	copy_feature_matrix(target);
+	return target;
 }
 
 template <class ST>
-SGMatrix<ST> CDenseFeatures<ST>::deep_copy_feature_matrix(SGMatrix<ST> target, index_t column_offset)
+void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
 {
 	REQUIRE(column_offset>=0, "Column offset (%d) cannot be negative!\n", column_offset);
+	REQUIRE(!target.equals(feature_matrix), "Source and target feature matrices cannot be the same\n");
 
 	index_t num_vecs=get_num_vectors();
 	index_t num_cols=num_vecs+column_offset;
 
-	if (target.matrix==nullptr || target.num_rows!=num_features || target.num_cols<num_cols)
-	{
-		SG_DEBUG("Provided matrix does not have sufficient memory allocated. "
-				"Reallocated it to a %d X %d matrix.\n", num_features, num_cols);
-		target=SGMatrix<ST>(num_features, num_cols);
-		std::fill(target.matrix, target.matrix+int64_t(num_features)*column_offset, static_cast<ST>(0));
-	}
+	REQUIRE(target.matrix!=nullptr, "Provided matrix is not allocated!\n");
+	REQUIRE(target.num_rows==num_features,
+			"Number of rows of given matrix (%d) should be equal to the number of features (%d)!\n",
+			target.num_rows, num_features);
+	REQUIRE(target.num_cols>=num_cols,
+			"Number of cols of given matrix (%d) should be at least %d!\n",
+			target.num_cols, num_cols);
 
 	if (!m_subset_stack->has_subsets())
 	{
-		auto input_begin=feature_matrix.matrix;
-		auto input_end=input_begin+feature_matrix.size();
-		auto output_begin=target.matrix+int64_t(num_features)*column_offset;
-		std::copy(input_begin, input_end, output_begin);
+		auto src=feature_matrix.matrix;
+		auto dest=target.matrix+int64_t(num_features)*column_offset;
+		shogun::memcpy(dest, src, feature_matrix.size()*sizeof(ST));
 	}
 	else
 	{
 		for (int32_t i=0; i<num_vecs; ++i)
 		{
 			auto real_i=m_subset_stack->subset_idx_conversion(i);
-			auto input_begin=feature_matrix.matrix+real_i*int64_t(num_features);
-			auto input_end=input_begin+num_features;
-			auto output_begin=target.matrix+int64_t(num_features)*(column_offset+i);
-			std::copy(input_begin, input_end, output_begin);
+			auto src=feature_matrix.matrix+real_i*int64_t(num_features);
+			auto dest=target.matrix+int64_t(num_features)*(column_offset+i);
+			shogun::memcpy(dest, src, num_features*sizeof(ST));
 		}
 	}
-
-	return target;
 }
 
 template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
@@ -1012,7 +1011,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 {
 	SG_DEBUG("Entering.\n");
 
-	REQUIRE(others!=nullptr, "The list of feature instances cannot be null!\n");
+	REQUIRE(others!=nullptr, "The list of other feature instances is not initialized!\n");
 
 	auto current=others->get_first_element();
 	auto total_num_vectors=get_num_vectors();
@@ -1022,7 +1021,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 	{
 		auto casted=dynamic_cast<CDenseFeatures<ST>*>(current);
 
-		REQUIRE(casted!=nullptr, "Could not cast object of %s to same type as %s!\n",
+		REQUIRE(casted!=nullptr, "Provided object's type (%s) must match own type (%s)!\n",
 				current->get_name(), get_name());
 		REQUIRE(num_features==casted->num_features,
 				"Provided feature object has different dimension (%d) than this one (%d)!\n",
@@ -1038,7 +1037,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 
 	SGMatrix<ST> data(num_features, total_num_vectors);
 	index_t num_copied=0;
-	deep_copy_feature_matrix(data, num_copied);
+	copy_feature_matrix(data, num_copied);
 	num_copied+=get_num_vectors();
 
 	current=others->get_first_element();
@@ -1046,7 +1045,7 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others)
 	while (current!=nullptr)
 	{
 		auto casted=static_cast<CDenseFeatures<ST>*>(current);
-		casted->deep_copy_feature_matrix(data, num_copied);
+		casted->copy_feature_matrix(data, num_copied);
 		num_copied+=casted->get_num_vectors();
 
 		if (unref_required)
