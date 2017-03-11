@@ -250,6 +250,7 @@ class CMachine : public CSGObject
 			return 0.0;
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -272,6 +273,7 @@ class CMachine : public CSGObject
 		/** applies a locked machine on a set of indices for latent problems */
 		virtual CLatentLabels* apply_locked_latent(
 				SGVector<index_t> indices);
+#endif // SWIG // SWIG should skip this part
 
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called

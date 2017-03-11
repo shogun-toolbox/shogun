@@ -154,6 +154,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 			return CKernelMachine::train_locked(indices);
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -188,7 +189,8 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		{
 			return CKernelMachine::apply_locked_get_output(indices);
 		}
-
+#endif // SWIG // SWIG should skip this part
+		
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called
 		 *
