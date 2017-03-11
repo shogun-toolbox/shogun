@@ -247,15 +247,33 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** Check for pointer identity */
-		bool operator==(SGMatrix<T>& other);
+		SG_FORCED_INLINE bool operator==(const SGMatrix<T>& other) const
+		{
+			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+				return false;
+
+			if (on_gpu())
+			{
+				if (!other.on_gpu())
+					return false;
+				if (gpu_ptr!=other.gpu_ptr)
+					return false;
+			}
+
+			if (matrix != other.matrix)
+				return false;
+
+			return true;
+		}
 
 		/** Operator overload for element-wise matrix comparison.
-		 * Note that only numerical data is compared
+		 * Note that only numerical data is compared. Works for floating
+		 * point numbers (along with complex128_t) as well.
 		 *
 		 * @param other matrix to compare with
 		 * @return true iff all elements are equal
 		 */
-		bool equals(SGMatrix<T>& other);
+		bool equals(const SGMatrix<T>& other) const;
 
 		/** Set matrix to a constant */
 		void set_const(T const_elem);
@@ -272,13 +290,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		 *
 		 * @return whether the matrix is symmetric
 		 */
-		bool is_symmetric();
+		bool is_symmetric() const;
 
 		/** @return the maximum single element of the matrix */
-		T max_single();
+		T max_single() const;
 
 		/** Clone matrix */
-		SGMatrix<T> clone();
+		SGMatrix<T> clone() const;
 
 		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);

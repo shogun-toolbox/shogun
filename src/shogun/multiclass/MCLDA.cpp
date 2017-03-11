@@ -224,7 +224,6 @@ bool CMCLDA::train_machine(CFeatures* data)
 	int32_t iX = 0;
 
 	m_means.zero();
-	m_cov.zero();
 
 	int32_t vlen;
 	bool vfree;
