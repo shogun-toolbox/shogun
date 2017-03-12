@@ -32,8 +32,6 @@ class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
-class ParameterMap;
-class SGParamInfo;
 class CSerializableFile;
 
 template <class T, class K> class CMap;
