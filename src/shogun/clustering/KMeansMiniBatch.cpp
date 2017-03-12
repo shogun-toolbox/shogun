@@ -79,9 +79,8 @@ void CKMeansMiniBatch::minibatch_KMeans()
 
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(mus);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
-	rhs_mus->set_feature_matrix(mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
 
