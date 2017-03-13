@@ -3844,7 +3844,7 @@ bool TParameter::copy(TParameter* target)
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 				/* check whether ptype is SGOBJECT, if yes we need to initialize
 				   the memory with NULL for the way copy_ptype handles it */
-				if (m_datatype.m_ptype==PT_SGOBJECT)
+				if (m_datatype.m_ptype==PT_SGOBJECT || m_datatype.m_stype==ST_STRING)
 					memset(*(void**)target->m_parameter, 0, num_bytes);
 
 				/* use length of source */
@@ -3860,7 +3860,7 @@ bool TParameter::copy(TParameter* target)
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
 			{
-				SG_SDEBUG("copying element %d which is %d byes from start\n",
+				SG_SDEBUG("copying element %d which is %d bytes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
@@ -3874,7 +3874,7 @@ bool TParameter::copy(TParameter* target)
 					return false;
 				}
 
-				x=x+(m_datatype.sizeof_ptype());
+				x=x+(m_datatype.sizeof_stype());
 			}
 
 			break;
