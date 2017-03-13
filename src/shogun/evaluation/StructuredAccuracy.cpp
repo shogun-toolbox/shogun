@@ -77,6 +77,9 @@ float64_t CStructuredAccuracy::evaluate_real(CStructuredLabels * predicted,
 
 	for (int32_t i = 0 ; i < length ; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, length, 1, "EVALUTAING ACCURACY: ");
+
 		CRealNumber * truth = CRealNumber::obtain_from_generic(ground_truth->get_label(i));
 		CRealNumber * pred = CRealNumber::obtain_from_generic(predicted->get_label(i));
 
@@ -99,6 +102,9 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 
 	for (int32_t i = 0 ; i < length ; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, length, 1, "EVALUATING ACCURACY: ");
+
 		CSequence * true_seq = CSequence::obtain_from_generic(ground_truth->get_label(i));
 		CSequence * pred_seq = CSequence::obtain_from_generic(predicted->get_label(i));
 
@@ -141,4 +147,3 @@ float64_t CStructuredAccuracy::evaluate_sparse_multilabel(CStructuredLabels * pr
 
 	return accuracy;
 }
-

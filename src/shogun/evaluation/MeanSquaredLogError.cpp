@@ -26,6 +26,9 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 	float64_t msle=0.0;
 	for (int32_t i=0; i<length; i++)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, length, 1, "EVALUATING RMSLE: ");
+
 		float64_t prediction=((CRegressionLabels*) predicted)->get_label(i);
 		float64_t truth=((CRegressionLabels*) ground_truth)->get_label(i);
 

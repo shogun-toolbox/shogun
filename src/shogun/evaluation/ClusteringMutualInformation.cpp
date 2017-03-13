@@ -54,6 +54,9 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 	float64_t mutual_info = 0;
 	for (index_t i=0; i < n_class; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, n_class+n_class, 1, "EVALUATING MUTUAL INFORMATION: ");
+
 		for (index_t j=0; j < n_class; ++j)
 		{
 			if (G(i, j) != 0)
@@ -66,6 +69,9 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 	float64_t entropy_g = 0;
 	for (index_t i=0; i < n_class; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i+n_class, 0, n_class+n_class, 1, "EVALUATING MUTUAL INFORMATION: ");
+
 		entropy_g += -G_rowsum[i] * log(G_rowsum[i])/log(2.);
 		entropy_p += -G_colsum[i] * log(G_colsum[i])/log(2.);
 	}

@@ -23,6 +23,9 @@ float64_t CClusteringAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 	int32_t correct=0;
 	for (int32_t i=0; i < predicted_ilabels.vlen; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, predicted_ilabels.vlen, 1, "EVALUATING ACCURACY: ");
+
 		if (predicted_ilabels[i] == groundtruth_ilabels[i])
 			correct++;
 	}
