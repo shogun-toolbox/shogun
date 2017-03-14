@@ -335,6 +335,28 @@ class CDistance : public CSGObject
 			return lhs==rhs;
 		}
 
+		/**
+		 * Function for computing distance values
+		 *
+		 * @param result array of distance values
+		 * @param idx_r_start iteration start value
+		 * @param idx_start start
+		 * @param idx_stop iteration end value
+		 * @param idx_a feature vector a at idx_a
+		 */
+		void run_distance_rhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_a);
+
+		/**
+		 * Function for computing distance values
+		 *
+		 * @param result array of distance values
+		 * @param idx_r_start iteration start value
+		 * @param idx_start start
+		 * @param idx_stop iteration end value
+		 * @param idx_b feature vector b at idx_b
+		 */
+		void run_distance_lhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_b);
+
 	protected:
 
 		/// run distance thread

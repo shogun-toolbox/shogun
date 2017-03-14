@@ -216,6 +216,18 @@ float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
 	return compute(idx_a, idx_b);
 }
 
+void CDistance::run_distance_rhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_a)
+{
+	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
+        result.vector[i] = this->distance(idx_a,idx_start);
+}
+
+void CDistance::run_distance_lhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_b)
+{
+	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
+        result.vector[i] = this->distance(idx_start,idx_b);
+}
+
 void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
