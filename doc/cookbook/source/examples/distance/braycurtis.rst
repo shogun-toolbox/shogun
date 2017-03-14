@@ -1,6 +1,6 @@
-======================
+===================
 BrayCurtis Distance
-======================
+===================
 
 The BrayCurtis Distance or Sorensen Distance is similar to the Manhattan Distance with normalization.
 
