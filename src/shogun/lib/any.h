@@ -45,21 +45,58 @@ namespace shogun
 {
 
 #ifndef SWIG // SWIG should skip this part
-	namespace serial
-	{
+
+#define CASE_PRIMITIVE_SAVE(datatype) {\
+	case (serial::PT_##datatype): \
+		cereal_save_helper<Archive, datatype>(ar); \
+		break; \
+} \
+
+#define CASE_SGOBJECT_SAVE(objecttype, datatype) {\
+	case (serial::PT_##datatype): \
+		cereal_save_helper<Archive, objecttype<datatype> >(ar); \
+		break; \
+} \
+
+#define CASE_PRIMITIVE_LOAD(datatype) {\
+	case (serial::PT_##datatype): \
+		cereal_load_helper<Archive, datatype>(ar); \
+		break; \
+} \
+
+#define CASE_SGOBJECT_LOAD(objecttype, datatype) {\
+	case (serial::PT_##datatype): \
+		cereal_load_helper<Archive, objecttype<datatype> >(ar); \
+		break; \
+} \
+
+namespace serial
+{
 		enum EnumContainerType
 		{
 			CT_UNDEFINED,
 			CT_PRIMITIVE,
-			CT_SGVECTOR,
-			CT_SGMATRIX
+			CT_SGVector,
+			CT_SGMatrix
 		};
 
 		enum EnumPrimitiveType
 		{
 			PT_UNDEFINED,
-			PT_INT_32,
-			PT_FLOAT_64,
+			PT_bool,
+			PT_char,
+			PT_int8_t,
+			PT_uint8_t,
+			PT_int16_t,
+			PT_uint16_t,
+			PT_int32_t,
+			PT_uint32_t,
+			PT_int64_t,
+			PT_uint64_t,
+			PT_float32_t,
+			PT_float64_t,
+			PT_floatmax_t,
+			PT_complex128_t,
 		};
 
 		/** cast data type to EnumContainerType and EnumPrimitiveType */
@@ -71,31 +108,199 @@ namespace shogun
 		};
 
 		template<>
+		struct Type2Enum<bool>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_bool;
+		};
+
+		template<>
+		struct Type2Enum<char>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_char;
+		};
+
+		template<>
+		struct Type2Enum<int8_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int8_t;
+		};
+
+		template<>
+		struct Type2Enum<uint8_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint8_t;
+		};
+
+		template<>
+		struct Type2Enum<int16_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int16_t;
+		};
+
+		template<>
+		struct Type2Enum<uint16_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint16_t;
+		};
+
+		template<>
 		struct Type2Enum<int32_t>
 		{
 			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
-			static constexpr EnumPrimitiveType e_primitivetype = PT_INT_32;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int32_t;
+		};
+
+		template<>
+		struct Type2Enum<uint32_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint32_t;
+		};
+
+		template<>
+		struct Type2Enum<int64_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int64_t;
+		};
+
+		template<>
+		struct Type2Enum<uint64_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint64_t;
+		};
+
+		template<>
+		struct Type2Enum<float32_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_float32_t;
 		};
 
 		template<>
 		struct Type2Enum<float64_t>
 		{
 			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
-			static constexpr EnumPrimitiveType e_primitivetype = PT_FLOAT_64;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_float64_t;
+		};
+
+		template<>
+		struct Type2Enum<floatmax_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_floatmax_t;
+		};
+
+		template<>
+		struct Type2Enum<complex128_t>
+		{
+			static constexpr EnumContainerType e_containertype = CT_PRIMITIVE;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_complex128_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<bool> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_bool;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<char> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_char;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<int8_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int8_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<uint8_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint8_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<int16_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int16_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<uint16_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint16_t;
 		};
 
 		template<>
 		struct Type2Enum<SGVector<int32_t> >
 		{
-			static constexpr EnumContainerType e_containertype = CT_SGVECTOR;
-			static constexpr EnumPrimitiveType e_primitivetype = PT_INT_32;
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int32_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<uint32_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint32_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<int64_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_int64_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<uint64_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_uint64_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<float32_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_float32_t;
 		};
 
 		template<>
 		struct Type2Enum<SGVector<float64_t> >
 		{
-			static constexpr EnumContainerType e_containertype = CT_SGVECTOR;
-			static constexpr EnumPrimitiveType e_primitivetype = PT_FLOAT_64;
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_float64_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<floatmax_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_floatmax_t;
+		};
+
+		template<>
+		struct Type2Enum<SGVector<complex128_t> >
+		{
+			static constexpr EnumContainerType e_containertype = CT_SGVector;
+			static constexpr EnumPrimitiveType e_primitivetype = PT_complex128_t;
 		};
 
 		/** @brief data structure that saves the EnumContainerType
@@ -300,6 +505,14 @@ namespace shogun
 			ar(*(reinterpret_cast<Type*>(storage)));
 		}
 
+		template <class Archive>
+		void cereal_complex_save_helper(Archive& ar) const
+		{
+			float64_t* temp = reinterpret_cast<float64_t*>(storage);
+			ar(temp[0]);
+			ar(temp[1]);
+		}
+
 		/** save data with cereal save method
 		 *
 		 * @param ar Archive type
@@ -312,31 +525,49 @@ namespace shogun
 			switch (m_datatype.e_containertype) {
 			case serial::EnumContainerType::CT_PRIMITIVE:
 				switch (m_datatype.e_primitivetype) {
-				case serial::EnumPrimitiveType::PT_INT_32:
-					cereal_save_helper<Archive, int32_t>(ar);
-					break;
-				case serial::EnumPrimitiveType::PT_FLOAT_64:
-					cereal_save_helper<Archive, float64_t>(ar);
+				CASE_PRIMITIVE_SAVE(bool);
+				CASE_PRIMITIVE_SAVE(char);
+				CASE_PRIMITIVE_SAVE(int8_t);
+				CASE_PRIMITIVE_SAVE(uint8_t);
+				CASE_PRIMITIVE_SAVE(int16_t);
+				CASE_PRIMITIVE_SAVE(uint16_t);
+				CASE_PRIMITIVE_SAVE(int32_t);
+				CASE_PRIMITIVE_SAVE(uint32_t);
+				CASE_PRIMITIVE_SAVE(int64_t);
+				CASE_PRIMITIVE_SAVE(uint64_t);
+				CASE_PRIMITIVE_SAVE(float32_t);
+				CASE_PRIMITIVE_SAVE(float64_t);
+				CASE_PRIMITIVE_SAVE(floatmax_t);
+				case serial::EnumPrimitiveType::PT_complex128_t:
+					cereal_complex_save_helper<Archive>(ar);
 					break;
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
 					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
 					break;
 				}
 				break;
-			case serial::EnumContainerType::CT_SGVECTOR:
+			case serial::EnumContainerType::CT_SGVector:
 				switch (m_datatype.e_primitivetype) {
-				case serial::EnumPrimitiveType::PT_INT_32:
-					cereal_save_helper<Archive, SGVector<int32_t> >(ar);
-					break;
-				case serial::EnumPrimitiveType::PT_FLOAT_64:
-					cereal_save_helper<Archive, SGVector<float64_t> >(ar);
-					break;
+				CASE_SGOBJECT_SAVE(SGVector, bool);
+				CASE_SGOBJECT_SAVE(SGVector, char);
+				CASE_SGOBJECT_SAVE(SGVector, int8_t);
+				CASE_SGOBJECT_SAVE(SGVector, uint8_t);
+				CASE_SGOBJECT_SAVE(SGVector, int16_t);
+				CASE_SGOBJECT_SAVE(SGVector, uint16_t);
+				CASE_SGOBJECT_SAVE(SGVector, int32_t);
+				CASE_SGOBJECT_SAVE(SGVector, uint32_t);
+				CASE_SGOBJECT_SAVE(SGVector, int64_t);
+				CASE_SGOBJECT_SAVE(SGVector, uint64_t);
+				CASE_SGOBJECT_SAVE(SGVector, float32_t);
+				CASE_SGOBJECT_SAVE(SGVector, float64_t);
+				CASE_SGOBJECT_SAVE(SGVector, floatmax_t);
+				CASE_SGOBJECT_SAVE(SGVector, complex128_t);
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
 					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
 					break;
 				}
 				break;
-			case serial::EnumContainerType::CT_SGMATRIX:
+			case serial::EnumContainerType::CT_SGMatrix:
 				SG_SWARNING("SGMatrix serializatino method not implemented.\n");
 				break;
 			case serial::EnumContainerType::CT_UNDEFINED:
@@ -358,6 +589,17 @@ namespace shogun
 			policy->set(&storage, &temp);
 		}
 
+		template <class Archive>
+		void cereal_complex_load_helper(Archive& ar)
+		{
+			complex128_t data_temp;
+			float64_t* temp = reinterpret_cast<float64_t*>(&data_temp);
+			ar(temp[0]);
+			ar(temp[1]);
+			policy->clear(&storage);
+			policy->set(&storage, &data_temp);
+		}
+
 		/** load data from archive with cereal load method
 		 *
 		 * @param ar Archive type
@@ -370,11 +612,21 @@ namespace shogun
 			switch (m_datatype.e_containertype) {
 			case serial::EnumContainerType::CT_PRIMITIVE:
 				switch (m_datatype.e_primitivetype) {
-				case serial::EnumPrimitiveType::PT_INT_32:
-					cereal_load_helper<Archive, int32_t>(ar);
-					break;
-				case serial::EnumPrimitiveType::PT_FLOAT_64:
-					cereal_load_helper<Archive, float64_t>(ar);
+				CASE_PRIMITIVE_LOAD(bool);
+				CASE_PRIMITIVE_LOAD(char);
+				CASE_PRIMITIVE_LOAD(int8_t);
+				CASE_PRIMITIVE_LOAD(uint8_t);
+				CASE_PRIMITIVE_LOAD(int16_t);
+				CASE_PRIMITIVE_LOAD(uint16_t);
+				CASE_PRIMITIVE_LOAD(int32_t);
+				CASE_PRIMITIVE_LOAD(uint32_t);
+				CASE_PRIMITIVE_LOAD(int64_t);
+				CASE_PRIMITIVE_LOAD(uint64_t);
+				CASE_PRIMITIVE_LOAD(float32_t);
+				CASE_PRIMITIVE_LOAD(float64_t);
+				CASE_PRIMITIVE_LOAD(floatmax_t);
+				case serial::EnumPrimitiveType::PT_complex128_t:
+					cereal_complex_load_helper<Archive>(ar);
 					break;
 				default:
 					SG_SERROR("Error: undefined data type cannot be loaded.\n");
@@ -382,25 +634,33 @@ namespace shogun
 				}
 				break;
 
-			case serial::EnumContainerType::CT_SGVECTOR:
+			case serial::EnumContainerType::CT_SGVector:
 				switch (m_datatype.e_primitivetype) {
-				case serial::EnumPrimitiveType::PT_INT_32:
-					cereal_load_helper<Archive, SGVector<int32_t>>(ar);
-					break;
-				case serial::EnumPrimitiveType::PT_FLOAT_64:
-					cereal_load_helper<Archive, SGVector<float64_t>>(ar);
-					break;
+				CASE_SGOBJECT_LOAD(SGVector, bool);
+				CASE_SGOBJECT_LOAD(SGVector, char);
+				CASE_SGOBJECT_LOAD(SGVector, int8_t);
+				CASE_SGOBJECT_LOAD(SGVector, uint8_t);
+				CASE_SGOBJECT_LOAD(SGVector, int16_t);
+				CASE_SGOBJECT_LOAD(SGVector, uint16_t);
+				CASE_SGOBJECT_LOAD(SGVector, int32_t);
+				CASE_SGOBJECT_LOAD(SGVector, uint32_t);
+				CASE_SGOBJECT_LOAD(SGVector, int64_t);
+				CASE_SGOBJECT_LOAD(SGVector, uint64_t);
+				CASE_SGOBJECT_LOAD(SGVector, float32_t);
+				CASE_SGOBJECT_LOAD(SGVector, float64_t);
+				CASE_SGOBJECT_LOAD(SGVector, floatmax_t);
+				CASE_SGOBJECT_LOAD(SGVector, complex128_t);
 				case serial::EnumPrimitiveType::PT_UNDEFINED:
 					SG_SERROR("Type error: undefined data type cannot be serialized.\n");
 					break;
 				}
 				break;
 
-			case serial::EnumContainerType::CT_SGMATRIX:
+			case serial::EnumContainerType::CT_SGMatrix:
 				SG_SWARNING("SGMatrix serializatino method not implemented.\n")
 
 			default:
-				SG_SERROR("Error: undefined container type cannot be serialize loaded.\n");
+				SG_SERROR("Error: undefined container type cannot be loaded.\n");
 				break;
 			}
 		}
