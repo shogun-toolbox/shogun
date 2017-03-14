@@ -450,11 +450,6 @@ protected:
 	virtual SGVector<float64_t> get_derivative_wrt_mean(
 			const TParameter* param)=0;
 
-	/** pthread helper method to compute negative log marginal likelihood
-	 * derivatives wrt hyperparameter
-	 */
-	static void* get_derivative_helper(void* p);
-
 	/** update gradients */
 	virtual void compute_gradient();
 
