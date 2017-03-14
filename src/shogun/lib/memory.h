@@ -17,6 +17,7 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <new>
+#include <cstring>
 
 /* wrappers for malloc, free, realloc, calloc */
 
@@ -95,6 +96,13 @@ template <class T> void sg_generic_free(T* ptr)
 {
 	sg_free(ptr);
 }
+
+template <class InputIt, class OutputIt>
+SG_FORCED_INLINE void* memcpy(InputIt dest, OutputIt src, size_t count)
+{
+	return std::memcpy(static_cast<void*>(dest), static_cast<const void*>(src), count);
+}
+
 #endif //TRACE_MEMORY_ALLOCS
 #ifdef TRACE_MEMORY_ALLOCS
 /** @brief memory block */
