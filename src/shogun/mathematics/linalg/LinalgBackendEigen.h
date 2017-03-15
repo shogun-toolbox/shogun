@@ -685,6 +685,11 @@ private:
 
 		return result;
 	}
+
+#undef DEFINE_FOR_ALL_PTYPE
+#undef DEFINE_FOR_REAL_PTYPE
+#undef DEFINE_FOR_NON_INTEGER_PTYPE
+#undef DEFINE_FOR_NUMERIC_PTYPE
 };
 
 }

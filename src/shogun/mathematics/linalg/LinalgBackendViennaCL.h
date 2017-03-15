@@ -70,6 +70,10 @@ public:
 	METHODNAME(float32_t, Container); \
 	METHODNAME(float64_t, Container); \
 
+	#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
+	METHODNAME(float32_t, Container); \
+	METHODNAME(float64_t, Container); \
+
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
 	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, \
@@ -107,8 +111,8 @@ public:
 	{  \
 		matrix_prod_impl(a, b, result, transpose_A, transpose_B); \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
 
 	/** Implementation of @see LinalgBackendBase::max */
@@ -471,6 +475,9 @@ private:
 		viennacl::backend::memory_read(*(gpu_ptr->m_data),
 			gpu_ptr->m_offset*sizeof(T), a.size()*sizeof(T), data);
 	}
+
+#undef DEFINE_FOR_ALL_PTYPE
+#undef DEFINE_FOR_NON_INTEGER_PTYPE
 };
 
 }
