@@ -41,8 +41,11 @@
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
 #include <viennacl/linalg/matrix_operations.hpp>
-#include <viennacl/linalg/sum.hpp>
 #include <shogun/mathematics/linalg/GPUMemoryViennaCL.h>
+
+#if VIENNACL_VERSION >= 10700
+#include <viennacl/linalg/sum.hpp>
+#endif
 
 namespace shogun
 {
@@ -372,14 +375,6 @@ private:
 		viennacl::linalg::vector_assign(vcl_vector, value);
 	}
 
-	/** ViennaCL vector sum method. */
-	template <typename T>
-	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
-	{
-		GPUMemoryViennaCL<T>* vec_gpu = cast_to_viennacl(vec);
-		return viennacl::linalg::sum(vec_gpu->data_vector(vec.size()));
-	}
-
 	/** ViennaCL matrix sum method. */
 	template <typename T>
 	T sum_impl(const SGMatrix<T>& mat, bool no_diag=false) const
@@ -400,6 +395,18 @@ private:
 			result_gpu->m_offset*sizeof(T), sizeof(T), result);
 
 		return result[0];
+	}
+
+	/** ViennaCL vector sum method. */
+	template <typename T>
+	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
+	{
+		#if VIENNACL_VERSION >= 10700
+			GPUMemoryViennaCL<T>* vec_gpu = cast_to_viennacl(vec);
+			return viennacl::linalg::sum(vec_gpu->data_vector(vec.size()));
+		#else
+			return sum_impl(SGMatrix<T>(vec));
+		#endif
 	}
 
 	/** ViennaCL matrix sum method. */
