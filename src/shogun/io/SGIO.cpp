@@ -54,7 +54,7 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), location_info(MSG_NONE),
+	last_progress(-1), show_progress(false), location_info(MSG_NONE),
 	syntax_highlight(true), loglevel(MSG_WARN)
 {
 	m_refcount = new RefCount();
@@ -170,7 +170,7 @@ void SGIO::progress(
 	if (decimals < 1)
 		decimals = 1;
 
-	if (last_progress>v)
+	if (last_progress==-1)
 	{
 		last_progress_time = runtime;
 		progress_start_time = runtime;
@@ -182,7 +182,19 @@ void SGIO::progress(
 		last_progress = v-1e-6;
 
 		if ((v!=100.0) && (runtime - last_progress_time<0.5))
+		{
+
+			// This is made to display correctly the percentage
+			// if the algorithm execution is too fast
+			if (current_val >= max_val-1)
+			{
+				v = 100;
+				snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    ",decimals+3, decimals);
+				message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
+				message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			}
 			return;
+		}
 
 		last_progress_time = runtime;
 		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100);
@@ -198,6 +210,13 @@ void SGIO::progress(
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
 		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
+	}
+
+	// Print a new line if the execution is completed
+	// to prevent bad display
+	if (current_val >= max_val-1)
+	{
+		message(MSG_MESSAGEONLY, "", "", -1, "\n");
 	}
 
     fflush(target);
