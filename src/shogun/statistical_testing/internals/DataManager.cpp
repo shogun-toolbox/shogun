@@ -385,7 +385,9 @@ NextSamples DataManager::next()
 		auto feats=fetchers[i]->next();
 		if (feats!=nullptr)
 		{
+#ifdef USE_REFERENCE_COUNTING
 			ASSERT(feats->ref_count()==0);
+#endif // USE_REFERENCE_COUNTING
 
 			auto blocksize=fetchers[i]->m_block_details.m_blocksize;
 			auto num_blocks_curr_burst=feats->get_num_vectors()/blocksize;

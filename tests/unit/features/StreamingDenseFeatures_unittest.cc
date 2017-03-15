@@ -96,7 +96,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	SG_UNREF(feats);
 }
 
-TEST(StreamingDenseFeaturesTest, reset_stream)
+TEST(StreamingDenseFeaturesTest, DISABLED_reset_stream)
 {
 	index_t n=20;
 	index_t dim=2;
