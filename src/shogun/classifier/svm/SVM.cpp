@@ -62,25 +62,24 @@ void CSVM::set_defaults(int32_t num_sv)
 	callback=NULL;
 	mkl=NULL;
 
-	svm_loaded=false;
+	set_loaded_status(false);
 
-	epsilon=1e-5;
-	tube_epsilon=1e-2;
+	set_epsilon(1e-5);
+	set_tube_epsilon(1e-2);
 
-	nu=0.5;
-	C1=1;
-	C2=1;
+	set_nu(0.5);
+	set_C(1,1);
 
-	objective=0;
+	set_objective(0);
 
-	qpsize=41;
-	use_bias=true;
-	use_shrinking=true;
-	use_batch_computation=true;
-	use_linadd=true;
+	set_qpsize(41);
+	set_bias_enabled(true);
+	set_linadd_enabled(true);
+	set_shrinking_enabled(true);
+	set_batch_computation_enabled(true);
 
-    if (num_sv>0)
-        create_new_model(num_sv);
+	if (num_sv>0)
+		create_new_model(num_sv);
 }
 
 bool CSVM::load(FILE* modelfl)
@@ -194,7 +193,7 @@ bool CSVM::load(FILE* modelfl)
 		line_number++;
 	}
 
-	svm_loaded=result;
+	set_loaded_status(result);
 	SG_RESET_LOCALE;
 	return result;
 }
@@ -270,10 +269,10 @@ float64_t CSVM::compute_svm_primal_objective()
 
 	if (m_labels && kernel)
 	{
-		float64_t C2_tmp=C1;
+		float64_t C2_tmp=get_C1();
 		if(C2>0)
 		{
-			C2_tmp=C2;
+			C2_tmp=get_C2();
 		}
 
 		for (int32_t i=0; i<n; i++)

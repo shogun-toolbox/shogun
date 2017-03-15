@@ -220,6 +220,21 @@ class CSVM : public CKernelMachine
 			return objective;
 		}
 
+		/** check if svm been loaded
+		 *
+		 * @return if svm_loaded is true
+		 */
+		inline bool get_loaded_status() { return svm_loaded; }
+
+		/** set svm loaded status
+		 *
+		 * @loaded if svm been loaded
+		 */
+		inline void set_loaded_status(bool loaded)
+		{
+			svm_loaded = loaded;
+		}; 
+
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
 		 *
