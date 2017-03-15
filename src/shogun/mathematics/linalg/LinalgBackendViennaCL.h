@@ -40,7 +40,7 @@
 
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
-#include <viennacl/linalg/matrix_operations.hpp>
+#include <viennacl/linalg/matrix.hpp>
 #include <shogun/mathematics/linalg/GPUMemoryViennaCL.h>
 
 #if VIENNACL_VERSION >= 10700
