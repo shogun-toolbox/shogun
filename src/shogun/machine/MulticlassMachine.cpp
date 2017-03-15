@@ -92,8 +92,8 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 
 CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
-	SG_DEBUG("entering %s::apply_multiclass(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("entering apply_multiclass(%s at %p)\n",
+			data ? data->get_name() : "NULL", data);
 
 	CMulticlassLabels* return_labels=NULL;
 
@@ -167,8 +167,8 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 				for (int32_t r=0; r<num_classes; r++)
 					r_output_for_i[r] = output_for_i[r];
 
-				SG_DEBUG("%s::apply_multiclass(): sum(r_output_for_i) = %f\n",
-					get_name(), SGVector<float64_t>::sum(r_output_for_i.vector,num_classes));
+				SG_DEBUG("sum(r_output_for_i) = %f\n",
+					SGVector<float64_t>::sum(r_output_for_i.vector,num_classes));
 			}
 
 			// use rescaled outputs for label decision
@@ -187,8 +187,8 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		SG_ERROR("Not ready")
 
 
-	SG_DEBUG("leaving %s::apply_multiclass(%s at %p)\n",
-				get_name(), data ? data->get_name() : "NULL", data);
+	SG_DEBUG("leaving apply_multiclass(%s at %p)\n",
+				data ? data->get_name() : "NULL", data);
 	return return_labels;
 }
 

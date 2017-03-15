@@ -33,7 +33,7 @@ CMeanShiftDataGenerator::~CMeanShiftDataGenerator()
 void CMeanShiftDataGenerator::set_mean_shift_model(float64_t mean_shift,
 		index_t dimension, index_t dimension_shift)
 {
-	REQUIRE(dimension_shift<dimension, "%s::set_mean_shift_model(%f,%d,%d): "
+	REQUIRE(dimension_shift<dimension, "set_mean_shift_model(%f,%d,%d): "
 			"Dimension of shift is larger than number of dimensions!\n",
 			mean_shift, dimension, dimension_shift);
 

@@ -193,8 +193,7 @@ void CGraphCut::init_maxflow()
 float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
-	        "%s::inference(): the output assignment should be prepared as"
-	        "the same size as variables!\n", get_name());
+	        "The output assignment should be prepared as the same size as variables!\n");
 
 	// compute max flow
 	init_maxflow();

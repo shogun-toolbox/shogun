@@ -31,7 +31,7 @@ CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy(EProbHeuristicType prob
 void CMulticlassOneVsOneStrategy::register_parameters()
 {
 	//SG_ADD(&m_num_samples, "num_samples", "Number of samples in each training machine", MS_NOT_AVAILABLE);
-	SG_WARNING("%s::CMulticlassOneVsOneStrategy(): register parameters!\n", get_name());
+	SG_WARNING("register parameters!\n");
 }
 
 void CMulticlassOneVsOneStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
@@ -161,7 +161,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 	}
 
 	if(tot!=m_num_machines)
-		SG_ERROR("%s::rescale_output(): size(outputs) is not num_machines.\n", get_name());
+		SG_ERROR("size(outputs) is not num_machines.\n");
 
 	switch(get_prob_heuris_type())
 	{
@@ -177,7 +177,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 		case PROB_HEURIS_NONE:
 			break;
 		default:
-			SG_ERROR("%s::rescale_outputs(): Unknown OVO probability heuristic type!\n", get_name());
+			SG_ERROR("Unknown OVO probability heuristic type!\n");
 			break;
 	}
 }
@@ -187,8 +187,8 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t> outpu
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_price(): size(outputs) = %d != m_num_machines = %d\n",
-				get_name(), outputs.vlen, m_num_machines);
+		SG_ERROR("size(outputs) = %d != m_num_machines = %d\n",
+				outputs.vlen, m_num_machines);
 	}
 
 	SGVector<float64_t> new_outputs(m_num_classes);
@@ -219,8 +219,8 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_hastie(): size(outputs) = %d != m_num_machines = %d\n",
-				get_name(), outputs.vlen, m_num_machines);
+		SG_ERROR("size(outputs) = %d != m_num_machines = %d\n",
+				outputs.vlen, m_num_machines);
 	}
 
 	SGVector<float64_t> new_outputs(m_num_classes);
@@ -295,8 +295,8 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> ou
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_hamamura(): size(outputs) = %d != m_num_machines = %d\n",
-				get_name(), outputs.vlen, m_num_machines);
+		SG_ERROR("rescale_heuris_hamamura(): size(outputs) = %d != m_num_machines = %d\n",
+				outputs.vlen, m_num_machines);
 	}
 
 	SGVector<float64_t> new_outputs(m_num_classes);

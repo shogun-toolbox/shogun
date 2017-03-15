@@ -77,9 +77,8 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 {
 	if (!m_is_filled)
 	{
-		SG_ERROR("Call %s::build_subsets() before accessing them! If this error"
-				" stays, its an implementation error of %s::build_subsets()\n",
-				get_name(), get_name());
+		SG_ERROR("Call build_subsets() before accessing them! If this error"
+				" stays, its an implementation error of build_subsets()\n");
 	}
 
 	/* construct SGVector copy from index vector */
@@ -101,9 +100,8 @@ SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx
 {
 	if (!m_is_filled)
 	{
-		SG_ERROR("Call %s::build_subsets() before accessing them! If this error"
-				" stays, its an implementation error of %s::build_subsets()\n",
-				get_name(), get_name());
+		SG_ERROR("Call build_subsets() before accessing them! If this error"
+				" stays, its an implementation error of build_subsets()\n");
 	}
 
 	CDynamicArray<index_t>* to_invert=(CDynamicArray<index_t>*)

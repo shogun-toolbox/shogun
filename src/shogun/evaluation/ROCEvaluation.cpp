@@ -83,10 +83,10 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	}
 
 	// assure both number of positive and negative examples is >0
-	REQUIRE(pos_count>0, "%s::evaluate_roc(): Number of positive labels is "
-			"zero, ROC fails!\n", get_name());
-	REQUIRE(neg_count>0, "%s::evaluate_roc(): Number of negative labels is "
-			"zero, ROC fails!\n", get_name());
+	REQUIRE(pos_count>0, "Number of positive labels is "
+			"zero, ROC fails!\n");
+	REQUIRE(neg_count>0, "Number of negative labels is "
+			"zero, ROC fails!\n");
 
 	int32_t j = 0;
 	float64_t label;

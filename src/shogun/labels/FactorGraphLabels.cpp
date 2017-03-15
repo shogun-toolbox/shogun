@@ -27,8 +27,8 @@ SGVector<float64_t> CFactorGraphObservation::get_loss_weights() const
 
 void CFactorGraphObservation::set_loss_weights(SGVector<float64_t> loss_weights)
 {
-	REQUIRE(loss_weights.size() == m_observed_state.size(), "%s::set_loss_weights(): \
-		loss_weights should be the same length as observed_states", get_name());
+	REQUIRE(loss_weights.size() == m_observed_state.size(), "Loss_weights should \
+		be the same length as observed_states");
 
 	m_loss_weights = loss_weights;
 }

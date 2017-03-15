@@ -980,7 +980,7 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		CList* others)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("entering create_merged_copy()\n");
 
 	if (!others)
 		return NULL;
@@ -994,21 +994,20 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 
 		if (!casted)
 		{
-			SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
-					"same type as %s\n",get_name(), other->get_name(), get_name());
+			SG_ERROR("Could not cast object of %s to "
+					"same type as %s\n", other->get_name(), get_name());
 		}
 
 		if (get_feature_type()!=casted->get_feature_type() ||
 				get_feature_class()!=casted->get_feature_class() ||
 				strcmp(get_name(), casted->get_name()))
 		{
-			SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
-					get_name());
+			SG_ERROR("Features are of different type!\n");
 		}
 
 		if (num_features!=casted->num_features)
 		{
-			SG_ERROR("%s::create_merged_copy(): Provided feature object has "
+			SG_ERROR("Provided feature object has "
 					"different dimension than this one\n");
 		}
 
@@ -1055,14 +1054,14 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	/* create new instance and return */
 	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("leaving create_merged_copy()\n");
 	return result;
 }
 
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		CFeatures* other)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("entering create_merged_copy()\n");
 
 	/* create list with one element and call general method */
 	CList* list=new CList();
@@ -1070,7 +1069,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	CFeatures* result=create_merged_copy(list);
 	SG_UNREF(list);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("leaving create_merged_copy()\n");
 	return result;
 }
 

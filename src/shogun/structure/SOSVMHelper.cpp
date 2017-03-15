@@ -110,8 +110,7 @@ void CSOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_
 {
 	if (m_tracker >= m_bufsize)
 	{
-		SG_PRINT("%s::add_debug_information(): Buffer overflows! No more values will be recorded!\n",
-			get_name());
+		SG_PRINT("Add_debug_information(): Buffer overflows! No more values will be recorded!\n");
 
 		return;
 	}

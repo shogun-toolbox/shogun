@@ -43,7 +43,7 @@ void CDisjointSet::init()
 
 void CDisjointSet::make_sets()
 {
-	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
+	REQUIRE(m_num_elements > 0, "m_num_elements <= 0.\n");
 
 	m_parent.range_fill();
 	m_rank.zero();
@@ -111,7 +111,7 @@ bool CDisjointSet::is_same_set(int32_t x, int32_t y)
 
 int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 {
-	REQUIRE(m_num_elements > 0, "%s::get_unique_labeling(): m_num_elements <= 0.\n", get_name());
+	REQUIRE(m_num_elements > 0, "m_num_elements <= 0.\n");
 
 	if (out_labels.size() != m_num_elements)
 		out_labels.resize_vector(m_num_elements);
@@ -137,7 +137,7 @@ int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 
 int32_t CDisjointSet::get_num_sets()
 {
-	REQUIRE(m_num_elements > 0, "%s::get_num_sets(): m_num_elements <= 0.\n", get_name());
+	REQUIRE(m_num_elements > 0, "m_num_elements <= 0.\n");
 
 	return get_unique_labeling(SGVector<int32_t>(m_num_elements));
 }

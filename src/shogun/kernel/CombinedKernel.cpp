@@ -94,12 +94,12 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	}
 
 	CKernel::init(l,r);
-	REQUIRE(l->get_feature_class()==C_COMBINED, "%s::init(): LHS features are"
+	REQUIRE(l->get_feature_class()==C_COMBINED, "LHS features are"
 			" of class %s but need to be combined features!\n",
-			get_name(), l->get_name());
-	REQUIRE(r->get_feature_class()==C_COMBINED, "%s::init(): RHS features are"
+			l->get_name());
+	REQUIRE(r->get_feature_class()==C_COMBINED, "RHS features are"
 			" of class %s but need to be combined features!\n",
-			get_name(), r->get_name());
+			r->get_name());
 	ASSERT(l->get_feature_type()==F_UNKNOWN)
 	ASSERT(r->get_feature_type()==F_UNKNOWN)
 

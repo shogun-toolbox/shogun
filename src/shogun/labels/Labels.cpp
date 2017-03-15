@@ -66,9 +66,9 @@ float64_t CLabels::get_value(int32_t idx)
 void CLabels::set_value(float64_t value, int32_t idx)
 {
 
-	REQUIRE(m_current_values.vector, "%s::set_value(%f, %d): No values vector"
+	REQUIRE(m_current_values.vector, "No values vector ((%f, %d) is"
 	        " set!\n", get_name(), value, idx);
-	REQUIRE(get_num_labels(), "%s::set_value(%f, %d): Number of values is "
+	REQUIRE(get_num_labels(), "Number of values ((%f, %d) is "
 	        "zero!\n", get_name(), value, idx);
 
 	int32_t real_num = m_subset_stack->subset_idx_conversion(idx);

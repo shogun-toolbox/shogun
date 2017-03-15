@@ -38,7 +38,7 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 		CDenseFeatures<T>* dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
-	REQUIRE(dense_features, "%s::CStreamingDenseFeatures(): Features needed!\n")
+	REQUIRE(dense_features, "CStreamingDenseFeatures(): Features needed!\n")
 
 	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
@@ -55,11 +55,11 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
-	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name())
+	SG_DEBUG("entering ~CStreamingDenseFeatures()\n")
 	/* needed to prevent double free memory errors */
 	current_vector.vector=NULL;
 	current_vector.vlen=0;
-	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name())
+	SG_DEBUG("leaving ~CStreamingDenseFeatures()\n")
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
