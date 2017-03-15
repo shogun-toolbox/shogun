@@ -141,6 +141,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 			CLinearMachine::set_store_model_features(store_model);
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -176,6 +177,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		}
 
 		using CLinearMachine::apply_locked_multiclass;
+#endif // SWIG // SWIG should skip this part
 
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called
