@@ -530,11 +530,11 @@ private:
 	T sum_impl(const SGMatrix<T>& mat, bool no_diag=false) const
 	{
 		typename SGMatrix<T>::EigenMatrixXtMap m = mat;
-		T sum = m.sum();
+		T result = m.sum();
 		if (no_diag)
-			sum -= m.diagonal().sum();
+			result -= m.diagonal().sum();
 
-		return sum;
+		return result;
 	}
 
 	/** Eigen3 matrix block sum method */
@@ -545,11 +545,11 @@ private:
 		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
 			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
 
-		T sum = m_block.sum();
+		T result = m_block.sum();
 		if (no_diag)
-			sum -= m_block.diagonal().sum();
+			result -= m_block.diagonal().sum();
 
-		return sum;
+		return result;
 	}
 
 	/** Eigen3 symmetric matrix sum method */
@@ -562,12 +562,12 @@ private:
 		// the computation with using only the upper triangular part.
 		typename SGMatrix<T>::EigenMatrixXt m_upper =
 			m.template triangularView<Eigen::StrictlyUpper>();
-		T sum = m_upper.sum();
-		sum += sum;
+		T result = m_upper.sum();
+		result += result;
 
 		if (!no_diag)
-			sum += m.diagonal().sum();
-		return sum;
+			result += m.diagonal().sum();
+		return result;
 	}
 
 	/** Eigen3 symmetric matrix block sum method */
@@ -582,12 +582,12 @@ private:
 		// the computation with using only the upper triangular part.
 		typename SGMatrix<T>::EigenMatrixXt m_upper =
 			m_block.template triangularView<Eigen::StrictlyUpper>();
-		T sum = m_upper.sum();
-		sum += sum;
+		T result = m_upper.sum();
+		result += result;
 
 		if (!no_diag)
-			sum += m_block.diagonal().sum();
-		return sum;
+			result += m_block.diagonal().sum();
+		return result;
 	}
 
 	/** Eigen3 matrix colwise sum method */
