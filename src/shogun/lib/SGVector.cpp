@@ -98,9 +98,9 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 }
 
 template<class T>
-SGVector<T>::SGVector(GPUMemoryBase<T>* vector, index_t len)
+SGVector<T>::SGVector(GPUMemoryBase<T>* gpu_vector, index_t len)
  : SGReferencedData(true), vector(NULL), vlen(len),
-   gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(vector))
+   gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
 {
 	m_on_gpu.store(true, std::memory_order_release);
 }
