@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2016 Soumyajit De
+ * Written (w) 2016 - 2017 Soumyajit De
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
