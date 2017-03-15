@@ -228,6 +228,7 @@ class CMachine : public CSGObject
 		 */
 		virtual void set_store_model_features(bool store_model);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -242,6 +243,7 @@ class CMachine : public CSGObject
 					"for %s\n", get_name());
 			return false;
 		}
+#endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t i)

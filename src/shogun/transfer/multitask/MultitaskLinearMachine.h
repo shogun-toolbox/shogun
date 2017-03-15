@@ -102,10 +102,10 @@ class CMultitaskLinearMachine : public CLinearMachine
 		/** post lock */
 		virtual void post_lock(CLabels* labels, CFeatures* features_);
 
+#ifndef SWIG // SWIG should skip this part
 		/** train on given indices */
 		virtual bool train_locked(SGVector<index_t> indices);
 
-#ifndef SWIG // SWIG should skip this part
 		/** applies on given indices */
 		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
 #endif // SWIG // SWIG should skip this part

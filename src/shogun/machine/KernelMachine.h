@@ -235,6 +235,7 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -249,7 +250,7 @@ class CKernelMachine : public CMachine
 		 * @param indices index vector (of locked features) that is predicted
 		 * @return resulting labels
 		 */
-#ifndef SWIG // SWIG should skip this part
+
 		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
 
 		/** Applies a locked machine on a set of indices. Error if machine is
