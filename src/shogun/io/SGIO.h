@@ -288,6 +288,12 @@ class SGIO
 			return location_info;
 		}
 
+		/** @return last progress as a percentage */
+		inline float64_t get_last_progress() const
+		{
+			return last_progress;
+		}
+
 		/** get syntax highlight
 		 *
 		 * @return if syntax highlighting is enabled
