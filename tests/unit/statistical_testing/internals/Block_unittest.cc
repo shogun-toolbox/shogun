@@ -55,35 +55,11 @@ TEST(Block, create_blocks)
 	auto blocks=Block::create_blocks(feats_p, num_vec/blocksize, blocksize);
 	ASSERT_TRUE(blocks.size()==size_t(num_vec/blocksize));
 
-	// check const cast operator
-	for (auto it=blocks.begin(); it!=blocks.end(); ++it)
-	{
-		const Block& block=*it;
-		auto block_feats=static_cast<const CFeatures*>(block);
-		ASSERT_TRUE(block_feats->get_num_vectors()==blocksize);
-	}
-
 	// check non-const cast operator
 	for (auto it=blocks.begin(); it!=blocks.end(); ++it)
 	{
 		Block& block=*it;
-		auto block_feats=static_cast<std::shared_ptr<CFeatures>>(block);
-		ASSERT_TRUE(block_feats->get_num_vectors()==blocksize);
-	}
-
-	// check const get() method
-	for (auto it=blocks.begin(); it!=blocks.end(); ++it)
-	{
-		const Block& block=*it;
-		auto block_feats=block.get();
-		ASSERT_TRUE(block_feats->get_num_vectors()==blocksize);
-	}
-
-	// check non-const get() method
-	for (auto it=blocks.begin(); it!=blocks.end(); ++it)
-	{
-		Block& block=*it;
-		auto block_feats=block.get();
+		auto block_feats=static_cast<CFeatures*>(block);
 		ASSERT_TRUE(block_feats->get_num_vectors()==blocksize);
 	}
 
@@ -94,8 +70,9 @@ TEST(Block, create_blocks)
 	{
 		feats_p->add_subset(inds);
 		SGMatrix<float64_t> subset=feats_p->get_feature_matrix();
-		SGMatrix<float64_t> blockd=static_cast<feat_type*>(blocks[i].get())->get_feature_matrix();
-		ASSERT_TRUE(subset.equals(blockd));
+		auto block_feats=static_cast<CFeatures*>(blocks[i]);
+		SGMatrix<float64_t> block_matrix=dynamic_cast<feat_type*>(block_feats)->get_feature_matrix();
+		ASSERT_TRUE(subset.equals(block_matrix));
 		feats_p->remove_subset();
 		std::for_each(inds.vector, inds.vector+inds.vlen, [&blocksize](index_t& val) { val+=blocksize; });
 	}

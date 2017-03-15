@@ -42,7 +42,6 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/PermutationMMD.h>
 #include <gtest/gtest.h>
@@ -359,7 +358,8 @@ TEST(PermutationMMD, biased_full_multi_kernel)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 	SG_REF(merged_feats);
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
@@ -424,7 +424,8 @@ TEST(PermutationMMD, unbiased_full_multi_kernel)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 	SG_REF(merged_feats);
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
@@ -489,7 +490,8 @@ TEST(PermutationMMD, unbiased_incomplete_multi_kernel)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 	SG_REF(merged_feats);
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);

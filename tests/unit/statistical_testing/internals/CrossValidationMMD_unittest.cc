@@ -40,7 +40,6 @@
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/TestEnums.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/mmd/CrossValidationMMD.h>
 #include <gtest/gtest.h>
@@ -68,7 +67,8 @@ TEST(CrossValidationMMD, biased_full)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
@@ -125,7 +125,7 @@ TEST(CrossValidationMMD, biased_full)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=static_cast<CDenseFeatures<float64_t>*>
-					(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
@@ -162,7 +162,8 @@ TEST(CrossValidationMMD, unbiased_full)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
@@ -219,7 +220,7 @@ TEST(CrossValidationMMD, unbiased_full)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=static_cast<CDenseFeatures<float64_t>*>
-					(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
@@ -256,7 +257,8 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+	auto merged_feats=static_cast<CDenseFeatures<float64_t>*>
+		(feats_p->create_merged_copy(feats_q));
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
@@ -313,7 +315,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=static_cast<CDenseFeatures<float64_t>*>
-					(FeaturesUtil::create_merged_copy(feats_p, feats_q));
+					(feats_p->create_merged_copy(feats_q));
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());

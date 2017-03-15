@@ -63,7 +63,7 @@ TEST(DataManager, full_data_one_distribution_normal_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][0].get());
+	auto tmp=static_cast<CFeatures*>(next_burst[0][0]);
 	ASSERT_TRUE(tmp!=nullptr);
 	ASSERT_TRUE(tmp->get_num_vectors()==num_vec);
 
@@ -95,7 +95,7 @@ TEST(DataManager, full_data_one_distribution_streaming_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][0].get());
+	auto tmp=static_cast<CFeatures*>(next_burst[0][0]);
 	ASSERT_TRUE(tmp!=nullptr);
 	ASSERT_TRUE(tmp->get_num_vectors()==num_vec);
 
@@ -131,8 +131,8 @@ TEST(DataManager, full_data_two_distributions_normal_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -173,8 +173,8 @@ TEST(DataManager, full_data_two_distributions_streaming_feats)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -215,7 +215,7 @@ TEST(DataManager, block_data_one_distribution_normal_feats)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][i].get());
+			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();
@@ -257,7 +257,7 @@ TEST(DataManager, block_data_one_distribution_streaming_feats)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][i].get());
+			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();
@@ -303,8 +303,8 @@ TEST(DataManager, block_data_two_distributions_normal_feats_equal_blocksize)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -356,8 +356,8 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_equal_blocksize)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -409,8 +409,8 @@ TEST(DataManager, block_data_two_distributions_normal_feats_different_blocksize)
 	{
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize_p);
@@ -468,8 +468,8 @@ TEST(DataManager, block_data_two_distributions_streaming_feats_different_blocksi
 	{
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize_p);
@@ -515,8 +515,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -535,8 +535,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -555,8 +555,8 @@ TEST(DataManager, train_test_whole_dense)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -610,8 +610,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -637,8 +637,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -664,8 +664,8 @@ TEST(DataManager, train_test_blockwise_dense)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -692,8 +692,6 @@ TEST(DataManager, train_test_whole_streaming)
 	mgr.num_samples_at(0)=num_vec;
 	mgr.num_samples_at(1)=num_vec;
 
-	typedef CDenseFeatures<float64_t> feat_type;
-
 	mgr.set_train_test_mode(true);
 	mgr.set_train_test_ratio(train_test_ratio);
 
@@ -705,8 +703,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	auto tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	auto tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -725,8 +723,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -746,8 +744,8 @@ TEST(DataManager, train_test_whole_streaming)
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
 
-	tmp_p=dynamic_cast<feat_type*>(next_burst[0][0].get());
-	tmp_q=dynamic_cast<feat_type*>(next_burst[1][0].get());
+	tmp_p=static_cast<CFeatures*>(next_burst[0][0]);
+	tmp_q=static_cast<CFeatures*>(next_burst[1][0]);
 
 	ASSERT_TRUE(tmp_p!=nullptr);
 	ASSERT_TRUE(tmp_q!=nullptr);
@@ -777,8 +775,6 @@ TEST(DataManager, train_test_blockwise_streaming)
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	typedef CDenseFeatures<float64_t> feat_type;
-
 	mgr.set_train_test_mode(true);
 	mgr.set_train_test_ratio(train_test_ratio);
 
@@ -796,8 +792,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -823,8 +819,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -851,8 +847,8 @@ TEST(DataManager, train_test_blockwise_streaming)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp_p=dynamic_cast<feat_type*>(next_burst[0][i].get());
-			auto tmp_q=dynamic_cast<feat_type*>(next_burst[1][i].get());
+			auto tmp_p=static_cast<CFeatures*>(next_burst[0][i]);
+			auto tmp_q=static_cast<CFeatures*>(next_burst[1][i]);
 			ASSERT_TRUE(tmp_p!=nullptr);
 			ASSERT_TRUE(tmp_q!=nullptr);
 			ASSERT_TRUE(tmp_p->get_num_vectors()==blocksize/2);
@@ -888,9 +884,10 @@ TEST(DataManager, set_blockwise_on_off)
 	auto next_burst=mgr.next();
 	ASSERT_TRUE(!next_burst.empty());
 	ASSERT_TRUE(next_burst.num_blocks()==1);
-	auto casted=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][0].get());
+	auto casted=static_cast<CFeatures*>(next_burst[0][0]);
 	ASSERT_TRUE(casted!=nullptr);
 	ASSERT_TRUE(casted->get_num_vectors()==num_vec);
+
 	next_burst=mgr.next();
 	ASSERT_TRUE(next_burst.empty());
 	mgr.end();
@@ -905,7 +902,7 @@ TEST(DataManager, set_blockwise_on_off)
 		ASSERT_TRUE(next_burst.num_blocks()==num_blocks_per_burst);
 		for (auto i=0; i<next_burst.num_blocks(); ++i)
 		{
-			auto tmp=dynamic_cast<CDenseFeatures<float64_t>*>(next_burst[0][i].get());
+			auto tmp=static_cast<CFeatures*>(next_burst[0][i]);
 			ASSERT_TRUE(tmp!=nullptr);
 			ASSERT_TRUE(tmp->get_num_vectors()==blocksize);
 			total+=tmp->get_num_vectors();

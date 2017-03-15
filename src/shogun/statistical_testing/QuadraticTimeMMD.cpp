@@ -38,7 +38,6 @@
 #include <shogun/statistical_testing/QuadraticTimeMMD.h>
 #include <shogun/statistical_testing/MultiKernelQuadraticTimeMMD.h>
 #include <shogun/statistical_testing/internals/Kernel.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
@@ -255,9 +254,9 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	auto samples=data_mgr.next();
 	if (!samples.empty())
 	{
-		CFeatures *samples_p=samples[0][0].get();
-		CFeatures *samples_q=samples[1][0].get();
-		samples_p_and_q=FeaturesUtil::create_merged_copy(samples_p, samples_q);
+		CFeatures *samples_p=samples[0][0];
+		CFeatures *samples_q=samples[1][0];
+		samples_p_and_q=samples_p->create_merged_copy(samples_q);
 		samples.clear();
 	}
 	else

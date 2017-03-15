@@ -30,14 +30,15 @@ StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples)
 : DataFetcher(), parser_running(false)
 {
 	REQUIRE(samples!=nullptr, "Samples cannot be null!\n");
-	SG_REF(samples);
-	m_samples=std::shared_ptr<CStreamingFeatures>(samples, [](CStreamingFeatures* ptr) { SG_UNREF(ptr); });
+	m_samples=samples;
+	SG_REF(m_samples);
 	m_num_samples=0;
 }
 
 StreamingDataFetcher::~StreamingDataFetcher()
 {
 	end();
+	SG_UNREF(m_samples);
 }
 
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
@@ -100,6 +101,7 @@ CFeatures* StreamingDataFetcher::next()
 	{
 		auto num_samples_this_burst=std::min(m_block_details.m_max_num_samples_per_burst, num_more_samples);
 		next_samples=m_samples->get_streamed_features(num_samples_this_burst);
+		SG_REF(next_samples);
 		m_block_details.m_next_block_index+=m_block_details.m_num_blocks_per_burst;
 	}
 	return next_samples;

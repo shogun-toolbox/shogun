@@ -28,7 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <memory>
 #include <vector>
 #include <shogun/lib/common.h>
 
@@ -93,47 +92,16 @@ public:
 	static std::vector<Block> create_blocks(CFeatures* feats, index_t num_blocks, index_t size);
 
 	/**
-	 * Operator overloading for getting the block object as a shared ptr (non-const).
-	 */
-	inline operator std::shared_ptr<CFeatures>()
-	{
-		return m_block;
-	}
-
-	/**
 	 * Operator overloading for getting the block object as a naked ptr (non-const, unsafe).
 	 */
 	inline operator CFeatures*()
 	{
-		return m_block.get();
+		return m_block;
 	}
 
-	/**
-	 * Operator overloading for getting the block object as a naked ptr (const).
-	 */
-	inline operator const CFeatures*() const
-	{
-		return m_block.get();
-	}
-
-	/**
-	 * @return the block feature object (non-const, unsafe).
-	 */
-	inline CFeatures* get()
-	{
-		return static_cast<CFeatures*>(*this);
-	}
-
-	/**
-	 * @return the block feature object (const).
-	 */
-	inline const CFeatures* get() const
-	{
-		return static_cast<const CFeatures*>(*this);
-	}
 private:
 	/** Shallow copy representing the block */
-	std::shared_ptr<CFeatures> m_block;
+	CFeatures* m_block;
 
 	/** Underlying feature object */
 	CFeatures* m_feats;

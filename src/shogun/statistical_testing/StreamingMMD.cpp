@@ -42,7 +42,6 @@
 #include <shogun/statistical_testing/kernelselection/KernelSelectionStrategy.h>
 #include <shogun/statistical_testing/internals/NextSamples.h>
 #include <shogun/statistical_testing/internals/DataManager.h>
-#include <shogun/statistical_testing/internals/FeaturesUtil.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/internals/ComputationManager.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
@@ -137,9 +136,9 @@ void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFe
 #pragma omp parallel for
 	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
-		auto block_p=next_burst[0][i].get();
-		auto block_q=next_burst[1][i].get();
-		auto block_p_and_q=FeaturesUtil::create_merged_copy(block_p, block_q);
+		CFeatures *block_p=next_burst[0][i];
+		CFeatures *block_q=next_burst[1][i];
+		auto block_p_and_q=block_p->create_merged_copy(block_q);
 		blocks[i]=block_p_and_q;
 	}
 	next_burst.clear();

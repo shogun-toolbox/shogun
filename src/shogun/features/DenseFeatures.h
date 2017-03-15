@@ -7,6 +7,7 @@
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2014-2017 Soumyajit De
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -484,6 +485,7 @@ public:
 	/** Takes a list of feature instances and returns a new instance which is
 	 * a concatenation of a copy if this instace's data and the given
 	 * instancess data. Note that the feature types have to be equal.
+	 * This method respects the subsets for all the feature instances involved.
 	 *
 	 * @param other feature object to append
 	 * @return new feature object which contains copy of data of this
@@ -530,6 +532,15 @@ private:
 	void init();
 
 protected:
+	/*
+	 * Helper method which copies the working feature matrix into the pre-allocated
+	 * target matrix passed to this method. If the size of the pre-allocated matrix
+	 * is not sufficient to copy all the feature vectors, considering the column
+	 * offset, it throws an error. It then copies into the target matrix, starting
+	 * from base + (colum_offset * num_features) location.
+	 */
+	void copy_feature_matrix(SGMatrix<ST> target, index_t column_offset=0) const;
+
 	/// number of vectors in cache
 	int32_t num_vectors;
 

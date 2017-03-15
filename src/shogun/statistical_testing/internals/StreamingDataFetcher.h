@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http:/www.gnu.org/licenses/>.
  */
 
-#include <memory>
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/internals/DataFetcher.h>
 
@@ -58,7 +57,7 @@ public:
 		return "StreamingDataFetcher";
 	}
 private:
-	std::shared_ptr<CStreamingFeatures> m_samples;
+	CStreamingFeatures* m_samples;
 	bool parser_running;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
