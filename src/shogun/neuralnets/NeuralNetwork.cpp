@@ -470,7 +470,10 @@ float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
 	forward_propagate(inputs);
 
 	for (int32_t i=0; i<m_num_layers; i++)
-		get_layer(i)->get_activation_gradients().zero();
+	{
+		if (!get_layer(i)->is_input())
+			get_layer(i)->get_activation_gradients().zero();
+	}
 
 	for (int32_t i=m_num_layers-1; i>=0; i--)
 	{

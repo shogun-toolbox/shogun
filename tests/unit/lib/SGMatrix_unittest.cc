@@ -553,3 +553,64 @@ TEST(SGMatrixTest, from_eigen3)
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(eigen_mat(i), sg_mat[i]);
 }
+
+TEST(SGMatrixTest, equals)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat, copy;
+
+	EXPECT_TRUE(mat.equals(mat));
+	EXPECT_TRUE(mat.equals(copy));
+
+	mat=SGMatrix<float32_t>(size, size);
+	CMath::init_random(100);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	EXPECT_TRUE(mat.equals(mat));
+	EXPECT_FALSE(mat.equals(copy));
+
+	copy=SGMatrix<float32_t>(size, size);
+	EXPECT_FALSE(mat.equals(copy));
+
+	CMath::init_random(100);
+	for (uint64_t i=0; i<copy.size(); ++i)
+		copy.matrix[i]=CMath::randn_float();
+
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, clone)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat(size, size);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	SGMatrix<float32_t> copy=mat.clone();
+
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, set_const)
+{
+	const index_t size=10;
+	SGMatrix<float64_t> mat(size, size);
+	const auto value=CMath::randn_double();
+	mat.set_const(value);
+
+	for (uint64_t i=0; i<mat.size(); ++i)
+		EXPECT_NEAR(mat.matrix[i], value, 1E-15);
+}
+
+TEST(SGMatrixTest, max_single)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat(size, size);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	auto max=mat.max_single();
+	for (uint64_t i=0; i<mat.size(); ++i)
+		EXPECT_GE(max, mat.matrix[i]);
+}
