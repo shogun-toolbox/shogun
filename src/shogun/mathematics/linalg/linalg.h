@@ -36,6 +36,8 @@
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/lib/GPUVector.h>
+#include <viennacl/matrix.hpp>
+#include <viennacl/linalg/vector_operations.hpp>
 #endif
 
 namespace shogun

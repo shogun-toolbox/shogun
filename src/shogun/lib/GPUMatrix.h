@@ -41,7 +41,6 @@
 
 #include <shogun/lib/common.h>
 #include <memory>
-#include <viennacl/linalg/matrix_operations.hpp>
 
 #ifndef SWIG // SWIG should skip this part
 namespace viennacl
