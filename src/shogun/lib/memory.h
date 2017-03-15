@@ -98,9 +98,9 @@ template <class T> void sg_generic_free(T* ptr)
 }
 
 template <class InputIt, class OutputIt>
-SG_FORCED_INLINE void* memcpy(InputIt dest, OutputIt src, size_t count)
+SG_FORCED_INLINE void* sg_memcpy(InputIt dest, OutputIt src, size_t count)
 {
-	return std::memcpy(static_cast<void*>(dest), static_cast<const void*>(src), count);
+	return shogun::memcpy(static_cast<void*>(dest), static_cast<const void*>(src), count);
 }
 
 #endif //TRACE_MEMORY_ALLOCS
