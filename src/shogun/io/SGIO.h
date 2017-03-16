@@ -67,6 +67,7 @@ enum EMessageLocation
 
 #define NUM_LOG_LEVELS 10
 #define FBUFSIZE 4096
+#define __MAC_10_8 1080
 
 #ifdef DARWIN
 #include <Availability.h>
