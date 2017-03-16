@@ -4,7 +4,6 @@
 #include <shogun/lib/config.h>
 #include <iterator>
 
-#ifdef HAVE_CXX11
 namespace shogun
 {
 
@@ -52,8 +51,8 @@ namespace shogun
                     Iterator& operator++(int)
                     {
                         Iterator tmp(*this);
-                        tmp++;
-                        return tmp; 
+                        ++*this;
+                        return tmp;
                     }
                     T operator*()
                     {
@@ -124,5 +123,4 @@ namespace shogun
 
 }
 
-#endif /* HAVE_CXX */
 #endif /* __SG_RANGE_H__ */
