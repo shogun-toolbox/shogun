@@ -158,6 +158,32 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_qr_solver)
+{
+	const index_t size=3, n_x=2;
+	SGMatrix<float64_t> m(size, size);
+	SGMatrix<float64_t> b(size, n_x);
+
+	for (index_t i=0; i<size*size; ++i)
+		m[i]=i*i;
+	for (index_t i=0; i<size*n_x; ++i)
+		b[i]=i;
+
+	SGMatrix<float64_t> x_cal = qr_solver(m, b);
+
+	SGMatrix<float64_t> x_ref(size, n_x);
+	x_ref[0] = -0.25;
+	x_ref[1] = 0.33333333;
+	x_ref[2] = -0.08333333;
+	x_ref[3] = -0.08333333;
+	x_ref[4] = 0.0;
+	x_ref[5] = 0.08333333;
+
+	for (index_t i=0; i<size*n_x; ++i)
+		EXPECT_NEAR(x_ref[i], x_cal[i], 1E-8);
+	EXPECT_EQ(x_ref.size(), x_cal.size());
+}
+
 TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;

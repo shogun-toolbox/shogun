@@ -127,6 +127,16 @@ public:
 	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
+	/** Implementation of @see LinalgBackendBase::qr_solver */
+	#define BACKEND_GENERIC_QR_SOLVER(Type, Container) \
+	virtual Container<Type> qr_solver(const Container<Type>& A, \
+		const Container<Type>& b, linalg::QRDecompositionPivoting pivoting) const \
+	{  \
+		return qr_solver_impl(A, b, pivoting); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_QR_SOLVER
+
 	/** Implementation of @see LinalgBackendBase::dot */
 	#define BACKEND_GENERIC_DOT(Type, Container) \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
@@ -376,6 +386,40 @@ private:
 			Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt,
 				0, Eigen::Stride<0,0> >, Eigen::Lower> tlv(L_eig);
 			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+		}
+
+		return x;
+	}
+
+	/** Eigen3 QR solver */
+	template <typename T>
+	SGMatrix<T> qr_solver_impl(const SGMatrix<T>& A,
+			const SGMatrix<T>& b, linalg::QRDecompositionPivoting pivoting) const
+	{
+		SGMatrix<T> x = SGMatrix<T>(b.num_rows, b.num_cols);
+		x.zero();
+
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap x_eig = x;
+
+		using linalg::QRDecompositionPivoting;
+		switch (pivoting) {
+			case QRDecompositionPivoting::None: {
+				auto qr = Eigen::HouseholderQR<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(A_eig);
+				x_eig = qr.solve(b_eig);
+				break;
+			}
+			case QRDecompositionPivoting::Column: {
+				auto qr = Eigen::ColPivHouseholderQR<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(A_eig);
+				x_eig = qr.solve(b_eig);
+				break;
+			}
+			case QRDecompositionPivoting::Full: {
+				auto qr = Eigen::FullPivHouseholderQR<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(A_eig);
+				x_eig = qr.solve(b_eig);
+				break;
+			}
 		}
 
 		return x;

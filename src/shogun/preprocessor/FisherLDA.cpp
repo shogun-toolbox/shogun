@@ -42,6 +42,7 @@
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <vector>
 
 using namespace std;
@@ -233,10 +234,10 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 	else
 	{
 		// For holding the within class scatter.
-		MatrixXd Sw=fmatrix*fmatrix.transpose();
+		SGMatrix<float64_t>::EigenMatrixXt Sw=fmatrix*fmatrix.transpose();
 
 		// For holding the between class scatter.
-		MatrixXd Sb(num_features, C);
+		SGMatrix<float64_t>::EigenMatrixXt Sb(num_features, C);
 
 		for (i=0; i<C; i++)
 			Sb.col(i)=mean_class[i];
@@ -250,7 +251,10 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 		// x=M
 		// MatrixXd M=Sw.householderQr().solve(Sb);
 		// calculate the eigenvalues and eigenvectors of M.
-		EigenSolver<MatrixXd> es(Sw.householderQr().solve(Sb));
+		SGMatrix<float64_t> M=linalg::qr_solver<float64_t>(Sw, Sb);
+
+		SGMatrix<float64_t>::EigenMatrixXtMap M_eig=M;
+		EigenSolver<MatrixXd> es(M_eig);
 
 		MatrixXd all_eigenvectors=es.eigenvectors().real();
 		VectorXd all_eigenvalues=es.eigenvalues().real();
