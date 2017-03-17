@@ -12,6 +12,8 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
+#include <algorithm>
+
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
@@ -20,6 +22,19 @@
 namespace shogun
 {
 template <class T> class CDynamicArray;
+
+template <typename T> struct ptr_only
+{
+    template <typename U> static void fill_nullptr(U* ptr, size_t count) {}
+};
+
+template <typename T> struct ptr_only<T*>
+{
+    template <typename U> static void fill_nullptr(U* ptr, size_t count)
+    {
+	std::fill_n(ptr, count, nullptr);
+    }
+};
 
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
@@ -52,6 +67,8 @@ template <class T> class DynArray
 			else
 				array=(T*) malloc(size_t(p_resize_granularity)*sizeof(T));
 
+			// If this is a DynArray of pointers, initialize with nullptr
+			ptr_only<T>::fill_nullptr(array, p_resize_granularity);
 			num_elements=p_resize_granularity;
 			current_num_elements=0;
 		}
@@ -355,6 +372,11 @@ template <class T> class DynArray
 			//in case of shrinking we must adjust last element idx
 			if (n-1<current_num_elements-1)
 				current_num_elements=n;
+
+			//in case of expanding we must initialize the newly
+			//allocated memory in case were are holding pointers
+			if (new_num_elements > num_elements)
+			    ptr_only<T>::fill_nullptr(array+num_elements, new_num_elements - num_elements);
 
 			num_elements=new_num_elements;
 			return true;
