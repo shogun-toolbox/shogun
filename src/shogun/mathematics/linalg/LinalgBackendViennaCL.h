@@ -38,10 +38,10 @@
 
 #ifdef HAVE_VIENNACL
 
-#include <viennacl/vector.hpp>
-#include <viennacl/matrix.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
 #include <viennacl/linalg/prod.hpp>
+#include <viennacl/vector.hpp>
+#include <viennacl/matrix.hpp>
 #include <shogun/mathematics/linalg/GPUMemoryViennaCL.h>
 
 #if VIENNACL_VERSION >= 10700
