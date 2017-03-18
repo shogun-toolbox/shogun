@@ -99,11 +99,14 @@ public:
 	Example<T>* get_free_example()
 	{
 #ifdef HAVE_CXX11
-		std::unique_lock<std::mutex> write_lk(*write_mutex, std::defer_lock);
-		std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_write_index], std::defer_lock);
-		std::lock(write_lk, current_ex_lock);
-		while (ex_used[ex_write_index] == E_NOT_USED)
-			ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
+//		std::unique_lock<std::mutex> write_lk(*write_mutex, std::defer_lock);
+//		std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_write_index], std::defer_lock);
+//		std::lock(write_lk, current_ex_lock);
+        int32_t current_write_index = ex_write_index.load(std::memory_order_relaxed);  // only written from parser thread
+        int32_t current_read_index = ex_read_index.load(std::memory_order_acquire); // for synchronisation
+		while (ex_used[current_write_index] == E_NOT_USED)
+//			ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
+            current_read_index = ex_read_index.load(std::memory_order_acquire); // for synchronisation
 		Example<T>* ex=&ex_ring[ex_write_index];
 #elif HAVE_PTHREAD
 		pthread_mutex_lock(write_lock);
@@ -203,7 +206,9 @@ protected:
 	 */
 	virtual void inc_read_index()
 	{
-		ex_read_index=(ex_read_index + 1) % ring_size;
+//		ex_read_index=(ex_read_index + 1) % ring_size;
+        int32_t current_read_index  = ex_read_index.load(std::memory_order_relaxed); // only written from streaming thread
+        ex_read_index.store((current_read_index + 1) % ring_size,std::memory_order_release);
 	}
 
 	/**
@@ -212,7 +217,9 @@ protected:
 	 */
 	virtual void inc_write_index()
 	{
-		ex_write_index=(ex_write_index + 1) % ring_size;
+//		ex_write_index=(ex_write_index + 1) % ring_size;
+        int32_t current_write_index = ex_write_index.load(std::memory_order_relaxed);  // only written from parser thread
+        ex_write_index.store((current_write_index + 1) % ring_size,std::memory_order_release);
 	}
 
 protected:
@@ -226,13 +233,13 @@ protected:
 	E_IS_EXAMPLE_USED* ex_used;
 #ifdef HAVE_CXX11
 	/// Lock on state of example - used or unused
-	std::vector<std::shared_ptr<std::mutex> > ex_in_use_mutex;
+//	std::vector<std::shared_ptr<std::mutex> > ex_in_use_mutex;
 	/// Condition variable triggered when example is being/not being used
-	std::vector<std::shared_ptr<std::condition_variable> > ex_in_use_cond;
+//	std::vector<std::shared_ptr<std::condition_variable> > ex_in_use_cond;
 	/// Lock for reading examples from the ring
-	std::shared_ptr<std::mutex> read_mutex;
+//	std::shared_ptr<std::mutex> read_mutex;
 	/// Lock for writing new examples
-	std::shared_ptr<std::mutex> write_mutex;
+//	std::shared_ptr<std::mutex> write_mutex;
 #elif HAVE_PTHREAD
 	/// Lock on state of example - used or unused
 	pthread_mutex_t* ex_in_use_mutex;
@@ -245,9 +252,9 @@ protected:
 #endif
 
 	/// Write position for next example
-	int32_t ex_write_index;
+	std::atomic<int32_t> ex_write_index;
 	/// Position of next example to be read
-	int32_t ex_read_index;
+    std::atomic<int32_t> ex_read_index;
 
 	/// Whether examples on the ring will be freed on destruction
 	bool free_vectors_on_destruct;
@@ -271,8 +278,8 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	ex_ring = SG_CALLOC(Example<T>, ring_size);
 	ex_used = SG_MALLOC(E_IS_EXAMPLE_USED, ring_size);
 #ifdef HAVE_CXX11
-	read_mutex = std::make_shared<std::mutex>();
-	write_mutex = std::make_shared<std::mutex>();
+//	read_mutex = std::make_shared<std::mutex>();
+//	write_mutex = std::make_shared<std::mutex>();
 #elif HAVE_PTHREAD
 	ex_in_use_mutex = SG_MALLOC(pthread_mutex_t, ring_size);
 	ex_in_use_cond = SG_MALLOC(pthread_cond_t, ring_size);
@@ -294,8 +301,8 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 		ex_ring[i].label = FLT_MAX;
 
 #ifdef HAVE_CXX11
-		ex_in_use_mutex.push_back(std::make_shared<std::mutex>());
-		ex_in_use_cond.push_back(std::make_shared<std::condition_variable>());
+//		ex_in_use_mutex.push_back(std::make_shared<std::mutex>());
+//		ex_in_use_cond.push_back(std::make_shared<std::condition_variable>());
 #elif defined(HAVE_PTHREAD)
 		pthread_cond_init(&ex_in_use_cond[i], NULL);
 		pthread_mutex_init(&ex_in_use_mutex[i], NULL);
@@ -327,10 +334,10 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 	SG_FREE(ex_ring);
 	SG_FREE(ex_used);
 #ifdef HAVE_CXX11
-	ex_in_use_mutex.clear();
-	ex_in_use_cond.clear();
-	read_mutex.reset();
-	write_mutex.reset();
+//	ex_in_use_mutex.clear();
+//	ex_in_use_cond.clear();
+//	read_mutex.reset();
+//	write_mutex.reset();
 #elif HAVE_PTHREAD
 	SG_FREE(ex_in_use_mutex);
 	SG_FREE(ex_in_use_cond);
@@ -365,28 +372,29 @@ template <class T>
 Example<T>* CParseBuffer<T>::get_unused_example()
 {
 #ifdef HAVE_CXX11
-	std::lock_guard<std::mutex> read_lk(*read_mutex);
+//	std::lock_guard<std::mutex> read_lk(*read_mutex);
 #elif HAVE_PTHREAD
 	pthread_mutex_lock(read_lock);
 #endif
 
 	Example<T> *ex;
-	int32_t current_index = ex_read_index;
+	int32_t current_read_index = ex_read_index.load(std::memory_order_relaxed); // only written from streaming thread
 	// Because read index will change after return_example_to_read
+    int32_t current_write_index = ex_write_index.load(std::memory_order_acquire); //for synchronisation
 
 #ifdef HAVE_CXX11
-	std::lock_guard<std::mutex> current_ex_lk(*ex_in_use_mutex[current_index]);
+//	std::lock_guard<std::mutex> current_ex_lk(*ex_in_use_mutex[current_read_index]);
 #elif HAVE_PTHREAD
-	pthread_mutex_lock(&ex_in_use_mutex[current_index]);
+	pthread_mutex_lock(&ex_in_use_mutex[current_read_index]);
 #endif
 
-	if (ex_used[current_index] == E_NOT_USED)
+	if (ex_used[current_read_index] == E_NOT_USED) //indirectly compared with current_write_index for checking available example
 		ex = return_example_to_read();
 	else
 		ex = NULL;
 
 #if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
-	pthread_mutex_unlock(&ex_in_use_mutex[current_index]);
+	pthread_mutex_unlock(&ex_in_use_mutex[current_read_index]);
 	pthread_mutex_unlock(read_lock);
 #endif
 	return ex;
@@ -396,22 +404,24 @@ template <class T>
 int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 {
 #ifdef HAVE_CXX11
-	std::lock_guard<std::mutex> write_lk(*write_mutex);
+//	std::lock_guard<std::mutex> write_lk(*write_mutex);
 #elif HAVE_PTHREAD
 	pthread_mutex_lock(write_lock);
 #endif
 	int32_t ret;
-	int32_t current_index = ex_write_index;
-
+	int32_t current_write_index = ex_write_index.load(std::memory_order_relaxed);  // only written from parser thread
+    // Because write index will change after write_example
+    int32_t current_read_index = ex_read_index.load(std::memory_order_acquire); // for synchronisation
 #ifdef HAVE_CXX11
-	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[current_index]);
+//	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[current_write_index]);
 #elif HAVE_PTHREAD
-	pthread_mutex_lock(&ex_in_use_mutex[current_index]);
+	pthread_mutex_lock(&ex_in_use_mutex[current_write_index]);
 #endif
-	while (ex_used[ex_write_index] == E_NOT_USED)
+	while (ex_used[current_write_index] == E_NOT_USED) //indirectly compared with current_read_index for checking full buffer
 	{
 #ifdef HAVE_CXX11
-		ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
+        current_read_index = ex_read_index.load(std::memory_order_acquire); // for synchronisation
+//		ex_in_use_cond[ex_write_index]->wait(current_ex_lock);
 #elif HAVE_PTHREAD
 		pthread_cond_wait(&ex_in_use_cond[ex_write_index], &ex_in_use_mutex[ex_write_index]);
 #endif
@@ -420,7 +430,7 @@ int32_t CParseBuffer<T>::copy_example(Example<T> *ex)
 	ret = write_example(ex);
 
 #if defined(HAVE_PTHREAD) && !defined(HAVE_CXX11)
-	pthread_mutex_unlock(&ex_in_use_mutex[current_index]);
+	pthread_mutex_unlock(&ex_in_use_mutex[current_write_index]);
 	pthread_mutex_unlock(write_lock);
 #endif
 
@@ -431,26 +441,27 @@ template <class T>
 void CParseBuffer<T>::finalize_example(bool free_after_release)
 {
 #ifdef HAVE_CXX11
-	std::lock_guard<std::mutex> read_lk(*read_mutex);
-	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_read_index]);
+//	std::lock_guard<std::mutex> read_lk(*read_mutex);
+//	std::unique_lock<std::mutex> current_ex_lock(*ex_in_use_mutex[ex_read_index]);
 #elif HAVE_PTHREAD
 	pthread_mutex_lock(read_lock);
 	pthread_mutex_lock(&ex_in_use_mutex[ex_read_index]);
 #endif
-	ex_used[ex_read_index] = E_USED;
+    int32_t current_read_index  = ex_read_index.load(std::memory_order_relaxed); // only written from streaming thread
+	ex_used[current_read_index] = E_USED;
 
 	if (free_after_release)
 	{
 		SG_DEBUG("Freeing object in ring at index %d and address: %p.\n",
-			 ex_read_index, ex_ring[ex_read_index].fv);
+			 current_read_index, ex_ring[current_read_index].fv);
 
-		SG_FREE(ex_ring[ex_read_index].fv);
-		ex_ring[ex_read_index].fv=NULL;
+		SG_FREE(ex_ring[current_read_index].fv);
+		ex_ring[current_read_index].fv=NULL;
 	}
 
 #ifdef HAVE_CXX11
-	ex_in_use_cond[ex_read_index]->notify_one();
-	current_ex_lock.unlock();
+//	ex_in_use_cond[ex_read_index]->notify_one();
+//	current_ex_lock.unlock();
 #elif HAVE_PTHREAD
 	pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
 	pthread_mutex_unlock(&ex_in_use_mutex[ex_read_index]);
