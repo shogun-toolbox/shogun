@@ -95,6 +95,8 @@ class CMKL : public CSVM
 		 */
 		virtual ~CMKL();
 
+		virtual CSGObject* clone();
+
 		/** SVM to use as constraint generator in MKL SIP
 		 *
 		 * @param s svm
@@ -399,6 +401,9 @@ class CMKL : public CSVM
 		/** initialize solver such as glpk or cplex */
 		void init_solver();
 
+	private:
+		void register_params();
+
 	protected:
 		/** wrapper SVM */
 		CSVM* svm;
@@ -419,15 +424,14 @@ class CMKL : public CSVM
 
 		/** sub-kernel weights on the L1-term of ElasticnetMKL */
 		float64_t* beta_local;
+		int32_t beta_local_size;
+
 		/** number of mkl steps */
 		int32_t mkl_iterations;
 		/** mkl_epsilon for multiple kernel learning */
 		float64_t mkl_epsilon;
 		/** whether to use mkl wrapper or interleaved opt. */
 		bool interleaved_optimization;
-
-		/** partial objectives (one per kernel) */
-		float64_t* W;
 
 		/** gap between iterations */
 		float64_t w_gap;
