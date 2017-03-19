@@ -349,7 +349,7 @@ char* SGIO::c_string_of_substring(substring s)
 {
 	uint32_t len = s.end - s.start+1;
 	char* ret = SG_CALLOC(char, len);
-	memcpy(ret,s.start,len-1);
+	sg_memcpy(ret,s.start,len-1);
 	return ret;
 }
 

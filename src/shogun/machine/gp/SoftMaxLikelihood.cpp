@@ -131,7 +131,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 		"%d\n",func.num_cols,i,labels[i]);
 
 	SGVector<float64_t> ret=SGVector<float64_t>(func.num_rows*func.num_cols);
-	memcpy(ret.vector,func.matrix,func.num_rows*func.num_cols*sizeof(float64_t));
+	sg_memcpy(ret.vector,func.matrix,func.num_rows*func.num_cols*sizeof(float64_t));
 
 	//pi
 	Map<MatrixXd> eigen_ret(ret.vector,func.num_rows,func.num_cols);

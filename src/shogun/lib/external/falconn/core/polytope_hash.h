@@ -94,9 +94,9 @@ class FHTHelper {
           throw LSHFunctionError("Error when allocating temporary FHT array.");
         }
       }
-      std::memcpy(aligned_data_, data, dim_ * sizeof(ScalarType));
+      sg_memcpy(aligned_data_, data, dim_ * sizeof(ScalarType));
       FHTFunction<ScalarType>::apply(aligned_data_, dim_);
-      std::memcpy(data, aligned_data_, dim_ * sizeof(ScalarType));
+      sg_memcpy(data, aligned_data_, dim_ * sizeof(ScalarType));
     }
 #else
     FHTFunction<ScalarType>::apply(data, dim_);

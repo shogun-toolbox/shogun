@@ -1172,7 +1172,7 @@ int32_t Pardalos(
          if((xint[i] >= xmin) && (xint[i] <= xmax))
             xint2[l++] = xint[i];
      lxint = l;
-     memcpy(xint, xint2, lxint*sizeof(float64_t));
+     sg_memcpy(xint, xint2, lxint*sizeof(float64_t));
 
      l = 0;
      for (i = 0; i < luv; i++)
@@ -1187,7 +1187,7 @@ int32_t Pardalos(
              uvt[l++] = uv[i];
     }
     luv = l;
-    memcpy(uv, uvt, luv*sizeof(int32_t));
+    sg_memcpy(uv, uvt, luv*sizeof(int32_t));
     iter++;
   } while(luv != 0 && iter < maxprojections);
 

@@ -49,7 +49,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 
 	AA_matrix=SGMatrix<float64_t>(128,128);
 
-	memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	read_profiles_and_sequences();
 	SGStringList<char> string_list;
@@ -70,7 +70,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 	target_letter_0=-1 ;
 
 	AA_matrix=SGMatrix<float64_t>(128,128);
-	memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	init(l, r);
 	register_param();
@@ -374,7 +374,7 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 	if (AA_matrix_)
 	{
 		SG_DEBUG("Setting AA_matrix\n")
-		memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+		sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}
 

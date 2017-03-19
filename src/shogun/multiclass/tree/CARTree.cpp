@@ -438,8 +438,8 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 
 	SGVector<float64_t> left_transit(c_left);
 	SGVector<float64_t> right_transit(c_right);
-	memcpy(left_transit.vector,left.vector,c_left*sizeof(float64_t));
-	memcpy(right_transit.vector,right.vector,c_right*sizeof(float64_t));
+	sg_memcpy(left_transit.vector,left.vector,c_left*sizeof(float64_t));
+	sg_memcpy(right_transit.vector,right.vector,c_right*sizeof(float64_t));
 
 	if (num_missing_final>0)
 	{
@@ -604,7 +604,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 		SGVector<float64_t> feats(num_vecs);
 		SGVector<index_t> sorted_args(num_vecs);
 		SGVector<int32_t> temp_count_indices(count_indices.size());
-		memcpy(temp_count_indices.vector, count_indices.vector, sizeof(int32_t)*count_indices.size());
+		sg_memcpy(temp_count_indices.vector, count_indices.vector, sizeof(int32_t)*count_indices.size());
 
 		if (m_pre_sort)
 		{
@@ -723,7 +723,7 @@ int32_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const S
 				{
 					best_attribute=idx[i];
 					max_gain=g;
-					memcpy(is_left_final.vector,is_left.vector,is_left.vlen*sizeof(bool));
+					sg_memcpy(is_left_final.vector,is_left.vector,is_left.vlen*sizeof(bool));
 					num_missing_final=num_vecs-n_nm_vecs;
 
 					count_left=0;

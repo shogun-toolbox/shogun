@@ -76,8 +76,8 @@ void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 
 		float64_t mdist=min_dist(root,qfeats.matrix+i*dim,dim);
 		query_knn_single(heap,mdist,root,qfeats.matrix+i*dim,dim);
-		memcpy(m_knn_dists.matrix+i*k,heap->get_dists(),k*sizeof(float64_t));
-		memcpy(m_knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));
+		sg_memcpy(m_knn_dists.matrix+i*k,heap->get_dists(),k*sizeof(float64_t));
+		sg_memcpy(m_knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));
 
 		delete(heap);
 	}

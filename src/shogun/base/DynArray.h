@@ -394,7 +394,7 @@ template <class T> class DynArray
 					array=SG_MALLOC(T, p_array_size);
 				else
 					array=(T*) malloc(p_array_size*sizeof(T));
-				memcpy(array, p_array, p_array_size*sizeof(T));
+				sg_memcpy(array, p_array, p_array_size*sizeof(T));
 			}
 			else
 				array=p_array;
@@ -420,7 +420,7 @@ template <class T> class DynArray
 				array=SG_MALLOC(T, p_array_size);
 			else
 				array=(T*) malloc(p_array_size*sizeof(T));
-			memcpy(array, p_array, p_array_size*sizeof(T));
+			sg_memcpy(array, p_array, p_array_size*sizeof(T));
 
 			num_elements=p_array_size;
 			current_num_elements=p_num_elements;
@@ -500,7 +500,7 @@ template <class T> class DynArray
 					array=(T*) malloc(sizeof(T)*orig.num_elements);
 			}
 
-			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
+			sg_memcpy(array, orig.array, sizeof(T)*orig.num_elements);
 			num_elements=orig.num_elements;
 			current_num_elements=orig.current_num_elements;
 

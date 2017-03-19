@@ -59,10 +59,10 @@ TEST(MemoryTest,SGMatrix)
 template <typename T>
 static void clone(T* dest, T const * const src, size_t size)
 {
-	shogun::memcpy(dest, src, size);
+	shogun::sg_memcpy(dest, src, size);
 }
 
-TEST(MemoryTest, memcpy)
+TEST(MemoryTest, sg_memcpy)
 {
 	const index_t size = 10;
 	auto src = SG_CALLOC(float64_t, size);

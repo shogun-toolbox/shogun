@@ -156,7 +156,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	// remove the highest rank holders by storing indices
 	SGVector<index_t> inds(argsorted.vlen-threshold);
-	memcpy(inds.vector, argsorted.vector, sizeof(index_t)*inds.vlen);
+	sg_memcpy(inds.vector, argsorted.vector, sizeof(index_t)*inds.vlen);
 
 	// sorting the indices to get the original order
 	CMath::qsort(inds);

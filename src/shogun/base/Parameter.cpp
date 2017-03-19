@@ -2918,7 +2918,7 @@ void Parameter::set_from_parameters(Parameter* params)
 
 		/* copy parameter data, size in memory is equal because of same type */
 		if (dest!=source)
-			memcpy(dest, source, own->m_datatype.get_size());
+			sg_memcpy(dest, source, own->m_datatype.get_size());
 	}
 }
 
@@ -3354,7 +3354,7 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 {
 	SG_SDEBUG("entering TParameter::copy_ptype()\n");
 
-	/* rather than using memcpy, use the cumbersome way here and cast all types.
+	/* rather than using sg_memcpy, use the cumbersome way here and cast all types.
 	 * This makes it so much easier to debug code.
 	 * Copy full stype if this is too slow */
 	switch (ptype)
@@ -3637,7 +3637,7 @@ bool TParameter::copy_stype(EStructType stype, EPrimitiveType ptype,
 	 *
 	 * Therefore, this code is very close to the the equals code for
 	 * stypes. If it turns out to be too slow (which I doubt), stypes can be
-	 * copied with memcpy over the full memory blocks */
+	 * copied with sg_memcpy over the full memory blocks */
 
 	switch (stype)
 	{

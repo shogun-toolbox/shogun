@@ -162,7 +162,7 @@ uint32_t* CLBPPyrDotFeatures::get_image(int32_t index, int32_t& width, int32_t& 
 	uint32_t* image = images->get_feature_vector(index, len, do_free);
 	uint32_t* img;
 	img = SG_MALLOC(uint32_t, len);
-	memcpy(img, image, len * sizeof(uint32_t));
+	sg_memcpy(img, image, len * sizeof(uint32_t));
 	images->free_feature_vector(image, index, do_free);
 	width = image_width;
 	height = image_height;

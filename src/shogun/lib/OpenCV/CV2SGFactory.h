@@ -84,7 +84,7 @@ template<typename SG_T> SGMatrix<SG_T> CV2SGFactory::get_sgmatrix
 	SGMatrix<SG_T> sgMat(num_rows, num_cols);
 	const int inType=OpenCVTypeName<SG_T>::get_opencv_type();
 	cvMat.convertTo(cvMat,inType);
-	memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(SG_T));
+	sg_memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(SG_T));
 	SGMatrix<SG_T>::transpose_matrix(sgMat.matrix, num_cols, num_rows);
 	return sgMat;
 }

@@ -467,8 +467,8 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){
 
 			/* copy Ynew to Y, and xnew to x */
-			memcpy(x, xnew, sizeof(double) * p);
-			memcpy(Y, Ynew, sizeof(double) * YSize);
+			sg_memcpy(x, xnew, sizeof(double) * p);
+			sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 			/*
 			   printf("\n iterStep=%d, L=%2.5f, gap=%e", iterStep, L, *gap);
@@ -519,8 +519,8 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			if (*gap< gapR){
 				/*(xnew, Ynew) is better in terms of duality gap*/
 				/* copy Ynew to Y, and xnew to x */
-				memcpy(x, xnew, sizeof(double) * p);
-				memcpy(Y, Ynew, sizeof(double) * YSize);
+				sg_memcpy(x, xnew, sizeof(double) * p);
+				sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 				/*In this case, we do not apply restart, as (x,Y) is not better
 				 *
@@ -837,11 +837,11 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 	 *        (x, Y)= (xnew, Ynew)
 	 */
 
-	/*memcpy(xp, x, sizeof(double) * p);*/
-	memcpy(Yp, Y, sizeof(double) * YSize);
+	/*sg_memcpy(xp, x, sizeof(double) * p);*/
+	sg_memcpy(Yp, Y, sizeof(double) * YSize);
 
-	/*memcpy(x, xnew, sizeof(double) * p);*/
-	memcpy(Y, Ynew, sizeof(double) * YSize);
+	/*sg_memcpy(x, xnew, sizeof(double) * p);*/
+	sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 	gamma=L;
 
@@ -1006,8 +1006,8 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 		 */
 		if (*gap <=tol){
 
-			memcpy(x, xnew, sizeof(double) * p);
-			memcpy(Y, Ynew, sizeof(double) * YSize);
+			sg_memcpy(x, xnew, sizeof(double) * p);
+			sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 			break;
 		}
@@ -1031,11 +1031,11 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){
 
 
-			/*memcpy(xp, x, sizeof(double) * p);*/
-			memcpy(Yp, Y, sizeof(double) * YSize);
+			/*sg_memcpy(xp, x, sizeof(double) * p);*/
+			sg_memcpy(Yp, Y, sizeof(double) * YSize);
 
-			/*memcpy(x, xnew, sizeof(double) * p);*/
-			memcpy(Y, Ynew, sizeof(double) * YSize);
+			/*sg_memcpy(x, xnew, sizeof(double) * p);*/
+			sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 			gamma=gamma * (1-alpha);
 
@@ -1096,11 +1096,11 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 				 *           "nextRestartStep"
 				 */
 
-				/*memcpy(xp, x, sizeof(double) * p);*/
-				memcpy(Yp, Y, sizeof(double) * YSize);
+				/*sg_memcpy(xp, x, sizeof(double) * p);*/
+				sg_memcpy(Yp, Y, sizeof(double) * YSize);
 
-				/*memcpy(x, xnew, sizeof(double) * p);*/
-				memcpy(Y, Ynew, sizeof(double) * YSize);
+				/*sg_memcpy(x, xnew, sizeof(double) * p);*/
+				sg_memcpy(Y, Ynew, sizeof(double) * YSize);
 
 				gamma=gamma * (1-alpha);
 
@@ -1116,8 +1116,8 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 
 				if (*gap <=tol){
 
-					memcpy(x, xS, sizeof(double) * p);
-					memcpy(Y, YS, sizeof(double) * YSize);
+					sg_memcpy(x, xS, sizeof(double) * p);
+					sg_memcpy(Y, YS, sizeof(double) * YSize);
 
 					break;
 				}else{
@@ -1140,8 +1140,8 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 							xS, YS, p, g, zeroGroupFlag,
 							G, w);
 
-					/*memcpy(xp, xS, sizeof(double) * p);*/
-					memcpy(Yp, YS, sizeof(double) * YSize);
+					/*sg_memcpy(xp, xS, sizeof(double) * p);*/
+					sg_memcpy(Yp, YS, sizeof(double) * YSize);
 
 					gamma=L;
 

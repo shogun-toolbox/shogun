@@ -719,7 +719,7 @@ SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(int32_t i)
 	int32_t n = get_layer(i)->get_num_parameters();
 	SGVector<float64_t>* p = new SGVector<float64_t>(n);
 
-	memcpy(p->vector, get_section(m_params, i), n*sizeof(float64_t));
+	sg_memcpy(p->vector, get_section(m_params, i), n*sizeof(float64_t));
 	return p;
 }
 

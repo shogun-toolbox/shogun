@@ -72,19 +72,19 @@ CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool
 
 			SGVector<float64_t> old_mean=components[i]->get_mean();
 			SGVector<float64_t> new_mean(old_mean.vlen);
-			memcpy(new_mean.vector, old_mean.vector, old_mean.vlen*sizeof(float64_t));
+			sg_memcpy(new_mean.vector, old_mean.vector, old_mean.vlen*sizeof(float64_t));
 			m_components[i]->set_mean(new_mean);
 
 			SGVector<float64_t> old_d=components[i]->get_d();
 			SGVector<float64_t> new_d(old_d.vlen);
-			memcpy(new_d.vector, old_d.vector, old_d.vlen*sizeof(float64_t));
+			sg_memcpy(new_d.vector, old_d.vector, old_d.vlen*sizeof(float64_t));
 			m_components[i]->set_d(new_d);
 
 			if (components[i]->get_cov_type()==FULL)
 			{
 				SGMatrix<float64_t> old_u=components[i]->get_u();
 				SGMatrix<float64_t> new_u(old_u.num_rows, old_u.num_cols);
-				memcpy(new_u.matrix, old_u.matrix, old_u.num_rows*old_u.num_cols*sizeof(float64_t));
+				sg_memcpy(new_u.matrix, old_u.matrix, old_u.num_rows*old_u.num_cols*sizeof(float64_t));
 				m_components[i]->set_u(new_u);
 			}
 

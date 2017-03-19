@@ -247,22 +247,22 @@ void CDynProg::init_tiling_data(
 
 
 	if (m_num_raw_data==1){
-		memcpy(tmp_probe_pos, probe_pos, num_probes*sizeof(int32_t));
-		memcpy(tmp_raw_intensities, intensities, num_probes*sizeof(float64_t));
+		sg_memcpy(tmp_probe_pos, probe_pos, num_probes*sizeof(int32_t));
+		sg_memcpy(tmp_raw_intensities, intensities, num_probes*sizeof(float64_t));
 		//SG_PRINT("raw_intens:%f \n",*tmp_raw_intensities+2)
 	}else{
-		memcpy(tmp_probe_pos, m_probe_pos, m_num_probes_cum[m_num_raw_data-1]*sizeof(int32_t));
-		memcpy(tmp_raw_intensities, m_raw_intensities, m_num_probes_cum[m_num_raw_data-1]*sizeof(float64_t));
-		memcpy(tmp_probe_pos+m_num_probes_cum[m_num_raw_data-1], probe_pos, num_probes*sizeof(int32_t));
-		memcpy(tmp_raw_intensities+m_num_probes_cum[m_num_raw_data-1], intensities, num_probes*sizeof(float64_t));
+		sg_memcpy(tmp_probe_pos, m_probe_pos, m_num_probes_cum[m_num_raw_data-1]*sizeof(int32_t));
+		sg_memcpy(tmp_raw_intensities, m_raw_intensities, m_num_probes_cum[m_num_raw_data-1]*sizeof(float64_t));
+		sg_memcpy(tmp_probe_pos+m_num_probes_cum[m_num_raw_data-1], probe_pos, num_probes*sizeof(int32_t));
+		sg_memcpy(tmp_raw_intensities+m_num_probes_cum[m_num_raw_data-1], intensities, num_probes*sizeof(float64_t));
 	}
 	SG_FREE(m_probe_pos);
 	SG_FREE(m_raw_intensities);
 	m_probe_pos = tmp_probe_pos; //SG_MALLOC(int32_t, num_probes);
 	m_raw_intensities = tmp_raw_intensities;//SG_MALLOC(float64_t, num_probes);
 
-	//memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
-	//memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
+	//sg_memcpy(m_probe_pos, probe_pos, num_probes*sizeof(int32_t));
+	//sg_memcpy(m_raw_intensities, intensities, num_probes*sizeof(float64_t));
 
 }
 
@@ -835,7 +835,7 @@ void CDynProg::best_path_set_segment_ids_mask(
 SGVector<float64_t> CDynProg::get_scores()
 {
 	SGVector<float64_t> scores(m_scores.get_dim1());
-	memcpy(scores.vector,m_scores.get_array(), sizeof(float64_t)*(m_scores.get_dim1()));
+	sg_memcpy(scores.vector,m_scores.get_array(), sizeof(float64_t)*(m_scores.get_dim1()));
 
 	return scores;
 }
@@ -845,7 +845,7 @@ SGMatrix<int32_t> CDynProg::get_states()
 	SGMatrix<int32_t> states(m_states.get_dim1(), m_states.get_dim2());
 
 	int32_t sz = sizeof(int32_t)*( m_states.get_dim1() * m_states.get_dim2() );
-	memcpy(states.matrix ,m_states.get_array(),sz);
+	sg_memcpy(states.matrix ,m_states.get_array(),sz);
 
 	return states;
 }
@@ -855,7 +855,7 @@ SGMatrix<int32_t> CDynProg::get_positions()
    SGMatrix<int32_t> positions(m_positions.get_dim1(), m_positions.get_dim2());
 
    int32_t sz = sizeof(int32_t)*(m_positions.get_dim1()*m_positions.get_dim2());
-   memcpy(positions.matrix, m_positions.get_array(),sz);
+   sg_memcpy(positions.matrix, m_positions.get_array(),sz);
 
    return positions;
 }
@@ -871,7 +871,7 @@ void CDynProg::get_path_scores(float64_t** scores, int32_t* seq_len)
    *scores = SG_MALLOC(float64_t, *seq_len);
    ASSERT(*scores)
 
-   memcpy(*scores,m_my_scores.get_array(),sz);
+   sg_memcpy(*scores,m_my_scores.get_array(),sz);
 }
 
 void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
@@ -885,7 +885,7 @@ void CDynProg::get_path_losses(float64_t** losses, int32_t* seq_len)
    *losses = SG_MALLOC(float64_t, *seq_len);
    ASSERT(*losses)
 
-   memcpy(*losses,m_my_losses.get_array(),sz);
+   sg_memcpy(*losses,m_my_losses.get_array(),sz);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

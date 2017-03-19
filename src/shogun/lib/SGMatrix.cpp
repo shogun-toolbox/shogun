@@ -350,7 +350,7 @@ T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 
 	auto size=int64_t(nrows)*ncols;
 	T* result=SG_MALLOC(T, size);
-	memcpy(result, matrix, size*sizeof(T));
+	sg_memcpy(result, matrix, size*sizeof(T));
 	return result;
 }
 

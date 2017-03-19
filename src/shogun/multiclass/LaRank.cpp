@@ -99,7 +99,7 @@ namespace shogun
 			if (nlen > 0)
 			{
 				ndata = SG_MALLOC(float32_t, nlen);
-				memcpy (ndata, odata, nlen * sizeof (float32_t));
+				sg_memcpy (ndata, odata, nlen * sizeof (float32_t));
 			}
 			else
 			{
@@ -216,7 +216,7 @@ namespace shogun
 			if (olen > 0)
 			{
 				float32_t *odata = self->rdata[k];
-				memcpy (ndata, odata, olen * sizeof (float32_t));
+				sg_memcpy (ndata, odata, olen * sizeof (float32_t));
 				SG_FREE (odata);
 			}
 			self->rdata[k] = ndata;

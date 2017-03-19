@@ -81,7 +81,7 @@ template <typename SG_T, typename CV_T> cv::Mat SG2CVFactory::get_cvMat
 	const int outType=OpenCVTypeName<CV_T>::get_opencv_type();
 	const int inType=OpenCVTypeName<SG_T>::get_opencv_type();
 	cv::Mat cvMat(num_cols, num_rows, inType);
-	memcpy((SG_T*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(SG_T));
+	sg_memcpy((SG_T*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(SG_T));
 	cvMat.convertTo(cvMat,outType);
 	return cvMat.t();
 }

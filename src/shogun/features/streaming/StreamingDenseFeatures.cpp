@@ -317,7 +317,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			SGMatrix<T> so_far(matrix.num_rows, i);
 
 			/* copy */
-			memcpy(so_far.matrix, matrix.matrix,
+			sg_memcpy(so_far.matrix, matrix.matrix,
 					so_far.num_rows*so_far.num_cols*sizeof(T));
 
 			matrix=so_far;
@@ -343,7 +343,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 					vec.vlen, matrix.num_rows);
 
 			/* copy vector into matrix */
-			memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
+			sg_memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
 					vec.vlen*sizeof(T));
 
 			/* clean up */

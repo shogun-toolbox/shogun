@@ -301,7 +301,7 @@ float64_t* CSVM::get_linear_term_array()
 		return NULL;
 	float64_t* a = SG_MALLOC(float64_t, m_linear_term.vlen);
 
-	memcpy(a, m_linear_term.vector,
+	sg_memcpy(a, m_linear_term.vector,
 			m_linear_term.vlen*sizeof(float64_t));
 
 	return a;

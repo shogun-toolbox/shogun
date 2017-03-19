@@ -354,7 +354,7 @@ template<class T>
 SGSparseVector<T> SGSparseVector<T>::clone() const
 {
 	SGSparseVectorEntry <T> * copy = SG_MALLOC(SGSparseVectorEntry <T>, num_feat_entries);
-	memcpy(copy, features, num_feat_entries * sizeof(SGSparseVectorEntry <T>));
+	sg_memcpy(copy, features, num_feat_entries * sizeof(SGSparseVectorEntry <T>));
 	return SGSparseVector<T>(copy, num_feat_entries);
 }
 

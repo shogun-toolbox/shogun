@@ -25,7 +25,7 @@
 #define LIBBMRM_CALLOC(x, y) SG_CALLOC(y, x)
 #define LIBBMRM_REALLOC(x, y) SG_REALLOC(x, y)
 #define LIBBMRM_FREE(x) SG_FREE(x)
-#define LIBBMRM_MEMCPY(x, y, z) memcpy(x, y, z)
+#define LIBBMRM_MEMCPY(x, y, z) sg_memcpy(x, y, z)
 #define LIBBMRM_MEMMOVE(x, y, z) memmove(x, y, z)
 #define LIBBMRM_INDEX(ROW, COL, NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define LIBBMRM_ABS(A) ((A) < 0 ? -(A) : (A))

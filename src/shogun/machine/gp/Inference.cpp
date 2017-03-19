@@ -151,7 +151,7 @@ float64_t CInference::get_marginal_likelihood_estimate(
 
 	/* log pdf p(f^i|\theta) and free memory afterwise. Scale kernel before */
 	SGMatrix<float64_t> scaled_kernel(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
+	sg_memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
 			sizeof(float64_t)*m_ktrtr.num_rows*m_ktrtr.num_cols);
 	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
 		scaled_kernel.matrix[i]*=CMath::exp(m_log_scale*2.0);

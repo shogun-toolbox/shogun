@@ -74,7 +74,7 @@ float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
 
 	/* copy the resulting w */
 	SGVector<float64_t> cur_w = svm.get_w();
-	memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
+	sg_memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
 
 	return svm.compute_primal_objective();
 }

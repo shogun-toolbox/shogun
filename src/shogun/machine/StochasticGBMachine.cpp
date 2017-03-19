@@ -280,7 +280,7 @@ void CStochasticGBMachine::apply_subset(CDenseFeatures<float64_t>* f, CLabels* i
 	CMath::permute(idx);
 
 	SGVector<index_t> subset(subset_size);
-	memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));
+	sg_memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));
 
 	f->add_subset(subset);
 	interf->add_subset(subset);
