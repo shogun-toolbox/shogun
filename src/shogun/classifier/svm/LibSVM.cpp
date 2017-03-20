@@ -61,7 +61,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	if (m_linear_term.vlen>0)
 	{
 		if (m_labels->get_num_labels()!=m_linear_term.vlen)
-            SG_ERROR("Number of training vectors does not match length of linear term\n")
+			SG_ERROR("Number of training vectors does not match length of linear term\n")
 
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
@@ -77,7 +77,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
-    problem.C=SG_MALLOC(float64_t, problem.l);
+	problem.C=SG_MALLOC(float64_t, problem.l);
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
@@ -155,7 +155,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 		SG_FREE(problem.x);
 		SG_FREE(problem.y);
 		SG_FREE(problem.pv);
-        SG_FREE(problem.C);
+		SG_FREE(problem.C);
 
 
 		SG_FREE(x_space);
