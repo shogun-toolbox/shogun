@@ -28,7 +28,7 @@ CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
 	CLinearMachine(), m_lasso(lasso),
 	m_max_nonz(0), m_max_l1_norm(0)
 {
-	m_epsilon = CMath::MACHINE_EPSILON;
+	set_epsilon(CMath::MACHINE_EPSILON);
 	SG_ADD(&m_epsilon, "epsilon", "Epsilon for early stopping", MS_AVAILABLE);
 	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
 	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
@@ -185,7 +185,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	// main loop
 	//========================================
 	int32_t nloop=0;
-	while (m_num_active < max_active_allowed && max_corr/n_vec > m_epsilon && !stop_cond)
+	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
 	{
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		typename SGVector<ST>::EigenVectorXtMap map_corr(&corr[0], n_fea);
@@ -298,17 +298,18 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 		// update estimator
 		for (index_t i=0; i < m_num_active; ++i)
 			beta[m_active_set[i]] += gamma * wA(i);
+
 		// early stopping on max l1-norm
-		if (m_max_l1_norm > 0)
+		if (get_max_l1_norm() > 0)
 		{
 			ST l1 = SGVector<ST>::onenorm(&beta[0], n_fea);
-			if (l1 > m_max_l1_norm)
+			if (l1 > get_max_l1_norm())
 			{
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
 				ST l1_prev = (ST) SGVector<ST>::onenorm(&m_beta_path_t[nloop][0], n_fea);
-				ST s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
+				ST s = (get_max_l1_norm()-l1_prev)/(l1-l1_prev);
 
 				typename SGVector<ST>::EigenVectorXtMap map_beta(&beta[0], n_fea);
 				typename SGVector<ST>::EigenVectorXtMap map_beta_prev(&m_beta_path_t[nloop][0], n_fea);
@@ -333,13 +334,13 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 
 		nloop++;
 		m_beta_path_t.push_back(beta);
-		if (size_t(m_num_active) >= m_beta_idx.size())
+		if (size_t(m_num_active) >= get_path_size())
 			m_beta_idx.push_back(nloop);
 		else
 			m_beta_idx[m_num_active] = nloop;
 
 		// early stopping with max number of non-zero variables
-		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
+		if (get_max_non_zero() > 0 && m_num_active >= get_max_non_zero())
 			stop_cond = true;
 		SG_DEBUG("Added : %d , Dropped %d, Active set size %d max_corr %.17f \n", i_max_corr, i_kick, m_num_active, max_corr);
 	}
@@ -356,8 +357,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 
 	// assign default estimator
 	set_w(SGVector<float64_t>(n_fea));
-	switch_w(m_beta_idx.size()-1);
-
+	switch_w(get_path_size()-1);
+	
 	return true;
 }
 
