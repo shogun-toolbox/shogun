@@ -226,7 +226,7 @@ float64_t CGradientModelSelection::get_cost(SGVector<float64_t> model_vars, SGVe
 		REQUIRE(derivative.vlen, "Can't find gradient wrt %s parameter!\n",
 				node->key->m_name);
 
-		memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
+		sg_memcpy(model_grads.vector+offset, derivative.vector, sizeof(float64_t)*derivative.vlen);
 
 		offset+=derivative.vlen;
 	}
@@ -314,7 +314,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		for (index_t i=0; i<argument->get_num_elements(); i++)
 		{
 			CMapNode<TParameter*, SGVector<float64_t> >* node=argument->get_node_ptr(i);
-			memcpy(model_vars.vector+offset, node->data.vector, sizeof(float64_t)*node->data.vlen);
+			sg_memcpy(model_vars.vector+offset, node->data.vector, sizeof(float64_t)*node->data.vlen);
 			offset+=node->data.vlen;
 		}
 

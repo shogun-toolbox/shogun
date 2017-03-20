@@ -22,7 +22,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	C_dims[1] = C0.dims[1];
 	C_dims[2] = C0.dims[2];
 	SGNDArray<float64_t> C(C_dims,3);
-	memcpy(C.array, C0.array, C0.dims[0]*C0.dims[1]*C0.dims[2]*sizeof(float64_t));
+	sg_memcpy(C.array, C0.array, C0.dims[0]*C0.dims[1]*C0.dims[2]*sizeof(float64_t));
 
 	SGMatrix<float64_t> V;
 	if (V0.num_rows == n && V0.num_cols == n)

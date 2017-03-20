@@ -663,7 +663,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
 	}
 
-	memcpy(histogram, h.vector, sizeof(histogram));
+	sg_memcpy(histogram, h.vector, sizeof(histogram));
 }
 
 const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)

@@ -62,7 +62,7 @@ CMulticlassLabels* CLSHKNNSolver::classify_objects(CDistance* knn_distance, cons
 		falconn::DenseVector<double> temp = Map<VectorXd> (vec, len);
 		auto indices = new std::vector<int32_t> ();
 		lsh_table->find_k_nearest_neighbors(temp, (int_fast64_t)m_k, indices);
-		memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
+		sg_memcpy(NN.get_column_vector(i), indices->data(), sizeof(int32_t)*m_k);
 		delete indices;
 	}
 		

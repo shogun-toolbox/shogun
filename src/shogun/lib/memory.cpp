@@ -444,7 +444,7 @@ SG_SPECIALIZED_MALLOC(SGMatrix<complex128_t>)
 void* shogun::get_copy(void* src, size_t len)
 {
 	void* copy=SG_MALLOC(uint8_t, len);
-	memcpy(copy, src, len);
+	sg_memcpy(copy, src, len);
 	return copy;
 }
 

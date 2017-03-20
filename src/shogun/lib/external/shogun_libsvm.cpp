@@ -59,7 +59,7 @@ typedef float64_t schar;
 template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 {
 	dst = SG_MALLOC(T, n);
-	memcpy((void *)dst,(void *)src,sizeof(T)*n);
+	sg_memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
 #define INF HUGE_VAL
 #define TAU 1e-12

@@ -89,7 +89,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 			SG_ERROR("NULL returned by apply method\n");
 
 		float64_t* bag_results = output.get_column_vector(i);
-		memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
+		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
 
 		SG_UNREF(l);
 		SG_UNREF(m);

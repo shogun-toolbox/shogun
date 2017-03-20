@@ -202,7 +202,7 @@ static void owlqn_project(
 
 void lbfgs_parameter_init(lbfgs_parameter_t *param)
 {
-    memcpy(param, &_defparam, sizeof(*param));
+    sg_memcpy(param, &_defparam, sizeof(*param));
 }
 
 int32_t lbfgs(

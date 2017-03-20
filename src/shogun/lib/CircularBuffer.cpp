@@ -316,7 +316,7 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 	if (from_buffer_begin)
 		m_end_pos=m_buffer.vector;
 
-	memcpy(m_end_pos, source, source_size);
+	sg_memcpy(m_end_pos, source, source_size);
 	move_pointer(&m_end_pos, m_end_pos+source_size);
 
 	m_bytes_available-=source_size;
@@ -364,7 +364,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 	if (from_buffer_begin)
 		m_begin_pos=m_buffer.vector;
 
-	memcpy(*dest+dest_offset, m_begin_pos, num_bytes);
+	sg_memcpy(*dest+dest_offset, m_begin_pos, num_bytes);
 	move_pointer(&m_begin_pos, m_begin_pos+num_bytes);
 
 	m_last_idx-=num_bytes;

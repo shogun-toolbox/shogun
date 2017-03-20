@@ -60,7 +60,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 				initial_buffer_size=uncompressed_size;
 				compressed_size=uncompressed_size;
 				compressed=SG_MALLOC(uint8_t, compressed_size);
-				memcpy(compressed, uncompressed, uncompressed_size);
+				sg_memcpy(compressed, uncompressed, uncompressed_size);
 				break;
 			}
 #ifdef USE_LZO
@@ -221,7 +221,7 @@ void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,
 			{
 				ASSERT(uncompressed_size>=compressed_size)
 				uncompressed_size=compressed_size;
-				memcpy(uncompressed, compressed, uncompressed_size);
+				sg_memcpy(uncompressed, compressed, uncompressed_size);
 				break;
 			}
 #ifdef USE_LZO

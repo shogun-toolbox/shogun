@@ -76,7 +76,7 @@ void CCrossValidationMKLStorage::update_trained_machine(
 			m_current_fold_index, first_idx);
 
 	/* copy memory */
-	memcpy(&m_mkl_weights.matrix[first_idx], w.vector,
+	sg_memcpy(&m_mkl_weights.matrix[first_idx], w.vector,
 			w.vlen*sizeof(float64_t));
 
 	SG_UNREF(kernel);

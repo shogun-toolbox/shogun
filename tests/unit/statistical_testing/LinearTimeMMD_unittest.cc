@@ -49,10 +49,10 @@ TEST(LinearTimeMMD, biased_same_num_samples)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();
@@ -93,10 +93,10 @@ TEST(LinearTimeMMD, unbiased_same_num_samples)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();
@@ -137,10 +137,10 @@ TEST(LinearTimeMMD, incomplete_same_num_samples)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();
@@ -182,10 +182,10 @@ TEST(LinearTimeMMD, biased_different_null_samples)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, n);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*n);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*n);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();
@@ -226,10 +226,10 @@ TEST(LinearTimeMMD, unbiased_different_null_samples)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, n);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*n);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*n);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();
@@ -269,10 +269,10 @@ TEST(LinearTimeMMD, compute_variance_null)
 
 	// create data matrix for each features (appended is not supported)
 	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
 	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+	sg_memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
 
 	// normalise data
 	float64_t max_p=data_p.max_single();

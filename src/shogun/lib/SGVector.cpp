@@ -256,7 +256,7 @@ template<class T>
 T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 {
 	T* result = SG_MALLOC(T, len);
-	memcpy(result, vec, sizeof(T)*len);
+	sg_memcpy(result, vec, sizeof(T)*len);
 	return result;
 }
 

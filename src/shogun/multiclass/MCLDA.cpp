@@ -331,8 +331,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	Eigen::JacobiSVD<MatrixXd> eSvd;
 	eSvd.compute(X,Eigen::ComputeFullV);
-	memcpy(S.data(), eSvd.singularValues().data(), m_dim*sizeof(float64_t));
-	memcpy(V.data(), eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
+	sg_memcpy(S.data(), eSvd.singularValues().data(), m_dim*sizeof(float64_t));
+	sg_memcpy(V.data(), eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
 	V.transposeInPlace();
 
 	int rank = 0;
@@ -372,8 +372,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 	V = MatrixXd(rank, rank);
 
 	eSvd.compute(Xc,Eigen::ComputeFullV);
-	memcpy(S.data(), eSvd.singularValues().data(), rank*sizeof(float64_t));
-	memcpy(V.data(), eSvd.matrixV().data(), rank*rank*sizeof(float64_t));
+	sg_memcpy(S.data(), eSvd.singularValues().data(), rank*sizeof(float64_t));
+	sg_memcpy(V.data(), eSvd.matrixV().data(), rank*rank*sizeof(float64_t));
 
 	m_rank = 0;
 	while (m_rank < rank && S[m_rank] > m_tolerance*S[0])

@@ -57,7 +57,7 @@ COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
 	if (w_dim > 0)
 	{
 		w = SG_MALLOC(float32_t, w_dim);
-		memcpy(w, mch->w, w_dim*sizeof(float32_t));
+		sg_memcpy(w, mch->w, w_dim*sizeof(float32_t));
 	}
 	else
 	{

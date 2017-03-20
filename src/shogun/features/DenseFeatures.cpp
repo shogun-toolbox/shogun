@@ -143,7 +143,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 		// note: tmp_feat_after should be checked as it is used by memcpy
 		if (tmp_feat_after)
 		{
-			memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
+			sg_memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
 			SG_FREE(tmp_feat_after);
 
 			len = tmp_len;
@@ -170,7 +170,7 @@ template<class ST> void CDenseFeatures<ST>::set_feature_vector(SGVector<ST> vect
 		SG_ERROR(
 				"Vector not of length %d (has %d)\n", num_features, vector.vlen);
 
-	memcpy(&feature_matrix.matrix[real_num * int64_t(num_features)], vector.vector,
+	sg_memcpy(&feature_matrix.matrix[real_num * int64_t(num_features)], vector.vector,
 			int64_t(num_features) * sizeof(ST));
 }
 
@@ -230,7 +230,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 		if (i == ii)
 			continue;
 
-		memcpy(&feature_matrix.matrix[int64_t(num_features) * i],
+		sg_memcpy(&feature_matrix.matrix[int64_t(num_features) * i],
 				&feature_matrix.matrix[int64_t(num_features) * ii],
 				num_features * sizeof(ST));
 		old_ii = ii;
@@ -299,7 +299,7 @@ void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column
 	{
 		auto src=feature_matrix.matrix;
 		auto dest=target.matrix+int64_t(num_features)*column_offset;
-		shogun::memcpy(dest, src, feature_matrix.size()*sizeof(ST));
+		sg_memcpy(dest, src, feature_matrix.size()*sizeof(ST));
 	}
 	else
 	{
@@ -308,7 +308,7 @@ void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column
 			auto real_i=m_subset_stack->subset_idx_conversion(i);
 			auto src=feature_matrix.matrix+real_i*int64_t(num_features);
 			auto dest=target.matrix+int64_t(num_features)*(column_offset+i);
-			shogun::memcpy(dest, src, num_features*sizeof(ST));
+			sg_memcpy(dest, src, num_features*sizeof(ST));
 		}
 	}
 }
@@ -614,7 +614,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		index_t real_idx=m_subset_stack->subset_idx_conversion(indices.vector[i]);
-		memcpy(&feature_matrix_copy.matrix[i*num_features],
+		sg_memcpy(&feature_matrix_copy.matrix[i*num_features],
 				&feature_matrix.matrix[real_idx*num_features],
 				num_features*sizeof(ST));
 	}

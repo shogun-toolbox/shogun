@@ -109,7 +109,7 @@ void CVwNativeCacheWriter::cache_tag(v_array<char> tag)
 	buf.buf_write(c, sizeof(vw_size_t)+tag.index());
 	*(vw_size_t*)c = tag.index();
 	c += sizeof(vw_size_t);
-	memcpy(c, tag.begin, tag.index());
+	sg_memcpy(c, tag.begin, tag.index());
 	c += tag.index();
 
 	buf.set(c);

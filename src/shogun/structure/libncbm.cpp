@@ -404,14 +404,14 @@ BmrmStatistics svm_ncbm_solver(
 	/* initial solution */
 	SGVector<float64_t> cur_subgrad(w_dim);
 	SGVector<float64_t> cur_w(w_dim);
-	memcpy(cur_w.vector, w, sizeof(float64_t)*w_dim);
+	sg_memcpy(cur_w.vector, w, sizeof(float64_t)*w_dim);
 
 	float64_t cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
 	bias[0] = -cur_risk;
 	best_Fp = 0.5*_lambda*CMath::dot(cur_w.vector, cur_w.vector, cur_w.vlen) + cur_risk;
 	best_risk = cur_risk;
-	memcpy(best_w.vector, cur_w.vector, sizeof(float64_t)*w_dim);
-	memcpy(best_subgrad.vector, cur_subgrad.vector, sizeof(float64_t)*w_dim);
+	sg_memcpy(best_w.vector, cur_w.vector, sizeof(float64_t)*w_dim);
+	sg_memcpy(best_subgrad.vector, cur_subgrad.vector, sizeof(float64_t)*w_dim);
 
 	/* create a double-linked list over the A the subgrad matrix */
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_list=NULL;
@@ -422,7 +422,7 @@ BmrmStatistics svm_ncbm_solver(
 		return ncbm;
 	}
 	/* save the subgradient */
-	memcpy(A.matrix, cur_subgrad.vector, sizeof(float64_t)*w_dim);
+	sg_memcpy(A.matrix, cur_subgrad.vector, sizeof(float64_t)*w_dim);
 	map[0] = false;
 	cp_list->address=&A[0];
 	cp_list->idx=0;
@@ -657,8 +657,8 @@ BmrmStatistics svm_ncbm_solver(
 			{
 				best_Fp = wbest_candidates[i].fval;
 				best_risk = wbest_candidates[i].fval - wbest_candidates[i].reg;
-				memcpy(best_w, wbest_candidates[i].solution.vector, sizeof(float64_t)*w_dim);
-				memcpy(best_subgrad.vector, wbest_candidates[i].gradient.vector, sizeof(float64_t)*w_dim);
+				sg_memcpy(best_w, wbest_candidates[i].solution.vector, sizeof(float64_t)*w_dim);
+				sg_memcpy(best_subgrad.vector, wbest_candidates[i].gradient.vector, sizeof(float64_t)*w_dim);
 
 				ncbm.Fp = best_Fp;
 
@@ -752,7 +752,7 @@ BmrmStatistics svm_ncbm_solver(
 		*/
 	}
 
-	memcpy(w, best_w.vector, sizeof(float64_t)*w_dim);
+	sg_memcpy(w, best_w.vector, sizeof(float64_t)*w_dim);
 
 	/* free ICP_stats variables */
 	LIBBMRM_FREE(icp_stats.ICPcounter);

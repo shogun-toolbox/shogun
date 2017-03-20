@@ -125,10 +125,10 @@ void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
 
         t = 64 - t;
         if (len < t) {
-            memcpy(p, buf, len);
+            sg_memcpy(p, buf, len);
             return;
         }
-        memcpy(p, buf, t);
+        sg_memcpy(p, buf, t);
         byteReverse(ctx->in, 16);
         MD5Transform(ctx->buf, (uint32_t *) ctx->in);
         buf += t;
@@ -137,7 +137,7 @@ void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
     /* Process data in 64-byte chunks */
 
     while (len >= 64) {
-        memcpy(ctx->in, buf, 64);
+        sg_memcpy(ctx->in, buf, 64);
         byteReverse(ctx->in, 16);
         MD5Transform(ctx->buf, (uint32_t *) ctx->in);
         buf += 64;
@@ -146,7 +146,7 @@ void CHash::MD5Update(struct MD5Context *ctx, unsigned char const *buf,
 
     /* Handle any remaining bytes of data. */
 
-    memcpy(ctx->in, buf, len);
+    sg_memcpy(ctx->in, buf, len);
 }
 
 void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
@@ -186,7 +186,7 @@ void CHash::MD5Final(unsigned char digest[16], struct MD5Context *ctx)
 
     MD5Transform(ctx->buf, (uint32_t *) ctx->in);
     byteReverse((unsigned char *) ctx->buf, 4);
-    memcpy(digest, ctx->buf, 16);
+    sg_memcpy(digest, ctx->buf, 16);
     memset(ctx, 0, sizeof(*ctx));        /* In case it's sensitive */
 }
 

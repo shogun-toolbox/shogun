@@ -224,7 +224,7 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 	ASSERT(m_mean.vector && m_d.vector)
 	ASSERT(point.vlen == m_mean.vlen)
 	float64_t* difference=SG_MALLOC(float64_t, m_mean.vlen);
-	memcpy(difference, point.vector, sizeof(float64_t)*m_mean.vlen);
+	sg_memcpy(difference, point.vector, sizeof(float64_t)*m_mean.vlen);
 
 	for (int32_t i = 0; i < m_mean.vlen; i++)
 		difference[i] -= m_mean.vector[i];
@@ -339,7 +339,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 	{
 		case FULL:
 			m_u=SGMatrix<float64_t>(cov.num_rows,cov.num_rows);
-			memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
+			sg_memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
 
 			m_d.vector=SGMatrix<float64_t>::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
 			m_d.vlen=cov.num_rows;

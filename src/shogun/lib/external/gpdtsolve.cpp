@@ -1322,7 +1322,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       total_time += (float64_t)(ti-t) / CLOCKS_PER_SEC;
   ti = t;
 
-  memcpy(solution, alpha, ell * sizeof(float64_t));
+  sg_memcpy(solution, alpha, ell * sizeof(float64_t));
 
   /* objective function evaluation */
   fval = 0.0;

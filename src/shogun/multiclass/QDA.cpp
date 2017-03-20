@@ -279,8 +279,8 @@ bool CQDA::train_machine(CFeatures* data)
 
 		Eigen::JacobiSVD<MatrixXd> eSvd;
 		eSvd.compute(buffer,Eigen::ComputeFullV);
-		memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
-		memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
+		sg_memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
+		sg_memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(class_nums[k]-1), col, m_dim);
@@ -295,7 +295,7 @@ bool CQDA::train_machine(CFeatures* data)
 			MatrixXd rotE = Map<MatrixXd>(rot_mat,m_dim,m_dim);
 			MatrixXd resE(m_dim,m_dim);
 			resE = MEig * rotE.transpose();
-			memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
+			sg_memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
 		}
 	}
 

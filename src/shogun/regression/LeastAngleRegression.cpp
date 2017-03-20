@@ -382,7 +382,7 @@ SGMatrix<ST> CLeastAngleRegression::cholesky_insert(const SGMatrix<ST>& X,
 	typename SGMatrix<ST>::EigenMatrixXtMap map_R_new(R_new.matrix, R_new.num_rows, R_new.num_cols);
 
 	map_R_new.block(0, 0, num_active, num_active) = map_R;
-	memcpy(R_new.matrix+num_active*(num_active+1), R_k.data(), sizeof(ST)*(num_active));
+	sg_memcpy(R_new.matrix+num_active*(num_active+1), R_k.data(), sizeof(ST)*(num_active));
 	map_R_new.row(num_active).setZero();
 	map_R_new(num_active, num_active) = R_kk;
 	return R_new;
