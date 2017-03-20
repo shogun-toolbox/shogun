@@ -98,6 +98,9 @@ class CLibSVR : public CSVM
 		/** @return object name */
 		virtual const char* get_name() const { return "LibSVR"; }
 
+	private:
+		void register_params();
+
 	protected:
 		/** train regression
 		 *
@@ -109,14 +112,6 @@ class CLibSVR : public CSVM
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 	protected:
-		/** SVM problem */
-		svm_problem problem;
-		/** SVM parameter */
-		svm_parameter param;
-
-		/** SVM model */
-		struct svm_model* model;
-
 		/** solver type */
 		LIBSVR_SOLVER_TYPE solver_type;
 };

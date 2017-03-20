@@ -15,29 +15,39 @@
 using namespace shogun;
 
 CLibSVM::CLibSVM()
-: CSVM(), model(NULL), solver_type(LIBSVM_C_SVC)
+: CSVM(), solver_type(LIBSVM_C_SVC)
 {
+	register_params();
 }
 
 CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
-: CSVM(), model(NULL), solver_type(st)
+: CSVM(), solver_type(st)
 {
+	register_params();
 }
 
 
 CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab, LIBSVM_SOLVER_TYPE st)
-: CSVM(C, k, lab), model(NULL), solver_type(st)
+: CSVM(C, k, lab), solver_type(st)
 {
-	problem = svm_problem();
+	register_params();
 }
 
 CLibSVM::~CLibSVM()
 {
 }
 
+void CLibSVM::register_params()
+{
+	SG_ADD((machine_int_t*) &solver_type, "libsvm_solver_type", "LibSVM Solver type", MS_NOT_AVAILABLE);
+}
 
 bool CLibSVM::train_machine(CFeatures* data)
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	struct svm_node* x_space;
 
 	ASSERT(m_labels && m_labels->get_num_labels())

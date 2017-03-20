@@ -16,12 +16,12 @@
 using namespace shogun;
 
 CMulticlassLibSVM::CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
-: CMulticlassSVM(new CMulticlassOneVsOneStrategy()), model(NULL), solver_type(st)
+: CMulticlassSVM(new CMulticlassOneVsOneStrategy()), solver_type(st)
 {
 }
 
 CMulticlassLibSVM::CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsOneStrategy(), C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
+: CMulticlassSVM(new CMulticlassOneVsOneStrategy(), C, k, lab), solver_type(LIBSVM_C_SVC)
 {
 }
 
@@ -29,8 +29,17 @@ CMulticlassLibSVM::~CMulticlassLibSVM()
 {
 }
 
+void CMulticlassLibSVM::register_params()
+{
+	SG_ADD((machine_int_t*) &solver_type, "libsvm_solver_type", "LibSVM solver type", MS_NOT_AVAILABLE);
+}
+
 bool CMulticlassLibSVM::train_machine(CFeatures* data)
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	struct svm_node* x_space;
 
 	problem = svm_problem();

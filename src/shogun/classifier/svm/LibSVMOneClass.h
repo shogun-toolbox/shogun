@@ -58,15 +58,6 @@ class CLibSVMOneClass : public CSVM
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
-
-	protected:
-		/** SVM problem */
-		svm_problem problem;
-		/** SVM parameter */
-		svm_parameter param;
-
-		/** SVM model */
-		struct svm_model* model;
 };
 }
 #endif

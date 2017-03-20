@@ -1,5 +1,5 @@
 /*
- * This program is free software; you can redistribute it and/or modify
+
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -18,7 +18,7 @@ using namespace shogun;
 CLibSVR::CLibSVR()
 : CSVM()
 {
-	model=NULL;
+	register_params();
 	solver_type=LIBSVR_EPSILON_SVR;
 }
 
@@ -26,8 +26,7 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 		LIBSVR_SOLVER_TYPE st)
 : CSVM()
 {
-	model=NULL;
-
+	register_params();
 	set_C(C,C);
 
 	switch (st)
@@ -50,7 +49,11 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 
 CLibSVR::~CLibSVR()
 {
-	SG_FREE(model);
+}
+
+void CLibSVR::register_params()
+{
+	SG_ADD((machine_int_t*) &solver_type, "libsvr_solver_type", "LibSVR Solver type", MS_NOT_AVAILABLE);
 }
 
 EMachineType CLibSVR::get_classifier_type()
@@ -60,6 +63,10 @@ EMachineType CLibSVR::get_classifier_type()
 
 bool CLibSVR::train_machine(CFeatures* data)
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	ASSERT(kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_REGRESSION)
