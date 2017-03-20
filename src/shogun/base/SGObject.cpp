@@ -711,24 +711,6 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
 				this_param->m_name, other_param->m_name);
 
-		/* hard-wired exception for DynamicObjectArray parameter num_elements */
-		if (!strcmp("DynamicObjectArray", get_name()) &&
-				!strcmp(this_param->m_name, "num_elements") &&
-				!strcmp(other_param->m_name, "num_elements"))
-		{
-			SG_DEBUG("Ignoring DynamicObjectArray::num_elements field\n");
-			continue;
-		}
-
-		/* hard-wired exception for DynamicArray parameter num_elements */
-		if (!strcmp("DynamicArray", get_name()) &&
-				!strcmp(this_param->m_name, "num_elements") &&
-				!strcmp(other_param->m_name, "num_elements"))
-		{
-			SG_DEBUG("Ignoring DynamicArray::num_elements field\n");
-			continue;
-		}
-
 		/* use equals method of TParameter from here */
 		if (!this_param->equals(other_param, accuracy, tolerant))
 		{
