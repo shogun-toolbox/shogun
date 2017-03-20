@@ -51,7 +51,7 @@ CMulticlassMachine::~CMulticlassMachine()
 
 void CMulticlassMachine::set_labels(CLabels* lab)
 {
-    CMachine::set_labels(lab);
+    CMachine::set_labels(dynamic_cast<CMulticlassLabels*>(lab));
     if (lab)
         init_strategy();
 }

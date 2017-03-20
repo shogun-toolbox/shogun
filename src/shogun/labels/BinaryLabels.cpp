@@ -14,6 +14,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -62,6 +63,22 @@ CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDe
 
 CBinaryLabels::CBinaryLabels(CFile * loader) : CDenseLabels(loader)
 {
+}
+
+CBinaryLabels::operator CMulticlassLabels()
+{
+	CMulticlassLabels src;
+	
+	for (index_t i = 0; i < m_labels.vlen; i++)
+	{
+		if(m_labels.vector[i] == -1)
+		{
+			m_labels.vector[i] = 0;
+		}
+	}
+	src.set_labels(m_labels);
+
+	return src;
 }
 
 void CBinaryLabels::ensure_valid(const char * context)
