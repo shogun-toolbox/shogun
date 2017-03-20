@@ -5,6 +5,7 @@ os: Visual Studio 2015
 environment:
   matrix:
     - VSVER: Visual Studio 14 2015 Win64
+    - VSVER: Visual Studio 15 2017 Win64
 
 platform:
   - x64
