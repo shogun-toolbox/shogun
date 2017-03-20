@@ -33,7 +33,7 @@ class CDynamicObjectArray : public CSGObject
 	public:
 		/** default constructor */
 		CDynamicObjectArray()
-		: CSGObject(), m_array(), name("Array")
+		: CSGObject(), m_array()
 		{
 			dim1_size=1;
 			dim2_size=1;
@@ -49,7 +49,7 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim3 dimension 3
 		 */
 		CDynamicObjectArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
-		: CSGObject(), m_array(dim1*dim2*dim3), name("Array")
+		: CSGObject(), m_array(dim1*dim2*dim3)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -66,7 +66,7 @@ class CDynamicObjectArray : public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
@@ -85,7 +85,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -105,7 +105,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -393,21 +393,6 @@ class CDynamicObjectArray : public CSGObject
 		/** shuffles the array with external random state */
 		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
-		/** set array's name
-		 *
-		 * @param p_name new name
-		 */
-		inline void set_array_name(const char* p_name)
-		{
-			name=p_name;
-		}
-
-		/** get array's name
-		 *
-		 * @return array's name
-		 */
-		inline const char* get_array_name() const { return name; }
-
 		/** @return object name */
 		virtual const char* get_name() const
 		{ return "DynamicObjectArray"; }
@@ -487,10 +472,6 @@ class CDynamicObjectArray : public CSGObject
 
 		/** dimension 3 */
 		int32_t dim3_size;
-
-		/** array's name */
-		const char* name;
-
 };
 }
 #endif /* _DYNAMIC_OBJECT_ARRAY_H_  */

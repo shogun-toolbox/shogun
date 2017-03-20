@@ -32,7 +32,7 @@ template <class T> class CDynamicArray :public CSGObject
 	public:
 		/** default constructor */
 		CDynamicArray()
-		: CSGObject(), m_array(), name("Array")
+		: CSGObject(), m_array()
 		{
 			dim1_size=1;
 			dim2_size=1;
@@ -48,7 +48,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_dim3_size dimension 3
 		 */
 		CDynamicArray(int32_t p_dim1_size, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
-		: CSGObject(), m_array(p_dim1_size*p_dim2_size*p_dim3_size), name("Array")
+		: CSGObject(), m_array(p_dim1_size*p_dim2_size*p_dim3_size)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -65,7 +65,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CDynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
@@ -84,7 +84,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -104,7 +104,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -121,7 +121,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_dim3_size dimension 3
 		 */
 		CDynamicArray(const T* p_array, int32_t p_dim1_size=1, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size), name("Array")
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -545,21 +545,6 @@ template <class T> class CDynamicArray :public CSGObject
 		/** shuffles the array with external random state */
 		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
-		/** set array's name
-		 *
-		 * @param p_name new name
-		 */
-		inline void set_array_name(const char* p_name)
-		{
-			name=p_name;
-		}
-
-		/** get array's name
-		 *
-		 * @return array's name
-		 */
-		inline const char* get_array_name() const { return name; }
-
 		/** display this array */
 		inline void display_array()
 		{
@@ -659,9 +644,6 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** dimension 3 */
 		int32_t dim3_size;
-
-		/** array's name */
-		const char* name;
 };
 }
 #endif /* _DYNAMIC_ARRAY_H_  */
