@@ -6,6 +6,37 @@ ExternalProject_Get_Property(GoogleMock source_dir)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
+function (add_unit_test_executable EXECUTABLE TARGET SRC)
+	ADD_EXECUTABLE(${EXECUTABLE} ${SRC} utils/Utils.cpp)
+	add_dependencies(${EXECUTABLE} GoogleMock shogun::shogun)
+	target_include_directories(${EXECUTABLE} PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
+	target_link_libraries(${EXECUTABLE} PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
+	IF (SANITIZER_FLAGS)
+		set_target_properties(${EXECUTABLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+	ENDIF()
+	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+	set_target_properties (${EXECUTABLE} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+
+	# In some cases gTest segfaults with GCC >= 6.0.0.  This is a dirty fix.
+	# TODO: Update to gTest-release with proper support for GCC >= 6.0.0.
+	# See:  https://github.com/google/googletest/issues/705
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		# in order to support cmake 2.8.7 and older
+		IF(NOT CMAKE_CXX_COMPILER_VERSION)
+			include(CheckCompiler)
+		ENDIF(NOT CMAKE_CXX_COMPILER_VERSION)
+		IF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
+			target_compile_options(${EXECUTABLE}
+					PUBLIC -fno-delete-null-pointer-checks)
+		ENDIF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
+	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+	ADD_CUSTOM_TARGET(${TARGET}
+			COMMAND ${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
+			DEPENDS ${EXECUTABLE})
+endfunction ()
+
 # Generate automatic unittest from jinja2 templates
 ADD_CUSTOM_COMMAND(OUTPUT clone_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
@@ -38,7 +69,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationAscii_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationAscii_unittest.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST SerializationAscii_unittest.cc)
+LIST(APPEND SERIALIZATION_UNITTEST SerializationAscii_unittest.cc)
 
 ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
@@ -49,7 +80,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationHDF5_unittest.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST SerializationHDF5_unittest.cc)
+LIST(APPEND SERIALIZATION_UNITTEST SerializationHDF5_unittest.cc)
 
 ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
@@ -60,7 +91,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationJSON_unittest.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST SerializationJSON_unittest.cc)
+LIST(APPEND SERIALIZATION_UNITTEST SerializationJSON_unittest.cc)
 
 ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
@@ -71,7 +102,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationXML_unittest.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST SerializationXML_unittest.cc)
+LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
 
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -80,35 +111,12 @@ set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_
 
 # collect the unittests
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
+LIST(APPEND UNITTEST_SRC ${TEMPLATE_GENERATED_UNITTEST})
 
-ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC} ${TEMPLATE_GENERATED_UNITTEST} utils/Utils.cpp)
-add_dependencies(shogun-unit-test GoogleMock shogun::shogun)
-target_include_directories(shogun-unit-test PRIVATE ${source_dir}/googlemock/include ${INCLUDES} ${source_dir}/googletest/include)
-target_link_libraries(shogun-unit-test PRIVATE shogun_deps gmock gtest ${SANITIZER_LIBRARY})
-IF (SANITIZER_FLAGS)
-	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
-ENDIF()
-set_target_properties (shogun-unit-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set_target_properties (shogun-unit-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-set_target_properties (shogun-unit-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+add_unit_test_executable(shogun-unit-test unit-tests "${UNITTEST_SRC}")
 
-# In some cases gTest segfaults with GCC >= 6.0.0.  This is a dirty fix.
-# TODO: Update to gTest-release with proper support for GCC >= 6.0.0.
-# See:  https://github.com/google/googletest/issues/705
-IF(CMAKE_COMPILER_IS_GNUCXX)
-	# in order to support cmake 2.8.7 and older
-	IF(NOT CMAKE_CXX_COMPILER_VERSION)
-		include(CheckCompiler)
-	ENDIF(NOT CMAKE_CXX_COMPILER_VERSION)
-	IF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
-		target_compile_options(shogun-unit-test
-			PUBLIC -fno-delete-null-pointer-checks)
-	ENDIF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-
-ADD_CUSTOM_TARGET(unit-tests
-	COMMAND ${CMAKE_BINARY_DIR}/bin/shogun-unit-test
-	DEPENDS shogun-unit-test)
+LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
+add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
 
 shogun_discover_tests(shogun-unit-test)
 
