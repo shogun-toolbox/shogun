@@ -77,13 +77,13 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	}
 
 	SGVector<float64_t> w;
-	if (m_use_bias)
+	if (get_use_bias())
 		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
 		w=SGVector<float64_t>(num_feat);
 
 	liblinear_problem prob;
-	if (m_use_bias)
+	if (get_use_bias())
 	{
 		prob.n=w.vlen+1;
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
@@ -103,10 +103,10 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 		{
 			double* Cs = SG_MALLOC(double, prob.l);
 			for(int i = 0; i < prob.l; i++)
-				Cs[i] = m_C;
+				Cs[i] = get_C();
 
-			function *fun_obj=new l2r_l2_svr_fun(&prob, Cs, m_tube_epsilon);
-			CTron tron_obj(fun_obj, m_epsilon);
+			function *fun_obj=new l2r_l2_svr_fun(&prob, Cs, get_tube_epsilon());
+			CTron tron_obj(fun_obj, get_epsilon());
 			tron_obj.tron(w.vector, m_max_train_time);
 			delete fun_obj;
 			SG_FREE(Cs);
@@ -160,10 +160,10 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const liblinear_problem *prob)
 {
 	int l = prob->l;
-	double C = m_C;
-	double p = m_tube_epsilon;
+	double C = get_C();
+	double p = get_tube_epsilon();
 	int w_size = prob->n;
-	double eps = m_epsilon;
+	double eps = get_epsilon();
 	int i, s, iter = 0;
 	int max_iter = 1000;
 	int active_size = l;

@@ -29,14 +29,14 @@ CLinearRidgeRegression::CLinearRidgeRegression(float64_t tau, CDenseFeatures<flo
 {
 	init();
 
-	m_tau=tau;
+	set_tau(tau);
 	set_labels(lab);
 	set_features(data);
 }
 
 void CLinearRidgeRegression::init()
 {
-	m_tau=1e-6;
+	set_tau(1e-6);
 
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
