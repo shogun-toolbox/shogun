@@ -427,7 +427,7 @@ TEST(LinalgBackendEigen, SGMatrix_matrix_product_in_place)
 	for (index_t i = 0; i < dim1*dim2; ++i)
 		A[i] = i;
 	for (index_t i = 0; i < dim2*dim3; ++i)
-		B[i] = 0.5*i;
+		B[i] = 0.5 * i;
 	cal.zero();
 
 	linalg::matrix_prod(A, B, cal);
