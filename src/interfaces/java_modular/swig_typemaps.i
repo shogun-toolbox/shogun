@@ -664,7 +664,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 		if (len >0) {
 			strings[i].string = SG_MALLOC(SGTYPE, len);
-			memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
+			sg_memcpy(strings[i].string, jarr, len * sizeof(SGTYPE));
 		}
 	}
 
@@ -686,7 +686,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 
 	for (i = 0; i < num; i++) {
 		SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-		memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+		sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 
 		##JNITYPE##Array jarr = (##JNITYPE##Array)JCALL1(New##JAVATYPE##Array, jenv, str[i].slen);
 
@@ -756,7 +756,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 
 		if (len > 0) {
 			strings[i].string = SG_MALLOC(char, len);
-			memcpy(strings[i].string, str, len);
+			sg_memcpy(strings[i].string, str, len);
 		}
 		JCALL2(ReleaseStringUTFChars, jenv, jstr, str);
 	}
