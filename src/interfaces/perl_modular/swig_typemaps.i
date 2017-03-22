@@ -35,7 +35,7 @@
                 PDL->destroy(it);
                 return false;
             }
-            memcpy((type *)data, sg_vec.vector, clen);
+            sg_memcpy((type *)data, sg_vec.vector, clen);
             PDL->SetSV_PDL(rsv, it);
             return true;
         }
@@ -99,7 +99,7 @@
                 }
                 for(int32_t i = 0; i < sg_num; i++) {
                     //PTZ121012 really to check this with unicode types also...
-                    memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
+                    sg_memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
                     //PTZ121012 shall have calloced also...
                 }
                 PDL->SetSV_PDL(rsv, it);
@@ -303,7 +303,7 @@ fail:
                                 //free(inds);
                                 return false;
                             }
-                            memcpy(l_ss[lind].string, el_str, el_len);
+                            sg_memcpy(l_ss[lind].string, el_str, el_len);
                             if(el_len > sg_strings.max_string_length) {
                                 sg_strings.max_string_length = el_len;
                             }
@@ -346,7 +346,7 @@ fail:
                         l_ss[i].string = NULL;
                         if (el_len > 0) {
                             l_ss[i].string = SG_MALLOC(type, el_len);
-                            memcpy(l_ss[i].string, el_str, el_len);
+                            sg_memcpy(l_ss[i].string, el_str, el_len);
                             if(el_len > sg_strings.max_string_length) {
                                 sg_strings.max_string_length = el_len;
                             }

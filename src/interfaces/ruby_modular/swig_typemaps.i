@@ -193,7 +193,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 
 			if (len > 0) {
 				strings[i].string = SG_MALLOC(SGTYPE, len + 1);
-				memcpy(strings[i].string, str, len + 1);
+				sg_memcpy(strings[i].string, str, len + 1);
 			}
 		}
 		else {
@@ -237,7 +237,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		}
 		else {
 			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-			memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+			sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 
 			VALUE vec = rb_ary_new2(str[i].slen);
 			for (j = 0; j < str[i].slen; j++) {

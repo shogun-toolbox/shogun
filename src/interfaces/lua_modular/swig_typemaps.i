@@ -306,7 +306,7 @@ TYPEMAP_SGMATRIX(float64_t)
 
             if (len > 0) {
                 strings[i].string = SG_MALLOC(SGTYPE, len+1);
-                memcpy(strings[i].string, str, len);
+                sg_memcpy(strings[i].string, str, len);
                 strings[i].string[len]='\0';
             }
         }
@@ -323,7 +323,7 @@ TYPEMAP_SGMATRIX(float64_t)
 
             if (len > 0) {
                 strings[i].string = SG_MALLOC(SGTYPE, len);
-                memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
+                sg_memcpy(strings[i].string, arr, len * sizeof(SGTYPE));
             }
 
         }
@@ -350,7 +350,7 @@ TYPEMAP_SGMATRIX(float64_t)
         }
         else {
             SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
-            memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
+            sg_memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
 
             lua_newtable(L);
             for (j = 0; j < str[i].slen; j++) {
