@@ -7,26 +7,30 @@ RealFeatures features(data_fname)
 #![calculate_distances_before]
 EuclideanDistance distance_before()
 distance_before.init(features, features)
+RealMatrix distance_matrix_before = distance_before.get_distance_matrix()
 #![calculate_distances_before]
 
-#![apply_mds]
+#![apply_mds_no_landmark]
 MultidimensionalScaling converter()
 converter.set_target_dim(2)
 converter.set_landmark(False)
 RealFeatures embedding = converter.apply(features)
-#![apply_mds]
+#![apply_mds_no_landmark]
+
+#![apply_mds_landmark]
+MultidimensionalScaling converter_landmark()
+converter_landmark.set_target_dim(2)
+RealFeatures embedding_landmark = converter_landmark.apply(features)
+#![apply_mds_landmark]
 
 #![calculate_distances_after]
 EuclideanDistance distance_after()
 distance_after.init(embedding, embedding)
+RealMatrix distance_matrix_after = distance_after.get_distance_matrix()
+EuclideanDistance distance_after_landmark()
+distance_after_landmark.init(embedding_landmark, embedding_landmark)
+RealMatrix distance_matrix_after_landmark = distance_after_landmark.get_distance_matrix()
 #![calculate_distances_after]
 
-#![calculate_distance_matrices]
-RealMatrix distance_matrix_after = distance_after.get_distance_matrix()
-RealMatrix distance_matrix_before = distance_before.get_distance_matrix()
-#![calculate_distance_matrices]
-
-# additional integration testing variables
-#bool output = ((numpy.linalg.norm(distance_matrix_after-distance_matrix_before) / numpy.linalg.norm(distance_matrix_before)) < 1e-6)
 
 
