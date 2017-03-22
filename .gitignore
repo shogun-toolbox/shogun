@@ -45,9 +45,6 @@ cpplint.py
 /doc/pages*/Examples*.mainpage
 
 # /src/
-/src/shogun/lib/versionstring.h
-/src/shogun/lib/config.h
-/src/shogun/base/class_list.cpp
 /src/shogun/Makefile
 /src/interfaces/*/Makefile
 /src/examples
