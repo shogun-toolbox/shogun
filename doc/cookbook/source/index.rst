@@ -105,3 +105,13 @@ Neural Networks
    :caption: Neural Netwroks
 
    examples/neural_nets/**
+
+Feature Transformations
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Feature Transformations
+
+   examples/converter/**
