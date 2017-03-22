@@ -2,13 +2,13 @@
 Minkowski Distance
 ====================
 
-The Minkowski distance is a general class of distances for a :math:`R^n` feature space and is defined as
+The Minkowski distance is a general class of distances for a :math:`R^d` feature space and is defined as
 
 .. math::
 
-    \big(\sum_{i=1}^{n} |{\bf x_i} - {\bf x'_i}|^k \big)^{\frac{1}{k}}
+    \left (\sum_{i=1}^{n} |{\bf x_i} - {\bf x'_i}|^k \right )^{\frac{1}{k}}
 
-where :math:`\bf x` and :math:`\bf x'` are :math:`n` dimensional feature vectors.
+where :math:`\bf x` and :math:`\bf x'` are :math:`d`-dimensional feature vectors.
 
 :doc:`../distance/manhattan` and :doc:`../distance/euclidean`  are special cases for :math:`k=1` and :math:`k=2` respectively.
 
@@ -21,7 +21,7 @@ Imagine we have files with data. We create CDenseFeatures (here 64 bit floats ak
 
 .. sgexample:: minkowski.sg:create_features
 
-We create an instance of :sgclass:`CMinkowskiMetric` by passing it :sgclass:`CDenseFeatures`. We choose the order :math:`k` to be 3.	
+We create an instance of :sgclass:`CMinkowskiMetric` by passing it :sgclass:`CDenseFeatures`. We choose the order :math:`k`.	
 
 .. sgexample:: minkowski.sg:create_instance
 
