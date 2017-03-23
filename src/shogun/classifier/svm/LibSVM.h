@@ -60,6 +60,9 @@ class CLibSVM : public CSVM
 		/** @return object name */
 		virtual const char* get_name() const { return "LibSVM"; }
 
+	private:
+		void register_params();
+
 	protected:
 		/** train SVM classifier
 		 *
@@ -72,13 +75,6 @@ class CLibSVM : public CSVM
 		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
-		/** SVM problem */
-		svm_problem problem;
-		/** SVM param */
-		svm_parameter param;
-		/** SVM model */
-		struct svm_model* model;
-
 		/** solver type */
 		LIBSVM_SOLVER_TYPE solver_type;
 };
