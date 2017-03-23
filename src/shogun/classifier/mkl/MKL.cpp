@@ -240,15 +240,12 @@ public:
 #endif
 };
 
-CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
-		mkl_block_norm(1),beta_local(NULL), mkl_iterations(0), mkl_epsilon(1e-5),
-		interleaved_optimization(true), w_gap(1.0), rho(0), self()
+CMKL::CMKL(CSVM* s) : CSVM()
 {
+	SG_DEBUG("creating MKL object %p\n", this)
+	register_params();
 	set_constraint_generator(s);
 	self->init();
-
-	SG_DEBUG("creating MKL object %p\n", this)
-	lp_initialized = false ;
 }
 
 CMKL::~CMKL()
@@ -260,6 +257,61 @@ CMKL::~CMKL()
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
 	SG_UNREF(svm);
+}
+
+void CMKL::register_params()
+{
+	svm =NULL;
+	C_mkl = 0;
+	mkl_norm = 1;
+	ent_lambda = 0;
+	mkl_block_norm = 1;
+	beta_local = NULL;
+	beta_local_size = 0;
+	mkl_iterations = 0;
+	mkl_epsilon = 1e-5;
+	interleaved_optimization = true;
+	w_gap = 1.0;
+	rho = 0;
+	lp_initialized = false;
+
+	SG_ADD((CSGObject**) &svm, "svm", "wrapper svm", MS_NOT_AVAILABLE);
+	SG_ADD(&C_mkl, "C_mkl", "C mkl", MS_NOT_AVAILABLE);
+	SG_ADD(&mkl_norm, "mkl_norm", "norm used in mkl", MS_NOT_AVAILABLE);
+	SG_ADD(&ent_lambda, "ent_lambda", "elastic net sparsity trade-off parameter", MS_NOT_AVAILABLE);
+	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter", MS_NOT_AVAILABLE);
+	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
+	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps", MS_NOT_AVAILABLE);
+	SG_ADD(&mkl_epsilon, "mkl_epsilon", "mkl epsilon", MS_NOT_AVAILABLE);
+	SG_ADD(&interleaved_optimization, "interleaved_optimization", "whether to use mkl wrapper or interleaved opt.", MS_NOT_AVAILABLE);
+	SG_ADD(&w_gap, "w_gap", "gap between interactions", MS_NOT_AVAILABLE);
+	SG_ADD(&rho, "rho", "objective after mkl iterations", MS_NOT_AVAILABLE);
+	SG_ADD(&lp_initialized, "lp_initialized", "if lp is Initialized", MS_NOT_AVAILABLE);
+	// Missing: self (3rd party specific, handled in clone())
+}
+
+CSGObject* CMKL::clone()
+{
+	CMKL* cloned = (CMKL*) CSGObject::clone();
+#ifdef USE_GLPK
+	// GLPK params
+	if (self->lp_glpk_parm != nullptr)
+	{
+		cloned->self->lp_glpk_parm = SG_MALLOC(glp_smcp, 1);
+		*cloned->self->lp_glpk_parm = *self->lp_glpk_parm;
+	}
+	// GLPK problem
+	if (self->lp_glpk != nullptr)
+	{
+		cloned->self->lp_glpk = glp_create_prob();
+		glp_copy_prob(cloned->self->lp_glpk, self->lp_glpk, GLP_ON);
+	}
+#endif
+#ifdef USE_CPLEX
+	// Shogun currently doesn't compile with CPLEX
+	SG_ERROR("Cloning MKL using the CPLEX solver is currently not supported.\n");
+#endif
+	return cloned;
 }
 
 void CMKL::init_solver()
@@ -337,6 +389,7 @@ bool CMKL::train_machine(CFeatures* data)
 
 	  SG_FREE(beta_local);
 	  beta_local = SGVector<float64_t>::clone_vector(beta, num_kernels);
+	  beta_local_size = num_kernels;
 
 	  elasticnet_transform(beta, ent_lambda, num_kernels);
 	}
