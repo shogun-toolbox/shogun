@@ -56,6 +56,12 @@ void CLabels::remove_all_subsets()
 	m_subset_stack->remove_all_subsets();
 }
 
+CSubsetStack* CLabels::get_subset_stack()
+{
+	SG_REF(m_subset_stack);
+	return m_subset_stack;
+}
+
 float64_t CLabels::get_value(int32_t idx)
 {
 	ASSERT(m_current_values.vector && idx < get_num_labels())
