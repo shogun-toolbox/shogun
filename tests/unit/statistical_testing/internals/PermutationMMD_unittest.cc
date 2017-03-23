@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <numeric>
 #include <algorithm>
 #include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
