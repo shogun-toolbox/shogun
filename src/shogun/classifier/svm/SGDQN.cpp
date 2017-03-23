@@ -111,7 +111,7 @@ bool CSGDQN::train(CFeatures* data)
 	ASSERT(num_vec==num_train_labels)
 	ASSERT(num_vec>0)
 
-	w=SGVector<float64_t>(features->get_dim_feature_space());
+	SGVector<float64_t> w(features->get_dim_feature_space());
 	w.zero();
 
 	float64_t lambda= 1.0/(C1*num_vec);
@@ -197,6 +197,8 @@ bool CSGDQN::train(CFeatures* data)
 	}
 	SG_FREE(result);
 	SG_FREE(B);
+
+	set_w(w);
 
 	return true;
 }

@@ -251,12 +251,14 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 		bias=bias*(-1);
 	}
 
- 	w=SGVector<float64_t>(num_feat);
+ 	SGVector<float64_t> w(num_feat);
 	w.zero();
 
 	//copy w_st into w
 	for(i = 0; i < w.size(); ++i)
 		w[i] = (float64_t) w_st[i];
+
+	set_w(w);
 
 	return true;
 }

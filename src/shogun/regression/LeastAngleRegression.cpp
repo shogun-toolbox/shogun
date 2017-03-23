@@ -355,7 +355,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	}
 
 	// assign default estimator
-	w.vlen = n_fea;
+	set_w(SGVector<float64_t>(n_fea));
 	switch_w(m_beta_idx.size()-1);
 
 	return true;
