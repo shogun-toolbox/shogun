@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <shogun/machine/LinearMachine.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
