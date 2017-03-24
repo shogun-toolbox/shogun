@@ -24,24 +24,23 @@ using namespace shogun;
 CLibLinear::CLibLinear()
 : CLinearMachine()
 {
-    init();
+	init();
 }
 
 CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l)
 : CLinearMachine()
 {
-    init();
-    liblinear_solver_type=l;
+	init();
+	set_liblinear_solver_type(l);
 }
 
 CLibLinear::CLibLinear(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 : CLinearMachine()
 {
-    init();
-	C1=C;
-	C2=C;
-	use_bias=true;
+	init();
+	set_C(C, C);
+	set_bias_enabled(true);
 
 	set_features(traindat);
 	set_labels(trainlab);
@@ -50,12 +49,11 @@ CLibLinear::CLibLinear(
 
 void CLibLinear::init()
 {
-	liblinear_solver_type=L2R_L1LOSS_SVC_DUAL;
-	use_bias=false;
-	C1=1;
-	C2=1;
+	set_liblinear_solver_type(L2R_L1LOSS_SVC_DUAL);
+	set_bias_enabled(false);
+	set_C(1, 1);
 	set_max_iterations();
-	epsilon=1e-5;
+	set_epsilon(1e-5);
 	/** Prevent default bias computation*/
 	set_compute_bias(false);
 
@@ -95,8 +93,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	if (liblinear_solver_type == L1R_L2LOSS_SVC ||
-			(liblinear_solver_type == L1R_LR) )
+	LIBLINEAR_SOLVER_TYPE solver_type = get_liblinear_solver_type();
+
+	if (solver_type == L1R_L2LOSS_SVC ||
+			(solver_type == L1R_LR) )
 	{
 		if (num_feat!=num_train_labels)
 		{
@@ -118,15 +118,15 @@ bool CLibLinear::train_machine(CFeatures* data)
 		}
 	}
 	SGVector<float64_t> w;
-	if (use_bias)
+	if (get_bias_enabled())
 		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
 		w=SGVector<float64_t>(num_feat);
 
 	liblinear_problem prob;
-	if (use_bias)
+	if (get_bias_enabled())
 	{
-		if(liblinear_solver_type!=L2R_LR_DUAL)
+		if(solver_type!=L2R_LR_DUAL)
 			prob.n=w.vlen+1;
 		else
 			prob.n=w.vlen;
@@ -141,17 +141,17 @@ bool CLibLinear::train_machine(CFeatures* data)
 	prob.x=features;
 	prob.y=SG_MALLOC(double, prob.l);
 	float64_t* Cs=SG_MALLOC(double, prob.l);
-	prob.use_bias=use_bias;
-	double Cp=C1;
-	double Cn=C2;
+	prob.use_bias=get_bias_enabled();
+	double Cp=get_C1();
+	double Cn=get_C2();
 
 	for (int32_t i=0; i<prob.l; i++)
 	{
 		prob.y[i]=((CBinaryLabels*) m_labels)->get_int_label(i);
 		if (prob.y[i] == +1)
-			Cs[i]=C1;
+			Cs[i]=get_C1();
 		else if (prob.y[i] == -1)
-			Cs[i]=C2;
+			Cs[i]=get_C2();
 		else
 			SG_ERROR("labels should be +1/-1 only\n")
 	}
@@ -168,12 +168,12 @@ bool CLibLinear::train_machine(CFeatures* data)
 	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
 
 	function *fun_obj=NULL;
-	switch (liblinear_solver_type)
+	switch (solver_type)
 	{
 		case L2R_LR:
 		{
 			fun_obj=new l2r_lr_fun(&prob, Cs);
-			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
+			CTron tron_obj(fun_obj, get_epsilon()*CMath::min(pos,neg)/prob.l, get_max_iterations());
 			SG_DEBUG("starting L2R_LR training via tron\n")
 			tron_obj.tron(w.vector, m_max_train_time);
 			SG_DEBUG("done with tron\n")
@@ -183,32 +183,32 @@ bool CLibLinear::train_machine(CFeatures* data)
 		case L2R_L2LOSS_SVC:
 		{
 			fun_obj=new l2r_l2_svc_fun(&prob, Cs);
-			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
+			CTron tron_obj(fun_obj, get_epsilon()*CMath::min(pos,neg)/prob.l, get_max_iterations());
 			tron_obj.tron(w.vector, m_max_train_time);
 			delete fun_obj;
 			break;
 		}
 		case L2R_L2LOSS_SVC_DUAL:
-			solve_l2r_l1l2_svc(w, &prob, epsilon, Cp, Cn, L2R_L2LOSS_SVC_DUAL);
+			solve_l2r_l1l2_svc(w, &prob, get_epsilon(), Cp, Cn, L2R_L2LOSS_SVC_DUAL);
 			break;
 		case L2R_L1LOSS_SVC_DUAL:
-			solve_l2r_l1l2_svc(w, &prob, epsilon, Cp, Cn, L2R_L1LOSS_SVC_DUAL);
+			solve_l2r_l1l2_svc(w, &prob, get_epsilon(), Cp, Cn, L2R_L1LOSS_SVC_DUAL);
 			break;
 		case L1R_L2LOSS_SVC:
 		{
 			//ASSUME FEATURES ARE TRANSPOSED ALREADY
-			solve_l1r_l2_svc(w, &prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
+			solve_l1r_l2_svc(w, &prob, get_epsilon()*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
 		case L1R_LR:
 		{
 			//ASSUME FEATURES ARE TRANSPOSED ALREADY
-			solve_l1r_lr(w, &prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
+			solve_l1r_lr(w, &prob, get_epsilon()*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
 		case L2R_LR_DUAL:
 		{
-			solve_l2r_lr_dual(w, &prob, epsilon, Cp, Cn);
+			solve_l2r_lr_dual(w, &prob, get_epsilon(), Cp, Cn);
 			break;
 		}
 		default:
@@ -218,13 +218,13 @@ bool CLibLinear::train_machine(CFeatures* data)
 
 	set_w(w);
 
-	if (use_bias)
+	if (get_bias_enabled())
 		set_bias(w[w.vlen]);
 	else
 		set_bias(0);
 
-    SG_FREE(prob.y);
-    SG_FREE(Cs);
+	SG_FREE(prob.y);
+	SG_FREE(Cs);
 
 	return true;
 }
@@ -277,6 +277,12 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	double PGmin_old = -CMath::INFTY;
 	double PGmax_new, PGmin_new;
 
+	SGVector<float64_t> linear_term;
+	if (linear_term_inited())
+	{
+		linear_term = get_linear_term();
+	}
+
 	// default solver_type: L2R_L2LOSS_SVC_DUAL
 	double diag[3] = {0.5/Cn, 0, 0.5/Cp};
 	double upper_bound[3] = {CMath::INFTY, 0, CMath::INFTY};
@@ -315,7 +321,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < get_max_iterations() && !CSignal::cancel_computations())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -338,8 +344,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			if (prob->use_bias)
 				G+=w.vector[n];
 
-			if (m_linear_term.vector)
-				G = G*yi + m_linear_term.vector[i];
+			if (linear_term.vector)
+				G = G*yi + linear_term.vector[i];
 			else
 				G = G*yi-1;
 
@@ -416,7 +422,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	SG_DONE()
 	SG_INFO("optimization finished, #iter = %d\n",iter)
-	if (iter >= max_iterations)
+	if (iter >= get_max_iterations())
 	{
 		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
 				"(also see liblinear FAQ)\n\n");
@@ -508,7 +514,7 @@ void CLibLinear::solve_l1r_l2_svc(
 		index[j] = j;
 		xj_sq[j] = 0;
 
-		if (use_bias && j==n)
+		if (get_bias_enabled() && j==n)
 		{
 			for (ind=0; ind<l; ind++)
 				xj_sq[n] += C[GETI(ind)];
@@ -524,7 +530,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < get_max_iterations() && !CSignal::cancel_computations())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -623,7 +629,7 @@ void CLibLinear::solve_l1r_l2_svc(
 				appxcond = xj_sq[j]*d*d + G_loss*d + cond;
 				if(appxcond <= 0)
 				{
-					if (use_bias && j==n)
+					if (get_bias_enabled() && j==n)
 					{
 						for (ind=0; ind<l; ind++)
 							b[ind] += d_diff*y[ind];
@@ -645,7 +651,7 @@ void CLibLinear::solve_l1r_l2_svc(
 					loss_old = 0;
 					loss_new = 0;
 
-					if (use_bias && j==n)
+					if (get_bias_enabled() && j==n)
 					{
 						for (ind=0; ind<l; ind++)
 						{
@@ -675,7 +681,7 @@ void CLibLinear::solve_l1r_l2_svc(
 				else
 				{
 					loss_new = 0;
-					if (use_bias && j==n)
+					if (get_bias_enabled() && j==n)
 					{
 						for (ind=0; ind<l; ind++)
 						{
@@ -730,7 +736,7 @@ void CLibLinear::solve_l1r_l2_svc(
 					x->free_feature_iterator(iterator);
 				}
 
-				if (use_bias && w.vector[n])
+				if (get_bias_enabled() && w.vector[n])
 				{
 					for (ind=0; ind<l; ind++)
 						b[ind] -= w.vector[n]*y[ind];
@@ -762,7 +768,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	SG_DONE()
 	SG_INFO("optimization finished, #iter = %d\n", iter)
-	if(iter >= max_iterations)
+	if(iter >= get_max_iterations())
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
 
 	// calculate objective value
@@ -863,7 +869,7 @@ void CLibLinear::solve_l1r_lr(
 		xjneg_sum[j] = 0;
 		xjpos_sum[j] = 0;
 
-		if (use_bias && j==n)
+		if (get_bias_enabled() && j==n)
 		{
 			for (ind=0; ind<l; ind++)
 			{
@@ -894,7 +900,7 @@ void CLibLinear::solve_l1r_lr(
 	}
 
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < get_max_iterations() && !CSignal::cancel_computations())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -914,7 +920,7 @@ void CLibLinear::solve_l1r_lr(
 			sum2 = 0;
 			H = 0;
 
-			if (use_bias && j==n)
+			if (get_bias_enabled() && j==n)
 			{
 				for (ind=0; ind<l; ind++)
 				{
@@ -995,7 +1001,7 @@ void CLibLinear::solve_l1r_lr(
 					appxcond2 = log(1+sum2*(1/tmp-1)/xj_max[j]/C_sum[j])*C_sum[j] + cond + d*xjneg_sum[j];
 					if(CMath::min(appxcond1,appxcond2) <= 0)
 					{
-						if (use_bias && j==n)
+						if (get_bias_enabled() && j==n)
 						{
 							for (ind=0; ind<l; ind++)
 								exp_wTx[ind] *= exp(d);
@@ -1016,7 +1022,7 @@ void CLibLinear::solve_l1r_lr(
 
 				int i = 0;
 
-				if (use_bias && j==n)
+				if (get_bias_enabled() && j==n)
 				{
 					for (ind=0; ind<l; ind++)
 					{
@@ -1043,7 +1049,7 @@ void CLibLinear::solve_l1r_lr(
 				if(cond <= 0)
 				{
 					i = 0;
-					if (use_bias && j==n)
+					if (get_bias_enabled() && j==n)
 					{
 						for (ind=0; ind<l; ind++)
 						{
@@ -1083,7 +1089,7 @@ void CLibLinear::solve_l1r_lr(
 				{
 					if(w.vector[i]==0) continue;
 
-					if (use_bias && i==n)
+					if (get_bias_enabled() && i==n)
 					{
 						for (ind=0; ind<l; ind++)
 							exp_wTx[ind] += w.vector[i];
@@ -1124,7 +1130,7 @@ void CLibLinear::solve_l1r_lr(
 
 	SG_DONE()
 	SG_INFO("optimization finished, #iter = %d\n", iter)
-	if(iter >= max_iterations)
+	if(iter >= get_max_iterations())
 		SG_WARNING("\nWARNING: reaching max number of iterations\n")
 
 	// calculate objective value

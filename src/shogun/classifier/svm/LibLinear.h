@@ -175,6 +175,17 @@ class CLibLinear : public CLinearMachine
 		/** set the linear term for qp */
 		void init_linear_term();
 
+		/** check if linear_term been inited
+		 * @return if linear_term been inited
+		 */
+		bool linear_term_inited()
+		{
+			if (!m_linear_term.vlen || !m_linear_term.vector)
+				return false;
+
+			return true;
+		}
+
 	protected:
 		/** train linear SVM classifier
 		 *
@@ -188,7 +199,7 @@ class CLibLinear : public CLinearMachine
 
 	private:
 		/** set up parameters */
-        void init();
+		void init();
 
 		void train_one(const liblinear_problem *prob, const liblinear_parameter *param, double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
