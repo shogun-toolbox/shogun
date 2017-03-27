@@ -107,9 +107,17 @@ TEST_F(TrainedModelSerializationTest, {{class}})
 }
 {%- endmacro %}
 
-{% for c in classes['LinearMachine'] -%}
-#include <{{c['header']}}>
-{% for g in c['guards'] %} #ifdef {{g}} {%- endfor %}
-{{ test(c['name']) }}
-{% for g  in c['guards'] %} #endif {%- endfor %}
-{%- endfor %}
+{% set ignores = [
+'FeatureBlockLogisticRegression', 'LibLinearMTL', 'NewtonSVM',
+'MultitaskLinearMachine', 'MultitaskLogisticRegression',
+'DomainAdaptationSVMLinear', 'MultitaskL12LogisticRegression',
+'MultitaskLeastSquaresRegression', 'MultitaskClusteredLogisticRegression',
+'MultitaskTraceLogisticRegression', 'LatentSVM', 'LatentSOSVM'
+] %}
+
+{% for name, attrs in classes.items() %}
+{% if not (name in ignores or attrs['abstract'] or attrs['template']) -%}
+#include <shogun/{{attrs['header']}}>
+{{ test(name) }}
+{%- endif %}
+{% endfor %}
