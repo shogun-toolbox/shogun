@@ -26,8 +26,17 @@ class CInference;
 class CFeatures;
 class CLabels;
 
-/** @brief Class GaussianProcessRegression implements regression based on
- * Gaussian Processes.
+/** @brief  
+ * Description: Class GaussianProcessRegression implements a Gaussian Process Regression(GPR). It is a nonparametric kernel-based probabilistic regressor. Given training data and input 
+ * 		variables, it ouputs predictions. Building onto a linear regression model, y=x^{T}\cdot \boldsymbol{\beta }+\epsilon, it adds
+ *              in latent variables, f(x)_{i},i=1,2,...,n, from a Gaussian Process and a kernel function.
+ * Implementation:
+ * Computation load:
+ * Reference: 
+ * 1. Wikipedia page for Gaussian_process: https://en.wikipedia.org/wiki/Gaussian_process
+ * 2. http://www.gaussianprocess.org/gpml/chapters/RW2.pdf
+ * [C. E. Rasmussen and C. K. I. Williams. Gaussian Processes for Machine Learning (Adaptive Computation and Machine Learning). The MIT Press, 2005.]
+ * 
  */
 class CGaussianProcessRegression : public CGaussianProcessMachine
 {
