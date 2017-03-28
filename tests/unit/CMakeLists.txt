@@ -35,6 +35,8 @@ function (add_unit_test_executable EXECUTABLE TARGET SRC)
 	ADD_CUSTOM_TARGET(${TARGET}
 			COMMAND ${CMAKE_BINARY_DIR}/bin/${EXECUTABLE}
 			DEPENDS ${EXECUTABLE})
+
+	shogun_discover_tests(${EXECUTABLE})
 endfunction ()
 
 # Generate automatic unittest from jinja2 templates
@@ -117,8 +119,6 @@ add_unit_test_executable(shogun-unit-test unit-tests "${UNITTEST_SRC}")
 
 LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
 add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
-
-shogun_discover_tests(shogun-unit-test)
 
 # Add unittests to the dependencies of modular interfaces to make sure nothing
 # will infer with them being build single-threaded.
