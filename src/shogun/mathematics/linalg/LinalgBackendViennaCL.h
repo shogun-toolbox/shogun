@@ -104,6 +104,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
+	/** Implementation of @see LinalgBackendBase::logistic */
+	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
+	virtual void logistic(Container<Type>& a, Container<Type>& result) const \
+	{  \
+		logistic_impl(a, result); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
+	#undef BACKEND_GENERIC_LOGISTIC
+
 	/** Implementation of @see LinalgBackendBase::matrix_prod */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
 	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
@@ -269,6 +278,30 @@ private:
 		result_gpu->data_matrix(a.num_rows, a.num_cols) =
 			viennacl::linalg::element_prod(a_gpu->data_matrix(a.num_rows,
 				a.num_cols), b_gpu->data_matrix(a.num_rows, a.num_cols));
+	}
+
+	/** ViennaCL logistic method. Calculates f(x) = 1/(1+exp(-x)) */
+	template <typename T>
+	void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+	{
+		GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
+		GPUMemoryViennaCL<T>* result_gpu = cast_to_viennacl(result);
+
+		const std::string operation = "return 1.0/(1+exp(-1*element));";
+
+		std::string kernel_name = "logistic_" + linalg::implementation::ocl::get_type_string<T>();
+		viennacl::ocl::kernel& kernel =
+			linalg::implementation::ocl::
+			generate_single_arg_elementwise_kernel<T>(kernel_name, operation);
+
+		kernel.global_work_size(0,
+			linalg::implementation::ocl::align_to_multiple_1d(a.num_rows*a.num_cols));
+
+		viennacl::ocl::enqueue(kernel(a_gpu->data_matrix(a.num_rows, a.num_cols),
+			cl_int(a.num_rows*a.num_cols), cl_int(a_gpu->m_offset),
+			result_gpu->data_matrix(a.num_rows, a.num_cols), cl_int(result_gpu->m_offset)));
+
+		result = SGMatrix<T>(result_gpu, a.num_rows, a.num_cols);
 	}
 
 	/** ViennaCL matrix * vector in-place product method */

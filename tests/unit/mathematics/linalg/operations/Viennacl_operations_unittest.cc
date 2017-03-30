@@ -1,6 +1,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_VIENNACL
@@ -181,6 +183,26 @@ TEST(LinalgBackendViennaCL, SGMatrix_elementwise_product_in_place)
 
 	for (index_t i = 0; i < 9; ++i)
 		EXPECT_NEAR(C[i]*B[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendViennaCL, logistic)
+{
+	SGMatrix<float64_t> A(3,3), A_gpu;
+	SGMatrix<float64_t> B(3,3), B_gpu;
+
+	for (index_t i = 0; i < 9; ++i)
+		A[i] = i;
+
+	to_gpu(A, A_gpu);
+	to_gpu(B, B_gpu);
+
+	logistic(A_gpu, B_gpu);
+
+	from_gpu(A_gpu, A);
+	from_gpu(B_gpu, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(1.0/(1+CMath::exp(-1*A[i])), B[i], 1e-15);
 }
 
 TEST(LinalgBackendViennaCL, SGMatrix_SGVector_matrix_prod)
