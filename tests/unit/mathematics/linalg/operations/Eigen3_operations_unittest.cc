@@ -1,5 +1,7 @@
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/linalg/LinalgSpecialPurposes.h>
 #include <gtest/gtest.h>
 #include <shogun/lib/ShogunException.h>
 
@@ -235,6 +237,20 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 	for (index_t i = 0; i < 2; ++i)
 		for (index_t j = 0; j < 2; ++j)
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+}
+
+TEST(LinalgBackendEigen, logistic)
+{
+	SGMatrix<float64_t> A(3,3);
+	SGMatrix<float64_t> B(3,3);
+
+	for (index_t i = 0; i < 9; ++i)
+		A[i] = i;
+
+	linalg::logistic(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(1.0/(1+CMath::exp(-1*A[i])), B[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_SGVector_matrix_prod)

@@ -175,6 +175,19 @@ public:
 	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
 	/**
+	 * Wrapper method of logistic function f(x) = 1/(1+exp(-x))
+	 *
+	 * @see linalg::logistic
+	 */
+	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
+	virtual void logistic(Container<Type>& a, Container<Type>& result) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
+	#undef BACKEND_GENERIC_LOGISTIC
+
+	/**
 	 * Wrapper method of matrix product method.
 	 *
 	 * @see linalg::matrix_prod

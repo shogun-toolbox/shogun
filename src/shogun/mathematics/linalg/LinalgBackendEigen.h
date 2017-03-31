@@ -156,6 +156,15 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
+	/** Implementation of @see LinalgBackendBase::logistic */
+	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
+	virtual void logistic(Container<Type>& a, Container<Type>& result) const \
+	{  \
+		logistic_impl(a, result); \
+	}
+	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
+	#undef BACKEND_GENERIC_LOGISTIC
+
 	/** Implementation of @see LinalgBackendBase::matrix_prod */
 	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
 	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
@@ -397,6 +406,19 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = a_eig.array() * b_eig.array();
+	}
+
+	/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
+	template <typename T>
+	void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+		result_eig = (T)1 / (1 + ((-1 * a_eig).array()).exp());
+
+		//for (int32_t i=0; i<a.num_rows*a.num_cols; i++)
+		//	result_eig[i] = 1.0/(1+CMath::exp(-1*a_eig[i]));
 	}
 
 	/** Eigen3 matrix block in-place elementwise product method */
