@@ -416,9 +416,6 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = (T)1 / (1 + ((-1 * a_eig).array()).exp());
-
-		//for (int32_t i=0; i<a.num_rows*a.num_cols; i++)
-		//	result_eig[i] = 1.0/(1+CMath::exp(-1*a_eig[i]));
 	}
 
 	/** Eigen3 matrix block in-place elementwise product method */

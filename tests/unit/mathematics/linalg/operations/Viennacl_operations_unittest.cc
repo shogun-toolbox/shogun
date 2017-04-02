@@ -190,13 +190,13 @@ TEST(LinalgBackendViennaCL, logistic)
 	SGMatrix<float64_t> A(3,3), A_gpu;
 	SGMatrix<float64_t> B(3,3), B_gpu;
 
-	for (index_t i = 0; i < 9; ++i)
-		A[i] = i;
+	range_fill(A, 0.0);
+	B.zero();
 
 	to_gpu(A, A_gpu);
 	to_gpu(B, B_gpu);
 
-	logistic(A_gpu, B_gpu);
+	linalg::logistic(A_gpu, B_gpu);
 
 	from_gpu(A_gpu, A);
 	from_gpu(B_gpu, B);

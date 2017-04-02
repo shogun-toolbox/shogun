@@ -301,7 +301,8 @@ private:
 			cl_int(a.num_rows*a.num_cols), cl_int(a_gpu->m_offset),
 			result_gpu->data_matrix(a.num_rows, a.num_cols), cl_int(result_gpu->m_offset)));
 
-		result = SGMatrix<T>(result_gpu, a.num_rows, a.num_cols);
+		result.gpu_ptr = std::shared_ptr<GPUMemoryBase<T>>(
+			result_gpu->clone_vector(result_gpu,a.num_rows*a.num_cols));
 	}
 
 	/** ViennaCL matrix * vector in-place product method */
