@@ -42,7 +42,9 @@
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <vector>
+#include <shogun/machine/gp/KLInference.h>
 
 using namespace std;
 using namespace Eigen;
@@ -167,7 +169,7 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 		// holds the  fmatrix for each class
 		vector<MatrixXd> centered_class_i(C);
 		VectorXd temp=num_class;
-		MatrixXd Sw=MatrixXd::Zero(num_features, num_features);
+		SGMatrix<float64_t>::EigenMatrixXt Sw=MatrixXd::Zero(num_features, num_features);
 		for (i=0; i<C; i++)
 		{
 			centered_class_i[i]=MatrixXd::Zero(num_features, num_class[i]);
@@ -180,7 +182,7 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 		}
 
 		// within class matrix for cannonical variates implementation
-		MatrixXd Sb(num_features, C);
+		SGMatrix<float64_t>::EigenMatrixXt Sb(num_features, C);
 		for (i=0; i<C; i++)
 		Sb.col(i)=sqrt(num_class[i])*(mean_class[i]-mean_total);
 
@@ -212,31 +214,35 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 		// to find SVD((inverse(Chol(Sw)))' * Sb * (inverse(Chol(Sw))))
 		//1.get Cw=Chol(Sw)
 		//find the decomposition of Cw'
-		HouseholderQR<MatrixXd> decomposition(Sw.llt().matrixU().transpose());
+		SGMatrix<float64_t> Cw = linalg::cholesky_factor<float64_t>(Sw, false);
+		SGMatrix<float64_t>::transpose_matrix(Cw.matrix, Cw.num_rows, Cw.num_cols);
+		SGMatrix<float64_t> P=linalg::qr_solver<float64_t>(Cw, Sb);
+		SGMatrix<float64_t>::transpose_matrix(P.matrix, P.num_rows, P.num_cols);
 		//2.get P=inv(Cw')*Sb
-		//MatrixXd P=decomposition.solve(Sb);
+		//MatrixXd P=qr_solver(Cw,Sb);
 		//3. final value to be put in SVD will be therefore:
 		// final_ output = (inv(Cw')*(P'))';
-		//MatrixXd X_final_chol=(decomposition.solve(P.transpose())).transpose();
-		JacobiSVD<MatrixXd> svd2(decomposition.solve
-				(decomposition.solve(Sb).transpose()).transpose(),ComputeThinU);
+		//MatrixXd X_final_chol=qr_solver(Cw, P);
+		SGMatrix<float64_t> D = linalg::qr_solver<float64_t>(Cw, P);
+		SGMatrix<float64_t>::transpose_matrix(D.matrix, D.num_rows, D.num_cols);
 		m_transformation_matrix=SGMatrix<float64_t> (num_features, m_num_dim);
 		Map<MatrixXd> eigenVectors(m_transformation_matrix.matrix, num_features,
 									m_num_dim);
-
-		eigenVectors=Q*(svd2.matrixU()).leftCols(m_num_dim);
+		SGMatrix<float64_t>::EigenMatrixXtMap svdU = linalg::svd_u<float64_t>(D);
+		SGMatrix<float64_t>::EigenMatrixXtMap svdS = linalg::svd_s<float64_t>(D);
+		eigenVectors=Q*(svdU).leftCols(m_num_dim);
 
 		m_eigenvalues_vector=SGVector<float64_t>(m_num_dim);
 		Map<VectorXd> eigenValues (m_eigenvalues_vector.vector, m_num_dim);
-		eigenValues=svd2.singularValues().topRows(m_num_dim);
+		eigenValues=svdS.topRows(m_num_dim);
 	}
 	else
 	{
 		// For holding the within class scatter.
-		MatrixXd Sw=fmatrix*fmatrix.transpose();
+		SGMatrix<float64_t>::EigenMatrixXt Sw=fmatrix*fmatrix.transpose();
 
 		// For holding the between class scatter.
-		MatrixXd Sb(num_features, C);
+		SGMatrix<float64_t>::EigenMatrixXt Sb(num_features, C);
 
 		for (i=0; i<C; i++)
 			Sb.col(i)=mean_class[i];
@@ -250,7 +256,10 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 		// x=M
 		// MatrixXd M=Sw.householderQr().solve(Sb);
 		// calculate the eigenvalues and eigenvectors of M.
-		EigenSolver<MatrixXd> es(Sw.householderQr().solve(Sb));
+		SGMatrix<float64_t> M=linalg::qr_solver<float64_t>(Sw, Sb);
+
+		SGMatrix<float64_t>::EigenMatrixXtMap M_eig=M;
+		EigenSolver<MatrixXd> es(M_eig);
 
 		MatrixXd all_eigenvectors=es.eigenvectors().real();
 		VectorXd all_eigenvalues=es.eigenvalues().real();
