@@ -132,6 +132,93 @@ public:
 	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
+    /**
+     * Wrapper solver with QR decomposition.
+     *
+     * @see linalg::qr_solver
+     */
+    #define BACKEND_GENERIC_QR_SOLVER(Type, Container) \
+	virtual SGMatrix<Type> qr_solver(const Container<Type>& A, \
+		const SGMatrix<Type>& b) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+    DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+    #undef BACKEND_GENERIC_QR_SOLVER
+
+	/**
+	 * Wrapper method of QR decomposition.
+	 *
+	 * @see linalg::qr_factor
+	 */
+	#define BACKEND_GENERIC_QR_FACTOR(Type, Container) \
+	virtual Container<Type> qr_factor(const Container<Type>& A, \
+		const bool upper) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_FACTOR, SGMatrix)
+	#undef BACKEND_GENERIC_QR_FACTOR
+
+	/**
+	* Wrapper solver with SVD decomposition.
+	*
+	* @see linalg::svd_solver
+	*/
+	#define BACKEND_GENERIC_SVD_SOLVER(Type, Container) \
+	virtual SGVector<Type> svd_solver(const Container<Type>& A, \
+		const SGVector<Type>& b) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_SOLVER
+
+	/**
+	 * Wrapper method of SVD S decomposition.
+	 *
+	 * @see linalg::svd_s
+	 */
+	#define BACKEND_GENERIC_SVD_S(Type, Container) \
+	virtual Container<Type> svd_s(const Container<Type>& A) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_S, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_S
+
+	 /**
+	 * Wrapper method of SVD U decomposition.
+	 *
+	 * @see linalg::svd_u
+	 */
+	#define BACKEND_GENERIC_SVD_U(Type, Container) \
+	virtual Container<Type> svd_u(const Container<Type>& A) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_U, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_U
+
+	/**
+	* Wrapper method of SVD V decomposition.
+	*
+	* @see linalg::svd_v
+	*/
+	#define BACKEND_GENERIC_SVD_V(Type, Container) \
+	virtual Container<Type> svd_v(const Container<Type>& A) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_V, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_V
+
 	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.
 	 *
