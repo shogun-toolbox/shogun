@@ -22,7 +22,9 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	 * Heiko Strathamn */
 //	predicted->ensure_valid();
 
-	ground_truth->ensure_valid();
+	/* commented out:  what if a cross validation split returns only +1? 
+	 * Jose Gonzalez-Brenes */
+	//ground_truth->ensure_valid();
 	compute_scores((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 	switch (m_type)
 	{
