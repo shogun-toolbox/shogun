@@ -63,6 +63,6 @@ def seqdict(dic, (start,end)):
 		else:
 			stop=end
 
-		sequences.append(sequence(seqname, seq, (start,stop)))
+		return sequences.append(sequence(seqname, seq, (start,stop)))
 
-	return sequences
+	
