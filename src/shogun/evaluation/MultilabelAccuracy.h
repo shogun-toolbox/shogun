@@ -44,6 +44,45 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels * predicted, CLabels * ground_truth);
 
+	/** get number of true positives
+	 *
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 *
+	 * @return vector of number of true positives per example
+	 */
+	virtual SGVector<int32_t> get_true_pos(CLabels * predicted,
+			CLabels * ground_truth);
+
+	/** get number of false positives
+	 *
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 *
+	 * @return vector of number of false positives per example
+	 */
+	virtual SGVector<int32_t> get_false_pos(CLabels * predicted,
+			CLabels * ground_truth);
+
+	/** get number of false negatives
+	 *
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 *
+	 * @return vector of number of false negatives per example
+	 */
+	virtual SGVector<int32_t> get_false_neg(CLabels * predicted,
+			CLabels * ground_truth);
+
+	/** get f1-score
+	 *
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 *
+	 * @return f1-score
+	 */
+	virtual float64_t get_f1_score(CLabels * predicted, CLabels * ground_truth);
+
 	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
@@ -54,6 +93,27 @@ public:
 	{
 		return "MultilabelAccuracy";
 	}
+
+private:
+	/** function to compute multi-label evaluation metrics
+	 *
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 * @param accuracy accuracy to be computed
+	 * @param score f1-score to be computed
+	 * @param tp true positives to be computed
+	 * @param fp false positives to be computed
+	 * @param fn false negatives to be computed
+	 */
+	void evaluate(
+			CLabels * predicted,
+			CLabels * ground_truth,
+			float64_t & accuracy,
+			float64_t & score,
+			SGVector<int32_t> & tp,
+			SGVector<int32_t> & fp,
+			SGVector<int32_t> & fn);
+
 }; /* class CMultilabelAccuracy */
 
 } /* namespace shogun */

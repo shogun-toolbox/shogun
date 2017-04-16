@@ -59,8 +59,11 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 	SGSparseVector<float64_t> psi_2 = model->get_sparse_joint_feature_vector(1,
 	                                  slabel_2);
 
-	SGSparseVector<float64_t> expected_psi_1(lab_1.vlen * HASH_DIMS);
+	SGSparseVector<float64_t> expected_psi_1(lab_1.vlen * HASH_DIMS + 1);
 	index_t k = 0;
+	expected_psi_1.features[k].feat_index = 0;
+	expected_psi_1.features[k].entry = 1;
+	k++;
 
 	SGSparseVector<float64_t> feat_1 = features->get_sparse_feature_vector(0);
 
@@ -73,7 +76,7 @@ TEST(HashedMultilabelModel, get_joint_feature_vector)
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
-			expected_psi_1.features[k].feat_index = (hash >> 1) % HASH_DIMS;
+			expected_psi_1.features[k].feat_index = (hash >> 1) % HASH_DIMS + 1;
 			expected_psi_1.features[k++].entry =
 			        (hash % 2 == 1 ? -1.0 : 1.0) * feat_1.features[j].entry;
 		}
@@ -203,14 +206,16 @@ TEST(HashedMultilabelModel, argmax)
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
 		uint32_t seed = (uint32_t)slabel_1[i];
-		SGSparseVector<float64_t> h_vec(feat_1.num_feat_entries);
+		SGSparseVector<float64_t> h_vec(feat_1.num_feat_entries + 1);
+		h_vec.features[0].feat_index = 0;
+		h_vec.features[0].entry = 1;
 
 		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
-			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS;
+			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS + 1;
 			h_vec.features[j].entry =
 			        (hash % 2 == 1 ? -1.0 : 1.0) * feat_1.features[j].entry;
 		}
@@ -237,13 +242,15 @@ TEST(HashedMultilabelModel, argmax)
 	{
 		uint32_t seed = (uint32_t)slabel_1[i];
 		SGSparseVector<float64_t> h_vec(feat_1.num_feat_entries);
+		h_vec.features[0].feat_index = 0;
+		h_vec.features[0].entry = 1;
 
 		for (int32_t j = 0; j < feat_1.num_feat_entries; j++)
 		{
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&feat_1.features[j].feat_index,
 			                        sizeof(index_t), seed);
-			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS;
+			h_vec.features[j].feat_index = (hash >> 1) % HASH_DIMS + 1;
 			h_vec.features[j].entry =
 			        (hash % 2 == 1 ? -1.0 : 1.0) * feat_1.features[j].entry;
 		}
