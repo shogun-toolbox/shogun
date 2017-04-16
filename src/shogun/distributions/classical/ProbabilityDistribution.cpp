@@ -68,7 +68,46 @@ float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) cons
 	sg_memcpy(s.matrix, sample_vec.vector, m_dimension*sizeof(float64_t));
 	return log_pdf_multiple(s)[0];
 }
+SGMatrix<float64_t> CProbabilityDistribution::get_plotting_bounds() const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return SGMatrix<float64_t>();
 
+}
+SGVector<float64_t> CProbabilityDistribution::get_proposal_points(int32_t
+                                                                  num_samples) const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CProbabilityDistribution::get_acceptance_points(int32_t
+                                                                    num_samples) const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CProbabilityDistribution::get_log_likelihood_samples(int32_t
+                                                       num_samples) const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CProbabilityDistribution::get_log_partial_derivatives(
+                                    SGVector<float64_t> sample_vec) const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return SGVector<float64_t>();
+}
+
+float64_t CProbabilityDistribution::get_maximum_log_likelihood(
+                        SGVector<float64_t>partial_derivatives_vec) const
+{
+    SG_ERROR("Not implemented in sub-class\n");
+    return float64_t();
+}
 void CProbabilityDistribution::init()
 {
 	m_dimension=0;
