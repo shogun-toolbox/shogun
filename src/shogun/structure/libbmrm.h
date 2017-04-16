@@ -45,6 +45,13 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 	float64_t   *address;
 	/** Index of CP */
 	uint32_t    idx;
+	void bmrm_ll_init(bmrm_ll* prv, bmrm_ll* nxt, float64_t* adrs, uint32_t id)
+	{
+		prev = prv;
+		next = nxt;
+		address = adrs;
+		idx = id;
+	}
 };
 
 /** inactive cutting plane statistics */
