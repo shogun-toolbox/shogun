@@ -25,7 +25,7 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
  * See [doc/readme/EXAMPLES.md](https://github.com/shogun-toolbox/docs/blob/master/EXAMPLES.md) for details on creating API examples.
  * See [doc/readme/DEVELOPING.md](https://github.com/shogun-toolbox/docs/blob/master/DEVELOPING.md) for how to hack Shogun.
  
- * See [API examples](http://shogun.ml/examples) for API examples for all interfaces.
+ * See [API examples](http://shogun-toolbox.org/examples) for API examples for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for extended developer information.
 
 ## Interfaces
@@ -45,7 +45,7 @@ Shogun is implemented in C++ and offers automatically generated, unified interfa
 |perl              | *pre-alpha* (work in progress quality)                    |
 |js                | *pre-alpha* (work in progress quality)                    |
 
-See [our website](http://shogun.ml/examples) for examples in all languages.
+See [our website](http://shogun-toolbox.org/examples) for examples in all languages.
 
 ## Platforms
 ------------
