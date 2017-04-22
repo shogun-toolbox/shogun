@@ -141,7 +141,7 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 
 			if (tmp_feat_after)
 			{
-				memcpy(result.features, tmp_feat_after,
+				sg_memcpy(result.features, tmp_feat_after,
 						sizeof(SGSparseVectorEntry<ST>)*tmp_len);
 
 				SG_FREE(tmp_feat_after);

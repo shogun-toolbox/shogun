@@ -30,10 +30,7 @@
  */
 
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -49,7 +46,6 @@ CGaussianARDSparseKernel::~CGaussianARDSparseKernel()
 {
 }
 
-#ifdef HAVE_LINALG_LIB
 using namespace Eigen;
 
 CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
@@ -149,5 +145,3 @@ SGMatrix<float64_t> CGaussianARDSparseKernel::get_parameter_gradient(
 		return CGaussianARDKernel::get_parameter_gradient(param, index);
 	}
 }
-#endif /* HAVE_LINALG_LIB */
-

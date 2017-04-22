@@ -414,7 +414,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 
 		float64_t* pfeat = feats.get_column_vector(n);
 		SGVector<float64_t> feat_i(dim);
-		memcpy(feat_i.vector, pfeat, dim * sizeof(float64_t));
+		sg_memcpy(feat_i.vector, pfeat, dim * sizeof(float64_t));
 
 		// add unary factors
 		for (int32_t u = 0; u < num_classes; u++)
@@ -441,7 +441,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 		// add label
 		int32_t* plabs = labels.get_column_vector(n);
 		SGVector<int32_t> states_gt(num_classes);
-		memcpy(states_gt.vector, plabs, num_classes * sizeof(int32_t));
+		sg_memcpy(states_gt.vector, plabs, num_classes * sizeof(int32_t));
 		SGVector<float64_t> loss_weights(num_classes);
 		SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / num_classes);
 		CFactorGraphObservation* fg_obs = new CFactorGraphObservation(states_gt, loss_weights);

@@ -29,7 +29,6 @@ endmacro()
 
 FIND_LTO_FLAG(LTO_FLAG LINKER_FLAG)
 if(NOT ${LTO_FLAG} STREQUAL "")
-	MESSAGE(STATUS "Link-time optimisation enabled")
 	set(LTO_FOUND TRUE)
 endif()
 

@@ -661,7 +661,7 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	SG_UNREF(inf);
 	SG_UNREF(inducing_features_train);
 }
-#ifdef HAVE_LINALG_LIB
+
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 {
 	index_t n=6;
@@ -1070,5 +1070,3 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	SG_UNREF(inf);
 	SG_UNREF(latent_features_train);
 }
-
-#endif /* HAVE_LINALG_LIB */

@@ -283,7 +283,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 
 		AA_matrix=SGMatrix<float64_t>(nc, nr);
 		SG_DEBUG("Setting AA_matrix\n")
-		memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t));
+		sg_memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t));
 		return true;
 	}
 

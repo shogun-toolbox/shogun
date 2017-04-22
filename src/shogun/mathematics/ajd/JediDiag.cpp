@@ -1,4 +1,5 @@
 #include <shogun/mathematics/ajd/JediDiag.h>
+#include <shogun/lib/memory.h>
 
 
 #include <shogun/base/init.h>
@@ -152,8 +153,8 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	eigenvectors.col(1) = eigenvectors.col(1).normalized();
 	eigenvectors.col(2) = eigenvectors.col(2).normalized();
 
-	memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
-	memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
+	sg_memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
+	sg_memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
 
 	float64_t tmp_evec[3],tmp_eval;
 	if (fabs(evalues[1])<fabs(evalues[2]))
@@ -161,27 +162,27 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		sg_memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[0])<fabs(evalues[1]))
 	{
 		tmp_eval = evalues[0];
 		evalues[0] = evalues[1];
 		evalues[1] = tmp_eval;
-		memcpy(tmp_evec,evectors,3*sizeof(float64_t));
-		memcpy(evectors,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,evectors,3*sizeof(float64_t));
+		sg_memcpy(evectors,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[1])<fabs(evalues[2]))
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		sg_memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 
 	float64_t aux[9];

@@ -64,6 +64,7 @@ FOREACH(REFERENCE_FILE ${META_INTEGRATION_REFERENCES})
 	            AddMetaIntegrationTest(octave OctaveModular)
 	            AddMetaIntegrationTest(csharp CSharpModular)
 	            AddMetaIntegrationTest(ruby RubyModular)
+	            AddMetaIntegrationTest(scala ScalaModular)
 	            #AddMetaIntegrationTest(lua LuaModular) # currently doesn't have meta examples
 	        ENDIF()
 		ELSE()

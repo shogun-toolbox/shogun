@@ -212,6 +212,8 @@ class CSVMOcas : public CLinearMachine
 		/** method */
 		E_SVM_TYPE method;
 
+		/** current W */
+		SGVector<float64_t> current_w;
 		/** old W */
 		float64_t* old_w;
 		/** old bias */

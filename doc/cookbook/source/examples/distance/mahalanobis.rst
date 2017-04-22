@@ -1,6 +1,6 @@
-======================
+====================
 Mahalanobis Distance
-======================
+====================
 
 The Mahalanobis distance for real valued features computes the distance between a feature vector and a distribution of features characterized by its mean and covariance.
 

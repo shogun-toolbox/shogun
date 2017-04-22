@@ -33,13 +33,13 @@
 #define LINALG_H_
 
 #include <shogun/lib/config.h>
+#ifdef HAVE_VIENNACL
+#include <shogun/lib/GPUMatrix.h>
+#include <shogun/lib/GPUVector.h>
+#include <viennacl/matrix.hpp>
+#include <viennacl/linalg/vector_operations.hpp>
+#endif
 
-/**
- * Just include this file to use in your applications (in the cpp). Only available
- * if a C++11 compatible compiler found.
- */
-
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 namespace shogun
 {
 
@@ -109,14 +109,11 @@ struct MODULE \
  * Set global backend should define all the module types with same backend.
  * Currently supported modules are
  * Core         - For basic linear algebra operations (e.g. matrix multiplication, addition)
- * Redux        - For reduction to a scalar from vector or matrix (e.g. norm, sum, dot)
  * Linsolver    - Solvers for linear systems (SVD, Cholesky, QR etc)
  * Eigsolver    - Different eigensolvers
  */
 #ifndef SET_GLOBAL_BACKEND
 #define SET_GLOBAL_BACKEND(BACKEND) \
-	SET_MODULE_BACKEND(Core, BACKEND) \
-	SET_MODULE_BACKEND(Redux, BACKEND) \
 	SET_MODULE_BACKEND(Linsolver, BACKEND) \
 	SET_MODULE_BACKEND(Eigsolver, BACKEND)
 #endif // SET_GLOBAL_BACKEND
@@ -129,24 +126,6 @@ struct MODULE \
 #else
 
 /** set module specific backends */
-
-/** Core module */
-#ifdef USE_EIGEN3_CORE
-	SET_MODULE_BACKEND(Core, EIGEN3)
-#elif USE_VIENNACL_CORE
-	SET_MODULE_BACKEND(Core, VIENNACL)
-#else // the default case
-	SET_MODULE_BACKEND(Core, DEFAULT)
-#endif
-
-/** Reduction module */
-#ifdef USE_EIGEN3_REDUX
-	SET_MODULE_BACKEND(Redux, EIGEN3)
-#elif USE_VIENNACL_REDUX
-	SET_MODULE_BACKEND(Redux, VIENNACL)
-#else // the default case
-	SET_MODULE_BACKEND(Redux, DEFAULT)
-#endif
 
 /** Linear solver module */
 #ifdef USE_EIGEN3_LINSLV
@@ -177,15 +156,7 @@ struct MODULE \
 }
 
 /** include all the modules here */
-
-/** Core and Util are both part of the same module 'Core' */
-#include <shogun/mathematics/linalg/internal/modules/Core.h>
-#include <shogun/mathematics/linalg/internal/modules/Util.h>
-
-#include <shogun/mathematics/linalg/internal/modules/Redux.h>
 #include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
-
 #include <shogun/mathematics/linalg/internal/modules/ElementwiseOperations.h>
 
-#endif // defined(HAVE_CXX0X) || defined(HAVE_CXX11)
 #endif // LINALG_H_

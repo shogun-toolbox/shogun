@@ -88,7 +88,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	ASSERT(num_vec==num_train_labels)
 	ASSERT(num_vec>0)
 
-	w=SGVector<float64_t>(features->get_dim_feature_space());
+	SGVector<float64_t> w(features->get_dim_feature_space());
 	w.zero();
 	bias=0;
 
@@ -152,6 +152,8 @@ bool CSVMSGD::train_machine(CFeatures* data)
 
 	float64_t wnorm =  CMath::dot(w.vector,w.vector, w.vlen);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
+
+	set_w(w);
 
 	return true;
 }

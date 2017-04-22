@@ -214,7 +214,7 @@ target_languages_tab_titles = {
                 'python': 'Python',
                 'octave': 'Octave',
                 'r': 'R',
-                'java': 'Java',
+                'java': 'Java/Scala',
                 'csharp': 'C#',
                 'ruby': 'Ruby',
                 'cpp': 'Native C++',

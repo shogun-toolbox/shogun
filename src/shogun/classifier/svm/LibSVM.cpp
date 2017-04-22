@@ -15,29 +15,39 @@
 using namespace shogun;
 
 CLibSVM::CLibSVM()
-: CSVM(), model(NULL), solver_type(LIBSVM_C_SVC)
+: CSVM(), solver_type(LIBSVM_C_SVC)
 {
+	register_params();
 }
 
 CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
-: CSVM(), model(NULL), solver_type(st)
+: CSVM(), solver_type(st)
 {
+	register_params();
 }
 
 
 CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab, LIBSVM_SOLVER_TYPE st)
-: CSVM(C, k, lab), model(NULL), solver_type(st)
+: CSVM(C, k, lab), solver_type(st)
 {
-	problem = svm_problem();
+	register_params();
 }
 
 CLibSVM::~CLibSVM()
 {
 }
 
+void CLibSVM::register_params()
+{
+	SG_ADD((machine_int_t*) &solver_type, "libsvm_solver_type", "LibSVM Solver type", MS_NOT_AVAILABLE);
+}
 
 bool CLibSVM::train_machine(CFeatures* data)
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	struct svm_node* x_space;
 
 	ASSERT(m_labels && m_labels->get_num_labels())
@@ -61,7 +71,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	if (m_linear_term.vlen>0)
 	{
 		if (m_labels->get_num_labels()!=m_linear_term.vlen)
-            SG_ERROR("Number of training vectors does not match length of linear term\n")
+			SG_ERROR("Number of training vectors does not match length of linear term\n")
 
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
@@ -77,7 +87,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
-    problem.C=SG_MALLOC(float64_t, problem.l);
+	problem.C=SG_MALLOC(float64_t, problem.l);
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
@@ -155,7 +165,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 		SG_FREE(problem.x);
 		SG_FREE(problem.y);
 		SG_FREE(problem.pv);
-        SG_FREE(problem.C);
+		SG_FREE(problem.C);
 
 
 		SG_FREE(x_space);

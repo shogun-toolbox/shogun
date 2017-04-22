@@ -60,7 +60,7 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 {
 	if (m_start_index == 0)
 	{
-		memcpy(m_activations.matrix, inputs.matrix,
+		sg_memcpy(m_activations.matrix, inputs.matrix,
 			m_num_neurons*m_batch_size*sizeof(float64_t));
 	}
 	else

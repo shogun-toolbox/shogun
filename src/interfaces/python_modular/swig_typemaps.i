@@ -411,7 +411,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     if (len>0)
                     {
                         strings[i].string=SG_MALLOC(type, len);
-                        memcpy(strings[i].string, str, len);
+                        sg_memcpy(strings[i].string, str, len);
                     }
                 }
                 else
@@ -443,7 +443,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     if (len>0)
                     {
                         strings[i].string=SG_MALLOC(type, len);
-                        memcpy(strings[i].string, str, len*sizeof(type));
+                        sg_memcpy(strings[i].string, str, len*sizeof(type));
                     }
 
                     if (is_new_object)
@@ -505,7 +505,7 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
                 type* data = SG_MALLOC(type, str[i].slen);
                 if (descr && data)
                 {
-                    memcpy(data, str[i].string, str[i].slen*sizeof(type));
+                    sg_memcpy(data, str[i].string, str[i].slen*sizeof(type));
                     npy_intp dims = str[i].slen;
 
                     s = PyArray_NewFromDescr(&PyArray_Type,

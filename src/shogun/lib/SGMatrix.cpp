@@ -4,6 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2016-2017 Pan Deng
+ * Written (W) 2013-2017 Soumyajit De
  * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
@@ -19,10 +21,11 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <limits>
-
+#include <algorithm>
 #include <shogun/mathematics/eigen3.h>
 
-namespace shogun {
+namespace shogun
+{
 
 template <class T>
 SGMatrix<T>::SGMatrix() : SGReferencedData()
@@ -39,37 +42,62 @@ SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
 template <class T>
 SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), matrix(m),
-	num_rows(nrows), num_cols(ncols) { }
+	num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
+{
+	m_on_gpu.store(false, std::memory_order_release);
+}
+
+template <class T>
+SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
+	: SGReferencedData(false), matrix(m+offset),
+	num_rows(nrows), num_cols(ncols)
+{
+	m_on_gpu.store(false, std::memory_order_release);
+}
 
 template <class T>
 SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
-	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
+	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
 {
-	matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
+	matrix=SG_CALLOC(T, ((int64_t) nrows)*ncols);
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
 {
-	REQUIRE(vec.vector, "Vector not initialized!\n");
+	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
 	matrix=vec.vector;
 	num_rows=vec.vlen;
 	num_cols=1;
+	gpu_ptr = vec.gpu_ptr;
+	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
 }
 
 template <class T>
 SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
 : SGReferencedData(vec)
 {
-	REQUIRE(vec.vector, "Vector not initialized!\n");
+	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
 	REQUIRE(nrows>0, "Number of rows (%d) has to be a positive integer!\n", nrows);
 	REQUIRE(ncols>0, "Number of cols (%d) has to be a positive integer!\n", ncols);
 	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix (%d) must "
 			"be the same as the number of elements in the vector (%d)!\n",
 			nrows*ncols, vec.vlen);
+
 	matrix=vec.vector;
 	num_rows=nrows;
 	num_cols=ncols;
+	gpu_ptr = vec.gpu_ptr;
+	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
+}
+
+template<class T>
+SGMatrix<T>::SGMatrix(GPUMemoryBase<T>* mat, index_t nrows, index_t ncols)
+	: SGReferencedData(true), matrix(NULL), num_rows(nrows), num_cols(ncols),
+	gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(mat))
+{
+	m_on_gpu.store(true, std::memory_order_release);
 }
 
 template <class T>
@@ -81,15 +109,29 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 template <class T>
 SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 : SGReferencedData(false), matrix(mat.data()),
-	num_rows(mat.rows()), num_cols(mat.cols())
+	num_rows(mat.rows()), num_cols(mat.cols()), gpu_ptr(nullptr)
 {
-
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template <class T>
 SGMatrix<T>::operator EigenMatrixXtMap() const
 {
+	assert_on_cpu();
 	return EigenMatrixXtMap(matrix, num_rows, num_cols);
+}
+
+template<class T>
+SGMatrix<T>& SGMatrix<T>::operator=(const SGMatrix<T>& other)
+{
+	if(&other == this)
+	return *this;
+
+	unref();
+	copy_data(other);
+	copy_refcount(other);
+	ref();
+	return *this;
 }
 
 template <class T>
@@ -99,128 +141,160 @@ SGMatrix<T>::~SGMatrix()
 }
 
 template <class T>
-bool SGMatrix<T>::operator==(SGMatrix<T>& other)
+bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 {
+	// avoid comparing elements when both are same.
+	// the case where both matrices are uninitialized is handled here as well.
+	if (*this==other)
+		return true;
+
+	// avoid uninitialized memory read in case the matrices are not initialized
+	if (matrix==nullptr || other.matrix==nullptr)
+		return false;
+
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
-	if (matrix!=other.matrix)
-		return false;
-
-	return true;
+	return std::equal(matrix, matrix+size(), other.matrix);
 }
 
-template <class T>
-bool SGMatrix<T>::equals(SGMatrix<T>& other)
+#ifndef REAL_EQUALS
+#define REAL_EQUALS(real_t)	\
+template <>	\
+bool SGMatrix<real_t>::equals(const SGMatrix<real_t>& other) const	\
+{	\
+	if (*this==other)	\
+		return true;	\
+	\
+	if (matrix==nullptr || other.matrix==nullptr)	\
+		return false;	\
+	\
+	if (num_rows!=other.num_rows || num_cols!=other.num_cols)	\
+		return false;	\
+	\
+	return std::equal(matrix, matrix+size(), other.matrix,	\
+			[](const real_t& a, const real_t& b)	\
+			{	\
+				return CMath::fequals<real_t>(a, b, std::numeric_limits<real_t>::epsilon());	\
+			});	\
+}
+
+REAL_EQUALS(float32_t)
+REAL_EQUALS(float64_t)
+REAL_EQUALS(floatmax_t)
+#undef REAL_EQUALS
+#endif // REAL_EQUALS
+
+template <>
+bool SGMatrix<complex128_t>::equals(const SGMatrix<complex128_t>& other) const
 {
+	if (*this==other)
+		return true;
+
+	if (matrix==nullptr || other.matrix==nullptr)
+		return false;
+
 	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 		return false;
 
-	for (int64_t i=0; i<int64_t(num_rows)*num_cols; ++i)
-	{
-		if (matrix[i]!=other.matrix[i])
-			return false;
-	}
-
-	return true;
+	return std::equal(matrix, matrix+size(), other.matrix,
+		[](const complex128_t& a, const complex128_t& b)
+		{
+			return CMath::fequals<float64_t>(a.real(), b.real(), LDBL_EPSILON) &&
+				CMath::fequals<float64_t>(a.imag(), b.imag(), LDBL_EPSILON);
+		});
 }
 
 template <class T>
 void SGMatrix<T>::set_const(T const_elem)
 {
-	for (int64_t i=0; i<int64_t(num_rows)*num_cols; i++)
-		matrix[i]=const_elem ;
+	assert_on_cpu();
+
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+
+	std::fill(matrix, matrix+size(), const_elem);
 }
 
 template <class T>
 void SGMatrix<T>::zero()
 {
-	if (matrix && (int64_t(num_rows)*num_cols))
-		set_const(0);
-}
-
-template <>
-void SGMatrix<complex128_t>::zero()
-{
-	if (matrix && (int64_t(num_rows)*num_cols))
-		set_const(complex128_t(0.0));
+	set_const(static_cast<T>(0));
 }
 
 template <class T>
-bool SGMatrix<T>::is_symmetric()
+bool SGMatrix<T>::is_symmetric() const
 {
+	assert_on_cpu();
+
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+
 	if (num_rows!=num_cols)
 		return false;
-	for (int i=0; i<num_rows; ++i)
+
+	for (index_t i=0; i<num_rows; ++i)
 	{
-		for (int j=i+1; j<num_cols; ++j)
+		for (index_t j=i+1; j<num_cols; ++j)
 		{
 			if (matrix[j*num_rows+i]!=matrix[i*num_rows+j])
 				return false;
 		}
 	}
+
 	return true;
 }
 
-template <>
-bool SGMatrix<float32_t>::is_symmetric()
-{
-	if (num_rows!=num_cols)
-		return false;
-	for (int i=0; i<num_rows; ++i)
-	{
-		for (int j=i+1; j<num_cols; ++j)
-		{
-			if (!CMath::fequals<float32_t>(matrix[j*num_rows+i],
-						matrix[i*num_rows+j], FLT_EPSILON))
-				return false;
-		}
-	}
-	return true;
+#ifndef REAL_IS_SYMMETRIC
+#define REAL_IS_SYMMETRIC(real_t)	\
+template <>	\
+bool SGMatrix<real_t>::is_symmetric() const	\
+{	\
+	assert_on_cpu();	\
+	\
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");	\
+	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);	\
+	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);	\
+	\
+	if (num_rows!=num_cols)	\
+		return false;	\
+	\
+	for (index_t i=0; i<num_rows; ++i)	\
+	{	\
+		for (index_t j=i+1; j<num_cols; ++j)	\
+		{	\
+			if (!CMath::fequals<real_t>(matrix[j*num_rows+i],	\
+						matrix[i*num_rows+j], std::numeric_limits<real_t>::epsilon()))	\
+				return false;	\
+		}	\
+	}	\
+	\
+	return true;	\
 }
 
-template <>
-bool SGMatrix<float64_t>::is_symmetric()
-{
-	if (num_rows!=num_cols)
-		return false;
-	for (int i=0; i<num_rows; ++i)
-	{
-		for (int j=i+1; j<num_cols; ++j)
-		{
-			if (!CMath::fequals<float64_t>(matrix[j*num_rows+i],
-						matrix[i*num_rows+j], DBL_EPSILON))
-				return false;
-		}
-	}
-	return true;
-}
+REAL_IS_SYMMETRIC(float32_t)
+REAL_IS_SYMMETRIC(float64_t)
+REAL_IS_SYMMETRIC(floatmax_t)
+#undef REAL_IS_SYMMETRIC
+#endif // REAL_IS_SYMMETRIC
 
 template <>
-bool SGMatrix<floatmax_t>::is_symmetric()
+bool SGMatrix<complex128_t>::is_symmetric() const
 {
-	if (num_rows!=num_cols)
-		return false;
-	for (int i=0; i<num_rows; ++i)
-	{
-		for (int j=i+1; j<num_cols; ++j)
-		{
-			if (!CMath::fequals<floatmax_t>(matrix[j*num_rows+i],
-						matrix[i*num_rows+j], LDBL_EPSILON))
-				return false;
-		}
-	}
-	return true;
-}
+	assert_on_cpu();
 
-template <>
-bool SGMatrix<complex128_t>::is_symmetric()
-{
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+
 	if (num_rows!=num_cols)
 		return false;
-	for (int i=0; i<num_rows; ++i)
+
+	for (index_t i=0; i<num_rows; ++i)
 	{
-		for (int j=i+1; j<num_cols; ++j)
+		for (index_t j=i+1; j<num_cols; ++j)
 		{
 			if (!(CMath::fequals<float64_t>(matrix[j*num_rows+i].real(),
 						matrix[i*num_rows+j].real(), DBL_EPSILON) &&
@@ -229,49 +303,59 @@ bool SGMatrix<complex128_t>::is_symmetric()
 				return false;
 		}
 	}
+
 	return true;
 }
 
 template <class T>
-T SGMatrix<T>::max_single()
+T SGMatrix<T>::max_single() const
 {
-	T max=matrix[0];
-	for (int64_t i=1; i<int64_t(num_rows)*num_cols; ++i)
-	{
-		if (matrix[i]>max)
-			max=matrix[i];
-	}
+	assert_on_cpu();
 
-	return max;
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	REQUIRE(num_rows>0, "Number of rows (%d) has to be positive!\n", num_rows);
+	REQUIRE(num_cols>0, "Number of cols (%d) has to be positive!\n", num_cols);
+
+	return *std::max_element(matrix, matrix+size());
 }
 
 template <>
-complex128_t SGMatrix<complex128_t>::max_single()
+complex128_t SGMatrix<complex128_t>::max_single() const
 {
 	SG_SERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
 	return complex128_t(0.0);
 }
 
 template <class T>
-SGMatrix<T> SGMatrix<T>::clone()
+SGMatrix<T> SGMatrix<T>::clone() const
 {
-	return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
-			num_rows, num_cols);
+	if (on_gpu())
+	{
+		return SGMatrix<T>(gpu_ptr->clone_vector(gpu_ptr.get(),
+						   num_rows*num_cols), num_rows, num_cols);
+	}
+	else
+	{
+		return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
+						   num_rows, num_cols);
+	}
 }
 
 template <class T>
 T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 {
-	T* result = SG_MALLOC(T, int64_t(nrows)*ncols);
-	for (int64_t i=0; i<int64_t(nrows)*ncols; i++)
-		result[i]=matrix[i];
+	REQUIRE(matrix!=nullptr, "The underlying matrix is not allocated!\n");
+	REQUIRE(nrows>0, "Number of rows (%d) has to be positive!\n", nrows);
+	REQUIRE(ncols>0, "Number of cols (%d) has to be positive!\n", ncols);
 
+	auto size=int64_t(nrows)*ncols;
+	T* result=SG_MALLOC(T, size);
+	sg_memcpy(result, matrix, size*sizeof(T));
 	return result;
 }
 
 template <class T>
-void SGMatrix<T>::transpose_matrix(
-	T*& matrix, int32_t& num_feat, int32_t& num_vec)
+void SGMatrix<T>::transpose_matrix(T*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
 	/* this should be done in-place! Heiko */
 	T* transposed=SG_MALLOC(T, int64_t(num_vec)*num_feat);
@@ -290,6 +374,7 @@ void SGMatrix<T>::transpose_matrix(
 template <class T>
 void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 {
+	/* Need assert v.size() */
 	for(int64_t i=0;i<size;i++)
 	{
 		for(int64_t j=0;j<size;j++)
@@ -312,6 +397,7 @@ float64_t SGMatrix<T>::trace(
 	return trace;
 }
 
+/* Already in linalg */
 template <class T>
 T* SGMatrix<T>::get_row_sum(T* matrix, int32_t m, int32_t n)
 {
@@ -325,6 +411,7 @@ T* SGMatrix<T>::get_row_sum(T* matrix, int32_t m, int32_t n)
 	return rowsums;
 }
 
+/* Already in linalg */
 template <class T>
 T* SGMatrix<T>::get_column_sum(T* matrix, int32_t m, int32_t n)
 {
@@ -341,6 +428,7 @@ T* SGMatrix<T>::get_column_sum(T* matrix, int32_t m, int32_t n)
 template <class T>
 void SGMatrix<T>::center()
 {
+	assert_on_cpu();
 	center_matrix(matrix, num_rows, num_cols);
 }
 
@@ -372,6 +460,8 @@ void SGMatrix<T>::center_matrix(T* matrix, int32_t m, int32_t n)
 template <class T>
 void SGMatrix<T>::remove_column_mean()
 {
+	assert_on_cpu();
+
 	/* compute "row" sums (which I would call column sums), i.e. sum of all
 	 * elements in a fixed column */
 	T* means=get_row_sum(matrix, num_rows, num_cols);
@@ -389,6 +479,7 @@ void SGMatrix<T>::remove_column_mean()
 
 template<class T> void SGMatrix<T>::display_matrix(const char* name) const
 {
+	assert_on_cpu();
 	display_matrix(matrix, num_rows, num_cols, name);
 }
 
@@ -880,6 +971,7 @@ float64_t* SGMatrix<T>::pinv(
 template <class T>
 void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 {
+	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	ASSERT(matrix.num_cols==matrix.num_rows)
 	int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
 	clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
@@ -890,6 +982,7 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 template <class T>
 SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
 {
+	REQUIRE(!matrix.on_gpu(), "Operation is not possible when data is in GPU memory.\n");
 	if (matrix.num_rows!=matrix.num_cols)
 	{
 		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
@@ -939,11 +1032,15 @@ void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues
 
 #endif //HAVE_LAPACK
 
+/* Already in linalg */
 template <class T>
 SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 		SGMatrix<float64_t> A, SGMatrix<float64_t> B,
 		bool transpose_A, bool transpose_B, float64_t scale)
 {
+	REQUIRE((!A.on_gpu()) && (!B.on_gpu()),
+		"Operation is not possible when data is in GPU memory.\n");
+
 	/* these variables store size of transposed matrices*/
 	index_t cols_A=transpose_A ? A.num_rows : A.num_cols;
 	index_t rows_A=transpose_A ? A.num_cols : A.num_rows;
@@ -996,7 +1093,7 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 	SGMatrix<T> result;
 
 	/* evtl use pre-allocated space */
-	if (pre_allocated.matrix)
+	if (pre_allocated.matrix || pre_allocated.gpu_ptr)
 	{
 		result=pre_allocated;
 
@@ -1022,9 +1119,12 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 template<class T>
 void SGMatrix<T>::copy_data(const SGReferencedData &orig)
 {
+	gpu_ptr=((SGMatrix*)(&orig))->gpu_ptr;
 	matrix=((SGMatrix*)(&orig))->matrix;
 	num_rows=((SGMatrix*)(&orig))->num_rows;
 	num_cols=((SGMatrix*)(&orig))->num_cols;
+	m_on_gpu.store(((SGMatrix*)(&orig))->m_on_gpu.load(
+		std::memory_order_acquire), std::memory_order_release);
 }
 
 template<class T>
@@ -1033,6 +1133,8 @@ void SGMatrix<T>::init_data()
 	matrix=NULL;
 	num_rows=0;
 	num_cols=0;
+	gpu_ptr=nullptr;
+	m_on_gpu.store(false, std::memory_order_release);
 }
 
 template<class T>
@@ -1053,6 +1155,7 @@ void SGMatrix<T>::load(CFile* loader)
 	SG_SET_LOCALE_C;
 	SGMatrix<T> mat;
 	loader->get_matrix(mat.matrix, mat.num_rows, mat.num_cols);
+	mat.gpu_ptr = nullptr;
 	copy_data(mat);
 	copy_refcount(mat);
 	ref();
@@ -1068,6 +1171,7 @@ void SGMatrix<complex128_t>::load(CFile* loader)
 template<class T>
 void SGMatrix<T>::save(CFile* writer)
 {
+	assert_on_cpu();
 	ASSERT(writer)
 	SG_SET_LOCALE_C;
 	writer->set_matrix(matrix, num_rows, num_cols);
@@ -1083,6 +1187,7 @@ void SGMatrix<complex128_t>::save(CFile* saver)
 template<class T>
 SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 {
+	assert_on_cpu();
 	SGVector<T> rowv(num_cols);
 	for (int64_t i = 0; i < num_cols; i++)
 	{
@@ -1094,6 +1199,7 @@ SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 template<class T>
 SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 {
+	assert_on_cpu();
 	index_t diag_vlen=CMath::min(num_cols, num_rows);
 	SGVector<T> diag(diag_vlen);
 

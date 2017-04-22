@@ -91,3 +91,21 @@ TEST(Any, recall_type)
 	EXPECT_THROW(recall_type<float64_t>(any), std::logic_error);
 	EXPECT_THROW(recall_type<int32_t>(empty_any), std::logic_error);
 }
+
+TEST(Any, erase_type_non_owning)
+{
+	int32_t integer = 10;
+	auto any = erase_type_non_owning(&integer);
+	EXPECT_EQ(recall_type<int32_t>(any), integer);
+	integer++;
+	EXPECT_EQ(recall_type<int32_t>(any), integer);
+}
+
+TEST(Any, mixing_policies)
+{
+	int32_t integer = 10;
+	auto owning_any = erase_type(integer);
+	auto non_owning_any = erase_type_non_owning(&integer);
+	EXPECT_THROW(owning_any = non_owning_any, std::logic_error);
+	EXPECT_THROW(non_owning_any = owning_any, std::logic_error);
+}

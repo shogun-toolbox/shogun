@@ -105,7 +105,7 @@ class COnlineLinearMachine : public CMachine
 		{
 			SG_FREE(w);
 			w=SG_MALLOC(float32_t, src_w_dim);
-			memcpy(w, src_w, size_t(src_w_dim)*sizeof(float32_t));
+			sg_memcpy(w, src_w, size_t(src_w_dim)*sizeof(float32_t));
 			w_dim=src_w_dim;
 		}
 

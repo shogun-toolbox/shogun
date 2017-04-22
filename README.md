@@ -19,11 +19,11 @@ Develop branch build status:
 
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
- * See [doc/readme/ABOUT.md](https://github.com/shogun-toolbox/docs/blob/master/ABOUT.md) for a project description.
- * See [doc/readme/INSTALL.md](https://github.com/shogun-toolbox/docs/blob/master/INSTALL.md) for installation instructions.
- * See [doc/readme/INTERFACES.md](https://github.com/shogun-toolbox/docs/blob/master/INTERFACES.md) for calling Shogun from its interfaces.
- * See [doc/readme/EXAMPLES.md](https://github.com/shogun-toolbox/docs/blob/master/EXAMPLES.md) for details on creating API examples.
- * See [doc/readme/DEVELOPING.md](https://github.com/shogun-toolbox/docs/blob/master/DEVELOPING.md) for how to hack Shogun.
+ * See [doc/readme/ABOUT.md](doc/readme/ABOUT.md) for a project description.
+ * See [doc/readme/INSTALL.md](doc/readme/INSTALL.md) for installation instructions.
+ * See [doc/readme/INTERFACES.md](doc/readme/INTERFACES.md) for calling Shogun from its interfaces.
+ * See [doc/readme/EXAMPLES.md](doc/readme/EXAMPLES.md) for details on creating API examples.
+ * See [doc/readme/DEVELOPING.md](doc/readme/DEVELOPING.md) for how to hack Shogun.
  
  * See [API examples](http://shogun.ml/examples) for API examples for all interfaces.
  * See [the wiki](https://github.com/shogun-toolbox/shogun/wiki/) for extended developer information.
@@ -31,13 +31,13 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 ## Interfaces
 -------------
 
-Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, Scala, and Matlab.
+Shogun is implemented in C++ and offers automatically generated, unified interfaces to Python, Octave, Java / Scala, Ruby, C#, R, Lua. We are currently working on adding more languages including JavaScript, D, and Matlab.
 
 |    Interface     |     Status                                                |
 |:----------------:|-----------------------------------------------------------|
 |python            | *mature* (no known problems)                              |
 |octave            | *mature* (no known problems)                              |
-|java              | *stable* (no known problems)                              |
+|java/scala        | *stable* (no known problems)                              |
 |ruby              | *stable* (no known problems)                              |
 |csharp            | *stable* (no known problems)                              |
 |r                 | *beta*   (most examples work, static calls unavailable)   |

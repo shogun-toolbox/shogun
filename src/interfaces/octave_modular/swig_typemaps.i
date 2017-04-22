@@ -24,6 +24,10 @@
 #include <octave/Cell.h>
 
 #include <shogun/lib/DataType.h>
+
+// this is for the hack that sets the number of threads to 1 below
+// see #3772
+#include <shogun/io/SGIO.h>
 %}
 
 /* One dimensional input arrays */
@@ -486,3 +490,10 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 
 TYPEMAP_SPARSEFEATURES_OUT(float64_t,     NPY_FLOAT64)
 #undef TYPEMAP_SPARSEFEATURES_OUT
+
+%init %{
+	// set number of threads to 1
+	// see issue #3772
+	SG_SWARNING("Using Shogun single-threaded. Multi-threaded Octave is currently broken. See https://github.com/shogun-toolbox/shogun/issues/3772\n");
+	shogun::get_global_parallel()->set_num_threads(1);
+%}

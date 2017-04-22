@@ -269,7 +269,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 	do
 	{
 		SGVector<float64_t>::vector_multiply(temp1, Y.vector, Xd, x_n);
-		memcpy(temp1forout, temp1, sizeof(float64_t)*x_n);
+		sg_memcpy(temp1forout, temp1, sizeof(float64_t)*x_n);
 		SGVector<float64_t>::scale_vector(t, temp1forout, x_n);
 		SGVector<float64_t>::add(outz, 1.0, out, -1.0, temp1forout, x_n);
 
@@ -342,7 +342,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 
 	//create copy of w0
 	float64_t* w0=SG_MALLOC(float64_t, x_d+1);
-	memcpy(w0, weights, sizeof(float64_t)*(x_d));
+	sg_memcpy(w0, weights, sizeof(float64_t)*(x_d));
 	w0[x_d]=0; //do not penalize b
 
 	//create copy of out
@@ -353,7 +353,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 	float64_t p1=SGVector<float64_t>::sum(out1, x_n)/2;
 	float64_t C1;
 	float64_t* w0copy=SG_MALLOC(float64_t, x_d+1);
-	memcpy(w0copy, w0, sizeof(float64_t)*(x_d+1));
+	sg_memcpy(w0copy, w0, sizeof(float64_t)*(x_d+1));
 	SGVector<float64_t>::scale_vector(0.5, w0copy, x_d+1);
 	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, x_d+1, lambda,
 			w0, x_d+1, w0copy, x_d+1, 0.0, &C1, 1);

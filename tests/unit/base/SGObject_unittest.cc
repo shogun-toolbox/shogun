@@ -18,7 +18,6 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include "MockObject.h"
 #include <shogun/base/some.h>
@@ -44,13 +43,13 @@ TEST(SGObject,equals_NULL_parameter)
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 	CGaussianKernel* kernel=new CGaussianKernel();
-	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, feats, 5);
-	CQuadraticTimeMMD* mmd2=new CQuadraticTimeMMD(NULL, feats, 5);
+	CGaussianKernel* kernel2=new CGaussianKernel();
+	kernel2->init(feats, feats);
 
-	mmd->equals(mmd2);
+	EXPECT_FALSE(kernel->equals(kernel2));
 
-	SG_UNREF(mmd);
-	SG_UNREF(mmd2);
+	SG_UNREF(kernel);
+	SG_UNREF(kernel2);
 }
 
 #ifdef USE_REFERENCE_COUNTING

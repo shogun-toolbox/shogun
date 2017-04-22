@@ -613,7 +613,6 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	SG_UNREF(inducing_features_train);
 }
 
-#ifdef HAVE_LINALG_LIB
 TEST(GaussianProcessRegression,fitc_regression)
 {
 	index_t n=6;
@@ -738,4 +737,3 @@ TEST(GaussianProcessRegression,fitc_regression)
 	SG_UNREF(latent_features_train);
 	SG_UNREF(gpr);
 }
-#endif /* HAVE_LINALG_LIB */

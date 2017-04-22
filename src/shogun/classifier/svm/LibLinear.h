@@ -192,11 +192,12 @@ class CLibLinear : public CLinearMachine
 
 		void train_one(const liblinear_problem *prob, const liblinear_parameter *param, double Cp, double Cn);
 		void solve_l2r_l1l2_svc(
+			SGVector<float64_t>& w,
 			const liblinear_problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st);
 
-		void solve_l1r_l2_svc(liblinear_problem *prob_col, double eps, double Cp, double Cn);
-		void solve_l1r_lr(const liblinear_problem *prob_col, double eps, double Cp, double Cn);
-		void solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn);
+		void solve_l1r_l2_svc(SGVector<float64_t>& w, liblinear_problem *prob_col, double eps, double Cp, double Cn);
+		void solve_l1r_lr(SGVector<float64_t>& w, const liblinear_problem *prob_col, double eps, double Cp, double Cn);
+		void solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_problem *prob, double eps, double Cp, double Cn);
 
 
 	protected:

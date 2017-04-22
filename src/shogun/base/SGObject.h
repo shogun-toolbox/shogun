@@ -32,8 +32,6 @@ class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
-class ParameterMap;
-class SGParamInfo;
 class CSerializableFile;
 
 template <class T, class K> class CMap;
@@ -300,8 +298,7 @@ public:
 	 */
 	bool has(const std::string& name) const
 	{
-		BaseTag tag(name);
-		return has_with_base_tag(tag);
+		return type_erased_has(BaseTag(name));
 	}
 
 	/** Checks if object has a class parameter identified by a Tag.
@@ -324,9 +321,9 @@ public:
 	bool has(const std::string& name) const
 	{
 		BaseTag tag(name);
-		if(!has_with_base_tag(tag))
+		if(!type_erased_has(tag))
 			return false;
-		const Any value = get_with_base_tag(tag);
+		const Any value = type_erased_get(tag);
 		return value.same_type<T>();
 	}
 
@@ -339,10 +336,10 @@ public:
 	template <typename T>
 	void set(const Tag<T>& _tag, const T& value)
 	{
-		if(has_with_base_tag(_tag))
+		if(type_erased_has(_tag))
 		{
 			if(has<T>(_tag.name()))
-				set_with_base_tag(_tag, erase_type(value));
+				type_erased_set(_tag, erase_type(value));
 			else
 			{
 				SG_ERROR("Type for parameter with name \"%s\" is not correct.\n",
@@ -378,16 +375,18 @@ public:
 	template <typename T>
 	T get(const Tag<T>& _tag) const
 	{
-		const Any value = get_with_base_tag(_tag);
+		const Any value = type_erased_get(_tag);
 		try
 		{
 			return recall_type<T>(value);
 		}
-		catch(std::logic_error)
+		catch (const std::logic_error&)
 		{
 			SG_ERROR("Type for parameter with name \"%s\" is not correct in \"%s\".\n",
 					_tag.name().c_str(), get_name());
 		}
+		// we won't be there
+		return recall_type<T>(value);
 	}
 
 	/** Getter for a class parameter, identified by a name.
@@ -450,7 +449,7 @@ protected:
 	template <typename T>
 	void register_param(Tag<T>& _tag, const T& value)
 	{
-		set_with_base_tag(_tag, erase_type(value));
+		type_erased_set(_tag, erase_type(value));
 	}
 
 	/** Registers a class parameter which is identified by a name.
@@ -464,7 +463,7 @@ protected:
 	void register_param(const std::string& name, const T& value)
 	{
 		BaseTag tag(name);
-		set_with_base_tag(tag, erase_type(value));
+		type_erased_set(tag, erase_type(value));
 	}
 
 public:
@@ -500,6 +499,16 @@ public:
 	 */
 	virtual CSGObject* clone();
 
+protected:
+	/* Iteratively clones all parameters of the provided instance into this instance.
+	 * This will fail if the objects have different sets of registered parameters,
+	 * or if they have a different type as defined by get_name().
+	 *
+	 * @param other object whose parameters are to be cloned into this instance
+	 * @return true if cloning was successful
+	 */
+	bool clone_parameters(CSGObject* other);
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
@@ -512,7 +521,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return true if the parameter exists with the input tag
 	 */
-	bool has_with_base_tag(const BaseTag& _tag) const;
+	bool type_erased_has(const BaseTag& _tag) const;
 
 	/** Registers and modifies a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -520,7 +529,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @param any value without type information of the parameter
 	 */
-	void set_with_base_tag(const BaseTag& _tag, const Any& any);
+	void type_erased_set(const BaseTag& _tag, const Any& any);
 
 	/** Getter for a class parameter, identified by a BaseTag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -528,7 +537,7 @@ private:
 	 * @param _tag name information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	Any get_with_base_tag(const BaseTag& _tag) const;
+	Any type_erased_get(const BaseTag& _tag) const;
 
 	/** Gets an incremental hash of all parameters as well as the parameters of
 	 * CSGObject children of the current object's parameters.

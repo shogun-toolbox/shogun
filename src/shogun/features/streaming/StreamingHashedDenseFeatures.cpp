@@ -135,12 +135,6 @@ int32_t CStreamingHashedDenseFeatures<ST>::get_num_vectors() const
 }
 
 template <class ST>
-CFeatures* CStreamingHashedDenseFeatures<ST>::duplicate() const
-{
-	return new CStreamingHashedDenseFeatures<ST>(*this);
-}
-
-template <class ST>
 void CStreamingHashedDenseFeatures<ST>::set_vector_reader()
 {
 	parser.set_read_vector(&CStreamingFile::get_vector);

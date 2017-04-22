@@ -17,6 +17,19 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <new>
+#include <cstring>
+
+/* memcpy wrapper to enable clean moves to different memcpy backends */
+namespace shogun
+{
+
+template <class InputIt, class OutputIt>
+SG_FORCED_INLINE void* sg_memcpy(InputIt dest, OutputIt src, size_t count)
+{
+	return std::memcpy(static_cast<void*>(dest), static_cast<const void*>(src), count);
+}
+
+}  // namespace shogun
 
 /* wrappers for malloc, free, realloc, calloc */
 

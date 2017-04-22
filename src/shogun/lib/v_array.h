@@ -191,7 +191,7 @@ inline void v_array<T>::push_many(const T* new_elem, size_t num)
 		end = begin + length;
 		end_array = begin + new_length;
 	}
-	memcpy(end, new_elem, num * sizeof(T));
+	sg_memcpy(end, new_elem, num * sizeof(T));
 	end += num;
 }
 

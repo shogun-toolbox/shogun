@@ -57,7 +57,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	Cs_dims[1] = d;
 	Cs_dims[2] = L;
 	SGNDArray<float64_t> Cs(Cs_dims,3);
-	memcpy(Cs.array, C.array, Cs.dims[0]*Cs.dims[1]*Cs.dims[2]*sizeof(float64_t));
+	sg_memcpy(Cs.array, C.array, Cs.dims[0]*Cs.dims[1]*Cs.dims[2]*sizeof(float64_t));
 
 	MatrixXd Rs(d,L);
 	std::vector<float64_t> crit;

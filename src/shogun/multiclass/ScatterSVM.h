@@ -110,23 +110,19 @@ class CScatterSVM : public CMulticlassSVM
 #endif //USE_SVMLIGHT
 		virtual bool train_testrule12();
 
+		void register_params();
+
 	protected:
 		/** type of scatter SVM */
 		SCATTER_TYPE scatter_type;
 
-		/** SVM problem */
-		svm_problem problem;
-		/** SVM param */
-		svm_parameter param;
-
-		/** SVM model */
-		struct svm_model* model;
-
 		/** norm of w_c */
 		float64_t* norm_wc;
+		int32_t norm_wc_len;
 
 		/** norm of w_cw */
 		float64_t* norm_wcw;
+		int32_t norm_wcw_len;
 
 		/** ScatterSVM rho */
 		float64_t rho;

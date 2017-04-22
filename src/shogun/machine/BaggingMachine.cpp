@@ -76,7 +76,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
 	output.zero();
 
-	
+
 	#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
@@ -89,7 +89,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 			SG_ERROR("NULL returned by apply method\n");
 
 		float64_t* bag_results = output.get_column_vector(i);
-		memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
+		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
 
 		SG_UNREF(l);
 		SG_UNREF(m);
@@ -178,7 +178,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		labels->remove_subset();
 
 		#pragma omp critical
-		{		
+		{
 		// get out of bag indexes
 		CDynamicArray<index_t>* oob = get_oob_indices(idx);
 		m_oob_indices->push_back(oob);

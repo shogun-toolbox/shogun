@@ -113,7 +113,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		if (alen>0)
 		{
 			avec=SG_MALLOC(uint16_t, alen);
-			memcpy(avec, av, sizeof(uint16_t)*alen);
+			sg_memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
 		else
@@ -122,7 +122,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		if (blen>0)
 		{
 			bvec=SG_MALLOC(uint16_t, blen);
-			memcpy(bvec, bv, sizeof(uint16_t)*blen);
+			sg_memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
 		else
@@ -246,7 +246,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 	}
 
 	init_dictionary(1<<(sizeof(uint16_t)*8));
-	memcpy(dictionary_weights, dic, sizeof(float64_t)*dic_size);
+	sg_memcpy(dictionary_weights, dic, sizeof(float64_t)*dic_size);
 	SG_FREE(dic);
 }
 
@@ -294,14 +294,14 @@ float64_t* CWeightedCommWordStringKernel::compute_scoring(
 
 	int32_t dic_size=1<<(sizeof(uint16_t)*9);
 	float64_t* dic=SG_MALLOC(float64_t, dic_size);
-	memcpy(dic, dictionary_weights, sizeof(float64_t)*dic_size);
+	sg_memcpy(dic, dictionary_weights, sizeof(float64_t)*dic_size);
 
 	merge_normal();
 	float64_t* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
 			num_sym, target, num_suppvec, IDX, alphas, false);
 
 	init_dictionary(1<<(sizeof(uint16_t)*9));
-	memcpy(dictionary_weights,dic,  sizeof(float64_t)*dic_size);
+	sg_memcpy(dictionary_weights,dic,  sizeof(float64_t)*dic_size);
 	SG_FREE(dic);
 
 	return result;

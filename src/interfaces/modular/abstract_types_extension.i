@@ -54,7 +54,7 @@
 	  {
 	    CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(i);
 	    CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(i);
-	    memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
+	    sg_memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
 	  }
 	CDenseFeatures<float64_t>* psi_feats = new CDenseFeatures<float64_t>(psi_m);
 	return psi_feats;

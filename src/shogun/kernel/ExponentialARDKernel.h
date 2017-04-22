@@ -150,7 +150,6 @@ protected:
 		return CMath::exp(-distance(idx_a,idx_b));
 	}
 
-#ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
@@ -250,7 +249,6 @@ protected:
 	 *
 	 */
 	virtual void check_weight_gradient_index(index_t index);
-#endif /* HAVE_LINALG_LIB */
 };
 }
 #endif /* EXPONENTIALARDKERNEL_H */

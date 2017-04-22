@@ -30,7 +30,7 @@ if (MSVC AND (BUILD_EXAMPLES OR BUILD_META_EXAMPLES))
 endif()
 
 # add target to compile the libshogun sources
-add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
+add_library(libshogun OBJECT ${LIBSHOGUN_SRC} ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/lib/config.h)
 set_property(TARGET libshogun PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 IF (SANITIZER_FLAGS)
   set_property(libshogun PROPERTY COMPILE_FLAGS ${SANITIZER_FLAGS})
@@ -231,22 +231,10 @@ SHOGUN_DEPENDENCIES(
   VERSION ${VIENNACL_VERSION_MINIMUM}
   CONFIG_FLAG HAVE_VIENNACL)
 
-# Check if supported linear algebra backend is found
-IF (HAVE_CXX0X OR HAVE_CXX11)
-  SET(HAVE_LINALG_LIB 1)
-ELSE ()
-  MESSAGE (STATUS "LINALG uses c++11 features. Please use a supported compiler")
-ENDIF ()
-
 # Linear algebra default global backend setups
 SET_LINALG_BACKEND(LINALG_DEFAULT_BACKEND GLOBAL)
 
 # Linear algebra default module specific backend setup
-# Core module
-SET_LINALG_BACKEND(LINALG_CORE_LIB CORE)
-# Reduction module
-SET_LINALG_BACKEND(LINALG_REDUX_LIB REDUX)
-
 # Linear solver module
 SET_LINALG_BACKEND(LINALG_LINEAR_SOLVER_LIB LINSLV)
 
@@ -274,7 +262,7 @@ IF (LAPACK_FOUND)
     IF(Atlas_FOUND)
       SET(HAVE_ATLAS 1)
       SET(HAVE_LAPACK 1)
-      SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE ${Atlas_INCLUDE_DIRS})
+      SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
       IF(USE_ORIGINAL_LAPACK)
         SET(ATLAS_CLAPACK_LIBRARY)
         FOREACH(ITR ${Atlas_LIBRARIES})
@@ -479,6 +467,7 @@ endif()
 
 include(LTO)
 if (ENABLE_LTO AND LTO_FOUND)
+  MESSAGE(STATUS "Link-time optimisation enabled")
   SET_LTO(shogun shogun-static shogun_deps libshogun)
 endif()
 

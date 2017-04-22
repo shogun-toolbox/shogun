@@ -80,6 +80,8 @@ public:
 	 */
 	CStreamingFeatures();
 
+	CStreamingFeatures(const CStreamingFeatures&) = delete;
+
 	/**
 	 * Destructor
 	 */
@@ -192,6 +194,17 @@ public:
 	{
 		SG_ERROR("%s::get_streamed_features() is not yet implemented!\n",
 				get_name());
+		return NULL;
+	}
+
+	/**
+	 * Duplicate the object.
+	 *
+	 * @return a duplicate object as CFeatures*
+	 */
+	virtual CFeatures* duplicate() const
+	{
+		SG_NOTIMPLEMENTED
 		return NULL;
 	}
 

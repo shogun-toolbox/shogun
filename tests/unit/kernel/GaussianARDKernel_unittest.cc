@@ -30,7 +30,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LINALG_LIB
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -730,4 +729,3 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	SG_UNREF(features_train)
 	SG_UNREF(latent_features_train)
 }
-#endif /* HAVE_LINALG_LIB */

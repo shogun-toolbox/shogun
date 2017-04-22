@@ -56,12 +56,12 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 {
 	REQUIRE(check_compatibility(l, r), "Features are not compatible!\n");
 
-	//remove references to previous features
-	remove_lhs_and_rhs();
-
 	//increase reference counts
 	SG_REF(l);
 	SG_REF(r);
+
+	//remove references to previous features
+	remove_lhs_and_rhs();
 
 	lhs=l;
 	rhs=r;
@@ -216,6 +216,18 @@ float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
 	return compute(idx_a, idx_b);
 }
 
+void CDistance::run_distance_rhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_a)
+{
+	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
+        result.vector[i] = this->distance(idx_a,idx_start);
+}
+
+void CDistance::run_distance_lhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_b)
+{
+	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
+        result.vector[i] = this->distance(idx_start,idx_b);
+}
+
 void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
@@ -282,7 +294,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	#pragma omp parallel shared(num_threads, step)
 	{
 #ifdef HAVE_OPENMP
-		#pragma opm single
+		#pragma omp single
 		{
 			num_threads=omp_get_num_threads();
 			step=total_num/num_threads;

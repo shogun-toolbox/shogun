@@ -243,13 +243,13 @@ TEST(CustomKernelTest, sum_symmetric_block)
 	sum1=kernel->sum_symmetric_block(0, m+n);
 	sum2=precomputed_kernel->sum_symmetric_block(0, m+n);
 
-	EXPECT_NEAR(sum1, sum2, 1E-4);
+	EXPECT_NEAR(sum1, sum2, 1E-3);
 
 	// overall - sum(K(X.Y, X'.Y')) (with diag)
 	sum1=kernel->sum_symmetric_block(0, m+n, false);
 	sum2=precomputed_kernel->sum_symmetric_block(0, m+n, false);
 
-	EXPECT_NEAR(sum1, sum2, 1E-4);
+	EXPECT_NEAR(sum1, sum2, 1E-3);
 
 	SG_UNREF(precomputed_kernel);
 	SG_UNREF(kernel);

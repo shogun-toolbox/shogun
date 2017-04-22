@@ -199,13 +199,6 @@ public:
 	virtual EFeatureClass get_feature_class() const;
 
 	/**
-	 * Duplicate the object.
-	 *
-	 * @return a duplicate object as CFeatures*
-	 */
-	virtual CFeatures* duplicate() const;
-
-	/**
 	 * Return the name.
 	 *
 	 * @return StreamingSparseFeatures

@@ -117,6 +117,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 					num_vec, num_train_labels);
 		}
 	}
+	SGVector<float64_t> w;
 	if (use_bias)
 		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
@@ -188,32 +189,34 @@ bool CLibLinear::train_machine(CFeatures* data)
 			break;
 		}
 		case L2R_L2LOSS_SVC_DUAL:
-			solve_l2r_l1l2_svc(&prob, epsilon, Cp, Cn, L2R_L2LOSS_SVC_DUAL);
+			solve_l2r_l1l2_svc(w, &prob, epsilon, Cp, Cn, L2R_L2LOSS_SVC_DUAL);
 			break;
 		case L2R_L1LOSS_SVC_DUAL:
-			solve_l2r_l1l2_svc(&prob, epsilon, Cp, Cn, L2R_L1LOSS_SVC_DUAL);
+			solve_l2r_l1l2_svc(w, &prob, epsilon, Cp, Cn, L2R_L1LOSS_SVC_DUAL);
 			break;
 		case L1R_L2LOSS_SVC:
 		{
 			//ASSUME FEATURES ARE TRANSPOSED ALREADY
-			solve_l1r_l2_svc(&prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
+			solve_l1r_l2_svc(w, &prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
 		case L1R_LR:
 		{
 			//ASSUME FEATURES ARE TRANSPOSED ALREADY
-			solve_l1r_lr(&prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
+			solve_l1r_lr(w, &prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
 		case L2R_LR_DUAL:
 		{
-			solve_l2r_lr_dual(&prob, epsilon, Cp, Cn);
+			solve_l2r_lr_dual(w, &prob, epsilon, Cp, Cn);
 			break;
 		}
 		default:
 			SG_ERROR("Error: unknown solver_type\n")
 			break;
 	}
+
+	set_w(w);
 
 	if (use_bias)
 		set_bias(w[w.vlen]);
@@ -255,6 +258,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l2r_l1l2_svc(
+			SGVector<float64_t>& w,
 			const liblinear_problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
 {
 	int l = prob->l;
@@ -455,6 +459,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_l2_svc(
+	SGVector<float64_t>& w,
 	liblinear_problem *prob_col, double eps, double Cp, double Cn)
 {
 	int l = prob_col->l;
@@ -801,6 +806,7 @@ void CLibLinear::solve_l1r_l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_lr(
+	SGVector<float64_t>& w,
 	const liblinear_problem *prob_col, double eps,
 	double Cp, double Cn)
 {
@@ -1172,7 +1178,7 @@ void CLibLinear::solve_l1r_lr(
 #define GETI(i) (y[i]+1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn)
+void CLibLinear::solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 	int l = prob->l;
 	int w_size = prob->n;

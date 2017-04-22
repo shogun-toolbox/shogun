@@ -33,10 +33,7 @@
  */
  
 #include <shogun/lib/config.h>
-#ifdef HAVE_LINALG_LIB
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
-
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -3703,7 +3700,6 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_variance_vecto
 
 
 
-#ifdef HAVE_LINALG_LIB
 TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 {
 	index_t n=6;
@@ -4046,5 +4042,3 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 	SG_UNREF(gpc);
 	SG_UNREF(latent_features_train);
 }
-
-#endif /* HAVE_LINALG_LIB */

@@ -81,12 +81,6 @@ floatmax_t CStreamingStringFeatures<T>::get_num_symbols()
 }
 
 template <class T>
-CFeatures* CStreamingStringFeatures<T>::duplicate() const
-{
-	return new CStreamingStringFeatures<T>(*this);
-}
-
-template <class T>
 int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 {
 	if (current_string)

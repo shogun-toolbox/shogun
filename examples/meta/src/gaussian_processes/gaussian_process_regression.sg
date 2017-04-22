@@ -27,6 +27,10 @@ gp_regression.train()
 RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
 #![train_and_apply]
 
+#![compute_variance]
+RealVector variances = gp_regression.get_variance_vector(features_test)
+#![compute_variance]
+
 #![optimize_marginal_likelihood]
 GradientCriterion grad_criterion()
 GradientEvaluation grad(gp_regression, features_train, labels_train, grad_criterion)

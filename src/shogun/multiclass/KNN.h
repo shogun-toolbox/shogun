@@ -21,6 +21,12 @@
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/multiclass/KNNSolver.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/multiclass/BruteKNNSolver.h>
+#include <shogun/multiclass/KDTreeKNNSolver.h>
+#include <shogun/multiclass/CoverTreeKNNSolver.h>
+#include <shogun/multiclass/LSHKNNSolver.h>
 
 namespace shogun
 {
@@ -269,6 +275,11 @@ class CKNN : public CDistanceMachine
 		 */
 		void choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step);
 
+		/** 
+		 * To init the solver pointer indicated which solver will been used to classify_objects
+		 */
+		void init_solver(KNN_SOLVER knn_solver);
+
 	protected:
 		/// the k parameter in KNN
 		int32_t m_k;
@@ -276,14 +287,17 @@ class CKNN : public CDistanceMachine
 		/// parameter q of rank weighting
 		float64_t m_q;
 
-		///	number of classes (i.e. number of values labels can take)
+		/// number of classes (i.e. number of values labels can take)
 		int32_t m_num_classes;
 
-		///	smallest label, i.e. -1
+		/// smallest label, i.e. -1
 		int32_t m_min_label;
 
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
+
+		/// Solver for KNN
+		CKNNSolver* solver;
 
 		KNN_SOLVER m_knn_solver;
 

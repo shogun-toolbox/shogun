@@ -73,7 +73,7 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 	if (orig.labels && get_num_vectors())
 	{
 		labels=SG_MALLOC(int32_t, get_num_vectors());
-		memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
+		sg_memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
 	}
 }
 

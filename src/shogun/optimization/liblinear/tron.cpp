@@ -113,7 +113,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 		cg_iter = trcg(delta, g, s, r);
 
-		memcpy(w_new, w, sizeof(float64_t)*n);
+		sg_memcpy(w_new, w, sizeof(float64_t)*n);
 		tron_daxpy(n, one, s, inc, w_new, inc);
 
 		gs = tron_ddot(n, g, inc, s, inc);
@@ -149,7 +149,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		if (actred > eta0*prered)
 		{
 			iter++;
-			memcpy(w, w_new, sizeof(float64_t)*n);
+			sg_memcpy(w, w_new, sizeof(float64_t)*n);
 			f = fnew;
 		        fun_obj->grad(w, g);
 

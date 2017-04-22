@@ -13,10 +13,8 @@
 #include <shogun/kernel/ExponentialARDKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
-
-#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/mathematics/linalg/linalg.h>
-#endif
 
 using namespace shogun;
 
@@ -66,7 +64,6 @@ SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeat
 
 }
 
-#ifdef HAVE_LINALG_LIB
 
 void CExponentialARDKernel::set_weights(SGMatrix<float64_t> weights)
 {
@@ -168,7 +165,7 @@ void CExponentialARDKernel::set_matrix_weights(SGMatrix<float64_t> weights)
 	m_ARD_type=KT_FULL;
 	index_t len=(2*m_weights_rows+1-m_weights_cols)*m_weights_cols/2;
 	m_log_weights=SGVector<float64_t>(len);
-		
+
 	index_t offset=0;
 	for (int i=0; i<weights.num_cols && i<weights.num_rows; i++)
 	{
@@ -229,7 +226,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 			SGMatrix<float64_t> weights(log_weights.vector+offset,1,m_weights_rows-i,false);
 			weights[0]=CMath::exp(weights[0]);
 			SGMatrix<float64_t> rtmp(vec.vector+i,vec.vlen-i,1,false);
-			SGMatrix<float64_t> s=linalg::matrix_product(weights,rtmp);
+			SGMatrix<float64_t> s=linalg::matrix_prod(weights,rtmp);
 			weights[0]=CMath::log(weights[0]);
 			res[i]=s[0];
 			offset+=m_weights_rows-i;
@@ -243,7 +240,7 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 			{
 			return CMath::exp(value);
 			});
-		res=linalg::elementwise_product(weights, rtmp);
+		res=linalg::element_prod(weights, rtmp);
 	}
 	return res;
 }
@@ -279,4 +276,3 @@ void CExponentialARDKernel::check_weight_gradient_index(index_t index)
 			index, m_log_weights.vlen);
 	}
 }
-#endif //HAVE_LINALG_LIB

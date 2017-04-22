@@ -15,13 +15,14 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 #include <shogun/io/LibSVMFile.h>
+#include "../utils/Utils.h"
 
 using namespace shogun;
 
 TEST(StreamingSparseFeaturesTest, parse_file)
 {
   std::string tmp_name = "StreamingSparseFeatures_parse_file.XXXXXX";
-  const char* fname = mktemp(const_cast<char*>(tmp_name.c_str()));
+  const char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
 
   int32_t max_num_entries=20;
   int32_t max_label_value=1;

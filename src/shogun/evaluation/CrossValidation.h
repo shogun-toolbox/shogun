@@ -108,6 +108,11 @@ class CCrossValidationResult : public CEvaluationResult
  * speed up computations. Can be turned off by the set_autolock()  method.
  * Locking in general may speed up things (eg for kernel machines the kernel
  * matrix is precomputed), however, it is not always supported.
+ *
+ * Crossvalidation runs with current number of threads
+ * (Parallel::set_num_threads) for unlocked case, and currently duplicates all
+ * objects (might be changed later).
+ *
  */
 class CCrossValidation: public CMachineEvaluation
 {

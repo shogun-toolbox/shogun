@@ -5,6 +5,3 @@
 [submodule "debian"]
 	path = debian
 	url = git://github.com/shogun-toolbox/shogun-debian.git
-[submodule "doc/readme"]
-	path = doc/readme
-	url = git://github.com/shogun-toolbox/docs.git

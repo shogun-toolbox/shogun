@@ -39,6 +39,11 @@
 namespace shogun
 {
 
+namespace internal
+{
+	class KernelManager;
+}
+
 /** @brief Base class for the family of kernel functions that only depend on
  * the difference of the inputs, i.e. whose values does not change if the
  * inputs are shifted by the same amount. More precisely,
@@ -49,6 +54,9 @@ namespace shogun
  */
 class CShiftInvariantKernel: public CKernel
 {
+
+	friend class internal::KernelManager;
+
 public:
 	/** Default constructor.  */
 	CShiftInvariantKernel();
