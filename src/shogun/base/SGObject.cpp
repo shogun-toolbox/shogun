@@ -782,12 +782,12 @@ bool CSGObject::clone_parameters(CSGObject* other)
 	return true;
 }
 
-void CSGObject::set_with_base_tag(const BaseTag& _tag, const Any& any)
+void CSGObject::type_erased_set(const BaseTag& _tag, const Any& any)
 {
 	self->set(_tag, any);
 }
 
-Any CSGObject::get_with_base_tag(const BaseTag& _tag) const
+Any CSGObject::type_erased_get(const BaseTag& _tag) const
 {
 	Any any = self->get(_tag);
 	if(any.empty())
@@ -798,7 +798,7 @@ Any CSGObject::get_with_base_tag(const BaseTag& _tag) const
 	return any;
 }
 
-bool CSGObject::has_with_base_tag(const BaseTag& _tag) const
+bool CSGObject::type_erased_has(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
