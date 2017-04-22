@@ -225,6 +225,10 @@ class CPCA: public CDimensionReductionPreprocessor
 		 * whitening to tackle numerical issues
 		 */
 		float64_t m_eigenvalue_zero_tolerance;
+
+	private:
+		void init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed);
+		void init_with_svd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed);
 };
 }
 #endif // PCA_H_
