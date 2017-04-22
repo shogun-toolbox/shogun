@@ -227,7 +227,9 @@ class CPCA: public CDimensionReductionPreprocessor
 		float64_t m_eigenvalue_zero_tolerance;
 
 	private:
+		/** Computes the transformation matrix using an eigenvalue decomposition. */
 		void init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed);
+		/** Computes the transformation matrix using svd */
 		void init_with_svd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed);
 };
 }

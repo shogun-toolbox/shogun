@@ -127,7 +127,8 @@ bool CPCA::init(CFeatures* features)
 	return false;
 }
 
-void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed) {
+void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_dim_allowed)
+{
 	int32_t num_vectors = feature_matrix.num_cols;
 	int32_t num_features = feature_matrix.num_rows;
 
@@ -208,7 +209,8 @@ void CPCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_
 	}
 }
 
-void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_dim_allowed) {
+void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_dim_allowed)
+{
 	int32_t num_vectors = feature_matrix.num_cols;
 	int32_t num_features = feature_matrix.num_rows;
 
@@ -223,12 +225,14 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 	eigenValues = eigenValues.cwiseProduct(eigenValues) / (num_vectors - 1);
 
 	// target dimension
-	switch (m_mode) {
+	switch (m_mode)
+	{
 		case FIXED_NUMBER:
 			num_dim = m_target_dim;
         	break;
 
-		case VARIANCE_EXPLAINED: {
+		case VARIANCE_EXPLAINED:
+		{
 			float64_t eig_sum = eigenValues.sum();
 			float64_t com_sum = 0;
 			for (int32_t i = 0; i < num_features; i++) {
@@ -256,9 +260,12 @@ void CPCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_
 	num_old_dim = num_features;
 	transformMatrix = svd.matrixV().block(0, 0, num_features, num_dim);
 
-	if (m_whitening) {
-		for (int32_t i = 0; i < num_dim; i++) {
-			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance)) {
+	if (m_whitening)
+	{
+		for (int32_t i = 0; i < num_dim; i++)
+		{
+			if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
+			{
 
 				SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
 					"Eigenvalue within a tolerance of %E around 0) at "
