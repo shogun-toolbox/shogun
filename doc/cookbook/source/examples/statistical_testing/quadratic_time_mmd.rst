@@ -30,7 +30,9 @@ The biased statistic is computed as
 
 .. sgexample:: quadratic_time_mmd.sg:estimate_mmd
 
-There are multiple ways to perform the actual hypothesis test, see :sgclass:`CQuadraticTimeMMD` for details. The permutation version simulates from :math:`H_0` via repeatedly permuting the samples from :math:`p` and :math:`q`. We can perform the test via computing a test threshold for a given :math:`\alpha`, or by directly computing a p-value.
+There are multiple ways to perform the actual hypothesis test, see :sgclass:`CQuadraticTimeMMD` for details.
+The permutation version simulates from :math:`H_0` via repeatedly permuting the samples from :math:`p` and :math:`q`.
+We can perform the test via computing a test threshold for a given :math:`\alpha`, or by directly computing a p-value.
 
 .. sgexample:: quadratic_time_mmd.sg:perform_test
 
@@ -53,21 +55,20 @@ There are various options to learn a kernel.
 All options allow to learn a single kernel among a number of provided baseline kernels.
 Furthermore, some of these criterions can be used to learn the coefficients of a convex combination of baseline kernels.
 
-There are different strategies to learn the kernel, see :sgclass:`CKernelSelectionStrategy`.
-
-We specify the desired baseline kernels to consider. Note the kernel above is not considered in the selection.
+We specify the desired baseline kernels to consider.
+Note the kernel above is not considered in the selection.
 
 .. sgexample:: quadratic_time_mmd.sg:add_kernels
 
 IMPORTANT: when learning the kernel for statistical testing, this needs to be done on different data than being used for performing the actual test.
 One way to accomplish this is to manually provide a different set of features for testing.
-In Shogun, it is also possible to automatically split the provided data by specifying the ratio between train and test data, via enabling the train-test mode.
+It is also possible to automatically split the provided data by specifying the ratio between train and test data, via enabling the train-test mode.
 
 .. sgexample:: quadratic_time_mmd.sg:enable_train_test_mode
 
 A ratio of 1 means the data is split into half during learning the kernel, and subsequent tests are performed on the second half.
 
-We learn the kernel and extract the result, again see :sgclass:`CKernelSelectionStrategy` more available strategies.
+We learn the kernel and extract the result.
 Note that the kernel of the mmd itself is replaced.
 If all kernels have the same type, we can convert the result into that type, for example to extract its parameters.
 
