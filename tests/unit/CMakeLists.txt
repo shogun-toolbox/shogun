@@ -106,6 +106,20 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
 	COMMENT "Generating SerializationXML_unittest.cc")
 LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
 
+ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_unittest.cc
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
+	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp.json
+	trained_model_serialization_unittest.cc
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
+	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp.json
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Generating trained_model_serialization_unittest.cc")
+LIST(APPEND SERIALIZATION_UNITTEST trained_model_serialization_unittest.cc)
+
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)

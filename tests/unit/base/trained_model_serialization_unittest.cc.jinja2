@@ -1,0 +1,123 @@
+/*
+ * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
+ * CORRESPONDING TEMPLATE FILE, PLEASE!
+ */
+
+#include <gtest/gtest.h>
+#include <shogun/machine/Machine.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/io/CSVFile.h>
+#include <shogun/io/SGIO.h>
+#include "utils/Utils.h"
+
+using namespace shogun;
+
+class TrainedModelSerializationTest : public testing::Test
+{
+	protected:
+		void load_data(CMachine* machine)
+		{
+			CCSVFile* csv_train=nullptr;
+			CCSVFile* csv_test=nullptr;
+			CCSVFile* csv_label=nullptr;
+
+			switch (machine->get_machine_problem_type())
+			{
+				case PT_BINARY:
+					csv_train=new CCSVFile("{{data_path}}/classifier_binary_2d_linear_features_train.dat");
+					csv_test=new CCSVFile("{{data_path}}/classifier_binary_2d_linear_features_test.dat");
+					csv_label=new CCSVFile("{{data_path}}/classifier_binary_2d_linear_labels_train.dat");
+					feat_train=new CDenseFeatures<float64_t>(csv_train);
+					feat_test=new CDenseFeatures<float64_t>(csv_test);
+					label_train=new CBinaryLabels(csv_label);
+					break;
+				case PT_REGRESSION:
+					csv_train=new CCSVFile("{{data_path}}/regression_1d_linear_features_train.dat");
+					csv_test=new CCSVFile("{{data_path}}/regression_1d_linear_features_test.dat");
+					csv_label=new CCSVFile("{{data_path}}/regression_1d_linear_labels_train.dat");
+					feat_train=new CDenseFeatures<float64_t>(csv_train);
+					feat_test=new CDenseFeatures<float64_t>(csv_test);
+					label_train=new CRegressionLabels(csv_label);
+					break;
+				default:
+					break;
+			}
+
+			SG_UNREF(csv_train);
+			SG_UNREF(csv_test);
+			SG_UNREF(csv_label);
+		}
+
+		CDotFeatures* feat_train;
+		CDotFeatures* feat_test;
+		CLabels* label_train;
+};
+
+{% macro test(class) -%}
+TEST_F(TrainedModelSerializationTest, {{class}})
+{
+	auto machine=new C{{class}}();
+
+	load_data(machine);
+	machine->set_features(feat_train);
+	machine->set_labels(label_train);
+
+	bool train_success=machine->train();
+	ASSERT_TRUE(train_success);
+
+	/* to avoid serialization of the data */
+//	machine->set_features(NULL);
+//	machine->set_labels(NULL);
+
+	CLabels* predictions=machine->apply(feat_test);
+
+	std::string class_name("{{class}}");
+	std::string file_template="/tmp/shogun-unittest-trained-model-serialization-" + class_name + ".XXXXXX";
+	char* filename=mktemp_cst(const_cast<char*>(file_template.c_str()));
+
+	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
+	bool save_success=machine->save_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
+
+	file=new CSerializableAsciiFile(filename, 'r');
+	auto deserialized_machine=new C{{class}}();
+	bool load_success=deserialized_machine->load_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
+
+	CLabels* deserialized_predictions=deserialized_machine->apply(feat_test);
+
+	float64_t accuracy=1e-14;
+	EXPECT_TRUE(predictions->equals(deserialized_predictions, accuracy));
+
+	int delete_success=unlink(filename);
+	ASSERT_EQ(0, delete_success);
+
+	SG_UNREF(machine);
+	SG_UNREF(deserialized_machine);
+	SG_UNREF(predictions);
+	SG_UNREF(deserialized_predictions);
+}
+{%- endmacro %}
+
+{% set ignores = [
+'FeatureBlockLogisticRegression', 'LibLinearMTL', 'NewtonSVM',
+'MultitaskLinearMachine', 'MultitaskLogisticRegression',
+'DomainAdaptationSVMLinear', 'MultitaskL12LogisticRegression',
+'MultitaskLeastSquaresRegression', 'MultitaskClusteredLogisticRegression',
+'MultitaskTraceLogisticRegression', 'LatentSVM', 'LatentSOSVM'
+] %}
+
+{% for name, attrs in classes.items() %}
+{% if not (name in ignores or attrs['abstract'] or attrs['template']) -%}
+#include <shogun/{{attrs['header']}}>
+{{ test(name) }}
+{%- endif %}
+{% endfor %}
