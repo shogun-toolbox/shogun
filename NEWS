@@ -2,7 +2,8 @@
 
 	* SHOGUN Release version 6.0.0 (libshogun 18.0, data 0.11, parameter 1)
 
-	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann, Lea Götz]	 * NOTE: Known issue: Octave multithreaded crashes, currently bindings are initialized single-threaded [https://github.com/shogun-toolbox/shogun/issues/3772]
+	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann, Lea Götz]
+	* NOTE: Known issue: Octave multithreaded crashes, currently bindings are initialized single-threaded, https://github.com/shogun-toolbox/shogun/issues/3772 [Heiko Strathmann]
 	
 	* Add native MS Windows support [Viktor Gal]
 	* Shogun requires the compiler to support C++11 features
