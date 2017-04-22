@@ -30,10 +30,6 @@
 
 namespace shogun
 {
-	class CFile;
-	class CFeatures;
-	class CKernelNormalizer;
-
 #ifdef USE_SHORTREAL_KERNELCACHE
 	/** kernel cache element */
 	typedef float32_t KERNELCACHE_ELEM;

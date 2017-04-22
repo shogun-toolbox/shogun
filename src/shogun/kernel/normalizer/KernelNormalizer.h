@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/kernel/Kernel.h>
 #include <shogun/base/Parameter.h>
 
 namespace shogun
@@ -117,4 +116,6 @@ class CKernelNormalizer : public CSGObject
 		ENormalizerType m_type;
 };
 }
+
+#include <shogun/kernel/Kernel.h>
 #endif
