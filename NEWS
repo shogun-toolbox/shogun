@@ -25,7 +25,7 @@
 		- Make ExponentialARDKernel thread-safe [Viktor Gal]
 		- Make PRNG thread-safe [Viktor Gal]
 		- Fix python interface when using libshogun compiled with OpenMP [Viktor Gal]
-		- Fix CART regression trees to work with x-validation [Fernando Iglesias]
+		- Fix CART to work with cross-validation [Fernando Iglesias]
 	* Cleanup, efficiency updates, and API Changes:
 		- Port multi-threading to use OpenMP backend in Kernel [Viktor Gal]
 		- Fix false sharing in EuclideanDistance [Viktor Gal]
