@@ -19,7 +19,7 @@ Develop branch build status:
 
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
- * See [doc/readme/ABOUT.md](doc/readme/master/ABOUT.md) for a project description.
+ * See [doc/readme/ABOUT.md](doc/readme/ABOUT.md) for a project description.
  * See [doc/readme/INSTALL.md](doc/readme/INSTALL.md) for installation instructions.
  * See [doc/readme/INTERFACES.md](doc/readme/INTERFACES.md) for calling Shogun from its interfaces.
  * See [doc/readme/EXAMPLES.md](doc/readme/EXAMPLES.md) for details on creating API examples.
