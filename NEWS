@@ -7,6 +7,7 @@
 	
 	* Add native MS Windows support [Viktor Gal]
 	* Shogun requires the compiler to support C++11 features
+	* Shogun cloud online: Jupyter notebook with Shogun from the browser, https://cloud.shogun.ml
 
 	* Features:
 		- LDA now supports 32, 64 and 128 bit floating point numbers [Chris Goldsworthy]
