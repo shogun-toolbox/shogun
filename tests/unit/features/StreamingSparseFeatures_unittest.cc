@@ -7,19 +7,22 @@
  * Written (W) 2013 Thoralf Klein <thoralf.klein@zib.de>
  */
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <gtest/gtest.h>
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 #include <shogun/io/LibSVMFile.h>
+#include "../utils/Utils.h"
 
 using namespace shogun;
 
 TEST(StreamingSparseFeaturesTest, parse_file)
 {
-  std::string tmp_name = "/tmp/StreamingSparseFeatures_parse_file.XXXXXX";
-  const char* fname = mktemp(const_cast<char*>(tmp_name.c_str()));
+  std::string tmp_name = "StreamingSparseFeatures_parse_file.XXXXXX";
+  const char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
 
   int32_t max_num_entries=20;
   int32_t max_label_value=1;
@@ -76,6 +79,5 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   SG_FREE(data);
   SG_FREE(labels);
 
-  int delete_success = unlink(fname);
-  ASSERT_EQ(0, delete_success);
+  std::remove(fname);
 }

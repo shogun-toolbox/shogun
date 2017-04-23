@@ -225,7 +225,6 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(inducing_features_train);
 }
 
-#ifdef HAVE_LINALG_LIB
 TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_features)
 {
 	float64_t rel_tolerance=1e-5;
@@ -333,4 +332,3 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivative_wrt_inducing_featu
 	SG_UNREF(inf);
 	SG_UNREF(inducing_features_train);
 }
-#endif /* HAVE_LINALG_LIB */

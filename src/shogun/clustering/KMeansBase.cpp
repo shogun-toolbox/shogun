@@ -18,10 +18,6 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/eigen3.h>
 
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-#endif
-
 using namespace shogun;
 using namespace Eigen;
 
@@ -160,13 +156,7 @@ void CKMeansBase::initialize_training(CFeatures* data)
 
 	/* if kmeans++ to be used */
 	if (use_kmeanspp)
-	{
-#ifdef HAVE_LINALG_LIB
 		mus_initial=kmeanspp();
-#else
-		SG_WARNING("LINALG library not available for KMeans++, resorting to random initialisation");
-#endif
-	}
 
 	R=SGVector<float64_t>(k);
 
@@ -292,7 +282,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 	distance->precompute_lhs();
 	distance->precompute_rhs();
-#pragma omp parallel for shared(min_dist)
+#pragma omp parallel for \
+	default(none) shared(min_dist, mu, lhs_size) \
+	schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(int32_t i=0; i<lhs_size; i++)
 		min_dist[i]=CMath::sq(distance->distance(i, mu));
 #ifdef HAVE_LINALG
@@ -330,8 +322,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 				}
 			}
 
-#pragma omp parallel for firstprivate(lhs_size) \
-			shared(temp_min_dist)		
+#pragma omp parallel for default(none) \
+			private(temp_dist) shared(temp_min_dist, min_dist, lhs_size, new_center) \
+			schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 			for(int32_t j=0; j<lhs_size; j++)
 			{
 				temp_dist=CMath::sq(distance->distance(j, new_center));

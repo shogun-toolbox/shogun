@@ -1,0 +1,51 @@
+CSVFile f_feats_train("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_inducing("../../data/regression_1d_sinc_features_train.dat")
+CSVFile f_feats_test("../../data/regression_1d_sinc_features_test.dat")
+CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
+CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+RegressionLabels labels_train(f_labels_train)
+RegressionLabels labels_test(f_labels_test)
+#![create_features]
+
+#![create_kernel_and_mean_function]
+real width = 1.0
+GaussianKernel kernel(features_train, features_train, width)
+ZeroMean mean_function()
+#![create_kernel_and_mean_function]
+
+#![create_inference]
+IntVector inducing_points(3)
+inducing_points[0]=0
+inducing_points[1]=1
+inducing_points[2]=2
+RealFeatures inducing_features(f_feats_inducing)
+inducing_features.add_subset(inducing_points)
+
+GaussianLikelihood gauss_likelihood()	
+FITCInferenceMethod inference_method(kernel, features_train, mean_function, labels_train, gauss_likelihood, inducing_features)
+#![create_inference]
+
+#![create_instance]
+GaussianProcessRegression gp_regression(inference_method)
+#![create_instance]
+
+#![train_and_apply]
+gp_regression.train()
+RegressionLabels labels_predict = gp_regression.apply_regression(features_test)
+#![train_and_apply]
+
+#![compute_variance]
+RealVector variances = gp_regression.get_variance_vector(features_test)
+#![compute_variance]
+
+#![evaluate_error]
+MeanSquaredError mserror()
+real mse = mserror.evaluate(labels_predict, labels_test)
+#![evaluate_error]
+
+# integration testing variables
+RealVector output = labels_test.get_labels()

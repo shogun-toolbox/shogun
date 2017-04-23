@@ -1,3 +1,40 @@
+2016-11-05 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
+	* SHOGUN Release version 6.0.0 (libshogun 18.0, data 0.11, parameter 1)
+
+	* NOTE: Contains major rewrite and clean-up of developer documentation in doc/readme [Heiko Strathmann, Lea Götz]
+	* NOTE: Known issue: Octave multithreaded crashes, currently bindings are initialized single-threaded, https://github.com/shogun-toolbox/shogun/issues/3772 [Heiko Strathmann]
+	
+	* Add native MS Windows support [Viktor Gal]
+	* Shogun requires the compiler to support C++11 features
+	* Shogun cloud online: Jupyter notebook with Shogun from the browser, https://cloud.shogun.ml
+
+	* Features:
+		- LDA now supports 32, 64 and 128 bit floating point numbers [Chris Goldsworthy]
+		- Add SHOGUN_NUM_THREADS enviroment variable to control the number of threads
+		used by the models in runtime [Viktor Gal]
+		- Added Scala Interface to the build [Abhinav Rai]
+		- Major re-writing and API changes in kernel statistical hypothesis 
+		testing framework, significant speed up in permutation test for
+		quadratic time MMD, new kernel selection algorithms for quadratic time MMD [Soumyajit De]
+	* Bugfixes:
+		- Fix build error of R interface for R>=3.3.0, #3460 [Heiko Strathmann]
+		- Make the code compatible with Eigen 3.3.0 [Viktor Gal]
+		- Fix number of CPUs detected on Linux [Viktor Gal]
+		- Fix multi-threading in KMeansBase [Viktor Gal]
+		- Make ExponentialARDKernel thread-safe [Viktor Gal]
+		- Make PRNG thread-safe [Viktor Gal]
+		- Fix python interface when using libshogun compiled with OpenMP [Viktor Gal]
+		- Fix CART to work with cross-validation [Fernando Iglesias]
+	* Cleanup, efficiency updates, and API Changes:
+		- Port multi-threading to use OpenMP backend in Kernel [Viktor Gal]
+		- Fix false sharing in EuclideanDistance [Viktor Gal]
+		- Fix out of source build of the whole project [Viktor Gal]
+		- Add LIBSHOGUN cmake flag to turn off libshogun compilation [Viktor Gal]
+		- Export Shogun target with cmake to enable to build modular interfaces to a
+		pre-compiled libshogun on the system without requiring to compile 
+		libshogun itself [Viktor Gal]
+
 2016-11-04 Viktor Gal <viktor.gal@shogun-toolbox.org>
 
 	* SHOGUN Release version 5.0.0 (libshogun 17.2, data 0.11, parameter 1)

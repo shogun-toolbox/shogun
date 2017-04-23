@@ -10,6 +10,7 @@
  */
 
 #include <string.h>
+#include <cctype>
 
 #include <shogun/base/Parameter.h>
 #include <shogun/base/class_list.h>
@@ -2917,7 +2918,7 @@ void Parameter::set_from_parameters(Parameter* params)
 
 		/* copy parameter data, size in memory is equal because of same type */
 		if (dest!=source)
-			memcpy(dest, source, own->m_datatype.get_size());
+			sg_memcpy(dest, source, own->m_datatype.get_size());
 	}
 }
 
@@ -3353,7 +3354,7 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 {
 	SG_SDEBUG("entering TParameter::copy_ptype()\n");
 
-	/* rather than using memcpy, use the cumbersome way here and cast all types.
+	/* rather than using sg_memcpy, use the cumbersome way here and cast all types.
 	 * This makes it so much easier to debug code.
 	 * Copy full stype if this is too slow */
 	switch (ptype)
@@ -3636,7 +3637,7 @@ bool TParameter::copy_stype(EStructType stype, EPrimitiveType ptype,
 	 *
 	 * Therefore, this code is very close to the the equals code for
 	 * stypes. If it turns out to be too slow (which I doubt), stypes can be
-	 * copied with memcpy over the full memory blocks */
+	 * copied with sg_memcpy over the full memory blocks */
 
 	switch (stype)
 	{
@@ -3843,7 +3844,7 @@ bool TParameter::copy(TParameter* target)
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 				/* check whether ptype is SGOBJECT, if yes we need to initialize
 				   the memory with NULL for the way copy_ptype handles it */
-				if (m_datatype.m_ptype==PT_SGOBJECT)
+				if (m_datatype.m_ptype==PT_SGOBJECT || m_datatype.m_stype==ST_STRING)
 					memset(*(void**)target->m_parameter, 0, num_bytes);
 
 				/* use length of source */
@@ -3859,7 +3860,7 @@ bool TParameter::copy(TParameter* target)
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
 			{
-				SG_SDEBUG("copying element %d which is %d byes from start\n",
+				SG_SDEBUG("copying element %d which is %d bytes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
@@ -3873,7 +3874,7 @@ bool TParameter::copy(TParameter* target)
 					return false;
 				}
 
-				x=x+(m_datatype.sizeof_ptype());
+				x=x+(m_datatype.sizeof_stype());
 			}
 
 			break;

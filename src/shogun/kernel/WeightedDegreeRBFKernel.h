@@ -77,6 +77,18 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 
+		/** Set width
+		 *
+		 * @param w new width
+		 */
+		void set_width(float64_t w) { width=w; }
+
+		/** Get width
+		 *
+		 * @return width
+		 */
+		float64_t get_width() { return width; }
+
 		/** set degree
 		 *
 		 * @param deg new degree

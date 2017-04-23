@@ -30,7 +30,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
@@ -317,5 +316,3 @@ TEST(SpecialPurpose, squared_error_viennacl_backend)
 	EXPECT_NEAR(se, linalg::special_purpose::squared_error<linalg::Backend::VIENNACL>(A, B), 1e-15);
 }
 #endif // HAVE_VIENNACL
-
-#endif // HAVE_LINALG_LIB

@@ -709,7 +709,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 		TreeMemPtrMax=to_copy.TreeMemPtrMax;
 		TreeMemPtr=to_copy.TreeMemPtr;
 		TreeMem=SG_MALLOC(Trie, TreeMemPtrMax);
-		memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
+		sg_memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
 
 		length=to_copy.length;
 		trees=SG_MALLOC(int32_t, length);
@@ -741,7 +741,7 @@ const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
 	TreeMemPtr=to_copy.TreeMemPtr ;
 	SG_FREE(TreeMem) ;
 	TreeMem = SG_MALLOC(Trie, TreeMemPtrMax);
-	memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie)) ;
+	sg_memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie)) ;
 
 	length = to_copy.length ;
 	if (trees)

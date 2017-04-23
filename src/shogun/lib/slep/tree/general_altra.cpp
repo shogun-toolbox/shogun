@@ -55,7 +55,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 		i=1;
 	}
 	else{
-		memcpy(x, v, sizeof(double) * n);
+		shogun::sg_memcpy(x, v, sizeof(double) * n);
 		i=0;
 	}
 

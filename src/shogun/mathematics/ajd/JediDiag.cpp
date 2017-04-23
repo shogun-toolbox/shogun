@@ -1,4 +1,5 @@
 #include <shogun/mathematics/ajd/JediDiag.h>
+#include <shogun/lib/memory.h>
 
 
 #include <shogun/base/init.h>
@@ -59,7 +60,7 @@ void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
 
 	int MS=*pMatSize;
 	int MN=*pMatNumber;
-	float64_t col_norm[MS];
+	SGVector<float64_t> col_norm(MS);
 
 	for (int i=0;i<MS;i++)
 	{
@@ -72,7 +73,7 @@ void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
 	}
 
 	float64_t daux=1;
-	float64_t d[MS];
+	SGVector<float64_t> d(MS);
 
 	for (int i=0;i<MS;i++)
 		daux*=col_norm[i];
@@ -104,9 +105,9 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	int MN=*pMatNumber;
 	int MS=*pMatSize;
 
-	float64_t tmm[MN];
-	float64_t tnn[MN];
-	float64_t tmn[MN];
+	SGVector<float64_t> tmm(MN);
+	SGVector<float64_t> tnn(MN);
+	SGVector<float64_t> tmn(MN);
 	for (int i = 0, d3 = 0; i < MN; i++, d3+=MS*MS)
 	{
 		tmm[i] = C[d3+m*MS+m];
@@ -115,13 +116,13 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	}
 
 	// here we evd
-	float64_t G[MN][3];
+	SGMatrix<float64_t> G(MN, 3);
 	float64_t evectors[9], evalues[3];
 	for (int i = 0; i < MN; i++)
 	{
-		G[i][0] = 0.5*(tmm[i]+tnn[i]);
-		G[i][1] = 0.5*(tmm[i]-tnn[i]);
-		G[i][2] = tmn[i];
+		G(i,0) = 0.5*(tmm[i]+tnn[i]);
+		G(i,1) = 0.5*(tmm[i]-tnn[i]);
+		G(i,2) = tmn[i];
 	}
 	float64_t GG[9];
 	for (int i = 0; i < 3; i++)
@@ -131,7 +132,7 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 			GG[3*j+i] = 0;
 
 			for (int k = 0; k < MN; k++)
-				GG[3*j+i] += G[k][i]*G[k][j];
+				GG[3*j+i] += G(k, i)*G(k, j);
 
 			GG[3*i+j] = GG[3*j+i];
 		}
@@ -152,8 +153,8 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	eigenvectors.col(1) = eigenvectors.col(1).normalized();
 	eigenvectors.col(2) = eigenvectors.col(2).normalized();
 
-	memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
-	memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
+	sg_memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
+	sg_memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
 
 	float64_t tmp_evec[3],tmp_eval;
 	if (fabs(evalues[1])<fabs(evalues[2]))
@@ -161,27 +162,27 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		sg_memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[0])<fabs(evalues[1]))
 	{
 		tmp_eval = evalues[0];
 		evalues[0] = evalues[1];
 		evalues[1] = tmp_eval;
-		memcpy(tmp_evec,evectors,3*sizeof(float64_t));
-		memcpy(evectors,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,evectors,3*sizeof(float64_t));
+		sg_memcpy(evectors,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[1])<fabs(evalues[2]))
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
+		sg_memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		sg_memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		sg_memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 
 	float64_t aux[9];
@@ -225,7 +226,7 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	float64_t rm22=c*ch + s*sh;
 
 	float64_t h_slice1,h_slice2;
-	float64_t buf[MS][MN];
+	SGMatrix<float64_t> buf(MS, MN);
 
 	for (int i = 0; i < MS ;i++)
 	{
@@ -233,16 +234,16 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		{
 			h_slice1 = C[d3+i*MS+m];
 			h_slice2 = C[d3+i*MS+n];
-			buf[i][j] = rm11*h_slice1 + rm21*h_slice2;
+			buf(i, j) = rm11*h_slice1 + rm21*h_slice2;
 			C[d3+i*MS+n] = rm12*h_slice1 + rm22*h_slice2;
-			C[d3+i*MS+m] = buf[i][j];
+			C[d3+i*MS+m] = buf(i, j);
 		}
 	}
 
 	for (int i = 0; i < MS; i++)
 	{
 		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS)
-			C[d3+m*MS+i] = buf[i][j];
+			C[d3+m*MS+i] = buf(i, j);
 	}
 	for (int i = 0; i < MS; i++)
 	{

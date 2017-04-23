@@ -223,6 +223,6 @@ SGMatrix<float64_t> CPositionalPWM::get_scoring(int32_t d)
 	int32_t rows=CMath::pow((int32_t) m_w.num_rows,d);
 	int32_t cols=m_w.num_cols;
 	float64_t* scoring_matrix = SG_MALLOC(float64_t, rows*cols);
-	memcpy(scoring_matrix,m_poim.vector+offs,rows*cols*sizeof(float64_t));
+	sg_memcpy(scoring_matrix,m_poim.vector+offs,rows*cols*sizeof(float64_t));
 	return SGMatrix<float64_t>(scoring_matrix,rows,cols);
 }

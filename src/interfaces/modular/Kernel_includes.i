@@ -76,9 +76,7 @@
 #include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <shogun/kernel/PeriodicKernel.h>
 #include <shogun/kernel/LinearKernel.h>
-#ifdef HAVE_LINALG_LIB
 #include <shogun/kernel/ExponentialARDKernel.h>
 #include <shogun/kernel/GaussianARDKernel.h>
 #include <shogun/machine/gp/GaussianARDSparseKernel.h>
-#endif
 %}

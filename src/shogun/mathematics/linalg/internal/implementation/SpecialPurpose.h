@@ -57,7 +57,7 @@ namespace special_purpose
 /** Generic class which is specialized for different backends to perform
  * the logistic operation
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct logistic
 {
 	/** Scalar type */
@@ -115,7 +115,7 @@ struct logistic<Backend::VIENNACL, Matrix>
 /** Generic class which is specialized for different backends to perform
  * the multiply_by_logistic_derivative operation
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct multiply_by_logistic_derivative
 {
 	/** Scalar type */
@@ -174,7 +174,7 @@ struct multiply_by_logistic_derivative<Backend::VIENNACL, Matrix>
 /** Generic class which is specialized for different backends to perform
  * the rectified_linear operation
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct rectified_linear
 {
 	/** Scalar type */
@@ -232,7 +232,7 @@ struct rectified_linear<Backend::VIENNACL, Matrix>
 /** Generic class which is specialized for different backends to perform
  * the multiply_by_rectified_linear_derivative operation
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct multiply_by_rectified_linear_derivative
 {
 	/** Scalar type */
@@ -292,7 +292,7 @@ struct multiply_by_rectified_linear_derivative<Backend::VIENNACL, Matrix>
 /** Applies the softmax function inplace to a matrix. The softmax function is
  * defined as \f$ f(A[i,j]) = \frac{exp(A[i,j])}{\sum_i exp(A[i,j])} \f$
  */
-template <enum Backend, class Matrix>
+template <Backend backend, class Matrix>
 struct softmax
 {
 	/** Scalar type */
@@ -410,7 +410,7 @@ struct softmax<Backend::VIENNACL, Matrix>
 /** Generic class which is specialized for different backends to perform
  * the cross_entropy operation
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct cross_entropy
 {
 	/** Scalar type */
@@ -525,7 +525,7 @@ struct cross_entropy<Backend::VIENNACL,Matrix>
 /** Generic class which is specialized for different backends to perform
  * the squared_error operation
  */
-template <enum Backend,class Matrix>
+template <Backend backend,class Matrix>
 struct squared_error
 {
 	/** Scalar type */

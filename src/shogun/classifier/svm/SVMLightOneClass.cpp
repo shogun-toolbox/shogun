@@ -21,7 +21,9 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #ifdef USE_CPLEX
 extern "C" {
@@ -30,10 +32,6 @@ extern "C" {
 #endif
 
 #include <shogun/base/Parallel.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
 
 using namespace shogun;
 

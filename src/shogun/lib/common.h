@@ -19,6 +19,16 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#ifdef _MSC_VER
+#define NOMINMAX
+#include <windows.h>
+
+// Visual C++ accepts but does not implement when
+// function is declared using exception specification
+// this pragma is suppressing the compiler warning
+#pragma warning( disable : 4290 )
+#endif
+
 #include <shogun/lib/config.h>
 
 /**@name Standard Types
@@ -65,6 +75,21 @@ typedef int32_t index_t;
 #include <complex>
 
 typedef std::complex<float64_t> complex128_t;
+
+/** CPU cache line size */
+constexpr size_t CPU_CACHE_LINE_SIZE = 64;
+constexpr size_t CPU_CACHE_LINE_SIZE_BYTES = CPU_CACHE_LINE_SIZE/8;
+
+#ifdef _WIN32
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
+#ifdef _MSC_VER
+#define SG_FORCED_INLINE __forceinline
+#else
+#define SG_FORCED_INLINE inline __attribute__((always_inline))
+#endif
 
 #include <shogun/lib/memory.h>
 #endif //__COMMON_H__

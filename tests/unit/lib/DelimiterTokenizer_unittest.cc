@@ -22,13 +22,14 @@ TEST(DelimiterTokenizerTest, tokenization)
 		if (token_end==token_start)
 			continue;
 
-		char token[token_end-token_start+1];
+		char* token = SG_MALLOC(char, token_end-token_start+1);
 		for (index_t i=token_start; i<token_end; i++)
 		{
 			token[i-token_start] = text[i];
 		}
 		token[token_end-token_start] = '\0';
 		ASSERT_STREQ(token, tokens[token_in_tokens++]);
+		SG_FREE(token);
 	}
 
 	ASSERT_EQ(token_in_tokens, 5);
@@ -39,13 +40,14 @@ TEST(DelimiterTokenizerTest, tokenization)
 	while (tokenizer->has_next())
 	{
 		index_t token_end = tokenizer->next_token_idx(token_start);
-		char token[token_end-token_start+1];
+		char* token = SG_MALLOC(char, token_end-token_start+1);
 		for (index_t i=token_start; i<token_end; i++)
 		{
 			token[i-token_start] = text[i];
 		}
 		token[token_end-token_start] = '\0';
 		ASSERT_STREQ(token, tokens[token_in_tokens++]);
+		SG_FREE(token);
 	}
 
 	ASSERT_EQ(token_in_tokens, 5);

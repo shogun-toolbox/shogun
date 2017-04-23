@@ -35,6 +35,7 @@
 #include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linalg.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
 
@@ -356,7 +357,7 @@ TEST(LeastAngleRegression, lars_template_test_floatmax)
 	lars_n_less_than_d_feature_test_templated<floatmax_t>();
 }
 
-#ifndef USE_VIENNACL
+#ifndef USE_VIENNACL_GLOBAL
 TEST(LeastAngleRegression, cholesky_insert)
 {
 	class lars_helper: public CLeastAngleRegression
@@ -395,7 +396,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 	
 	MatrixXd XX=mat_old.transpose()*mat_old;
 	// Compute matrix R which has to be updated
-	SGMatrix<float64_t> R_old=linalg::cholesky(XX, false);
+	SGMatrix<float64_t> R_old=linalg::cholesky_factor(SGMatrix<float64_t>(XX), false);
 
 	// Update cholesky decomposition matrix R
 	lars_helper lars = lars_helper();
@@ -404,7 +405,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 
 	// Compute true cholesky decomposition		
 	MatrixXd XX_new=mat_new.transpose()*mat_new;
-	SGMatrix<float64_t> R_true=linalg::cholesky(XX_new, false);
+	SGMatrix<float64_t> R_true=linalg::cholesky_factor(SGMatrix<float64_t>(XX_new), false);
 
 	Map<MatrixXd> map_R_true(R_true.matrix, num_feats, num_feats);	
 	EXPECT_NEAR( (map_R_true - map_R_new).norm(), 0.0, 1E-12);	
@@ -451,11 +452,16 @@ TEST(LeastAngleRegression, ols_equivalence)
 	Map<MatrixXd> feat(mat.matrix, mat.num_rows, mat.num_cols);
 	Map<VectorXd> l(lab.vector, lab.size());
 	// OLS
+#if EIGEN_WITH_TRANSPOSITION_BUG
+	MatrixXd feat_t = feat.transpose().eval();
+	VectorXd solve=feat_t.colPivHouseholderQr().solve(l);
+#else
 	VectorXd solve=feat.transpose().colPivHouseholderQr().solve(l);
+#endif
 
 	// Check if full LAR model is equivalent to OLS
 	EXPECT_EQ( w.size(), n_feat);
-	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);	
+	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);
 	
 
 	SG_UNREF(proc1);

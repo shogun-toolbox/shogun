@@ -105,7 +105,7 @@ template<class T> void SGNDArray<T>::free_data()
 template<class T> SGNDArray<T> SGNDArray<T>::clone() const
 {
 	SGNDArray<T> array_clone(get_dimensions());
-	memcpy(array_clone.array, array, sizeof(T)*len_array);
+	sg_memcpy(array_clone.array, array, sizeof(T)*len_array);
 	return array_clone;
 }
 

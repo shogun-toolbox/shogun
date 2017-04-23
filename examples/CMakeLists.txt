@@ -12,3 +12,5 @@ IF(BUILD_META_EXAMPLES)
 ELSE()
     add_custom_target(examples)
 ENDIF()
+
+CREATE_DATA_SYMLINK(${CMAKE_SOURCE_DIR}/data/toy ${CMAKE_CURRENT_BINARY_DIR}/undocumented/data)

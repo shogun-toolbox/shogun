@@ -23,20 +23,20 @@ using namespace shogun;
 
 CScatterSVM::CScatterSVM()
 : CMulticlassSVM(new CMulticlassOneVsRestStrategy()), scatter_type(NO_BIAS_LIBSVM),
-  model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
+  norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n")
 }
 
 CScatterSVM::CScatterSVM(SCATTER_TYPE type)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy()), scatter_type(type), model(NULL),
-	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy()), scatter_type(type),
+	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }
 
 CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
-	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab), scatter_type(NO_BIAS_LIBSVM),
+	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }
 
@@ -44,6 +44,15 @@ CScatterSVM::~CScatterSVM()
 {
 	SG_FREE(norm_wc);
 	SG_FREE(norm_wcw);
+}
+
+void CScatterSVM::register_params()
+{
+	SG_ADD((machine_int_t*) &scatter_type, "scatter_type", "Type of scatter SVM", MS_NOT_AVAILABLE);
+	m_parameters->add_vector(&norm_wc, &norm_wc_len, "norm_wc", "Norm of w_c");
+	m_parameters->add_vector(&norm_wcw, &norm_wcw_len, "norm_wcw", "Norm of w_cw");
+	SG_ADD(&rho, "rho", "Scatter SVM rho", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
 
 bool CScatterSVM::train_machine(CFeatures* data)
@@ -113,6 +122,10 @@ bool CScatterSVM::train_machine(CFeatures* data)
 
 bool CScatterSVM::train_no_bias_libsvm()
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
@@ -177,6 +190,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 
 		SG_FREE(norm_wcw);
 		norm_wcw = SG_MALLOC(float64_t, m_machines->get_num_elements());
+		norm_wcw_len = m_machines->get_num_elements();
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -231,6 +245,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 
 	SG_FREE(norm_wcw);
 	norm_wcw = SG_MALLOC(float64_t, m_num_classes);
+	norm_wcw_len = m_num_classes;
 
 	int32_t num_sv=light->get_num_support_vectors();
 	svm_proto()->create_new_model(num_sv);
@@ -248,6 +263,10 @@ bool CScatterSVM::train_no_bias_svmlight()
 
 bool CScatterSVM::train_testrule12()
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	struct svm_node* x_space;
 	problem.l=m_labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", problem.l)
@@ -306,6 +325,7 @@ bool CScatterSVM::train_testrule12()
 
 		SG_FREE(norm_wcw);
 		norm_wcw = SG_MALLOC(float64_t, m_machines->get_num_elements());
+		norm_wcw_len = m_machines->get_num_elements();
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -349,6 +369,7 @@ void CScatterSVM::compute_norm_wc()
 {
 	SG_FREE(norm_wc);
 	norm_wc = SG_MALLOC(float64_t, m_machines->get_num_elements());
+	norm_wc_len = m_machines->get_num_elements();
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 		norm_wc[i]=0;
 

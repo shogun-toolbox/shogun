@@ -14,12 +14,13 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
-#ifdef HAVE_PTHREAD
-
 #include <shogun/io/SGIO.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/io/streaming/ParseBuffer.h>
-#include <pthread.h>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <thread>
 
 #define PARSER_DEFAULT_BUFFSIZE 100
 
@@ -317,7 +318,7 @@ protected:
     CStreamingFile* input_source;
 
     /// Thread in which the parser runs
-    pthread_t parse_thread;
+	std::thread parse_thread;
 
     /// The ring of examples, stored as they are parsed
     CParseBuffer<T>* examples_ring;
@@ -350,10 +351,13 @@ protected:
     int32_t ring_size;
 
     /// Mutex which is used when getting/setting state of examples (whether a new example is ready)
-    pthread_mutex_t examples_state_lock;
+	std::mutex examples_state_lock;
 
     /// Condition variable to indicate change of state of examples
-    pthread_cond_t examples_state_changed;
+	std::condition_variable examples_state_changed;
+
+	/// Flag that indicate that the parsing thread should continue reading
+	alignas(CPU_CACHE_LINE_SIZE) std::atomic_bool keep_running;
 
 };
 
@@ -374,22 +378,15 @@ template <class T>
 template <class T>
     CInputParser<T>::CInputParser()
 {
-	/* this line was commented out when I found it. However, the mutex locks
-	 * have to be initialised. Otherwise uninitialised memory error */
-	//init(NULL, true, PARSER_DEFAULT_BUFFSIZE);
-	pthread_mutex_init(&examples_state_lock, NULL);
-	pthread_cond_init(&examples_state_changed, NULL);
-	examples_ring=NULL;
+	examples_ring = nullptr;
 	parsing_done=true;
 	reading_done=true;
+	keep_running.store(false, std::memory_order_release);
 }
 
 template <class T>
     CInputParser<T>::~CInputParser()
 {
-	pthread_mutex_destroy(&examples_state_lock);
-	pthread_cond_destroy(&examples_state_changed);
-
 	SG_UNREF(examples_ring);
 }
 
@@ -403,6 +400,7 @@ template <class T>
     else
         example_type = E_UNLABELLED;
 
+	SG_UNREF(examples_ring);
     examples_ring = new CParseBuffer<T>(size);
     SG_REF(examples_ring);
 
@@ -441,8 +439,10 @@ template <class T>
     }
 
     SG_SDEBUG("creating parse thread\n")
-    examples_ring->init_vector();
-    pthread_create(&parse_thread, NULL, parse_loop_entry_point, this);
+    if (examples_ring)
+		examples_ring->init_vector();
+	keep_running.store(true, std::memory_order_release);
+	parse_thread = std::thread(&parse_loop_entry_point, this);
 
     SG_SDEBUG("leaving CInputParser::start_parser()\n")
 }
@@ -460,8 +460,7 @@ template <class T>
 {
 	SG_SDEBUG("entering CInputParser::is_running()\n")
     bool ret;
-
-    pthread_mutex_lock(&examples_state_lock);
+	std::lock_guard<std::mutex> lock(examples_state_lock);
 
     if (parsing_done)
         if (reading_done)
@@ -470,8 +469,6 @@ template <class T>
             ret = true;
     else
         ret = false;
-
-    pthread_mutex_unlock(&examples_state_lock);
 
     SG_SDEBUG("leaving CInputParser::is_running(), returning %d\n", ret)
     return ret;
@@ -518,21 +515,18 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 {
     // Read the examples into current_* objects
     // Instead of allocating mem for new objects each time
-#ifdef HAVE_PTHREAD
     CInputParser* this_obj = (CInputParser *) params;
     this->input_source = this_obj->input_source;
 
-    while (1)
+    while (keep_running.load(std::memory_order_acquire))
 	{
-		pthread_mutex_lock(&examples_state_lock);
+		std::unique_lock<std::mutex> lock(examples_state_lock);
+
 		if (parsing_done)
 		{
-			pthread_mutex_unlock(&examples_state_lock);
 			return NULL;
 		}
-		pthread_mutex_unlock(&examples_state_lock);
-
-		pthread_testcancel();
+		lock.unlock();
 
 		current_example = examples_ring->get_free_example();
 		current_feature_vector = current_example->fv;
@@ -546,10 +540,9 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 
 		if (current_len < 0)
 		{
-			pthread_mutex_lock(&examples_state_lock);
+			lock.lock();
 			parsing_done = true;
-			pthread_cond_signal(&examples_state_changed);
-			pthread_mutex_unlock(&examples_state_lock);
+			examples_state_changed.notify_one();
 			return NULL;
 		}
 
@@ -558,13 +551,10 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 		current_example->length = current_len;
 
 		examples_ring->copy_example(current_example);
-
-		pthread_mutex_lock(&examples_state_lock);
+		lock.lock();
 		number_of_vectors_parsed++;
-		pthread_cond_signal(&examples_state_changed);
-		pthread_mutex_unlock(&examples_state_lock);
+		examples_state_changed.notify_one();
 	}
-#endif /* HAVE_PTHREAD */
     return NULL;
 }
 
@@ -579,7 +569,7 @@ template <class T> Example<T>* CInputParser<T>::retrieve_example()
         {
             reading_done = true;
             /* Signal to waiting threads that no more examples are left */
-            pthread_cond_signal(&examples_state_changed);
+			examples_state_changed.notify_one();
             return NULL;
         }
     }
@@ -608,12 +598,12 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
 
     Example<T> *ex;
 
-    while (1)
+    while (keep_running.load(std::memory_order_acquire))
     {
         if (reading_done)
             return 0;
 
-        pthread_mutex_lock(&examples_state_lock);
+		std::unique_lock<std::mutex> lock(examples_state_lock);
         ex = retrieve_example();
 
         if (ex == NULL)
@@ -621,21 +611,18 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
             if (reading_done)
             {
                 /* No more examples left, return */
-                pthread_mutex_unlock(&examples_state_lock);
                 return 0;
             }
             else
             {
                 /* Examples left, wait for one to become ready */
-                pthread_cond_wait(&examples_state_changed, &examples_state_lock);
-                pthread_mutex_unlock(&examples_state_lock);
+				examples_state_changed.wait(lock);
                 continue;
             }
         }
         else
         {
             /* Example ready, return the example */
-            pthread_mutex_unlock(&examples_state_lock);
             break;
         }
     }
@@ -665,17 +652,19 @@ template <class T> void CInputParser<T>::end_parser()
 {
 	SG_SDEBUG("entering CInputParser::end_parser\n")
 	SG_SDEBUG("joining parse thread\n")
-    pthread_join(parse_thread, NULL);
+	if (parse_thread.joinable())
+		parse_thread.join();
     SG_SDEBUG("leaving CInputParser::end_parser\n")
 }
 
 template <class T> void CInputParser<T>::exit_parser()
 {
 	SG_SDEBUG("cancelling parse thread\n")
-    pthread_cancel(parse_thread);
+	keep_running.store(false, std::memory_order_release);
+	examples_state_changed.notify_one();
+	if (parse_thread.joinable())
+		parse_thread.join();
 }
 }
-
-#endif /* HAVE_PTHREAD */
 
 #endif // __INPUTPARSER_H__

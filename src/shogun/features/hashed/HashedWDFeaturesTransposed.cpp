@@ -211,7 +211,12 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
 
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
@@ -219,10 +224,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
 
-#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
-#endif
 		HASHEDWD_THREAD_PARAM params;
 		params.hf=this;
 		params.sub_index=NULL;
@@ -235,8 +238,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		params.progress=false; //true;
 		params.index=index;
 		dense_dot_range_helper((void*) &params);
-#ifdef HAVE_PTHREAD
 	}
+#ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -295,7 +298,12 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 
 	uint32_t* index=SG_MALLOC(uint32_t, num);
 
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
@@ -303,10 +311,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
 
-#ifdef HAVE_PTHREAD
 	if (num_threads < 2)
 	{
-#endif
 		HASHEDWD_THREAD_PARAM params;
 		params.hf=this;
 		params.sub_index=sub_index;
@@ -319,8 +325,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		params.progress=false; //true;
 		params.index=index;
 		dense_dot_range_helper((void*) &params);
-#ifdef HAVE_PTHREAD
 	}
+#ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

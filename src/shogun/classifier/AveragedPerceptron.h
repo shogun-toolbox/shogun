@@ -23,7 +23,7 @@ namespace shogun
  *         Averaged perceptron is the simple extension of Perceptron.
  *
  * Given a maximum number of iterations (the standard averaged perceptron
- * algorithm is not guaranteed to converge) and a fixed lerning rate,
+ * algorithm is not guaranteed to converge) and a fixed learning rate,
  * the result is a linear classifier.
  *
  * \sa CLinearMachine
@@ -72,7 +72,7 @@ protected:
 		 *
 		 * @param data training data (parameter can be avoided if distance or
 		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
+		 * initialized with training data)
 		 *
 		 * @return whether training was successful
 		 */

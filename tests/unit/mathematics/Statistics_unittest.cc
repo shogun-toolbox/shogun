@@ -716,5 +716,9 @@ TEST(Statistics, vector_mean_overflow_test)
 {
 	SGVector<float64_t> a(10);
 	a.set_const(std::numeric_limits<float64_t>::max());
+#ifdef _MSC_VER
+	EXPECT_TRUE(CMath::is_infinity(CStatistics::mean(a)));
+#else
 	EXPECT_EQ(std::numeric_limits<float64_t>::max(), CStatistics::mean(a));
+#endif
 }

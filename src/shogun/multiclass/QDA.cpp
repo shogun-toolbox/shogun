@@ -127,23 +127,21 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	VectorXd norm2(num_vecs*m_num_classes);
 	norm2.setZero();
 
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec;
+	SGVector<float64_t> vec;
 	for (int k = 0; k < m_num_classes; k++)
 	{
 		// X = features - means
 		for (int i = 0; i < num_vecs; i++)
 		{
-			vec = rf->get_feature_vector(i, vlen, vfree);
-			ASSERT(vec)
+			vec = rf->get_feature_vector(i);
+			ASSERT(vec.vector)
 
-			Map< VectorXd > Evec(vec,vlen);
+			Map< VectorXd > Evec(vec, vec.vlen);
 			Map< VectorXd > Em_means_col(m_means.get_column_vector(k), m_dim);
 
 			X.row(i) = Evec - Em_means_col;
 
-			rf->free_feature_vector(vec, i, vfree);
+			rf->free_feature_vector(vec, i);
 		}
 
 		Map< MatrixXd > Em_M(m_M.get_matrix(k), m_dim, m_dim);
@@ -253,23 +251,21 @@ bool CQDA::train_machine(CFeatures* data)
 
 	m_means.zero();
 
-	int32_t vlen;
-	bool vfree;
-	float64_t* vec;
+	SGVector<float64_t> vec;
 	for (int k = 0; k < m_num_classes; k++)
 	{
 		MatrixXd buffer(class_nums[k], m_dim);
 		Map< VectorXd > Em_means(m_means.get_column_vector(k), m_dim);
 		for (int i = 0; i < class_nums[k]; i++)
 		{
-			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
-			ASSERT(vec)
+			vec = rf->get_feature_vector(class_idxs[k*num_vec + i]);
+			ASSERT(vec.vector)
 
-			Map< VectorXd > Evec(vec, vlen);
+			Map< VectorXd > Evec(vec, vec.vlen);
 			Em_means += Evec;
 			buffer.row(i) = Evec;
 
-			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
+			rf->free_feature_vector(vec, class_idxs[k*num_vec + i]);
 		}
 
 		Em_means /= class_nums[k];
@@ -283,8 +279,8 @@ bool CQDA::train_machine(CFeatures* data)
 
 		Eigen::JacobiSVD<MatrixXd> eSvd;
 		eSvd.compute(buffer,Eigen::ComputeFullV);
-		memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
-		memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
+		sg_memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
+		sg_memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(class_nums[k]-1), col, m_dim);
@@ -299,7 +295,7 @@ bool CQDA::train_machine(CFeatures* data)
 			MatrixXd rotE = Map<MatrixXd>(rot_mat,m_dim,m_dim);
 			MatrixXd resE(m_dim,m_dim);
 			resE = MEig * rotE.transpose();
-			memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
+			sg_memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
 		}
 	}
 

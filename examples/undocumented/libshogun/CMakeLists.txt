@@ -1,8 +1,3 @@
-INCLUDE_DIRECTORIES(${INCLUDES})
-if(SYSTEM_INCLUDES)
-	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
-endif()
-
 FILE(GLOB EXAMPLES_CPP RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 IF (NOT USE_MOSEK)
@@ -30,6 +25,7 @@ LIST(REMOVE_ITEM EXAMPLES_CPP
 	"random_conditional_probability_tree.cpp"
 	"random_fourier_features.cpp"
 	"serialization_file_formats.cpp"
+	"so_fg_multilabel.cpp"
 	"so_hmsvm_mosek_simple.cpp"
 	"splitting_LOO_crossvalidation.cpp"
 	"streaming_onlinesvmsgd.cpp"
@@ -43,13 +39,11 @@ FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 	STRING(REGEX REPLACE ".cpp\$" "" EXAMPLE "${EXAMPLE_CPP}")
 
 	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
-	target_link_libraries(${EXAMPLE} shogun ${SANITIZER_LIBRARY})
+	target_link_libraries(${EXAMPLE} shogun::shogun ${SANITIZER_LIBRARY})
 	IF(SANITIZER_FLAGS)
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
 	add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
-	set_property(TEST libshogun-${EXAMPLE} PROPERTY
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 	
 	# Add examples to the dependencies of modular interfaces to make sure

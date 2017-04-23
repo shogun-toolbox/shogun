@@ -102,7 +102,7 @@ SGVector<float64_t> CLinearMachine::get_w() const
 
 void CLinearMachine::set_w(const SGVector<float64_t> src_w)
 {
-	w=src_w;
+	w = src_w;
 }
 
 void CLinearMachine::set_bias(float64_t b)

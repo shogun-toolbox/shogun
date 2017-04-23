@@ -15,22 +15,25 @@
 using namespace shogun;
 
 CLibSVMOneClass::CLibSVMOneClass()
-: CSVM(), model(NULL)
+: CSVM()
 {
 }
 
 CLibSVMOneClass::CLibSVMOneClass(float64_t C, CKernel* k)
-: CSVM(C, k, NULL), model(NULL)
+: CSVM(C, k, NULL)
 {
 }
 
 CLibSVMOneClass::~CLibSVMOneClass()
 {
-	SG_FREE(model);
 }
 
 bool CLibSVMOneClass::train_machine(CFeatures* data)
 {
+	svm_problem problem;
+	svm_parameter param;
+	struct svm_model* model = nullptr;
+
 	ASSERT(kernel)
 	if (data)
 		kernel->init(data, data);

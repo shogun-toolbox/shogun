@@ -1244,18 +1244,19 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 
 	int32_t num_feat=((CStringFeatures<char>*) rhs)->get_max_vector_length();
 	ASSERT(num_feat>0)
+	// TODO: port to use OpenMP backend instead of pthread
+#ifdef HAVE_PTHREAD
 	int32_t num_threads=parallel->get_num_threads();
+#else
+	int32_t num_threads=1;
+#endif
 	ASSERT(num_threads>0)
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
 
 	if (num_threads < 2)
 	{
-#ifdef WIN32
-	   for (int32_t j=0; j<num_feat; j++)
-#else
        CSignal::clear_cancel();
 	   for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-#endif
 			{
 				init_optimization(num_suppvec, IDX, alphas, j);
 				S_THREAD_PARAM_WDS<DNATrie> params;
@@ -1818,7 +1819,7 @@ void CWeightedDegreePositionStringKernel::prepare_POIM2(SGMatrix<float64_t> dist
 	int32_t num_sym=distrib.num_cols;
 	int32_t num_feat=distrib.num_rows;
 	m_poim_distrib=SG_MALLOC(float64_t, num_sym*num_feat);
-	memcpy(m_poim_distrib, distrib.matrix, num_sym*num_feat*sizeof(float64_t));
+	sg_memcpy(m_poim_distrib, distrib.matrix, num_sym*num_feat*sizeof(float64_t));
 	m_poim_num_sym=num_sym;
 	m_poim_num_feat=num_feat;
 }

@@ -50,10 +50,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 namespace shogun
 {
 
@@ -63,7 +59,7 @@ typedef float64_t schar;
 template <class S, class T> inline void clone(T*& dst, S* src, int32_t n)
 {
 	dst = SG_MALLOC(T, n);
-	memcpy((void *)dst,(void *)src,sizeof(T)*n);
+	sg_memcpy((void *)dst,(void *)src,sizeof(T)*n);
 }
 #define INF HUGE_VAL
 #define TAU 1e-12
@@ -217,17 +213,6 @@ public:
 
 class LibSVMKernel;
 
-// helper struct for threaded processing
-struct Q_THREAD_PARAM
-{
-	int32_t i;
-	int32_t start;
-	int32_t end;
-	Qfloat* data;
-	float64_t* y;
-	const LibSVMKernel* q;
-};
-
 extern Parallel* sg_parallel;
 
 class LibSVMKernel: public QMatrix {
@@ -243,93 +228,19 @@ public:
 		if(x_square) CMath::swap(x_square[i],x_square[j]);
 	}
 
-	static void* compute_Q_parallel_helper(void* p)
+	void compute_Q_parallel(Qfloat* data, float64_t* lab, int32_t i, int32_t start, int32_t len) const
 	{
-		Q_THREAD_PARAM* params= (Q_THREAD_PARAM*) p;
-		int32_t i=params->i;
-		int32_t start=params->start;
-		int32_t end=params->end;
-		float64_t* y=params->y;
-		Qfloat* data=params->data;
-		const LibSVMKernel* q=params->q;
-
-		if (y) // two class
+		if (lab) // two class
 		{
-			for(int32_t j=start;j<end;j++)
-				data[j] = (Qfloat) y[i]*y[j]*q->kernel_function(i,j);
+			#pragma omp parallel for
+			for(int32_t j=start;j<len;j++)
+				data[j] = (Qfloat) lab[i]*lab[j]*this->kernel_function(i,j);
 		}
 		else // one class, eps svr
 		{
-			for(int32_t j=start;j<end;j++)
-				data[j] = (Qfloat) q->kernel_function(i,j);
-		}
-
-		return NULL;
-	}
-
-	void compute_Q_parallel(Qfloat* data, float64_t* lab, int32_t i, int32_t start, int32_t len) const
-	{
-		int32_t num_threads=sg_parallel->get_num_threads();
-		if (num_threads < 2)
-		{
-			Q_THREAD_PARAM params;
-			params.i=i;
-			params.start=start;
-			params.end=len;
-			params.y=lab;
-			params.data=data;
-			params.q=this;
-			compute_Q_parallel_helper((void*) &params);
-		}
-		else
-		{
-#ifdef HAVE_PTHREAD
-			int32_t total_num=(len-start);
-			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-			Q_THREAD_PARAM* params = SG_MALLOC(Q_THREAD_PARAM, num_threads);
-			int32_t step= total_num/num_threads;
-
-			int32_t t;
-
-			num_threads--;
-			for (t=0; t<num_threads; t++)
-			{
-				params[t].i=i;
-				params[t].start=t*step;
-				params[t].end=(t+1)*step;
-				params[t].y=lab;
-				params[t].data=data;
-				params[t].q=this;
-
-				int code=pthread_create(&threads[t], NULL,
-						compute_Q_parallel_helper, (void*)&params[t]);
-
-				if (code != 0)
-				{
-					SG_SWARNING("Thread creation failed (thread %d of %d) "
-							"with error:'%s'\n",t, num_threads, strerror(code));
-					num_threads=t;
-					break;
-				}
-			}
-
-			params[t].i=i;
-			params[t].start=t*step;
-			params[t].end=len;
-			params[t].y=lab;
-			params[t].data=data;
-			params[t].q=this;
-			compute_Q_parallel_helper(&params[t]);
-
-			for (t=0; t<num_threads; t++)
-			{
-				if (pthread_join(threads[t], NULL) != 0)
-					SG_SWARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-			}
-
-			SG_FREE(params);
-			SG_FREE(threads);
-#endif /* HAVE_PTHREAD */
+			#pragma omp parallel for
+			for(int32_t j=start;j<len;j++)
+				data[j] = (Qfloat) this->kernel_function(i,j);
 		}
 	}
 

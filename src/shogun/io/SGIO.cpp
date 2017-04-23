@@ -22,8 +22,16 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
+
+#ifdef _WIN32
+#define R_OK 4
+#endif
 
 using namespace shogun;
 
@@ -46,7 +54,7 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), location_info(MSG_NONE),
+	last_progress(0), show_progress(false), location_info(MSG_NONE),
 	syntax_highlight(true), loglevel(MSG_WARN)
 {
 	m_refcount = new RefCount();
@@ -54,7 +62,7 @@ SGIO::SGIO()
 
 SGIO::SGIO(const SGIO& orig)
 : target(orig.get_target()), last_progress_time(0),
-	progress_start_time(0), last_progress(1),
+	progress_start_time(0), last_progress(0),
 	show_progress(orig.get_show_progress()),
 	location_info(orig.get_location_info()),
 	syntax_highlight(orig.get_syntax_highlight()),
@@ -158,11 +166,15 @@ void SGIO::progress(
 
 	if (max_val-min_val>0.0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
+	else
+		return;
+
+	v=CMath::clamp(v,1e-5,100.0);
 
 	if (decimals < 1)
 		decimals = 1;
 
-	if (last_progress>v)
+	if (last_progress==0)
 	{
 		last_progress_time = runtime;
 		progress_start_time = runtime;
@@ -170,11 +182,22 @@ void SGIO::progress(
 	}
 	else
 	{
-		v=CMath::clamp(v,1e-5,100.0);
 		last_progress = v-1e-6;
-
 		if ((v!=100.0) && (runtime - last_progress_time<0.5))
+		{
+
+			// This is made to display correctly the percentage
+			// if the algorithm execution is too fast
+			if (current_val >= max_val-1)
+			{
+				v = 100;
+				last_progress=v-1e-6;
+				snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    ",decimals+3, decimals);
+				message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
+				message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			}
 			return;
+		}
 
 		last_progress_time = runtime;
 		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100);
@@ -190,6 +213,13 @@ void SGIO::progress(
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
 		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
+	}
+
+	// Print a new line if the execution is completed
+	// to prevent bad display
+	if (current_val >= max_val-1)
+	{
+		message(MSG_MESSAGEONLY, "", "", -1, "\n");
 	}
 
     fflush(target);
@@ -322,7 +352,7 @@ char* SGIO::c_string_of_substring(substring s)
 {
 	uint32_t len = s.end - s.start+1;
 	char* ret = SG_CALLOC(char, len);
-	memcpy(ret,s.start,len-1);
+	sg_memcpy(ret,s.start,len-1);
 	return ret;
 }
 
@@ -374,7 +404,11 @@ uint32_t SGIO::ss_length(substring s)
 
 char* SGIO::concat_filename(const char* filename)
 {
+#ifdef WIN32
+	if (snprintf(file_buffer, FBUFSIZE, "%s\\%s", directory_name, filename) > FBUFSIZE)
+#else
 	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+#endif
 		SG_SERROR("filename too long")
 
 	SG_SDEBUG("filename=\"%s\"\n", file_buffer)

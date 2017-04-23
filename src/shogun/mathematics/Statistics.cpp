@@ -12,7 +12,6 @@
  * https://people.sc.fsu.edu/~jburkardt/f_src/cdflib/cdflib.html
  */
 
-#include <cmath>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
@@ -149,7 +148,7 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	if (!in_place)
 	{
 		int64_t num_elements = N*D;
-		memcpy(centered.matrix, observations.matrix,
+		sg_memcpy(centered.matrix, observations.matrix,
 				sizeof(float64_t)*num_elements);
 	}
 	SG_SDEBUG("Centering observations\n");

@@ -12,6 +12,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -78,6 +79,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 
 	bool primalcool;
 	bool dualcool;
+	CSignal::clear_cancel();
 
 	//if (nustop)
 	//etas[1] = 1;
@@ -94,7 +96,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	}
 
 	// go ...
-	while (niter++ < maxiter)
+	while (niter++ < maxiter && !CSignal::cancel_computations())
 	{
 		int32_t maxpidx=-1;
 		float64_t maxpviol = -1;

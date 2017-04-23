@@ -17,7 +17,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 #include <time.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -369,7 +371,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
         A0 = sq_norm_W -2*dot_prod_WoldW + sq_norm_oldW;
         B0 = dot_prod_WoldW - sq_norm_oldW;
 
-        memcpy( old_output, output, sizeof(float64_t)*nData );
+        sg_memcpy( old_output, output, sizeof(float64_t)*nData );
 
         start_time = get_time();
         if( compute_output( output, user_data ) != 0)
@@ -801,7 +803,7 @@ ocas_return_value_T svm_ocas_solver(
         A0 = sq_norm_W -2*dot_prod_WoldW + sq_norm_oldW;
         B0 = dot_prod_WoldW - sq_norm_oldW;
 
-        memcpy( old_output, output, sizeof(float64_t)*nData );
+        sg_memcpy( old_output, output, sizeof(float64_t)*nData );
 
         start_time = get_time();
         if( compute_output( output, user_data ) != 0)
@@ -1243,7 +1245,7 @@ ocas_return_value_T svm_ocas_solver_difC(
         A0 = sq_norm_W -2*dot_prod_WoldW + sq_norm_oldW;
         B0 = dot_prod_WoldW - sq_norm_oldW;
 
-        memcpy( old_output, output, sizeof(float64_t)*nData );
+        sg_memcpy( old_output, output, sizeof(float64_t)*nData );
 
         start_time = get_time();
         if( compute_output( output, user_data ) != 0)
@@ -1767,7 +1769,7 @@ ocas_return_value_T msvm_ocas_solver(
 
       /* The OCAS solver */
       case 1:
-        memcpy( old_output, output, sizeof(float64_t)*nData*nY );
+        sg_memcpy( old_output, output, sizeof(float64_t)*nData*nY );
 
         start_time = get_time();
         if( compute_output( output, user_data ) != 0)

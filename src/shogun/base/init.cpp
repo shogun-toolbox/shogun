@@ -14,13 +14,15 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/linalg/SGLinalg.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/SGObject.h>
+
+#include <string>
 #include <stdlib.h>
 #include <string.h>
-
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
@@ -37,6 +39,7 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
+	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -66,6 +69,9 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
+		if (!sg_linalg)
+			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
+
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -185,7 +191,12 @@ namespace shogun
 		SG_REF(sg_rand);
 		return sg_rand;
 	}
-
+#ifndef SWIG // SWIG should skip this part
+	SGLinalg* get_global_linalg()
+	{
+		return sg_linalg.get();
+	}
+#endif
 	void init_from_env()
 	{
 		char* env_log_val = NULL;
@@ -201,5 +212,31 @@ namespace shogun
 				io->set_loglevel(MSG_ERROR);
 		}
 		SG_UNREF(io);
+
+		char* env_warnings_val = NULL;
+		SGLinalg* linalg = get_global_linalg();
+		env_warnings_val = getenv("SHOGUN_GPU_WARNINGS");
+		if (env_warnings_val)
+		{
+			if (strncmp(env_warnings_val, "off", 3) == 0)
+				linalg->set_linalg_warnings(false);
+		}
+
+#ifdef HAVE_CXX11
+		char* env_thread_val = NULL;
+		Parallel* parallel = get_global_parallel();
+		env_thread_val = getenv("SHOGUN_NUM_THREADS");
+		if (env_thread_val)
+		{
+
+			try {
+				int32_t num_threads = std::stoi(std::string(env_thread_val));
+				parallel->set_num_threads(num_threads);
+			} catch (...) {
+				SG_WARNING("The specified SHOGUN_NUM_THREADS environment (%s)"
+				"variable could not be parsed as integer!\n", env_thread_val);
+			}
+		}
+#endif
 	}
 }

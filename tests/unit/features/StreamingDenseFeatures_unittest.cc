@@ -7,11 +7,15 @@
  * Written (W) 2013 Viktor Gal
  */
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#include <gtest/gtest.h>
+
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <unistd.h>
-#include <gtest/gtest.h>
+#include "../utils/Utils.h"
 
 using namespace shogun;
 
@@ -19,8 +23,8 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 {
 	index_t n=20;
 	index_t dim=2;
-	std::string tmp_name = "/tmp/StreamingDenseFeatures_reading.XXXXXX";
-	char* fname = mktemp(const_cast<char*>(tmp_name.c_str()));
+	std::string tmp_name = "StreamingDenseFeatures_reading.XXXXXX";
+	char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
 
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
@@ -57,8 +61,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	SG_UNREF(orig_feats);
 	SG_UNREF(feats);
 
-	int delete_success = unlink(fname);
-	ASSERT_EQ(0, delete_success);
+	std::remove(fname);
 }
 
 TEST(StreamingDenseFeaturesTest, example_reading_from_features)
@@ -90,5 +93,35 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	}
 	feats->end_parser();
 
+	SG_UNREF(feats);
+}
+
+TEST(StreamingDenseFeaturesTest, reset_stream)
+{
+	index_t n=20;
+	index_t dim=2;
+
+	SGMatrix<float64_t> data(dim,n);
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i]=sg_rand->std_normal_distrib();
+
+	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
+	CStreamingDenseFeatures<float64_t>* feats=new CStreamingDenseFeatures<float64_t>(orig_feats);
+
+	feats->start_parser();
+
+	CDenseFeatures<float64_t>* streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	ASSERT_TRUE(streamed!=nullptr);
+	ASSERT_TRUE(orig_feats->equals(streamed));
+	SG_UNREF(streamed);
+
+	feats->reset_stream();
+
+	streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	ASSERT_TRUE(streamed!=nullptr);
+	ASSERT_TRUE(orig_feats->equals(streamed));
+	SG_UNREF(streamed);
+
+	feats->end_parser();
 	SG_UNREF(feats);
 }

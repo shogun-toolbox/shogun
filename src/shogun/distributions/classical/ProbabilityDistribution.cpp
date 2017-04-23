@@ -47,7 +47,7 @@ SGVector<float64_t> CProbabilityDistribution::sample() const
 {
 	SGMatrix<float64_t> s=sample(1);
 	SGVector<float64_t> result(m_dimension);
-	memcpy(result.vector, s.matrix, m_dimension*sizeof(float64_t));
+	sg_memcpy(result.vector, s.matrix, m_dimension*sizeof(float64_t));
 	return result;
 }
 
@@ -65,7 +65,7 @@ float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) cons
 			m_dimension);
 
 	SGMatrix<float64_t> s(m_dimension, 1);
-	memcpy(s.matrix, sample_vec.vector, m_dimension*sizeof(float64_t));
+	sg_memcpy(s.matrix, sample_vec.vector, m_dimension*sizeof(float64_t));
 	return log_pdf_multiple(s)[0];
 }
 

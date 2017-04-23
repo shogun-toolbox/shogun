@@ -1,3 +1,12 @@
+FIND_PACKAGE(PkgConfig)
+pkg_search_module(LUA REQUIRED lua lua5.1)
+IF (NOT LUA_FOUND)
+MESSAGE(FATAL_ERROR "Lua could not be found!\n"
+	"Lua is required for compiling lua modular interface!")
+ENDIF ()
+SET(LUA_EXECUTABLE lua)
+UNSET(TARGET_SWIGFLAGS)
+
 include(CommonModularInterface)
 include_directories(${LUA_INCLUDE_DIRS})
 

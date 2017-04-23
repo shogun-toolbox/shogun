@@ -13,9 +13,13 @@
 #ifndef __SGMATRIX_H__
 #define __SGMATRIX_H__
 
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+
+#include <memory>
+#include <atomic>
 
 namespace Eigen
 {
@@ -27,11 +31,14 @@ namespace Eigen
 namespace shogun
 {
 	template<class T> class SGVector;
+	template<typename T> struct GPUMemoryBase;
 	class CFile;
 
 /** @brief shogun matrix */
 template<class T> class SGMatrix : public SGReferencedData
 {
+	friend class LinalgBackendEigen;
+
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 		typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
@@ -50,12 +57,29 @@ template<class T> class SGMatrix : public SGReferencedData
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
 
 		/** Wraps a matrix around an existing memory segment with an offset */
-		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
-			: SGReferencedData(false), matrix(m+offset),
-			num_rows(nrows), num_cols(ncols) { }
+		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset);
 
 		/** Constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
+
+		/**
+		 * Construct SGMatrix from GPU memory.
+		 *
+		 * @param vector GPUMemoryBase pointer
+		 * @param nrows row number of the matrix
+		 * @param ncols column number of the matrix
+		 * @see GPUMemoryBase
+		 */
+		 SGMatrix(GPUMemoryBase<T>* matrix, index_t nrows, index_t ncols);
+
+		/** Check whether data is stored on GPU
+		 *
+		 * @return true if matrix is on GPU
+		 */
+		bool on_gpu() const
+		{
+			return gpu_ptr != NULL;
+		}
 
 #ifndef SWIG // SWIG should skip this part
 #if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
@@ -97,6 +121,9 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Wraps an Eigen3 matrix around the data of this matrix */
 		operator EigenMatrixXtMap() const;
+
+		/** Copy assign operator */
+		SGMatrix<T>& operator=(const SGMatrix<T>&);
 #endif // SWIG
 
 		/** Copy constructor */
@@ -112,6 +139,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		T* get_column_vector(index_t col) const
 		{
+			assert_on_cpu();
 			const int64_t c = col;
 			return &matrix[c*num_rows];
 		}
@@ -135,6 +163,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline const T& operator()(index_t i_row, index_t i_col) const
 		{
+			assert_on_cpu();
 		    const int64_t c = i_col;
 		    return matrix[c*num_rows + i_row];
 		}
@@ -144,6 +173,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline const T& operator[](index_t index) const
 		{
+			assert_on_cpu();
 			return matrix[index];
 		}
 
@@ -153,6 +183,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline T& operator()(index_t i_row, index_t i_col)
 		{
+			assert_on_cpu();
 		    const int64_t c = i_col;
 		    return matrix[c*num_rows + i_row];
 		}
@@ -162,8 +193,35 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline T& operator[](index_t index)
 		{
+			assert_on_cpu();
 			return matrix[index];
 		}
+
+#endif // SWIG should skip this part
+
+		/** Get element at index
+		 *
+		 * @param row row index
+		 * @param col column index
+		 * @return element at index
+		 */
+		const T& get_element(index_t row, index_t col)
+		{
+			return (*this)(row, col);
+		}
+
+		/** Set element at index
+		 *
+		 * @param el element to set
+		 * @param row row index
+		 * @param col column index
+		 */
+		void set_element(const T& el, index_t row, index_t col)
+		{
+			(*this)(row, col)=el;
+		}
+
+#ifndef SWIG // SWIG should skip this part
 
 		/**
 		 * Get the matrix (no copying is done here)
@@ -189,15 +247,33 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** Check for pointer identity */
-		bool operator==(SGMatrix<T>& other);
+		SG_FORCED_INLINE bool operator==(const SGMatrix<T>& other) const
+		{
+			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+				return false;
+
+			if (on_gpu())
+			{
+				if (!other.on_gpu())
+					return false;
+				if (gpu_ptr!=other.gpu_ptr)
+					return false;
+			}
+
+			if (matrix != other.matrix)
+				return false;
+
+			return true;
+		}
 
 		/** Operator overload for element-wise matrix comparison.
-		 * Note that only numerical data is compared
+		 * Note that only numerical data is compared. Works for floating
+		 * point numbers (along with complex128_t) as well.
 		 *
 		 * @param other matrix to compare with
 		 * @return true iff all elements are equal
 		 */
-		bool equals(SGMatrix<T>& other);
+		bool equals(const SGMatrix<T>& other) const;
 
 		/** Set matrix to a constant */
 		void set_const(T const_elem);
@@ -214,13 +290,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		 *
 		 * @return whether the matrix is symmetric
 		 */
-		bool is_symmetric();
+		bool is_symmetric() const;
 
 		/** @return the maximum single element of the matrix */
-		T max_single();
+		T max_single() const;
 
 		/** Clone matrix */
-		SGMatrix<T> clone();
+		SGMatrix<T> clone() const;
 
 		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);
@@ -367,6 +443,19 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** overridden to free data */
 		virtual void free_data();
 
+  private:
+		/** Atomic variable of vector on_gpu status */
+		std::atomic<bool> m_on_gpu;
+
+		/** Assert whether the data is on GPU
+		 * and raise error if the data is on GPU
+		 */
+		void assert_on_cpu() const
+		{
+			if (on_gpu())
+				SG_SERROR("Direct memory access not possible when data is in GPU memory.\n");
+		}
+
 	public:
 		/** matrix  */
 		T* matrix;
@@ -374,6 +463,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		index_t num_rows;
 		/** number of columns of matrix  */
 		index_t num_cols;
+		/** GPU Matrix structure. Stores pointer to the data on GPU. */
+		std::shared_ptr<GPUMemoryBase<T>> gpu_ptr;
 };
 }
 #endif // __SGMATRIX_H__

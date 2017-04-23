@@ -1,3 +1,28 @@
+# find python library for the found python interpreter
+# i.e. versions should match!
+FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
+FIND_PACKAGE(NumPy REQUIRED)
+
+SET(HAVE_PYTHON 1)
+
+#custom swig flags for python modular interface
+IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
+  SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads\;-py3")
+  SET(PYTHON3 1)
+ELSE()
+  SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads")
+ENDIF()
+
+# SWIG-generated Python-wrappers fail to build
+# for Python >=3.5 with SWIG < 3.0.8.  Make CMake
+# emit an error and fail to configure.
+IF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
+  ("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
+  MESSAGE(FATAL_ERROR
+    "Building Python_modular interface for Python >= 3.5 requires SWIG >= 3.0.8.")
+ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
+  ("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
+
 include(CommonModularInterface)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 

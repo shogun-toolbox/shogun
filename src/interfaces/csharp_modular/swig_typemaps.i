@@ -204,7 +204,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 		if (len >0) {
 			strings[i].string = SG_MALLOC(SGTYPE, len);
-			memcpy(strings[i].string, array, len * sizeof(SGTYPE));
+			sg_memcpy(strings[i].string, array, len * sizeof(SGTYPE));
 		}
 		array = array + len;
 	}
@@ -230,7 +230,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	res = res + 2;
 
 	for (i = 0; i < rows; i++) {
-		memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
+		sg_memcpy(res, str[i].string, str[i].slen * sizeof(SGTYPE));
 		res = res + cols;
 		SG_FREE(str[i].string);
 	}
@@ -302,7 +302,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 		if (len > 0) {
 			strings[i].string = SG_MALLOC(char, len);
-			memcpy(strings[i].string, str, len);
+			sg_memcpy(strings[i].string, str, len);
 		}
 	}
 
@@ -325,7 +325,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 	for (i = 0; i < size; i++) {
 		res[i + 1] = SG_MALLOC(char, str[i].slen);
-		memcpy(res[i + 1], str[i].string, str[i].slen * sizeof(char));
+		sg_memcpy(res[i + 1], str[i].string, str[i].slen * sizeof(char));
 	}
 	$result = res;
 }

@@ -5,7 +5,6 @@
     "Init": {
         "Construct": "$name = Modshogun::$typeName.new $arguments",
         "Copy": "$name = $expr",
-        "BoolVector": "$name = NArray.byte($arguments)",
         "CharVector": "$name = NArray.byte($arguments)",
         "ByteVector": "$name = NArray.byte($arguments)",
         "WordVector": "$name = NArray.byte($arguments)",
@@ -16,7 +15,6 @@
         "RealVector": "$name = NArray.float($arguments)",
         "LongRealVector": "$name = NArray.float($arguments)",
         "ComplexVector": "$name = NArray.scomplex($arguments)",
-        "BoolMatrix": "$name = NMatrix.byte($arguments)",
         "CharMatrix": "$name = NMatrix.float($arguments)",
         "ByteMatrix": "$name = NMatrix.byte($arguments)",
         "WordMatrix": "$name = NMatrix.byte($arguments)",
@@ -36,8 +34,8 @@
         "StringLiteral": "\"$literal\"",
         "CharLiteral": "'$literal'",
         "BoolLiteral": {
-            "True": "1",
-            "False": "0"
+            "True": "true",
+            "False": "false"
         },
         "IntLiteral": "$number",
         "RealLiteral": "$number",
@@ -50,11 +48,15 @@
     "Element": {
         "Access": {
             "Vector": "$identifier[$indices]",
-            "Matrix": "$identifier[$indices]"
+            "Matrix": "$identifier[$indices]",
+            "BoolVector": "$identifier.get_element $indices",
+            "BoolMatrix": "$identifier.get_element $indices"
         },
         "Assign": {
             "Vector": "$identifier[$indices] = $expr",
-            "Matrix": "$identifier[$indices] = $expr"
+            "Matrix": "$identifier[$indices] = $expr",
+            "BoolVector": "$identifier.set_element $expr, $indices",
+            "BoolMatrix": "$identifier.set_element $expr, $indices"
         },
         "ZeroIndexed": true
     },

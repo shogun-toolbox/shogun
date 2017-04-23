@@ -2,8 +2,13 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/mathematics/eigen3.h>
+
+#ifdef HAVE_VIENNACL
+#include <shogun/mathematics/linalg/LinalgBackendViennaCL.h>
+#endif
 
 using namespace shogun;
 
@@ -165,6 +170,35 @@ TEST(SGMatrixTest,equals_different_size)
 
 	EXPECT_FALSE(a.equals(b));
 }
+
+#ifdef HAVE_VIENNACL
+TEST(SGMatrixTest,pointer_equal_equal)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> a(3,2), a_gpu;
+	a.zero();
+	linalg::to_gpu(a, a_gpu);
+	SGMatrix<float64_t> b_gpu(a_gpu);
+
+	EXPECT_TRUE(a_gpu == b_gpu);
+}
+
+TEST(SGMatrixTest,pointer_equal_different)
+{
+	sg_linalg->set_gpu_backend(new LinalgBackendViennaCL());
+
+	SGMatrix<float64_t> a(3,2), a_gpu;
+	a.zero();
+	linalg::to_gpu(a, a_gpu);
+
+	SGMatrix<float64_t> b(3,2), b_gpu;
+	b.zero();
+	linalg::to_gpu(b, b_gpu);
+
+	EXPECT_FALSE(a_gpu == b_gpu);
+}
+#endif
 
 TEST(SGMatrixTest,get_diagonal_vector_square_matrix)
 {
@@ -518,4 +552,65 @@ TEST(SGMatrixTest, from_eigen3)
 
 	for (int32_t i=0; i<nrows*ncols; i++)
 		EXPECT_EQ(eigen_mat(i), sg_mat[i]);
+}
+
+TEST(SGMatrixTest, equals)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat, copy;
+
+	EXPECT_TRUE(mat.equals(mat));
+	EXPECT_TRUE(mat.equals(copy));
+
+	mat=SGMatrix<float32_t>(size, size);
+	CMath::init_random(100);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	EXPECT_TRUE(mat.equals(mat));
+	EXPECT_FALSE(mat.equals(copy));
+
+	copy=SGMatrix<float32_t>(size, size);
+	EXPECT_FALSE(mat.equals(copy));
+
+	CMath::init_random(100);
+	for (uint64_t i=0; i<copy.size(); ++i)
+		copy.matrix[i]=CMath::randn_float();
+
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, clone)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat(size, size);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	SGMatrix<float32_t> copy=mat.clone();
+
+	EXPECT_TRUE(mat.equals(copy));
+}
+
+TEST(SGMatrixTest, set_const)
+{
+	const index_t size=10;
+	SGMatrix<float64_t> mat(size, size);
+	const auto value=CMath::randn_double();
+	mat.set_const(value);
+
+	for (uint64_t i=0; i<mat.size(); ++i)
+		EXPECT_NEAR(mat.matrix[i], value, 1E-15);
+}
+
+TEST(SGMatrixTest, max_single)
+{
+	const index_t size=10;
+	SGMatrix<float32_t> mat(size, size);
+	for (uint64_t i=0; i<mat.size(); ++i)
+		mat.matrix[i]=CMath::randn_float();
+
+	auto max=mat.max_single();
+	for (uint64_t i=0; i<mat.size(); ++i)
+		EXPECT_GE(max, mat.matrix[i]);
 }

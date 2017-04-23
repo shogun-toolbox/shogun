@@ -1,10 +1,7 @@
 MACRO(GENERATE_MODULAR_TARGET MODULAR_NAME MODULAR_DIR MODULAR_LIBARIES)
-if(SYSTEM_INCLUDES)
-	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
-endif()
-INCLUDE_DIRECTORIES(${INCLUDES})
 
-# transform defines to -D<definition> string
+get_target_property(ShogunIncludes shogun::shogun INTERFACE_INCLUDE_DIRECTORIES)
+INCLUDE_DIRECTORIES(${ShogunIncludes})
 
 # set compiler SWIG generated cxx compiler flags
 SET(CMAKE_CXX_FLAGS ${SWIG_CXX_COMPILER_FLAGS})
@@ -33,7 +30,7 @@ FOREACH(file ${MODULAR_FILES})
 ENDFOREACH()
 
 ADD_CUSTOM_TARGET(${MODULAR_NAME}_modular_src
-	DEPENDS shogun ${modular_files}
+	DEPENDS shogun::shogun ${modular_files}
 	COMMENT "copying SWIG files")
 
 INCLUDE(${SWIG_USE_FILE})
@@ -43,7 +40,7 @@ IF(DEFINED TARGET_SWIGFLAGS)
 ENDIF()
 SET(SWIG_MODULE_${MODULAR_NAME}_modular_EXTRA_DEPS ${modular_files})
 SWIG_ADD_MODULE(${MODULAR_NAME}_modular ${MODULAR_NAME} modshogun.i sg_print_functions.cpp)
-SWIG_LINK_LIBRARIES(${MODULAR_NAME}_modular shogun ${MODULAR_LIBARIES})
+SWIG_LINK_LIBRARIES(${MODULAR_NAME}_modular shogun::shogun ${MODULAR_LIBARIES})
 SET_TARGET_PROPERTIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} PROPERTIES OUTPUT_NAME ${PREPEND_TARGET}modshogun)
 ADD_DEPENDENCIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} ${MODULAR_NAME}_modular_src)
 
@@ -59,7 +56,7 @@ IF(DOXYGEN_FOUND)
 	OUTPUT    modshogun
 	COMMAND   ${DOXYGEN_EXECUTABLE}
 	ARGS	  modshogun.doxy
-	DEPENDS   shogun
+	DEPENDS   shogun::shogun
 	COMMENT   "Generating doxygen doc"
 	)
 

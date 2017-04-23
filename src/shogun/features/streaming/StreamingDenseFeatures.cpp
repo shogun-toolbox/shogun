@@ -67,9 +67,12 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 	if (seekable)
 	{
 		((CStreamingFileFromDenseFeatures<T>*)working_file)->reset_stream();
+		if (parser.is_running())
+			parser.end_parser();
 		parser.exit_parser();
 		parser.init(working_file, has_labels, 1);
 		parser.set_free_vector_after_release(false);
+		parser.set_free_vectors_on_destruct(false);
 		parser.start_parser();
 	}
 }
@@ -135,11 +138,6 @@ template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 template<class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vector()
 {
 	return current_vector.vlen;
-}
-
-template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
-{
-	return new CStreamingDenseFeatures<T>(*this);
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
@@ -319,7 +317,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			SGMatrix<T> so_far(matrix.num_rows, i);
 
 			/* copy */
-			memcpy(so_far.matrix, matrix.matrix,
+			sg_memcpy(so_far.matrix, matrix.matrix,
 					so_far.num_rows*so_far.num_cols*sizeof(T));
 
 			matrix=so_far;
@@ -345,7 +343,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 					vec.vlen, matrix.num_rows);
 
 			/* copy vector into matrix */
-			memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
+			sg_memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
 					vec.vlen*sizeof(T));
 
 			/* clean up */

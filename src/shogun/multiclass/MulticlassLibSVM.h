@@ -59,15 +59,10 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	private:
+		void register_params();
+
 	protected:
-		/** SVM problem */
-		svm_problem problem;
-		/** SVM parameter */
-		svm_parameter param;
-
-		/** SVM model */
-		struct svm_model* model;
-
 		/** solver type */
 		LIBSVM_SOLVER_TYPE solver_type;
 };

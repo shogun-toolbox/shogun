@@ -10,6 +10,8 @@
 #define __LOCK_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/cpu.h>
+#include <atomic>
 
 namespace shogun
 {
@@ -17,19 +19,26 @@ namespace shogun
 class CLock
 {
 public:
-	/** default constructor */
-	CLock();
-	/** de-structor */
-	~CLock();
-
 	/** lock the object */
-	void lock();
+	SG_FORCED_INLINE void lock()
+	{
+		do
+		{
+			while (m_locked.load(std::memory_order_relaxed))
+				CpuRelax();
+		}
+		while (m_locked.exchange(true, std::memory_order_acquire));
+	}
+
 	/** unlock the object (must be called as often as lock) */
-	void unlock();
+	SG_FORCED_INLINE void unlock()
+	{
+		m_locked.store(false, std::memory_order_release);
+	}
 
 private:
 	/** lock object */
-	void* lock_object;
+	std::atomic_bool m_locked = { false };
 };
 }
 #endif // __LOCK_H__

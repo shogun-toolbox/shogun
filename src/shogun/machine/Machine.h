@@ -228,6 +228,7 @@ class CMachine : public CSGObject
 		 */
 		virtual void set_store_model_features(bool store_model);
 
+#ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -242,6 +243,7 @@ class CMachine : public CSGObject
 					"for %s\n", get_name());
 			return false;
 		}
+#endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t i)
@@ -250,6 +252,7 @@ class CMachine : public CSGObject
 			return 0.0;
 		}
 
+#ifndef SWIG // SWIG should skip this part
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -272,6 +275,7 @@ class CMachine : public CSGObject
 		/** applies a locked machine on a set of indices for latent problems */
 		virtual CLatentLabels* apply_locked_latent(
 				SGVector<index_t> indices);
+#endif // SWIG // SWIG should skip this part
 
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called

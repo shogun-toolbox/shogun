@@ -173,7 +173,7 @@ void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_Wo
 
 	uint32_t i,j;
 
-	memcpy(oldW, W, sizeof(float64_t)*nDim*nY);
+	sg_memcpy(oldW, W, sizeof(float64_t)*nDim*nY);
 	memset(W, 0, sizeof(float64_t)*nDim*nY);
 
 	for(i=0; i<nSel; i++)

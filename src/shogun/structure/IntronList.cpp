@@ -32,7 +32,7 @@ void CIntronList::init_list(int32_t* all_pos, int32_t len)
 {
 	m_length = len;
 	m_all_pos = SG_MALLOC(int32_t, len);
-	memcpy(m_all_pos, all_pos, len*sizeof(int32_t));
+	sg_memcpy(m_all_pos, all_pos, len*sizeof(int32_t));
 	m_intron_list = SG_MALLOC(int32_t*, len);
 	m_quality_list = SG_MALLOC(int32_t*, len);
 

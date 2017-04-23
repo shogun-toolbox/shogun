@@ -25,9 +25,22 @@ IF(POLICY CMP0054)
 ENDIF(POLICY CMP0054)
 
 project(shogun)
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 3.1)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
+
+SET(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
+
+#### set required C++ standard level of the compiler
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+### FIXME: remove these flags when the codebase
+# is cleared up
+set(HAVE_CXX11 ON)
+set(HAVE_CXX11_ATOMIC ON)
+set(HAVE_STD_UNORDERED_MAP ON)
 
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
@@ -74,19 +87,23 @@ SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src
-	${CMAKE_SOURCE_DIR}/src/shogun
-	${CMAKE_BINARY_DIR}/src
-	${CMAKE_BINARY_DIR}/src/shogun)
+SET(AVAILABLE_INTERFACES PythonModular;OctaveModular;JavaModular;PerlModular;RubyModular;CSharpModular;RModular;LuaModular;ScalaModular)
+SET(PythonModularDescription "Python")
+SET(OctaveModularDescription "Octave")
+SET(JavaModularDescription "Java")
+SET(PerlModularDescription "Perl")
+SET(RubyModularDescription "Ruby")
+SET(CSharpModularDescription "C#")
+SET(RModularDescription "R")
+SET(LuaModularDescription "Lua")
+SET(ScalaModularDescription "Scala")
+SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
-# check whether any of the modular interfaces are turned ON
-IF (
-	PythonModular OR LuaModular OR RModular OR
-	OctaveModular OR JavaModular OR PerlModular OR
-	RubyModular OR CSharpModular
-   )
+IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
+IF (${ANY_INTERFACE_ENABLED})
+	# SWIG3 is the minimum requirement because of C++11 support
+	SET(SWIG_VERSION_MINIMUM 3.0.0)
 
-	SET(SWIG_VERSION_MINIMUM 2.0.4)
 	IF(CSharpModular)
 		# We require SWIG 3.0.7 to support functions with a few SGVector or
 		# SGMatrix arguments. The required SWIG feature is called
@@ -98,11 +115,14 @@ IF (
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(RModular)
-		SET(SWIG_VERSION_MINIMUM 2.0.5)
+	ELSEIF(PythonModular)
+		# SWIG was broken for combining -builtin and -modernargs
+		# from v3.0.0 and until 3.0.4.  This bug was fixed in
+		# v3.0.5.  Make CMake emit an error and fail to configure.
+		SET(SWIG_VERSION_MINIMUM 3.0.5)
 	ENDIF()
-	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
 
+	FIND_PACKAGE(SWIG ${SWIG_VERSION_MINIMUM} REQUIRED)
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)
@@ -112,33 +132,7 @@ IF (
 ENDIF()
 
 # Detect OS
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	SET(DARWIN 1)
-	set(CMAKE_MACOSX_RPATH TRUE)
-
-	# use, i.e. don't skip the full RPATH for the build tree
-	set(CMAKE_SKIP_BUILD_RPATH FALSE)
-
-	# when building, don't use the install RPATH already
-	# (but later on when installing)
-	set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-	set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-	# add the automatically determined parts of the RPATH
-	# which point to directories outside the build tree to the install RPATH
-	set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-	# the RPATH to be used when installing, but only if it's not a system directory
-	list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-	if(${isSystemDir} STREQUAL "-1")
-		set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-	endif(${isSystemDir} STREQUAL "-1")
-ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	SET(LINUX 1)
-ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-	SET(FREEBSD 1)
-ENDIF()
+DetectSystemName()
 
 # Get processor type, sets MACHINE macro
 SET(MACHINE ${CMAKE_SYSTEM_PROCESSOR})
@@ -168,9 +162,7 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # set the flags for the build types
-IF(MSVC)
-	SET(COMPILER_WARNINGS "/Wall")
-ELSE()
+IF(NOT MSVC)
 	SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
 ENDIF()
 
@@ -185,12 +177,21 @@ ENDIF()
 SET(SWIG_CXX_COMPILER_FLAGS "-O0 -g")
 SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} ${CMAKE_C_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
-SET(CMAKE_C_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
-SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2")
-SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
-SET(CMAKE_C_FLAGS_DEBUG "-g")
-SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+IF(MSVC)
+	SET(CMAKE_C_FLAGS_RELEASE "/O2 ${RELEASE_COMPILER_FLAGS}")
+	SET(CMAKE_CXX_FLAGS_RELEASE "/O2 ${RELEASE_COMPILER_FLAGS}")
+	SET(CMAKE_C_FLAGS_DISTRIBUTION "/Ot")
+	SET(CMAKE_CXX_FLAGS_DISTRIBUTION "/Ot")
+	SET(CMAKE_C_FLAGS_DEBUG "/DEBUG /Od /Zi")
+	SET(CMAKE_CXX_FLAGS_DEBUG "/DEBUG /Od /Zi")
+ELSE()
+	SET(CMAKE_C_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
+	SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
+	SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2")
+	SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
+	SET(CMAKE_C_FLAGS_DEBUG "-g")
+	SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+ENDIF()
 
 OPTION(ENABLE_COVERAGE "Enable code coverage" OFF)
 IF(ENABLE_COVERAGE)
@@ -256,45 +257,12 @@ IF(ENABLE_UBSAN)
 	ENDIF()
 ENDIF()
 
-# check for supported c++11 features
-#
-# clang with -std=c++11 and -stdlib=libc++ does not work
-# well with swig generated cxx hence disable c++11 for this case.
-
-# this has been only fixed in swig 2.0.12 or later.
-IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE
-	AND SWIG_VERSION VERSION_LESS "2.0.12")))
-	INCLUDE(CheckCXX11Features)
-
-	IF(_HAS_CXX11_FLAG)
-		SET(HAVE_CXX11 1)
-		SET(CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
-		SET(SWIG_CXX_COMPILER_FLAGS "${CXX11_COMPILER_FLAGS} ${SWIG_CXX_COMPILER_FLAGS}")
-	ENDIF()
-
-	IF(_HAS_CXX0X_FLAG)
-		SET(HAVE_CXX0X 1)
-		SET(CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
-		SET(SWIG_CXX_COMPILER_FLAGS "${CXX11_COMPILER_FLAGS} ${SWIG_CXX_COMPILER_FLAGS}")
-	ENDIF()
-
-ELSEIF(DARWIN AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0.0"))
-	# osx clang 5.0.0 or later uses libc++ by default
-	# this is causing problems with source generated by swig version earlier than 3.0.0
-	# force to use libstdc++ for compilation of sources
-	SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
-	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
-ENDIF()
-
 # Fix build on Mac OSX 10.10 Yosemite when using mp-gcc-4X.
 # See: https://github.com/shogun-toolbox/shogun/issues/2635
 IF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
 	SET(CMAKE_CXX_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${CMAKE_CXX_FLAGS}")
 	SET(SWIG_CXX_COMPILER_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${SWIG_CXX_COMPILER_FLAGS}")
 ENDIF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
-
-include(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX("unordered_map" HAVE_STD_UNORDERED_MAP)
 
 ###### MALLOC LIBRARY ###########
 SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
@@ -334,7 +302,6 @@ STRING(REGEX REPLACE "([0-9]*).[0-9]*.[0-9]*" "\\1" SHOGUN_VERSION_MAJOR "${VERS
 STRING(REGEX REPLACE "[0-9]*.([0-9]*).[0-9]*" "\\1" SHOGUN_VERSION_MINOR "${VERSION}")
 STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERSION}")
 
-SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
@@ -358,38 +325,15 @@ IF(COMPILE_MODULAR_INTERFACE)
 	OPTION(USE_FLOATMAX "Support for floatmax_t datatype" OFF)
 ENDIF(COMPILE_MODULAR_INTERFACE)
 
-IF(MSVC)
-	include(external/MSIntTypes)
-	LIST(APPEND INCLUDES ${THIRD_PARTY_DIR}/MSIntTypes)
-
-	include(external/MSDirent)
-	LIST(APPEND INCLUDES ${MSDIRENT_INCLUDE_DIR})
-ENDIF()
-
 # detect word size
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
 	SET(SWIGWORDSIZE64 TRUE)
 ENDIF()
 
-#integration
-OPTION(OpenCV "OpenCV Integration" OFF)
-
 #interfaces
-OPTION(PythonModular "Python Modular" OFF)
-OPTION(LuaModular "Lua Modular" OFF)
-OPTION(RModular "R Modular" OFF)
-OPTION(OctaveModular "Octave Modular" OFF)
-OPTION(JavaModular "Java Modular" OFF)
-OPTION(PerlModular "Perl Modular" OFF)
-OPTION(RubyModular "Ruby Modular" OFF)
-OPTION(CSharpModular "CSharp Modular" OFF)
-
-SET(STATIC_INTERFACES PythonStatic;OctaveStatic;RStatic;MatlabStatic;CmdLineStatic)
-FOREACH(static_interface ${STATIC_INTERFACES})
-	if(${static_interface})
-		MESSAGE(FATAL_ERROR "Static interfaces are deprecated, use the corresponding modular interface!")
-	endif()
-ENDFOREACH()
+ForEach(Interface ${AVAILABLE_INTERFACES})
+    OPTION(${Interface} ${Interface}Description OFF)
+EndForEach(Interface)
 
 # Debugging Python-interface with CTest
 OPTION(ENABLE_PYTHON_DEBUG "Enable Python-interface-debugging with CTest" OFF)
@@ -455,269 +399,10 @@ OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
 
 ######################### LIBRARIES #########################
 
-#check for symbols
-include (CheckCXXSymbolExists)
-CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
-CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
-CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
-CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
-CHECK_CXX_SYMBOL_EXISTS(fdopen "stdio.h" HAVE_FDOPEN)
-
-# check for math functions
-include(CheckFunctionExists)
-IF(UNIX)
-	SET(CMAKE_REQUIRED_LIBRARIES m)
-ENDIF()
-CHECK_FUNCTION_EXISTS(log2 HAVE_LOG2)
-CHECK_FUNCTION_EXISTS(powl HAVE_POWL)
-CHECK_FUNCTION_EXISTS(lgammal HAVE_LGAMMAL)
-CHECK_FUNCTION_EXISTS(sqrtl HAVE_SQRTL)
-
-CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
-CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
-CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
-CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
-
-include(CheckCXXSourceCompiles)
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
-  HAVE_STD_ISINF )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
-  HAVE_STD_ISFINITE )
-CHECK_CXX_SOURCE_COMPILES(
-  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
-  HAVE_STD_ISNAN )
-
-# check SSE and SSE2 intrinsics header
-OPTION(DISABLE_SSE "Disable SSE and SSE2 features." OFF)
-IF((NOT CYGWIN) AND (NOT DISABLE_SSE))
-include(CheckIncludeFile)
-CHECK_INCLUDE_FILE(xmmintrin.h HAVE_BUILTIN_VECTOR)
-CHECK_INCLUDE_FILE(emmintrin.h HAVE_SSE2)
-ENDIF((NOT CYGWIN) AND (NOT DISABLE_SSE))
-
-###### checks for random
-CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
-IF(NOT HAVE_ARC4RANDOM)
-    # assume that /dev/random is non-blocking if /dev/urandom does not exist
-    if(EXISTS /dev/urandom)
-      set(DEV_RANDOM "/dev/urandom" CACHE INTERNAL "" FORCE)
-    elseif( EXISTS /dev/random )
-      set(DEV_RANDOM "/dev/random" CACHE INTERNAL "" FORCE)
-    endif()
-ENDIF()
-
 FIND_PACKAGE(GDB)
 IF (GDB_FOUND)
 	SET(GDB_DEFAULT_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/src/.gdb)
 ENDIF()
-
-FIND_PACKAGE(Mosek)
-IF (MOSEK_FOUND)
-	SET(USE_MOSEK 1)
-	LIST(APPEND INCLUDES ${MOSEK_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${MOSEK_LIBRARY})
-ENDIF()
-
-FIND_PACKAGE(Threads)
-IF (CMAKE_USE_PTHREADS_INIT)
-	SET(HAVE_PTHREAD 1)
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${CMAKE_THREAD_LIBS_INIT})
-ENDIF()
-
-FIND_PACKAGE(OpenMP)
-if (OPENMP_FOUND)
-	SET(HAVE_OPENMP 1)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
-
-FIND_PACKAGE(PkgConfig)
-
-# prefer original LAPACK, if needed
-OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
-
-FIND_PACKAGE(LAPACK)
-IF(DARWIN AND RModular)
-	MESSAGE(WARNING "Turning OFF LAPACK support because of RModular on interface, see issue #3022")
-ENDIF()
-# Cannot use Accelerate.framework and R at the same time on OSX
-# because there's a redefinition of COMPLEX, see issue #3022
-IF (LAPACK_FOUND AND NOT (DARWIN AND RModular))
-	# find out whether it is Accelerate.framework we found for LaPack/BLAS
-	IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
-		SET(HAVE_MVEC 1)
-
-		#Accelerate framework provides HAVE_CATLAS
-		SET(HAVE_CATLAS 1)
-
-		SET(HAVE_LAPACK 1)
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES})
-	ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/mkl_.*")
-		SET(HAVE_LAPACK 1)
-		SET(HAVE_MKL 1)
-	ELSE()
-		FIND_PACKAGE(Atlas)
-		IF(Atlas_FOUND)
-			SET(HAVE_ATLAS 1)
-			SET(HAVE_LAPACK 1)
-			LIST(APPEND INCLUDES ${Atlas_INCLUDE_DIRS})
-			IF(USE_ORIGINAL_LAPACK)
-				SET(ATLAS_CLAPACK_LIBRARY)
-				FOREACH(ITR ${Atlas_LIBRARIES})
-					IF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-						STRING(REGEX REPLACE "lapack" "clapack" ITR ${ITR})
-						LIST(APPEND ATLAS_CLAPACK_LIBRARY ${ITR})
-					ENDIF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-				ENDFOREACH(ITR ${ATLAS_LIBRARIES})
-				MESSAGE(STATUS "using ATLAS-CLAPACK from: ${ATLAS_CLAPACK_LIBRARY}")
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES} ${ATLAS_CLAPACK_LIBRARY} ${Atlas_LIBRARIES})
-			ELSE(USE_ORIGINAL_LAPACK)
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${Atlas_LIBRARIES})
-			ENDIF(USE_ORIGINAL_LAPACK)
-		ELSE()
-			FIND_PACKAGE(CBLAS)
-		    if(CBLAS_LIBRARY)
-				SET(HAVE_LAPACK 1)
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES} ${CBLAS_LIBRARY})
-			else()
-				SET(HAVE_LAPACK 1)
-				SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LAPACK_LIBRARIES})
-		    endif()
-		ENDIF()
-	ENDIF()
-ENDIF()
-
-FIND_PACKAGE(GLPK)
-IF (GLPK_FOUND)
-	SET(USE_GLPK 1)
-	LIST(APPEND INCLUDES ${GLPK_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${GLPK_LIBRARY})
-ENDIF()
-
-FIND_PACKAGE(CPLEX)
-IF (CPLEX_FOUND)
-	SET(USE_CPLEX 1)
-	LIST(APPEND INCLUDES ${CPLEX_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${CPLEX_LIBRARY})
-ENDIF()
-
-FIND_PACKAGE(ARPACK)
-IF (ARPACK_FOUND)
-	SET(HAVE_ARPACK 1)
-	LIST(APPEND INCLUDES ${ARPACK_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${ARPACK_LIB})
-ENDIF()
-
-FIND_PACKAGE(Eigen3 ${EIGEN_VERSION_MINIMUM})
-IF(NOT EIGEN3_FOUND)
-	include(external/Eigen3)
-	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
-ELSE()
-    # eigen3 bug related to aliasing operators and self-storing.
-    # TODO put in proper reference and version from when this is fixed
-    IF(${EIGEN_VERSION} VERSION_GREATER 3.2.90)
-        MESSAGE(WARNING "The system Eigen3 version ${EIGEN_VERSION} is buggy, manually bundling.")
-        include(external/Eigen3)
-    ENDIF()
-
-	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
-ENDIF()
-
-# OpenCL/ViennaCL detection
-OPTION(ENABLE_VIENNACL "Enable ViennaCL" ON)
-FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM})
-IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-	SET(HAVE_VIENNACL 1)
-	LIST(APPEND INCLUDES ${VIENNACL_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${VIENNACL_LIBRARIES})
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENCL_C_FLAGS}")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENCL_CXX_FLAGS}")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OPENCL_EXE_LINKER_FLAGS}")
-ENDIF()
-
-IF (OpenCV)
-	# find OpenCV library if intended by the user.
-	FIND_PACKAGE(OpenCV)
-	IF (OpenCV_FOUND)
-		SET(HAVE_OPENCV 1)
-		LIST(APPEND INCLUDES ${OpenCV_INCLUDE_DIRS})
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${OpenCV_LIBRARIES})
-	ENDIF()
-ENDIF()
-
-# COLPACK
-OPTION(ENABLE_COLPACK "Enable ColPack" ON)
-OPTION(BUNDLE_COLPACK "Bundle COLPACK" OFF)
-IF(BUNDLE_COLPACK AND ENABLE_COLPACK)
-	include(external/ColPack)
-	SET(HAVE_COLPACK 1)
-	LIST(APPEND INCLUDES ${COLPACK_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${COLPACK_LDFLAGS})
-ELSE()
-	IF (PKG_CONFIG_FOUND)
-		pkg_search_module(COLPACK libColPack>=1.0.9 ColPack>=1.0.9)
-		IF (COLPACK_FOUND)
-			SET(HAVE_COLPACK 1)
-			LIST(APPEND INCLUDES ${COLPACK_INCLUDE_DIRS})
-			SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${COLPACK_LDFLAGS})
-		ENDIF()
-	ENDIF()
-ENDIF()
-
-OPTION(BUNDLE_NLOPT "Bundle NLOPT" OFF)
-IF(BUNDLE_NLOPT)
-	include(external/NLopt)
-	SET(HAVE_NLOPT 1)
-	LIST(APPEND INCLUDES ${NLOPT_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${NLOPT_LIBRARIES})
-ELSE()
-	FIND_PACKAGE(NLopt)
-	IF (NLOPT_FOUND)
-		SET(HAVE_NLOPT 1)
-		LIST(APPEND INCLUDES ${NLOPT_INCLUDE_DIR})
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${NLOPT_LIBRARIES})
-	ENDIF()
-ENDIF()
-
-FIND_PACKAGE(LpSolve)
-IF (LPSOLVE_FOUND)
-	SET(USE_LPSOLVE 1)
-	#LIST(APPEND DEFINES USE_LPSOLVE YY_NEVER_INTERACTIVE PARSER_LP INVERSE_ACTIVE=INVERSE_LUSOL RoleIsExternalInvEngine)
-	LIST(APPEND INCLUDES ${LPSOLVE_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LPSOLVE_LIBRARIES})
-ENDIF()
-
-IF (ENABLE_COLPACK)
-        FIND_PACKAGE(ColPack)
-        IF(COLPACK_FOUND)
-                SET(HAVE_COLPACK 1)
-                LIST(APPEND INCLUDES ${COLPACK_INCLUDE_DIR})
-                SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${COLPACK_LIBRARIES})
-        ENDIF()
-ENDIF()
-
-OPTION(USE_ARPREC "Use ARPREC (bundle if not found)" OFF)
-IF(USE_ARPREC AND NOT LICENSE_GPL_SHOGUN)
-	MESSAGE(FATAL_ERROR "ARPREC can only be used if USE_GPL_SHOGUN is enabled ")
-ENDIF()
-IF(USE_ARPREC)
-	FIND_PACKAGE(ARPREC)
-	IF(ARPREC_FOUND)
-		SET(HAVE_ARPREC 1)
-		LIST(APPEND INCLUDES ${ARPREC_INCLUDE_DIR})
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${ARPREC_LIBRARIES})
-	ELSE()
-		include(external/ARPREC)
-		SET(HAVE_ARPREC 1)
-		LIST(APPEND INCLUDES ${ARPREC_INCLUDE_DIR})
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${ARPREC_LIBRARIES})
-	ENDIF()
-ENDIF()
-
 
 FIND_PACKAGE(Doxygen 1.8.6)
 IF(DOXYGEN_FOUND)
@@ -727,228 +412,20 @@ ENDIF()
 # detect PYTHON
 FIND_PACKAGE(PythonInterp REQUIRED)
 
-# Meta examples and dependencies
-IF(BUILD_META_EXAMPLES)
-    FIND_PACKAGE(PLY REQUIRED)
-    IF(NOT PLY_FOUND)
-        message(FATAL_ERROR "Python module ply required for meta examples. Disable meta examples or install python-ply")
-    ENDIF()
-
-    FIND_PACKAGE(Ctags)
-    IF(NOT CTAGS_FOUND)
-        message(FATAL_ERROR "Ctags required for meta examples.")
-    ENDIF()
-ENDIF(BUILD_META_EXAMPLES)
-
-# add meta example dir below after tests have been defined
-
-# cookbook and dependencies (note there are in fact more, see its requirements.txt)
-FIND_PACKAGE(Sphinx)
-FIND_PACKAGE(Pandoc)
-IF(BUILD_META_EXAMPLES AND SPHINX_FOUND AND PANDOC_FOUND)
-    SET(BUILD_COOKBOOK 1)
-ENDIF()
-
-# JSON
-OPTION(BUNDLE_JSON "Bundle JSON" OFF)
-IF(BUNDLE_JSON)
-	include(external/JSON)
-	SET(HAVE_JSON 1)
-	LIST(APPEND INCLUDES ${JSON_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${JSON_LDFLAGS})
+# save configuration options
+IF (LIBSHOGUN)
+	MergeCFLAGS()
+	add_subdirectory(${CMAKE_SOURCE_DIR}/src/shogun)
+	add_library(shogun::shogun ALIAS shogun)
+	set(shogun_INCLUDE_DIR ${CMAKE_BINARY_DIR}/src)
 ELSE()
-	IF (PKG_CONFIG_FOUND)
-		pkg_search_module(JSON libjson>=0.11 json>=0.11 json-c>=0.11)
-		IF (JSON_FOUND)
-			SET(HAVE_JSON 1)
-			LIST(APPEND INCLUDES ${JSON_INCLUDE_DIRS})
-			SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${JSON_LDFLAGS})
-		ENDIF()
-	ENDIF()
+	find_package(Shogun ${VERSION} CONFIG REQUIRED)
 ENDIF()
-
-FIND_PACKAGE(LibXml2)
-IF (LIBXML2_FOUND)
-	SET(HAVE_XML 1)
-	LIST(APPEND INCLUDES ${LIBXML2_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LIBXML2_LIBRARIES})
-ENDIF()
-
-OPTION(USE_HDF5 "Use HDF5" ON)
-FIND_PACKAGE(HDF5)
-IF (HDF5_FOUND AND USE_HDF5)
-	SET(HAVE_HDF5 1)
-	LIST(APPEND INCLUDES ${HDF5_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${HDF5_LIBRARIES})
-ENDIF()
-
-FIND_PACKAGE(CURL)
-IF (CURL_FOUND)
-	SET(HAVE_CURL 1)
-	LIST(APPEND INCLUDES ${CURL_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${CURL_LIBRARIES})
-ENDIF(CURL_FOUND)
-
-FIND_PACKAGE(ZLIB)
-IF (ZLIB_FOUND)
-	SET(USE_GZIP 1)
-	LIST(APPEND INCLUDES ${ZLIB_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${ZLIB_LIBRARIES})
-ENDIF()
-
-FIND_PACKAGE(BZip2)
-IF (BZIP2_FOUND)
-	SET(USE_BZIP2 1)
-	LIST(APPEND INCLUDES ${BZIP_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${BZIP2_LIBRARIES})
-ENDIF()
-
-FIND_PACKAGE(LibLZMA)
-IF (LIBLZMA_FOUND)
-	SET(USE_LZMA 1)
-	LIST(APPEND INCLUDES ${LIBLZMA_INCLUDE_DIRS})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LIBLZMA_LIBRARIES})
-ENDIF()
-
-FIND_PACKAGE(SNAPPY)
-IF (SNAPPY_FOUND)
-	SET(USE_SNAPPY 1)
-	LIST(APPEND INCLUDES ${SNAPPY_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${SNAPPY_LIBRARIES})
-ENDIF()
-
-FIND_PACKAGE(LZO)
-IF (LZO_FOUND)
-	SET(USE_LZO 1)
-	LIST(APPEND INCLUDES ${LZO_INCLUDE_DIR})
-	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${LZO_LIBS})
-ENDIF()
-
-FIND_PACKAGE(Spinlock)
-IF (SPINLOCK_FOUND)
-	SET(USE_SPINLOCKS 1)
-ENDIF()
-
-OPTION(ENABLE_PROTOBUF "Enable Protobuf serialization format" ON)
-IF (ENABLE_PROTOBUF)
-	FIND_PACKAGE(Protobuf)
-	IF (PROTOBUF_FOUND)
-		SET(HAVE_PROTOBUF 1)
-		LIST(APPEND INCUDES ${PROTOBUF_INCLUDE_DIRS})
-		SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${PROTOBUF_LIBRARIES})
-	ENDIF()
-ENDIF()
-
-# Check if supported linear algebra backend is found
-IF (HAVE_CXX0X OR HAVE_CXX11)
-	SET(HAVE_LINALG_LIB 1)
-ELSE ()
-	MESSAGE ("-- LINALG uses c++11 features. Please use a supported compiler")
-ENDIF ()
-
-# Linear algebra default global backend setups
-if( NOT LINALG_DEFAULT_BACKEND )
-  set( LINALG_DEFAULT_BACKEND EIGEN3 CACHE STRING
-       "Set global linear algebra backend library for all modules: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_DEFAULT_BACKEND STREQUAL "EIGEN3")
-	SET(USE_EIGEN3 1)
-	MESSAGE("-- Eigen3 set as default global linear algebra backend library")
-ELSEIF (LINALG_DEFAULT_BACKEND STREQUAL "VIENNACL")
-	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(USE_VIENNACL 1)
-		MESSAGE("-- ViennaCL set as default global linear algebra backend library")
-	ELSE ()
-		MESSAGE("-- Could NOT set ViennaCL as default global linear algebra backend")
-	ENDIF ()
-ENDIF ()
-
-# Linear algebra default module specific backend setup
-
-# Core module
-if( NOT LINALG_CORE_LIB )
-  set( LINALG_CORE_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for core module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_CORE_LIB STREQUAL "EIGEN3")
-	SET(USE_EIGEN3_CORE 1)
-	MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
-ELSEIF (LINALG_CORE_LIB STREQUAL "VIENNACL")
-	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(USE_VIENNACL_CORE 1)
-		MESSAGE("-- ViennaCL set as default core module (linalg) backend library")
-	ELSE ()
-		MESSAGE("-- Could NOT set ViennaCL as default core module (linalg) backend")
-	ENDIF ()
-ENDIF ()
-
-# Reduction module
-if( NOT LINALG_REDUX_LIB )
-  set( LINALG_REDUX_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for reduction module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_REDUX_LIB STREQUAL "EIGEN3")
-	SET(USE_EIGEN3_REDUX 1)
-	MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
-ELSEIF (LINALG_REDUX_LIB STREQUAL "VIENNACL")
-	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(USE_VIENNACL_REDUX 1)
-		MESSAGE("-- ViennaCL set as default reduction module (linalg) backend library")
-	ELSE ()
-		MESSAGE("-- Could NOT set ViennaCL as default reduction module (linalg) backend")
-	ENDIF ()
-ENDIF ()
-
-# Linear solver module
-if( NOT LINALG_LINEAR_SOLVER_LIB )
-  set( LINALG_SOLVER_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for linear solver module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_LINEAR_SOLVER_LIB STREQUAL "EIGEN3")
-	SET(USE_EIGEN3_LINSLV 1)
-	MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
-ELSEIF (LINALG_LINEAR_SOLVER_LIB STREQUAL "VIENNACL")
-	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(USE_VIENNACL_LINSLV 1)
-		MESSAGE("-- ViennaCL set as default linear solver module (linalg) backend library")
-	ELSE ()
-		MESSAGE("-- Could NOT set ViennaCL as default linear solver module (linalg) backend")
-	ENDIF ()
-ENDIF ()
-
-# Eigen solver module
-if( NOT LINALG_EIGENSOLVER_LIB )
-  set( LINALG_EIGENSOLVER_LIB EIGEN3 CACHE STRING
-       "Set linear algebra backend library for eigen solver module: EIGEN3, VIENNACL"
-       FORCE )
-endif()
-IF (LINALG_EIGENSOLVER_LIB STREQUAL "EIGEN3")
-	SET(USE_EIGEN3_EIGSLV 1)
-	MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
-ELSEIF (LINALG_EIGENSOLVER_LIB STREQUAL "VIENNACL")
-	FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM} REQUIRED)
-	IF (VIENNACL_FOUND AND ENABLE_VIENNACL)
-		SET(USE_VIENNACL_EIGSLV 1)
-		MESSAGE("-- ViennaCL set as default eigen solver module (linalg) backend library")
-	ELSE ()
-		MESSAGE("-- Could NOT set ViennaCL as default eigen solver module (linalg) backend")
-	ENDIF ()
-ENDIF ()
 
 #SWIG Interfaces
-LIST(APPEND CMAKE_SWIG_FLAGS "-w473")
-LIST(APPEND CMAKE_SWIG_FLAGS "-w454")
-LIST(APPEND CMAKE_SWIG_FLAGS "-w312")
-LIST(APPEND CMAKE_SWIG_FLAGS "-w325")
-LIST(APPEND CMAKE_SWIG_FLAGS "-fvirtual")
+ForEach(SwigFlag "-w473" "-w454" "-w312" "-w325" "-fvirtual")
+    LIST(APPEND CMAKE_SWIG_FLAGS ${SwigFlag})
+EndForEach()
 
 OPTION(SWIG_SINGLE_THREADED "Build modular interfaces single-threaded to reduce memory usage" OFF)
 
@@ -973,81 +450,32 @@ ENDIF(REDUCE_SWIG_DEBUG)
 
 # python modular
 IF (PythonModular)
-	# find python library for the found python interpreter
-	# i.e. versions should match!
-	FIND_PACKAGE(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
-	FIND_PACKAGE(NumPy REQUIRED)
-
-	SET(HAVE_PYTHON 1)
-
-	IF(PythonModular)
-		#custom swig flags for python modular interface
-		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
-			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
-			SET(PYTHON3 1)
-		ELSE()
-			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-		ENDIF()
-
-		# SWIG was broken for combining -builtin and -modernargs
-		# from v3.0.0 and until 3.0.4.  This bug was fixed in
-		# v3.0.5.  Make CMake emit an error and fail to configure.
-		IF((NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0") AND
-			("${SWIG_VERSION}" VERSION_LESS "3.0.5"))
-			MESSAGE(FATAL_ERROR
-				"This version of SWIG is broken for building Python_modular interface.  Use SWIG < 3.0.0 or >= 3.0.5.")
-		ENDIF((NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0") AND
-			("${SWIG_VERSION}" VERSION_LESS "3.0.5"))
-
-		# SWIG-generated Python-wrappers fail to build
-		# for Python >=3.5 with SWIG < 3.0.8.  Make CMake
-		# emit an error and fail to configure.
-		IF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
-			("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
-			MESSAGE(FATAL_ERROR
-				"Building Python_modular interface for Python >= 3.5 requires SWIG >= 3.0.8.")
-		ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
-			("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
-
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-		ENDIF()
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 	ENDIF()
 ENDIF()
 
 # lua modular
 IF (LuaModular)
-	#FIND_PACKAGE(Lua51 REQUIRED)
-	pkg_search_module(LUA REQUIRED lua lua5.1)
-	IF (NOT LUA_FOUND)
-	MESSAGE(FATAL_ERROR "Lua could not be found!\n"
-		"Lua is required for compiling lua modular interface!")
-    ENDIF ()
-	SET(LUA_EXECUTABLE lua)
-	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 	ENDIF()
 ENDIF()
 
+# scala modular
+IF (ScalaModular)
+	# Java needed because Scala extends Java Classes and uses the executable generated from Java example for Integration testing
+	set(JavaModular "ON")
+	FIND_PACKAGE(Scala REQUIRED)
+	IF(NOT JavaModular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+		ENDIF()
+	ENDIF()
+ENDIF()
+
 # java modular
 IF (JavaModular)
-	FIND_PACKAGE(Java REQUIRED)
-	FIND_PACKAGE(JNI REQUIRED)
-
-	#find jblas
-	INCLUDE(UseJava)
-	FIND_JAR(JBLAS NAMES jblas jblas-1.2.0
-			PATHS /usr/lib/java /opt/local/share/java
-				  ENV JBLAS_PATH)
-	IF(JBLAS)
-		SET(HAVE_JBLAS 1)
-	ELSE()
-		MESSAGE(FATAL_ERROR "JBlas could not be found!\n"
-			"It is required for java modular interface!!!")
-	ENDIF()
-
-	SET(TARGET_SWIGFLAGS "-package\;org.shogun")
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 	ENDIF()
@@ -1055,30 +483,18 @@ ENDIF()
 
 # ruby modular
 IF (RubyModular)
-	FIND_PACKAGE(Ruby REQUIRED)
-	FIND_PACKAGE(RubyNArray REQUIRED)
-	SET(NARRAY_LIB ${RUBY_NARRAY_LIBRARY})
-	UNSET(TARGET_SWIGFLAGS)
 	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
 ENDIF()
 
 # octave modular
 IF (OctaveModular)
-	FIND_PACKAGE(Octave 3.6 REQUIRED)
-	SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
-
-	IF(OctaveModular)
-		UNSET(TARGET_SWIGFLAGS)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
-		ENDIF()
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 	ENDIF()
 ENDIF()
 
 # csharp modular
 IF (CSharpModular)
-	FIND_PACKAGE(CSharp REQUIRED)
-	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 	ENDIF()
@@ -1086,13 +502,8 @@ ENDIF()
 
 # r modular
 IF (RModular)
-	FIND_PACKAGE(R REQUIRED)
-
-	IF (RModular)
-		UNSET(TARGET_SWIGFLAGS)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
-		ENDIF()
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 	ENDIF()
 ENDIF()
 
@@ -1127,33 +538,23 @@ OPTION(DISABLE_META_INTEGRATION_TESTS "Disable meta integration testing to speed
 
 
 IF(ENABLE_TESTING)
-	FIND_PACKAGE(Jinja2)
-	IF(NOT BUILD_DASHBOARD_REPORTS)
-		enable_testing()
+	IF (NOT LIBSHOGUN)
+		MESSAGE(FATAL_ERROR "Cannot compile tests without libshogun!")
 	ENDIF()
 
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+		IF(NOT BUILD_DASHBOARD_REPORTS)
+			enable_testing()
+		ENDIF()
+
 		IF (NOT TRAVIS_DISABLE_UNIT_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/unit)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
 		ENDIF()
 
-		IF(BUILD_META_EXAMPLES)
-		    SET(USE_META_INTEGRATION_TESTS 1)
-		    IF(NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
-                add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
-            ENDIF()
+		IF(BUILD_META_EXAMPLES AND NOT DISABLE_META_INTEGRATION_TESTS AND EXISTS ${CMAKE_SOURCE_DIR}/tests/meta)
+            add_subdirectory(${CMAKE_SOURCE_DIR}/tests/meta)
         ENDIF()
 	ENDIF()
-ENDIF()
-
-# save configuration options
-MergeCFLAGS()
-SET(CONFIGURE_OPTIONS "TODO")
-SET(COMPFLAGS_CPP "${MERGED_CXX_FLAGS}")
-SET(LINKFLAGS "${POSTLINKFLAGS}")
-
-IF(EXISTS ${CMAKE_SOURCE_DIR}/src/shogun)
-	add_subdirectory(${CMAKE_SOURCE_DIR}/src/shogun)
 ENDIF()
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
@@ -1163,9 +564,10 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
     IF(ENABLE_TESTING OR BUILD_EXAMPLES)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
+
 	IF(BUILD_META_EXAMPLES)
         # allow meta examples without adding examples dir itself
-        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples/meta)
+        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
     ENDIF()
 ENDIF()
 
@@ -1175,53 +577,31 @@ ENDIF()
 
 include(ShogunPackaging)
 
-message(STATUS "===================================================================================================================")
-message(STATUS "Summary of Configuration Variables")
+PrintLine()
+PrintStatus("Summary of Configuration Variables")
 include(FeatureSummary)
 feature_summary(WHAT ALL)
 
-message(STATUS "===================================================================================================================")
-message(STATUS "Enabled Integration")
+PrintLine()
+PrintStatus("Integration")
 
 PrintInterfaceStatus("OpenCV Integration" OpenCV)
 
-message(STATUS
-"===================================================================================================================")
-message(STATUS "Enabled Interfaces")
+PrintLine()
+PrintStatus("Interfaces")
 
-message(STATUS "  libshogun is ON")
+ForEach(Interface ${AVAILABLE_INTERFACES})
+    PrintInterfaceStatus("${${Interface}Description} interface" ${Interface})
+EndForEach(Interface)
 
-PrintInterfaceStatus("python" PythonModular)
-PrintInterfaceStatus("octave" OctaveModular)
-PrintInterfaceStatus("java" JavaModular)
-PrintInterfaceStatus("perl" PerlModular)
-PrintInterfaceStatus("ruby" RubyModular)
-PrintInterfaceStatus("csharp" CSharpModular)
-PrintInterfaceStatus("R   " RModular)
-PrintInterfaceStatus("lua" LuaModular)
-
-message(STATUS "")
-message(STATUS "")
-message(STATUS "------------------------------------")
-IF(LICENSE_GPL_SHOGUN)
-	message(STATUS "Shogun will be built GPL3 compatible")
-ELSE()
-	message(STATUS "Shogun will be built BSD3 compatible")
-ENDIF()
-message(STATUS "------------------------------------")
-message(STATUS "")
-
-message(STATUS "===================================================================================================================")
-
-message(STATUS "To compile shogun type")
-message(STATUS "  make")
-message(STATUS "")
-message(STATUS "To install shogun to ${CMAKE_INSTALL_PREFIX} type")
-message(STATUS "  make install")
-message(STATUS "")
-message(STATUS "or to install to a custom directory")
-message(STATUS "  make install DESTDIR=/my/special/path")
-message(STATUS "  (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix")
-message(STATUS "===================================================================================================================")
-
-
+PrintLine()
+PrintStatus("To compile shogun type")
+PrintStatus("  make")
+PrintStatus("")
+PrintStatus("To install shogun to ${CMAKE_INSTALL_PREFIX} type")
+PrintStatus("  make install")
+PrintStatus("")
+PrintStatus("or to install to a custom directory")
+PrintStatus("  make install DESTDIR=/my/special/path")
+PrintStatus("  (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix")
+PrintLine()

@@ -44,6 +44,8 @@
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
+// FIXME: do not use eigen in examples, as then we need eigen
+// during compilation of an example.
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/io/CSVFile.h>
 #include <cstdio>

@@ -5,6 +5,14 @@
 
 using namespace shogun;
 
+static void is_eqauls(const SGMatrix<float64_t> a, SGMatrix<float64_t> b, float64_t tolerance = 1E-15)
+{
+	EXPECT_TRUE((a.num_rows == b.num_rows) && (a.num_cols == b.num_cols));
+
+	for (int64_t i=0; i<int64_t(a.num_rows)*a.num_cols; ++i)
+		EXPECT_NEAR(a.matrix[i], b.matrix[i], tolerance);
+}
+
 TEST(PeriodicKernelTest,test_kernel_matrix)
 {
 	// Construct matrix with features
@@ -33,7 +41,7 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	expected_kernel_matrix(1,2) = 0.14718930341788436;
 	expected_kernel_matrix(2,2) = 1.0;
 
-	EXPECT_EQ(true, computed_kernel_matrix.equals(expected_kernel_matrix));
+	is_eqauls(expected_kernel_matrix, computed_kernel_matrix);
 
 	// Clean up
 	SG_UNREF(kernel);
@@ -71,7 +79,7 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	expected_derivative_matrix(1,2) = 0.564039932473408001;
 	expected_derivative_matrix(2,2) = 0.0;
 
-	EXPECT_EQ(true, dMatrix.equals(expected_derivative_matrix));
+	is_eqauls(expected_derivative_matrix, dMatrix);
 
 	// Clean up
 	SG_UNREF(kernel);
@@ -109,7 +117,7 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	expected_derivative_matrix(1,2) = -0.0419672133442629894;
 	expected_derivative_matrix(2,2) = 0.0;
 
-	EXPECT_EQ(true, dMatrix.equals(expected_derivative_matrix));
+	is_eqauls(expected_derivative_matrix, dMatrix);
 
 	// Clean up
 	SG_UNREF(kernel);

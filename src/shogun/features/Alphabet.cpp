@@ -663,7 +663,7 @@ void CAlphabet::copy_histogram(CAlphabet* a)
 				h.vlen, sizeof(histogram)/sizeof(histogram[0]));
 	}
 
-	memcpy(histogram, h.vector, sizeof(histogram));
+	sg_memcpy(histogram, h.vector, sizeof(histogram));
 }
 
 const char* CAlphabet::get_alphabet_name(EAlphabet alphabet)
@@ -830,6 +830,14 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 		for (i=start; i<sequence_length; i++)
 			obs[i-start]=obs[i];
 	}
+}
+
+CSGObject * CAlphabet::clone()
+{
+	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone();
+	alph_clone->init_map_table();
+	alph_clone->copy_histogram(this);
+	return alph_clone;
 }
 
 template <class ST>

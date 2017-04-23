@@ -15,14 +15,10 @@
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
-
-#ifdef HAVE_LINALG_LIB
-#include <shogun/mathematics/linalg/linalg.h>
-
 using namespace linalg;
-#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::init()
 {
@@ -160,7 +156,6 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-#ifdef HAVE_LINALG_LIB
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
 {
@@ -184,7 +179,7 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 
 	SG_DEBUG("Leaving\n");
 
-	return sum_symmetric<Backend::EIGEN3>(block(kmatrix, block_begin,
+	return sum_symmetric(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
 }
 
@@ -224,7 +219,7 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 
 	SG_DEBUG("Leaving\n");
 
-	return sum<Backend::EIGEN3>(block(kmatrix, block_begin_row, block_begin_col,
+	return sum(block(kmatrix, block_begin_row, block_begin_col,
 				block_size_row, block_size_col), no_diag);
 }
 
@@ -250,7 +245,7 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
 	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
 
-	SGVector<float32_t> s=rowwise_sum<Backend::EIGEN3>(block(kmatrix, block_begin,
+	SGVector<float32_t> s=rowwise_sum(block(kmatrix, block_begin,
 				block_begin, block_size, block_size), no_diag);
 
 	// casting to float64_t vector
@@ -290,12 +285,12 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 	// the second column stores the sum of squared kernel values
 	SGMatrix<float64_t> row_sum(block_size, 2);
 
-	SGVector<float32_t> sum=rowwise_sum<Backend::EIGEN3>(block(kmatrix,
+	SGVector<float32_t> sum=rowwise_sum(block(kmatrix,
 				block_begin, block_begin, block_size, block_size), no_diag);
 
-	SGVector<float32_t> sq_sum=rowwise_sum<Backend::EIGEN3>(
-		elementwise_square<Backend::EIGEN3>(block(kmatrix,
-		block_begin, block_begin, block_size, block_size)), no_diag);
+	auto kmatrix_block = block(kmatrix, block_begin, block_begin, block_size, block_size);
+	SGVector<float32_t> sq_sum=rowwise_sum(
+		element_prod(kmatrix_block, kmatrix_block), no_diag);
 
 	for (index_t i=0; i<sum.vlen; ++i)
 		row_sum(i, 0)=sum[i];
@@ -347,11 +342,11 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 	// the nextt block_size_col entries store the col-wise sum of kernel values
 	SGVector<float64_t> sum(block_size_row+block_size_col);
 
-	SGVector<float32_t> rowwise=rowwise_sum<Backend::EIGEN3>(block(kmatrix,
+	SGVector<float32_t> rowwise=rowwise_sum(block(kmatrix,
 				block_begin_row, block_begin_col, block_size_row,
 				block_size_col), no_diag);
 
-	SGVector<float32_t> colwise=colwise_sum<Backend::EIGEN3>(block(kmatrix,
+	SGVector<float32_t> colwise=colwise_sum(block(kmatrix,
 				block_begin_row, block_begin_col, block_size_row,
 				block_size_col), no_diag);
 
@@ -365,7 +360,6 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 
 	return sum;
 }
-#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::cleanup_custom()
 {

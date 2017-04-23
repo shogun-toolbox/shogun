@@ -14,6 +14,7 @@
 #define __SGIO_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #include <dirent.h>
 #include <string.h>
@@ -23,8 +24,6 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-
-#include <shogun/lib/common.h>
 
 namespace shogun
 {
@@ -289,6 +288,12 @@ class SGIO
 			return location_info;
 		}
 
+		/** @return last progress as a percentage */
+		inline float64_t get_last_progress() const
+		{
+			return last_progress;
+		}
+
 		/** get syntax highlight
 		 *
 		 * @return if syntax highlighting is enabled
@@ -457,7 +462,11 @@ class SGIO
 		 */
 		static inline void set_dirname(const char* dirname)
 		{
+#ifdef _MSC_VER
+			strncpy_s(directory_name, FBUFSIZE, dirname, strlen(dirname));
+#else
 			strncpy(directory_name, dirname, FBUFSIZE);
+#endif
 		}
 
 		/** concatenate directory and filename

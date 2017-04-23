@@ -81,13 +81,6 @@ public:
 	~CStreamingVwFeatures();
 
 	/**
-	 * Duplicate this object
-	 *
-	 * @return a copy of this object
-	 */
-	CFeatures* duplicate() const;
-
-	/**
 	 * Sets the read function (in case the examples are
 	 * unlabelled) to get_*_vector() from CStreamingFile.
 	 *

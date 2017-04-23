@@ -146,7 +146,7 @@ float64_t CCommWordStringKernel::compute_helper(
 		if (alen>0)
 		{
 			avec=SG_MALLOC(uint16_t, alen);
-			memcpy(avec, av, sizeof(uint16_t)*alen);
+			sg_memcpy(avec, av, sizeof(uint16_t)*alen);
 			CMath::radix_sort(avec, alen);
 		}
 		else
@@ -155,7 +155,7 @@ float64_t CCommWordStringKernel::compute_helper(
 		if (blen>0)
 		{
 			bvec=SG_MALLOC(uint16_t, blen);
-			memcpy(bvec, bv, sizeof(uint16_t)*blen);
+			sg_memcpy(bvec, bv, sizeof(uint16_t)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
 		else
@@ -487,7 +487,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	}
 
 	for (int32_t i=1; i<num_feat; i++)
-		memcpy(&target[num_sym*i], target, num_sym*sizeof(float64_t));
+		sg_memcpy(&target[num_sym*i], target, num_sym*sizeof(float64_t));
 
 	SG_UNREF(alpha);
 

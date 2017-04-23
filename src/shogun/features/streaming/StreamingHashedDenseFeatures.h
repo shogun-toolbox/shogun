@@ -118,13 +118,6 @@ public:
 	virtual int32_t get_num_vectors() const;
 
 	/**
-	 * Duplicate the object.
-	 *
-	 * @return a duplicate object as CFeatures*
-	 */
-	virtual CFeatures* duplicate() const;
-
-	/**
 	 * Sets the read function (in case the examples are
 	 * unlabelled) to get_*_vector() from CStreamingFile.
 	 *

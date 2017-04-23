@@ -93,7 +93,6 @@ protected:
 	 */
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 
-#ifdef HAVE_LINALG_LIB
 public:
 	/** constructor
 	 *
@@ -205,8 +204,6 @@ protected:
 	virtual float64_t get_parameter_gradient_helper(const TParameter* param,
 		index_t index, int32_t idx_a, int32_t idx_b,
 		SGVector<float64_t> avec, SGVector<float64_t> bvec);
-
-#endif /* HAVE_LINALG_LIB */
 };
 }
 #endif /* _GAUSSIANARDKERNEL_H_ */

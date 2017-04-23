@@ -191,7 +191,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 				new_w[i] = result.w[i];
 			set_bias(result.c[0]);
 
-			w = new_w;
+			set_w(new_w);
 		}
 		break;
 		case TREE:
@@ -221,7 +221,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 
 			set_bias(result.c[0]);
 
-			w = new_w;
+			set_w(new_w);
 		}
 		break;
 		default:
@@ -233,6 +233,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 
 float64_t CFeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
 {
+	SGVector<float64_t> w = get_w();
 	return CMath::exp(-(features->dense_dot(vec_idx, w.vector, w.vlen) + bias));
 }
 
@@ -250,6 +251,7 @@ SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures
 		return SGVector<float64_t>();
 
 	int32_t num=features->get_num_vectors();
+	SGVector<float64_t> w = get_w();
 	ASSERT(num>0)
 	ASSERT(w.vlen==features->get_dim_feature_space())
 

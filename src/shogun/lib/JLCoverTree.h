@@ -11,7 +11,11 @@
 #ifndef NDEBUG
 #define NDEBUG
 #endif  // NDEBUG
-#include<assert.h>
+#include<cassert>
+#ifdef _WIN32
+#undef far
+#undef near
+#endif
 
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com

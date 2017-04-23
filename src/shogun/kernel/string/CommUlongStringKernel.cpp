@@ -239,7 +239,7 @@ bool CCommUlongStringKernel::init_optimization(
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	SG_PRINT("Done.         \n")
+	SG_DEBUG("Done.         \n")
 
 	set_is_initialized(true);
 	return true;

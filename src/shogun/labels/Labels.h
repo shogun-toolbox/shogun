@@ -96,6 +96,11 @@ public:
 	 * Calls subset_changed_post() afterwards */
 	virtual void remove_all_subsets();
 
+	/**
+	 * @return subset stack
+	 */
+	virtual CSubsetStack* get_subset_stack();
+
 	/** set the confidence value for a particular label
 	 *
 	 * @param value value to set

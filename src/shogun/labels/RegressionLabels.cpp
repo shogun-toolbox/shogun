@@ -35,6 +35,6 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
-	
+
 	return shallow_copy_labels;
 }

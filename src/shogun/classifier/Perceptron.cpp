@@ -12,6 +12,7 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -53,22 +54,25 @@ bool CPerceptron::train_machine(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen)
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
+	SGVector<float64_t> w = get_w();
 	if (m_initialize_hyperplane)
 	{
+		w = SGVector<float64_t>(num_feat);
 		//start with uniform w, bias=0
-		w=SGVector<float64_t>(num_feat);
 		bias=0;
 		for (int32_t i=0; i<num_feat; i++)
 			w.vector[i]=1.0/num_feat;
 	}
 
+	CSignal::clear_cancel();
+
 	//loop till we either get everything classified right or reach max_iter
-	while (!converged && iter<max_iter)
+	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
 	{
 		converged=true;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			output[i]=apply_one(i);
+			output[i] = features->dense_dot(i, w.vector, w.vlen) + bias;
 
 			if (CMath::sign<float64_t>(output[i]) != train_labels.vector[i])
 			{
@@ -87,6 +91,8 @@ bool CPerceptron::train_machine(CFeatures* data)
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter)
 
 	SG_FREE(output);
+
+	set_w(w);
 
 	return converged;
 }

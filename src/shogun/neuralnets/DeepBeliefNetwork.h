@@ -39,7 +39,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/neuralnets/RBM.h>
-#include <lib/SGMatrixList.h>
+#include <shogun/lib/SGMatrixList.h>
 
 namespace shogun
 {

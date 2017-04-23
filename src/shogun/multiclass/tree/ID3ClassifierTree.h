@@ -45,16 +45,16 @@ namespace shogun
 /** @brief class ID3ClassifierTree, implements classifier tree for discrete feature
  * values using the ID3 algorithm. The training algorithm implemented is as follows :
  *
- * function ID3 (R: a set of non-categorical attributes, C: the categorical attribute, S: a training set)\n
+ * function ID3 (R: a set of features, C: the Labels, S: a training set)\n
  * returns a decision tree;
  *
  * begin \n
- *	If S consists of records all with the same value for the categorical attribute,\n
+ *	If S consists of records all with the same value for the Label,\n
  *	   return a single node with that value;
  *
  *	If R is empty,\n
  * 	   return a single node with as value the most frequent
- * of the values of the categorical attribute that are found in records of S;\n
+ * of the values of the Label that are found in records of S;\n
  * [note that then there will be errors, that is, records that will be improperly classified];
  *
  *	Let D be the attribute with largest Gain(D,S)

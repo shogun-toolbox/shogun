@@ -1,0 +1,36 @@
+CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("../../data/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("../../data/classifier_4class_2d_linear_labels_test.dat")
+Math:init_random(1)
+
+#![create_features]
+RealFeatures features_train(f_feats_train)
+RealFeatures features_test(f_feats_test)
+MulticlassLabels labels_train(f_labels_train)
+MulticlassLabels labels_test(f_labels_test)
+#![create_features]
+
+#![set_attribute_types]
+BoolVector ft(2)
+ft[0] = False
+ft[1] = False
+#![set_attribute_types]
+
+#![create_instance]
+CARTree classifier(ft,enum EProblemType.PT_MULTICLASS, 5, True)
+classifier.set_labels(labels_train)
+#![create_instance]
+
+#![train_and_apply]
+classifier.train(features_train)
+MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+MulticlassAccuracy eval()
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_predict.get_labels()

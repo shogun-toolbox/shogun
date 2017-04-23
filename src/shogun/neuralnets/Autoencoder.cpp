@@ -36,7 +36,7 @@
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <features/DenseFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 

@@ -90,7 +90,7 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 	SGVector<index_t> result(num_elements, true);
 
 	/* copy data */
-	memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
+	sg_memcpy(result.vector, to_copy->get_array(), sizeof(index_t)*num_elements);
 
 	SG_UNREF(to_copy);
 

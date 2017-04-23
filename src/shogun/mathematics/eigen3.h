@@ -76,6 +76,11 @@
 	// c.f. github isse #3486
 	#define EIGEN_WITH_OPERATOR_BUG 1
 #endif
+
+#if ((EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && \
+	((EIGEN_MINOR_VERSION >= 93)))
+	#define EIGEN_WITH_TRANSPOSITION_BUG 1
+#endif
 namespace shogun
 {
 template<class T> class SGSparseMatrix;

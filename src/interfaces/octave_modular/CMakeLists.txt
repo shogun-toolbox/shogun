@@ -1,9 +1,14 @@
+FIND_PACKAGE(Octave 3.6 REQUIRED)
+SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
+UNSET(TARGET_SWIGFLAGS)
+
 include(CommonModularInterface)
 include_directories(${OCTAVE_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} ${OCTAVE_LIBRARY})
 set_target_properties(octave_modular PROPERTIES PREFIX "")
 set_target_properties(octave_modular PROPERTIES SUFFIX ".oct")
+target_compile_definitions(octave_modular PRIVATE "OCTAVE_APIVERSION=${OCTAVE_API_VERSION}")
 
 SET(OCTAVE_MODULAR_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 install (TARGETS octave_modular

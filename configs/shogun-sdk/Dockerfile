@@ -33,3 +33,9 @@ RUN cd /tmp;\
     cd arprec-2.2.18;\
     ./configure --enable-shared;\
     make install; ldconfig
+
+ADD http://www.scala-lang.org/files/archive/scala-2.11.7.deb /tmp/scala.deb
+RUN sudo dpkg -i /tmp/scala.deb
+
+ADD http://dl.bintray.com/sbt/debian/sbt-0.13.6.deb /tmp/sbt.deb
+RUN sudo dpkg -i /tmp/sbt.deb

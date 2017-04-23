@@ -33,6 +33,9 @@
  *
  * Authors: Heiko Strathmann
  */
+
+#include <shogun/lib/config.h>
+
 #ifdef USE_META_INTEGRATION_TESTS
 
 #ifndef WRAPPED_OBJECT_ARRAY_H__

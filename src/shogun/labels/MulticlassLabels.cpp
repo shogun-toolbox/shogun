@@ -122,7 +122,7 @@ SGVector<float64_t> CMulticlassLabels::get_unique_labels()
 	unique_labels.vlen=SGVector<float64_t>::unique(unique_labels.vector, unique_labels.vlen);
 
 	SGVector<float64_t> result(unique_labels.vlen);
-	memcpy(result.vector, unique_labels.vector,
+	sg_memcpy(result.vector, unique_labels.vector,
 			sizeof(float64_t)*unique_labels.vlen);
 
 	return result;
@@ -144,6 +144,6 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
-	
-	return shallow_copy_labels;	
+
+	return shallow_copy_labels;
 }

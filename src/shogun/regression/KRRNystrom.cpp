@@ -93,7 +93,7 @@ bool CKRRNystrom::solve_krr_system()
 	}
 	#pragma omp parallel for
 	for (index_t i=0; i<m_num_rkhs_basis; ++i)
-		memcpy(K_mm.matrix+i*m_num_rkhs_basis, K_nm.get_row_vector(col[i]), m_num_rkhs_basis*sizeof(float64_t));
+		sg_memcpy(K_mm.matrix+i*m_num_rkhs_basis, K_nm.get_row_vector(col[i]), m_num_rkhs_basis*sizeof(float64_t));
 
 	Map<MatrixXd> K_mm_eig(K_mm.matrix, m_num_rkhs_basis, m_num_rkhs_basis);
 	Map<MatrixXd> K_nm_eig(K_nm.matrix, n, m_num_rkhs_basis);

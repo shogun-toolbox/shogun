@@ -14,12 +14,8 @@
 
 using namespace shogun;
 
-TEST(StringFeaturesTest,copy_subset)
+SGStringList<char> generateRandomData(index_t num_strings=10, index_t max_string_length=20, index_t min_string_length=10)
 {
-	index_t num_strings=10;
-	index_t max_string_length=20;
-	index_t min_string_length=max_string_length/2;
-
 	SGStringList<char> strings(num_strings, max_string_length);
 
 	//SG_SPRINT("original string data:\n");
@@ -45,6 +41,12 @@ TEST(StringFeaturesTest,copy_subset)
 
 		strings.strings[i]=current;
 	}
+	return strings;
+}
+
+TEST(StringFeaturesTest,copy_subset)
+{
+	SGStringList<char> strings = generateRandomData();
 
 	/* create num_feautres 2-dimensional vectors */
 	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
@@ -105,4 +107,31 @@ TEST(StringFeaturesTest,copy_subset)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
+}
+
+TEST(StringFeaturesTest,clone)
+{
+	SGStringList<char> strings = generateRandomData();
+
+	CStringFeatures<char>* f=new CStringFeatures<char>(strings, ALPHANUM);
+	CStringFeatures<char>* f_clone = (CStringFeatures<char> *) f->clone();
+
+	for (index_t i=0; i<f->get_num_vectors(); ++i)
+	{
+		index_t a_len;
+		index_t b_len;
+		bool a_free;
+		bool b_free;
+
+		char * a_vec = f->get_feature_vector(i, a_len, a_free);
+		char * b_vec = f_clone->get_feature_vector(i, b_len, b_free);
+
+		EXPECT_EQ(a_len, b_len);
+		EXPECT_EQ(a_free, b_free);
+		for (index_t j = 0; j < a_len; ++j)
+			EXPECT_EQ(a_vec[j], b_vec[j]);
+	}
+
+	SG_UNREF(f);
+	SG_UNREF(f_clone);
 }

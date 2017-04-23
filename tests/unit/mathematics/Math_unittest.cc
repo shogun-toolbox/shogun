@@ -63,6 +63,7 @@ TEST(CMath, qsort_backward_index_test)
 	SG_FREE(i1);
 }
 
+#ifdef HAVE_PTHREAD
 TEST(CMath, parallel_qsort_index_test)
 {
 	// testing parallel_qsort_index on list of zero elements
@@ -75,6 +76,7 @@ TEST(CMath, parallel_qsort_index_test)
 	SG_FREE(v1);
 	SG_FREE(i1);
 }
+#endif
 
 TEST(CMath, float64_tests)
 {
@@ -510,4 +512,18 @@ TEST(CMath, dot)
 
 	float64_t sgdot_val = CMath::dot(a.vector,a.vector, a.vlen);
 	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
+}
+
+TEST(CMath, gcd)
+{
+	EXPECT_EQ(CMath::gcd(12,8), 4);
+	EXPECT_EQ(CMath::gcd(18,27), 9);
+	EXPECT_EQ(CMath::gcd(1,1), 1);
+	EXPECT_EQ(CMath::gcd(1,2), 1);
+	EXPECT_EQ(CMath::gcd(1,0), 1);
+	EXPECT_EQ(CMath::gcd(0,1), 1);
+	EXPECT_THROW(CMath::gcd(0,0), ShogunException);
+	EXPECT_THROW(CMath::gcd(1,-1), ShogunException);
+	EXPECT_THROW(CMath::gcd(-1,1), ShogunException);
+
 }

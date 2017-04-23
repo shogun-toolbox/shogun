@@ -1,17 +1,20 @@
-SET (MSINTTYPES_REVISION 29)
+set (PREFIX ${CMAKE_BINARY_DIR}/MSIntTypes)
+SET (MSINTTYPES_COMMIT f9e7c5758ed9e3b9f4b2394de1881c704dd79de0)
 include(ExternalProject)
 ExternalProject_Add(
 	MSIntTypes
-	SVN_REPOSITORY http://msinttypes.googlecode.com/svn/trunk/
-	SVN_REVISION -r ${MSINTTYPES_REVISION}
+	GIT_REPOSITORY https://github.com/chemeris/msinttypes.git
+	GIT_TAG ${MSINTTYPES_COMMIT}
 	UPDATE_COMMAND ""
     TIMEOUT 10
-	PREFIX ${CMAKE_BINARY_DIR}/MSIntTypes
+	PREFIX ${PREFIX}
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/MSIntTypes
 	SOURCE_DIR ${THIRD_PARTY_DIR}/MSIntTypes
-	INSTALL_COMMAND ""
+	INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory ${PREFIX}/src/MSIntTypes ${THIRD_PARTY_INCLUDE_DIR}/MSIntTypes
 	BUILD_COMMAND ""
 	CONFIGURE_COMMAND ""
 )
 
-LIST(APPEND SHOGUN_DEPENDS MSIntTypes)
+ExternalProject_Get_Property(MSIntTypes SOURCE_DIR)
+SET(MSINTTYPES_INCLUDE_DIR ${SOURCE_DIR})
+add_dependencies(libshogun MSIntTypes)

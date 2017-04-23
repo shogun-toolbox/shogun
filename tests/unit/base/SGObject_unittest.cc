@@ -18,11 +18,12 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
-#include <../tests/unit/base/MockObject.h>
+#include "MockObject.h"
 #include <shogun/base/some.h>
+#ifdef HAVE_PTHREAD
 #include <pthread.h>
+#endif
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -42,13 +43,13 @@ TEST(SGObject,equals_NULL_parameter)
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 	CGaussianKernel* kernel=new CGaussianKernel();
-	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, feats, 5);
-	CQuadraticTimeMMD* mmd2=new CQuadraticTimeMMD(NULL, feats, 5);
+	CGaussianKernel* kernel2=new CGaussianKernel();
+	kernel2->init(feats, feats);
 
-	mmd->equals(mmd2);
+	EXPECT_FALSE(kernel->equals(kernel2));
 
-	SG_UNREF(mmd);
-	SG_UNREF(mmd2);
+	SG_UNREF(kernel);
+	SG_UNREF(kernel2);
 }
 
 #ifdef USE_REFERENCE_COUNTING
@@ -364,7 +365,7 @@ TEST(SGObject, tags_set_get_int)
 }
 
 TEST(SGObject, tags_has)
-{	
+{
 	auto obj = some<CMockObject>();
 
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
@@ -372,7 +373,7 @@ TEST(SGObject, tags_has)
 	EXPECT_EQ(obj->has("int"), true);
 	EXPECT_EQ(obj->has<float64_t>("int"), false);
 	EXPECT_EQ(obj->has<int32_t>("int"), true);
-	
+
 	obj->set("int", 10);
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
 	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);

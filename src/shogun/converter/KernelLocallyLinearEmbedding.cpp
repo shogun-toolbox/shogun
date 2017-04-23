@@ -12,10 +12,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 using namespace shogun;
 
 CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding() :

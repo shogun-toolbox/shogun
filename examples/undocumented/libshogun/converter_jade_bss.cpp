@@ -19,6 +19,8 @@ using namespace shogun;
 
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
+// FIXME: do not use eigen in examples, as then we need eigen
+// during compilation of an example.
 #include <shogun/mathematics/eigen3.h>
 
 #include <shogun/converter/ica/Jade.h>
