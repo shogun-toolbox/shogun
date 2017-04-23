@@ -56,7 +56,7 @@ TEST(SerializationHDF5, {{class}})
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
-	int delete_success = unlink(filename);
+	int delete_success = _unlink(filename);
 	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}
@@ -97,7 +97,7 @@ TEST(SerializationHDF5,{{class}}_{{type}})
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
-	int delete_success = unlink(filename);
+	int delete_success = _unlink(filename);
 	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}

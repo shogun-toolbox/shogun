@@ -40,7 +40,7 @@ TEST(CSVFileTest, vector_int32)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("CSVFileTest_vector_int32_output.txt");
+	_unlink("CSVFileTest_vector_int32_output.txt");
 }
 
 TEST(CSVFileTest, vector_float64)
@@ -72,7 +72,7 @@ TEST(CSVFileTest, vector_float64)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("CSVFileTest_vector_float64_output.txt");
+	_unlink("CSVFileTest_vector_float64_output.txt");
 }
 
 TEST(CSVFileTest, matrix_int32)
@@ -111,7 +111,7 @@ TEST(CSVFileTest, matrix_int32)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("CSVFileTest_matrix_int32_output.txt");
+	_unlink("CSVFileTest_matrix_int32_output.txt");
 }
 
 TEST(CSVFileTest, matrix_float64)
@@ -150,7 +150,7 @@ TEST(CSVFileTest, matrix_float64)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("CSVFileTest_matrix_float64_output.txt");
+	_unlink("CSVFileTest_matrix_float64_output.txt");
 }
 
 TEST(CSVFileTest, string_list_char)
@@ -188,5 +188,5 @@ TEST(CSVFileTest, string_list_char)
 	SG_UNREF(fin);
 	SG_FREE(lines_to_write);
 	SG_FREE(lines_to_read);
-	unlink("CSVFileTest_string_list_char_output.txt");
+	_unlink("CSVFileTest_string_list_char_output.txt");
 }
