@@ -16,7 +16,6 @@ using namespace shogun;
 
 TEST(LibSVR,epsilon_svr_apply)
 {
-	const int32_t kernel_cache=0;
 	const float64_t rbf_width=1;
 	const float64_t svm_C=1;
 	const float64_t svm_eps=0.1;
@@ -54,7 +53,7 @@ TEST(LibSVR,epsilon_svr_apply)
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, rbf_width);
+	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR;
@@ -82,7 +81,6 @@ TEST(LibSVR,epsilon_svr_apply)
 
 TEST(LibSVR,nu_svr_apply)
 {
-	const int32_t kernel_cache=0;
 	const float64_t rbf_width=1;
 	const float64_t svm_C=1;
 	const float64_t svm_nu=0.1;
@@ -120,7 +118,7 @@ TEST(LibSVR,nu_svr_apply)
 	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, rbf_width);
+	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
