@@ -379,9 +379,6 @@ OPTION(USE_PATHDEBUG "Viterbi path debugging" OFF)
 # big states
 OPTION(USE_BIGSTATES "Big (16bit) state" ON)
 
-# Large file
-OPTION(HAVE_LARGEFILE "Large file support" ON)
-
 #kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles
 OPTION(USE_SHORTREAL_KERNELCACHE "Kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles" ON)
 
