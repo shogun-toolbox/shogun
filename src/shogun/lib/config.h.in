@@ -10,7 +10,6 @@
 #cmakedefine HAVE_CURL 1
 #cmakedefine HAVE_JSON 1
 #cmakedefine HAVE_XML 1
-#cmakedefine HAVE_LARGEFILE 1
 #cmakedefine HAVE_DOXYGEN 1
 #cmakedefine HAVE_LAPACK 1
 #cmakedefine HAVE_MVEC 1
