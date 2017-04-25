@@ -108,6 +108,7 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 {
 	const index_t m=5;
@@ -145,6 +146,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	for (auto i=0; i<weights.size(); ++i)
 		EXPECT_NEAR(weights[i], 0.1, 1E-10);
 }
+#endif // USE_GPL_SHOGUN
 
 TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 {
@@ -211,6 +213,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
 }
 
+#ifdef USE_GPL_SHOGUN
 TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 {
 	const index_t m=5;
@@ -248,6 +251,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	for (auto i=0; i<weights.size(); ++i)
 		EXPECT_NEAR(weights[i], 0.1, 1E-10);
 }
+#endif // USE_GPL_SHOGUN
 
 TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 {
