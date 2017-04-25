@@ -136,6 +136,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 #define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_GPL_ONLY { io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_DEPRECATED { io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define SG_PROGRESS(...) {						\
@@ -195,6 +196,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 }
 
 #define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SGPL_ONLY { sg_io->gpl_only(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define ASSERT(x) {																	\
@@ -354,6 +356,12 @@ class SGIO
 		inline void not_implemented(const char* function, const char* file, int32_t line) const
 		{
 			message(MSG_ERROR, function, file, line, "Sorry, not yet implemented .\n");
+		}
+
+		/** print error message 'Only available with GPL parts.' */
+		inline void gpl_only(const char* function, const char* file, int32_t line) const
+		{
+			message(MSG_ERROR, function, file, line, "This feature is only available if Shogun is built with GPL codes.\n");
 		}
 
 		/** print warning message 'function deprecated' */
