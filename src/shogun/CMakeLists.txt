@@ -31,18 +31,23 @@ endif()
 
 # Allow to hide non-bsd compatible codes
 OPTION(LICENSE_GPL_SHOGUN "Include GPL codes of Shogun (non-BSD compatible) in build" ON)
+SET(USE_GPL_SHOGUN 0)
 IF (LICENSE_GPL_SHOGUN)
-        SET(USE_GPL_SHOGUN 1)
         SET(SHOGUN_GPL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/src/gpl)
+        IF(EXISTS "${SHOGUN_GPL_INCLUDE_DIR}")
+            SET(USE_GPL_SHOGUN 1)
 
-        FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
-        FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_HEADER})
+            FILE(GLOB_RECURSE GPL_LIBSHOGUN_SRC ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_CPP} ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_C})
+            FILE(GLOB_RECURSE GPL_LIBSHOGUN_HEADERS ${SHOGUN_GPL_INCLUDE_DIR}/*.${EXT_SRC_HEADER})
 
-        LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
-        LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
-        INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
-ELSE()
-        SET(USE_GPL_SHOGUN 0)
+            LIST(APPEND LIBSHOGUN_SRC ${GPL_LIBSHOGUN_SRC})
+            LIST(APPEND LIBSHOGUN_HEADERS ${GPL_LIBSHOGUN_HEADERS})
+            INCLUDE_DIRECTORIES(${SHOGUN_GPL_INCLUDE_DIR})
+
+            SET(USE_GPL_SHOGUN 1)
+        ELSE()
+            MESSAGE(FATAL_ERROR "Shogun can only be built with GPL codes if the source files are in ${SHOGUN_GPL_INCLUDE_DIR}. Please download or disable.\n")
+        ENDIF()
 ENDIF()
 
 OPTION(USE_SVMLIGHT "SVMLight" ON)
@@ -117,8 +122,10 @@ target_include_directories(shogun PUBLIC
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
   $<INSTALL_INTERFACE:include/shogun>
-  $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>
 )
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun PUBLIC $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
 
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 foreach(dir ${dirs})
@@ -131,9 +138,11 @@ add_library(shogun_deps INTERFACE)
 target_link_libraries(shogun_deps INTERFACE shogun)
 target_include_directories(shogun_deps INTERFACE
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
 )
+IF (${USE_GPL_SHOGUN})
+    target_include_directories(shogun_deps INTERFACE $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>)
+ENDIF()
 
 # add bundled libraries to dependency
 if(SHOGUN_DEPENDS)
