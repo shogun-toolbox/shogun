@@ -130,6 +130,7 @@ add_library(shogun_deps INTERFACE)
 target_link_libraries(shogun_deps INTERFACE shogun)
 target_include_directories(shogun_deps INTERFACE
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${SHOGUN_GPL_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
 )
 
