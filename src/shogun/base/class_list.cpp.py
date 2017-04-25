@@ -9,6 +9,7 @@
 # Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
 
 class_str = 'class'
+public_str = 'public'
 types = ["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
          "INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
 config_tests = ["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK",
@@ -51,6 +52,10 @@ def check_is_in_blacklist(c, lines, line_nr, blacklist):
     return False
 
 
+def is_shogun_class(c):
+    return c.startswith('C') and len(c) > 2 and c[1].isupper()
+
+
 def extract_class_name(lines, line_nr, line, blacklist):
     try:
         if not line:
@@ -67,13 +72,11 @@ def extract_class_name(lines, line_nr, line, blacklist):
 
     c = c.strip(':').strip()
 
-    if not c.startswith('C'):
+    if not is_shogun_class(c):
         return
     if c.endswith(';'):
         return
     if '>' in c:
-        return
-    if not (len(c) > 2 and c[1].isupper()):
         return
     if check_is_in_blacklist(c[1:], lines, line_nr, blacklist):
         return
@@ -81,66 +84,74 @@ def extract_class_name(lines, line_nr, line, blacklist):
     return c[1:]
 
 
-def get_includes(classes, basedir="."):
-    class_headers = []
-    for c, t in classes:
-        class_headers.append(c+".h")
+def extract_base_class_name(lines, line_nr, line):
+    if not public_str in line:
+        line += lines[line_nr+1]
+    s = line[line.index(public_str)+len(public_str):]
+    if '<' in s:
+        b = s[:s.index('<')]
+    else:
+        b = s.split()[0]
+    b = b.strip(' {')
+    if is_shogun_class(b):
+        return b[1:]
 
-    import os
-    result = []
-    for root, dirs, files in os.walk(basedir):
-        for f in files:
-            if f in class_headers:
-                result.append(os.path.join(os.path.relpath(root, basedir), f))
 
-    includes = []
-    result.sort()
-    for o in result:
-        includes.append('#include <shogun/%s>' % o.strip().lstrip('./'))
-    return includes
+def get_includes(classes):
+    includes = set()
+    for attrs in classes.values():
+        if not attrs['abstract']:
+            includes.add('#include <shogun/%s>' % attrs['header'])
+    return sorted(list(includes))
 
 
 def get_definitions(classes):
     definitions = []
     definitions.append("#define %s" % SHOGUN_TEMPLATE_CLASS)
     definitions.append("#define %s" % SHOGUN_BASIC_CLASS)
-    for c, t in classes:
-        d = "static %s CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
-        definitions.append(d)
+    for c, attrs in classes.items():
+        if not (attrs['template'] or attrs['abstract']):
+            d = "static %s CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }"\
+                % (SHOGUN_BASIC_CLASS,c,c)
+            definitions.append(d)
     return definitions
 
 
 def get_template_definitions(classes, supports_complex):
     definitions = []
-    for c, t in classes:
-        d = []
-        d.append("static %s CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n"
-                 % (SHOGUN_TEMPLATE_CLASS, c))
-        for t in types:
-            if t in ('BOOL', 'CHAR'):
-                suffix = ''
-            else:
-                suffix = '_t'
-            if t == 'COMPLEX128' and not supports_complex:
-                d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
-            else:
-                d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n"
-                         % (t, c, t.lower(), suffix))
-        d.append("\t\tcase PT_SGOBJECT:\n")
-        d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
-        definitions.append(''.join(d))
+    for c, attrs in classes.items():
+        if attrs['abstract']:
+            continue
+        if attrs['template'] and attrs['complex_supported'] == supports_complex:
+            d = []
+            d.append("static %s CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n"
+                     % (SHOGUN_TEMPLATE_CLASS, c))
+            for t in types:
+                if t in ('BOOL', 'CHAR'):
+                    suffix = ''
+                else:
+                    suffix = '_t'
+                if t == 'COMPLEX128' and not supports_complex:
+                    d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
+                else:
+                    d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n"
+                             % (t, c, t.lower(), suffix))
+            d.append("\t\tcase PT_SGOBJECT:\n")
+            d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
+            definitions.append(''.join(d))
     return definitions
 
 
 def get_struct(classes):
     struct = []
-    for c, template in classes:
-        prefix = SHOGUN_BASIC_CLASS
-        if template:
-            prefix = SHOGUN_TEMPLATE_CLASS
+    for c, attrs in classes.items():
+        if not attrs['abstract']:
+            prefix = SHOGUN_BASIC_CLASS
+            if attrs['template']:
+                prefix = SHOGUN_TEMPLATE_CLASS
 
-        s = '{"%s", %s __new_C%s},' % (c, prefix, c)
-        struct.append(s)
+            s = '{"%s", %s __new_C%s},' % (c, prefix, c)
+            struct.append(s)
     return struct
 
 
@@ -173,43 +184,38 @@ def check_complex_supported_class(line):
     return supported
 
 
-def test_candidate(c, lines, line_nr, supports_complex):
+def test_candidate(c, lines, line_nr):
     start, stop = extract_block(c, lines, line_nr, len(lines), '{', '}')
     if stop < line_nr:
-        return False, line_nr+1
+        return False, line_nr+1, False
+    abstract = False
     complex_supported = False
     for line_nr in range(start, stop):
         line = lines[line_nr]
         if line.find('virtual') != -1:
             if check_abstract_class(line):
-                return False, stop
+                abstract = True
             else:
                 vstart, vstop = extract_block(c, lines, line_nr,
                                               stop, '(', ')')
                 for line_nr in range(vstart, vstop):
                     line = lines[line_nr]
                     if check_abstract_class(line):
-                        return False, stop
+                        abstract = True
+                        break
         if line.find('supports_complex128_t') != -1:
             if check_complex_supported_class(line):
                 complex_supported = True
-                if not supports_complex:
-                    return False, stop
-    if supports_complex and not complex_supported:
-        return False, stop
 
-    return True, stop
+    return abstract, complex_supported, stop
 
 
-def extract_classes(HEADERS, template, blacklist, supports_complex):
+def extract_classes(HEADERS, blacklist, basedir):
     """
-    Search in headers for non-template/non-abstract class-names starting
-    with `C'.
-
-    Does not support local nor multiple classes and
-    drops classes with pure virtual functions
+    Search in headers for class-names starting with `C'.
+    Does not support local nor multiple classes
     """
-    classes = list()
+    classes = dict()
     for fname in HEADERS:
         try:
             lines = open(fname).readlines()
@@ -223,23 +229,31 @@ def extract_classes(HEADERS, template, blacklist, supports_complex):
                 line_nr += 1
                 continue
             c = None
-            if template:
-                tp = line.find('template')
-                if tp != -1:
-                    line = line[tp:]
-                    cp = line.find('>')
-                    line = line[cp+1:]
-                    cp = line.find(class_str)
-                    if cp != -1:
-                        c = extract_class_name(lines, line_nr, line, blacklist)
+
+            template = False
+            tp = line.find('template')
+            if tp != -1:
+                template = True
+                line = line[tp:]
+                cp = line.find('>')
+                line = line[cp+1:]
+                cp = line.find(class_str)
+                if cp != -1:
+                    c = extract_class_name(lines, line_nr, line, blacklist)
             else:
                 if line.find(class_str) != -1:
                     c = extract_class_name(lines, line_nr, None, blacklist)
             if c:
-                ok, line_nr = test_candidate(c, lines,
-                                             line_nr, supports_complex)
-                if ok:
-                    classes.append((c, template))
+                b = extract_base_class_name(lines, line_nr, line)
+                abstract, complex, line_nr = test_candidate(c, lines, line_nr)
+
+                classes[c] = {
+                    'base': b,
+                    'header': os.path.relpath(fname, basedir),
+                    'template': template,
+                    'abstract': abstract,
+                    'complex_supported': complex
+                }
                 continue
 
             line_nr += 1
@@ -268,6 +282,12 @@ def write_templated_file(fname, substitutes):
             f.write(line)
 
 
+def write_json_file(fname, classes):
+    import json
+    with open(fname, 'w') as f:
+        json.dump(classes, f)
+
+
 def read_config():
     config = dict()
     for line in open('lib/config.h').readlines():
@@ -294,28 +314,27 @@ def get_base_src_dir(headers):
 
 
 if __name__ == '__main__':
-    import sys
+    import sys, os
     TEMPL_FILE = sys.argv[1]
+    JSON_FILE = sys.argv[2]
     HEADERS = None
-    if (sys.argv[2] == "-in"):
+    if (sys.argv[3] == "-in"):
         # read header file list from file
-        with open(sys.argv[3]) as f:
+        with open(sys.argv[4]) as f:
             content = f.readlines()
             HEADERS = [x.strip() for x in content]
     else:
-        HEADERS = sys.argv[2:]
+        HEADERS = sys.argv[3:]
 
     blacklist = get_blacklist()
 
     base_src_dir = get_base_src_dir(HEADERS)
-    classes = extract_classes(HEADERS, False, blacklist, False)
-    template_classes = extract_classes(HEADERS, True, blacklist, False)
-    complex_template_classes = extract_classes(HEADERS, True, blacklist, True)
-    includes = get_includes(classes+template_classes+complex_template_classes, basedir=base_src_dir)
+    classes = extract_classes(HEADERS, blacklist, base_src_dir)
+    includes = get_includes(classes)
     definitions = get_definitions(classes)
-    template_definitions = get_template_definitions(template_classes, False)
-    complex_template_definitions = get_template_definitions(complex_template_classes, True)
-    struct = get_struct(classes+template_classes+complex_template_classes)
+    template_definitions = get_template_definitions(classes, False)
+    complex_template_definitions = get_template_definitions(classes, True)
+    struct = get_struct(classes)
     substitutes = {'includes': includes,
                    'definitions': definitions,
                    'template_definitions': template_definitions,
@@ -324,3 +343,5 @@ if __name__ == '__main__':
                    }
 
     write_templated_file(TEMPL_FILE, substitutes)
+
+    write_json_file(JSON_FILE, classes)

@@ -53,6 +53,7 @@ add_dependencies(libshogun version)
 FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_SRC_CPP} generated_cpp "${template}")
   STRING(REGEX REPLACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} generated_cpp "${generated_cpp}")
+  STRING(REGEX REPLACE ${EXT_SRC_CPP} ${EXT_CPP_JSON} generated_json "${generated_cpp}")
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
 
@@ -63,7 +64,8 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
 
     ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
+        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${generated_json}
+        -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
         DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating ${generated_cpp}"
@@ -71,7 +73,7 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   ELSE()
     ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${template} ${generated_cpp}
-        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${LIBSHOGUN_HEADERS}
+        COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} ${generated_json} ${LIBSHOGUN_HEADERS}
         DEPENDS ${template} ${generator_script} version ${LIBSHOGUN_HEADERS}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating ${generated_cpp}"
