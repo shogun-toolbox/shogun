@@ -510,7 +510,7 @@ IF (CTAGS_FOUND)
         COMMAND ${CTAGS_EXECUTABLE} -f ${CTAGS_FILE}
         # functions, classes, macroses, enumerations, enumerators, typedefs
         --c++-kinds=fcdget
-        -R ${CMAKE_CURRENT_SOURCE_DIR})
+        -R ${CMAKE_SOURCE_DIR})
     ADD_CUSTOM_TARGET(ctags DEPENDS ${CTAGS_FILE})
     SET_SOURCE_FILES_PROPERTIES(${CTAGS_FILE} PROPERTIES GENERATED 1)
 ENDIF()
