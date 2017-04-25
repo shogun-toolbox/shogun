@@ -29,6 +29,9 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <functional>
 #include <algorithm>
 #include <numeric>
@@ -37,11 +40,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
-//#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/external/libqp.h>
-//#endif // USE_GPL_SHOGUN
 
 using namespace shogun;
 using namespace internal;
@@ -49,7 +50,6 @@ using namespace internal;
 struct OptimizationSolver::Self
 {
 	Self(SGVector<float64_t> mmds, SGMatrix<float64_t> Q);
-//#ifdef USE_GPL_SHOGUN
 	SGVector<float64_t> solve() const;
 	void init();
 	static const float64_t* get_Q_col(uint32_t i);
@@ -60,23 +60,17 @@ struct OptimizationSolver::Self
 	float64_t opt_low_cut;
 	SGVector<float64_t> m_mmds;
 	static SGMatrix<float64_t> m_Q;
-//#endif // USE_GPL_SHOGUN
 };
 
-//#ifdef USE_GPL_SHOGUN
 SGMatrix<float64_t> OptimizationSolver::Self::m_Q=SGMatrix<float64_t>();
-//#endif // USE_GPL_SHOGUN
 
 OptimizationSolver::Self::Self(SGVector<float64_t> mmds, SGMatrix<float64_t> Q)
 {
-//#ifdef USE_GPL_SHOGUN
 	m_Q=Q;
 	m_mmds=mmds;
 	init();
-//#endif // USE_GPL_SHOGUN
 }
 
-//#ifdef USE_GPL_SHOGUN
 void OptimizationSolver::Self::init()
 {
 	opt_max_iterations=10000;
@@ -163,7 +157,6 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 	}
 	return weights;
 }
-//#endif // USE_GPL_SHOGUN
 
 OptimizationSolver::OptimizationSolver(const SGVector<float64_t>& mmds, const SGMatrix<float64_t>& Q)
 {
@@ -176,10 +169,6 @@ OptimizationSolver::~OptimizationSolver()
 
 SGVector<float64_t> OptimizationSolver::solve() const
 {
-//#ifdef USE_GPL_SHOGUN
 	return self->solve();
-//#else // USE_GPL_SHOGUN
-//	SG_SWARNING("Presently this feature is only available with GNU GPLv3 license!");
-//	return SGVector<float64_t>();
-//#endif // USE_GPL_SHOGUN
 }
+#endif // USE_GPL_SHOGUN

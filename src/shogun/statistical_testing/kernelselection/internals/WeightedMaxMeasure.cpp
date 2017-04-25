@@ -36,6 +36,8 @@
 #include <shogun/statistical_testing/MMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
+
+#ifdef USE_GPL_SHOGUN
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
 using namespace shogun;
@@ -84,3 +86,4 @@ CKernel* WeightedMaxMeasure::select_kernel()
 	SG_SDEBUG("Created a weighted kernel!\n");
 	return kernel;
 }
+#endif // USE_GPL_SHOGUN

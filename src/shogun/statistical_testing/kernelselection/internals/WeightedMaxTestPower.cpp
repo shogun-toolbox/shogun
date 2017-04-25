@@ -29,13 +29,15 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/statistical_testing/StreamingMMD.h>
 #include <shogun/statistical_testing/internals/KernelManager.h>
-#include <shogun/statistical_testing/kernelselection/internals/WeightedMaxTestPower.h>
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
 using namespace shogun;
@@ -63,3 +65,4 @@ void WeightedMaxTestPower::compute_measures()
 	for (index_t i=0; i<Q.num_rows; ++i)
 		Q(i, i)+=lambda;
 }
+#endif // USE_GPL_SHOGUN

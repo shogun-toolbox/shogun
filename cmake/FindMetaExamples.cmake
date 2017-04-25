@@ -31,6 +31,8 @@ function(get_excluded_meta_examples)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
 			gaussian_processes/gaussian_process_regression.sg
 			multiclass_classifier/multiclass_logisticregression.sg
+            statistical_testing/linear_time_mmd.sg
+            statistical_testing/quadratic_time_mmd.sg
 			)
 	ENDIF()
 

@@ -32,6 +32,9 @@
 #ifndef OPTIMIZATION_SOLVER_H__
 #define OPTIMIZATION_SOLVER_H__
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <memory>
 #include <shogun/lib/common.h>
 
@@ -62,3 +65,4 @@ private:
 }
 
 #endif // OPTIMIZATION_SOLVER_H__
+#endif // USE_GPL_SHOGUN

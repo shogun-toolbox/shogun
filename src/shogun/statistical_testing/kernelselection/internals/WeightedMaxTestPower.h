@@ -32,6 +32,9 @@
 #ifndef WEIGHTED_MAX_TEST_POWER_H__
 #define WEIGHTED_MAX_TEST_POWER_H__
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/kernelselection/internals/WeightedMaxMeasure.h>
 
@@ -63,3 +66,4 @@ protected:
 }
 
 #endif // WEIGHTED_MAX_TEST_POWER_H__
+#endif //USE_GPL_SHOGUN

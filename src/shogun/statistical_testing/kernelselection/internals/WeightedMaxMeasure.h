@@ -32,8 +32,12 @@
 #ifndef WEIGHTED_MAX_MEASURE_H__
 #define WEIGHTED_MAX_MEASURE_H__
 
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
+
 #include <shogun/lib/common.h>
 #include <shogun/statistical_testing/kernelselection/internals/MaxMeasure.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -63,3 +67,4 @@ protected:
 }
 
 #endif // WEIGHTED_MAX_MEASURE_H__
+#endif // USE_GPL_SHOGUN
