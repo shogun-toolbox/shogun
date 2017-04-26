@@ -111,14 +111,23 @@ def get_includes(classes, headers_absolute_fnames):
         for h in headers_absolute_fnames:
             class_from_header = os.path.splitext(os.path.basename(h))[0]
 
-            # find corresponding abslute header filename
+            # build relative include path from absolute header filename
             if class_from_header in c:
-                # find last occurence of "shogun" dir in header
-                h_split = h.split(os.sep)
-                idx = max([loc for loc, val in enumerate(h_split) if val == 'shogun'])
+                # find *last* occurence of "shogun" dir in header
+                shogun_dir = "shogun"
+                assert shogun_dir in h
+                tails = []
+                head, tail = os.path.split(h)
+                while tail != shogun_dir and len(head)>0:
+                    tails += [tail]
+                    head, tail = os.path.split(head)
+                
+                # construct include path from collected tails
+                tails.reverse()
+                include = os.path.join(*([shogun_dir] + tails))
 
                 # thats your include header
-                includes.append("#include <%s>" % os.sep.join(h_split[idx:]))
+                includes.append("#include <%s>" % include)
 
     return includes
 
