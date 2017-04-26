@@ -55,10 +55,13 @@
 %include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
-%include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
 %include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
 %include <shogun/transfer/multitask/LibLinearMTL.h>
+
+#ifdef USE_GPL_SHOGUN
+%include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
+#endif // USE_GPL_SHOGUN
 
 /* Domain adaptation includes */
 #ifdef USE_SVMLIGHT
