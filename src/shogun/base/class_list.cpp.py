@@ -115,7 +115,7 @@ def get_includes(classes, headers_absolute_fnames):
             if class_from_header in c:
                 # find last occurence of "shogun" dir in header
                 h_split = h.split(os.sep)
-                idx = max(loc for loc, val in enumerate(h_split) if val == 'shogun')
+                idx = max([loc for loc, val in enumerate(h_split) if val == 'shogun'])
 
                 # thats your include header
                 includes.append("#include <%s>" % os.sep.join(h_split[idx:]))
