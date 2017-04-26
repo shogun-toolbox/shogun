@@ -23,10 +23,10 @@
 #include <shogun/mathematics/Math.h>
 #include <limits>
 
-#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
+#if defined HAVE_ARPREC
 #include <arprec/mp_real.h>
 #include <arprec/mp_complex.h>
-#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
+#endif //(HAVE_ARPREC)
 
 namespace shogun
 {
@@ -54,23 +54,23 @@ namespace shogun
  */
 class CJacobiEllipticFunctions: public CSGObject
 {
-#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
+#if defined HAVE_ARPREC
 	typedef mp_real Real;
 	typedef mp_complex Complex;
 #else
 	typedef float64_t Real;
 	typedef complex128_t Complex;
-#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
+#endif //HAVE_ARPREC
 private:
 	static inline Real compute_quarter_period(Real b)
 	{
-#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
+#if defined HAVE_ARPREC
 		const Real eps=mp_real::_eps;
 		const Real pi=mp_real::_pi;
 #else
 		const Real eps=std::numeric_limits<Real>::epsilon();
 		const Real pi=M_PI;
-#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
+#endif //(HAVE_ARPREC)
 		Real a=1.0;
 		Real mm=1.0;
 
@@ -114,7 +114,7 @@ public:
 	static void ellipJC(Complex u, Real m, Complex &sn, Complex &cn,
 		Complex &dn);
 
-#if defined HAVE_ARPREC && defined USE_GPL_SHOGUN
+#if defined HAVE_ARPREC
 	/** Wrapper method for ellipKKp if ARPREC is present (for high precision)
 	 * @param L
 	 * @param K the quarter period (to be computed) on the Real axis
@@ -149,7 +149,7 @@ public:
 		dn=complex128_t(dble(_dn.real),dble(_dn.imag));
 		mp::mp_finalize();
 	}
-#endif //(HAVE_ARPREC && USE_GPL_SHOGUN)
+#endif //(HAVE_ARPREC)
 
 	/** @return object name */
 	virtual const char* get_name() const
