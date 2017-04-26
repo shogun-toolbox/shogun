@@ -188,7 +188,7 @@ class CLinearMachine : public CMachine
 	private:
 
 		/** w */
-		SGVector<float64_t> w;
+		SGVector<float64_t> m_w;
 
 	protected:
 		/** bias */
