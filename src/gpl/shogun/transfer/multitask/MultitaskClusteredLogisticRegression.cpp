@@ -8,7 +8,6 @@
  */
 
 #include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/malsar/malsar_clustered.h>
 #include <shogun/lib/malsar/malsar_options.h>
@@ -139,5 +138,3 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 }
 
 }
-
-#endif //USE_GPL_SHOGUN
