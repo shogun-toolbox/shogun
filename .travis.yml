@@ -54,6 +54,7 @@ matrix:
       services: docker
       env:
         - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - OCTAVE_MODULAR=true
     - compiler: clang
       services: docker
       env:
@@ -68,11 +69,14 @@ matrix:
         - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
-  - echo $CC; echo $CXX
-  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" --name devenv -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" -e "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST" -e "TRAVIS_BRANCH=$TRAVIS_BRANCH" -e "TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"  --name devenv -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
+  - |
+    if [ $CC == "gcc" ] && [ -z $OCTAVE_MODULAR ]; then
+      docker exec -t devenv /bin/sh -c "cd /opt/shogun/; ./scripts/check_format.sh"
+    fi
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; ctest --output-on-failure -j 2"
