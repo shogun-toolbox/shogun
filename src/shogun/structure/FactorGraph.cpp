@@ -49,7 +49,6 @@ CFactorGraph::~CFactorGraph()
 	SG_UNREF(m_datasources);
 	SG_UNREF(m_dset);
 
-#ifdef USE_REFERENCE_COUNTING
 	if (m_factors != NULL)
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
 
@@ -57,7 +56,6 @@ CFactorGraph::~CFactorGraph()
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = %d.\n", m_datasources->ref_count());
 
 	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = %d.\n", this->ref_count());
-#endif
 }
 
 void CFactorGraph::register_parameters()
@@ -79,10 +77,8 @@ void CFactorGraph::init()
 	m_factors = new CDynamicObjectArray();
 	m_datasources = new CDynamicObjectArray();
 
-#ifdef USE_REFERENCE_COUNTING
 	if (m_factors != NULL)
 		SG_DEBUG("CFactorGraph::init(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
-#endif
 
 	// NOTE m_cards cannot be empty
 	m_dset = new CDisjointSet(m_cardinalities.size());

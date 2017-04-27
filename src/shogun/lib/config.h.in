@@ -109,7 +109,6 @@
 #cmakedefine USE_GZIP 1
 #cmakedefine USE_BZIP2 1
 #cmakedefine USE_LZMA 1
-#cmakedefine USE_REFERENCE_COUNTING 1
 #cmakedefine USE_SNAPPY 1
 
 #cmakedefine HAVE_SSE2 1

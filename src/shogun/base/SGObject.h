@@ -44,15 +44,9 @@ template <class T> class SGStringList;
  * define reference counter macros
  ******************************************************************************/
 
-#ifdef USE_REFERENCE_COUNTING
 #define SG_REF(x) { if (x) (x)->ref(); }
 #define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
 #define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
-#else
-#define SG_REF(x)
-#define SG_UNREF(x)
-#define SG_UNREF_NO_NULL(x)
-#endif
 
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
@@ -134,7 +128,6 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
-#ifdef USE_REFERENCE_COUNTING
 	/** increase reference counter
 	 *
 	 * @return reference count
@@ -153,7 +146,6 @@ public:
 	 * @return reference count
 	 */
 	int32_t unref();
-#endif //USE_REFERENCE_COUNTING
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs();

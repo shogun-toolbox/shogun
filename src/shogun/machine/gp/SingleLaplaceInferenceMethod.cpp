@@ -506,10 +506,8 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 	if (opt)
 	{
 		opt->set_target(this);
-#ifdef USE_REFERENCE_COUNTING
 		if(this->ref_count()>1)
 			cleanup=true;
-#endif
 		opt->minimize();
 		opt->unset_target(cleanup);
 	}
@@ -520,10 +518,8 @@ void CSingleLaplaceInferenceMethod::update_alpha()
 
 		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
 		cost_fun->set_target(this);
-#ifdef USE_REFERENCE_COUNTING
 		if(this->ref_count()>1)
 			cleanup=true;
-#endif
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function(false);

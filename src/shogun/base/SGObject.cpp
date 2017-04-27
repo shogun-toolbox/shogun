@@ -180,7 +180,6 @@ CSGObject::~CSGObject()
 	delete m_refcount;
 }
 
-#ifdef USE_REFERENCE_COUNTING
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
@@ -210,7 +209,6 @@ int32_t CSGObject::unref()
 		return m_refcount->ref_count();
 	}
 }
-#endif //USE_REFERENCE_COUNTING
 
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>
