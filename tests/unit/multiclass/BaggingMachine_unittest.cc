@@ -24,7 +24,6 @@
 #define weak 1.
 #define strong 2.
 
-#ifdef USE_REFERENCE_COUNTING
 using namespace shogun;
 using ::testing::Return;
 
@@ -239,4 +238,3 @@ TEST(BaggingMachine,classify_CART)
 	SG_UNREF(c);
 	SG_UNREF(eval);
 }
-#endif

@@ -39,8 +39,6 @@ TEST(LatentModel, argmax_h)
 	SG_UNREF(data);
 }
 
-#ifdef USE_REFERENCE_COUNTING
-
 #ifdef FREEBSD
 TEST(LatentSVM, DISABLED_ctor)
 #else
@@ -109,6 +107,4 @@ TEST(LatentSVM, apply)
 	SG_UNREF(lsvm);
 	SG_UNREF(dense_feats);
 }
-#endif
-
 #endif //USE_GPL_SHOGUN

@@ -374,9 +374,6 @@ SET(MEXP "19937" CACHE STRING "PRNG Mersenne exponent")
 SET(SFMT_MEXP ${MEXP})
 SET(DSFMT_MEXP ${MEXP})
 
-# Reference counting
-OPTION(USE_REFERENCE_COUNTING "Reference Counting" ON)
-
 OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
 
 OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)

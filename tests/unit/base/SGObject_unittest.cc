@@ -52,7 +52,6 @@ TEST(SGObject,equals_NULL_parameter)
 	SG_UNREF(kernel2);
 }
 
-#ifdef USE_REFERENCE_COUNTING
 TEST(SGObject,DISABLED_ref_copy_constructor)
 {
 	CBinaryLabels* labs = new CBinaryLabels(10);
@@ -80,7 +79,6 @@ TEST(SGObject,ref_unref_simple)
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
 }
-#endif
 
 TEST(SGObject,equals_null)
 {
