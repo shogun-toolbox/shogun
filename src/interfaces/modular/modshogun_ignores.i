@@ -222,3 +222,5 @@
 %ignore shogun::CMAPInference::CMAPInference();
 %ignore shogun::CGraphCut::CGraphCut();
 %ignore shogun::CFactorGraphModel::CFactorGraphModel();
+
+%ignore shogun::Range;
