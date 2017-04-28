@@ -24,6 +24,7 @@
 #include <shogun/lib/List.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/DynamicArray.h>
+#include <shogun/base/range.h>
 
 namespace shogun
 {
@@ -108,6 +109,22 @@ class CFeatures : public CSGObject
 		 * @return feature class like STRING, SIMPLE, SPARSE...
 		 */
 		virtual EFeatureClass get_feature_class() const=0;
+
+#ifndef SWIG
+		/** returns an iterator of indices
+		 * from 0 to @ref CFeatures::get_num_vectors
+		 *
+		 * Should be used in algorithms in the following way:
+		 * @code
+		 * for (auto idx : features->index_iterator()) { ... }
+		 * @endcode
+		 *
+		 */
+		virtual Range<int32_t> index_iterator() const
+		{
+			return range(0, get_num_vectors());
+		}
+#endif
 
 		/** add preprocessor
 		 *
