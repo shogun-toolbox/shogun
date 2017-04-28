@@ -46,8 +46,8 @@
  #include <shogun/multiclass/ecoc/ECOCAEDDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
 
- #include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
+ #include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
  #include <shogun/multiclass/MulticlassLogisticRegression.h>
 #endif //USE_GPL_SHOGUN
  #include <shogun/multiclass/MulticlassLibLinear.h>
