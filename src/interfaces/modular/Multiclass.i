@@ -52,8 +52,8 @@
 %rename(ECOCAEDDecoder) CECOCAEDDecoder;
 %rename(ECOCLLBDecoder) CECOCLLBDecoder;
 
-%rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
 #ifdef USE_GPL_SHOGUN
+%rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
 %rename(MulticlassLogisticRegression) CMulticlassLogisticRegression;
 #endif //USE_GPL_SHOGUN
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
@@ -123,8 +123,8 @@ namespace shogun
 %include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCStrategy.h>
 
-%include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
+%include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 %include <shogun/multiclass/MulticlassLogisticRegression.h>
 #endif // USE_GPL_SHOGUN
 %include <shogun/multiclass/MulticlassLibLinear.h>
