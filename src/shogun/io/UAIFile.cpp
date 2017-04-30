@@ -104,30 +104,34 @@ void CUAIFile::init_with_defaults()
     SG_REF(m_line_reader);
 }
 
-#define GET_VECTOR(read_func, sg_type) \
-void CUAIFile::get_vector(sg_type*& vector, int32_t& len) \
-{ \
-    if (!m_line_reader->has_next()) \
-        return; \
-    \
-    SGVector<char> line; \
-    int32_t num_elements = 0; \
-    \
-    line = m_line_reader->read_line(); \
-    m_tokenizer->set_text(line); \
-    while (m_tokenizer->has_next()) \
-    { \
-        int32_t temp_start; \
-        m_tokenizer->next_token_idx(temp_start); \
-        num_elements++; \
-    } \
-    \
-    vector = SG_MALLOC(sg_type, num_elements); \
-    m_parser->set_text(line); \
-    for (int32_t i=0; i<num_elements; i++) \
-        vector[i] = m_parser->read_func(); \
-    len = num_elements; \
-}
+#define GET_VECTOR(read_func, sg_type)                                         \
+	void CUAIFile::get_vector(sg_type*& vector, int32_t& len)                  \
+	{                                                                          \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		if (!m_line_reader->has_next())                                        \
+			return;                                                            \
+                                                                               \
+		SGVector<char> line;                                                   \
+		int32_t num_elements = 0;                                              \
+                                                                               \
+		line = m_line_reader->read_line();                                     \
+		m_tokenizer->set_text(line);                                           \
+		while (m_tokenizer->has_next())                                        \
+		{                                                                      \
+			int32_t temp_start;                                                \
+			m_tokenizer->next_token_idx(temp_start);                           \
+			num_elements++;                                                    \
+		}                                                                      \
+                                                                               \
+		vector = SG_MALLOC(sg_type, num_elements);                             \
+		m_parser->set_text(line);                                              \
+		for (int32_t i = 0; i < num_elements; i++)                             \
+			vector[i] = m_parser->read_func();                                 \
+		len = num_elements;                                                    \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 GET_VECTOR(read_char, int8_t)
 GET_VECTOR(read_byte, uint8_t)
