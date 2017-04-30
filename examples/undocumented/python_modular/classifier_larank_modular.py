@@ -18,8 +18,8 @@ def classifier_larank_modular (num_vec,num_class,distance,C=0.9,num_threads=1,nu
 	fm_train=array(random.randn(num_class,num_vec))
 	fm_test=array(random.randn(num_class,num_vec))
 	for i in range(len(label_train)):
-		fm_train[label_train[i],int(i)]+=distance
-		fm_test[label_test[i],int(i)]+=distance
+		fm_train[int(label_train[i]),i]+=distance
+		fm_test[int(label_test[i]),i]+=distance
 
 	feats_train=RealFeatures(fm_train)
 	feats_test=RealFeatures(fm_test)

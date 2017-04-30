@@ -21,8 +21,8 @@ def classifier_multiclassocas_modular (num_vec=10,num_class=3,distance=15,width=
 	fm_train=array(random.randn(num_class,num_vec))
 	fm_test=array(random.randn(num_class,num_vec))
 	for i in range(len(label_train)):
-		fm_train[label_train[i],int(i)]+=distance
-		fm_test[label_test[i],int(i)]+=distance
+		fm_train[int(label_train[i]),i]+=distance
+		fm_test[int(label_test[i]),i]+=distance
 
 	feats_train=RealFeatures(fm_train)
 	feats_test=RealFeatures(fm_test)
