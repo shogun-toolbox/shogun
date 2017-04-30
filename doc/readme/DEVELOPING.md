@@ -127,7 +127,7 @@ You can execute single tests via `ctest`, or via directly executing the unit tes
 
 Note that wildcards are allowed. Running single sub-tests is sometimes useful (i.e. for bug hunting)
 
-    ./bin/shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_apply_regression
+    ./bin/shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_regression
 
 ### Debugging and Memory leaks
 **All your C++ code and unit tests must be checked to not leak memory!**
@@ -136,8 +136,8 @@ If you do that, you might want to compile with debugging symbols and without com
 
 Then
 
-    valgrind ./shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_apply_regression
-    gdb ./shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_apply_regression
+    valgrind ./bin/shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_regression
+    gdb --args ./bin/shogun-unit-test --gtest_filter=GaussianProcessRegression.apply_regression
 
 The option `--leak-check=full` for valgrind might be useful.
 In addition to manually running valgrind on your tests, you can use `ctest` to check multiple tests.
