@@ -6,6 +6,8 @@ set(_SCALA_PATHS
   /sw
   /usr
   /usr/share/java
+  /usr/share/scala
+  /usr/share/scala/lib
   )
 
 find_package(Java COMPONENTS Runtime)
@@ -25,29 +27,31 @@ find_program(Scala_SCALAC_EXECUTABLE
   PATHS ${_SCALA_PATHS}
   )
 
-find_jar(Scala_JAR_EXECUTABLE "scala-library")
+find_jar(Scala_JAR_EXECUTABLE
+  NAMES "scala-library"
+  PATHS ${_SCALA_PATHS}
+  )
 
-if(Scala_SCALA_EXECUTABLE)
-    execute_process(COMMAND ${Scala_SCALA_EXECUTABLE} -version
-      RESULT_VARIABLE SCALA_SEARCH_SUCCESS
-      OUTPUT_VARIABLE SCALA_VERSION
-      ERROR_VARIABLE SCALA_VERSION
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_STRIP_TRAILING_WHITESPACE)
-    if( SCALA_SEARCH_SUCCESS )
-      message( FATAL_ERROR "Error executing scala -version" )
-    else()
-      string(TOLOWER ${SCALA_VERSION} SCALA_VERSION)
-      string( REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9_.]+.*)" "\\1" SCALA_VERSION "${SCALA_VERSION}" )
-      string( REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9_.]).*" "\\1" SCALA_VERSION ${SCALA_VERSION} )
-    endif()
+if( "${Scala_SCALA_EXECUTABLE}" MATCHES "Scala_SCALA_EXECUTABLE-NOTFOUND" )
+  message( FATAL_ERROR "Error executing scala -version" )
+else()
+  execute_process(COMMAND ${Scala_SCALA_EXECUTABLE} -version
+    RESULT_VARIABLE SCALA_SEARCH_SUCCESS
+    OUTPUT_VARIABLE SCALA_VERSION
+    ERROR_VARIABLE SCALA_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE
+    )
+    string(TOLOWER ${SCALA_VERSION} SCALA_VERSION)
+    string( REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9_.]+.*)" "\\1" SCALA_VERSION "${SCALA_VERSION}" )
+    string( REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9_.]).*" "\\1" SCALA_VERSION ${SCALA_VERSION} )
 endif()
 
 include(FindPackageHandleStandardArgs)
 if (CMAKE_VERSION LESS 2.8.3)
   find_package_handle_standard_args(SCALA DEFAULT_MSG Scala_SCALA_EXECUTABLE)
 else ()
-  find_package_handle_standard_args(SCALA 
+  find_package_handle_standard_args(SCALA
       REQUIRED_VARS Scala_SCALA_EXECUTABLE Scala_SCALAC_EXECUTABLE Scala_JAR_EXECUTABLE
       VERSION_VAR SCALA_VERSION)
 endif ()
