@@ -39,8 +39,8 @@ def stochasticgbmachine_modular(train=traindat,train_labels=label_traindat,ft=fe
 	labels.remove_subset()
 
 	# apply
-	feats.add_subset(np.int32(p[num:len(p)]))
-	labels.add_subset(np.int32(p[num:len(p)]))
+	feats.add_subset(np.int32(p[int(num):len(p)]))
+	labels.add_subset(np.int32(p[int(num):len(p)]))
 	output=s.apply_regression(feats)
 
 	feats.remove_subset()
