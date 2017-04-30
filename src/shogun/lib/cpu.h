@@ -36,9 +36,23 @@
 SG_FORCED_INLINE static void CpuRelax()
 {
 #ifdef _MSC_VER
-        _mm_pause();
+	_mm_pause();
+#elif defined(__i386__) || defined(__x86_64__)
+	asm volatile("pause");
+#elif defined(__arm__) || defined(__aarch64__)
+	asm volatile("yield");
+#elif defined(__powerpc__) || defined(__ppc__)
+	asm volatile("or 27,27,27");
+#elif defined(__s390__) || defined(__s390x__)
+	asm volatile("" : : : "memory");
 #else
-        asm("pause");
+#warning "Unknown architecture, defaulting to delaying loop."
+	static uint32_t bar = 13;
+	static uint32_t* foo = &bar;
+	for (unsigned int i = 0; i < 100000; i++)
+	{
+		*foo = (*foo * 33) + 17;
+	}
 #endif
 }
 
