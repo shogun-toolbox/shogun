@@ -25,8 +25,8 @@ def multiclass_c45classifiertree_modular(train=traindat,test=testdat,labels=labe
 
 	# divide train dataset into training and validation subsets in the ratio 2/3 to 1/3
 	subset=int32(random.permutation(feats_train.get_num_vectors()))
-	vsubset=subset[1:subset.size/3]
-	trsubset=subset[1+subset.size/3:subset.size]
+	vsubset=subset[1:int(subset.size/3)]
+	trsubset=subset[1+int(subset.size/3):subset.size]
 
 	# C4.5 Tree formation using training subset
 	train_labels.add_subset(trsubset)

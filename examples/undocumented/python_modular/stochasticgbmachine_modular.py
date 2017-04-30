@@ -31,8 +31,8 @@ def stochasticgbmachine_modular(train=traindat,train_labels=label_traindat,ft=fe
 	s=StochasticGBMachine(cart,loss,500,0.01,0.6)
 
 	# train
-	feats.add_subset(np.int32(p[0:num]))
-	labels.add_subset(np.int32(p[0:num]))
+	feats.add_subset(np.int32(p[0:int(num)]))
+	labels.add_subset(np.int32(p[0:int(num)]))
 	s.set_labels(labels)
 	s.train(feats)
 	feats.remove_subset()
