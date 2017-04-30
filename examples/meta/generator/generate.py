@@ -88,8 +88,13 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
             extension = target["FileExtension"]
 
             # Create directory if it does not exist
-            if not os.path.exists(directory):
-                os.makedirs(directory)
+            try:
+                os.makedirs(name=directory, exist_ok=True)
+            except TypeError:
+                try:
+                    os.makedirs(directory)
+                except OSError:
+                    pass
 
             # Write translation
             outputFile = os.path.join(directory,
@@ -98,9 +103,12 @@ def translateExamples(inputDir, outputDir, targetsDir, ctagsFile,
 
             # create subdirectories if they don't exist yet
             try:
-                os.makedirs(os.path.dirname(outputFile))
-            except OSError:
-                pass
+                os.makedirs(name=os.path.dirname(outputFile), exist_ok=True)
+            except TypeError:
+                try:
+                    os.makedirs(os.path.dirname(outputFile))
+                except OSError:
+                    pass
 
             with open(outputFile, "w") as nf:
                 nf.write(translation)
