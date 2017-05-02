@@ -74,9 +74,6 @@ Install the latest stable version as
 
     sudo brew install shogun
 
-Note: Shogun in homebrew is outdated.
-Contact us if this changed or if you want to help changing it.
-
 ### Windows <a name="windows"></a>
 Shogun natively compiles under Windows using MSVC, see the [AppVeyor CI build](https://ci.appveyor.com/project/vigsterkr/shogun) and the [Windows section](#manual-windows)
 We currently do not support a binary installer.
