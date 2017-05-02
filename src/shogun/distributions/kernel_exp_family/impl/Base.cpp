@@ -84,13 +84,16 @@ index_t Base::get_num_data() const
 //}
 
 Base::Base(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda)
+		kernel::Base* kernel, float64_t lambda, bool init_base_and_data)
 {
 	m_kernel = kernel;
 	m_lambda = lambda;
-	set_basis_and_data(data, data);
 
-	SG_SINFO("Problem size is N=%d, D=%d.\n", get_num_basis(), get_num_dimensions());
+	if (init_base_and_data)
+	{
+		set_basis_and_data(data, data);
+		SG_SINFO("Problem size is N=%d, D=%d.\n", get_num_basis(), get_num_dimensions());
+	}
 }
 
 void Base::set_basis_and_data(SGMatrix<float64_t> basis,

@@ -44,41 +44,76 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-		kernel::Base* kernel, float64_t lambda) : Full(basis, kernel, lambda)
+		kernel::Base* kernel, float64_t lambda) : Full(basis, kernel, lambda, 0.0, false)
 {
-	SG_SINFO("Using m=%d user provided RKHS basis functions.\n", basis.num_cols);
-	m_data = data;
+	auto N = data.num_cols;
+
+	SG_SINFO("Using m=%d of N=%d user provided RKHS basis functions.\n",
+			basis.num_cols, N);
+	set_basis_and_data(basis, data);
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda)
+			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda, 0.0, false)
 {
-	SG_SINFO("Using m=%d user provided subsample of data RKHS basis functions.\n",
-			basis_inds.vlen);
-	m_basis = subsample_matrix_cols(basis_inds, m_data);
+	auto N = data.num_cols;
 
-	SG_SINFO("Avoid double precomputation of kernel.\n");
-	m_kernel->set_lhs(data);
-	SG_SINFO("Problem size is m=%d, D=%d.\n", get_num_basis(), get_num_dimensions());
-	m_kernel->precompute();
+	SG_SINFO("Using m=%d of N=%d user provided subsampled data RKHS basis functions.\n",
+			basis_inds.vlen, N);
+
+	auto basis = subsample_matrix_cols(basis_inds, data);
+	set_basis_and_data(basis, data);
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda)
+			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda, 0.0, false)
 {
-	auto N = get_num_data();
-	auto D = get_num_dimensions();
+	auto N = data.num_cols;
 
+	SG_SINFO("Using m=%d of N=%d uniformly sub-sampled data as RKHS basis functions.\n",
+			num_subsample_basis, data.num_cols);
 
-	SG_SINFO("Using m*D=%d*%d uniformly sampled RKHS basis functions.\n",
-			num_subsample_basis, D);
 	auto basis_inds = choose_m_in_n(num_subsample_basis, N);
-	m_basis = subsample_matrix_cols(basis_inds, m_data);
+	auto basis = subsample_matrix_cols(basis_inds, data);
 
-	SG_SINFO("Avoid double precomputation of kernel.\n");
-	m_kernel->set_lhs(data);
-	SG_SINFO("Problem size is m=%d, D=%d.\n", get_num_basis(), get_num_dimensions());
+	set_basis_and_data(basis, data);
+}
+
+SGVector<float64_t> Nystrom::compute_h() const
+{
+	SG_SWARNING("TODO: This does not need to be overloaded. Rather implement kernel->dx_dy_dy and use base class method\n");
+	auto D = get_num_dimensions();
+	auto m = get_num_basis();
+	auto N = get_num_data();
+
+	// this is a hack that saves me from implementing dx_dy_dy for now
+	// luckily the unit tests cover me
+	m_kernel->set_rhs(m_basis);
+	m_kernel->set_lhs(m_data);
+	// ouch
 	m_kernel->precompute();
+
+	auto mD = m*D;
+	SGVector<float64_t> h(mD);
+	Map<VectorXd> eigen_h(h.vector, mD);
+	eigen_h = VectorXd::Zero(mD);
+
+#pragma omp parallel for
+	for (auto idx_a=0; idx_a<m; idx_a++)
+		for (auto idx_b=0; idx_b<N; idx_b++)
+		{
+			SGMatrix<float64_t> temp = m_kernel->dx_dx_dy(idx_b, idx_a);
+			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
+		}
+
+	eigen_h /= N;
+
+	m_kernel->set_rhs(m_data);
+	m_kernel->set_lhs(m_basis);
+	// ouch
+	m_kernel->precompute();
+
+	return h;
 }
 
 void Nystrom::fit()
@@ -94,9 +129,8 @@ void Nystrom::fit()
 	auto data = m_data;
 
 	SG_SINFO("Computing h.\n");
-	set_basis_and_data(m_data, m_data);
 	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, ND);
+	auto eigen_h=Map<VectorXd>(h.vector, mD);
 
 	SG_SINFO("Computing sub-sampled kernel Hessians.\n");
 	set_basis_and_data(basis, basis);
@@ -108,20 +142,22 @@ void Nystrom::fit()
 	auto G_mn = m_kernel->dx_dy_all();
 	Map<MatrixXd> eigen_G_mn(G_mn.matrix, mD, ND);
 
-	eigen_G_mm *= N*m_lambda;
-	eigen_G_mm += eigen_G_mn*eigen_G_mn.adjoint();
+	eigen_G_mm *= m_lambda;
+	eigen_G_mm += eigen_G_mn*eigen_G_mn.adjoint() / N;
 
 	m_beta = SGVector<float64_t>(mD);
 	auto eigen_beta = Map<VectorXd>(m_beta.vector, mD);
 
 	SG_SINFO("Solving with HouseholderQR.\n");
+	SG_SWARNING("TODO: Compare QR and self-adjoint-pseudo-inverse.\n");
 	auto solver = HouseholderQR<MatrixXd>();
 	solver.compute(eigen_G_mm);
 
 //	if (!solver.info() == Eigen::Success)
 //		SG_SWARNING("Numerical problems computing HouseholderQR.\n");
 
-	eigen_beta = solver.solve(eigen_G_mn * (eigen_h / m_lambda));
+	SG_SINFO("Constructing solution.\n");
+	eigen_beta = -solver.solve(eigen_h);
 	return;
 
 	SG_SINFO("Computing pseudo-inverse.\n");
@@ -130,7 +166,7 @@ void Nystrom::fit()
 	Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, mD, mD);
 
 	SG_SINFO("Constructing solution.\n");
-	eigen_beta = eigen_G_dagger * eigen_G_mn * (eigen_h / m_lambda);
+	eigen_beta = -eigen_G_dagger * eigen_h;
 }
 
 SGMatrix<float64_t> Nystrom::pinv_self_adjoint(const SGMatrix<float64_t>& A)
@@ -183,15 +219,57 @@ SGVector<index_t> Nystrom::choose_m_in_n(index_t m, index_t n, bool sorted)
 	return chosen;
 }
 
-SGMatrix<float64_t> Nystrom::subsample_matrix_cols(SGVector<index_t> col_inds,
-		SGMatrix<float64_t> mat)
+SGMatrix<float64_t> Nystrom::subsample_matrix_cols(const SGVector<index_t>& col_inds,
+		const SGMatrix<float64_t>& mat)
 {
-	auto subsampled=SGMatrix<float64_t>(mat.num_rows, col_inds.vlen);
-	for (auto i=0; i<col_inds.vlen; i++)
+	auto D = mat.num_rows;
+	auto N_new = col_inds.vlen;
+	auto subsampled=SGMatrix<float64_t>(D, N_new);
+	for (auto i=0; i<N_new; i++)
 	{
 		memcpy(subsampled.get_column_vector(i), mat.get_column_vector(col_inds[i]),
-				sizeof(float64_t)*mat.num_rows);
+				sizeof(float64_t)*D);
 	}
 
 	return subsampled;
+}
+
+// TODO shouldnt be overloaded to get rid of xi
+float64_t Nystrom::log_pdf(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto m = get_num_basis();
+
+	float64_t beta_sum = 0;
+
+	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+	for (auto idx_a=0; idx_a<m; idx_a++)
+	{
+		auto grad_x_xa = m_kernel->dx(idx_a, idx_test);
+		Map<VectorXd> eigen_grad_xa(grad_x_xa.vector, D);
+		beta_sum -= eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
+	}
+
+	return beta_sum;
+}
+
+// TODO shouldnt be overloaded to get rid of xi
+SGVector<float64_t> Nystrom::grad(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto m = get_num_basis();
+
+	SGVector<float64_t> beta_sum_grad(D);
+	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
+	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
+
+	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+	for (auto a=0; a<m; a++)
+	{
+		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
+		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
+		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
+	}
+
+	return beta_sum_grad;
 }

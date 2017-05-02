@@ -43,8 +43,9 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Full::Full(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda, float64_t base_measure_cov_ridge) :
-		Base(data, kernel, lambda)
+		kernel::Base* kernel, float64_t lambda, float64_t base_measure_cov_ridge,
+		bool init_base_and_data) :
+		Base(data, kernel, lambda, init_base_and_data)
 {
 	m_base_measure_cov_ridge = base_measure_cov_ridge;
 }
@@ -128,26 +129,26 @@ SGVector<float64_t> Full::base_measure_dx_dx_times_vec(const SGVector<float64_t>
 
 SGVector<float64_t> Full::compute_h() const
 {
-	REQUIRE(is_basis_equal_data(), "Cannot proceed with set data. Reset data!\n");
-
 	auto D = get_num_dimensions();
-	auto N = get_num_basis();
-	auto ND = N*D;
-	SGVector<float64_t> h(ND);
-	Map<VectorXd> eigen_h(h.vector, ND);
-	eigen_h = VectorXd::Zero(ND);
+	auto N_basis = get_num_basis();
+	auto N_data = get_num_data();
+
+	auto ND_basis = N_basis*D;
+	SGVector<float64_t> h(ND_basis);
+	Map<VectorXd> eigen_h(h.vector, ND_basis);
+	eigen_h = VectorXd::Zero(ND_basis);
 
 #pragma omp parallel for
-	for (auto idx_b=0; idx_b<N; idx_b++)
-		for (auto idx_a=0; idx_a<N; idx_a++)
+	for (auto idx_a=0; idx_a<N_basis; idx_a++)
+		for (auto idx_b=0; idx_b<N_data; idx_b++)
 		{
 			// TODO optimise, no need to store matrix
-			// TODO optimise, pull allocation of the loop
+			// TODO optimise, pull allocation out of the loop
 			SGMatrix<float64_t> temp = m_kernel->dx_dx_dy(idx_a, idx_b);
 			eigen_h.segment(idx_b*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
 
-	eigen_h /= N;
+	eigen_h /= N_data;
 
 	return h;
 }
@@ -191,12 +192,8 @@ void Full::fit()
 		for (auto i=0; i<D; i++)
 			eigen_Sigma_L(i,i)+=m_base_measure_cov_ridge;
 
-		m_Sigma_L.display_matrix("covariance");
-
 		SG_SINFO("Computing Cholesky of covariance for base measure.\n");
 		eigen_Sigma_L = eigen_Sigma_L.llt().matrixL();
-
-		m_Sigma_L.display_matrix("L");
 	}
 
 	SG_SINFO("Computing h.\n");
@@ -328,9 +325,7 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 	{
 		SGVector<float64_t> test_vec(m_data.get_column_vector(idx_test), D, false);
 		auto log_q0_grad = base_measure_dx(test_vec);
-		return log_q0_grad;
 		Map<VectorXd> eigen_log_q0_grad(log_q0_grad.vector, D);
-
 		eigen_beta_sum_grad += eigen_log_q0_grad;
 	}
 	return beta_sum_grad;

@@ -53,7 +53,8 @@ class Base;
 class Base
 {
 public :
-	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda);
+	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
+			bool init_base_and_data=true);
 	virtual ~Base();
 
 	void set_data(SGMatrix<float64_t> X);

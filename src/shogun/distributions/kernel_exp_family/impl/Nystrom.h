@@ -58,13 +58,21 @@ public :
 
 	virtual ~Nystrom() {};
 
+	// TODO this shouldnt be overloaded, but rather the base class method should
+	// deal with the sub-sampling case transparently
+	SGVector<float64_t> compute_h() const;
+
 	virtual void fit();
+
+	// TODO should not overload these but re-use code from base class
+	virtual float64_t log_pdf(index_t idx_test) const;
+	virtual SGVector<float64_t> grad(index_t idx_test) const;
 
 	// TODO these should go to the lib
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
 	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
-	static SGMatrix<float64_t> subsample_matrix_cols(SGVector<index_t> col_inds,
-			SGMatrix<float64_t> mat);
+	static SGMatrix<float64_t> subsample_matrix_cols(const SGVector<index_t>& col_inds,
+			const SGMatrix<float64_t>& mat);
 protected:
 };
 };

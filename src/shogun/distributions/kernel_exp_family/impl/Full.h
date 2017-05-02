@@ -78,7 +78,7 @@ class Full : public Base
 {
 public :
 	Full(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
-			float64_t base_measure_cov_ridge=0.0);
+			float64_t base_measure_cov_ridge=0.0, bool init_base_and_data=true);
 	virtual ~Full() {};
 
 	virtual void fit();

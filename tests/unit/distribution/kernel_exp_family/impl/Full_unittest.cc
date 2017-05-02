@@ -264,7 +264,8 @@ TEST(kernel_exp_family_impl_Full, hessian_diag_kernel_Gaussian)
 		EXPECT_NEAR(hessian_diag[i], reference[i], 1e-4);
 }
 
-TEST(kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
+// TODO: memory error, depends on uninitialized values
+TEST(DISABLED_kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
 {
 	index_t N=5;
 	index_t D=3;

@@ -29,6 +29,7 @@
  */
 
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/base/init.h>
 #include <shogun/distributions/kernel_exp_family/impl/Full.h>
 #include <shogun/distributions/kernel_exp_family/impl/Nystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/kernel/Gaussian.h>
@@ -60,59 +61,59 @@ using namespace Eigen;
 //	EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-12);
 //}
 
-//TEST(kernel_exp_family_impl_Nystrom, compute_h_all_inds_equals_full)
-//{
-//	index_t N=5;
-//	index_t D=3;
-//	SGMatrix<float64_t> X(D,N);
-//	for (auto i=0; i<N*D; i++)
-//		X.matrix[i]=CMath::randn_float();
-//
-//	float64_t sigma = 2;
-//	float64_t lambda = 1;
-//	Nystrom est(X, N*D, new kernel::Gaussian(sigma), lambda);
-//	Full est_full(X, new kernel::Gaussian(sigma), lambda);
-//
-//	// compare against full version
-//	auto h = est.compute_h();
-//	auto h_full = est.compute_h();
-//
-//	ASSERT_EQ(h.vlen, h_full.vlen);
-//
-//	for (auto i=0; i<N*D; i++)
-//		EXPECT_NEAR(h[i], h_full[i], 1e-12);
-//}
+TEST(kernel_exp_family_impl_Nystrom, compute_h_all_inds_equals_full)
+{
+	index_t N=5;
+	index_t D=3;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
 
-//TEST(kernel_exp_family_impl_Nystrom, compute_h_half_inds_equals_subsampled_full)
-//{
-//	index_t N=5;
-//	index_t D=3;
-//	SGMatrix<float64_t> X(D,N);
-//	for (auto i=0; i<N*D; i++)
-//		X.matrix[i]=CMath::randn_float();
-//
-//	float64_t sigma = 2;
-//	float64_t lambda = 1;
-//
-//	index_t m=5;
-//	SGVector<index_t> temp(N*D);
-//	temp.range_fill();
-//	CMath::permute(temp);
-//	SGVector<index_t> inds(m);
-//	memcpy(inds.vector, temp.vector, sizeof(index_t)*m);
-//
-//	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
-//	Full est_full(X, new kernel::Gaussian(sigma), lambda);
-//
-//	// compare against full version
-//	auto h = est.compute_h();
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	Nystrom est(X, N, new kernel::Gaussian(sigma), lambda);
+	Full est_full(X, new kernel::Gaussian(sigma), lambda);
+
+	// compare against full version
+	auto h = est.compute_h();
+	auto h_full = est.compute_h();
+
+	ASSERT_EQ(h.vlen, h_full.vlen);
+
+	for (auto i=0; i<N*D; i++)
+		EXPECT_NEAR(h[i], h_full[i], 1e-12);
+}
+
+TEST(kernel_exp_family_impl_Nystrom, compute_h_half_inds_equals_subsampled_full_1D)
+{
+	index_t N=5;
+	index_t D=1;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+
+	index_t m=N/2;
+	SGVector<index_t> temp(N);
+	temp.range_fill();
+	CMath::permute(temp);
+	SGVector<index_t> inds(m);
+	memcpy(inds.vector, temp.vector, sizeof(index_t)*m);
+
+	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
+	Full est_full(X, new kernel::Gaussian(sigma), lambda);
+
+	// compare against full version
+	auto h = est.compute_h();
 //	auto h_full = est_full.compute_h();
 //
 //	ASSERT_EQ(h.vlen, m);
 //	ASSERT_EQ(h_full.vlen, N*D);
 //	for (auto i=0; i<m; i++)
 //		EXPECT_NEAR(h[i], h_full[inds[i]], 1e-12);
-//}
+}
 
 TEST(kernel_exp_family_impl_Nystrom, fit)
 {
@@ -135,7 +136,7 @@ TEST(kernel_exp_family_impl_Nystrom, fit)
 
 TEST(kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
 {
-	index_t N=5;
+	index_t N=15;
 	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
@@ -162,9 +163,9 @@ TEST(kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
 	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 0.1);
 }
 
-TEST(kernel_exp_family_impl_Nystrom, grad_all_inds_equals_exact)
+TEST(kernel_exp_family_impl_Nystrom, grad_all_inds_close_exact)
 {
-	index_t N=5;
+	index_t N=50;
 	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
@@ -250,7 +251,8 @@ TEST(kernel_exp_family_impl_Nystrom, grad_almost_all_inds_close_exact)
 //	EXPECT_EQ(ai.second, 1);
 //}
 
-TEST(kernel_exp_family_impl_Nystrom, fit_all_inds_equals_exact)
+// disabled as NOT true anymore for the new Nystrom version. log_pdf should be close
+TEST(DISABLED_kernel_exp_family_impl_Nystrom, fit_all_inds_equals_exact)
 {
 	index_t N=5;
 	index_t D=3;
@@ -329,9 +331,9 @@ TEST(kernel_exp_family_impl_Nystrom, pinv_self_adjoint)
 		EXPECT_NEAR(pinv[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Nystrom, log_pdf_all_inds_equals_exact)
+TEST(kernel_exp_family_impl_Nystrom, log_pdf_all_inds_close_exact)
 {
-	index_t N=5;
+	index_t N=50;
 	index_t D=3;
 	SGMatrix<float64_t> X(D,N);
 	for (auto i=0; i<N*D; i++)
