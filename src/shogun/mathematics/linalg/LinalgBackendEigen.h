@@ -505,7 +505,7 @@ private:
 	template <typename T, template <typename> class Container>
 	void range_fill_impl(Container<T>& a, const T start) const
 	{
-		for (index_t i = 0; i < static_cast<index_t>(a.size()); ++i)
+		for (decltype(a.size()) i = 0; i < a.size(); ++i)
 			a[i] = start + T(i);
 	}
 
@@ -533,7 +533,7 @@ private:
 	template <typename T, template <typename> class Container>
 	void set_const_impl(Container<T>& a, T value) const
 	{
-		for (index_t i = 0; i < a.size(); ++i)
+		for (decltype(a.size()) i = 0; i < a.size(); ++i)
 			a[i] = value;
 	}
 

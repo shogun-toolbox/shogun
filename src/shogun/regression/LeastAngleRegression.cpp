@@ -334,7 +334,7 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 
 		nloop++;
 		m_beta_path_t.push_back(beta);
-		if (size_t(m_num_active) >= get_path_size())
+		if (int32_t(m_num_active) >= get_path_size())
 			m_beta_idx.push_back(nloop);
 		else
 			m_beta_idx[m_num_active] = nloop;
