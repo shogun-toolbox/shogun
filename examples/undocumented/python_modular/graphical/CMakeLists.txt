@@ -1,17 +1,14 @@
 INCLUDE(PythonEnvironment)
 GET_PYTHON_ENV()
 
-FILE(GLOB PYTHON_EXAMPLES *.py)
+# FILE(GLOB PYTHON_EXAMPLES *.py)
+SET(PYTHON_EXAMPLES classifier_gaussian_process_binary_classification.py)
 FOREACH(EXAMPLE ${PYTHON_EXAMPLES})
 	STRING(REGEX REPLACE ".*/(.*).py" "\\1" EXAMPLE_NAME ${EXAMPLE})
-	add_test(NAME python_modular-${EXAMPLE_NAME}
+	add_test(NAME python_modular_graphical-${EXAMPLE_NAME}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			COMMAND ${PYTHON_EXECUTABLE} ${EXAMPLE})
-	set_property(TEST python_modular-${EXAMPLE_NAME} PROPERTY
+	set_property(TEST python_modular_graphical-${EXAMPLE_NAME} PROPERTY
 				ENVIRONMENT "${PYTHON_ENV_VARS}")
 
 ENDFOREACH()
-
-IF (PythonModular AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/graphical)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/graphical)
-ENDIF()
