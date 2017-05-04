@@ -268,7 +268,7 @@ SGVector<float64_t> Nystrom::grad(index_t idx_test) const
 	{
 		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
-		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
+		eigen_beta_sum_grad -= eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
 	}
 
 	return beta_sum_grad;
