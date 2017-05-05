@@ -335,8 +335,8 @@ void add(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, T alpha=1, T beta=
  * Performs the operation C = alpha * A + beta * B.
  * This version returns the result in a newly created vector or matrix.
  *
- * @param A First vector or matrix
- * @param B Second vector or matrix
+ * @param a First vector or matrix
+ * @param b Second vector or matrix
  * @param alpha Constant to be multiplied by the first vector or matrix
  * @param beta Constant to be multiplied by the second vector or matrix
  * @return The result vector or matrix
@@ -407,7 +407,7 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
  *
  * @param a First matrix block
  * @param b Second matrix block
- * @param c Result matrix
+ * @param result Result matrix
  */
 template <typename T>
 void element_prod(Block<SGMatrix<T>>& a, Block<SGMatrix<T>>& b, SGMatrix<T>& result)
@@ -483,8 +483,8 @@ void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)
  *
  * This version returns the result in a newly created matrix.
  *
- * @param A First matrix
- * @param B Second matrix
+ * @param a First matrix
+ * @param b Second matrix
  * @return The result of the operation
  */
 template <typename T>
@@ -865,7 +865,7 @@ T sum_symmetric(const Block<SGMatrix<T>>& a, bool no_diag=false)
 /**
  * Method that computes colwise sum of co-efficients of a dense matrix
  *
- * @param Mat a matrix whose colwise sum has to be computed
+ * @param mat a matrix whose colwise sum has to be computed
  * @param no_diag If true, diagonal entries are excluded from the sum. Default: false
  * @return The colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
  */
