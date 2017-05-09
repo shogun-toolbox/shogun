@@ -79,43 +79,6 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 	set_basis_and_data(basis, data);
 }
 
-SGVector<float64_t> Nystrom::compute_h() const
-{
-	SG_SWARNING("TODO: This does not need to be overloaded. Rather implement kernel->dx_dy_dy and use base class method\n");
-	auto D = get_num_dimensions();
-	auto m = get_num_basis();
-	auto N = get_num_data();
-
-	// this is a hack that saves me from implementing dx_dy_dy for now
-	// luckily the unit tests cover me
-	m_kernel->set_rhs(m_basis);
-	m_kernel->set_lhs(m_data);
-	// ouch
-	m_kernel->precompute();
-
-	auto mD = m*D;
-	SGVector<float64_t> h(mD);
-	Map<VectorXd> eigen_h(h.vector, mD);
-	eigen_h = VectorXd::Zero(mD);
-
-#pragma omp parallel for
-	for (auto idx_a=0; idx_a<m; idx_a++)
-		for (auto idx_b=0; idx_b<N; idx_b++)
-		{
-			SGMatrix<float64_t> temp = m_kernel->dx_dx_dy(idx_b, idx_a);
-			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
-		}
-
-	eigen_h /= N;
-
-	m_kernel->set_rhs(m_data);
-	m_kernel->set_lhs(m_basis);
-	// ouch
-	m_kernel->precompute();
-
-	return h;
-}
-
 void Nystrom::fit()
 {
 	auto D = get_num_dimensions();

@@ -58,10 +58,6 @@ public :
 
 	virtual ~Nystrom() {};
 
-	// TODO this shouldnt be overloaded, but rather the base class method should
-	// deal with the sub-sampling case transparently
-	SGVector<float64_t> compute_h() const;
-
 	virtual void fit();
 
 	// TODO should not overload these but re-use code from base class
