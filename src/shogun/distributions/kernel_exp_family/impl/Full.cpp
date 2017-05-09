@@ -144,8 +144,9 @@ SGVector<float64_t> Full::compute_h() const
 		{
 			// TODO optimise, no need to store matrix
 			// TODO optimise, pull allocation out of the loop
-			SGMatrix<float64_t> temp = m_kernel->dx_dx_dy(idx_a, idx_b);
-			eigen_h.segment(idx_b*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
+			// note: this was changed compared to Esben's Python code, using the dx_dy_dy form
+			SGMatrix<float64_t> temp = m_kernel->dx_dy_dy(idx_a, idx_b);
+			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
 
 	eigen_h /= N_data;
