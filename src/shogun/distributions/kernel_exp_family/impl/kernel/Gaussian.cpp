@@ -172,6 +172,17 @@ SGMatrix<float64_t> Gaussian::dx_dx_dy(index_t idx_a, index_t idx_b) const
 	return result;
 }
 
+SGMatrix<float64_t> Gaussian::dx_dy_dy(index_t idx_a, index_t idx_b) const
+{
+	auto D = get_num_dimensions();
+
+	// inspired by the scalar valued case just being a sign difference
+	auto result = Gaussian::dx_dx_dy(idx_a, idx_b);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+	eigen_result*=-1;
+	return result;
+}
+
 float64_t Gaussian::dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const
 {
 	auto D = get_num_dimensions();

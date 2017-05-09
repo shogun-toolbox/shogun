@@ -62,6 +62,7 @@ public :
 
 	virtual float64_t kernel(index_t idx_a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_dx_dy(index_t idx_a, index_t idx_b) const=0;
+	virtual SGMatrix<float64_t> dx_dy_dy(index_t idx_a, index_t idx_b) const=0;
 	virtual float64_t dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_dy(index_t idx_a, index_t idx_b) const=0;
 	virtual SGMatrix<float64_t> dx_dy_all() const=0;
