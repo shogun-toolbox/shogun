@@ -468,7 +468,8 @@ T dot(const SGVector<T>& a, const SGVector<T>& b)
 	return infer_backend(a, b)->dot(a, b);
 }
 
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication
+/** Performs the operation C = A .* B where ".*" denotes elementwise
+ * multiplication
  * on matrix blocks.
  *
  * This version returns the result in-place.
@@ -550,7 +551,8 @@ void element_prod(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result)
 	infer_backend(a, b)->element_prod(a, b, result);
 }
 
-/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication.
+/** Performs the operation C = A .* B where ".*" denotes elementwise
+ * multiplication.
  *
  * This version returns the result in a newly created matrix.
  *
@@ -992,9 +994,11 @@ T sum_symmetric(const Block<SGMatrix<T>>& a, bool no_diag=false)
 /**
  * Method that computes colwise sum of co-efficients of a dense matrix
  *
- * @param mat a matrix whose colwise sum has to be computed
- * @param no_diag If true, diagonal entries are excluded from the sum. Default: false
- * @return The colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
+ * @param Mat a matrix whose colwise sum has to be computed
+ * @param no_diag If true, diagonal entries are excluded from the sum. Default:
+ * false
+ * @return The colwise sum of co-efficients computed as
+ * \f$s_j=\sum_{i}b_{i,j}\f$
  */
 template <typename T>
 SGVector<T> colwise_sum(const SGMatrix<T>& mat, bool no_diag=false)

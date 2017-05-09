@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
+
+#include "environments/LinearTestEnvironment.h"
+#include "environments/MutiLabelTestEnvironment.h"
 
 using namespace shogun;
 using ::testing::Test;
@@ -10,6 +13,7 @@ using ::testing::TestCase;
 using ::testing::TestInfo;
 using ::testing::TestPartResult;
 using ::testing::TestEventListener;
+using ::testing::Environment;
 
 class FailurePrinter : public TestEventListener {
 public:
@@ -37,17 +41,17 @@ protected:
 
 void FailurePrinter::OnTestPartResult(const TestPartResult& test_part_result)
 {
-  if (test_part_result.failed())
-  {
-      _listener->OnTestPartResult(test_part_result);
-      printf("\n");
-  }
+	if (test_part_result.failed())
+	{
+		_listener->OnTestPartResult(test_part_result);
+		printf("\n");
+	}
 }
 
 void FailurePrinter::OnTestEnd(const TestInfo& test_info)
 {
 	if (test_info.result()->Failed())
-	    _listener->OnTestEnd(test_info);
+		_listener->OnTestEnd(test_info);
 }
 
 int main(int argc, char** argv)
@@ -67,6 +71,8 @@ int main(int argc, char** argv)
 
 	init_shogun_with_defaults();
 	sg_io->set_loglevel(MSG_WARN);
+	::testing::AddGlobalTestEnvironment(new LinearTestEnvironment());
+	::testing::AddGlobalTestEnvironment(new MutiLabelTestEnvironment());
 	int ret = RUN_ALL_TESTS();
 	exit_shogun();
 
