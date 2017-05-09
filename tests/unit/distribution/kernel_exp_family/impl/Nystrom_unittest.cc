@@ -107,12 +107,12 @@ TEST(kernel_exp_family_impl_Nystrom, compute_h_half_inds_equals_subsampled_full_
 
 	// compare against full version
 	auto h = est.compute_h();
-//	auto h_full = est_full.compute_h();
-//
-//	ASSERT_EQ(h.vlen, m);
-//	ASSERT_EQ(h_full.vlen, N*D);
-//	for (auto i=0; i<m; i++)
-//		EXPECT_NEAR(h[i], h_full[inds[i]], 1e-12);
+	auto h_full = est_full.compute_h();
+
+	ASSERT_EQ(h.vlen, m);
+	ASSERT_EQ(h_full.vlen, N*D);
+	for (auto i=0; i<m; i++)
+		EXPECT_NEAR(h[i], h_full[inds[i]], 1e-12);
 }
 
 TEST(kernel_exp_family_impl_Nystrom, fit)
@@ -134,7 +134,8 @@ TEST(kernel_exp_family_impl_Nystrom, fit)
 	ASSERT(beta.vector);
 }
 
-TEST(kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
+// disabled as log_pdf might be different (up to constant)
+TEST(DISABLED_kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
 {
 	index_t N=15;
 	index_t D=3;
@@ -179,17 +180,20 @@ TEST(kernel_exp_family_impl_Nystrom, grad_all_inds_close_exact)
 	est_nystrom.fit();
 	est.fit();
 
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
+	for (auto trial=0; trial<20; trial++)
+	{
+		SGVector<float64_t> x(D);
+		for (auto i=0; i<D; i++)
+			x[i]=CMath::randn_float();
 
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto grad = est.grad(0);
-	auto grad_nystrom = est_nystrom.grad(0);
+		est.set_data(x);
+		est_nystrom.set_data(x);
+		auto grad = est.grad(0);
+		auto grad_nystrom = est_nystrom.grad(0);
 
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(grad[i], grad_nystrom[i], 1e-8);
+		for (auto i=0; i<D; i++)
+			EXPECT_NEAR(grad[i], grad_nystrom[i], 1e-1);
+	}
 }
 
 TEST(kernel_exp_family_impl_Nystrom, grad_almost_all_inds_close_exact)
@@ -331,7 +335,8 @@ TEST(kernel_exp_family_impl_Nystrom, pinv_self_adjoint)
 		EXPECT_NEAR(pinv[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Nystrom, log_pdf_all_inds_close_exact)
+// disabled as log-pdf might actually be quite different (up to constant)
+TEST(DISABLED_kernel_exp_family_impl_Nystrom, log_pdf_all_inds_close_exact)
 {
 	index_t N=50;
 	index_t D=3;
