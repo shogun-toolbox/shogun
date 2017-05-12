@@ -236,3 +236,33 @@ SGVector<float64_t> Nystrom::grad(index_t idx_test) const
 
 	return beta_sum_grad;
 }
+
+// TODO shouldnt be overloaded to get rid of xi
+SGVector<float64_t> Nystrom::hessian_diag(index_t idx_test) const
+{
+	REQUIRE(!m_base_measure_cov_ridge, "Base measure not implemented for Hessian.\n");
+
+	// Note: code modifed from full hessian case
+	auto m = get_num_basis();
+	auto D = get_num_dimensions();
+
+	SGVector<float64_t> beta_sum_hessian_diag(D);
+
+	Map<VectorXd> eigen_beta_sum_hessian_diag(beta_sum_hessian_diag.vector, D);
+
+	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
+
+	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+
+	for (auto a=0; a<m; a++)
+	{
+		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
+		for (auto i=0; i<D; i++)
+		{
+			eigen_beta_sum_hessian_diag[i] -= m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
+					a, idx_test, beta_a, i, i);
+		}
+	}
+
+	return beta_sum_hessian_diag;
+}

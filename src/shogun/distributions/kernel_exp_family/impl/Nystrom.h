@@ -63,6 +63,7 @@ public :
 	// TODO should not overload these but re-use code from base class
 	virtual float64_t log_pdf(index_t idx_test) const;
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
+	virtual SGVector<float64_t> hessian_diag(index_t idx_test) const;
 
 	// TODO these should go to the lib
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
