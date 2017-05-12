@@ -264,8 +264,7 @@ TEST(kernel_exp_family_impl_Full, hessian_diag_kernel_Gaussian)
 		EXPECT_NEAR(hessian_diag[i], reference[i], 1e-4);
 }
 
-// TODO: memory error, depends on uninitialized values
-TEST(DISABLED_kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
+TEST(kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
 {
 	index_t N=5;
 	index_t D=3;
@@ -282,10 +281,11 @@ TEST(DISABLED_kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
 	SGVector<float64_t> x(D);
 	x[0] = CMath::randn_float();
 	x[1] = CMath::randn_float();
+	x[2] = CMath::randn_float();
 	est.set_data(x);
 	auto hessian = est.hessian(0);
 	auto hessian_diag = est.hessian_diag(0);
-	
+
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(hessian_diag[i], hessian(i,i), 1e-8);
 }
