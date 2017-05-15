@@ -75,7 +75,7 @@ before_script:
 script:
   - |
     if [ $CC == "gcc" ] && [ -z $OCTAVE_MODULAR ]; then
-      docker exec -t devenv /bin/sh -c "cd /opt/shogun/; ./scripts/check_format.sh"
+      docker exec -t devenv /bin/sh -c "cd /opt/shogun/;  if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./scripts/check_format.sh "$TRAVIS_PULL_REQUEST_BRANCH" "$TRAVIS_BRANCH"; fi"
     fi
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
