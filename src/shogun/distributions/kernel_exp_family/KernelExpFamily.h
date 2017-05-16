@@ -55,6 +55,7 @@ public:
 	virtual float64_t log_pdf(index_t i=0);
 	virtual SGVector<float64_t> grad(index_t i=0);
 	virtual SGMatrix<float64_t> hessian(index_t i=0);
+	virtual SGVector<float64_t> hessian_diag(index_t i=0);
 
 	virtual SGVector<float64_t> log_pdf_multiple();
 	virtual SGMatrix<float64_t> grad_multiple();

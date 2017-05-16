@@ -210,7 +210,7 @@ float64_t Nystrom::log_pdf(index_t idx_test) const
 	{
 		auto grad_x_xa = m_kernel->dx(idx_a, idx_test);
 		Map<VectorXd> eigen_grad_xa(grad_x_xa.vector, D);
-		beta_sum -= eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
+		beta_sum += eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
 	}
 
 	return beta_sum;
@@ -259,7 +259,7 @@ SGVector<float64_t> Nystrom::hessian_diag(index_t idx_test) const
 		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
 		for (auto i=0; i<D; i++)
 		{
-			eigen_beta_sum_hessian_diag[i] -= m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
+			eigen_beta_sum_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
 					a, idx_test, beta_a, i, i);
 		}
 	}

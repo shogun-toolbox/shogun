@@ -103,6 +103,13 @@ SGMatrix<float64_t> CKernelExpFamily::hessian(index_t i)
 	return m_impl->hessian(i);
 }
 
+SGVector<float64_t> CKernelExpFamily::hessian_diag(index_t i)
+{
+	auto N = m_impl->get_num_data();
+	REQUIRE(i>=0 && i<N, "Given test data index (%d) must be in [0, %d].\n", i, N-1);
+	return m_impl->hessian_diag(i);
+}
+
 float64_t CKernelExpFamily::score()
 {
 	return m_impl->score();

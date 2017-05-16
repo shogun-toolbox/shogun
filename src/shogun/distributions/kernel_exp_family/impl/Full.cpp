@@ -226,7 +226,8 @@ void Full::fit()
 	if (!solver.info() == Eigen::Success)
 		SG_SWARNING("Numerical problems computing LLT.\n");
 
-	eigen_beta = solver.solve(eigen_h / m_lambda);
+	eigen_beta = solver.solve(eigen_h / -m_lambda);
+	// Differs from JMLR paper by a minus sign; this way seems to be correct.
 }
 
 float64_t Full::log_pdf(index_t idx_test) const
@@ -249,8 +250,7 @@ float64_t Full::log_pdf(index_t idx_test) const
 		Map<VectorXd> eigen_grad_xa(grad_x_xa.vector, D);
 
 		// betasum += np.dot(gradient_x_xa, beta[a, :])
-		// note: sign flip as different argument order compared to Python code
-		beta_sum -= eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
+		beta_sum += eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
 
 		if (m_base_measure_cov_ridge)
 		{
@@ -298,10 +298,9 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
 		// betasum_grad += beta[a, :].dot(left_arg_hessian)
 		// TODO storage is not necessary here
-		// note: sign flip as different argument order compared to Python code
 		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
-		eigen_beta_sum_grad += eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
+		eigen_beta_sum_grad -= eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
 
 		if (m_base_measure_cov_ridge)
 		{
@@ -365,7 +364,7 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 		// Note sign flip because arguments are opposite order of Python code
 		auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec(a, idx_test, beta_a);
 		Map<MatrixXd> eigen_beta_hess_sum(beta_hess_sum.matrix, D, D);
-		eigen_beta_sum_hessian -= eigen_beta_hess_sum;
+		eigen_beta_sum_hessian += eigen_beta_hess_sum;
 	}
 
 	// note that xi is not yet normalised
@@ -403,7 +402,7 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 		{
 			eigen_xi_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dx_k_row_sum_component(
 					a, idx_test, i, i);
-			eigen_beta_sum_hessian_diag[i] -= m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
+			eigen_beta_sum_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
 					a, idx_test, beta_a, i, i);
 		}
 	}
