@@ -1,12 +1,7 @@
 #ifndef __SG_SOME_H__
 #define __SG_SOME_H__
 
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_CXX11
 #include <memory>
-
-#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
@@ -34,12 +29,12 @@ namespace shogun
                  *
                  * @return raw pointer (without SG_REF)
                  */
-                operator T*();
+                operator T*() const;
                 /** Call member function or access member of T
                  *
                  * @return raw pointer (without SG_REF)
                  */
-                T* operator->();
+                T* operator->() const;
             private:
                 Some();
                 void unref();
@@ -81,24 +76,24 @@ namespace shogun
         unref();
     }
     template <typename T>
-    Some<T>::operator T*()
+    Some<T>::operator T*() const
     {
         return raw;
     }
     template <typename T>
-    T* Some<T>::operator->()
+    T* Some<T>::operator->() const
     {
         return raw;
     }
     template <typename T>
     void Some<T>::ref()
     {
-        SG_REF(raw);
+        if (raw) (raw)->ref();
     }
     template <typename T>
     void Some<T>::unref()
     {
-        SG_UNREF(raw);
+        if (raw) { if ((raw)->unref()==0) (raw)=NULL; };
     }
     template <typename T>
     Some<T> Some<T>::from_raw(T* raw)
@@ -144,5 +139,4 @@ namespace shogun
 
 };
 
-#endif /* HAVE_CXX11 */
 #endif /* __SG_SOME_H__ */
