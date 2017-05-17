@@ -74,6 +74,9 @@ public:
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 
+	void set_regularization(bool regularize_rkhs_norm,
+							bool regularize_l2_norm);
+
 protected:
 	kernel_exp_family_impl::Base* m_impl;
 };

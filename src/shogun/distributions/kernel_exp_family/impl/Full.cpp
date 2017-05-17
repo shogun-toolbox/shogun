@@ -179,6 +179,7 @@ void Full::fit()
 
 	if (m_base_measure_cov_ridge)
 	{
+		SG_SWARNING("TODO: make base measure modular.\n");
 		SG_SINFO("Computing covariance of data for base measure.\n");
 		m_mu = SGVector<float64_t>(D);
 		Map<VectorXd> eigen_mu(m_mu.vector, D);
@@ -412,6 +413,11 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 	eigen_xi_hessian_diag += eigen_beta_sum_hessian_diag;
 
 	return xi_hessian_diag;
+}
+
+void Full::set_regularization(bool regularize_rkhs_norm, bool regularize_l2_norm)
+{
+	SG_SNOTIMPLEMENTED;
 }
 
 //SGVector<float64_t> Full::leverage() const

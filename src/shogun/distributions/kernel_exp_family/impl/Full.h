@@ -103,6 +103,9 @@ public :
 	using Base::hessian;
 	using Base::hessian_diag;
 
+	virtual void set_regularization(bool regularize_rkhs_norm=true,
+									bool regularize_l2_norm=false);
+
 protected:
 	float64_t m_base_measure_cov_ridge;
 

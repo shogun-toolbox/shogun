@@ -70,7 +70,13 @@ public :
 	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
 	static SGMatrix<float64_t> subsample_matrix_cols(const SGVector<index_t>& col_inds,
 			const SGMatrix<float64_t>& mat);
+
+	virtual void set_regularization(bool regularize_rkhs_norm=true,
+									bool regularize_l2_norm=false);
 protected:
+
+	bool m_regularize_rkhs_norm;
+	bool m_regularize_l2_norm;
 };
 };
 

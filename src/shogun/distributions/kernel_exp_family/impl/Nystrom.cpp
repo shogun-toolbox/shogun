@@ -51,6 +51,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 	SG_SINFO("Using m=%d of N=%d user provided RKHS basis functions.\n",
 			basis.num_cols, N);
 	set_basis_and_data(basis, data);
+	set_regularization();
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
@@ -63,6 +64,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
 
 	auto basis = subsample_matrix_cols(basis_inds, data);
 	set_basis_and_data(basis, data);
+	set_regularization();
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
@@ -77,6 +79,13 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 	auto basis = subsample_matrix_cols(basis_inds, data);
 
 	set_basis_and_data(basis, data);
+	set_regularization();
+}
+
+void Nystrom::set_regularization(bool regularize_rkhs_norm, bool regularize_l2_norm)
+{
+	m_regularize_rkhs_norm=regularize_rkhs_norm;
+	m_regularize_l2_norm=regularize_l2_norm;
 }
 
 void Nystrom::fit()
@@ -95,18 +104,33 @@ void Nystrom::fit()
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, mD);
 
-	SG_SINFO("Computing sub-sampled kernel Hessians.\n");
-	set_basis_and_data(basis, basis);
-	auto G_mm = m_kernel->dx_dy_all();
-	Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
+	MatrixXd system_matrix = MatrixXd::Zero(mD, mD);
+	if (m_lambda>0)
+	{
+		if (m_regularize_rkhs_norm)
+		{
+			SG_SINFO("Computing sub-sampled kernel Hessians.\n");
+			set_basis_and_data(basis, basis);
+			auto G_mm = m_kernel->dx_dy_all();
+			Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
+			system_matrix+=m_lambda*eigen_G_mm;
 
-	SG_SINFO("TODO: Redundant when sub-sampling basis from data.\n");
-	set_basis_and_data(basis, data);
+			SG_SINFO("TODO: Redundant when sub-sampling basis from data.\n");
+			set_basis_and_data(basis, data);
+		}
+
+		if (m_regularize_l2_norm)
+		{
+			system_matrix.diagonal().array() += m_lambda;
+			SG_SWARNING("TODO: Consider LLT solver here for speed.\n");
+		}
+
+	}
+
 	auto G_mn = m_kernel->dx_dy_all();
 	Map<MatrixXd> eigen_G_mn(G_mn.matrix, mD, ND);
 
-	eigen_G_mm *= m_lambda;
-	eigen_G_mm += eigen_G_mn*eigen_G_mn.adjoint() / N;
+	system_matrix += eigen_G_mn*eigen_G_mn.adjoint() / N;
 
 	m_beta = SGVector<float64_t>(mD);
 	auto eigen_beta = Map<VectorXd>(m_beta.vector, mD);
@@ -114,7 +138,7 @@ void Nystrom::fit()
 	SG_SINFO("Solving with HouseholderQR.\n");
 	SG_SWARNING("TODO: Compare QR and self-adjoint-pseudo-inverse.\n");
 	auto solver = HouseholderQR<MatrixXd>();
-	solver.compute(eigen_G_mm);
+	solver.compute(system_matrix);
 
 //	if (!solver.info() == Eigen::Success)
 //		SG_SWARNING("Numerical problems computing HouseholderQR.\n");
@@ -125,7 +149,7 @@ void Nystrom::fit()
 
 	SG_SINFO("Computing pseudo-inverse.\n");
 	// SG_SWARNING("TODO: compare to CG in terms of speed.\n");
-	auto G_dagger = pinv_self_adjoint(G_mm);
+	auto G_dagger = pinv_self_adjoint(system_matrix);
 	Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, mD, mD);
 
 	SG_SINFO("Constructing solution.\n");
