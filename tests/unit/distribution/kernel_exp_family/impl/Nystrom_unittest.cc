@@ -436,6 +436,7 @@ TEST(kernel_exp_family_impl_Nystrom, hessian_diag_equals_hessian)
 	SGVector<float64_t> x(D);
 	x[0] = CMath::randn_float();
 	x[1] = CMath::randn_float();
+	x[2] = CMath::randn_float();
 
 	est.set_data(x);
 	auto hessian = est.hessian(0);
