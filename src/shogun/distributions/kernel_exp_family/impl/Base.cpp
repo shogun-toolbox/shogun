@@ -129,13 +129,16 @@ float64_t Base::score() const
 	auto D = get_num_dimensions();
 
 	floatmax_t score = 0.0;
+	float64_t sqrt_N_test = CMath::sqrt(float64_t(N_test));
 
 #pragma omp parallel for reduction (+:score)
 	for (auto i=0; i<N_test; ++i)
 	{
 		auto gradient = grad(i);
 		auto eigen_gradient = Map<VectorXd>(gradient.vector, D);
-		score += 0.5 * eigen_gradient.squaredNorm() / N_test;
+		floatmax_t norm = eigen_gradient.stableNorm();
+		norm /= sqrt_N_test;
+		score += 0.5 * norm * norm;
 
 		auto hessian_diag = this->hessian_diag(i);
 		auto eigen_hessian_diag = Map<VectorXd>(hessian_diag.vector, D);
