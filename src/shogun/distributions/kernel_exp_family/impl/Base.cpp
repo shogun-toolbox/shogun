@@ -128,21 +128,21 @@ float64_t Base::score() const
 	auto N_test = get_num_data();
 	auto D = get_num_dimensions();
 
-	float64_t score = 0.0;
+	floatmax_t score = 0.0;
 
 #pragma omp parallel for reduction (+:score)
 	for (auto i=0; i<N_test; ++i)
 	{
 		auto gradient = grad(i);
 		auto eigen_gradient = Map<VectorXd>(gradient.vector, D);
-		score += 0.5 * eigen_gradient.squaredNorm();
+		score += 0.5 * eigen_gradient.squaredNorm() / N_test;
 
 		auto hessian_diag = this->hessian_diag(i);
 		auto eigen_hessian_diag = Map<VectorXd>(hessian_diag.vector, D);
-		score += eigen_hessian_diag.sum();
+		score += eigen_hessian_diag.sum() / N_test;
 	}
 
-	return score / N_test;
+	return score;
 }
 
 SGVector<float64_t> Base::log_pdf() const
