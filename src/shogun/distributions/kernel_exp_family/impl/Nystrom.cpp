@@ -44,111 +44,158 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-		kernel::Base* kernel, float64_t lambda) : Full(basis, kernel, lambda, 0.0, false)
+		kernel::Base* kernel, float64_t lambda,
+		float64_t lambda_l2) : Full(basis, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
 
 	SG_SINFO("Using m=%d of N=%d user provided RKHS basis functions.\n",
 			basis.num_cols, N);
 	set_basis_and_data(basis, data);
-	set_regularization();
+
+	m_lambda_l2 = lambda_l2;
+	m_basis_inds = SGVector<index_t>();
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda, 0.0, false)
+			kernel::Base* kernel, float64_t lambda,
+			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
 
 	SG_SINFO("Using m=%d of N=%d user provided subsampled data RKHS basis functions.\n",
 			basis_inds.vlen, N);
 
+	m_basis_inds = basis_inds;
 	auto basis = subsample_matrix_cols(basis_inds, data);
 	set_basis_and_data(basis, data);
-	set_regularization();
+
+	m_lambda_l2 = lambda_l2;
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-			kernel::Base* kernel, float64_t lambda) : Full(data, kernel, lambda, 0.0, false)
+			kernel::Base* kernel, float64_t lambda,
+			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
 
 	SG_SINFO("Using m=%d of N=%d uniformly sub-sampled data as RKHS basis functions.\n",
 			num_subsample_basis, data.num_cols);
 
-	auto basis_inds = choose_m_in_n(num_subsample_basis, N);
-	auto basis = subsample_matrix_cols(basis_inds, data);
+	m_basis_inds = choose_m_in_n(num_subsample_basis, N);
+	auto basis = subsample_matrix_cols(m_basis_inds, data);
 
 	set_basis_and_data(basis, data);
-	set_regularization();
-}
-
-void Nystrom::set_regularization(bool regularize_rkhs_norm, bool regularize_l2_norm)
-{
-	m_regularize_rkhs_norm=regularize_rkhs_norm;
-	m_regularize_l2_norm=regularize_l2_norm;
+	m_lambda_l2 = lambda_l2;
 }
 
 void Nystrom::fit()
 {
+	// TODO this needs a clean-up, put things into modulars
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
 	auto m = get_num_basis();
 	auto ND = N*D;
 	auto mD = m*D;
 
-	// keep references for later
-	auto basis = m_basis;
-	auto data = m_data;
+	SGMatrix<float64_t> system_matrix(mD, mD);
+	Map<MatrixXd> eigen_system_matrix(system_matrix.matrix, mD, mD);
 
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
 	auto eigen_h=Map<VectorXd>(h.vector, mD);
 
-	MatrixXd system_matrix = MatrixXd::Zero(mD, mD);
+	SG_SINFO("Computing kernel Hessians between basis and data.\n");
+	auto G_mn = m_kernel->dx_dy_all();
+	Map<MatrixXd> eigen_G_mn(G_mn.matrix, mD, ND);
+	eigen_system_matrix = eigen_G_mn*eigen_G_mn.adjoint() / N;
 	if (m_lambda>0)
 	{
-		if (m_regularize_rkhs_norm)
+		if (m_basis_inds.vlen)
 		{
-			SG_SINFO("Computing sub-sampled kernel Hessians.\n");
+			SG_SINFO("Block sub-sampling kernel Hessians for basis.\n");
+			SGMatrix<float64_t> G_mm(mD, mD);
+			for (auto src_block=0; src_block<m; src_block++)
+			{
+				memcpy(G_mm.get_column_vector(src_block*D),
+						G_mn.get_column_vector(m_basis_inds[src_block]*D),
+						D*D*sizeof(float64_t)*m
+						);
+			}
+
+			Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
+			eigen_system_matrix+=m_lambda*eigen_G_mm;
+		}
+		else
+		{
+			SG_SINFO("Computing kernel Hessians for basis.\n");
+			SG_SINFO("TODO: Avoid re-initializing the kernel matrix.\n");
+			auto basis = m_basis;
+			auto data = m_data;
+
 			set_basis_and_data(basis, basis);
 			auto G_mm = m_kernel->dx_dy_all();
 			Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
-			system_matrix+=m_lambda*eigen_G_mm;
+			eigen_system_matrix+=m_lambda*eigen_G_mm;
 
-			SG_SINFO("TODO: Redundant when sub-sampling basis from data.\n");
 			set_basis_and_data(basis, data);
 		}
-
-		if (m_regularize_l2_norm)
-		{
-			system_matrix.diagonal().array() += m_lambda;
-			SG_SWARNING("TODO: Consider LLT solver here for speed.\n");
-		}
-
 	}
 
-	auto G_mn = m_kernel->dx_dy_all();
-	Map<MatrixXd> eigen_G_mn(G_mn.matrix, mD, ND);
-
-	system_matrix += eigen_G_mn*eigen_G_mn.adjoint() / N;
+	if (m_lambda_l2>0.0)
+		eigen_system_matrix.diagonal().array() += m_lambda_l2;
 
 	m_beta = SGVector<float64_t>(mD);
 	auto eigen_beta = Map<VectorXd>(m_beta.vector, mD);
 
-	SG_SINFO("Solving with HouseholderQR.\n");
-	SG_SWARNING("TODO: Compare QR and self-adjoint-pseudo-inverse.\n");
-	auto solver = HouseholderQR<MatrixXd>();
-	solver.compute(system_matrix);
+	// attempt fast solvers first and use stable fall-back option otherwise
+	bool solve_success=false;
+	if (m_lambda_l2>0)
+	{
+		// this has smalles Eigenvalues bounded away form zero, so can use fast LLT
+		SG_SINFO("Solving with LLT.\n");
+		auto solver = LLT<MatrixXd>();
+		solver.compute(eigen_system_matrix);
+		if (solver.info() != Eigen::Success)
+		{
+			SG_SWARNING("Numerical problems computing LLT.\n");
+			SG_SINFO("Solving with LDLT.\n");
+			auto solver2 = LDLT<MatrixXd>();
+			solver2.compute(eigen_system_matrix);
+			if (solver2.info() != Eigen::Success)
+			{
+				SG_SWARNING("Numerical problems computing LDLT.\n");
+			}
+			else
+			{
+				SG_SINFO("Constructing solution.\n");
+				eigen_beta = -solver.solve(eigen_h);
+				solve_success=true;
+			}
+		}
+		else
+		{
+			SG_SINFO("Constructing solution.\n");
+			eigen_beta = -solver.solve(eigen_h);
+			solve_success=true;
+		}
+	}
+	else
+	{
+		SG_SINFO("Solving with HouseholderQR.\n");
+		SG_SWARNING("TODO: Compare QR and self-adjoint-pseudo-inverse.\n");
+		auto solver = HouseholderQR<MatrixXd>();
+		solver.compute(eigen_system_matrix);
 
-//	if (!solver.info() == Eigen::Success)
-//		SG_SWARNING("Numerical problems computing HouseholderQR.\n");
+		SG_SINFO("Constructing solution.\n");
+		eigen_beta = -solver.solve(eigen_h);
+		solve_success=true;
+	}
 
-	SG_SINFO("Constructing solution.\n");
-	eigen_beta = -solver.solve(eigen_h);
-	return;
+	if (solve_success)
+		return;
 
-	SG_SINFO("Computing pseudo-inverse.\n");
-	// SG_SWARNING("TODO: compare to CG in terms of speed.\n");
+	SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse.\n");
 	auto G_dagger = pinv_self_adjoint(system_matrix);
 	Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, mD, mD);
 

@@ -44,16 +44,17 @@ class CKernelExpFamilyNystrom : public CKernelExpFamily
 public :
 	CKernelExpFamilyNystrom();
 	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-				float64_t sigma, float64_t lambda);
+				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
 
 	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-				float64_t sigma, float64_t lambda);
+				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
 
 	virtual void fit();
 
 	virtual ~CKernelExpFamilyNystrom();
 
 	virtual const char* get_name() const { return "KernelExpFamilyNystrom"; }
+
 };
 
 }

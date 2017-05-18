@@ -415,11 +415,6 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 	return xi_hessian_diag;
 }
 
-void Full::set_regularization(bool regularize_rkhs_norm, bool regularize_l2_norm)
-{
-	SG_SNOTIMPLEMENTED;
-}
-
 //SGVector<float64_t> Full::leverage() const
 //{
 //	auto ND = get_num_basis()*get_num_dimensions();

@@ -47,7 +47,7 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom() : CKernelExpFamily()
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 			SGMatrix<float64_t> basis,
-			float64_t sigma, float64_t lambda)
+			float64_t sigma, float64_t lambda, float64_t lambda_l2)
 			: CKernelExpFamily()
 {
 	REQUIRE(data.matrix, "Given observations cannot be empty.\n");
@@ -58,13 +58,14 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 	REQUIRE(basis.num_cols>0, "Number of given basis (%d) must be positive.\n", basis.num_cols);
 	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
 
 	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
-	m_impl = new kernel_exp_family_impl::Nystrom(data, basis, kernel, lambda);
+	m_impl = new kernel_exp_family_impl::Nystrom(data, basis, kernel, lambda, lambda_l2);
 }
 
 CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-				float64_t sigma, float64_t lambda)
+				float64_t sigma, float64_t lambda, float64_t lambda_l2)
 {
 	REQUIRE(data.matrix, "Given observations cannot be empty.\n");
 	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
@@ -74,9 +75,11 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data, index
 			num_subsample_basis, data.num_cols);
 	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
 
 	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
-	m_impl = new kernel_exp_family_impl::Nystrom(data, num_subsample_basis, kernel, lambda);
+	m_impl = new kernel_exp_family_impl::Nystrom(data, num_subsample_basis,
+													kernel, lambda, lambda_l2);
 }
 
 CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()

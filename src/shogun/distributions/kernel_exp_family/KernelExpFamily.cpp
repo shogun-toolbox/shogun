@@ -161,8 +161,3 @@ void CKernelExpFamily::set_data(SGVector<float64_t> x)
 	REQUIRE(x.vlen==D, "Dimension of given point (%d) must match the estimator's (%d).\n", x.vlen, D);
 	m_impl->set_data(x);
 }
-
-void CKernelExpFamily::set_regularization(bool regularize_rkhs_norm, bool regularize_l2_norm)
-{
-	m_impl->set_regularization(regularize_rkhs_norm, regularize_l2_norm);
-}

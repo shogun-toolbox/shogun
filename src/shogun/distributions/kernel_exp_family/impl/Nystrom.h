@@ -48,13 +48,13 @@ class Nystrom : public Full
 {
 public :
 	Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-			kernel::Base* kernel, float64_t lambda);
+			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			kernel::Base* kernel, float64_t lambda);
+			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-				kernel::Base* kernel, float64_t lambda);
+				kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	virtual ~Nystrom() {};
 
@@ -70,13 +70,10 @@ public :
 	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
 	static SGMatrix<float64_t> subsample_matrix_cols(const SGVector<index_t>& col_inds,
 			const SGMatrix<float64_t>& mat);
-
-	virtual void set_regularization(bool regularize_rkhs_norm=true,
-									bool regularize_l2_norm=false);
 protected:
 
-	bool m_regularize_rkhs_norm;
-	bool m_regularize_l2_norm;
+	float64_t m_lambda_l2;
+	SGVector<index_t> m_basis_inds;
 };
 };
 

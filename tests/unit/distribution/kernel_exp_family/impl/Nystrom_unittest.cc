@@ -134,6 +134,81 @@ TEST(kernel_exp_family_impl_Nystrom, fit)
 	ASSERT(beta.vector);
 }
 
+TEST(kernel_exp_family_impl_Nystrom, fit_custom_equals_subsampled_basis_m_1)
+{
+	index_t N=2;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+
+	index_t m=1;
+	SGVector<index_t> inds(m);
+	inds[0]=1;
+
+	// explicitly sub-sampled basis, but Nystrom won't know
+	SGMatrix<float64_t> basis(D,m);
+	basis(0,0)=X(0,inds[0]);
+	basis(1,0)=X(1,inds[0]);
+
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
+	Nystrom est_custom(X, basis, new kernel::Gaussian(sigma), lambda);
+
+	est.fit();
+	est_custom.fit();
+
+	auto beta=est.get_beta();
+	auto beta_custom=est_custom.get_beta();
+	ASSERT_EQ(beta.vlen, m*D);
+	ASSERT(beta.vector);
+	ASSERT_EQ(beta_custom.vlen, m*D);
+	ASSERT(beta_custom.vector);
+
+	for (auto i=0; i<beta.vlen; i++)
+		EXPECT_NEAR(beta[i], beta_custom[i], 1e-13);
+}
+
+TEST(kernel_exp_family_impl_Nystrom, fit_custom_equals_subsampled_basis_m_2)
+{
+	index_t N=5;
+	index_t D=2;
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<N*D; i++)
+		X.matrix[i]=CMath::randn_float();
+
+	index_t m=2;
+	SGVector<index_t> inds(m);
+	inds[0]=1;
+	inds[1]=3;
+
+	// explicitly sub-sampled basis, but Nystrom won't know
+	SGMatrix<float64_t> basis(D,m);
+	basis(0,0)=X(0,inds[0]);
+	basis(1,0)=X(1,inds[0]);
+	basis(0,1)=X(0,inds[1]);
+	basis(1,1)=X(1,inds[1]);
+
+	float64_t sigma = 2;
+	float64_t lambda = 1;
+	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
+	Nystrom est_custom(X, basis, new kernel::Gaussian(sigma), lambda);
+
+	est.fit();
+	est_custom.fit();
+
+	auto beta=est.get_beta();
+	auto beta_custom=est_custom.get_beta();
+	ASSERT_EQ(beta.vlen, m*D);
+	ASSERT(beta.vector);
+	ASSERT_EQ(beta_custom.vlen, m*D);
+	ASSERT(beta_custom.vector);
+
+	for (auto i=0; i<beta.vlen; i++)
+		EXPECT_NEAR(beta[i], beta_custom[i], 1e-13);
+}
+
 // disabled as log_pdf might be different (up to constant)
 TEST(DISABLED_kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
 {

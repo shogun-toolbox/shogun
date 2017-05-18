@@ -81,8 +81,6 @@ public :
 	virtual SGVector<float64_t> log_pdf() const;
 	virtual SGMatrix<float64_t> grad() const;
 
-	virtual void set_regularization(bool regularize_rkhs_norm=true,
-									bool regularize_l2_norm=false)=0;
 protected:
 	virtual void set_basis_and_data(SGMatrix<float64_t> basis,
 			SGMatrix<float64_t> data);
