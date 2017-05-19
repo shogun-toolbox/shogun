@@ -105,6 +105,6 @@ TEST(UAIFileTest, preamble)
     delete [] factors_scope;
     delete [] factors_table;
 
-    unlink("UAIFileTest_unittest_preamble.uai");
+    _unlink("UAIFileTest_unittest_preamble.uai");
 }
 

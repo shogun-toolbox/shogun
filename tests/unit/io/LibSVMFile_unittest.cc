@@ -91,7 +91,7 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	SG_FREE(data_from_file);
 	SG_FREE(labels_from_file);
 
-	unlink("LibSVMFileTest_sparse_matrix_int32_output.txt");
+	_unlink("LibSVMFileTest_sparse_matrix_int32_output.txt");
 }
 
 TEST(LibSVMFileTest, sparse_matrix_float64)
@@ -176,5 +176,5 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	SG_FREE(labels);
 	SG_FREE(data_from_file);
 	SG_FREE(labels_from_file);
-	unlink("LibSVMFileTest_sparse_matrix_float64_output.txt");
+	_unlink("LibSVMFileTest_sparse_matrix_float64_output.txt");
 }

@@ -47,7 +47,7 @@ TEST(MLDataHDF5File, read_matrix)
 		}
 	}
 	SG_UNREF(fin);
-	unlink(fname);
+	_unlink(fname);
 	SG_FREE(fname);
 }
 #else

@@ -43,7 +43,7 @@ TEST(ProtobufFileTest, vector_int32)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_vector_int32_output.txt");
+	_unlink("ProtobufFileTest_vector_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, vector_float64)
@@ -73,7 +73,7 @@ TEST(ProtobufFileTest, vector_float64)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_vector_float64_output.txt");
+	_unlink("ProtobufFileTest_vector_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_int32)
@@ -110,7 +110,7 @@ TEST(ProtobufFileTest, matrix_int32)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_matrix_int32_output.txt");
+	_unlink("ProtobufFileTest_matrix_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_float64)
@@ -147,7 +147,7 @@ TEST(ProtobufFileTest, matrix_float64)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_matrix_float64_output.txt");
+	_unlink("ProtobufFileTest_matrix_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, sparse_matrix_int32)
@@ -205,7 +205,7 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	SG_FREE(data);
 	SG_FREE(data_from_file);
 
-	unlink("ProtobufFileTest_sparse_matrix_int32_output.txt");
+	_unlink("ProtobufFileTest_sparse_matrix_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, sparse_matrix_float64)
@@ -262,7 +262,7 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 	SG_FREE(data);
 	SG_FREE(data_from_file);
 
-	unlink("ProtobufFileTest_sparse_matrix_float64_output.txt");
+	_unlink("ProtobufFileTest_sparse_matrix_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, DISABLED_string_list_char)
@@ -304,7 +304,7 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 
 	SG_FREE(strings);
 	SG_FREE(data_from_file);
-	unlink("ProtobufFileTest_string_list_char_output.txt");
+	_unlink("ProtobufFileTest_string_list_char_output.txt");
 }
 
 #endif /* HAVE_PROTOBUF */
