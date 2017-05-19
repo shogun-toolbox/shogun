@@ -350,6 +350,25 @@ Container<T> add(Container<T>& a, Container<T>& b, T alpha=1, T beta=1)
 }
 
 /**
+ * Performs the operation A = alpha * x * y' + A
+ *
+ * @param alpha scaling factor for vector x
+ * @param x vector
+ * @param y vector
+ * @param A m artix
+ */
+template <typename T>
+void dger(T alpha, const SGVector<T> x, const SGVector<T> y, SGMatrix<T>& A)
+{
+	auto x_martix = SGVector<T>::convert_to_matrix(x, A.num_rows, 1, false);
+	auto y_martix = SGVector<T>::convert_to_matrix(y, A.num_cols, 1, false);
+
+	auto temp_martix =
+		SGMatrix<T>::matrix_multiply(x_martix, y_martix, false, true, alpha);
+	add(A, temp_martix, A);
+}
+
+/**
  * Compute the cholesky decomposition \f$A = L L^{*}\f$ or \f$A = U^{*} U\f$
  * of a Hermitian positive definite matrix
  *
@@ -688,6 +707,50 @@ SGMatrix<T> matrix_prod(SGMatrix<T>& A, SGMatrix<T>& B,
 	matrix_prod(A, B, result, transpose_A, transpose_B);
 
 	return result;
+}
+
+/**
+ * Performs the operation y = \alpha ax + \beta y
+ * This function multiplies a * x (after transposing a, if needed)
+ * and multiplies the resulting matrix by alpha. It then multiplies vector y by
+ * beta. It stores the sum of these two products in vector y
+ *
+ * @param alpha scaling factor for vector ax
+ * @param a matrix
+ * @param transpose Whether to transpose matrix a
+ * @param x vector
+ * @param beta scaling factor for vector y
+ * @param y vector
+ */
+template <typename T>
+void dgemv(
+	T alpha, SGMatrix<T> a, bool transpose, SGVector<T> x, T beta,
+	SGVector<T>& y)
+{
+	auto temp_vector = matrix_prod(a, x, transpose);
+	add(temp_vector, y, y, alpha, beta);
+}
+
+/**
+ * This function multiplies a * b and multiplies the resulting matrix by alpha.
+ * It then multiplies matrix c by beta. It stores the sum of these two products
+ * in matrix c.
+ *
+ * @param alpha scaling factor for matrix a*b
+ * @param a matrix
+ * @param b matrix
+ * @param transpose_a Whether to transpose matrix a
+ * @param transpose_b Whether to transpose matrix b
+ * @param beta scaling factor for matrix c
+ * @param c matrix
+ */
+template <typename T>
+void dgemm(
+	T alpha, SGMatrix<T> a, SGMatrix<T> b, bool transpose_a, bool transpose_b,
+	T beta, SGMatrix<T>& c)
+{
+	auto temp_matrix = matrix_prod(a, b, transpose_a, transpose_b);
+	add(temp_matrix, c, c, alpha, beta);
 }
 
 /**
