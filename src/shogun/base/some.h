@@ -41,7 +41,8 @@ namespace shogun
 
 		/**
 		 * Get the raw pointer
-		 * @return raw pointer
+		 *
+		 * @return raw pointer (without SG_REF)
 		 */
 		T* get() const;
 
@@ -68,9 +69,10 @@ namespace shogun
 	{
 		ref();
 	}
-	template<class T>
-	template<class R>
-	Some<T>::Some(const Some<R>& other)  {
+	template <class T>
+	template <class R>
+	Some<T>::Some(const Some<R>& other)
+	{
 		raw = dynamic_cast<T*>(other.get());
 		ref();
 	}
@@ -127,7 +129,6 @@ namespace shogun
 		Some<T> result(raw);
 		return result;
 	}
-
 
 	/** Creates an instance of any class
 	 * that is wrapped with a shared pointer like

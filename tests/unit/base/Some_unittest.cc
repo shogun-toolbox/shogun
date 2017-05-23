@@ -1,8 +1,8 @@
+#include <gtest/gtest.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/some.h>
 #include <shogun/classifier/AveragedPerceptron.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <gtest/gtest.h>
 
 #ifdef HAVE_CXX11
 using namespace shogun;
@@ -24,10 +24,10 @@ TEST(Some,basic)
         EXPECT_EQ(2, kernel->ref_count());
     }
 
-    EXPECT_TRUE(raw);
-    // last references now
-    EXPECT_EQ(1, raw->ref_count());
-    SG_UNREF(raw);
+	EXPECT_TRUE(raw);
+	// last references now
+	EXPECT_EQ(1, raw->ref_count());
+	SG_UNREF(raw);
 }
 
 TEST(Some,reassignment)
@@ -86,6 +86,5 @@ TEST(Some, constructor_new_type_wrong_casting)
 	EXPECT_TRUE(object.get() == nullptr);
 	EXPECT_TRUE(kernel.get() != nullptr);
 }
-
 
 #endif  // HAVE_CXX11
