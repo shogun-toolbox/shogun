@@ -82,7 +82,6 @@ TEST(MixtureModel,gaussian_mixture_model)
 	EXPECT_NEAR(m[0],9.863760378,eps);
 	EXPECT_NEAR(cov(0,0),0.956568199,eps);
 
-	SG_FREE(cov.matrix);
 	SG_UNREF(outg);
 	SG_UNREF(distr);
 
@@ -94,7 +93,6 @@ TEST(MixtureModel,gaussian_mixture_model)
 	EXPECT_NEAR(m[0],-0.208122793,eps);
 	EXPECT_NEAR(cov(0,0),1.095106568,eps);
 
-	SG_FREE(cov.matrix);
 	SG_UNREF(outg);
 	SG_UNREF(distr);
 	SG_UNREF(mix)

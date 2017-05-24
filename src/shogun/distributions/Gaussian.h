@@ -14,8 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
-
 #include <shogun/distributions/Distribution.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/common.h>
@@ -245,5 +243,4 @@ class CGaussian : public CDistribution
 		ECovType m_cov_type;
 };
 }
-#endif //HAVE_LAPACK
 #endif //_GAUSSIAN_H__
