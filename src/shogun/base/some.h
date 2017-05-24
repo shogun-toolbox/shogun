@@ -17,7 +17,10 @@ namespace shogun
 	{
 	public:
 		Some(const Some<T>& other);
+		template <typename R>
+		Some(const Some<R>& other);
 		explicit Some(T* other);
+
 		Some& operator=(T* other);
 		~Some();
 
@@ -36,13 +39,20 @@ namespace shogun
 		 */
 		T* operator->() const;
 
+		/**
+		 * Get the raw pointer
+		 *
+		 * @return raw pointer (without SG_REF)
+		 */
+		T* get() const;
+
 	private:
 		Some();
 		void unref();
 		void ref();
 
 	private:
-		T* raw;
+		T* raw = nullptr;
 	};
 
 	template <typename T>
@@ -59,6 +69,13 @@ namespace shogun
 	{
 		ref();
 	}
+	template <class T>
+	template <class R>
+	Some<T>::Some(const Some<R>& other)
+	{
+		raw = dynamic_cast<T*>(other.get());
+		ref();
+	}
 	template <typename T>
 	Some<T>& Some<T>::operator=(T* other)
 	{
@@ -70,6 +87,7 @@ namespace shogun
 		}
 		return *this;
 	}
+
 	template <typename T>
 	Some<T>::~Some()
 	{
@@ -82,6 +100,11 @@ namespace shogun
 	}
 	template <typename T>
 	T* Some<T>::operator->() const
+	{
+		return raw;
+	}
+	template <class T>
+	T* Some<T>::get() const
 	{
 		return raw;
 	}
