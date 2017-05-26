@@ -27,6 +27,26 @@ CMachineEvaluation::CMachineEvaluation()
 
 CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
+		CDynamicObjectArray* evaluation_criteria, bool autolock)
+{
+	init();
+
+	m_machine = machine;
+	m_features = features;
+	m_labels = labels;
+	m_splitting_strategy = splitting_strategy;
+	m_evaluation_criteria = evaluation_criteria;
+	m_autolock = autolock;
+
+	SG_REF(m_machine);
+	SG_REF(m_features);
+	SG_REF(m_labels);
+	SG_REF(m_splitting_strategy);
+	SG_REF(m_evaluation_criteria);
+}
+
+CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
+		CLabels* labels, CSplittingStrategy* splitting_strategy,
 		CEvaluation* evaluation_criterion, bool autolock)
 {
 	init();
@@ -35,14 +55,33 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
 	m_features = features;
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criterion = evaluation_criterion;
+	m_evaluation_criteria = new CDynamicObjectArray();
+	m_evaluation_criteria->push_back(evaluation_criterion);
 	m_autolock = autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_features);
 	SG_REF(m_labels);
 	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
+	SG_REF(m_evaluation_criteria);
+}
+
+CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
+		CSplittingStrategy* splitting_strategy,
+		CDynamicObjectArray* evaluation_criteria, bool autolock)
+{
+	init();
+
+	m_machine = machine;
+	m_labels = labels;
+	m_splitting_strategy = splitting_strategy;
+	m_evaluation_criteria = evaluation_criteria;
+	m_autolock = autolock;
+
+	SG_REF(m_machine);
+	SG_REF(m_labels);
+	SG_REF(m_splitting_strategy);
+	SG_REF(m_evaluation_criteria);
 }
 
 CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
@@ -54,13 +93,14 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
 	m_machine = machine;
 	m_labels = labels;
 	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criterion = evaluation_criterion;
+	m_evaluation_criteria = new CDynamicObjectArray();
+	m_evaluation_criteria->push_back(evaluation_criterion);
 	m_autolock = autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_labels);
 	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
+	SG_REF(m_evaluation_criteria);
 }
 
 CMachineEvaluation::~CMachineEvaluation()
@@ -69,7 +109,7 @@ CMachineEvaluation::~CMachineEvaluation()
 	SG_UNREF(m_features);
 	SG_UNREF(m_labels);
 	SG_UNREF(m_splitting_strategy);
-	SG_UNREF(m_evaluation_criterion);
+	SG_UNREF(m_evaluation_criteria);
 }
 
 void CMachineEvaluation::init()
@@ -78,7 +118,7 @@ void CMachineEvaluation::init()
 	m_features = NULL;
 	m_labels = NULL;
 	m_splitting_strategy = NULL;
-	m_evaluation_criterion = NULL;
+	m_evaluation_criteria = NULL;
 	m_do_unlock = false;
 	m_autolock = true;
 
@@ -90,8 +130,8 @@ void CMachineEvaluation::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_splitting_strategy, "splitting_strategy",
 			"Used splitting strategy", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_evaluation_criterion, "evaluation_criterion",
-			"Used evaluation criterion", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_evaluation_criteria, "evaluation_criteria",
+			"List of used evaluation criteria", MS_NOT_AVAILABLE);
 	SG_ADD(&m_do_unlock, "do_unlock",
 			"Whether machine should be unlocked after evaluation",
 			MS_NOT_AVAILABLE);
@@ -109,5 +149,22 @@ CMachine* CMachineEvaluation::get_machine() const
 
 EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
 {
-	return m_evaluation_criterion->get_evaluation_direction();
+	REQUIRE(m_evaluation_criteria->get_array_size()==1,
+		"Multiple Metrics provided. Please use get_evaluation_directions()");
+	CEvaluation* temp_eval = (CEvaluation*) m_evaluation_criteria->get_element_safe(0);
+	return temp_eval->get_evaluation_direction();
+}
+
+CDynamicArray<EEvaluationDirection>* CMachineEvaluation::get_evaluation_directions()
+{
+	CDynamicArray<EEvaluationDirection>* list_evaluation_directions = new CDynamicArray<EEvaluationDirection>();
+	int32_t num_eval = m_evaluation_criteria->get_num_elements();
+	for (int32_t i = 0; i < num_eval;i++)
+	{
+		//following line is type safe which is why we don't check
+		CEvaluation* temp_eval = (CEvaluation*) m_evaluation_criteria->get_element_safe(i);
+		list_evaluation_directions->push_back(temp_eval->get_evaluation_direction());
+	}
+	SG_REF(list_evaluation_directions);
+	return list_evaluation_directions;
 }
