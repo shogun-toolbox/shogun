@@ -18,6 +18,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 namespace shogun
 {
@@ -76,6 +77,12 @@ public:
 	 * @param loader File object via which to load data
 	 */
 	CBinaryLabels(CFile * loader);
+
+	/** cast CBinaryLabels to CMulticlassLabels
+	 *
+	 * @return CMulticlassLabels style labels
+	 */
+	operator CMulticlassLabels();
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *

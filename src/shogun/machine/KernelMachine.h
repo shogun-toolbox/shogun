@@ -228,13 +228,6 @@ class CKernelMachine : public CMachine
 		 */
 		virtual float64_t apply_one(int32_t num);
 
-		/** apply example helper, used in threads
-		 *
-		 * @param p params of the thread
-		 * @return nothing really
-		 */
-		static void* apply_helper(void* p);
-
 #ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
