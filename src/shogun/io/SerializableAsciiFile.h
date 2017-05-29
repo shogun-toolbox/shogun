@@ -13,9 +13,9 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
+#include <vector>
 
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'
@@ -41,7 +41,7 @@ class CSerializableAsciiFile :public CSerializableFile
 {
 	friend class SerializableAsciiReader00;
 
-	DynArray<long> m_stack_fpos;
+	std::vector<long> m_stack_fpos;
 
 	void init();
 	bool ignore();

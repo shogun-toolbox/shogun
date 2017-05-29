@@ -17,7 +17,7 @@
 #include <hdf5.h>
 
 #include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 
 #define TYPE_INDEX                 H5T_NATIVE_INT32
 
@@ -58,8 +58,8 @@ IGNORE_IN_CLASSLIST class CSerializableHdf5File
 		const char* name;
 	};
 
-	DynArray<type_item_t*> m_stack_type;
-	DynArray<hid_t> m_stack_h5stream;
+	std::vector<type_item_t*> m_stack_type;
+	std::vector<hid_t> m_stack_h5stream;
 
 	static hid_t sizeof_sparsetype();
 	static hid_t new_sparsetype();

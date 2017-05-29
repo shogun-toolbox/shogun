@@ -124,10 +124,11 @@ CSerializableJsonFile::init(const char* fname)
 void
 CSerializableJsonFile::close()
 {
-	while (m_stack_stream.get_num_elements() > 1)
+	while (m_stack_stream.size() > 1)
 		pop_object();
 
-	if (m_stack_stream.get_num_elements() == 1) {
+	if (m_stack_stream.size() == 1)
+	{
 		if (m_task == 'w'
 			&& json_object_to_file(m_filename, m_stack_stream.back()))
 		{
@@ -142,7 +143,7 @@ CSerializableJsonFile::close()
 bool
 CSerializableJsonFile::is_opened()
 {
-	return m_stack_stream.get_num_elements() > 0;
+	return m_stack_stream.size() > 0;
 }
 
 bool
@@ -275,8 +276,7 @@ bool
 CSerializableJsonFile::write_stringentry_end_wrapped(
 	const TSGDataType* type, index_t y)
 {
-	json_object* array = m_stack_stream.get_element(
-		m_stack_stream.get_num_elements() - 2);
+	json_object* array = m_stack_stream.at(m_stack_stream.size() - 2);
 
 	if (json_object_array_put_idx( array, y, m_stack_stream.back()))
 		return false;
@@ -336,8 +336,7 @@ CSerializableJsonFile::write_sparseentry_end_wrapped(
 	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
-	json_object* o = m_stack_stream.get_element(
-		m_stack_stream.get_num_elements() - 2);
+	json_object* o = m_stack_stream.at(m_stack_stream.size() - 2);
 
 	json_object_object_add(o, STR_KEY_SPARSE_ENTRY,
 						   m_stack_stream.back());
@@ -357,8 +356,7 @@ bool
 CSerializableJsonFile::write_item_end_wrapped(
 	const TSGDataType* type, index_t y, index_t x)
 {
-	json_object* array = m_stack_stream.get_element(
-		m_stack_stream.get_num_elements() - 2);
+	json_object* array = m_stack_stream.at(m_stack_stream.size() - 2);
 
 	if (type->m_ctype==CT_MATRIX || type->m_ctype==CT_SGMATRIX)
 		array = json_object_array_get_idx(array, x);
@@ -448,9 +446,8 @@ CSerializableJsonFile::write_type_end_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	json_object_object_add(
-		m_stack_stream.get_element(
-			m_stack_stream.get_num_elements() - 2), STR_KEY_DATA,
-		m_stack_stream.back());
+	    m_stack_stream.at(m_stack_stream.size() - 2), STR_KEY_DATA,
+	    m_stack_stream.back());
 	pop_object();
 
 	pop_object();

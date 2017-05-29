@@ -7,6 +7,7 @@
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+#include <vector>
 
 #include <shogun/machine/OnlineLinearMachine.h>
 #include <shogun/base/Parameter.h>
@@ -58,7 +59,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	ASSERT(features)
 	ASSERT(features->has_property(FP_STREAMING_DOT))
 
-	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
+	std::vector<float64_t> labels_dynarray;
 	int32_t num_labels=0;
 
 	features->start_parser();
@@ -66,7 +67,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	{
 		float64_t current_lab=features->dense_dot(w, w_dim) + bias;
 
-		labels_dynarray->append_element(current_lab);
+		labels_dynarray.push_back(current_lab);
 		num_labels++;
 
 		features->release_example();
@@ -75,9 +76,8 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 
 	SGVector<float64_t> labels_array(num_labels);
 	for (int32_t i=0; i<num_labels; i++)
-		labels_array.vector[i]=(*labels_dynarray)[i];
+		labels_array.vector[i] = labels_dynarray[i];
 
-	delete labels_dynarray;
 	return labels_array;
 }
 

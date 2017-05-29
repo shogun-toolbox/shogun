@@ -9,8 +9,8 @@
  */
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
-
 #include <shogun/lib/config.h>
+#include <vector>
 
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/lib/v_array.h>
@@ -20,7 +20,6 @@ namespace shogun
 
 struct substring;
 template <class ST> struct SGSparseVectorEntry;
-template <class T> class DynArray;
 
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
@@ -118,7 +117,8 @@ private:
 	 * @param ptr_data
 	 * @param ptr_item
 	 */
-	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
+	template <class T>
+	void append_item(std::vector<T>* items, char* ptr_data, char* ptr_item);
 
 	/**
 	 * Split a given substring into an array of substrings

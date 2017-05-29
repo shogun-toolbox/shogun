@@ -141,7 +141,8 @@ CSerializableXmlFile::init(bool format)
 void
 CSerializableXmlFile::close()
 {
-	while (m_stack_stream.get_num_elements() > 0) pop_node();
+	while (m_stack_stream.size() > 0)
+		pop_node();
 
 	if (is_opened()) {
 		if (m_task == 'w'

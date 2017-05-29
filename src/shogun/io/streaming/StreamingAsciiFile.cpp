@@ -11,7 +11,6 @@
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/DynArray.h>
 
 #include <ctype.h>
 
@@ -36,76 +35,75 @@ CStreamingAsciiFile::~CStreamingAsciiFile()
 
 /* Methods for reading dense vectors from an ascii file */
 
-#define GET_VECTOR(fname, conv, sg_type)									\
-void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
-{																			\
-		char* buffer = NULL;												\
-		ssize_t bytes_read;													\
-		int32_t old_len = num_feat;											\
-																			\
-		SG_SET_LOCALE_C;													\
-		bytes_read = buf->read_line(buffer);								\
-																			\
-		if (bytes_read<=0)													\
-		{																	\
-				vector=NULL;												\
-				num_feat=-1;												\
-				SG_RESET_LOCALE;											\
-				return;														\
-		}																	\
-																			\
-		/* determine num_feat, populate dynamic array */					\
-		int32_t nf=0;														\
-		num_feat=0;															\
-																			\
-		char* ptr_item=NULL;												\
-		char* ptr_data=buffer;												\
-		DynArray<char*>* items=new DynArray<char*>();						\
-																			\
-		while (*ptr_data)													\
-		{																	\
-				if ((*ptr_data=='\n') ||									\
-				    (ptr_data - buffer >= bytes_read))						\
-				{															\
-						if (ptr_item)										\
-								nf++;										\
-																			\
-						append_item(items, ptr_data, ptr_item);				\
-						num_feat=nf;										\
-																			\
-						nf=0;												\
-						ptr_item=NULL;										\
-						break;												\
-				}															\
-				else if (!isblank(*ptr_data) && !ptr_item)					\
-				{															\
-						ptr_item=ptr_data;									\
-				}															\
-				else if (isblank(*ptr_data) && ptr_item)					\
-				{															\
-						append_item(items, ptr_data, ptr_item);				\
-						ptr_item=NULL;										\
-						nf++;												\
-				}															\
-																			\
-				ptr_data++;													\
-		}																	\
-																			\
-		SG_DEBUG("num_feat %d\n", num_feat)									\
-																			\
-		/* now copy data into vector */										\
-		if (old_len < num_feat)												\
-				vector=SG_REALLOC(sg_type, vector, old_len, num_feat);		\
-																			\
-		for (int32_t i=0; i<num_feat; i++)									\
-		{																	\
-				char* item=items->get_element(i);							\
-				vector[i]=conv(item);										\
-				SG_FREE(item);												\
-		}																	\
-		delete items;														\
-		SG_RESET_LOCALE;													\
-}
+#define GET_VECTOR(fname, conv, sg_type)                                       \
+	void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)  \
+	{                                                                          \
+		char* buffer = NULL;                                                   \
+		ssize_t bytes_read;                                                    \
+		int32_t old_len = num_feat;                                            \
+                                                                               \
+		SG_SET_LOCALE_C;                                                       \
+		bytes_read = buf->read_line(buffer);                                   \
+                                                                               \
+		if (bytes_read <= 0)                                                   \
+		{                                                                      \
+			vector = NULL;                                                     \
+			num_feat = -1;                                                     \
+			SG_RESET_LOCALE;                                                   \
+			return;                                                            \
+		}                                                                      \
+                                                                               \
+		/* determine num_feat, populate dynamic array */                       \
+		int32_t nf = 0;                                                        \
+		num_feat = 0;                                                          \
+                                                                               \
+		char* ptr_item = NULL;                                                 \
+		char* ptr_data = buffer;                                               \
+		std::vector<char*>* items = new std::vector<char*>();                  \
+                                                                               \
+		while (*ptr_data)                                                      \
+		{                                                                      \
+			if ((*ptr_data == '\n') || (ptr_data - buffer >= bytes_read))      \
+			{                                                                  \
+				if (ptr_item)                                                  \
+					nf++;                                                      \
+                                                                               \
+				append_item(items, ptr_data, ptr_item);                        \
+				num_feat = nf;                                                 \
+                                                                               \
+				nf = 0;                                                        \
+				ptr_item = NULL;                                               \
+				break;                                                         \
+			}                                                                  \
+			else if (!isblank(*ptr_data) && !ptr_item)                         \
+			{                                                                  \
+				ptr_item = ptr_data;                                           \
+			}                                                                  \
+			else if (isblank(*ptr_data) && ptr_item)                           \
+			{                                                                  \
+				append_item(items, ptr_data, ptr_item);                        \
+				ptr_item = NULL;                                               \
+				nf++;                                                          \
+			}                                                                  \
+                                                                               \
+			ptr_data++;                                                        \
+		}                                                                      \
+                                                                               \
+		SG_DEBUG("num_feat %d\n", num_feat)                                    \
+                                                                               \
+		/* now copy data into vector */                                        \
+		if (old_len < num_feat)                                                \
+			vector = SG_REALLOC(sg_type, vector, old_len, num_feat);           \
+                                                                               \
+		for (int32_t i = 0; i < num_feat; i++)                                 \
+		{                                                                      \
+			char* item = items->at(i);                                         \
+			vector[i] = conv(item);                                            \
+			SG_FREE(item);                                                     \
+		}                                                                      \
+		delete items;                                                          \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 GET_VECTOR(get_bool_vector, str_to_bool, bool)
 GET_VECTOR(get_byte_vector, atoi, uint8_t)
@@ -159,78 +157,78 @@ GET_FLOAT_VECTOR(float64_t)
 
 /* Methods for reading a dense vector and a label from an ascii file */
 
-#define GET_VECTOR_AND_LABEL(fname, conv, sg_type)						\
-		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
-		{																\
-				char* buffer = NULL;									\
-				ssize_t bytes_read;										\
-				int32_t old_len = num_feat;								\
-				SG_SET_LOCALE_C;										\
-																		\
-				bytes_read = buf->read_line(buffer);					\
-																		\
-				if (bytes_read<=0)										\
-				{														\
-						vector=NULL;									\
-						num_feat=-1;									\
-						SG_RESET_LOCALE;								\
-						return;											\
-				}														\
-																		\
-				/* determine num_feat, populate dynamic array */		\
-				int32_t nf=0;											\
-				num_feat=0;												\
-																		\
-				char* ptr_item=NULL;									\
-				char* ptr_data=buffer;									\
-				DynArray<char*>* items=new DynArray<char*>();			\
-																		\
-				while (*ptr_data)										\
-				{														\
-						if ((*ptr_data=='\n') ||						\
-						    (ptr_data - buffer >= bytes_read))			\
-						{												\
-								if (ptr_item)							\
-										nf++;							\
-																		\
-								append_item(items, ptr_data, ptr_item);	\
-								num_feat=nf;							\
-																		\
-								nf=0;									\
-								ptr_item=NULL;							\
-								break;									\
-						}												\
-						else if (!isblank(*ptr_data) && !ptr_item)		\
-						{												\
-								ptr_item=ptr_data;						\
-						}												\
-						else if (isblank(*ptr_data) && ptr_item)		\
-						{												\
-								append_item(items, ptr_data, ptr_item);	\
-								ptr_item=NULL;							\
-								nf++;									\
-						}												\
-																		\
-						ptr_data++;										\
-				}														\
-																		\
-				SG_DEBUG("num_feat %d\n", num_feat)					\
-				/* The first element is the label */					\
-				label=atof(items->get_element(0));						\
-				/* now copy rest of the data into vector */				\
-				if (old_len < num_feat - 1)								\
-						vector=SG_REALLOC(sg_type, vector, old_len, num_feat-1);	\
-																		\
-				for (int32_t i=1; i<num_feat; i++)						\
-				{														\
-						char* item=items->get_element(i);				\
-						vector[i-1]=conv(item);							\
-						SG_FREE(item);									\
-				}														\
-				delete items;											\
-				num_feat--;												\
-				SG_RESET_LOCALE;										\
-		}
+#define GET_VECTOR_AND_LABEL(fname, conv, sg_type)                             \
+	void CStreamingAsciiFile::get_vector_and_label(                            \
+	    sg_type*& vector, int32_t& num_feat, float64_t& label)                 \
+	{                                                                          \
+		char* buffer = NULL;                                                   \
+		ssize_t bytes_read;                                                    \
+		int32_t old_len = num_feat;                                            \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		bytes_read = buf->read_line(buffer);                                   \
+                                                                               \
+		if (bytes_read <= 0)                                                   \
+		{                                                                      \
+			vector = NULL;                                                     \
+			num_feat = -1;                                                     \
+			SG_RESET_LOCALE;                                                   \
+			return;                                                            \
+		}                                                                      \
+                                                                               \
+		/* determine num_feat, populate dynamic array */                       \
+		int32_t nf = 0;                                                        \
+		num_feat = 0;                                                          \
+                                                                               \
+		char* ptr_item = NULL;                                                 \
+		char* ptr_data = buffer;                                               \
+		std::vector<char*>* items = new std::vector<char*>();                  \
+                                                                               \
+		while (*ptr_data)                                                      \
+		{                                                                      \
+			if ((*ptr_data == '\n') || (ptr_data - buffer >= bytes_read))      \
+			{                                                                  \
+				if (ptr_item)                                                  \
+					nf++;                                                      \
+                                                                               \
+				append_item(items, ptr_data, ptr_item);                        \
+				num_feat = nf;                                                 \
+                                                                               \
+				nf = 0;                                                        \
+				ptr_item = NULL;                                               \
+				break;                                                         \
+			}                                                                  \
+			else if (!isblank(*ptr_data) && !ptr_item)                         \
+			{                                                                  \
+				ptr_item = ptr_data;                                           \
+			}                                                                  \
+			else if (isblank(*ptr_data) && ptr_item)                           \
+			{                                                                  \
+				append_item(items, ptr_data, ptr_item);                        \
+				ptr_item = NULL;                                               \
+				nf++;                                                          \
+			}                                                                  \
+                                                                               \
+			ptr_data++;                                                        \
+		}                                                                      \
+                                                                               \
+		SG_DEBUG("num_feat %d\n", num_feat)                                    \
+		/* The first element is the label */                                   \
+		label = atof(items->at(0));                                            \
+		/* now copy rest of the data into vector */                            \
+		if (old_len < num_feat - 1)                                            \
+			vector = SG_REALLOC(sg_type, vector, old_len, num_feat - 1);       \
+                                                                               \
+		for (int32_t i = 1; i < num_feat; i++)                                 \
+		{                                                                      \
+			char* item = items->at(i);                                         \
+			vector[i - 1] = conv(item);                                        \
+			SG_FREE(item);                                                     \
+		}                                                                      \
+		delete items;                                                          \
+		num_feat--;                                                            \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
 GET_VECTOR_AND_LABEL(get_byte_vector_and_label, atoi, uint8_t)
@@ -610,7 +608,7 @@ GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax
 
 template <class T>
 void CStreamingAsciiFile::append_item(
-		DynArray<T>* items, char* ptr_data, char* ptr_item)
+    std::vector<T>* items, char* ptr_data, char* ptr_item)
 {
 		REQUIRE(ptr_data && ptr_item, "Data and Item to append should not be NULL\n");
 
@@ -620,7 +618,7 @@ void CStreamingAsciiFile::append_item(
 		item=strncpy(item, ptr_item, len);
 
 		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
-		items->append_element(item);
+	    items->push_back(item);
 }
 
 void CStreamingAsciiFile::set_delimiter(char delimiter)

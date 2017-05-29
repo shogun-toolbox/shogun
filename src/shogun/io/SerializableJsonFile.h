@@ -17,7 +17,7 @@
 #include <json.h>
 
 #include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 
 #define STR_KEY_TYPE               "type"
 #define STR_KEY_DATA               "data"
@@ -36,7 +36,7 @@ IGNORE_IN_CLASSLIST class CSerializableJsonFile
 {
 	friend class SerializableJsonReader00;
 
-	DynArray<json_object*> m_stack_stream;
+	std::vector<json_object*> m_stack_stream;
 
 	void init(const char* fname);
 	void push_object(json_object* o);

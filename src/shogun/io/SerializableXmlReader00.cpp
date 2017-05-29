@@ -9,6 +9,7 @@
  */
 
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 #ifdef HAVE_XML
 
 #include <shogun/lib/common.h>

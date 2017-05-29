@@ -15,7 +15,7 @@
 #ifdef HAVE_XML
 
 #include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -40,7 +40,7 @@ class CSerializableXmlFile
 {
 	friend class SerializableXmlReader00;
 
-	DynArray<xmlNode*> m_stack_stream;
+	std::vector<xmlNode*> m_stack_stream;
 	xmlDocPtr m_doc;
 	bool m_format;
 

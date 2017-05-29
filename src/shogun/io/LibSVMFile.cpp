@@ -7,8 +7,9 @@
  * Written (W) 2014 Jiaolong Xu
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
-
+#include <algorithm>
 #include <shogun/io/LibSVMFile.h>
+#include <vector>
 
 #include <shogun/base/DynArray.h>
 #include <shogun/base/progress.h>

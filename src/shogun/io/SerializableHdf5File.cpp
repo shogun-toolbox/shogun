@@ -357,7 +357,8 @@ CSerializableHdf5File::CSerializableHdf5File(const char* fname, char rw)
 
 CSerializableHdf5File::~CSerializableHdf5File()
 {
-	while (m_stack_type.get_num_elements() > 0) {
+	while (m_stack_type.size() > 0)
+	{
 		delete m_stack_type.back(); m_stack_type.pop_back();
 	}
 
@@ -421,13 +422,15 @@ CSerializableHdf5File::init(const char* fname)
 void
 CSerializableHdf5File::close()
 {
-	while (m_stack_h5stream.get_num_elements() > 1) {
+	while (m_stack_h5stream.size() > 1)
+	{
 		if (m_stack_h5stream.back() >= 0)
 			H5Gclose(m_stack_h5stream.back());
 		m_stack_h5stream.pop_back();
 	}
 
-	if (m_stack_h5stream.get_num_elements() == 1) {
+	if (m_stack_h5stream.size() == 1)
+	{
 		if (m_stack_h5stream.back() >= 0)
 			H5Fclose(m_stack_h5stream.back());
 		m_stack_h5stream.pop_back();
@@ -437,7 +440,7 @@ CSerializableHdf5File::close()
 bool
 CSerializableHdf5File::is_opened()
 {
-	return m_stack_h5stream.get_num_elements() > 0;
+	return m_stack_h5stream.size() > 0;
 }
 
 bool
