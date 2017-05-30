@@ -14,7 +14,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/modelselection/ModelSelection.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 
 namespace shogun
 {

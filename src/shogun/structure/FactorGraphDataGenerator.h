@@ -11,13 +11,13 @@
 #ifndef __FACTOR_GRAPH_DATA_GENERATOR_H__
 #define __FACTOR_GRAPH_DATA_GENERATOR_H__
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGNDArray.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
+#include <vector>
 
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorGraphModel.h>
@@ -113,9 +113,11 @@ public:
 	 * @param fg_feats features for factor graph
 	 * @param fg_labels labels for factor graph
 	 */
-	void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
-	                        SGMatrix< int32_t > edge_list, const DynArray<CTableFactorType*> &v_factor_type,
-	                        CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels);
+	void build_factor_graph(
+		SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
+		SGMatrix<int32_t> edge_list,
+		const std::vector<CTableFactorType*>& v_factor_type,
+		CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels);
 
 	/** Define factor type
 	 *
@@ -124,8 +126,9 @@ public:
 	 * @param num_edges number of edegs
 	 * @param v_factor_type factor types
 	 */
-	void define_factor_types(int32_t num_classes, int32_t dim, int32_t num_edges,
-	                         DynArray<CTableFactorType*> &v_factor_type);
+	void define_factor_types(
+		int32_t num_classes, int32_t dim, int32_t num_edges,
+		std::vector<CTableFactorType*>& v_factor_type);
 
 	/** Test sosvm inference algorithm with random data
 	 *

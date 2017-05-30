@@ -10,11 +10,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/modelselection/ParameterCombination.h>
+#include <set>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/Machine.h>
-#include <set>
+#include <shogun/modelselection/ParameterCombination.h>
 #include <string>
+#include <vector>
 
 using namespace shogun;
 using namespace std;
@@ -379,35 +380,35 @@ void CParameterCombination::print_tree(int prefix_num) const
 	SG_FREE(prefix);
 }
 
-DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
-		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
+std::vector<Parameter*>* CParameterCombination::parameter_set_multiplication(
+    const std::vector<Parameter*>& set_1, const std::vector<Parameter*>& set_2)
 {
 	SG_SDEBUG("entering CParameterCombination::parameter_set_multiplication()\n")
 
 	SG_SDEBUG("set 1:\n")
-	for (index_t i=0; i<set_1.get_num_elements(); ++i)
+	for (index_t i = 0; i < index_t(set_1.size()); ++i)
 	{
-		for (index_t j=0; j<set_1.get_element(i)->get_num_parameters(); ++j)
-			SG_SDEBUG("\t%s\n", set_1.get_element(i)->get_parameter(j)->m_name)
+		for (index_t j = 0; j < set_1.at(i)->get_num_parameters(); ++j)
+			SG_SDEBUG("\t%s\n", set_1.at(i)->get_parameter(j)->m_name)
 	}
 
 	SG_SDEBUG("set 2:\n")
-	for (index_t i=0; i<set_2.get_num_elements(); ++i)
+	for (index_t i = 0; i < index_t(set_2.size()); ++i)
 	{
-		for (index_t j=0; j<set_2.get_element(i)->get_num_parameters(); ++j)
-			SG_SDEBUG("\t%s\n", set_2.get_element(i)->get_parameter(j)->m_name)
+		for (index_t j = 0; j < set_2.at(i)->get_num_parameters(); ++j)
+			SG_SDEBUG("\t%s\n", set_2.at(i)->get_parameter(j)->m_name)
 	}
 
-	DynArray<Parameter*>* result=new DynArray<Parameter*>();
+	std::vector<Parameter*>* result = new std::vector<Parameter*>();
 
-	for (index_t i=0; i<set_1.get_num_elements(); ++i)
+	for (index_t i = 0; i < index_t(set_1.size()); ++i)
 	{
-		for (index_t j=0; j<set_2.get_num_elements(); ++j)
+		for (index_t j = 0; j < index_t(set_2.size()); ++j)
 		{
 			Parameter* p=new Parameter();
 			p->add_parameters(set_1[i]);
 			p->add_parameters(set_2[j]);
-			result->append_element(p);
+			result->push_back(p);
 		}
 	}
 
@@ -448,14 +449,15 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		/* now the case where at least two sets are given */
 
 		/* first, extract Parameter instances of given sets */
-		DynArray<DynArray<Parameter*>*> param_sets;
+		std::vector<std::vector<Parameter*>*> param_sets;
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
 			CDynamicObjectArray* current_set=(CDynamicObjectArray*)
 					sets.get_element(set_nr);
-			DynArray<Parameter*>* new_param_set=new DynArray<Parameter*> ();
-			param_sets.append_element(new_param_set);
+			std::vector<Parameter*>* new_param_set =
+			    new std::vector<Parameter*>();
+			param_sets.push_back(new_param_set);
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
@@ -471,7 +473,7 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 				Parameter* current_param=current_node->m_param;
 
 				if (current_param)
-					new_param_set->append_element(current_param);
+					new_param_set->push_back(current_param);
 				else
 				{
 					SG_SERROR("leaf sets multiplication only possible if all "
@@ -485,40 +487,40 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		}
 
 		/* second, build products of all parameter sets */
-		DynArray<Parameter*>* param_product=parameter_set_multiplication(
-				*param_sets[0], *param_sets[1]);
+		std::vector<Parameter*>* param_product =
+		    parameter_set_multiplication(*param_sets[0], *param_sets[1]);
 
 		delete param_sets[0];
 		delete param_sets[1];
 
 		/* build product of all remaining sets and collect results. delete all
 		 * parameter instances of interim products*/
-		for (index_t i=2; i<param_sets.get_num_elements(); ++i)
+		for (index_t i = 2; i < index_t(param_sets.size()); ++i)
 		{
-			DynArray<Parameter*>* old_temp_result=param_product;
+			std::vector<Parameter*>* old_temp_result = param_product;
 			param_product=parameter_set_multiplication(*param_product,
 					*param_sets[i]);
 
 			/* delete interim result parameter instances */
-			for (index_t j=0; j<old_temp_result->get_num_elements(); ++j)
-				delete old_temp_result->get_element(j);
+			for (index_t j = 0; j < index_t(old_temp_result->size()); ++j)
+				delete old_temp_result->at(j);
 
 			/* and dyn arrays of interim result and of param_sets */
 			delete old_temp_result;
 			delete param_sets[i];
 		}
 
-		/* at this point there is only one DynArray instance remaining:
+		/* at this point there is only one std::vector instance remaining:
 		 * param_product. contains all combinations of parameters of all given
 		 * sets */
 
 		/* third, build tree sets with the given root and the parameter product
 		 * elements */
-		for (index_t i=0; i<param_product->get_num_elements(); ++i)
+		for (index_t i = 0; i < index_t(param_product->size()); ++i)
 		{
 			/* build parameter node from parameter product to append to root */
-			CParameterCombination* param_node=new CParameterCombination(
-					param_product->get_element(i));
+			CParameterCombination* param_node =
+			    new CParameterCombination(param_product->at(i));
 
 			/* copy new root node, has to be a new one each time */
 			CParameterCombination* root=new_root->copy_tree();

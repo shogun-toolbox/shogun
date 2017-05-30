@@ -10,12 +10,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <shogun/base/Parameter.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/Set.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/lib/Set.h>
+#include <vector>
 
 using namespace shogun;
 

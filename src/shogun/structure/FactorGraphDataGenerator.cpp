@@ -395,9 +395,11 @@ SGMatrix< int32_t > CFactorGraphDataGenerator::get_edges_full(const int32_t num_
 	return mat;
 }
 
-void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
-                                     SGMatrix< int32_t > edge_list, const DynArray<CTableFactorType*> &v_factor_type,
-                                     CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels)
+void CFactorGraphDataGenerator::build_factor_graph(
+    SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
+    SGMatrix<int32_t> edge_list,
+    const std::vector<CTableFactorType*>& v_factor_type,
+    CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels)
 {
 	int32_t num_sample        = labels.num_cols;
 	int32_t num_classes       = labels.num_rows;
@@ -456,8 +458,9 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
  * @param num_edges number of edegs
  * @param v_factor_type factor types
  */
-void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t dim, int32_t num_edges,
-                                      DynArray<CTableFactorType*> &v_factor_type)
+void CFactorGraphDataGenerator::define_factor_types(
+    int32_t num_classes, int32_t dim, int32_t num_edges,
+    std::vector<CTableFactorType*>& v_factor_type)
 {
 	int32_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
@@ -470,7 +473,7 @@ void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t
 		SGVector<float64_t> w_u(dim * 2);
 		w_u.zero();
 		CTableFactorType* ft = new CTableFactorType(tid, card_u, w_u);
-		v_factor_type.append_element(ft);
+		v_factor_type.push_back(ft);
 	}
 
 	// define factor type: tree edge factor
@@ -484,7 +487,7 @@ void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t
 		SGVector<float64_t> w_t(2 * 2);
 		w_t.zero();
 		CTableFactorType* ft = new CTableFactorType(tid, card_t, w_t);
-		v_factor_type.append_element(ft);
+		v_factor_type.push_back(ft);
 	}
 }
 
@@ -506,7 +509,7 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	int32_t num_edges = edge_table.num_rows;
 
 	// 1.2 Define factor type
-	DynArray<CTableFactorType*> v_factor_type;
+	std::vector<CTableFactorType*> v_factor_type;
 	define_factor_types(num_classes, dim, num_edges, v_factor_type);
 
 	// 1.3 Prepare features and labels in factor graph

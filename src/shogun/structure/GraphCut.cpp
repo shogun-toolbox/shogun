@@ -409,7 +409,7 @@ int32_t CGraphCut::get_tripleId(SGVector<int32_t> triple)
 	// search for triple in list
 	int32_t counter = m_num_variables;
 
-	for (int32_t i = 0; i < m_triple_list.get_num_elements(); i++)
+	for (int32_t i = 0; i < int32_t(m_triple_list.size()); i++)
 	{
 		SGVector<int32_t> vec = m_triple_list[i];
 

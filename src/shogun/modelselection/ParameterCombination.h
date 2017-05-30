@@ -12,10 +12,10 @@
 #ifndef __PARAMETERCOMBINATION_H__
 #define __PARAMETERCOMBINATION_H__
 
-#include <shogun/lib/config.h>
-
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/config.h>
+#include <vector>
 
 namespace shogun
 {
@@ -205,9 +205,9 @@ public:
 	 * @param set_2 array of Parameter instances
 	 * @return result array with all combinations
 	 */
-	static DynArray<Parameter*>* parameter_set_multiplication(
-			const DynArray<Parameter*>& set_1,
-			const DynArray<Parameter*>& set_2);
+	static std::vector<Parameter*>* parameter_set_multiplication(
+		const std::vector<Parameter*>& set_1,
+		const std::vector<Parameter*>& set_2);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

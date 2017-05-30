@@ -9,11 +9,11 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
-
+#include <shogun/modelselection/ParameterCombination.h>
 #include <stdlib.h>
+#include <vector>
 
 using namespace std;
 using namespace shogun;
@@ -27,8 +27,8 @@ void test_parameter_set_multiplication()
 {
 	SG_SPRINT("\ntest_parameter_set_multiplication()\n");
 
-	DynArray<Parameter*> set1;
-	DynArray<Parameter*> set2;
+	std::vector<Parameter*> set1;
+	std::vector<Parameter*> set2;
 
 	SGVector<float64_t> param_vector(8);
 	SGVector<float64_t>::range_fill_vector(param_vector.vector, param_vector.vlen);
@@ -37,25 +37,27 @@ void test_parameter_set_multiplication()
 
 	parameters[0].add(&param_vector.vector[0], "0");
 	parameters[0].add(&param_vector.vector[1], "1");
-	set1.append_element(&parameters[0]);
+	set1.push_back(&parameters[0]);
 
 	parameters[1].add(&param_vector.vector[2], "2");
 	parameters[1].add(&param_vector.vector[3], "3");
-	set1.append_element(&parameters[1]);
+	set1.push_back(&parameters[1]);
 
 	parameters[2].add(&param_vector.vector[4], "4");
 	parameters[2].add(&param_vector.vector[5], "5");
-	set2.append_element(&parameters[2]);
+	set2.push_back(&parameters[2]);
 
 	parameters[3].add(&param_vector.vector[6], "6");
 	parameters[3].add(&param_vector.vector[7], "7");
-	set2.append_element(&parameters[3]);
+	set2.push_back(&parameters[3]);
 
-	DynArray<Parameter*>* result=new DynArray<Parameter*>();//CParameterCombination::parameter_set_multiplication(set1, set2);
+	std::vector<Parameter*>* result = new std::vector<
+	    Parameter*>(); // CParameterCombination::parameter_set_multiplication(set1,
+	                   // set2);
 
-	for (index_t i=0; i<result->get_num_elements(); ++i)
+	for (index_t i = 0; i < index_t(result->size()); ++i)
 	{
-		Parameter* p=result->get_element(i);
+		Parameter* p = result->at(i);
 		for (index_t j=0; j<p->get_num_parameters(); ++j)
 			SG_SPRINT("%s ", p->get_parameter(j)->m_name);
 
