@@ -1,8 +1,6 @@
 #include <shogun/base/range.h>
-#include <shogun/lib/config.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_CXX11
 using namespace shogun;
 
 TEST(Range, basic_upper)
@@ -53,4 +51,3 @@ TEST(Range, identical_bounds)
     }
     EXPECT_EQ(0, actual_count);
 }
-#endif
