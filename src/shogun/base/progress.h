@@ -12,6 +12,15 @@
 #include <shogun/base/init.h>
 #include <shogun/base/range.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
+
+#if WIN32
+#include <windows.h>
+#else
+#include <sys/ioctl.h>
+#include <unistd.h>
+#endif
 
 namespace shogun
 {
@@ -33,21 +42,35 @@ namespace shogun
 		*
 		* @param    io  SGIO object
 		*/
-		ProgressPrinter(const SGIO& io)
-				: m_io(io), m_prefix("PROGRESS: "), m_mode(UTF8)
-		{
-		}
-		ProgressPrinter(const SGIO& io, const std::string& prefix)
-				: m_io(io), m_prefix(prefix), m_mode(UTF8)
-		{
-		}
-		ProgressPrinter(const SGIO& io, const SG_PRG_MODE mode)
-				: m_io(io), m_prefix("PROGRESS: "), m_mode(mode)
+		ProgressPrinter(
+		    const SGIO& io, float64_t max_value, float64_t min_value)
+		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
+		      m_prefix("PROGRESS: "), m_mode(UTF8), m_last_progress(0),
+		      m_last_progress_time(0), m_progress_start_time(0)
 		{
 		}
 		ProgressPrinter(
-				const SGIO& io, const std::string& prefix, const SG_PRG_MODE mode)
-				: m_io(io), m_prefix(prefix), m_mode(mode)
+		    const SGIO& io, float64_t max_value, float64_t min_value,
+		    const std::string& prefix)
+		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
+		      m_prefix(prefix), m_mode(UTF8), m_last_progress(0),
+		      m_last_progress_time(0), m_progress_start_time(0)
+		{
+		}
+		ProgressPrinter(
+		    const SGIO& io, float64_t max_value, float64_t min_value,
+		    const SG_PRG_MODE mode)
+		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
+		      m_prefix("PROGRESS: "), m_mode(mode), m_last_progress(0),
+		      m_last_progress_time(0), m_progress_start_time(0)
+		{
+		}
+		ProgressPrinter(
+		    const SGIO& io, float64_t max_value, float64_t min_value,
+		    const std::string& prefix, const SG_PRG_MODE mode)
+		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
+		      m_prefix(prefix), m_mode(mode), m_last_progress(0),
+		      m_last_progress_time(0), m_progress_start_time(0)
 		{
 		}
 		~ProgressPrinter()
@@ -55,34 +78,183 @@ namespace shogun
 		}
 
 		/** Print the progress bar */
-		void print_progress() const
+		void print_progress(float64_t current_value) const
 		{
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "TEST\n");
+			// Check if the progress was enabled
+			if (!m_io.get_show_progress())
+				return;
+
+			if (m_max_value <= m_min_value)
+				return;
+
+			// Check for terminal dimension. This is for provide
+			// a minimal resize functionality.
+			set_screen_size();
+
+			float64_t difference = m_max_value - m_min_value, v = -1,
+			          estimate = 0, total_estimate = 0;
+			float64_t size_chunk = -1;
+
+			// Check if we have enough space to show the progress bar
+			// Use only a fraction of it to account for the size of the
+			// time displayed (decimals and integer).
+			int32_t progress_bar_space =
+			    (m_columns_num - 50 - m_prefix.length()) * 0.9;
+			REQUIRE(
+			    progress_bar_space > 0,
+			    "Not enough terminal space to show the progress bar!\n")
+
+			char str[1000];
+			float64_t runtime = CTime::get_curtime();
+
+			if (difference > 0.0)
+				v = 100 * (current_value - m_min_value + 1) /
+				    (m_max_value - m_min_value + 1);
+
+			// Set up chunk size
+			size_chunk = difference / (double_t)progress_bar_space;
+
+			if (m_last_progress == 0)
+			{
+				m_last_progress_time = runtime;
+				m_progress_start_time = runtime;
+				m_last_progress = v;
+			}
+			else
+			{
+				m_last_progress = v - 1e-6;
+
+				if ((v != 100.0) && (runtime - m_last_progress_time < 0.5))
+				{
+					// This is made to display correctly the percentage
+					// if the algorithm execution is too fast
+					if (current_value >= m_max_value - 1)
+					{
+						v = 100;
+						m_last_progress = v - 1e-6;
+						snprintf(
+						    str, sizeof(str), "%%s %.2f    %%1.1f "
+						                      "seconds remaining    %%1.1f "
+						                      "seconds total\r");
+						m_io.message(
+						    MSG_MESSAGEONLY, "", "", -1, str, m_prefix.c_str(),
+						    v, estimate, total_estimate);
+					}
+					return;
+				}
+
+				m_last_progress_time = runtime;
+				estimate = (1 - v / 100) *
+				           (m_last_progress_time - m_progress_start_time) /
+				           (v / 100);
+				total_estimate =
+				    (m_last_progress_time - m_progress_start_time) / (v / 100);
+			}
+
+			/** Print the actual progress bar to screen **/
+			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			for (index_t i = 1; i < progress_bar_space; i++)
+			{
+				if (current_value > i * size_chunk)
+				{
+					m_io.message(
+					    MSG_MESSAGEONLY, "", "", -1, "%s",
+					    get_pb_char().c_str());
+				}
+				else
+				{
+					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+				}
+			}
+			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", v);
+
+			if (estimate > 120)
+			{
+				snprintf(
+				    str, sizeof(str),
+				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
+				m_io.message(
+				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
+				    total_estimate / 60);
+			}
+			else
+			{
+				snprintf(
+				    str, sizeof(str),
+				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
+				m_io.message(
+				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+			}
+
+			// If we arrive to the end, we print a new line (fancier output)
+			if (current_value >= m_max_value)
+				m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
 		}
 
 		/** Print the progress bar end */
 		void print_end() const
 		{
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "100\n");
+			// Check if the progress was enabled
+			if (!m_io.get_show_progress())
+				return;
+
+			print_progress(m_max_value);
 		}
 
 	private:
+
+		std::string get_pb_char() const
+		{
+			switch (m_mode)
+			{
+			case ASCII:
+				return m_ascii_char;
+			case UTF8:
+				return m_utf8_char;
+			default:
+				return m_ascii_char;
+			}
+		}
+
+		void set_screen_size() const
+		{
+#if WIN32
+			CONSOLE_SCREEN_BUFFER_INFO csbi;
+			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+			m_columns_num = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+			m_rows_num = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+#else
+			struct winsize wind;
+			ioctl(STDOUT_FILENO, TIOCGWINSZ, &wind);
+			m_columns_num = wind.ws_col;
+			m_rows_num = wind.ws_row;
+#endif
+		}
+
 		/** IO object */
 		SGIO m_io;
 		/** Prefix which will be printed before the progress bar */
 		std::string m_prefix;
 		/** Progres bar's char mode */
 		SG_PRG_MODE m_mode;
+		/** ASCII char */
+		std::string m_ascii_char = "#";
+		/** UTF8 char */
+		std::string m_utf8_char = "\u2588";
+		/* Screen column number*/
+		mutable int32_t m_columns_num;
+		/* Screen row number*/
+		mutable int32_t m_rows_num;
 		/** Maxmimum value */
 		float64_t m_max_value;
 		/** Minimum value */
 		float64_t m_min_value;
 		/** Last progress time */
-		float64_t m_last_progress_time;
+		mutable float64_t m_last_progress_time;
 		/** Progress start time */
-		float64_t m_progress_start_time;
+		mutable float64_t m_progress_start_time;
 		/** Last progress */
-		float64_t m_last_progress;
+		mutable float64_t m_last_progress;
 	};
 
 	/** @class Helper class to show a progress bar given a range.
@@ -102,24 +274,32 @@ namespace shogun
 		*/
 		PRange(Range<T> range, const SGIO& io) : m_range(range)
 		{
-			m_printer = std::make_shared<ProgressPrinter>(io);
+			set_up_range();
+			m_printer =
+			    std::make_shared<ProgressPrinter>(io, end_range, begin_range);
 		}
 		PRange(Range<T> range, const SGIO& io, const SG_PRG_MODE mode)
-				: m_range(range)
+		    : m_range(range)
 		{
-			m_printer = std::make_shared<ProgressPrinter>(io, mode);
+			set_up_range();
+			m_printer = std::make_shared<ProgressPrinter>(
+			    io, end_range, begin_range, mode);
 		}
 		PRange(Range<T> range, const SGIO& io, const std::string prefix)
-				: m_range(range)
+		    : m_range(range)
 		{
-			m_printer = std::make_shared<ProgressPrinter>(io, prefix);
+			set_up_range();
+			m_printer = std::make_shared<ProgressPrinter>(
+			    io, end_range, begin_range, prefix);
 		}
 		PRange(
-				Range<T> range, const SGIO& io, const std::string prefix,
-				const SG_PRG_MODE mode)
-				: m_range(range)
+		    Range<T> range, const SGIO& io, const std::string prefix,
+		    const SG_PRG_MODE mode)
+		    : m_range(range)
 		{
-			m_printer = std::make_shared<ProgressPrinter>(io, prefix, mode);
+			set_up_range();
+			m_printer = std::make_shared<ProgressPrinter>(
+			    io, end_range, begin_range, prefix, mode);
 		}
 
 		/** @class Wrapper for Range<T>::Iterator spawned by @ref PRange. */
@@ -127,17 +307,17 @@ namespace shogun
 		{
 		public:
 			PIterator(
-					typename Range<T>::Iterator value,
-					std::shared_ptr<ProgressPrinter> shrd_ptr)
-					: m_value(value), m_printer(shrd_ptr)
+			    typename Range<T>::Iterator value,
+			    std::shared_ptr<ProgressPrinter> shrd_ptr)
+			    : m_value(value), m_printer(shrd_ptr)
 			{
 			}
 			PIterator(const PIterator& other)
-					: m_value(other.m_value), m_printer(other.m_printer)
+			    : m_value(other.m_value), m_printer(other.m_printer)
 			{
 			}
 			PIterator(PIterator&& other)
-					: m_value(other.m_value), m_printer(other.m_printer)
+			    : m_value(other.m_value), m_printer(other.m_printer)
 			{
 			}
 			PIterator& operator=(const PIterator&) = delete;
@@ -145,7 +325,7 @@ namespace shogun
 			{
 				// Every time we update the iterator we print
 				// also the updated progress bar
-				m_printer->print_progress();
+				m_printer->print_progress((*m_value));
 				m_value++;
 				return *this;
 			}
@@ -174,7 +354,8 @@ namespace shogun
 			}
 
 		private:
-			/* The ProgressPrinter object which will be used to show the progress bar*/
+			/* The ProgressPrinter object which will be used to show the
+			 * progress bar*/
 			std::shared_ptr<ProgressPrinter> m_printer;
 			/* The wrapped range */
 			typename Range<T>::Iterator m_value;
@@ -193,10 +374,18 @@ namespace shogun
 		}
 
 	private:
+		void set_up_range()
+		{
+			begin_range = *(m_range.begin());
+			end_range = *(m_range.end());
+		}
+
 		/** Range we iterate over */
 		Range<T> m_range;
 		/** Observer that will print the actual progress bar */
 		std::shared_ptr<ProgressPrinter> m_printer;
+		float64_t begin_range;
+		float64_t end_range;
 	};
 
 	/** Creates @ref PRange given a range.
@@ -209,9 +398,9 @@ namespace shogun
 	 * @param   io      SGIO object
 	 */
 	template <typename T>
-	inline PRange<T> progress(Range<T> range, const SGIO& io)
+	inline PRange<T> progress(Range<T> range, const SGIO& io, SG_PRG_MODE mode=UTF8)
 	{
-		return PRange<T>(range, io);
+		return PRange<T>(range, io, mode);
 	}
 
 	/** Creates @ref PRange given a range that uses the global SGIO
@@ -223,9 +412,9 @@ namespace shogun
 	 * @param   range   range used
 	 */
 	template <typename T>
-	inline PRange<T> progress(Range<T> range)
+	inline PRange<T> progress(Range<T> range, SG_PRG_MODE mode=UTF8)
 	{
-		return PRange<T>(range, *sg_io);
+		return PRange<T>(range, *sg_io, mode);
 	}
 };
 #endif /* __SG_PROGRESS_H__ */
