@@ -37,7 +37,6 @@
 #define __SG_RANGE_H__
 
 #include <iterator>
-#include <shogun/lib/config.h>
 
 namespace shogun
 {
@@ -83,7 +82,7 @@ namespace shogun
 				m_value++;
 				return *this;
 			}
-			Iterator& operator++(int)
+			Iterator operator++(int)
 			{
 				Iterator tmp(*this);
 				++*this;

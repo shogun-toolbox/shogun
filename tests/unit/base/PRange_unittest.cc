@@ -87,6 +87,7 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_positive)
 	range_test = progress(range(100, 0), range_io);
 	for (auto i : range_test)
 	{
+		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
 	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
@@ -98,6 +99,7 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_negative)
 	range_test = progress(range(100, 0), range_io);
 	for (auto i : range_test)
 	{
+		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
 	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
@@ -109,6 +111,7 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_equal)
 	range_test = progress(range(1, 1), range_io);
 	for (auto i : range_test)
 	{
+		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
 	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
