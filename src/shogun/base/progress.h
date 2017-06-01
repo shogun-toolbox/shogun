@@ -77,7 +77,8 @@ namespace shogun
 		    const SGIO& io, float64_t max_value, float64_t min_value)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix("PROGRESS: "), m_mode(UTF8), m_last_progress(0),
-		      m_last_progress_time(0), m_progress_start_time(0)
+		      m_last_progress_time(0),
+		      m_progress_start_time(CTime::get_curtime())
 		{
 		}
 		ProgressPrinter(
@@ -85,7 +86,8 @@ namespace shogun
 		    const std::string& prefix)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(UTF8), m_last_progress(0),
-		      m_last_progress_time(0), m_progress_start_time(0)
+		      m_last_progress_time(0),
+		      m_progress_start_time(CTime::get_curtime())
 		{
 		}
 		ProgressPrinter(
@@ -93,7 +95,8 @@ namespace shogun
 		    const SG_PRG_MODE mode)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix("PROGRESS: "), m_mode(mode), m_last_progress(0),
-		      m_last_progress_time(0), m_progress_start_time(0)
+		      m_last_progress_time(0),
+		      m_progress_start_time(CTime::get_curtime())
 		{
 		}
 		ProgressPrinter(
@@ -101,7 +104,8 @@ namespace shogun
 		    const std::string& prefix, const SG_PRG_MODE mode)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(mode), m_last_progress(0),
-		      m_last_progress_time(0), m_progress_start_time(0)
+		      m_last_progress_time(0),
+		      m_progress_start_time(CTime::get_curtime())
 		{
 		}
 		~ProgressPrinter()
@@ -141,8 +145,8 @@ namespace shogun
 			float64_t runtime = CTime::get_curtime();
 
 			if (difference > 0.0)
-				v = 100 * (current_value - m_min_value + 1) /
-				    (m_max_value - m_min_value + 1);
+				v = 100 * (current_value + 1 - m_min_value) /
+				    (m_max_value - m_min_value);
 
 			// Set up chunk size
 			size_chunk = difference / (float64_t)progress_bar_space;
@@ -150,7 +154,6 @@ namespace shogun
 			if (m_last_progress == 0)
 			{
 				m_last_progress_time = runtime;
-				m_progress_start_time = runtime;
 				m_last_progress = v;
 			}
 			else
@@ -159,20 +162,6 @@ namespace shogun
 
 				if ((v != 100.0) && (runtime - m_last_progress_time < 0.5))
 				{
-					// This is made to display correctly the percentage
-					// if the algorithm execution is too fast
-					if (current_value >= m_max_value - 1)
-					{
-						v = 100;
-						m_last_progress = v - 1e-6;
-						snprintf(
-						    str, sizeof(str), "%%s %.2f    %%1.1f "
-						                      "seconds remaining    %%1.1f "
-						                      "seconds total\r");
-						m_io.message(
-						    MSG_MESSAGEONLY, "", "", -1, str, m_prefix.c_str(),
-						    v, estimate, total_estimate);
-					}
 					return;
 				}
 
@@ -188,7 +177,7 @@ namespace shogun
 			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
-				if (current_value > i * size_chunk)
+				if (current_value + 1 - m_min_value > i * size_chunk)
 				{
 					m_io.message(
 					    MSG_MESSAGEONLY, "", "", -1, "%s",
@@ -219,9 +208,10 @@ namespace shogun
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
 
-			// If we arrive to the end, we print a new line (fancier output)
-			if (current_value >= m_max_value)
-				m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			if (current_value + 1 - m_min_value >= m_max_value)
+			{
+				return;
+			}
 		}
 
 		/** Print the progress bar end */
@@ -232,6 +222,7 @@ namespace shogun
 				return;
 
 			print_progress(m_max_value);
+			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
 		}
 
 		/** @return last progress as a percentage */
