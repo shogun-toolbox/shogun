@@ -13,7 +13,17 @@ IFS=$'\n\t'
 
 function check_shogun_style {
 
+        # Prevent cases in which we are testing branches
+        # different from develop
+        if [ ! `git branch --list ${2:-}` ]
+        then
+            echo "Branch ${2:-} does not exists locally. Fetching it."
+            git fetch origin "${2:-}:${2:-}"
+            
+        fi
+
         BASE_COMMIT=$(git rev-parse ${2:-})
+
 
         echo "-----"
         echo "Shogun Style Checker"
