@@ -383,11 +383,11 @@ namespace shogun
 			}
 
 		private:
+			/* The wrapped range */
+			typename Range<T>::Iterator m_value;
 			/* The ProgressPrinter object which will be used to show the
 			 * progress bar*/
 			std::shared_ptr<ProgressPrinter> m_printer;
-			/* The wrapped range */
-			typename Range<T>::Iterator m_value;
 		};
 
 		/** Create the iterator that corresponds to the start of the range*/
