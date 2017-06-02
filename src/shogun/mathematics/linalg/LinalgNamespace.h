@@ -350,6 +350,58 @@ Container<T> add(Container<T>& a, Container<T>& b, T alpha=1, T beta=1)
 }
 
 /**
+ * Performs the operation result.col(i) = alpha * A.col(i) + beta * b.
+ * User should pass an appropriately pre-allocated memory matrix
+ * Or pass the operand argument A as a result.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param result The matrix that saves the result
+ * @param alpha Constant to be multiplied by the matrix
+ * @param beta Constant to be multiplied by the vector
+ */
+template <typename T>
+void add_col_vec(const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+                 SGMatrix<T>& result, T alpha=1, T beta=1)
+{
+	REQUIRE(A.num_rows == b.vlen,
+	        "Number of rows of matrix A (%d) doesn't match length of vector b (%d).\n",
+	        A.num_rows, b.vlen);
+	REQUIRE(result.num_rows == A.num_rows,
+	        "Number of rows of result (%d) doesn't match matrix A (%d).\n",
+	        result.num_rows, A.num_rows);
+	REQUIRE(i >= 0 && i < A.num_cols, "Index i (%d) is out of range (0-%d)", i, A.num_cols-1);
+
+	infer_backend(A, SGMatrix<T>(b))->add_col_vec(A, i, b, result, alpha, beta);
+}
+
+/**
+ * Performs the operation result = alpha * A.col(i) + beta * b.
+ * User should pass an appropriately pre-allocated vector
+ * Or pass the operand argument b as a result.
+ *
+ * @param A The matrix
+ * @param b The vector
+ * @param result The vector that saves the result
+ * @param alpha Constant to be multiplied by the matrix
+ * @param beta Constant to be multiplied by the vector
+ */
+template <typename T>
+void add_col_vec(
+	const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+	SGVector<T>& result, T alpha=1, T beta=1)
+{
+	REQUIRE(A.num_rows == b.vlen,
+	        "Number of rows of matrix A (%d) doesn't match length of vector b (%d).\n",
+	        A.num_rows, b.vlen);
+	REQUIRE(result.vlen == b.vlen,
+	        "Length of result (%d) doesn't match vector b (%d).\n", result.vlen, b.vlen);
+	REQUIRE(i >= 0 && i < A.num_cols, "Index i (%d) is out of range (0-%d)", i,  A.num_cols-1);
+
+	infer_backend(A, SGMatrix<T>(b))->add_col_vec(A, i, b, result, alpha, beta);
+}
+
+/**
  * Performs the operation A = alpha * x * y' + A
  *
  * @param alpha scaling factor for vector x
@@ -519,6 +571,18 @@ SGMatrix<T> element_prod(SGMatrix<T>& a, SGMatrix<T>& b)
 	element_prod(a, b, result);
 
 	return result;
+}
+
+/**
+ * Method that writes the identity into a square matrix.
+ *
+ * @param a The square matrix to be set
+ */
+template <typename T>
+void identity(SGMatrix<T>& I)
+{
+	REQUIRE(I.num_rows == I.num_cols, "Matrix is not square!\n");
+	infer_backend(I)->identity(I);
 }
 
 /** Performs the operation of a matrix multiplies a vector \f$x = Ab\f$.
@@ -977,6 +1041,30 @@ template <typename T>
 SGVector<T> rowwise_sum(const Block<SGMatrix<T>>& a, bool no_diag=false)
 {
 	return sg_linalg->get_cpu_backend()->rowwise_sum(a, no_diag);
+}
+
+/**
+ * Method that computes the trace of square matrix.
+ *
+ * @param A The matrix whose trace has to be computed
+ * @return The trace of the matrix
+ */
+template <typename T>
+T trace(const SGMatrix<T>& A)
+{
+	REQUIRE(A.num_rows == A.num_cols, "Matrix is not square!\n");
+	return infer_backend(A)->trace(A);
+}
+
+/**
+ * Method that fills with zero a vector or a matrix.
+ *
+ * @param a The vector or the matrix to be set
+ */
+template <typename T, template<typename> class Container>
+void zero(Container<T>& a)
+{
+	infer_backend(a)->zero(a);
 }
 
 }

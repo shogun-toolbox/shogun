@@ -93,6 +93,100 @@ TEST(LinalgBackendEigen, SGMatrix_add_in_place)
 		EXPECT_NEAR(alpha*C[i]+beta*B[i], A[i], 1e-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_add_col_vec_allocated)
+{
+	const float64_t alpha = 0.7;
+	const float64_t beta = -1.2;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+	SGVector<float64_t> result(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, result, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(result[i], alpha*A.get_element(i, col)+beta*b[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_add_col_vec_in_place)
+{
+	const float64_t alpha = 0.6;
+	const float64_t beta = -1.3;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, b, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(b[i], alpha*A.get_element(i, col)+beta*0.5*i, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_col_vec_allocated)
+{
+	const float64_t alpha = 0.8;
+	const float64_t beta = -1.4;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+	SGMatrix<float64_t> result(nrows, ncols);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, result, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		EXPECT_NEAR(result.get_element(i, col),
+		            alpha*A.get_element(i, col)+beta*b[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
+{
+	const float64_t alpha = 0.9;
+	const float64_t beta = -1.7;
+	const index_t nrows = 2, ncols = 3;
+	const index_t col = 1;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		A[i] = i;
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5*i;
+
+	add_col_vec(A, col, b, A, alpha, beta);
+
+	for (index_t i = 0; i < nrows; ++i)
+		for (index_t j = 0; j < ncols; ++j)
+		{
+			float64_t a = i+j*nrows;
+			if (j == col)
+				EXPECT_NEAR(A.get_element(i, j), alpha*a+beta*b[i], 1e-15);
+			else
+				EXPECT_EQ(A.get_element(i,j), a);
+		}
+}
+
 TEST(LinalgBackendEigen, SGMatrix_cholesky_llt_lower)
 {
 	const index_t size=2;
@@ -237,6 +331,17 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 	for (index_t i = 0; i < 2; ++i)
 		for (index_t j = 0; j < 2; ++j)
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_identity)
+{
+	const index_t n = 4;
+	SGMatrix<float64_t> A(n, n);
+	identity(A);
+
+	for (index_t i = 0; i < n; ++i)
+		for (index_t j = 0; j < n; ++j)
+			EXPECT_EQ(A.get_element(i, j), (i==j));
 }
 
 TEST(LinalgBackendEigen, logistic)
@@ -928,4 +1033,39 @@ TEST(LinalgBackendEigen, SGMatrix_block_rowwise_sum)
 			sum += mat(i, j);
 		EXPECT_NEAR(sum, result[i], 1E-15);
 	}
+}
+
+TEST(LinalgBackendEigen, SGMatrix_trace)
+{
+	const index_t n = 4;
+
+	SGMatrix<float64_t> A(n, n);
+	for (index_t i = 0; i < n*n; ++i)
+		A[i] = i;
+
+	float64_t tr = 0;
+	for (index_t i = 0; i < n; ++i)
+		tr += A.get_element(i, i);
+
+	EXPECT_NEAR(trace(A), tr, 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_zero)
+{
+	const index_t n = 16;
+	SGVector<float64_t> a(n);
+	zero(a);
+
+	for (index_t i = 0; i < n; ++i)
+		EXPECT_EQ(a[i], 0);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_zero)
+{
+	const index_t nrows = 3, ncols = 4;
+	SGMatrix<float64_t> A(nrows, ncols);
+	zero(A);
+
+	for (index_t i = 0; i < nrows*ncols; ++i)
+		EXPECT_EQ(A[i], 0);
 }

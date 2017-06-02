@@ -103,6 +103,22 @@ public:
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
 
 	/**
+	 * Wrapper method of add column vector result = alpha*A.col(i) + beta*b.
+	 *
+	 * @see linalg::add_col_vec
+	 */
+	#define BACKEND_GENERIC_ADD_COL_VEC(Type, Container) \
+	virtual void add_col_vec(const SGMatrix<Type>& A, index_t i, \
+		const SGVector<Type>& b, Container<Type>& result, Type alpha, Type beta) const \
+	{ \
+		SG_SNOTIMPLEMENTED; \
+		return; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
+	#undef BACKEND_GENERIC_ADD_COL_VEC
+
+	/**
 	 * Wrapper method of Cholesky decomposition.
 	 *
 	 * @see linalg::cholesky_factor
@@ -173,6 +189,20 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
+
+	/**
+	 * Wrapper method of set matrix to identity.
+	 *
+	 * @see linalg::identity
+	 */
+	#define BACKEND_GENERIC_IDENTITY(Type, Container) \
+	virtual void identity(Container<Type>& I) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
+	#undef BACKEND_GENERIC_IDENTITY
 
 	/**
 	 * Wrapper method of logistic function f(x) = 1/(1+exp(-x))
@@ -403,6 +433,35 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
+
+	/**
+	 * Wrapper method of trace computation.
+	 *
+	 * @see linalg::trace
+	 */
+	#define BACKEND_GENERIC_TRACE(Type, Container) \
+	virtual Type trace(const Container<Type>& A) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
+	#undef BACKEND_GENERIC_TRACE
+
+	/**
+	 * Wrapper method of set vector or matrix to zero.
+	 *
+	 * @see linalg::zero
+	 */
+	#define BACKEND_GENERIC_ZERO(Type, Container) \
+	virtual void zero(Container<Type>& a) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return; \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
+	#undef BACKEND_GENERIC_ZERO
 
 	/**
 	 * Wrapper method of Transferring data to GPU memory.
