@@ -92,6 +92,10 @@ namespace shogun
 			{
 				return m_value;
 			}
+			bool operator>(const Iterator& other)
+			{
+				return this->m_value > other.m_value;
+			}
 			bool operator!=(const Iterator& other)
 			{
 				return this->m_value != other.m_value;
@@ -99,6 +103,15 @@ namespace shogun
 			bool operator==(const Iterator& other)
 			{
 				return this->m_value == other.m_value;
+			}
+			T operator-(Iterator& other)
+			{
+				return (this->m_value - other.m_value);
+			}
+			T operator+=(T& other)
+			{
+				this->m_value = this->m_value + other;
+				return this->m_value;
 			}
 
 		private:

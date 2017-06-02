@@ -43,6 +43,7 @@
 #include <shogun/base/init.h>
 #include <shogun/base/range.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Lock.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 
@@ -51,6 +52,7 @@
 #else
 #include <sys/ioctl.h>
 #include <unistd.h>
+
 #endif
 
 namespace shogun
@@ -78,7 +80,7 @@ namespace shogun
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix("PROGRESS: "), m_mode(UTF8), m_last_progress(0),
 		      m_last_progress_time(0),
-		      m_progress_start_time(CTime::get_curtime())
+		      m_progress_start_time(CTime::get_curtime()), m_current_value(0)
 		{
 		}
 		ProgressPrinter(
@@ -87,7 +89,8 @@ namespace shogun
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(UTF8), m_last_progress(0),
 		      m_last_progress_time(0),
-		      m_progress_start_time(CTime::get_curtime())
+		      m_progress_start_time(CTime::get_curtime()),
+		      m_current_value(min_value)
 		{
 		}
 		ProgressPrinter(
@@ -96,7 +99,8 @@ namespace shogun
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix("PROGRESS: "), m_mode(mode), m_last_progress(0),
 		      m_last_progress_time(0),
-		      m_progress_start_time(CTime::get_curtime())
+		      m_progress_start_time(CTime::get_curtime()),
+		      m_current_value(min_value)
 		{
 		}
 		ProgressPrinter(
@@ -105,16 +109,54 @@ namespace shogun
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(mode), m_last_progress(0),
 		      m_last_progress_time(0),
-		      m_progress_start_time(CTime::get_curtime())
+		      m_progress_start_time(CTime::get_curtime()),
+		      m_current_value(min_value)
 		{
 		}
 		~ProgressPrinter()
 		{
 		}
 
-		/** Print the progress bar */
-		void print_progress(float64_t current_value) const
+		void print_progress() const
 		{
+			lock.lock();
+			if (m_current_value.load() + 1 - m_min_value >
+			    m_max_value - m_min_value)
+			{
+				increment();
+				lock.unlock();
+				return;
+			}
+			print_progress_impl();
+			if (m_current_value.load() + 1 - m_min_value ==
+			    m_max_value - m_min_value)
+			{
+				print_end();
+				increment();
+				lock.unlock();
+				return;
+			}
+			increment();
+			lock.unlock();
+		}
+
+		/** @return last progress as a percentage */
+		inline float64_t get_last_progress() const
+		{
+			return m_last_progress;
+		}
+
+		/** @return last progress as a percentage */
+		inline float64_t get_current_progress() const
+		{
+			return m_current_value.load();
+		}
+
+	private:
+		/** Print the progress bar */
+		void print_progress_impl() const
+		{
+
 			// Check if the progress was enabled
 			if (!m_io.get_show_progress())
 				return;
@@ -145,7 +187,7 @@ namespace shogun
 			float64_t runtime = CTime::get_curtime();
 
 			if (difference > 0.0)
-				v = 100 * (current_value + 1 - m_min_value) /
+				v = 100 * (m_current_value.load() - m_min_value + 1) /
 				    (m_max_value - m_min_value);
 
 			// Set up chunk size
@@ -161,9 +203,7 @@ namespace shogun
 				m_last_progress = v - 1e-6;
 
 				if ((v != 100.0) && (runtime - m_last_progress_time < 0.5))
-				{
 					return;
-				}
 
 				m_last_progress_time = runtime;
 				estimate = (1 - v / 100) *
@@ -177,7 +217,7 @@ namespace shogun
 			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
-				if (current_value + 1 - m_min_value > i * size_chunk)
+				if (m_current_value.load() + 1 - m_min_value > i * size_chunk)
 				{
 					m_io.message(
 					    MSG_MESSAGEONLY, "", "", -1, "%s",
@@ -207,31 +247,14 @@ namespace shogun
 				m_io.message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
-
-			if (current_value + 1 - m_min_value >= m_max_value)
-			{
-				return;
-			}
 		}
 
 		/** Print the progress bar end */
 		void print_end() const
 		{
-			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
-				return;
-
-			print_progress(m_max_value);
 			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
 		}
 
-		/** @return last progress as a percentage */
-		inline float64_t get_last_progress() const
-		{
-			return m_last_progress;
-		}
-
-	private:
 		std::string get_pb_char() const
 		{
 			switch (m_mode)
@@ -260,6 +283,11 @@ namespace shogun
 #endif
 		}
 
+		void increment() const
+		{
+			m_current_value++;
+		}
+
 		/** IO object */
 		SGIO m_io;
 		/** Maxmimum value */
@@ -284,6 +312,10 @@ namespace shogun
 		mutable float64_t m_last_progress_time;
 		/** Progress start time */
 		mutable float64_t m_progress_start_time;
+		/** Current value */
+		mutable std::atomic<int64_t> m_current_value;
+		/** Lock for multithreaded operations **/
+		mutable CLock lock;
 	};
 
 	/** @class Helper class to show a progress bar given a range.
@@ -354,13 +386,13 @@ namespace shogun
 			{
 				// Every time we update the iterator we print
 				// also the updated progress bar
-				m_printer->print_progress((*m_value));
+				m_printer->print_progress();
 				m_value++;
 				return *this;
 			}
 			PIterator& operator++(int)
 			{
-				PIterator tmp(*this, this->m_printer);
+				PIterator tmp(*this);
 				++*this;
 				return tmp;
 			}
@@ -373,13 +405,30 @@ namespace shogun
 			}
 			bool operator!=(const PIterator& other)
 			{
-				if (!(this->m_value != other.m_value))
-					m_printer->print_end();
 				return this->m_value != other.m_value;
 			}
 			bool operator==(const PIterator& other)
 			{
 				return this->m_value == other.m_value;
+			}
+			bool operator>(const PIterator& other)
+			{
+				return this->m_value > other.m_value;
+			}
+			bool operator<(const PIterator& other)
+			{
+				return !(*this > other);
+			}
+
+			T operator-(PIterator& other)
+			{
+				return this->m_value - other.m_value;
+			}
+
+			T operator+=(T other)
+			{
+				m_printer->print_progress();
+				return this->m_value += other;
 			}
 
 		private:
@@ -406,6 +455,12 @@ namespace shogun
 		inline float64_t get_last_progress() const
 		{
 			return m_printer->get_last_progress();
+		}
+
+		/** @return last progress as a percentage */
+		inline float64_t get_current_progress() const
+		{
+			return m_printer->get_current_progress();
 		}
 
 	private:
