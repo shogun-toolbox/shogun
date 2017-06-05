@@ -81,6 +81,20 @@ TEST(PRange, progress_correct_bounds_negative)
 	}
 }
 
+TEST(PRange, lambda_stop)
+{
+	int test = 6;
+	/* Stops before the 4th iteration */
+	for (auto i :
+	     progress(range(0, 6), range_io, UTF8, [&]() { return test > 3; }))
+	{
+		(void)i;
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		test--;
+	}
+	EXPECT_EQ(test, 3);
+}
+
 TEST(PRange, DISABLED_progress_incorrect_bounds_positive)
 {
 	range_io.enable_progress();
