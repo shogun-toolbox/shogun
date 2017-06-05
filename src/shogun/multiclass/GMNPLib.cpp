@@ -62,6 +62,7 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 
 #include <shogun/multiclass/GMNPLib.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/base/progress.h>
 
 #include <string.h>
 #include <limits.h>
@@ -348,6 +349,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* Main optimization loop                                       */
   /* ------------------------------------------------------------ */
 
+	auto pb = progress(range(10), *this->io);
   col_u = (float64_t*)get_col(u,-1);
   while( exitflag == -1 )
   {
@@ -420,10 +422,11 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     else if(t >= tmax) exitflag = 0;
 
     /* print info */
-	SG_ABS_PROGRESS(CMath::abs((UB-LB)/UB),
+	pb.print_absolute(CMath::abs((UB-LB)/UB),
 			-CMath::log10(CMath::abs(UB-LB)),
 			-CMath::log10(1.0),
-			-CMath::log10(tolrel), 6);
+			-CMath::log10(tolrel));
+
     if(verb && (t % verb) == 0 ) {
       SG_PRINT("%d: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
         t, UB, LB, UB-LB,(UB-LB)/UB);
@@ -451,7 +454,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   }
 
   /* print info about last iteration*/
-  SG_DONE()
+  pb.complete_absolute();
   if(verb && (t % verb) ) {
     SG_PRINT("exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);

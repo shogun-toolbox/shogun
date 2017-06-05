@@ -123,6 +123,28 @@ namespace shogun
 			lock.unlock();
 		}
 
+		void print_progress_absolute(
+				float64_t current_val, float64_t val, float64_t min_val, float64_t max_val)
+		{
+			lock.lock();
+			if (val - m_min_value >
+				m_max_value - m_min_value)
+			{
+				lock.unlock();
+				return;
+			}
+			print_progress_absolute_impl(current_val, val, min_val, max_val);
+			if (val - m_min_value ==
+				m_max_value - m_min_value)
+			{
+				print_end();
+				lock.unlock();
+				return;
+			}
+			lock.unlock();
+		}
+
+
 		/**
 		 * Manually increment to max size the current value
 		 * to print a complete progress bar.
@@ -235,6 +257,106 @@ namespace shogun
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
 				m_io.message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+			}
+		}
+
+		/**
+		 * Logic implementation fo the absolute progress bar.
+		 */
+		void print_progress_absolute_impl(
+				float64_t current_val, float64_t val, float64_t min_value, float64_t max_value) const
+		{
+			// Check if the progress was enabled
+			if (!m_io.get_show_progress())
+				return;
+
+			m_current_value.store(current_val);
+
+			if (max_value <= min_value)
+				return;
+
+			// Check for terminal dimension. This is for provide
+			// a minimal resize functionality.
+			set_screen_size();
+
+			float64_t difference = max_value - min_value, v = -1,
+					estimate = 0, total_estimate = 0;
+			float64_t size_chunk = -1;
+
+			// Check if we have enough space to show the progress bar
+			// Use only a fraction of it to account for the size of the
+			// time displayed (decimals and integer).
+			int32_t progress_bar_space =
+					(m_columns_num - 50 - m_prefix.length()) * 0.9;
+
+			// TODO: this guy here brokes testing
+			// REQUIRE(
+			//    progress_bar_space > 0,
+			//    "Not enough terminal space to show the progress bar!\n")
+
+			char str[1000];
+			float64_t runtime = CTime::get_curtime();
+
+			if (difference > 0.0)
+				v = 100 * (val - min_value) /
+					(max_value - min_value);
+
+			// Set up chunk size
+			size_chunk = difference / (float64_t)progress_bar_space;
+
+			if (m_last_progress == 0)
+			{
+				m_last_progress_time = runtime;
+				m_last_progress = v;
+			}
+			else
+			{
+				m_last_progress = v - 1e-6;
+
+				if ((v != 100.0) && (runtime - m_last_progress_time < 0.5))
+					return;
+
+				m_last_progress_time = runtime;
+				estimate = (1 - v / 100) *
+						   (m_last_progress_time - m_progress_start_time) /
+						   (v / 100);
+				total_estimate =
+						(m_last_progress_time - m_progress_start_time) / (v / 100);
+			}
+
+			/** Print the actual progress bar to screen **/
+			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			for (index_t i = 1; i < progress_bar_space; i++)
+			{
+				if (m_current_value.load() - min_value > i * size_chunk)
+				{
+					m_io.message(
+							MSG_MESSAGEONLY, "", "", -1, "%s",
+							get_pb_char().c_str());
+				}
+				else
+				{
+					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+				}
+			}
+			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", current_val);
+
+			if (estimate > 120)
+			{
+				snprintf(
+						str, sizeof(str),
+						"   %%1.1f minutes remaining  %%1.1f minutes total\r");
+				m_io.message(
+						MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
+						total_estimate / 60);
+			}
+			else
+			{
+				snprintf(
+						str, sizeof(str),
+						"   %%1.1f seconds remaining  %%1.1f seconds total\r");
+				m_io.message(
+						MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
 		}
 
@@ -500,6 +622,20 @@ namespace shogun
 		}
 
 		/**
+		 * Print the absolute progress bar. This method must be called
+		 * each time we want the progress bar to be updated.
+		 *
+		 * @param current_val current value
+		 * @param val value
+		 * @param min_val minimum value
+		 * @param max_val maximum value
+		 */
+		void print_absolute(float64_t current_val, float64_t val, float64_t min_value, float64_t max_value) const
+		{
+			m_printer->print_progress_absolute(current_val, val, min_value, max_value);
+		}
+
+		/**
 		 * Print the progress bar end. This method must be called
 		 * one time, after the loop.
 		 * @code
@@ -516,6 +652,24 @@ namespace shogun
 		{
 			m_printer->premature_end();
 			m_printer->print_progress();
+		}
+
+		/**
+		 * Print the progress bar end. This method must be called
+		 * one time, after the loop.
+		 * @code
+		 * 	auto pr = progress(range(0,10), ASCII);
+		 * 	for (int i=0; i<10; i++)
+		 * 	{
+		 * 		// Do stuff
+		 * 		pr.print_absolute();
+		 * 	}
+		 * 	pr.complete_absolute();
+		 * @endcode
+		 */
+		void complete_absolute() const
+		{
+			m_printer->print_progress_absolute(100, 100, 0, 100);
 		}
 
 	private:
