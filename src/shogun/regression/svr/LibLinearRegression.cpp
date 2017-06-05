@@ -15,6 +15,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -206,7 +207,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		index[i] = i;
 	}
 
-
+	auto pb=progress(range(10));
 	while(iter < max_iter)
 	{
 		Gmax_new = 0;
@@ -305,7 +306,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			Gnorm1_init = Gnorm1_new;
 		iter++;
 
-		SG_SABS_PROGRESS(Gnorm1_new, -CMath::log10(Gnorm1_new), -CMath::log10(eps*Gnorm1_init), -CMath::log10(Gnorm1_init), 6)
+		pb.print_absolute(Gnorm1_new, -CMath::log10(Gnorm1_new), -CMath::log10(eps*Gnorm1_init), -CMath::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
@@ -322,7 +323,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		Gmax_old = Gmax_new;
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("\noptimization finished, #iter = %d\n", iter)
 	if(iter >= max_iter)
 		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")

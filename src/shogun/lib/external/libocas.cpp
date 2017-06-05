@@ -28,6 +28,7 @@
 #include <shogun/lib/external/libocas.h>
 #include <shogun/lib/external/libocas_common.h>
 #include <shogun/lib/external/libqp.h>
+#include <shogun/base/progress.h>
 
 namespace shogun
 {
@@ -690,12 +691,13 @@ ocas_return_value_T svm_ocas_solver(
   ocas.Q_D = 0;
 
   /* Compute the initial cutting plane */
+	auto pb=progress(range(10));
   cut_length = nData;
   for(i=0; i < nData; i++)
     new_cut[i] = i;
 
 	gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-	SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
+	pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel));
 
   ocas.trn_err = nData;
   ocas.ocas_time = get_time() - ocas_start_time;
@@ -765,7 +767,7 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.output_time += get_time()-start_time;
 				gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
+        pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel));
 
         xi = 0;
         cut_length = 0;
@@ -936,6 +938,7 @@ ocas_return_value_T svm_ocas_solver(
 
   } /* end of the main loop */
 
+	pb.complete_absolute();
 cleanup:
 
   LIBOCAS_FREE(H);
@@ -1385,8 +1388,8 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   } /* end of the main loop */
 
-cleanup:
 
+cleanup:
   LIBOCAS_FREE(H);
   LIBOCAS_FREE(b);
   LIBOCAS_FREE(alpha);

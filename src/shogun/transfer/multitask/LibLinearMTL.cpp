@@ -22,6 +22,7 @@
 #include <shogun/transfer/multitask/LibLinearMTL.h>
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -253,6 +254,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 		index[i] = i;
 	}
 
+	auto pb=progress(range(10));
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
@@ -352,7 +354,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
-		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6)
+		pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
 
 		if(gap <= eps)
 		{
@@ -374,7 +376,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 			PGmin_old = -CMath::INFTY;
 	}
 
-	SG_DONE()
+	pb.complete_absolute();
 	SG_INFO("optimization finished, #iter = %d\n",iter)
 	if (iter >= max_iterations)
 	{

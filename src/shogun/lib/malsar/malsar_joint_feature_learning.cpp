@@ -177,7 +177,6 @@ malsar_result_t malsar_joint_feature_learning(
 		//for (task=0; task<n_tasks; task++)
 		//	obj += rho1*(Wz.col(task).norm());
 		SG_SDEBUG("Obj = %f\n",obj)
-		//SG_SABS_PROGRESS(obj,0.0)
 		// check if process should be terminated
 		switch (options.termination)
 		{
