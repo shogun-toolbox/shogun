@@ -33,6 +33,7 @@
 #include <unistd.h>
 #endif
 #include <shogun/mathematics/Math.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -984,8 +985,6 @@ template <class T> struct K_THREAD_PARAM
 	int32_t end;
 	/** start (unit number of elements) */
 	int64_t total_start;
-	/** end (unit number of elements) */
-	int64_t total_end;
 	/** m */
 	int32_t m;
 	/** n */
@@ -995,7 +994,9 @@ template <class T> struct K_THREAD_PARAM
 	/** kernel matrix k(i,j)=k(j,i) */
 	bool symmetric;
 	/** output progress */
-	bool verbose;
+	bool verbose	;
+	/* Progress bar*/
+	PRange<int64_t> * pb;
 };
 }
 
@@ -1274,8 +1275,8 @@ template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 	int32_t m=params->m;
 	bool verbose=params->verbose;
 	int64_t total_start=params->total_start;
-	int64_t total_end=params->total_end;
 	int64_t total=total_start;
+	PRange<int64_t>* pb = params->pb;
 
 	for (int32_t i=i_start; i<i_end; i++)
 	{
@@ -1299,8 +1300,7 @@ template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 				if (symmetric && i!=j)
 					total++;
 
-				if (total%100 == 0)
-					SG_OBJ_PROGRESS(k, total, total_start, total_end)
+				pb->print_progress();
 
 				if (CSignal::cancel_computations())
 					break;
@@ -1335,6 +1335,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	K_THREAD_PARAM<T> params;
 	int64_t step = total_num/num_threads;
 	index_t t = 0;
+	auto pb = progress(range(total_num), *this->io);
 	#pragma omp parallel for lastprivate(t) private(params)
 	for (t = 0; t < num_threads; ++t)
 	{
@@ -1343,11 +1344,11 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 		params.start = compute_row_start(t*step, n, symmetric);
 		params.end = compute_row_start((t+1)*step, n, symmetric);
 		params.total_start=t*step;
-		params.total_end=(t+1)*step;
 		params.n=n;
 		params.m=m;
 		params.symmetric=symmetric;
 		params.verbose=false;
+		params.pb = &pb;
 		CKernel::get_kernel_matrix_helper<T>((void*)&params);
 	}
 
@@ -1358,15 +1359,15 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 		params.start = compute_row_start(t*step, n, symmetric);
 		params.end = m;
 		params.total_start=t*step;
-		params.total_end=total_num;
 		params.n=n;
 		params.m=m;
 		params.symmetric=symmetric;
 		params.verbose=false;
+		params.pb = &pb;
 		CKernel::get_kernel_matrix_helper<T>((void*)&params);
 	}
 
-	SG_DONE()
+	pb.complete();
 
 	return SGMatrix<T>(result,m,n,true);
 }
@@ -1377,4 +1378,3 @@ template SGMatrix<float32_t> CKernel::get_kernel_matrix<float32_t>();
 
 template void* CKernel::get_kernel_matrix_helper<float64_t>(void* p);
 template void* CKernel::get_kernel_matrix_helper<float32_t>(void* p);
-

@@ -17,6 +17,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
@@ -28,6 +29,7 @@
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
+
 #endif
 
 using namespace shogun;
@@ -241,15 +243,11 @@ void CDistance::do_precompute_matrix()
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=SG_MALLOC(float32_t, num*(num+1)/2);
 
-	for (int32_t i=0; i<num; i++)
+	for (auto i : progress(range(num), *this->io))
 	{
-		SG_PROGRESS(i*i,0,num*num)
 		for (int32_t j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
-
-	SG_PROGRESS(num*num,0,num*num)
-	SG_DONE()
 }
 
 void CDistance::init()
@@ -279,8 +277,6 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 	int64_t total_num = int64_t(m)*n;
 	int64_t total=0;
-	int64_t total_start=0;
-	int64_t total_end=total_num;
 
 	// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 	bool symmetric= (lhs && lhs==rhs && m==n);
@@ -289,6 +285,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 	result=SG_MALLOC(T, total_num);
 
+	PRange<int64_t> pb = PRange<int64_t>(range(total_num), *this->io, "PROGRESS: ", UTF8, [](){return true;});
 	int32_t num_threads;
 	int64_t step;
 	#pragma omp parallel shared(num_threads, step)
@@ -333,8 +330,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 					if (symmetric && i!=j)
 						total++;
 
-					if (total%100 == 0)
-					SG_OBJ_PROGRESS(this, total, total_start, total_end)
+					pb.print_progress();
 
 					if (CSignal::cancel_computations())
 						break;
@@ -342,8 +338,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 			}
 		}
 	}
-
-	SG_DONE()
+	pb.complete();
 
 	return SGMatrix<T>(result,m,n,true);
 }

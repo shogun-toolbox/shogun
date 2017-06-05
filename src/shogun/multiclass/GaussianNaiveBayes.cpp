@@ -15,6 +15,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -114,9 +115,8 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	// number of iterations in all cycles
 	int32_t max_progress = 2 * train_labels.vlen + 2 * m_num_classes;
 
-	// current progress
-	int32_t progress = 0;
-	SG_PROGRESS(progress, 0, max_progress)
+	// Progress bar
+	auto pb = progress(range(max_progress), *this->io);
 
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
@@ -127,8 +127,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 
-		progress++;
-		SG_PROGRESS(progress, 0, max_progress)
+		pb.print_progress();
 	}
 
 	// get means of features of labels
@@ -136,9 +135,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	{
 		for (j=0; j<m_dim; j++)
 			m_means(j, i) /= m_label_prob.vector[i];
-
-		progress++;
-		SG_PROGRESS(progress, 0, max_progress)
+		pb.print_progress();
 	}
 
 	// compute squared residuals with means available
@@ -150,9 +147,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 			m_variances(j, train_labels.vector[i]) +=
 				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
-
-		progress++;
-		SG_PROGRESS(progress, 0, max_progress)
+		pb.print_progress();
 	}
 
 	// get variance of features of labels
@@ -164,10 +159,9 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		// get a priori probabilities of labels
 		m_label_prob.vector[i]/= m_num_classes;
 
-		progress++;
-		SG_PROGRESS(progress, 0, max_progress)
+		pb.print_progress();
 	}
-	SG_DONE()
+	pb.complete();
 
 	return true;
 }
@@ -186,13 +180,11 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
 
 	// classify each example of data
-	SG_PROGRESS(0, 0, num_vectors)
-	for (int i = 0; i < num_vectors; i++)
+	for (auto i : progress(range(num_vectors), *this->io))
 	{
 		result->set_label(i,apply_one(i));
-		SG_PROGRESS(i + 1, 0, num_vectors)
 	}
-	SG_DONE()
+
 	return result;
 };
 

@@ -16,6 +16,7 @@
 #include <shogun/kernel/string/CommWordStringKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -303,11 +304,8 @@ bool CCommWordStringKernel::init_optimization(
 
 	SG_DEBUG("initializing CCommWordStringKernel optimization\n")
 
-	for (int32_t i=0; i<count; i++)
+	for (auto i : progress(range(0, count), *this->io))
 	{
-		if ( (i % (count/10+1)) == 0)
-			SG_PROGRESS(i, 0, count)
-
 		add_to_normal(IDX[i], weights[i]);
 	}
 

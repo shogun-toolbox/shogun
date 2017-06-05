@@ -13,6 +13,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
 #include <shogun/lib/DelimiterTokenizer.h>
@@ -165,6 +166,7 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t&
 	mat_feat=SG_MALLOC(SGSparseVector<sg_type>, num_vec); \
 	multilabel=SG_MALLOC(SGVector<float64_t>, num_vec); \
 	\
+	auto pb = progress(range(0, num_vec), *this->io, "LOADING: "); \
 	num_classes=0; \
 	SG_SET_LOCALE_C; \
 	\
@@ -244,8 +246,9 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t&
 		} \
 		\
 		current_line_ind++; \
-		SG_PROGRESS(current_line_ind, 0, num_vec, 1, "LOADING:\t") \
+		pb.print_progress(); \
 	} \
+	pb.complete();\
 	num_classes=classes.get_num_elements(); \
 	\
 	SG_RESET_LOCALE; \

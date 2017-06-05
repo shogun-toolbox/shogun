@@ -14,6 +14,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
+#include <shogun/base/progress.h>
 
 using namespace shogun;
 
@@ -83,21 +84,21 @@ bool CHierarchical::train_machine(CFeatures* data)
 	float64_t* distances=SG_MALLOC(float64_t, num_pairs);
 
 	int32_t offs=0;
-	for (int32_t i=0; i<num; i++)
+	for (auto i : progress(range(0, num), *this->io))
 	{
 		for (int32_t j=i+1; j<num; j++)
 		{
-			distances[offs]=distance->distance(i,j);
-			index[offs].idx1=i;
-			index[offs].idx2=j;
-			offs++;					//offs=i*(i+1)/2+j
+			distances[offs] = distance->distance(i, j);
+			index[offs].idx1 = i;
+			index[offs].idx2 = j;
+			offs++;                    //offs=i*(i+1)/2+j
 		}
-		SG_PROGRESS(i, 0, num-1)
 	}
 
 	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
 	//CMath::display_vector(distances, (num-1)*num/2, "dists");
 
+	auto pb = progress(range(0, num_pairs-1), *this->io);
 	int32_t k=-1;
 	int32_t l=0;
 	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)
@@ -114,7 +115,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 			if (c1==c2)
 				continue;
 
-			SG_PROGRESS(k, 0, num_pairs-1)
+			pb.print_progress();
 
 			if (c1<c2)
 			{
@@ -140,6 +141,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 			break;
 		}
 	}
+	pb.complete();
 
 	assignment_size=num;
 	table_size=l-1;

@@ -18,6 +18,8 @@
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
+#include <shogun/base/progress.h>
+
 #endif
 
 using namespace shogun;
@@ -65,6 +67,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 	int32_t num_threads;
 	int32_t step;
+	auto pb = progress(range(num_vectors), *this->io);
 	#pragma omp parallel shared(num_threads, step)
 	{
 #ifdef HAVE_OPENMP
@@ -80,7 +83,6 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		step=num_vectors;
 		int32_t thread_num=0;
 #endif
-		bool progress=false; // (thread_num == 0);
 
 		int32_t t_start=thread_num*step;
 		int32_t t_stop=(thread_num==num_threads) ? stop : (thread_num+1)*step;
@@ -96,10 +98,10 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 				output[i]=alphas[i]*this->dense_dot(i, vec, dim)+b;
 			else
 				output[i]=this->dense_dot(i, vec, dim)+b;
-			if (progress)
-				this->display_progress(t_start, t_stop, i);
+			pb.print_progress();
 		}
 	}
+	pb.complete();
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
@@ -114,6 +116,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 
 	CSignal::clear_cancel();
 
+	auto pb = progress(range(num), *this->io);
 	int32_t num_threads;
 	int32_t step;
 	#pragma omp parallel shared(num_threads, step)
@@ -131,7 +134,6 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		step = num;
 		int32_t thread_num=0;
 #endif
-		bool progress=false; // (thread_num == 0);
 
 		int32_t t_start=thread_num*step;
 		int32_t t_stop=(thread_num==num_threads) ? num : (thread_num+1)*step;
@@ -147,10 +149,10 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 				output[i]=alphas[sub_index[i]]*this->dense_dot(sub_index[i], vec, dim)+b;
 			else
 				output[i]=this->dense_dot(sub_index[i], vec, dim)+b;
-			if (progress)
-				this->display_progress(t_start, t_stop, i);
+			pb.print_progress();
 		}
 	}
+	pb.complete();
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
@@ -400,15 +402,6 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	}
 
 	return cov;
-}
-
-void CDotFeatures::display_progress(int32_t start, int32_t stop, int32_t v)
-{
-	int32_t num_vectors=stop-start;
-	int32_t i=v-start;
-
-	if ( (i% (num_vectors/100+1))== 0)
-		SG_PROGRESS(v, 0.0, num_vectors-1)
 }
 
 void CDotFeatures::init()

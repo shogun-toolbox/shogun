@@ -23,6 +23,8 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+#include <shogun/base/progress.h>
+
 #endif
 
 using namespace shogun;
@@ -213,12 +215,10 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n")
 
-	for (int32_t i=0; i<count; i++)
+	for (auto i : progress(range(count), *this->io))
 	{
 		if (tree_num<0)
 		{
-			if ( (i % (count/10+1)) == 0)
-				SG_PROGRESS(i, 0, count)
 
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
@@ -235,9 +235,6 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 				add_example_to_single_tree_mismatch(IDX[i], alphas[i], tree_num) ;
 		}
 	}
-
-	if (tree_num<0)
-		SG_DONE()
 
 	//tries.compact_nodes(NO_CHILD, 0, weights) ;
 
@@ -883,6 +880,8 @@ void CWeightedDegreeStringKernel::compute_batch(
 #endif
 	ASSERT(num_threads>0)
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
+	auto pb = progress(range(num_feat), *this->io);
+
 
 	if (num_threads < 2)
 	{
@@ -904,8 +903,9 @@ void CWeightedDegreeStringKernel::compute_batch(
 			params.vec_idx=vec_idx;
 			compute_batch_helper((void*) &params);
 
-			SG_PROGRESS(j,0,num_feat)
+			pb.print_progress();
 		}
+		pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
@@ -949,11 +949,12 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			SG_PROGRESS(j,0,num_feat)
+			pb.print_progress();
 
 			SG_FREE(params);
 			SG_FREE(threads);
 		}
+		pb.complete();
 	}
 #endif
 
