@@ -3,6 +3,7 @@
 #include <shogun/latent/LatentSVM.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/base/init.h>
+#include <shogun/base/progress.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
@@ -113,6 +114,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	feats = new CLatentFeatures(num_examples);
 	SG_REF(feats);
 
+	auto pb=progress(range(num_examples));
 	CMath::init_random();
 	for (int i = 0; (!feof(fd)) && (i < num_examples); ++i)
 	{
@@ -150,7 +152,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 		CBoundingBox* bb = new CBoundingBox(x,y);
 		labels->add_latent_label(bb);
 
-		SG_SPROGRESS(i, 0, num_examples);
+		pb.print_progress();
 		CHOGFeatures* hog = new CHOGFeatures(width, height);
 		hog->hog = SG_CALLOC(float64_t**, hog->width);
 		for (int j = 0; j < width; ++j)
@@ -176,7 +178,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 
 	labels->set_labels(ys);
 
-	SG_SDONE();
+	pb.complete();
 }
 
 int main(int argc, char** argv)

@@ -42,6 +42,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/base/progress.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -432,6 +433,7 @@ void Solver::Solve(
 	CSignal::clear_cancel();
 	CTime start_time;
 	{
+		auto pb= progress(range(l));
 		G = SG_MALLOC(float64_t, l);
 		G_bar = SG_MALLOC(float64_t, l);
 		int32_t i;
@@ -455,9 +457,9 @@ void Solver::Solve(
 					for(j=0;j<l;j++)
 						G_bar[j] += get_C(i) * Q_i[j];
 			}
-			SG_SPROGRESS(i, 0, l)
+			pb.print_progress();
 		}
-		SG_SDONE()
+		pb.complete();
 	}
 
 	// optimization step

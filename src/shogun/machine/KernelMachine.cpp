@@ -13,13 +13,16 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/progress.h>
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/labels/Labels.h>
 
+
 #ifdef HAVE_OPENMP
 #include <omp.h>
+
 #endif
 
 using namespace shogun;
@@ -337,6 +340,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 		else
 		{
+			auto pb = progress(range(num_vectors));
 			int32_t num_threads;
 			int64_t step;
 #pragma omp parallel shared(num_threads, step)
@@ -355,7 +359,6 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				step = num_vectors;
 				int32_t thread_num = 0;
 #endif
-				bool verbose = (thread_num == 0);
 				int32_t start = thread_num * step;
 				int32_t end = (thread_num == num_threads)
 				                  ? num_vectors
@@ -368,13 +371,8 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				     vec < end && !CSignal::cancel_computations(); vec++)
 #endif
 				{
-					if (verbose)
-					{
-						int32_t vectors_num = end - start;
-						int32_t v = vec - start;
-						if ((v % (vectors_num / 100 + 1)) == 0)
-							SG_SPROGRESS(v, 0.0, vectors_num - 1)
-					}
+					pb.print_progress();
+
 					ASSERT(kernel)
 					if (kernel->has_property(KP_LINADD) &&
 					    (kernel->get_is_initialized()))
@@ -393,14 +391,13 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 					}
 				}
 			}
+			pb.complete();
 		}
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
 			SG_INFO("prematurely stopped.           \n")
-		else
 #endif
-			SG_DONE()
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
@@ -507,6 +504,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		io->disable_progress();
 
 	/* custom kernel never has batch evaluation property so dont do this here */
+	auto pb = progress(range(0, num_inds));
 	int32_t num_threads;
 	int64_t step;
 #pragma omp parallel shared(num_threads, step)
@@ -524,7 +522,6 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		step = num_inds;
 		int32_t thread_num = 0;
 #endif
-		bool verbose = (thread_num == 0);
 		int32_t start = thread_num * step;
 		int32_t end =
 		    (thread_num == num_threads) ? num_inds : (thread_num + 1) * step;
@@ -535,13 +532,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		     vec++)
 #endif
 		{
-			if (verbose)
-			{
-				int32_t vectors_num = end - start;
-				int32_t v = vec - start;
-				if ((v % (vectors_num / 100 + 1)) == 0)
-					SG_SPROGRESS(v, 0.0, vectors_num - 1)
-			}
+			pb.print_progress();
 			index_t index = indices[vec];
 			ASSERT(kernel)
 			if (kernel->has_property(KP_LINADD) &&
@@ -561,13 +552,13 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 			}
 		}
 	}
+	pb.complete();
 
 #ifndef WIN32
 	if ( CSignal::cancel_computations() )
 		SG_INFO("prematurely stopped.\n")
 	else
 #endif
-		SG_DONE()
 
 	return output;
 }
