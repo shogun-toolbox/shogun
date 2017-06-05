@@ -62,31 +62,62 @@ TEST(PRange, identical_bounds)
 TEST(PRange, progress_correct_bounds_positive)
 {
 	range_io.enable_progress();
-	range_test = progress(range(0, 100), range_io);
-	for (auto i : range_test)
+	range_test = progress(range(0, 10), range_io);
+	for (int i = 0; i < 10; i++)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
-		EXPECT_EQ(std::ceil(range_test.get_last_progress()), i);
+		EXPECT_EQ(std::ceil(range_test.get_current_progress()), i);
+		range_test.print_progress();
 	}
+	range_test.complete();
+	EXPECT_EQ(std::ceil(range_test.get_current_progress()), 11);
 }
 
 TEST(PRange, progress_correct_bounds_negative)
 {
 	range_io.enable_progress();
-	range_test = progress(range(-100, 0), range_io);
+	range_test = progress(range(-10, 0), range_io);
+	for (int i = -10; i > 0; i++)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
+		EXPECT_EQ(std::ceil(range_test.get_current_progress()), i);
+		range_test.print_progress();
+	}
+	range_test.complete();
+	EXPECT_EQ(std::ceil(range_test.get_current_progress()), 1);
+}
+
+TEST(PRange, progress_iterator_correct_bounds_positive)
+{
+	range_io.enable_progress();
+	range_test = progress(range(0, 10), range_io);
 	for (auto i : range_test)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
-		EXPECT_EQ(std::ceil(range_test.get_last_progress()), (100 + i));
+		EXPECT_EQ(std::ceil(range_test.get_current_progress()), i);
 	}
+	EXPECT_EQ(std::ceil(range_test.get_current_progress()), 11);
+}
+
+TEST(PRange, progress_iterator_correct_bounds_negative)
+{
+	range_io.enable_progress();
+	range_test = progress(range(-10, 0), range_io);
+	for (auto i : range_test)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
+		EXPECT_EQ(std::ceil(range_test.get_current_progress()), i);
+	}
+	EXPECT_EQ(std::ceil(range_test.get_current_progress()), 1);
 }
 
 TEST(PRange, lambda_stop)
 {
 	int test = 6;
 	/* Stops before the 4th iteration */
-	for (auto i :
-	     progress(range(0, 6), range_io, UTF8, [&]() { return test > 3; }))
+	for (auto i : progress(range(0, 6), range_io, "PROGRESS: ", UTF8, [&]() {
+		     return test > 3;
+		 }))
 	{
 		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -104,7 +135,7 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_positive)
 		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
-	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
+	EXPECT_FLOAT_EQ(range_test.get_current_progress(), (float64_t)0);
 }
 
 TEST(PRange, DISABLED_progress_incorrect_bounds_negative)
@@ -116,7 +147,7 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_negative)
 		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
-	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
+	EXPECT_FLOAT_EQ(range_test.get_current_progress(), (float64_t)0);
 }
 
 TEST(PRange, DISABLED_progress_incorrect_bounds_equal)
@@ -128,5 +159,5 @@ TEST(PRange, DISABLED_progress_incorrect_bounds_equal)
 		(void)i;
 		std::this_thread::sleep_for(std::chrono::milliseconds(millis));
 	}
-	EXPECT_FLOAT_EQ(range_test.get_last_progress(), (float64_t)0);
+	EXPECT_FLOAT_EQ(range_test.get_current_progress(), (float64_t)0);
 }
