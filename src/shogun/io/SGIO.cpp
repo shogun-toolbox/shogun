@@ -53,16 +53,14 @@ char SGIO::file_buffer[FBUFSIZE];
 char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
-: target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(0), show_progress(false), location_info(MSG_NONE),
+: target(stdout), show_progress(false), location_info(MSG_NONE),
 	syntax_highlight(true), loglevel(MSG_WARN)
 {
 	m_refcount = new RefCount();
 }
 
 SGIO::SGIO(const SGIO& orig)
-: target(orig.get_target()), last_progress_time(0),
-	progress_start_time(0), last_progress(0),
+: target(orig.get_target()),
 	show_progress(orig.get_show_progress()),
 	location_info(orig.get_location_info()),
 	syntax_highlight(orig.get_syntax_highlight()),
@@ -152,129 +150,6 @@ void SGIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 	}
 }
 
-void SGIO::progress(
-	float64_t current_val, float64_t min_val, float64_t max_val,
-	int32_t decimals, const char* prefix)
-{
-	if (!show_progress)
-		return;
-
-	float64_t runtime = CTime::get_curtime();
-
-	char str[1000];
-	float64_t v=-1, estimate=0, total_estimate=0 ;
-
-	if (max_val-min_val>0.0)
-		v=100*(current_val-min_val+1)/(max_val-min_val+1);
-	else
-		return;
-
-	v=CMath::clamp(v,1e-5,100.0);
-
-	if (decimals < 1)
-		decimals = 1;
-
-	if (last_progress==0)
-	{
-		last_progress_time = runtime;
-		progress_start_time = runtime;
-		last_progress = v;
-	}
-	else
-	{
-		last_progress = v-1e-6;
-		if ((v!=100.0) && (runtime - last_progress_time<0.5))
-		{
-
-			// This is made to display correctly the percentage
-			// if the algorithm execution is too fast
-			if (current_val >= max_val-1)
-			{
-				v = 100;
-				last_progress=v-1e-6;
-				snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    ",decimals+3, decimals);
-				message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
-				message(MSG_MESSAGEONLY, "", "", -1, "\n");
-			}
-			return;
-		}
-
-		last_progress_time = runtime;
-		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100);
-		total_estimate = (last_progress_time-progress_start_time)/(v/100);
-	}
-
-	if (estimate>120)
-	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate/60, total_estimate/60);
-	}
-	else
-	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
-	}
-
-	// Print a new line if the execution is completed
-	// to prevent bad display
-	if (current_val >= max_val-1)
-	{
-		message(MSG_MESSAGEONLY, "", "", -1, "\n");
-	}
-
-    fflush(target);
-}
-
-void SGIO::absolute_progress(
-	float64_t current_val, float64_t val, float64_t min_val, float64_t max_val,
-	int32_t decimals, const char* prefix)
-{
-	if (!show_progress)
-		return;
-
-	float64_t runtime = CTime::get_curtime();
-
-	char str[1000];
-	float64_t v=-1, estimate=0, total_estimate=0 ;
-
-	if (max_val-min_val>0)
-		v=100*(val-min_val+1)/(max_val-min_val+1);
-
-	if (decimals < 1)
-		decimals = 1;
-
-	if (last_progress>v)
-	{
-		last_progress_time = runtime;
-		progress_start_time = runtime;
-		last_progress = v;
-	}
-	else
-	{
-		v=CMath::clamp(v,1e-5,100.0);
-		last_progress = v-1e-6;
-
-		if ((v!=100.0) && (runtime - last_progress_time<100))
-			return;
-
-		last_progress_time = runtime;
-		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100);
-		total_estimate = (last_progress_time-progress_start_time)/(v/100);
-	}
-
-	if (estimate>120)
-	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate/60, total_estimate/60);
-	}
-	else
-	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate, total_estimate);
-	}
-
-    fflush(target);
-}
 
 void SGIO::done()
 {
