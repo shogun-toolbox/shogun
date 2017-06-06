@@ -227,8 +227,7 @@ void Full::fit()
 	if (!solver.info() == Eigen::Success)
 		SG_SWARNING("Numerical problems computing LLT.\n");
 
-	eigen_beta = solver.solve(eigen_h / -m_lambda);
-	// Differs from JMLR paper by a minus sign; this way seems to be correct.
+	eigen_beta = solver.solve(eigen_h / m_lambda);
 }
 
 float64_t Full::log_pdf(index_t idx_test) const
