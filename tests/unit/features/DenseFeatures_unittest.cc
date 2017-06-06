@@ -249,3 +249,51 @@ TEST(DenseFeaturesTest, copy_feature_matrix)
 			EXPECT_NEAR(copy(i, j+offset), data(i, inds[j]), 1E-15);
 	}
 }
+
+TEST(DenseFeaturesTest,subsetClone)
+{
+	// Create data for dense features
+	SGMatrix<float64_t> featMatrix(5,5);
+	for (index_t i=0; i < featMatrix.num_rows * featMatrix.num_cols; ++i)
+		featMatrix.data()[i] = i;
+
+	// Create some subset vectors
+	SGVector<index_t> firstFour(4);
+	for (index_t i=0; i < 4; ++i)
+		firstFour[i] = i;
+
+	SGVector<index_t> firstThree(3);
+	for (index_t i=0; i < 3; ++i)
+		firstThree[i] = i;
+
+	// Create features
+	CDenseFeatures<float64_t> * df_orig = new CDenseFeatures<float64_t>(featMatrix);
+
+	// Add subset
+	df_orig->add_subset(firstFour);
+
+	// Clone with subset
+	CDenseFeatures<float64_t> * df_clone = (CDenseFeatures<float64_t> *) df_orig->clone();
+
+	// Add additional subset on the clone
+	df_clone->add_subset(firstThree);
+
+	// Check the original
+	CSubsetStack * sstack_orig = df_orig->get_subset_stack();
+	EXPECT_EQ(sstack_orig->get_size(), 4);
+	df_orig->remove_subset();
+	EXPECT_FALSE(sstack_orig->has_subsets());
+	SG_UNREF(sstack_orig);
+
+	// Check the clone
+	CSubsetStack * sstack_clone = df_clone->get_subset_stack();
+	EXPECT_EQ(sstack_clone->get_size(), 3);
+	df_clone->remove_subset();
+	EXPECT_EQ(sstack_clone->get_size(), 4);
+	df_clone->remove_subset();
+	EXPECT_FALSE(sstack_clone->has_subsets());
+	SG_UNREF(sstack_clone);
+
+	SG_UNREF(df_clone);
+	SG_UNREF(df_orig);
+}
