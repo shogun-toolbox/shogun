@@ -8,14 +8,14 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
+#include <shogun/base/Parallel.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/hashed/HashedWDFeaturesTransposed.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
-#include <shogun/base/progress.h>
 
 #endif
 

@@ -9,12 +9,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Trie.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/Parallel.h>
+#include <shogun/lib/common.h>
 
 #include <shogun/kernel/string/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/normalizer/FirstElementKernelNormalizer.h>
@@ -23,7 +24,6 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
-#include <shogun/base/progress.h>
 
 #endif
 

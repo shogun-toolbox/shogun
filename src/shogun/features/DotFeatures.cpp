@@ -8,18 +8,17 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/base/Parallel.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
-#include <shogun/base/progress.h>
-
 #endif
 
 using namespace shogun;

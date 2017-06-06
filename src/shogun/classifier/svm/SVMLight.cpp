@@ -24,10 +24,11 @@
 
 #ifdef USE_SVMLIGHT
 
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
 #include <shogun/classifier/svm/SVMLight.h>
@@ -52,7 +53,6 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
-#include <shogun/base/progress.h>
 
 #endif
 

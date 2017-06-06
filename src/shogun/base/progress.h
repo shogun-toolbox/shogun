@@ -48,7 +48,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 
-#if WIN32
+#ifdef WIN32
 #include <windows.h>
 #else
 #include <sys/ioctl.h>
@@ -390,7 +390,7 @@ namespace shogun
 		 */
 		void set_screen_size() const
 		{
-#if WIN32
+#ifdef WIN32
 			CONSOLE_SCREEN_BUFFER_INFO csbi;
 			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 			m_columns_num = csbi.srWindow.Right - csbi.srWindow.Left + 1;
