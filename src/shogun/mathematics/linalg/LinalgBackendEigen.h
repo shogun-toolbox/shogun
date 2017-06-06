@@ -114,8 +114,8 @@ public:
 	{  \
 		add_col_vec_impl(A, i, b, result, alpha, beta); \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
+	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
+	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 	#undef BACKEND_GENERIC_ADD_COL_VEC
 
 	/** Implementation of @see LinalgBackendBase::cholesky_factor */
