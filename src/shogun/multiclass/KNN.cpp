@@ -11,13 +11,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/multiclass/KNN.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/multiclass/KNN.h>
 
 //#define DEBUG_KNN
 

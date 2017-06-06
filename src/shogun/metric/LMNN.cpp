@@ -10,10 +10,9 @@
 
 #include <shogun/metric/LMNN.h>
 
-
-#include <shogun/metric/LMNNImpl.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/progress.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/metric/LMNNImpl.h>
 
 // useful shorthand to perform operations with Eigen matrices
 // trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')

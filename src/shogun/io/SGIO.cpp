@@ -53,18 +53,17 @@ char SGIO::file_buffer[FBUFSIZE];
 char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
-: target(stdout), show_progress(false), location_info(MSG_NONE),
-	syntax_highlight(true), loglevel(MSG_WARN)
+    : target(stdout), show_progress(false), location_info(MSG_NONE),
+      syntax_highlight(true), loglevel(MSG_WARN)
 {
 	m_refcount = new RefCount();
 }
 
 SGIO::SGIO(const SGIO& orig)
-: target(orig.get_target()),
-	show_progress(orig.get_show_progress()),
-	location_info(orig.get_location_info()),
-	syntax_highlight(orig.get_syntax_highlight()),
-	loglevel(orig.get_loglevel())
+    : target(orig.get_target()), show_progress(orig.get_show_progress()),
+      location_info(orig.get_location_info()),
+      syntax_highlight(orig.get_syntax_highlight()),
+      loglevel(orig.get_loglevel())
 {
 	m_refcount = new RefCount();
 }

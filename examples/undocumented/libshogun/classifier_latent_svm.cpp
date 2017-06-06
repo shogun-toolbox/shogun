@@ -1,11 +1,11 @@
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/features/LatentFeatures.h>
-#include <shogun/latent/LatentSVM.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/base/progress.h>
-#include <shogun/lib/common.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/LatentFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/LatentLabels.h>
+#include <shogun/latent/LatentSVM.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
 #include <libgen.h>
@@ -114,7 +114,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	feats = new CLatentFeatures(num_examples);
 	SG_REF(feats);
 
-	auto pb=progress(range(num_examples));
+	auto pb = progress(range(num_examples));
 	CMath::init_random();
 	for (int i = 0; (!feof(fd)) && (i < num_examples); ++i)
 	{

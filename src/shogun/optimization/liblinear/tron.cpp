@@ -8,8 +8,8 @@
 #include <shogun/lib/Time.h>
 
 #include <shogun/base/progress.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/optimization/liblinear/tron.h>
 
 using namespace shogun;
@@ -106,7 +106,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	CSignal::clear_cancel();
 	CTime start_time;
-	auto pb=progress(range(10));
+	auto pb = progress(range(10));
 
 	while (iter <= max_iter && search && (!CSignal::cancel_computations()))
 	{
@@ -158,7 +158,9 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 			gnorm = tron_dnrm2(n, g, inc);
 			if (gnorm < eps*gnorm1)
 				break;
-			pb.print_absolute(gnorm, -CMath::log10(gnorm), -CMath::log10(1), -CMath::log10(eps*gnorm1));
+			pb.print_absolute(
+			    gnorm, -CMath::log10(gnorm), -CMath::log10(1),
+			    -CMath::log10(eps * gnorm1));
 		}
 		if (f < -1.0e+32)
 		{

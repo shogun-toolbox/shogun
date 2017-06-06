@@ -9,15 +9,15 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/File.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/progress.h>
+#include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Features.h>
@@ -285,7 +285,8 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 	result=SG_MALLOC(T, total_num);
 
-	PRange<int64_t> pb = PRange<int64_t>(range(total_num), *this->io, "PROGRESS: ", UTF8, [](){return true;});
+	PRange<int64_t> pb = PRange<int64_t>(
+	    range(total_num), *this->io, "PROGRESS: ", UTF8, []() { return true; });
 	int32_t num_threads;
 	int64_t step;
 	#pragma omp parallel shared(num_threads, step)

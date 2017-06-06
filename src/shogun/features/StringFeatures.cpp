@@ -1,12 +1,12 @@
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/io/MemoryMappedFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/lib/SGStringList.h>
-#include <shogun/base/progress.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/preprocessor/StringPreprocessor.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -516,7 +516,10 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 		overflow=SG_MALLOC(uint8_t, blocksize);
 		features=SG_MALLOC(SGString<ST>, num_vectors);
 
-		auto pb2 = PRange<int>(range(num_vectors), *this->io, "LOADING: ",  UTF8, [](){return true;});
+		auto pb2 =
+			PRange<int>(range(num_vectors), *this->io, "LOADING: ", UTF8, []() {
+				return true;
+			});
 		rewind(f);
 		sz=blocksize;
 		int32_t lines=0;

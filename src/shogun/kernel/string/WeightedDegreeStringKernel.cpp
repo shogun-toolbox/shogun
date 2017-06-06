@@ -882,7 +882,6 @@ void CWeightedDegreeStringKernel::compute_batch(
 	int32_t* vec=SG_MALLOC(int32_t, num_threads*num_feat);
 	auto pb = progress(range(num_feat), *this->io);
 
-
 	if (num_threads < 2)
 	{
         CSignal::clear_cancel();

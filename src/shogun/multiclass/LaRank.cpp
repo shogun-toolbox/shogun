@@ -46,8 +46,8 @@
  * $Id: kcache.c,v 1.9 2007/01/25 22:42:09 leonb Exp $
  **********************************************************************/
 
-#include <shogun/lib/config.h>
 #include <shogun/base/progress.h>
+#include <shogun/lib/config.h>
 
 #include <vector>
 #include <algorithm>
@@ -663,7 +663,9 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("End of iteration %d\n", n_it)
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
-		pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()));
+		pb.print_absolute(
+		    gap, -CMath::log10(gap), -CMath::log10(DBL_MAX),
+		    -CMath::log10(get_C()));
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
@@ -671,11 +673,11 @@ bool CLaRank::train_machine(CFeatures* data)
 	}
 	pb.complete_absolute();
 
-        if (n_it >= max_iteration && gap > get_C())
-        {
-            SG_WARNING("LaRank did not converge after %d iterations.\n",
-                       max_iteration)
-        }
+	if (n_it >= max_iteration && gap > get_C())
+	{
+		SG_WARNING(
+		    "LaRank did not converge after %d iterations.\n", max_iteration)
+	}
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);

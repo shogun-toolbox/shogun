@@ -15,14 +15,14 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
+#include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/transfer/multitask/LibLinearMTL.h>
 #include <shogun/optimization/liblinear/tron.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/base/progress.h>
+#include <shogun/transfer/multitask/LibLinearMTL.h>
 
 using namespace shogun;
 
@@ -254,7 +254,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 		index[i] = i;
 	}
 
-	auto pb=progress(range(10));
+	auto pb = progress(range(10));
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
@@ -354,7 +354,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
-		pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
+		pb.print_absolute(
+		    gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
 
 		if(gap <= eps)
 		{

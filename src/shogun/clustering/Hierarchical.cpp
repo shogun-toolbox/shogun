@@ -8,13 +8,13 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/clustering/Hierarchical.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/progress.h>
+#include <shogun/clustering/Hierarchical.h>
+#include <shogun/distance/Distance.h>
+#include <shogun/features/Features.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -91,14 +91,14 @@ bool CHierarchical::train_machine(CFeatures* data)
 			distances[offs] = distance->distance(i, j);
 			index[offs].idx1 = i;
 			index[offs].idx2 = j;
-			offs++;                    //offs=i*(i+1)/2+j
+			offs++; // offs=i*(i+1)/2+j
 		}
 	}
 
 	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
 	//CMath::display_vector(distances, (num-1)*num/2, "dists");
 
-	auto pb = progress(range(0, num_pairs-1), *this->io);
+	auto pb = progress(range(0, num_pairs - 1), *this->io);
 	int32_t k=-1;
 	int32_t l=0;
 	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)

@@ -35,14 +35,14 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <shogun/lib/external/shogun_libsvm.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/progress.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/external/shogun_libsvm.h>
+#include <shogun/mathematics/Math.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -433,7 +433,7 @@ void Solver::Solve(
 	CSignal::clear_cancel();
 	CTime start_time;
 	{
-		auto pb= progress(range(l));
+		auto pb = progress(range(l));
 		G = SG_MALLOC(float64_t, l);
 		G_bar = SG_MALLOC(float64_t, l);
 		int32_t i;
@@ -496,7 +496,8 @@ void Solver::Solve(
 				counter = 1;	// do shrinking next iteration
 		}
 
-		pb.print_absolute(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
+		pb.print_absolute(
+			gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
 
 		++iter;
 

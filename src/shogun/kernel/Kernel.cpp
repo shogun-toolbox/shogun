@@ -32,8 +32,8 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/progress.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -994,9 +994,9 @@ template <class T> struct K_THREAD_PARAM
 	/** kernel matrix k(i,j)=k(j,i) */
 	bool symmetric;
 	/** output progress */
-	bool verbose	;
+	bool verbose;
 	/* Progress bar*/
-	PRange<int64_t> * pb;
+	PRange<int64_t>* pb;
 };
 }
 
@@ -1336,7 +1336,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 	int64_t step = total_num/num_threads;
 	index_t t = 0;
 	auto pb = progress(range(total_num), *this->io);
-	#pragma omp parallel for lastprivate(t) private(params)
+#pragma omp parallel for lastprivate(t) private(params)
 	for (t = 0; t < num_threads; ++t)
 	{
 		params.kernel = this;

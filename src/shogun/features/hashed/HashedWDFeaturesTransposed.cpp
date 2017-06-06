@@ -240,8 +240,8 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		params.vec=vec;
 		params.bias=b;
 		params.progress=false; //true;
-		params.progress_bar=&pb
-		params.index=index;
+		params.progress_bar = &pb;
+		params.index = index;
 		dense_dot_range_helper((void*) &params);
 		pb.complete();
 	}

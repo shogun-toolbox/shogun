@@ -1253,7 +1253,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	if (num_threads < 2)
 	{
        CSignal::clear_cancel();
-		auto pb =  progress(range(num_feat), *this->io);
+	   auto pb = progress(range(num_feat), *this->io);
 	   for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 			{
 				init_optimization(num_suppvec, IDX, alphas, j);
@@ -1273,16 +1273,16 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 				params.vec_idx=vec_idx;
 				compute_batch_helper((void*) &params);
 
-				pb.print_progress();
-			}
-		pb.complete();
+			    pb.print_progress();
+		    }
+		    pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
 	{
 
 		CSignal::clear_cancel();
-		auto pb =  progress(range(num_feat), *this->io);
+		auto pb = progress(range(num_feat), *this->io);
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
@@ -1423,7 +1423,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	info.R_k = NULL;
 
 	// === main loop
-	auto pb = progress(range(num_feat*max_degree), *this->io);
+	auto pb = progress(range(num_feat * max_degree), *this->io);
 	for( k = 0; k < max_degree; ++k )
 	{
 		const int32_t nofKmers = nofsKmers[ k ];

@@ -8,15 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-
 #include <shogun/base/Parameter.h>
-
-#include <shogun/kernel/string/CommWordStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/StringFeatures.h>
 #include <shogun/base/progress.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/common.h>
+
+#include <shogun/features/StringFeatures.h>
+#include <shogun/kernel/string/CommWordStringKernel.h>
+
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 
 using namespace shogun;
 

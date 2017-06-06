@@ -124,18 +124,17 @@ namespace shogun
 		}
 
 		void print_progress_absolute(
-				float64_t current_val, float64_t val, float64_t min_val, float64_t max_val)
+		    float64_t current_val, float64_t val, float64_t min_val,
+		    float64_t max_val)
 		{
 			lock.lock();
-			if (val - m_min_value >
-				m_max_value - m_min_value)
+			if (val - m_min_value > m_max_value - m_min_value)
 			{
 				lock.unlock();
 				return;
 			}
 			print_progress_absolute_impl(current_val, val, min_val, max_val);
-			if (val - m_min_value ==
-				m_max_value - m_min_value)
+			if (val - m_min_value == m_max_value - m_min_value)
 			{
 				print_end();
 				lock.unlock();
@@ -143,7 +142,6 @@ namespace shogun
 			}
 			lock.unlock();
 		}
-
 
 		/**
 		 * Manually increment to max size the current value
@@ -264,7 +262,8 @@ namespace shogun
 		 * Logic implementation fo the absolute progress bar.
 		 */
 		void print_progress_absolute_impl(
-				float64_t current_val, float64_t val, float64_t min_value, float64_t max_value) const
+		    float64_t current_val, float64_t val, float64_t min_value,
+		    float64_t max_value) const
 		{
 			// Check if the progress was enabled
 			if (!m_io.get_show_progress())
@@ -279,15 +278,15 @@ namespace shogun
 			// a minimal resize functionality.
 			set_screen_size();
 
-			float64_t difference = max_value - min_value, v = -1,
-					estimate = 0, total_estimate = 0;
+			float64_t difference = max_value - min_value, v = -1, estimate = 0,
+			          total_estimate = 0;
 			float64_t size_chunk = -1;
 
 			// Check if we have enough space to show the progress bar
 			// Use only a fraction of it to account for the size of the
 			// time displayed (decimals and integer).
 			int32_t progress_bar_space =
-					(m_columns_num - 50 - m_prefix.length()) * 0.9;
+			    (m_columns_num - 50 - m_prefix.length()) * 0.9;
 
 			// TODO: this guy here brokes testing
 			// REQUIRE(
@@ -298,8 +297,7 @@ namespace shogun
 			float64_t runtime = CTime::get_curtime();
 
 			if (difference > 0.0)
-				v = 100 * (val - min_value) /
-					(max_value - min_value);
+				v = 100 * (val - min_value) / (max_value - min_value);
 
 			// Set up chunk size
 			size_chunk = difference / (float64_t)progress_bar_space;
@@ -318,10 +316,10 @@ namespace shogun
 
 				m_last_progress_time = runtime;
 				estimate = (1 - v / 100) *
-						   (m_last_progress_time - m_progress_start_time) /
-						   (v / 100);
+				           (m_last_progress_time - m_progress_start_time) /
+				           (v / 100);
 				total_estimate =
-						(m_last_progress_time - m_progress_start_time) / (v / 100);
+				    (m_last_progress_time - m_progress_start_time) / (v / 100);
 			}
 
 			/** Print the actual progress bar to screen **/
@@ -331,8 +329,8 @@ namespace shogun
 				if (m_current_value.load() - min_value > i * size_chunk)
 				{
 					m_io.message(
-							MSG_MESSAGEONLY, "", "", -1, "%s",
-							get_pb_char().c_str());
+					    MSG_MESSAGEONLY, "", "", -1, "%s",
+					    get_pb_char().c_str());
 				}
 				else
 				{
@@ -344,19 +342,19 @@ namespace shogun
 			if (estimate > 120)
 			{
 				snprintf(
-						str, sizeof(str),
-						"   %%1.1f minutes remaining  %%1.1f minutes total\r");
+				    str, sizeof(str),
+				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
 				m_io.message(
-						MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
-						total_estimate / 60);
+				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
+				    total_estimate / 60);
 			}
 			else
 			{
 				snprintf(
-						str, sizeof(str),
-						"   %%1.1f seconds remaining  %%1.1f seconds total\r");
+				    str, sizeof(str),
+				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
 				m_io.message(
-						MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
+				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
 		}
 
@@ -630,9 +628,12 @@ namespace shogun
 		 * @param min_val minimum value
 		 * @param max_val maximum value
 		 */
-		void print_absolute(float64_t current_val, float64_t val, float64_t min_value, float64_t max_value) const
+		void print_absolute(
+		    float64_t current_val, float64_t val, float64_t min_value,
+		    float64_t max_value) const
 		{
-			m_printer->print_progress_absolute(current_val, val, min_value, max_value);
+			m_printer->print_progress_absolute(
+			    current_val, val, min_value, max_value);
 		}
 
 		/**

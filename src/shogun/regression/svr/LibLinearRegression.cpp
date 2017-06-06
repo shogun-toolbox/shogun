@@ -10,12 +10,12 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/regression/svr/LibLinearRegression.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/lib/Signal.h>
 #include <shogun/base/progress.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/optimization/liblinear/tron.h>
+#include <shogun/regression/svr/LibLinearRegression.h>
 
 using namespace shogun;
 
@@ -207,7 +207,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 		index[i] = i;
 	}
 
-	auto pb=progress(range(10));
+	auto pb = progress(range(10));
 	while(iter < max_iter)
 	{
 		Gmax_new = 0;
@@ -306,7 +306,9 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 			Gnorm1_init = Gnorm1_new;
 		iter++;
 
-		pb.print_absolute(Gnorm1_new, -CMath::log10(Gnorm1_new), -CMath::log10(eps*Gnorm1_init), -CMath::log10(Gnorm1_init));
+		pb.print_absolute(
+		    Gnorm1_new, -CMath::log10(Gnorm1_new),
+		    -CMath::log10(eps * Gnorm1_init), -CMath::log10(Gnorm1_init));
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{

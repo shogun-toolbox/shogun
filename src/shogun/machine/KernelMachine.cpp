@@ -9,16 +9,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/progress.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/machine/KernelMachine.h>
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/labels/Labels.h>
-
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -552,13 +551,13 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 			}
 		}
 	}
-	pb.complete();
 
 #ifndef WIN32
 	if ( CSignal::cancel_computations() )
 		SG_INFO("prematurely stopped.\n")
 	else
 #endif
+		pb.complete();
 
 	return output;
 }
@@ -662,4 +661,3 @@ bool CKernelMachine::supports_locking() const
 {
 	return true;
 }
-
