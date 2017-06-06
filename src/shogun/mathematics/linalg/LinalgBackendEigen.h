@@ -107,6 +107,17 @@ public:
 	DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_ADD
 
+	/** Implementation of @see LinalgBackendBase::add_col_vec */
+	#define BACKEND_GENERIC_ADD_COL_VEC(Type, Container) \
+	virtual void add_col_vec(const SGMatrix<Type>& A, index_t i, \
+		const SGVector<Type>& b, Container<Type>& result, Type alpha, Type beta) const \
+	{  \
+		add_col_vec_impl(A, i, b, result, alpha, beta); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
+	#undef BACKEND_GENERIC_ADD_COL_VEC
+
 	/** Implementation of @see LinalgBackendBase::cholesky_factor */
 	#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container) \
 	virtual Container<Type> cholesky_factor(const Container<Type>& A, \
@@ -155,6 +166,15 @@ public:
 	}
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
+
+	/** Implementation of @see LinalgBackendBase::identity */
+	#define BACKEND_GENERIC_IDENTITY(Type, Container) \
+	virtual void identity(Container<Type>& I) const \
+	{  \
+		identity_impl(I); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
+	#undef BACKEND_GENERIC_IDENTITY
 
 	/** Implementation of @see LinalgBackendBase::logistic */
 	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
@@ -309,6 +329,25 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
 	#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
+	/** Implementation of @see LinalgBackendBase::trace */
+	#define BACKEND_GENERIC_TRACE(Type, Container) \
+	virtual Type trace(const Container<Type>& A) const \
+	{  \
+		return trace_impl(A); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
+	#undef BACKEND_GENERIC_TRACE
+
+	/** Implementation of @see LinalgBackendBase::zero */
+	#define BACKEND_GENERIC_ZERO(Type, Container) \
+	virtual void zero(Container<Type>& a) const \
+	{  \
+		zero_impl(a); \
+	}
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGVector)
+	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
+	#undef BACKEND_GENERIC_ZERO
+
 	#undef DEFINE_FOR_ALL_PTYPE
 
 private:
@@ -332,6 +371,30 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = alpha * a_eig + beta * b_eig;
+	}
+
+	/** Eigen3 add column vector method */
+	template <typename T>
+	void add_col_vec_impl(const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+	                      SGMatrix<T>& result, T alpha, T beta) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+		result_eig.col(i) = alpha * A_eig.col(i) + beta * b_eig;
+	}
+
+	/** Eigen3 add column vector method */
+	template <typename T>
+	void add_col_vec_impl(const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+	                      SGVector<T>& result, T alpha, T beta) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+		result_eig = alpha * A_eig.col(i) + beta * b_eig;
 	}
 
 	/** Eigen3 Cholesky decomposition */
@@ -406,6 +469,14 @@ private:
 		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
 		result_eig = a_eig.array() * b_eig.array();
+	}
+
+	/** Eigen3 set matrix to identity method */
+	template <typename T>
+	void identity_impl(SGMatrix<T>& I) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap I_eig = I;
+		I_eig.setIdentity();
 	}
 
 	/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
@@ -703,6 +774,30 @@ private:
 		}
 
 		return result;
+	}
+
+	/** Eigen3 compute trace method */
+	template <typename T>
+	T trace_impl(const SGMatrix<T>& A) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		return A_eig.trace();
+	}
+
+	/** Eigen3 set vector to zero method */
+	template <typename T>
+	void zero_impl(SGVector<T>& a) const
+	{
+		typename SGVector<T>::EigenVectorXtMap a_eig = a;
+		a_eig.setZero();
+	}
+
+	/** Eigen3 set matrix to zero method */
+	template <typename T>
+	void zero_impl(SGMatrix<T>& a) const
+	{
+		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+		a_eig.setZero();
 	}
 
 #undef DEFINE_FOR_ALL_PTYPE
