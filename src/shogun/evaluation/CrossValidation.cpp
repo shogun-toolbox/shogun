@@ -124,6 +124,8 @@ CEvaluationResult* CCrossValidation::evaluate()
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, m_num_runs, 1, "EVALUATING X-VALIDATION: ");
 
 		/* evtl. update xvalidation output class */
 		current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();

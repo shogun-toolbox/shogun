@@ -102,6 +102,9 @@ void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBina
 
 	for (int i=0; i<predicted->get_num_labels(); i++)
 	{
+		/* print progress */
+		SG_PROGRESS(i, 0, predicted->get_num_labels(), 1, "EVALUATING CONFUSION MATRIX: ");
+
 		if (ground_truth->get_label(i)==1)
 		{
 			if (predicted->get_label(i)==1)

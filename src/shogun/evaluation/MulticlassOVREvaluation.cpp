@@ -71,6 +71,9 @@ float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground
 	}
 	for (int32_t c=0; c<n_classes; c++)
 	{
+		/* print progress */
+		SG_PROGRESS(c, 0, n_classes, 1, "EVALUATING: ");
+
 		CLabels* pred = new CBinaryLabels(SGVector<float64_t>(all.get_column_vector(c),n_labels,false));
 		SGVector<float64_t> gt_vec(n_labels);
 		for (int32_t i=0; i<n_labels; i++)
