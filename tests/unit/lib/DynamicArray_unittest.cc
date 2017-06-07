@@ -225,7 +225,6 @@ TEST_F(CDynamicArrayFixture, set_operation)
 
 TEST_F(CDynamicArrayFixture, pop_operation)
 {
-	// test if can set array
 	wrapper_array_i->pop_back();
 	wrapper_array_b->pop_back();
 	EXPECT_EQ(wrapper_array_i->back(), 3);
@@ -234,11 +233,48 @@ TEST_F(CDynamicArrayFixture, pop_operation)
 
 TEST_F(CDynamicArrayFixture, insert_operation)
 {
-	// test if can set array
 	wrapper_array_i->insert_element(8, 2);
 	wrapper_array_b->insert_element(false, 2);
 	EXPECT_EQ(wrapper_array_i->get_element(2), 8);
 	EXPECT_EQ(wrapper_array_b->get_element(2), false);
+}
+
+TEST_F(CDynamicArrayFixture, find_element)
+{
+	// we manually extend the array to 10 to test if we can find right index
+	// when the num_elements is differnet from the array size
+	wrapper_array_i->resize_array(10);
+
+	// hidden the zero from the array
+	wrapper_array_i->set_element(5, 0);
+
+	for (int32_t i = 1; i < 5; i++)
+	{
+		EXPECT_EQ(wrapper_array_i->find_element(i), i);
+	}
+	EXPECT_EQ(wrapper_array_i->find_element(5), 0);
+	EXPECT_EQ(wrapper_array_i->find_element(0), -1);
+
+	// restore the array
+	wrapper_array_i->set_element(0, 0);
+	EXPECT_EQ(wrapper_array_i->find_element(0), 0);
+}
+
+TEST_F(CDynamicArrayFixture, get_element_safe)
+{
+	for (int32_t i = 0; i < 5; i++)
+	{
+		EXPECT_EQ(wrapper_array_i->get_element_safe(i), i);
+	}
+}
+
+TEST_F(CDynamicArrayFixture, copy_array)
+{
+	CDynamicArray<int32_t>* copy_array = wrapper_array_i;
+	for (int32_t i = 0; i < 5; i++)
+	{
+		EXPECT_EQ(copy_array->get_element(i), i);
+	}
 }
 
 TEST_F(CDynamicArrayFixture, append_array_bool)
