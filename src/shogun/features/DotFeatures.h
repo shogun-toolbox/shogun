@@ -227,15 +227,6 @@ class CDotFeatures : public CFeatures
 		 */
 		static SGMatrix<float64_t> compute_cov(CDotFeatures* lhs, CDotFeatures* rhs);
 
-	protected:
-		/** display progress output
-		 *
-		 * @param start minimum value
-		 * @param stop maximum value
-		 * @param v current value
-		 */
-		void display_progress(int32_t start, int32_t stop, int32_t v);
-
 	private:
 		void init();
 

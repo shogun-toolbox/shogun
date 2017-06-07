@@ -46,6 +46,7 @@
  * $Id: kcache.c,v 1.9 2007/01/25 22:42:09 leonb Exp $
  **********************************************************************/
 
+#include <shogun/base/progress.h>
 #include <shogun/lib/config.h>
 
 #include <vector>
@@ -638,6 +639,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	int32_t n_it = 1;
 	float64_t gap = DBL_MAX;
 
+	auto pb = progress(range(0, 10), *this->io);
 	SG_INFO("Training on %d examples\n", nb_train)
 	while (gap > get_C() && (!CSignal::cancel_computations()) &&
             n_it < max_iteration)      // stopping criteria
@@ -661,19 +663,21 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("End of iteration %d\n", n_it)
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
-		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6)
+		pb.print_absolute(
+		    gap, -CMath::log10(gap), -CMath::log10(DBL_MAX),
+		    -CMath::log10(get_C()));
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
                 n_it++;
 	}
-	SG_DONE()
+	pb.complete_absolute();
 
-        if (n_it >= max_iteration && gap > get_C())
-        {
-            SG_WARNING("LaRank did not converge after %d iterations.\n",
-                       max_iteration)
-        }
+	if (n_it >= max_iteration && gap > get_C())
+	{
+		SG_WARNING(
+		    "LaRank did not converge after %d iterations.\n", max_iteration)
+	}
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);

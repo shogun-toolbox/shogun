@@ -8,13 +8,15 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
+#include <shogun/base/Parallel.h>
+#include <shogun/base/progress.h>
 #include <shogun/features/hashed/HashedWDFeaturesTransposed.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+
 #endif
 
 using namespace shogun;
@@ -31,6 +33,7 @@ struct HASHEDWD_THREAD_PARAM
 	float64_t* vec;
 	float64_t bias;
 	bool progress;
+	PRange<int32_t>* progress_bar;
 	uint32_t* index;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -227,6 +230,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	if (num_threads < 2)
 	{
 		HASHEDWD_THREAD_PARAM params;
+		auto pb = progress(range(start, stop), *this->io);
 		params.hf=this;
 		params.sub_index=NULL;
 		params.output=output;
@@ -236,14 +240,17 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		params.vec=vec;
 		params.bias=b;
 		params.progress=false; //true;
-		params.index=index;
+		params.progress_bar = &pb;
+		params.index = index;
 		dense_dot_range_helper((void*) &params);
+		pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
+		auto pb = progress(range(start, stop), *this->io);
 		int32_t step= num_vectors/num_threads;
 
 		int32_t t;
@@ -259,6 +266,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 			params[t].vec=vec;
 			params[t].bias=b;
 			params[t].progress = false;
+			params[t].progress_bar = &pb;
 			params[t].index=index;
 			pthread_create(&threads[t], NULL,
 					CHashedWDFeaturesTransposed::dense_dot_range_helper, (void*)&params[t]);
@@ -273,6 +281,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 		params[t].vec=vec;
 		params[t].bias=b;
 		params[t].progress = false; //true;
+		params[t].progress_bar = &pb;
 		params[t].index=index;
 		CHashedWDFeaturesTransposed::dense_dot_range_helper((void*) &params[t]);
 
@@ -314,6 +323,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	if (num_threads < 2)
 	{
 		HASHEDWD_THREAD_PARAM params;
+		auto pb = progress(range(num), *this->io);
 		params.hf=this;
 		params.sub_index=sub_index;
 		params.output=output;
@@ -323,8 +333,10 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		params.vec=vec;
 		params.bias=b;
 		params.progress=false; //true;
+		params.progress_bar = &pb;
 		params.index=index;
 		dense_dot_range_helper((void*) &params);
+		pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
@@ -332,7 +344,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
 		int32_t step= num/num_threads;
-
+		auto pb = progress(range(num), *this->io);
 		int32_t t;
 
 		for (t=0; t<num_threads-1; t++)
@@ -346,6 +358,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 			params[t].vec=vec;
 			params[t].bias=b;
 			params[t].progress = false;
+			params[t].progress_bar = &pb;
 			params[t].index=index;
 			pthread_create(&threads[t], NULL,
 					CHashedWDFeaturesTransposed::dense_dot_range_helper, (void*)&params[t]);
@@ -360,12 +373,14 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		params[t].vec=vec;
 		params[t].bias=b;
 		params[t].progress = false; //true;
+		params[t].progress_bar = &pb;
 		params[t].index=index;
 		CHashedWDFeaturesTransposed::dense_dot_range_helper((void*) &params[t]);
 
 		for (t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
+		pb.complete();
 		SG_FREE(params);
 		SG_FREE(threads);
 		SG_FREE(index);
@@ -390,6 +405,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	float64_t* vec=par->vec;
 	float64_t bias=par->bias;
 	bool progress=par->progress;
+	auto pb = par->progress_bar;
 	uint32_t* index=par->index;
 	int32_t string_length=hf->string_length;
 	int32_t degree=hf->degree;
@@ -440,7 +456,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			offs+=partial_w_dim*degree;
 
 			if (progress)
-				hf->io->progress(i, 0,string_length, i);
+				pb->print_progress();
 		}
 
 		for (int32_t j=start; j<stop; j++)
@@ -491,7 +507,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			offs+=partial_w_dim*degree;
 
 			if (progress)
-				hf->io->progress(i, 0,string_length, i);
+				pb->print_progress();
 		}
 
 		for (int32_t j=start; j<stop; j++)

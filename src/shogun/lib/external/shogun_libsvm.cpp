@@ -35,12 +35,13 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <shogun/lib/external/shogun_libsvm.h>
-#include <shogun/kernel/Kernel.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/Time.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/external/shogun_libsvm.h>
 #include <shogun/mathematics/Math.h>
 
 #include <stdio.h>
@@ -432,6 +433,7 @@ void Solver::Solve(
 	CSignal::clear_cancel();
 	CTime start_time;
 	{
+		auto pb = progress(range(l));
 		G = SG_MALLOC(float64_t, l);
 		G_bar = SG_MALLOC(float64_t, l);
 		int32_t i;
@@ -455,16 +457,16 @@ void Solver::Solve(
 					for(j=0;j<l;j++)
 						G_bar[j] += get_C(i) * Q_i[j];
 			}
-			SG_SPROGRESS(i, 0, l)
+			pb.print_progress();
 		}
-		SG_SDONE()
+		pb.complete();
 	}
 
 	// optimization step
 
 	int32_t iter = 0;
 	int32_t counter = CMath::min(l,1000)+1;
-
+	auto pb = progress(range(10));
 	while (!CSignal::cancel_computations())
 	{
 		if (Q->max_train_time > 0 && start_time.cur_time_diff() > Q->max_train_time)
@@ -494,7 +496,8 @@ void Solver::Solve(
 				counter = 1;	// do shrinking next iteration
 		}
 
-		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6)
+		pb.print_absolute(
+			gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
 
 		++iter;
 
@@ -672,6 +675,7 @@ void Solver::Solve(
 		}
 #endif
 	}
+	pb.complete_absolute();
 
 	// calculate rho
 

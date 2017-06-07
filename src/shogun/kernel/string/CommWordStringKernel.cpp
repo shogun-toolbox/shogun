@@ -8,14 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/common.h>
 
-#include <shogun/kernel/string/CommWordStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/kernel/string/CommWordStringKernel.h>
+
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 
 using namespace shogun;
 
@@ -303,11 +304,8 @@ bool CCommWordStringKernel::init_optimization(
 
 	SG_DEBUG("initializing CCommWordStringKernel optimization\n")
 
-	for (int32_t i=0; i<count; i++)
+	for (auto i : progress(range(0, count), *this->io))
 	{
-		if ( (i % (count/10+1)) == 0)
-			SG_PROGRESS(i, 0, count)
-
 		add_to_normal(IDX[i], weights[i]);
 	}
 

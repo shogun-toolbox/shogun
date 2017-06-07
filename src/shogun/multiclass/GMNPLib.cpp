@@ -60,8 +60,9 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 
 -------------------------------------------------------------------- */
 
-#include <shogun/multiclass/GMNPLib.h>
+#include <shogun/base/progress.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/multiclass/GMNPLib.h>
 
 #include <string.h>
 #include <limits.h>
@@ -348,6 +349,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* Main optimization loop                                       */
   /* ------------------------------------------------------------ */
 
+  auto pb = progress(range(10), *this->io);
   col_u = (float64_t*)get_col(u,-1);
   while( exitflag == -1 )
   {
@@ -420,38 +422,44 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     else if(t >= tmax) exitflag = 0;
 
     /* print info */
-	SG_ABS_PROGRESS(CMath::abs((UB-LB)/UB),
-			-CMath::log10(CMath::abs(UB-LB)),
-			-CMath::log10(1.0),
-			-CMath::log10(tolrel), 6);
-    if(verb && (t % verb) == 0 ) {
-      SG_PRINT("%d: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
-        t, UB, LB, UB-LB,(UB-LB)/UB);
-    }
+	pb.print_absolute(
+		CMath::abs((UB - LB) / UB), -CMath::log10(CMath::abs(UB - LB)),
+		-CMath::log10(1.0), -CMath::log10(tolrel));
 
-    /* Store selected values */
-    if( t < History_size ) {
-      History[INDEX(0,t,2)] = LB;
-      History[INDEX(1,t,2)] = UB;
-    }
-    else {
-      tmp_ptr = SG_MALLOC(float64_t, (History_size+HISTORY_BUF)*2);
-      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.")
-      for( i = 0; i < History_size; i++ ) {
-        tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
-        tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
-      }
-      tmp_ptr[INDEX(0,t,2)] = LB;
-      tmp_ptr[INDEX(1,t,2)] = UB;
+	if (verb && (t % verb) == 0)
+	{
+		SG_PRINT(
+			"%d: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n", t, UB, LB,
+			UB - LB, (UB - LB) / UB);
+	}
 
-      History_size += HISTORY_BUF;
-      SG_FREE(History);
-      History = tmp_ptr;
-    }
+	/* Store selected values */
+	if (t < History_size)
+	{
+		History[INDEX(0, t, 2)] = LB;
+		History[INDEX(1, t, 2)] = UB;
+	}
+	else
+	{
+		tmp_ptr = SG_MALLOC(float64_t, (History_size + HISTORY_BUF) * 2);
+		if (tmp_ptr == NULL)
+			SG_ERROR("Not enough memory.")
+		for (i = 0; i < History_size; i++)
+		{
+			tmp_ptr[INDEX(0, i, 2)] = History[INDEX(0, i, 2)];
+			tmp_ptr[INDEX(1, i, 2)] = History[INDEX(1, i, 2)];
+		}
+		tmp_ptr[INDEX(0, t, 2)] = LB;
+		tmp_ptr[INDEX(1, t, 2)] = UB;
+
+		History_size += HISTORY_BUF;
+		SG_FREE(History);
+		History = tmp_ptr;
+	}
   }
 
   /* print info about last iteration*/
-  SG_DONE()
+  pb.complete_absolute();
   if(verb && (t % verb) ) {
     SG_PRINT("exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);

@@ -9,11 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Trie.h>
-#include <shogun/base/Parallel.h>
+#include <shogun/lib/common.h>
 
 #include <shogun/kernel/string/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
@@ -24,6 +25,7 @@
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
+
 #endif
 
 using namespace shogun;
@@ -268,12 +270,10 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n")
 
-	for (int32_t i=0; i<p_count; i++)
+	for (auto i : progress(range(p_count), *this->io))
 	{
 		if (tree_num<0)
 		{
-			if ( (i % (p_count/10+1)) == 0)
-				SG_PROGRESS(i,0,p_count)
 			add_example_to_tree(IDX[i], alphas[i]);
 		}
 		else
@@ -282,9 +282,6 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 				add_example_to_single_tree(IDX[i], alphas[i], t);
 		}
 	}
-
-	if (tree_num<0)
-		SG_DONE()
 
 	set_is_initialized(true) ;
 	return true ;
@@ -1256,6 +1253,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	if (num_threads < 2)
 	{
        CSignal::clear_cancel();
+	   auto pb = progress(range(num_feat), *this->io);
 	   for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 			{
 				init_optimization(num_suppvec, IDX, alphas, j);
@@ -1275,14 +1273,16 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 				params.vec_idx=vec_idx;
 				compute_batch_helper((void*) &params);
 
-				SG_PROGRESS(j,0,num_feat)
-			}
+			    pb.print_progress();
+		    }
+		    pb.complete();
 	}
 #ifdef HAVE_PTHREAD
 	else
 	{
 
 		CSignal::clear_cancel();
+		auto pb = progress(range(num_feat), *this->io);
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
@@ -1326,11 +1326,12 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			SG_PROGRESS(j,0,num_feat)
+			pb.print_progress();
 
 			SG_FREE(params);
 			SG_FREE(threads);
 		}
+		pb.complete();
 	}
 #endif
 
@@ -1422,7 +1423,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	info.R_k = NULL;
 
 	// === main loop
-	i = 0; // total progress
+	auto pb = progress(range(num_feat * max_degree), *this->io);
 	for( k = 0; k < max_degree; ++k )
 	{
 		const int32_t nofKmers = nofsKmers[ k ];
@@ -1439,7 +1440,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 				x[j] = -1;
 			}
 			tries.traverse( tree, p, info, 0, x, k );
-			SG_PROGRESS(i++,0,num_feat*max_degree)
+			pb.print_progress();
 		}
 
 		// --- add partial overlap scores
@@ -1478,6 +1479,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 		//     end;
 		//   end;
 	}
+	pb.complete();
 
 	// === return a vector
 	num_feat=1;
@@ -1521,7 +1523,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
 
 	//compute consensus via dynamic programming
-	for (int32_t i=0; i<num_tables; i++)
+	for (auto i : progress(range(num_tables), *this->io))
 	{
 		bool cumulative=false;
 
@@ -1537,8 +1539,6 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 			tries.fill_backtracking_table(i, NULL, table[i], cumulative, weights);
 		else
 			tries.fill_backtracking_table(i, table[i-1], table[i], cumulative, weights);
-
-		SG_PROGRESS(i,0,num_feat)
 	}
 
 
