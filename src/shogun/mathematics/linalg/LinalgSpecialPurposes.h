@@ -38,30 +38,33 @@
 namespace shogun
 {
 
-namespace linalg
-{
+	namespace linalg
+	{
 
-/** Applies the elementwise logistic function f(x) = 1/(1+exp(-x)) to a matrix
- *  This method returns the result in-place.
- *
- * @param a The input matrix
- * @param result The output matrix
- */
-template <typename T>
-void logistic(SGMatrix<T>& a, SGMatrix<T>& result)
-{
-	REQUIRE((a.num_rows == result.num_rows),
-		"Number of rows of matrix a (%d) must match matrix result (%d).\n",
-		a.num_rows, result.num_rows);
-	REQUIRE((a.num_cols == result.num_cols),
-		"Number of columns of matrix result (%d) must match matrix result (%d).\n",
-		a.num_cols, result.num_cols);
+		/** Applies the elementwise logistic function f(x) = 1/(1+exp(-x)) to a
+		 * matrix
+		 *  This method returns the result in-place.
+		 *
+		 * @param a The input matrix
+		 * @param result The output matrix
+		 */
+		template <typename T>
+		void logistic(SGMatrix<T>& a, SGMatrix<T>& result)
+		{
+			REQUIRE(
+			    (a.num_rows == result.num_rows), "Number of rows of matrix a "
+			                                     "(%d) must match matrix "
+			                                     "result (%d).\n",
+			    a.num_rows, result.num_rows);
+			REQUIRE(
+			    (a.num_cols == result.num_cols), "Number of columns of matrix "
+			                                     "result (%d) must match "
+			                                     "matrix result (%d).\n",
+			    a.num_cols, result.num_cols);
 
-	infer_backend(a, result)->logistic(a, result);
+			infer_backend(a, result)->logistic(a, result);
+		}
+	}
 }
 
-}
-
-}
-
-#endif //LINALG_SPECIAL_PURPOSE_H_
+#endif // LINALG_SPECIAL_PURPOSE_H_

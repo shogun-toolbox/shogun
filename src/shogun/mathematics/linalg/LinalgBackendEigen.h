@@ -33,18 +33,19 @@
 #ifndef LINALG_BACKEND_EIGEN_H__
 #define LINALG_BACKEND_EIGEN_H__
 
+#include <numeric>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
-#include <numeric>
 
 namespace shogun
 {
 
-/** @brief Linalg methods with Eigen3 backend */
-class LinalgBackendEigen : public LinalgBackendBase
-{
-public:
+	/** @brief Linalg methods with Eigen3 backend */
+	class LinalgBackendEigen : public LinalgBackendBase
+	{
+	public:
+// clang-format off
 	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
 	METHODNAME(bool, Container); \
 	METHODNAME(char, Container); \
@@ -349,463 +350,507 @@ public:
 	#undef BACKEND_GENERIC_ZERO
 
 	#undef DEFINE_FOR_ALL_PTYPE
-
-private:
-	/** Eigen3 vector result = alpha*A + beta*B method */
-	template <typename T>
-	void add_impl(SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
-	{
-		typename SGVector<T>::EigenVectorXtMap a_eig = a;
-		typename SGVector<T>::EigenVectorXtMap b_eig = b;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = alpha * a_eig + beta * b_eig;
-	}
-
-	/** Eigen3 matrix result = alpha*A + beta*B method */
-	template <typename T>
-	void add_impl(SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		result_eig = alpha * a_eig + beta * b_eig;
-	}
-
-	/** Eigen3 add column vector method */
-	template <typename T>
-	void add_col_vec_impl(const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
-	                      SGMatrix<T>& result, T alpha, T beta) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
-		typename SGVector<T>::EigenVectorXtMap b_eig = b;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		result_eig.col(i) = alpha * A_eig.col(i) + beta * b_eig;
-	}
-
-	/** Eigen3 add column vector method */
-	template <typename T>
-	void add_col_vec_impl(const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
-	                      SGVector<T>& result, T alpha, T beta) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
-		typename SGVector<T>::EigenVectorXtMap b_eig = b;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = alpha * A_eig.col(i) + beta * b_eig;
-	}
-
-	/** Eigen3 Cholesky decomposition */
-	template <typename T>
-	SGMatrix<T> cholesky_factor_impl(const SGMatrix<T>& A, const bool lower) const
-	{
-		SGMatrix<T> c(A.num_rows, A.num_cols);
-		set_const_impl<T>(c, 0);
-		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
-		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
-
-		Eigen::LLT<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > llt(A_eig);
-
-		//compute matrix L or U
-		if(lower==false)
-			c_eig = llt.matrixU();
-		else
-			c_eig = llt.matrixL();
-
-		/*
-		 * checking for success
-		 *
-		 * 0: Eigen::Success. Decomposition was successful
-		 * 1: Eigen::NumericalIssue. The provided data did not satisfy the prerequisites.
-		 */
-		REQUIRE(llt.info()!=Eigen::NumericalIssue, "Matrix is not Hermitian positive definite!\n");
-
-		return c;
-	}
-
-	/** Eigen3 Cholesky solver */
-	template <typename T>
-	SGVector<T> cholesky_solver_impl(const SGMatrix<T>& L, const SGVector<T>& b,
-		const bool lower) const
-	{
-		SGVector<T> x(b.size());
-		set_const_impl<T>(x, 0);
-		typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
-		typename SGVector<T>::EigenVectorXtMap b_eig = b;
-		typename SGVector<T>::EigenVectorXtMap x_eig = x;
-
-		if (lower == false)
+		// clang-format on
+	private:
+		/** Eigen3 vector result = alpha*A + beta*B method */
+		template <typename T>
+		void add_impl(
+		    SGVector<T>& a, SGVector<T>& b, T alpha, T beta,
+		    SGVector<T>& result) const
 		{
-			Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt,
-				0, Eigen::Stride<0,0> >, Eigen::Upper> tlv(L_eig);
+			typename SGVector<T>::EigenVectorXtMap a_eig = a;
+			typename SGVector<T>::EigenVectorXtMap b_eig = b;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
 
-			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
-		}
-		else
-		{
-			Eigen::TriangularView<Eigen::Map<typename SGMatrix<T>::EigenMatrixXt,
-				0, Eigen::Stride<0,0> >, Eigen::Lower> tlv(L_eig);
-			x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+			result_eig = alpha * a_eig + beta * b_eig;
 		}
 
-		return x;
-	}
-
-	/** Eigen3 vector dot-product method */
-	template <typename T>
-	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
-	{
-		return (typename SGVector<T>::EigenVectorXtMap(a)).dot(typename SGVector<T>::EigenVectorXtMap(b));
-	}
-
-	/** Eigen3 matrix in-place elementwise product method */
-	template <typename T>
-	void element_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		result_eig = a_eig.array() * b_eig.array();
-	}
-
-	/** Eigen3 set matrix to identity method */
-	template <typename T>
-	void identity_impl(SGMatrix<T>& I) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap I_eig = I;
-		I_eig.setIdentity();
-	}
-
-	/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
-	template <typename T>
-	void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		result_eig = (T)1 / (1 + ((-1 * a_eig).array()).exp());
-	}
-
-	/** Eigen3 matrix block in-place elementwise product method */
-	template <typename T>
-	void element_prod_impl(linalg::Block<SGMatrix<T>>& a,
-		linalg::Block<SGMatrix<T>>& b, SGMatrix<T>& result) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
-		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b.m_matrix;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> a_block =
-			a_eig.block(a.m_row_begin, a.m_col_begin, a.m_row_size, a.m_col_size);
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
-			b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
-
-		result_eig = a_block.array() * b_block.array();
-	}
-
-	/** Eigen3 matrix * vector in-place product method */
-	template <typename T>
-	void matrix_prod_impl(SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result,
-		bool transpose, bool transpose_B=false) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGVector<T>::EigenVectorXtMap b_eig = b;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		if (transpose)
-			result_eig = a_eig.transpose() * b_eig;
-		else
-			result_eig = a_eig * b_eig;
-	}
-
-	/** Eigen3 matrix in-place product method */
-	template <typename T>
-	void matrix_prod_impl(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
-		bool transpose_A, bool transpose_B) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		if (transpose_A && transpose_B)
-			result_eig = a_eig.transpose() * b_eig.transpose();
-
-		else if (transpose_A)
-			result_eig = a_eig.transpose() * b_eig;
-
-		else if (transpose_B)
-			result_eig = a_eig * b_eig.transpose();
-
-		else
-			result_eig = a_eig * b_eig;
-	}
-
-	/** Return the largest element in the vector with Eigen3 library */
-	template <typename T>
-	T max_impl(const SGVector<T>& vec) const
-	{
-		return (typename SGVector<T>::EigenVectorXtMap(vec)).maxCoeff();
-	}
-
-	/** Return the largest element in the matrix with Eigen3 library */
-	template <typename T>
-	T max_impl(const SGMatrix<T>& mat) const
-	{
-		return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).maxCoeff();
-	}
-
-	/** Real eigen3 vector and matrix mean method */
-	template <typename T, template <typename> class Container>
-	typename std::enable_if<!std::is_same<T, complex128_t>::value, float64_t>::type
-	mean_impl(const Container<T>& a) const
-	{
-		return sum_impl(a)/(float64_t(a.size()));
-	}
-
-	/** Complex eigen3 vector and matrix mean method */
-	template<template <typename> class Container>
-	complex128_t mean_impl(const Container<complex128_t>& a) const
-	{
-		return sum_impl(a)/(complex128_t(a.size()));
-	}
-
-	/** Range fill a vector or matrix with start...start+len-1. */
-	template <typename T, template <typename> class Container>
-	void range_fill_impl(Container<T>& a, const T start) const
-	{
-		for (decltype(a.size()) i = 0; i < a.size(); ++i)
-			a[i] = start + T(i);
-	}
-
-	/** Eigen3 vector inplace scale method: result = alpha * A */
-	template <typename T>
-	void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const
-	{
-		typename SGVector<T>::EigenVectorXtMap a_eig = a;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = alpha * a_eig;
-	}
-
-	/** Eigen3 matrix inplace scale method: result = alpha * A */
-	template <typename T>
-	void scale_impl(SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-		result_eig = alpha * a_eig;
-	}
-
-	/** Eigen3 set const method */
-	template <typename T, template <typename> class Container>
-	void set_const_impl(Container<T>& a, T value) const
-	{
-		for (decltype(a.size()) i = 0; i < a.size(); ++i)
-			a[i] = value;
-	}
-
-	/** Eigen3 vector sum method */
-	template <typename T>
-	T sum_impl(const SGVector<T>& vec, bool no_diag=false) const
-	{
-		return (typename SGVector<T>::EigenVectorXtMap(vec)).sum();
-	}
-
-	/** Eigen3 matrix sum method */
-	template <typename T>
-	T sum_impl(const SGMatrix<T>& mat, bool no_diag=false) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat;
-		T result = m.sum();
-		if (no_diag)
-			result -= m.diagonal().sum();
-
-		return result;
-	}
-
-	/** Eigen3 matrix block sum method */
-	template <typename T>
-	T sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag=false) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
-			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
-
-		T result = m_block.sum();
-		if (no_diag)
-			result -= m_block.diagonal().sum();
-
-		return result;
-	}
-
-	/** Eigen3 symmetric matrix sum method */
-	template <typename T>
-	T sum_symmetric_impl(const SGMatrix<T>& mat, bool no_diag=false) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat;
-
-		// since the matrix is symmetric with main diagonal inside, we can save half
-		// the computation with using only the upper triangular part.
-		typename SGMatrix<T>::EigenMatrixXt m_upper =
-			m.template triangularView<Eigen::StrictlyUpper>();
-		T result = m_upper.sum();
-		result += result;
-
-		if (!no_diag)
-			result += m.diagonal().sum();
-		return result;
-	}
-
-	/** Eigen3 symmetric matrix block sum method */
-	template <typename T>
-	T sum_symmetric_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag=false) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
-			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
-
-		// since the matrix is symmetric with main diagonal inside, we can save half
-		// the computation with using only the upper triangular part.
-		typename SGMatrix<T>::EigenMatrixXt m_upper =
-			m_block.template triangularView<Eigen::StrictlyUpper>();
-		T result = m_upper.sum();
-		result += result;
-
-		if (!no_diag)
-			result += m_block.diagonal().sum();
-		return result;
-	}
-
-	/** Eigen3 matrix colwise sum method */
-	template <typename T>
-	SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
-	{
-		SGVector<T> result(mat.num_cols);
-
-		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = mat_eig.colwise().sum();
-
-		// remove the main diagonal elements if required
-		if (no_diag)
+		/** Eigen3 matrix result = alpha*A + beta*B method */
+		template <typename T>
+		void add_impl(
+		    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta,
+		    SGMatrix<T>& result) const
 		{
-			index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
-				? mat_eig.rows() : mat_eig.cols();
-			for (index_t i = 0; i < len_major_diag; ++i)
-				result_eig[i] -= mat_eig(i,i);
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			result_eig = alpha * a_eig + beta * b_eig;
 		}
 
-		return result;
-	}
-
-	/** Eigen3 matrix block colwise sum method */
-	template <typename T>
-	SGVector<T> colwise_sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
-	{
-		SGVector<T> result(mat.m_col_size);
-
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
-			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = m_block.colwise().sum();
-
-		// remove the main diagonal elements if required
-		if (no_diag)
+		/** Eigen3 add column vector method */
+		template <typename T>
+		void add_col_vec_impl(
+		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+		    SGMatrix<T>& result, T alpha, T beta) const
 		{
-			index_t len_major_diag = m_block.rows() < m_block.cols()
-				? m_block.rows() : m_block.cols();
-			for (index_t i = 0; i < len_major_diag; ++i)
-				result_eig[i] -= m_block(i,i);
+			typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+			typename SGVector<T>::EigenVectorXtMap b_eig = b;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			result_eig.col(i) = alpha * A_eig.col(i) + beta * b_eig;
 		}
 
-		return result;
-	}
-
-	/** Eigen3 matrix rowwise sum method */
-	template <typename T>
-	SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
-	{
-		SGVector<T> result(mat.num_rows);
-
-		typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = mat_eig.rowwise().sum();
-
-		// remove the main diagonal elements if required
-		if (no_diag)
+		/** Eigen3 add column vector method */
+		template <typename T>
+		void add_col_vec_impl(
+		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
+		    SGVector<T>& result, T alpha, T beta) const
 		{
-			index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
-				? mat_eig.rows() : mat_eig.cols();
-			for (index_t i = 0; i < len_major_diag; ++i)
-				result_eig[i] -= mat_eig(i,i);
+			typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+			typename SGVector<T>::EigenVectorXtMap b_eig = b;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = alpha * A_eig.col(i) + beta * b_eig;
 		}
 
-		return result;
-	}
-
-	/** Eigen3 matrix block rowwise sum method */
-	template <typename T>
-	SGVector<T> rowwise_sum_impl(const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
-	{
-		SGVector<T> result(mat.m_row_size);
-
-		typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
-		Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block = m.block(
-			mat.m_row_begin, mat.m_col_begin, mat.m_row_size, mat.m_col_size);
-		typename SGVector<T>::EigenVectorXtMap result_eig = result;
-
-		result_eig = m_block.rowwise().sum();
-
-		// remove the main diagonal elements if required
-		if (no_diag)
+		/** Eigen3 Cholesky decomposition */
+		template <typename T>
+		SGMatrix<T>
+		cholesky_factor_impl(const SGMatrix<T>& A, const bool lower) const
 		{
-			index_t len_major_diag = m_block.rows() < m_block.cols()
-				? m_block.rows() : m_block.cols();
-			for (index_t i = 0; i < len_major_diag; ++i)
-				result_eig[i] -= m_block(i,i);
+			SGMatrix<T> c(A.num_rows, A.num_cols);
+			set_const_impl<T>(c, 0);
+			typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+			typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+			Eigen::LLT<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> llt(
+			    A_eig);
+
+			// compute matrix L or U
+			if (lower == false)
+				c_eig = llt.matrixU();
+			else
+				c_eig = llt.matrixL();
+
+			/*
+			 * checking for success
+			 *
+			 * 0: Eigen::Success. Decomposition was successful
+			 * 1: Eigen::NumericalIssue. The provided data did not satisfy the
+			 * prerequisites.
+			 */
+			REQUIRE(
+			    llt.info() != Eigen::NumericalIssue,
+			    "Matrix is not Hermitian positive definite!\n");
+
+			return c;
 		}
 
-		return result;
-	}
+		/** Eigen3 Cholesky solver */
+		template <typename T>
+		SGVector<T> cholesky_solver_impl(
+		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower) const
+		{
+			SGVector<T> x(b.size());
+			set_const_impl<T>(x, 0);
+			typename SGMatrix<T>::EigenMatrixXtMap L_eig = L;
+			typename SGVector<T>::EigenVectorXtMap b_eig = b;
+			typename SGVector<T>::EigenVectorXtMap x_eig = x;
 
-	/** Eigen3 compute trace method */
-	template <typename T>
-	T trace_impl(const SGMatrix<T>& A) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
-		return A_eig.trace();
-	}
+			if (lower == false)
+			{
+				Eigen::TriangularView<
+				    Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+				               Eigen::Stride<0, 0>>,
+				    Eigen::Upper>
+				    tlv(L_eig);
 
-	/** Eigen3 set vector to zero method */
-	template <typename T>
-	void zero_impl(SGVector<T>& a) const
-	{
-		typename SGVector<T>::EigenVectorXtMap a_eig = a;
-		a_eig.setZero();
-	}
+				x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+			}
+			else
+			{
+				Eigen::TriangularView<
+				    Eigen::Map<typename SGMatrix<T>::EigenMatrixXt, 0,
+				               Eigen::Stride<0, 0>>,
+				    Eigen::Lower>
+				    tlv(L_eig);
+				x_eig = (tlv.transpose()).solve(tlv.solve(b_eig));
+			}
 
-	/** Eigen3 set matrix to zero method */
-	template <typename T>
-	void zero_impl(SGMatrix<T>& a) const
-	{
-		typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-		a_eig.setZero();
-	}
+			return x;
+		}
 
+		/** Eigen3 vector dot-product method */
+		template <typename T>
+		T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
+		{
+			return (typename SGVector<T>::EigenVectorXtMap(a))
+			    .dot(typename SGVector<T>::EigenVectorXtMap(b));
+		}
+
+		/** Eigen3 matrix in-place elementwise product method */
+		template <typename T>
+		void element_prod_impl(
+		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			result_eig = a_eig.array() * b_eig.array();
+		}
+
+		/** Eigen3 set matrix to identity method */
+		template <typename T>
+		void identity_impl(SGMatrix<T>& I) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap I_eig = I;
+			I_eig.setIdentity();
+		}
+
+		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
+		template <typename T>
+		void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			result_eig = (T)1 / (1 + ((-1 * a_eig).array()).exp());
+		}
+
+		/** Eigen3 matrix block in-place elementwise product method */
+		template <typename T>
+		void element_prod_impl(
+		    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
+		    SGMatrix<T>& result) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
+			typename SGMatrix<T>::EigenMatrixXtMap b_eig = b.m_matrix;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> a_block =
+			    a_eig.block(
+			        a.m_row_begin, a.m_col_begin, a.m_row_size, a.m_col_size);
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> b_block =
+			    b_eig.block(
+			        b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
+
+			result_eig = a_block.array() * b_block.array();
+		}
+
+		/** Eigen3 matrix * vector in-place product method */
+		template <typename T>
+		void matrix_prod_impl(
+		    SGMatrix<T>& a, SGVector<T>& b, SGVector<T>& result, bool transpose,
+		    bool transpose_B = false) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGVector<T>::EigenVectorXtMap b_eig = b;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			if (transpose)
+				result_eig = a_eig.transpose() * b_eig;
+			else
+				result_eig = a_eig * b_eig;
+		}
+
+		/** Eigen3 matrix in-place product method */
+		template <typename T>
+		void matrix_prod_impl(
+		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result,
+		    bool transpose_A, bool transpose_B) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			if (transpose_A && transpose_B)
+				result_eig = a_eig.transpose() * b_eig.transpose();
+
+			else if (transpose_A)
+				result_eig = a_eig.transpose() * b_eig;
+
+			else if (transpose_B)
+				result_eig = a_eig * b_eig.transpose();
+
+			else
+				result_eig = a_eig * b_eig;
+		}
+
+		/** Return the largest element in the vector with Eigen3 library */
+		template <typename T>
+		T max_impl(const SGVector<T>& vec) const
+		{
+			return (typename SGVector<T>::EigenVectorXtMap(vec)).maxCoeff();
+		}
+
+		/** Return the largest element in the matrix with Eigen3 library */
+		template <typename T>
+		T max_impl(const SGMatrix<T>& mat) const
+		{
+			return (typename SGMatrix<T>::EigenMatrixXtMap(mat)).maxCoeff();
+		}
+
+		/** Real eigen3 vector and matrix mean method */
+		template <typename T, template <typename> class Container>
+		typename std::enable_if<!std::is_same<T, complex128_t>::value,
+		                        float64_t>::type
+		mean_impl(const Container<T>& a) const
+		{
+			return sum_impl(a) / (float64_t(a.size()));
+		}
+
+		/** Complex eigen3 vector and matrix mean method */
+		template <template <typename> class Container>
+		complex128_t mean_impl(const Container<complex128_t>& a) const
+		{
+			return sum_impl(a) / (complex128_t(a.size()));
+		}
+
+		/** Range fill a vector or matrix with start...start+len-1. */
+		template <typename T, template <typename> class Container>
+		void range_fill_impl(Container<T>& a, const T start) const
+		{
+			for (decltype(a.size()) i = 0; i < a.size(); ++i)
+				a[i] = start + T(i);
+		}
+
+		/** Eigen3 vector inplace scale method: result = alpha * A */
+		template <typename T>
+		void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const
+		{
+			typename SGVector<T>::EigenVectorXtMap a_eig = a;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = alpha * a_eig;
+		}
+
+		/** Eigen3 matrix inplace scale method: result = alpha * A */
+		template <typename T>
+		void scale_impl(SGMatrix<T>& a, T alpha, SGMatrix<T>& result) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+			result_eig = alpha * a_eig;
+		}
+
+		/** Eigen3 set const method */
+		template <typename T, template <typename> class Container>
+		void set_const_impl(Container<T>& a, T value) const
+		{
+			for (decltype(a.size()) i = 0; i < a.size(); ++i)
+				a[i] = value;
+		}
+
+		/** Eigen3 vector sum method */
+		template <typename T>
+		T sum_impl(const SGVector<T>& vec, bool no_diag = false) const
+		{
+			return (typename SGVector<T>::EigenVectorXtMap(vec)).sum();
+		}
+
+		/** Eigen3 matrix sum method */
+		template <typename T>
+		T sum_impl(const SGMatrix<T>& mat, bool no_diag = false) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat;
+			T result = m.sum();
+			if (no_diag)
+				result -= m.diagonal().sum();
+
+			return result;
+		}
+
+		/** Eigen3 matrix block sum method */
+		template <typename T>
+		T sum_impl(
+		    const linalg::Block<SGMatrix<T>>& mat, bool no_diag = false) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block =
+			    m.block(
+			        mat.m_row_begin, mat.m_col_begin, mat.m_row_size,
+			        mat.m_col_size);
+
+			T result = m_block.sum();
+			if (no_diag)
+				result -= m_block.diagonal().sum();
+
+			return result;
+		}
+
+		/** Eigen3 symmetric matrix sum method */
+		template <typename T>
+		T sum_symmetric_impl(const SGMatrix<T>& mat, bool no_diag = false) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat;
+
+			// since the matrix is symmetric with main diagonal inside, we can
+			// save half
+			// the computation with using only the upper triangular part.
+			typename SGMatrix<T>::EigenMatrixXt m_upper =
+			    m.template triangularView<Eigen::StrictlyUpper>();
+			T result = m_upper.sum();
+			result += result;
+
+			if (!no_diag)
+				result += m.diagonal().sum();
+			return result;
+		}
+
+		/** Eigen3 symmetric matrix block sum method */
+		template <typename T>
+		T sum_symmetric_impl(
+		    const linalg::Block<SGMatrix<T>>& mat, bool no_diag = false) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block =
+			    m.block(
+			        mat.m_row_begin, mat.m_col_begin, mat.m_row_size,
+			        mat.m_col_size);
+
+			// since the matrix is symmetric with main diagonal inside, we can
+			// save half
+			// the computation with using only the upper triangular part.
+			typename SGMatrix<T>::EigenMatrixXt m_upper =
+			    m_block.template triangularView<Eigen::StrictlyUpper>();
+			T result = m_upper.sum();
+			result += result;
+
+			if (!no_diag)
+				result += m_block.diagonal().sum();
+			return result;
+		}
+
+		/** Eigen3 matrix colwise sum method */
+		template <typename T>
+		SGVector<T> colwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
+		{
+			SGVector<T> result(mat.num_cols);
+
+			typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = mat_eig.colwise().sum();
+
+			// remove the main diagonal elements if required
+			if (no_diag)
+			{
+				index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
+				                             ? mat_eig.rows()
+				                             : mat_eig.cols();
+				for (index_t i = 0; i < len_major_diag; ++i)
+					result_eig[i] -= mat_eig(i, i);
+			}
+
+			return result;
+		}
+
+		/** Eigen3 matrix block colwise sum method */
+		template <typename T>
+		SGVector<T> colwise_sum_impl(
+		    const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
+		{
+			SGVector<T> result(mat.m_col_size);
+
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block =
+			    m.block(
+			        mat.m_row_begin, mat.m_col_begin, mat.m_row_size,
+			        mat.m_col_size);
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = m_block.colwise().sum();
+
+			// remove the main diagonal elements if required
+			if (no_diag)
+			{
+				index_t len_major_diag = m_block.rows() < m_block.cols()
+				                             ? m_block.rows()
+				                             : m_block.cols();
+				for (index_t i = 0; i < len_major_diag; ++i)
+					result_eig[i] -= m_block(i, i);
+			}
+
+			return result;
+		}
+
+		/** Eigen3 matrix rowwise sum method */
+		template <typename T>
+		SGVector<T> rowwise_sum_impl(const SGMatrix<T>& mat, bool no_diag) const
+		{
+			SGVector<T> result(mat.num_rows);
+
+			typename SGMatrix<T>::EigenMatrixXtMap mat_eig = mat;
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = mat_eig.rowwise().sum();
+
+			// remove the main diagonal elements if required
+			if (no_diag)
+			{
+				index_t len_major_diag = mat_eig.rows() < mat_eig.cols()
+				                             ? mat_eig.rows()
+				                             : mat_eig.cols();
+				for (index_t i = 0; i < len_major_diag; ++i)
+					result_eig[i] -= mat_eig(i, i);
+			}
+
+			return result;
+		}
+
+		/** Eigen3 matrix block rowwise sum method */
+		template <typename T>
+		SGVector<T> rowwise_sum_impl(
+		    const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const
+		{
+			SGVector<T> result(mat.m_row_size);
+
+			typename SGMatrix<T>::EigenMatrixXtMap m = mat.m_matrix;
+			Eigen::Block<typename SGMatrix<T>::EigenMatrixXtMap> m_block =
+			    m.block(
+			        mat.m_row_begin, mat.m_col_begin, mat.m_row_size,
+			        mat.m_col_size);
+			typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+			result_eig = m_block.rowwise().sum();
+
+			// remove the main diagonal elements if required
+			if (no_diag)
+			{
+				index_t len_major_diag = m_block.rows() < m_block.cols()
+				                             ? m_block.rows()
+				                             : m_block.cols();
+				for (index_t i = 0; i < len_major_diag; ++i)
+					result_eig[i] -= m_block(i, i);
+			}
+
+			return result;
+		}
+
+		/** Eigen3 compute trace method */
+		template <typename T>
+		T trace_impl(const SGMatrix<T>& A) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+			return A_eig.trace();
+		}
+
+		/** Eigen3 set vector to zero method */
+		template <typename T>
+		void zero_impl(SGVector<T>& a) const
+		{
+			typename SGVector<T>::EigenVectorXtMap a_eig = a;
+			a_eig.setZero();
+		}
+
+		/** Eigen3 set matrix to zero method */
+		template <typename T>
+		void zero_impl(SGMatrix<T>& a) const
+		{
+			typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+			a_eig.setZero();
+		}
+
+// clang-format off
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_REAL_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
-};
-
+		// clang-format on
+	};
 }
 
-#endif //LINALG_BACKEND_EIGEN_H__
+#endif // LINALG_BACKEND_EIGEN_H__

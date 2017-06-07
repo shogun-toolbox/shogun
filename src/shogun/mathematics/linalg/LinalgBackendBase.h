@@ -33,24 +33,25 @@
 #ifndef LINALG_BACKEND_BASE_H__
 #define LINALG_BACKEND_BASE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <memory>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
-#include <memory>
 
 namespace shogun
 {
 
-/** @brief Base interface of generic linalg methods
- * and generic memory transfer methods.
- */
-class LinalgBackendBase
-{
-public:
+	/** @brief Base interface of generic linalg methods
+	 * and generic memory transfer methods.
+	 */
+	class LinalgBackendBase
+	{
+	public:
+// clang-format off
 	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
 	METHODNAME(bool, Container); \
 	METHODNAME(char, Container); \
@@ -493,11 +494,11 @@ public:
 	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
 	#undef BACKEND_GENERIC_FROM_GPU
 
-#undef DEFINE_FOR_ALL_PTYPE
-#undef DEFINE_FOR_REAL_PTYPE
-#undef DEFINE_FOR_NON_INTEGER_PTYPE
-};
-
+	#undef DEFINE_FOR_ALL_PTYPE
+	#undef DEFINE_FOR_REAL_PTYPE
+	#undef DEFINE_FOR_NON_INTEGER_PTYPE
+		// clang-format on
+	};
 }
 
-#endif //LINALG_BACKEND_BASE_H__
+#endif // LINALG_BACKEND_BASE_H__
