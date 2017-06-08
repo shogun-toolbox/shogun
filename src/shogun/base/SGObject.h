@@ -14,6 +14,7 @@
 #define __SGOBJECT_H__
 
 #include <shogun/base/Version.h>
+#include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -605,13 +606,13 @@ public:
 	Some<Version> version;
 
 	/** parameters */
-	Parameter * m_parameters;
+	Parameter* m_parameters;
 
 	/** model selection parameters */
-	Parameter * m_model_selection_parameters;
+	Parameter* m_model_selection_parameters;
 
 	/** parameters wrt which we can compute gradients */
-	Parameter * m_gradient_parameters;
+	Parameter* m_gradient_parameters;
 
 	/** Hash of parameter values*/
 	uint32_t m_hash;

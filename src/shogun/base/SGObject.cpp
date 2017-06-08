@@ -19,8 +19,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/io/SerializableFile.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/base/some.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGStringList.h>
@@ -715,9 +713,14 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
+<<<<<<< 37566447fe88cde4d6d2ab955619f3c273802cc8
 	Some<CSGObject> copy = Some<CSGObject>::from_raw(create(get_name(), this->m_generic));
+=======
+	Some<CSGObject> copy = Some<CSGObject>::from_raw(
+	    new_sgserializable(get_name(), this->m_generic));
+>>>>>>> [SmartPointers] Style fixes.
 
-	//TODO: delete this when we'll change signature
+	// TODO: delete this when we'll change signature
 	SG_REF(copy.get());
 
 	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
@@ -734,7 +737,6 @@ CSGObject* CSGObject::clone()
 	{
 		SG_DEBUG("Done cloning.\n");
 	}
-
 
 	return copy.get();
 }
