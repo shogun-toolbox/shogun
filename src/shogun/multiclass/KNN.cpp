@@ -11,12 +11,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/multiclass/KNN.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/lib/Signal.h>
+#include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/multiclass/KNN.h>
 
 //#define DEBUG_KNN
 
@@ -125,10 +126,12 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	distance->precompute_lhs();
 	distance->precompute_rhs();
 
+	auto pb = progress(range(n), *this->io);
+
 	//for each test example
 	for (int32_t i=0; i<n && (!CSignal::cancel_computations()); i++)
 	{
-		SG_PROGRESS(i, 0, n)
+		pb.print_progress();
 
 		//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
 		distances_lhs(dists,0,m_train_labels.vlen-1,i);
@@ -151,6 +154,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 		for (int32_t j=0; j<m_k; j++)
 			NN(j,i) = train_idxs[j];
 	}
+	pb.complete();
 
 	distance->reset_precompute();
 
@@ -207,10 +211,12 @@ CMulticlassLabels* CKNN::classify_NN()
 
 	distance->precompute_lhs();
 
+	auto pb = progress(range(num_lab), *this->io);
+
 	// for each test example
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
-		SG_PROGRESS(i,0,num_lab)
+		pb.print_progress();
 
 		// get distances from i-th test example to 0..num_m_train_labels-1 train examples
 		distances_lhs(distances,0,m_train_labels.vlen-1,i);
@@ -233,6 +239,7 @@ CMulticlassLabels* CKNN::classify_NN()
 		// label i-th test example with label of nearest neighbor with out_idx index
 		output->set_label(i,m_train_labels.vector[out_idx]+m_min_label);
 	}
+	pb.complete();
 
 	distance->reset_precompute();
 

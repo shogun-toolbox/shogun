@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include <shogun/base/progress.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/external/libocas.h>
 #include <shogun/lib/external/libocas_common.h>
@@ -588,6 +589,9 @@ ocas_return_value_T svm_ocas_solver(
   Ci=NULL;
   Bi=NULL;
 
+  /* Initialize progress bar */
+  auto pb = progress(range(10));
+
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
   H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);
   if(H == NULL)
@@ -695,247 +699,280 @@ ocas_return_value_T svm_ocas_solver(
     new_cut[i] = i;
 
 	gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-	SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
+	pb.print_absolute(
+		gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel));
 
-  ocas.trn_err = nData;
-  ocas.ocas_time = get_time() - ocas_start_time;
-  /*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f\n",
-          ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
-  */
-  ocas_print(ocas);
+	ocas.trn_err = nData;
+	ocas.ocas_time = get_time() - ocas_start_time;
+	/*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
+	   Q_P-Q_D/abs(Q_P)=%f\n",
+		    ocas.nIter,cur_time,
+	   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
+	*/
+	ocas_print(ocas);
 
-  /* main loop */
-  while( ocas.exitflag == 0 )
-  {
-    ocas.nIter++;
+	/* main loop */
+	while (ocas.exitflag == 0)
+	{
+		ocas.nIter++;
 
-    /* append a new cut to the buffer and update H */
-    b[ocas.nCutPlanes] = -(float64_t)cut_length;
+		/* append a new cut to the buffer and update H */
+		b[ocas.nCutPlanes] = -(float64_t)cut_length;
 
-    start_time = get_time();
+		start_time = get_time();
 
-    if(add_new_cut( &H[LIBOCAS_INDEX(0,ocas.nCutPlanes,BufSize)], new_cut, cut_length, ocas.nCutPlanes, user_data ) != 0)
-    {
-	  ocas.exitflag=-2;
-	  goto cleanup;
-    }
+		if (add_new_cut(
+			    &H[LIBOCAS_INDEX(0, ocas.nCutPlanes, BufSize)], new_cut,
+			    cut_length, ocas.nCutPlanes, user_data) != 0)
+		{
+			ocas.exitflag = -2;
+			goto cleanup;
+		}
 
-    ocas.add_time += get_time() - start_time;
+		ocas.add_time += get_time() - start_time;
 
-    /* copy new added row:  H(ocas.nCutPlanes,ocas.nCutPlanes,1:ocas.nCutPlanes-1) = H(1:ocas.nCutPlanes-1:ocas.nCutPlanes)' */
-    diag_H[ocas.nCutPlanes] = H[LIBOCAS_INDEX(ocas.nCutPlanes,ocas.nCutPlanes,BufSize)];
-    for(i=0; i < ocas.nCutPlanes; i++) {
-      H[LIBOCAS_INDEX(ocas.nCutPlanes,i,BufSize)] = H[LIBOCAS_INDEX(i,ocas.nCutPlanes,BufSize)];
-    }
+		/* copy new added row:
+		 * H(ocas.nCutPlanes,ocas.nCutPlanes,1:ocas.nCutPlanes-1) =
+		 * H(1:ocas.nCutPlanes-1:ocas.nCutPlanes)' */
+		diag_H[ocas.nCutPlanes] =
+			H[LIBOCAS_INDEX(ocas.nCutPlanes, ocas.nCutPlanes, BufSize)];
+		for (i = 0; i < ocas.nCutPlanes; i++)
+		{
+			H[LIBOCAS_INDEX(ocas.nCutPlanes, i, BufSize)] =
+				H[LIBOCAS_INDEX(i, ocas.nCutPlanes, BufSize)];
+		}
 
-    ocas.nCutPlanes++;
+		ocas.nCutPlanes++;
 
-    /* call inner QP solver */
-    start_time = get_time();
+		/* call inner QP solver */
+		start_time = get_time();
 
-    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, alpha,
-                                  ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF,0);
+		qp_exitflag = libqp_splx_solver(
+			&get_col, diag_H, b, &C, I, &S, alpha, ocas.nCutPlanes,
+			QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF, 0);
 
-    ocas.qp_exitflag = qp_exitflag.exitflag;
+		ocas.qp_exitflag = qp_exitflag.exitflag;
 
-    ocas.qp_solver_time += get_time() - start_time;
-    ocas.Q_D = -qp_exitflag.QP;
+		ocas.qp_solver_time += get_time() - start_time;
+		ocas.Q_D = -qp_exitflag.QP;
 
-    ocas.nNZAlpha = 0;
-    for(i=0; i < ocas.nCutPlanes; i++) {
-      if( alpha[i] != 0) ocas.nNZAlpha++;
-    }
+		ocas.nNZAlpha = 0;
+		for (i = 0; i < ocas.nCutPlanes; i++)
+		{
+			if (alpha[i] != 0)
+				ocas.nNZAlpha++;
+		}
 
-    sq_norm_oldW = sq_norm_W;
-    start_time = get_time();
-    compute_W( &sq_norm_W, &dot_prod_WoldW, alpha, ocas.nCutPlanes, user_data );
-    ocas.w_time += get_time() - start_time;
+		sq_norm_oldW = sq_norm_W;
+		start_time = get_time();
+		compute_W(
+			&sq_norm_W, &dot_prod_WoldW, alpha, ocas.nCutPlanes, user_data);
+		ocas.w_time += get_time() - start_time;
 
-    /* select a new cut */
-    switch( Method )
-    {
-      /* cutting plane algorithm implemented in SVMperf and BMRM */
-      case 0:
+		/* select a new cut */
+		switch (Method)
+		{
+		/* cutting plane algorithm implemented in SVMperf and BMRM */
+		case 0:
 
-        start_time = get_time();
-        if( compute_output( output, user_data ) != 0)
-        {
-          ocas.exitflag=-2;
-          goto cleanup;
-        }
-        ocas.output_time += get_time()-start_time;
-				gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
+			start_time = get_time();
+			if (compute_output(output, user_data) != 0)
+			{
+				ocas.exitflag = -2;
+				goto cleanup;
+			}
+			ocas.output_time += get_time() - start_time;
+			gap = (ocas.Q_P - ocas.Q_D) / CMath::abs(ocas.Q_P);
+			pb.print_absolute(
+				gap, -CMath::log10(gap), -CMath::log10(1),
+				-CMath::log10(TolRel));
 
-        xi = 0;
-        cut_length = 0;
-        ocas.trn_err = 0;
-        for(i=0; i < nData; i++)
-        {
-          if(output[i] <= 0) ocas.trn_err++;
+			xi = 0;
+			cut_length = 0;
+			ocas.trn_err = 0;
+			for (i = 0; i < nData; i++)
+			{
+				if (output[i] <= 0)
+					ocas.trn_err++;
 
-          if(output[i] <= 1) {
-            xi += 1 - output[i];
-            new_cut[cut_length] = i;
-            cut_length++;
-          }
-        }
-        ocas.Q_P = 0.5*sq_norm_W + C*xi;
+				if (output[i] <= 1)
+				{
+					xi += 1 - output[i];
+					new_cut[cut_length] = i;
+					cut_length++;
+				}
+			}
+			ocas.Q_P = 0.5 * sq_norm_W + C * xi;
 
-        ocas.ocas_time = get_time() - ocas_start_time;
+			ocas.ocas_time = get_time() - ocas_start_time;
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
-                  ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
-                  ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */
+			/*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
+			   1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+				      ocas.nIter,cur_time,
+			   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
+				      ocas.nNZAlpha,
+			   100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
+			*/
 
-        start_time = get_time();
-        ocas_print(ocas);
-        ocas.print_time += get_time() - start_time;
+			start_time = get_time();
+			ocas_print(ocas);
+			ocas.print_time += get_time() - start_time;
 
-        break;
+			break;
 
+		/* Ocas strategy */
+		case 1:
 
-      /* Ocas strategy */
-      case 1:
+			/* Linesearch */
+			A0 = sq_norm_W - 2 * dot_prod_WoldW + sq_norm_oldW;
+			B0 = dot_prod_WoldW - sq_norm_oldW;
 
-        /* Linesearch */
-        A0 = sq_norm_W -2*dot_prod_WoldW + sq_norm_oldW;
-        B0 = dot_prod_WoldW - sq_norm_oldW;
+			sg_memcpy(old_output, output, sizeof(float64_t) * nData);
 
-        sg_memcpy( old_output, output, sizeof(float64_t)*nData );
+			start_time = get_time();
+			if (compute_output(output, user_data) != 0)
+			{
+				ocas.exitflag = -2;
+				goto cleanup;
+			}
+			ocas.output_time += get_time() - start_time;
 
-        start_time = get_time();
-        if( compute_output( output, user_data ) != 0)
-        {
-          ocas.exitflag=-2;
-          goto cleanup;
-        }
-        ocas.output_time += get_time()-start_time;
+			uint32_t num_hp = 0;
+			GradVal = B0;
+			for (i = 0; i < nData; i++)
+			{
 
-        uint32_t num_hp = 0;
-        GradVal = B0;
-        for(i=0; i< nData; i++) {
+				Ci[i] = C * (1 - old_output[i]);
+				Bi[i] = C * (old_output[i] - output[i]);
 
-          Ci[i] = C*(1-old_output[i]);
-          Bi[i] = C*(old_output[i] - output[i]);
+				float64_t val;
+				if (Bi[i] != 0)
+					val = -Ci[i] / Bi[i];
+				else
+					val = -LIBOCAS_PLUS_INF;
 
-          float64_t val;
-          if(Bi[i] != 0)
-            val = -Ci[i]/Bi[i];
-          else
-            val = -LIBOCAS_PLUS_INF;
+				if (val > 0)
+				{
+					/*            hpi[num_hp] = i;*/
+					hpb[num_hp] = Bi[i];
+					hpf[num_hp] = val;
+					num_hp++;
+				}
 
-          if (val>0)
-          {
-/*            hpi[num_hp] = i;*/
-            hpb[num_hp] = Bi[i];
-            hpf[num_hp] = val;
-            num_hp++;
-          }
+				if ((Bi[i] < 0 && val > 0) || (Bi[i] > 0 && val <= 0))
+					GradVal += Bi[i];
+			}
 
-          if( (Bi[i] < 0 && val > 0) || (Bi[i] > 0 && val <= 0))
-            GradVal += Bi[i];
+			t = 0;
+			if (GradVal < 0)
+			{
+				start_time = get_time();
+				/*          if( sort(hpf, hpi, num_hp) != 0)*/
+				if (sort(hpf, hpb, num_hp) != 0)
+				{
+					ocas.exitflag = -2;
+					goto cleanup;
+				}
+				ocas.sort_time += get_time() - start_time;
 
-        }
+				float64_t t_new, GradVal_new;
+				i = 0;
+				while (GradVal < 0 && i < num_hp)
+				{
+					t_new = hpf[i];
+					GradVal_new =
+						GradVal + LIBOCAS_ABS(hpb[i]) + A0 * (t_new - t);
 
-        t = 0;
-        if( GradVal < 0 )
-        {
-          start_time = get_time();
-/*          if( sort(hpf, hpi, num_hp) != 0)*/
-          if( sort(hpf, hpb, num_hp) != 0 )
-          {
-            ocas.exitflag=-2;
-            goto cleanup;
-          }
-          ocas.sort_time += get_time() - start_time;
+					if (GradVal_new >= 0)
+					{
+						t = t + GradVal * (t - t_new) / (GradVal_new - GradVal);
+					}
+					else
+					{
+						t = t_new;
+						i++;
+					}
 
-          float64_t t_new, GradVal_new;
-          i = 0;
-          while( GradVal < 0 && i < num_hp )
-          {
-            t_new = hpf[i];
-            GradVal_new = GradVal + LIBOCAS_ABS(hpb[i]) + A0*(t_new-t);
+					GradVal = GradVal_new;
+				}
+			}
 
-            if( GradVal_new >= 0 )
-            {
-              t = t + GradVal*(t-t_new)/(GradVal_new - GradVal);
-            }
-            else
-            {
-              t = t_new;
-              i++;
-            }
+			/*
+			t = hpf[0] - 1;
+			i = 0;
+			GradVal = t*A0 + Bsum;
+			while( GradVal < 0 && i < num_hp && hpf[i] < LIBOCAS_PLUS_INF ) {
+			  t = hpf[i];
+			  Bsum = Bsum + LIBOCAS_ABS(Bi[hpi[i]]);
+			  GradVal = t*A0 + Bsum;
+			  i++;
+			}
+			*/
+			t = LIBOCAS_MAX(
+				t, 0); /* just sanity check; t < 0 should not ocure */
 
-            GradVal = GradVal_new;
-          }
-        }
+			t1 = t;                  /* new (best so far) W */
+			t2 = t + MU * (1.0 - t); /* new cutting plane */
+			/*        t2 = t+(1.0-t)/10.0;   */
 
-        /*
-        t = hpf[0] - 1;
-        i = 0;
-        GradVal = t*A0 + Bsum;
-        while( GradVal < 0 && i < num_hp && hpf[i] < LIBOCAS_PLUS_INF ) {
-          t = hpf[i];
-          Bsum = Bsum + LIBOCAS_ABS(Bi[hpi[i]]);
-          GradVal = t*A0 + Bsum;
-          i++;
-        }
-        */
-        t = LIBOCAS_MAX(t,0);          /* just sanity check; t < 0 should not ocure */
+			/* update W to be the best so far solution */
+			sq_norm_W = update_W(t1, user_data);
 
-        t1 = t;                /* new (best so far) W */
-        t2 = t+MU*(1.0-t);   /* new cutting plane */
-        /*        t2 = t+(1.0-t)/10.0;   */
+			/* select a new cut */
+			xi = 0;
+			cut_length = 0;
+			ocas.trn_err = 0;
+			for (i = 0; i < nData; i++)
+			{
 
-        /* update W to be the best so far solution */
-        sq_norm_W = update_W( t1, user_data );
+				if ((old_output[i] * (1 - t2) + t2 * output[i]) <= 1)
+				{
+					new_cut[cut_length] = i;
+					cut_length++;
+				}
 
-        /* select a new cut */
-        xi = 0;
-        cut_length = 0;
-        ocas.trn_err = 0;
-        for(i=0; i < nData; i++ ) {
+				output[i] = old_output[i] * (1 - t1) + t1 * output[i];
 
-          if( (old_output[i]*(1-t2) + t2*output[i]) <= 1 )
-          {
-            new_cut[cut_length] = i;
-            cut_length++;
-          }
+				if (output[i] <= 1)
+					xi += 1 - output[i];
+				if (output[i] <= 0)
+					ocas.trn_err++;
+			}
 
-          output[i] = old_output[i]*(1-t1) + t1*output[i];
+			ocas.Q_P = 0.5 * sq_norm_W + C * xi;
 
-          if( output[i] <= 1) xi += 1-output[i];
-          if( output[i] <= 0) ocas.trn_err++;
+			ocas.ocas_time = get_time() - ocas_start_time;
 
-        }
+			/*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f,
+			   1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
+				       ocas.nIter, cur_time,
+			   ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
+				       ocas.nNZAlpha,
+			   100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
+			*/
 
-        ocas.Q_P = 0.5*sq_norm_W + C*xi;
+			start_time = get_time();
+			ocas_print(ocas);
+			ocas.print_time += get_time() - start_time;
 
-        ocas.ocas_time = get_time() - ocas_start_time;
+			break;
+		}
 
-        /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
-                   ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
-                   ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */
-
-        start_time = get_time();
-        ocas_print(ocas);
-        ocas.print_time += get_time() - start_time;
-
-        break;
-    }
-
-    /* Stopping conditions */
-    if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1;
-    if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2;
-    if( ocas.Q_P <= QPBound) ocas.exitflag = 3;
-    if( MaxTime > 0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
-    if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
+		/* Stopping conditions */
+		if (ocas.Q_P - ocas.Q_D <= TolRel * LIBOCAS_ABS(ocas.Q_P))
+			ocas.exitflag = 1;
+		if (ocas.Q_P - ocas.Q_D <= TolAbs)
+			ocas.exitflag = 2;
+		if (ocas.Q_P <= QPBound)
+			ocas.exitflag = 3;
+		if (MaxTime > 0 && ocas.ocas_time >= MaxTime)
+			ocas.exitflag = 4;
+		if (ocas.nCutPlanes >= BufSize)
+			ocas.exitflag = -1;
 
   } /* end of the main loop */
 
+  pb.complete_absolute();
 cleanup:
 
   LIBOCAS_FREE(H);
@@ -1386,24 +1423,23 @@ ocas_return_value_T svm_ocas_solver_difC(
   } /* end of the main loop */
 
 cleanup:
+	LIBOCAS_FREE(H);
+	LIBOCAS_FREE(b);
+	LIBOCAS_FREE(alpha);
+	LIBOCAS_FREE(new_cut);
+	LIBOCAS_FREE(I);
+	LIBOCAS_FREE(diag_H);
+	LIBOCAS_FREE(output);
+	LIBOCAS_FREE(old_output);
+	LIBOCAS_FREE(hpf);
+	/*  LIBOCAS_FREE(hpi);*/
+	LIBOCAS_FREE(hpb);
+	LIBOCAS_FREE(Ci);
+	LIBOCAS_FREE(Bi);
 
-  LIBOCAS_FREE(H);
-  LIBOCAS_FREE(b);
-  LIBOCAS_FREE(alpha);
-  LIBOCAS_FREE(new_cut);
-  LIBOCAS_FREE(I);
-  LIBOCAS_FREE(diag_H);
-  LIBOCAS_FREE(output);
-  LIBOCAS_FREE(old_output);
-  LIBOCAS_FREE(hpf);
-/*  LIBOCAS_FREE(hpi);*/
-  LIBOCAS_FREE(hpb);
-  LIBOCAS_FREE(Ci);
-  LIBOCAS_FREE(Bi);
+	ocas.ocas_time = get_time() - ocas_start_time;
 
-  ocas.ocas_time = get_time() - ocas_start_time;
-
-  return(ocas);
+	return (ocas);
 }
 
 
