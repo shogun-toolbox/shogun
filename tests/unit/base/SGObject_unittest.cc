@@ -30,9 +30,8 @@ using namespace shogun;
 
 TEST(SGObject,equals_same)
 {
-	CGaussianKernel* kernel=new CGaussianKernel();
+	Some<CGaussianKernel> kernel=some<CGaussianKernel>();
 	EXPECT_TRUE(kernel->equals(kernel));
-	SG_UNREF(kernel);
 }
 
 TEST(SGObject,equals_NULL_parameter)
@@ -42,79 +41,65 @@ TEST(SGObject,equals_NULL_parameter)
 		data.matrix[i]=CMath::randn_double();
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
-	CGaussianKernel* kernel=new CGaussianKernel();
-	CGaussianKernel* kernel2=new CGaussianKernel();
+	Some<CGaussianKernel> kernel=some<CGaussianKernel>();
+	Some<CGaussianKernel> kernel2=some<CGaussianKernel>();
 	kernel2->init(feats, feats);
 
 	EXPECT_FALSE(kernel->equals(kernel2));
-
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
 {
-	CBinaryLabels* labs = new CBinaryLabels(10);
-	EXPECT_EQ(labs->ref_count(), 0);
-
-	SG_REF(labs);
-	EXPECT_EQ(labs->ref_count(), 1);
+	Some<CBinaryLabels> labs = some<CBinaryLabels>(10);
 
 	// TODO: This causes memory corruptions; disabled test until fixed
-	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
-	SG_UNREF(labs_2);
+	Some<CBinaryLabels> labs_2 = Some<CBinaryLabels>::from_raw(labs.get());
 
-	SG_UNREF(labs);
-	EXPECT_TRUE(labs == NULL);
+	CBinaryLabels* ptr = labs.get();	
+	EXPECT_TRUE(ptr == NULL);
 }
 
 TEST(SGObject,ref_unref_simple)
 {
-	CBinaryLabels* labs = new CBinaryLabels(10);
-	EXPECT_EQ(labs->ref_count(), 0);
-
-	SG_REF(labs);
-	EXPECT_EQ(labs->ref_count(), 1);
-
-	SG_UNREF(labs);
-	EXPECT_TRUE(labs == NULL);
+	CBinaryLabels * a = new CBinaryLabels(10);
+	Some<CBinaryLabels> tmp = Some<CBinaryLabels>::from_raw(a);
+	EXPECT_EQ(a->ref_count(), 1);
+	if (tmp == NULL)
+		EXPECT_TRUE(true);
 }
 
 TEST(SGObject,equals_null)
 {
-	CBinaryLabels* labels=new CBinaryLabels(10);
-
+	Some<CBinaryLabels> labels=some<CBinaryLabels>(10);
 	EXPECT_FALSE(labels->equals(NULL));
-
-	SG_UNREF(labels);
 }
 
 TEST(SGObject,equals_different_name)
 {
-	CBinaryLabels* labels=new CBinaryLabels(10);
-	CRegressionLabels* labels2=new CRegressionLabels(10);
+	Some<CBinaryLabels> labels=some<CBinaryLabels>(10);
+	Some<CRegressionLabels> labels2=some<CRegressionLabels>(10);
 
 	EXPECT_FALSE(labels->equals(labels2));
-
-	SG_UNREF(labels);
-	SG_UNREF(labels2);
 }
 
 TEST(SGObject,equals_DynamicObjectArray_equal)
 {
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
+	Some<CDynamicObjectArray> array1=some<CDynamicObjectArray>();
+	Some<CDynamicObjectArray> array2=some<CDynamicObjectArray>();
 
-	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
+	CDynamicObjectArray* array1_tmp=array1.get();
+	CDynamicObjectArray* array2_tmp=array2.get();
 
-	SG_UNREF(array1);
-	SG_UNREF(array2);
+	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1_tmp, &array2_tmp));
 }
 
 TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
 {
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
+	Some<CDynamicObjectArray> array1= some<CDynamicObjectArray>();
+	Some<CDynamicObjectArray> array2= some<CDynamicObjectArray>();
+
+	CDynamicObjectArray* array1_tmp=array1.get();
+	CDynamicObjectArray* array2_tmp=array2.get();
 
 	/* enforce a resize */
 	for (index_t i=0; i<1000; ++i)
@@ -122,23 +107,20 @@ TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
 
 	array1->reset_array();
 
-	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
+	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1_tmp, &array2_tmp));
 }
 
 TEST(SGObject,equals_DynamicObjectArray_different)
 {
-	CDynamicObjectArray* array1=new CDynamicObjectArray();
-	CDynamicObjectArray* array2=new CDynamicObjectArray();
+	Some<CDynamicObjectArray> array1=some<CDynamicObjectArray>();
+	Some<CDynamicObjectArray> array2=some<CDynamicObjectArray>();
+
+	CDynamicObjectArray* array1_tmp=array1.get();
+	CDynamicObjectArray* array2_tmp=array2.get();
 
 	array1->append_element(new CGaussianKernel());
 
-	EXPECT_FALSE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
-
-	SG_UNREF(array1);
-	SG_UNREF(array2);
+	EXPECT_FALSE(TParameter::compare_ptype(PT_SGOBJECT, &array1_tmp, &array2_tmp));
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -160,64 +142,56 @@ TEST(SGObject,equals_complex_equal)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	Some<CDenseFeatures<float64_t>> feat_train= some<CDenseFeatures<float64_t>>(X);
+	Some<CDenseFeatures<float64_t>> feat_test= some<CDenseFeatures<float64_t>>(X_test);
+	Some<CRegressionLabels> label_train= some<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	Some<CGaussianKernel> kernel= some<CGaussianKernel>(10, shogun_sigma);
+	Some<CZeroMean> mean=some<CZeroMean>();
+	Some<CGaussianLikelihood> lik=some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	Some<CExactInferenceMethod> inf=some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	Some<CGaussianProcessRegression> gpr= some<CGaussianProcessRegression>(inf);
 
 	/* train machine */
 	gpr->train();
 
 	// apply regression
-	CRegressionLabels* predictions=gpr->apply_regression(feat_test);
+	Some<CRegressionLabels> predictions=Some<CRegressionLabels>::from_raw(gpr->apply_regression(feat_test));
 	//predictions->get_labels().display_vector("predictions");
 
 	/* save and load instance to compare */
 	const char* filename_gpr="gpr_instance.txt";
 	const char* filename_predictions="predictions_instance.txt";
 
-	CSerializableAsciiFile* file;
+	Some<CSerializableAsciiFile> file {nullptr};
 	file=new CSerializableAsciiFile(filename_gpr, 'w');
 	gpr->save_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
 	file=new CSerializableAsciiFile(filename_predictions, 'w');
 	predictions->save_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
 	file=new CSerializableAsciiFile(filename_gpr, 'r');
-	CGaussianProcessRegression* gpr_copy=new CGaussianProcessRegression();
+	Some<CGaussianProcessRegression> gpr_copy=some<CGaussianProcessRegression>();
 	gpr_copy->load_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
 	file=new CSerializableAsciiFile(filename_predictions, 'r');
-	CRegressionLabels* predictions_copy=new CRegressionLabels();
+	Some<CRegressionLabels> predictions_copy=some<CRegressionLabels>();
 	predictions_copy->load_serializable(file);
 	file->close();
-	SG_UNREF(file);
 
 	/* now compare */
 	floatmax_t accuracy=1E-10;
 	EXPECT_TRUE(predictions->equals(predictions_copy, accuracy));
 	EXPECT_TRUE(gpr->equals(gpr_copy, accuracy));
 
-	SG_UNREF(predictions);
-	SG_UNREF(predictions_copy);
-	SG_UNREF(gpr);
-	SG_UNREF(gpr_copy);
 }
 #endif //USE_GPL_SHOGUN
 
@@ -243,16 +217,16 @@ TEST(SGObject,update_parameter_hash)
 		Y[i]=CMath::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	Some<CDenseFeatures<float64_t>> feat_train=some<CDenseFeatures<float64_t>>(X);
+	Some<CRegressionLabels> label_train=some<CRegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	Some<CGaussianKernel> kernel=some<CGaussianKernel>(10, shogun_sigma);
+	Some<CZeroMean> mean= some<CZeroMean>();
+	Some<CGaussianLikelihood> lik= some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	Some<CExactInferenceMethod> inf=some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -264,7 +238,6 @@ TEST(SGObject,update_parameter_hash)
 
 	EXPECT_TRUE(hash1==hash2);
 
-	SG_UNREF(inf);
 }
 #endif //USE_GPL_SHOGUN
 
@@ -290,16 +263,16 @@ TEST(SGObject,parameter_hash_changed)
 		Y[i]=CMath::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	Some<CDenseFeatures<float64_t>> feat_train=some<CDenseFeatures<float64_t>>(X);
+	Some<CRegressionLabels> label_train=some<CRegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	Some<CGaussianKernel> kernel=some<CGaussianKernel>(10, shogun_sigma);
+	Some<CZeroMean> mean=some<CZeroMean>();
+	Some<CGaussianLikelihood> lik=some<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	Some<CExactInferenceMethod> inf=some<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 	EXPECT_TRUE(inf->parameter_hash_changed());
 
@@ -310,7 +283,6 @@ TEST(SGObject,parameter_hash_changed)
 	inf->update_parameter_hash();
 	EXPECT_FALSE(inf->parameter_hash_changed());
 
-	SG_UNREF(inf);
 }
 #endif //USE_GPL_SHOGUN
 

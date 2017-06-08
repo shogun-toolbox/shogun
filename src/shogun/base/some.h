@@ -121,7 +121,7 @@ namespace shogun
 		{
 			if ((raw)->unref() == 0)
 				(raw) = NULL;
-		};
+		}
 	}
 	template <typename T>
 	Some<T> Some<T>::from_raw(T* raw)

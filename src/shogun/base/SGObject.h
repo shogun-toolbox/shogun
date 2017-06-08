@@ -26,7 +26,7 @@
 #include <shogun/lib/tag.h>
 
 #include <utility>
-
+#include <shogun/base/some.h>
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -533,7 +533,6 @@ protected:
 
 private:
 	void set_global_objects();
-	void unset_global_objects();
 	void init();
 
 	/** Checks if object has a parameter identified by a BaseTag.
@@ -597,22 +596,22 @@ protected:
 
 public:
 	/** io */
-	SGIO* io;
+	Some<SGIO> io;
 
 	/** parallel */
-	Parallel* parallel;
+	Some<Parallel> parallel;
 
 	/** version */
-	Version* version;
+	Some<Version> version;
 
 	/** parameters */
-	Parameter* m_parameters;
+	Parameter * m_parameters;
 
 	/** model selection parameters */
-	Parameter* m_model_selection_parameters;
+	Parameter * m_model_selection_parameters;
 
 	/** parameters wrt which we can compute gradients */
-	Parameter* m_gradient_parameters;
+	Parameter * m_gradient_parameters;
 
 	/** Hash of parameter values*/
 	uint32_t m_hash;

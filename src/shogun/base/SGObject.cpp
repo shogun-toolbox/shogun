@@ -19,6 +19,9 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
 #include <shogun/io/SerializableFile.h>
+#include <shogun/base/Parameter.h>
+#include <shogun/base/DynArray.h>
+#include <shogun/base/some.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
@@ -149,7 +152,8 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject() : self(), param_obs_list()
+CSGObject::CSGObject()
+: self(),param_obs_list(), io(nullptr), parallel(nullptr), version(nullptr)
 {
 	init();
 	set_global_objects();
@@ -173,7 +177,6 @@ CSGObject::~CSGObject()
 {
 	SG_SGCDEBUG("SGObject destroyed (%p)\n", this)
 
-	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
@@ -243,39 +246,24 @@ void CSGObject::set_global_objects()
 		exit(1);
 	}
 
-	SG_REF(sg_io);
-	SG_REF(sg_parallel);
-	SG_REF(sg_version);
-
 	io=sg_io;
 	parallel=sg_parallel;
 	version=sg_version;
 }
 
-void CSGObject::unset_global_objects()
-{
-	SG_UNREF(version);
-	SG_UNREF(parallel);
-	SG_UNREF(io);
-}
 
 void CSGObject::set_global_io(SGIO* new_io)
 {
-	SG_REF(new_io);
-	SG_UNREF(sg_io);
 	sg_io=new_io;
 }
 
 SGIO* CSGObject::get_global_io()
 {
-	SG_REF(sg_io);
 	return sg_io;
 }
 
 void CSGObject::set_global_parallel(Parallel* new_parallel)
 {
-	SG_REF(new_parallel);
-	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
 }
 
@@ -310,20 +298,16 @@ bool CSGObject::parameter_hash_changed()
 
 Parallel* CSGObject::get_global_parallel()
 {
-	SG_REF(sg_parallel);
 	return sg_parallel;
 }
 
 void CSGObject::set_global_version(Version* new_version)
 {
-	SG_REF(new_version);
-	SG_UNREF(sg_version);
 	sg_version=new_version;
 }
 
 Version* CSGObject::get_global_version()
 {
-	SG_REF(sg_version);
 	return sg_version;
 }
 
@@ -491,9 +475,6 @@ void CSGObject::init()
 	}
 #endif
 
-	io = NULL;
-	parallel = NULL;
-	version = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
@@ -734,9 +715,10 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	CSGObject* copy = create(get_name(), this->m_generic);
+	Some<CSGObject> copy = Some<CSGObject>::from_raw(create(get_name(), this->m_generic));
 
-	SG_REF(copy);
+	//TODO: delete this when we'll change signature
+	SG_REF(copy.get());
 
 	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
 			"this usually is that get_name() of the class returns something "
@@ -753,7 +735,8 @@ CSGObject* CSGObject::clone()
 		SG_DEBUG("Done cloning.\n");
 	}
 
-	return copy;
+
+	return copy.get();
 }
 
 bool CSGObject::clone_parameters(CSGObject* other)
