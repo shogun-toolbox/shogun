@@ -234,37 +234,37 @@ public:
 	 *
 	 * @param io io object to use
 	 */
-	void set_global_io(SGIO* io);
+	void set_global_io(Some<SGIO>& io);
 
 	/** get the io object
 	 *
 	 * @return io object
 	 */
-	SGIO* get_global_io();
+	Some<SGIO> get_global_io();
 
 	/** set the parallel object
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_global_parallel(Parallel* parallel);
+	void set_global_parallel(Some<Parallel>& parallel);
 
 	/** get the parallel object
 	 *
 	 * @return parallel object
 	 */
-	Parallel* get_global_parallel();
+	Some<Parallel> get_global_parallel();
 
 	/** set the version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_global_version(Version* version);
+	void set_global_version(Some<Version>& version);
 
 	/** get the version object
 	 *
 	 * @return version object
 	 */
-	Version* get_global_version();
+	Some<Version> get_global_version();
 
 	/** @return vector of names of all parameters which are registered for model
 	 * selection */

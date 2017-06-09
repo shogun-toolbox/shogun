@@ -249,18 +249,17 @@ void CSGObject::set_global_objects()
 	version=sg_version;
 }
 
-
-void CSGObject::set_global_io(SGIO* new_io)
+void CSGObject::set_global_io(Some<SGIO>& new_io)
 {
 	sg_io=new_io;
 }
 
-SGIO* CSGObject::get_global_io()
+Some<SGIO> CSGObject::get_global_io()
 {
-	return sg_io;
+	return Some<SGIO>::from_raw(sg_io);
 }
 
-void CSGObject::set_global_parallel(Parallel* new_parallel)
+void CSGObject::set_global_parallel(Some<Parallel>& new_parallel)
 {
 	sg_parallel=new_parallel;
 }
@@ -294,19 +293,19 @@ bool CSGObject::parameter_hash_changed()
 	return (m_hash!=hash);
 }
 
-Parallel* CSGObject::get_global_parallel()
+Some<Parallel> CSGObject::get_global_parallel()
 {
-	return sg_parallel;
+	return Some<Parallel>::from_raw(sg_parallel);
 }
 
-void CSGObject::set_global_version(Version* new_version)
+void CSGObject::set_global_version(Some<Version>& new_version)
 {
 	sg_version=new_version;
 }
 
-Version* CSGObject::get_global_version()
+Some<Version> CSGObject::get_global_version()
 {
-	return sg_version;
+	return Some<Version>::from_raw(sg_version);
 }
 
 bool CSGObject::is_generic(EPrimitiveType* generic) const
@@ -713,15 +712,11 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-<<<<<<< 37566447fe88cde4d6d2ab955619f3c273802cc8
 	Some<CSGObject> copy = Some<CSGObject>::from_raw(create(get_name(), this->m_generic));
-=======
-	Some<CSGObject> copy = Some<CSGObject>::from_raw(
-	    new_sgserializable(get_name(), this->m_generic));
->>>>>>> [SmartPointers] Style fixes.
 
-	// TODO: delete this when we'll change signature
-	SG_REF(copy.get());
+	// Increase copy reference counter
+	if (copy)
+		copy->ref();
 
 	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
 			"this usually is that get_name() of the class returns something "
@@ -738,7 +733,7 @@ CSGObject* CSGObject::clone()
 		SG_DEBUG("Done cloning.\n");
 	}
 
-	return copy.get();
+	return copy;
 }
 
 bool CSGObject::clone_parameters(CSGObject* other)
