@@ -84,6 +84,7 @@
 %include "bagging_includes.i"
 %include "Boost_includes.i"
 
+%include "some.i"
 %include "SGBase.i"
 %include "Machine.i"
 %include "IO.i"
