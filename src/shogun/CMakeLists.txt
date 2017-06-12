@@ -275,6 +275,17 @@ SET_LINALG_BACKEND(LINALG_EIGENSOLVER_LIB EIGSLV)
 
 ####### /LINALG
 
+FIND_PACKAGE(rxcpp)
+IF(NOT rxcpp_FOUND)
+    include(external/rxcpp)
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+            $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include/shogun/lib/external/rxcpp>
+            )
+ELSE()
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
+ENDIF()
+
 # prefer original LAPACK, if needed
 OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
 FIND_PACKAGE(LAPACK)
