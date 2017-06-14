@@ -60,15 +60,13 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_feat; i++)
 		w[i]=1.0/num_feat;
 
-	CSignal::clear_cancel();
-
 	//loop till we either get everything classified right or reach max_iter
 
 	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
 	{
 		converged=true;
 		SG_INFO("Iteration Number : %d of max %d\n", iter, max_iter);
-		
+
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			output[i] = features->dense_dot(i, w.vector, w.vlen) + bias;

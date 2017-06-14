@@ -72,7 +72,7 @@ CLibLinearMTL::~CLibLinearMTL()
 
 bool CLibLinearMTL::train_machine(CFeatures* data)
 {
-	CSignal::clear_cancel();
+	 
 	ASSERT(m_labels)
 
 	if (data)

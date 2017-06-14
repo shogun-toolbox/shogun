@@ -298,7 +298,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	{
 		SG_DEBUG("computing output on %d test examples\n", num_vectors)
 
-		CSignal::clear_cancel();
+		 
 
 		if (io->get_show_progress())
 			io->enable_progress();
@@ -495,7 +495,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	int32_t num_inds=indices.vlen;
 	SGVector<float64_t> output(num_inds);
 
-	CSignal::clear_cancel();
+	 
 
 	if (io->get_show_progress())
 		io->enable_progress();

@@ -427,7 +427,6 @@ bool CMKL::train_machine(CFeatures* data)
 #endif
 
 	mkl_iterations = 0;
-	CSignal::clear_cancel();
 
 	training_time_clock.start();
 

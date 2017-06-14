@@ -370,7 +370,6 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 
 	int32_t numberofsilpiterations=0;
 	bool final=false;
-	CSignal::clear_cancel();
 
 	while (!(CSignal::cancel_computations()) && !final)
 	{

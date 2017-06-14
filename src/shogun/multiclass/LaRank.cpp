@@ -619,7 +619,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
-	CSignal::clear_cancel();
+	 
 
 	if (data)
 	{
