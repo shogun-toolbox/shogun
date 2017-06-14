@@ -23,7 +23,7 @@ CGaussianNaiveBayes::CGaussianNaiveBayes() : CNativeMulticlassMachine(), m_featu
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(), m_variances(),
 	m_label_prob(), m_rates()
 {
-
+	init();
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
@@ -31,6 +31,7 @@ CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
+	init();
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels())
 	set_labels(train_labels);
 
@@ -226,3 +227,19 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 
 	return max_label_idx+m_min_label;
 };
+
+void CGaussianNaiveBayes::init()
+{
+	SG_ADD(&m_min_label, "m_min_label", "minimal label", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "m_num_classes",
+		"number of different classes (labels)", MS_NOT_AVAILABLE);
+	SG_ADD(&m_dim, "m_dim",
+		"dimensionality of feature space", MS_NOT_AVAILABLE);
+	SG_ADD(&m_means, "m_means",
+		"means for normal distributions of features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_variances, "m_variances",
+		"variances for normal distributions of features", MS_NOT_AVAILABLE);
+	SG_ADD(&m_label_prob, "m_label_prob",
+		"a priori probabilities of labels", MS_NOT_AVAILABLE);
+	SG_ADD(&m_rates, "m_rates", "label rates", MS_NOT_AVAILABLE);
+}
