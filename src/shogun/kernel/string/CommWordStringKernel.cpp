@@ -46,20 +46,17 @@ CCommWordStringKernel::CCommWordStringKernel(
 
 bool CCommWordStringKernel::init_dictionary(int32_t size)
 {
-	dictionary_size= size;
-	SG_FREE(dictionary_weights);
-	dictionary_weights=SG_MALLOC(float64_t, size);
+	dictionary_weights=SGVector<float64_t>(size);
 	SG_DEBUG("using dictionary of %d words\n", size)
 	clear_normal();
 
-	return dictionary_weights!=NULL;
+	return dictionary_weights.vector!=NULL;
 }
 
 CCommWordStringKernel::~CCommWordStringKernel()
 {
 	cleanup();
 
-	SG_FREE(dictionary_weights);
 	SG_FREE(dict_diagonal_optimization);
 }
 
@@ -98,7 +95,7 @@ float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 	ASSERT((1<<(sizeof(uint16_t)*8)) > alen)
 
 	int32_t num_symbols=(int32_t) l->get_num_symbols();
-	ASSERT(num_symbols<=dictionary_size)
+	ASSERT(num_symbols<=dictionary_weights.vlen)
 
 	int32_t* dic = dict_diagonal_optimization;
 	memset(dic, 0, num_symbols*sizeof(int32_t));
@@ -286,7 +283,7 @@ void CCommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 void CCommWordStringKernel::clear_normal()
 {
-	memset(dictionary_weights, 0, dictionary_size*sizeof(float64_t));
+	dictionary_weights.zero();
 	set_is_initialized(false);
 }
 
@@ -600,9 +597,6 @@ char* CCommWordStringKernel::compute_consensus(
 
 void CCommWordStringKernel::init()
 {
-	dictionary_size=0;
-	dictionary_weights=NULL;
-
 	use_sign=false;
 	use_dict_diagonal_optimization=false;
 	dict_diagonal_optimization=NULL;
@@ -611,8 +605,8 @@ void CCommWordStringKernel::init()
 	init_dictionary(1<<(sizeof(uint16_t)*8));
 	set_normalizer(new CSqrtDiagKernelNormalizer(use_dict_diagonal_optimization));
 
-	m_parameters->add_vector(&dictionary_weights, &dictionary_size, "dictionary_weights",
-			"Dictionary for applying kernel.");
+	SG_ADD(&dictionary_weights,  "dictionary_weights",
+			"Dictionary for applying kernel.", MS_NOT_AVAILABLE);
 	SG_ADD(&use_sign, "use_sign",
 	    "If signum(counts) is used instead of counts.", MS_AVAILABLE);
 	SG_ADD(&use_dict_diagonal_optimization,
