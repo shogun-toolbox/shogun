@@ -51,7 +51,7 @@ CNewtonSVM::~CNewtonSVM()
 
 bool CNewtonSVM::train_machine(CFeatures* data)
 {
-	CSignal::clear_cancel();
+	 
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 

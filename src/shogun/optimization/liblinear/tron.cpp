@@ -104,7 +104,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	iter = 1;
 
-	CSignal::clear_cancel();
+	 
 	CTime start_time;
 	auto pb = progress(range(10));
 

@@ -79,7 +79,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 
 	bool primalcool;
 	bool dualcool;
-	CSignal::clear_cancel();
+	 
 
 	//if (nustop)
 	//etas[1] = 1;

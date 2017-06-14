@@ -430,7 +430,6 @@ void Solver::Solve(
 	}
 
 	// initialize gradient
-	CSignal::clear_cancel();
 	CTime start_time;
 	{
 		auto pb = progress(range(l));
