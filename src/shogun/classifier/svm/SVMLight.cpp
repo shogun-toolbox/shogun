@@ -646,7 +646,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 #ifdef CYGWIN
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else
-	  CSignal::clear_cancel();
+	   
 	  for (;((!CSignal::cancel_computations()) && ((iteration<3 || (!mkl_converged && callback) ) || (retrain && (!terminate)))); iteration++){
 #endif
 

@@ -62,7 +62,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	int32_t num_vectors=stop-start;
 	ASSERT(num_vectors>0)
 
-	CSignal::clear_cancel();
+	 
 
 	int32_t num_threads;
 	int32_t step;
@@ -113,7 +113,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 	ASSERT(sub_index)
 	ASSERT(output)
 
-	CSignal::clear_cancel();
+	 
 
 	auto pb = progress(range(num), *this->io);
 	int32_t num_threads;

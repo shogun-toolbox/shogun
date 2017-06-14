@@ -124,7 +124,6 @@ bool CLPBoost::train_machine(CFeatures* data)
 
 	int32_t num_hypothesis=0;
 	CTime time;
-	CSignal::clear_cancel();
 
 	while (!(CSignal::cancel_computations()))
 	{
