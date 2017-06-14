@@ -35,7 +35,6 @@ ShogunException::init(const char* str)
 ShogunException::ShogunException(const char* str)
 {
 #ifndef WIN32
-	CSignal::unset_handler();
 #endif
 
 	init(str);

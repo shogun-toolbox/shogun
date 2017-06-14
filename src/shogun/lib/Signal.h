@@ -12,6 +12,7 @@
 #define __SIGNAL__H_
 
 #include <shogun/lib/config.h>
+#include <rxcpp/rx-includes.hpp>
 
 #if defined(__MINGW64__) || defined(_MSC_VER)
 typedef unsigned long sigset_t;
@@ -73,36 +74,28 @@ namespace shogun
 class CSignal : public CSGObject
 {
 	public:
-		/** default constructor */
+
 		CSignal();
+		CSignal(bool active);
 		virtual ~CSignal();
 
-		/** handler
+		/** Signal handler. Need to be registered with std::signal.
 		 *
 		 * @param signal signal number
 		 */
 		static void handler(int signal);
 
-		/** set handler
-		 *
-		 * @return if setting was successful
+		/**
+		 * Get SIGINT observable
+		 * @return observable
 		 */
-		static bool set_handler();
+		rxcpp::connectable_observable<int> get_SIGINT_observable();
 
-		/** unset handler
-		 *
-		 * @return if unsetting was successful
-		 */
-		static bool unset_handler();
-
-		/** clear signals */
-		static void clear();
-
-		/** clear cancel flag signals */
-		static void clear_cancel();
-
-		/** set cancel flag signals */
-		static void set_cancel(bool immediately=false);
+		/**
+		* Get SIGURG observable
+		* @ return observable
+		*/
+		rxcpp::connectable_observable<int> get_SIGURG_observable();
 
 		/** cancel computations
 		 *
@@ -110,20 +103,14 @@ class CSignal : public CSGObject
 		 */
 		static inline bool cancel_computations()
 		{
-#ifndef DISABLE_CANCEL_CALLBACK
-			if (sg_cancel_computations)
-				sg_cancel_computations(cancel_computation, cancel_immediately);
-#endif
-			if (cancel_immediately)
-				throw ShogunException("Computations have been cancelled immediately");
-
-			return cancel_computation;
+			return false;
 		}
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Signal"; }
 
-	protected:
+	private:
+
 		/** signals; handling external lib  */
 		static int signals[NUMTRAPPEDSIGS];
 
@@ -131,13 +118,10 @@ class CSignal : public CSGObject
 		static struct sigaction oldsigaction[NUMTRAPPEDSIGS];
 
 		/** active signal */
-		static bool active;
+		bool m_active;
 
-		/** if computation should be cancelled */
-		static bool cancel_computation;
-
-		/** if shogun should return ASAP */
-		static bool cancel_immediately;
+		static rxcpp::connectable_observable<int> m_sigint_observable;
+		static rxcpp::connectable_observable<int> m_sigurg_observable;
 };
 }
 #endif // __SIGNAL__H_
