@@ -45,6 +45,22 @@
 namespace shogun
 {
 
+namespace linalg
+{
+
+/**
+ * @brief
+ * Type used to choose the pivoting in algorithms
+ * that make use of QR decomposition
+ */
+enum class QRDecompositionPivoting {
+	None,
+	Column,
+	Full
+};
+
+}
+
 /** @brief Base interface of generic linalg methods
  * and generic memory transfer methods.
  */
@@ -147,6 +163,21 @@ public:
 	}
 	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
+
+	/**
+	 * Wrapper solver with QR decomposition.
+	 *
+	 * @see linalg::qr_solver
+	 */
+	#define BACKEND_GENERIC_QR_SOLVER(Type, Container) \
+	virtual Container<Type> qr_solver(const Container<Type>& A, const Container<Type>& b, \
+		linalg::QRDecompositionPivoting pivoting = linalg::QRDecompositionPivoting::None) const \
+	{  \
+		SG_SNOTIMPLEMENTED; \
+		return 0; \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_QR_SOLVER
 
 	/**
 	 * Wrapper method of vector dot-product that works with generic vectors.

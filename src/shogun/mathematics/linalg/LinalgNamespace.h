@@ -453,6 +453,28 @@ SGVector<T> cholesky_solver(const SGMatrix<T>& L, const SGVector<T>& b,
 }
 
 /**
+ * Solve the linear equations \f$Ax=b\f$ by means of the
+ * QR factorization of \f$A\f$
+ *
+ * @param A Square matrix
+ * @param b Right-hand side matrix
+ * @param p Pivoting type in QR decomposition
+ * @return \f$\x\f$
+ */
+template <typename T>
+SGMatrix<T> qr_solver(const SGMatrix<T>& A, const SGMatrix<T>& b,
+		QRDecompositionPivoting pivoting = QRDecompositionPivoting::None)
+{
+	REQUIRE(A.num_rows == A.num_cols, "Matrix is not square!\n");
+	REQUIRE((A.num_cols == b.num_rows),
+			"Number of columns of matrix A (%d) must match \
+					number of rows of matrix b (%d).\n",
+			A.num_cols, b.num_rows);
+
+	return infer_backend(A, b)->qr_solver(A, b, pivoting);
+}
+
+/**
  * Vector dot-product that works with generic vectors.
  *
  * @param a First vector
