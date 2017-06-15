@@ -14,7 +14,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 #include <shogun/base/init.h>
 
 #include <shogun/mathematics/Math.h>
@@ -175,8 +175,8 @@ SGMatrix<int32_t> get_edge_list(EGraphStructure graph_type, int32_t num_classes)
 
 void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
 		CFactorGraphFeatures * fg_feats, CFactorGraphLabels * fg_labels,
-		const DynArray<CTableFactorType *>& v_ftp_u,
-		const DynArray<CTableFactorType *>& v_ftp_t)
+		const std::vector<CTableFactorType*>& v_ftp_u,
+		const std::Vector<CTableFactorType*>& v_ftp_t)
 {
 	int32_t num_sample        = labels.num_cols;
 	int32_t num_classes       = labels.num_rows;
@@ -262,7 +262,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 	int32_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
 	// so we create num_classes different unary factor types
-	DynArray<CTableFactorType *> v_ftp_u;
+	std::vector<CTableFactorType*> v_ftp_u;
 
 	for (int32_t u = 0; u < num_classes; u++)
 	{
@@ -271,12 +271,12 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 		card_u[0] = NUM_STATUS;
 		SGVector<float64_t> w_u(dim * NUM_STATUS);
 		w_u.zero();
-		v_ftp_u.append_element(new CTableFactorType(tid, card_u, w_u));
+		v_ftp_u.push_back(new CTableFactorType(tid, card_u, w_u));
 	}
 
 	// define factor type: tree edge factor
 	// note that each edge is a new type
-	DynArray<CTableFactorType *> v_ftp_t;
+	std::vector<CTableFactorType*> v_ftp_t;
 
 	for (int32_t t = 0; t < num_edges; t++)
 	{
@@ -286,7 +286,7 @@ void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<fl
 		card_t[1] = NUM_STATUS;
 		SGVector<float64_t> w_t(NUM_STATUS * NUM_STATUS);
 		w_t.zero();
-		v_ftp_t.append_element(new CTableFactorType(tid, card_t, w_t));
+		v_ftp_t.push_back(new CTableFactorType(tid, card_t, w_t));
 	}
 
 	// prepare features and labels in factor graph
