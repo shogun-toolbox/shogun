@@ -297,9 +297,9 @@ float32_t CVowpalWabbit::inline_l1_predict(VwExample* &ex)
 
 	prediction += features->dense_dot_truncated(weights, ex, env->l1_regularization * env->update_sum);
 
-	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
+	for (int32_t k = 0; k < int32_t(env->pairs.size()); k++)
 	{
-		char* i = env->pairs.get_element(k);
+		char* i = env->pairs.at(k);
 
 		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
 		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
@@ -322,9 +322,9 @@ float32_t CVowpalWabbit::inline_predict(VwExample* &ex)
 	vw_size_t thread_mask = env->thread_mask;
 	prediction += features->dense_dot(weights, 0);
 
-	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
+	for (int32_t k = 0; k < int32_t(env->pairs.size()); k++)
 	{
-		char* i = env->pairs.get_element(k);
+		char* i = env->pairs.at(k);
 
 		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
 		temp.begin = ex->atomics[(int32_t)(i[0])].begin;
@@ -446,9 +446,9 @@ float32_t CVowpalWabbit::compute_exact_norm(VwExample* &ex, float32_t& sum_abs_x
 		}
 	}
 
-	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
+	for (int32_t k = 0; k < int32_t(env->pairs.size()); k++)
 	{
-		char* i = env->pairs.get_element(k);
+		char* i = env->pairs.at(k);
 
 		v_array<VwFeature> temp = ex->atomics[(int32_t)(i[0])];
 		temp.begin = ex->atomics[(int32_t)(i[0])].begin;

@@ -220,9 +220,9 @@ void CStreamingVwFeatures::setup_example(VwExample* ae)
 	}
 
 	// For quadratic features
-	for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
+	for (int32_t k = 0; k < int32_t(env->pairs.size()); k++)
 	{
-		char* i = env->pairs.get_element(k);
+		char* i = env->pairs.at(k);
 
 		ae->num_features
 			+= (ae->atomics[(int32_t)(i[0])].end - ae->atomics[(int32_t)(i[0])].begin)

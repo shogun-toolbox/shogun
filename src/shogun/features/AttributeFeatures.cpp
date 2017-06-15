@@ -34,17 +34,17 @@ CFeatures* CAttributeFeatures::get_attribute(char* attr_name)
 
 void CAttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj)
 {
-		T_ATTRIBUTE a= features.get_element_safe(idx);
-		attr_name= a.attr_name;
-		attr_obj= a.attr_obj;
-		SG_REF(a.attr_obj);
+	T_ATTRIBUTE a = features.at(idx);
+	attr_name = a.attr_name;
+	attr_obj = a.attr_obj;
+	SG_REF(a.attr_obj);
 }
 
 bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 {
 	int32_t idx=find_attr_index(attr_name);
 	if (idx==-1)
-		idx=features.get_num_elements();
+		idx = features.size();
 
 	T_ATTRIBUTE a;
 	a.attr_name=get_strdup(attr_name);
@@ -52,7 +52,15 @@ bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 
 	SG_REF(attr_obj);
 
-	return features.set_element(a, idx);
+	try
+	{
+		features.insert(features.begin() + idx, a);
+		return true;
+	}
+	catch (const std::bad_alloc&)
+	{
+		return false;
+	}
 }
 
 bool CAttributeFeatures::del_attribute(char* attr_name)
@@ -71,12 +79,12 @@ bool CAttributeFeatures::del_attribute(char* attr_name)
 
 int32_t CAttributeFeatures::get_num_attributes()
 {
-	return features.get_num_elements();
+	return features.size();
 }
 
 int32_t CAttributeFeatures::find_attr_index(char* attr_name)
 {
-	int32_t n=features.get_num_elements();
+	int32_t n=features.size();
 	for (int32_t i=0; i<n; i++)
 	{
 		if (!strcmp(features[n].attr_name, attr_name))
@@ -88,7 +96,7 @@ int32_t CAttributeFeatures::find_attr_index(char* attr_name)
 
 CAttributeFeatures::~CAttributeFeatures()
 {
-	int32_t n=features.get_num_elements();
+	int32_t n = features.size();
 	for (int32_t i=0; i<n; i++)
 		SG_UNREF_NO_NULL(features[i].attr_obj);
 }

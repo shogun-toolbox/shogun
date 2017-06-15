@@ -15,8 +15,6 @@
 %newobject CModelSelectionParameters::get_combinations();
 %newobject CModelSelectionParameters::get_single_combination();
 
-/* what about parameter_set_multiplication returns new DynArray<Parameter*>? */
-
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
 %rename(RandomSearchModelSelection) CRandomSearchModelSelection;

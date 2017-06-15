@@ -15,6 +15,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Trie.h>
 #include <shogun/lib/common.h>
+#include <vector>
 
 #include <shogun/kernel/string/WeightedDegreePositionStringKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
@@ -1517,10 +1518,11 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 
 	//backtracking and scoring table
 	int32_t num_tables=CMath::max(1,num_feat-degree+1);
-	DynArray<ConsensusEntry>** table=SG_MALLOC(DynArray<ConsensusEntry>*, num_tables);
+	std::vector<ConsensusEntry>** table =
+	    SG_MALLOC(std::vector<ConsensusEntry>*, num_tables);
 
 	for (int32_t i=0; i<num_tables; i++)
-		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
+		table[i] = new std::vector<ConsensusEntry>(num_suppvec / 10);
 
 	//compute consensus via dynamic programming
 	for (auto i : progress(range(num_tables), *this->io))
@@ -1568,18 +1570,18 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 	//backtracking start
 	int32_t max_idx=-1;
 	float32_t max_score=0;
-	int32_t num_elements=table[num_tables-1]->get_num_elements();
+	int32_t num_elements = table[num_tables - 1]->size();
 
 	for (int32_t i=0; i<num_elements; i++)
 	{
-		float64_t sc=table[num_tables-1]->get_element(i).score;
+		float64_t sc = table[num_tables - 1]->at(i).score;
 		if (sc>max_score || max_idx==-1)
 		{
 			max_idx=i;
 			max_score=sc;
 		}
 	}
-	uint64_t endstr=table[num_tables-1]->get_element(max_idx).string;
+	uint64_t endstr = table[num_tables - 1]->at(max_idx).string;
 
 	SG_INFO("max_idx:%d num_el:%d num_feat:%d num_tables:%d max_score:%f\n", max_idx, num_elements, num_feat, num_tables, max_score)
 
@@ -1591,8 +1593,9 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 		for (int32_t i=num_tables-1; i>=0; i--)
 		{
 			//SG_PRINT("max_idx: %d, i:%d\n", max_idx, i)
-			result[i]=acgt[table[i]->get_element(max_idx).string >> (2*(degree-1)) & 3];
-			max_idx=table[i]->get_element(max_idx).bt;
+			result[i] =
+			    acgt[table[i]->at(max_idx).string >> (2 * (degree - 1)) & 3];
+			max_idx = table[i]->at(max_idx).bt;
 		}
 	}
 

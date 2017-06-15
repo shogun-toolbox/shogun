@@ -116,11 +116,11 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 		io_temp.write_file((char *)&env->thread_bits, sizeof(env->thread_bits));
 
 		// For paired namespaces forming quadratic features
-		int32_t len = env->pairs.get_num_elements();
+		int32_t len = env->pairs.size();
 		io_temp.write_file((char *)&len, sizeof(len));
 
-		for (int32_t k = 0; k < env->pairs.get_num_elements(); k++)
-			io_temp.write_file(env->pairs.get_element(k), 2);
+		for (int32_t k = 0; k < env->pairs.size(); k++)
+			io_temp.write_file(env->pairs.at(k), 2);
 
 		// ngram and skips information
 		io_temp.write_file((char*)&env->ngram, sizeof(env->ngram));
@@ -139,7 +139,7 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 		len = sprintf(buff, "bits:%d thread_bits:%d\n", (int32_t)env->num_bits, (int32_t)env->thread_bits);
 		io_temp.write_file(buff, len);
 
-		if (env->pairs.get_num_elements() > 0)
+		if (env->pairs.size() > 0)
 		{
 			len = sprintf(buff, "\n");
 			io_temp.write_file(buff, len);
@@ -220,7 +220,7 @@ void CVwRegressor::load_regressor(char* file)
 	source.read_file((char *)&len, sizeof(len));
 
 	// Read paired namespace information
-	DynArray<char*> local_pairs;
+	std::vector<char*> local_pairs;
 	for (; len > 0; len--)
 	{
 		char pair[3];

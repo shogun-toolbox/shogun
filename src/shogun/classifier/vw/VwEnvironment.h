@@ -18,7 +18,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/DynArray.h>
+#include <vector>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/v_array.h>
@@ -193,7 +193,7 @@ public:
 	bool ignore[256];
 
 	/// Pairs of features to cross for quadratic updates
-	DynArray<char*> pairs;
+	std::vector<char*> pairs;
 
 	/// VW version
 	const char* vw_version;
