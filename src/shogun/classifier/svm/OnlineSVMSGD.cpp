@@ -100,8 +100,6 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if (features->is_seekable())
 		features->reset_stream();
 
-	 
-
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))

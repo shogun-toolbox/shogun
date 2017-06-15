@@ -163,7 +163,6 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 			  "loss", "last", "counter", "weight", "label", "predict", "features");
 	}
 
-	 
 	features->start_parser();
 	while (!(CSignal::cancel_computations()) && (env->passes_complete < env->num_passes))
 	{
