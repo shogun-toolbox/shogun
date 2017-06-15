@@ -137,7 +137,6 @@ bool CSGDQN::train(CFeatures* data)
 	calibrate();
 
 	SG_INFO("Training on %d vectors\n", num_vec)
-	 
 
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
