@@ -1252,7 +1252,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 
 	if (num_threads < 2)
 	{
-        
+
 	   auto pb = progress(range(num_feat), *this->io);
 	   for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 			{
@@ -1281,7 +1281,6 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	else
 	{
 
-		 
 		auto pb = progress(range(num_feat), *this->io);
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{

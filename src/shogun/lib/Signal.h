@@ -11,8 +11,8 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
-#include <shogun/lib/config.h>
 #include <rxcpp/rx-includes.hpp>
+#include <shogun/lib/config.h>
 
 #if defined(__MINGW64__) || defined(_MSC_VER)
 typedef unsigned long sigset_t;
@@ -74,7 +74,6 @@ namespace shogun
 class CSignal : public CSGObject
 {
 	public:
-
 		CSignal();
 		CSignal(bool active);
 		virtual ~CSignal();
@@ -110,7 +109,6 @@ class CSignal : public CSGObject
 		virtual const char* get_name() const { return "Signal"; }
 
 	private:
-
 		/** signals; handling external lib  */
 		static int signals[NUMTRAPPEDSIGS];
 

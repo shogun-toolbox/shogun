@@ -58,7 +58,6 @@ CLibLinearRegression::~CLibLinearRegression()
 
 bool CLibLinearRegression::train_machine(CFeatures* data)
 {
-	 
 
 	if (data)
 		set_features((CDotFeatures*)data);
