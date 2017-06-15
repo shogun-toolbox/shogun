@@ -33,12 +33,16 @@ class CDynamicObjectArray : public CSGObject
 	public:
 		/** default constructor */
 		CDynamicObjectArray()
-		: CSGObject(), m_array()
+		: CSGObject()
 		{
 			dim1_size=1;
 			dim2_size=1;
 			dim3_size=1;
 
+			num_elements = 0;
+			free_array = true;
+			resize_granularity = 128;
+			m_array = std::vector<CSGObject*>(128);
 			init();
 		}
 
@@ -49,12 +53,16 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim3 dimension 3
 		 */
 		CDynamicObjectArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
-		: CSGObject(), m_array(dim1*dim2*dim3)
+		: CSGObject()
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
 			dim3_size=dim3;
 
+			num_elements = 0;
+			free_array = true;
+			resize_granularity = dim1 * dim2 * dim3;
+			m_array = std::vector<CSGObject*>(dim1 * dim2 * dim3);
 			init();
 		}
 
@@ -66,12 +74,16 @@ class CDynamicObjectArray : public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
+		: CSGObject()
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
 			dim3_size=1;
 
+			free_array = p_free_array;
+			num_elements = p_dim1_size;
+			resize_granularity = 128;
+			m_array.assign(p_array, p_array + (p_dim1_size));
 			init();
 		}
 
@@ -85,12 +97,16 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
+		: CSGObject()
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=1;
 
+			free_array = p_free_array;
+			num_elements = p_dim1_size * p_dim2_size;
+			resize_granularity = 128;
+			m_array.assign(p_array, p_array + (p_dim1_size * p_dim2_size));
 			init();
 		}
 
@@ -105,12 +121,16 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
+		: CSGObject()
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=p_dim3_size;
 
+			num_elements = p_dim1_size * p_dim2_size * p_dim3_size;
+			resize_granularity = 128;
+			m_array.assign(
+			    p_array, p_array + (p_dim1_size * p_dim2_size * p_dim3_size));
 			init();
 		}
 
@@ -122,7 +142,10 @@ class CDynamicObjectArray : public CSGObject
 		 * @return what has been set (minimum is 128)
 		 */
 		inline int32_t set_granularity(int32_t g)
-		{ return m_array.set_granularity(g); }
+		{ 
+			resize_granularity = g;
+			return true;
+		}
 
 		/** get array size (including granularity buffer)
 		 *
@@ -130,7 +153,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline int32_t get_array_size()
 		{
-			return m_array.get_array_size();
+			return m_array.size();
 		}
 
 		/** return 2d array size
@@ -181,7 +204,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline int32_t get_num_elements() const
 		{
-			return m_array.get_num_elements();
+			return num_elements;
 		}
 
 		/** get array element at index
@@ -193,7 +216,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* get_element(int32_t index) const
 		{
-			CSGObject* elem=m_array.get_element(index);
+			CSGObject* elem=m_array.at(index);
 			SG_REF(elem);
 			return elem;
 		}
@@ -216,7 +239,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* get_last_element() const
 		{
-			CSGObject* e=m_array.get_last_element();
+			CSGObject* e=m_array[num_elements - 1];
 			SG_REF(e);
 			return e;
 		}
@@ -230,7 +253,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* get_element_safe(int32_t index) const
 		{
-			CSGObject* e=m_array.get_element_safe(index);
+			CSGObject* e=m_array.at(index);
 			SG_REF(e);
 			return e;
 		}
@@ -249,17 +272,20 @@ class CDynamicObjectArray : public CSGObject
 			CSGObject* old=NULL;
 
 			if (idx<get_num_elements())
-				old = (CSGObject*) m_array.get_element(idx);
-
-			bool success=m_array.set_element(e, idx);
-			if (success)
-			{
-				SG_REF(e);
-				SG_UNREF(old);
-			}
+				old = (CSGObject*) m_array[idx];
 
 			/* ref before unref to prevent deletion if new=old */
-			return success;
+			try
+ 			{
+				m_array.insert(m_array.begin() + idx, e);
+				SG_REF(e);
+				SG_UNREF(old);
+				return true;
+			}
+			catch (const std::bad_alloc&)
+			{
+				return false;
+			}
 		}
 
 		/** insert array element at index
@@ -270,11 +296,18 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline bool insert_element(CSGObject* e, int32_t index)
 		{
-			bool success=m_array.insert_element(e, index);
-			if (success)
+			try
+			{
+				m_array.insert(m_array.begin() + index, e);
 				SG_REF(e);
-
-			return success;
+  
+				num_elements++;
+				return true;
+			}
+			catch (const std::bad_alloc&)
+			{
+				return false;
+			}
 		}
 
 		/** append array element to the end of array
@@ -284,11 +317,18 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline bool append_element(CSGObject* e)
 		{
-			bool success=m_array.append_element(e);
-			if (success)
+			if (num_elements < int32_t(m_array.size()))
+			{
+				m_array[num_elements] = e;
 				SG_REF(e);
-
-			return success;
+			}
+			else
+			{
+				m_array.push_back(e);
+				SG_REF(e);
+			}
+			++num_elements;
+			return true;
 		}
 
 		/** STD VECTOR compatible. Append array element to the end
@@ -298,8 +338,17 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline void push_back(CSGObject* e)
 		{
-			SG_REF(e);
-			m_array.push_back(e);
+			if (num_elements < int32_t(m_array.size()))
+			{
+				m_array[num_elements] = e;
+				SG_REF(e);
+			}
+			else
+			{
+				m_array.push_back(e);
+				SG_REF(e);
+			}
+			++num_elements;
 		}
 
 		/** STD VECTOR compatible. Delete array element at the end
@@ -307,10 +356,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline void pop_back()
 		{
-			CSGObject* e=m_array.back();
-			SG_UNREF(e);
-
-			m_array.pop_back();
+			delete_element(num_elements-1);
 		}
 
 		/** STD VECTOR compatible. Return array element at the end
@@ -320,7 +366,7 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* back() const
 		{
-			CSGObject* e=m_array.back();
+			CSGObject* e=m_array[num_elements - 1];
 			SG_REF(e);
 			return e;
 		}
@@ -333,7 +379,16 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline int32_t find_element(CSGObject* elem) const
 		{
-			return m_array.find_element(elem);
+			int32_t index = -1;
+			for (index_t i = 0; i < num_elements; i++)
+			{
+				if (m_array[i] == elem)
+				{
+					index = i;
+					break;
+				}
+			}
+			return index;
 		}
 
 		/** delete array element at idx
@@ -344,25 +399,34 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			CSGObject* e=m_array.get_element(idx);
+			int32_t old_length = m_array.size();
+			CSGObject* e = m_array[idx];
 			SG_UNREF(e);
-			m_array.set_element(NULL, idx);
-
-			return m_array.delete_element(idx);
+			m_array.erase(m_array.begin() + idx);
+			if (old_length > int32_t(m_array.size()))
+			{
+				--num_elements;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		/** clear the array (with zeros) */
 		inline void clear_array()
 		{
 			unref_all();
-			m_array.clear_array(NULL);
+			std::fill(m_array.begin(), m_array.end(), nullptr);
 		}
 
 		/** resets the array */
 		inline void reset_array()
 		{
 			unref_all();
-			m_array.reset(NULL);
+			num_elements = 0;
+			std::fill(m_array.begin(), m_array.end(), nullptr);
 		}
 
 		/** operator overload for array assignment
@@ -379,19 +443,64 @@ class CDynamicObjectArray : public CSGObject
 			/* unref after adding to avoid possible deletion */
 			unref_all();
 
-			/* copy pointer DynArray */
+			/* copy the vector and number of elements */
 			m_array=orig.m_array;
+			num_elements=orig.num_elements;
 			return *this;
 		}
 
 		/** @return underlying array of pointers */
-		inline CSGObject** get_array() const { return m_array.get_array(); }
+		inline CSGObject** get_array() const 
+		{ 
+			return (typename std::vector<CSGObject*>::pointer) m_array.data(); 
+		}
+
+		/** get array element at index as pointer
+		 *
+		 * (does NOT do bounds checking)
+		 *
+		 * @param index index
+		 * @return array element at index
+		 */
+		inline typename std::vector<CSGObject*>::pointer get_element_ptr(int32_t index)
+		{
+			return &m_array[index];
+		}
 
 		/** shuffles the array (not thread safe!) */
-		inline void shuffle() { m_array.shuffle(); }
+		inline void shuffle() 
+		{ 
+			for (index_t i = 0; i <= num_elements - 1; ++i)
+				CMath::swap(
+				    m_array[i], m_array[CMath::random(i, num_elements - 1)]); 
+		}
 
 		/** shuffles the array with external random state */
-		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
+		inline void shuffle(CRandom * rand) 
+		{ 
+			for (index_t i = 0; i <= num_elements - 1; ++i)
+				CMath::swap(
+				    m_array[i], m_array[rand->random(i, num_elements - 1)]);
+		}
+
+ 		/** resize array
+  		 *
+  		 * @param p_array_size the array size we want to have
+		 * @param exact_resize resize exactly to the ndim1 * ndim2 * ndim3
+		 * @return if resizing was successful
+		 */
+		inline void
+				resize_array(int32_t p_array_size, bool exact_resize = false)
+		{
+			int32_t new_num_elements = p_array_size;
+ 			if (!exact_resize)
+			{
+				new_num_elements =
+				    ((new_num_elements / resize_granularity) + 1) *
+				    resize_granularity;
+			}
+			m_array.resize(new_num_elements);
+		}
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -409,7 +518,7 @@ class CDynamicObjectArray : public CSGObject
 		{
 			CSGObject::load_serializable_pre();
 
-			m_array.resize_array(m_array.get_num_elements(), true);
+			resize_array(get_num_elements(), true);
 		}
 
 		/** Can (optionally) be overridden to pre-initialize some member
@@ -424,7 +533,7 @@ class CDynamicObjectArray : public CSGObject
 		{
 			CSGObject::save_serializable_pre();
 
-			m_array.resize_array(m_array.get_num_elements(), true);
+			resize_array(get_num_elements(), true);
 		}
 
 		virtual CSGObject* clone()
@@ -434,7 +543,7 @@ class CDynamicObjectArray : public CSGObject
 			// current_num_elements as size (see parameter
 			// registration) the cloned version has less memory
 			// allocated than known to dynarray. We fix this here.
-			cloned->m_array.num_elements = cloned->m_array.current_num_elements;
+			// cloned->num_elements = cloned->m_array.size();
 			return cloned;
 		}
 
@@ -442,16 +551,12 @@ class CDynamicObjectArray : public CSGObject
 		/** register parameters */
 		virtual void init()
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.current_num_elements, "array",
-									 "Memory for dynamic array.");
-			SG_ADD(&m_array.resize_granularity,
+			CSGObject** head = m_array.data();
+			m_parameters->add_vector(&head, &num_elements, "array", "Memory for dynamic array.");
+			SG_ADD(&resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.use_sg_mallocs,
-							  "use_sg_malloc",
-							  "whether SG_MALLOC or malloc should be used",
-							  MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.free_array,
+			SG_ADD(&free_array,
 							  "free_array",
 							  "whether array must be freed",
 							  MS_NOT_AVAILABLE);
@@ -464,15 +569,15 @@ class CDynamicObjectArray : public CSGObject
 		inline void unref_all()
 		{
 			/* SG_UNREF all my elements */
-			for (index_t i=0; i<m_array.get_num_elements(); ++i)
+			for (index_t i=0; i<get_num_elements(); ++i)
 			{
-				SG_UNREF(*m_array.get_element_ptr(i));
+				SG_UNREF(*get_element_ptr(i));
 			}
 		}
 
 	private:
 		/** underlying array */
-		DynArray<CSGObject*> m_array;
+		std::vector<CSGObject*> m_array;
 
 		/** dimension 1 */
 		int32_t dim1_size;
@@ -482,6 +587,14 @@ class CDynamicObjectArray : public CSGObject
 
 		/** dimension 3 */
 		int32_t dim3_size;
+		
+		/** number of elements */
+		int32_t num_elements;
+
+		/** if array must be freed */
+		bool free_array;
+
+		int32_t resize_granularity;
 };
 }
 #endif /* _DYNAMIC_OBJECT_ARRAY_H_  */

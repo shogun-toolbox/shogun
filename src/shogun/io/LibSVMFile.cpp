@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <shogun/io/LibSVMFile.h>
 #include <vector>
+#include <algorithm>
 
-#include <shogun/base/DynArray.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
@@ -162,9 +162,9 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 		SGVector<char> line;                                                   \
                                                                                \
 		int32_t num_feat_entries = 0;                                          \
-		DynArray<SGVector<char>> entries_feat;                                 \
-		DynArray<float64_t> entries_label;                                     \
-		DynArray<float64_t> classes;                                           \
+		std::vector<SGVector<char>> entries_feat;                                 \
+		std::vector<float64_t> entries_label;                                     \
+		std::vector<float64_t> classes;                                           \
                                                                                \
 		mat_feat = SG_MALLOC(SGSparseVector<sg_type>, num_vec);                \
 		multilabel = SG_MALLOC(SGVector<float64_t>, num_vec);                  \
@@ -176,7 +176,9 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 		while (m_line_reader->has_next())                                      \
 		{                                                                      \
 			num_feat_entries = 0;                                              \
-			entries_feat.reset(SGVector<char>(false));                         \
+			/*std::fill(entries_feat.begin(), entries_feat.end(),               \
+				(SGVector<char>(false)));*/                                      \
+			entries_feat.clear();                                           \
 			line = m_line_reader->read_line();                                 \
                                                                                \
 			m_parser->set_tokenizer(m_whitespace_tokenizer);                   \
@@ -231,14 +233,16 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 				m_parser->set_text(entry_label);                               \
                                                                                \
 				int32_t num_label_entries = 0;                                 \
-				entries_label.reset(0);                                        \
-                                                                               \
+                /*std::fill(entries_label.begin(), entries_label.end(), 0);*/      \
+				entries_label.clear();                                         \
 				while (m_parser->has_next())                                   \
 				{                                                              \
 					num_label_entries++;                                       \
 					float64_t label_val = m_parser->read_real();               \
                                                                                \
-					if (classes.find_element(label_val) == -1)                 \
+					auto index = std::find(                                    \
+					    std::begin(classes), std::end(classes), label_val);    \
+					if (index == std::end(classes))                            \
 						classes.push_back(label_val);                          \
                                                                                \
 					entries_label.push_back(label_val);                        \
@@ -254,7 +258,7 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 			pb.print_progress();                                               \
 		}                                                                      \
 		pb.complete();                                                         \
-		num_classes = classes.get_num_elements();                              \
+		num_classes = classes.size();                              \
                                                                                \
 		SG_RESET_LOCALE;                                                       \
                                                                                \

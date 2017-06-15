@@ -2719,15 +2719,16 @@ TParameter::load(CSerializableFile* file, const char* prefix)
   Initializing m_params(1) with small preallocation-size, because Parameter
   will be constructed several times for EACH SGObject instance.
  */
-Parameter::Parameter() : m_params(1)
+Parameter::Parameter()
 {
+	m_params = std::vector<TParameter*>(0);
 	SG_REF(sg_io);
 }
 
 Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		delete m_params.get_element(i);
+		delete m_params[i];
 
 	SG_UNREF(sg_io);
 }
@@ -2750,11 +2751,11 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	}
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
+		if (strcmp(m_params[i]->m_name, name) == 0)
 			SG_SERROR("FATAL: Parameter::add_type(): "
 					 "Double parameter `%s'!\n", name);
 
-	m_params.append_element(
+	m_params.push_back(
 		new TParameter(type, param, name, description)
 		);
 }
@@ -2763,7 +2764,7 @@ void
 Parameter::print(const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		m_params.get_element(i)->print(prefix);
+		m_params[i]->print(prefix);
 }
 
 bool
@@ -2771,7 +2772,7 @@ Parameter::save(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 	{
-		if (!m_params.get_element(i)->save(file, prefix))
+		if (!m_params[i]->save(file, prefix))
 			return false;
 	}
 
@@ -2782,7 +2783,7 @@ bool
 Parameter::load(CSerializableFile* file, const char* prefix)
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (!m_params.get_element(i)->load(file, prefix))
+		if (!m_params[i]->load(file, prefix))
 			return false;
 
 	return true;
@@ -2796,18 +2797,18 @@ void Parameter::set_from_parameters(Parameter* params)
 		TParameter* current=params->get_parameter(i);
 		TSGDataType current_type=current->m_datatype;
 
-		ASSERT(m_params.get_num_elements())
+		ASSERT(m_params.size())
 
 		/* search for own parameter with same name and check types if found */
 		TParameter* own=NULL;
-		for (index_t j=0; j<m_params.get_num_elements(); ++j)
+		for (index_t j=0; j<m_params.size(); ++j)
 		{
-			own=m_params.get_element(j);
+			own=m_params.at(j);
 			if (!strcmp(own->m_name, current->m_name))
 			{
 				if (own->m_datatype==current_type)
 				{
-					own=m_params.get_element(j);
+					own=m_params.at(j);
 					break;
 				}
 				else
@@ -2934,7 +2935,7 @@ void Parameter::add_parameters(Parameter* params)
 
 bool Parameter::contains_parameter(const char* name)
 {
-	for (index_t i=0; i<m_params.get_num_elements(); ++i)
+	for (index_t i=0; i<m_params.size(); ++i)
 	{
 		if (!strcmp(name, m_params[i]->m_name))
 			return true;
