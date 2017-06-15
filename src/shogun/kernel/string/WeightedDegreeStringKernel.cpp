@@ -884,7 +884,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 	if (num_threads < 2)
 	{
-         
+
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
@@ -909,7 +909,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 #ifdef HAVE_PTHREAD
 	else
 	{
-         
+
 		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);

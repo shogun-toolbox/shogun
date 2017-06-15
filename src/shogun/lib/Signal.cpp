@@ -12,11 +12,11 @@
 
 #include <stdlib.h>
 
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/base/init.h>
 #include <rxcpp/rx-includes.hpp>
 #include <rxcpp/rx.hpp>
+#include <shogun/base/init.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 using namespace rxcpp;
@@ -24,17 +24,15 @@ using namespace rxcpp;
 int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
 struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
 
-rxcpp::connectable_observable<int> CSignal::m_sigint_observable = rxcpp::observable<>::create<int>(
-		[](rxcpp::subscriber<int> s){
-			s.on_completed();
-		}
-).publish();
+rxcpp::connectable_observable<int> CSignal::m_sigint_observable =
+    rxcpp::observable<>::create<int>([](rxcpp::subscriber<int> s) {
+	    s.on_completed();
+	}).publish();
 
-rxcpp::connectable_observable<int> CSignal::m_sigurg_observable = rxcpp::observable<>::create<int>(
-	   [](rxcpp::subscriber<int> s){
-		   s.on_next(1);
-	   }
-).publish();
+rxcpp::connectable_observable<int> CSignal::m_sigurg_observable =
+    rxcpp::observable<>::create<int>([](rxcpp::subscriber<int> s) {
+	    s.on_next(1);
+	}).publish();
 
 CSignal::CSignal()
 : CSGObject()
@@ -43,8 +41,7 @@ CSignal::CSignal()
 	m_active = true;
 }
 
-CSignal::CSignal(bool active)
-: CSGObject()
+CSignal::CSignal(bool active) : CSGObject()
 {
 	// Set if the signal handler is active or not
 	m_active = active;
@@ -68,22 +65,22 @@ void CSignal::handler(int signal)
 {
 	if (signal == SIGINT)
 	{
-		//SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ")
-		//char answer=fgetc(stdin);
+		// SG_SPRINT("\nImmediately return to prompt / Prematurely finish
+		// computations / Do nothing (I/P/D)? ")
+		// char answer=fgetc(stdin);
 		/*switch (answer){
-			case 'I':
-				m_sigint_observable.connect();
-				break;
-			case 'P':
-				m_sigurg_observable.connect();
-				break;
-			default:
-				SG_SPRINT("Continuing...\n")
-				break;
+		    case 'I':
+		        m_sigint_observable.connect();
+		        break;
+		    case 'P':
+		        m_sigurg_observable.connect();
+		        break;
+		    default:
+		        SG_SPRINT("Continuing...\n")
+		        break;
 		}*/
 		SG_SPRINT("Killing the application...\n");
 		m_sigint_observable.connect();
-
 	}
 	else if (signal == SIGURG)
 		m_sigurg_observable.connect();
