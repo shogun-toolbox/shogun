@@ -49,7 +49,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 {
 	auto N = data.num_cols;
 
-	SG_SINFO("Using m=%d of N=%d user provided RKHS basis functions.\n",
+	SG_SINFO("Using m=%d of N=%d user provided basis points.\n",
 			basis.num_cols, N);
 	set_basis_and_data(basis, data);
 
@@ -63,7 +63,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
 {
 	auto N = data.num_cols;
 
-	SG_SINFO("Using m=%d of N=%d user provided subsampled data RKHS basis functions.\n",
+	SG_SINFO("Using m=%d of N=%d user provided subsampled data basis points.\n",
 			basis_inds.vlen, N);
 
 	m_basis_inds = basis_inds;
@@ -79,7 +79,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 {
 	auto N = data.num_cols;
 
-	SG_SINFO("Using m=%d of N=%d uniformly sub-sampled data as RKHS basis functions.\n",
+	SG_SINFO("Using m=%d of N=%d uniformly sub-sampled data as basis points.\n",
 			num_subsample_basis, data.num_cols);
 
 	m_basis_inds = choose_m_in_n(num_subsample_basis, N);
@@ -89,64 +89,60 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 	m_lambda_l2 = lambda_l2;
 }
 
-void Nystrom::fit()
+index_t Nystrom::get_system_size() const
 {
-	// TODO this needs a clean-up, put things into modulars
-	auto D = get_num_dimensions();
-	auto N = get_num_data();
 	auto m = get_num_basis();
-	auto ND = N*D;
-	auto mD = m*D;
+	auto D = get_num_dimensions();
 
-	SGMatrix<float64_t> system_matrix(mD, mD);
-	Map<MatrixXd> eigen_system_matrix(system_matrix.matrix, mD, mD);
+	return m*D;
+}
 
-	SG_SINFO("Computing h.\n");
-	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, mD);
+SGMatrix<float64_t> Nystrom::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const
+{
+	auto system_size = get_system_size();
+	auto D = get_num_dimensions();
+	auto m = get_num_basis();
 
-	SG_SINFO("Computing kernel Hessians between basis and data.\n");
-	auto G_mn = m_kernel->dx_dy_all();
-	Map<MatrixXd> eigen_G_mn(G_mn.matrix, mD, ND);
-	eigen_system_matrix = eigen_G_mn*eigen_G_mn.adjoint() / N;
-	if (m_lambda>0)
+	SGMatrix<float64_t> G_mm(system_size, system_size);
+	for (auto src_block=0; src_block<m; src_block++)
 	{
-		if (m_basis_inds.vlen)
-		{
-			SG_SINFO("Block sub-sampling kernel Hessians for basis.\n");
-			SGMatrix<float64_t> G_mm(mD, mD);
-			for (auto src_block=0; src_block<m; src_block++)
-			{
-				memcpy(G_mm.get_column_vector(src_block*D),
-						G_mn.get_column_vector(m_basis_inds[src_block]*D),
-						D*D*sizeof(float64_t)*m
-						);
-			}
-
-			Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
-			eigen_system_matrix+=m_lambda*eigen_G_mm;
-		}
-		else
-		{
-			SG_SINFO("Computing kernel Hessians for basis.\n");
-			SG_SINFO("TODO: Avoid re-initializing the kernel matrix.\n");
-			auto basis = m_basis;
-			auto data = m_data;
-
-			set_basis_and_data(basis, basis);
-			auto G_mm = m_kernel->dx_dy_all();
-			Map<MatrixXd> eigen_G_mm(G_mm.matrix, mD, mD);
-			eigen_system_matrix+=m_lambda*eigen_G_mm;
-
-			set_basis_and_data(basis, data);
-		}
+		memcpy(G_mm.get_column_vector(src_block*D),
+				G_mn.get_column_vector(m_basis_inds[src_block]*D),
+				D*D*sizeof(float64_t)*m
+				);
 	}
 
-	if (m_lambda_l2>0.0)
-		eigen_system_matrix.diagonal().array() += m_lambda_l2;
+	return G_mm;
+}
 
-	m_beta = SGVector<float64_t>(mD);
-	auto eigen_beta = Map<VectorXd>(m_beta.vector, mD);
+SGMatrix<float64_t> Nystrom::compute_G_mn() const
+{
+	auto G_mn = m_kernel->dx_dy_all();
+	return G_mn;
+}
+
+SGMatrix<float64_t> Nystrom::compute_G_mm()
+{
+	SG_SINFO("TODO: Avoid re-initializing the kernel matrix, make const\n");
+	auto basis = m_basis;
+	auto data = m_data;
+
+	set_basis_and_data(basis, basis);
+	auto G_mm = m_kernel->dx_dy_all();
+	set_basis_and_data(basis, data);
+	return G_mm;
+}
+
+SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matrix,
+		const SGVector<float64_t>& system_vector) const
+{
+	auto system_size = get_system_size();
+	auto eigen_system_vector = Map<VectorXd>(system_vector.vector, system_size);
+	auto eigen_system_matrix = Map<MatrixXd>(system_matrix.matrix,
+			system_matrix.num_rows, system_matrix.num_cols);
+
+	SGVector<float64_t> result(system_size);
+	auto eigen_result = Map<VectorXd>(result.vector, system_size);
 
 	// attempt fast solvers first and use stable fall-back option otherwise
 	bool solve_success=false;
@@ -169,14 +165,14 @@ void Nystrom::fit()
 			else
 			{
 				SG_SINFO("Constructing solution.\n");
-				eigen_beta = -solver.solve(eigen_h);
+				eigen_result = -solver.solve(eigen_system_vector);
 				solve_success=true;
 			}
 		}
 		else
 		{
 			SG_SINFO("Constructing solution.\n");
-			eigen_beta = -solver.solve(eigen_h);
+			eigen_result = -solver.solve(eigen_system_vector);
 			solve_success=true;
 		}
 	}
@@ -188,19 +184,63 @@ void Nystrom::fit()
 		solver.compute(eigen_system_matrix);
 
 		SG_SINFO("Constructing solution.\n");
-		eigen_beta = -solver.solve(eigen_h);
+		eigen_result = -solver.solve(eigen_system_vector);
 		solve_success=true;
 	}
 
-	if (solve_success)
-		return;
+	if (!solve_success)
+	{
+		SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse.\n");
+		auto G_dagger = pinv_self_adjoint(system_matrix);
+		Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, system_size, system_size);
 
-	SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse.\n");
-	auto G_dagger = pinv_self_adjoint(system_matrix);
-	Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, mD, mD);
+		SG_SINFO("Constructing solution.\n");
+		eigen_result = -eigen_G_dagger * eigen_system_vector;
+	}
 
-	SG_SINFO("Constructing solution.\n");
-	eigen_beta = -eigen_G_dagger * eigen_h;
+	return result;
+}
+
+void Nystrom::fit()
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_data();
+	auto ND = N*D;
+	auto system_size = get_system_size();
+
+	SGMatrix<float64_t> system_matrix(system_size, system_size);
+	Map<MatrixXd> eigen_system_matrix(system_matrix.matrix, system_size, system_size);
+
+	SG_SINFO("Computing h.\n");
+	auto h = compute_h();
+	auto eigen_h=Map<VectorXd>(h.vector, system_size);
+
+	SG_SINFO("Computing kernel Hessians between basis and data.\n");
+	auto G_mn = compute_G_mn();
+	Map<MatrixXd> eigen_G_mn(G_mn.matrix, system_size, ND);
+	eigen_system_matrix = eigen_G_mn*eigen_G_mn.adjoint() / N;
+	if (m_lambda>0)
+	{
+		if (basis_is_subsampled_data())
+		{
+			SG_SINFO("Block sub-sampling kernel Hessians for basis.\n");
+			auto G_mm = subsample_G_mm_from_G_mn(G_mn);
+			Map<MatrixXd> eigen_G_mm(G_mm.matrix, system_size, system_size);
+			eigen_system_matrix+=m_lambda*eigen_G_mm;
+		}
+		else
+		{
+			SG_SINFO("Computing kernel Hessians for basis.\n");
+			auto G_mm = compute_G_mm();
+			Map<MatrixXd> eigen_G_mm(G_mm.matrix, system_size, system_size);
+			eigen_system_matrix+=m_lambda*eigen_G_mm;
+		}
+	}
+
+	if (m_lambda_l2>0.0)
+		eigen_system_matrix.diagonal().array() += m_lambda_l2;
+
+	m_beta = solve_system(system_matrix, h);
 }
 
 SGMatrix<float64_t> Nystrom::pinv_self_adjoint(const SGMatrix<float64_t>& A)

@@ -89,7 +89,7 @@ public :
 //	virtual SGVector<float64_t> leverage() const;
 
 //	float64_t compute_xi_norm_2() const;
-	SGVector<float64_t> compute_h() const;
+	virtual SGVector<float64_t> compute_h() const;
 
 	float64_t base_measure_log_pdf(const SGVector<float64_t>& vec) const;
 	SGVector<float64_t> base_measure_dx(const SGVector<float64_t>& vec) const;

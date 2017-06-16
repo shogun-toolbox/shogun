@@ -70,6 +70,15 @@ public :
 	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
 	static SGMatrix<float64_t> subsample_matrix_cols(const SGVector<index_t>& col_inds,
 			const SGMatrix<float64_t>& mat);
+
+	// modularisation of the fit method
+	virtual bool basis_is_subsampled_data() const { return m_basis_inds.vlen; }
+	virtual index_t get_system_size() const;
+	virtual SGMatrix<float64_t> subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const;
+	virtual SGMatrix<float64_t> compute_G_mn() const;
+	virtual SGMatrix<float64_t> compute_G_mm(); // TODO this should be const!
+	SGVector<float64_t> solve_system(const SGMatrix<float64_t>& system_matrix,
+			const SGVector<float64_t>& system_vector) const;
 protected:
 
 	float64_t m_lambda_l2;
