@@ -34,6 +34,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/Nystrom.h>
+#include <shogun/distributions/kernel_exp_family/impl/NystromD.h>
+
 
 #include "impl/kernel/Gaussian.h"
 
@@ -91,4 +93,28 @@ CKernelExpFamilyNystrom::~CKernelExpFamilyNystrom()
 void CKernelExpFamilyNystrom::fit()
 {
 	m_impl->fit();
+}
+
+CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
+			SGMatrix<float64_t> basis, SGMatrix<bool> basis_mask,
+			float64_t sigma, float64_t lambda, float64_t lambda_l2)
+			: CKernelExpFamily()
+{
+	REQUIRE(data.matrix, "Given observations cannot be empty.\n");
+	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
+	REQUIRE(data.num_cols>0, "Number of given observations (%d) must be positive.\n", data.num_cols);
+	REQUIRE(basis.matrix, "Given basis cannot be empty.\n");
+	REQUIRE(basis.num_rows>0, "Dimension of given basis (%d) must be positive.\n", basis.num_rows);
+	REQUIRE(basis.num_cols>0, "Number of given basis (%d) must be positive.\n", basis.num_cols);
+	REQUIRE(basis_mask.num_rows == basis.num_rows && basis_mask.num_cols == basis.num_cols,
+				"Shape of basis mask (%d,%d) must match shape of basis (%d,%d).\n",
+				basis_mask.num_rows, basis_mask.num_cols, basis.num_rows, basis.num_cols);
+	REQUIRE(basis_mask.matrix, "Basis mask cannot be empty.\n");
+	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
+	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
+
+	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	m_impl = new kernel_exp_family_impl::NystromD(data, basis, basis_mask,
+			kernel, lambda, lambda_l2);
 }

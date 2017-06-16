@@ -28,39 +28,48 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_EXP_FAMILY_NYSTROM__
-#define KERNEL_EXP_FAMILY_NYSTROM__
+#ifndef KERNEL_EXP_FAMILY_IMPL_NYSTROM_D__
+#define KERNEL_EXP_FAMILY_IMPL_NYSTROM_D__
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+
+#include "Nystrom.h"
 
 namespace shogun
 {
 
-class CKernelExpFamilyNystrom : public CKernelExpFamily
+namespace kernel_exp_family_impl
+{
+class NystromD : public Nystrom
 {
 public :
-	CKernelExpFamilyNystrom();
-	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
+	NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
+			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
-	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
+	NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
+			SGMatrix<bool> basis_mask,
+			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
-	// sub-sampling dimensions
-	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-				SGMatrix<bool> basis_mask,
-				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
+	void set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask);
 
-	virtual void fit();
+	// overloaded from Full base class
+	virtual SGVector<float64_t> compute_h() const;
 
-	virtual ~CKernelExpFamilyNystrom();
+	// overloaded from base Nystrom class for sub-sampling dimensions
+	virtual bool basis_is_subsampled_data() const;
+	virtual index_t get_system_size() const;
+	virtual SGMatrix<float64_t> subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const;
+	virtual SGMatrix<float64_t> compute_G_mn() const;
+	virtual SGMatrix<float64_t> compute_G_mm(); // TODO this should be const!
+	SGVector<float64_t> solve_system(const SGMatrix<float64_t>& system_matrix,
+			const SGVector<float64_t>& system_vector) const;
 
-	virtual const char* get_name() const { return "KernelExpFamilyNystrom"; }
-
+protected:
+};
 };
 
 }
-#endif // KERNEL_EXP_FAMILY_NYSTROM__
+#endif // KERNEL_EXP_FAMILY_IMPL_NYSTROM_D__
