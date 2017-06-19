@@ -8,21 +8,17 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-
+#include <csignal>
 #include <stdlib.h>
 
-#include <rxcpp/rx-includes.hpp>
 #include <rxcpp/rx.hpp>
-#include <shogun/base/init.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;
 using namespace rxcpp;
 
-int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
-struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
+bool CSignal::m_active = false;
 
 rxcpp::connectable_observable<int> CSignal::m_sigint_observable =
     rxcpp::observable<>::create<int>([](rxcpp::subscriber<int> s) {
@@ -35,16 +31,7 @@ rxcpp::connectable_observable<int> CSignal::m_sigurg_observable =
 	}).publish();
 
 CSignal::CSignal()
-: CSGObject()
 {
-	// Set if the signal handler is active or not
-	m_active = true;
-}
-
-CSignal::CSignal(bool active) : CSGObject()
-{
-	// Set if the signal handler is active or not
-	m_active = active;
 }
 
 CSignal::~CSignal()
@@ -63,60 +50,37 @@ rxcpp::connectable_observable<int> CSignal::get_SIGURG_observable()
 
 void CSignal::handler(int signal)
 {
+	/* If the handler is not enabled, then return */
+	if (!m_active)
+		return;
+
 	if (signal == SIGINT)
 	{
-		// SG_SPRINT("\nImmediately return to prompt / Prematurely finish
-		// computations / Do nothing (I/P/D)? ")
-		// char answer=fgetc(stdin);
-		/*switch (answer){
-		    case 'I':
-		        m_sigint_observable.connect();
-		        break;
-		    case 'P':
-		        m_sigurg_observable.connect();
-		        break;
-		    default:
-		        SG_SPRINT("Continuing...\n")
-		        break;
-		}*/
-		SG_SPRINT("Killing the application...\n");
-		m_sigint_observable.connect();
+		SG_SPRINT(
+		    "\n[ShogunSignalHandler] Immediately return to prompt / "
+		    "Prematurely finish "
+		    "computations / Do nothing (I/P/D)? ")
+		char answer = fgetc(stdin);
+		switch (answer)
+		{
+		case 'I':
+			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
+			m_sigint_observable.connect();
+			exit(0);
+			break;
+		case 'P':
+			SG_SPRINT(
+			    "[ShogunSignalHandler] Terminating"
+			    " prematurely current algorithm...\n");
+			m_sigurg_observable.connect();
+			break;
+		default:
+			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
+			break;
+		}
 	}
-	else if (signal == SIGURG)
-		m_sigurg_observable.connect();
 	else
-		SG_SPRINT("unknown signal %d received\n", signal)
-}
-
-#if defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__)
-#define SIGBAD(signo) ( (signo) <=0 || (signo) >=NSIG)
-Sigfunc *handlers[NSIG]={0};
-
-int sigaddset(sigset_t *set, int signo)
-{
-	if (SIGBAD(signo)) {
-		errno = EINVAL;
-		return -1;
+	{
+		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
 	}
-	*set |= 1 << (signo-1);
-	return 0;
 }
-
-int sigaction(int signo, const struct sigaction *act, struct sigaction *oact)
-{
-	if (SIGBAD(signo)) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	if(oact){
-			oact->sa_handler = handlers[signo];
-			oact->sa_mask = 0;
-			oact->sa_flags =0;
-	}
-	if (act)
-		handlers[signo]=act->sa_handler;
-
-	return 0;
-}
-#endif
