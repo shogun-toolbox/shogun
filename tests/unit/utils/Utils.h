@@ -46,4 +46,10 @@
 */
 char * mktemp_cst(char * __template);
 
+/** Generate file name for serialization test
+ *
+ * @param file_name template of file name
+ */
+void generate_temp_filename(char* file_name);
+
 #endif
