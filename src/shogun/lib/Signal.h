@@ -12,70 +12,23 @@
 #define __SIGNAL__H_
 
 #include <rxcpp/rx-includes.hpp>
-#include <shogun/lib/config.h>
-
-#if defined(__MINGW64__) || defined(_MSC_VER)
-typedef unsigned long sigset_t;
-#endif
-#if defined(__MINGW32__) && !defined(__MINGW64__)
-typedef int sigset_t;
-#endif
-
-#ifndef SIGURG
-#define SIGURG  -16
-#endif
-
-#if defined(__MINGW64__) || defined(_MSC_VER) || defined(__MINGW32__)
-typedef void Sigfunc (int);
-
-struct sigaction {
-	Sigfunc *sa_handler;
-	sigset_t sa_mask;
-	int sa_flags;
-};
-
-#define sigemptyset(ptr) (*(ptr) = 0)
-#define sigfillset(ptr) ( *(ptr) = ~(sigset_t)0,0)
-
-int sigaddset(sigset_t*, int);
-int sigaction(int signo, const struct sigaction *act, struct sigaction *oact);
-#endif
-
-#ifndef DISABLE_CANCEL_CALLBACK
-namespace shogun
-{
-extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
-}
-#endif
-
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/SGObject.h>
 
-#include <csignal>
-#define NUMTRAPPEDSIGS 2
-
 namespace shogun
 {
-/** @brief Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
- * long running process.
- *
- * This is done in two ways:
- *
- * -# A signal handler is attached to trap the SIGINT and SIGURG signal.
- *  Pressing ctrl+c or sending the SIGINT (kill ...) signal to the shogun
- *  process will make shogun print a message asking to immediately exit the
- *  running method and to fall back to the command line.
- * -# When an URG signal is received or ctrl+c P is pressed shogun will
- *  prematurely stop a method and continue execution. For example when an SVM
- *  solver takes a long time without progressing much, one might still be
- *  interested in the result and should thus send SIGURG or interactively
- *  prematurely stop the method
- */
-class CSignal : public CSGObject
-{
+	/** @brief Class Signal implements signal handling to e.g. allow CTRL+C to
+	 * cancel a long running process.
+	 *
+	 * -# A signal handler is attached to trap the SIGINT signal.
+	 *  Pressing CTRL+C or sending the SIGINT (kill ...) signal to the shogun
+	 *  process will make shogun print a message asking the user to choose an
+	 *  option bewteen: immediately exit the running method and fall back to
+	 *  the command line, prematurely stop the current algoritmh and do nothing.
+	 */
+	class CSignal : public CSGObject
+	{
 	public:
 		CSignal();
-		CSignal(bool active);
 		virtual ~CSignal();
 
 		/** Signal handler. Need to be registered with std::signal.
@@ -96,7 +49,7 @@ class CSignal : public CSGObject
 		*/
 		rxcpp::connectable_observable<int> get_SIGURG_observable();
 
-		/** cancel computations
+		/** Cancel computations
 		 *
 		 * @return if computations should be cancelled
 		 */
@@ -105,20 +58,24 @@ class CSignal : public CSGObject
 			return false;
 		}
 
+		/** Enable signal handler
+		*/
+		void enable_handler()
+		{
+			m_active = true;
+		}
+
 		/** @return object name */
 		virtual const char* get_name() const { return "Signal"; }
 
 	private:
-		/** signals; handling external lib  */
-		static int signals[NUMTRAPPEDSIGS];
+		/** Active signal */
+		static bool m_active;
 
-		/** signal actions */
-		static struct sigaction oldsigaction[NUMTRAPPEDSIGS];
-
-		/** active signal */
-		bool m_active;
-
+		/** SIGINT Observable */
 		static rxcpp::connectable_observable<int> m_sigint_observable;
+
+		/** SIGURG Observable */
 		static rxcpp::connectable_observable<int> m_sigurg_observable;
 };
 }
