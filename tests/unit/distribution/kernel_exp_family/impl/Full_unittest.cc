@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2016 Heiko Strathmann
+ * Written (w) 2016-2017 Heiko Strathmann, Dougal Sutherland
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,18 @@
 using namespace shogun;
 using namespace kernel_exp_family_impl;
 
-TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
+/* All unit tests are based on the following gist
+ * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
+ */
+
+const float64_t sigma = 2.0;
+const float64_t lambda = 1.0;
+const index_t N=3;
+const index_t D=2;
+const index_t ND=N*D;
+
+SGMatrix<float64_t> data_train_fixed()
 {
-	index_t N=3;
-	index_t D=2;
-	auto ND = N*D;
 	SGMatrix<float64_t> X(D,N);
 	X(0,0)=0;
 	X(1,0)=1;
@@ -51,15 +58,39 @@ TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
 	X(1,1)=4;
 	X(0,2)=3;
 	X(1,2)=6;
+
+	return X;
+}
+
+SGMatrix<float64_t> data_test_fixed()
+{
+	SGMatrix<float64_t> X(D,2);
+	X(0,0)=0;
+	X(1,0)=1;
+	X(0,1)=1;
+	X(1,1)=1;
+
+	return X;
+}
+
+SGMatrix<float64_t> data_train_random()
+{
+	SGMatrix<float64_t> X(D,N);
+	for (auto i=0; i<ND; i++)
+		X.matrix[i] = CMath::randn_float();
+
+	return X;
+}
+
+TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
+{
+	auto X = data_train_fixed();
 		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	
 	auto result = est.compute_h();
 
-	// from kernel_exp_family Python implementation
 	float64_t reference[] = {0.00902188,  0.01353302,  0.01834103,  0.04119238,
 							 -0.02736291,-0.0547254 };
 	ASSERT_EQ(result.vlen, ND);
@@ -67,44 +98,10 @@ TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
 		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-//TEST(kernel_exp_family_impl_Full, compute_xi_norm_2_kernel_Gaussian)
-//{
-//	index_t N=3;
-//	index_t D=2;
-//	SGMatrix<float64_t> X(D,N);
-//	X(0,0)=0;
-//	X(1,0)=1;
-//	X(0,1)=2;
-//	X(1,1)=4;
-//	X(0,2)=3;
-//	X(1,2)=6;
-//
-//	float64_t sigma = 2;
-//	float64_t lambda = 1;
-//	auto kernel = new kernel::Gaussian(sigma);
-//	Full est(X, kernel, lambda);
-//
-//	auto result = est.compute_xi_norm_2();
-//
-//	// from kernel_exp_family Python implementation
-//	EXPECT_NEAR(result, 2.5633762219921161, 1e-15);
-//}
-
 TEST(kernel_exp_family_impl_Full, fit_kernel_Gaussian)
 {
-	index_t N=3;
-	index_t D=2;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
+	auto X = data_train_fixed();
 		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	
@@ -113,32 +110,20 @@ TEST(kernel_exp_family_impl_Full, fit_kernel_Gaussian)
 	ASSERT_EQ(x.vlen, ND);
 	ASSERT(x.vector);
 	
-	// from kernel_exp_family Python implementation
 	float64_t reference_x[] = {
-			//-0.99999999999999989, // old alpha term, not used anymore, is -1.0/lambda
-			0.00228091,  0.00342023,
-		 0.00406425,  0.0092514 ,
-		-0.00646103, -0.01294499};
+			0.00228091,  0.00342023,  0.00406425,  0.0092514 , -0.00646103,
+			-0.01294499
+	};
 
 	for (auto i=0; i<ND; i++)
-		EXPECT_NEAR(x[i], reference_x[i], 1e-5);
+		EXPECT_NEAR(x[i], reference_x[i], 1e-8);
 	
 }
 
 TEST(kernel_exp_family_impl_Full, log_pdf_kernel_Gaussian)
 {
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
+	auto X = data_train_fixed();
+
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	est.fit();
@@ -149,24 +134,13 @@ TEST(kernel_exp_family_impl_Full, log_pdf_kernel_Gaussian)
 	est.set_data(x);
 	auto log_pdf = est.log_pdf(0);
 
-	// from kernel_exp_family Python implementation
-	EXPECT_NEAR(log_pdf, 0.6612075586873365, 1e-15);
+	EXPECT_NEAR(log_pdf, 0.6610996707107812, 1e-15);
 }
 
 TEST(kernel_exp_family_impl_Full, grad_kernel_Gaussian)
 {
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
+	auto X = data_train_fixed();
+
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	est.fit();
@@ -177,8 +151,7 @@ TEST(kernel_exp_family_impl_Full, grad_kernel_Gaussian)
 	est.set_data(x);
 	auto grad = est.grad(0);
 
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = {-0.01120102, -0.01680534};
+	float64_t reference[] = {-0.00684274, -0.0102607 };
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference[i], 1e-8);
 	
@@ -186,152 +159,91 @@ TEST(kernel_exp_family_impl_Full, grad_kernel_Gaussian)
 	x[1] = 1;
 	est.set_data(x);
 	grad = est.grad(0);
-	float64_t reference2[] = {-0.61982803, -0.04194253};
+	float64_t reference2[] = {-0.62020189, -0.03895487};
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference2[i], 1e-8);
 }
 
 TEST(kernel_exp_family_impl_Full, hessian_kernel_Gaussian)
 {
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
+	auto X = data_train_fixed();
 
-	float64_t sigma = 2;
-	float64_t lambda = 2;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	est.fit();
 	
 	SGVector<float64_t> x(D);
-	x[0] = 1;
+	x[0] = 0;
 	x[1] = 1;
 	est.set_data(x);
 	auto hessian = est.hessian(0);
 	
-	float64_t reference[] = {0.20518773, -0.01275602,
-							-0.01275602, -0.33620648};
+	float64_t reference[] = {-1.34299555, -0.02133143,
+							-0.02133143, -1.36075253};
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(hessian[i], reference[i], 1e-8);
 
-	x[0] = -1;
-	x[1] = 0;
+	x[0] = 1;
+	x[1] = 1;
 	est.set_data(x);
 	hessian = est.hessian(0);
 
-	float64_t reference2[] = {0.12205638, 0.24511196,
-							  0.24511196, 0.12173557};
+	float64_t reference2[] = { 0.40612246, -0.02956325,
+								-0.02956325, -0.67672628};
 
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(hessian[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Full, hessian_diag_kernel_Gaussian)
-{
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	est.set_data(x);
-	auto hessian_diag = est.hessian_diag(0);
-	
-	// from kernel_exp_family Python implementation
-	float64_t reference[] = {-1.34262346, -1.3600992 };
-	
-	for (auto i=0; i<D; i++)
-		// TODO why is this only 1e-4? Check python code for that!
-		EXPECT_NEAR(hessian_diag[i], reference[i], 1e-4);
-}
-
 TEST(kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
 {
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	auto X = data_train_random();
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	est.fit();
 	
-	SGVector<float64_t> x(D);
-	x[0] = CMath::randn_float();
-	x[1] = CMath::randn_float();
-	x[2] = CMath::randn_float();
-	est.set_data(x);
-	auto hessian = est.hessian(0);
-	auto hessian_diag = est.hessian_diag(0);
+	// on training data
+	for (auto i=0; i<N; i++)
+	{
+		auto hessian = est.hessian(i);
+		auto hessian_diag = est.hessian_diag(i);
 
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(hessian_diag[i], hessian(i,i), 1e-8);
+		for (auto j=0; j<D; j++)
+			EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
+	}
+
+	auto X_test = data_train_random();
+	est.set_data(X_test);
+	for (auto i=0; i<N; i++)
+	{
+		auto hessian = est.hessian(i);
+		auto hessian_diag = est.hessian_diag(i);
+
+		for (auto j=0; j<D; j++)
+			EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
+	}
 }
 
 TEST(kernel_exp_family_impl_Full, score_kernel_Gaussian)
 {
-	index_t N=3;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
-		
-	float64_t sigma = 2;
-	float64_t lambda = 1;
+	auto X = data_train_fixed();
+
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda);
 	est.fit();
 	
-	// from kernel_exp_family Python implementation
-	// on training data
-	// TODO why is this only 1e-2? Check python code for that!
-	EXPECT_NEAR(est.score(), -2.56402312081, 1e-2);
+	EXPECT_NEAR(est.score(), -2.56147602838, 1e-8);
 	
-	// on test data
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	est.set_data(x);
-	// TODO why is this only 1e-2? Check python code for that!
-	EXPECT_NEAR(est.score(), -2.70251871779, 1e-2);
+	auto X_test = data_test_fixed();
+	est.set_data(X_test);
+	EXPECT_NEAR(est.score(), -1.39059595876, 1e-8);
 }
 
 TEST(kernel_exp_family_impl_Full, fit_base_measure_execute)
 {
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	auto X = data_train_random();
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda, true);
 	est.fit();
@@ -339,15 +251,8 @@ TEST(kernel_exp_family_impl_Full, fit_base_measure_execute)
 
 TEST(kernel_exp_family_impl_Full, log_pdf_base_measure_execute)
 {
-	get_global_parallel()->set_num_threads(1);
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	auto X = data_train_random();
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda, true);
 	est.fit();
@@ -357,14 +262,8 @@ TEST(kernel_exp_family_impl_Full, log_pdf_base_measure_execute)
 
 TEST(kernel_exp_family_impl_Full, grad_base_measure_execute)
 {
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	auto X = data_train_random();
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
 	auto kernel = new kernel::Gaussian(sigma);
 	Full est(X, kernel, lambda, true);
 	est.fit();
