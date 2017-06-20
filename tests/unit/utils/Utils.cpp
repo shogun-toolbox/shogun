@@ -32,12 +32,14 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <string>
+#include "Utils.h"
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
-#include <cstdlib>
-#include <algorithm>
-#include "Utils.h"
+#include <shogun/io/SGIO.h>
+#include <string>
+
+using namespace shogun;
 
 char * mktemp_cst(char * __template)
 {
@@ -67,4 +69,17 @@ char * mktemp_cst(char * __template)
 	strncpy(pos, pattern.c_str(), 6);
 
     return __template;
+}
+
+void generate_temp_filename(char* file_name)
+{
+#ifdef _WIN32
+	int err = _mktemp_s(file_name, strlen(file_name));
+	ASSERT(err == 0);
+#else
+	int fd = mkstemp(file_name);
+	ASSERT(fd != -1);
+	int retval = close(fd);
+	ASSERT(retval != -1);
+#endif
 }
