@@ -39,6 +39,10 @@
 #include <shogun/io/SGIO.h>
 #include <string>
 
+#ifdef _MSC_VER
+#include <io.h>
+#endif
+
 using namespace shogun;
 
 char * mktemp_cst(char * __template)
