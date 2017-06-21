@@ -39,3 +39,12 @@ RUN sudo dpkg -i /tmp/scala.deb
 
 ADD http://dl.bintray.com/sbt/debian/sbt-0.13.6.deb /tmp/sbt.deb
 RUN sudo dpkg -i /tmp/sbt.deb
+
+ADD https://github.com/Reactive-Extensions/RxCpp/archive/v4.0.0.tar.gz /tmp/
+RUN cd /tmp;\
+    tar -xvf v4.0.0.tar.gz;\
+    cd RxCpp-4.0.0/projects/;\
+    mkdir build;\
+    cd build;\
+    cmake ../../;\
+    sudo make install;
