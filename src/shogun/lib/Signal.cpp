@@ -19,16 +19,10 @@ using namespace shogun;
 using namespace rxcpp;
 
 bool CSignal::m_active = false;
-
-rxcpp::connectable_observable<int> CSignal::m_sigint_observable =
-    rxcpp::observable<>::create<int>([](rxcpp::subscriber<int> s) {
-	    s.on_completed();
-	}).publish();
-
-rxcpp::connectable_observable<int> CSignal::m_sigurg_observable =
-    rxcpp::observable<>::create<int>([](rxcpp::subscriber<int> s) {
-	    s.on_next(1);
-	}).publish();
+rxcpp::subjects::subject<int> CSignal::m_subject =
+    rxcpp::subjects::subject<int>();
+rxcpp::observable<int> CSignal::m_observable = m_subject.get_observable();
+rxcpp::subscriber<int> CSignal::m_subscriber = m_subject.get_subscriber();
 
 CSignal::CSignal()
 {
@@ -36,16 +30,6 @@ CSignal::CSignal()
 
 CSignal::~CSignal()
 {
-}
-
-rxcpp::connectable_observable<int> CSignal::get_SIGINT_observable()
-{
-	return m_sigint_observable;
-}
-
-rxcpp::connectable_observable<int> CSignal::get_SIGURG_observable()
-{
-	return m_sigurg_observable;
 }
 
 void CSignal::handler(int signal)
@@ -57,22 +41,29 @@ void CSignal::handler(int signal)
 	if (signal == SIGINT)
 	{
 		SG_SPRINT(
-		    "\n[ShogunSignalHandler] Immediately return to prompt / "
-		    "Prematurely finish "
-		    "computations / Do nothing (I/P/D)? ")
-		char answer = fgetc(stdin);
+		    "\n[ShogunSignalHandler] "
+		    "Immediately return to prompt / "
+		    "Prematurely finish computations / "
+		    "Pause current computation / "
+		    "Do nothing (I/C/P/D)? ")
+		char answer = getchar();
+		getchar();
 		switch (answer)
 		{
 		case 'I':
 			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
-			m_sigint_observable.connect();
+			m_subscriber.on_completed();
 			exit(0);
 			break;
-		case 'P':
+		case 'C':
 			SG_SPRINT(
 			    "[ShogunSignalHandler] Terminating"
 			    " prematurely current algorithm...\n");
-			m_sigurg_observable.connect();
+			m_subscriber.on_next(SG_BLOCK_COMP);
+			break;
+		case 'P':
+			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
+			m_subscriber.on_next(SG_PAUSE_COMP);
 			break;
 		default:
 			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
