@@ -48,7 +48,7 @@ using namespace shogun;
 void generate_temp_filename(char* file_name)
 {
 #ifdef _WIN32
-	int err = _mktemp_s(file_name, strlen(file_name));
+	int err = _mktemp_s(file_name, strlen(file_name) + 1);
 	ASSERT(err == 0);
 #else
 	int fd = mkstemp(file_name);
