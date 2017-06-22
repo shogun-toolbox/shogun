@@ -20,7 +20,7 @@ TEST(SVMOcasTest,train)
 	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
 	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
 
-	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_test();
+	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_train();
 
 	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
 	ocas->parallel->set_num_threads(1);
