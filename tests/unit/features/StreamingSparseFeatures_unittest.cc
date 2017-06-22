@@ -21,8 +21,8 @@ using namespace shogun;
 
 TEST(StreamingSparseFeaturesTest, parse_file)
 {
-  char tmp_name[] = "StreamingSparseFeatures_parse_file.XXXXXX";
-  generate_temp_filename(tmp_name);
+  char fname[] = "StreamingSparseFeatures_parse_file.XXXXXX";
+  generate_temp_filename(fname);
 
   int32_t max_num_entries=20;
   int32_t max_label_value=1;
