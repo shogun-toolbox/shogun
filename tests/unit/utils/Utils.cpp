@@ -45,36 +45,6 @@
 
 using namespace shogun;
 
-char * mktemp_cst(char * __template)
-{
-
-	/* If the string is null*/
-	if (__template == NULL)
-		return NULL;
-
-	/* Method to generate a random char */
-	auto random = [] {
-        const char chars[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-        const size_t size = (sizeof(chars) - 1);
-        return chars[ rand() % size ];
-    };
-
-	/* Check that __template has an alterable pattern */
-	char * pos = strstr(__template,"XXXXXX");
-
-	if (pos == NULL)
-		return NULL;
-
-	std::string pattern(6,0);
-	std::generate_n(pattern.begin(), 6, random);
-	strncpy(pos, pattern.c_str(), 6);
-
-    return __template;
-}
-
 void generate_temp_filename(char* file_name)
 {
 #ifdef _WIN32

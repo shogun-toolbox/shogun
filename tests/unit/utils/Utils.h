@@ -35,17 +35,6 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-/*
-* Simple implementation of mktemp method to prevent compilation warnings,
-* since the original is not safe to use.
-* This method is not safe either, but we get rid of those annoying messages.
-*
-* For more information see:
-* http://man7.org/linux/man-pages/man3/mktemp.3.html
-* https://www.gnu.org/software/libc/manual/html_node/Temporary-Files.html
-*/
-char * mktemp_cst(char * __template);
-
 /** Generate file name for serialization test
  *
  * @param file_name template of file name

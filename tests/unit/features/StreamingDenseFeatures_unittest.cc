@@ -23,8 +23,8 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 {
 	index_t n=20;
 	index_t dim=2;
-	std::string tmp_name = "StreamingDenseFeatures_reading.XXXXXX";
-	char* fname = mktemp_cst(const_cast<char*>(tmp_name.c_str()));
+	char tmp_name[] = "StreamingDenseFeatures_reading.XXXXXX";
+	generate_temp_filename(tmp_name);
 
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
