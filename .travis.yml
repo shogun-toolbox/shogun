@@ -1,5 +1,6 @@
 sudo: required
 language: cpp
+cache: ccache
 notifications:
   email: false
   irc:
@@ -69,7 +70,7 @@ matrix:
         - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
-  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" -e "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST" -e "TRAVIS_BRANCH=$TRAVIS_BRANCH" -e "TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"  --name devenv -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" -e "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST" -e "TRAVIS_BRANCH=$TRAVIS_BRANCH" -e "TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH" --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
