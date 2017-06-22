@@ -33,8 +33,6 @@ TEST(MulticlassOCASTest,train)
   EXPECT_GT(result, 0.99);
 
   SG_UNREF(mocas);
-  SG_UNREF(train_feats);
-  SG_UNREF(test_feats);
   SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK

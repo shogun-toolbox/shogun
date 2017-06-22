@@ -21,7 +21,6 @@ TEST(SVMOcasTest,train)
 	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();
 
 	CBinaryLabels* ground_truth = (CBinaryLabels*)mockData->get_labels_test();
-	index_t num_samples = mockData->get_set_size();
 
 	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
 	ocas->parallel->set_num_threads(1);
@@ -37,8 +36,6 @@ TEST(SVMOcasTest,train)
 	EXPECT_GT(evaluate.get_accuracy(), 0.99);
 
 	SG_UNREF(ocas);
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
 	SG_UNREF(pred);
 }
 #endif // HAVE_LAPACK
