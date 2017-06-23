@@ -13,6 +13,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <functional>
 #include <stdio.h>
 
 namespace shogun
@@ -42,10 +43,9 @@ namespace shogun
 	 *
 	 */
 	void init_shogun(
-	    void (*print_message)(FILE* target, const char* str) = NULL,
-	    void (*print_warning)(FILE* target, const char* str) = NULL,
-	    void (*print_error)(FILE* target, const char* str) = NULL,
-	    void (*cancel_computations)(bool& delayed, bool& immediately) = NULL);
+	    const std::function<void(FILE*, const char*)> print_message = nullptr,
+	    const std::function<void(FILE*, const char*)> print_warning = nullptr,
+	    const std::function<void(FILE*, const char*)> print_error = nullptr);
 
 	/** init shogun with defaults */
 	void init_shogun_with_defaults();
@@ -133,15 +133,12 @@ CSignal* get_global_signal();
 void init_from_env();
 
 /// function called to print normal messages
-extern void (*sg_print_message)(FILE* target, const char* str);
+extern std::function<void(FILE*, const char*)> sg_print_message;
 
 /// function called to print warning messages
-extern void (*sg_print_warning)(FILE* target, const char* str);
+extern std::function<void(FILE*, const char*)> sg_print_warning;
 
 /// function called to print error messages
-extern void (*sg_print_error)(FILE* target, const char* str);
-
-/// function called to cancel things
-extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
+extern std::function<void(FILE*, const char*)> sg_print_error;
 }
 #endif //__SG_INIT__
