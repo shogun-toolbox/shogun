@@ -111,9 +111,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
  extern void sg_global_print_error(FILE* target, const char* str);
-#ifndef DISABLE_CANCEL_CALLBACK
- extern void sg_global_cancel_computations(bool &delayed, bool &immediately);
-#endif
 
 #ifdef SWIGR
  #include <Rdefines.h>
@@ -162,7 +159,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 #ifndef DISABLE_CANCEL_CALLBACK
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
-                &sg_global_print_error, &sg_global_cancel_computations);
+                &sg_global_print_error);
 #else
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error);
