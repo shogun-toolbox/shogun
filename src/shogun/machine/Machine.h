@@ -306,6 +306,24 @@ class CMachine : public CSGObject
 			return PT_BINARY;
 		}
 
+		/** @return whether the algorithm needs to be stopped */
+		inline bool cancel_computation() const
+		{
+			return m_cancel_computation.load();
+		}
+
+		/** @return whether the algorithm needs to be paused */
+		inline bool pause_computation() const
+		{
+			return m_pause_computation.load();
+		}
+
+		/** Unpause current computation (sets the flag) */
+		inline void unpause_computation()
+		{
+			m_pause_computation = false;
+		}
+
 		virtual const char* get_name() const { return "Machine"; }
 
 	protected:
@@ -357,6 +375,29 @@ class CMachine : public CSGObject
 		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const { return true; }
 
+		/** connect the machine instance to the signal handler */
+		void connect_to_signal_handler();
+
+		/** The action which will be done when the user decides to
+		* premature stop the CMachine execution */
+		virtual void on_next()
+		{
+			m_cancel_computation.store(true);
+		}
+
+		/** The action which will be done when the user decides to
+		* pause the CMachine execution */
+		virtual void on_pause()
+		{
+			m_pause_computation.store(true);
+		}
+
+		/** The action which will be done when the user decides to
+		* return to prompt and terminate the program execution */
+		virtual void on_complete()
+		{
+		}
+
 	protected:
 		/** maximum training time */
 		float64_t m_max_train_time;
@@ -372,6 +413,12 @@ class CMachine : public CSGObject
 
 		/** whether data is locked */
 		bool m_data_locked;
+
+		/** Cancel computation */
+		std::atomic<bool> m_cancel_computation;
+
+		/** Pause computation */
+		std::atomic<bool> m_pause_computation;
 };
 }
 #endif // _MACHINE_H__
