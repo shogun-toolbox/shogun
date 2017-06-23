@@ -22,6 +22,7 @@
 #include <shogun/mathematics/linalg/SGLinalg.h>
 
 #include <csignal>
+#include <functional>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
@@ -41,26 +42,22 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
-	CSignal* sg_signal = NULL;
+	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
 	/// function called to print normal messages
-	void (*sg_print_message)(FILE* target, const char* str) = NULL;
+	std::function<void(FILE*, const char*)> sg_print_message(nullptr);
 
 	/// function called to print warning messages
-	void (*sg_print_warning)(FILE* target, const char* str) = NULL;
+	std::function<void(FILE*, const char*)> sg_print_warning(nullptr);
 
 	/// function called to print error messages
-	void (*sg_print_error)(FILE* target, const char* str) = NULL;
+	std::function<void(FILE*, const char*)> sg_print_error(nullptr);
 
-	/// function called to cancel things
-	void (*sg_cancel_computations)(bool &delayed, bool &immediately)=NULL;
-
-
-	void init_shogun(void (*print_message)(FILE* target, const char* str),
-			void (*print_warning)(FILE* target, const char* str),
-			void (*print_error)(FILE* target, const char* str),
-			void (*cancel_computations)(bool &delayed, bool &immediately))
+	void init_shogun(
+	    const std::function<void(FILE*, const char*)> print_message,
+	    const std::function<void(FILE*, const char*)> print_warning,
+	    const std::function<void(FILE*, const char*)> print_error)
 	{
 		if (!sg_io)
 			sg_io = new shogun::SGIO();
@@ -75,7 +72,7 @@ namespace shogun
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
 		if (!sg_signal)
-			sg_signal = new shogun::CSignal();
+			sg_signal = std::unique_ptr<CSignal>(new shogun::CSignal());
 
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
@@ -88,12 +85,10 @@ namespace shogun
 		SG_REF(sg_version);
 		SG_REF(sg_math);
 		SG_REF(sg_rand);
-		SG_REF(sg_signal);
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
-		sg_cancel_computations=cancel_computations;
 
 		// Set up signal handler
 		std::signal(SIGINT, sg_signal->handler);
@@ -120,12 +115,7 @@ namespace shogun
 		sg_mallocs=NULL;
 		SG_UNREF(mallocs);
 #endif
-		sg_print_message=NULL;
-		sg_print_warning=NULL;
-		sg_print_error=NULL;
-		sg_cancel_computations=NULL;
 
-		SG_UNREF(sg_signal);
 		SG_UNREF(sg_rand);
 		SG_UNREF(sg_math);
 		SG_UNREF(sg_version);
@@ -204,8 +194,7 @@ namespace shogun
 
 	CSignal* get_global_signal()
 	{
-		SG_REF(sg_signal);
-		return sg_signal;
+		return sg_signal.get();
 	}
 
 #ifndef SWIG // SWIG should skip this part
