@@ -23,19 +23,21 @@
 //#define V_NEWTON
 using namespace shogun;
 
-CNewtonSVM::CNewtonSVM()
-: CLinearMachine(), C(1), use_bias(true)
+CNewtonSVM::CNewtonSVM() : CLinearMachine(true)
 {
+	lambda = 1;
+	num_iter = 20;
+	prec = 1e-6;
+	C = 1;
 }
 
-CNewtonSVM::CNewtonSVM(float64_t c, CDotFeatures* traindat, CLabels* trainlab, int32_t itr)
-: CLinearMachine()
+CNewtonSVM::CNewtonSVM(
+    float64_t c, CDotFeatures* traindat, CLabels* trainlab, int32_t itr)
+    : CLinearMachine(true)
 {
 	lambda=1/c;
 	num_iter=itr;
 	prec=1e-6;
-	num_iter=20;
-	use_bias=true;
 	C=c;
 	set_features(traindat);
 	set_labels(trainlab);

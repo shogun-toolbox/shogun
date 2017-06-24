@@ -1,4 +1,5 @@
 FIND_PACKAGE(Jinja2)
+FIND_PACKAGE(Ctags)
 
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
@@ -40,71 +41,95 @@ function (add_unit_test_executable EXECUTABLE TARGET SRC)
 endfunction ()
 
 # Generate automatic unittest from jinja2 templates
-ADD_CUSTOM_COMMAND(OUTPUT clone_unittest.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
-	clone_unittest.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating clone_unittest.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST clone_unittest.cc)
+if(JINJA2_IMPORT_SUCCESS)
+    ADD_CUSTOM_COMMAND(OUTPUT clone_unittest.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
+        clone_unittest.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating clone_unittest.cc")
+    LIST(APPEND TEMPLATE_GENERATED_UNITTEST clone_unittest.cc)
 
-ADD_CUSTOM_COMMAND(OUTPUT DynamicObjectArray_unittest_generated.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest_generated.cc.jinja2
-	DynamicObjectArray_unittest_generated.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest_generated.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating DynamicObjectArray_unittest_generated.cc")
-LIST(APPEND TEMPLATE_GENERATED_UNITTEST DynamicObjectArray_unittest_generated.cc)
+    ADD_CUSTOM_COMMAND(OUTPUT DynamicObjectArray_unittest_generated.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest_generated.cc.jinja2
+        DynamicObjectArray_unittest_generated.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest_generated.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating DynamicObjectArray_unittest_generated.cc")
+    LIST(APPEND TEMPLATE_GENERATED_UNITTEST DynamicObjectArray_unittest_generated.cc)
 
-ADD_CUSTOM_COMMAND(OUTPUT SerializationAscii_unittest.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
-	SerializationAscii_unittest.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating SerializationAscii_unittest.cc")
-LIST(APPEND SERIALIZATION_UNITTEST SerializationAscii_unittest.cc)
+    ADD_CUSTOM_COMMAND(OUTPUT SerializationAscii_unittest.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
+        SerializationAscii_unittest.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating SerializationAscii_unittest.cc")
+    LIST(APPEND SERIALIZATION_UNITTEST SerializationAscii_unittest.cc)
 
-ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
-	SerializationHDF5_unittest.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating SerializationHDF5_unittest.cc")
-LIST(APPEND SERIALIZATION_UNITTEST SerializationHDF5_unittest.cc)
+    ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
+        SerializationHDF5_unittest.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating SerializationHDF5_unittest.cc")
+    LIST(APPEND SERIALIZATION_UNITTEST SerializationHDF5_unittest.cc)
 
-ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
-	SerializationJSON_unittest.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating SerializationJSON_unittest.cc")
-LIST(APPEND SERIALIZATION_UNITTEST SerializationJSON_unittest.cc)
+    ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
+        SerializationJSON_unittest.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating SerializationJSON_unittest.cc")
+    LIST(APPEND SERIALIZATION_UNITTEST SerializationJSON_unittest.cc)
 
-ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
-	SerializationXML_unittest.cc
-	${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	COMMENT "Generating SerializationXML_unittest.cc")
-LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
+    ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
+        SerializationXML_unittest.cc
+        ${CMAKE_BINARY_DIR}/src/shogun/base/class_list.cpp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating SerializationXML_unittest.cc")
+    LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
+
+    IF(CTAGS_FOUND)
+        ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_unittest.cc
+            COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
+            ${CTAGS_FILE}
+            trained_model_serialization_unittest.cc
+            ${CMAKE_BINARY_DIR}/src/shogun/lib/config.h
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
+            ctags
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating trained_model_serialization_unittest.cc")
+        LIST(APPEND SERIALIZATION_UNITTEST trained_model_serialization_unittest.cc)
+    ELSE()
+        MESSAGE("Please install Ctags for trained models serialization tests.")
+    ENDIF()
+
+    LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
+    add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
+ELSE()
+    MESSAGE(Please install jinja2 for automatic generated tests.)
+ENDIF()
 
 add_executable (discover_gtest_tests ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
 set_target_properties (discover_gtest_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -116,9 +141,6 @@ FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 LIST(APPEND UNITTEST_SRC ${TEMPLATE_GENERATED_UNITTEST})
 
 add_unit_test_executable(shogun-unit-test unit-tests "${UNITTEST_SRC}")
-
-LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
-add_unit_test_executable(shogun-serialization-unit-test serialization-unit-tests "${SERIALIZATION_UNITTEST}")
 
 # Add unittests to the dependencies of modular interfaces to make sure nothing
 # will infer with them being build single-threaded.

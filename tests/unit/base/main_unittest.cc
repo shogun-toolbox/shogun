@@ -5,6 +5,7 @@
 
 #include "environments/LinearTestEnvironment.h"
 #include "environments/MultiLabelTestEnvironment.h"
+#include "environments/RegressionTestEnvironment.h"
 
 using namespace shogun;
 using ::testing::Test;
@@ -56,6 +57,7 @@ void FailurePrinter::OnTestEnd(const TestInfo& test_info)
 
 LinearTestEnvironment* linear_test_env;
 MultiLabelTestEnvironment* multilabel_test_env;
+RegressionTestEnvironment* regression_test_env;
 
 int main(int argc, char** argv)
 {
@@ -77,6 +79,9 @@ int main(int argc, char** argv)
 
 	multilabel_test_env = new MultiLabelTestEnvironment();
 	::testing::AddGlobalTestEnvironment(multilabel_test_env);
+
+	regression_test_env = new RegressionTestEnvironment();
+	::testing::AddGlobalTestEnvironment(regression_test_env);
 
 	init_shogun_with_defaults();
 	sg_io->set_loglevel(MSG_WARN);
