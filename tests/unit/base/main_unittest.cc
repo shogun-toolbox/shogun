@@ -4,7 +4,7 @@
 #include <shogun/io/SGIO.h>
 
 #include "environments/LinearTestEnvironment.h"
-#include "environments/MutiLabelTestEnvironment.h"
+#include "environments/MultiLabelTestEnvironment.h"
 
 using namespace shogun;
 using ::testing::Test;
@@ -54,6 +54,9 @@ void FailurePrinter::OnTestEnd(const TestInfo& test_info)
 		_listener->OnTestEnd(test_info);
 }
 
+LinearTestEnvironment* linear_test_env;
+MultiLabelTestEnvironment* multilabel_test_env;
+
 int main(int argc, char** argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
@@ -69,10 +72,15 @@ int main(int argc, char** argv)
 		listeners.Append(new FailurePrinter(default_printer));
 	}
 
+	linear_test_env = new LinearTestEnvironment();
+	::testing::AddGlobalTestEnvironment(linear_test_env);
+
+	multilabel_test_env = new MultiLabelTestEnvironment();
+	::testing::AddGlobalTestEnvironment(multilabel_test_env);
+
 	init_shogun_with_defaults();
 	sg_io->set_loglevel(MSG_WARN);
-	::testing::AddGlobalTestEnvironment(new LinearTestEnvironment());
-	::testing::AddGlobalTestEnvironment(new MutiLabelTestEnvironment());
+
 	int ret = RUN_ALL_TESTS();
 	exit_shogun();
 

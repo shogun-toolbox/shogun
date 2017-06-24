@@ -9,13 +9,15 @@
 
 using namespace shogun;
 
+extern LinearTestEnvironment* linear_test_env;
+
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
 	CMath::init_random(5);
 	std::shared_ptr<GaussianCheckerboard> mockData =
-	    LinearTestEnvironment::instance().getBinaryLabelData();
+	    linear_test_env->getBinaryLabelData();
 
 	CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
 	CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();

@@ -30,8 +30,8 @@
  * Authors: 2016 MikeLing, Viktor Gal, Sergey Lisitsyn, Heiko Strathmann
  */
 
-#ifndef MUTILABELTESTENVIRONMENT_HPP
-#define MUTILABELTESTENVIRONMENT_HPP
+#ifndef MULTILABELTESTENVIRONMENT_HPP
+#define MULTILABELTESTENVIRONMENT_HPP
 
 #include "GaussianCheckerboard.h"
 #include <gtest/gtest.h>
@@ -40,19 +40,13 @@
 using namespace shogun;
 using namespace std;
 using ::testing::Environment;
-class MutiLabelTestEnvironment : public ::testing::Environment
+class MultiLabelTestEnvironment : public ::testing::Environment
 {
 public:
-	MutiLabelTestEnvironment()
+	virtual void SetUp()
 	{
 		mMulticlassFixture = std::shared_ptr<GaussianCheckerboard>(
 		    new GaussianCheckerboard(100, 3, 3));
-	}
-
-	static MutiLabelTestEnvironment& instance()
-	{
-		static MutiLabelTestEnvironment mInstance;
-		return mInstance;
 	}
 
 	std::shared_ptr<GaussianCheckerboard> getMulticlassFixture() const
