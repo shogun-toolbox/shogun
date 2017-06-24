@@ -254,6 +254,123 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_QR_solver)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0)=2.0;
+	A(0,1)=1.0;
+	A(1,0)=1.0;
+	A(1,1)=2.5;
+
+	SGMatrix<float64_t> b(size, size);
+	b(0,0) = 10;
+	b(0,1) = 13;
+	b(1,0) = 10;
+	b(1,1) = 13;
+
+	SGMatrix<float64_t> x_ref(size, size);
+	x_ref(0,0) = 3;
+	x_ref(0,1) = 4;
+	x_ref(1,0) = 3;
+	x_ref(1,1) = 4;
+
+	SGMatrix<float64_t> x_cal = qr_solver(A, b);
+
+	EXPECT_NEAR(x_ref(0,0), x_cal(0,0), 1E-15);
+	EXPECT_NEAR(x_ref(0,1), x_cal(0,1), 1E-15);
+	EXPECT_EQ(x_ref.size(), x_cal.size());
+}
+
+TEST(LinalgBackendEigen, SGMatrix_QR_decomposition)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+
+	m(0,0)=2.0;
+	m(0,1)=1.0;
+	m(1,0)=1.0;
+	m(1,1)=2.5;
+
+	SGMatrix<float64_t> Q = cholesky_factor(m, false);
+	SGMatrix<float64_t> R = cholesky_factor(m);
+
+	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
+	Map<MatrixXd> map_Q(Q.matrix,Q.num_rows,Q.num_cols);
+	Map<MatrixXd> map_R(R.matrix,R.num_rows,R.num_cols);
+	EXPECT_NEAR((map_A-map_Q*map_R).norm(),0.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_SVD_solver)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0)=2.0;
+	A(0,1)=1.0;
+	A(1,0)=1.0;
+	A(1,1)=2.5;
+
+	SGVector<float64_t> b(size);
+	b[0] = 10;
+	b[1] = 13;
+
+	SGVector<float64_t> x_ref(size);
+	x_ref[0] = 3;
+	x_ref[1] = 4;
+
+	SGVector<float64_t> x_cal = svd_solver(A, b);
+
+	EXPECT_NEAR(x_ref[0], x_cal[0], 1E-15);
+	EXPECT_NEAR(x_ref[1], x_cal[1], 1E-15);
+	EXPECT_EQ(x_ref.size(), x_cal.size());
+}
+
+TEST(LinalgBackendEigen, SGMatrix_SVD_decomposition)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+
+	m(0,0)=2.0;
+	m(0,1)=1.0;
+	m(1,0)=1.0;
+	m(1,1)=2.5;
+
+	SGMatrix<float64_t> S = svd_s(m);
+	SGMatrix<float64_t> V = svd_v(m);
+	SGMatrix<float64_t> U = svd_u(m);
+
+	Map<MatrixXd> map_A(m.matrix,m.num_rows,m.num_cols);
+	Map<MatrixXd> map_S(S.matrix,S.num_rows,S.num_cols);
+	Map<MatrixXd> map_V(V.matrix,V.num_rows,V.num_cols);
+	Map<MatrixXd> map_U(U.matrix,U.num_rows,U.num_cols);
+	EXPECT_NEAR((map_A-map_U*map_S*map_V.transpose()).norm(),0.0, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_svd_solver)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0)=2.0;
+	A(0,1)=1.0;
+	A(1,0)=1.0;
+	A(1,1)=2.5;
+
+	SGVector<float64_t> b(size);
+	b[0] = 10;
+	b[1] = 13;
+
+	SGVector<float64_t> x_ref(size);
+	x_ref[0] = 3;
+	x_ref[1] = 4;
+
+	SGVector<float64_t> x_cal = svd_solver(A, b);
+
+	EXPECT_NEAR(x_ref[0], x_cal[0], 1E-15);
+	EXPECT_NEAR(x_ref[1], x_cal[1], 1E-15);
+	EXPECT_EQ(x_ref.size(), x_cal.size());
+}
+
+
 TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;

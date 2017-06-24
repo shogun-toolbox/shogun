@@ -453,6 +453,92 @@ SGVector<T> cholesky_solver(const SGMatrix<T>& L, const SGVector<T>& b,
 }
 
 /**
+ * Solve the linear equations \f$Ax=b\f$, using QR factorization of A
+ *
+ * @param A The matrix whose QR decomposition is to be computed
+ * @param b Right-hand side Matrix
+ * @return \f$\x\f$
+ */
+template <typename T>
+SGMatrix<T> qr_solver(const SGMatrix<T>& A, const SGMatrix<T>& b)
+{
+	return infer_backend(A, SGMatrix<T>(b))->qr_solver(A, b);
+}
+
+/**
+ * Compute the QR decomposition \f$AP = QR\f$ or \f$AP = QTZ\f$ or \f$P'AP = QR\f$ or \f$A = QR\f$
+ *  *
+ * @param A The matrix whose QR decomposition is to be computed
+ * @param upper Whether to compute the  unitary or upper triangular matrix
+ * QR factorization (default: upper)
+ * @return The unitary or upper triangular QR factorization
+ */
+template <typename T>
+SGMatrix<T> qr_factor(const SGMatrix<T>& A, const bool upper)
+{
+	return infer_backend(A)->qr_factor(A, upper);
+}
+
+/**
+ * Solve the linear equations \f$Ax=b\f$, with SVD decomposition of \f$A\f$.
+ * \f$A = U S V^{*}\f$
+ * where U is a n-by-n unitary, V is a p-by-p unitary, and S is a n-by-p real positive matrix which is zero outside of its main diagonal
+ *
+ * @param A The matrix whose SVD decomposition is to be computed
+ * @param b Right-hand side array
+ *
+ * @return \f$\x\f$
+ */
+template <typename T>
+SGVector<T> svd_solver(const SGMatrix<T>& A, const SGVector<T>& b)
+{
+	return infer_backend(A, SGMatrix<T>(b))->svd_solver(A, b);
+}
+
+ /**
+ * Compute the SVD decomposition \f$A = U S V^{*}\f$
+ * where U is a n-by-n unitary, V is a p-by-p unitary, and S is a n-by-p real positive matrix which is zero outside of its main diagonal
+ *
+ *
+ * @param A The matrix whose cholesky decomposition is to be computed
+ * @return The s of SVD factorization
+ */
+template <typename T>
+SGMatrix<T> svd_s(const SGMatrix<T>& A)
+{
+	return infer_backend(A)->svd_s(A);
+}
+
+ /**
+ * Compute the SVD decomposition \f$A = U S V^{*}\f$
+ * where U is a n-by-n unitary, V is a p-by-p unitary, and S is a n-by-p real positive matrix which is zero outside of its main diagonal
+ *
+ *
+ * @param A The matrix whose cholesky decomposition is to be computed
+ * @return The u of SVD factorization
+*/
+template <typename T>
+SGMatrix<T> svd_u(const SGMatrix<T>& A)
+{
+	return infer_backend(A)->svd_u(A);
+}
+
+ /**
+ * Compute the SVD decomposition \f$A = U S V^{*}\f$
+ * where U is a n-by-n unitary, V is a p-by-p unitary, and S is a n-by-p real positive matrix which is zero outside of its main diagonal
+ *
+ *
+ * @param A The matrix whose cholesky decomposition is to be computed
+ * @return The v of SVD factorization
+ */
+template <typename T>
+SGMatrix<T> svd_v(const SGMatrix<T>& A)
+{
+	return infer_backend(A)->svd_v(A);
+}
+
+
+ /**
  * Vector dot-product that works with generic vectors.
  *
  * @param a First vector

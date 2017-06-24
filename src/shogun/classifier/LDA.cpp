@@ -18,6 +18,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -177,7 +178,7 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 		//Reasoning and Machine Learning by David Barber.
 
 		//we will perform SVD here.
-		typename SGMatrix<ST>::EigenMatrixXtMap fmatrix1(feature_matrix.matrix, num_feat, num_vec);
+		SGMatrix<ST> fmatrix1(feature_matrix.matrix, num_feat, num_vec);
 
 		// to hold the centered positive and negative class data
 		typename SGMatrix<ST>::EigenMatrixXt cen_pos(num_feat,num_pos);
@@ -220,10 +221,8 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 		Sb.col(0)=sqrt(num_pos)*(mean_pos-mean_total);
 		Sb.col(1)=sqrt(num_neg)*(mean_neg-mean_total);
 
-		JacobiSVD<typename SGMatrix<ST>::EigenMatrixXt> svd(fmatrix1, ComputeThinU);
-
 		// basis to represent the solution
-		typename SGMatrix<ST>::EigenMatrixXt Q=svd.matrixU();
+		typename SGMatrix<ST>::EigenMatrixXtMap Q=linalg::svd_u<ST>(fmatrix1);
 		// modified between class scatter
 		Sb=Q.transpose()*(Sb*(Sb.transpose()))*Q;
 
@@ -233,19 +232,23 @@ bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *da
 		// to find SVD((inverse(Chol(Sw)))' * Sb * (inverse(Chol(Sw))))
 		//1.get Cw=Chol(Sw)
 		//find the decomposition of Cw'.
-		HouseholderQR<typename SGMatrix<ST>::EigenMatrixXt> decomposition(Sw.llt().matrixU().transpose());
+		SGMatrix<ST> Cw = linalg::cholesky_factor<ST>(Sw, false);
+		SGMatrix<ST>::transpose_matrix(Cw.matrix, Cw.num_rows, Cw.num_cols);
+		SGMatrix<ST> P=linalg::qr_solver<ST>(Cw, Sb);
+		SGMatrix<ST>::transpose_matrix(P.matrix, P.num_rows, P.num_cols);
 
 		//2.get P=inv(Cw')*Sb_new
 		//MatrixXd P=decomposition.solve(Sb);
 		//3. final value to be put in SVD will be therefore:
-		// final_ output =(inv(Cw')*(P'))'
-		JacobiSVD<typename SGMatrix<ST>::EigenMatrixXt> svd2(decomposition.solve((decomposition.solve(Sb))
-					.transpose()).transpose(), ComputeThinU);
+		// final_ output D =(inv(Cw')*(P'))'
+		SGMatrix<ST> D = linalg::qr_solver<ST>(Cw, P);
+		SGMatrix<ST>::transpose_matrix(D.matrix, D.num_rows, D.num_cols);
+		typename SGMatrix<ST>::EigenMatrixXtMap svdU = linalg::svd_u<ST>(D);
 
 		// Since this is a linear classifier, with only binary classes,
 		// we need to keep only the 1st eigenvector.
 		Map<typename SGVector<ST>::EigenVectorXt> x(w_st.vector, num_feat);
-		x=Q*(svd2.matrixU().col(0));
+		x=Q*(svdU.col(0));
 		// get the bias
 		bias=((float64_t)(x.transpose()*mean_total));
 		bias=bias*(-1);

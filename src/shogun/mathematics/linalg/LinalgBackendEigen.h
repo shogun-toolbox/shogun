@@ -75,6 +75,61 @@ public:
 	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
+	/** Implementation of @see LinalgBackendBase::qr_solver */
+	#define BACKEND_GENERIC_QR_SOLVER(Type, Container) \
+	virtual SGMatrix<Type> qr_solver(const Container<Type>& A, const SGMatrix<Type>& b) const \
+	{  \
+			return qr_solver_impl(A, b); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_QR_SOLVER
+
+	/** Implementation of @see LinalgBackendBase::qr_factor */
+	#define BACKEND_GENERIC_QR_FACTOR(Type, Container) \
+	virtual Container<Type> qr_factor(const Container<Type>& A, const bool upper) const \
+	{  \
+		return qr_factor_impl(A, upper); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_FACTOR, SGMatrix)
+	#undef BACKEND_GENERIC_QR_FACTOR
+
+	/** Implementation of @see LinalgBackendBase::svd_solver */
+	#define BACKEND_GENERIC_SVD_SOLVER(Type, Container) \
+	virtual SGVector<Type> svd_solver(const Container<Type>& A, \
+		const SGVector<Type>& b) const \
+	{  \
+		return svd_solver_impl(A, b); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_SOLVER, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_SOLVER
+
+	/** Implementation of @see LinalgBackendBase::svd_s*/
+	#define BACKEND_GENERIC_SVD_S(Type, Container) \
+	virtual SGMatrix<Type> svd_s(const Container<Type>& A) const \
+	{  \
+		return svd_s_impl(A); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_S, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_S
+
+	/** Implementation of @see LinalgBackendBase::svd_u */
+	#define BACKEND_GENERIC_SVD_U(Type, Container) \
+	virtual SGMatrix<Type> svd_u(const Container<Type>& A) const \
+	{  \
+		return svd_u_impl(A); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_U, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_U
+
+	/** Implementation of @see LinalgBackendBase::svd_v */
+	#define BACKEND_GENERIC_SVD_V(Type, Container) \
+	virtual SGMatrix<Type> svd_v(const Container<Type>& A) const \
+	{  \
+		return svd_v_impl(A); \
+	}
+	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD_V, SGMatrix)
+	#undef BACKEND_GENERIC_SVD_V
+
 	/** Implementation of @see LinalgBackendBase::dot */
 	#define BACKEND_GENERIC_DOT(Type, Container) \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const;
@@ -252,7 +307,102 @@ private:
 	SGVector<T> cholesky_solver_impl(const SGMatrix<T>& L, const SGVector<T>& b,
 	                                 const bool lower) const;
 
-	/** Eigen3 vector dot-product method */
+	/** Eigen3 QR solver */
+	template <typename T>
+	SGMatrix<T> qr_solver_impl(const SGMatrix<T>& A, const SGMatrix<T>& b) const
+	{
+		SGMatrix<T> x(b.size());
+		set_const_impl<T>(x, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
+		typename SGMatrix<T>::EigenMatrixXtMap x_eig = x;
+
+		auto qr = Eigen::HouseholderQR<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> (A_eig);
+		x_eig = qr.solve(b_eig);
+
+		return x;
+	}
+
+	/** Eigen3 QR decomposition */
+	template <typename T>
+	SGMatrix<T> qr_factor_impl(const SGMatrix<T>& A, const bool upper) const
+	{
+		SGMatrix<T> c(A.num_rows, A.num_cols);
+		set_const_impl<T>(c, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		Eigen::HouseholderQR<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > qr(A_eig);
+
+		//compute matrix Q or U
+		if(upper == false)
+			c_eig = qr.matrixQR().template triangularView<Eigen::Upper>();
+		else
+			c_eig = qr.householderQ();
+		return c;
+
+	}
+
+	/** Eigen3 SVD solver */
+	template <typename T>
+	SGVector<T> svd_solver_impl(const SGMatrix<T>& A, const SGVector<T>& b) const
+	{
+		SGVector<T> x(b.size());
+		set_const_impl<T>(x, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGVector<T>::EigenVectorXtMap b_eig = b;
+		typename SGVector<T>::EigenVectorXtMap x_eig = x;
+
+		auto svd = Eigen::JacobiSVD<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> (A_eig);
+		x_eig = svd.solve(b_eig);
+
+		return x;
+	}
+
+	/** Eigen3 SVD S decomposition */
+	template <typename T>
+	SGMatrix<T> svd_s_impl(const SGMatrix<T>& A) const
+	{
+		SGMatrix<T> c(A.num_rows, A.num_cols);
+		set_const_impl<T>(c, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		Eigen::JacobiSVD<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > svd(A_eig);
+		c_eig = svd.singularValues().template cast<T>().asDiagonal();
+		return c;
+	}
+
+	/** Eigen3 SVD U decomposition */
+	template <typename T>
+	SGMatrix<T> svd_u_impl(const SGMatrix<T>& A) const
+	{
+		SGMatrix<T> c(A.num_rows, A.num_rows);
+		set_const_impl<T>(c, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		Eigen::JacobiSVD<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > svd(A_eig);
+		c_eig = svd.matrixU();
+		return c;
+	}
+
+	/** Eigen3 SVD V decomposition */
+	template <typename T>
+	SGMatrix<T> svd_v_impl(const SGMatrix<T>& A) const
+	{
+		SGMatrix<T> c(A.num_cols, A.num_cols);
+		set_const_impl<T>(c, 0);
+		typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+		typename SGMatrix<T>::EigenMatrixXtMap c_eig = c;
+
+		Eigen::JacobiSVD<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > svd(A_eig);
+		c_eig = svd.matrixV();
+		return c;
+	}
+
+
+		/** Eigen3 vector dot-product method */
 	template <typename T>
 	T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const;
 
