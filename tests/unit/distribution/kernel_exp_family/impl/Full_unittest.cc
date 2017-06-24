@@ -35,61 +35,51 @@
 #include <shogun/base/some.h>
 #include <shogun/base/init.h>
 #include <gtest/gtest.h>
+#include <memory>
 
+#include "DataFixture.h"
+
+using namespace std;
 using namespace shogun;
 using namespace kernel_exp_family_impl;
 
 /* All unit tests are based on the following gist
  * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
  */
-
-const float64_t sigma = 2.0;
-const float64_t lambda = 1.0;
-const index_t N=3;
-const index_t D=2;
-const index_t ND=N*D;
-
-SGMatrix<float64_t> data_train_fixed()
+class FullFixtureFixed: public DataFixture
 {
-	SGMatrix<float64_t> X(D,N);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=2;
-	X(1,1)=4;
-	X(0,2)=3;
-	X(1,2)=6;
+public:
+	void SetUp()
+	{
+		auto sigma = 2.0;
+		auto lambda = 1.0;
 
-	return X;
-}
+		auto X = get_data_train();
+		auto kernel = new kernel::Gaussian(sigma);
+		est = make_shared<Full>(X, kernel, lambda);
+		est->fit();
 
-SGMatrix<float64_t> data_test_fixed()
+		est->set_data(X_test_fixed);
+	}
+
+	virtual SGMatrix<float64_t> get_data_train() { return X_train_fixed; }
+
+protected:
+	 shared_ptr<Full> est;
+};
+
+class FullFixtureRandom: public FullFixtureFixed
 {
-	SGMatrix<float64_t> X(D,2);
-	X(0,0)=0;
-	X(1,0)=1;
-	X(0,1)=1;
-	X(1,1)=1;
+public:
+	virtual SGMatrix<float64_t> get_data_train() { return X_train_random; }
 
-	return X;
-}
+protected:
+	 shared_ptr<Full> est;
+};
 
-SGMatrix<float64_t> data_train_random()
+TEST_F(FullFixtureFixed, compute_h_kernel_Gaussian)
 {
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<ND; i++)
-		X.matrix[i] = CMath::randn_float();
-
-	return X;
-}
-
-TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
-{
-	auto X = data_train_fixed();
-		
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	
-	auto result = est.compute_h();
+	auto result = est->compute_h();
 
 	float64_t reference[] = {0.00902188,  0.01353302,  0.01834103,  0.04119238,
 							 -0.02736291,-0.0547254 };
@@ -98,15 +88,9 @@ TEST(kernel_exp_family_impl_Full, compute_h_kernel_Gaussian)
 		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Full, fit_kernel_Gaussian)
+TEST_F(FullFixtureFixed, fit_kernel_Gaussian)
 {
-	auto X = data_train_fixed();
-		
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	
-	est.fit();
-	auto x = est.get_beta();
+	auto x = est->get_beta();
 	ASSERT_EQ(x.vlen, ND);
 	ASSERT(x.vector);
 	
@@ -120,73 +104,39 @@ TEST(kernel_exp_family_impl_Full, fit_kernel_Gaussian)
 	
 }
 
-TEST(kernel_exp_family_impl_Full, log_pdf_kernel_Gaussian)
+TEST_F(FullFixtureFixed, log_pdf_kernel_Gaussian)
 {
-	auto X = data_train_fixed();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	est.set_data(x);
-	auto log_pdf = est.log_pdf(0);
-
+	auto log_pdf = est->log_pdf(0);
 	EXPECT_NEAR(log_pdf, 0.6610996707107812, 1e-15);
+
+	log_pdf = est->log_pdf(1);
+	EXPECT_NEAR(log_pdf, 0.1853735804373066, 1e-15);
 }
 
-TEST(kernel_exp_family_impl_Full, grad_kernel_Gaussian)
+TEST_F(FullFixtureFixed, grad_kernel_Gaussian)
 {
-	auto X = data_train_fixed();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	est.set_data(x);
-	auto grad = est.grad(0);
+	auto grad = est->grad(0);
 
 	float64_t reference[] = {-0.00684274, -0.0102607 };
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference[i], 1e-8);
 	
-	x[0] = 1;
-	x[1] = 1;
-	est.set_data(x);
-	grad = est.grad(0);
+	grad = est->grad(1);
 	float64_t reference2[] = {-0.62020189, -0.03895487};
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Full, hessian_kernel_Gaussian)
+TEST_F(FullFixtureFixed, hessian_kernel_Gaussian)
 {
-	auto X = data_train_fixed();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	SGVector<float64_t> x(D);
-	x[0] = 0;
-	x[1] = 1;
-	est.set_data(x);
-	auto hessian = est.hessian(0);
+	auto hessian = est->hessian(0);
 	
 	float64_t reference[] = {-1.34299555, -0.02133143,
 							-0.02133143, -1.36075253};
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(hessian[i], reference[i], 1e-8);
 
-	x[0] = 1;
-	x[1] = 1;
-	est.set_data(x);
-	hessian = est.hessian(0);
+	hessian = est->hessian(1);
 
 	float64_t reference2[] = { 0.40612246, -0.02956325,
 								-0.02956325, -0.67672628};
@@ -195,78 +145,22 @@ TEST(kernel_exp_family_impl_Full, hessian_kernel_Gaussian)
 		EXPECT_NEAR(hessian[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_Full, hessian_diag_equals_hessian)
+TEST_F(FullFixtureRandom, hessian_diag_equals_hessian)
 {
-	auto X = data_train_random();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	// on training data
-	for (auto i=0; i<N; i++)
+	for (auto i=0; i<est->get_num_data(); i++)
 	{
-		auto hessian = est.hessian(i);
-		auto hessian_diag = est.hessian_diag(i);
-
-		for (auto j=0; j<D; j++)
-			EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
-	}
-
-	auto X_test = data_train_random();
-	est.set_data(X_test);
-	for (auto i=0; i<N; i++)
-	{
-		auto hessian = est.hessian(i);
-		auto hessian_diag = est.hessian_diag(i);
+		auto hessian = est->hessian(i);
+		auto hessian_diag = est->hessian_diag(i);
 
 		for (auto j=0; j<D; j++)
 			EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
 	}
 }
 
-TEST(kernel_exp_family_impl_Full, score_kernel_Gaussian)
+TEST_F(FullFixtureFixed, score_kernel_Gaussian)
 {
-	auto X = data_train_fixed();
+	EXPECT_NEAR(est->score(), -1.39059595876, 1e-8);
 
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda);
-	est.fit();
-	
-	EXPECT_NEAR(est.score(), -2.56147602838, 1e-8);
-	
-	auto X_test = data_test_fixed();
-	est.set_data(X_test);
-	EXPECT_NEAR(est.score(), -1.39059595876, 1e-8);
-}
-
-TEST(kernel_exp_family_impl_Full, fit_base_measure_execute)
-{
-	auto X = data_train_random();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda, true);
-	est.fit();
-}
-
-TEST(kernel_exp_family_impl_Full, log_pdf_base_measure_execute)
-{
-	auto X = data_train_random();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda, true);
-	est.fit();
-
-	est.log_pdf();
-}
-
-TEST(kernel_exp_family_impl_Full, grad_base_measure_execute)
-{
-	auto X = data_train_random();
-
-	auto kernel = new kernel::Gaussian(sigma);
-	Full est(X, kernel, lambda, true);
-	est.fit();
-
-	est.grad();
+	est->set_data(X_train_fixed);
+	EXPECT_NEAR(est->score(), -2.56147602838, 1e-8);
 }
