@@ -63,23 +63,13 @@ def entry(templateFile, class_list_file):
 # execution
 # ./clone_unittest.cc.py <template file> <output file name> <extra args...>
 
-import sys
+import sys, jinja2
 TEMPLATE_FILE = sys.argv[1]
 output_file = sys.argv[2]
 class_list_file = sys.argv[3]
 
-try:
-    import jinja2
-    outputText = entry(TEMPLATE_FILE, class_list_file)
-except ImportError:
-    import os
-    basename = os.path.basename(output_file)
-    basename = basename.replace('.cc', '')
-    print("Please install jinja2 for clone unit-tests");
-    outputText = ['''#include <gtest/gtest.h>
-TEST(Dummy, %s_dummy)
-{
-}''' % (basename)]
+import jinja2
+outputText = entry(TEMPLATE_FILE, class_list_file)
 
 f = open(output_file, 'w')
 f.writelines(outputText)
