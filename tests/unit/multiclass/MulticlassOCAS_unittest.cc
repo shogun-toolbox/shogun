@@ -1,4 +1,4 @@
-#include "environments/MutiLabelTestEnvironment.h"
+#include "environments/MultiLabelTestEnvironment.h"
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
@@ -10,13 +10,15 @@
 
 using namespace shogun;
 
+extern MultiLabelTestEnvironment* multilabel_test_env;
+
 #ifdef HAVE_LAPACK
 TEST(MulticlassOCASTest,train)
 {
   CMath::init_random(5);
   float64_t C = 1.0;
   std::shared_ptr<GaussianCheckerboard> mockData =
-	  MutiLabelTestEnvironment::instance().getMulticlassFixture();
+	  multilabel_test_env->getMulticlassFixture();
 
   CDenseFeatures<float64_t>* train_feats = mockData->get_features_train();
   CDenseFeatures<float64_t>* test_feats = mockData->get_features_test();

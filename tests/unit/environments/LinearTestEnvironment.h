@@ -43,16 +43,10 @@ using ::testing::Environment;
 class LinearTestEnvironment : public ::testing::Environment
 {
 public:
-	LinearTestEnvironment()
+	virtual void SetUp()
 	{
 		mBinaryLabelData = std::shared_ptr<GaussianCheckerboard>(
 		    new GaussianCheckerboard(100, 2, 2));
-	}
-
-	static LinearTestEnvironment& instance()
-	{
-		static LinearTestEnvironment mInstance;
-		return mInstance;
 	}
 
 	std::shared_ptr<GaussianCheckerboard> getBinaryLabelData() const
