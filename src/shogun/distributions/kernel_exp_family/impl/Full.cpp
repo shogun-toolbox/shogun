@@ -133,10 +133,10 @@ SGVector<float64_t> Full::compute_h() const
 	auto N_basis = get_num_basis();
 	auto N_data = get_num_data();
 
-	auto ND_basis = N_basis*D;
-	SGVector<float64_t> h(ND_basis);
-	Map<VectorXd> eigen_h(h.vector, ND_basis);
-	eigen_h = VectorXd::Zero(ND_basis);
+	auto system_size = get_system_size();
+	SGVector<float64_t> h(system_size);
+	Map<VectorXd> eigen_h(h.vector, system_size);
+	eigen_h = VectorXd::Zero(system_size);
 
 #pragma omp parallel for
 	for (auto idx_a=0; idx_a<N_basis; idx_a++)
@@ -175,7 +175,7 @@ void Full::fit()
 
 	auto D = get_num_dimensions();
 	auto N = get_num_basis(); // same as number of data
-	auto ND = N*D;
+	auto system_size = get_system_size();
 
 	if (m_base_measure_cov_ridge)
 	{
@@ -200,25 +200,25 @@ void Full::fit()
 
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, ND);
+	auto eigen_h=Map<VectorXd>(h.vector, system_size);
 
 	SG_SINFO("Computing all kernel Hessians.\n");
 	auto G = m_kernel->dx_dy_all();
-	for (auto i=0; i<ND; i++)
+	for (auto i=0; i<system_size; i++)
 		G(i,i) += N*m_lambda;
 
-	auto eigen_G = Map<MatrixXd>(G.matrix, ND, ND);
+	auto eigen_G = Map<MatrixXd>(G.matrix, system_size, system_size);
 
 	if (m_base_measure_cov_ridge)
 	{
 		SG_SINFO("Computing base measure scores.\n");
 		auto q0 = base_measure_dx(m_data);
-		Map<VectorXd> eigen_q0(q0.matrix, ND);
+		Map<VectorXd> eigen_q0(q0.matrix, system_size);
 		eigen_h += (eigen_G*eigen_q0)/N;
 	}
 
-	m_beta = SGVector<float64_t>(ND);
-	auto eigen_beta = Map<VectorXd>(m_beta.vector, ND);
+	m_beta = SGVector<float64_t>(system_size);
+	auto eigen_beta = Map<VectorXd>(m_beta.vector, system_size);
 
 	SG_SINFO("Solving with LLT.\n");
 	auto solver = LLT<MatrixXd>();
@@ -230,6 +230,22 @@ void Full::fit()
 	eigen_beta = solver.solve(eigen_h / m_lambda);
 }
 
+void Full::log_pdf_xi_add(index_t basis_ind, index_t idx_test, float64_t& xi) const
+{
+	auto N = get_num_basis();
+	auto D = get_num_dimensions();
+	SGVector<float64_t> k=m_kernel->dx_dx(basis_ind, idx_test);
+	Map<VectorXd> eigen_k(k.vector, D);
+	xi += eigen_k.sum() / N;
+}
+
+void Full::log_pdf_xi_result(float64_t xi, float64_t& result) const
+{
+	// note the N normalisation is already in the xi
+	result -= 1.0/(m_lambda)*xi;
+}
+
+#include <iostream>
 float64_t Full::log_pdf(index_t idx_test) const
 {
 	auto D = get_num_dimensions();
@@ -238,12 +254,10 @@ float64_t Full::log_pdf(index_t idx_test) const
 	float64_t xi = 0;
 	float64_t beta_sum = 0;
 
-	Map<VectorXd> eigen_beta(m_beta.vector, N*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 	for (auto idx_a=0; idx_a<N; idx_a++)
 	{
-		SGVector<float64_t> k=m_kernel->dx_dx(idx_a, idx_test);
-		Map<VectorXd> eigen_k(k.vector, D);
-		xi += eigen_k.sum() / N;
+		log_pdf_xi_add(idx_a, idx_test, xi);
 
 		// TODO optimise, compute all gradients before loop in batch mode
 		auto grad_x_xa = m_kernel->dx(idx_a, idx_test);
@@ -262,8 +276,8 @@ float64_t Full::log_pdf(index_t idx_test) const
 		}
 	}
 
-	// note the N normalisation is already in the xi
-	auto result = -1.0/(m_lambda)*xi + beta_sum;
+	auto result = beta_sum;
+	log_pdf_xi_result(xi, result);
 
 	if (m_base_measure_cov_ridge)
 	{
@@ -275,6 +289,30 @@ float64_t Full::log_pdf(index_t idx_test) const
 	return result;
 }
 
+void Full::grad_xi_add(index_t basis_ind, index_t idx_test,
+		SGVector<float64_t>& xi_grad) const
+{
+	auto D = get_num_dimensions();
+	Map<VectorXd> eigen_xi_grad(xi_grad.vector, D);
+	SGMatrix<float64_t> g=m_kernel->dx_i_dx_i_dx_j(basis_ind, idx_test);
+	Map<MatrixXd> eigen_g(g.matrix, D, D);
+	eigen_xi_grad -= eigen_g.colwise().sum();
+}
+
+void Full::grad_xi_result(const SGVector<float64_t>& xi_grad,
+		 SGVector<float64_t>& result) const
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_basis();
+
+	// alpha * xi_grad + betasum_grad
+	// note that xi is not yet normalised
+	Map<VectorXd> eigen_result(result.vector, D);
+	Map<VectorXd> eigen_xi_grad(xi_grad.vector, D);
+
+	eigen_result += -1.0 / (m_lambda*N) * eigen_xi_grad;
+}
+
 SGVector<float64_t> Full::grad(index_t idx_test) const
 {
 	// TODO this produces junk for 1D case
@@ -282,25 +320,23 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 	auto N = get_num_basis();
 
 	SGVector<float64_t> xi_grad(D);
-	SGVector<float64_t> beta_sum_grad(D);
 	Map<VectorXd> eigen_xi_grad(xi_grad.vector, D);
-	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
+	SGVector<float64_t> beta_grad_sum(D);
+	Map<VectorXd> eigen_beta_grad_sum(beta_grad_sum.vector, D);
 	eigen_xi_grad = VectorXd::Zero(D);
-	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
+	eigen_beta_grad_sum.array() = VectorXd::Zero(D);
 
-	Map<VectorXd> eigen_beta(m_beta.vector, N*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 	for (auto a=0; a<N; a++)
 	{
-		SGMatrix<float64_t> g=m_kernel->dx_i_dx_i_dx_j(a, idx_test);
-		Map<MatrixXd> eigen_g(g.matrix, D, D);
-		eigen_xi_grad -= eigen_g.colwise().sum();
+		grad_xi_add(a, idx_test, xi_grad);
 
 		// left_arg_hessian = gaussian_kernel_dx_i_dx_j(x, x_a, sigma)
 		// betasum_grad += beta[a, :].dot(left_arg_hessian)
 		// TODO storage is not necessary here
 		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
 		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
-		eigen_beta_sum_grad -= eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
+		eigen_beta_grad_sum -= eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
 
 		if (m_base_measure_cov_ridge)
 		{
@@ -317,18 +353,17 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 		}
 	}
 
-	// alpha * xi_grad + betasum_grad
-	// note that xi is not yet normalised
-	eigen_beta_sum_grad += -1.0 / (m_lambda*N) * eigen_xi_grad;
+	auto result = beta_grad_sum;
+	grad_xi_result(xi_grad, result);
 
 	if (m_base_measure_cov_ridge)
 	{
 		SGVector<float64_t> test_vec(m_data.get_column_vector(idx_test), D, false);
 		auto log_q0_grad = base_measure_dx(test_vec);
 		Map<VectorXd> eigen_log_q0_grad(log_q0_grad.vector, D);
-		eigen_beta_sum_grad += eigen_log_q0_grad;
+		eigen_beta_grad_sum += eigen_log_q0_grad;
 	}
-	return beta_sum_grad;
+	return beta_grad_sum;
 }
 
 SGMatrix<float64_t> Full::hessian(index_t idx_test) const
@@ -347,7 +382,7 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
 
 	// Entire alpha-beta vector
-	Map<VectorXd> eigen_beta(m_beta.vector, N*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 
 	for (auto a=0; a<N; a++)
 	{
@@ -393,7 +428,7 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 	eigen_xi_hessian_diag = VectorXd::Zero(D);
 	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
 
-	Map<VectorXd> eigen_beta(m_beta.vector, N*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 
 	for (auto a=0; a<N; a++)
 	{
@@ -414,9 +449,16 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 	return xi_hessian_diag;
 }
 
+index_t Full::get_system_size() const
+{
+	auto N = get_num_basis();
+	auto D = get_num_dimensions();
+
+	return N*D;
+}
+
 //SGVector<float64_t> Full::leverage() const
 //{
-//	auto ND = get_num_basis()*get_num_dimensions();
 //
 //	auto leverage = SGVector<float64_t>(ND);
 //

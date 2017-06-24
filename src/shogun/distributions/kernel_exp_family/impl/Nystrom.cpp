@@ -213,7 +213,6 @@ void Nystrom::fit()
 
 	SG_SINFO("Computing h.\n");
 	auto h = compute_h();
-	auto eigen_h=Map<VectorXd>(h.vector, system_size);
 
 	SG_SINFO("Computing kernel Hessians between basis and data.\n");
 	auto G_mn = compute_G_mn();
@@ -316,7 +315,7 @@ float64_t Nystrom::log_pdf(index_t idx_test) const
 
 	float64_t beta_sum = 0;
 
-	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 	for (auto idx_a=0; idx_a<m; idx_a++)
 	{
 		auto grad_x_xa = m_kernel->dx(idx_a, idx_test);
@@ -337,7 +336,7 @@ SGVector<float64_t> Nystrom::grad(index_t idx_test) const
 	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
 	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
 
-	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 	for (auto a=0; a<m; a++)
 	{
 		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
@@ -363,7 +362,7 @@ SGVector<float64_t> Nystrom::hessian_diag(index_t idx_test) const
 
 	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
 
-	Map<VectorXd> eigen_beta(m_beta.vector, m*D);
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 
 	for (auto a=0; a<m; a++)
 	{

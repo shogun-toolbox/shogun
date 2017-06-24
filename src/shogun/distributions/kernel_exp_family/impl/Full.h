@@ -97,11 +97,24 @@ public :
 	SGVector<float64_t> base_measure_dx_dx_times_vec(const SGVector<float64_t>& vec,
 			const SGVector<float64_t>& other) const;
 
+
 	// define wrappers for convenience functions in base class
 	using Base::log_pdf;
 	using Base::grad;
 	using Base::hessian;
 	using Base::hessian_diag;
+
+
+	// modularization
+	virtual index_t get_system_size() const;
+protected:
+	virtual void log_pdf_xi_add(index_t basis_ind, index_t idx_test, float64_t& xi) const;
+	virtual void log_pdf_xi_result(float64_t xi, float64_t& result) const;
+	virtual void grad_xi_add(index_t basis_ind, index_t idx_test,
+			SGVector<float64_t>& xi_grad) const;
+	virtual void grad_xi_result(const SGVector<float64_t>& xi,
+			 SGVector<float64_t>& result) const;
+
 
 protected:
 	float64_t m_base_measure_cov_ridge;
