@@ -23,6 +23,8 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/Features.h>
 
+#include <rxcpp/rx.hpp>
+
 namespace shogun
 {
 
@@ -376,7 +378,14 @@ class CMachine : public CSGObject
 		virtual bool train_require_labels() const { return true; }
 
 		/** connect the machine instance to the signal handler */
-		void connect_to_signal_handler();
+		rxcpp::subscription connect_to_signal_handler();
+
+		/** reset the computation variables */
+		void reset_computation_variables()
+		{
+			m_cancel_computation = false;
+			m_pause_computation = false;
+		}
 
 		/** The action which will be done when the user decides to
 		* premature stop the CMachine execution */
