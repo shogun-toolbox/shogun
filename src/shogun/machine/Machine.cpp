@@ -59,8 +59,10 @@ bool CMachine::train(CFeatures* data)
 		m_labels->ensure_valid(get_name());
 	}
 
-	connect_to_signal_handler();
+	auto sub = connect_to_signal_handler();
 	bool result = train_machine(data);
+    sub.unsubscribe();
+    reset_computation_variables();
 
 	if (m_store_model_features)
 		store_model_features();
@@ -276,7 +278,7 @@ CLatentLabels* CMachine::apply_locked_latent(SGVector<index_t> indices)
 	return NULL;
 }
 
-void CMachine::connect_to_signal_handler()
+rxcpp::subscription CMachine::connect_to_signal_handler()
 {
 	// Subscribe this algorithm to the signal handler
 	auto subscriber = rxcpp::make_subscriber<int>(
@@ -287,5 +289,5 @@ void CMachine::connect_to_signal_handler()
 			    this->on_next();
 		},
 	    [this]() { this->on_complete(); });
-	get_global_signal()->get_observable().subscribe(subscriber);
+	return get_global_signal()->get_observable().subscribe(subscriber);
 }
