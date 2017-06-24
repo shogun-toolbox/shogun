@@ -94,8 +94,6 @@ public:
 		features_test =
 		    (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
 
-		SG_REF(features_train)
-		SG_REF(features_test)
 		SG_REF(labels_train)
 		SG_REF(labels_test)
 	}
