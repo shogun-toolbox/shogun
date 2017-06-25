@@ -29,7 +29,3 @@ void sg_global_print_error(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
 }
-
-void sg_global_cancel_computations(bool &delayed, bool &immediately)
-{
-}
