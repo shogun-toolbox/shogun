@@ -33,471 +33,485 @@
 #ifndef LINALG_BACKEND_BASE_H__
 #define LINALG_BACKEND_BASE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <memory>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
-#include <memory>
 
 namespace shogun
 {
 
-/** @brief Base interface of generic linalg methods
- * and generic memory transfer methods.
- */
-class LinalgBackendBase
-{
-public:
-	#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
-	METHODNAME(bool, Container); \
-	METHODNAME(char, Container); \
-	METHODNAME(int8_t, Container); \
-	METHODNAME(uint8_t, Container); \
-	METHODNAME(int16_t, Container); \
-	METHODNAME(uint16_t, Container); \
-	METHODNAME(int32_t, Container); \
-	METHODNAME(uint32_t, Container); \
-	METHODNAME(int64_t, Container); \
-	METHODNAME(uint64_t, Container); \
-	METHODNAME(float32_t, Container); \
-	METHODNAME(float64_t, Container); \
-	METHODNAME(floatmax_t, Container); \
-	METHODNAME(complex128_t, Container); \
-
-	#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container) \
-	METHODNAME(bool, Container); \
-	METHODNAME(char, Container); \
-	METHODNAME(int8_t, Container); \
-	METHODNAME(uint8_t, Container); \
-	METHODNAME(int16_t, Container); \
-	METHODNAME(uint16_t, Container); \
-	METHODNAME(int32_t, Container); \
-	METHODNAME(uint32_t, Container); \
-	METHODNAME(int64_t, Container); \
-	METHODNAME(uint64_t, Container); \
-	METHODNAME(float32_t, Container); \
-	METHODNAME(float64_t, Container); \
-	METHODNAME(floatmax_t, Container);
-
-	#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
-	METHODNAME(float32_t, Container); \
-	METHODNAME(float64_t, Container); \
-	METHODNAME(floatmax_t, Container); \
+	/** @brief Base interface of generic linalg methods
+	 * and generic memory transfer methods.
+	 */
+	class LinalgBackendBase
+	{
+	public:
+#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container)                            \
+	METHODNAME(bool, Container);                                               \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);                                         \
 	METHODNAME(complex128_t, Container);
 
-	/**
-	 * Wrapper method of add operation the operation result = alpha*a + beta*b.
-	 *
-	 * @see linalg::add
-	 */
-	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, Type beta, Container<Type>& result) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_ADD
+#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
+	METHODNAME(bool, Container);                                               \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);
 
-	/**
-	 * Wrapper method of add column vector result = alpha*A.col(i) + beta*b.
-	 *
-	 * @see linalg::add_col_vec
-	 */
-	#define BACKEND_GENERIC_ADD_COL_VEC(Type, Container) \
-	virtual void add_col_vec(const SGMatrix<Type>& A, index_t i, \
-		const SGVector<Type>& b, Container<Type>& result, Type alpha, Type beta) const \
-	{ \
-		SG_SNOTIMPLEMENTED; \
-		return; \
-	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
-	#undef BACKEND_GENERIC_ADD_COL_VEC
+#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container)                    \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);                                         \
+	METHODNAME(complex128_t, Container);
 
-	/**
-	 * Wrapper method of Cholesky decomposition.
-	 *
-	 * @see linalg::cholesky_factor
-	 */
-	#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container) \
-	virtual Container<Type> cholesky_factor(const Container<Type>& A, \
-		const bool lower) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of add operation the operation result = alpha*a + beta*b.
+ *
+ * @see linalg::add
+ */
+#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
+	virtual void add(                                                          \
+	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
-	#undef BACKEND_GENERIC_CHOLESKY_FACTOR
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ADD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_ADD
 
-	/**
-	 * Wrapper triangular solver with Choleksy decomposition.
-	 *
-	 * @see linalg::cholesky_solver
-	 */
-	#define BACKEND_GENERIC_CHOLESKY_SOLVER(Type, Container) \
-	virtual SGVector<Type> cholesky_solver(const Container<Type>& L, \
-		const SGVector<Type>& b, const bool lower) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of add column vector result = alpha*A.col(i) + beta*b.
+ *
+ * @see linalg::add_col_vec
+ */
+#define BACKEND_GENERIC_ADD_COL_VEC(Type, Container)                           \
+	virtual void add_col_vec(                                                  \
+	    const SGMatrix<Type>& A, index_t i, const SGVector<Type>& b,           \
+	    Container<Type>& result, Type alpha, Type beta) const                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
 	}
-	DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
-	#undef BACKEND_GENERIC_CHOLESKY_SOLVER
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
+#undef BACKEND_GENERIC_ADD_COL_VEC
 
-	/**
-	 * Wrapper method of vector dot-product that works with generic vectors.
-	 *
-	 * @see linalg::dot
-	 */
-	#define BACKEND_GENERIC_DOT(Type, Container) \
+/**
+ * Wrapper method of Cholesky decomposition.
+ *
+ * @see linalg::cholesky_factor
+ */
+#define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container)                       \
+	virtual Container<Type> cholesky_factor(                                   \
+	    const Container<Type>& A, const bool lower) const                      \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
+#undef BACKEND_GENERIC_CHOLESKY_FACTOR
+
+/**
+ * Wrapper triangular solver with Choleksy decomposition.
+ *
+ * @see linalg::cholesky_solver
+ */
+#define BACKEND_GENERIC_CHOLESKY_SOLVER(Type, Container)                       \
+	virtual SGVector<Type> cholesky_solver(                                    \
+	    const Container<Type>& L, const SGVector<Type>& b, const bool lower)   \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_CHOLESKY_SOLVER
+
+/**
+ * Wrapper method of vector dot-product that works with generic vectors.
+ *
+ * @see linalg::dot
+ */
+#define BACKEND_GENERIC_DOT(Type, Container)                                   \
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
-	#undef BACKEND_GENERIC_DOT
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
+#undef BACKEND_GENERIC_DOT
 
-	/**
-	 * Wrapper method of in-place matrix elementwise product.
-	 *
-	 * @see linalg::element_prod
-	 */
-	#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container) \
-	virtual void element_prod(Container<Type>& a, Container<Type>& b,\
-		Container<Type>& result) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of in-place matrix elementwise product.
+ *
+ * @see linalg::element_prod
+ */
+#define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
+	virtual void element_prod(                                                 \
+	    Container<Type>& a, Container<Type>& b, Container<Type>& result) const \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
-	/**
-	 * Wrapper method of in-place matrix block elementwise product.
-	 *
-	 * @see linalg::element_prod
-	 */
-	#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container) \
-	virtual void element_prod(linalg::Block<Container<Type>>& a, \
-		linalg::Block<Container<Type>>& b, Container<Type>& result) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of in-place matrix block elementwise product.
+ *
+ * @see linalg::element_prod
+ */
+#define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
+	virtual void element_prod(                                                 \
+	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
+	    Container<Type>& result) const                                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
-	/**
-	 * Wrapper method of set matrix to identity.
-	 *
-	 * @see linalg::identity
-	 */
-	#define BACKEND_GENERIC_IDENTITY(Type, Container) \
-	virtual void identity(Container<Type>& I) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return; \
+/**
+ * Wrapper method of set matrix to identity.
+ *
+ * @see linalg::identity
+ */
+#define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
+	virtual void identity(Container<Type>& I) const                            \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
-	#undef BACKEND_GENERIC_IDENTITY
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
+#undef BACKEND_GENERIC_IDENTITY
 
-	/**
-	 * Wrapper method of logistic function f(x) = 1/(1+exp(-x))
-	 *
-	 * @see linalg::logistic
-	 */
-	#define BACKEND_GENERIC_LOGISTIC(Type, Container) \
-	virtual void logistic(Container<Type>& a, Container<Type>& result) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of logistic function f(x) = 1/(1+exp(-x))
+ *
+ * @see linalg::logistic
+ */
+#define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
+	virtual void logistic(Container<Type>& a, Container<Type>& result) const   \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
-	#undef BACKEND_GENERIC_LOGISTIC
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
+#undef BACKEND_GENERIC_LOGISTIC
 
-	/**
-	 * Wrapper method of matrix product method.
-	 *
-	 * @see linalg::matrix_prod
-	 */
-	#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container) \
-	virtual void matrix_prod(SGMatrix<Type>& a, Container<Type>& b,\
-		Container<Type>& result, bool transpose_A, bool transpose_B) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of matrix product method.
+ *
+ * @see linalg::matrix_prod
+ */
+#define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
+	virtual void matrix_prod(                                                  \
+	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
+	    bool transpose_A, bool transpose_B) const                              \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_MATRIX_PROD, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_MATRIX_PROD
 
-	/**
-	 * Wrapper method of max method. Return the largest element in a vector or matrix.
-	 *
-	 * @see linalg::max
-	 */
-	#define BACKEND_GENERIC_MAX(Type, Container) \
-	virtual Type max(const Container<Type>& a) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of max method. Return the largest element in a vector or
+ * matrix.
+ *
+ * @see linalg::max
+ */
+#define BACKEND_GENERIC_MAX(Type, Container)                                   \
+	virtual Type max(const Container<Type>& a) const                           \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
-	#undef BACKEND_GENERIC_MAX
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MAX, SGMatrix)
+#undef BACKEND_GENERIC_MAX
 
-	/**
-	* Wrapper method that computes mean of SGVectors and SGMatrices
-	* that are composed of real numbers.
-	*
-	* @see linalg::mean
-	*/
-	#define BACKEND_GENERIC_REAL_MEAN(Type, Container) \
-	virtual float64_t mean(const Container<Type>& a) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method that computes mean of SGVectors and SGMatrices
+* that are composed of real numbers.
+*
+* @see linalg::mean
+*/
+#define BACKEND_GENERIC_REAL_MEAN(Type, Container)                             \
+	virtual float64_t mean(const Container<Type>& a) const                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
-	DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
-	#undef BACKEND_GENERIC_REAL_MEAN
+		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGVector)
+		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_REAL_MEAN, SGMatrix)
+#undef BACKEND_GENERIC_REAL_MEAN
 
-	/**
-	* Wrapper method that computes mean of SGVectors and SGMatrices
-	* that are composed of complex numbers.
-	*
-	* @see linalg::mean
-	*/
-	#define BACKEND_GENERIC_COMPLEX_MEAN(Container) \
-	virtual complex128_t mean(const Container<complex128_t>& a) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method that computes mean of SGVectors and SGMatrices
+* that are composed of complex numbers.
+*
+* @see linalg::mean
+*/
+#define BACKEND_GENERIC_COMPLEX_MEAN(Container)                                \
+	virtual complex128_t mean(const Container<complex128_t>& a) const          \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
-	BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
-	#undef BACKEND_GENERIC_COMPLEX_MEAN
+		BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
+		BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
+#undef BACKEND_GENERIC_COMPLEX_MEAN
 
-	/**
-	* Wrapper method that range fills a vector of matrix.
-	*
-	* @see linalg::range_fill
-	*/
-	#define BACKEND_GENERIC_RANGE_FILL(Type, Container) \
-	virtual void range_fill(Container<Type>& a, const Type start) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+* Wrapper method that range fills a vector of matrix.
+*
+* @see linalg::range_fill
+*/
+#define BACKEND_GENERIC_RANGE_FILL(Type, Container)                            \
+	virtual void range_fill(Container<Type>& a, const Type start) const        \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
-	#undef BACKEND_GENERIC_RANGE_FILL
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
+#undef BACKEND_GENERIC_RANGE_FILL
 
-	/**
-	 * Wrapper method of scale operation the operation result = alpha*A.
-	 *
-	 * @see linalg::scale
-	 */
-	#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container) \
-	virtual void scale(Container<Type>& a, Type alpha, Container<Type>& result) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of scale operation the operation result = alpha*A.
+ *
+ * @see linalg::scale
+ */
+#define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
+	virtual void scale(                                                        \
+	    Container<Type>& a, Type alpha, Container<Type>& result) const         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
-	#undef BACKEND_GENERIC_IN_PLACE_SCALE
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
+#undef BACKEND_GENERIC_IN_PLACE_SCALE
 
-	/**
-	 * Wrapper method that sets const values to vectors or matrices.
-	 *
-	 * @see linalg::set_const
-	 */
-	#define BACKEND_GENERIC_SET_CONST(Type, Container) \
-	virtual void set_const(Container<Type>& a, const Type value) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method that sets const values to vectors or matrices.
+ *
+ * @see linalg::set_const
+ */
+#define BACKEND_GENERIC_SET_CONST(Type, Container)                             \
+	virtual void set_const(Container<Type>& a, const Type value) const         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
-	#undef BACKEND_GENERIC_SET_CONST
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
+#undef BACKEND_GENERIC_SET_CONST
 
-	/**
-	* Wrapper method of sum that works with generic vectors or matrices.
-	*
-	* @see linalg::sum
-	*/
-	#define BACKEND_GENERIC_SUM(Type, Container) \
-	virtual Type sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of sum that works with generic vectors or matrices.
+*
+* @see linalg::sum
+*/
+#define BACKEND_GENERIC_SUM(Type, Container)                                   \
+	virtual Type sum(const Container<Type>& a, bool no_diag) const             \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
+#undef BACKEND_GENERIC_SUM
 
-	/**
-	* Wrapper method of sum that works with matrix blocks.
-	*
-	* @see linalg::sum
-	*/
-	#define BACKEND_GENERIC_BLOCK_SUM(Type, Container) \
-	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of sum that works with matrix blocks.
+*
+* @see linalg::sum
+*/
+#define BACKEND_GENERIC_BLOCK_SUM(Type, Container)                             \
+	virtual Type sum(const linalg::Block<Container<Type>>& a, bool no_diag)    \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_BLOCK_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_SUM, SGMatrix)
+#undef BACKEND_GENERIC_BLOCK_SUM
 
-	/**
-	* Wrapper method of sum that works with symmetric matrices.
-	*
-	* @see linalg::sum_symmetric
-	*/
-	#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container) \
-	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of sum that works with symmetric matrices.
+*
+* @see linalg::sum_symmetric
+*/
+#define BACKEND_GENERIC_SYMMETRIC_SUM(Type, Container)                         \
+	virtual Type sum_symmetric(const Container<Type>& a, bool no_diag) const   \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_SYMMETRIC_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_SUM, SGMatrix)
+#undef BACKEND_GENERIC_SYMMETRIC_SUM
 
-	/**
-	* Wrapper method of sum that works with symmetric matrix blocks.
-	*
-	* @see linalg::sum
-	*/
-	#define BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM(Type, Container) \
-	virtual Type sum_symmetric(const linalg::Block<Container<Type>>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of sum that works with symmetric matrix blocks.
+*
+* @see linalg::sum
+*/
+#define BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM(Type, Container)                   \
+	virtual Type sum_symmetric(                                                \
+	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM, SGMatrix)
+#undef BACKEND_GENERIC_SYMMETRIC_BLOCK_SUM
 
-	/**
-	 * Wrapper method of matrix rowwise sum that works with dense matrices.
-	 *
-	 * @see linalg::colwise_sum
-	 */
-	#define BACKEND_GENERIC_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of matrix rowwise sum that works with dense matrices.
+ *
+ * @see linalg::colwise_sum
+ */
+#define BACKEND_GENERIC_COLWISE_SUM(Type, Container)                           \
+	virtual SGVector<Type> colwise_sum(const Container<Type>& a, bool no_diag) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_COLWISE_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_COLWISE_SUM, SGMatrix)
+#undef BACKEND_GENERIC_COLWISE_SUM
 
-	/**
-	* Wrapper method of matrix colwise sum that works with dense matrices.
-	*
-	* @see linalg::colwise_sum
-	*/
-	#define BACKEND_GENERIC_BLOCK_COLWISE_SUM(Type, Container) \
-	virtual SGVector<Type> colwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of matrix colwise sum that works with dense matrices.
+*
+* @see linalg::colwise_sum
+*/
+#define BACKEND_GENERIC_BLOCK_COLWISE_SUM(Type, Container)                     \
+	virtual SGVector<Type> colwise_sum(                                        \
+	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_COLWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_BLOCK_COLWISE_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_COLWISE_SUM, SGMatrix)
+#undef BACKEND_GENERIC_BLOCK_COLWISE_SUM
 
-	/**
-	 * Wrapper method of matrix rowwise sum that works with dense matrices.
-	 *
-	 * @see linalg::rowwise_sum
-	 */
-	#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of matrix rowwise sum that works with dense matrices.
+ *
+ * @see linalg::rowwise_sum
+ */
+#define BACKEND_GENERIC_ROWWISE_SUM(Type, Container)                           \
+	virtual SGVector<Type> rowwise_sum(const Container<Type>& a, bool no_diag) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_ROWWISE_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ROWWISE_SUM, SGMatrix)
+#undef BACKEND_GENERIC_ROWWISE_SUM
 
-	/**
-	* Wrapper method of matrix rowwise sum that works with dense matrices.
-	*
-	* @see linalg::rowwise_sum
-	*/
-	#define BACKEND_GENERIC_BLOCK_ROWWISE_SUM(Type, Container) \
-	virtual SGVector<Type> rowwise_sum(const linalg::Block<Container<Type>>& a, bool no_diag) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+* Wrapper method of matrix rowwise sum that works with dense matrices.
+*
+* @see linalg::rowwise_sum
+*/
+#define BACKEND_GENERIC_BLOCK_ROWWISE_SUM(Type, Container)                     \
+	virtual SGVector<Type> rowwise_sum(                                        \
+	    const linalg::Block<Container<Type>>& a, bool no_diag) const           \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
-	#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
+#undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
-	/**
-	 * Wrapper method of trace computation.
-	 *
-	 * @see linalg::trace
-	 */
-	#define BACKEND_GENERIC_TRACE(Type, Container) \
-	virtual Type trace(const Container<Type>& A) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of trace computation.
+ *
+ * @see linalg::trace
+ */
+#define BACKEND_GENERIC_TRACE(Type, Container)                                 \
+	virtual Type trace(const Container<Type>& A) const                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
-	#undef BACKEND_GENERIC_TRACE
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
+#undef BACKEND_GENERIC_TRACE
 
-	/**
-	 * Wrapper method of set vector or matrix to zero.
-	 *
-	 * @see linalg::zero
-	 */
-	#define BACKEND_GENERIC_ZERO(Type, Container) \
-	virtual void zero(Container<Type>& a) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return; \
+/**
+ * Wrapper method of set vector or matrix to zero.
+ *
+ * @see linalg::zero
+ */
+#define BACKEND_GENERIC_ZERO(Type, Container)                                  \
+	virtual void zero(Container<Type>& a) const                                \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
-	#undef BACKEND_GENERIC_ZERO
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
+#undef BACKEND_GENERIC_ZERO
 
-	/**
-	 * Wrapper method of Transferring data to GPU memory.
-	 * Does nothing if no GPU backend registered.
-	 *
-	 * @see linalg::to_gpu
-	 */
-	#define BACKEND_GENERIC_TO_GPU(Type, Container) \
-	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
-		return 0; \
+/**
+ * Wrapper method of Transferring data to GPU memory.
+ * Does nothing if no GPU backend registered.
+ *
+ * @see linalg::to_gpu
+ */
+#define BACKEND_GENERIC_TO_GPU(Type, Container)                                \
+	virtual GPUMemoryBase<Type>* to_gpu(const Container<Type>&) const          \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
-	#undef BACKEND_GENERIC_TO_GPU
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TO_GPU, SGMatrix)
+#undef BACKEND_GENERIC_TO_GPU
 
-	/**
-	 * Wrapper method of fetching data from GPU memory.
-	 *
-	 * @see linalg::from_gpu
-	 */
-	#define BACKEND_GENERIC_FROM_GPU(Type, Container) \
-	virtual void from_gpu(const Container<Type>&, Type* data) const \
-	{  \
-		SG_SNOTIMPLEMENTED; \
+/**
+ * Wrapper method of fetching data from GPU memory.
+ *
+ * @see linalg::from_gpu
+ */
+#define BACKEND_GENERIC_FROM_GPU(Type, Container)                              \
+	virtual void from_gpu(const Container<Type>&, Type* data) const            \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
 	}
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
-	DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
-	#undef BACKEND_GENERIC_FROM_GPU
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_FROM_GPU, SGMatrix)
+#undef BACKEND_GENERIC_FROM_GPU
 
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_REAL_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
-};
-
+	};
 }
 
-#endif //LINALG_BACKEND_BASE_H__
+#endif // LINALG_BACKEND_BASE_H__

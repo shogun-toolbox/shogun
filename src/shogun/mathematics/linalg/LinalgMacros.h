@@ -30,53 +30,53 @@
  * Authors: 2016 Pan Deng, Soumyajit De, Heiko Strathmann, Viktor Gal
  */
 
-#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
-METHODNAME(bool, Container); \
-METHODNAME(char, Container); \
-METHODNAME(int8_t, Container); \
-METHODNAME(uint8_t, Container); \
-METHODNAME(int16_t, Container); \
-METHODNAME(uint16_t, Container); \
-METHODNAME(int32_t, Container); \
-METHODNAME(uint32_t, Container); \
-METHODNAME(int64_t, Container); \
-METHODNAME(uint64_t, Container); \
-METHODNAME(float32_t, Container); \
-METHODNAME(float64_t, Container); \
-METHODNAME(floatmax_t, Container); \
-METHODNAME(complex128_t, Container); \
+#define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container)                            \
+	METHODNAME(bool, Container);                                               \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);                                         \
+	METHODNAME(complex128_t, Container);
 
-#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container) \
-METHODNAME(bool, Container); \
-METHODNAME(char, Container); \
-METHODNAME(int8_t, Container); \
-METHODNAME(uint8_t, Container); \
-METHODNAME(int16_t, Container); \
-METHODNAME(uint16_t, Container); \
-METHODNAME(int32_t, Container); \
-METHODNAME(uint32_t, Container); \
-METHODNAME(int64_t, Container); \
-METHODNAME(uint64_t, Container); \
-METHODNAME(float32_t, Container); \
-METHODNAME(float64_t, Container); \
-METHODNAME(floatmax_t, Container);
+#define DEFINE_FOR_REAL_PTYPE(METHODNAME, Container)                           \
+	METHODNAME(bool, Container);                                               \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);
 
-#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container) \
-METHODNAME(float32_t, Container); \
-METHODNAME(float64_t, Container); \
-METHODNAME(floatmax_t, Container); \
-METHODNAME(complex128_t, Container);
+#define DEFINE_FOR_NON_INTEGER_PTYPE(METHODNAME, Container)                    \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);                                         \
+	METHODNAME(complex128_t, Container);
 
-#define DEFINE_FOR_NUMERIC_PTYPE(METHODNAME, Container) \
-METHODNAME(char, Container); \
-METHODNAME(int8_t, Container); \
-METHODNAME(uint8_t, Container); \
-METHODNAME(int16_t, Container); \
-METHODNAME(uint16_t, Container); \
-METHODNAME(int32_t, Container); \
-METHODNAME(uint32_t, Container); \
-METHODNAME(int64_t, Container); \
-METHODNAME(uint64_t, Container); \
-METHODNAME(float32_t, Container); \
-METHODNAME(float64_t, Container); \
-METHODNAME(floatmax_t, Container);
+#define DEFINE_FOR_NUMERIC_PTYPE(METHODNAME, Container)                        \
+	METHODNAME(char, Container);                                               \
+	METHODNAME(int8_t, Container);                                             \
+	METHODNAME(uint8_t, Container);                                            \
+	METHODNAME(int16_t, Container);                                            \
+	METHODNAME(uint16_t, Container);                                           \
+	METHODNAME(int32_t, Container);                                            \
+	METHODNAME(uint32_t, Container);                                           \
+	METHODNAME(int64_t, Container);                                            \
+	METHODNAME(uint64_t, Container);                                           \
+	METHODNAME(float32_t, Container);                                          \
+	METHODNAME(float64_t, Container);                                          \
+	METHODNAME(floatmax_t, Container);
