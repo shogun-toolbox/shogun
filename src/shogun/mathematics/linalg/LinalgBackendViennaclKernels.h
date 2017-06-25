@@ -36,8 +36,8 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_VIENNACL
-#include <shogun/mathematics/linalg/internal/opencl_util.h>
 #include <memory>
+#include <shogun/mathematics/linalg/internal/opencl_util.h>
 
 namespace shogun
 {
@@ -47,15 +47,18 @@ namespace shogun
 	template <typename T>
 	static viennacl::ocl::kernel& generate_max_kernel()
 	{
-		std::string kernel_name = "max_" + linalg::implementation::ocl::get_type_string<T>();
+		std::string kernel_name =
+		    "max_" + linalg::implementation::ocl::get_type_string<T>();
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
-		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
+		std::string source =
+		    linalg::implementation::ocl::generate_kernel_preamble<T>(
+		        kernel_name);
 
 		source.append(
-			R"(
+		    R"(
 				__kernel void KERNEL_NAME(
 					__global DATATYPE* vec, int size, int offset,
 					__global DATATYPE* result)
@@ -79,10 +82,10 @@ namespace shogun
 					if (get_global_id(0)==0)
 						*result = buffer[0];
 				}
-			)"
-		);
+			)");
 
-		viennacl::ocl::kernel& kernel = linalg::implementation::ocl::compile_kernel(kernel_name, source);
+		viennacl::ocl::kernel& kernel =
+		    linalg::implementation::ocl::compile_kernel(kernel_name, source);
 
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
@@ -98,17 +101,22 @@ namespace shogun
 	template <class T>
 	static viennacl::ocl::kernel& generate_sum_kernel(bool no_diag)
 	{
-		std::string kernel_name = "sum_" + linalg::implementation::ocl::get_type_string<T>();
-		if (no_diag) kernel_name.append("_no_diag");
+		std::string kernel_name =
+		    "sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag)
+			kernel_name.append("_no_diag");
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
-		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
-		if (no_diag) source.append("#define NO_DIAG\n");
+		std::string source =
+		    linalg::implementation::ocl::generate_kernel_preamble<T>(
+		        kernel_name);
+		if (no_diag)
+			source.append("#define NO_DIAG\n");
 
 		source.append(
-			R"(
+		    R"(
 				__kernel void KERNEL_NAME(
 					__global DATATYPE* mat, int nrows, int ncols, int offset,
 					__global DATATYPE* result)
@@ -141,11 +149,10 @@ namespace shogun
 					if (get_global_id(0)==0)
 						*result = buffer[0];
 				}
-			)"
-		);
+			)");
 
 		viennacl::ocl::kernel& kernel =
-			linalg::implementation::ocl::compile_kernel(kernel_name, source);
+		    linalg::implementation::ocl::compile_kernel(kernel_name, source);
 
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
@@ -161,17 +168,22 @@ namespace shogun
 	template <class T>
 	static viennacl::ocl::kernel& generate_colwise_sum_kernel(bool no_diag)
 	{
-		std::string kernel_name = "colwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
-		if (no_diag) kernel_name.append("_no_diag");
+		std::string kernel_name =
+		    "colwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag)
+			kernel_name.append("_no_diag");
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
-		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
-		if (no_diag) source.append("#define NO_DIAG\n");
+		std::string source =
+		    linalg::implementation::ocl::generate_kernel_preamble<T>(
+		        kernel_name);
+		if (no_diag)
+			source.append("#define NO_DIAG\n");
 
 		source.append(
-			R"(
+		    R"(
 				__kernel void KERNEL_NAME(
 					__global DATATYPE* mat, int nrows, int ncols, int offset,
 					__global DATATYPE* result, int result_offset)
@@ -192,11 +204,10 @@ namespace shogun
 
 					result[j+result_offset] = sum;
 				}
-			)"
-		);
+			)");
 
 		viennacl::ocl::kernel& kernel =
-			linalg::implementation::ocl::compile_kernel(kernel_name, source);
+		    linalg::implementation::ocl::compile_kernel(kernel_name, source);
 
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 
@@ -211,17 +222,22 @@ namespace shogun
 	template <class T>
 	static viennacl::ocl::kernel& generate_rowwise_sum_kernel(bool no_diag)
 	{
-		std::string kernel_name = "rowwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
-		if (no_diag) kernel_name.append("_no_diag");
+		std::string kernel_name =
+		    "rowwise_sum_" + linalg::implementation::ocl::get_type_string<T>();
+		if (no_diag)
+			kernel_name.append("_no_diag");
 
 		if (linalg::implementation::ocl::kernel_exists(kernel_name))
 			return linalg::implementation::ocl::get_kernel(kernel_name);
 
-		std::string source = linalg::implementation::ocl::generate_kernel_preamble<T>(kernel_name);
-		if (no_diag) source.append("#define NO_DIAG\n");
+		std::string source =
+		    linalg::implementation::ocl::generate_kernel_preamble<T>(
+		        kernel_name);
+		if (no_diag)
+			source.append("#define NO_DIAG\n");
 
 		source.append(
-			R"(
+		    R"(
 				__kernel void KERNEL_NAME(
 					__global DATATYPE* mat, int nrows, int ncols, int offset,
 					__global DATATYPE* result, int result_offset)
@@ -242,16 +258,15 @@ namespace shogun
 
 					result[i+result_offset] = sum;
 				}
-			)"
-		);
+			)");
 
-		viennacl::ocl::kernel& kernel = linalg::implementation::ocl::compile_kernel(kernel_name, source);
+		viennacl::ocl::kernel& kernel =
+		    linalg::implementation::ocl::compile_kernel(kernel_name, source);
 
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 
 		return kernel;
 	}
-
 }
 #endif // HAVE_VIENNACL
 
