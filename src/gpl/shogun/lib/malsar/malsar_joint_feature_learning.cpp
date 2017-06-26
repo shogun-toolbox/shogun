@@ -51,7 +51,10 @@ malsar_result_t malsar_joint_feature_learning(
 
 	//internal::set_is_malloc_allowed(false);
 	bool done = false;
-	while (!done && iter <= options.max_iter && !CSignal::cancel_computations())
+	// TODO: replace with the new signal
+	// while (!done && iter <= options.max_iter &&
+	// !CSignal::cancel_computations())
+	while (!done && iter <= options.max_iter)
 	{
 		double alpha = double(t_old - 1)/t;
 

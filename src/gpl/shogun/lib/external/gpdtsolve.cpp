@@ -1311,7 +1311,9 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
     }
     Cache->Iteration();
     nit = nit+1;
-  } while (!optimal() && !(CSignal::cancel_computations()));
+	// TODO: replace with the new signal
+	//} while (!optimal() && !(CSignal::cancel_computations()));
+  } while (!optimal());
   /* End of the problem resolution loop                                      */
   /***************************************************************************/
 

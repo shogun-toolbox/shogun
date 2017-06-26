@@ -164,7 +164,7 @@ bool CVowpalWabbit::train_machine(CFeatures* feat)
 	}
 
 	features->start_parser();
-	while (!(CSignal::cancel_computations()) && (env->passes_complete < env->num_passes))
+	while (!(cancel_computation()) && (env->passes_complete < env->num_passes))
 	{
 		while (features->get_next_example())
 		{

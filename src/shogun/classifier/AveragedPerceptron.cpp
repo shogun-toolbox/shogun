@@ -62,7 +62,7 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 
 	//loop till we either get everything classified right or reach max_iter
 
-	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
+	while (!(cancel_computation()) && (!converged && iter < max_iter))
 	{
 		converged=true;
 		SG_INFO("Iteration Number : %d of max %d\n", iter, max_iter);

@@ -129,7 +129,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	auto pb = progress(range(n), *this->io);
 
 	//for each test example
-	for (int32_t i=0; i<n && (!CSignal::cancel_computations()); i++)
+	for (int32_t i = 0; i < n && (!cancel_computation()); i++)
 	{
 		pb.print_progress();
 
@@ -212,7 +212,7 @@ CMulticlassLabels* CKNN::classify_NN()
 	auto pb = progress(range(num_lab), *this->io);
 
 	// for each test example
-	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		pb.print_progress();
 

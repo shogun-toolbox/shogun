@@ -647,7 +647,11 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
 #else
 
-	  for (;((!CSignal::cancel_computations()) && ((iteration<3 || (!mkl_converged && callback) ) || (retrain && (!terminate)))); iteration++){
+  for (; ((!cancel_computation()) &&
+	      ((iteration < 3 || (!mkl_converged && callback)) ||
+	       (retrain && (!terminate))));
+	   iteration++)
+  {
 #endif
 
 	  if(use_kernel_cache)

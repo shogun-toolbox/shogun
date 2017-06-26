@@ -1302,8 +1302,9 @@ template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 
 				pb->print_progress();
 
-				if (CSignal::cancel_computations())
-					break;
+				// TODO: replace with the new signal
+				// if (CSignal::cancel_computations())
+				//	break;
 			}
 		}
 

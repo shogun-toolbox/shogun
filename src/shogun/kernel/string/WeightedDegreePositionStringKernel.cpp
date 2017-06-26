@@ -1254,26 +1254,28 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	{
 
 	   auto pb = progress(range(num_feat), *this->io);
-	   for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-			{
-				init_optimization(num_suppvec, IDX, alphas, j);
-				S_THREAD_PARAM_WDS<DNATrie> params;
-				params.vec=vec;
-				params.result=result;
-				params.weights=weights;
-				params.kernel=this;
-				params.tries=&tries;
-				params.factor=factor;
-				params.j=j;
-				params.start=0;
-				params.end=num_vec;
-				params.length=length;
-				params.max_shift=max_shift;
-				params.shift=shift;
-				params.vec_idx=vec_idx;
-				compute_batch_helper((void*) &params);
+	   // TODO: replace with the new signal
+	   // for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+	   for (int32_t j = 0; j < num_feat; j++)
+	   {
+		   init_optimization(num_suppvec, IDX, alphas, j);
+		   S_THREAD_PARAM_WDS<DNATrie> params;
+		   params.vec = vec;
+		   params.result = result;
+		   params.weights = weights;
+		   params.kernel = this;
+		   params.tries = &tries;
+		   params.factor = factor;
+		   params.j = j;
+		   params.start = 0;
+		   params.end = num_vec;
+		   params.length = length;
+		   params.max_shift = max_shift;
+		   params.shift = shift;
+		   params.vec_idx = vec_idx;
+		   compute_batch_helper((void*)&params);
 
-			    pb.print_progress();
+		   pb.print_progress();
 		    }
 		    pb.complete();
 	}
@@ -1282,7 +1284,9 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	{
 
 		auto pb = progress(range(num_feat), *this->io);
-		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

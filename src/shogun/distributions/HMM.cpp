@@ -5586,7 +5586,9 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 	float64_t prob_train=CMath::ALMOST_NEG_INFTY;
 	iteration_count=iterations;
 
-	while (!converged(prob, prob_train) && (!CSignal::cancel_computations()))
+	// TODO: replace with the new signal
+	// while (!converged(prob, prob_train) && (!CSignal::cancel_computations()))
+	while (!converged(prob, prob_train))
 	{
 		CMath::swap(working, estimate);
 		prob=prob_train;

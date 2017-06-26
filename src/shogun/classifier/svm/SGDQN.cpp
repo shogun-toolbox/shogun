@@ -143,7 +143,7 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
+	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		count = skip;
 		bool updateB=false;
