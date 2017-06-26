@@ -88,6 +88,12 @@ void generate_test_data(SGVector<float64_t>& lab, SGMatrix<float64_t>& feat)
 				lab[i*num+j]=+1;
 }
 
+template <typename T>
+class LDATest: public ::testing::Test { };
+
+typedef ::testing::Types<float32_t, float64_t, floatmax_t> FloatTypes;
+TYPED_TEST_CASE(LDATest, FloatTypes);
+
 template <typename ST>
 void FLD_test(SGVector<ST> &projection_FLD, SGVector<ST> &w_FLD)
 {
@@ -225,33 +231,13 @@ TEST(LDA, DISABLED_CheckProjection_SVD)
 }
 
 //FLD template testing
-TEST(LDA, FLD_template_test_float32)
+TYPED_TEST(LDATest, check_eigenvectors_fld)
 {
-	check_eigenvectors_fld<float32_t>();
-}
-
-TEST(LDA, FLD_template_test_float64)
-{
-	check_eigenvectors_fld<float64_t>();
-}
-
-TEST(LDA, FLD_template_test_floatmax)
-{
-	check_eigenvectors_fld<floatmax_t>();
+	check_eigenvectors_fld<TypeParam>();
 }
 
 //SVD template testing
-TEST(LDA, SVD_template_test_float32)
+TYPED_TEST(LDATest, check_eigenvectors_svd)
 {
-	check_eigenvectors_svd<float32_t>();
-}
-
-TEST(LDA, SVD_template_test_float64)
-{
-	check_eigenvectors_svd<float64_t>();
-}
-
-TEST(LDA, SVD_template_test_floatmax)
-{
-	check_eigenvectors_svd<floatmax_t>();
+	check_eigenvectors_svd<TypeParam>();
 }
