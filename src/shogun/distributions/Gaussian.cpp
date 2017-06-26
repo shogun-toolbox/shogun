@@ -13,6 +13,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
@@ -132,11 +133,10 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 	{
 		alpha_k_sum+=alpha_k[i];
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(i);
-		SGVector<float64_t>::add(mean.vector, alpha_k[i], v.vector, 1, mean.vector, v.vlen);
+		linalg::add(v, mean, mean, alpha_k[i], 1.0);
 	}
 
-	for (int32_t i=0; i<num_dim; i++)
-		mean[i]/=alpha_k_sum;
+	linalg::scale(mean, mean, 1.0 / alpha_k_sum);
 
 	set_mean(mean);
 
@@ -163,7 +163,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 	for (int32_t j=0; j<len; j++)
 	{
 		SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
-		SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+		linalg::add(v, mean, v, -1.0, 1.0);
 
 		switch (cov_type)
 		{
@@ -184,8 +184,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		case SPHERICAL:
 			float64_t temp = 0;
 
-			for (int32_t k = 0; k < num_dim; k++)
-				temp += v.vector[k] * v.vector[k];
+			temp = linalg::dot(v, v);
 
 			cov_sum(0, 0) += temp * alpha_k[j];
 			break;
@@ -196,11 +195,21 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 	{
 	case FULL:
 	{
-		for (int32_t j = 0; j < num_dim * num_dim; j++)
-			cov_sum[j] /= alpha_k_sum;
+		linalg::scale(cov_sum, cov_sum, 1 / alpha_k_sum);
 
-		SGVector<float64_t> d0;
-		d0 = cov_sum.get_diagonal_vector();
+		SGVector<float64_t> d0(num_dim);
+#ifdef HAVE_LAPACK
+		d0.vector = SGMatrix<float64_t>::compute_eigenvectors(
+		    cov_sum.matrix, num_dim, num_dim);
+#else
+		// FIXME use eigenvectors computeation warpper by micmn
+		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = cov_sum;
+		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = d0;
+
+		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
+		    eig);
+		eigenvalues_eig = solver.eigenvalues().real();
+#endif
 
 		set_d(d0);
 		set_u(cov_sum);
@@ -208,8 +217,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 		break;
 	}
 	case DIAG:
-		for (int32_t j = 0; j < num_dim; j++)
-			cov_sum[j] /= alpha_k_sum;
+		linalg::scale(cov_sum, cov_sum, 1 / alpha_k_sum);
 
 		set_d(cov_sum.get_row_vector(0));
 
@@ -230,11 +238,9 @@ float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 {
 	ASSERT(m_mean.vector && m_d.vector)
 	ASSERT(point.vlen == m_mean.vlen)
-	SGVector<float64_t> difference(m_mean.vlen);
-	sg_memcpy(difference.vector, point.vector, sizeof(float64_t) * m_mean.vlen);
+	SGVector<float64_t> difference = point.clone();
 
-	for (int32_t i = 0; i < m_mean.vlen; i++)
-		difference[i] -= m_mean.vector[i];
+	linalg::add(difference, m_mean, difference, -1.0, 1.0);
 
 	float64_t answer=m_constant;
 
@@ -351,16 +357,24 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 	switch (m_cov_type)
 	{
 	case FULL:
+	{
 		m_u = SGMatrix<float64_t>(cov.num_rows, cov.num_rows);
-		sg_memcpy(
-		    m_u.matrix, cov.matrix,
-		    sizeof(float64_t) * cov.num_rows * cov.num_rows);
+		m_u = cov.clone();
+		m_d = SGVector<float64_t>(cov.num_rows);
+#ifdef HAVE_LAPACK
+		m_d.vector = SGMatrix<float64_t>::compute_eigenvectors(
+		    m_u.matrix, cov.num_rows, cov.num_rows);
+#else
+		// FIXME use eigenvectors computeation warpper by micmn
+		typename SGMatrix<float64_t>::EigenMatrixXtMap eig = m_u;
+		typename SGVector<float64_t>::EigenVectorXtMap eigenvalues_eig = m_d;
 
-		m_d.vector = cov.get_diagonal_vector();
-		m_d.vlen = cov.num_rows;
-		m_u.num_rows = cov.num_rows;
-		m_u.num_cols = cov.num_rows;
+		Eigen::EigenSolver<typename SGMatrix<float64_t>::EigenMatrixXt> solver(
+		    eig);
+		eigenvalues_eig = solver.eigenvalues().real();
+#endif
 		break;
+	}
 	case DIAG:
 		m_d = SGVector<float64_t>(cov.num_rows);
 		for (int32_t i = 0; i < cov.num_rows; i++)
