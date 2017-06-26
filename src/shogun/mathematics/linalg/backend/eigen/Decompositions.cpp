@@ -44,6 +44,36 @@ using namespace shogun;
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_FACTOR, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_FACTOR
 
+#define BACKEND_GENERIC_EIGEN_SOLVER(Type, Container)                          \
+	void LinalgBackendEigen::eigen_solver(                                     \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const                                    \
+	{                                                                          \
+		eigen_solver_impl(A, eigenvalues, eigenvectors);                       \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER
+
+#define BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC(Type, Container)                \
+	void LinalgBackendEigen::eigen_solver_symmetric(                           \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const                                    \
+	{                                                                          \
+		eigen_solver_symmetric_impl(A, eigenvalues, eigenvectors);             \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
+
+#define BACKEND_GENERIC_SVD(Type, Container)                                   \
+	void LinalgBackendEigen::svd(                                              \
+	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
+	    bool thin_U) const                                                     \
+	{                                                                          \
+		return svd_impl(A, s, U, thin_U);                                      \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
+#undef BACKEND_GENERIC_SVD
+
 #undef DEFINE_FOR_ALL_PTYPE
 #undef DEFINE_FOR_REAL_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
@@ -78,4 +108,63 @@ SGMatrix<T> LinalgBackendEigen::cholesky_factor_impl(
 	    "Matrix is not Hermitian positive definite!\n");
 
 	return c;
+}
+
+template <typename T>
+void LinalgBackendEigen::eigen_solver_impl(
+    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+    SGMatrix<T>& eigenvectors) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap eigenvectors_eig = eigenvectors;
+	typename SGVector<T>::EigenVectorXtMap eigenvalues_eig = eigenvalues;
+
+	Eigen::EigenSolver<typename SGMatrix<T>::EigenMatrixXt> solver(A_eig);
+	eigenvalues_eig = solver.eigenvalues().real();
+	eigenvectors_eig = solver.eigenvectors().real();
+}
+
+void LinalgBackendEigen::eigen_solver_impl(
+    const SGMatrix<complex128_t>& A, SGVector<complex128_t>& eigenvalues,
+    SGMatrix<complex128_t>& eigenvectors) const
+{
+	typename SGMatrix<complex128_t>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<complex128_t>::EigenMatrixXtMap eigenvectors_eig =
+	    eigenvectors;
+	typename SGVector<complex128_t>::EigenVectorXtMap eigenvalues_eig =
+	    eigenvalues;
+
+	Eigen::ComplexEigenSolver<typename SGMatrix<complex128_t>::EigenMatrixXt>
+	    solver(A_eig);
+	eigenvalues_eig = solver.eigenvalues();
+	eigenvectors_eig = solver.eigenvectors();
+}
+
+template <typename T>
+void LinalgBackendEigen::eigen_solver_symmetric_impl(
+    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+    SGMatrix<T>& eigenvectors) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap eigenvectors_eig = eigenvectors;
+	typename SGVector<T>::EigenVectorXtMap eigenvalues_eig = eigenvalues;
+
+	Eigen::SelfAdjointEigenSolver<typename SGMatrix<T>::EigenMatrixXt> solver(
+	    A_eig);
+	eigenvalues_eig = solver.eigenvalues().template cast<T>();
+	eigenvectors_eig = solver.eigenvectors().template cast<T>();
+}
+
+template <typename T>
+void LinalgBackendEigen::svd_impl(
+    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U, bool thin_U) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGVector<T>::EigenVectorXtMap s_eig = s;
+	typename SGMatrix<T>::EigenMatrixXtMap U_eig = U;
+
+	auto svd_eig =
+	    A_eig.jacobiSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
+	s_eig = svd_eig.singularValues().template cast<T>();
+	U_eig = svd_eig.matrixU().template cast<T>();
 }

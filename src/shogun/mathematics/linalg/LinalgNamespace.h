@@ -444,6 +444,37 @@ namespace shogun
 		}
 
 		/**
+		 * Adds a scalar to each element of a vector or a matrix in-place.
+		 *
+		 * @param a Vector or matrix
+		 * @param b Scalar to be added
+		 */
+		template <typename T, template <typename> class Container>
+		void add_scalar(Container<T>& a, T b)
+		{
+			infer_backend(a)->add_scalar(a, b);
+		}
+
+		/**
+		 * Centers a square matrix in-place, i.e. removes column/row mean from
+		 * columns/rows.
+		 * In particular it computes A = A - 1N*A - A*1N + 1N*A*1N
+		 * where 1N denotes the matrix of the same size as A for which each
+		 * element
+		 * takes value 1/n, where n is the number of columns and rows of A.
+		 *
+		 * @param A The matrix to be centered
+		 */
+		template <typename T>
+		void center_matrix(SGMatrix<T>& A)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols, "Matrix A (%d x% d) is not square!\n",
+			    A.num_rows, A.num_cols);
+			infer_backend(A)->center_matrix(A);
+		}
+
+		/**
 		 * Performs the operation A = alpha * x * y' + A
 		 *
 		 * @param alpha scaling factor for vector x
@@ -518,6 +549,84 @@ namespace shogun
 			    "Length of vector a (%d) doesn't match vector b (%d).\n",
 			    a.vlen, b.vlen);
 			return infer_backend(a, b)->dot(a, b);
+		}
+
+		/**
+		 * Compute the eigenvalues and eigenvectors of a matrix.
+		 * Note that the type of the computed values is the same
+		 * as the matrix's type, i.e. for real matrices it returns
+		 * only the real part of the eigenvalues/vectors.
+		 *
+		 * User should pass an appropriately pre-allocated memory vector
+		 * to store the eigenvalues and an appropriately pre-allocated memory
+		 * matrix to store the eigenvectors.
+		 *
+		 * @param A The matrix whose eigenvalues and eigenvectors are to be
+		 * computed
+		 * @param eigenvalues Eigenvalues result vector
+		 * @param eigenvectors Eigenvectors result matrix
+		 */
+		template <typename T>
+		void eigen_solver(
+		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+		    SGMatrix<T>& eigenvectors)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols, "Matrix A (%d x% d) is not square!\n",
+			    A.num_rows, A.num_cols);
+			REQUIRE(
+			    A.num_rows == eigenvectors.num_rows,
+			    "Number of rows of A (%d) doesn't match eigenvectors' matrix "
+			    "(%d).\n",
+			    A.num_rows, eigenvectors.num_rows);
+			REQUIRE(
+			    A.num_cols == eigenvectors.num_cols,
+			    "Number of columns of A (%d) doesn't match eigenvectors' "
+			    "matrix (%d).\n",
+			    A.num_cols, eigenvectors.num_cols);
+			REQUIRE(
+			    A.num_cols == eigenvalues.vlen,
+			    "Length of eigenvalues' vector doesn't match matrix A");
+
+			infer_backend(A)->eigen_solver(A, eigenvalues, eigenvectors);
+		}
+
+		/**
+		 * Compute the eigenvalues and eigenvectors of a symmetric matrix.
+		 *
+		 * User should pass an appropriately pre-allocated memory vector
+		 * to store the eigenvalues and an appropriately pre-allocated memory
+		 * matrix to store the eigenvectors.
+		 *
+		 * @param A The matrix whose eigenvalues and eigenvectors are to be
+		 * computed
+		 * @param eigenvalues Eigenvalues result vector
+		 * @param eigenvectors Eigenvectors result matrix
+		 */
+		template <typename T>
+		void eigen_solver_symmetric(
+		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+		    SGMatrix<T>& eigenvectors)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols, "Matrix A (%d x% d) is not square!\n",
+			    A.num_rows, A.num_cols);
+			REQUIRE(
+			    A.num_rows == eigenvectors.num_rows,
+			    "Number of rows of A (%d) doesn't match eigenvectors' matrix "
+			    "(%d).\n",
+			    A.num_rows, eigenvectors.num_rows);
+			REQUIRE(
+			    A.num_cols == eigenvectors.num_cols,
+			    "Number of columns of A (%d) doesn't match eigenvectors' "
+			    "matrix (%d).\n",
+			    A.num_cols, eigenvectors.num_cols);
+			REQUIRE(
+			    A.num_cols == eigenvalues.vlen,
+			    "Length of eigenvalues' vector doesn't match matrix A");
+
+			infer_backend(A)->eigen_solver_symmetric(
+			    A, eigenvalues, eigenvectors);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise
@@ -1007,6 +1116,24 @@ namespace shogun
 		}
 
 		/**
+		 * Solve the linear equations \f$Ax=b\f$ through the
+		 * QR decomposition of A.
+		 *
+		 * @param A The matrix
+		 * @param b Right-hand side vector or matrix
+		 * @return \f$\x\f$
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> qr_solver(const SGMatrix<T>& A, const Container<T>& b)
+		{
+			REQUIRE(
+			    A.num_rows == A.num_cols, "Matrix A (%d x% d) is not square!\n",
+			    A.num_rows, A.num_cols);
+
+			return infer_backend(A, SGMatrix<T>(b))->qr_solver(A, b);
+		}
+
+		/**
 		 * Range fill a vector or matrix with start...start+len-1
 		 *
 		 * @param a The vector or matrix to be filled
@@ -1223,6 +1350,55 @@ namespace shogun
 		}
 
 		/**
+		 * Compute the singular value decomposition \f$A = U S V^{*}\f$ of a
+		 * matrix.
+		 * Given the \f$m \times n\f$ matrix A with \f$r = min(m,n)\f$, user
+		 * should pass
+		 * an appropriately pre-allocated vector of length r and a pre-allocated
+		 * matrix of size \f$m \times r\f$ for thin U or \f$m \times m\f$
+		 * otherwise.
+		 *
+		 * @param A The matrix whose svd is to be computed
+		 * @param s The vector that stores the resulting singular values
+		 * @param U The matrix that stores the resulting unitary matrix U
+		 * @param thin_U Whether to compute the full or thin matrix U
+		 * (default:thin)
+		 */
+		template <typename T>
+		void
+		svd(const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U,
+		    bool thin_U = true)
+		{
+			auto r = CMath::min(A.num_cols, A.num_rows);
+			REQUIRE(
+			    (A.num_rows == U.num_rows),
+			    "Number of rows of matrix A (%d) must match matrix U (%d).\n",
+			    A.num_rows, U.num_rows);
+			if (thin_U)
+			{
+				REQUIRE(
+				    (U.num_cols == r), "Number of columns of matrix A (%d) "
+				                       "must match A's smaller dimension "
+				                       "(%d).\n",
+				    A.num_cols, r);
+			}
+			else
+			{
+				REQUIRE(
+				    (A.num_rows == U.num_cols), "Number of rows of matrix A "
+				                                "(%d) must match number of "
+				                                "columns of U (%d).\n",
+				    A.num_cols, r);
+			}
+			REQUIRE(
+			    (s.vlen == r), "Length of vector s (%d) doesn't match A's "
+			                   "smaller dimension (%d).\n",
+			    s.vlen, r);
+
+			infer_backend(A)->svd(A, s, U, thin_U);
+		}
+
+		/**
 		 * Method that computes the trace of square matrix.
 		 *
 		 * @param A The matrix whose trace has to be computed
@@ -1233,6 +1409,36 @@ namespace shogun
 		{
 			REQUIRE(A.num_rows == A.num_cols, "Matrix is not square!\n");
 			return infer_backend(A)->trace(A);
+		}
+
+		/**
+		 * Method that computes the transpose of a matrix.
+		 *
+		 * @param A The matrix
+		 * @return The transposed matrix
+		 */
+		template <typename T>
+		SGMatrix<T> transpose_matrix(const SGMatrix<T>& A)
+		{
+			return infer_backend(A)->transpose_matrix(A);
+		}
+
+		/**
+		 * Solve the linear equations \f$Lx=b\f$,
+		 * where \f$L\f$ is a triangular matrix.
+		 *
+		 * @param L Triangular matrix
+		 * @param b Right-hand side array
+		 * @param lower Whether L is upper or lower triangular (default:lower)
+		 * @return \f$\x\f$
+		 */
+		template <typename T, template <typename> class Container>
+		Container<T> triangular_solver(
+		    const SGMatrix<T>& L, const Container<T>& b,
+		    const bool lower = true)
+		{
+			return infer_backend(L, SGMatrix<T>(b))
+			    ->triangular_solver(L, b, lower);
 		}
 
 		/**

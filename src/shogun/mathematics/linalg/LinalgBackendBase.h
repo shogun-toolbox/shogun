@@ -39,6 +39,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
 
@@ -122,6 +123,33 @@ namespace shogun
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
 /**
+ * Wrapper method of add scalar operation.
+ *
+ * @see linalg::add_scalar
+ */
+#define BACKEND_GENERIC_ADD_SCALAR(Type, Container)                            \
+	virtual void add_scalar(Container<Type>& a, Type b) const                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGMatrix)
+#undef BACKEND_GENERIC_ADD_SCALAR
+
+/**
+ * Wrapper method of center matrix operation.
+ *
+ * @see linalg::center_matrix
+ */
+#define BACKEND_GENERIC_CENTER_MATRIX(Type, Container)                         \
+	virtual void center_matrix(Container<Type>& A) const                       \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CENTER_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_CENTER_MATRIX
+
+/**
  * Wrapper method of Cholesky decomposition.
  *
  * @see linalg::cholesky_factor
@@ -165,6 +193,38 @@ namespace shogun
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
+
+/**
+ * Wrapper method of eigenvalues and eigenvectors computation.
+ *
+ * @see linalg::eigen_solver
+ */
+#define BACKEND_GENERIC_EIGEN_SOLVER(Type, Container)                          \
+	virtual void eigen_solver(                                                 \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const                                    \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER
+
+/**
+ * Wrapper method of eigenvalues and eigenvectors computation
+ * for symmetric matrices.
+ *
+ * @see linalg::eigen_solver_symmetric
+ */
+#define BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC(Type, Container)                \
+	virtual void eigen_solver_symmetric(                                       \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const                                    \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /**
  * Wrapper method of in-place matrix elementwise product.
@@ -300,6 +360,23 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
 #undef BACKEND_GENERIC_RANGE_FILL
+
+/**
+ * Wrapper method that solves a system of linear equations
+ * using QR decomposition.
+ *
+ * @see linalg::qr_solver
+ */
+#define BACKEND_GENERIC_QR_SOLVER(Type, Container)                             \
+	virtual Container<Type> qr_solver(                                         \
+	    const SGMatrix<Type>& A, const Container<Type>& b) const               \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGVector)
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_QR_SOLVER
 
 /**
  * Wrapper method of scale operation the operation result = alpha*A.
@@ -450,6 +527,21 @@ namespace shogun
 #undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
 /**
+ * Wrapper method of svd computation.
+ *
+ * @see linalg::svd
+ */
+#define BACKEND_GENERIC_SVD(Type, Container)                                   \
+	virtual void svd(                                                          \
+	    const Container<Type>& A, SGVector<Type> s, SGMatrix<Type> U,          \
+	    bool thin_U) const                                                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
+#undef BACKEND_GENERIC_SVD
+
+/**
  * Wrapper method of trace computation.
  *
  * @see linalg::trace
@@ -462,6 +554,39 @@ namespace shogun
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
 #undef BACKEND_GENERIC_TRACE
+
+/**
+ * Wrapper method of trace computation.
+ *
+ * @see linalg::transpose_matrix
+ */
+#define BACKEND_GENERIC_TRANSPOSE_MATRIX(Type, Container)                      \
+	virtual Container<Type> transpose_matrix(const Container<Type>& A) const   \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRANSPOSE_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_TRANSPOSE_MATRIX
+
+/**
+ * Wrapper method of triangular solver.
+ *
+ * @see linalg::triangular_solver
+ */
+#define BACKEND_GENERIC_TRIANGULAR_SOLVER(Type, Container)                     \
+	virtual Container<Type> triangular_solver(                                 \
+	    const SGMatrix<Type>& L, const Container<Type>& b,                     \
+	    const bool lower = true) const                                         \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_TRIANGULAR_SOLVER, SGVector)
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_TRIANGULAR_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_TRIANGULAR_SOLVER
 
 /**
  * Wrapper method of set vector or matrix to zero.
