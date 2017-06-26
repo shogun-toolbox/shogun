@@ -36,6 +36,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
+#include <memory>
+
 #include "Nystrom.h"
 
 namespace shogun
@@ -47,11 +49,11 @@ class NystromD : public Nystrom
 {
 public :
 	NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
-			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 			SGMatrix<bool> basis_mask,
-			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	void set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask);
 

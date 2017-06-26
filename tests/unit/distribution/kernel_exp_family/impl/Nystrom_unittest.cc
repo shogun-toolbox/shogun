@@ -37,350 +37,263 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/base/some.h>
 #include <gtest/gtest.h>
+#include <memory>
 
+#include "DataFixture.h"
+
+using namespace std;
 using namespace shogun;
 using namespace kernel_exp_family_impl;
 
 using namespace shogun;
 using namespace Eigen;
 
-//TEST(kernel_exp_family_impl_Nystrom, compute_xi_norm_2_all_inds_equals_exact)
-//{
-//	index_t N=5;
-//	index_t D=3;
-//	SGMatrix<float64_t> X(D,N);
-//	for (auto i=0; i<N*D; i++)
-//		X.matrix[i]=CMath::randn_float();
-//
-//	float64_t sigma = 2;
-//	float64_t lambda = 1;
-//	Nystrom est(X, new kernel::Gaussian(sigma), lambda, N*D);
-//	Full est_full(X, new kernel::Gaussian(sigma), lambda);
-//
-//	// compare against full version
-//	EXPECT_NEAR(est.compute_xi_norm_2(), est_full.compute_xi_norm_2(), 1e-12);
-//}
-
-TEST(kernel_exp_family_impl_Nystrom, compute_h_all_inds_equals_full)
+/* All unit tests are based on the following gist
+ * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
+ */
+class NystromFixed: public DataFixture, public ::testing::TestWithParam<bool>
 {
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est(X, N, new kernel::Gaussian(sigma), lambda);
-	Full est_full(X, new kernel::Gaussian(sigma), lambda);
-
-	// compare against full version
-	auto h = est.compute_h();
-	auto h_full = est.compute_h();
-
-	ASSERT_EQ(h.vlen, h_full.vlen);
-
-	for (auto i=0; i<N*D; i++)
-		EXPECT_NEAR(h[i], h_full[i], 1e-12);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, compute_h_half_inds_equals_subsampled_full_1D)
-{
-	index_t N=5;
-	index_t D=1;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-
-	index_t m=N/2;
-	SGVector<index_t> temp(N);
-	temp.range_fill();
-	CMath::permute(temp);
-	SGVector<index_t> inds(m);
-	memcpy(inds.vector, temp.vector, sizeof(index_t)*m);
-
-	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
-	Full est_full(X, new kernel::Gaussian(sigma), lambda);
-
-	// compare against full version
-	auto h = est.compute_h();
-	auto h_full = est_full.compute_h();
-
-	ASSERT_EQ(h.vlen, m);
-	ASSERT_EQ(h_full.vlen, N*D);
-	for (auto i=0; i<m; i++)
-		EXPECT_NEAR(h[i], h_full[inds[i]], 1e-12);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, fit)
-{
-	index_t N=5;
-	index_t D=3;
-	index_t m=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est(X, m, new kernel::Gaussian(sigma), lambda);
-	est.fit();
-
-	auto beta=est.get_beta();
-	ASSERT_EQ(beta.vlen, m*D);
-	ASSERT(beta.vector);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, fit_custom_equals_subsampled_basis_m_1)
-{
-	index_t N=2;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	index_t m=1;
-	SGVector<index_t> inds(m);
-	inds[0]=1;
-
-	// explicitly sub-sampled basis, but Nystrom won't know
-	SGMatrix<float64_t> basis(D,m);
-	basis(0,0)=X(0,inds[0]);
-	basis(1,0)=X(1,inds[0]);
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
-	Nystrom est_custom(X, basis, new kernel::Gaussian(sigma), lambda);
-
-	est.fit();
-	est_custom.fit();
-
-	auto beta=est.get_beta();
-	auto beta_custom=est_custom.get_beta();
-	ASSERT_EQ(beta.vlen, m*D);
-	ASSERT(beta.vector);
-	ASSERT_EQ(beta_custom.vlen, m*D);
-	ASSERT(beta_custom.vector);
-
-	for (auto i=0; i<beta.vlen; i++)
-		EXPECT_NEAR(beta[i], beta_custom[i], 1e-13);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, fit_custom_equals_subsampled_basis_m_2)
-{
-	index_t N=5;
-	index_t D=2;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	index_t m=2;
-	SGVector<index_t> inds(m);
-	inds[0]=1;
-	inds[1]=3;
-
-	// explicitly sub-sampled basis, but Nystrom won't know
-	SGMatrix<float64_t> basis(D,m);
-	basis(0,0)=X(0,inds[0]);
-	basis(1,0)=X(1,inds[0]);
-	basis(0,1)=X(0,inds[1]);
-	basis(1,1)=X(1,inds[1]);
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est(X, inds, new kernel::Gaussian(sigma), lambda);
-	Nystrom est_custom(X, basis, new kernel::Gaussian(sigma), lambda);
-
-	est.fit();
-	est_custom.fit();
-
-	auto beta=est.get_beta();
-	auto beta_custom=est_custom.get_beta();
-	ASSERT_EQ(beta.vlen, m*D);
-	ASSERT(beta.vector);
-	ASSERT_EQ(beta_custom.vlen, m*D);
-	ASSERT(beta_custom.vector);
-
-	for (auto i=0; i<beta.vlen; i++)
-		EXPECT_NEAR(beta[i], beta_custom[i], 1e-13);
-}
-
-// disabled as log_pdf might be different (up to constant)
-TEST(DISABLED_kernel_exp_family_impl_Nystrom, log_pdf_almost_all_inds_close_exact)
-{
-	index_t N=15;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto m=N-1;
-	Nystrom est_nystrom(X, m, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-
-	est_nystrom.fit();
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
-
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto log_pdf = est.log_pdf(0);
-	auto log_pdf_nystrom = est_nystrom.log_pdf(0);
-
-	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 0.1);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, grad_all_inds_close_exact)
-{
-	index_t N=50;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto m=N;
-	Nystrom est_nystrom(X, m, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-	est_nystrom.fit();
-	est.fit();
-
-	for (auto trial=0; trial<20; trial++)
+public:
+	void SetUp()
 	{
-		SGVector<float64_t> x(D);
-		for (auto i=0; i<D; i++)
-			x[i]=CMath::randn_float();
+		DataFixture::SetUp();
+		auto sigma = 2.0;
+		auto lambda = 1.0;
+		m = 2;
 
-		est.set_data(x);
-		est_nystrom.set_data(x);
-		auto grad = est.grad(0);
-		auto grad_nystrom = est_nystrom.grad(0);
+		auto X = get_data_train();
+		auto kernel = make_shared<kernel::Gaussian>(sigma);
 
-		for (auto i=0; i<D; i++)
-			EXPECT_NEAR(grad[i], grad_nystrom[i], 1e-1);
+		// templated test to make sure sub-sampled basis and explicit (sub-sampled)
+		// basis lead to the same results
+		bool subsampled_basis = GetParam();
+		if (subsampled_basis)
+		{
+			SGVector <index_t> basis(m);
+			basis[0]=0;
+			basis[1]=1;
+			est = make_shared <Nystrom> (X, basis, kernel, lambda);
+		}
+		else
+		{
+			// explicit basis, manually sub-sampled
+			SGMatrix < float64_t > basis(D, m);
+			for (auto i = 0; i < m*D; i++)
+				basis.matrix[i] = get_data_train().matrix[i];
+
+			est = make_shared <Nystrom> (X, basis, kernel, lambda);
+		}
+		est->fit();
+	}
+
+	virtual SGMatrix<float64_t> get_data_train()
+	{
+		return X_train_fixed;
+	}
+
+protected:
+	shared_ptr<Nystrom> est;
+	index_t m;
+};
+
+class NystromRandom: public NystromFixed
+{
+	virtual SGMatrix<float64_t> get_data_train()
+			{
+		return X_train_random;
+	}
+};
+
+TEST_P(NystromFixed, compute_G_mm)
+{
+	auto result = est->compute_G_mm();
+	ASSERT_EQ(result.num_rows, m*D);
+	ASSERT_EQ(result.num_cols, m*D);
+	ASSERT_TRUE(result.matrix);
+
+	// note: matrix is symmetric
+	float64_t reference[] = {
+		1. , 0. , -0.0045103175789327,
+		-0.0090206351578654, 0. , 1. ,
+		-0.0090206351578654, -0.0120275135438206, -0.0045103175789327,
+		-0.0090206351578654, 1. , 0. ,
+		-0.0090206351578654, -0.0120275135438206, 0. , 1.
+	};
+
+	for (auto i=0; i<m*D*m*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-15);
+}
+
+TEST_P(NystromFixed, compute_G_mn)
+{
+	auto result = est->compute_G_mn();
+	ASSERT_EQ(result.num_rows, m*D);
+	ASSERT_EQ(result.num_cols, ND);
+	ASSERT_TRUE(result.matrix);
+
+	float64_t reference[] = {
+		1.0000000000000000e+00, 0.0000000000000000e+00,
+		-4.5103175789327175e-03, -9.0206351578654351e-03,
+		0.0000000000000000e+00, 1.0000000000000000e+00,
+		-9.0206351578654351e-03, -1.2027513543820579e-02,
+		-4.5103175789327175e-03, -9.0206351578654351e-03,
+		1.0000000000000000e+00, 0.0000000000000000e+00,
+		-9.0206351578654351e-03, -1.2027513543820579e-02,
+		0.0000000000000000e+00, 1.0000000000000000e+00,
+		-3.3119501750281335e-07, -6.2099065781777500e-07,
+		0.0000000000000000e+00, -1.6416999724779760e-01,
+		-6.2099065781777500e-07, -9.9358505250844009e-07,
+		-1.6416999724779760e-01,  -2.4625499587169641e-01
+	};
+
+	for (auto i=0; i<m*D*m*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-15);
+}
+
+TEST_P(NystromFixed, compute_system_matrix)
+{
+	auto result = est->compute_system_matrix();
+	ASSERT_EQ(result.num_rows, m*D);
+	ASSERT_EQ(result.num_cols, m*D);
+	ASSERT_TRUE(result.matrix);
+
+	// note: matrix is symmetric
+	float64_t reference[] = {
+		1.3333672382746031e+00, 4.9727247227808545e-05,
+		-7.5171619822096674e-03, -1.5034322831663395e-02,
+		4.9727247227808545e-05, 1.3334086776473568e+00,
+		-1.5034337557490613e-02, -2.0045740365261768e-02,
+		-7.5171619822096674e-03, -1.5034337557490613e-02,
+		1.3423511676065520e+00, 1.3525621245124521e-02,
+		-1.5034322831663395e-02, -2.0045740365261768e-02,
+		1.3525621245124521e-02, 1.3626064479762696e+00
+	};
+
+	for (auto i=0; i<result.num_rows*result.num_cols; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-15);
+}
+
+TEST_P(NystromFixed, compute_system_vector)
+{
+	auto result = est->compute_system_vector();
+	ASSERT_EQ(result.vlen, m*D);
+	ASSERT_TRUE(result.vector);
+
+	float64_t reference[] = {
+		0.0090218771391811, 0.0135330227056575, 0.0183410310501008,
+		0.0411923796791344
+	};
+
+	for (auto i=0; i<m*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-15);
+}
+
+TEST_P(NystromFixed, fit_kernel_Gaussian)
+{
+	auto result = est->get_beta();
+	ASSERT_EQ(result.vlen, m*D);
+	ASSERT_TRUE(result.vector);
+
+	float64_t reference[] = {
+		-0.0071840764907642, -0.010757370959334, -0.0135184296925311,
+		-0.0303339102579069
+	};
+
+	for (auto i=0; i<m*D; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-15);
+
+}
+
+TEST_P(NystromFixed, log_pdf_kernel_Gaussian)
+{
+	est->set_data(X_test_fixed);
+	auto log_pdf = est->log_pdf();
+
+	ASSERT_TRUE(log_pdf.vector != NULL);
+	ASSERT_EQ(log_pdf.vlen, N_test);
+	EXPECT_NEAR(log_pdf[0], 0.0001774638427285, 1e-15);
+	EXPECT_NEAR(log_pdf[1], -0.0036531113518117, 1e-15);
+}
+
+TEST_P(NystromFixed, grad_kernel_Gaussian)
+{
+	est->set_data(X_test_fixed);
+	auto grad = est->grad(0);
+
+	float64_t reference[] = {-0.0068494729423344, -0.0102705846207064};
+	ASSERT_EQ(grad.vlen, D);
+	ASSERT_TRUE(grad.vector);
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(grad[i], reference[i], 1e-15);
+
+	grad = est->grad(1);
+	float64_t reference2[] = {0.0006131648387784, -0.0046163096796586};
+	ASSERT_EQ(grad.vlen, D);
+	ASSERT_TRUE(grad.vector);
+	for (auto i=0; i<D; i++)
+		EXPECT_NEAR(grad[i], reference2[i], 1e-15);
+}
+
+TEST_P(NystromFixed, hessian_kernel_Gaussian)
+{
+	est->set_data(X_test_fixed);
+	auto hessian = est->hessian(0);
+
+	float64_t reference[] = {
+		0.0004510949800765, 0.0009126002661734,
+		0.0009126002661734, 0.0011460796044802
+	};
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(hessian[i], reference[i], 1e-8);
+
+	hessian = est->hessian(1);
+
+	float64_t reference2[] = {
+		0.0085325523811802, 0.0081597815414807,
+		0.0081597815414807, 0.0087650433882726
+	};
+
+	for (auto i=0; i<D*D; i++)
+		EXPECT_NEAR(hessian[i], reference2[i], 1e-8);
+}
+
+TEST_P(NystromRandom, hessian_diag_equals_hessian)
+{
+	est->set_data(X_test_fixed);
+	for (auto i=0; i<est->get_num_data(); i++)
+	{
+		auto hessian = est->hessian(i);
+		auto hessian_diag = est->hessian_diag(i);
+
+		ASSERT_EQ(hessian.num_rows, D);
+		ASSERT_EQ(hessian.num_cols, D);
+		ASSERT_TRUE(hessian.matrix);
+
+		ASSERT_EQ(hessian_diag.vlen, D);
+		ASSERT_TRUE(hessian_diag.vector);
+
+		for (auto j=0; j<D; j++)
+		EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
 	}
 }
 
-TEST(kernel_exp_family_impl_Nystrom, grad_almost_all_inds_close_exact)
+TEST_P(NystromFixed, score_kernel_Gaussian)
 {
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+	EXPECT_NEAR(est->score(), -0.0014814034043, 1e-14);
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto m=N-1;
-	Nystrom est_nystrom(X, m, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-	est_nystrom.fit();
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
-
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto grad = est.grad(0);
-	auto grad_nystrom = est_nystrom.grad(0);
-
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(grad[i], grad_nystrom[i], 0.3);
+	est->set_data(X_test_fixed);
+	EXPECT_NEAR(est->score(), 0.00949090679556, 1e-14);
 }
 
-//TEST(kernel_exp_family_impl_Nystrom, idx_to_ai)
-//{
-//	index_t D=3;
-//
-//	index_t idx=0;
-//	auto ai=Nystrom::idx_to_ai(idx, D);
-//	EXPECT_EQ(ai.first, 0);
-//	EXPECT_EQ(ai.second, 0);
-//
-//	idx=1;
-//	ai=Nystrom::idx_to_ai(idx, D);
-//	EXPECT_EQ(ai.first, 0);
-//	EXPECT_EQ(ai.second, 1);
-//
-//	idx=2;
-//	ai=Nystrom::idx_to_ai(idx, D);
-//	EXPECT_EQ(ai.first, 0);
-//	EXPECT_EQ(ai.second, 2);
-//
-//	idx=3;
-//	ai=Nystrom::idx_to_ai(idx, D);
-//	EXPECT_EQ(ai.first, 1);
-//	EXPECT_EQ(ai.second, 0);
-//
-//	idx=4;
-//	ai=Nystrom::idx_to_ai(idx, D);
-//	EXPECT_EQ(ai.first, 1);
-//	EXPECT_EQ(ai.second, 1);
-//}
+INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
+						NystromFixed,
+						::testing::Values(true, false));
 
-// disabled as NOT true anymore for the new Nystrom version. log_pdf should be close
-TEST(DISABLED_kernel_exp_family_impl_Nystrom, fit_all_inds_equals_exact)
-{
-	index_t N=5;
-	index_t D=3;
-	auto ND=N*D;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
+INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
+						NystromRandom,
+						::testing::Values(true, false));
 
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est_nystrom(X, N, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-
-	est.fit();
-	est_nystrom.fit();
-
-	// compare against full version
-	auto result_nystrom=est_nystrom.get_beta();
-	auto result=est.get_beta();
-
-	ASSERT_EQ(result.vlen, ND);
-	ASSERT_EQ(result_nystrom.vlen, ND);
-	ASSERT(result.vector);
-	ASSERT(result_nystrom.vector);
-
-	for (auto i=0; i<ND; i++)
-		EXPECT_NEAR(result[i], result_nystrom[i], 1e-10);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, fit_half_inds_shape)
-{
-	index_t N=5;
-	index_t D=3;
-	index_t m=N/2;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est(X, m, new kernel::Gaussian(sigma), lambda);
-	est.fit();
-
-	auto beta=est.get_beta();
-	ASSERT_EQ(beta.vlen, m*D);
-	ASSERT(beta.vector);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, pinv_self_adjoint)
+TEST(KernelExpFamilyImplNystrom, pinv_self_adjoint)
 {
 	index_t N=3;
 	index_t D=2;
@@ -404,119 +317,9 @@ TEST(kernel_exp_family_impl_Nystrom, pinv_self_adjoint)
 	ASSERT_EQ(pinv.num_cols, 2);
 
 	// from numpy.linalg.pinv
-	float64_t reference[] = {0.15929204, -0.09734513, -0.09734513,  0.11504425};
+	float64_t reference[] = {0.15929204, -0.09734513, -0.09734513, 0.11504425};
 
 	for (auto i=0; i<pinv.num_rows*pinv.num_cols; i++)
-		EXPECT_NEAR(pinv[i], reference[i], 1e-8);
+	EXPECT_NEAR(pinv[i], reference[i], 1e-8);
 }
 
-// disabled as log-pdf might actually be quite different (up to constant)
-TEST(DISABLED_kernel_exp_family_impl_Nystrom, log_pdf_all_inds_close_exact)
-{
-	index_t N=50;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	Nystrom est_nystrom(X, N, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-	est_nystrom.fit();
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
-
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto log_pdf = est.log_pdf(0);
-	auto log_pdf_nystrom = est_nystrom.log_pdf(0);
-
-	EXPECT_NEAR(log_pdf, log_pdf_nystrom, 1e-8);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, hessian_all_inds_equals_exact)
-{
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto m=N;
-	Nystrom est_nystrom(X, m, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-	est_nystrom.fit();
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
-
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto hessian = est.hessian(0);
-	auto hessian_nystrom = est_nystrom.hessian(0);
-
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(hessian.matrix[i], hessian_nystrom.matrix[i], 1e-8);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, hessian_almost_all_inds_execute)
-{
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 1;
-	auto m=N*.6;
-	Nystrom est_nystrom(X, m, new kernel::Gaussian(sigma), lambda);
-	Full est(X, new kernel::Gaussian(sigma), lambda);
-	est_nystrom.fit();
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	for (auto i=0; i<D; i++)
-		x[i]=CMath::randn_float();
-
-	est.set_data(x);
-	est_nystrom.set_data(x);
-	auto hessian = est.hessian(0);
-	auto hessian_nystrom = est_nystrom.hessian(0);
-}
-
-TEST(kernel_exp_family_impl_Nystrom, hessian_diag_equals_hessian)
-{
-	index_t N=5;
-	index_t D=3;
-	SGMatrix<float64_t> X(D,N);
-	for (auto i=0; i<N*D; i++)
-		X.matrix[i]=CMath::randn_float();
-
-	float64_t sigma = 2;
-	float64_t lambda = 2;
-	auto m=N*.6;
-	auto kernel = new kernel::Gaussian(sigma);
-	Nystrom est(X, m, kernel, lambda);
-	est.fit();
-
-	SGVector<float64_t> x(D);
-	x[0] = CMath::randn_float();
-	x[1] = CMath::randn_float();
-	x[2] = CMath::randn_float();
-
-	est.set_data(x);
-	auto hessian = est.hessian(0);
-	auto hessian_diag = est.hessian_diag(0);
-
-	for (auto i=0; i<D; i++)
-		EXPECT_NEAR(hessian_diag[i], hessian(i,i), 1e-8);
-}

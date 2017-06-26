@@ -84,7 +84,7 @@ index_t Base::get_num_data() const
 //}
 
 Base::Base(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda, bool init_base_and_data)
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda, bool init_base_and_data)
 {
 	m_kernel = kernel;
 	m_lambda = lambda;
@@ -109,7 +109,6 @@ void Base::set_basis_and_data(SGMatrix<float64_t> basis,
 
 Base::~Base()
 {
-	delete m_kernel;
 }
 
 bool Base::is_basis_equal_data() const
@@ -124,7 +123,6 @@ bool Base::is_basis_equal_data() const
 
 float64_t Base::score() const
 {
-	// TODO check for rounding errors as Python implementation differs for Hessian diagonal
 	auto N_test = get_num_data();
 	auto D = get_num_dimensions();
 

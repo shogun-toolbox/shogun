@@ -36,6 +36,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <utility>
+#include <memory>
 
 #include "kernel/Base.h"
 
@@ -53,7 +54,7 @@ class Base;
 class Base
 {
 public :
-	Base(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
+	Base(SGMatrix<float64_t> data, std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 			bool init_base_and_data=true);
 	virtual ~Base();
 
@@ -87,7 +88,7 @@ protected:
 //	const SGVector<float64_t> get_lhs_point(index_t i) const;
 //	const SGVector<float64_t> get_rhs_point(index_t i) const;
 
-	kernel::Base* m_kernel;
+	std::shared_ptr<kernel::Base> m_kernel;
 	float64_t m_lambda;
 
 	SGVector<float64_t> m_beta;

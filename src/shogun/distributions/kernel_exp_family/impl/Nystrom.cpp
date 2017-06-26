@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
+#include <memory>
 
 #include "kernel/Base.h"
 #include "Nystrom.h"
@@ -44,7 +45,7 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-		kernel::Base* kernel, float64_t lambda,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 		float64_t lambda_l2) : Full(basis, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
@@ -58,7 +59,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			kernel::Base* kernel, float64_t lambda,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
@@ -74,7 +75,7 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-			kernel::Base* kernel, float64_t lambda,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
@@ -152,22 +153,12 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 		SG_SINFO("Solving with LLT.\n");
 		auto solver = LLT<MatrixXd>();
 		solver.compute(eigen_system_matrix);
+
 		if (solver.info() != Eigen::Success)
 		{
-			SG_SWARNING("Numerical problems computing LLT.\n");
-			SG_SINFO("Solving with LDLT.\n");
-			auto solver2 = LDLT<MatrixXd>();
-			solver2.compute(eigen_system_matrix);
-			if (solver2.info() != Eigen::Success)
-			{
-				SG_SWARNING("Numerical problems computing LDLT.\n");
-			}
-			else
-			{
-				SG_SINFO("Constructing solution.\n");
-				eigen_result = -solver.solve(eigen_system_vector);
-				solve_success=true;
-			}
+			SG_SWARNING("Numerical problems computing LLT. This usually means that"
+					" either the L2 regularizer is too small, or the problem is "
+					"badly conditioned. Using fallback option.\n");
 		}
 		else
 		{
@@ -176,21 +167,11 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 			solve_success=true;
 		}
 	}
-	else
-	{
-		SG_SINFO("Solving with HouseholderQR.\n");
-		SG_SWARNING("TODO: Compare QR and self-adjoint-pseudo-inverse.\n");
-		auto solver = HouseholderQR<MatrixXd>();
-		solver.compute(eigen_system_matrix);
-
-		SG_SINFO("Constructing solution.\n");
-		eigen_result = -solver.solve(eigen_system_vector);
-		solve_success=true;
-	}
 
 	if (!solve_success)
 	{
-		SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse.\n");
+		SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse,"
+				", consider adding a L2 regularizer for faster LLT solve.\n");
 		auto G_dagger = pinv_self_adjoint(system_matrix);
 		Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, system_size, system_size);
 
@@ -201,8 +182,10 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 	return result;
 }
 
-void Nystrom::fit()
+
+SGMatrix<float64_t> Nystrom::compute_system_matrix()
 {
+	SG_SINFO("TODO: Avoid re-initializing the kernel matrix, make const\n");
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
 	auto ND = N*D;
@@ -211,35 +194,48 @@ void Nystrom::fit()
 	SGMatrix<float64_t> system_matrix(system_size, system_size);
 	Map<MatrixXd> eigen_system_matrix(system_matrix.matrix, system_size, system_size);
 
-	SG_SINFO("Computing h.\n");
-	auto h = compute_h();
-
 	SG_SINFO("Computing kernel Hessians between basis and data.\n");
 	auto G_mn = compute_G_mn();
 	Map<MatrixXd> eigen_G_mn(G_mn.matrix, system_size, ND);
 	eigen_system_matrix = eigen_G_mn*eigen_G_mn.adjoint() / N;
+
 	if (m_lambda>0)
 	{
+		SGMatrix<float64_t> G_mm;
 		if (basis_is_subsampled_data())
 		{
 			SG_SINFO("Block sub-sampling kernel Hessians for basis.\n");
-			auto G_mm = subsample_G_mm_from_G_mn(G_mn);
-			Map<MatrixXd> eigen_G_mm(G_mm.matrix, system_size, system_size);
-			eigen_system_matrix+=m_lambda*eigen_G_mm;
+			G_mm = subsample_G_mm_from_G_mn(G_mn);
 		}
 		else
 		{
 			SG_SINFO("Computing kernel Hessians for basis.\n");
-			auto G_mm = compute_G_mm();
-			Map<MatrixXd> eigen_G_mm(G_mm.matrix, system_size, system_size);
-			eigen_system_matrix+=m_lambda*eigen_G_mm;
+			G_mm = compute_G_mm();
 		}
+
+		Map<MatrixXd> eigen_G_mm(G_mm.matrix, system_size, system_size);
+		eigen_system_matrix+=m_lambda*eigen_G_mm;
 	}
 
 	if (m_lambda_l2>0.0)
 		eigen_system_matrix.diagonal().array() += m_lambda_l2;
 
-	m_beta = solve_system(system_matrix, h);
+	return system_matrix;
+}
+SGVector<float64_t> Nystrom::compute_system_vector() const
+{
+	SG_SINFO("Computing h.\n");
+	auto h = compute_h();
+	return h;
+}
+
+
+void Nystrom::fit()
+{
+	auto system_matrix = compute_system_matrix();
+	auto system_vector = compute_system_vector();
+
+	m_beta = solve_system(system_matrix, system_vector);
 }
 
 SGMatrix<float64_t> Nystrom::pinv_self_adjoint(const SGMatrix<float64_t>& A)
@@ -305,74 +301,4 @@ SGMatrix<float64_t> Nystrom::subsample_matrix_cols(const SGVector<index_t>& col_
 	}
 
 	return subsampled;
-}
-
-// TODO shouldnt be overloaded to get rid of xi
-float64_t Nystrom::log_pdf(index_t idx_test) const
-{
-	auto D = get_num_dimensions();
-	auto m = get_num_basis();
-
-	float64_t beta_sum = 0;
-
-	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
-	for (auto idx_a=0; idx_a<m; idx_a++)
-	{
-		auto grad_x_xa = m_kernel->dx(idx_a, idx_test);
-		Map<VectorXd> eigen_grad_xa(grad_x_xa.vector, D);
-		beta_sum += eigen_grad_xa.dot(eigen_beta.segment(idx_a*D, D));
-	}
-
-	return beta_sum;
-}
-
-// TODO shouldnt be overloaded to get rid of xi
-SGVector<float64_t> Nystrom::grad(index_t idx_test) const
-{
-	auto D = get_num_dimensions();
-	auto m = get_num_basis();
-
-	SGVector<float64_t> beta_sum_grad(D);
-	Map<VectorXd> eigen_beta_sum_grad(beta_sum_grad.vector, D);
-	eigen_beta_sum_grad.array() = VectorXd::Zero(D);
-
-	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
-	for (auto a=0; a<m; a++)
-	{
-		auto left_arg_hessian = m_kernel->dx_i_dx_j(a, idx_test);
-		Map<MatrixXd> eigen_left_arg_hessian(left_arg_hessian.matrix, D, D);
-		eigen_beta_sum_grad -= eigen_left_arg_hessian*eigen_beta.segment(a*D, D).matrix();
-	}
-
-	return beta_sum_grad;
-}
-
-// TODO shouldnt be overloaded to get rid of xi
-SGVector<float64_t> Nystrom::hessian_diag(index_t idx_test) const
-{
-	REQUIRE(!m_base_measure_cov_ridge, "Base measure not implemented for Hessian.\n");
-
-	// Note: code modifed from full hessian case
-	auto m = get_num_basis();
-	auto D = get_num_dimensions();
-
-	SGVector<float64_t> beta_sum_hessian_diag(D);
-
-	Map<VectorXd> eigen_beta_sum_hessian_diag(beta_sum_hessian_diag.vector, D);
-
-	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
-
-	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
-
-	for (auto a=0; a<m; a++)
-	{
-		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
-		for (auto i=0; i<D; i++)
-		{
-			eigen_beta_sum_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
-					a, idx_test, beta_a, i, i);
-		}
-	}
-
-	return beta_sum_hessian_diag;
 }

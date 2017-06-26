@@ -68,7 +68,7 @@ SGMatrix<float64_t> gen_fix_toy_data_N_3_D_2()
 	return X;
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_equals_manual)
+TEST(KernelExpFamilyImplKernelGaussian, kernel_equals_manual)
 {
 	index_t N=3;
 	index_t D=2;
@@ -101,7 +101,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_equals_manual)
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_equals_shogun)
+TEST(KernelExpFamilyImplKernelGaussian, kernel_equals_shogun)
 {
 	index_t N=30;
 	index_t D=20;
@@ -130,7 +130,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_equals_shogun)
 	SG_UNREF(f);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx)
+TEST(KernelExpFamilyImplKernelGaussian, dx)
 {
 	index_t N=3;
 	index_t D=2;
@@ -165,7 +165,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx)
 		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy)
 {
 	index_t N=3;
 	index_t D=2;
@@ -206,7 +206,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy)
 {
 	index_t N=3;
 	index_t D=2;
@@ -248,7 +248,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_dy)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy_dy)
 {
 	index_t N=3;
 	index_t D=2;
@@ -286,7 +286,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy)
 		EXPECT_NEAR(result.matrix[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy)
 {
 	index_t N=3;
 	index_t D=2;
@@ -333,7 +333,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy)
 		}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dx)
 {
 	index_t N=3;
 	index_t D=2;
@@ -362,7 +362,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx)
 		EXPECT_NEAR(result.vector[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_i_dx_j)
 {
 	index_t N=3;
 	index_t D=2;
@@ -401,7 +401,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j)
 		EXPECT_NEAR(result.matrix[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_dx_i_dx_j)
+TEST(KernelExpFamilyImplKernelGaussian, kernel_dx_i_dx_j)
 {
 	index_t N=3;
 	index_t D=2;
@@ -440,7 +440,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, kernel_dx_i_dx_j)
 		EXPECT_NEAR(result.matrix[i], reference2[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_all)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy_all)
 {
 	index_t N=3;
 	index_t D=2;
@@ -475,7 +475,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_all)
 		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy_sum)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy_dy_sum)
 {
 	index_t N=5;
 	index_t D=3;
@@ -500,7 +500,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_dy_dy_sum)
 	EXPECT_NEAR(sum, sum_manual, 1e-14);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_component)
 {
 	index_t N=3;
 	index_t D=2;
@@ -531,7 +531,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_component)
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dx_component)
 {
 	index_t N=3;
 	index_t D=2;
@@ -562,7 +562,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dx_component)
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_component)
 {
 	index_t N=30;
 	index_t D=20;
@@ -590,7 +590,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_component)
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_i_dx_j_component)
 {
 	index_t N=30;
 	index_t D=20;
@@ -618,7 +618,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_i_dx_j_component)
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy_component)
 {
 	index_t N=30;
 	index_t D=20;
@@ -645,7 +645,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_dy_component)
 		}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dot_vec)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_dx_k_dot_vec)
 {
 	index_t N=2;
 	index_t D=3;
@@ -682,7 +682,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dot_vec)
 		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_dot_vec)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_dx_k_dx_k_dot_vec)
 {
 	index_t N=2;
 	index_t D=3;
@@ -719,7 +719,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_dot_vec)
 		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_row_sum_equals_dot_with_ones)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_dx_k_dx_k_row_sum_equals_dot_with_ones)
 {
 	index_t N=2;
 	index_t D=3;
@@ -747,7 +747,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_row_sum_equals_
 		EXPECT_NEAR(result_ones[i], result[i], 1e-8);
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_row_sum_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_dx_k_dx_k_row_sum_component)
 {
 	index_t N=5;
 	index_t D=3;
@@ -778,7 +778,7 @@ TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dx_k_row_sum_compone
 	}
 }
 
-TEST(kernel_exp_family_impl_kernel_Gaussian, dx_i_dx_j_dx_k_dot_vec_component)
+TEST(KernelExpFamilyImplKernelGaussian, dx_i_dx_j_dx_k_dot_vec_component)
 {
 	index_t N=5;
 	index_t D=3;

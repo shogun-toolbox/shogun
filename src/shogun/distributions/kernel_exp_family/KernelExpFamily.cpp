@@ -33,6 +33,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/distributions/kernel_exp_family/KernelExpFamily.h>
 #include <shogun/io/SGIO.h>
+#include <memory>
 
 #include "impl/Full.h"
 #include "impl/kernel/Gaussian.h"
@@ -54,7 +55,7 @@ CKernelExpFamily::CKernelExpFamily(SGMatrix<float64_t> data,
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 	REQUIRE(base_measure_cov_ridge>=0, "Given base measure covariance ridge (%f) must be 0 or positive.\n", base_measure_cov_ridge);
 
-	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	auto kernel = std::make_shared<kernel_exp_family_impl::kernel::Gaussian>(sigma);
 	m_impl = new kernel_exp_family_impl::Full(data, kernel, lambda, base_measure_cov_ridge);
 }
 

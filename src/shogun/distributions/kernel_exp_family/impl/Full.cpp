@@ -43,7 +43,7 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 Full::Full(SGMatrix<float64_t> data,
-		kernel::Base* kernel, float64_t lambda, float64_t base_measure_cov_ridge,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t base_measure_cov_ridge,
 		bool init_base_and_data) :
 		Base(data, kernel, lambda, init_base_and_data)
 {
@@ -225,8 +225,13 @@ void Full::fit()
 	solver.compute(eigen_G);
 
 	if (!solver.info() == Eigen::Success)
-		SG_SWARNING("Numerical problems computing LLT.\n");
+	{
+		SG_SERROR("Numerical problems computing LLT. This usually means that"
+				" either the regularizer is too small, or the problem is "
+				"badly conditioned.\n");
+	}
 
+	SG_SINFO("Constructing solution.\n");
 	eigen_beta = solver.solve(eigen_h / m_lambda);
 }
 
@@ -366,6 +371,30 @@ SGVector<float64_t> Full::grad(index_t idx_test) const
 	return beta_grad_sum;
 }
 
+void Full::hessian_xi_add(index_t basis_ind, index_t idx_test,
+		SGMatrix<float64_t>& xi_hessian) const
+{
+	auto D = get_num_dimensions();
+	auto xi_hess_sum = m_kernel->dx_i_dx_j_dx_k_dx_k_row_sum(basis_ind, idx_test);
+
+	Map<MatrixXd> eigen_xi_hessian(xi_hessian.matrix, D, D);
+	Map<MatrixXd> eigen_xi_hess_sum(xi_hess_sum.matrix, D, D);
+	eigen_xi_hessian += eigen_xi_hess_sum;
+}
+
+void Full::hessian_xi_result(const SGMatrix<float64_t>& xi_hessian,
+		SGMatrix<float64_t>& result) const
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_basis();
+
+	Map<MatrixXd> eigen_xi_hessian(xi_hessian.matrix, D, D);
+	Map<MatrixXd> eigen_result(result.matrix, D, D);
+
+	// note that xi is not yet normalised
+	eigen_result += eigen_xi_hessian * -1.0/(m_lambda*N);
+}
+
 SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 {
 	REQUIRE(!m_base_measure_cov_ridge, "Base measure not implemented for Hessian.\n");
@@ -373,9 +402,9 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 	auto D = get_num_dimensions();
 
 	SGMatrix<float64_t> xi_hessian(D, D);
+	Map<MatrixXd> eigen_xi_hessian(xi_hessian.matrix, D, D);
 	SGMatrix<float64_t> beta_sum_hessian(D, D);
 
-	Map<MatrixXd> eigen_xi_hessian(xi_hessian.matrix, D, D);
 	Map<MatrixXd> eigen_beta_sum_hessian(beta_sum_hessian.matrix, D, D);
 
 	eigen_xi_hessian = MatrixXd::Zero(D, D);
@@ -386,36 +415,52 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 
 	for (auto a=0; a<N; a++)
 	{
-		// Arguments are opposite order of Python code but sign flip is not
-		// needed since the function is symmetric
-		auto xi_hess_sum = m_kernel->dx_i_dx_j_dx_k_dx_k_row_sum(a, idx_test);
-
-		Map<MatrixXd> eigen_xi_hess_sum(xi_hess_sum.matrix, D, D);
-		eigen_xi_hessian += eigen_xi_hess_sum;
+		hessian_xi_add(a, idx_test, xi_hessian);
 
 		// Beta segment vector
 		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
 
-		// Note sign flip because arguments are opposite order of Python code
 		auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec(a, idx_test, beta_a);
 		Map<MatrixXd> eigen_beta_hess_sum(beta_hess_sum.matrix, D, D);
 		eigen_beta_sum_hessian += eigen_beta_hess_sum;
 	}
 
+	auto result = beta_sum_hessian;
+	hessian_xi_result(xi_hessian, result);
+
+	return result;
+}
+
+void Full::hessian_diag_xi_add(index_t basis_ind, index_t idx_test,
+		SGVector<float64_t>& xi_hessian_diag) const
+{
+	auto D = get_num_dimensions();
+	Map<VectorXd> eigen_xi_hessian_diag(xi_hessian_diag.vector, D);
+
+	for (auto i=0; i<D; i++)
+	{
+		eigen_xi_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dx_k_row_sum_component(
+				basis_ind, idx_test, i, i);
+	}
+}
+
+void Full::hessian_diag_xi_result(const SGVector<float64_t>& xi_hessian_diag,
+		SGVector<float64_t>& result) const
+{
+	auto D = get_num_dimensions();
+	auto N = get_num_basis();
+
+	Map<VectorXd> eigen_xi_hessian_diag(xi_hessian_diag.vector, D);
+	Map<VectorXd> eigen_result(result.vector, D);
+
 	// note that xi is not yet normalised
-	eigen_xi_hessian.array() *= -1.0/(m_lambda*N);
-
-	// re-use memory rather than re-allocating a new result matrix
-	eigen_xi_hessian += eigen_beta_sum_hessian;
-
-	return xi_hessian;
+	eigen_result += eigen_xi_hessian_diag * -1.0/(m_lambda*N);
 }
 
 SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 {
 	REQUIRE(!m_base_measure_cov_ridge, "Base measure not implemented for Hessian.\n");
 
-	// Note: code modifed from full hessian case
 	auto N = get_num_basis();
 	auto D = get_num_dimensions();
 
@@ -433,20 +478,20 @@ SGVector<float64_t> Full::hessian_diag(index_t idx_test) const
 	for (auto a=0; a<N; a++)
 	{
 		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
+
+		hessian_diag_xi_add(a, idx_test, xi_hessian_diag);
+
 		for (auto i=0; i<D; i++)
 		{
-			eigen_xi_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dx_k_row_sum_component(
-					a, idx_test, i, i);
 			eigen_beta_sum_hessian_diag[i] += m_kernel->dx_i_dx_j_dx_k_dot_vec_component(
 					a, idx_test, beta_a, i, i);
 		}
 	}
 
-	// note that xi is not yet normalised
-	eigen_xi_hessian_diag.array() *= -1.0/(m_lambda*N);
-	eigen_xi_hessian_diag += eigen_beta_sum_hessian_diag;
+	auto result = beta_sum_hessian_diag;
+	hessian_diag_xi_result(xi_hessian_diag, result);
 
-	return xi_hessian_diag;
+	return result;
 }
 
 index_t Full::get_system_size() const

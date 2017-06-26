@@ -35,7 +35,7 @@
 #include <shogun/distributions/kernel_exp_family/KernelExpFamilyNystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/Nystrom.h>
 #include <shogun/distributions/kernel_exp_family/impl/NystromD.h>
-
+#include <memory>
 
 #include "impl/kernel/Gaussian.h"
 
@@ -62,7 +62,7 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
 
-	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	auto kernel = std::make_shared<kernel_exp_family_impl::kernel::Gaussian>(sigma);
 	m_impl = new kernel_exp_family_impl::Nystrom(data, basis, kernel, lambda, lambda_l2);
 }
 
@@ -79,7 +79,7 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data, index
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
 
-	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	auto kernel = std::make_shared<kernel_exp_family_impl::kernel::Gaussian>(sigma);
 	m_impl = new kernel_exp_family_impl::Nystrom(data, num_subsample_basis,
 													kernel, lambda, lambda_l2);
 }
@@ -114,7 +114,7 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
 	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
 
-	auto kernel = new kernel_exp_family_impl::kernel::Gaussian(sigma);
+	auto kernel = std::make_shared<kernel_exp_family_impl::kernel::Gaussian>(sigma);
 	m_impl = new kernel_exp_family_impl::NystromD(data, basis, basis_mask,
 			kernel, lambda, lambda_l2);
 }

@@ -44,7 +44,7 @@ using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
 
 NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
-		kernel::Base* kernel, float64_t lambda,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 		float64_t lambda_l2) : Nystrom(data, data, kernel, lambda, lambda_l2)
 {
 	set_basis_inds_from_mask(basis_mask);
@@ -52,7 +52,7 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
 
 NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 		SGMatrix<bool> basis_mask,
-		kernel::Base* kernel, float64_t lambda,
+		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 		float64_t lambda_l2) : Nystrom(data, basis, kernel, lambda, lambda_l2)
 {
 	set_basis_inds_from_mask(basis_mask);

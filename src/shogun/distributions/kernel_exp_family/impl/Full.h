@@ -77,7 +77,7 @@ class Base;
 class Full : public Base
 {
 public :
-	Full(SGMatrix<float64_t> data, kernel::Base* kernel, float64_t lambda,
+	Full(SGMatrix<float64_t> data, std::shared_ptr<kernel::Base> kernel, float64_t lambda,
 			float64_t base_measure_cov_ridge=0.0, bool init_base_and_data=true);
 	virtual ~Full() {};
 
@@ -86,9 +86,7 @@ public :
 	virtual SGVector<float64_t> grad(index_t idx_test) const;
 	virtual SGMatrix<float64_t> hessian(index_t idx_test) const;
 	virtual SGVector<float64_t> hessian_diag(index_t idx_test) const;
-//	virtual SGVector<float64_t> leverage() const;
 
-//	float64_t compute_xi_norm_2() const;
 	virtual SGVector<float64_t> compute_h() const;
 
 	float64_t base_measure_log_pdf(const SGVector<float64_t>& vec) const;
@@ -96,7 +94,6 @@ public :
 	SGMatrix<float64_t> base_measure_dx(const SGMatrix<float64_t>& mat) const;
 	SGVector<float64_t> base_measure_dx_dx_times_vec(const SGVector<float64_t>& vec,
 			const SGVector<float64_t>& other) const;
-
 
 	// define wrappers for convenience functions in base class
 	using Base::log_pdf;
@@ -107,14 +104,20 @@ public :
 
 	// modularization
 	virtual index_t get_system_size() const;
-protected:
 	virtual void log_pdf_xi_add(index_t basis_ind, index_t idx_test, float64_t& xi) const;
 	virtual void log_pdf_xi_result(float64_t xi, float64_t& result) const;
 	virtual void grad_xi_add(index_t basis_ind, index_t idx_test,
 			SGVector<float64_t>& xi_grad) const;
-	virtual void grad_xi_result(const SGVector<float64_t>& xi,
+	virtual void grad_xi_result(const SGVector<float64_t>& xi_grad,
 			 SGVector<float64_t>& result) const;
-
+	virtual void hessian_xi_add(index_t basis_ind, index_t idx_test,
+			SGMatrix<float64_t>& xi_hessian) const;
+	virtual void hessian_xi_result(const SGMatrix<float64_t>& xi_hessian,
+			 SGMatrix<float64_t>& result) const;
+	virtual void hessian_diag_xi_add(index_t basis_ind, index_t idx_test,
+			SGVector<float64_t>& xi_hessian_diag) const;
+	virtual void hessian_diag_xi_result(const SGVector<float64_t>& xi_hessian_diag,
+			SGVector<float64_t>& result) const;
 
 protected:
 	float64_t m_base_measure_cov_ridge;

@@ -46,38 +46,32 @@ using namespace kernel_exp_family_impl;
 /* All unit tests are based on the following gist
  * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
  */
-class FullFixtureFixed: public DataFixture
+class KernelExpFamilyImplFullFixed: public DataFixture, public ::testing::Test
 {
 public:
 	void SetUp()
 	{
+		DataFixture::SetUp();
 		auto sigma = 2.0;
 		auto lambda = 1.0;
 
 		auto X = get_data_train();
-		auto kernel = new kernel::Gaussian(sigma);
+		auto kernel = make_shared<kernel::Gaussian>(sigma);
 		est = make_shared<Full>(X, kernel, lambda);
 		est->fit();
-
-		est->set_data(X_test_fixed);
 	}
 
 	virtual SGMatrix<float64_t> get_data_train() { return X_train_fixed; }
 
-protected:
 	 shared_ptr<Full> est;
 };
 
-class FullFixtureRandom: public FullFixtureFixed
+class KernelExpFamilyImplFullRandom: public KernelExpFamilyImplFullFixed
 {
-public:
 	virtual SGMatrix<float64_t> get_data_train() { return X_train_random; }
-
-protected:
-	 shared_ptr<Full> est;
 };
 
-TEST_F(FullFixtureFixed, compute_h_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, compute_h_kernel_Gaussian)
 {
 	auto result = est->compute_h();
 
@@ -88,51 +82,67 @@ TEST_F(FullFixtureFixed, compute_h_kernel_Gaussian)
 		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-TEST_F(FullFixtureFixed, fit_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, fit_kernel_Gaussian)
 {
-	auto x = est->get_beta();
-	ASSERT_EQ(x.vlen, ND);
-	ASSERT(x.vector);
+	auto result = est->get_beta();
+	ASSERT_EQ(result.vlen, ND);
+	ASSERT_TRUE(result.vector);
 	
-	float64_t reference_x[] = {
-			0.00228091,  0.00342023,  0.00406425,  0.0092514 , -0.00646103,
-			-0.01294499
+	float64_t reference[] = {
+			0.0022809128878491,  0.0034202348297001,  0.0040642480460088,
+			0.0092514041335136, -0.006461025579696 , -0.0129449913732097
 	};
 
 	for (auto i=0; i<ND; i++)
-		EXPECT_NEAR(x[i], reference_x[i], 1e-8);
+		EXPECT_NEAR(result[i], reference[i], 1e-8);
 	
 }
 
-TEST_F(FullFixtureFixed, log_pdf_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, log_pdf_kernel_Gaussian)
 {
-	auto log_pdf = est->log_pdf(0);
-	EXPECT_NEAR(log_pdf, 0.6610996707107812, 1e-15);
+	est->set_data(X_test_fixed);
 
-	log_pdf = est->log_pdf(1);
-	EXPECT_NEAR(log_pdf, 0.1853735804373066, 1e-15);
+	auto result = est->log_pdf();
+
+	float64_t reference[] = {
+			0.6610996707107812, 0.1853735804373066
+	};
+
+	ASSERT_TRUE(result.vector);
+	ASSERT_EQ(result.vlen, N_test);
+	for (auto i=0; i<N_test; i++)
+		EXPECT_NEAR(result[i], reference[i], 1e-8);
 }
 
-TEST_F(FullFixtureFixed, grad_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, grad_kernel_Gaussian)
 {
+	est->set_data(X_test_fixed);
 	auto grad = est->grad(0);
 
 	float64_t reference[] = {-0.00684274, -0.0102607 };
+	ASSERT_EQ(grad.vlen, D);
+	ASSERT_TRUE(grad.vector);
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference[i], 1e-8);
 	
 	grad = est->grad(1);
 	float64_t reference2[] = {-0.62020189, -0.03895487};
+	ASSERT_EQ(grad.vlen, D);
+	ASSERT_TRUE(grad.vector);
 	for (auto i=0; i<D; i++)
 		EXPECT_NEAR(grad[i], reference2[i], 1e-8);
 }
 
-TEST_F(FullFixtureFixed, hessian_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, hessian_kernel_Gaussian)
 {
+	est->set_data(X_test_fixed);
 	auto hessian = est->hessian(0);
 	
 	float64_t reference[] = {-1.34299555, -0.02133143,
 							-0.02133143, -1.36075253};
+	ASSERT_EQ(hessian.num_rows, D);
+	ASSERT_EQ(hessian.num_cols, D);
+	ASSERT_TRUE(hessian.matrix);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(hessian[i], reference[i], 1e-8);
 
@@ -140,27 +150,37 @@ TEST_F(FullFixtureFixed, hessian_kernel_Gaussian)
 
 	float64_t reference2[] = { 0.40612246, -0.02956325,
 								-0.02956325, -0.67672628};
-
+	ASSERT_EQ(hessian.num_rows, D);
+	ASSERT_EQ(hessian.num_cols, D);
+	ASSERT_TRUE(hessian.matrix);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(hessian[i], reference2[i], 1e-8);
 }
 
-TEST_F(FullFixtureRandom, hessian_diag_equals_hessian)
+TEST_F(KernelExpFamilyImplFullRandom, hessian_diag_equals_hessian)
 {
+	SG_SWARNING("TODO make this type parametrized test,\n");
 	for (auto i=0; i<est->get_num_data(); i++)
 	{
 		auto hessian = est->hessian(i);
 		auto hessian_diag = est->hessian_diag(i);
+
+		ASSERT_EQ(hessian.num_rows, D);
+		ASSERT_EQ(hessian.num_cols, D);
+		ASSERT_TRUE(hessian.matrix);
+
+		ASSERT_EQ(hessian_diag.vlen, D);
+		ASSERT_TRUE(hessian_diag.vector);
 
 		for (auto j=0; j<D; j++)
 			EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
 	}
 }
 
-TEST_F(FullFixtureFixed, score_kernel_Gaussian)
+TEST_F(KernelExpFamilyImplFullFixed, score_kernel_Gaussian)
 {
-	EXPECT_NEAR(est->score(), -1.39059595876, 1e-8);
-
-	est->set_data(X_train_fixed);
 	EXPECT_NEAR(est->score(), -2.56147602838, 1e-8);
+
+	est->set_data(X_test_fixed);
+	EXPECT_NEAR(est->score(), -1.39059595876, 1e-8);
 }

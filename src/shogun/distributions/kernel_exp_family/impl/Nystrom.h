@@ -36,6 +36,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
+#include <memory>
+
 #include "Base.h"
 #include "Full.h"
 
@@ -48,22 +50,17 @@ class Nystrom : public Full
 {
 public :
 	Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-				kernel::Base* kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
 
 	virtual ~Nystrom() {};
 
 	virtual void fit();
-
-	// TODO should not overload these but re-use code from base class
-	virtual float64_t log_pdf(index_t idx_test) const;
-	virtual SGVector<float64_t> grad(index_t idx_test) const;
-	virtual SGVector<float64_t> hessian_diag(index_t idx_test) const;
 
 	// TODO these should go to the lib
 	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
@@ -74,11 +71,31 @@ public :
 	// modularisation of the fit method
 	virtual bool basis_is_subsampled_data() const { return m_basis_inds.vlen; }
 	virtual index_t get_system_size() const;
+	SGMatrix<float64_t> compute_system_matrix();
+	SGVector<float64_t> compute_system_vector() const;
+
+
 	virtual SGMatrix<float64_t> subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const;
 	virtual SGMatrix<float64_t> compute_G_mn() const;
 	virtual SGMatrix<float64_t> compute_G_mm(); // TODO this should be const!
 	SGVector<float64_t> solve_system(const SGMatrix<float64_t>& system_matrix,
 			const SGVector<float64_t>& system_vector) const;
+
+	// overloading base class methods as no-ops to get rid of xi parts
+	virtual void log_pdf_xi_add(index_t basis_ind, index_t idx_test, float64_t& xi) const {};
+	virtual void log_pdf_xi_result(float64_t xi, float64_t& result) const {};
+	virtual void grad_xi_add(index_t basis_ind, index_t idx_test,
+			SGVector<float64_t>& xi_grad) const {};
+	virtual void grad_xi_result(const SGVector<float64_t>& xi,
+			 SGVector<float64_t>& result) const {};
+	virtual void hessian_xi_add(index_t basis_ind, index_t idx_test,
+			SGMatrix<float64_t>& xi_hessian) const {};
+	virtual void hessian_xi_result(const SGMatrix<float64_t>& xi_hessian,
+			 SGMatrix<float64_t>& result) const {};
+	virtual void hessian_diag_xi_add(index_t basis_ind, index_t idx_test,
+			SGVector<float64_t>& xi_hessian_diag) const {};
+	virtual void hessian_diag_xi_result(const SGVector<float64_t>& xi_hessian_diag,
+			SGVector<float64_t>& result) const {};
 protected:
 
 	float64_t m_lambda_l2;
