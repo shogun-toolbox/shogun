@@ -1,11 +1,9 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update && apt-get install -qq software-properties-common lsb-release
 RUN add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) multiverse"
-RUN add-apt-repository -y ppa:rosmo/swig3.0.7
 RUN add-apt-repository -y ppa:webupd8team/java
-RUN add-apt-repository -y ppa:george-edison55/cmake-3.x
 RUN apt-get update -qq
 RUN apt-get upgrade -y
 
@@ -18,10 +16,10 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapack-dev cmake \
     libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
-    python-jinja2 git-core wget jblas mono-devel mono-gmcs cli-common-dev \
+    python-jinja2 git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
-    exuberant-ctags clang-format-3.8
+    exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev
 
 RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme
 
@@ -35,10 +33,10 @@ RUN cd /tmp;\
     make install; ldconfig
 
 ADD http://www.scala-lang.org/files/archive/scala-2.11.7.deb /tmp/scala.deb
-RUN sudo dpkg -i /tmp/scala.deb
+RUN dpkg -i /tmp/scala.deb
 
 ADD http://dl.bintray.com/sbt/debian/sbt-0.13.6.deb /tmp/sbt.deb
-RUN sudo dpkg -i /tmp/sbt.deb
+RUN dpkg -i /tmp/sbt.deb
 
 ADD https://github.com/Reactive-Extensions/RxCpp/archive/v4.0.0.tar.gz /tmp/
 RUN cd /tmp;\
@@ -47,4 +45,4 @@ RUN cd /tmp;\
     mkdir build;\
     cd build;\
     cmake ../../;\
-    sudo make install;
+    make install;
