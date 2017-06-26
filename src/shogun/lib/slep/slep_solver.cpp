@@ -524,7 +524,8 @@ slep_result_t slep_solver(
 	double alphap = 0.0, alpha = 1.0;
 	double fun_x = 0.0;
 
-	while (!done && iter <= options.max_iter && !CSignal::cancel_computations())
+	// while (!done && iter <= options.max_iter && !cancel_computation())
+	while (!done && iter <= options.max_iter)
 	{
 		beta = (alphap-1.0)/alpha;
 

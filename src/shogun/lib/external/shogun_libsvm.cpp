@@ -35,6 +35,7 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+#include <shogun/base/init.h>
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
@@ -50,6 +51,8 @@
 #include <float.h>
 #include <string.h>
 #include <stdarg.h>
+
+#include <rxcpp/rx.hpp>
 
 namespace shogun
 {
@@ -290,7 +293,7 @@ LibSVMKernel::~LibSVMKernel()
 //
 class Solver {
 public:
-	Solver() {};
+	Solver() : m_cancel_computation(false){};
 	virtual ~Solver() {};
 
 	struct SolutionInfo {
@@ -322,6 +325,7 @@ protected:
 	float64_t *G_bar;		// gradient, if we treat free variables as 0
 	int32_t l;
 	bool unshrink;	// XXX
+	std::atomic<bool> m_cancel_computation;
 
 	float64_t get_C(int32_t i)
 	{
@@ -343,9 +347,50 @@ protected:
 	virtual int32_t select_working_set(int32_t &i, int32_t &j, float64_t &gap);
 	virtual float64_t calculate_rho();
 	virtual void do_shrinking();
+
+	/* Custom implementation of signal handling */
+	rxcpp::subscription connect_to_signal_handler();
+	void reset_computation_variables();
+#ifndef SWIG
+	/** @return whether the algorithm needs to be stopped */
+	SG_FORCED_INLINE bool cancel_computation() const
+	{
+		return m_cancel_computation.load();
+	}
+#endif
+	void on_pause()
+	{
+	}
+	void on_next()
+	{
+		m_cancel_computation.store(false);
+	}
+	void on_complete()
+	{
+	}
+
 private:
 	bool be_shrunk(int32_t i, float64_t Gmax1, float64_t Gmax2);
 };
+
+rxcpp::subscription Solver::connect_to_signal_handler()
+{
+	// Subscribe this algorithm to the signal handler
+	auto subscriber = rxcpp::make_subscriber<int>(
+		[this](int i) {
+			if (i == SG_PAUSE_COMP)
+				this->on_pause();
+			else
+				this->on_next();
+		},
+		[this]() { this->on_complete(); });
+	return get_global_signal()->get_observable().subscribe(subscriber);
+}
+
+void Solver::reset_computation_variables()
+{
+	m_cancel_computation.store(false);
+}
 
 void Solver::swap_index(int32_t i, int32_t j)
 {
@@ -403,6 +448,8 @@ void Solver::Solve(
 	const schar *p_y, float64_t *p_alpha, float64_t p_Cp, float64_t p_Cn,
 	float64_t p_eps, SolutionInfo* p_si, int32_t shrinking, bool use_bias)
 {
+	auto sub = connect_to_signal_handler();
+
 	this->l = p_l;
 	this->Q = &p_Q;
 	QD=Q->get_QD();
@@ -443,7 +490,7 @@ void Solver::Solve(
 		}
 		SG_SINFO("Computing gradient for initial set of non-zero alphas\n")
 		//CMath::display_vector(alpha, l, "alphas");
-		for(i=0;i<l && !CSignal::cancel_computations(); i++)
+		for (i = 0; i < l && !cancel_computation(); i++)
 		{
 			if(!is_lower_bound(i))
 			{
@@ -466,7 +513,7 @@ void Solver::Solve(
 	int32_t iter = 0;
 	int32_t counter = CMath::min(l,1000)+1;
 	auto pb = progress(range(10));
-	while (!CSignal::cancel_computations())
+	while (!cancel_computation())
 	{
 		if (Q->max_train_time > 0 && start_time.cur_time_diff() > Q->max_train_time)
 		  break;
@@ -711,6 +758,9 @@ void Solver::Solve(
 	SG_FREE(active_set);
 	SG_FREE(G);
 	SG_FREE(G_bar);
+
+	sub.unsubscribe();
+	reset_computation_variables();
 }
 
 // return 1 if already optimal, return 0 otherwise
@@ -1832,7 +1882,7 @@ void solve_c_svc_weighted(
 		if(prob->y[i] > 0) y[i] = +1; else y[i]=-1;
 	}
 
-	WeightedSolver s = WeightedSolver(prob->C);
+	WeightedSolver s{prob->C};
 	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
 		alpha, Cp, Cn, param->eps, si, param->shrinking, param->use_bias);
 

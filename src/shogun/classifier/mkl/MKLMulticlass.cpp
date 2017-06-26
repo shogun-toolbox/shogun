@@ -371,7 +371,7 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 	int32_t numberofsilpiterations=0;
 	bool final=false;
 
-	while (!(CSignal::cancel_computations()) && !final)
+	while (!(cancel_computation()) && !final)
 	{
 
 		//curweights.clear();

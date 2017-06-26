@@ -106,7 +106,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 		is_log_loss = true;
 
 	int32_t vec_count;
-	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
+	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		vec_count=0;
 		count = skip;

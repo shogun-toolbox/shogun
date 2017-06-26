@@ -12,7 +12,6 @@
 #include <shogun/base/progress.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/lib/Signal.h>
 #include <shogun/machine/KernelMachine.h>
 
 #include <shogun/kernel/Kernel.h>
@@ -364,8 +363,8 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 #ifdef WIN32
 				for (int32_t vec = start; vec < end; vec++)
 #else
-				for (int32_t vec = start;
-				     vec < end && !CSignal::cancel_computations(); vec++)
+				for (int32_t vec = start; vec < end && !cancel_computation();
+				     vec++)
 #endif
 				{
 					pb.print_progress();
@@ -392,7 +391,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 
 #ifndef WIN32
-		if ( CSignal::cancel_computations() )
+		if (cancel_computation())
 			SG_INFO("prematurely stopped.           \n")
 #endif
 	}
@@ -523,8 +522,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 #ifdef WIN32
 		for (int32_t vec = start; vec < end; vec++)
 #else
-		for (int32_t vec = start; vec < end && !CSignal::cancel_computations();
-		     vec++)
+		for (int32_t vec = start; vec < end && !cancel_computation(); vec++)
 #endif
 		{
 			pb.print_progress();
@@ -549,7 +547,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	}
 
 #ifndef WIN32
-	if ( CSignal::cancel_computations() )
+	if (cancel_computation())
 		SG_INFO("prematurely stopped.\n")
 	else
 #endif

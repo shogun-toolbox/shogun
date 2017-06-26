@@ -333,8 +333,9 @@ SGMatrix<T> CDistance::get_distance_matrix()
 
 					pb.print_progress();
 
-					if (CSignal::cancel_computations())
-						break;
+					// TODO: replace with new signal
+					// if (CSignal::cancel_computations())
+					//	break;
 				}
 			}
 		}

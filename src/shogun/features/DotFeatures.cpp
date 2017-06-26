@@ -87,8 +87,10 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
 #else
-		for (int32_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)
@@ -99,11 +101,6 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 		}
 	}
 	pb.complete();
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
 }
 
 void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
@@ -136,8 +133,10 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 #ifdef WIN32
 		for (int32_t i=t_start; i<t_stop; i++)
 #else
-		for (int32_t i=t_start; i<t_stop &&
-				!CSignal::cancel_computations(); i++)
+		// TODO: replace with the new signal
+		// for (int32_t i=t_start; i<t_stop &&
+		//		!CSignal::cancel_computations(); i++)
+		for (int32_t i = t_start; i < t_stop; i++)
 #endif
 		{
 			if (alphas)
@@ -148,11 +147,6 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 		}
 	}
 	pb.complete();
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
 }
 
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()

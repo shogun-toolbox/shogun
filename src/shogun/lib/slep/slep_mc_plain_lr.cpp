@@ -91,7 +91,8 @@ slep_result_t slep_mc_plain_lr(
 	bool done = false;
 	CTime time;
 	//internal::set_is_malloc_allowed(false);
-	while ((!done) && (iter<options.max_iter) && (!CSignal::cancel_computations()))
+	// while ((!done) && (iter<options.max_iter) && (!cancel_computation()))
+	while ((!done) && (iter < options.max_iter))
 	{
 		double beta = (alphap-1)/alpha;
 		// compute search points

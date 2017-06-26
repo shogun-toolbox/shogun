@@ -28,7 +28,7 @@ CMulticlassLabels* CKDTREEKNNSolver::classify_objects(CDistance* knn_distance, c
 	CFeatures* query = knn_distance->get_rhs();
 	kd_tree->query_knn(dynamic_cast<CDenseFeatures<float64_t>*>(query), m_k);
 	SGMatrix<index_t> NN = kd_tree->get_knn_indices();
-	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
 		for (int32_t j=0; j<m_k; j++)
@@ -59,7 +59,7 @@ SGVector<int32_t> CKDTREEKNNSolver::classify_objects_k(CDistance* knn_distance, 
 	CFeatures* data = knn_distance->get_rhs();
 	kd_tree->query_knn(dynamic_cast<CDenseFeatures<float64_t>*>(data), m_k);
 	SGMatrix<index_t> NN = kd_tree->get_knn_indices();
-	for (index_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
 		for (index_t j=0; j<m_k; j++)
