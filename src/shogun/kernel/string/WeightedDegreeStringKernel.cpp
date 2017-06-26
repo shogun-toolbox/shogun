@@ -884,8 +884,9 @@ void CWeightedDegreeStringKernel::compute_batch(
 
 	if (num_threads < 2)
 	{
-
-		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM_WD params;
@@ -909,8 +910,9 @@ void CWeightedDegreeStringKernel::compute_batch(
 #ifdef HAVE_PTHREAD
 	else
 	{
-
-		for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		// TODO: replace with the new signal
+		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+		for (int32_t j = 0; j < num_feat; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);

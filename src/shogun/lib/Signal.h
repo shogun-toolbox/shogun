@@ -68,15 +68,6 @@ namespace shogun
 		};
 #endif
 
-		/** Cancel computations
-		 *
-		 * @return if computations should be cancelled
-		 */
-		static inline bool cancel_computations()
-		{
-			return false;
-		}
-
 		/** Enable signal handler
 		*/
 		void enable_handler()
