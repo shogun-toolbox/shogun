@@ -60,6 +60,16 @@ namespace shogun
 			return m_gradient;
 		}
 
+		/** serialize the object using cereal
+		 *
+		 * @param ar Archive type
+		 */
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(m_model_selection, m_gradient);
+		}
+
 	private:
 		std::string m_description;
 		EModelSelectionAvailability m_model_selection;
@@ -110,6 +120,16 @@ namespace shogun
 		inline bool operator!=(const AnyParameter& other) const
 		{
 			return !(*this == other);
+		}
+
+		/** serialize the object using cereal
+		 *
+		 * @param ar Archive type
+		 */
+		template<class Archive>
+		void serialize(Archive& ar)
+		{
+			ar(m_value, m_properties);
 		}
 
 	private:

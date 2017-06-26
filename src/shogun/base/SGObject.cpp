@@ -32,6 +32,15 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <algorithm>
+
+#include <cereal/types/map.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include <fstream>
+
 #include <unordered_map>
 #include <memory>
 
@@ -234,6 +243,74 @@ int32_t CSGObject::unref()
 		return m_refcount->ref_count();
 	}
 }
+
+void CSGObject::save_binary(const char* filename) const
+{
+	std::ofstream os(filename);
+	cereal::BinaryOutputArchive archive(os);
+	archive(cereal::make_nvp(this->get_name(), *this));
+}
+
+void CSGObject::save_json(const char* filename) const
+{
+	std::ofstream os(filename);
+	cereal::JSONOutputArchive archive(os);
+	archive(cereal::make_nvp(this->get_name(), *this));
+}
+
+void CSGObject::save_xml(const char* filename) const
+{
+	std::ofstream os(filename);
+	cereal::XMLOutputArchive archive(os);
+	archive(cereal::make_nvp(this->get_name(), *this));
+}
+
+void CSGObject::load_binary(const char* filename)
+{
+	std::ifstream is(filename);
+	cereal::BinaryInputArchive archive(is);
+	archive(*this);
+}
+
+void CSGObject::load_json(const char* filename)
+{
+	std::ifstream is(filename);
+	cereal::JSONInputArchive archive(is);
+	archive(*this);
+}
+
+void CSGObject::load_xml(const char* filename)
+{
+	std::ifstream is(filename);
+	cereal::XMLInputArchive archive(is);
+	archive(*this);
+}
+
+template <class Archive>
+void CSGObject::cereal_save(Archive& ar) const
+{
+	for (const auto& it : self->map)
+		ar(cereal::make_nvp(it.first.name(), it.second));
+}
+template void CSGObject::cereal_save<cereal::BinaryOutputArchive>(
+    cereal::BinaryOutputArchive& ar) const;
+template void CSGObject::cereal_save<cereal::JSONOutputArchive>(
+    cereal::JSONOutputArchive& ar) const;
+template void CSGObject::cereal_save<cereal::XMLOutputArchive>(
+    cereal::XMLOutputArchive& ar) const;
+
+template <class Archive>
+void CSGObject::cereal_load(Archive& ar)
+{
+	for (auto& it : self->map)
+		ar(it.second);
+}
+template void CSGObject::cereal_load<cereal::BinaryInputArchive>(
+    cereal::BinaryInputArchive& ar);
+template void
+CSGObject::cereal_load<cereal::JSONInputArchive>(cereal::JSONInputArchive& ar);
+template void
+CSGObject::cereal_load<cereal::XMLInputArchive>(cereal::XMLInputArchive& ar);
 
 #ifdef TRACE_MEMORY_ALLOCS
 #include <shogun/lib/Map.h>

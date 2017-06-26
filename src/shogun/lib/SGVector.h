@@ -9,12 +9,12 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
-#include <shogun/lib/config.h>
-
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 #include <shogun/util/iterators.h>
+
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 #include <memory>
@@ -555,6 +555,13 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return matrix
 		 */
 		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+
+		template <class Archive>
+		void cereal_save(Archive& ar) const;
+
+		template <class Archive>
+		void cereal_load(Archive& ar);
+
 #endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
