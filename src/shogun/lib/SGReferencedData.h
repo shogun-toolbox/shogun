@@ -43,6 +43,14 @@ class SGReferencedData
 		 */
 		int32_t ref_count();
 
+#ifndef SWIG // SWIG should skip this part
+		template <class Archive>
+		void cereal_save(Archive& ar) const;
+
+		template <class Archive>
+		void cereal_load(Archive& ar);
+#endif //#ifndef SWIG // SWIG should skip this part
+
 	protected:
 		/** copy refcount */
 		void copy_refcount(const SGReferencedData &orig);

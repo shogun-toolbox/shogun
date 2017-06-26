@@ -1,6 +1,12 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/RefCount.h>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/cereal.hpp>
+#include <cereal/types/polymorphic.hpp>
+
 using namespace shogun;
 
 namespace shogun {
@@ -112,4 +118,42 @@ int32_t SGReferencedData::unref()
 		return c;
 	}
 }
+
+template <class Archive>
+void SGReferencedData::cereal_save(Archive& ar) const
+{
+	if (m_refcount != NULL)
+		ar(cereal::make_nvp("ref_counting", true),
+		   cereal::make_nvp("refcount number", m_refcount->ref_count()));
+	else
+		ar(cereal::make_nvp("ref_counting", false));
+}
+template void SGReferencedData::cereal_save<cereal::BinaryOutputArchive>(
+	cereal::BinaryOutputArchive& ar) const;
+template void SGReferencedData::cereal_save<cereal::JSONOutputArchive>(
+	cereal::JSONOutputArchive& ar) const;
+template void SGReferencedData::cereal_save<cereal::XMLOutputArchive>(
+	cereal::XMLOutputArchive& ar) const;
+
+template <class Archive>
+void SGReferencedData::cereal_load(Archive& ar)
+{
+	bool ref_counting;
+	ar(ref_counting);
+
+	if (ref_counting)
+	{
+		int32_t temp;
+		ar(temp);
+		m_refcount = new RefCount(temp);
+	}
+	else
+		m_refcount = NULL;
+}
+template void SGReferencedData::cereal_load<cereal::BinaryInputArchive>(
+	cereal::BinaryInputArchive& ar);
+template void SGReferencedData::cereal_load<cereal::JSONInputArchive>(
+	cereal::JSONInputArchive& ar);
+template void SGReferencedData::cereal_load<cereal::XMLInputArchive>(
+	cereal::XMLInputArchive& ar);
 }
