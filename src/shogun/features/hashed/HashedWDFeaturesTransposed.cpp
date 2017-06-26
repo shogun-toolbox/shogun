@@ -291,11 +291,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	}
 #endif
 	SG_FREE(index);
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
 }
 
 void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
@@ -381,11 +376,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		SG_FREE(threads);
 		SG_FREE(index);
 	}
-#endif
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 

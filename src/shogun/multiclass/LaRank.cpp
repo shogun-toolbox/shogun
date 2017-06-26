@@ -639,8 +639,8 @@ bool CLaRank::train_machine(CFeatures* data)
 
 	auto pb = progress(range(0, 10), *this->io);
 	SG_INFO("Training on %d examples\n", nb_train)
-	while (gap > get_C() && (!CSignal::cancel_computations()) &&
-            n_it < max_iteration)      // stopping criteria
+	while (gap > get_C() && (!cancel_computation()) &&
+	       n_it < max_iteration) // stopping criteria
 	{
 		float64_t tr_err = 0;
 		int32_t ind = step;

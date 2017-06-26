@@ -513,7 +513,9 @@ void Solver_MCSVM_CS::solve()
 		state->inited = true;
 	}
 
-	while(iter < max_iter && !CSignal::cancel_computations())
+	// TODO: replace with the new signal
+	// while(iter < max_iter && !CSignal::cancel_computations())
+	while (iter < max_iter)
 	{
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)

@@ -125,7 +125,7 @@ bool CLPBoost::train_machine(CFeatures* data)
 	int32_t num_hypothesis=0;
 	CTime time;
 
-	while (!(CSignal::cancel_computations()))
+	while (!(cancel_computation()))
 	{
 		int32_t max_dim=0;
 		float64_t violator=find_max_violator(max_dim);
