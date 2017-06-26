@@ -431,6 +431,21 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param saver File object via which to save data
 		 */
 		void save(CFile* saver);
+
+		/** Serialize matrix with Cereal
+		*
+		* @param ar the Archive via which to save data
+		*/
+		template <class Archive>
+		void cereal_save(Archive& ar) const;
+
+		/** Load matrix with Cereal
+		 *
+		 * @param ar the Archive via which to load data
+		 */
+		template <class Archive>
+		void cereal_load(Archive& ar);
+
 #endif // #ifndef SWIG // SWIG should skip this part
 
 	protected:

@@ -128,6 +128,58 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
+#ifndef SWIG // SWIG should skip this part
+		     /** serializes the SGObject to a binary file
+		      *
+		      * @param filename Binary archive filename
+		      */
+	void save_binary(const char* filename) const;
+
+	/** serializes the SGObject to a JSON file
+	 *
+	 * @param filename JSON archive filename
+	 */
+	void save_json(const char* filename) const;
+
+	/** serializes the SGObject to a XML file
+	 *
+	 * @param filename XML archive filename
+	 */
+	void save_xml(const char* filename) const;
+
+	/** loads SGObject from a Binary file
+	 *
+	 * @param filename Binary archive filename
+	 */
+	void load_binary(const char* filename);
+
+	/** loads SGObject from a JSON file
+	 *
+	 * @param filename JSON archive filename
+	 */
+	void load_json(const char* filename);
+
+	/** loads SGObject from a XML file
+	 *
+	 * @param filename XML archive filename
+	 */
+	void load_xml(const char* filename);
+
+	/** serializes SGObject parameters to Archive with Cereal
+	 *
+	 * @param ar Archive
+	 */
+	template <class Archive>
+	void cereal_save(Archive& ar) const;
+
+	/** loads SGObject parameters from Archive with Cereal
+	 *
+	 * @param ar Archive
+	 */
+	template <class Archive>
+	void cereal_load(Archive& ar);
+#endif // #ifndef SWIG // SWIG should skip this part
+
 	/** increase reference counter
 	 *
 	 * @return reference count

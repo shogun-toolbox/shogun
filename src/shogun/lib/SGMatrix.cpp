@@ -24,139 +24,154 @@
 #include <algorithm>
 #include <shogun/mathematics/eigen3.h>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/cereal.hpp>
+#include <cereal/types/polymorphic.hpp>
+
 namespace shogun
 {
 
-template <class T>
-SGMatrix<T>::SGMatrix() : SGReferencedData()
-{
-	init_data();
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix() : SGReferencedData()
+	{
+		init_data();
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
-{
-	init_data();
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
+	{
+		init_data();
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
-	: SGReferencedData(ref_counting), matrix(m),
-	num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
-{
-	m_on_gpu.store(false, std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
+	    : SGReferencedData(ref_counting), matrix(m), num_rows(nrows),
+	      num_cols(ncols), gpu_ptr(nullptr)
+	{
+		m_on_gpu.store(false, std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
-	: SGReferencedData(false), matrix(m+offset),
-	num_rows(nrows), num_cols(ncols)
-{
-	m_on_gpu.store(false, std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
+	    : SGReferencedData(false), matrix(m + offset), num_rows(nrows),
+	      num_cols(ncols)
+	{
+		m_on_gpu.store(false, std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
-	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols), gpu_ptr(nullptr)
-{
-	matrix=SG_CALLOC(T, ((int64_t) nrows)*ncols);
-	m_on_gpu.store(false, std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
+	    : SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols),
+	      gpu_ptr(nullptr)
+	{
+		matrix = SG_CALLOC(T, ((int64_t)nrows) * ncols);
+		m_on_gpu.store(false, std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
-{
-	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
-	matrix=vec.vector;
-	num_rows=vec.vlen;
-	num_cols=1;
-	gpu_ptr = vec.gpu_ptr;
-	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(SGVector<T> vec) : SGReferencedData(vec)
+	{
+		REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
+		matrix = vec.vector;
+		num_rows = vec.vlen;
+		num_cols = 1;
+		gpu_ptr = vec.gpu_ptr;
+		m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
-: SGReferencedData(vec)
-{
-	REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
-	REQUIRE(nrows>0, "Number of rows (%d) has to be a positive integer!\n", nrows);
-	REQUIRE(ncols>0, "Number of cols (%d) has to be a positive integer!\n", ncols);
-	REQUIRE(vec.vlen==nrows*ncols, "Number of elements in the matrix (%d) must "
-			"be the same as the number of elements in the vector (%d)!\n",
-			nrows*ncols, vec.vlen);
+	template <class T>
+	SGMatrix<T>::SGMatrix(SGVector<T> vec, index_t nrows, index_t ncols)
+	    : SGReferencedData(vec)
+	{
+		REQUIRE((vec.vector || vec.gpu_ptr), "Vector not initialized!\n");
+		REQUIRE(
+		    nrows > 0, "Number of rows (%d) has to be a positive integer!\n",
+		    nrows);
+		REQUIRE(
+		    ncols > 0, "Number of cols (%d) has to be a positive integer!\n",
+		    ncols);
+		REQUIRE(
+		    vec.vlen == nrows * ncols,
+		    "Number of elements in the matrix (%d) must "
+		    "be the same as the number of elements in the vector (%d)!\n",
+		    nrows * ncols, vec.vlen);
 
-	matrix=vec.vector;
-	num_rows=nrows;
-	num_cols=ncols;
-	gpu_ptr = vec.gpu_ptr;
-	m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
-}
+		matrix = vec.vector;
+		num_rows = nrows;
+		num_cols = ncols;
+		gpu_ptr = vec.gpu_ptr;
+		m_on_gpu.store(vec.on_gpu(), std::memory_order_release);
+	}
 
-template<class T>
-SGMatrix<T>::SGMatrix(GPUMemoryBase<T>* mat, index_t nrows, index_t ncols)
-	: SGReferencedData(true), matrix(NULL), num_rows(nrows), num_cols(ncols),
-	gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(mat))
-{
-	m_on_gpu.store(true, std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(GPUMemoryBase<T>* mat, index_t nrows, index_t ncols)
+	    : SGReferencedData(true), matrix(NULL), num_rows(nrows),
+	      num_cols(ncols), gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(mat))
+	{
+		m_on_gpu.store(true, std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
-{
-	copy_data(orig);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(const SGMatrix& orig) : SGReferencedData(orig)
+	{
+		copy_data(orig);
+	}
 
-template <class T>
-SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
-: SGReferencedData(false), matrix(mat.data()),
-	num_rows(mat.rows()), num_cols(mat.cols()), gpu_ptr(nullptr)
-{
-	m_on_gpu.store(false, std::memory_order_release);
-}
+	template <class T>
+	SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
+	    : SGReferencedData(false), matrix(mat.data()), num_rows(mat.rows()),
+	      num_cols(mat.cols()), gpu_ptr(nullptr)
+	{
+		m_on_gpu.store(false, std::memory_order_release);
+	}
 
-template <class T>
-SGMatrix<T>::operator EigenMatrixXtMap() const
-{
-	assert_on_cpu();
-	return EigenMatrixXtMap(matrix, num_rows, num_cols);
-}
+	template <class T>
+	SGMatrix<T>::operator EigenMatrixXtMap() const
+	{
+		assert_on_cpu();
+		return EigenMatrixXtMap(matrix, num_rows, num_cols);
+	}
 
-template<class T>
-SGMatrix<T>& SGMatrix<T>::operator=(const SGMatrix<T>& other)
-{
-	if(&other == this)
-	return *this;
+	template <class T>
+	SGMatrix<T>& SGMatrix<T>::operator=(const SGMatrix<T>& other)
+	{
+		if (&other == this)
+			return *this;
 
-	unref();
-	copy_data(other);
-	copy_refcount(other);
-	ref();
-	return *this;
-}
+		unref();
+		copy_data(other);
+		copy_refcount(other);
+		ref();
+		return *this;
+	}
 
-template <class T>
-SGMatrix<T>::~SGMatrix()
-{
-	unref();
-}
+	template <class T>
+	SGMatrix<T>::~SGMatrix()
+	{
+		unref();
+	}
 
-template <class T>
-bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
-{
-	// avoid comparing elements when both are same.
-	// the case where both matrices are uninitialized is handled here as well.
-	if (*this==other)
-		return true;
+	template <class T>
+	bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
+	{
+		// avoid comparing elements when both are same.
+		// the case where both matrices are uninitialized is handled here as
+		// well.
+		if (*this == other)
+			return true;
 
-	// avoid uninitialized memory read in case the matrices are not initialized
-	if (matrix==nullptr || other.matrix==nullptr)
-		return false;
+		// avoid uninitialized memory read in case the matrices are not
+		// initialized
+		if (matrix == nullptr || other.matrix == nullptr)
+			return false;
 
-	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
-		return false;
+		if (num_rows != other.num_rows || num_cols != other.num_cols)
+			return false;
 
-	return std::equal(matrix, matrix+size(), other.matrix);
-}
+		return std::equal(matrix, matrix + size(), other.matrix);
+	}
 
 #ifndef REAL_EQUALS
 #define REAL_EQUALS(real_t)	\
@@ -1184,7 +1199,61 @@ void SGMatrix<complex128_t>::save(CFile* saver)
 	SG_SERROR("SGMatrix::save():: Not supported for complex128_t\n");
 }
 
-template<class T>
+template <class T>
+template <class Archive>
+void SGMatrix<T>::cereal_save(Archive& ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("num_rows", num_rows));
+	ar(cereal::make_nvp("num_cols", num_cols));
+
+	for (index_t i = 0; i < num_rows * num_cols; ++i)
+		ar(matrix[i]);
+}
+
+template <>
+template <class Archive>
+void SGMatrix<complex128_t>::cereal_save(Archive& ar) const
+{
+	ar(cereal::base_class<SGReferencedData>(this));
+	ar(cereal::make_nvp("num_rows", num_rows));
+	ar(cereal::make_nvp("num_cols", num_cols));
+
+	float64_t* temp = reinterpret_cast<float64_t*>(matrix);
+	for (index_t i = 0; i < num_rows * num_cols * 2; ++i)
+		ar(temp[i]);
+}
+
+template <class T>
+template <class Archive>
+void SGMatrix<T>::cereal_load(Archive& ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(num_rows);
+	ar(num_cols);
+	matrix = SG_MALLOC(T, num_rows * num_cols);
+	for (index_t i = 0; i < num_rows * num_cols; ++i)
+		ar(matrix[i]);
+}
+
+template <>
+template <class Archive>
+void SGMatrix<complex128_t>::cereal_load(Archive& ar)
+{
+	unref();
+	ar(cereal::base_class<SGReferencedData>(this));
+
+	ar(num_rows);
+	ar(num_cols);
+	matrix = SG_MALLOC(complex128_t, num_rows * num_cols);
+	float64_t* temp = reinterpret_cast<float64_t*>(matrix);
+	for (index_t i = 0; i < num_rows * num_cols * 2; ++i)
+		ar(temp[i]);
+}
+
+template <class T>
 SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 {
 	assert_on_cpu();
@@ -1211,18 +1280,33 @@ SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 	return diag;
 }
 
-template class SGMatrix<bool>;
-template class SGMatrix<char>;
-template class SGMatrix<int8_t>;
-template class SGMatrix<uint8_t>;
-template class SGMatrix<int16_t>;
-template class SGMatrix<uint16_t>;
-template class SGMatrix<int32_t>;
-template class SGMatrix<uint32_t>;
-template class SGMatrix<int64_t>;
-template class SGMatrix<uint64_t>;
-template class SGMatrix<float32_t>;
-template class SGMatrix<float64_t>;
-template class SGMatrix<floatmax_t>;
-template class SGMatrix<complex128_t>;
+#define FILL_SGMATRIX(typetype)                                                \
+	template class SGMatrix<typetype>;                                         \
+	template void SGMatrix<typetype>::cereal_save(                             \
+	    cereal::BinaryOutputArchive& ar) const;                                \
+	template void SGMatrix<typetype>::cereal_save(                             \
+	    cereal::JSONOutputArchive& ar) const;                                  \
+	template void SGMatrix<typetype>::cereal_save(                             \
+	    cereal::XMLOutputArchive& ar) const;                                   \
+	template void SGMatrix<typetype>::cereal_load(                             \
+	    cereal::BinaryInputArchive& ar);                                       \
+	template void SGMatrix<typetype>::cereal_load(                             \
+	    cereal::JSONInputArchive& ar);                                         \
+	template void SGMatrix<typetype>::cereal_load(cereal::XMLInputArchive& ar);
+
+FILL_SGMATRIX(bool)
+FILL_SGMATRIX(char)
+FILL_SGMATRIX(int8_t)
+FILL_SGMATRIX(uint8_t)
+FILL_SGMATRIX(int16_t)
+FILL_SGMATRIX(uint16_t)
+FILL_SGMATRIX(int32_t)
+FILL_SGMATRIX(uint32_t)
+FILL_SGMATRIX(int64_t)
+FILL_SGMATRIX(uint64_t)
+FILL_SGMATRIX(float32_t)
+FILL_SGMATRIX(float64_t)
+FILL_SGMATRIX(floatmax_t)
+FILL_SGMATRIX(complex128_t)
+#undef FILL_SGMATRIX
 }
