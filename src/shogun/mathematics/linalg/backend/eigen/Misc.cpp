@@ -35,6 +35,14 @@
 
 using namespace shogun;
 
+#define BACKEND_GENERIC_CENTER_MATRIX(Type, Container)                         \
+	void LinalgBackendEigen::center_matrix(Container<Type>& A) const           \
+	{                                                                          \
+		center_matrix_impl(A);                                                 \
+	}
+DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CENTER_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_CENTER_MATRIX
+
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
 	void LinalgBackendEigen::identity(Container<Type>& I) const                \
 	{                                                                          \
@@ -63,6 +71,15 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
 #undef BACKEND_GENERIC_RANGE_FILL
 
+#define BACKEND_GENERIC_TRANSPOSE_MATRIX(Type, Container)                      \
+	Container<Type> LinalgBackendEigen::transpose_matrix(                      \
+	    const Container<Type>& A) const                                        \
+	{                                                                          \
+		return transpose_matrix_impl(A);                                       \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRANSPOSE_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_TRANSPOSE_MATRIX
+
 #define BACKEND_GENERIC_ZERO(Type, Container)                                  \
 	void LinalgBackendEigen::zero(Container<Type>& a) const                    \
 	{                                                                          \
@@ -76,6 +93,22 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ZERO, SGMatrix)
 #undef DEFINE_FOR_REAL_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
+
+template <typename T>
+void LinalgBackendEigen::center_matrix_impl(SGMatrix<T>& A) const
+{
+	index_t n = A.num_cols;
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+
+	typename SGVector<T>::EigenVectorXt rows_sum =
+	    (A_eig.rowwise().sum()).array() / (T)n;
+	typename SGVector<T>::EigenRowVectorXt cols_sum =
+	    (A_eig.colwise().sum()).array() / (T)n;
+	T m = rows_sum.sum() / (T)n;
+
+	A_eig = ((A_eig.array() + m).matrix().rowwise() - cols_sum).colwise() -
+	        rows_sum;
+}
 
 template <typename T>
 void LinalgBackendEigen::identity_impl(SGMatrix<T>& I) const
@@ -96,6 +129,18 @@ void LinalgBackendEigen::set_const_impl(Container<T>& a, T value) const
 {
 	for (decltype(a.size()) i = 0; i < a.size(); ++i)
 		a[i] = value;
+}
+
+template <typename T>
+SGMatrix<T>
+LinalgBackendEigen::transpose_matrix_impl(const SGMatrix<T>& A) const
+{
+	SGMatrix<T> tr(A.num_cols, A.num_rows);
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGMatrix<T>::EigenMatrixXtMap tr_eig = tr;
+
+	tr_eig = A_eig.transpose();
+	return tr;
 }
 
 template <typename T>

@@ -63,6 +63,19 @@ namespace shogun
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
+/** Implementation of @see LinalgBackendBase::add_scalar */
+#define BACKEND_GENERIC_ADD_SCALAR(Type, Container)                            \
+	virtual void add_scalar(Container<Type>& a, Type b) const;
+		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGVector)
+		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_SCALAR, SGMatrix)
+#undef BACKEND_GENERIC_ADD_SCALAR
+
+/** Implementation of @see LinalgBackendBase::center_matrix */
+#define BACKEND_GENERIC_CENTER_MATRIX(Type, Container)                         \
+	virtual void center_matrix(Container<Type>& A) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CENTER_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_CENTER_MATRIX
+
 /** Implementation of @see LinalgBackendBase::cholesky_factor */
 #define BACKEND_GENERIC_CHOLESKY_FACTOR(Type, Container)                       \
 	virtual Container<Type> cholesky_factor(                                   \
@@ -83,6 +96,23 @@ namespace shogun
 	virtual Type dot(const Container<Type>& a, const Container<Type>& b) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 #undef BACKEND_GENERIC_DOT
+
+/** Implementation of @see LinalgBackendBase::eigen_solver */
+#define BACKEND_GENERIC_EIGEN_SOLVER(Type, Container)                          \
+	virtual void eigen_solver(                                                 \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER
+
+/** Implementation of @see LinalgBackendBase::eigen_solver_symmetric */
+#define BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC(Type, Container)                \
+	virtual void eigen_solver_symmetric(                                       \
+	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
+	    SGMatrix<Type>& eigenvectors) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
+#undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /** Implementation of @see LinalgBackendBase::element_prod */
 #define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
@@ -142,6 +172,14 @@ namespace shogun
 		BACKEND_GENERIC_COMPLEX_MEAN(SGVector)
 		BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
+
+/** Implementation of @see LinalgBackendBase::qr_solver */
+#define BACKEND_GENERIC_QR_SOLVER(Type, Container)                             \
+	virtual Container<Type> qr_solver(                                         \
+	    const SGMatrix<Type>& A, const Container<Type>& b) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGVector)
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_QR_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_QR_SOLVER
 
 /** Implementation of @see LinalgBackendBase::range_fill */
 #define BACKEND_GENERIC_RANGE_FILL(Type, Container)                            \
@@ -220,11 +258,36 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_BLOCK_ROWWISE_SUM, SGMatrix)
 #undef BACKEND_GENERIC_BLOCK_ROWWISE_SUM
 
+/** Implementation of @see LinalgBackendBase::svd */
+#define BACKEND_GENERIC_SVD(Type, Container)                                   \
+	virtual void svd(                                                          \
+	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
+	    bool thin_U) const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
+#undef BACKEND_GENERIC_SVD
+
 /** Implementation of @see LinalgBackendBase::trace */
 #define BACKEND_GENERIC_TRACE(Type, Container)                                 \
 	virtual Type trace(const Container<Type>& A) const;
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
 #undef BACKEND_GENERIC_TRACE
+
+/** Implementation of @see LinalgBackendBase::transpose_matrix */
+#define BACKEND_GENERIC_TRANSPOSE_MATRIX(Type, Container)                      \
+	virtual Container<Type> transpose_matrix(const Container<Type>& A) const;
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRANSPOSE_MATRIX, SGMatrix)
+#undef BACKEND_GENERIC_TRANSPOSE_MATRIX
+
+/** Implementation of @see LinalgBackendBase::triangular_solver */
+#define BACKEND_GENERIC_TRIANGULAR_SOLVER(Type, Container)                     \
+	virtual Container<Type> triangular_solver(                                 \
+	    const SGMatrix<Type>& L, const Container<Type>& b, const bool lower)   \
+	    const;
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_TRIANGULAR_SOLVER, SGVector)
+		DEFINE_FOR_NON_INTEGER_PTYPE(
+		    BACKEND_GENERIC_TRIANGULAR_SOLVER, SGMatrix)
+#undef BACKEND_GENERIC_TRIANGULAR_SOLVER
 
 /** Implementation of @see LinalgBackendBase::zero */
 #define BACKEND_GENERIC_ZERO(Type, Container)                                  \
@@ -263,6 +326,18 @@ namespace shogun
 		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
 		    SGVector<T>& result, T alpha, T beta) const;
 
+		/** Eigen3 vector add scalar method */
+		template <typename T>
+		void add_scalar_impl(SGVector<T>& a, T b) const;
+
+		/** Eigen3 matrix add scalar method */
+		template <typename T>
+		void add_scalar_impl(SGMatrix<T>& a, T b) const;
+
+		/** Eigen3 center matrix method */
+		template <typename T>
+		void center_matrix_impl(SGMatrix<T>& A) const;
+
 		/** Eigen3 Cholesky decomposition */
 		template <typename T>
 		SGMatrix<T>
@@ -276,6 +351,27 @@ namespace shogun
 		/** Eigen3 vector dot-product method */
 		template <typename T>
 		T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const;
+
+		/** Eigen3 eigenvalues and eigenvectors computation for real matrices.
+		 */
+		template <typename T>
+		void eigen_solver_impl(
+		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+		    SGMatrix<T>& eigenvectors) const;
+
+		/** Eigen3 eigenvalues and eigenvectors computation for complex
+		 * matrices. */
+		void eigen_solver_impl(
+		    const SGMatrix<complex128_t>& A,
+		    SGVector<complex128_t>& eigenvalues,
+		    SGMatrix<complex128_t>& eigenvectors) const;
+
+		/** Eigen3 eigenvalues and eigenvectors computation of symmetric
+		 * matrices */
+		template <typename T>
+		void eigen_solver_symmetric_impl(
+		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
+		    SGMatrix<T>& eigenvectors) const;
 
 		/** Eigen3 matrix in-place elementwise product method */
 		template <typename T>
@@ -325,6 +421,16 @@ namespace shogun
 		/** Complex eigen3 vector and matrix mean method */
 		template <template <typename> class Container>
 		complex128_t mean_impl(const Container<complex128_t>& a) const;
+
+		/** Eigen3 vector QR solver. */
+		template <typename T>
+		SGVector<T>
+		qr_solver_impl(const SGMatrix<T>& A, const SGVector<T>& b) const;
+
+		/** Eigen3 matrix QR solver. */
+		template <typename T>
+		SGMatrix<T>
+		qr_solver_impl(const SGMatrix<T>& A, const SGMatrix<T> b) const;
 
 		/** Range fill a vector or matrix with start...start+len-1. */
 		template <typename T, template <typename> class Container>
@@ -385,9 +491,29 @@ namespace shogun
 		SGVector<T> rowwise_sum_impl(
 		    const linalg::Block<SGMatrix<T>>& mat, bool no_diag) const;
 
+		/** Eigen3 compute svd method */
+		template <typename T>
+		void svd_impl(
+		    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U,
+		    bool thin_U) const;
+
 		/** Eigen3 compute trace method */
 		template <typename T>
 		T trace_impl(const SGMatrix<T>& A) const;
+
+		/** Eigen3 transpose matrix method */
+		template <typename T>
+		SGMatrix<T> transpose_matrix_impl(const SGMatrix<T>& A) const;
+
+		/** Eigen3 triangular solver method */
+		template <typename T>
+		SGMatrix<T> triangular_solver_impl(
+		    const SGMatrix<T>& L, const SGMatrix<T>& b, const bool lower) const;
+
+		/** Eigen3 triangular solver method */
+		template <typename T>
+		SGVector<T> triangular_solver_impl(
+		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower) const;
 
 		/** Eigen3 set vector to zero method */
 		template <typename T>
