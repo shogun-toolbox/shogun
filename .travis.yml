@@ -84,6 +84,7 @@ script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; ctest --output-on-failure -j 2"
 after_success:
-  - if [ $CODE_COVERAGE ] ; then
+  - |
+    if [ $CODE_COVERAGE ] ; then
       docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; lcov --directory src/shogun/ --capture --output-file all_coverage.info; lcov --remove all_coverage.info '/usr/*' > coverage.info; rm all_coverage.info; codecov -X gcov"
     fi
