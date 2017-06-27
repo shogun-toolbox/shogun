@@ -71,8 +71,8 @@ matrix:
 #        - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
-  - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/env.list.in > env.list
-  - docker run -t -d -P --env-file env.list --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/travis.env.in > travis.env
+  - docker run -t -d -P --env-file travis.env --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
