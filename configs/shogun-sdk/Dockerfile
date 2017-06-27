@@ -19,9 +19,9 @@ RUN apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     oracle-java8-installer ruby ruby-dev python-ply sphinx-doc python-pip \
-    exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev
+    exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev lcov
 
-RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme
+RUN pip install sphinx ply sphinxcontrib-bibtex sphinx_bootstrap_theme codecov
 
 RUN gem install narray
 RUN cd /usr/bin && ln -s swig3.0 swig && ln -s ccache-swig3.0 ccache-swig

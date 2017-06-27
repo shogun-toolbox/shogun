@@ -17,6 +17,11 @@ matrix:
       services: docker
     - compiler: clang
       services: docker
+    - compiler: gcc
+      services: docker
+      env:
+        - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DENABLE_CCACHE=OFF"
+        - CODE_COVERAGE=1
     - compiler: clang
       services: docker
       python: "2.7_with_system_site_packages"
@@ -70,7 +75,8 @@ matrix:
         - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
-  - docker run -t -d -P -e "JAVA_HOME=/usr/lib/jvm/java-8-oracle" -e "CC=$CC" -e "CXX=$CXX" -e "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST" -e "TRAVIS_BRANCH=$TRAVIS_BRANCH" -e "TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH" --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
+  - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/env.list.in > env.list
+  - docker run -t -d -P --env-file env.list --name devenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/shogun shogun/shogun-dev /bin/sh -c "mkdir /opt/shogun/build;bash"
 before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
@@ -81,3 +87,7 @@ script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make install"
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; ctest --output-on-failure -j 2"
+after_success:
+  - if [ $CODE_COVERAGE ] ; then
+      docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; lcov --directory src/shogun/ --capture --output-file all_coverage.info; lcov --remove all_coverage.info '/usr/*' > coverage.info; rm all_coverage.info; codecov -X gcov"
+    fi
