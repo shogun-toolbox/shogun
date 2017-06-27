@@ -63,12 +63,12 @@ matrix:
         - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
-    - compiler: clang
-      services: docker
-      env:
-        - CMAKE_OPTIONS="-DScalaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-        - CC=clang
-        - CXX=clang++
+#    - compiler: clang
+#      services: docker
+#      env:
+#        - CMAKE_OPTIONS="-DScalaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+#        - CC=clang
+#        - CXX=clang++
 before_install:
   - docker pull shogun/shogun-dev
   - perl -pe 's/\$(\w+)/$ENV{$1}/g' configs/shogun-sdk/env.list.in > env.list
