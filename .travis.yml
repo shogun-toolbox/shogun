@@ -24,22 +24,18 @@ matrix:
         - CODE_COVERAGE=1
     - compiler: clang
       services: docker
-      python: "2.7_with_system_site_packages"
-      language: python
       env:
         - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
-      language: ruby
       env:
         - CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
-      language: java
       env:
         - CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
