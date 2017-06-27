@@ -185,14 +185,14 @@ namespace shogun
  *
  * @see linalg::cross_entropy
  */
-#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container) \
-virtual Type cross_entropy(const Container<Type>& P, \
-	const Container<Type>& Q) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-	return 0; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
+#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
+	virtual Type cross_entropy(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 #undef BACKEND_GENERIC_CROSS_ENTROPY
 
 /**
@@ -363,17 +363,19 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 /**
- * Wrapper method of multiply_by_logistic_derivative function f(x) = 1/(1+exp(-x))
+ * Wrapper method of multiply_by_logistic_derivative function f(x) =
+ * 1/(1+exp(-x))
  *
  * @see linalg::multiply_by_logistic_derivative
  */
-#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
-virtual void multiply_by_logistic_derivative(Container<Type>& a,\
-	Container<Type>& result) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
+#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
+	virtual void multiply_by_logistic_derivative(                              \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
 
 /**
@@ -381,13 +383,14 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
  *
  * @see linalg::multiply_by_rectified_linear_derivative
  */
-#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
-virtual void multiply_by_rectified_linear_derivative(Container<Type>& a,\
-	Container<Type>& result) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
+#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
+	virtual void multiply_by_rectified_linear_derivative(                      \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
 
 /**
@@ -409,14 +412,14 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatri
  *
  * @see linalg::rectified_linear
  */
-#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
-virtual void rectified_linear(Container<Type>& a, Container<Type>& result) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
+	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
-
 
 /**
  * Wrapper method that solves a system of linear equations
@@ -484,12 +487,12 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
  *
  * @see linalg::softmax
  */
-#define BACKEND_GENERIC_SOFTMAX(Type, Container) \
-virtual void softmax(Container<Type>& a) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
+#define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
+	virtual void softmax(Container<Type>& a) const                             \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
 
 /**
@@ -497,13 +500,14 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 *
 * @see linalg::squared_error
 */
-#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container) \
-virtual Type squared_error(const Container<Type>& P, const Container<Type>& Q) const \
-{  \
-	SG_SNOTIMPLEMENTED; \
-	return 0; \
-}
-DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
+#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
+	virtual Type squared_error(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 #undef BACKEND_GENERIC_SQUARED_ERROR
 
 /**

@@ -33,22 +33,22 @@
 #ifndef LINALG_BACKEND_GPU_BASE_H__
 #define LINALG_BACKEND_GPU_BASE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/linalg/GPUMemoryBase.h>
 #include <memory>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/linalg/GPUMemoryBase.h>
 
 namespace shogun
 {
 
-/** @brief Base interface of generic GPU linalg methods
- * and generic GPU memory transfer methods.
- */
-class LinalgBackendGPUBase : public LinalgBackendBase
-{
-public:
+	/** @brief Base interface of generic GPU linalg methods
+	 * and generic GPU memory transfer methods.
+	 */
+	class LinalgBackendGPUBase : public LinalgBackendBase
+	{
+	public:
 // clang-format off
 #define DEFINE_FOR_ALL_PTYPE(METHODNAME, Container) \
 	METHODNAME(char, Container); \
@@ -85,9 +85,8 @@ public:
 	#undef BACKEND_GENERIC_FROM_GPU
 
 	#undef DEFINE_FOR_ALL_PTYPE
-	// clang-format on
-};
-
+		// clang-format on
+	};
 }
 
-#endif //LINALG_BACKEND_GPU_BASE_H__
+#endif // LINALG_BACKEND_GPU_BASE_H__

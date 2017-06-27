@@ -35,13 +35,12 @@
 
 using namespace shogun;
 
-#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container) \
-Type LinalgBackendEigen::cross_entropy( \
-  const Container<Type>& P, \
-  const Container<Type>& Q) const \
-{  \
-  return cross_entropy_impl(P, Q); \
-}
+#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
+	Type LinalgBackendEigen::cross_entropy(                                    \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		return cross_entropy_impl(P, Q);                                       \
+	}
 DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 #undef BACKEND_GENERIC_CROSS_ENTROPY
 
@@ -54,50 +53,48 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
 #undef BACKEND_GENERIC_LOGISTIC
 
-#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
-void LinalgBackendEigen::multiply_by_logistic_derivative( \
-  Container<Type>& a,\
-  Container<Type>& result) const \
-{  \
-  multiply_by_logistic_derivative_impl(a, result); \
-}
+#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
+	void LinalgBackendEigen::multiply_by_logistic_derivative(                  \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		multiply_by_logistic_derivative_impl(a, result);                       \
+	}
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
 
-#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
-void LinalgBackendEigen::multiply_by_rectified_linear_derivative( \
-  Container<Type>& a,\
-  Container<Type>& result) const \
-{  \
-  multiply_by_rectified_linear_derivative_impl(a, result); \
-}
-DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
+#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
+	void LinalgBackendEigen::multiply_by_rectified_linear_derivative(          \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		multiply_by_rectified_linear_derivative_impl(a, result);               \
+	}
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
+    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
 
-#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
-void LinalgBackendEigen::rectified_linear( \
-  Container<Type>& a, Container<Type>& result) const \
-{  \
-  rectified_linear_impl(a, result); \
-}
+#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
+	void LinalgBackendEigen::rectified_linear(                                 \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		rectified_linear_impl(a, result);                                      \
+	}
 DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
-#define BACKEND_GENERIC_SOFTMAX(Type, Container) \
-void LinalgBackendEigen::softmax( \
-  Container<Type>& a) const \
-{  \
-  softmax_impl(a); \
-}
+#define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
+	void LinalgBackendEigen::softmax(Container<Type>& a) const                 \
+	{                                                                          \
+		softmax_impl(a);                                                       \
+	}
 DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
 
-#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container) \
-Type LinalgBackendEigen::squared_error( \
-  const Container<Type>& P, const Container<Type>& Q) const \
-{  \
-  return squared_error_impl(P, Q); \
-}
+#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
+	Type LinalgBackendEigen::squared_error(                                    \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		return squared_error_impl(P, Q);                                       \
+	}
 DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 #undef BACKEND_GENERIC_SQUARED_ERROR
 
@@ -108,12 +105,12 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 
 template <typename T>
 T LinalgBackendEigen::cross_entropy_impl(
-  const SGMatrix<T>& p, const SGMatrix<T>& q) const
+    const SGMatrix<T>& p, const SGMatrix<T>& q) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap p_eig = p;
-  typename SGMatrix<T>::EigenMatrixXtMap q_eig = q;
+	typename SGMatrix<T>::EigenMatrixXtMap p_eig = p;
+	typename SGMatrix<T>::EigenMatrixXtMap q_eig = q;
 
-  return -1 * (p_eig.array() * (q_eig.array() + 1e-30).log()).sum();
+	return -1 * (p_eig.array() * (q_eig.array() + 1e-30).log()).sum();
 }
 
 template <typename T>
@@ -128,57 +125,58 @@ void LinalgBackendEigen::logistic_impl(
 
 template <typename T>
 void LinalgBackendEigen::multiply_by_logistic_derivative_impl(
-  SGMatrix<T>& a, SGMatrix<T>& result) const
+    SGMatrix<T>& a, SGMatrix<T>& result) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-  typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-  result_eig =
-    result_eig.array() * a_eig.array() * ((T)1 - a_eig.array());
+	result_eig = result_eig.array() * a_eig.array() * ((T)1 - a_eig.array());
 }
 
 template <typename T>
 void LinalgBackendEigen::multiply_by_rectified_linear_derivative_impl(
-  SGMatrix<T>& a, SGMatrix<T>& result) const
+    SGMatrix<T>& a, SGMatrix<T>& result) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-  typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-  for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
-    if (a_eig(i) == 0)
-      result_eig(i) = 0;
+	for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
+		if (a_eig(i) == 0)
+			result_eig(i) = 0;
 }
 
 template <typename T>
-void LinalgBackendEigen::rectified_linear_impl(SGMatrix<T>& a, SGMatrix<T>& result) const
+void LinalgBackendEigen::rectified_linear_impl(
+    SGMatrix<T>& a, SGMatrix<T>& result) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-  typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
 
-  for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
-    result_eig(i) = CMath::max((T)0, a_eig(i));
+	for (index_t i = 0; i < a_eig.rows() * a_eig.cols(); ++i)
+		result_eig(i) = CMath::max((T)0, a_eig(i));
 }
 
 /** Eigen3 softmax method */
 template <typename T, template <typename> class Container>
 void LinalgBackendEigen::softmax_impl(Container<T>& a) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 
-  auto max = a_eig.maxCoeff();
-  for (index_t j = 0; j < a.num_cols; ++j)
-  {
-    auto sum = (a_eig.col(j).array() - max).exp().sum();
-    T normalizer = (T)CMath::log(sum); // Has to use T instead of float
-    a_eig.col(j) = (a_eig.col(j).array() - normalizer - max).exp();
-  }
+	auto max = a_eig.maxCoeff();
+	for (index_t j = 0; j < a.num_cols; ++j)
+	{
+		auto sum = (a_eig.col(j).array() - max).exp().sum();
+		T normalizer = (T)CMath::log(sum); // Has to use T instead of float
+		a_eig.col(j) = (a_eig.col(j).array() - normalizer - max).exp();
+	}
 }
 
 template <typename T>
-T LinalgBackendEigen::squared_error_impl(const SGMatrix<T>& p, const SGMatrix<T>& q) const
+T LinalgBackendEigen::squared_error_impl(
+    const SGMatrix<T>& p, const SGMatrix<T>& q) const
 {
-  typename SGMatrix<T>::EigenMatrixXtMap p_eig = p;
-  typename SGMatrix<T>::EigenMatrixXtMap q_eig = q;
+	typename SGMatrix<T>::EigenMatrixXtMap p_eig = p;
+	typename SGMatrix<T>::EigenMatrixXtMap q_eig = q;
 
-  return 0.5 * (p_eig - q_eig).array().square().sum();
+	return 0.5 * (p_eig - q_eig).array().square().sum();
 }

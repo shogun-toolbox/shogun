@@ -67,7 +67,7 @@
 	METHODNAME(floatmax_t, Container);                                         \
 	METHODNAME(complex128_t, Container);
 
-#define DEFINE_FOR_NON_INTEGER_REAL_PTYPE(METHODNAME, Container)                    \
+#define DEFINE_FOR_NON_INTEGER_REAL_PTYPE(METHODNAME, Container)               \
 	METHODNAME(float32_t, Container);                                          \
 	METHODNAME(float64_t, Container);                                          \
 	METHODNAME(floatmax_t, Container);

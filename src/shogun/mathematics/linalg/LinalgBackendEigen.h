@@ -93,10 +93,11 @@ namespace shogun
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 /** Implementation of @see linalg::cross_entropy */
-#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container) \
-virtual Type cross_entropy(const Container<Type>& P, \
-	const Container<Type>& Q) const;
-DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
+#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
+	virtual Type cross_entropy(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const;
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
+		    BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 #undef BACKEND_GENERIC_CROSS_ENTROPY
 
 /** Implementation of @see LinalgBackendBase::dot */
@@ -182,17 +183,19 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 /** Implementation of @see linalg::multiply_by_logistic_derivative */
-#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
-virtual void multiply_by_logistic_derivative(Container<Type>& a,\
-	Container<Type>& result) const;
-DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
+#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
+	virtual void multiply_by_logistic_derivative(                              \
+	    Container<Type>& a, Container<Type>& result) const;
+		DEFINE_FOR_NUMERIC_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
 
 /** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
-#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
-virtual void multiply_by_rectified_linear_derivative(Container<Type>& a,\
-	Container<Type>& result) const;
-DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
+#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
+	virtual void multiply_by_rectified_linear_derivative(                      \
+	    Container<Type>& a, Container<Type>& result) const;
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
 #undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
 
 /** Implementation of @see LinalgBackendBase::qr_solver */
@@ -211,9 +214,10 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_D
 #undef BACKEND_GENERIC_RANGE_FILL
 
 /** Implementation of @see linalg::rectified_linear */
-#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
-virtual void rectified_linear(Container<Type>& a, Container<Type>& result) const;
-DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
+	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
+	    const;
+		DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
 /** Implementation of @see linalg::scale */
@@ -232,15 +236,17 @@ DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
 #undef BACKEND_GENERIC_SET_CONST
 
 /** Implementation of @see linalg::softmax */
-#define BACKEND_GENERIC_SOFTMAX(Type, Container) \
-virtual void softmax(Container<Type>& a) const;
-DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
+#define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
+	virtual void softmax(Container<Type>& a) const;
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
 #undef BACKEND_GENERIC_SOFTMAX
 
 /** Implementation of @see linalg::squared_error */
-#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container) \
-virtual Type squared_error(const Container<Type>& P, const Container<Type>& Q) const;
-DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
+#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
+	virtual Type squared_error(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const;
+		DEFINE_FOR_NON_INTEGER_REAL_PTYPE(
+		    BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 #undef BACKEND_GENERIC_SQUARED_ERROR
 
 /** Implementation of @see LinalgBackendBase::sum */
@@ -470,19 +476,20 @@ DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
 		complex128_t mean_impl(const Container<complex128_t>& a) const;
 
 		/** Eigen3 multiply_by_logistic_derivative method
-		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for all i
+		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for
+		 * all i
 		 * and j
 		 */
 		template <typename T>
 		void multiply_by_logistic_derivative_impl(
-			SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 multiply_by_rectified_linear_derivative method
 		 * Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j
 		 */
 		template <typename T>
 		void multiply_by_rectified_linear_derivative_impl(
-			SGMatrix<T>& a, SGMatrix<T>& result) const;
+		    SGMatrix<T>& a, SGMatrix<T>& result) const;
 
 		/** Eigen3 vector QR solver. */
 		template <typename T>
