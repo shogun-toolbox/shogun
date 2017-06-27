@@ -23,6 +23,9 @@
 #include <shogun/lib/tag.h>
 #include <shogun/lib/any.h>
 
+#include <rxcpp/rx.hpp>
+#include <utility>
+
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -394,6 +397,22 @@ public:
 		return get(tag);
 	}
 
+#ifndef SWIG
+	/**
+	  * Get parameters observable
+	  * @return RxCpp observable
+	  */
+	rxcpp::observable<std::pair<std::string, Any>> get_parameters_observable()
+	{
+		return m_observable_params;
+	};
+#endif
+
+	/** Subscribe a parameter observer to watch over params */
+	void subscribe_to_parameters()
+	{
+	}
+
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -545,6 +564,12 @@ private:
 	class Self;
 	Unique<Self> self;
 
+protected:
+	/** Observe the parameter and emits a value using the
+	* observable object
+	*/
+	void observe_scalar(const std::string& name, const Any& value);
+
 public:
 	/** io */
 	SGIO* io;
@@ -576,6 +601,15 @@ private:
 	bool m_save_post_called;
 
 	RefCount* m_refcount;
+
+	/** Subject used to create the params observer */
+	rxcpp::subjects::subject<std::pair<std::string, Any>> m_subject_params;
+
+	/** Parameter Observable */
+	rxcpp::observable<std::pair<std::string, Any>> m_observable_params;
+
+	/** Subscriber used to call onNext, onComplete etc.*/
+	rxcpp::subscriber<std::pair<std::string, Any>> m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__
