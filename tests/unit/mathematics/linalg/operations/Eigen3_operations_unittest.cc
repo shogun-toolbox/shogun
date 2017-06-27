@@ -304,6 +304,27 @@ TEST(LinalgBackendEigen, SGMatrix_cholesky_solver)
 	EXPECT_EQ(x_ref.size(), x_cal.size());
 }
 
+TEST(LinalgBackendEigen, SGMatrix_cross_entropy)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> B(4, 3);
+
+	int32_t size = A.num_rows * A.num_cols;
+	for (float64_t i = 0; i < size; ++i)
+	{
+		A[i] = i / size;
+		B[i] = (i / size) * 0.5;
+	}
+
+	float64_t ref = 0;
+	for (int32_t i = 0; i < size; i++)
+		ref += A[i] * CMath::log(B[i] + 1e-30);
+	ref *= -1;
+
+	auto result = linalg::cross_entropy(A, B);
+	EXPECT_NEAR(ref, result, 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_dot)
 {
 	const index_t size = 3;
@@ -800,6 +821,40 @@ TEST(LinalgBackendEigen, SGMatrix_mean)
 	EXPECT_NEAR(result, 2.5, 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGMatrix_multiply_by_logistic_derivative)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	for (float64_t i = 0; i < 9; ++i)
+	{
+		A[i] = i / 9;
+		B[i] = i;
+	}
+
+	linalg::multiply_by_logistic_derivative(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(i * A[i] * (1.0 - A[i]), B[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_multiply_by_rectified_linear_derivative)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	for (float64_t i = 0; i < 9; ++i)
+	{
+		A[i] = i * 0.5 - 0.5;
+		B[i] = i;
+	}
+
+	multiply_by_rectified_linear_derivative(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(i * (A[i] != 0), B[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_qr_solver)
 {
 	const index_t n = 3;
@@ -856,6 +911,19 @@ TEST(LinalgBackendEigen, SGMatrix_range_fill)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(mat[i], i + 1, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_rectified_linear)
+{
+	SGMatrix<float64_t> A(3, 3);
+	SGMatrix<float64_t> B(3, 3);
+
+	range_fill(A, -5.0);
+
+	linalg::rectified_linear(A, B);
+
+	for (index_t i = 0; i < 9; ++i)
+		EXPECT_NEAR(CMath::max(0.0, A[i]), B[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_scale)
@@ -937,6 +1005,54 @@ TEST(LinalgBackendEigen, SGMatrix_set_const)
 
 	for (index_t i = 0; i < nrows*ncols; ++i)
 		EXPECT_NEAR(a[i], value, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_softmax)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> ref(4, 3);
+
+	for (float64_t i = 0; i < 12; ++i)
+		A[i] = i / 12;
+
+	for (index_t i = 0; i < 12; ++i)
+		ref[i] = CMath::exp(A[i]);
+
+	for (index_t j = 0; j < ref.num_cols; ++j)
+	{
+		float64_t sum = 0;
+		for (index_t i = 0; i < ref.num_rows; ++i)
+			sum += ref(i, j);
+
+		for (index_t i = 0; i < ref.num_rows; ++i)
+			ref(i, j) /= sum;
+	}
+
+	linalg::softmax(A);
+
+	for (index_t i = 0; i < 12; ++i)
+		EXPECT_NEAR(ref[i], A[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_squared_error)
+{
+	SGMatrix<float64_t> A(4, 3);
+	SGMatrix<float64_t> B(4, 3);
+
+	int32_t size = A.num_rows * A.num_cols;
+	for (float64_t i = 0; i < size; ++i)
+	{
+		A[i] = i / size;
+		B[i] = (i / size) * 0.5;
+	}
+
+	float64_t ref = 0;
+	for (index_t i = 0; i < size; i++)
+		ref += CMath::pow(A[i] - B[i], 2);
+	ref *= 0.5;
+
+	auto result = linalg::squared_error(A, B);
+	EXPECT_NEAR(ref, result, 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_sum)

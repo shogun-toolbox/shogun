@@ -35,15 +35,6 @@
 
 using namespace shogun;
 
-#define BACKEND_GENERIC_LOGISTIC(Type, Container)                              \
-	void LinalgBackendEigen::logistic(                                         \
-	    Container<Type>& a, Container<Type>& result) const                     \
-	{                                                                          \
-		logistic_impl(a, result);                                              \
-	}
-DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_LOGISTIC, SGMatrix)
-#undef BACKEND_GENERIC_LOGISTIC
-
 #define BACKEND_GENERIC_MAX(Type, Container)                                   \
 	Type LinalgBackendEigen::max(const Container<Type>& a) const               \
 	{                                                                          \
@@ -156,16 +147,6 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_TRACE, SGMatrix)
 #undef DEFINE_FOR_REAL_PTYPE
 #undef DEFINE_FOR_NON_INTEGER_PTYPE
 #undef DEFINE_FOR_NUMERIC_PTYPE
-
-template <typename T>
-void LinalgBackendEigen::logistic_impl(
-    SGMatrix<T>& a, SGMatrix<T>& result) const
-{
-	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
-	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
-
-	result_eig = (T)1 / (1 + ((-1 * a_eig).array()).exp());
-}
 
 template <typename T>
 T LinalgBackendEigen::max_impl(const SGVector<T>& vec) const

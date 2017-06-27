@@ -181,6 +181,21 @@ namespace shogun
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
 
 /**
+ * Wrapper method of cross entropy.
+ *
+ * @see linalg::cross_entropy
+ */
+#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container)                         \
+	virtual Type cross_entropy(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
+#undef BACKEND_GENERIC_CROSS_ENTROPY
+
+/**
  * Wrapper method of vector dot-product that works with generic vectors.
  *
  * @see linalg::dot
@@ -348,6 +363,37 @@ namespace shogun
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
 /**
+ * Wrapper method of multiply_by_logistic_derivative function f(x) =
+ * 1/(1+exp(-x))
+ *
+ * @see linalg::multiply_by_logistic_derivative
+ */
+#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container)            \
+	virtual void multiply_by_logistic_derivative(                              \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
+#undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
+
+/**
+ * Wrapper method of multiply_by_rectified_linear_derivative
+ *
+ * @see linalg::multiply_by_rectified_linear_derivative
+ */
+#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container)    \
+	virtual void multiply_by_rectified_linear_derivative(                      \
+	    Container<Type>& a, Container<Type>& result) const                     \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(
+		    BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
+#undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
+
+/**
 * Wrapper method that range fills a vector of matrix.
 *
 * @see linalg::range_fill
@@ -360,6 +406,20 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
 #undef BACKEND_GENERIC_RANGE_FILL
+
+/**
+ * Wrapper method of rectified_linear method f(x) = max(0, x)
+ *
+ * @see linalg::rectified_linear
+ */
+#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container)                      \
+	virtual void rectified_linear(Container<Type>& a, Container<Type>& result) \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+#undef BACKEND_GENERIC_RECTIFIED_LINEAR
 
 /**
  * Wrapper method that solves a system of linear equations
@@ -421,6 +481,34 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SUM, SGMatrix)
 #undef BACKEND_GENERIC_SUM
+
+/**
+ * Wrapper method of softmax method.
+ *
+ * @see linalg::softmax
+ */
+#define BACKEND_GENERIC_SOFTMAX(Type, Container)                               \
+	virtual void softmax(Container<Type>& a) const                             \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
+#undef BACKEND_GENERIC_SOFTMAX
+
+/**
+* Wrapper method of squared error method.
+*
+* @see linalg::squared_error
+*/
+#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container)                         \
+	virtual Type squared_error(                                                \
+	    const Container<Type>& P, const Container<Type>& Q) const              \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return 0;                                                              \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
+#undef BACKEND_GENERIC_SQUARED_ERROR
 
 /**
 * Wrapper method of sum that works with matrix blocks.
