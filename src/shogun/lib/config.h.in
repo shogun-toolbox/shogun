@@ -89,7 +89,6 @@
 
 #cmakedefine HAVE_FDOPEN 1
 
-#cmakedefine USE_SPINLOCKS 1
 #cmakedefine USE_SHORTREAL_KERNELCACHE 1
 #cmakedefine USE_BIGSTATES 1
 

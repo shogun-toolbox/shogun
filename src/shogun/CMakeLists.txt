@@ -194,11 +194,6 @@ if (OPENMP_FOUND)
   endif()
 endif()
 
-FIND_PACKAGE(Spinlock)
-IF (SPINLOCK_FOUND)
-  SET(USE_SPINLOCKS 1)
-ENDIF()
-
 FIND_PACKAGE(CxaDemangle)
 
 # check SSE and SSE2 intrinsics header
