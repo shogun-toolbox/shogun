@@ -172,6 +172,5 @@ namespace shogun
 
 /** include all the modules here */
 #include <shogun/mathematics/linalg/internal/modules/ElementwiseOperations.h>
-#include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
 #endif // LINALG_H_
