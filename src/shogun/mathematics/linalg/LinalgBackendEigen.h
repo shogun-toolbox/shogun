@@ -33,6 +33,7 @@
 #ifndef LINALG_BACKEND_EIGEN_H__
 #define LINALG_BACKEND_EIGEN_H__
 
+#include <numeric>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
@@ -90,6 +91,13 @@ namespace shogun
 	    const;
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CHOLESKY_SOLVER, SGMatrix)
 #undef BACKEND_GENERIC_CHOLESKY_SOLVER
+
+/** Implementation of @see linalg::cross_entropy */
+#define BACKEND_GENERIC_CROSS_ENTROPY(Type, Container) \
+virtual Type cross_entropy(const Container<Type>& P, \
+	const Container<Type>& Q) const;
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_CROSS_ENTROPY, SGMatrix)
+#undef BACKEND_GENERIC_CROSS_ENTROPY
 
 /** Implementation of @see LinalgBackendBase::dot */
 #define BACKEND_GENERIC_DOT(Type, Container)                                   \
@@ -173,6 +181,20 @@ namespace shogun
 		BACKEND_GENERIC_COMPLEX_MEAN(SGMatrix)
 #undef BACKEND_GENERIC_COMPLEX_MEAN
 
+/** Implementation of @see linalg::multiply_by_logistic_derivative */
+#define BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV(Type, Container) \
+virtual void multiply_by_logistic_derivative(Container<Type>& a,\
+	Container<Type>& result) const;
+DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV, SGMatrix)
+#undef BACKEND_GENERIC_MULTIPLY_BY_LOGISTIC_DERIV
+
+/** Implementation of @see linalg::multiply_by_rectified_linear_derivative */
+#define BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV(Type, Container) \
+virtual void multiply_by_rectified_linear_derivative(Container<Type>& a,\
+	Container<Type>& result) const;
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV, SGMatrix)
+#undef BACKEND_GENERIC_MULTIPLY_BY_RECTIFIED_LINEAR_DERIV
+
 /** Implementation of @see LinalgBackendBase::qr_solver */
 #define BACKEND_GENERIC_QR_SOLVER(Type, Container)                             \
 	virtual Container<Type> qr_solver(                                         \
@@ -188,6 +210,12 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_RANGE_FILL, SGMatrix)
 #undef BACKEND_GENERIC_RANGE_FILL
 
+/** Implementation of @see linalg::rectified_linear */
+#define BACKEND_GENERIC_RECTIFIED_LINEAR(Type, Container) \
+virtual void rectified_linear(Container<Type>& a, Container<Type>& result) const;
+DEFINE_FOR_REAL_PTYPE(BACKEND_GENERIC_RECTIFIED_LINEAR, SGMatrix)
+#undef BACKEND_GENERIC_RECTIFIED_LINEAR
+
 /** Implementation of @see linalg::scale */
 #define BACKEND_GENERIC_IN_PLACE_SCALE(Type, Container)                        \
 	virtual void scale(                                                        \
@@ -202,6 +230,18 @@ namespace shogun
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGVector)
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_SET_CONST, SGMatrix)
 #undef BACKEND_GENERIC_SET_CONST
+
+/** Implementation of @see linalg::softmax */
+#define BACKEND_GENERIC_SOFTMAX(Type, Container) \
+virtual void softmax(Container<Type>& a) const;
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SOFTMAX, SGMatrix)
+#undef BACKEND_GENERIC_SOFTMAX
+
+/** Implementation of @see linalg::squared_error */
+#define BACKEND_GENERIC_SQUARED_ERROR(Type, Container) \
+virtual Type squared_error(const Container<Type>& P, const Container<Type>& Q) const;
+DEFINE_FOR_NON_INTEGER_REAL_PTYPE(BACKEND_GENERIC_SQUARED_ERROR, SGMatrix)
+#undef BACKEND_GENERIC_SQUARED_ERROR
 
 /** Implementation of @see LinalgBackendBase::sum */
 #define BACKEND_GENERIC_SUM(Type, Container)                                   \
@@ -348,6 +388,13 @@ namespace shogun
 		SGVector<T> cholesky_solver_impl(
 		    const SGMatrix<T>& L, const SGVector<T>& b, const bool lower) const;
 
+		/** Eigen3 cross_entropy method
+		 * The cross entropy is defined as \f$ H(P,Q) = - \sum_{ij}
+		 * P[i,j]log(Q[i,j]) \f$
+		 */
+		template <typename T>
+		T cross_entropy_impl(const SGMatrix<T>& p, const SGMatrix<T>& q) const;
+
 		/** Eigen3 vector dot-product method */
 		template <typename T>
 		T dot_impl(const SGVector<T>& a, const SGVector<T>& b) const;
@@ -422,6 +469,21 @@ namespace shogun
 		template <template <typename> class Container>
 		complex128_t mean_impl(const Container<complex128_t>& a) const;
 
+		/** Eigen3 multiply_by_logistic_derivative method
+		 * Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j)) for all i
+		 * and j
+		 */
+		template <typename T>
+		void multiply_by_logistic_derivative_impl(
+			SGMatrix<T>& a, SGMatrix<T>& result) const;
+
+		/** Eigen3 multiply_by_rectified_linear_derivative method
+		 * Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j
+		 */
+		template <typename T>
+		void multiply_by_rectified_linear_derivative_impl(
+			SGMatrix<T>& a, SGMatrix<T>& result) const;
+
 		/** Eigen3 vector QR solver. */
 		template <typename T>
 		SGVector<T>
@@ -436,6 +498,10 @@ namespace shogun
 		template <typename T, template <typename> class Container>
 		void range_fill_impl(Container<T>& a, const T start) const;
 
+		/** Applies the elementwise rectified linear function f(x) = max(0,x) */
+		template <typename T>
+		void rectified_linear_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
+
 		/** Eigen3 vector inplace scale method: result = alpha * A */
 		template <typename T>
 		void scale_impl(SGVector<T>& a, T alpha, SGVector<T>& result) const;
@@ -447,6 +513,17 @@ namespace shogun
 		/** Eigen3 set const method */
 		template <typename T, template <typename> class Container>
 		void set_const_impl(Container<T>& a, T value) const;
+
+		/** Eigen3 softmax method */
+		template <typename T, template <typename> class Container>
+		void softmax_impl(Container<T>& a) const;
+
+		/** Eigen3 squared error method
+		 * The squared error is defined as \f$ E(P,Q) = \frac{1}{2} \sum_{ij}
+		 * (P[i,j]-Q[i,j])^2 \f$
+		 */
+		template <typename T>
+		T squared_error_impl(const SGMatrix<T>& p, const SGMatrix<T>& q) const;
 
 		/** Eigen3 vector sum method */
 		template <typename T>
