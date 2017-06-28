@@ -93,6 +93,11 @@ namespace shogun
          */
         virtual std::string type() const = 0;
 
+        /** Returns type info
+         * @return type info of value's type
+         */
+        virtual const std::type_info& type_info() const = 0;
+
         /** Compares type.
          * @param ti type information
          * @return true if type matches
@@ -147,6 +152,14 @@ namespace shogun
         virtual std::string type() const
         {
             return demangledType<T>();
+        }
+
+        /** Returns type info
+         * @return type info of value's type
+         */
+        virtual const std::type_info& type_info() const
+        {
+            return typeid(T);
         }
 
         /** Compares type.
@@ -205,6 +218,14 @@ namespace shogun
         virtual std::string type() const
         {
             return demangledType<T>();
+        }
+
+        /** Returns type info
+         * @return type info of value's type
+         */
+        virtual const std::type_info& type_info() const
+        {
+            return typeid(T);
         }
 
         /** Compares type.
@@ -357,6 +378,11 @@ namespace shogun
         bool empty() const
         {
             return same_type<Empty>();
+        }
+
+        const std::type_info& type_info() const
+        {
+            return policy->type_info();
         }
 
     private:
