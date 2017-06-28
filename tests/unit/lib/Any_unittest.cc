@@ -117,5 +117,5 @@ TEST(Any, type_info)
 {
 	int32_t integer = 10;
 	auto any = erase_type(integer);
-	EXPECT_EQ(any.type_info(), typeid(integer));
+	EXPECT_EQ(any.type_info().hash_code(), typeid(integer).hash_code());
 }
