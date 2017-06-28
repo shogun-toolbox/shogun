@@ -83,6 +83,7 @@
 %include "NeuralNets_includes.i"
 %include "bagging_includes.i"
 %include "Boost_includes.i"
+%include "ParameterObserver.i"
 
 %include "SGBase.i"
 %include "Machine.i"
