@@ -284,6 +284,20 @@ ELSE()
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
 ENDIF()
 
+# TFLogger package
+FIND_PACKAGE(TFLogger 0.1.0 CONFIG)
+IF (TFLogger_FOUND)
+    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
+    target_link_libraries(shogun PRIVATE tflogger::tflogger)
+ELSE()
+    include(external/tflogger)
+    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
+            $<BUILD_INTERFACE:${TFLogger_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include/shogun/lib/external/tflogger>
+            )
+    target_link_libraries(shogun PRIVATE tflogger::tflogger)
+ENDIF()
+
 #### LAPACK
 include(ShogunFindLAPACK)
 

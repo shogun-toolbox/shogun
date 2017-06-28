@@ -13,15 +13,16 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/tag.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/ParameterObserverInterface.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/tag.h>
 
 #include <rxcpp/rx.hpp>
 #include <utility>
@@ -402,16 +403,14 @@ public:
 	  * Get parameters observable
 	  * @return RxCpp observable
 	  */
-	rxcpp::observable<std::pair<std::string, Any>> get_parameters_observable()
+	rxcpp::observable<ParameterObserverInterface::ObservedValue> get_parameters_observable()
 	{
 		return m_observable_params;
 	};
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe_to_parameters()
-	{
-	}
+	void subscribe_to_parameters(ParameterObserverInterface* obs);
 
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
@@ -568,7 +567,7 @@ protected:
 	/** Observe the parameter and emits a value using the
 	* observable object
 	*/
-	void observe_scalar(const std::string& name, const Any& value);
+	void observe_scalar(const int64_t step, const std::string& name, const Any& value);
 
 public:
 	/** io */
@@ -603,13 +602,13 @@ private:
 	RefCount* m_refcount;
 
 	/** Subject used to create the params observer */
-	rxcpp::subjects::subject<std::pair<std::string, Any>> m_subject_params;
+	rxcpp::subjects::subject<ParameterObserverInterface::ObservedValue> m_subject_params;
 
 	/** Parameter Observable */
-	rxcpp::observable<std::pair<std::string, Any>> m_observable_params;
+	rxcpp::observable<ParameterObserverInterface::ObservedValue> m_observable_params;
 
 	/** Subscriber used to call onNext, onComplete etc.*/
-	rxcpp::subscriber<std::pair<std::string, Any>> m_subscriber_params;
+	rxcpp::subscriber<ParameterObserverInterface::ObservedValue> m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__
