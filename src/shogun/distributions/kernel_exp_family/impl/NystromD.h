@@ -37,6 +37,8 @@
 #include <shogun/lib/SGVector.h>
 
 #include <memory>
+#include <utility>
+
 
 #include "Nystrom.h"
 
@@ -60,6 +62,12 @@ public :
 	// overloaded from Full base class
 	virtual SGVector<float64_t> compute_h() const;
 
+	// re-implemented evaluation methods
+	virtual float64_t log_pdf(index_t idx_test) const;
+	virtual SGVector<float64_t> grad(index_t idx_test) const;
+	virtual SGMatrix<float64_t> hessian(index_t idx_test) const;
+	virtual SGVector<float64_t> hessian_diag(index_t idx_test) const;
+
 	// overloaded from base Nystrom class for sub-sampling dimensions
 	virtual bool basis_is_subsampled_data() const;
 	virtual index_t get_system_size() const;
@@ -68,6 +76,8 @@ public :
 	virtual SGMatrix<float64_t> compute_G_mm(); // TODO this should be const!
 	SGVector<float64_t> solve_system(const SGMatrix<float64_t>& system_matrix,
 			const SGVector<float64_t>& system_vector) const;
+
+	static std::pair<index_t, index_t> idx_to_ai(index_t idx, index_t D);
 
 protected:
 };

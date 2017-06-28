@@ -71,7 +71,7 @@ public :
 	// modularisation of the fit method
 	virtual bool basis_is_subsampled_data() const { return m_basis_inds.vlen; }
 	virtual index_t get_system_size() const;
-	SGMatrix<float64_t> compute_system_matrix();
+	SGMatrix<float64_t> compute_system_matrix(); // TODO this should be const!
 	SGVector<float64_t> compute_system_vector() const;
 
 

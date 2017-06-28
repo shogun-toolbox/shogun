@@ -511,7 +511,7 @@ float64_t Gaussian::dx_dy_component(index_t idx_a, index_t idx_b, index_t i, ind
 		ridge /= m_sigma;
 	}
 
-	return k*(ridge - 4*(differences_i*differences_j)/pow(m_sigma, 2));
+	return k*(- 4*(differences_i*differences_j)/pow(m_sigma, 2) + ridge);
 }
 
 float64_t Gaussian::dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const

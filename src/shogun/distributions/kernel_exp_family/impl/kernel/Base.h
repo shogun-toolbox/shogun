@@ -77,7 +77,7 @@ public :
 	// old develop code
 	virtual SGMatrix<float64_t> dx_dx_dy_dy(index_t idx_a, index_t idx_b) const=0;
 
-	// nystrom parts
+	// nystrom with dimension subsampling parts
 	virtual float64_t difference_component(index_t idx_a, index_t idx_b, index_t i) const=0;
 	virtual float64_t dx_dy_component(const index_t idx_a, index_t idx_b, index_t i, index_t j) const=0;
 	virtual float64_t dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const=0;

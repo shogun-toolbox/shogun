@@ -133,7 +133,7 @@ SGVector<float64_t> Full::compute_h() const
 	auto N_basis = get_num_basis();
 	auto N_data = get_num_data();
 
-	auto system_size = get_system_size();
+	auto system_size = N_basis*D;
 	SGVector<float64_t> h(system_size);
 	Map<VectorXd> eigen_h(h.vector, system_size);
 	eigen_h = VectorXd::Zero(system_size);
@@ -144,7 +144,6 @@ SGVector<float64_t> Full::compute_h() const
 		{
 			// TODO optimise, no need to store matrix
 			// TODO optimise, pull allocation out of the loop
-			// note: this was changed compared to Esben's Python code, using the dx_dy_dy form
 			SGMatrix<float64_t> temp = m_kernel->dx_dy_dy(idx_a, idx_b);
 			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
 		}
@@ -250,7 +249,6 @@ void Full::log_pdf_xi_result(float64_t xi, float64_t& result) const
 	result -= 1.0/(m_lambda)*xi;
 }
 
-#include <iostream>
 float64_t Full::log_pdf(index_t idx_test) const
 {
 	auto D = get_num_dimensions();
@@ -320,7 +318,6 @@ void Full::grad_xi_result(const SGVector<float64_t>& xi_grad,
 
 SGVector<float64_t> Full::grad(index_t idx_test) const
 {
-	// TODO this produces junk for 1D case
 	auto D = get_num_dimensions();
 	auto N = get_num_basis();
 
@@ -410,16 +407,13 @@ SGMatrix<float64_t> Full::hessian(index_t idx_test) const
 	eigen_xi_hessian = MatrixXd::Zero(D, D);
 	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
 
-	// Entire alpha-beta vector
 	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 
 	for (auto a=0; a<N; a++)
 	{
 		hessian_xi_add(a, idx_test, xi_hessian);
 
-		// Beta segment vector
 		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
-
 		auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec(a, idx_test, beta_a);
 		Map<MatrixXd> eigen_beta_hess_sum(beta_hess_sum.matrix, D, D);
 		eigen_beta_sum_hessian += eigen_beta_hess_sum;

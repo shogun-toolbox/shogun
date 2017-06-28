@@ -32,6 +32,7 @@
 #include <shogun/base/init.h>
 #include <shogun/distributions/kernel_exp_family/impl/Full.h>
 #include <shogun/distributions/kernel_exp_family/impl/Nystrom.h>
+#include <shogun/distributions/kernel_exp_family/impl/NystromD.h>
 #include <shogun/distributions/kernel_exp_family/impl/kernel/Gaussian.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -48,10 +49,21 @@ using namespace kernel_exp_family_impl;
 using namespace shogun;
 using namespace Eigen;
 
-/* All unit tests are based on the following gist
+/** Nystrom test type, used to instantiate different version of the Nystrom
+ * solver, see fixture below.
+ */
+enum class ENystromTestType
+{
+	E_EXPLCIT_BASIS,
+	E_SUBSAMPLED_BASIS,
+	E_D_EXPLCIT_BASIS,
+	E_D_SUBSAMPLED_BASIS,
+};
+
+/** All unit tests are based on the following gist
  * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
  */
-class NystromFixed: public DataFixture, public ::testing::TestWithParam<bool>
+class NystromFixed: public DataFixture, public ::testing::TestWithParam<ENystromTestType>
 {
 public:
 	void SetUp()
@@ -59,29 +71,70 @@ public:
 		DataFixture::SetUp();
 		auto sigma = 2.0;
 		auto lambda = 1.0;
-		m = 2;
 
 		auto X = get_data_train();
 		auto kernel = make_shared<kernel::Gaussian>(sigma);
 
-		// templated test to make sure sub-sampled basis and explicit (sub-sampled)
-		// basis lead to the same results
-		bool subsampled_basis = GetParam();
-		if (subsampled_basis)
+		// value parametrised test to make sure all Nystrom solvers lead to the
+		// same results
+		auto test_type = GetParam();
+		switch (test_type)
 		{
-			SGVector <index_t> basis(m);
-			basis[0]=0;
-			basis[1]=1;
-			est = make_shared <Nystrom> (X, basis, kernel, lambda);
-		}
-		else
-		{
-			// explicit basis, manually sub-sampled
-			SGMatrix < float64_t > basis(D, m);
-			for (auto i = 0; i < m*D; i++)
-				basis.matrix[i] = get_data_train().matrix[i];
+			case ENystromTestType::E_EXPLCIT_BASIS:
+			{
+				num_basis = 2;
+				system_size = num_basis*D;
 
-			est = make_shared <Nystrom> (X, basis, kernel, lambda);
+				// explicit basis, manually sub-sampled
+				SGMatrix < float64_t > basis(D, num_basis);
+				for (auto i = 0; i < system_size; i++)
+					basis.matrix[i] = get_data_train().matrix[i];
+
+				est = make_shared <Nystrom> (X, basis, kernel, lambda);
+				break;
+			}
+			case ENystromTestType::E_SUBSAMPLED_BASIS:
+			{
+				num_basis = 2;
+				system_size = num_basis*D;
+
+				SGVector <index_t> basis(num_basis);
+				basis[0]=0;
+				basis[1]=1;
+				est = make_shared <Nystrom> (X, basis, kernel, lambda);
+				break;
+			}
+			case ENystromTestType::E_D_SUBSAMPLED_BASIS:
+			{
+				num_basis = 4;
+				system_size = num_basis;
+
+				SGMatrix<bool> basis_mask(X.num_rows, X.num_cols);
+				basis_mask.zero();
+				basis_mask(0,0)=1;
+				basis_mask(1,0)=1;
+				basis_mask(0,1)=1;
+				basis_mask(1,1)=1;
+				est = make_shared <NystromD> (X, basis_mask, kernel, lambda);
+				break;
+			}
+			case ENystromTestType::E_D_EXPLCIT_BASIS:
+			{
+				num_basis = 4;
+				system_size = num_basis;
+
+				// explicit basis, being all of the training data
+				SGMatrix <float64_t> basis = get_data_train().clone();
+
+				SGMatrix<bool> basis_mask(X.num_rows, X.num_cols);
+				basis_mask.zero();
+				basis_mask(0,0)=1;
+				basis_mask(1,0)=1;
+				basis_mask(0,1)=1;
+				basis_mask(1,1)=1;
+				est = make_shared <NystromD> (X, basis, basis_mask, kernel, lambda);
+				break;
+			}
 		}
 		est->fit();
 	}
@@ -93,8 +146,10 @@ public:
 
 protected:
 	shared_ptr<Nystrom> est;
-	index_t m;
+	index_t num_basis;
+	index_t system_size;
 };
+
 
 class NystromRandom: public NystromFixed
 {
@@ -107,8 +162,8 @@ class NystromRandom: public NystromFixed
 TEST_P(NystromFixed, compute_G_mm)
 {
 	auto result = est->compute_G_mm();
-	ASSERT_EQ(result.num_rows, m*D);
-	ASSERT_EQ(result.num_cols, m*D);
+	ASSERT_EQ(result.num_rows, system_size);
+	ASSERT_EQ(result.num_cols, system_size);
 	ASSERT_TRUE(result.matrix);
 
 	// note: matrix is symmetric
@@ -120,14 +175,14 @@ TEST_P(NystromFixed, compute_G_mm)
 		-0.0090206351578654, -0.0120275135438206, 0. , 1.
 	};
 
-	for (auto i=0; i<m*D*m*D; i++)
+	for (auto i=0; i<system_size*system_size; i++)
 		EXPECT_NEAR(result[i], reference[i], 1e-15);
 }
 
 TEST_P(NystromFixed, compute_G_mn)
 {
 	auto result = est->compute_G_mn();
-	ASSERT_EQ(result.num_rows, m*D);
+	ASSERT_EQ(result.num_rows, system_size);
 	ASSERT_EQ(result.num_cols, ND);
 	ASSERT_TRUE(result.matrix);
 
@@ -146,15 +201,15 @@ TEST_P(NystromFixed, compute_G_mn)
 		-1.6416999724779760e-01,  -2.4625499587169641e-01
 	};
 
-	for (auto i=0; i<m*D*m*D; i++)
+	for (auto i=0; i<system_size*system_size; i++)
 		EXPECT_NEAR(result[i], reference[i], 1e-15);
 }
 
 TEST_P(NystromFixed, compute_system_matrix)
 {
 	auto result = est->compute_system_matrix();
-	ASSERT_EQ(result.num_rows, m*D);
-	ASSERT_EQ(result.num_cols, m*D);
+	ASSERT_EQ(result.num_rows, system_size);
+	ASSERT_EQ(result.num_cols, system_size);
 	ASSERT_TRUE(result.matrix);
 
 	// note: matrix is symmetric
@@ -176,7 +231,7 @@ TEST_P(NystromFixed, compute_system_matrix)
 TEST_P(NystromFixed, compute_system_vector)
 {
 	auto result = est->compute_system_vector();
-	ASSERT_EQ(result.vlen, m*D);
+	ASSERT_EQ(result.vlen, system_size);
 	ASSERT_TRUE(result.vector);
 
 	float64_t reference[] = {
@@ -184,14 +239,14 @@ TEST_P(NystromFixed, compute_system_vector)
 		0.0411923796791344
 	};
 
-	for (auto i=0; i<m*D; i++)
+	for (auto i=0; i<system_size; i++)
 		EXPECT_NEAR(result[i], reference[i], 1e-15);
 }
 
 TEST_P(NystromFixed, fit_kernel_Gaussian)
 {
 	auto result = est->get_beta();
-	ASSERT_EQ(result.vlen, m*D);
+	ASSERT_EQ(result.vlen, system_size);
 	ASSERT_TRUE(result.vector);
 
 	float64_t reference[] = {
@@ -199,7 +254,7 @@ TEST_P(NystromFixed, fit_kernel_Gaussian)
 		-0.0303339102579069
 	};
 
-	for (auto i=0; i<m*D; i++)
+	for (auto i=0; i<system_size; i++)
 		EXPECT_NEAR(result[i], reference[i], 1e-15);
 
 }
@@ -287,11 +342,51 @@ TEST_P(NystromFixed, score_kernel_Gaussian)
 
 INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 						NystromFixed,
-						::testing::Values(true, false));
+						::testing::Values(
+								ENystromTestType::E_EXPLCIT_BASIS,
+								ENystromTestType::E_SUBSAMPLED_BASIS,
+								ENystromTestType::E_D_EXPLCIT_BASIS,
+								ENystromTestType::E_D_SUBSAMPLED_BASIS)
+);
 
 INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 						NystromRandom,
-						::testing::Values(true, false));
+						::testing::Values(
+								ENystromTestType::E_EXPLCIT_BASIS,
+								ENystromTestType::E_SUBSAMPLED_BASIS,
+								ENystromTestType::E_D_EXPLCIT_BASIS,
+								ENystromTestType::E_D_SUBSAMPLED_BASIS)
+);
+
+TEST(KernelExpFamilyImplNystromD, idx_to_ai)
+{
+	index_t D=3;
+
+	index_t idx=0;
+	auto ai=NystromD::idx_to_ai(idx, D);
+	EXPECT_EQ(ai.first, 0);
+	EXPECT_EQ(ai.second, 0);
+
+	idx=1;
+	ai=NystromD::idx_to_ai(idx, D);
+	EXPECT_EQ(ai.first, 0);
+	EXPECT_EQ(ai.second, 1);
+
+	idx=2;
+	ai=NystromD::idx_to_ai(idx, D);
+	EXPECT_EQ(ai.first, 0);
+	EXPECT_EQ(ai.second, 2);
+
+	idx=3;
+	ai=NystromD::idx_to_ai(idx, D);
+	EXPECT_EQ(ai.first, 1);
+	EXPECT_EQ(ai.second, 0);
+
+	idx=4;
+	ai=NystromD::idx_to_ai(idx, D);
+	EXPECT_EQ(ai.first, 1);
+	EXPECT_EQ(ai.second, 1);
+}
 
 TEST(KernelExpFamilyImplNystrom, pinv_self_adjoint)
 {

@@ -83,13 +83,16 @@ index_t NystromD::get_system_size() const
 
 SGVector<float64_t> NystromD::compute_h() const
 {
+	// needs a new kernel method
 	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
+
 	auto h_full = Nystrom::compute_h();
 
-	SGVector<float64_t> h(get_num_basis());
+	auto system_size = get_system_size();
+	SGVector<float64_t> h(system_size);
 
 	// subsample vector entries
-	for (auto i=0; i<get_num_basis(); i++)
+	for (auto i=0; i<system_size; i++)
 		h[i] = h_full[m_basis_inds[i]];
 
 	return h;
@@ -97,9 +100,6 @@ SGVector<float64_t> NystromD::compute_h() const
 
 SGMatrix<float64_t> NystromD::compute_G_mn() const
 {
-	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
-	auto G_mn_full = Nystrom::compute_G_mn();
-
 	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 	auto N = get_num_data();
@@ -107,11 +107,21 @@ SGMatrix<float64_t> NystromD::compute_G_mn() const
 
 	SGMatrix<float64_t> G_mn(system_size, ND);
 
-	// subsample matrix rows
-	for (auto i=0; i<ND; i++)
+#pragma omp parallel for
+	for (auto idx_l=0; idx_l<ND; idx_l	++)
 	{
-		for (auto j=0; j<system_size; j++)
-			G_mn(j,i) = G_mn_full(m_basis_inds[j], i);
+		auto ai = idx_to_ai(idx_l, D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		for (auto idx_k=0; idx_k<system_size; idx_k++)
+		{
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+			auto b = bj.first;
+			auto j = bj.second;
+
+			G_mn(idx_k,idx_l) = m_kernel->dx_dy_component(b, a, j, i);
+		}
 	}
 
 	return G_mn;
@@ -119,17 +129,26 @@ SGMatrix<float64_t> NystromD::compute_G_mn() const
 
 SGMatrix<float64_t> NystromD::compute_G_mm()
 {
-	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
-	auto G_mm_full = Nystrom::compute_G_mm();
 	auto system_size = get_system_size();
+	auto D = get_num_dimensions();
 
 	SGMatrix<float64_t> G_mm(system_size, system_size);
 
-	// subsample matrix rows and columns
-	for (auto i=0; i<G_mm_full.num_cols; i++)
+#pragma omp parallel for
+	for (auto idx_l=0; idx_l<m_basis_inds.vlen; idx_l++)
 	{
-		for (auto j=0; j<G_mm_full.num_rows; j++)
-			G_mm(j,i) = G_mm_full(m_basis_inds[j], m_basis_inds[i]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		for (auto idx_k=0; idx_k<m_basis_inds.vlen; idx_k++)
+		{
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+			auto b = bj.first;
+			auto j = bj.second;
+
+			G_mm(idx_k, idx_l) = m_kernel->dx_dy_component(b, a, j, i);
+		}
 	}
 
 	return G_mm;
@@ -137,16 +156,125 @@ SGMatrix<float64_t> NystromD::compute_G_mm()
 
 bool NystromD::basis_is_subsampled_data() const
 {
-	SG_SWARNING("TODO: Optimize case where basis is equal to data!\n");
-	return false;
 	return m_data == m_basis;
 }
 
 SGMatrix<float64_t> NystromD::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const
 {
-	//TODO
-	ASSERT(false);
-	return SGMatrix<float64_t>();
+	auto system_size = get_system_size();
+
+	SGMatrix<float64_t> G_mm(system_size, system_size);
+	for (auto idx_l=0; idx_l<m_basis_inds.vlen; idx_l++)
+	{
+		for (auto idx_k=0; idx_k<system_size; idx_k++)
+			G_mm(idx_k,idx_l) = G_mn(idx_k, m_basis_inds[idx_l]);
+	}
+
+	return G_mm;
 }
 
+std::pair<index_t, index_t> NystromD::idx_to_ai(index_t idx, index_t D)
+{
+	return std::pair<index_t, index_t>(idx / D, idx%D);
+}
 
+float64_t NystromD::log_pdf(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto system_size = get_system_size();
+
+	float64_t beta_sum = 0;
+
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		auto grad_x_xa = m_kernel->dx_component(a, idx_test, i);
+		beta_sum += m_beta[idx_l]*grad_x_xa;
+	}
+
+	auto result = beta_sum;
+	return result;
+}
+
+SGVector<float64_t> NystromD::grad(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto system_size = get_system_size();
+
+	SGVector<float64_t> beta_grad_sum(D);
+	Map<VectorXd> eigen_beta_grad_sum(beta_grad_sum.vector, D);
+	eigen_beta_grad_sum.array() = VectorXd::Zero(D);
+
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		auto left_arg_hessian = m_kernel->dx_i_dx_j_component(a, idx_test, i);
+		Map<VectorXd> eigen_left_arg_hessian(left_arg_hessian.vector, D);
+		eigen_beta_grad_sum[i] -= eigen_left_arg_hessian.dot(eigen_beta.segment(a*D, D));
+	}
+
+	auto result = beta_grad_sum;
+	return beta_grad_sum;
+}
+
+SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto system_size = get_system_size();
+
+	SGMatrix<float64_t> beta_sum_hessian(D, D);
+	Map<MatrixXd> eigen_beta_sum_hessian(beta_sum_hessian.matrix, D, D);
+	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
+
+	Map<VectorXd> eigen_beta(m_beta.vector, system_size);
+
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
+		for (auto j=0; j<D; j++)
+		{
+			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
+			beta_sum_hessian(i,j) += beta_hess_sum;
+		}
+	}
+
+	auto result = beta_sum_hessian;
+	return result;
+}
+
+SGVector<float64_t> NystromD::hessian_diag(index_t idx_test) const
+{
+	auto D = get_num_dimensions();
+	auto system_size = get_system_size();
+
+	SGVector<float64_t> beta_sum_hessian_diag(D);
+	Map<VectorXd> eigen_beta_sum_hessian_diag(beta_sum_hessian_diag.vector, D);
+	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
+
+	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
+
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
+		auto a = ai.first;
+		auto i = ai.second;
+		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
+
+		auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, i);
+		beta_sum_hessian_diag[i] += beta_hess_sum;
+	}
+
+	auto result = beta_sum_hessian_diag;
+	return result;
+}

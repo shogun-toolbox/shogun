@@ -185,7 +185,7 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 
 SGMatrix<float64_t> Nystrom::compute_system_matrix()
 {
-	SG_SINFO("TODO: Avoid re-initializing the kernel matrix, make const\n");
+	SG_SWARNING("TODO: Avoid re-initializing the kernel matrix, make const\n");
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
 	auto ND = N*D;
