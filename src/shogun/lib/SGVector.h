@@ -65,6 +65,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
 
+		/** Constructor to create new vector from a SGMatrix */
+		SGVector(SGMatrix<T> matrix);
+
 		/** Construct SGVector from GPU memory.
 		 *
 		 * @param vector GPUMemoryBase pointer

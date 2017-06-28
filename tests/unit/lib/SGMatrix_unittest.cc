@@ -614,3 +614,35 @@ TEST(SGMatrixTest, max_single)
 	for (uint64_t i=0; i<mat.size(); ++i)
 		EXPECT_GE(max, mat.matrix[i]);
 }
+
+TEST(SGMatrixTest, get_column)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t col = 4;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	auto vec = mat.get_column_vector(col);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		EXPECT_EQ(mat(i, col), vec[i]);
+}
+
+TEST(SGMatrixTest, set_column)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t col = 4;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	SGVector<float64_t> vec(n_rows);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		vec[i] = CMath::randn_double();
+
+	mat.set_column(col, vec);
+
+	for (index_t i = 0; i < n_rows; ++i)
+		EXPECT_EQ(mat(i, col), vec[i]);
+}

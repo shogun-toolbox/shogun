@@ -64,6 +64,14 @@ namespace shogun
 		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
+/** Implementation of @see LinalgBackendBase::add_vector */
+#define BACKEND_GENERIC_ADD(Type, Container)                                   \
+	virtual void add_vector(                                                   \
+	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
+	    SGMatrix<Type>& result, Type alpha, Type beta) const;
+		DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD, SGMatrix)
+#undef BACKEND_GENERIC_ADD
+
 /** Implementation of @see LinalgBackendBase::add_scalar */
 #define BACKEND_GENERIC_ADD_SCALAR(Type, Container)                            \
 	virtual void add_scalar(Container<Type>& a, Type b) const;
@@ -371,6 +379,12 @@ namespace shogun
 		void add_col_vec_impl(
 		    const SGMatrix<T>& A, index_t i, const SGVector<T>& b,
 		    SGVector<T>& result, T alpha, T beta) const;
+
+		/** Eigen3 add vector to each column of matrix method */
+		template <typename T>
+		void add_vector_impl(
+		    const SGMatrix<T>& A, const SGVector<T>& b, SGMatrix<T>& result,
+		    T alpha, T beta) const;
 
 		/** Eigen3 vector add scalar method */
 		template <typename T>

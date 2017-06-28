@@ -38,6 +38,20 @@ TEST(SGVectorTest,ctor)
 
 }
 
+TEST(SGVectorTest, ctor_from_matrix)
+{
+	const index_t n_rows = 5, n_cols = 4;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < mat.size(); ++i)
+		mat[i] = CMath::randn_double();
+
+	auto vec = SGVector<float64_t>(mat);
+
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		EXPECT_EQ(mat[i], vec[i]);
+}
+
 TEST(SGVectorTest,setget)
 {
 	SGVector<index_t> v(4);

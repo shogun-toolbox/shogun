@@ -155,8 +155,9 @@ TEST(LinalgBackendEigen, SGMatrix_add_col_vec_allocated)
 	add_col_vec(A, col, b, result, alpha, beta);
 
 	for (index_t i = 0; i < nrows; ++i)
-		EXPECT_NEAR(result.get_element(i, col),
-		            alpha*A.get_element(i, col)+beta*b[i], 1e-15);
+		EXPECT_NEAR(
+		    result.get_element(i, col),
+		    alpha * A.get_element(i, col) + beta * b[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
@@ -185,6 +186,31 @@ TEST(LinalgBackendEigen, SGMatrix_add_col_vec_in_place)
 			else
 				EXPECT_EQ(A.get_element(i,j), a);
 		}
+}
+
+TEST(LinalgBackendEigen, add_vector)
+{
+	const float64_t alpha = 0.7;
+	const float64_t beta = -1.2;
+	const index_t nrows = 2, ncols = 3;
+
+	SGMatrix<float64_t> A(nrows, ncols);
+	SGMatrix<float64_t> result(nrows, ncols);
+	SGVector<float64_t> b(nrows);
+
+	for (index_t i = 0; i < nrows; ++i)
+		b[i] = 0.5 * i;
+	for (index_t j = 0; j < ncols; ++j)
+		for (index_t i = 0; i < nrows; ++i)
+		{
+			A(i, j) = i + j * ncols;
+			result(i, j) = alpha * A(i, j) + beta * b[i];
+		}
+
+	add_vector(A, b, A, alpha, beta);
+
+	for (index_t i = 0; i < nrows * ncols; ++i)
+		EXPECT_NEAR(A[i], result[i], 1e-15);
 }
 
 TEST(LinalgBackendEigen, SGVector_add_scalar)

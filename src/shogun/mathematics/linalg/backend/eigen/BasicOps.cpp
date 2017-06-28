@@ -57,6 +57,16 @@ DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGVector)
 DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_COL_VEC, SGMatrix)
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
+#define BACKEND_GENERIC_ADD_VECTOR(Type, Container)                            \
+	void LinalgBackendEigen::add_vector(                                       \
+	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
+	    SGMatrix<Type>& result, Type alpha, Type beta) const                   \
+	{                                                                          \
+		add_vector_impl(A, b, result, alpha, beta);                            \
+	}
+DEFINE_FOR_NUMERIC_PTYPE(BACKEND_GENERIC_ADD_VECTOR, SGMatrix)
+#undef BACKEND_GENERIC_ADD_VECTOR
+
 #define BACKEND_GENERIC_ADD_SCALAR(Type, Container)                            \
 	void LinalgBackendEigen::add_scalar(Container<Type>& a, Type b) const      \
 	{                                                                          \
@@ -164,6 +174,18 @@ void LinalgBackendEigen::add_col_vec_impl(
 	typename SGVector<T>::EigenVectorXtMap result_eig = result;
 
 	result_eig = alpha * A_eig.col(i) + beta * b_eig;
+}
+
+template <typename T>
+void LinalgBackendEigen::add_vector_impl(
+    const SGMatrix<T>& A, const SGVector<T>& b, SGMatrix<T>& result, T alpha,
+    T beta) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
+	typename SGVector<T>::EigenVectorXtMap b_eig = b;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+
+	result_eig = (alpha * A_eig).colwise() + beta * b_eig;
 }
 
 template <typename T>
