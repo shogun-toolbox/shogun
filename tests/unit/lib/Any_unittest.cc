@@ -112,3 +112,10 @@ TEST(Any, mixing_policies)
 	EXPECT_THROW(owning_any = non_owning_any, std::logic_error);
 	EXPECT_THROW(non_owning_any = owning_any, std::logic_error);
 }
+
+TEST(Any, type_info)
+{
+	int32_t integer = 10;
+	auto any = erase_type(integer);
+	EXPECT_EQ(any.type_info(), typeid(integer));
+}
