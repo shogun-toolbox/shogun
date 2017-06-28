@@ -53,6 +53,8 @@ public :
 	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 				SGMatrix<bool> basis_mask,
 				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
+	CKernelExpFamilyNystrom(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
+				float64_t sigma, float64_t lambda, float64_t lambda_l2=0.0);
 
 	virtual void fit();
 

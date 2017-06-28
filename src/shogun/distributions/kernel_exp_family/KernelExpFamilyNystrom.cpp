@@ -118,3 +118,24 @@ CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
 	m_impl = new kernel_exp_family_impl::NystromD(data, basis, basis_mask,
 			kernel, lambda, lambda_l2);
 }
+
+CKernelExpFamilyNystrom::CKernelExpFamilyNystrom(SGMatrix<float64_t> data,
+			SGMatrix<bool> basis_mask,
+			float64_t sigma, float64_t lambda, float64_t lambda_l2)
+			: CKernelExpFamily()
+{
+	REQUIRE(data.matrix, "Given observations cannot be empty.\n");
+	REQUIRE(data.num_rows>0, "Dimension of given observations (%d) must be positive.\n", data.num_rows);
+	REQUIRE(data.num_cols>0, "Number of given observations (%d) must be positive.\n", data.num_cols);
+	REQUIRE(basis_mask.num_rows == data.num_rows && basis_mask.num_cols == data.num_cols,
+				"Shape of basis mask (%d,%d) must match shape of data (%d,%d).\n",
+				basis_mask.num_rows, basis_mask.num_cols, data.num_rows, data.num_cols);
+	REQUIRE(basis_mask.matrix, "Basis mask cannot be empty.\n");
+	REQUIRE(sigma>0, "Given sigma (%f) must be positive.\n", sigma);
+	REQUIRE(lambda>0, "Given lambda (%f) must be positive.\n", lambda);
+	REQUIRE(lambda>=0, "Given L2 lambda (%f) must be >=0.\n", lambda_l2);
+
+	auto kernel = std::make_shared<kernel_exp_family_impl::kernel::Gaussian>(sigma);
+	m_impl = new kernel_exp_family_impl::NystromD(data, basis_mask,
+			kernel, lambda, lambda_l2);
+}
