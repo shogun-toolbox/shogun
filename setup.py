@@ -141,7 +141,7 @@ def shogun_cmake(arguments=None):
     print("Running CMake")
 
     if arguments is None:
-        arguments='-DPythonModular=ON -DENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=install'
+        arguments='-DPython=ON -DENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=install'
 
     if distutils.spawn.find_executable('cmake') is not None:
         print('CMake arguments: %s ' % arguments)
