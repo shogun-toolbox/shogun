@@ -11,7 +11,6 @@
 #ifndef KERNELPCA_H__
 #define KERNELPCA_H__
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
@@ -108,5 +107,4 @@ public:
 
 };
 }
-#endif
 #endif
