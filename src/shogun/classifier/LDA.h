@@ -172,6 +172,23 @@ class CLDA : public CLinearMachine
 		template <typename ST>
 		bool train_machine_templated(SGVector<int32_t> train_labels, CFeatures * features);
 
+		/**
+		 * Train the machine with the svd-based solver (@see CFisherLDA).
+		 * \warning This method is currently untemplated.
+		 * @param features training data
+		 * @param labels labels for training data
+		 */
+		bool solver_svd(SGVector<int32_t> train_labels, CFeatures* data);
+
+		/**
+		 * Train the machine with the classic method based on the cholesky
+		 * decomposition of the covariance matrix.
+		 * @param features training data
+		 * @param labels labels for training data
+		 */
+		template <typename ST>
+		bool solver_classic(SGVector<int32_t> train_labels, CFeatures* data);
+
 	protected:
 
 		void init();
