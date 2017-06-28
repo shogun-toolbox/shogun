@@ -87,16 +87,16 @@ SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
-SET(AVAILABLE_INTERFACES PythonModular;OctaveModular;JavaModular;PerlModular;RubyModular;CSharpModular;RModular;LuaModular;ScalaModular)
-SET(PythonModularDescription "Python")
-SET(OctaveModularDescription "Octave")
-SET(JavaModularDescription "Java")
-SET(PerlModularDescription "Perl")
-SET(RubyModularDescription "Ruby")
-SET(CSharpModularDescription "C#")
-SET(RModularDescription "R")
-SET(LuaModularDescription "Lua")
-SET(ScalaModularDescription "Scala")
+SET(AVAILABLE_INTERFACES Python;Octave;Java;Perl;Ruby;CSharp;R;Lua;Scala)
+SET(PythonDescription "Python")
+SET(OctaveDescription "Octave")
+SET(JavaDescription "Java")
+SET(PerlDescription "Perl")
+SET(RubyDescription "Ruby")
+SET(CSharpDescription "C#")
+SET(RDescription "R")
+SET(LuaDescription "Lua")
+SET(ScalaDescription "Scala")
 SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
 IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
@@ -104,7 +104,7 @@ IF (${ANY_INTERFACE_ENABLED})
 	# SWIG3 is the minimum requirement because of C++11 support
 	SET(SWIG_VERSION_MINIMUM 3.0.0)
 
-	IF(CSharpModular)
+	IF(CSharp)
 		# We require SWIG 3.0.7 to support functions with a few SGVector or
 		# SGMatrix arguments. The required SWIG feature is called
 		# "Support for special variable expansion in typemap attributes."
@@ -115,7 +115,7 @@ IF (${ANY_INTERFACE_ENABLED})
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(PythonModular)
+	ELSEIF(Python)
 		# SWIG was broken for combining -builtin and -modernargs
 		# from v3.0.0 and until 3.0.4.  This bug was fixed in
 		# v3.0.5.  Make CMake emit an error and fail to configure.
@@ -408,7 +408,7 @@ ForEach(SwigFlag "-w473" "-w454" "-w312" "-w325" "-fvirtual")
     LIST(APPEND CMAKE_SWIG_FLAGS ${SwigFlag})
 EndForEach()
 
-OPTION(SWIG_SINGLE_THREADED "Build modular interfaces single-threaded to reduce memory usage" OFF)
+OPTION(SWIG_SINGLE_THREADED "Build interfaces single-threaded to reduce memory usage" OFF)
 
 OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" ON)
 
@@ -429,67 +429,67 @@ IF(REDUCE_SWIG_DEBUG)
 	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -g1")
 ENDIF(REDUCE_SWIG_DEBUG)
 
-# python modular
-IF (PythonModular)
+# python
+IF (Python)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 	ENDIF()
 ENDIF()
 
-# lua modular
-IF (LuaModular)
+# lua
+IF (Lua)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 	ENDIF()
 ENDIF()
 
-# scala modular
-IF (ScalaModular)
+# scala
+IF (Scala)
 	# Java needed because Scala extends Java Classes and uses the executable generated from Java example for Integration testing
-	set(JavaModular "ON")
+	set(Java "ON")
 	FIND_PACKAGE(Scala REQUIRED)
-	IF(NOT JavaModular)
+	IF(NOT Java)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 		ENDIF()
 	ENDIF()
 ENDIF()
 
-# java modular
-IF (JavaModular)
+# java
+IF (Java)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 	ENDIF()
 ENDIF()
 
-# ruby modular
-IF (RubyModular)
+# ruby
+IF (Ruby)
 	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
 ENDIF()
 
-# octave modular
-IF (OctaveModular)
+# octave
+IF (Octave)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 	ENDIF()
 ENDIF()
 
-# csharp modular
-IF (CSharpModular)
+# csharp
+IF (CSharp)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 	ENDIF()
 ENDIF()
 
-# r modular
-IF (RModular)
+# R
+IF (R)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 	ENDIF()
 ENDIF()
 
-# perl modular
-IF (PerlModular)
+# perl
+IF (Perl)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
