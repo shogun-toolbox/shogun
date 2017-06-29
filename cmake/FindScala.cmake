@@ -14,7 +14,7 @@ find_package(Java COMPONENTS Runtime)
 if(JAVA_FOUND)
     include(UseJava)
 else()
-    message(WARNING "JAVA count not be found!" "\nIt is required for Scala Modular Interface!!!")
+    message(WARNING "Java is not found." "\nIt is required for the Scala Interface.")
 endif()
 
 find_program(Scala_SCALA_EXECUTABLE
