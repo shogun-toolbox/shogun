@@ -97,10 +97,20 @@ SGVector<T>::SGVector(index_t len, bool ref_counting)
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
-template<class T>
+template <class T>
+SGVector<T>::SGVector(SGMatrix<T> matrix)
+	: SGReferencedData(matrix), vlen(matrix.num_cols * matrix.num_rows),
+	  gpu_ptr(NULL)
+{
+	ASSERT(!matrix.on_gpu())
+	vector = matrix.data();
+	m_on_gpu.store(false, std::memory_order_release);
+}
+
+template <class T>
 SGVector<T>::SGVector(GPUMemoryBase<T>* gpu_vector, index_t len)
- : SGReferencedData(true), vector(NULL), vlen(len),
-   gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
+	: SGReferencedData(true), vector(NULL), vlen(len),
+	  gpu_ptr(std::shared_ptr<GPUMemoryBase<T>>(gpu_vector))
 {
 	m_on_gpu.store(true, std::memory_order_release);
 }

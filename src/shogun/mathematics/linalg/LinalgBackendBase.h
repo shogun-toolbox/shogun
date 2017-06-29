@@ -123,6 +123,22 @@ namespace shogun
 #undef BACKEND_GENERIC_ADD_COL_VEC
 
 /**
+ * Wrapper method of add vector to each column of matrix.
+ *
+ * @see linalg::add_vector
+ */
+#define BACKEND_GENERIC_ADD_VECTOR(Type, Container)                            \
+	virtual void add_vector(                                                   \
+	    const SGMatrix<Type>& A, const SGVector<Type>& b,                      \
+	    SGMatrix<Type>& result, Type alpha, Type beta) const                   \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+		return;                                                                \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_ADD_VECTOR, SGMatrix)
+#undef BACKEND_GENERIC_ADD_VECTOR
+
+/**
  * Wrapper method of add scalar operation.
  *
  * @see linalg::add_scalar

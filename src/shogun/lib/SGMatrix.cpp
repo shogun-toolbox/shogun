@@ -388,8 +388,23 @@ void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 }
 
 template <class T>
-float64_t SGMatrix<T>::trace(
-	float64_t* mat, int32_t cols, int32_t rows)
+SGVector<T> SGMatrix<T>::get_column(index_t col) const
+{
+	assert_on_cpu();
+	return SGVector<T>(get_column_vector(col), num_rows, false);
+}
+
+template <class T>
+void SGMatrix<T>::set_column(index_t col, const SGVector<T> vec)
+{
+	assert_on_cpu();
+	ASSERT(!vec.on_gpu())
+	ASSERT(vec.vlen == num_rows)
+	sg_memcpy(&matrix[num_rows * col], vec.vector, sizeof(T) * num_rows);
+}
+
+template <class T>
+float64_t SGMatrix<T>::trace(float64_t* mat, int32_t cols, int32_t rows)
 {
 	float64_t trace=0;
 	for (int64_t i=0; i<rows; i++)

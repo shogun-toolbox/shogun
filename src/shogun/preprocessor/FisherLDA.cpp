@@ -32,28 +32,29 @@
  */
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/preprocessor/FisherLDA.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/mathematics/eigen3.h>
-#include <vector>
+#include <shogun/preprocessor/FisherLDA.h>
 
 using namespace std;
 using namespace Eigen;
 using namespace shogun;
 
-CFisherLDA::CFisherLDA (EFLDAMethod method, float64_t thresh):
-	CDimensionReductionPreprocessor()
+CFisherLDA::CFisherLDA(EFLDAMethod method, float64_t thresh, float64_t gamma)
+    : CDimensionReductionPreprocessor()
 {
 	initialize_parameters();
 	m_method=method;
 	m_threshold=thresh;
+	m_gamma = gamma;
 }
 
 void CFisherLDA::initialize_parameters()
@@ -61,15 +62,23 @@ void CFisherLDA::initialize_parameters()
 	m_method=AUTO_FLDA;
 	m_threshold=0.01;
 	m_num_dim=0;
-	SG_ADD(&m_method, "FLDA_method","method for performing FLDA",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_dim, "final_dimensions","dimensions to be retained",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_transformation_matrix, "transformation_matrix","Transformation"
-			" matrix (Eigenvectors of covariance matrix).", MS_NOT_AVAILABLE);
+	m_gamma = 0;
+	SG_ADD(
+	    &m_method, "FLDA_method", "method for performing FLDA",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_num_dim, "final_dimensions", "dimensions to be retained",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_gamma, "m_gamma", "Regularization parameter", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_transformation_matrix, "transformation_matrix",
+	    "Transformation"
+	    " matrix (Eigenvectors of covariance matrix).",
+	    MS_NOT_AVAILABLE);
 	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
-			"Vector with Eigenvalues.", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &m_eigenvalues_vector, "eigenvalues_vector", "Vector with Eigenvalues.",
+	    MS_NOT_AVAILABLE);
 }
 
 CFisherLDA::~CFisherLDA()
@@ -89,197 +98,250 @@ bool CFisherLDA::fit(CFeatures *features, CLabels *labels, int32_t num_dimension
 
 	REQUIRE(labels, "Labels for the given features are not specified!\n")
 
-	REQUIRE(labels->get_label_type()==LT_MULTICLASS, "The labels should be of "
-			"the type MulticlassLabels! you provided %s\n", labels->get_name());
+	REQUIRE(
+	    labels->get_label_type() == LT_MULTICLASS,
+	    "The labels should be of "
+	    "the type MulticlassLabels! you provided %s\n",
+	    labels->get_name());
 
-	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)
-										->get_feature_matrix();
+	SGMatrix<float64_t> feature_matrix =
+	    ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 
 	SGVector<float64_t> labels_vector=((CMulticlassLabels*)labels)->get_labels();
 
-	int32_t num_vectors=feature_matrix.num_cols;
-	int32_t num_features=feature_matrix.num_rows;
+	index_t num_vectors = feature_matrix.num_cols;
+	index_t num_features = feature_matrix.num_rows;
 
-	REQUIRE(labels_vector.vlen==num_vectors,"The number of samples provided (%d)"
-			" must be equal to the number of labels provided(%d)\n",num_vectors,
-			labels_vector.vlen);
+	REQUIRE(
+	    labels_vector.vlen == num_vectors,
+	    "The number of samples provided (%d)"
+	    " must be equal to the number of labels provided(%d)\n",
+	    num_vectors, labels_vector.vlen);
 
 	// C holds the number of unique classes.
 	int32_t C=((CMulticlassLabels*)labels)->get_num_classes();
 
 	REQUIRE(C>1, "At least two classes are needed to perform LDA.\n")
 
-	int32_t i=0;
-	int32_t j=0;
-
 	m_num_dim=num_dimensions;
-	// max target dimension allowed.
-	// int32_t max_dim_allowed=C-1;
 
 	// clip number if Dimensions to be a valid number
 	if ((m_num_dim<=0) || (m_num_dim>(C-1)))
 		m_num_dim=(C-1);
 
-	MatrixXd fmatrix=Map<MatrixXd>(feature_matrix.matrix, num_features,
-									num_vectors);
-	Map<VectorXd> lvector(labels_vector.vector, num_vectors);
+	bool lda_more_efficient =
+	    m_method == AUTO_FLDA && num_vectors < num_features;
 
+	if ((m_method == CANVAR_FLDA) || lda_more_efficient)
+		return solver_canvar(feature_matrix, labels_vector, C);
+	else
+		return solver_classic(feature_matrix, labels_vector, C);
+}
+
+void CFisherLDA::center_data_compute_means(
+    SGMatrix<float64_t>& data, SGVector<float64_t>& labels_vector, int32_t C,
+    vector<SGVector<float64_t>>& mean_class, std::vector<index_t>& num_class)
+{
 	// holds the total mean
-	m_mean_vector=SGVector<float64_t>(num_features);
-	Map<VectorXd>mean_total (m_mean_vector.vector, num_features);
-	mean_total=VectorXd::Zero(num_features);
-	// holds the mean for each class
-	vector<VectorXd> mean_class(C);
-
-	// holds the frequency for each class.
-	// i.e the i'th element holds the number
-	// of times class i is observed.
-	VectorXd num_class=VectorXd::Zero(C);
+	m_mean_vector = SGVector<float64_t>(data.num_rows);
+	linalg::zero(m_mean_vector);
+	for (index_t i = 0; i < C; ++i)
+	{
+		mean_class[i] = SGVector<float64_t>(data.num_rows);
+		linalg::zero(mean_class[i]);
+	}
 
 	// calculate the class means and the total means.
-	for (i=0; i<C; i++)
+	for (index_t i = 0; i < data.num_cols; i++)
 	{
-		mean_class[i]=VectorXd::Zero(num_features);
-		for (j=0; j<num_vectors; j++)
-		{
-			if (i==lvector[j])
-			{
-				num_class[i]++;
-				mean_class[i]+=fmatrix.col(j);
-			}
-		}
-		mean_class[i]/=(float64_t)num_class[i];
-		mean_total+=mean_class[i];
+		index_t c = (index_t)labels_vector[i];
+		num_class[c]++;
+		linalg::add_col_vec(data, i, mean_class[c], mean_class[c]);
 	}
-	mean_total/=(float64_t)C;
+	for (index_t i = 0; i < C; ++i)
+	{
+		linalg::add(m_mean_vector, mean_class[i], m_mean_vector);
+		linalg::scale(
+		    mean_class[i], mean_class[i], 1 / (float64_t)num_class[i]);
+	}
+	linalg::scale(m_mean_vector, m_mean_vector, 1 / (float64_t)data.num_cols);
 
 	// Subtract the class means from the 'respective' data.
 	// e.g all data belonging to class 0 is subtracted by
 	// the mean of class 0 data.
-	for (i=0; i<C; i++)
-		for (j=0; j<num_vectors; j++)
-			if (i==lvector[j])
-				fmatrix.col(j)-=mean_class[i];
+	for (index_t i = 0; i < data.num_cols; i++)
+		linalg::add_col_vec(
+		    data, i, mean_class[labels_vector[i]], data, 1.0, -1.0);
+}
 
-	if ((m_method==CANVAR_FLDA) ||
-			(m_method==AUTO_FLDA && num_vectors<num_features))
+bool CFisherLDA::solver_canvar(
+    SGMatrix<float64_t>& data, SGVector<float64_t>& labels_vector, int32_t C)
+{
+	index_t num_vectors = data.num_cols;
+	index_t num_features = data.num_rows;
+
+	// holds the mean for each class
+	vector<SGVector<float64_t>> mean_class(C);
+
+	// holds the frequency for each class.
+	// i.e the i'th element holds the number
+	// of times class i is observed.
+	vector<index_t> num_class(C);
+
+	SGMatrix<float64_t> feature_centered = data.clone();
+	center_data_compute_means(
+	    feature_centered, labels_vector, C, mean_class, num_class);
+
+	// holds the feature matrix for each class
+	vector<SGMatrix<float64_t>> centered_class(C);
+	vector<index_t> centered_class_col(C);
+
+	SGMatrix<float64_t> Sw(num_features, num_features);
+	linalg::zero(Sw);
+	for (index_t i = 0; i < C; ++i)
 	{
-		// holds the  fmatrix for each class
-		vector<MatrixXd> centered_class_i(C);
-		VectorXd temp=num_class;
-		MatrixXd Sw=MatrixXd::Zero(num_features, num_features);
-		for (i=0; i<C; i++)
-		{
-			centered_class_i[i]=MatrixXd::Zero(num_features, num_class[i]);
-			for (j=0; j<num_vectors; j++)
-				if (i==lvector[j])
-					centered_class_i[i].col(num_class[i]-(temp[i]--))
-						=fmatrix.col(j);
-			Sw+=(centered_class_i[i]*centered_class_i[i].transpose())
-				*num_class[i]/(float64_t)(num_class[i]-1);
-		}
+		centered_class[i] = SGMatrix<float64_t>(num_features, num_class[i]);
+		linalg::zero(centered_class[i]);
+	}
+	for (index_t i = 0; i < num_vectors; i++)
+	{
+		index_t c = (index_t)labels_vector[i];
+		auto vec = feature_centered.get_column(i);
+		linalg::add_col_vec(
+		    centered_class[c], centered_class_col[c], vec, centered_class[c]);
+		centered_class_col[c]++;
+	}
+	for (index_t i = 0; i < C; ++i)
+	{
+		auto tmp = linalg::matrix_prod(
+		    centered_class[i], centered_class[i], false, true);
+		linalg::scale(tmp, tmp, num_class[i] / (float64_t)(num_class[i] - 1));
+		linalg::add(Sw, tmp, Sw);
+	}
 
-		// within class matrix for cannonical variates implementation
-		MatrixXd Sb(num_features, C);
-		for (i=0; i<C; i++)
-		Sb.col(i)=sqrt(num_class[i])*(mean_class[i]-mean_total);
+	// regularization
+	float64_t trace = linalg::trace(Sw);
+	SGMatrix<float64_t> id(Sw.num_rows, Sw.num_rows);
+	linalg::identity(id);
+	linalg::add(Sw, id, Sw, (1.0 - m_gamma), trace * (m_gamma) / num_features);
 
-		MatrixXd fmatrix1=Map<MatrixXd>(feature_matrix.matrix, num_features,
-									num_vectors);
+	// within class matrix for canonical variates implementation
+	SGMatrix<float64_t> Sb(num_features, C);
+	linalg::zero(Sb);
+	for (index_t i = 0; i < C; i++)
+	{
+		auto col = Sb.get_column(i);
+		linalg::add(mean_class[i], m_mean_vector, col, 1.0, -1.0);
+		linalg::scale(col, col, sqrt(num_class[i]));
+	}
 
-		JacobiSVD<MatrixXd> svd(fmatrix1, ComputeThinU | ComputeThinV);
-		// basis to represent the solution
-		MatrixXd Q;
+	index_t r = CMath::min(num_vectors, num_features);
+	SGMatrix<float64_t> U(num_features, r);
+	SGVector<float64_t> singularValues(r);
+	linalg::svd(data, singularValues, U);
+	// basis to represent the solution
+	SGMatrix<float64_t> Q;
 
-		if(num_features>num_vectors)
-		{
-			j=0;
-			for (i=0;i<num_vectors;i++)
-				if (svd.singularValues()(i)>m_threshold)
-					j++;
-				else
-					break;
-			Q=svd.matrixU().leftCols(j);
-		}
-		else
-			Q=svd.matrixU();
-
-		// Sb is the modified between scatter
-		Sb=(Q.transpose())*Sb*(Sb.transpose())*Q;
-		// Sw is the modified within scatter
-		Sw=Q.transpose()*Sw*Q;
-
-		// to find SVD((inverse(Chol(Sw)))' * Sb * (inverse(Chol(Sw))))
-		//1.get Cw=Chol(Sw)
-		//find the decomposition of Cw'
-		HouseholderQR<MatrixXd> decomposition(Sw.llt().matrixU().transpose());
-		//2.get P=inv(Cw')*Sb
-		//MatrixXd P=decomposition.solve(Sb);
-		//3. final value to be put in SVD will be therefore:
-		// final_ output = (inv(Cw')*(P'))';
-		//MatrixXd X_final_chol=(decomposition.solve(P.transpose())).transpose();
-		JacobiSVD<MatrixXd> svd2(decomposition.solve
-				(decomposition.solve(Sb).transpose()).transpose(),ComputeThinU);
-		m_transformation_matrix=SGMatrix<float64_t> (num_features, m_num_dim);
-		Map<MatrixXd> eigenVectors(m_transformation_matrix.matrix, num_features,
-									m_num_dim);
-
-		eigenVectors=Q*(svd2.matrixU()).leftCols(m_num_dim);
-
-		m_eigenvalues_vector=SGVector<float64_t>(m_num_dim);
-		Map<VectorXd> eigenValues (m_eigenvalues_vector.vector, m_num_dim);
-		eigenValues=svd2.singularValues().topRows(m_num_dim);
+	if (num_features > num_vectors)
+	{
+		index_t j = 0;
+		for (index_t i = 0; i < num_vectors; i++)
+			if (singularValues[i] > m_threshold)
+				j++;
+			else
+				break;
+		Q = SGMatrix<float64_t>(U.matrix, num_features, j, false);
 	}
 	else
+		Q = U;
+
+	// Sb is the modified between scatter
+	auto aux = linalg::matrix_prod(Q, Sb, true, false);
+	Sb = linalg::matrix_prod(aux, aux, false, true);
+	// Sw is the modified within scatter
+	aux = linalg::matrix_prod(Q, Sw, true, false);
+	Sw = linalg::matrix_prod(aux, Q);
+
+	// To find svd(inverse(Sw)' * Sb * inverse(Sw))
+	// solve Sb = (Sw' * X) * Sw
+	// 1. get chol(Sw)
+	// 2. solve chol(Sw)' * Y = Sb
+	// 3. solve chol(Sw) * X = Y
+	// 4. compute svd(X)
+	auto chol = linalg::cholesky_factor(Sw);
+	SGMatrix<float64_t> W(Sb.num_rows, Sb.num_cols);
+	SGVector<float64_t> eigenvalues(Sb.num_rows);
+	linalg::svd(
+	    linalg::triangular_solver(
+	        chol,
+	        linalg::transpose_matrix(linalg::triangular_solver(chol, Sb))),
+	    eigenvalues, W);
+
+	m_transformation_matrix = SGMatrix<float64_t>(num_features, m_num_dim);
+	linalg::zero(m_transformation_matrix);
+	m_eigenvalues_vector = SGVector<float64_t>(m_num_dim);
+
+	auto Wt = linalg::matrix_prod(Q, W);
+	for (index_t i = 0; i < m_num_dim; ++i)
 	{
-		// For holding the within class scatter.
-		MatrixXd Sw=fmatrix*fmatrix.transpose();
-
-		// For holding the between class scatter.
-		MatrixXd Sb(num_features, C);
-
-		for (i=0; i<C; i++)
-			Sb.col(i)=mean_class[i];
-
-		Sb=Sb-mean_total.rowwise().replicate(C);
-		Sb=Sb*Sb.transpose();
-
-		// calculate the Ax=b problem
-		// where A=Sw
-		// b=Sb
-		// x=M
-		// MatrixXd M=Sw.householderQr().solve(Sb);
-		// calculate the eigenvalues and eigenvectors of M.
-		EigenSolver<MatrixXd> es(Sw.householderQr().solve(Sb));
-
-		MatrixXd all_eigenvectors=es.eigenvectors().real();
-		VectorXd all_eigenvalues=es.eigenvalues().real();
-
-		std::vector<pair<float64_t, int32_t> > data(num_features);
-		for (i=0; i<num_features; i++)
-		{
-			data[i].first=all_eigenvalues[i];
-			data[i].second=i;
-		}
-		// sort the eigenvalues.
-		std::sort (data.begin(), data.end());
-
-		// keep 'm_num_dim' numbers of top Eigenvalues
-		m_eigenvalues_vector=SGVector<float64_t> (m_num_dim);
-		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, m_num_dim);
-
-		// keep 'm_num_dim' numbers of EigenVectors
-		// corresponding to their respective eigenvalues
-		m_transformation_matrix=SGMatrix<float64_t> (num_features, m_num_dim);
-		Map<MatrixXd> eigenVectors(m_transformation_matrix.matrix, num_features,
-									m_num_dim);
-
-		for (i=0; i<m_num_dim; i++)
-		{
-			eigenValues[i]=data[num_features-i-1].first;
-			eigenVectors.col(i)=all_eigenvectors.col(data[num_features-i-1].second);
-		}
+		m_transformation_matrix.set_column(i, Wt.get_column(i));
+		m_eigenvalues_vector[i] = eigenvalues[i];
 	}
+
+	return true;
+}
+
+bool CFisherLDA::solver_classic(
+    SGMatrix<float64_t>& data, SGVector<float64_t>& labels_vector, int32_t C)
+{
+	index_t num_features = data.num_rows;
+
+	// holds the mean for each class
+	vector<SGVector<float64_t>> mean_class(C);
+
+	// holds the frequency for each class.
+	// i.e the i'th element holds the number
+	// of times class i is observed.
+	vector<index_t> num_class(C);
+
+	SGMatrix<float64_t> feature_centered = data.clone();
+	center_data_compute_means(
+	    feature_centered, labels_vector, C, mean_class, num_class);
+
+	// For holding the within class scatter.
+	auto Sw =
+	    linalg::matrix_prod(feature_centered, feature_centered, false, true);
+
+	// For holding the between class scatter.
+	SGMatrix<float64_t> Sb(num_features, C);
+
+	for (index_t i = 0; i < C; i++)
+		Sb.set_column(i, linalg::add(mean_class[i], m_mean_vector, 1.0, -1.0));
+	Sb = linalg::matrix_prod(Sb, Sb, false, true);
+
+	// solve Sw * M = Sb
+	auto aux = linalg::qr_solver(Sw, Sb);
+
+	// calculate the eigenvalues and eigenvectors of M.
+	SGVector<float64_t> eigenvalues(Sb.num_rows);
+	SGMatrix<float64_t> eigenvectors(Sb.num_rows, Sb.num_cols);
+	linalg::eigen_solver(aux, eigenvalues, eigenvectors);
+
+	// keep 'm_num_dim' numbers of top Eigenvalues
+	m_eigenvalues_vector = SGVector<float64_t>(m_num_dim);
+
+	// keep 'm_num_dim' numbers of EigenVectors
+	// corresponding to their respective eigenvalues
+	m_transformation_matrix = SGMatrix<float64_t>(num_features, m_num_dim);
+
+	auto args = CMath::argsort(eigenvalues);
+	for (index_t i = 0; i < m_num_dim; i++)
+	{
+		index_t k = args[num_features - i - 1];
+		m_eigenvalues_vector[i] = eigenvalues[k];
+		m_transformation_matrix.set_column(k, eigenvectors.get_column(i));
+	}
+
 	return true;
 }
 
@@ -298,22 +360,23 @@ SGMatrix<float64_t> CFisherLDA::apply_to_feature_matrix(CFeatures*features)
 	REQUIRE(features->get_feature_type()==F_DREAL,
 			"LDA only works with real features\n");
 
-	SGMatrix<float64_t> m=((CDenseFeatures<float64_t>*)
-							features)->get_feature_matrix();
+	SGMatrix<float64_t> m =
+	    ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 
 	int32_t num_vectors=m.num_cols;
 	int32_t num_features=m.num_rows;
 
 	SG_INFO("Transforming feature matrix\n")
-	Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix,
-			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
+	Map<MatrixXd> transform_matrix(
+	    m_transformation_matrix.matrix, m_transformation_matrix.num_rows,
+	    m_transformation_matrix.num_cols);
 
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	Map<MatrixXd> feature_matrix (m.matrix, num_features, num_vectors);
 
-	feature_matrix.block (0, 0, m_num_dim, num_vectors)=
-			transform_matrix.transpose()*feature_matrix;
+	feature_matrix.block(0, 0, m_num_dim, num_vectors) =
+	    transform_matrix.transpose() * feature_matrix;
 
 	SG_INFO("Form matrix of target dimension")
 	for (int32_t col=0; col<num_vectors; col++)
@@ -334,8 +397,9 @@ SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vect
 	Map<VectorXd> inputVec(vector.vector, vector.vlen);
 
 	Map<VectorXd> mean(m_mean_vector.vector, m_mean_vector.vlen);
-	Map<MatrixXd> transformMat(m_transformation_matrix.matrix,
-		m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
+	Map<MatrixXd> transformMat(
+	    m_transformation_matrix.matrix, m_transformation_matrix.num_rows,
+	    m_transformation_matrix.num_cols);
 
 	resultVec=transformMat.transpose()*inputVec;
 	return result;

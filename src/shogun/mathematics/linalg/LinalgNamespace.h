@@ -444,6 +444,36 @@ namespace shogun
 		}
 
 		/**
+		 * Performs the operation result = alpha * A.col(i) + beta * b,
+		 * for each column of A.
+		 * User should pass an appropriately pre-allocated memory matrix
+		 * or pass the operand argument A as a result.
+		 *
+		 * @param A The matrix
+		 * @param b The vector
+		 * @param result The matrix that saves the result
+		 * @param alpha Constant to be multiplied by the matrix
+		 * @param beta Constant to be multiplied by the vector
+		 */
+		template <typename T>
+		void add_vector(
+		    const SGMatrix<T>& A, const SGVector<T>& b, SGMatrix<T>& result,
+		    T alpha = 1, T beta = 1)
+		{
+			REQUIRE(
+			    A.num_rows == b.vlen, "Number of rows of matrix A (%d) doesn't "
+			                          "match length of vector b (%d).\n",
+			    A.num_rows, b.vlen);
+			REQUIRE(
+			    result.num_rows == A.num_rows && result.num_cols == A.num_cols,
+			    "Dimension mismatch! A (%d x %d) vs result (%d x %d).\n",
+			    A.num_rows, A.num_cols, result.num_rows, result.num_cols);
+
+			infer_backend(A, SGMatrix<T>(b))
+			    ->add_vector(A, b, result, alpha, beta);
+		}
+
+		/**
 		 * Adds a scalar to each element of a vector or a matrix in-place.
 		 *
 		 * @param a Vector or matrix

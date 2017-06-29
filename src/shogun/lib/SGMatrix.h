@@ -132,7 +132,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Empty destructor */
 		virtual ~SGMatrix();
 
-#ifndef SWIG // SWIG should skip this part
+#ifndef SWIG // SWIG should skip this parts
 		/** Get a column vector
 		 * @param col column index
 		 * @return the column vector for index col
@@ -143,6 +143,19 @@ template<class T> class SGMatrix : public SGReferencedData
 			const int64_t c = col;
 			return &matrix[c*num_rows];
 		}
+
+		/** Map a column to a SGVector
+		 * \warning The returned SGVector is non-owning!
+		 * @param col column index
+		 * @return the column vector for index col
+		 */
+		SGVector<T> get_column(index_t col) const;
+
+		/** Copy the content of a vector into a column
+		 * @param col column index
+		 * @param vec vector
+		 */
+		void set_column(index_t col, const SGVector<T> vec);
 
 		/** Get a row vector
 		 *

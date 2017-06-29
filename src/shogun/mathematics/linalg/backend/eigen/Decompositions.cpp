@@ -120,6 +120,18 @@ void LinalgBackendEigen::eigen_solver_impl(
 	typename SGVector<T>::EigenVectorXtMap eigenvalues_eig = eigenvalues;
 
 	Eigen::EigenSolver<typename SGMatrix<T>::EigenMatrixXt> solver(A_eig);
+
+	/*
+	 * checking for success
+	 *
+	 * 0: Eigen::Success. Decomposition was successful
+	 * 1: Eigen::NumericalIssue. The input contains INF or NaN values or
+	 * overflow occured
+	 */
+	REQUIRE(
+	    solver.info() != Eigen::NumericalIssue,
+	    "The input contains INF or NaN values or overflow occured.\n");
+
 	eigenvalues_eig = solver.eigenvalues().real();
 	eigenvectors_eig = solver.eigenvectors().real();
 }
@@ -136,6 +148,11 @@ void LinalgBackendEigen::eigen_solver_impl(
 
 	Eigen::ComplexEigenSolver<typename SGMatrix<complex128_t>::EigenMatrixXt>
 	    solver(A_eig);
+
+	REQUIRE(
+	    solver.info() != Eigen::NumericalIssue,
+	    "The input contains INF or NaN values or overflow occured.\n");
+
 	eigenvalues_eig = solver.eigenvalues();
 	eigenvectors_eig = solver.eigenvectors();
 }
@@ -151,6 +168,17 @@ void LinalgBackendEigen::eigen_solver_symmetric_impl(
 
 	Eigen::SelfAdjointEigenSolver<typename SGMatrix<T>::EigenMatrixXt> solver(
 	    A_eig);
+
+	/*
+	 * checking for success
+	 *
+	 * 0: Eigen::Success. Eigenvalues computation was successful
+	 * 2: Eigen::NoConvergence. Iterative procedure did not converge.
+	 */
+	REQUIRE(
+	    solver.info() != Eigen::NoConvergence,
+	    "Iterative procedure did not converge!\n");
+
 	eigenvalues_eig = solver.eigenvalues().template cast<T>();
 	eigenvectors_eig = solver.eigenvectors().template cast<T>();
 }
