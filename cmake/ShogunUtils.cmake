@@ -247,7 +247,9 @@ endfunction()
 
 
 function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
-	string(REGEX MATCH "([a-zA-Z]+)Modular" _dir ${INTERFACE})
+	# Interfaces were called Modular that's why we needed regex.
+	# Now it is an identity regex.
+	string(REGEX MATCH "([a-zA-Z]+)" _dir ${INTERFACE})
 	STRING(TOLOWER "${CMAKE_MATCH_1}" _dir)
 	SET(${DIRECTORY} ${_dir} PARENT_SCOPE)
 
