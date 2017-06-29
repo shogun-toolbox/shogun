@@ -1,7 +1,7 @@
 # The SHOGUN machine learning toolbox
 -------------------------------------
 
-Unified and efficient Machine Learning since 1999 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
+Unified and efficient Machine Learning since 1999.
 
 Latest release:
 
@@ -16,6 +16,10 @@ Develop branch build status:
 [![Build Status](https://travis-ci.org/shogun-toolbox/shogun.svg?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
 [![Build status](https://ci.appveyor.com/api/projects/status/jx095rnr9qhg8dcv/branch/develop?svg=true)](https://ci.appveyor.com/project/vigsterkr/shogun/branch/develop)
 [![codecov](https://codecov.io/gh/shogun-toolbox/shogun/branch/develop/graph/badge.svg)](https://codecov.io/gh/shogun-toolbox/shogun)
+
+Donate to Shogun via NumFocus:
+
+[![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
 
 
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
