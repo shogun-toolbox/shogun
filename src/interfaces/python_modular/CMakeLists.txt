@@ -5,7 +5,7 @@ FIND_PACKAGE(NumPy REQUIRED)
 
 SET(HAVE_PYTHON 1)
 
-#custom swig flags for python modular interface
+#custom swig flags for python interface
 IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
   SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-threads\;-py3")
   SET(PYTHON3 1)
@@ -19,7 +19,7 @@ ENDIF()
 IF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
   ("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
   MESSAGE(FATAL_ERROR
-    "Building Python_modular interface for Python >= 3.5 requires SWIG >= 3.0.8.")
+    "Building Python interface for Python >= 3.5 requires SWIG >= 3.0.8.")
 ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
   ("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
 

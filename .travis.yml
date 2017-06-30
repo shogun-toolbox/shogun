@@ -25,42 +25,42 @@ matrix:
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DPython=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_PYTHON=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DRuby=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_RUBY=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DJava=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_JAVA=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DCSharp=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_CSHARP=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DLua=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_LUA=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
     - compiler: gcc
       services: docker
       env:
-        - CMAKE_OPTIONS="-DOctave=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-        - OCTAVE=true
+        - CMAKE_OPTIONS="-DINTERFACE_OCTAVE=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - INTERFACE_OCTAVE=true
     - compiler: clang
       services: docker
       env:
-        - CMAKE_OPTIONS="-DR=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+        - CMAKE_OPTIONS="-DINTERFACE_R=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
         - CC=clang
         - CXX=clang++
 #    - compiler: clang
@@ -77,7 +77,7 @@ before_script:
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME/shogun-build -DENABLE_TESTING=ON $CMAKE_OPTIONS .."
 script:
   - |
-    if [ $CC == "gcc" ] && [ -z $OCTAVE ]; then
+    if [ $CC == "gcc" ] && [ -z ${INTERFACE_OCTAVE} ]; then
       docker exec -t devenv /bin/sh -c "cd /opt/shogun/;  if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./scripts/check_format.sh "$TRAVIS_PULL_REQUEST_BRANCH" "$TRAVIS_BRANCH"; fi"
     fi
   - docker exec -t devenv /bin/sh -c "cd /opt/shogun/build; make -j2"

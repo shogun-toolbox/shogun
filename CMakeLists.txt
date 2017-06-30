@@ -87,16 +87,17 @@ SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
-SET(AVAILABLE_INTERFACES Python;Octave;Java;Perl;Ruby;CSharp;R;Lua;Scala)
-SET(PythonDescription "Python")
-SET(OctaveDescription "Octave")
-SET(JavaDescription "Java")
-SET(PerlDescription "Perl")
-SET(RubyDescription "Ruby")
-SET(CSharpDescription "C#")
-SET(RDescription "R")
-SET(LuaDescription "Lua")
-SET(ScalaDescription "Scala")
+SET(AVAILABLE_INTERFACES
+    INTERFACE_PYTHON;INTERFACE_OCTAVE;INTERFACE_JAVA;INTERFACE_PERL;INTERFACE_RUBY;INTERFACE_CSHARP;INTERFACE_R;INTERFACE_LUA;INTERFACE_SCALA)
+SET(INTERFACE_PYTHON_DESCRIPTION "Python")
+SET(INTERFACE_OCTAVE_DESCRIPTION "Octave")
+SET(INTERFACE_JAVA_DESCRIPTION "Java")
+SET(INTERFACE_PERL_DESCRIPTION "Perl")
+SET(INTERFACE_RUBY_DESCRIPTION "Ruby")
+SET(INTERFACE_CSHARP_DESCRIPTION "C#")
+SET(INTERFACE_R_DESCRIPTION "R")
+SET(INTERFACE_LUA_DESCRIPTION "Lua")
+SET(INTERFACE_SCALA_DESCRIPTION "Scala")
 SET(LIBSHOGUN ON CACHE BOOL "Compile shogun library")
 
 IsAnyTrue("${AVAILABLE_INTERFACES}" ANY_INTERFACE_ENABLED)
@@ -104,7 +105,7 @@ IF (${ANY_INTERFACE_ENABLED})
 	# SWIG3 is the minimum requirement because of C++11 support
 	SET(SWIG_VERSION_MINIMUM 3.0.0)
 
-	IF(CSharp)
+	IF(INTERFACE_CSHARP)
 		# We require SWIG 3.0.7 to support functions with a few SGVector or
 		# SGMatrix arguments. The required SWIG feature is called
 		# "Support for special variable expansion in typemap attributes."
@@ -115,7 +116,7 @@ IF (${ANY_INTERFACE_ENABLED})
 		# typemapping created for earlier versions of SWIG.
 		# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
 		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
-	ELSEIF(Python)
+	ELSEIF(INTERFACE_PYTHON)
 		# SWIG was broken for combining -builtin and -modernargs
 		# from v3.0.0 and until 3.0.4.  This bug was fixed in
 		# v3.0.5.  Make CMake emit an error and fail to configure.
@@ -430,25 +431,25 @@ IF(REDUCE_SWIG_DEBUG)
 ENDIF(REDUCE_SWIG_DEBUG)
 
 # python
-IF (Python)
+IF (INTERFACE_PYTHON)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 	ENDIF()
 ENDIF()
 
 # lua
-IF (Lua)
+IF (INTERFACE_LUA)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
 	ENDIF()
 ENDIF()
 
 # scala
-IF (Scala)
+IF (INTERFACE_SCALA)
 	# Java needed because Scala extends Java Classes and uses the executable generated from Java example for Integration testing
-	set(Java "ON")
+	set(INTERFACE_JAVA "ON")
 	FIND_PACKAGE(Scala REQUIRED)
-	IF(NOT Java)
+	IF(NOT INTERFACE_JAVA)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 		ENDIF()
@@ -456,40 +457,40 @@ IF (Scala)
 ENDIF()
 
 # java
-IF (Java)
+IF (INTERFACE_JAVA)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
 	ENDIF()
 ENDIF()
 
 # ruby
-IF (Ruby)
+IF (INTERFACE_RUBY)
 	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
 ENDIF()
 
 # octave
-IF (Octave)
+IF (INTERFACE_OCTAVE)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
 	ENDIF()
 ENDIF()
 
 # csharp
-IF (CSharp)
+IF (INTERFACE_CSHARP)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
 	ENDIF()
 ENDIF()
 
 # R
-IF (R)
+IF (INTERFACE_R)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
 	ENDIF()
 ENDIF()
 
 # perl
-IF (Perl)
+IF (INTERFACE_PERL)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
@@ -564,7 +565,7 @@ include(FeatureSummary)
 feature_summary(WHAT ALL)
 
 PrintLine()
-PrintStatus("Integration")
+PrintStatus("Integrations")
 
 PrintInterfaceStatus("OpenCV Integration" OpenCV)
 
@@ -572,7 +573,7 @@ PrintLine()
 PrintStatus("Interfaces")
 
 ForEach(Interface ${AVAILABLE_INTERFACES})
-    PrintInterfaceStatus("${${Interface}Description} interface" ${Interface})
+    PrintInterfaceStatus("${${Interface}_DESCRIPTION}" ${Interface})
 EndForEach(Interface)
 
 PrintLine()
