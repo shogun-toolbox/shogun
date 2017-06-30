@@ -410,7 +410,7 @@ EndForEach()
 
 OPTION(SWIG_SINGLE_THREADED "Build modular interfaces single-threaded to reduce memory usage" OFF)
 
-OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
+OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" ON)
 
 # Respect system's or distribution's C[XX]FLAGS.
 OPTION(SWIG_WITH_SYSTEM_CFLAGS "Enable system's C[XX]FLAGS for compilation of swig-binaries" ON)
