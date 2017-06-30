@@ -70,11 +70,15 @@ MACRO(PrintInterfaceStatus INTERFACE_NAME INTERFACE_FLAG)
 		message(STATUS "  ${INTERFACE_NAME} is ON")
 	ELSE()
 		STRING(LENGTH ${INTERFACE_NAME} IFACE_NAME_LENGTH)
-		IF (IFACE_NAME_LENGTH LESS 10)
-			message(STATUS "  ${INTERFACE_NAME} is OFF \t\t - enable with -D${INTERFACE_FLAG}=ON")
+		IF (IFACE_NAME_LENGTH LESS 3)
+			SET(INDENT "\t\t\t")
+		ELSEIF (IFACE_NAME_LENGTH LESS 10)
+			SET(INDENT "\t\t")
 		ELSE ()
-			message(STATUS "  ${INTERFACE_NAME} is OFF \t - enable with -D${INTERFACE_FLAG}=ON")
+			SET(INDENT "\t")
 		ENDIF ()
+		message(STATUS "  ${INTERFACE_NAME} is OFF ${INDENT} enable with -D${INTERFACE_FLAG}=ON")
+		UNSET(INDENT)
 	ENDIF()
 ENDMACRO()
 
@@ -247,9 +251,7 @@ endfunction()
 
 
 function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
-	# Interfaces were called Modular that's why we needed regex.
-	# Now it is an identity regex.
-	string(REGEX MATCH "([a-zA-Z]+)" _dir ${INTERFACE})
+    string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})
 	STRING(TOLOWER "${CMAKE_MATCH_1}" _dir)
 	SET(${DIRECTORY} ${_dir} PARENT_SCOPE)
 

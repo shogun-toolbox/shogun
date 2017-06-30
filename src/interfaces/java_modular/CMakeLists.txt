@@ -10,7 +10,7 @@ IF(JBLAS)
 	SET(HAVE_JBLAS 1)
 ELSE()
 	MESSAGE(FATAL_ERROR "JBlas could not be found!\n"
-		"It is required for java modular interface!!!")
+		"It is required for java interface!")
 ENDIF()
 
 SET(TARGET_SWIGFLAGS "-package\;org.shogun")

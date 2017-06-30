@@ -2,7 +2,7 @@ FIND_PACKAGE(PkgConfig)
 pkg_search_module(LUA REQUIRED lua lua5.1)
 IF (NOT LUA_FOUND)
 MESSAGE(FATAL_ERROR "Lua could not be found!\n"
-	"Lua is required for compiling lua modular interface!")
+	"Lua is required for compiling lua interface!")
 ENDIF ()
 SET(LUA_EXECUTABLE lua)
 UNSET(TARGET_SWIGFLAGS)

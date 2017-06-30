@@ -175,10 +175,10 @@ In both cases, it is necessary to set a number of system libraries for using Sho
 
 ## Interfaces <a name="manual-interfaces"></a>
 The native C++ interface is always included.
-The cmake options for building interfaces are `-DPython -DOctave -DR -DJava -DRuby -DLua -DCSharp` etc.
+The cmake options for building interfaces are `-DINTERFACE_PYTHON=ON -DINTERFACE_R ..` etc.
 For example, replace the cmake step above by
 ```
-cmake -DPython=ON [potentially more options] ..
+cmake -DINTERFACE_PYTHON=ON [potentially more options] ..
 ```
 
 The required packages (here debian/Ubuntu package names) for each interface are
@@ -249,16 +249,16 @@ For that, you need to do something similar to
 
 For example, for `brew` installed Python under MacOS, use something like:
 
-    cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DPython=ON ..
+    cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DINTERFACE_PYTHON=ON ..
 
 Under Linux, where you want to use Python 3, which is not the system's default:
 
-    cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DPython=ON ..
+    cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DINTERFACE_PYTHON=ON ..
 
 On a Linux cluster without root access, using [Anaconda](https://www.continuum.io/downloads) (note you will need to activate your environment everytime you want to run Shogun):
 
     source path/to/anaconda/bin/activate
-    cmake -DCMAKE_INSTALL_PREFIX=path/to/shogun/install/dir -DPYTHON_INCLUDE_DIR=path/to/anaconda/include/python2.7/ -DPYTHON_LIBRARY=path/to/anaconda/lib/libpython2.7.so  -DPYTHON_EXECUTABLE=path/to/anaconda/bin/python -DPython=ON ..
+    cmake -DCMAKE_INSTALL_PREFIX=path/to/shogun/install/dir -DPYTHON_INCLUDE_DIR=path/to/anaconda/include/python2.7/ -DPYTHON_LIBRARY=path/to/anaconda/lib/libpython2.7.so  -DPYTHON_EXECUTABLE=path/to/anaconda/bin/python -DINTERFACE_PYTHON=ON ..
 
 ## Windows build <a name="manual-windows"></a>
 
