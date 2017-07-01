@@ -2,8 +2,8 @@ IF (NOT TRAVIS_DISABLE_LIBSHOGUN_TESTS AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/un
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/libshogun)
 ENDIF()
 
-IF (INTERFACE_PYTHON AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/python_modular)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/python_modular)
+IF (INTERFACE_PYTHON AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/undocumented/python)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/undocumented/python)
 ENDIF()
 
 IF(BUILD_META_EXAMPLES)
