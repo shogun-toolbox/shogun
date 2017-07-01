@@ -58,7 +58,6 @@ public:
 		auto X = get_data_train();
 		auto kernel = make_shared<kernel::Gaussian>(sigma);
 		est = make_shared<Full>(X, kernel, lambda);
-		est->fit();
 	}
 
 	virtual SGMatrix<float64_t> get_data_train() { return X_train_fixed; }
@@ -84,6 +83,7 @@ TEST_F(KernelExpFamilyImplFullFixed, compute_h_kernel_Gaussian)
 
 TEST_F(KernelExpFamilyImplFullFixed, fit_kernel_Gaussian)
 {
+	est->fit();
 	auto result = est->get_beta();
 	ASSERT_EQ(result.vlen, ND);
 	ASSERT_TRUE(result.vector);
@@ -100,6 +100,7 @@ TEST_F(KernelExpFamilyImplFullFixed, fit_kernel_Gaussian)
 
 TEST_F(KernelExpFamilyImplFullFixed, log_pdf_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 
 	auto result = est->log_pdf();
@@ -116,6 +117,7 @@ TEST_F(KernelExpFamilyImplFullFixed, log_pdf_kernel_Gaussian)
 
 TEST_F(KernelExpFamilyImplFullFixed, grad_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	auto grad = est->grad(0);
 
@@ -135,6 +137,7 @@ TEST_F(KernelExpFamilyImplFullFixed, grad_kernel_Gaussian)
 
 TEST_F(KernelExpFamilyImplFullFixed, hessian_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	auto hessian = est->hessian(0);
 	
@@ -159,7 +162,7 @@ TEST_F(KernelExpFamilyImplFullFixed, hessian_kernel_Gaussian)
 
 TEST_F(KernelExpFamilyImplFullRandom, hessian_diag_equals_hessian)
 {
-	SG_SWARNING("TODO make this type parametrized test,\n");
+	est->fit();
 	for (auto i=0; i<est->get_num_data(); i++)
 	{
 		auto hessian = est->hessian(i);
@@ -179,6 +182,7 @@ TEST_F(KernelExpFamilyImplFullRandom, hessian_diag_equals_hessian)
 
 TEST_F(KernelExpFamilyImplFullFixed, score_kernel_Gaussian)
 {
+	est->fit();
 	EXPECT_NEAR(est->score(), -2.56147602838, 1e-8);
 
 	est->set_data(X_test_fixed);
