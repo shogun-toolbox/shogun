@@ -85,7 +85,7 @@ SET(EXT_SRC_TEST_TMP "${EXT_SRC_TEST}.jinja2")
 
 SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
-SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
+SET(COMMON_INTERFACE_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
 SET(AVAILABLE_INTERFACES
     INTERFACE_PYTHON;INTERFACE_OCTAVE;INTERFACE_JAVA;INTERFACE_PERL;INTERFACE_RUBY;INTERFACE_CSHARP;INTERFACE_R;INTERFACE_LUA;INTERFACE_SCALA)
@@ -129,7 +129,7 @@ IF (${ANY_INTERFACE_ENABLED})
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)
 		SET(CCACHE_SWIG_EXECUTABLE ${CCACHE_SWIG})
 	ENDIF()
-	SET(COMPILE_MODULAR_INTERFACE 1)
+	SET(COMPILE_INTERFACE 1)
 ENDIF()
 
 # Detect OS
@@ -138,9 +138,9 @@ DetectSystemName()
 # Get processor type, sets MACHINE macro
 SET(MACHINE ${CMAKE_SYSTEM_PROCESSOR})
 
-SET(EXT_LIB_SWIG_RUBY_MODULAR ".so")
+SET(EXT_LIB_SWIG_RUBY ".so")
 if(DARWIN)
-	SET(EXT_LIB_SWIG_RUBY_MODULAR ".bundle")
+	SET(EXT_LIB_SWIG_RUBY ".bundle")
 ENDIF()
 
 ################ COMPILER #######################
@@ -309,7 +309,7 @@ OPTION(BUILD_META_EXAMPLES "Generate API examples from meta-examples" ON)
 # note the examples dir is added below after tests have been defined
 
 ################# DATATYPES #################
-IF(COMPILE_MODULAR_INTERFACE)
+IF(COMPILE_INTERFACE)
 	OPTION(USE_CHAR "Support for char datatype" ON)
 	OPTION(USE_BOOL "Support for bool datatype" ON)
 	OPTION(USE_UINT8 "Support for uint8_t datatype" ON)
@@ -324,7 +324,7 @@ IF(COMPILE_MODULAR_INTERFACE)
 	OPTION(USE_FLOAT64 "Support for float64_t datatype" ON)
 	OPTION(USE_COMPLEX128 "Support for complex128_t datatype" ON)
 	OPTION(USE_FLOATMAX "Support for floatmax_t datatype" OFF)
-ENDIF(COMPILE_MODULAR_INTERFACE)
+ENDIF(COMPILE_INTERFACE)
 
 # detect word size
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
@@ -432,15 +432,15 @@ ENDIF(REDUCE_SWIG_DEBUG)
 
 # python
 IF (INTERFACE_PYTHON)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python)
 	ENDIF()
 ENDIF()
 
 # lua
 IF (INTERFACE_LUA)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua)
 	ENDIF()
 ENDIF()
 
@@ -450,42 +450,42 @@ IF (INTERFACE_SCALA)
 	set(INTERFACE_JAVA "ON")
 	FIND_PACKAGE(Scala REQUIRED)
 	IF(NOT INTERFACE_JAVA)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
-			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java)
 		ENDIF()
 	ENDIF()
 ENDIF()
 
 # java
 IF (INTERFACE_JAVA)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java)
 	ENDIF()
 ENDIF()
 
 # ruby
 IF (INTERFACE_RUBY)
-	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby)
 ENDIF()
 
 # octave
 IF (INTERFACE_OCTAVE)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave)
 	ENDIF()
 ENDIF()
 
 # csharp
 IF (INTERFACE_CSHARP)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp)
 	ENDIF()
 ENDIF()
 
 # R
 IF (INTERFACE_R)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
-		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r)
 	ENDIF()
 ENDIF()
 
@@ -493,8 +493,8 @@ ENDIF()
 IF (INTERFACE_PERL)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
-	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
-		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl)
+		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl)
 	ENDIF()
 ENDIF()
 

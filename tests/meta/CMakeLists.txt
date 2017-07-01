@@ -25,9 +25,9 @@ ENDIF()
 # Add tester to the dependencies of modular interfaces to make sure
 # nothing will infer with them being build single-threaded.
 IF(SWIG_SINGLE_THREADED)
-	FOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
-		ADD_DEPENDENCIES(${SG_MODULAR_INTERFACE_TARGET} meta_example_integration_tester)
-	ENDFOREACH(SG_MODULAR_INTERFACE_TARGET ${SG_MODULAR_INTERFACE_TARGETS})
+	FOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
+		ADD_DEPENDENCIES(${SG_INTERFACE_TARGET} meta_example_integration_tester)
+	ENDFOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
 ENDIF(SWIG_SINGLE_THREADED)
 
 # get list of meta examples that can be built and skip test if if cannot
