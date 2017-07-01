@@ -496,7 +496,7 @@ float64_t Gaussian::dx_dy_component(index_t idx_a, index_t idx_b, index_t i, ind
 	auto D = get_num_dimensions();
 
 	Map<VectorXd> x(m_lhs.get_column_vector(idx_a), D);
-	Map<VectorXd> y(m_lhs.get_column_vector(idx_b), D);
+	Map<VectorXd> y(m_rhs.get_column_vector(idx_b), D);
 
 	//k = gaussian_kernel(x_2d, y_2d, sigma)
 	auto k=kernel(idx_a, idx_b);
