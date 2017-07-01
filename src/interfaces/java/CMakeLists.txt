@@ -15,15 +15,15 @@ ENDIF()
 
 SET(TARGET_SWIGFLAGS "-package\;org.shogun")
 
-include(CommonModularInterface)
+include(ShogunInterfaces)
 include_directories(${JNI_INCLUDE_DIRS})
 
-GENERATE_MODULAR_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
+GENERATE_INTERFACE_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
 
 set(CMAKE_JAVA_TARGET_OUTPUT_NAME shogun)
 SET(CMAKE_JAVA_INCLUDE_PATH ${JBLAS})
 
-ADD_CUSTOM_COMMAND(TARGET java_modular POST_BUILD
+ADD_CUSTOM_COMMAND(TARGET interface_java POST_BUILD
 	COMMAND cmake -E echo "Compiling Java files..."
 	COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar
 	COMMAND ${Java_JAVAC_EXECUTABLE} *.java
@@ -36,7 +36,7 @@ ADD_CUSTOM_COMMAND(TARGET java_modular POST_BUILD
 
 
 #ADD_JAR(shogun_jar "${CMAKE_CURRENT_BINARY_DIR}/*.java")
-#add_dependencies(shogun_jar java_modular)
+#add_dependencies(shogun_jar interface_java)
 
 IF(NOT JAVA_INSTALL_DIR)
 	SET(JAVA_INSTALL_DIR "share/java")
@@ -46,8 +46,8 @@ IF(NOT JNI_INSTALL_DIR)
 	SET(JNI_INSTALL_DIR "lib/cli/shogun")
 ENDIF(NOT JNI_INSTALL_DIR)
 
-SET(JAVA_MODULAR_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
-INSTALL(TARGETS java_modular
+SET(INTERFACE_JAVA_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
+INSTALL(TARGETS interface_java
 	LIBRARY DESTINATION ${JNI_INSTALL_DIR}
 	COMPONENT java)
 

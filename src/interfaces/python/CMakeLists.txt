@@ -23,7 +23,7 @@ IF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
 ENDIF ((NOT "${PYTHON_VERSION_STRING}" VERSION_LESS "3.5") AND
   ("${SWIG_VERSION}" VERSION_LESS "3.0.8"))
 
-include(CommonModularInterface)
+include(ShogunInterfaces)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
 #TODO: check for SWIG version where this bug has been applied already:
@@ -31,7 +31,7 @@ include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
 SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -Wno-c++11-narrowing")
 
-GENERATE_MODULAR_TARGET(python ${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_LIBRARIES})
+GENERATE_INTERFACE_TARGET(python ${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_LIBRARIES})
 
 # pacakges directory
 if(CMAKE_HOST_UNIX)
@@ -64,7 +64,7 @@ elseif(CMAKE_HOST_WIN32)
 endif()
 SET(PYTHON_PACKAGES_PATH "${_PYTHON_PACKAGES_PATH}" CACHE PATH "Where to install the python packages.")
 
-INSTALL(TARGETS _python_modular
+INSTALL(TARGETS _interface_python
 		DESTINATION ${PYTHON_PACKAGES_PATH}
     COMPONENT python)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.py

@@ -11,7 +11,6 @@ extern "C" {
 }
 #endif
 
-
 #include <shogun/io/SGIO.h>
 
 void sg_global_print_message(FILE* target, const char* str)
@@ -21,7 +20,7 @@ void sg_global_print_message(FILE* target, const char* str)
 
 void sg_global_print_warning(FILE* target, const char* str)
 {
-	SV *err = get_sv("@", GV_ADD);
+	SV* err = get_sv("@", GV_ADD);
 	if (target == stdout)
 	{
 		if (sv_isobject(err))
@@ -37,14 +36,14 @@ void sg_global_print_error(FILE* target, const char* str)
 {
 	if (target == stdout) // PerlIO_stdout()) //"ERRSV" ($@)
 		croak(str);
-	//SWIG_croak(str);
+	// SWIG_croak(str);
 	else
 		fprintf(target, "%s", str);
 }
 
-//PTZ121009 used in threads...so cannot access stdin like this...
+// PTZ121009 used in threads...so cannot access stdin like this...
 // why not checking kill stuff???
-void sg_global_cancel_computations(bool &delayed, bool &immediately)
+void sg_global_cancel_computations(bool& delayed, bool& immediately)
 {
 #if 0
 	using namespace shogun;
