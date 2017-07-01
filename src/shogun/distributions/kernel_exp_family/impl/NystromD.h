@@ -37,7 +37,7 @@
 #include <shogun/lib/SGVector.h>
 
 #include <memory>
-#include <utility>
+#include <vector>
 
 
 #include "Nystrom.h"
@@ -51,13 +51,17 @@ class NystromD : public Nystrom
 {
 public :
 	NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
-			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda,
+			float64_t lambda_l2=0.0);
 
 	NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-			SGMatrix<bool> basis_mask,
-			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			SGMatrix<bool> basis_mask, std::shared_ptr<kernel::Base> kernel,
+			float64_t lambda, float64_t lambda_l2=0.0);
 
+	// helper methods for dealing with basis masking
 	void set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask);
+	SGVector<index_t> basis_inds_from_mask(const SGMatrix<bool>& basis_mask) const;
+	std::vector<index_t> get_basis_point_inds(const SGVector<index_t>& basis_inds) const;
 
 	// overloaded from Full base class
 	virtual SGVector<float64_t> compute_h() const;

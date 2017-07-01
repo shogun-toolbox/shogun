@@ -46,13 +46,16 @@ using namespace Eigen;
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
-		float64_t lambda_l2) : Full(basis, kernel, lambda, 0.0, false)
+		float64_t lambda_l2, bool init_base_and_data)
+		: Full(basis, kernel, lambda, 0.0, false)
 {
-	auto N = data.num_cols;
-
-	SG_SINFO("Using m=%d of N=%d user provided basis points.\n",
-			basis.num_cols, N);
-	set_basis_and_data(basis, data);
+	if (init_base_and_data);
+	{
+		auto N = data.num_cols;
+		SG_SINFO("Using m=%d of N=%d user provided basis points.\n",
+				basis.num_cols, N);
+		set_basis_and_data(basis, data);
+	}
 
 	m_lambda_l2 = lambda_l2;
 	m_basis_inds = SGVector<index_t>();
@@ -60,33 +63,39 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
 		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
-			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
+			float64_t lambda_l2, bool init_base_and_data)
+		: Full(data, kernel, lambda, 0.0, false)
 {
-	auto N = data.num_cols;
 
-	SG_SINFO("Using m=%d of N=%d user provided subsampled data basis points.\n",
-			basis_inds.vlen, N);
-
-	m_basis_inds = basis_inds;
-	auto basis = subsample_matrix_cols(basis_inds, data);
-	set_basis_and_data(basis, data);
+	if (init_base_and_data);
+	{
+		auto N = data.num_cols;
+		SG_SINFO("Subsampling m=%d of N=%d user provided data points as basis.\n",
+				basis_inds.vlen, N);
+		m_basis_inds = basis_inds;
+		auto basis = subsample_matrix_cols(basis_inds, data);
+		set_basis_and_data(basis, data);
+	}
 
 	m_lambda_l2 = lambda_l2;
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
 		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
-			float64_t lambda_l2) : Full(data, kernel, lambda, 0.0, false)
+			float64_t lambda_l2, bool init_base_and_data)
+		: Full(data, kernel, lambda, 0.0, false)
 {
 	auto N = data.num_cols;
 
-	SG_SINFO("Using m=%d of N=%d uniformly sub-sampled data as basis points.\n",
+	SG_SINFO("Uniformaly subsampling m=%d of N=%d data as basis.\n",
 			num_subsample_basis, data.num_cols);
 
-	m_basis_inds = choose_m_in_n(num_subsample_basis, N);
-	auto basis = subsample_matrix_cols(m_basis_inds, data);
-
-	set_basis_and_data(basis, data);
+	if (init_base_and_data);
+	{
+		m_basis_inds = choose_m_in_n(num_subsample_basis, N);
+		auto basis = subsample_matrix_cols(m_basis_inds, data);
+		set_basis_and_data(basis, data);
+	}
 	m_lambda_l2 = lambda_l2;
 }
 
@@ -170,8 +179,11 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 
 	if (!solve_success)
 	{
-		SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse,"
-				", consider adding a L2 regularizer for faster LLT solve.\n");
+		if (!m_lambda_l2)
+		{
+			SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse,"
+					"consider adding a L2 regularizer for faster LLT solve.\n");
+		}
 		auto G_dagger = pinv_self_adjoint(system_matrix);
 		Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, system_size, system_size);
 
@@ -286,19 +298,4 @@ SGVector<index_t> Nystrom::choose_m_in_n(index_t m, index_t n, bool sorted)
 		CMath::qsort(chosen.vector, m);
 
 	return chosen;
-}
-
-SGMatrix<float64_t> Nystrom::subsample_matrix_cols(const SGVector<index_t>& col_inds,
-		const SGMatrix<float64_t>& mat)
-{
-	auto D = mat.num_rows;
-	auto N_new = col_inds.vlen;
-	auto subsampled=SGMatrix<float64_t>(D, N_new);
-	for (auto i=0; i<N_new; i++)
-	{
-		memcpy(subsampled.get_column_vector(i), mat.get_column_vector(col_inds[i]),
-				sizeof(float64_t)*D);
-	}
-
-	return subsampled;
 }

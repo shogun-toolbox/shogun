@@ -38,6 +38,11 @@
 #include "NystromD.h"
 
 #include <vector>
+#include <set>
+#include <algorithm>
+
+
+
 
 using namespace shogun;
 using namespace shogun::kernel_exp_family_impl;
@@ -45,35 +50,100 @@ using namespace Eigen;
 
 NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
 		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
-		float64_t lambda_l2) : Nystrom(data, data, kernel, lambda, lambda_l2)
+		float64_t lambda_l2)
+		: Nystrom(data, data, kernel, lambda, lambda_l2, false)
 {
+	auto N = data.num_cols;
+
+	// potentially subsample data and basis mask if certain points are unused
+	SGMatrix<float64_t> basis;
+	auto basis_point_inds = get_basis_point_inds(basis_inds_from_mask(basis_mask));
+	if ((index_t)basis_point_inds.size() == N)
+		basis=data;
+	else
+	{
+		SGVector<index_t> wrap = SGVector<index_t>(basis_point_inds.data(),
+				basis_point_inds.size(), false);
+		SG_SINFO("Subsampling data as basis as some points are unused.\n");
+		basis = subsample_matrix_cols(wrap, data);
+		basis_mask = subsample_matrix_cols(wrap, basis_mask);
+	}
+
+	SG_SINFO("Using %d of N=%d user provided data points as basis points.\n",
+			basis.num_cols, N);
 	set_basis_inds_from_mask(basis_mask);
+	set_basis_and_data(basis, data);
 }
 
 NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-		SGMatrix<bool> basis_mask,
-		std::shared_ptr<kernel::Base> kernel, float64_t lambda,
-		float64_t lambda_l2) : Nystrom(data, basis, kernel, lambda, lambda_l2)
+		SGMatrix<bool> basis_mask, std::shared_ptr<kernel::Base> kernel,
+		float64_t lambda, float64_t lambda_l2)
+		: Nystrom(data, basis, kernel, lambda, lambda_l2, true)
 {
 	set_basis_inds_from_mask(basis_mask);
 }
 
 void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 {
-	std::vector<index_t> basis_inds;
+	m_basis_inds = basis_inds_from_mask(basis_mask);
+
+	// compute and potentially warn about unused basis points
+	auto basis_point_inds = get_basis_point_inds(m_basis_inds);
+	auto N = basis_mask.num_cols;
+	std::vector<index_t> all_inds;
+	for (index_t i=0; i<N; i++)
+		all_inds.push_back(i);
+	std::vector<index_t> unused;
+	set_difference(	all_inds.begin(), all_inds.end(),
+					basis_point_inds.begin(), basis_point_inds.end(),
+					std::inserter(unused, unused.end()));
+
+	for (size_t i=0; i<unused.size(); i++)
+	{
+		SG_SWARNING("Using zero components of basis point %d.\n", unused[i]);
+	}
+
+	SG_SINFO("Using %d of %dx%d=%d possible basis components.\n",
+			m_basis_inds.size(), basis_mask.num_rows, basis_mask.num_cols,
+			basis_mask.size());
+}
+
+SGVector<index_t> NystromD::basis_inds_from_mask(const SGMatrix<bool>& basis_mask) const
+{
+	std::vector<index_t> basis_inds_dynamic;
 	int64_t num_mask_elements = (int64_t)basis_mask.num_rows*(int64_t)basis_mask.num_cols;
 	for (auto i=0; i<num_mask_elements; i++)
 	{
 		if (basis_mask.matrix[i])
-			basis_inds.push_back(i);
+			basis_inds_dynamic.push_back(i);
 	}
 
-	m_basis_inds = SGVector<index_t>(basis_inds.size());
-	memcpy(m_basis_inds.vector, basis_inds.data(), basis_inds.size() * sizeof(index_t));
+	// TODO make SGVector constructor from std::vector
+	SGVector<index_t>basis_inds(basis_inds_dynamic.size());
+	memcpy(basis_inds.vector, basis_inds_dynamic.data(),
+			basis_inds_dynamic.size() * sizeof(index_t));
 
-	SG_SINFO("Using subsampled basis components, %d of %dx%d=%d possible components.\n",
-			basis_inds.size(), basis_mask.num_rows, basis_mask.num_cols,
-			basis_mask.size());
+	// for linear memory traversals
+	CMath::qsort(basis_inds);
+
+	return basis_inds;
+}
+
+std::vector<index_t> NystromD::get_basis_point_inds(const SGVector<index_t>& basis_inds) const
+{
+	std::set<index_t> set;
+	auto D = get_num_dimensions();
+
+	for (auto i=0; i<basis_inds.vlen; i++)
+	{
+		auto ai = idx_to_ai(basis_inds[i], D);
+		set.insert(ai.first);
+	}
+
+	std::vector<index_t> basis_point_inds;
+	std::copy(set.begin(), set.end(), std::back_inserter(basis_point_inds));
+
+	return basis_point_inds;
 }
 
 index_t NystromD::get_system_size() const

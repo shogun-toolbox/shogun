@@ -56,8 +56,10 @@ enum class ENystromTestType
 {
 	E_EXPLCIT_BASIS,
 	E_SUBSAMPLED_BASIS,
-	E_D_EXPLCIT_BASIS,
 	E_D_SUBSAMPLED_BASIS,
+	E_D_EXPLCIT_BASIS,
+	E_D_EXPLCIT_BASIS_NOT_REDUNDANT,
+
 };
 
 /** All unit tests are based on the following gist
@@ -68,6 +70,8 @@ class NystromFixed: public DataFixture, public ::testing::TestWithParam<ENystrom
 public:
 	void SetUp()
 	{
+		get_global_io()->set_loglevel(MSG_INFO);
+
 		DataFixture::SetUp();
 		auto sigma = 2.0;
 		auto lambda = 1.0;
@@ -135,8 +139,26 @@ public:
 				est = make_shared <NystromD> (X, basis, basis_mask, kernel, lambda);
 				break;
 			}
+			case ENystromTestType::E_D_EXPLCIT_BASIS_NOT_REDUNDANT:
+			{
+				num_basis = 4;
+				system_size = num_basis;
+
+				// explicit basis, only part of the training data
+				SGMatrix <float64_t> basis(X.num_rows, 2);
+				for (auto i=0; i<D*2; i++)
+					basis.matrix[i] = X.matrix[i];
+
+				SGMatrix<bool> basis_mask(basis.num_rows, basis.num_cols);
+				basis_mask.zero();
+				basis_mask(0,0)=1;
+				basis_mask(1,0)=1;
+				basis_mask(0,1)=1;
+				basis_mask(1,1)=1;
+				est = make_shared <NystromD> (X, basis, basis_mask, kernel, lambda);
+				break;
+			}
 		}
-		est->fit();
 	}
 
 	virtual SGMatrix<float64_t> get_data_train()
@@ -245,6 +267,7 @@ TEST_P(NystromFixed, compute_system_vector)
 
 TEST_P(NystromFixed, fit_kernel_Gaussian)
 {
+	est->fit();
 	auto result = est->get_beta();
 	ASSERT_EQ(result.vlen, system_size);
 	ASSERT_TRUE(result.vector);
@@ -261,6 +284,7 @@ TEST_P(NystromFixed, fit_kernel_Gaussian)
 
 TEST_P(NystromFixed, log_pdf_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	auto log_pdf = est->log_pdf();
 
@@ -272,6 +296,7 @@ TEST_P(NystromFixed, log_pdf_kernel_Gaussian)
 
 TEST_P(NystromFixed, grad_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	auto grad = est->grad(0);
 
@@ -291,6 +316,7 @@ TEST_P(NystromFixed, grad_kernel_Gaussian)
 
 TEST_P(NystromFixed, hessian_kernel_Gaussian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	auto hessian = est->hessian(0);
 
@@ -314,6 +340,7 @@ TEST_P(NystromFixed, hessian_kernel_Gaussian)
 
 TEST_P(NystromRandom, hessian_diag_equals_hessian)
 {
+	est->fit();
 	est->set_data(X_test_fixed);
 	for (auto i=0; i<est->get_num_data(); i++)
 	{
@@ -334,6 +361,7 @@ TEST_P(NystromRandom, hessian_diag_equals_hessian)
 
 TEST_P(NystromFixed, score_kernel_Gaussian)
 {
+	est->fit();
 	EXPECT_NEAR(est->score(), -0.0014814034043, 1e-14);
 
 	est->set_data(X_test_fixed);
@@ -345,8 +373,9 @@ INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 						::testing::Values(
 								ENystromTestType::E_EXPLCIT_BASIS,
 								ENystromTestType::E_SUBSAMPLED_BASIS,
+								ENystromTestType::E_D_SUBSAMPLED_BASIS,
 								ENystromTestType::E_D_EXPLCIT_BASIS,
-								ENystromTestType::E_D_SUBSAMPLED_BASIS)
+								ENystromTestType::E_D_EXPLCIT_BASIS_NOT_REDUNDANT)
 );
 
 INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
@@ -354,8 +383,9 @@ INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 						::testing::Values(
 								ENystromTestType::E_EXPLCIT_BASIS,
 								ENystromTestType::E_SUBSAMPLED_BASIS,
+								ENystromTestType::E_D_SUBSAMPLED_BASIS,
 								ENystromTestType::E_D_EXPLCIT_BASIS,
-								ENystromTestType::E_D_SUBSAMPLED_BASIS)
+								ENystromTestType::E_D_EXPLCIT_BASIS_NOT_REDUNDANT)
 );
 
 TEST(KernelExpFamilyImplNystromD, idx_to_ai)

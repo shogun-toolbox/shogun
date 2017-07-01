@@ -50,23 +50,20 @@ class Nystrom : public Full
 {
 public :
 	Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
-			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda,
+			float64_t lambda_l2=0.0, bool init_base_and_data=true);
 
 	Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
-			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda,
+			float64_t lambda_l2=0.0, bool init_base_and_data=true);
 
 	Nystrom(SGMatrix<float64_t> data, index_t num_subsample_basis,
-			std::shared_ptr<kernel::Base> kernel, float64_t lambda, float64_t lambda_l2=0.0);
+			std::shared_ptr<kernel::Base> kernel, float64_t lambda,
+			float64_t lambda_l2=0.0, bool init_base_and_data=true);
 
 	virtual ~Nystrom() {};
 
 	virtual void fit();
-
-	// TODO these should go to the lib
-	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
-	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
-	static SGMatrix<float64_t> subsample_matrix_cols(const SGVector<index_t>& col_inds,
-			const SGMatrix<float64_t>& mat);
 
 	// modularisation of the fit method
 	virtual bool basis_is_subsampled_data() const { return m_basis_inds.vlen; }
@@ -96,6 +93,26 @@ public :
 			SGVector<float64_t>& xi_hessian_diag) const {};
 	virtual void hessian_diag_xi_result(const SGVector<float64_t>& xi_hessian_diag,
 			SGVector<float64_t>& result) const {};
+
+
+	// TODO these should go to the lib
+	static SGMatrix<float64_t> pinv_self_adjoint(const SGMatrix<float64_t>& A);
+	static SGVector<index_t> choose_m_in_n(index_t m, index_t n, bool sorted=true);
+	template <class T>
+	static SGMatrix<T> subsample_matrix_cols(const SGVector<index_t>& col_inds,
+			const SGMatrix<T>& mat)
+	{
+		auto D = mat.num_rows;
+		auto N_new = col_inds.vlen;
+		auto subsampled=SGMatrix<T>(D, N_new);
+		for (auto i=0; i<N_new; i++)
+		{
+			memcpy(subsampled.get_column_vector(i), mat.get_column_vector(col_inds[i]),
+					sizeof(T)*D);
+		}
+
+		return subsampled;
+	}
 protected:
 
 	float64_t m_lambda_l2;
