@@ -6,26 +6,24 @@ parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
 
 def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	from modshogun import RealFeatures, GaussianKernel, CSVFile
+	from tempfile import NamedTemporaryFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
 	km_train=kernel.get_kernel_matrix()
-	f=CSVFile("tmp/gaussian_train.csv","w")
+	tmp_train_csv = NamedTemporaryFile(suffix='train.csv')
+	f=CSVFile(tmp_train_csv.name, "w")
 	kernel.save(f)
 	del f
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	f=CSVFile("tmp/gaussian_test.csv","w")
+	tmp_test_csv = NamedTemporaryFile(suffix='test.csv')
+	f=CSVFile(tmp_test_csv.name,"w")
 	kernel.save(f)
 	del f
-
-	#clean up
-	import os
-	os.unlink("tmp/gaussian_test.csv")
-	os.unlink("tmp/gaussian_train.csv")
 
 	return km_train, km_test, kernel
 
