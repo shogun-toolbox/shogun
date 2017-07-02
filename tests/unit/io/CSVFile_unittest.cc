@@ -39,7 +39,7 @@ TEST(CSVFileTest, vector_int32)
 		EXPECT_EQ(data_from_file[i], data[i]);
 	}
 	SG_UNREF(fin);
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	unlink("CSVFileTest_vector_int32_output.txt");
 }
 
@@ -71,7 +71,7 @@ TEST(CSVFileTest, vector_float64)
 		EXPECT_NEAR(data_from_file[i], data[i], 1E-14);
 	}
 	SG_UNREF(fin);
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	unlink("CSVFileTest_vector_float64_output.txt");
 }
 
@@ -110,7 +110,7 @@ TEST(CSVFileTest, matrix_int32)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	unlink("CSVFileTest_matrix_int32_output.txt");
 }
 
@@ -149,7 +149,7 @@ TEST(CSVFileTest, matrix_float64)
 	}
 
 	SG_UNREF(fin);
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	unlink("CSVFileTest_matrix_float64_output.txt");
 }
 

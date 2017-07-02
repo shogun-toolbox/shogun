@@ -80,13 +80,15 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
-			+min_eigenvalue;
+		diag[i] =
+		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
+		    min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 

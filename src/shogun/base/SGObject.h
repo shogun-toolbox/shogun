@@ -26,6 +26,8 @@
 #include <utility>
 #include <vector>
 
+#include <memory>
+
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
@@ -37,6 +39,7 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
+class CRandom;
 
 template <class T, class K> class CMap;
 
@@ -624,6 +627,11 @@ public:
 	 */
 	virtual CSGObject* clone();
 
+	/** Set random seed
+	 * @param seed seed for random generator
+	 */
+	void set_seed(int32_t seed);
+
 protected:
 	/** Returns an empty instance of own type.
 	 *
@@ -739,6 +747,10 @@ public:
 
 	/** Hash of parameter values*/
 	uint32_t m_hash;
+
+protected:
+	/** random generator */
+	std::unique_ptr<CRandom> m_rng;
 
 private:
 

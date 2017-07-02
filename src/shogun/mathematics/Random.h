@@ -10,10 +10,11 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/Lock.h>
 #include <limits>
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/Lock.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/Random.h>
 
 /* opaque pointers */
 struct SFMT_T;
@@ -28,7 +29,7 @@ namespace shogun
 	 * number generator.
 	 *
 	 * */
-	class CRandom : public CSGObject
+	class CRandom
 	{
 		public:
 			/** default ctor */

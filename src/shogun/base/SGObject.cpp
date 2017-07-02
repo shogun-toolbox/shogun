@@ -510,6 +510,7 @@ void CSGObject::init()
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
+	m_rng = std::unique_ptr<CRandom>(new CRandom());
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
@@ -1052,3 +1053,8 @@ namespace shogun
 	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float32_t)
 	SGOBJECT_PUT_DEFINE_WITH_CONVERSION(float64_t)
 };
+
+void CSGObject::set_seed(int32_t seed)
+{
+	m_rng->set_seed(seed);
+}

@@ -702,7 +702,6 @@ TEST(Statistics,log_det_general_test_4)
 
 TEST(Statistics, vector_mean_test)
 {
-	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 	floatmax_t sum_a=0;

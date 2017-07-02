@@ -14,7 +14,6 @@ using namespace shogun;
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
 	CSplittingStrategy()
 {
-	m_rng = sg_rand;
 }
 
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
@@ -66,7 +65,6 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 		}
 	}
 
-	m_rng = sg_rand;
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
@@ -120,7 +118,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 				label_indices.get_element(i);
 
 		// external random state important for threads
-		current->shuffle(m_rng);
+		current->shuffle(m_rng.get());
 
 		SG_UNREF(current);
 	}
@@ -148,5 +146,5 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	m_subset_indices->shuffle(m_rng);
+	m_subset_indices->shuffle(m_rng.get());
 }

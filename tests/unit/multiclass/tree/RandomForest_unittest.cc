@@ -50,7 +50,7 @@ public:
 
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(1);
+		CMath::init_random(1);
 		load_toy_data();
 	}
 
@@ -155,7 +155,6 @@ TEST_F(RandomForest, classify_non_nominal_test)
 
 TEST_F(RandomForest, score_compare_sklearn_toydata)
 {
-	sg_rand->set_seed(1);
 	// Comparison with sklearn's RandomForest probability outputs
 	// https://github.com/scikit-learn/scikit-learn/blob/6f70202ef9beefd3db9bb028755a0c38b4c5c8e7/sklearn/ensemble/tests/test_voting_classifier.py#L143
 	float64_t data_A[] = {-1.1, -1.5, -1.2, -1.4, -3.4, -2.2, 1.1, 1.2};
@@ -204,7 +203,6 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 	int32_t num_test = 10;
 	int32_t num_trees = 10;
 
-	sg_rand->set_seed(42);
 	SGMatrix<float64_t> data_B(1, num_train, false);
 
 	for (auto i = 0; i < num_train; ++i)

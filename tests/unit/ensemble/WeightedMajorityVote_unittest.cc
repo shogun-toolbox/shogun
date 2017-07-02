@@ -11,6 +11,7 @@ void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
 	const SGVector<float64_t>& w)
 {
 	int32_t num_classes = 3;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < em.num_rows; ++i)
 	{
 		SGVector<float64_t> hist(num_classes);
@@ -18,7 +19,7 @@ void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
 		float64_t max = CMath::ALMOST_NEG_INFTY;
 		for (index_t j = 0; j < em.num_cols; ++j)
 		{
-			int32_t r = sg_rand->random(0, num_classes-1);
+			int32_t r = m_rng->random(0, num_classes - 1);
 			em(i,j) = r;
 			hist[r] += w[j];
 			// if there's a tie mark it the first element will be the winner
@@ -69,10 +70,10 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 
 	expected.zero();
 	v.zero();
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		int32_t r = sg_rand->random(0, 1);
+		int32_t r = m_rng->random(0, 1);
 		v[i] = (r == 0) ? -1 : r;
 
 		expected[r] += weights[i];
@@ -95,6 +96,7 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> hist(3);
 
@@ -105,7 +107,7 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 	float64_t max = -1;
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		v[i] = sg_rand->random(0, 2);
+		v[i] = m_rng->random(0, 2);
 		hist[index_t(v[i])] += weights[i];
 		if (max < hist[index_t(v[i])])
 		{
