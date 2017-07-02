@@ -108,7 +108,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		m_debug_multiplier = 100;
 	}
 
-	CMath::init_random(m_rand_seed);
+	m_rng->set_seed(m_rand_seed);
 
 	// Main loop
 	int32_t k = 0;
@@ -117,7 +117,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) Picking random example
-			int32_t i = CMath::random(0, N-1);
+			int32_t i = m_rng->random(0, N - 1);
 
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);

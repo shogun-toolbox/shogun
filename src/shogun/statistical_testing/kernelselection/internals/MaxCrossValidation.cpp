@@ -97,12 +97,14 @@ void MaxCrossValidation::compute_measures()
 		auto Ny=estimator->get_num_samples_q();
 		auto num_null_samples=estimator->get_num_null_samples();
 		auto stype=estimator->get_statistic_type();
+		auto seed = estimator->get_random_seed();
 		CrossValidationMMD compute(Nx, Ny, num_folds, num_null_samples);
 		compute.m_stype=stype;
 		compute.m_alpha=alpha;
 		compute.m_num_runs=num_runs;
 		compute.m_rejections=rejections;
-
+		compute.m_kfold_x->set_seed(seed);
+		compute.m_kfold_y->set_seed(seed);
 		if (kernel_mgr.same_distance_type())
 		{
 			CDistance* distance=kernel_mgr.get_distance_instance();

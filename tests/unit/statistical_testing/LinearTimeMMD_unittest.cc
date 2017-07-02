@@ -318,8 +318,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	const index_t dim=3;
 
 	// use fixed seed
-	sg_rand->set_seed(12345);
-
+	CMath::init_random(12345);
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -357,11 +356,8 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	const index_t n=30;
 	const index_t dim=3;
 
-	// use fixed seed
-	sg_rand->set_seed(12345);
-
 	float64_t difference=0.5;
-
+	CMath::init_random(12345);
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -397,9 +393,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	const index_t n=20;
 	const index_t dim=3;
 
-	// use fixed seed
-	sg_rand->set_seed(12345);
-
+	CMath::init_random(12345);
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions

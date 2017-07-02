@@ -51,7 +51,7 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   CLibSVMFile* fout = new CLibSVMFile(fname, 'w', NULL);
   fout->set_sparse_matrix(data, num_feat, num_vec, labels);
   SG_UNREF(fout);
-  SG_UNREF(rand);
+  SG_FREE(rand);
 
   CStreamingAsciiFile *file = new CStreamingAsciiFile(fname);
   CStreamingSparseFeatures<float64_t> *stream_features =

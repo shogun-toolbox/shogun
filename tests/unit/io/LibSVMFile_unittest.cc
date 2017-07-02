@@ -85,7 +85,7 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	}
 	SG_UNREF(fin);
 
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);
@@ -171,7 +171,7 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	}
 	SG_UNREF(fin);
 
-	SG_UNREF(rand);
+	SG_FREE(rand);
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);

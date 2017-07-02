@@ -140,12 +140,12 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	mock_obj->set_num_samples_p(m);
 	mock_obj->set_num_samples_q(n);
 
-	sg_rand->set_seed(12345);
+	CMath::init_random(12345);
 	auto euclidean_distance=some<CEuclideanDistance>();
 	auto distance=mock_obj->compute_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	sg_rand->set_seed(12345);
+	CMath::init_random(12345);
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 	euclidean_distance->init(feats_p, feats_q);
@@ -175,12 +175,12 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 	mock_obj->set_num_samples_p(m);
 	mock_obj->set_num_samples_q(n);
 
-	sg_rand->set_seed(12345);
+	CMath::init_random(12345);
 	auto euclidean_distance=some<CEuclideanDistance>();
 	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	sg_rand->set_seed(12345);
+	CMath::init_random(12345);
 	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
 	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
 

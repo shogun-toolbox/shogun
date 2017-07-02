@@ -36,6 +36,8 @@ int32_t CMath::LOGACCURACY         = 0; // 100000 steps per integer
 
 int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
+CRandom* CMath::m_rng = new CRandom(12345);
+
 const float64_t CMath::NOT_A_NUMBER    	=  NAN;
 const float64_t CMath::INFTY            =  INFINITY;	// infinity
 const float64_t CMath::ALMOST_INFTY		=  +1e+300;		//a large number
@@ -54,7 +56,6 @@ const float64_t CMath::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
 #endif
-uint32_t CMath::seed = 0;
 
 CMath::CMath()
 : CSGObject()

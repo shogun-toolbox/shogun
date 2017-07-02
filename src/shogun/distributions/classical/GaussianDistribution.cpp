@@ -91,7 +91,7 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 		/* allocate memory and sample from std normal */
 		samples=SGMatrix<float64_t>(m_dimension, num_samples);
 		for (index_t i=0; i<m_dimension*num_samples; ++i)
-			samples.matrix[i]=sg_rand->std_normal_distrib();
+			samples.matrix[i] = m_rng->std_normal_distrib();
 	}
 
 	/* map into desired Gaussian covariance */

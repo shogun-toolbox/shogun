@@ -201,7 +201,7 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 	{
 		if (m_coloring_vector[i]==idx)
 		{
-			float64_t x=sg_rand->std_normal_distrib();
+			float64_t x = m_rng->std_normal_distrib();
 			s[i]=(x>0)-(x<0);
 		}
 	}

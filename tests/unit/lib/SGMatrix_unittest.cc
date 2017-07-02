@@ -316,7 +316,6 @@ TEST(SGMatrixTest,is_symmetric_float32_true)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
@@ -564,9 +563,9 @@ TEST(SGMatrixTest, equals)
 
 	mat=SGMatrix<float32_t>(size, size);
 	CMath::init_random(100);
+
 	for (uint64_t i=0; i<mat.size(); ++i)
 		mat.matrix[i]=CMath::randn_float();
-
 	EXPECT_TRUE(mat.equals(mat));
 	EXPECT_FALSE(mat.equals(copy));
 

@@ -27,8 +27,6 @@ TEST(CJADiagOrth, diagonalize)
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
 
-	CMath::init_random(17);
-
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);

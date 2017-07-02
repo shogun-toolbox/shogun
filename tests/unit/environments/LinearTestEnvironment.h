@@ -45,7 +45,6 @@ class LinearTestEnvironment : public ::testing::Environment
 public:
 	virtual void SetUp()
 	{
-		sg_rand->set_seed(17);
 		mBinaryLabelData = std::shared_ptr<GaussianCheckerboard>(
 		    new GaussianCheckerboard(100, 2, 2));
 	}

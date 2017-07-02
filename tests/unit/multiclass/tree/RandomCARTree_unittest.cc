@@ -51,7 +51,7 @@ using namespace shogun;
 
 TEST(RandomCARTree, classify_nominal)
 {
-	sg_rand->set_seed(2);
+	CMath::init_random(2);
 	SGMatrix<float64_t> data(4,14);
 
 	//vector = [Outlook Temperature Humidity Wind]

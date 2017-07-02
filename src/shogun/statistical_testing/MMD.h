@@ -223,6 +223,16 @@ public:
 	index_t get_num_null_samples() const;
 
 	/**
+	 * Method to sets random seed for CrossValidation.
+	 *
+	 * @param p_seed seed for random generator.
+	 */
+	void set_random_seed(int32_t p_seed);
+
+	/** @return seed of random */
+	index_t get_random_seed() const;
+
+	/**
 	 * Method that sets the type of the estimator for MMD^2
 	 *
 	 * @param stype The type of the estimator for MMD^2

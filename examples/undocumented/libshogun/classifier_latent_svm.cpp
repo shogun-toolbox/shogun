@@ -115,7 +115,6 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	SG_REF(feats);
 
 	auto pb = progress(range(num_examples));
-	CMath::init_random();
 	for (int i = 0; (!feof(fd)) && (i < num_examples); ++i)
 	{
 		fgets(line, MAX_LINE_LENGTH, fd);
