@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_laplacianeigenmaps_modular (data_fname,k):
+def converter_laplacianeigenmaps (data_fname,k):
 	try:
 		from modshogun import RealFeatures, CSVFile
 		try:
@@ -25,5 +25,5 @@ def converter_laplacianeigenmaps_modular (data_fname,k):
 
 if __name__=='__main__':
 	print('LaplacianEigenmaps')
-	converter_laplacianeigenmaps_modular(*parameter_list[0])
+	converter_laplacianeigenmaps(*parameter_list[0])
 

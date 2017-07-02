@@ -9,7 +9,7 @@ predicted = random.randn(len(ground_truth))
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_prcevaluation_modular (ground_truth, predicted):
+def evaluation_prcevaluation (ground_truth, predicted):
 	from modshogun import BinaryLabels
 	from modshogun import PRCEvaluation
 
@@ -24,5 +24,5 @@ def evaluation_prcevaluation_modular (ground_truth, predicted):
 
 if __name__=='__main__':
 	print('PRCEvaluation')
-	evaluation_prcevaluation_modular(*parameter_list[0])
+	evaluation_prcevaluation(*parameter_list[0])
 

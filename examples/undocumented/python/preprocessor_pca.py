@@ -6,7 +6,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def preprocessor_pca_modular (data):
+def preprocessor_pca (data):
 	from modshogun import RealFeatures
 	from modshogun import PCA
 
@@ -21,5 +21,5 @@ def preprocessor_pca_modular (data):
 
 if __name__=='__main__':
 	print('PCA')
-	preprocessor_pca_modular(*parameter_list[0])
+	preprocessor_pca(*parameter_list[0])
 

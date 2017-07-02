@@ -9,7 +9,7 @@ predicted = lm.load_labels('../data/label_train_multiclass.dat') * 2
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_multiclassaccuracy_modular (ground_truth, predicted):
+def evaluation_multiclassaccuracy (ground_truth, predicted):
 	from modshogun import MulticlassLabels
 	from modshogun import MulticlassAccuracy
 
@@ -24,5 +24,5 @@ def evaluation_multiclassaccuracy_modular (ground_truth, predicted):
 
 if __name__=='__main__':
 	print('MulticlassAccuracy')
-	evaluation_multiclassaccuracy_modular(*parameter_list[0])
+	evaluation_multiclassaccuracy(*parameter_list[0])
 

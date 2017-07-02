@@ -6,7 +6,7 @@ traindna = lm.load_dna('../data/fm_train_dna.dat')
 
 parameter_list = [[traindna,3],[traindna,4]]
 
-def distribution_ppwm_modular (fm_dna=traindna, order=3):
+def distribution_ppwm (fm_dna=traindna, order=3):
 	from modshogun import StringByteFeatures, StringCharFeatures, DNA
 	from modshogun import PositionalPWM
 
@@ -62,4 +62,4 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 
 if __name__=='__main__':
 	print('PositionalPWM')
-	distribution_ppwm_modular(*parameter_list[0])
+	distribution_ppwm(*parameter_list[0])

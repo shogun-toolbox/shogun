@@ -10,7 +10,7 @@ feattypes = array([False, False])
 
 parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
-def multiclass_randomforest_modular(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
+def multiclass_randomforest(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, MulticlassLabels, CSVFile, RandomForest, MajorityVote
 	except ImportError:
@@ -35,4 +35,4 @@ def multiclass_randomforest_modular(train=traindat,test=testdat,labels=label_tra
 
 if __name__=='__main__':
 	print('RandomForest')
-	multiclass_randomforest_modular(*parameter_list[0])
+	multiclass_randomforest(*parameter_list[0])

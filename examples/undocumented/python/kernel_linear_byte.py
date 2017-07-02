@@ -4,7 +4,7 @@ testdat = '../data/fm_test_byte.dat'
 
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
-def kernel_linear_byte_modular (train_fname=traindat,test_fname=testdat):
+def kernel_linear_byte (train_fname=traindat,test_fname=testdat):
 	from modshogun import LinearKernel, ByteFeatures, CSVFile
 
 	feats_train=ByteFeatures(CSVFile(train_fname))
@@ -19,4 +19,4 @@ def kernel_linear_byte_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('LinearByte')
-	kernel_linear_byte_modular(*parameter_list[0])
+	kernel_linear_byte(*parameter_list[0])

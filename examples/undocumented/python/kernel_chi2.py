@@ -4,7 +4,7 @@ testdat = '../data/fm_test_hist.dat'
 
 parameter_list = [[traindat,testdat,1.4,10], [traindat,testdat,1.5,10]]
 
-def kernel_chi2_modular (train_fname=traindat,test_fname=testdat,width=1.4, size_cache=10):
+def kernel_chi2 (train_fname=traindat,test_fname=testdat,width=1.4, size_cache=10):
 	from modshogun import RealFeatures, Chi2Kernel, CSVFile, NormOne
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -19,4 +19,4 @@ def kernel_chi2_modular (train_fname=traindat,test_fname=testdat,width=1.4, size
 
 if __name__=='__main__':
 	print('Chi2')
-	kernel_chi2_modular(*parameter_list[0])
+	kernel_chi2(*parameter_list[0])

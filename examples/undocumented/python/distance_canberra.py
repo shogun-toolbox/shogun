@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_canberra_modular (train_fname=traindat,test_fname=testdat):
+def distance_canberra (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, CanberraMetric, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -19,4 +19,4 @@ def distance_canberra_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('CanberaMetric')
-	distance_canberra_modular(*parameter_list[0])
+	distance_canberra(*parameter_list[0])

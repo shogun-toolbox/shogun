@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat,3],[traindat,testdat,4]]
 
-def distance_minkowski_modular (train_fname=traindat,test_fname=testdat,k=3):
+def distance_minkowski (train_fname=traindat,test_fname=testdat,k=3):
 	from modshogun import RealFeatures, MinkowskiMetric, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -20,5 +20,5 @@ def distance_minkowski_modular (train_fname=traindat,test_fname=testdat,k=3):
 
 if __name__=='__main__':
 	print('MinkowskiMetric')
-	distance_minkowski_modular(*parameter_list[0])
+	distance_minkowski(*parameter_list[0])
 

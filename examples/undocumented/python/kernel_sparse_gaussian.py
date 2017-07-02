@@ -6,7 +6,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
 
-def kernel_sparse_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.1 ):
+def kernel_sparse_gaussian (fm_train_real=traindat,fm_test_real=testdat,width=1.1 ):
 	from modshogun import SparseRealFeatures
 	from modshogun import GaussianKernel
 
@@ -23,4 +23,4 @@ def kernel_sparse_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat,
 
 if __name__=='__main__':
 	print('SparseGaussian')
-	kernel_sparse_gaussian_modular (*parameter_list[0])
+	kernel_sparse_gaussian (*parameter_list[0])

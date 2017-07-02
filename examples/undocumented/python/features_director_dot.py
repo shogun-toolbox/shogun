@@ -9,7 +9,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
 parameter_list = [[traindat,testdat,label_traindat,0.9,1e-3],[traindat,testdat,label_traindat,0.8,1e-2]]
 
-def features_director_dot_modular (fm_train_real, fm_test_real,
+def features_director_dot (fm_train_real, fm_test_real,
 		label_train_twoclass, C, epsilon):
 	try:
 		from modshogun import DirectorDotFeatures
@@ -105,4 +105,4 @@ def features_director_dot_modular (fm_train_real, fm_test_real,
 
 if __name__=='__main__':
 	print('DirectorLinear')
-	features_director_dot_modular(*parameter_list[0])
+	features_director_dot(*parameter_list[0])

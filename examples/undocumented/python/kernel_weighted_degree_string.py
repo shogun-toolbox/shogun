@@ -6,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,3],[traindat,testdat,20]]
 
-def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,degree=20):
+def kernel_weighted_degree_string (fm_train_dna=traindat,fm_test_dna=testdat,degree=20):
 	from modshogun import StringCharFeatures, DNA
 	from modshogun import WeightedDegreeStringKernel, MSG_DEBUG
 
@@ -38,4 +38,4 @@ def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=tes
 
 if __name__=='__main__':
 	print('WeightedDegreeString')
-	kernel_weighted_degree_string_modular(*parameter_list[0])
+	kernel_weighted_degree_string(*parameter_list[0])

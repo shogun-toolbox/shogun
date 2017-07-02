@@ -7,7 +7,7 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindna,testdna,4,0,False,False],[traindna,testdna,3,0,False,False]]
 
-def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
+def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
 	from modshogun import CommUlongStringKernel
 	from modshogun import StringCharFeatures, StringUlongFeatures, DNA
@@ -40,4 +40,4 @@ def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=test
 
 if __name__=='__main__':
 	print('CommUlongString')
-	preprocessor_sortulongstring_modular(*parameter_list[0])
+	preprocessor_sortulongstring(*parameter_list[0])

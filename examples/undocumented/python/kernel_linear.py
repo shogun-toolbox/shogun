@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
-def kernel_linear_modular (train_fname=traindat,test_fname=testdat,scale=1.2):
+def kernel_linear (train_fname=traindat,test_fname=testdat,scale=1.2):
 
 	from modshogun import RealFeatures, LinearKernel, AvgDiagKernelNormalizer, CSVFile
 
@@ -22,4 +22,4 @@ def kernel_linear_modular (train_fname=traindat,test_fname=testdat,scale=1.2):
 
 if __name__=='__main__':
 	print('Linear')
-	kernel_linear_modular(*parameter_list[0])
+	kernel_linear(*parameter_list[0])

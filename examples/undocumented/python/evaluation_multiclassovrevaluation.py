@@ -4,7 +4,7 @@ label_traindat = '../data/label_train_multiclass.dat'
 
 parameter_list = [[traindat, label_traindat]]
 
-def evaluation_multiclassovrevaluation_modular(train_fname=traindat, label_fname=label_traindat):
+def evaluation_multiclassovrevaluation(train_fname=traindat, label_fname=label_traindat):
 	from modshogun import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
 	from modshogun import MulticlassLabels, Math, CSVFile
@@ -29,5 +29,5 @@ def evaluation_multiclassovrevaluation_modular(train_fname=traindat, label_fname
 
 if __name__=='__main__':
 	print('MulticlassOVREvaluation')
-	evaluation_multiclassovrevaluation_modular(*parameter_list[0])
+	evaluation_multiclassovrevaluation(*parameter_list[0])
 

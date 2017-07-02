@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[['../data/snps.dat']]
 
-def features_snp_modular (fname):
+def features_snp (fname):
 	from modshogun import StringByteFeatures, SNPFeatures, SNP
 
 	sf=StringByteFeatures(SNP)
@@ -14,4 +14,4 @@ def features_snp_modular (fname):
 
 if __name__=='__main__':
 	print('SNP Features')
-	features_snp_modular(*parameter_list[0])
+	features_snp(*parameter_list[0])

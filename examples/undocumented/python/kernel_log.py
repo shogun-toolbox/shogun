@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
-def kernel_log_modular (train_fname=traindat,test_fname=testdat, degree=2.0):
+def kernel_log (train_fname=traindat,test_fname=testdat, degree=2.0):
 	from modshogun import RealFeatures, LogKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -22,4 +22,4 @@ def kernel_log_modular (train_fname=traindat,test_fname=testdat, degree=2.0):
 
 if __name__=='__main__':
 	print('Log')
-	kernel_log_modular(*parameter_list[0])
+	kernel_log(*parameter_list[0])

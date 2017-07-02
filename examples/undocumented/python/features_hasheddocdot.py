@@ -3,7 +3,7 @@ strings=['hey','guys','i','am','a','string']
 
 parameter_list=[[strings]]
 
-def features_hasheddocdot_modular(strings):
+def features_hasheddocdot(strings):
 	from modshogun import StringCharFeatures, RAWBYTE
 	from modshogun import HashedDocDotFeatures
 	from modshogun import NGramTokenizer
@@ -34,4 +34,4 @@ def features_hasheddocdot_modular(strings):
 
 if __name__=='__main__':
 	print('HashedDocDotFeatures')
-	features_hasheddocdot_modular(*parameter_list[0])
+	features_hasheddocdot(*parameter_list[0])

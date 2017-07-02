@@ -7,7 +7,7 @@ bins=numpy.array([[0.0, 0.0, 0.0],[1.0,1.0,1.0],[2.0,2.0,2.0],[3.0,3.0,3.0],[4.0
 
 parameter_list = [(matrix,bins)]
 
-def features_binned_dot_modular (matrix, bins):
+def features_binned_dot (matrix, bins):
 	from modshogun import RealFeatures, BinnedDotFeatures
 	rf=RealFeatures(matrix)
 
@@ -29,4 +29,4 @@ def features_binned_dot_modular (matrix, bins):
 
 if __name__=='__main__':
     print('BinnedDotFeatures')
-    features_binned_dot_modular(*parameter_list[0])
+    features_binned_dot(*parameter_list[0])

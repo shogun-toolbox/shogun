@@ -8,7 +8,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
-def kernel_spherical_modular (fm_train_real=traindat,fm_test_real=testdat, sigma=1.0):
+def kernel_spherical (fm_train_real=traindat,fm_test_real=testdat, sigma=1.0):
 	from modshogun import RealFeatures
 	from modshogun import MultiquadricKernel
 	from modshogun import EuclideanDistance
@@ -28,4 +28,4 @@ def kernel_spherical_modular (fm_train_real=traindat,fm_test_real=testdat, sigma
 
 if __name__=='__main__':
 	print('Spherical')
-	kernel_spherical_modular(*parameter_list[0])
+	kernel_spherical(*parameter_list[0])

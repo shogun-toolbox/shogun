@@ -6,7 +6,7 @@ label=lm.load_numbers('../data/label_train_twoclass.dat')
 
 parameter_list=[[data,label]]
 
-def features_io_modular (fm_train_real, label_train_twoclass):
+def features_io (fm_train_real, label_train_twoclass):
 	import numpy
 	from modshogun import SparseRealFeatures, RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel
@@ -81,4 +81,4 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 
 if __name__=='__main__':
 	print('Features IO')
-	features_io_modular(*parameter_list[0])
+	features_io(*parameter_list[0])

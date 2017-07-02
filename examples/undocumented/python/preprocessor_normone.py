@@ -7,7 +7,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,1.4,10],[traindat,testdat,1.5,10]]
 
-def preprocessor_normone_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
+def preprocessor_normone (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 
 	from modshogun import Chi2Kernel
 	from modshogun import RealFeatures
@@ -33,4 +33,4 @@ def preprocessor_normone_modular (fm_train_real=traindat,fm_test_real=testdat,wi
 
 if __name__=='__main__':
 	print('NormOne')
-	preprocessor_normone_modular(*parameter_list[0])
+	preprocessor_normone(*parameter_list[0])

@@ -10,7 +10,7 @@ parameter_list = [[traindat,testdat,1.5,10],[traindat,testdat,1.5,10]]
 from modshogun import Math_init_random;
 Math_init_random(12345);
 
-def preprocessor_randomfouriergausspreproc_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
+def preprocessor_randomfouriergausspreproc (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 	from modshogun import Chi2Kernel
 	from modshogun import RealFeatures
 	from modshogun import RandomFourierGaussPreproc
@@ -35,4 +35,4 @@ def preprocessor_randomfouriergausspreproc_modular (fm_train_real=traindat,fm_te
 
 if __name__=='__main__':
 	print('RandomFourierGaussPreproc')
-	preprocessor_randomfouriergausspreproc_modular(*parameter_list[0])
+	preprocessor_randomfouriergausspreproc(*parameter_list[0])

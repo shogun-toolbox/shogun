@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat,4,False,True],[traindat,testdat,5,False,True]]
 
-def kernel_poly_modular (train_fname=traindat,test_fname=testdat,degree=4,inhomogene=False,
+def kernel_poly (train_fname=traindat,test_fname=testdat,degree=4,inhomogene=False,
 	use_normalization=True):
 	from modshogun import RealFeatures, PolyKernel, CSVFile
 
@@ -20,4 +20,4 @@ def kernel_poly_modular (train_fname=traindat,test_fname=testdat,degree=4,inhomo
 	return km_train,km_test,kernel
 if __name__=='__main__':
 	print('Poly')
-	kernel_poly_modular (*parameter_list[0])
+	kernel_poly (*parameter_list[0])

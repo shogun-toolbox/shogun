@@ -4,7 +4,7 @@ traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
-def kernel_rationalquadratic_modular (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
+def kernel_rationalquadratic (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
 	from modshogun import RealFeatures, RationalQuadraticKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -22,4 +22,4 @@ def kernel_rationalquadratic_modular (train_fname=traindat,test_fname=testdat, s
 
 if __name__=='__main__':
 	print('RationalQuadratic')
-	kernel_rationalquadratic_modular(*parameter_list[0])
+	kernel_rationalquadratic(*parameter_list[0])

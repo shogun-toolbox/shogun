@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_tanimoto_modular (train_fname=traindat,test_fname=testdat):
+def distance_tanimoto (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, TanimotoDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -20,4 +20,4 @@ def distance_tanimoto_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('TanimotoDistance')
-	distance_tanimoto_modular(*parameter_list[0])
+	distance_tanimoto(*parameter_list[0])

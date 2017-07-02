@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
-def converter_factoranalysis_modular(data_fname):
+def converter_factoranalysis(data_fname):
 	try:
 		import numpy
 		from modshogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
@@ -22,4 +22,4 @@ def converter_factoranalysis_modular(data_fname):
 
 if __name__=='__main__':
 	print('Factor Analysis')
-	converter_factoranalysis_modular(*parameter_list[0])
+	converter_factoranalysis(*parameter_list[0])

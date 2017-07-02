@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat,],[traindat,testdat]]
 
-def distance_chisquare_modular (train_fname=traindat,test_fname=testdat):
+def distance_chisquare (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, ChiSquareDistance, CSVFile
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
@@ -18,4 +18,4 @@ def distance_chisquare_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('ChiSquareDistance')
-	distance_chisquare_modular(*parameter_list[0])
+	distance_chisquare(*parameter_list[0])

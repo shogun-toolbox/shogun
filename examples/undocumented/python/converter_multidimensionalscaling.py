@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
-def converter_multidimensionalscaling_modular (data_fname):
+def converter_multidimensionalscaling (data_fname):
 	try:
 		import numpy
 		from modshogun import RealFeatures, MultidimensionalScaling, EuclideanDistance, CSVFile
@@ -29,4 +29,4 @@ def converter_multidimensionalscaling_modular (data_fname):
 
 if __name__=='__main__':
 	print('MultidimensionalScaling')
-	converter_multidimensionalscaling_modular(*parameter_list[0])
+	converter_multidimensionalscaling(*parameter_list[0])

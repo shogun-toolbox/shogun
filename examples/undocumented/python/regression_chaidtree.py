@@ -6,7 +6,7 @@ feattypes = array([2],dtype=int32)
 
 parameter_list = [[500,50,15,0.2,feattypes]]
 
-def regression_chaidtree_modular(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
+def regression_chaidtree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, RegressionLabels, CSVFile, CHAIDTree, PT_REGRESSION
 		from numpy import random
@@ -40,4 +40,4 @@ def regression_chaidtree_modular(num_train=500,num_test=50,x_range=15,noise_var=
 
 if __name__=='__main__':
 	print('CHAIDTree')
-	regression_chaidtree_modular(*parameter_list[0])
+	regression_chaidtree(*parameter_list[0])

@@ -9,7 +9,7 @@ testdat = lm.load_labels('../data/fm_test_real.dat')
 parameter_list = [[traindna,testdna,testdat,4,0,False,False],
 		[traindna,testdna,testdat,3,0,False,False]]
 
-def distance_hammingword_modular (fm_train_dna=traindna,fm_test_dna=testdna,
+def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 		fm_test_real=testdat,order=3,gap=0,reverse=False,use_sign=False):
 
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
@@ -41,4 +41,4 @@ def distance_hammingword_modular (fm_train_dna=traindna,fm_test_dna=testdna,
 
 if __name__=='__main__':
 	print('HammingWordDistance')
-	distance_hammingword_modular(*parameter_list[0])
+	distance_hammingword(*parameter_list[0])

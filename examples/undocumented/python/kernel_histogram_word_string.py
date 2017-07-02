@@ -7,7 +7,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list=[[traindat,testdat,label_traindat,1,1e1, 1e0],[traindat,testdat,label_traindat,1,1e4,1e4]]
 
-def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,ppseudo_count=1,npseudo_count=1):
+def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,ppseudo_count=1,npseudo_count=1):
 
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
 	from modshogun import HistogramWordStringKernel, AvgDiagKernelNormalizer
@@ -40,4 +40,4 @@ def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=test
 
 if __name__=='__main__':
 	print('PluginEstimate w/ HistogramWord')
-	kernel_histogram_word_string_modular(*parameter_list[0])
+	kernel_histogram_word_string(*parameter_list[0])

@@ -8,7 +8,7 @@ data=[[1,2,3],[4,5,6],[7,8,9],[-1,-2,-3]]
 
 parameter_list = [[data]]
 
-def features_dense_zero_copy_modular (in_data=data):
+def features_dense_zero_copy (in_data=data):
 	feats = None
 	if numpy.__version__ >= '1.5':
 		feats=numpy.array(in_data, dtype=float64, order='F')
@@ -38,4 +38,4 @@ def features_dense_zero_copy_modular (in_data=data):
 
 if __name__=='__main__':
 	print('dense_zero_copy')
-	features_dense_zero_copy_modular(*parameter_list[0])
+	features_dense_zero_copy(*parameter_list[0])

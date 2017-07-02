@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_chebyshew_modular (train_fname=traindat,test_fname=testdat):
+def distance_chebyshew (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, ChebyshewMetric, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -19,4 +19,4 @@ def distance_chebyshew_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('ChebyshewMetric')
-	distance_chebyshew_modular(*parameter_list[0])
+	distance_chebyshew(*parameter_list[0])

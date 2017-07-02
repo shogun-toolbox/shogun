@@ -3,7 +3,7 @@ traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat,2,10], [traindat,testdat,5,10]]
 
-def kernel_anova_modular (train_fname=traindat,test_fname=testdat,cardinality=2, size_cache=10):
+def kernel_anova (train_fname=traindat,test_fname=testdat,cardinality=2, size_cache=10):
 	from modshogun import ANOVAKernel,RealFeatures,CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -18,4 +18,4 @@ def kernel_anova_modular (train_fname=traindat,test_fname=testdat,cardinality=2,
 
 if __name__=='__main__':
 	print('ANOVA')
-	kernel_anova_modular(*parameter_list[0])
+	kernel_anova(*parameter_list[0])

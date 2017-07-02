@@ -4,7 +4,7 @@ traindat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat,1.7],[traindat,testdat,1.8]]
 
-def kernel_distance_modular (train_fname=traindat,test_fname=testdat,width=1.7):
+def kernel_distance (train_fname=traindat,test_fname=testdat,width=1.7):
 	from modshogun import RealFeatures, DistanceKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -20,4 +20,4 @@ def kernel_distance_modular (train_fname=traindat,test_fname=testdat,width=1.7):
 
 if __name__=='__main__':
 	print('Distance')
-	kernel_distance_modular(*parameter_list[0])
+	kernel_distance(*parameter_list[0])

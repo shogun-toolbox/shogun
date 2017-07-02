@@ -9,7 +9,7 @@ predicted = random.randn(len(ground_truth))
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_director_contingencytableevaluation_modular (ground_truth, predicted):
+def evaluation_director_contingencytableevaluation (ground_truth, predicted):
 	try:
 		from modshogun import DirectorContingencyTableEvaluation, ED_MAXIMIZE
 	except ImportError:
@@ -35,5 +35,5 @@ def evaluation_director_contingencytableevaluation_modular (ground_truth, predic
 
 if __name__=='__main__':
 	print('EvaluationDirectorContingencyTableEvaluation')
-	evaluation_director_contingencytableevaluation_modular(*parameter_list[0])
+	evaluation_director_contingencytableevaluation(*parameter_list[0])
 

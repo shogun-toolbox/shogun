@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_sparseeuclidean_modular (train_fname=traindat,test_fname=testdat):
+def distance_sparseeuclidean (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, SparseRealFeatures, SparseEuclideanDistance, CSVFile
 
 	realfeat=RealFeatures(CSVFile(train_fname))
@@ -24,4 +24,4 @@ def distance_sparseeuclidean_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('SparseEuclideanDistance')
-	distance_sparseeuclidean_modular(*parameter_list[0])
+	distance_sparseeuclidean(*parameter_list[0])

@@ -3,7 +3,7 @@ strings=['hey','guys','string']
 
 parameter_list=[[strings,0,2,0,False]]
 
-def features_string_word_modular (strings, start, order, gap, rev):
+def features_string_word (strings, start, order, gap, rev):
 	from modshogun import StringCharFeatures, StringWordFeatures, RAWBYTE
 	from numpy import array, uint16
 
@@ -28,4 +28,4 @@ def features_string_word_modular (strings, start, order, gap, rev):
 
 if __name__=='__main__':
 	print('StringWordFeatures')
-	features_string_word_modular(*parameter_list[0])
+	features_string_word(*parameter_list[0])

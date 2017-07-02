@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list = [[1,7],[2,8]]
 
-def classifier_custom_kernel_modular (C=1,dim=7):
+def classifier_custom_kernel (C=1,dim=7):
 	from modshogun import RealFeatures, BinaryLabels, CustomKernel, LibSVM
 	from numpy import diag,ones,sign
 	from numpy.random import rand,seed
@@ -23,4 +23,4 @@ def classifier_custom_kernel_modular (C=1,dim=7):
 
 if __name__=='__main__':
 	print('custom_kernel')
-	classifier_custom_kernel_modular(*parameter_list[0])
+	classifier_custom_kernel(*parameter_list[0])

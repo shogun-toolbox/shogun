@@ -7,7 +7,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
 
-def kernel_sparse_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.1):
+def kernel_sparse_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.1):
 	from modshogun import SparseRealFeatures
 	from modshogun import LinearKernel, AvgDiagKernelNormalizer
 
@@ -25,4 +25,4 @@ def kernel_sparse_linear_modular (fm_train_real=traindat,fm_test_real=testdat,sc
 
 if __name__=='__main__':
 	print('SparseLinear')
-	kernel_sparse_linear_modular(*parameter_list[0])
+	kernel_sparse_linear(*parameter_list[0])

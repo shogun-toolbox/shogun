@@ -4,7 +4,7 @@ strings=['example document 1','example document 2','example document 3','example
 
 parameter_list=[[strings]]
 
-def converter_hasheddoc_modular(strings):
+def converter_hasheddoc(strings):
 	from modshogun import SparseRealFeatures, RAWBYTE, StringCharFeatures, Features, HashedDocDotFeatures
 	from modshogun import NGramTokenizer
 	from modshogun import HashedDocConverter
@@ -43,6 +43,6 @@ def converter_hasheddoc_modular(strings):
 
 if __name__=='__main__':
 	print('HashedDocConverter')
-	converter_hasheddoc_modular(*parameter_list[0])
+	converter_hasheddoc(*parameter_list[0])
 
 

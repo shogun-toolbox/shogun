@@ -2,7 +2,7 @@
 from numpy import *
 parameter_list = [[10,3,15,2.1,1,1e-5,1],[20,4,15,2.2,2,1e-5,2]]
 
-def classifier_multiclassocas_modular (num_vec=10,num_class=3,distance=15,width=2.1,C=1,epsilon=1e-5,seed=1):
+def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,epsilon=1e-5,seed=1):
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import Math_init_random
 	try:
@@ -39,4 +39,4 @@ def classifier_multiclassocas_modular (num_vec=10,num_class=3,distance=15,width=
 
 if __name__=='__main__':
 	print('MulticlassOCAS')
-	classifier_multiclassocas_modular(*parameter_list[0])
+	classifier_multiclassocas(*parameter_list[0])

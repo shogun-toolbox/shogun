@@ -3,7 +3,7 @@ traindat = '../data/fm_train_real.dat'
 label_traindat = '../data/label_train_twoclass.dat'
 parameter_list = [[traindat,label_traindat,1.7], [traindat,label_traindat,1.6]]
 
-def kernel_auc_modular (train_fname=traindat,label_fname=label_traindat,width=1.7):
+def kernel_auc (train_fname=traindat,label_fname=label_traindat,width=1.7):
 	from modshogun import GaussianKernel, AUCKernel, RealFeatures
 	from modshogun import BinaryLabels, CSVFile
 
@@ -17,4 +17,4 @@ def kernel_auc_modular (train_fname=traindat,label_fname=label_traindat,width=1.
 
 if __name__=='__main__':
 	print('AUC')
-	kernel_auc_modular(*parameter_list[0])
+	kernel_auc(*parameter_list[0])

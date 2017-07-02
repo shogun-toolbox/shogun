@@ -5,7 +5,7 @@ traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
-def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
+def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 	try:
 		from modshogun import DirectorKernel
 	except ImportError:
@@ -54,4 +54,4 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 
 if __name__=='__main__':
 	print('DirectorLinear')
-	kernel_director_linear_modular(*parameter_list[0])
+	kernel_director_linear(*parameter_list[0])

@@ -6,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def kernel_weighted_comm_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,order=3,gap=0,reverse=True ):
+def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,order=3,gap=0,reverse=True ):
 	from modshogun import WeightedCommWordStringKernel
 	from modshogun import StringWordFeatures, StringCharFeatures, DNA
 	from modshogun import SortWordString
@@ -35,4 +35,4 @@ def kernel_weighted_comm_word_string_modular (fm_train_dna=traindat,fm_test_dna=
 
 if __name__=='__main__':
 	print('WeightedCommWordString')
-	kernel_weighted_comm_word_string_modular(*parameter_list[0])
+	kernel_weighted_comm_word_string(*parameter_list[0])

@@ -6,7 +6,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data, 20], [data, 30]]
 
-def preprocessor_dimensionreductionpreprocessor_modular (data, k):
+def preprocessor_dimensionreductionpreprocessor (data, k):
 	from modshogun import RealFeatures
 	from modshogun import DimensionReductionPreprocessor
 	try:
@@ -29,5 +29,5 @@ def preprocessor_dimensionreductionpreprocessor_modular (data, k):
 
 if __name__=='__main__':
 	print('DimensionReductionPreprocessor')
-	preprocessor_dimensionreductionpreprocessor_modular(*parameter_list[0])
+	preprocessor_dimensionreductionpreprocessor(*parameter_list[0])
 

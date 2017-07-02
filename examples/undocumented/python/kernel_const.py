@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list =[[23],[24]]
 
-def kernel_const_modular (c=23):
+def kernel_const (c=23):
 	from modshogun import DummyFeatures
 	from modshogun import ConstKernel
 
@@ -17,4 +17,4 @@ def kernel_const_modular (c=23):
 
 if __name__=='__main__':
 	print('Const')
-	kernel_const_modular(*parameter_list[0])
+	kernel_const(*parameter_list[0])

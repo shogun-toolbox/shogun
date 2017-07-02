@@ -26,7 +26,7 @@ label_test_dna=numpy.array(5*[-1.0] + 5*[1.0])
 
 parameter_list = [[traindna,testdna,label_traindna,3,10,1e-5,1],[traindna,testdna,label_traindna,3,10,1e-5,1]]
 
-def classifier_svmlight_linear_term_modular (fm_train_dna=traindna,fm_test_dna=testdna, \
+def classifier_svmlight_linear_term (fm_train_dna=traindna,fm_test_dna=testdna, \
                                                 label_train_dna=label_traindna,degree=3, \
                                                 C=10,epsilon=1e-5,num_threads=1):
 
@@ -60,4 +60,4 @@ def classifier_svmlight_linear_term_modular (fm_train_dna=traindna,fm_test_dna=t
 
 if __name__=='__main__':
     print('SVMLight')
-    classifier_svmlight_linear_term_modular(*parameter_list[0])
+    classifier_svmlight_linear_term(*parameter_list[0])

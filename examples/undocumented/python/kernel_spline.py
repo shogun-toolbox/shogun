@@ -8,7 +8,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
-def kernel_spline_modular (fm_train_real=traindat,fm_test_real=testdat):
+def kernel_spline (fm_train_real=traindat,fm_test_real=testdat):
 	from modshogun import RealFeatures
 	from modshogun import SplineKernel
 
@@ -25,4 +25,4 @@ def kernel_spline_modular (fm_train_real=traindat,fm_test_real=testdat):
 
 if __name__=='__main__':
 	print('Spline')
-	kernel_spline_modular(*parameter_list[0])
+	kernel_spline(*parameter_list[0])

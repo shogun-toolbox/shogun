@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[[10, 1, 2.1, 2.0]]
 
-def serialization_svmlight_modular (num, dist, width, C):
+def serialization_svmlight (num, dist, width, C):
     from modshogun import MSG_DEBUG
     from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
     from modshogun import WeightedDegreeStringKernel, GaussianKernel
@@ -119,4 +119,4 @@ def serialization_svmlight_modular (num, dist, width, C):
 
 if __name__=='__main__':
     print('Serialization SVMLight')
-    serialization_svmlight_modular(*parameter_list[0])
+    serialization_svmlight(*parameter_list[0])

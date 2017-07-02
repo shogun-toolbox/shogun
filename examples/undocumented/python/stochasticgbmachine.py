@@ -9,7 +9,7 @@ feat_types=np.array([False,False,False,True,False,False,False,False,False,False,
 
 parameter_list = [[traindat,label_traindat,feat_types]]
 
-def stochasticgbmachine_modular(train=traindat,train_labels=label_traindat,ft=feat_types):
+def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 	try:
 		from modshogun import RealFeatures, RegressionLabels, CSVFile, CARTree, StochasticGBMachine, SquaredLoss
 	except ImportError:
@@ -50,4 +50,4 @@ def stochasticgbmachine_modular(train=traindat,train_labels=label_traindat,ft=fe
 
 if __name__=='__main__':
 	print('StochasticGBMachine')
-	stochasticgbmachine_modular(*parameter_list[0])
+	stochasticgbmachine(*parameter_list[0])

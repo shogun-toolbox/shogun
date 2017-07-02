@@ -7,7 +7,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat,1.8,2,1],[traindat,testdat,1.9,2,1]]
 
-def kernel_gaussian_shift_modular (train_fname=traindat,test_fname=testdat,width=1.8,max_shift=2,shift_step=1):
+def kernel_gaussian_shift (train_fname=traindat,test_fname=testdat,width=1.8,max_shift=2,shift_step=1):
 	from modshogun import RealFeatures, GaussianShiftKernel, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -23,4 +23,4 @@ def kernel_gaussian_shift_modular (train_fname=traindat,test_fname=testdat,width
 
 if __name__=='__main__':
 	print('GaussianShift')
-	kernel_gaussian_shift_modular(*parameter_list[0])
+	kernel_gaussian_shift(*parameter_list[0])

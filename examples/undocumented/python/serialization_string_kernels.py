@@ -149,7 +149,7 @@ def construct_features(features):
 
 parameter_list = [[200, 1, 100]]
 
-def serialization_string_kernels_modular(n_data, num_shifts, size):
+def serialization_string_kernels(n_data, num_shifts, size):
     """
     serialize svm with string kernels
     """
@@ -215,5 +215,5 @@ def serialization_string_kernels_modular(n_data, num_shifts, size):
 
 
 if __name__=='__main__':
-    serialization_string_kernels_modular(*parameter_list[0])
+    serialization_string_kernels(*parameter_list[0])
 

@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
 
-def kernel_io_modular (train_fname=traindat,test_fname=testdat,width=1.9):
+def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	from modshogun import RealFeatures, GaussianKernel, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -31,4 +31,4 @@ def kernel_io_modular (train_fname=traindat,test_fname=testdat,width=1.9):
 
 if __name__=='__main__':
 	print('Gaussian')
-	kernel_io_modular(*parameter_list[0])
+	kernel_io(*parameter_list[0])

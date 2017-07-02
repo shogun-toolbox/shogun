@@ -7,7 +7,7 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindna,testdna,3,0,False,False],[traindna,testdna,3,0,False,False]]
 
-def preprocessor_sortwordstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
+def preprocessor_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
 	from modshogun import CommWordStringKernel
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
@@ -37,4 +37,4 @@ def preprocessor_sortwordstring_modular (fm_train_dna=traindna,fm_test_dna=testd
 
 if __name__=='__main__':
 	print('CommWordString')
-	preprocessor_sortwordstring_modular(*parameter_list[0])
+	preprocessor_sortwordstring(*parameter_list[0])

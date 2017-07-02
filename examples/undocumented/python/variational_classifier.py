@@ -50,7 +50,7 @@ parameter_list=[
 	[KLDualInferenceMethod,traindat,testdat,label_binary_traindat,0,0,1e-5,1e-2,0],
 	[SingleLaplaceInferenceMethod,traindat,testdat,label_binary_traindat,0,0],
 ]
-def variational_classifier_modular(kl_inference,train_fname=traindat,test_fname=testdat,
+def variational_classifier(kl_inference,train_fname=traindat,test_fname=testdat,
 	label_fname=label_binary_traindat,kernel_log_sigma=0,kernel_log_scale=0,noise_factor=1e-5,
 	min_coeff_kernel=1e-2,max_attempt=0):
 	from math import exp
@@ -84,4 +84,4 @@ def variational_classifier_modular(kl_inference,train_fname=traindat,test_fname=
 if __name__=="__main__":
 	print("variational_classifier")
 	for parameter in parameter_list:
-		variational_classifier_modular(*parameter)
+		variational_classifier(*parameter)
