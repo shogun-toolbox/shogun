@@ -11,72 +11,75 @@ def features_io (fm_train_real, label_train_twoclass):
 	from modshogun import SparseRealFeatures, RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel
 	from modshogun import LibSVMFile, CSVFile, BinaryFile, HDF5File
+	from tempfile import NamedTemporaryFile
 
 	feats=SparseRealFeatures(fm_train_real)
 	feats2=SparseRealFeatures()
 
-	f=BinaryFile("tmp/fm_train_sparsereal.bin","w")
+	tmp_fm_train_sparsereal_bin = NamedTemporaryFile(suffix='sparsereal.bin')
+	f=BinaryFile(tmp_fm_train_sparsereal_bin.name, "w")
 	feats.save(f)
 
-	f=LibSVMFile("tmp/fm_train_sparsereal.ascii","w")
+	tmp_fm_train_sparsereal_ascii = NamedTemporaryFile(suffix='sparsereal.ascii')
+	f=LibSVMFile(tmp_fm_train_sparsereal_ascii.name, "w")
 	feats.save(f)
 
-	f=BinaryFile("tmp/fm_train_sparsereal.bin")
+	f=BinaryFile(tmp_fm_train_sparsereal_bin.name)
 	feats2.load(f)
 
-	f=LibSVMFile("tmp/fm_train_sparsereal.ascii")
+	f=LibSVMFile(tmp_fm_train_sparsereal_ascii.name)
 	feats2.load(f)
 
 	feats=RealFeatures(fm_train_real)
 	feats2=RealFeatures()
 
-	f=BinaryFile("tmp/fm_train_real.bin","w")
+	tmp_fm_train_real_bin = NamedTemporaryFile(suffix='real.bin')
+	f=BinaryFile(tmp_fm_train_real_bin.name, "w")
 	feats.save(f)
 
-	f=HDF5File("tmp/fm_train_real.h5","w", "/data/doubles")
+	tmp_fm_train_real_h5 = NamedTemporaryFile(suffix='real.h5')
+	f=HDF5File(tmp_fm_train_real_h5.name, "w", "/data/doubles")
 	feats.save(f)
 
-	f=CSVFile("tmp/fm_train_real.ascii","w")
+	tmp_fm_train_real_ascii = NamedTemporaryFile(suffix='real.ascii')
+	f=CSVFile(tmp_fm_train_real_ascii.name, "w")
 	feats.save(f)
 
-	f=BinaryFile("tmp/fm_train_real.bin")
+	f=BinaryFile(tmp_fm_train_real_bin.name)
 	feats2.load(f)
 	#print("diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
-	f=CSVFile("tmp/fm_train_real.ascii")
+	f=CSVFile(tmp_fm_train_real_ascii.name)
 	feats2.load(f)
 	#print("diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
 	lab=MulticlassLabels(numpy.array([0.0,1.0,2.0,3.0]))
 	lab2=MulticlassLabels()
-	f=CSVFile("tmp/label_train_twoclass.ascii","w")
+	tmp_label_train_twoclass_ascii = NamedTemporaryFile(suffix='twoclass.ascii')
+	f=CSVFile(tmp_label_train_twoclass_ascii.name, "w")
 	lab.save(f)
 
-	f=BinaryFile("tmp/label_train_twoclass.bin","w")
+	tmp_label_train_twoclass_bin = NamedTemporaryFile(suffix='twoclass.bin')
+	f=BinaryFile(tmp_label_train_twoclass_bin.name, "w")
 	lab.save(f)
 
-	f=HDF5File("tmp/label_train_real.h5","w", "/data/labels")
+	tmp_label_train_real_h5 = NamedTemporaryFile(suffix='real.h5')
+	f=HDF5File(tmp_label_train_real_h5.name, "w", "/data/labels")
 	lab.save(f)
 
-	f=CSVFile("tmp/label_train_twoclass.ascii")
+	f=CSVFile(tmp_label_train_twoclass_ascii.name)
 	lab2.load(f)
 
-	f=BinaryFile("tmp/label_train_twoclass.bin")
+	f=BinaryFile(tmp_label_train_twoclass_bin.name)
 	lab2.load(f)
 
-	f=HDF5File("tmp/fm_train_real.h5","r", "/data/doubles")
+	f=HDF5File(tmp_fm_train_real_h5.name, "r", "/data/doubles")
 	feats2.load(f)
 	#print(feats2.get_feature_matrix())
-	f=HDF5File("tmp/label_train_real.h5","r", "/data/labels")
+	f=HDF5File(tmp_label_train_real_h5.name, "r", "/data/labels")
 	lab2.load(f)
 	#print(lab2.get_labels())
 
-	#clean up
-	import os
-	for f in ['tmp/fm_train_sparsereal.bin','tmp/fm_train_sparsereal.ascii',
-			'tmp/fm_train_real.bin','tmp/fm_train_real.h5','tmp/fm_train_real.ascii',
-			'tmp/label_train_real.h5', 'tmp/label_train_twoclass.ascii','tmp/label_train_twoclass.bin']:
-		os.unlink(f)
 	return feats, feats2, lab, lab2
 
 if __name__=='__main__':
