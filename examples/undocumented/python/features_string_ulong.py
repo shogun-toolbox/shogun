@@ -2,7 +2,7 @@
 
 parameter_list = [[0,2,0,False],[0,3,0,False]]
 
-def features_string_ulong_modular (start=0,order=2,gap=0,rev=False):
+def features_string_ulong (start=0,order=2,gap=0,rev=False):
 
     from modshogun import StringCharFeatures, StringUlongFeatures, RAWBYTE
     from numpy import array, uint64
@@ -21,4 +21,4 @@ def features_string_ulong_modular (start=0,order=2,gap=0,rev=False):
 
 if __name__=='__main__':
     print('simple_longint')
-    features_string_ulong_modular(*parameter_list[0])
+    features_string_ulong(*parameter_list[0])

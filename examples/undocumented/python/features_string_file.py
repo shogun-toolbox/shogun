@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-parameter_list=[[".", "features_string_char_modular.py"]]
+parameter_list=[[".", "features_string_char.py"]]
 
-def features_string_file_modular (directory, fname):
+def features_string_file (directory, fname):
 	from modshogun import StringCharFeatures, RAWBYTE
 	from modshogun import CSVFile
 
@@ -29,4 +29,4 @@ def features_string_file_modular (directory, fname):
 
 if __name__=='__main__':
 	print('StringWordFeatures')
-	features_string_file_modular(*parameter_list[0])
+	features_string_file(*parameter_list[0])

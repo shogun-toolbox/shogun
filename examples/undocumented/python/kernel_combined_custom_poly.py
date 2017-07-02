@@ -7,7 +7,7 @@ label_traindat = '../data/label_train_twoclass.dat'
 parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_traindat]]
 
 
-def kernel_combined_custom_poly_modular (train_fname = traindat,test_fname = testdat,train_label_fname=label_traindat):
+def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,train_label_fname=label_traindat):
     from modshogun import CombinedFeatures, RealFeatures, BinaryLabels
     from modshogun import CombinedKernel, PolyKernel, CustomKernel
     from modshogun import LibSVM, CSVFile
@@ -53,4 +53,4 @@ def kernel_combined_custom_poly_modular (train_fname = traindat,test_fname = tes
     return km_train,kernel
 
 if __name__=='__main__':
-    kernel_combined_custom_poly_modular(*parameter_list[0])
+    kernel_combined_custom_poly(*parameter_list[0])

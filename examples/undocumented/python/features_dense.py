@@ -11,7 +11,7 @@ matrixC=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=uint8)
 # ... of type Real, LongInt and Byte
 parameter_list = [[matrixA,matrixB,matrixC]]
 
-def features_dense_modular (A=matrixA,B=matrixB,C=matrixC):
+def features_dense (A=matrixA,B=matrixB,C=matrixC):
 
     a=RealFeatures(A)
     b=LongIntFeatures(B)
@@ -42,4 +42,4 @@ def features_dense_modular (A=matrixA,B=matrixB,C=matrixC):
 
 if __name__=='__main__':
     print('dense')
-    features_dense_modular(*parameter_list[0])
+    features_dense(*parameter_list[0])

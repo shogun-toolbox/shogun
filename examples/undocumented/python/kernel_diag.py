@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 parameter_list =[[23],[24]]
-def kernel_diag_modular (diag=23):
+def kernel_diag (diag=23):
 	from modshogun import DummyFeatures
 	from modshogun import DiagKernel
 
@@ -16,5 +16,5 @@ def kernel_diag_modular (diag=23):
 
 if __name__=='__main__':
 	print('Diag')
-	kernel_diag_modular(*parameter_list[0])
+	kernel_diag(*parameter_list[0])
 

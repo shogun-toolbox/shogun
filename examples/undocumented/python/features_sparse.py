@@ -4,7 +4,7 @@ import numpy
 A=numpy.array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=numpy.float64)
 
 parameter_list=[[A]]
-def features_sparse_modular (A):
+def features_sparse (A):
 	from scipy.sparse import csc_matrix
 	from modshogun import SparseRealFeatures
 	from numpy import array, float64, all
@@ -42,4 +42,4 @@ def features_sparse_modular (A):
 
 if __name__=='__main__':
 	print('Sparse Features')
-	features_sparse_modular(*parameter_list[0])
+	features_sparse(*parameter_list[0])

@@ -5,7 +5,7 @@ from tools.multiclass_shared import prepare_data
 
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
-def classifier_multilabeloutputliblinear_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
+def classifier_multilabeloutputliblinear (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
 	from modshogun import RealFeatures, MulticlassLabels, MultilabelLabels
 	from modshogun import MulticlassLibLinear
 
@@ -24,4 +24,4 @@ def classifier_multilabeloutputliblinear_modular (fm_train_real=traindat,fm_test
 
 if __name__=='__main__':
 	print('MultilabelOutputLibLinear')
-	classifier_multilabeloutputliblinear_modular(*parameter_list[0])
+	classifier_multilabeloutputliblinear(*parameter_list[0])

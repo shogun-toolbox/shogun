@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-parameter_list = [['features_string_char_compressed_modular.py']]
+parameter_list = [['features_string_char_compressed.py']]
 
-def features_string_char_compressed_modular (fname):
+def features_string_char_compressed (fname):
 	from modshogun import StringCharFeatures, StringFileCharFeatures, RAWBYTE
 	from modshogun import UNCOMPRESSED,SNAPPY,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
 	from modshogun import DecompressCharString
@@ -93,4 +93,4 @@ def features_string_char_compressed_modular (fname):
 
 if __name__=='__main__':
     print('Compressing StringCharFileFeatures')
-    features_string_char_compressed_modular(*parameter_list[0])
+    features_string_char_compressed(*parameter_list[0])

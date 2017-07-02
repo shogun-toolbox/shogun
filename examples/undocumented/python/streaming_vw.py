@@ -6,7 +6,7 @@ from modshogun import VowpalWabbit
 
 parameter_list=[[None]]
 
-def streaming_vw_modular (dummy):
+def streaming_vw (dummy):
 	"""Runs the VW algorithm on a toy dataset in SVMLight format."""
 
 	# Open the input file as a StreamingVwFile
@@ -28,4 +28,4 @@ def streaming_vw_modular (dummy):
 	##return vw
 
 if __name__ == "__main__":
-	streaming_vw_modular(*parameter_list[0])
+	streaming_vw(*parameter_list[0])

@@ -18,7 +18,7 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 
 parameter_list = [[traindat,testdat,label_traindat,1,5,0.9]]
 
-def classifier_ssk_modular (fm_train_dna=traindat,fm_test_dna=testdat,
+def classifier_ssk (fm_train_dna=traindat,fm_test_dna=testdat,
 		label_train_dna=label_traindat,C=1,maxlen=1,decay=1):
 	from modshogun import StringCharFeatures, BinaryLabels
 	from modshogun import LibSVM, SubsequenceStringKernel, DNA
@@ -45,4 +45,4 @@ def classifier_ssk_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 
 if __name__=='__main__':
 	print('SringSubsequenceKernel classification DNA')
-	classifier_ssk_modular(*parameter_list[0])
+	classifier_ssk(*parameter_list[0])

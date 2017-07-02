@@ -5,7 +5,7 @@ from tools.multiclass_shared import prepare_data
 
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 
-def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
+def classifier_multiclassmachine (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel
 	from modshogun import LibSVM, KernelMulticlassMachine, MulticlassOneVsRestStrategy
@@ -28,4 +28,4 @@ def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=te
 
 if __name__=='__main__':
 	print('MulticlassMachine')
-	classifier_multiclassmachine_modular(*parameter_list[0])
+	classifier_multiclassmachine(*parameter_list[0])

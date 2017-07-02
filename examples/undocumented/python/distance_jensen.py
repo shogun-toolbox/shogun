@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_jensen_modular (train_fname=traindat,test_fname=testdat):
+def distance_jensen (train_fname=traindat,test_fname=testdat):
 
 	from modshogun import RealFeatures, JensenMetric, CSVFile
 
@@ -20,4 +20,4 @@ def distance_jensen_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('JensenMetric')
-	distance_jensen_modular(*parameter_list[0])
+	distance_jensen(*parameter_list[0])

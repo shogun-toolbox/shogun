@@ -8,7 +8,7 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,3,0,False]]
 
-def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False):
+def distance_canberraword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False):
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
 	from modshogun import SortWordString
 	from modshogun import CanberraWordDistance
@@ -38,4 +38,4 @@ def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,ord
 
 if __name__=='__main__':
 	print('CanberraWordDistance')
-	distance_canberraword_modular(*parameter_list[0])
+	distance_canberraword(*parameter_list[0])

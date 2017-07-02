@@ -6,7 +6,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,10,3,True],[traindat,testdat,10,4,True]]
 
-def kernel_sparse_poly_modular (fm_train_real=traindat,fm_test_real=testdat,
+def kernel_sparse_poly (fm_train_real=traindat,fm_test_real=testdat,
 		 size_cache=10,degree=3,inhomogene=True ):
 
 	from modshogun import SparseRealFeatures
@@ -27,4 +27,4 @@ def kernel_sparse_poly_modular (fm_train_real=traindat,fm_test_real=testdat,
 
 if __name__=='__main__':
 	print('SparsePoly')
-	kernel_sparse_poly_modular(*parameter_list[0])
+	kernel_sparse_poly(*parameter_list[0])

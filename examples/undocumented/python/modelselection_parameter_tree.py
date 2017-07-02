@@ -11,7 +11,7 @@
 
 parameter_list=[[None]]
 
-def modelselection_parameter_tree_modular (dummy):
+def modelselection_parameter_tree (dummy):
     from modshogun import ParameterCombination
     from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
     from modshogun import PowerKernel
@@ -99,7 +99,7 @@ def modelselection_parameter_tree_modular (dummy):
 
 if __name__=='__main__':
     print('ModelSelection ParameterTree')
-    modelselection_parameter_tree_modular(*parameter_list[0])
+    modelselection_parameter_tree(*parameter_list[0])
 
 
 

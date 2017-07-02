@@ -9,7 +9,7 @@ label=lm.load_labels('../data/label_train_dna.dat')
 parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-7, 1],
 		[train_dna, test_dna, label, 20, 2.3, 1e-7, 4]]
 
-def classifier_svmlight_batch_linadd_modular (fm_train_dna, fm_test_dna,
+def classifier_svmlight_batch_linadd (fm_train_dna, fm_test_dna,
 		label_train_dna, degree, C, epsilon, num_threads):
 
 	from modshogun import StringCharFeatures, BinaryLabels, DNA
@@ -51,4 +51,4 @@ def classifier_svmlight_batch_linadd_modular (fm_train_dna, fm_test_dna,
 
 if __name__=='__main__':
 	print('SVMlight batch')
-	classifier_svmlight_batch_linadd_modular(*parameter_list[0])
+	classifier_svmlight_batch_linadd(*parameter_list[0])

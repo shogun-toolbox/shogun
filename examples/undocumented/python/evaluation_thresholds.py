@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list = [[1000]]
 
-def evaluation_thresholds_modular (index):
+def evaluation_thresholds (index):
 	from modshogun import BinaryLabels, ROCEvaluation
 	import numpy
 	numpy.random.seed(17)
@@ -29,4 +29,4 @@ def evaluation_thresholds_modular (index):
 
 if __name__=='__main__':
 	print('Evaluation with Thresholds')
-	evaluation_thresholds_modular(*parameter_list[0])
+	evaluation_thresholds(*parameter_list[0])

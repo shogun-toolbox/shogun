@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_linearlocaltangentspacealignment_modular (data_fname,k):
+def converter_linearlocaltangentspacealignment (data_fname,k):
 	try:
 		from modshogun import RealFeatures, CSVFile
 		try:
@@ -24,5 +24,5 @@ def converter_linearlocaltangentspacealignment_modular (data_fname,k):
 
 if __name__=='__main__':
 	print('LinearLocalTangentSpaceAlignment')
-	converter_linearlocaltangentspacealignment_modular(*parameter_list[0])
+	converter_linearlocaltangentspacealignment(*parameter_list[0])
 

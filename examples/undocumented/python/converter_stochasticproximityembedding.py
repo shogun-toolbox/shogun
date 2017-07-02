@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data, 20]]
 
-def converter_stochasticproximityembedding_modular (data_fname, k):
+def converter_stochasticproximityembedding (data_fname, k):
 	try:
 		from modshogun import RealFeatures,StochasticProximityEmbedding, SPE_GLOBAL, SPE_LOCAL, CSVFile
 
@@ -25,4 +25,4 @@ def converter_stochasticproximityembedding_modular (data_fname, k):
 
 if __name__=='__main__':
 	print('StochasticProximityEmbedding')
-	converter_stochasticproximityembedding_modular(*parameter_list[0])
+	converter_stochasticproximityembedding(*parameter_list[0])

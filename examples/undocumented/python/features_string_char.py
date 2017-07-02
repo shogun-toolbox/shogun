@@ -3,7 +3,7 @@ strings=['hey','guys','i','am','a','string']
 
 parameter_list=[[strings]]
 
-def features_string_char_modular (strings):
+def features_string_char (strings):
 	from modshogun import StringCharFeatures, RAWBYTE
 	from numpy import array
 
@@ -25,4 +25,4 @@ def features_string_char_modular (strings):
 
 if __name__=='__main__':
 	print('StringCharFeatures')
-	features_string_char_modular(*parameter_list[0])
+	features_string_char(*parameter_list[0])

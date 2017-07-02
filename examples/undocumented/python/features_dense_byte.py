@@ -6,7 +6,7 @@ A=numpy.array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=numpy.uin
 
 parameter_list=[[A]]
 
-def features_dense_byte_modular (A):
+def features_dense_byte (A):
 	from modshogun import ByteFeatures
 
 	# create dense features a
@@ -31,4 +31,4 @@ def features_dense_byte_modular (A):
 
 if __name__=='__main__':
 	print('ByteFeatures')
-	features_dense_byte_modular(*parameter_list[0])
+	features_dense_byte(*parameter_list[0])

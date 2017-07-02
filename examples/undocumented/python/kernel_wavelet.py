@@ -8,7 +8,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list=[[traindat,testdat, 1.5, 1.0],[traindat,testdat, 1.0, 1.5]]
 
-def kernel_wavelet_modular (fm_train_real=traindat,fm_test_real=testdat, dilation=1.5, translation=1.0):
+def kernel_wavelet (fm_train_real=traindat,fm_test_real=testdat, dilation=1.5, translation=1.0):
 	from modshogun import RealFeatures
 	from modshogun import WaveletKernel
 
@@ -25,4 +25,4 @@ def kernel_wavelet_modular (fm_train_real=traindat,fm_test_real=testdat, dilatio
 
 if __name__=='__main__':
 	print('Wavelet')
-	kernel_wavelet_modular(*parameter_list[0])
+	kernel_wavelet(*parameter_list[0])

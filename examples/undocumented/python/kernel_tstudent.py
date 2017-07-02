@@ -8,7 +8,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
-def kernel_tstudent_modular (fm_train_real=traindat,fm_test_real=testdat, degree=2.0):
+def kernel_tstudent (fm_train_real=traindat,fm_test_real=testdat, degree=2.0):
 	from modshogun import RealFeatures
 	from modshogun import TStudentKernel
 	from modshogun import EuclideanDistance
@@ -28,4 +28,4 @@ def kernel_tstudent_modular (fm_train_real=traindat,fm_test_real=testdat, degree
 
 if __name__=='__main__':
 	print('TStudent')
-	kernel_tstudent_modular(*parameter_list[0])
+	kernel_tstudent(*parameter_list[0])

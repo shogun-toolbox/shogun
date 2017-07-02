@@ -6,7 +6,7 @@ traindna = lm.load_dna('../data/fm_train_dna.dat')
 
 parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
 
-def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False):
+def distribution_linearhmm (fm_dna=traindna,order=3,gap=0,reverse=False):
 
 	from modshogun import StringWordFeatures, StringCharFeatures, DNA
 	from modshogun import LinearHMM
@@ -36,5 +36,5 @@ def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False)
 ###########################################################################
 
 if __name__=='__main__':
-	distribution_linearhmm_modular(*parameter_list[0])
+	distribution_linearhmm(*parameter_list[0])
 	print('LinearHMM')

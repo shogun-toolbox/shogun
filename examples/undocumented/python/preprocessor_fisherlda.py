@@ -8,7 +8,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 labels = lm.load_numbers('../data/label_train_multiclass.dat')
 
 parameter_list = [[data, labels, CANVAR_FLDA], [data, labels, CLASSIC_FLDA]]
-def preprocessor_fisherlda_modular (data, labels, method):
+def preprocessor_fisherlda (data, labels, method):
 
 	from modshogun import RealFeatures, MulticlassLabels, CANVAR_FLDA
 	from modshogun import FisherLda
@@ -26,5 +26,5 @@ def preprocessor_fisherlda_modular (data, labels, method):
 
 if __name__=='__main__':
 	print('FisherLda')
-	preprocessor_fisherlda_modular(*parameter_list[0])
+	preprocessor_fisherlda(*parameter_list[0])
 

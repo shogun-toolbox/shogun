@@ -6,7 +6,7 @@ feattypes = array([False])
 
 parameter_list = [[50,5,15,0.2,feattypes]]
 
-def regression_cartree_modular(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
+def regression_cartree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, RegressionLabels, CSVFile, CARTree, PT_REGRESSION
 		from numpy import random
@@ -40,4 +40,4 @@ def regression_cartree_modular(num_train=500,num_test=50,x_range=15,noise_var=0.
 
 if __name__=='__main__':
 	print('CARTree')
-	regression_cartree_modular(*parameter_list[0])
+	regression_cartree(*parameter_list[0])

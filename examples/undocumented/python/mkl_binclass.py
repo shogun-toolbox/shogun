@@ -21,7 +21,7 @@ parameter_list = [[traindat,testdat,label_traindat],[traindat,testdat,label_trai
 #    fm_test_real.shape
 #    combined_custom()
 
-def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass = label_traindat):
+def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass = label_traindat):
 
     ##################################
     # set up and train
@@ -85,4 +85,4 @@ def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_t
     return mkl.apply(),kernel
 
 if __name__=='__main__':
-    mkl_binclass_modular (*parameter_list[0])
+    mkl_binclass (*parameter_list[0])

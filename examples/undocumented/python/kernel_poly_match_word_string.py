@@ -6,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,2,True,3,0,False],[traindat,testdat,2,True,3,0,False]]
 
-def kernel_poly_match_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
+def kernel_poly_match_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 degree=2,inhomogene=True,order=3,gap=0,reverse=False):
 	from modshogun import PolyMatchWordStringKernel
 	from modshogun import StringWordFeatures, StringCharFeatures, DNA
@@ -30,4 +30,4 @@ degree=2,inhomogene=True,order=3,gap=0,reverse=False):
 
 if __name__=='__main__':
 	print('PolyMatchWordString')
-	kernel_poly_match_word_string_modular(*parameter_list[0])
+	kernel_poly_match_word_string(*parameter_list[0])

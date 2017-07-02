@@ -4,7 +4,7 @@ s=10*'A' + 10*'C' + 10*'G' + 10*'T'
 
 parameter_list=[[s]]
 
-def features_string_sliding_window_modular (strings):
+def features_string_sliding_window (strings):
 	from modshogun import StringCharFeatures, DNA
 	from modshogun import DynamicIntArray
 
@@ -45,4 +45,4 @@ def features_string_sliding_window_modular (strings):
 
 if __name__=='__main__':
 	print('Sliding Window')
-	features_string_sliding_window_modular(*parameter_list[0])
+	features_string_sliding_window(*parameter_list[0])

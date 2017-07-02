@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_geodesic_modular (train_fname=traindat,test_fname=testdat):
+def distance_geodesic (train_fname=traindat,test_fname=testdat):
 
 	from modshogun import RealFeatures, GeodesicMetric, CSVFile
 
@@ -22,4 +22,4 @@ def distance_geodesic_modular (train_fname=traindat,test_fname=testdat):
 
 if __name__=='__main__':
 	print('GeodesicMetric')
-	distance_geodesic_modular(*parameter_list[0])
+	distance_geodesic(*parameter_list[0])

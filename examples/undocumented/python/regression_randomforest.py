@@ -10,7 +10,7 @@ feattypes = array([False])
 
 parameter_list = [[500,50,15,0.2,feattypes]]
 
-def regression_randomforest_modular(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
+def regression_randomforest(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
 		from modshogun import RealFeatures, RegressionLabels, CSVFile, RandomForest, MeanRule, PT_REGRESSION
 	except ImportError:
@@ -45,4 +45,4 @@ def regression_randomforest_modular(num_train=500,num_test=50,x_range=15,noise_v
 
 if __name__=='__main__':
 	print('RandomForest')
-	regression_randomforest_modular(*parameter_list[0])
+	regression_randomforest(*parameter_list[0])

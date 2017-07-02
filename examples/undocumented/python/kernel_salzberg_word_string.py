@@ -6,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 label_traindat = lm.load_labels('../data/label_train_dna.dat')
 
 parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,label_traindat,3,0,False]]
-def kernel_salzberg_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
+def kernel_salzberg_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
 order=3,gap=0,reverse=False):
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
 	from modshogun import SalzbergWordStringKernel
@@ -37,5 +37,5 @@ order=3,gap=0,reverse=False):
 
 if __name__=='__main__':
 	print('PluginEstimate w/ SalzbergWord')
-	kernel_salzberg_word_string_modular(*parameter_list[0])
+	kernel_salzberg_word_string(*parameter_list[0])
 

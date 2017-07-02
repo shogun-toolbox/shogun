@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_normsquared_modular (train_fname=traindat,test_fname=testdat):
+def distance_normsquared (train_fname=traindat,test_fname=testdat):
 	from modshogun import RealFeatures, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -22,4 +22,4 @@ def distance_normsquared_modular (train_fname=traindat,test_fname=testdat):
 if __name__=='__main__':
 
 	print('EuclideanDistance - NormSquared')
-	distance_normsquared_modular(*parameter_list[0])
+	distance_normsquared(*parameter_list[0])

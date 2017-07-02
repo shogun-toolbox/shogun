@@ -4,7 +4,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
-def kernel_exponential_modular (train_fname=traindat,test_fname=testdat, tau_coef=1.0):
+def kernel_exponential (train_fname=traindat,test_fname=testdat, tau_coef=1.0):
 	from modshogun import RealFeatures, ExponentialKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -21,4 +21,4 @@ def kernel_exponential_modular (train_fname=traindat,test_fname=testdat, tau_coe
 
 if __name__=='__main__':
 	print('Exponential')
-	kernel_exponential_modular(*parameter_list[0])
+	kernel_exponential(*parameter_list[0])

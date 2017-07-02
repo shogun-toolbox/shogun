@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[[]]
 
-def labels_io_modular():
+def labels_io():
 	from modshogun import RegressionLabels, CSVFile
 	lab=RegressionLabels()
 	f=CSVFile("../data/label_train_regression.dat","r")
@@ -12,4 +12,4 @@ def labels_io_modular():
 
 if __name__=='__main__':
 	print('Labels IO')
-	labels_io_modular(*parameter_list[0])
+	labels_io(*parameter_list[0])

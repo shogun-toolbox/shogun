@@ -5,7 +5,7 @@ label_traindat = '../data/label_train_twoclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,1,1e-5],[traindat,testdat,label_traindat,0.9,1e-5]]
 
-def classifier_mpdsvm_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=1,epsilon=1e-5):
+def classifier_mpdsvm (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=1,epsilon=1e-5):
 
 	from modshogun import RealFeatures, BinaryLabels
 	from modshogun import GaussianKernel
@@ -26,4 +26,4 @@ def classifier_mpdsvm_modular (train_fname=traindat,test_fname=testdat,label_fna
 
 if __name__=='__main__':
 	print('MPDSVM')
-	classifier_mpdsvm_modular(*parameter_list[0])
+	classifier_mpdsvm(*parameter_list[0])

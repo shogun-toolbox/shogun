@@ -9,7 +9,7 @@ traindna = lm.load_dna('../data/fm_train_dna.dat')
 testdna = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,traindna,testdna],[traindat,testdat,traindna,testdna]]
-def kernel_combined_modular (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
+def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
 	from modshogun import CombinedKernel, GaussianKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
 	from modshogun import RealFeatures, StringCharFeatures, CombinedFeatures, DNA
 
@@ -47,6 +47,6 @@ def kernel_combined_modular (fm_train_real=traindat,fm_test_real=testdat,fm_trai
 
 if __name__=='__main__':
 	print('Combined')
-	kernel_combined_modular(*parameter_list[0])
+	kernel_combined(*parameter_list[0])
 
 

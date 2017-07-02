@@ -9,7 +9,7 @@ parameter_list=[
 		[ fm_train_real, fm_test_real, label_train_multiclass, 1.2, 1.2, 1e-5, 1, 0.001, 1.5],
 		[ fm_train_real, fm_test_real, label_train_multiclass, 5, 1.2, 1e-2, 1, 0.001, 2]]
 
-def mkl_multiclass_modular (fm_train_real, fm_test_real, label_train_multiclass,
+def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 	width, C, epsilon, num_threads, mkl_epsilon, mkl_norm):
 
 	from modshogun import CombinedFeatures, RealFeatures, MulticlassLabels
@@ -61,4 +61,4 @@ def mkl_multiclass_modular (fm_train_real, fm_test_real, label_train_multiclass,
 
 if __name__ == '__main__':
 	print('mkl_multiclass')
-	mkl_multiclass_modular(*parameter_list[0])
+	mkl_multiclass(*parameter_list[0])

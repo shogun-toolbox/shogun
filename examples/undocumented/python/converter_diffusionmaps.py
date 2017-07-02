@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data,10],[data,20]]
 
-def converter_diffusionmaps_modular (data_fname,t):
+def converter_diffusionmaps (data_fname,t):
 	try:
 		from modshogun import RealFeatures, DiffusionMaps, GaussianKernel, CSVFile
 
@@ -20,5 +20,5 @@ def converter_diffusionmaps_modular (data_fname,t):
 
 if __name__=='__main__':
 	print('DiffusionMaps')
-	converter_diffusionmaps_modular(*parameter_list[0])
+	converter_diffusionmaps(*parameter_list[0])
 

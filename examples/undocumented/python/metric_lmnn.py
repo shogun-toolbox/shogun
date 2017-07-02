@@ -6,7 +6,7 @@ label_traindat = '../data/label_train_multiclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,3]]
 
-def metric_lmnn_modular(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
+def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
 	try:
 		from modshogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
 	except ImportError:
@@ -31,4 +31,4 @@ def metric_lmnn_modular(train_fname=traindat,test_fname=testdat,label_train_fnam
 
 if __name__=='__main__':
 	print('LMNN')
-	metric_lmnn_modular(*parameter_list[0])
+	metric_lmnn(*parameter_list[0])

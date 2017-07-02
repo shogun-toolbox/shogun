@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[[10,7,0,False]]
 
-def tests_check_commwordkernel_memleak_modular (num, order, gap, reverse):
+def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 	import gc
 	from modshogun import Alphabet,StringCharFeatures,StringWordFeatures,DNA
 	from modshogun import SortWordString, MSG_DEBUG
@@ -83,4 +83,4 @@ def tests_check_commwordkernel_memleak_modular (num, order, gap, reverse):
 
 if __name__=='__main__':
 	print('Leak Check Comm Word Kernel')
-	tests_check_commwordkernel_memleak_modular(*parameter_list[0])
+	tests_check_commwordkernel_memleak(*parameter_list[0])

@@ -6,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,5,5],[traindat,testdat,6,6]]
 
-def kernel_distantsegments_modular (fm_train_dna=traindat,fm_test_dna=testdat,delta=5, theta=5):
+def kernel_distantsegments (fm_train_dna=traindat,fm_test_dna=testdat,delta=5, theta=5):
 	from modshogun import StringCharFeatures, DNA
 	from modshogun import DistantSegmentsKernel
 
@@ -24,4 +24,4 @@ def kernel_distantsegments_modular (fm_train_dna=traindat,fm_test_dna=testdat,de
 
 if __name__=='__main__':
 	print('DistantSegments')
-	kernel_distantsegments_modular(*parameter_list[0])
+	kernel_distantsegments(*parameter_list[0])

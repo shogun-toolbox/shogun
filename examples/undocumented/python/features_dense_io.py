@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[[]]
 
-def features_dense_io_modular():
+def features_dense_io():
 	from modshogun import RealFeatures, CSVFile
 	feats=RealFeatures()
 	f=CSVFile("../data/fm_train_real.dat","r")
@@ -11,4 +11,4 @@ def features_dense_io_modular():
 
 if __name__=='__main__':
 	print('Dense Real Features IO')
-	features_dense_io_modular(*parameter_list[0])
+	features_dense_io(*parameter_list[0])

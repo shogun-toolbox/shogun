@@ -6,7 +6,7 @@ traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,4,0,False, False],[traindat,testdat,4,0,False,False]]
 
-def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, order=3, gap=0, reverse = False, use_sign = False):
+def kernel_comm_word_string (fm_train_dna=traindat, fm_test_dna=testdat, order=3, gap=0, reverse = False, use_sign = False):
 
 	from modshogun import CommWordStringKernel
 	from modshogun import StringWordFeatures, StringCharFeatures, DNA
@@ -37,4 +37,4 @@ def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat,
 
 if __name__=='__main__':
 	print('CommWordString')
-	kernel_comm_word_string_modular(*parameter_list[0])
+	kernel_comm_word_string(*parameter_list[0])

@@ -2,7 +2,7 @@
 from numpy import *
 parameter_list = [[10,3,15,0.9,1,2000,1],[20,4,15,0.9,1,5000,2]]
 
-def classifier_larank_modular (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5,seed=1):
+def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5,seed=1):
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel
 	from modshogun import LaRank
@@ -43,4 +43,4 @@ def classifier_larank_modular (num_vec,num_class,distance,C=0.9,num_threads=1,nu
 
 if __name__=='__main__':
 	print('LaRank')
-	[predictions, svm, labels] = classifier_larank_modular(*parameter_list[0])
+	[predictions, svm, labels] = classifier_larank(*parameter_list[0])

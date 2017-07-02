@@ -5,7 +5,7 @@ label_traindat = '../data/label_train_twoclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,0.9,1e-5,1],[traindat,testdat,label_traindat,0.8,1e-5,1]]
 
-def classifier_svmlin_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=0.9,epsilon=1e-5,num_threads=1):
+def classifier_svmlin (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=0.9,epsilon=1e-5,num_threads=1):
 	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
 	from modshogun import SVMLin, CSVFile
 
@@ -26,4 +26,4 @@ def classifier_svmlin_modular (train_fname=traindat,test_fname=testdat,label_fna
 
 if __name__=='__main__':
 	print('SVMLin')
-	classifier_svmlin_modular(*parameter_list[0])
+	classifier_svmlin(*parameter_list[0])

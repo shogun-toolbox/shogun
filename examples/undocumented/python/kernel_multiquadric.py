@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
-def kernel_multiquadric_modular (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
+def kernel_multiquadric (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
 	from modshogun import RealFeatures, MultiquadricKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
@@ -23,4 +23,4 @@ def kernel_multiquadric_modular (train_fname=traindat,test_fname=testdat, shift_
 
 if __name__=='__main__':
 	print('Multiquadric')
-	kernel_multiquadric_modular(*parameter_list[0])
+	kernel_multiquadric(*parameter_list[0])

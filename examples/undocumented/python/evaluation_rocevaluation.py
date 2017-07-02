@@ -9,7 +9,7 @@ predicted = random.randn(len(ground_truth))
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_rocevaluation_modular (ground_truth, predicted):
+def evaluation_rocevaluation (ground_truth, predicted):
 	from modshogun import BinaryLabels
 	from modshogun import ROCEvaluation
 
@@ -24,5 +24,5 @@ def evaluation_rocevaluation_modular (ground_truth, predicted):
 
 if __name__=='__main__':
 	print('ROCEvaluation')
-	evaluation_rocevaluation_modular(*parameter_list[0])
+	evaluation_rocevaluation(*parameter_list[0])
 

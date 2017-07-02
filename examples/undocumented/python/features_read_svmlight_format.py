@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 parameter_list=[['../data/train_sparsereal.light']]
 
-def features_read_svmlight_format_modular (fname):
+def features_read_svmlight_format (fname):
 	import os
 	from modshogun import SparseRealFeatures
 	from modshogun import LibSVMFile
@@ -13,4 +13,4 @@ def features_read_svmlight_format_modular (fname):
 
 if __name__=='__main__':
 	print('Reading SVMLIGHT format')
-	features_read_svmlight_format_modular(*parameter_list[0])
+	features_read_svmlight_format(*parameter_list[0])

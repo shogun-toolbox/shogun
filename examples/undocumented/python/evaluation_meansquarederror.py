@@ -11,7 +11,7 @@ predicted = random.randn(N)
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_meansquarederror_modular (ground_truth, predicted):
+def evaluation_meansquarederror (ground_truth, predicted):
 	from modshogun import RegressionLabels
 	from modshogun import MeanSquaredError
 
@@ -26,5 +26,5 @@ def evaluation_meansquarederror_modular (ground_truth, predicted):
 
 if __name__=='__main__':
 	print('MeanSquaredError')
-	evaluation_meansquarederror_modular(*parameter_list[0])
+	evaluation_meansquarederror(*parameter_list[0])
 

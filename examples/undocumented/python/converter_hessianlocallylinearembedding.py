@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_hessianlocallylinearembedding_modular (data_fname,k):
+def converter_hessianlocallylinearembedding (data_fname,k):
 	try:
 		from modshogun import RealFeatures, CSVFile
 		try:
@@ -24,5 +24,5 @@ def converter_hessianlocallylinearembedding_modular (data_fname,k):
 
 if __name__=='__main__':
 	print('HessianLocallyLinearEmbedding')
-	converter_hessianlocallylinearembedding_modular(*parameter_list[0])
+	converter_hessianlocallylinearembedding(*parameter_list[0])
 

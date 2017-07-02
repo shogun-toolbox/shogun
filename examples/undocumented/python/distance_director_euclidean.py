@@ -7,7 +7,7 @@ traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
-def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
+def distance_director_euclidean (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 	try:
 		from modshogun import DirectorDistance
 	except ImportError:
@@ -53,4 +53,4 @@ def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=tes
 
 if __name__=='__main__':
 	print('DirectorEuclideanDistance')
-	distance_director_euclidean_modular(*parameter_list[0])
+	distance_director_euclidean(*parameter_list[0])

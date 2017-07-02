@@ -64,7 +64,7 @@ def loads(str):
 	unpickler.dispatch[pickle.GLOBAL] = mapped_load_global
 	return unpickler.load()
 
-def structure_dynprog_modular (fname):
+def structure_dynprog (fname):
 	import sys
 
 	#pickle is not compatible between python2 -> 3
@@ -190,4 +190,4 @@ def structure_dynprog_modular (fname):
 
 if __name__ == '__main__':
 	print("Structure")
-	structure_dynprog_modular(*parameter_list[0])
+	structure_dynprog(*parameter_list[0])

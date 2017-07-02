@@ -2,7 +2,7 @@
 data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_localitypreservingprojections_modular (data_fname,k):
+def converter_localitypreservingprojections (data_fname,k):
 	from modshogun import RealFeatures, CSVFile
 	from modshogun import LocalityPreservingProjections
 
@@ -17,5 +17,5 @@ def converter_localitypreservingprojections_modular (data_fname,k):
 
 if __name__=='__main__':
 	print('LocalityPreservingProjections')
-	#converter_localitypreservingprojections_modular(*parameter_list[0])
+	#converter_localitypreservingprojections(*parameter_list[0])
 

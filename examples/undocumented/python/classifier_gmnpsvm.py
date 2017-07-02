@@ -5,7 +5,7 @@ label_traindat = '../data/label_train_multiclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 
-def classifier_gmnpsvm_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,width=2.1,C=1,epsilon=1e-5):
+def classifier_gmnpsvm (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel, GMNPSVM, CSVFile
 
@@ -23,4 +23,4 @@ def classifier_gmnpsvm_modular (train_fname=traindat,test_fname=testdat,label_fn
 	return out,kernel
 if __name__=='__main__':
 	print('GMNPSVM')
-	classifier_gmnpsvm_modular(*parameter_list[0])
+	classifier_gmnpsvm(*parameter_list[0])

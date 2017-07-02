@@ -19,7 +19,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def modelselection_random_search_liblinear_modular (traindat=traindat, label_traindat=label_traindat):
+def modelselection_random_search_liblinear (traindat=traindat, label_traindat=label_traindat):
     from modshogun import CrossValidation, CrossValidationResult
     from modshogun import ContingencyTableEvaluation, ACCURACY
     from modshogun import StratifiedCrossValidationSplitting
@@ -81,4 +81,4 @@ def modelselection_random_search_liblinear_modular (traindat=traindat, label_tra
 
 if __name__=='__main__':
     print('ModelSelectionRandomSearchLibLinear')
-    modelselection_random_search_liblinear_modular(*parameter_list[0])
+    modelselection_random_search_liblinear(*parameter_list[0])
