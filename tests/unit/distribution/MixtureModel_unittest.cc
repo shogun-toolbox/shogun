@@ -40,9 +40,8 @@ using namespace shogun;
 
 TEST(MixtureModel,gaussian_mixture_model)
 {
-	sg_rand->set_seed(2);
 	SGMatrix<float64_t> data(1,400);
-
+	CMath::init_random(2);
 	for (int32_t i=0;i<100;i++)
 		data(0,i)=CMath::randn_double();
 	for (int32_t i=100;i<400;i++)

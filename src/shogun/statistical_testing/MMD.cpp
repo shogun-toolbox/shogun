@@ -51,14 +51,17 @@ struct CMMD::Self
 		stype = DEFAULT_STYPE;
 		null_approximation_method = DEFAULT_NULL_APPROXIMATION_METHOD;
 		strategy=unique_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy());
+		seed = DEFAULT_NUM_OF_SEED;
 	}
 
 	index_t num_null_samples;
 	EStatisticType stype;
 	ENullApproximationMethod null_approximation_method;
 	std::unique_ptr<CKernelSelectionStrategy> strategy;
+	int32_t seed;
 
 	static constexpr index_t DEFAULT_NUM_NULL_SAMPLES = 250;
+	static constexpr int32_t DEFAULT_NUM_OF_SEED = 12345;
 	static constexpr EStatisticType DEFAULT_STYPE = ST_UNBIASED_FULL;
 	static constexpr ENullApproximationMethod DEFAULT_NULL_APPROXIMATION_METHOD = NAM_PERMUTATION;
 };
@@ -134,6 +137,16 @@ void CMMD::set_num_null_samples(index_t null_samples)
 index_t CMMD::get_num_null_samples() const
 {
 	return self->num_null_samples;
+}
+
+void CMMD::set_random_seed(int32_t p_seed)
+{
+	self->seed = p_seed;
+}
+
+index_t CMMD::get_random_seed() const
+{
+	return self->seed;
 }
 
 void CMMD::set_statistic_type(EStatisticType stype)

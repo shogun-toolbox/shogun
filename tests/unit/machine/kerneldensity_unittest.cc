@@ -169,14 +169,14 @@ TEST(KernelDensity,dual_tree)
 
 TEST(KernelDensity,dual_tree_single_tree_equivalence)
 {
-	sg_rand->set_seed(1);
+	CRandom* m_rng = new CRandom(1);
 
 	SGMatrix<float64_t> data(5,100);
-	sg_rand->fill_array_oo(data.matrix,500);
+	m_rng->fill_array_oo(data.matrix, 500);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	SGMatrix<float64_t> test(5,20);
-	sg_rand->fill_array_oo(test.matrix,100);
+	m_rng->fill_array_oo(test.matrix, 100);
 	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
 
 
@@ -195,4 +195,5 @@ TEST(KernelDensity,dual_tree_single_tree_equivalence)
 	SG_UNREF(testfeats);
 	SG_UNREF(feats);
 	SG_UNREF(k);
+	SG_FREE(m_rng);
 }

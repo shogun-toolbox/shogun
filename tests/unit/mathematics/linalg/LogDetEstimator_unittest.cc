@@ -120,7 +120,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	sg_rand->set_seed(1);
+	CMath::init_random(1);
 
 	float64_t accuracy=1E-5;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
@@ -169,10 +169,11 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
 	mat.set_const(0.0);
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		float64_t value = CMath::abs(m_rng->std_normal_distrib()) * 1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -256,10 +257,11 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
 	mat.set_const(0.0);
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		float64_t value = CMath::abs(m_rng->std_normal_distrib()) * 1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -347,12 +349,14 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
 
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
-			+min_eigenvalue;
+		diag[i] =
+		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
+		    min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 
@@ -406,10 +410,12 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
 	for (index_t i=0; i<size; ++i)
 	{
-		sm(i,i)=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
-			+min_eigenvalue;
+		sm(i, i) =
+		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
+		    min_eigenvalue;
 	}
 	// set its subdiagonal
 	float64_t entry=min_eigenvalue/2;

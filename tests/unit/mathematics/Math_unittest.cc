@@ -388,9 +388,9 @@ TEST(CMath, permute)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	CMath::init_random(2);
-	CMath::permute(v);
-
+	CRandom* random = new CRandom(2);
+	CMath::permute(v, random);
+	SG_FREE(random);
 	EXPECT_EQ(v[0], 2);
 	EXPECT_EQ(v[1], 1);
 	EXPECT_EQ(v[2], 3);
@@ -403,7 +403,7 @@ TEST(CMath, permute_with_random)
 	v.range_fill(0);
 	CRandom* random = new CRandom(2);
 	CMath::permute(v, random);
-	SG_UNREF(random);
+	SG_FREE(random);
 
 	EXPECT_EQ(v[0], 2);
 	EXPECT_EQ(v[1], 1);

@@ -83,7 +83,7 @@ TEST(BaggingMachine, mock_train)
 
 TEST(BaggingMachine,classify_CART)
 {
-	sg_rand->set_seed(1);
+	CMath::init_random(1);
 	SGMatrix<float64_t> data(4,14);
 
 	//vector = [Outlook Temperature Humidity Wind]

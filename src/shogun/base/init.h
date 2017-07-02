@@ -97,18 +97,6 @@ void set_global_math(CMath* math);
  */
 CMath* get_global_math();
 
-/** set the global random object
- *
- * @param rand random object to use
- */
-void set_global_rand(CRandom* rand);
-
-/** get the global random object
- *
- * @return random object
- */
-CRandom* get_global_rand();
-
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object
  *

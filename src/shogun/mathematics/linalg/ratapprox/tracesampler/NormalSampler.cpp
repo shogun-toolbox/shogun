@@ -43,7 +43,7 @@ SGVector<float64_t> CNormalSampler::sample(index_t idx) const
 	SGVector<float64_t> s(m_dimension);
 
 	for (index_t i=0; i<m_dimension; ++i)
-		s[i]=sg_rand->std_normal_distrib();
+		s[i] = m_rng->std_normal_distrib();
 
 	return s;
 }

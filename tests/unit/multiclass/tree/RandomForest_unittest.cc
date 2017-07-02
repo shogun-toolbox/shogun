@@ -142,8 +142,7 @@ void generate_nm_data(SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
 
 TEST(RandomForest,classify_nominal_test)
 {
-	sg_rand->set_seed(1);
-
+	CMath::init_random(1);
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);
 
@@ -212,8 +211,7 @@ TEST(RandomForest,classify_nominal_test)
 
 TEST(RandomForest,classify_non_nominal_test)
 {
-	sg_rand->set_seed(1);
-	
+	CMath::init_random(1);
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);	
 

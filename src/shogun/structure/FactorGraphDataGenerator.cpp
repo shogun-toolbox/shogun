@@ -104,7 +104,7 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 
 CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
 {
-	CMath::init_random(17);
+	m_rng->set_seed(17);
 
 	// ftype
 	SGVector<int32_t> card(2);
@@ -133,8 +133,8 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 		for (int32_t x = 0; x < N; ++x)
 		{
 			SGVector<float64_t> data(2);
-			data[0] = CMath::random(0.0, 1.0);
-			data[1] = CMath::random(0.0, 1.0);
+			data[0] = m_rng->random(0.0, 1.0);
+			data[1] = m_rng->random(0.0, 1.0);
 
 			SGVector<int32_t> var_index(1);
 			var_index[0] = y * N + x;
@@ -150,10 +150,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = m_rng->random(0.0, 1.0); // E(0,0)->A
+				float64_t C = m_rng->random(0.0, 1.0); // E(1,0)->C
+				float64_t B = m_rng->random(0.0, 1.0); // E(0,1)->B
+				float64_t D = m_rng->random(0.0, 1.0); // E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -173,10 +173,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = m_rng->random(0.0, 1.0); // E(0,0)->A
+				float64_t C = m_rng->random(0.0, 1.0); // E(1,0)->C
+				float64_t B = m_rng->random(0.0, 1.0); // E(0,1)->B
+				float64_t D = m_rng->random(0.0, 1.0); // E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -355,7 +355,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 		// generate feature vector
 		SGVector<int32_t> random_indices(len_feat);
 		random_indices.range_fill();
-		CMath::permute(random_indices);
+		CMath::permute(random_indices, m_rng.get());
 		SGVector<float64_t> v_feat(len_feat);
 		v_feat.zero();
 
@@ -494,7 +494,7 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	SGMatrix<float64_t> feats_train;
 
 	// Generate random data
-	sg_rand->set_seed(10); // fix the random seed
+	m_rng->set_seed(10); // fix the random seed
 	generate_data(4, 12, 8, feats_train, labels_train);
 
 	int32_t num_sample_train  = labels_train.num_cols;
