@@ -169,7 +169,7 @@ TEST(KernelDensity,dual_tree)
 
 TEST(KernelDensity,dual_tree_single_tree_equivalence)
 {
-	CRandom* m_rng = new CRandom(1);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
 
 	SGMatrix<float64_t> data(5,100);
 	m_rng->fill_array_oo(data.matrix, 500);
@@ -195,5 +195,4 @@ TEST(KernelDensity,dual_tree_single_tree_equivalence)
 	SG_UNREF(testfeats);
 	SG_UNREF(feats);
 	SG_UNREF(k);
-	SG_FREE(m_rng);
 }
