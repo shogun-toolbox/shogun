@@ -81,7 +81,9 @@ public :
 	SGVector<float64_t> solve_system(const SGMatrix<float64_t>& system_matrix,
 			const SGVector<float64_t>& system_vector) const;
 
+	// to deal with sub-sampling components
 	static std::pair<index_t, index_t> idx_to_ai(index_t idx, index_t D);
+
 
 protected:
 };

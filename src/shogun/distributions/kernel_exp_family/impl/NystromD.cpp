@@ -278,7 +278,6 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 	Map<VectorXd> eigen_beta_grad_sum(beta_grad_sum.vector, D);
 	eigen_beta_grad_sum.array() = VectorXd::Zero(D);
 
-	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
@@ -286,8 +285,18 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 		auto i = ai.second;
 
 		auto left_arg_hessian = m_kernel->dx_i_dx_j_component(a, idx_test, i);
-		Map<VectorXd> eigen_left_arg_hessian(left_arg_hessian.vector, D);
-		eigen_beta_grad_sum[i] -= eigen_left_arg_hessian.dot(eigen_beta.segment(a*D, D));
+
+		// mimic dot product with beta segment, but only relevant components
+		for (auto idx_k=0; idx_k<system_size; idx_k++)
+		{
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+			auto b = bj.first;
+			auto j = bj.second;
+
+			if (a!=b)
+				continue;
+			beta_grad_sum[i] -= left_arg_hessian[j]*m_beta[idx_k];
+		}
 	}
 
 	auto result = beta_grad_sum;
@@ -303,8 +312,10 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 	Map<MatrixXd> eigen_beta_sum_hessian(beta_sum_hessian.matrix, D, D);
 	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
 
+	SG_SWARNING("Hessian implementation only works correctly if all components "
+			"of a basis point are used. Expect memory read errors oand wrong "
+			"results otherwise.\n");
 	Map<VectorXd> eigen_beta(m_beta.vector, system_size);
-
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
@@ -317,6 +328,27 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
 			beta_sum_hessian(i,j) += beta_hess_sum;
 		}
+//		// mimic dot product with beta segment, but only relevant components
+//		// this is WIP
+//		SGVector<float64_t> beta_a(D);
+//		beta_a.zero();
+//		for (auto idx_k=0; idx_k<system_size; idx_k++)
+//		{
+//			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+//			auto b = bj.first;
+//			auto j = bj.second;
+//
+//			if (a!=b)
+//				continue;
+//
+//			beta_a[j] = m_beta[idx_k];
+//			beta_a[i] = m_beta[idx_l];
+//			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
+//			beta_a[j] = 0;
+//			beta_a[i] = 0;
+//
+//			beta_sum_hessian(i,j) += beta_hess_sum;
+//		}
 	}
 
 	auto result = beta_sum_hessian;
@@ -325,6 +357,10 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 
 SGVector<float64_t> NystromD::hessian_diag(index_t idx_test) const
 {
+	SG_SWARNING("Hessian implementation only works correctly if all components "
+			"of a basis point are used. Expect memory read errors oand wrong "
+			"results otherwise.\n");
+
 	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 

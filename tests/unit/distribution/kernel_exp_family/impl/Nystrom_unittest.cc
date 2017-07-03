@@ -62,7 +62,9 @@ enum class ENystromTestType
 
 };
 
-/** All unit tests are based on the following gist
+/** To test all Nystrom variants against reference results on equal setup.
+ *
+ * All unit tests are based on the following gist
  * https://gist.github.com/karlnapf/c0b24fc18d946cc315733ed679e249e8
  */
 class NystromFixed: public DataFixture, public ::testing::TestWithParam<ENystromTestType>
@@ -70,8 +72,6 @@ class NystromFixed: public DataFixture, public ::testing::TestWithParam<ENystrom
 public:
 	void SetUp()
 	{
-		get_global_io()->set_loglevel(MSG_INFO);
-
 		DataFixture::SetUp();
 		auto sigma = 2.0;
 		auto lambda = 1.0;
@@ -176,9 +176,45 @@ protected:
 class NystromRandom: public NystromFixed
 {
 	virtual SGMatrix<float64_t> get_data_train()
-			{
+	{
 		return X_train_random;
 	}
+};
+
+/** To test sub-sampling components (other tests use all components).
+ * This is just executing code (reference results covered by other tests) to
+ * outrule memory errors due to the component sub-sampling. */
+class KernelExpFamilyImplNystromDExecute: public DataFixture, public ::testing::Test
+{
+	void SetUp()
+	{
+		DataFixture::SetUp();
+		auto sigma = 2.0;
+		auto lambda = 1.0;
+
+		auto kernel = make_shared<kernel::Gaussian>(sigma);
+
+		// Bernoulli sampling for each basis component
+		SGMatrix<bool> basis_mask(X_train_random.num_rows, X_train_random.num_cols);
+		basis_mask.zero();
+		system_size=0;
+		for (auto i=0; i<ND; i++)
+		{
+			auto rand = CMath::randn_double();
+			if (rand>0)
+			{
+				basis_mask.matrix[i]=true;
+				system_size++;
+			}
+		}
+
+		est = make_shared<NystromD>(X_train_random, basis_mask, kernel, lambda);
+		est->fit();
+	}
+
+protected:
+	shared_ptr<Nystrom> est;
+	index_t system_size;
 };
 
 TEST_P(NystromFixed, compute_G_mm)
@@ -387,6 +423,35 @@ INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 								ENystromTestType::E_D_EXPLCIT_BASIS,
 								ENystromTestType::E_D_EXPLCIT_BASIS_NOT_REDUNDANT)
 );
+
+TEST_F(KernelExpFamilyImplNystromDExecute, fit)
+{
+}
+
+TEST_F(KernelExpFamilyImplNystromDExecute, log_pdf)
+{
+	est->log_pdf();
+}
+
+TEST_F(KernelExpFamilyImplNystromDExecute, grad)
+{
+	est->grad();
+}
+
+//TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
+//{
+//	est->hessian(0);
+//}
+//
+//TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
+//{
+//	est->hessian_diag(0);
+//}
+//
+//TEST_F(KernelExpFamilyImplNystromDExecute, score)
+//{
+//	est->score();
+//}
 
 TEST(KernelExpFamilyImplNystromD, idx_to_ai)
 {
