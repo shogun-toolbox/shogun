@@ -16,9 +16,9 @@ def kernel_fisher (fm_train_dna=traindat, fm_test_dna=testdat,
 		N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,
 		kargs=[1,False,True]):
 
-	from modshogun import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
-	from modshogun import PolyKernel
-	from modshogun import HMM, BW_NORMAL#, MSG_DEBUG
+	from shogun import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
+	from shogun import PolyKernel
+	from shogun import HMM, BW_NORMAL#, MSG_DEBUG
 
 	# train HMM for positive class
 	charfeat=StringCharFeatures(fm_hmm_pos, DNA)

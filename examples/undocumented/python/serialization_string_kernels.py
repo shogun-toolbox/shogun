@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-from modshogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
-from modshogun import CombinedKernel, WeightedDegreeRBFKernel
-from modshogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
-from modshogun import DNA, PROTEIN, Labels
-from modshogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
-from modshogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
+from shogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
+from shogun import CombinedKernel, WeightedDegreeRBFKernel
+from shogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
+from shogun import DNA, PROTEIN, Labels
+from shogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
+from shogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from modshogun import MSG_DEBUG
-from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
-from modshogun import WeightedDegreeStringKernel, GaussianKernel
+from shogun import MSG_DEBUG
+from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
+from shogun import WeightedDegreeStringKernel, GaussianKernel
 try:
-	from modshogun import SVMLight
+	from shogun import SVMLight
 except ImportError:
 	print("SVMLight is not available")
 	exit(0)

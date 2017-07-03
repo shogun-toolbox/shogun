@@ -9,12 +9,12 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
 	from numpy import concatenate, zeros, ones
 	from numpy.random import randn, seed
-	from modshogun import RealFeatures, MulticlassLabels
-	from modshogun import GMNPSVM
-	from modshogun import GaussianKernel
-	from modshogun import SerializableHdf5File,SerializableAsciiFile, \
+	from shogun import RealFeatures, MulticlassLabels
+	from shogun import GMNPSVM
+	from shogun import GaussianKernel
+	from shogun import SerializableHdf5File,SerializableAsciiFile, \
 			SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
-	from modshogun import NormOne, LogPlusOne
+	from shogun import NormOne, LogPlusOne
 	from tempfile import NamedTemporaryFile
 
 	seed(17)

@@ -129,7 +129,7 @@ else
 echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/NAMESPACE" <<EOF
-useDynLib(modshogun, .registration = TRUE)
+useDynLib(shogun, .registration = TRUE)
 EOF
 
 cat >"$1/$2/R/$2" <<EOF

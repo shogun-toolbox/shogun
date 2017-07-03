@@ -30,10 +30,10 @@ def classifier_svmlight_linear_term (fm_train_dna=traindna,fm_test_dna=testdna, 
                                                 label_train_dna=label_traindna,degree=3, \
                                                 C=10,epsilon=1e-5,num_threads=1):
 
-    from modshogun import StringCharFeatures, BinaryLabels, DNA
-    from modshogun import WeightedDegreeStringKernel
+    from shogun import StringCharFeatures, BinaryLabels, DNA
+    from shogun import WeightedDegreeStringKernel
     try:
-    	from modshogun import SVMLight
+    	from shogun import SVMLight
     except ImportError:
     	print("SVMLight is not available")
     	exit(0)

@@ -3,8 +3,8 @@ data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
 def converter_localitypreservingprojections (data_fname,k):
-	from modshogun import RealFeatures, CSVFile
-	from modshogun import LocalityPreservingProjections
+	from shogun import RealFeatures, CSVFile
+	from shogun import LocalityPreservingProjections
 
 	features = RealFeatures(CSVFile(data_fname))
 	converter = LocalityPreservingProjections()

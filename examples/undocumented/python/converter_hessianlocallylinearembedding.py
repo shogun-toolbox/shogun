@@ -4,9 +4,9 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_hessianlocallylinearembedding (data_fname,k):
 	try:
-		from modshogun import RealFeatures, CSVFile
+		from shogun import RealFeatures, CSVFile
 		try:
-			from modshogun import HessianLocallyLinearEmbedding
+			from shogun import HessianLocallyLinearEmbedding
 		except ImportError:
 			print("HessianLocallyLinearEmbedding not available")
 			exit(0)

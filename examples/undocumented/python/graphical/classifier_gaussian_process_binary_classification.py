@@ -35,7 +35,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
 
     # import all necessary modules from Shogun (some of them require Eigen3)
     try:
-        from modshogun import RealFeatures, BinaryLabels, GaussianKernel, \
+        from shogun import RealFeatures, BinaryLabels, GaussianKernel, \
             LogitLikelihood, ProbitLikelihood, ZeroMean, SingleLaplacianInferenceMethod, \
             EPInferenceMethod, GaussianProcessClassification
     except ImportError:

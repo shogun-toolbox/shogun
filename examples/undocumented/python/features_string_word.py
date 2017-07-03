@@ -4,7 +4,7 @@ strings=['hey','guys','string']
 parameter_list=[[strings,0,2,0,False]]
 
 def features_string_word (strings, start, order, gap, rev):
-	from modshogun import StringCharFeatures, StringWordFeatures, RAWBYTE
+	from shogun import StringCharFeatures, StringWordFeatures, RAWBYTE
 	from numpy import array, uint16
 
 	#create string features

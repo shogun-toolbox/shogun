@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from modshogun import TableFactorType
+from shogun import TableFactorType
 
 # create the factor type with GT parameters
 tid = 0
@@ -20,10 +20,10 @@ w_gt_b = np.array([0.8, -0.8])
 fac_type_b = TableFactorType(tid_b, cards_b, w_gt_b)
 
 def gen_data(ftype, num_samples, show_data = False):
-	from modshogun import Math
-	from modshogun import FactorType, Factor, TableFactorType, FactorGraph
-	from modshogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
-	from modshogun import MAPInference, TREE_MAX_PROD
+	from shogun import Math
+	from shogun import FactorType, Factor, TableFactorType, FactorGraph
+	from shogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
+	from shogun import MAPInference, TREE_MAX_PROD
 
 	Math.init_random(17)
 
@@ -95,11 +95,11 @@ samples, labels = gen_data(ftype_all, num_samples)
 parameter_list = [[samples,labels,w_all,ftype_all]]
 
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
-	from modshogun import SOSVMHelper, LabelsFactory
-	from modshogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
-	from modshogun import StochasticSOSVM, FWSOSVM
+	from shogun import SOSVMHelper, LabelsFactory
+	from shogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
+	from shogun import StochasticSOSVM, FWSOSVM
 	try:
-		from modshogun import DualLibQPBMSOSVM
+		from shogun import DualLibQPBMSOSVM
 	except ImportError:
 		print("DualLibQPBMSOSVM not available")
 		exit(0)

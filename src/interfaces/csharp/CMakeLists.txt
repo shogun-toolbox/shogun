@@ -7,8 +7,8 @@ GENERATE_INTERFACE_TARGET(csharp ${CMAKE_CURRENT_SOURCE_DIR} "")
 
 ADD_CUSTOM_COMMAND(TARGET interface_csharp
 				   POST_BUILD
-				   COMMAND "${CSHARP_COMPILER}" /t:library *.cs /out:modshogun.dll
-				   COMMENT "Creating modshogun.dll")
+				   COMMAND "${CSHARP_COMPILER}" /t:library *.cs /out:shogun.dll
+				   COMMENT "Creating shogun.dll")
 IF(NOT CSHARP_INSTALL_DIR)
 	SET(CSHARP_INSTALL_DIR "lib/cli/shogun")
 ENDIF(NOT CSHARP_INSTALL_DIR)
@@ -18,6 +18,6 @@ INSTALL(TARGETS interface_csharp
 	LIBRARY DESTINATION ${CSHARP_INSTALL_DIR}
 	COMPONENT csharp)
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.dll
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.dll
 		DESTINATION ${CSHARP_INSTALL_DIR}
 		COMPONENT csharp)

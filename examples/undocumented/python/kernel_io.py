@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
 
 def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
-	from modshogun import RealFeatures, GaussianKernel, CSVFile
+	from shogun import RealFeatures, GaussianKernel, CSVFile
 	from tempfile import NamedTemporaryFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))

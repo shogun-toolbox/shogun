@@ -12,7 +12,7 @@ parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
 def multiclass_randomforest(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
-		from modshogun import RealFeatures, MulticlassLabels, CSVFile, RandomForest, MajorityVote
+		from shogun import RealFeatures, MulticlassLabels, CSVFile, RandomForest, MajorityVote
 	except ImportError:
 		print("Could not import Shogun modules")
 		return

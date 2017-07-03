@@ -4,8 +4,8 @@ parameter_list = [[data]]
 
 def converter_tdistributedstochasticneighborembedding(data_fname, seed=1):
 	try:
-		from modshogun import RealFeatures, TDistributedStochasticNeighborEmbedding
-		from modshogun import Math_init_random, CSVFile
+		from shogun import RealFeatures, TDistributedStochasticNeighborEmbedding
+		from shogun import Math_init_random, CSVFile
 
 		# reproducible results
 		Math_init_random(seed)

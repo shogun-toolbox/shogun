@@ -7,9 +7,9 @@ parameter_list = [[traindat,testdat,label_traindat,1,1e-5],[traindat,testdat,lab
 
 def classifier_mpdsvm (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=1,epsilon=1e-5):
 
-	from modshogun import RealFeatures, BinaryLabels
-	from modshogun import GaussianKernel
-	from modshogun import MPDSVM, CSVFile
+	from shogun import RealFeatures, BinaryLabels
+	from shogun import GaussianKernel
+	from shogun import MPDSVM, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

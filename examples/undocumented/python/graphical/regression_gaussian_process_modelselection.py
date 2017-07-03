@@ -6,10 +6,10 @@ from pylab import plot, show, legend, fill_between, figure, subplot, title
 def regression_gaussian_process_modelselection (n=100, n_test=100, \
 		x_range=5, x_range_test=10, noise_var=0.4):
 
-	from modshogun import RealFeatures, RegressionLabels
-	from modshogun import GaussianKernel
-	from modshogun import GradientModelSelection, ModelSelectionParameters
-	from modshogun import GaussianLikelihood, ZeroMean, \
+	from shogun import RealFeatures, RegressionLabels
+	from shogun import GaussianKernel
+	from shogun import GradientModelSelection, ModelSelectionParameters
+	from shogun import GaussianLikelihood, ZeroMean, \
 		ExactInferenceMethod, GaussianProcessRegression, GradientCriterion, \
 		GradientEvaluation
 

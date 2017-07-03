@@ -241,7 +241,7 @@ class Translator:
 
     def dependenciesString(self, allClasses, interfacedClasses, enums):
         """ Returns dependency import string
-            e.g. for python: "from modshogun import RealFeatures\n\n"
+            e.g. for python: "from shogun import RealFeatures\n\n"
         """
 
         if "Dependencies" not in self.targetDict:

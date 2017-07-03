@@ -19,9 +19,9 @@ import numpy as np
 import pylab
 import util
 
-from modshogun  import RealFeatures
-from modshogun import StochasticProximityEmbedding, SPE_GLOBAL
-from modshogun import SPE_LOCAL, Isomap
+from shogun  import RealFeatures
+from shogun import StochasticProximityEmbedding, SPE_GLOBAL
+from shogun import SPE_LOCAL, Isomap
 
 # Number of data points
 N = 500

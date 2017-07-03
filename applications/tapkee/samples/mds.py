@@ -1,4 +1,4 @@
-import modshogun as sg
+import shogun as sg
 import data
 import numpy as np
 

@@ -12,7 +12,7 @@ parameter_list = [[traindat,testdat,label_traindat,feattypes]]
 
 def multiclass_c45classifiertree(train=traindat,test=testdat,labels=label_traindat,ft=feattypes):
 	try:
-		from modshogun import RealFeatures, MulticlassLabels, CSVFile, C45ClassifierTree
+		from shogun import RealFeatures, MulticlassLabels, CSVFile, C45ClassifierTree
 		from numpy import random, int32
 	except ImportError:
 		print("Could not import Shogun and/or numpy modules")

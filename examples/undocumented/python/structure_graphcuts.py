@@ -3,11 +3,11 @@
 import numpy as np
 import itertools
 
-from modshogun import Factor, TableFactorType, FactorGraph
-from modshogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
-from modshogun import FactorGraphModel, GRAPH_CUT
-from modshogun import GraphCut
-from modshogun import StochasticSOSVM
+from shogun import Factor, TableFactorType, FactorGraph
+from shogun import FactorGraphObservation, FactorGraphLabels, FactorGraphFeatures
+from shogun import FactorGraphModel, GRAPH_CUT
+from shogun import GraphCut
+from shogun import StochasticSOSVM
 
 def generate_data(num_train_samples, len_label, len_feat):
     """ Generate synthetic dataset

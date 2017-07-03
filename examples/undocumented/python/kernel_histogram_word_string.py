@@ -9,9 +9,9 @@ parameter_list=[[traindat,testdat,label_traindat,1,1e1, 1e0],[traindat,testdat,l
 
 def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,ppseudo_count=1,npseudo_count=1):
 
-	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from modshogun import HistogramWordStringKernel, AvgDiagKernelNormalizer
-	from modshogun import PluginEstimate#, MSG_DEBUG
+	from shogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
+	from shogun import HistogramWordStringKernel, AvgDiagKernelNormalizer
+	from shogun import PluginEstimate#, MSG_DEBUG
 
 	charfeat=StringCharFeatures(DNA)
 	#charfeat.io.set_loglevel(MSG_DEBUG)

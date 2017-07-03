@@ -2,7 +2,7 @@ from pylab import figure,clf,plot,linspace,pi,show
 from numpy import ones,zeros,cos,sin,concatenate
 from numpy.random import randn
 
-from modshogun import *
+from shogun import *
 
 k=4
 num=1000

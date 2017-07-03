@@ -20,13 +20,13 @@
 %include "swig_config.h"
 
 %define DOCSTR
-"The `modshogun` module gathers all modules available in the SHOGUN toolkit."
+"The `shogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%module(directors="1", docstring=DOCSTR) modshogun
+%module(directors="1", docstring=DOCSTR) shogun
 #else
-%module(docstring=DOCSTR) modshogun
+%module(docstring=DOCSTR) shogun
 #endif
 #undef DOCSTR
 
@@ -50,11 +50,11 @@
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
-%include "modshogun_doxygen.i"
+%include "shogun_doxygen.i"
 #endif
 #endif
 
-%include "modshogun_ignores.i"
+%include "shogun_ignores.i"
 
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"

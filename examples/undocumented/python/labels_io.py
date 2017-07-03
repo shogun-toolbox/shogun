@@ -2,7 +2,7 @@
 parameter_list=[[]]
 
 def labels_io():
-	from modshogun import RegressionLabels, CSVFile
+	from shogun import RegressionLabels, CSVFile
 	lab=RegressionLabels()
 	f=CSVFile("../data/label_train_regression.dat","r")
 	f.set_delimiter(" ")

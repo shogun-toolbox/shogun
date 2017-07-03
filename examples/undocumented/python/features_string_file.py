@@ -2,8 +2,8 @@
 parameter_list=[[".", "features_string_char.py"]]
 
 def features_string_file (directory, fname):
-	from modshogun import StringCharFeatures, RAWBYTE
-	from modshogun import CSVFile
+	from shogun import StringCharFeatures, RAWBYTE
+	from shogun import CSVFile
 
 	# load features from directory
 	f=StringCharFeatures(RAWBYTE)

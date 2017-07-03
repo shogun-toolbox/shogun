@@ -2,7 +2,7 @@
 parameter_list = [[1000]]
 
 def evaluation_thresholds (index):
-	from modshogun import BinaryLabels, ROCEvaluation
+	from shogun import BinaryLabels, ROCEvaluation
 	import numpy
 	numpy.random.seed(17)
 	output=numpy.arange(-1,1,0.001)

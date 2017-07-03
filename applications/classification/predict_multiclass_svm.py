@@ -32,7 +32,7 @@
 import argparse
 import logging
 from contextlib import closing
-from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
+from shogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 											MulticlassLibSVM, SerializableHdf5File,
 											MulticlassAccuracy)
 from utils import get_features_and_labels

@@ -2,7 +2,7 @@
 parameter_list=[[]]
 
 def features_dense_io():
-	from modshogun import RealFeatures, CSVFile
+	from shogun import RealFeatures, CSVFile
 	feats=RealFeatures()
 	f=CSVFile("../data/fm_train_real.dat","r")
 	f.set_delimiter(" ")

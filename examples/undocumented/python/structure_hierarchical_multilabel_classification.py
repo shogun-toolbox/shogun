@@ -7,10 +7,10 @@ multi-label classification. The data used:
     http://kt.ijs.si/DragiKocev/PhD/resources/doku.php?id=hmc_classification#imageclef07d
 """
 
-from modshogun import MultilabelSOLabels, HierarchicalMultilabelModel
-from modshogun import RealFeatures
-from modshogun import StochasticSOSVM
-from modshogun import StructuredAccuracy, LabelsFactory
+from shogun import MultilabelSOLabels, HierarchicalMultilabelModel
+from shogun import RealFeatures
+from shogun import StochasticSOSVM
+from shogun import StructuredAccuracy, LabelsFactory
 import numpy as np
 import time
 

@@ -9,9 +9,9 @@ parameter_list = [[traindat,testdat,1.4,10],[traindat,testdat,1.5,10]]
 
 def preprocessor_normone (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 
-	from modshogun import Chi2Kernel
-	from modshogun import RealFeatures
-	from modshogun import NormOne
+	from shogun import Chi2Kernel
+	from shogun import RealFeatures
+	from shogun import NormOne
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

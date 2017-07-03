@@ -25,15 +25,15 @@ traindat, label_traindat = gen_data(M,N,dim)
 parameter_list = [[traindat,label_traindat]]
 
 def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=label_traindat):
-	from modshogun import MulticlassSOLabels, LabelsFactory
-	from modshogun import RealFeatures
-	from modshogun import SOSVMHelper
+	from shogun import MulticlassSOLabels, LabelsFactory
+	from shogun import RealFeatures
+	from shogun import SOSVMHelper
 	try:
-		from modshogun import BMRM, PPBMRM, P3BMRM, DualLibQPBMSOSVM
+		from shogun import BMRM, PPBMRM, P3BMRM, DualLibQPBMSOSVM
 	except ImportError:
 		print("At least one of BMRM, PPBMRM, P3BMRM, DualLibQPBMSOSVM not available")
 		exit(0)
-	from modshogun import MulticlassModel, RealNumber
+	from shogun import MulticlassModel, RealNumber
 
 	labels = MulticlassSOLabels(label_train_multiclass)
 	features = RealFeatures(fm_train_real.T)

@@ -12,8 +12,8 @@ predicted = random.randn(N)
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_meansquarederror (ground_truth, predicted):
-	from modshogun import RegressionLabels
-	from modshogun import MeanSquaredError
+	from shogun import RegressionLabels
+	from shogun import MeanSquaredError
 
 	ground_truth_labels = RegressionLabels(ground_truth)
 	predicted_labels = RegressionLabels(predicted)

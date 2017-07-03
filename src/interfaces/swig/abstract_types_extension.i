@@ -18,7 +18,7 @@
  //PTZ121108 example of classifier in examples/undocumented/libshogun/classifier_latent_svm.cpp
  //extention to make use of CData,CLatentModel
  //TODO:PTZ121108 put it in another file like  classifier_latent_svm.i or %include  examples/undocumented/libshogun/classifier_latent_svm.cpp
- //or find a clever way to wrap CLatenModel, CData  instanciation, bless({}, modshogun::LatentModel)
+ //or find a clever way to wrap CLatenModel, CData  instanciation, bless({}, shogun::LatentModel)
  // is not enough and would need a new wrapper, but yet new CLatentModel() is not working,
  // (with error: "cannot allocate an object of abstract type") ?
 %inline %{

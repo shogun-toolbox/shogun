@@ -22,12 +22,12 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_classification (traindat=traindat, label_traindat=label_traindat):
-    from modshogun import CrossValidation, CrossValidationResult
-    from modshogun import ContingencyTableEvaluation, ACCURACY
-    from modshogun import StratifiedCrossValidationSplitting
-    from modshogun import BinaryLabels
-    from modshogun import RealFeatures
-    from modshogun import LibLinear, L2R_L2LOSS_SVC
+    from shogun import CrossValidation, CrossValidationResult
+    from shogun import ContingencyTableEvaluation, ACCURACY
+    from shogun import StratifiedCrossValidationSplitting
+    from shogun import BinaryLabels
+    from shogun import RealFeatures
+    from shogun import LibLinear, L2R_L2LOSS_SVC
 
     # training data
     features=RealFeatures(traindat)

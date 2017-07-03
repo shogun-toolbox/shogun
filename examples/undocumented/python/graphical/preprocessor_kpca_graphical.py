@@ -25,9 +25,9 @@ p.show()
 parameter_list = [[data,0.01,1.0], [data,0.05,2.0]]
 def preprocessor_kernelpca_modular (data, threshold, width):
 
-	from modshogun import RealFeatures
-	from modshogun import KernelPCA
-	from modshogun import GaussianKernel
+	from shogun import RealFeatures
+	from shogun import KernelPCA
+	from shogun import GaussianKernel
 	features = RealFeatures(data)
 	kernel=GaussianKernel(features,features,width)
 	preprocessor=KernelPCA(kernel)

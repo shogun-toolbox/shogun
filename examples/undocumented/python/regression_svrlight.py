@@ -17,10 +17,10 @@ def regression_svrlight (fm_train=traindat,fm_test=testdat,label_train=label_tra
 				    width=1.2,C=1,epsilon=1e-5,tube_epsilon=1e-2,num_threads=3):
 
 
-	from modshogun import RegressionLabels, RealFeatures
-	from modshogun import GaussianKernel
+	from shogun import RegressionLabels, RealFeatures
+	from shogun import GaussianKernel
 	try:
-		from modshogun import SVRLight
+		from shogun import SVRLight
 	except ImportError:
 		print('No support for SVRLight available.')
 		return

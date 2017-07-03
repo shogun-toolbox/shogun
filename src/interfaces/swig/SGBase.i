@@ -448,9 +448,9 @@ except ImportError:
     import copyreg as copy_reg
 def _sg_reconstructor(cls, base, state):
     try:
-        if isinstance(cls, str) and cls.startswith('modshogun.'):
+        if isinstance(cls, str) and cls.startswith('shogun.'):
             if base is object:
-                import modshogun
+                import shogun
                 return eval(cls+'()')
             else:
                 base.__new__(cls, state)
@@ -479,7 +479,7 @@ def _sg_reduce_ex(self, proto):
 
     base = object
     state = None
-    args = ('modshogun.' + self.get_name(), base, state)
+    args = ('shogun.' + self.get_name(), base, state)
 
 
     try:

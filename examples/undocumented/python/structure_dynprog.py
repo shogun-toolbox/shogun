@@ -4,7 +4,7 @@
 
 parameter_list=[['../data/DynProg_example_py.pickle.gz']]
 
-from modshogun import *
+from shogun import *
 
 import numpy
 from numpy import array,Inf,float64,matrix,frompyfunc,zeros

@@ -14,10 +14,10 @@ label_traindat = '../data/label_train_twoclass.dat'
 parameter_list = [[traindat,label_traindat,0.8,1e-6],[traindat,label_traindat,0.9,1e-7]]
 
 def evaluation_cross_validation_regression (train_fname=traindat,label_fname=label_traindat,width=0.8,tau=1e-6):
-	from modshogun import CrossValidation, CrossValidationResult
-	from modshogun import MeanSquaredError, CrossValidationSplitting
-	from modshogun import RegressionLabels, RealFeatures
-	from modshogun import GaussianKernel, KernelRidgeRegression, CSVFile
+	from shogun import CrossValidation, CrossValidationResult
+	from shogun import MeanSquaredError, CrossValidationSplitting
+	from shogun import RegressionLabels, RealFeatures
+	from shogun import GaussianKernel, KernelRidgeRegression, CSVFile
 
 	# training data
 	features=RealFeatures(CSVFile(train_fname))

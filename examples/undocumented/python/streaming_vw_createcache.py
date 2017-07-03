@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-from modshogun import StreamingVwFile
-from modshogun import StreamingVwCacheFile
-from modshogun import T_SVMLIGHT
-from modshogun import StreamingVwFeatures
-from modshogun import VowpalWabbit
+from shogun import StreamingVwFile
+from shogun import StreamingVwCacheFile
+from shogun import T_SVMLIGHT
+from shogun import StreamingVwFeatures
+from shogun import VowpalWabbit
 
 parameter_list=[['../data/fm_train_sparsereal.dat']]
 

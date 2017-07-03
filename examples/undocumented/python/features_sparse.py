@@ -6,7 +6,7 @@ A=numpy.array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=numpy.flo
 parameter_list=[[A]]
 def features_sparse (A):
 	from scipy.sparse import csc_matrix
-	from modshogun import SparseRealFeatures
+	from shogun import SparseRealFeatures
 	from numpy import array, float64, all
 
 	# sparse representation X of dense matrix A

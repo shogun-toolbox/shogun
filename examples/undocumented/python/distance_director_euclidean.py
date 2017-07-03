@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy
-from modshogun import RealFeatures, MSG_DEBUG
+from shogun import RealFeatures, MSG_DEBUG
 
 numpy.random.seed(17)
 traindat = numpy.random.random_sample((10,10))
@@ -9,7 +9,7 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def distance_director_euclidean (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 	try:
-		from modshogun import DirectorDistance
+		from shogun import DirectorDistance
 	except ImportError:
 		print("recompile shogun with --enable-swig-directors")
 		return
@@ -22,8 +22,8 @@ def distance_director_euclidean (fm_train_real=traindat,fm_test_real=testdat,sca
 			seq2 = self.get_rhs().get_feature_vector(idx_b)
 			return numpy.linalg.norm(seq1-seq2)
 
-	from modshogun import EuclideanDistance
-	from modshogun import Time
+	from shogun import EuclideanDistance
+	from shogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
 	#feats_train.io.set_loglevel(MSG_DEBUG)

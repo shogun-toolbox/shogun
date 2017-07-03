@@ -1,7 +1,7 @@
 from pylab import plot,grid,title,subplot,xlabel,ylabel,text,subplots_adjust,fill_between,mean,connect,show
-from modshogun import GaussianKernel
-from modshogun import LibSVM, LDA
-from modshogun import ROCEvaluation
+from shogun import GaussianKernel
+from shogun import LibSVM, LDA
+from shogun import ROCEvaluation
 import util
 
 util.set_title('ROC example')

@@ -5,7 +5,7 @@ parameter_list = [[data]]
 def converter_factoranalysis(data_fname):
 	try:
 		import numpy
-		from modshogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
+		from shogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
 
 		features = RealFeatures(CSVFile(data_fname))
 

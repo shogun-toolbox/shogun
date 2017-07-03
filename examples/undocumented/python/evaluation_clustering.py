@@ -26,9 +26,9 @@ parameter_list = [[fea, gnd_raw, 10]]
 
 
 def run_clustering(data, k):
-	from modshogun import KMeans
-	from modshogun import EuclideanDistance
-	from modshogun import RealFeatures
+	from shogun import KMeans
+	from shogun import EuclideanDistance
+	from shogun import RealFeatures
 
 	fea = RealFeatures(data)
 	distance = EuclideanDistance(fea, fea)
@@ -40,9 +40,9 @@ def run_clustering(data, k):
 	return kmeans.get_cluster_centers()
 
 def assign_labels(data, centroids, ncenters):
-	from modshogun import EuclideanDistance
-	from modshogun import RealFeatures, MulticlassLabels
-	from modshogun import KNN
+	from shogun import EuclideanDistance
+	from shogun import RealFeatures, MulticlassLabels
+	from shogun import KNN
 	from numpy import arange
 
 	labels = MulticlassLabels(arange(0.,ncenters))
@@ -54,9 +54,9 @@ def assign_labels(data, centroids, ncenters):
 	return knn.apply(fea)
 
 def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
-	from modshogun import ClusteringAccuracy, ClusteringMutualInformation
-	from modshogun import MulticlassLabels
-	from modshogun import Math
+	from shogun import ClusteringAccuracy, ClusteringMutualInformation
+	from shogun import MulticlassLabels
+	from shogun import Math
 
 	# reproducable results
 	Math.init_random(1)

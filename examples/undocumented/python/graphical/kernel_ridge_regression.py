@@ -1,7 +1,7 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
 from numpy import array,meshgrid,reshape,linspace,min,max
 from numpy import concatenate,transpose,ravel
-from modshogun import *
+from shogun import *
 import util
 
 util.set_title('KernelRidgeRegression')

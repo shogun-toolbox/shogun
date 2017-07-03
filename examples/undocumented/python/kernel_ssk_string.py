@@ -18,8 +18,8 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,2,0.75],[traindat,testdat,3,0.75]]
 
 def kernel_ssk_string (fm_train_dna=traindat, fm_test_dna=testdat, maxlen=1, decay=1):
-	from modshogun import SubsequenceStringKernel
-	from modshogun import StringCharFeatures, DNA
+	from shogun import SubsequenceStringKernel
+	from shogun import StringCharFeatures, DNA
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

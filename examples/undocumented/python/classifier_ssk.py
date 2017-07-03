@@ -20,9 +20,9 @@ parameter_list = [[traindat,testdat,label_traindat,1,5,0.9]]
 
 def classifier_ssk (fm_train_dna=traindat,fm_test_dna=testdat,
 		label_train_dna=label_traindat,C=1,maxlen=1,decay=1):
-	from modshogun import StringCharFeatures, BinaryLabels
-	from modshogun import LibSVM, SubsequenceStringKernel, DNA
-	from modshogun import ErrorRateMeasure
+	from shogun import StringCharFeatures, BinaryLabels
+	from shogun import LibSVM, SubsequenceStringKernel, DNA
+	from shogun import ErrorRateMeasure
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

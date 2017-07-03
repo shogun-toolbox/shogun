@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 import numpy
 
-from modshogun import StringCharFeatures, BinaryLabels, DNA
-from modshogun import WeightedDegreeStringKernel
-from modshogun import MSG_DEBUG
+from shogun import StringCharFeatures, BinaryLabels, DNA
+from shogun import WeightedDegreeStringKernel
+from shogun import MSG_DEBUG
 try:
-	from modshogun import DomainAdaptationSVM
+	from shogun import DomainAdaptationSVM
 except ImportError:
 	print("DomainAdaptationSVM not available")
 	exit(0)
 
 try:
-	from modshogun import SVMLight
+	from shogun import SVMLight
 except ImportError:
 	print("SVMLight not available")
 	exit(0)

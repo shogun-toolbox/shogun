@@ -3,8 +3,8 @@ data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
 def converter_isomap (data_fname):
-	from modshogun import RealFeatures, CSVFile
-	from modshogun import Isomap
+	from shogun import RealFeatures, CSVFile
+	from shogun import Isomap
 		
 	features = RealFeatures(CSVFile(data))
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-from modshogun import CombinedFeatures, RealFeatures, BinaryLabels
-from modshogun import CombinedKernel, PolyKernel, CustomKernel
-from modshogun import MKLClassification
+from shogun import CombinedFeatures, RealFeatures, BinaryLabels
+from shogun import CombinedKernel, PolyKernel, CustomKernel
+from shogun import MKLClassification
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
 #only run example if SVMLight is included as LibSVM solver crashes in MKLClassification
 try:
-	from modshogun import SVMLight
+	from shogun import SVMLight
 except ImportError:
 	print("SVMLight not available")
 	exit(0)

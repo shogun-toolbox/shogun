@@ -2,7 +2,7 @@
 parameter_list = [['features_string_file_char.py']]
 
 def features_string_file_char (fname):
-	from modshogun import StringFileCharFeatures, RAWBYTE
+	from shogun import StringFileCharFeatures, RAWBYTE
 	f = StringFileCharFeatures(fname, RAWBYTE)
 	#print("strings", f.get_features())
 	return f

@@ -39,53 +39,53 @@ Running it:
     ./native_example
 
 ### Python
-This needs `modshogun.py` to be visible, which is either in `path/to/build/src/interfaces/python_modular/` or in something similar to `path/to/shogun-install/lib/python2.7/dist-packages/`
+This needs `shogun.py` to be visible, which is either in `path/to/build/src/interfaces/python_modular/` or in something similar to `path/to/shogun-install/lib/python2.7/dist-packages/`
 
-    export PYTHONPATH="path/to/modshogun.py:$PYTHONPATH"
+    export PYTHONPATH="path/to/shogun.py:$PYTHONPATH"
 
 Running an example:
 
     python path/to/python_example.py
 
 ### Octave
-This needs `modshogun.oct` to be visible, which is either in `path/to/build/src/interfaces/octave_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/octave/site/oct/api-v50+/x86_64-pc-linux-gnu/shogun/`
+This needs `shogun.oct` to be visible, which is either in `path/to/build/src/interfaces/octave_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/octave/site/oct/api-v50+/x86_64-pc-linux-gnu/shogun/`
 
-    export OCTAVE_PATH="path/to/modshogun.oct:$OCTAVE_PATH"
+    export OCTAVE_PATH="path/to/shogun.oct:$OCTAVE_PATH"
 
 Running an example:
 
     python path/to/octave_example.py
 
 ### Ruby
-This needs `modshogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
-    export RUBYLIB="path/to/modshogun.rb:$RUBYLIB"
+This needs `shogun.rb` to be visible, which is either in `path/to/build/src/interfaces/ruby_modular/` or in something similar to `path/to/shogun-install/lib/x86_64-linux-gnu/site_ruby`
+    export RUBYLIB="path/to/shogun.rb:$RUBYLIB"
 
 Running an example:
 
     ruby path/to/ruby_example.rb
 
 ### R
-This needs `modshogun.R` to be visible, which is either in `path/to/build/src/interfaces/r_modular/` or in something similar to `path/to/shogun-install/lib/R/site-library`
-    export R_LIBS_USER="path/to/modshogun.R:$R_LIBS_USER"
+This needs `shogun.R` to be visible, which is either in `path/to/build/src/interfaces/r_modular/` or in something similar to `path/to/shogun-install/lib/R/site-library`
+    export R_LIBS_USER="path/to/shogun.R:$R_LIBS_USER"
 
 Running an example:
     R --no-restore --no-save --no-readline --slave -f path/to/r_example.rb
 
 ### Lua
-This needs `libmodshogun.so` (this is the interface file, not the shared library file `libshogun.so`) to be visible, which is either in `path/to/build/src/interfaces/lua_modular/` or in something similar to `path/to/shogun-install/lib/lua/5.1/`
+This needs `libshogun.so` (this is the interface file, not the shared library file `libshogun.so`) to be visible, which is either in `path/to/build/src/interfaces/lua_modular/` or in something similar to `path/to/shogun-install/lib/lua/5.1/`
 
-    export LUA_CPATH="path/to/libmodshogun.so:$LUA_CPATH"
+    export LUA_CPATH="path/to/libshogun.so:$LUA_CPATH"
 
 Running an example:
 
     R --no-restore --no-save --no-readline --slave -f path/to/r_example.R
 
 ### CSharp
-This needs `modshogun.dll` to be visible, which is either in `path/to/build/src/interfaces/csharp_modular` or in something similar to `path/to/shogun-install/lib/cli/shogun/`
+This needs `shogun.dll` to be visible, which is either in `path/to/build/src/interfaces/csharp_modular` or in something similar to `path/to/shogun-install/lib/cli/shogun/`
 
 Compiling code works with the mono C# compiler and passing location of the above file
 
-    mcs path/to/csharp_example.cs /lib:path/to/modshogun.dll/r:modshogun -out:csharp_example.exe
+    mcs path/to/csharp_example.cs /lib:path/to/shogun.dll/r:shogun -out:csharp_example.exe
 
 Running requires setting the mono path
 
@@ -103,7 +103,7 @@ usually in `/usr/share/java/`.
 Compiling code works with the java compiler and passing location of `shogun.jar`,
 `jblas.jar`, and the example itself in the class path
 
-    javac -cp /path/to/jblas.jar:/path/to/modshogun.jar:path/to/java_example.java -d /path/to/output/ /path/to/java_example.java
+    javac -cp /path/to/jblas.jar:/path/to/shogun.jar:path/to/java_example.java -d /path/to/output/ /path/to/java_example.java
 
 Running it again requires the above class path and some more options
 

@@ -6,8 +6,8 @@ data=lm.load_cubes('../data/fm_train_cube.dat')
 parameter_list=[[data, 1, 64, 1e-5, 2, 0, False, 5], [data, 3, 6, 1e-1, 1, 0, False, 2]]
 
 def distribution_hmm(fm_cube, N, M, pseudo, order, gap, reverse, num_examples):
-	from modshogun import StringWordFeatures, StringCharFeatures, CUBE
-	from modshogun import HMM, BW_NORMAL
+	from shogun import StringWordFeatures, StringCharFeatures, CUBE
+	from shogun import HMM, BW_NORMAL
 
 	charfeat=StringCharFeatures(CUBE)
 	charfeat.set_features(fm_cube)

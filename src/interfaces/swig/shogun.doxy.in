@@ -1,5 +1,5 @@
 INPUT                  = @LIBSHOGUN_SRC_DIR@
-OUTPUT_DIRECTORY       = modshogun
+OUTPUT_DIRECTORY       = shogun
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English

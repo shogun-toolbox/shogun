@@ -10,8 +10,8 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.2]]
 
 def kernel_linear_word (fm_train_word=traindat,fm_test_word=testdat,scale=1.2):
 
-	from modshogun import LinearKernel, AvgDiagKernelNormalizer
-	from modshogun import WordFeatures
+	from shogun import LinearKernel, AvgDiagKernelNormalizer
+	from shogun import WordFeatures
 
 	feats_train=WordFeatures(fm_train_word)
 	feats_test=WordFeatures(fm_test_word)

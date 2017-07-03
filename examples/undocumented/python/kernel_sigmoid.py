@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat,10,1.2,1.3],[traindat,testdat,10,1.2,1.3]]
 
 def kernel_sigmoid (train_fname=traindat,test_fname=testdat,size_cache=10,gamma=1.2,coef0=1.3):
-	from modshogun import RealFeatures, SigmoidKernel, CSVFile
+	from shogun import RealFeatures, SigmoidKernel, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

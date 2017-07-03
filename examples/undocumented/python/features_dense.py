@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from modshogun import RealFeatures, LongIntFeatures, ByteFeatures
+from shogun import RealFeatures, LongIntFeatures, ByteFeatures
 from numpy import array, float64, int64, uint8, all
 
 # create dense matrices A,B,C

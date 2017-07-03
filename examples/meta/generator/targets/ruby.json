@@ -1,9 +1,9 @@
 {
-    "Program": "require 'modshogun'\n\n$dependencies$program",
+    "Program": "require 'shogun'\n\n$dependencies$program",
     "Statement": "$statement\n",
     "Comment": "#$comment\n",
     "Init": {
-        "Construct": "$name = Modshogun::$typeName.new $arguments",
+        "Construct": "$name = Shogun::$typeName.new $arguments",
         "Copy": "$name = $expr",
         "CharVector": "$name = NArray.byte($arguments)",
         "ByteVector": "$name = NArray.byte($arguments)",
@@ -41,9 +41,9 @@
         "RealLiteral": "$number",
         "FloatLiteral": "$number",
         "MethodCall": "$object.$method $arguments",
-        "StaticCall": "Modshogun::$typeName.$method $arguments",
+        "StaticCall": "Shogun::$typeName.$method $arguments",
         "Identifier": "$identifier",
-        "Enum":"Modshogun::$value"
+        "Enum":"Shogun::$value"
     },
     "Element": {
         "Access": {

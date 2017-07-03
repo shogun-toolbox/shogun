@@ -12,9 +12,9 @@ parameter_list = [[traindna,testdna,testdat,4,0,False,False],
 def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,
 		fm_test_real=testdat,order=3,gap=0,reverse=False,use_sign=False):
 
-	from modshogun import StringCharFeatures, StringWordFeatures, DNA
-	from modshogun import SortWordString
-	from modshogun import HammingWordDistance
+	from shogun import StringCharFeatures, StringWordFeatures, DNA
+	from shogun import SortWordString
+	from shogun import HammingWordDistance
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)

@@ -8,8 +8,8 @@ parameter_list=[[traindat,testdat,5,5,7],[traindat,testdat,5,5,7]]
 
 def kernel_locality_improved_string (fm_train_dna=traindat,fm_test_dna=testdat,length=5,inner_degree=5,outer_degree=7):
 
-	from modshogun import StringCharFeatures, DNA
-	from modshogun import LocalityImprovedStringKernel
+	from shogun import StringCharFeatures, DNA
+	from shogun import LocalityImprovedStringKernel
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

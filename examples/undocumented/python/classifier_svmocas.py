@@ -6,10 +6,10 @@ label_traindat = '../data/label_train_twoclass.dat'
 parameter_list = [[traindat,testdat,label_traindat,0.9,1e-5,1],[traindat,testdat,label_traindat,0.8,1e-5,1]]
 
 def classifier_svmocas (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,C=0.9,epsilon=1e-5,num_threads=1):
-	from modshogun import RealFeatures, BinaryLabels
-	from modshogun import CSVFile
+	from shogun import RealFeatures, BinaryLabels
+	from shogun import CSVFile
 	try:
-		from modshogun import SVMOcas
+		from shogun import SVMOcas
 	except ImportError:
 		print("SVMOcas not available")
 		return

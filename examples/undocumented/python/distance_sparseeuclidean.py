@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_sparseeuclidean (train_fname=traindat,test_fname=testdat):
-	from modshogun import RealFeatures, SparseRealFeatures, SparseEuclideanDistance, CSVFile
+	from shogun import RealFeatures, SparseRealFeatures, SparseEuclideanDistance, CSVFile
 
 	realfeat=RealFeatures(CSVFile(train_fname))
 	feats_train=SparseRealFeatures()

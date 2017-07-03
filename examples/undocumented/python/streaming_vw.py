@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-from modshogun import StreamingVwFile
-from modshogun import T_SVMLIGHT
-from modshogun import StreamingVwFeatures
-from modshogun import VowpalWabbit
+from shogun import StreamingVwFile
+from shogun import T_SVMLIGHT
+from shogun import StreamingVwFeatures
+from shogun import VowpalWabbit
 
 parameter_list=[[None]]
 
