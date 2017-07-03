@@ -5,7 +5,7 @@ parameter_list = [[data]]
 def converter_multidimensionalscaling (data_fname):
 	try:
 		import numpy
-		from modshogun import RealFeatures, MultidimensionalScaling, EuclideanDistance, CSVFile
+		from shogun import RealFeatures, MultidimensionalScaling, EuclideanDistance, CSVFile
 
 		features = RealFeatures(CSVFile(data_fname))
 

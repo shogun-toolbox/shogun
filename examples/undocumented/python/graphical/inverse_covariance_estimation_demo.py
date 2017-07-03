@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pylab import show, imshow
 
 def simulate_data (n,p):
-	from modshogun import SparseInverseCovariance
+	from shogun import SparseInverseCovariance
 	import numpy as np
 
 	#create a random pxp covariance matrix
@@ -18,7 +18,7 @@ def simulate_data (n,p):
 	return data
 
 def inverse_covariance (data,lc):
-	from modshogun import SparseInverseCovariance
+	from shogun import SparseInverseCovariance
 	from numpy import dot
 
 	sic = SparseInverseCovariance()

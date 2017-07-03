@@ -4,7 +4,7 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect,axis
 from numpy import concatenate
 from numpy.random import randn
-from modshogun import *
+from shogun import *
 import util
 
 util.set_title('Multiple SVMS')

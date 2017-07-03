@@ -26,8 +26,8 @@ parameter_list = [[traindat,label_traindat]]
 
 def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat):
 	try:
-		from modshogun	import RealFeatures
-		from modshogun	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
+		from shogun	import RealFeatures
+		from shogun	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
 	except ImportError:
 		print("Mosek not available")
 		return

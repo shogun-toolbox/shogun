@@ -20,15 +20,15 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_random_search_liblinear (traindat=traindat, label_traindat=label_traindat):
-    from modshogun import CrossValidation, CrossValidationResult
-    from modshogun import ContingencyTableEvaluation, ACCURACY
-    from modshogun import StratifiedCrossValidationSplitting
-    from modshogun import RandomSearchModelSelection
-    from modshogun import ModelSelectionParameters, R_EXP
-    from modshogun import ParameterCombination
-    from modshogun import BinaryLabels
-    from modshogun import RealFeatures
-    from modshogun import LibLinear, L2R_L2LOSS_SVC
+    from shogun import CrossValidation, CrossValidationResult
+    from shogun import ContingencyTableEvaluation, ACCURACY
+    from shogun import StratifiedCrossValidationSplitting
+    from shogun import RandomSearchModelSelection
+    from shogun import ModelSelectionParameters, R_EXP
+    from shogun import ParameterCombination
+    from shogun import BinaryLabels
+    from shogun import RealFeatures
+    from shogun import LibLinear, L2R_L2LOSS_SVC
 
     # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()

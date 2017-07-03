@@ -7,8 +7,8 @@ traindna = lm.load_dna('../data/fm_train_dna.dat')
 parameter_list = [[traindna,3],[traindna,4]]
 
 def distribution_ppwm (fm_dna=traindna, order=3):
-	from modshogun import StringByteFeatures, StringCharFeatures, DNA
-	from modshogun import PositionalPWM
+	from shogun import StringByteFeatures, StringCharFeatures, DNA
+	from shogun import PositionalPWM
 
 	from numpy import array,e,log,exp
 

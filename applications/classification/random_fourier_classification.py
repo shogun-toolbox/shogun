@@ -32,7 +32,7 @@ def parse_arguments():
 	return parser.parse_args()
 
 def evaluate(predicted_labels, labels, prefix="Results"):
-	from modshogun import PRCEvaluation, ROCEvaluation, AccuracyMeasure
+	from shogun import PRCEvaluation, ROCEvaluation, AccuracyMeasure
 
 	prc_evaluator = PRCEvaluation()
 	roc_evaluator = ROCEvaluation()
@@ -58,9 +58,9 @@ def load_sparse_data(filename, dimension=None):
 	return {'data':sparse_feats, 'labels':labels}
 
 if __name__=='__main__':
-	from modshogun import SparseRealFeatures, RandomFourierDotFeatures, GAUSSIAN
-	from modshogun import LibSVMFile, BinaryLabels, SVMOcas
-	from modshogun import Time
+	from shogun import SparseRealFeatures, RandomFourierDotFeatures, GAUSSIAN
+	from shogun import LibSVMFile, BinaryLabels, SVMOcas
+	from shogun import Time
 	from numpy import array
 
 	args = parse_arguments()

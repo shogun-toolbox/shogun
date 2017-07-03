@@ -7,8 +7,8 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data]]
 
 def preprocessor_pca (data):
-	from modshogun import RealFeatures
-	from modshogun import PCA
+	from shogun import RealFeatures
+	from shogun import PCA
 
 	features = RealFeatures(data)
 

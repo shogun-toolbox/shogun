@@ -7,8 +7,8 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
 
 def kernel_sparse_gaussian (fm_train_real=traindat,fm_test_real=testdat,width=1.1 ):
-	from modshogun import SparseRealFeatures
-	from modshogun import GaussianKernel
+	from shogun import SparseRealFeatures
+	from shogun import GaussianKernel
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)

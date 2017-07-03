@@ -5,8 +5,8 @@ testdna = '../data/fm_test_dna.dat'
 parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,4,0,False]]
 
 def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=0,reverse=False):
-	from modshogun import StringCharFeatures, StringWordFeatures, DNA
-	from modshogun import SortWordString, ManhattanWordDistance, CSVFile
+	from shogun import StringCharFeatures, StringWordFeatures, DNA
+	from shogun import SortWordString, ManhattanWordDistance, CSVFile
 
 	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

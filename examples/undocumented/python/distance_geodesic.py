@@ -6,7 +6,7 @@ parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_geodesic (train_fname=traindat,test_fname=testdat):
 
-	from modshogun import RealFeatures, GeodesicMetric, CSVFile
+	from shogun import RealFeatures, GeodesicMetric, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

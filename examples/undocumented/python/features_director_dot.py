@@ -12,8 +12,8 @@ parameter_list = [[traindat,testdat,label_traindat,0.9,1e-3],[traindat,testdat,l
 def features_director_dot (fm_train_real, fm_test_real,
 		label_train_twoclass, C, epsilon):
 	try:
-		from modshogun import DirectorDotFeatures
-		from modshogun import RealVector
+		from shogun import DirectorDotFeatures
+		from shogun import RealVector
 	except ImportError:
 		print("recompile shogun with --enable-swig-directors")
 		return
@@ -61,9 +61,9 @@ def features_director_dot (fm_train_real, fm_test_real,
 	#		return NumpyFeatures(self.data-other.data)
 
 
-	#from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
-	#from modshogun import LibLinear, L2R_L2LOSS_SVC_DUAL
-	#from modshogun import Math_init_random
+	#from shogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	#from shogun import LibLinear, L2R_L2LOSS_SVC_DUAL
+	#from shogun import Math_init_random
 	#Math_init_random(17)
 
 	#feats_train=RealFeatures(fm_train_real)

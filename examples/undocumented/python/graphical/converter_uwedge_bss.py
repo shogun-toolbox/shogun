@@ -8,8 +8,8 @@ Kevin Hughes 2013
 import numpy as np
 import pylab as pl
 
-from modshogun  import RealFeatures
-from modshogun import UWedgeSep
+from shogun  import RealFeatures
+from shogun import UWedgeSep
 
 # Generate sample data
 np.random.seed(0)

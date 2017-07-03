@@ -4,9 +4,9 @@ strings=['hey','guys','i','am','a','string']
 parameter_list=[[strings]]
 
 def features_hasheddocdot(strings):
-	from modshogun import StringCharFeatures, RAWBYTE
-	from modshogun import HashedDocDotFeatures
-	from modshogun import NGramTokenizer
+	from shogun import StringCharFeatures, RAWBYTE
+	from shogun import HashedDocDotFeatures
+	from shogun import NGramTokenizer
 	from numpy import array
 
 	#create string features

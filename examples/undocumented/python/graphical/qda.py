@@ -1,6 +1,6 @@
-from modshogun import RealFeatures
-from modshogun import MulticlassLabels
-from modshogun import QDA
+from shogun import RealFeatures
+from shogun import MulticlassLabels
+from shogun import QDA
 from pylab import pcolor, contour, colorbar, connect, show, plot, axis
 
 import numpy as np

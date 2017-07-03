@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
 def kernel_log (train_fname=traindat,test_fname=testdat, degree=2.0):
-	from modshogun import RealFeatures, LogKernel, EuclideanDistance, CSVFile
+	from shogun import RealFeatures, LogKernel, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

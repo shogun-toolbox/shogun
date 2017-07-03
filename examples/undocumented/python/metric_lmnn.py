@@ -8,7 +8,7 @@ parameter_list = [[traindat,testdat,label_traindat,3]]
 
 def metric_lmnn(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
 	try:
-		from modshogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
+		from shogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
 	except ImportError:
 		return
 

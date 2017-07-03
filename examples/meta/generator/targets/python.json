@@ -4,8 +4,8 @@
         "IncludeAllClasses": false,
         "IncludeInterfacedClasses": true, 
         "IncludeEnums": true,
-        "DependencyListElement": "from modshogun import $typeName",
-        "DependencyListElementEnum": "from modshogun import $value",
+        "DependencyListElement": "from shogun import $typeName",
+        "DependencyListElementEnum": "from shogun import $value",
         "DependencyListSeparator": "\n"
     },
     "Statement": "$statement\n",

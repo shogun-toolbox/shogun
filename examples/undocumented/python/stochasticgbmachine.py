@@ -11,7 +11,7 @@ parameter_list = [[traindat,label_traindat,feat_types]]
 
 def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 	try:
-		from modshogun import RealFeatures, RegressionLabels, CSVFile, CARTree, StochasticGBMachine, SquaredLoss
+		from shogun import RealFeatures, RegressionLabels, CSVFile, CARTree, StochasticGBMachine, SquaredLoss
 	except ImportError:
 		print("Could not import Shogun modules")
 		return

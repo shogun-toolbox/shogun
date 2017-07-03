@@ -7,8 +7,8 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,5,5],[traindat,testdat,6,6]]
 
 def kernel_distantsegments (fm_train_dna=traindat,fm_test_dna=testdat,delta=5, theta=5):
-	from modshogun import StringCharFeatures, DNA
-	from modshogun import DistantSegmentsKernel
+	from shogun import StringCharFeatures, DNA
+	from shogun import DistantSegmentsKernel
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

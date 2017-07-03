@@ -8,7 +8,7 @@ parameter_list = [[500,50,15,0.2,feattypes]]
 
 def regression_chaidtree(num_train=500,num_test=50,x_range=15,noise_var=0.2,ft=feattypes):
 	try:
-		from modshogun import RealFeatures, RegressionLabels, CSVFile, CHAIDTree, PT_REGRESSION
+		from shogun import RealFeatures, RegressionLabels, CSVFile, CHAIDTree, PT_REGRESSION
 		from numpy import random
 	except ImportError:
 		print("Could not import Shogun and/or numpy modules")

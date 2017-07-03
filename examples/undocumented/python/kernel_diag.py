@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 parameter_list =[[23],[24]]
 def kernel_diag (diag=23):
-	from modshogun import DummyFeatures
-	from modshogun import DiagKernel
+	from shogun import DummyFeatures
+	from shogun import DiagKernel
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)

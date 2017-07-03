@@ -8,9 +8,9 @@ parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_train
 
 
 def kernel_combined_custom_poly (train_fname = traindat,test_fname = testdat,train_label_fname=label_traindat):
-    from modshogun import CombinedFeatures, RealFeatures, BinaryLabels
-    from modshogun import CombinedKernel, PolyKernel, CustomKernel
-    from modshogun import LibSVM, CSVFile
+    from shogun import CombinedFeatures, RealFeatures, BinaryLabels
+    from shogun import CombinedKernel, PolyKernel, CustomKernel
+    from shogun import LibSVM, CSVFile
 
     kernel = CombinedKernel()
     feats_train = CombinedFeatures()

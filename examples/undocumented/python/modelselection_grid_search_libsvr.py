@@ -24,16 +24,16 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 
 def modelselection_grid_search_libsvr (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
-    from modshogun import CrossValidation, CrossValidationResult
-    from modshogun import MeanSquaredError
-    from modshogun import CrossValidationSplitting
-    from modshogun import RegressionLabels
-    from modshogun import RealFeatures
-    from modshogun import GaussianKernel
-    from modshogun import LibSVR
-    from modshogun import GridSearchModelSelection
-    from modshogun import ModelSelectionParameters, R_EXP
-    from modshogun import ParameterCombination
+    from shogun import CrossValidation, CrossValidationResult
+    from shogun import MeanSquaredError
+    from shogun import CrossValidationSplitting
+    from shogun import RegressionLabels
+    from shogun import RealFeatures
+    from shogun import GaussianKernel
+    from shogun import LibSVR
+    from shogun import GridSearchModelSelection
+    from shogun import ModelSelectionParameters, R_EXP
+    from shogun import ParameterCombination
 
     # training data
     features_train=RealFeatures(traindat)

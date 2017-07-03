@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy
-from modshogun import RealFeatures
+from shogun import RealFeatures
 from numpy import array, float64, int64
 
 # create dense matrice

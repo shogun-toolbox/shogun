@@ -1,7 +1,7 @@
 from pylab import figure,show,connect,hist,plot,legend
 from numpy import array, append, arange, empty, exp
-from modshogun import Gaussian, GMM
-from modshogun import RealFeatures
+from shogun import Gaussian, GMM
+from shogun import RealFeatures
 import util
 
 util.set_title('EM for 1d GMM example')

@@ -15,9 +15,9 @@ parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, Tru
 
 def kernel_top (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,pseudo=1e-1,
 	order=1,gap=0,reverse=False,kargs=[1, False, True]):
-	from modshogun import StringCharFeatures, StringWordFeatures, TOPFeatures, DNA
-	from modshogun import PolyKernel
-	from modshogun import HMM, BW_NORMAL
+	from shogun import StringCharFeatures, StringWordFeatures, TOPFeatures, DNA
+	from shogun import PolyKernel
+	from shogun import HMM, BW_NORMAL
 
 	N=1 # toy HMM with 1 state
 	M=4 # 4 observations -> DNA

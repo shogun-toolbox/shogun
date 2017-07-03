@@ -2,9 +2,9 @@
 parameter_list = [['features_string_char_compressed.py']]
 
 def features_string_char_compressed (fname):
-	from modshogun import StringCharFeatures, StringFileCharFeatures, RAWBYTE
-	from modshogun import UNCOMPRESSED,SNAPPY,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
-	from modshogun import DecompressCharString
+	from shogun import StringCharFeatures, StringFileCharFeatures, RAWBYTE
+	from shogun import UNCOMPRESSED,SNAPPY,LZO,GZIP,BZIP2,LZMA, MSG_DEBUG
+	from shogun import DecompressCharString
 
 	f=StringFileCharFeatures(fname, RAWBYTE)
 

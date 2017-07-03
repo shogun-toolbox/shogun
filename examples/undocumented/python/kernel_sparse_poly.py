@@ -9,8 +9,8 @@ parameter_list = [[traindat,testdat,10,3,True],[traindat,testdat,10,4,True]]
 def kernel_sparse_poly (fm_train_real=traindat,fm_test_real=testdat,
 		 size_cache=10,degree=3,inhomogene=True ):
 
-	from modshogun import SparseRealFeatures
-	from modshogun import PolyKernel
+	from shogun import SparseRealFeatures
+	from shogun import PolyKernel
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)

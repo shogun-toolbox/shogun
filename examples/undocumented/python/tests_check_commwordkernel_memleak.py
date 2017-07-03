@@ -3,9 +3,9 @@ parameter_list=[[10,7,0,False]]
 
 def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 	import gc
-	from modshogun import Alphabet,StringCharFeatures,StringWordFeatures,DNA
-	from modshogun import SortWordString, MSG_DEBUG
-	from modshogun import CommWordStringKernel, IdentityKernelNormalizer
+	from shogun import Alphabet,StringCharFeatures,StringWordFeatures,DNA
+	from shogun import SortWordString, MSG_DEBUG
+	from shogun import CommWordStringKernel, IdentityKernelNormalizer
 	from numpy import mat
 
 	POS=[num*'ACGT', num*'ACGT', num*'ACGT',num*'ACGT', num*'ACGT',

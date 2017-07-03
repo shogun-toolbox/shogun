@@ -2,11 +2,11 @@
 parameter_list=[[10, 1, 2.1, 2.0]]
 
 def serialization_svmlight (num, dist, width, C):
-    from modshogun import MSG_DEBUG
-    from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
-    from modshogun import WeightedDegreeStringKernel, GaussianKernel
+    from shogun import MSG_DEBUG
+    from shogun import RealFeatures, BinaryLabels, DNA, Alphabet
+    from shogun import WeightedDegreeStringKernel, GaussianKernel
     try:
-        from modshogun import SVMLight
+        from shogun import SVMLight
     except ImportError:
         print("SVMLight not available")
         exit(0)

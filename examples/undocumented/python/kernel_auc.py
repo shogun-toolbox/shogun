@@ -4,8 +4,8 @@ label_traindat = '../data/label_train_twoclass.dat'
 parameter_list = [[traindat,label_traindat,1.7], [traindat,label_traindat,1.6]]
 
 def kernel_auc (train_fname=traindat,label_fname=label_traindat,width=1.7):
-	from modshogun import GaussianKernel, AUCKernel, RealFeatures
-	from modshogun import BinaryLabels, CSVFile
+	from shogun import GaussianKernel, AUCKernel, RealFeatures
+	from shogun import BinaryLabels, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	subkernel=GaussianKernel(feats_train, feats_train, width)

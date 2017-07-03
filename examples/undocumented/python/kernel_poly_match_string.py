@@ -6,8 +6,8 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,3,False],[traindat,testdat,4,False]]
 def kernel_poly_match_string (fm_train_dna=traindat,fm_test_dna=testdat,degree=3,inhomogene=False):
-	from modshogun import PolyMatchStringKernel
-	from modshogun import StringCharFeatures, DNA
+	from shogun import PolyMatchStringKernel
+	from shogun import StringCharFeatures, DNA
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_train_dna, DNA)

@@ -1,6 +1,6 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect,axis
 from numpy.random import randn
-from modshogun import *
+from shogun import *
 import util
 
 util.set_title('SVM')

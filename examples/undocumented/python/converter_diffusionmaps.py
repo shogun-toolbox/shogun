@@ -4,7 +4,7 @@ parameter_list = [[data,10],[data,20]]
 
 def converter_diffusionmaps (data_fname,t):
 	try:
-		from modshogun import RealFeatures, DiffusionMaps, GaussianKernel, CSVFile
+		from shogun import RealFeatures, DiffusionMaps, GaussianKernel, CSVFile
 
 		features = RealFeatures(CSVFile(data_fname))
 

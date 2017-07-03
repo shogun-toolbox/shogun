@@ -10,8 +10,8 @@ import pylab
 import util
 
 from scipy import linalg
-from modshogun import QDA
-from modshogun import RealFeatures, MulticlassLabels
+from shogun import QDA
+from shogun import RealFeatures, MulticlassLabels
 
 # colormap
 cmap = mpl.colors.LinearSegmentedColormap('color_classes',

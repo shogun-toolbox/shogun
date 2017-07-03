@@ -12,18 +12,18 @@ from numpy import array
 from numpy import random
 import math
 
-from modshogun import CrossValidation, CrossValidationResult
-from modshogun import ContingencyTableEvaluation, ACCURACY
-from modshogun import StratifiedCrossValidationSplitting
-from modshogun import BinaryLabels
-from modshogun import RealFeatures
-from modshogun import GaussianKernel, PowerKernel
-from modshogun import LibSVM
-from modshogun import MinkowskiMetric
-from modshogun import GridSearchModelSelection
-from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
-from modshogun import ParameterCombination
-from modshogun import Math
+from shogun import CrossValidation, CrossValidationResult
+from shogun import ContingencyTableEvaluation, ACCURACY
+from shogun import StratifiedCrossValidationSplitting
+from shogun import BinaryLabels
+from shogun import RealFeatures
+from shogun import GaussianKernel, PowerKernel
+from shogun import LibSVM
+from shogun import MinkowskiMetric
+from shogun import GridSearchModelSelection
+from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
+from shogun import ParameterCombination
+from shogun import Math
 
 def create_param_tree():
 	root=ModelSelectionParameters()

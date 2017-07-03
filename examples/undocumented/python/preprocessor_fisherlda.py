@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
-from modshogun import *
+from shogun import *
 
 
 lm=LoadMatrix()
@@ -10,9 +10,9 @@ labels = lm.load_numbers('../data/label_train_multiclass.dat')
 parameter_list = [[data, labels, CANVAR_FLDA], [data, labels, CLASSIC_FLDA]]
 def preprocessor_fisherlda (data, labels, method):
 
-	from modshogun import RealFeatures, MulticlassLabels, CANVAR_FLDA
-	from modshogun import FisherLda
-	from modshogun import MulticlassLabels
+	from shogun import RealFeatures, MulticlassLabels, CANVAR_FLDA
+	from shogun import FisherLda
+	from shogun import MulticlassLabels
 
 	sg_features = RealFeatures(data)
 	sg_labels = MulticlassLabels(labels)

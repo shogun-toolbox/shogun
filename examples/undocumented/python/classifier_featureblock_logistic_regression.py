@@ -12,9 +12,9 @@ parameter_list = [[traindat,testdat,label_traindat]]
 
 def classifier_featureblock_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 
-	from modshogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup
+	from shogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup
 	try:
-		from modshogun import FeatureBlockLogisticRegression
+		from shogun import FeatureBlockLogisticRegression
 	except ImportError:
 		print("FeatureBlockLogisticRegression not available")
 		exit(0)

@@ -5,7 +5,7 @@ testdat = '../data/fm_test_real.dat'
 parameter_list = [[traindat,testdat,3],[traindat,testdat,4]]
 
 def distance_minkowski (train_fname=traindat,test_fname=testdat,k=3):
-	from modshogun import RealFeatures, MinkowskiMetric, CSVFile
+	from shogun import RealFeatures, MinkowskiMetric, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

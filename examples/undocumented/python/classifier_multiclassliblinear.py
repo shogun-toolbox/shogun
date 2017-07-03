@@ -6,8 +6,8 @@ from tools.multiclass_shared import prepare_data
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclassliblinear (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
-	from modshogun import RealFeatures, MulticlassLabels
-	from modshogun import MulticlassLibLinear
+	from shogun import RealFeatures, MulticlassLabels
+	from shogun import MulticlassLibLinear
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -21,7 +21,7 @@ def classifier_multiclassliblinear (fm_train_real=traindat,fm_test_real=testdat,
 	out = label_pred.get_labels()
 
 	if label_test_multiclass is not None:
-		from modshogun import MulticlassAccuracy
+		from shogun import MulticlassAccuracy
 		labels_test = MulticlassLabels(label_test_multiclass)
 		evaluator = MulticlassAccuracy()
 		acc = evaluator.evaluate(label_pred, labels_test)

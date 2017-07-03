@@ -5,8 +5,8 @@ s=10*'A' + 10*'C' + 10*'G' + 10*'T'
 parameter_list=[[s]]
 
 def features_string_sliding_window (strings):
-	from modshogun import StringCharFeatures, DNA
-	from modshogun import DynamicIntArray
+	from shogun import StringCharFeatures, DNA
+	from shogun import DynamicIntArray
 
 	f=StringCharFeatures([strings], DNA)
 

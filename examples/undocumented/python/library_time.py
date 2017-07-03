@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import time
-from modshogun import Time
+from shogun import Time
 
 parameter_list = [[5],[1.0]]
 def library_time (sleep_secs):

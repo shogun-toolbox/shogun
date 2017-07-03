@@ -6,7 +6,7 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def kernel_linear (train_fname=traindat,test_fname=testdat,scale=1.2):
 
-	from modshogun import RealFeatures, LinearKernel, AvgDiagKernelNormalizer, CSVFile
+	from shogun import RealFeatures, LinearKernel, AvgDiagKernelNormalizer, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

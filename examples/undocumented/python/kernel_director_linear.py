@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import numpy
-from modshogun import RealFeatures, MSG_DEBUG
+from shogun import RealFeatures, MSG_DEBUG
 traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 	try:
-		from modshogun import DirectorKernel
+		from shogun import DirectorKernel
 	except ImportError:
 		print("recompile shogun with --enable-swig-directors")
 		return
@@ -21,8 +21,8 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 			return numpy.dot(seq1, seq2)
 
 
-	from modshogun import LinearKernel, AvgDiagKernelNormalizer
-	from modshogun import Time
+	from shogun import LinearKernel, AvgDiagKernelNormalizer
+	from shogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
 	#feats_train.io.set_loglevel(MSG_DEBUG)

@@ -3,10 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modshogun import RealFeatures
-from modshogun import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM, DirectorStructuredModel
-from modshogun import BMRM, PPBMRM, P3BMRM, ResultSet, RealVector
-from modshogun import StructuredAccuracy
+from shogun import RealFeatures
+from shogun import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM, DirectorStructuredModel
+from shogun import BMRM, PPBMRM, P3BMRM, ResultSet, RealVector
+from shogun import StructuredAccuracy
 
 class MulticlassStructuredModel(DirectorStructuredModel):
 	def __init__(self,features,labels):

@@ -10,7 +10,7 @@
 
 from numpy import *
 from pylab import *
-from modshogun import *
+from shogun import *
 import random
 import difflib
 

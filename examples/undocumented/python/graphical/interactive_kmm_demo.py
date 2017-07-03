@@ -25,9 +25,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from modshogun import *
-from modshogun import KernelMeanMatching
-from modshogun import Math
+from shogun import *
+from shogun import KernelMeanMatching
+from shogun import Math
 import util
 
 class Form(QMainWindow):

@@ -10,8 +10,8 @@ predicted = random.randn(len(ground_truth))
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_rocevaluation (ground_truth, predicted):
-	from modshogun import BinaryLabels
-	from modshogun import ROCEvaluation
+	from shogun import BinaryLabels
+	from shogun import ROCEvaluation
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)

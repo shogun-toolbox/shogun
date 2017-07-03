@@ -36,10 +36,10 @@ def load_compressed_features(fname_features):
 
 def metric_lmnn_statistics(k=3, fname_features='../../data/fm_train_multiclass_digits.dat.gz', fname_labels='../../data/label_train_multiclass_digits.dat'):
 	try:
-		from modshogun import LMNN, CSVFile, RealFeatures, MulticlassLabels, MSG_DEBUG
+		from shogun import LMNN, CSVFile, RealFeatures, MulticlassLabels, MSG_DEBUG
 		import matplotlib.pyplot as pyplot
 	except ImportError:
-		print 'Error importing modshogun or other required modules. Please, verify their installation.'
+		print 'Error importing shogun or other required modules. Please, verify their installation.'
 		return
 
 	features = RealFeatures(load_compressed_features(fname_features).T)

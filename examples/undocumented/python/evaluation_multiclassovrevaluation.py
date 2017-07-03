@@ -5,9 +5,9 @@ label_traindat = '../data/label_train_multiclass.dat'
 parameter_list = [[traindat, label_traindat]]
 
 def evaluation_multiclassovrevaluation(train_fname=traindat, label_fname=label_traindat):
-	from modshogun import MulticlassOVREvaluation,ROCEvaluation
-	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
-	from modshogun import MulticlassLabels, Math, CSVFile
+	from shogun import MulticlassOVREvaluation,ROCEvaluation
+	from shogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
+	from shogun import MulticlassLabels, Math, CSVFile
 
 	Math.init_random(1)
 	ground_truth_labels = MulticlassLabels(CSVFile(label_fname))

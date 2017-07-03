@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import numpy
-from modshogun import RealFeatures
-from modshogun import LongIntFeatures
+from shogun import RealFeatures
+from shogun import LongIntFeatures
 
 from numpy import array, float64, int64
 

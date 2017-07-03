@@ -11,7 +11,7 @@ parameter_list = [[ground_truth,predicted]]
 
 def evaluation_director_contingencytableevaluation (ground_truth, predicted):
 	try:
-		from modshogun import DirectorContingencyTableEvaluation, ED_MAXIMIZE
+		from shogun import DirectorContingencyTableEvaluation, ED_MAXIMIZE
 	except ImportError:
 		print("recompile shogun with --enable-swig-directors")
 		return
@@ -24,7 +24,7 @@ def evaluation_director_contingencytableevaluation (ground_truth, predicted):
 		def get_custom_score(self):
 			return self.get_WRACC()+self.get_BAL()
 
-	from modshogun import BinaryLabels
+	from shogun import BinaryLabels
 
 	evaluator = SimpleWeightedBinaryEvaluator()
 	r = evaluator.evaluate(BinaryLabels(ground_truth), BinaryLabels(predicted))

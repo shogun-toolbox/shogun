@@ -4,9 +4,9 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_laplacianeigenmaps (data_fname,k):
 	try:
-		from modshogun import RealFeatures, CSVFile
+		from shogun import RealFeatures, CSVFile
 		try:
-			from modshogun import LaplacianEigenmaps
+			from shogun import LaplacianEigenmaps
 		except ImportError:
 			print("LaplacianEigenmaps not available")
 			exit(0)

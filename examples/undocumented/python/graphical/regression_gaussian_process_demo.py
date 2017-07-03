@@ -6,14 +6,14 @@
 ###########################################################################
 from numpy import *
 from numpy.random import randn
-from modshogun import *
+from shogun import *
 import pylab as PL
 import matplotlib
 import logging as LG
 import scipy as SP
-from modshogun import GradientModelSelection
-from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
-from modshogun import ParameterCombination
+from shogun import GradientModelSelection
+from shogun import ModelSelectionParameters, R_EXP, R_LINEAR
+from shogun import ParameterCombination
 
 def plot_training_data(x, y,
                        shift=None,

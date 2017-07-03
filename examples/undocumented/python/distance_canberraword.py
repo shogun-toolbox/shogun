@@ -9,9 +9,9 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,3,0,False]]
 
 def distance_canberraword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False):
-	from modshogun import StringCharFeatures, StringWordFeatures, DNA
-	from modshogun import SortWordString
-	from modshogun import CanberraWordDistance
+	from shogun import StringCharFeatures, StringWordFeatures, DNA
+	from shogun import SortWordString
+	from shogun import CanberraWordDistance
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)

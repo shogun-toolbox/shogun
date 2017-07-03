@@ -11,8 +11,8 @@ Kevin Hughes 2013
 import numpy as np
 import pylab as pl
 
-from modshogun  import RealFeatures
-from modshogun import SOBI
+from shogun  import RealFeatures
+from shogun import SOBI
 
 # Generate sample data
 np.random.seed(0)

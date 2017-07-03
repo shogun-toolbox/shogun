@@ -3,8 +3,8 @@ parameter_list=[['../data/train_sparsereal.light']]
 
 def features_read_svmlight_format (fname):
 	from tempfile import NamedTemporaryFile
-	from modshogun import SparseRealFeatures
-	from modshogun import LibSVMFile
+	from shogun import SparseRealFeatures
+	from shogun import LibSVMFile
 
 	f=SparseRealFeatures()
 	lab=f.load_with_labels(LibSVMFile(fname))

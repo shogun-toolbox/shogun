@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from modshogun import *
+from shogun import *
 from numpy import array
 
 parameter_list=[[[[1.0,2,3],[4,5,6]]]]

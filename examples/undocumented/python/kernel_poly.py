@@ -6,7 +6,7 @@ parameter_list = [[traindat,testdat,4,False,True],[traindat,testdat,5,False,True
 
 def kernel_poly (train_fname=traindat,test_fname=testdat,degree=4,inhomogene=False,
 	use_normalization=True):
-	from modshogun import RealFeatures, PolyKernel, CSVFile
+	from shogun import RealFeatures, PolyKernel, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

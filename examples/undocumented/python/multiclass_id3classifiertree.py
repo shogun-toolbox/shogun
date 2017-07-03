@@ -18,7 +18,7 @@ parameter_list = [[train_data, train_labels, test_data]]
 
 def multiclass_id3classifiertree(train=train_data,labels=train_labels,test=test_data):
 	try:
-		from modshogun import RealFeatures, MulticlassLabels, ID3ClassifierTree
+		from shogun import RealFeatures, MulticlassLabels, ID3ClassifierTree
 	except ImportError:
 		return
 

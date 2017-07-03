@@ -9,8 +9,8 @@ traindat,testdat, 3,1.4,10,3,0,False]]
 
 def kernel_match_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 degree=3,scale=1.4,size_cache=10,order=3,gap=0,reverse=False):
-	from modshogun import MatchWordStringKernel, AvgDiagKernelNormalizer
-	from modshogun import StringWordFeatures, StringCharFeatures, DNA
+	from shogun import MatchWordStringKernel, AvgDiagKernelNormalizer
+	from shogun import StringWordFeatures, StringCharFeatures, DNA
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(DNA)

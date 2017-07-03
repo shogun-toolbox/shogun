@@ -41,9 +41,9 @@ except ImportError:
 import numpy as np
 from numpy    import random
 
-from modshogun import RealFeatures
-from modshogun import PCA
-from modshogun import EuclideanDistance
+from shogun import RealFeatures
+from shogun import PCA
+from shogun import EuclideanDistance
 import math
 import os
 import pylab as pl

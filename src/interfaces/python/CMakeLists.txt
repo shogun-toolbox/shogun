@@ -67,12 +67,12 @@ SET(PYTHON_PACKAGES_PATH "${_PYTHON_PACKAGES_PATH}" CACHE PATH "Where to install
 INSTALL(TARGETS _interface_python
 		DESTINATION ${PYTHON_PACKAGES_PATH}
     COMPONENT python)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.py
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.py
 		DESTINATION ${PYTHON_PACKAGES_PATH}
     COMPONENT python)
 
 # create the __init.py__ files for modules and the main
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in "from modshogun import *")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in "from shogun import *")
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "__all__= [\n")
 configure_file(${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in __init__.py COPYONLY)
 SET(MODULES Kernel Distance Features Classifier Regression Converter

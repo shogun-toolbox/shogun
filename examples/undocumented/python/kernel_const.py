@@ -2,8 +2,8 @@
 parameter_list =[[23],[24]]
 
 def kernel_const (c=23):
-	from modshogun import DummyFeatures
-	from modshogun import ConstKernel
+	from shogun import DummyFeatures
+	from shogun import ConstKernel
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)

@@ -8,7 +8,7 @@ parameter_list = [[data,0.0],[data,1.0]]
 
 def mathematics_sparseinversecovariance (data,lc):
 	try:
-		from modshogun import SparseInverseCovariance
+		from shogun import SparseInverseCovariance
 	except ImportError:
 		print("SparseInverseCovariance not available")
 		exit(0)

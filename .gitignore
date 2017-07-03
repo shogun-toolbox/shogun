@@ -52,53 +52,6 @@ cpplint.py
 /src/configure-*-*.c*
 /src/build-local
 
-# modular interfaces
-/src/interfaces/*_modular/*.doxy
-/src/interfaces/*_modular/Evaluation.i
-/src/interfaces/*_modular/Regression.i
-/src/interfaces/*_modular/Library.i
-/src/interfaces/*_modular/Distribution.i
-/src/interfaces/*_modular/Structure.i
-/src/interfaces/*_modular/Classifier.i
-/src/interfaces/*_modular/Features.i
-/src/interfaces/*_modular/Kernel.i
-/src/interfaces/*_modular/Preprocessor.i
-/src/interfaces/*_modular/Distance.i
-/src/interfaces/*_modular/Clustering.i
-/src/interfaces/*_modular/SGBase.i
-/src/interfaces/*_modular/IO.i
-/src/interfaces/*_modular/Mathematics.i
-/src/interfaces/*_modular/ModelSelection.i
-/src/interfaces/*_modular/modshogun.i
-/src/interfaces/*_modular/modshogun_ignores.i
-/src/interfaces/*_modular/*_includes.i
-/src/interfaces/*_modular/Makefile
-/src/interfaces/*_modular/Converter.i
-/src/interfaces/*_modular/Multiclass.i
-/src/interfaces/*_modular/Machine.i
-/src/interfaces/*_modular/Transfer.i
-/src/interfaces/*_modular/Loss.i
-/src/interfaces/*_modular/Statistics.i
-/src/interfaces/*_modular/Latent.i
-/src/interfaces/*_modular/GaussianProcess.i
-
-# particular modular ones
-/src/interfaces/csharp_modular/*.cs
-/src/interfaces/csharp_modular/abstract_types_extension.i
-/src/interfaces/csharp_modular/modshogun.dll
-/src/interfaces/java_modular/*.java
-/src/interfaces/java_modular/*.jar
-/src/interfaces/java_modular/*.class
-/src/interfaces/java_modular/org/*
-/src/interfaces/java_modular/shogun/*
-/src/interfaces/python_modular/*.py
-/src/interfaces/python_modular/abstract_types_extension.i
-/src/interfaces/r_modular/*.R
-/src/interfaces/r_modular/*.RData
-/src/interfaces/perl_modular/*.pm
-/src/interfaces/octave_modular/abstract_types_extension.i
-/.duped_py_pl.pb
-
 # /examples/
 *.log
 *.exe
@@ -108,9 +61,9 @@ cpplint.py
 !/examples/undocumented/libshogun/*.cpp
 !/examples/undocumented/libshogun/CMakeLists.txt
 !/examples/undocumented/libshogun/tools/
-!examples/undocumented/python_modular/graphical/
-!examples/undocumented/python_modular/*.py
-!examples/undocumented/python_modular/CMakeLists.txt
+!examples/undocumented/python/graphical/
+!examples/undocumented/python/*.py
+!examples/undocumented/python/CMakeLists.txt
 
 # /tests
 /tests/unit/shogun-unit-test
@@ -120,12 +73,8 @@ cpplint.py
 /tests/unit/*.json
 /tests/unit/combined_kernel.weights
 Testing/
-examples/undocumented/python_modular/serialized_svm.bz2
-examples/undocumented/python_modular/tmp/blaah.asc
-examples/undocumented/python_modular/tmp/blaah.h5
-examples/undocumented/python_modular/tmp/blaah.json
-examples/undocumented/python_modular/tmp/blaah.xml
-examples/undocumented/python_modular/vw_cache.dat.cache
+examples/undocumented/python/serialized_svm.bz2
+examples/undocumented/python/vw_cache.dat.cache
 
 # cmake
 /CMakeFiles/
