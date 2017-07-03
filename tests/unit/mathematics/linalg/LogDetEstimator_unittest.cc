@@ -139,6 +139,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_REF(op_func);
 
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
+	trace_sampler->set_seed(1);
 	SG_REF(trace_sampler);
 
 	CLogDetEstimator estimator(trace_sampler, op_func, e);
