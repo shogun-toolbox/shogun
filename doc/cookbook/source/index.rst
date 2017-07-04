@@ -56,15 +56,15 @@ Statistical Testing
 
    examples/statistical_testing/**
 
-Kernels
--------
+Converter
+---------
 
 .. toctree::
    :maxdepth: 1
    :glob:
-   :caption: Kernels
+   :caption: Converter
 
-   examples/kernel/**
+   examples/converter/**
 
 Gaussian Processes
 ------------------
