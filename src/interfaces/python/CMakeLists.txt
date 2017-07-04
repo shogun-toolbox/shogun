@@ -69,26 +69,5 @@ INSTALL(TARGETS _interface_python
     COMPONENT python)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.py
 		DESTINATION ${PYTHON_PACKAGES_PATH}
-    COMPONENT python)
-
-# create the __init.py__ files for modules and the main
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in "from shogun import *")
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "__all__= [\n")
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in __init__.py COPYONLY)
-SET(MODULES Kernel Distance Features Classifier Regression Converter
-	Loss Clustering Evaluation IO Library Mathematics
-	ModelSelection Preprocessor Structure Distribution Statistics Latent)
-
-FOREACH(module ${MODULES})
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py
-		DESTINATION ${PYTHON_PACKAGES_PATH}/shogun/${module}
-    COMPONENT python)
-	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "\"${module}\",\n")
-ENDFOREACH()
-
-file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "]")
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in main_init.py COPYONLY)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/main_init.py
-	DESTINATION ${PYTHON_PACKAGES_PATH}/shogun
-  COMPONENT python
-	RENAME __init__.py)
+    COMPONENT python
+)
