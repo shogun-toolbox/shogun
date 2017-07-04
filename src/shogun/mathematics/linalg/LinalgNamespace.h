@@ -34,6 +34,7 @@
 #define LINALG_NAMESPACE_H_
 
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
+#include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/SGLinalg.h>
 
 namespace shogun
@@ -1146,6 +1147,19 @@ namespace shogun
 		}
 
 		/**
+		 * Method that computes the euclidean norm of a vector.
+		 *
+		 * @param a SGVector
+		 * @return The vector norm
+		 */
+		template <typename T>
+		T norm(const SGVector<T>& a)
+		{
+			REQUIRE(a.size() > 0, "Vector cannot be empty!\n");
+			return CMath::sqrt(dot(a, a));
+		}
+
+		/**
 		 * Solve the linear equations \f$Ax=b\f$ through the
 		 * QR decomposition of A.
 		 *
@@ -1393,11 +1407,15 @@ namespace shogun
 		 * @param U The matrix that stores the resulting unitary matrix U
 		 * @param thin_U Whether to compute the full or thin matrix U
 		 * (default:thin)
+		 * @param alg Whether to compute the svd through bidiagonal divide
+		 * and conquer algorithm or Jacobi's algorithm (@see SVDAlgorithm)
+		 * (default: bidiagonal divide and conquer)
 		 */
 		template <typename T>
 		void
 		svd(const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U,
-		    bool thin_U = true)
+		    bool thin_U = true,
+		    SVDAlgorithm alg = SVDAlgorithm::BidiagonalDivideConquer)
 		{
 			auto r = CMath::min(A.num_cols, A.num_rows);
 			REQUIRE(
@@ -1425,7 +1443,7 @@ namespace shogun
 			                   "smaller dimension (%d).\n",
 			    s.vlen, r);
 
-			infer_backend(A)->svd(A, s, U, thin_U);
+			infer_backend(A)->svd(A, s, U, thin_U, alg);
 		}
 
 		/**

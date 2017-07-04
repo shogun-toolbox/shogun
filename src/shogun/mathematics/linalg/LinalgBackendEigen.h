@@ -37,6 +37,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgBackendBase.h>
+#include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/LinalgMacros.h>
 
 namespace shogun
@@ -316,7 +317,7 @@ namespace shogun
 #define BACKEND_GENERIC_SVD(Type, Container)                                   \
 	virtual void svd(                                                          \
 	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
-	    bool thin_U) const;
+	    bool thin_U, linalg::SVDAlgorithm alg) const;
 		DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
 #undef BACKEND_GENERIC_SVD
 
@@ -592,8 +593,8 @@ namespace shogun
 		/** Eigen3 compute svd method */
 		template <typename T>
 		void svd_impl(
-		    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U,
-		    bool thin_U) const;
+		    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U, bool thin_U,
+		    linalg::SVDAlgorithm alg) const;
 
 		/** Eigen3 compute trace method */
 		template <typename T>

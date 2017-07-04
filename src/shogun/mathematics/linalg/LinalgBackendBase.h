@@ -41,6 +41,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/GPUMemoryBase.h>
+#include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
 
 namespace shogun
@@ -638,7 +639,7 @@ namespace shogun
 #define BACKEND_GENERIC_SVD(Type, Container)                                   \
 	virtual void svd(                                                          \
 	    const Container<Type>& A, SGVector<Type> s, SGMatrix<Type> U,          \
-	    bool thin_U) const                                                     \
+	    bool thin_U, linalg::SVDAlgorithm alg) const                           \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
