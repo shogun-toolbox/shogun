@@ -11,50 +11,50 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/classifier/LDA.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/FisherLDA.h>
+#include <shogun/solver/LDACanVarSolver.h>
+#include <shogun/solver/LDASolver.h>
 #include <vector>
 
 using namespace Eigen;
 using namespace shogun;
 
-CLDA::CLDA(float64_t gamma, ELDAMethod method)
-	:CLinearMachine()
+CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
+    : CLinearMachine(false)
 {
 	init();
 	m_method=method;
 	m_gamma=gamma;
+	m_bdc_svd = bdc_svd;
 }
 
 CLDA::CLDA(
     float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
-    ELDAMethod method)
-    : CLinearMachine(), m_gamma(gamma)
+    ELDAMethod method, bool bdc_svd)
+    : CLinearMachine(false), m_gamma(gamma)
 {
 	init();
 	set_features(traindat);
 	set_labels(trainlab);
 	m_method=method;
 	m_gamma=gamma;
+	m_bdc_svd = bdc_svd;
 }
 
 void CLDA::init()
 {
 	m_method=AUTO_LDA;
 	m_gamma=0;
+	m_bdc_svd = true;
 	SG_ADD(
 	    (machine_int_t*)&m_method, "m_method",
 	    "Method used for LDA calculation", MS_NOT_AVAILABLE);
 	SG_ADD(
 	    (machine_int_t*)&m_gamma, "m_gamma", "Regularization parameter",
 	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_bdc_svd, "m_bdc_svd", "Use BDC-SVD algorithm", MS_NOT_AVAILABLE);
 }
 
 CLDA::~CLDA()
@@ -66,8 +66,7 @@ bool CLDA::train_machine(CFeatures *data)
 	REQUIRE(m_labels, "Labels for the given features are not specified!\n")
 	REQUIRE(
 	    m_labels->get_label_type() == LT_BINARY,
-	    "The labels should of type"
-	    " CBinaryLabels! you provided %s \n",
+	    "The labels should of type CBinaryLabels! Provided type is %s \n",
 	    m_labels->get_name())
 
 	if(data)
@@ -82,114 +81,89 @@ bool CLDA::train_machine(CFeatures *data)
 		REQUIRE(data, "Features have not been provided.\n")
 	}
 
-	SGVector<int32_t>train_labels=((CBinaryLabels *)m_labels)->get_int_labels();
-	REQUIRE(train_labels.vector,"Provided Labels are empty!\n")
+	REQUIRE(
+	    data->get_num_vectors() == m_labels->get_num_labels(),
+	    "Number of training examples(%d) should be equal to number of labels "
+	    "(%d)!\n",
+	    data->get_num_vectors(), m_labels->get_num_labels());
 
-	REQUIRE(data->get_num_vectors() == train_labels.vlen,"Number of training examples(%d) should be "
-		"equal to number of labels (%d)!\n", data->get_num_vectors(), train_labels.vlen);
+	REQUIRE(
+	    features->get_feature_class() == C_DENSE,
+	    "LDA only works with dense features")
 
 	if(data->get_feature_type() == F_SHORTREAL)
-		return CLDA::train_machine_templated<float32_t>(train_labels, data);
+		return CLDA::train_machine_templated<float32_t>();
 	else if(data->get_feature_type() == F_DREAL)
-		return CLDA::train_machine_templated<float64_t>(train_labels, data);
+		return CLDA::train_machine_templated<float64_t>();
 	else if(data->get_feature_type() == F_LONGREAL)
-		return CLDA::train_machine_templated<floatmax_t>(train_labels, data);
+		return CLDA::train_machine_templated<floatmax_t>();
 
 	return false;
 }
 
 template <typename ST>
-bool CLDA::train_machine_templated(SGVector<int32_t> train_labels, CFeatures *data)
+bool CLDA::train_machine_templated()
 {
-	SGMatrix<ST> feature_matrix =
-	    ((CDenseFeatures<ST>*)data)->get_feature_matrix();
-	index_t num_feat = feature_matrix.num_rows;
-	index_t num_vec = feature_matrix.num_cols;
+	index_t num_feat = ((CDenseFeatures<ST>*)features)->get_num_features();
+	index_t num_vec = features->get_num_vectors();
+	;
 
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
 	if (m_method == SVD_LDA || lda_more_efficient)
-		return solver_svd(train_labels, data);
+		return solver_svd<ST>();
 	else
-		return solver_classic<ST>(train_labels, data);
+		return solver_classic<ST>();
 }
 
-bool CLDA::solver_svd(SGVector<int32_t> train_labels, CFeatures* data)
+template <typename ST>
+bool CLDA::solver_svd()
 {
-	std::unique_ptr<CFisherLDA> lda(new CFisherLDA(CANVAR_FLDA));
-	std::unique_ptr<CMulticlassLabels> multiclass_labels(
-	    new CMulticlassLabels(m_labels->get_num_labels()));
+	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
 
-	for (index_t i = 0; i < m_labels->get_num_labels(); ++i)
-		multiclass_labels->set_int_label(
-		    i, (((CBinaryLabels*)m_labels)->get_int_label(i) == 1 ? 1 : 0));
+	// keep just one dimension to do binary classification
+	const index_t projection_dim = 1;
+	auto solver = std::unique_ptr<LDACanVarSolver<ST>>(
+	    new LDACanVarSolver<ST>(
+	        dense_feat,
+	        new CMulticlassLabels(static_cast<CBinaryLabels*>(m_labels)),
+	        projection_dim, m_gamma, m_bdc_svd));
 
-	// keep just the first dimension to do binary classification
-	lda->fit(data, multiclass_labels.get(), 1);
-	auto m = lda->get_transformation_matrix();
+	SGVector<ST> w_st(solver->get_eigenvectors());
 
-	SGVector<float64_t> w(m);
+	auto class_mean = solver->get_class_mean();
+	ST m_neg = linalg::dot(w_st, class_mean[0]);
+	ST m_pos = linalg::dot(w_st, class_mean[1]);
+
+	// change the sign of w if needed to get the correct labels
+	float64_t sign = (m_pos > m_neg) ? 1 : -1;
+
+	SGVector<float64_t> w(dense_feat->get_num_features());
+	// copy w_st into w
+	for (index_t i = 0; i < w.size(); ++i)
+		w[i] = sign * w_st[i];
 	set_w(w);
-	set_bias(-linalg::dot(w, lda->get_mean()));
+
+	set_bias(-0.5 * sign * (m_neg + m_pos));
 
 	return true;
 }
 
 template <typename ST>
-bool CLDA::solver_classic(SGVector<int32_t> train_labels, CFeatures* data)
+bool CLDA::solver_classic()
 {
-	SGMatrix<ST> feature_matrix =
-	    ((CDenseFeatures<ST>*)data)->get_feature_matrix();
-	index_t num_feat = feature_matrix.num_rows;
-	index_t num_vec = feature_matrix.num_cols;
+	auto dense_feat = static_cast<CDenseFeatures<ST>*>(features);
+	index_t num_feat = dense_feat->get_num_features();
 
-	std::vector<index_t> idx_neg;
-	std::vector<index_t> idx_pos;
+	auto solver = std::unique_ptr<LDASolver<ST>>(
+	    new LDASolver<ST>(
+	        dense_feat,
+	        new CMulticlassLabels(static_cast<CBinaryLabels*>(m_labels)),
+	        m_gamma));
 
-	for (index_t i = 0; i < train_labels.vlen; i++)
-	{
-		if (train_labels.vector[i] == -1)
-			idx_neg.push_back(i);
-		else if (train_labels.vector[i] == +1)
-			idx_pos.push_back(i);
-	}
-
-	SGMatrix<ST> matrix(feature_matrix);
-	SGVector<ST> mean_neg(num_feat);
-	SGVector<ST> mean_pos(num_feat);
-
-	linalg::zero(mean_neg);
-	linalg::zero(mean_pos);
-
-	// mean neg
-	for (auto i : idx_neg)
-		linalg::add_col_vec(matrix, i, mean_neg, mean_neg);
-	linalg::scale(mean_neg, mean_neg, 1 / (ST)idx_neg.size());
-
-	// get m(-ve) - mean(-ve)
-	for (auto i : idx_neg)
-		linalg::add_col_vec(matrix, i, mean_neg, matrix, (ST)1, (ST)-1);
-
-	// mean pos
-	for (auto i : idx_pos)
-		linalg::add_col_vec(matrix, i, mean_pos, mean_pos);
-	linalg::scale(mean_pos, mean_pos, 1 / (ST)idx_pos.size());
-
-	// get m(+ve) - mean(+ve)
-	for (auto i : idx_pos)
-		linalg::add_col_vec(matrix, i, mean_pos, matrix, (ST)1, (ST)-1);
-
-	// covariance matrix.
-	auto cov_mat = linalg::matrix_prod(matrix, matrix, false, true);
-	SGMatrix<ST> scatter_matrix(num_feat, num_feat);
-	linalg::scale(cov_mat, scatter_matrix, 1 / (ST)(num_vec - 1));
-
-	ST trace = linalg::trace(scatter_matrix);
-	SGMatrix<ST> id(num_feat, num_feat);
-	linalg::identity(id);
-	linalg::add(
-	    scatter_matrix, id, scatter_matrix, (ST)(1.0 - m_gamma),
-	    trace * ((ST)m_gamma) / num_feat);
+	auto class_mean = solver->get_class_mean();
+	auto class_count = solver->get_class_count();
+	SGMatrix<ST> scatter_matrix = solver->get_within_cov();
 
 	// the usual way
 	// we need to find a Basic Linear Solution of A.x=b for 'x'.
@@ -200,11 +174,12 @@ bool CLDA::solver_classic(SGVector<int32_t> train_labels, CFeatures* data)
 	// VectorXd x=w;
 	auto decomposition = linalg::cholesky_factor(scatter_matrix);
 	SGVector<ST> w_st = linalg::cholesky_solver(
-	    decomposition, linalg::add(mean_pos, mean_neg, (ST)1, (ST)-1));
+	    decomposition,
+	    linalg::add(class_mean[1], class_mean[0], (ST)1, (ST)-1));
 
 	// get the weights w_neg(for -ve class) and w_pos(for +ve class)
-	auto w_neg = linalg::cholesky_solver(decomposition, mean_neg);
-	auto w_pos = linalg::cholesky_solver(decomposition, mean_pos);
+	auto w_neg = linalg::cholesky_solver(decomposition, class_mean[0]);
+	auto w_pos = linalg::cholesky_solver(decomposition, class_mean[1]);
 
 	SGVector<float64_t> w(num_feat);
 	// copy w_st into w
@@ -215,8 +190,8 @@ bool CLDA::solver_classic(SGVector<int32_t> train_labels, CFeatures* data)
 	// get the bias.
 	set_bias(
 	    (float64_t)(
-	        0.5 *
-	        (linalg::dot(w_neg, mean_neg) - linalg::dot(w_pos, mean_pos))));
+	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
+	               linalg::dot(w_pos, class_mean[1]))));
 
 	return true;
 }
