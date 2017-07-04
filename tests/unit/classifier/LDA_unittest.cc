@@ -27,11 +27,12 @@
 * of the authors and should not be interpreted as representing official policies,
 * either expressed or implied, of the Shogun Development Team.
 */
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/classifier/LDA.h>
 #include <gtest/gtest.h>
+#include <shogun/classifier/LDA.h>
+#include <shogun/features/DataGenerator.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -162,13 +163,15 @@ void check_eigenvectors_fld()
 
 	FLD_test<float64_t>(projection_FLD, w_FLD);
 
+	// normalize 'w' since the magnitude is irrelevant
+	w_FLD = linalg::scale(w_FLD, 1.0 / linalg::norm(w_FLD));
 	// comparing our 'w' against 'w' a.k.a EigenVec of the scipy implementation
 	// of Fisher 2 Class LDA here:
 	// http://wiki.scipy.org/Cookbook/LinearClassification
 	float64_t epsilon=0.00000001;
-	EXPECT_NEAR(5.31296094, w_FLD[0], epsilon);
-	EXPECT_NEAR(40.45747764, w_FLD[1], epsilon);
-	EXPECT_NEAR(10.81046958, w_FLD[2], epsilon);
+	EXPECT_NEAR(0.12586205, w_FLD[0], epsilon);
+	EXPECT_NEAR(0.95842245, w_FLD[1], epsilon);
+	EXPECT_NEAR(0.25609597, w_FLD[2], epsilon);
 }
 
 TEST(LDA, DISABLED_CheckProjection_FLD)
