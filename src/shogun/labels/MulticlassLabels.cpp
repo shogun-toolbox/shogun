@@ -25,6 +25,15 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 	init();
 }
 
+CMulticlassLabels::CMulticlassLabels(CBinaryLabels* labels)
+    : CDenseLabels(labels->get_num_labels())
+{
+	init();
+
+	for (index_t i = 0; i < labels->get_num_labels(); ++i)
+		m_labels[i] = (labels->get_label(i) == 1 ? 1 : 0);
+}
+
 CMulticlassLabels::~CMulticlassLabels()
 {
 }

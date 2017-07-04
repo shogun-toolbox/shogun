@@ -57,6 +57,14 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(CFile* loader);
 
+		/**
+		 * Convert binary labels to multiclass labels,
+		 * namely -1 is mapped to 0 and 1 to 1.
+		 *
+		 * @param labels Binary labels
+		 */
+		CMulticlassLabels(CBinaryLabels* labels);
+
 		/** destructor */
 		~CMulticlassLabels();
 
