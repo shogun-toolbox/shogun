@@ -31,6 +31,7 @@
  */
 
 #include <shogun/mathematics/linalg/LinalgBackendEigen.h>
+#include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/LinalgMacros.h>
 
 using namespace shogun;
@@ -67,9 +68,9 @@ DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC, SGMatrix)
 #define BACKEND_GENERIC_SVD(Type, Container)                                   \
 	void LinalgBackendEigen::svd(                                              \
 	    const Container<Type>& A, SGVector<Type> s, Container<Type> U,         \
-	    bool thin_U) const                                                     \
+	    bool thin_U, linalg::SVDAlgorithm alg) const                           \
 	{                                                                          \
-		return svd_impl(A, s, U, thin_U);                                      \
+		return svd_impl(A, s, U, thin_U, alg);                                 \
 	}
 DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_SVD, SGMatrix)
 #undef BACKEND_GENERIC_SVD
@@ -185,14 +186,37 @@ void LinalgBackendEigen::eigen_solver_symmetric_impl(
 
 template <typename T>
 void LinalgBackendEigen::svd_impl(
-    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U, bool thin_U) const
+    const SGMatrix<T>& A, SGVector<T>& s, SGMatrix<T>& U, bool thin_U,
+    linalg::SVDAlgorithm alg) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap A_eig = A;
 	typename SGVector<T>::EigenVectorXtMap s_eig = s;
 	typename SGMatrix<T>::EigenMatrixXtMap U_eig = U;
 
-	auto svd_eig =
-	    A_eig.jacobiSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
-	s_eig = svd_eig.singularValues().template cast<T>();
-	U_eig = svd_eig.matrixU().template cast<T>();
+	switch (alg)
+	{
+	case linalg::SVDAlgorithm::BidiagonalDivideConquer:
+	{
+#if EIGEN_VERSION_AT_LEAST(3, 3, 0)
+		auto svd_eig =
+		    A_eig.bdcSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
+		s_eig = svd_eig.singularValues().template cast<T>();
+		U_eig = svd_eig.matrixU().template cast<T>();
+		break;
+#else
+		SG_SWARNING(
+		    "At least Eigen 3.3 is required for BDC-SVD.\n"
+		    "Falling back on Jacobi-SVD.\n")
+#endif
+	}
+
+	case linalg::SVDAlgorithm::Jacobi:
+	{
+		auto svd_eig =
+		    A_eig.jacobiSvd(thin_U ? Eigen::ComputeThinU : Eigen::ComputeFullU);
+		s_eig = svd_eig.singularValues().template cast<T>();
+		U_eig = svd_eig.matrixU().template cast<T>();
+		break;
+	}
+	}
 }
