@@ -27,8 +27,8 @@ import numpy
 import warnings
 import shutil
 
-from shogun.Features import Labels
-from shogun.Evaluation import *
+from shogun import Labels
+from shogun import *
 
 def plotroc(output, LTE, draw_random=False, figure_fname="", roc_label='ROC'):
     """Plot the receiver operating characteristic curve"""

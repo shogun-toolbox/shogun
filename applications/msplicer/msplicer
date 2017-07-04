@@ -22,9 +22,9 @@ try:
 	import genomic
 	import model
 	import seqdict
-	import shogun.Structure
+	import shogun
 
-	d=shogun.Structure.DynProg()
+	d=shogun.DynProg()
 	if (d.version.get_version_revision() < 2997):
 		print
 		print "ERROR: SHOGUN VERSION 0.6.2 or later required"
@@ -152,7 +152,7 @@ class msplicer:
 
 
 	def initialize_dynprog(self, seq):
-		dyn=shogun.Structure.DynProg()
+		dyn=shogun.DynProg()
 
 		self.content.initialize_content(dyn)
 
@@ -266,7 +266,7 @@ class msplicer:
 				dyn.best_path_set_my_state_seq(my_states)
 				dyn.best_path_set_my_pos_seq(my_pos)
 
-				dyn.io.set_loglevel(shogun.Structure.M_DEBUG)
+				dyn.io.set_loglevel(shogun.M_DEBUG)
 				dyn.best_path_deriv_call()
 
 def print_version():
@@ -348,7 +348,7 @@ WS160, WS160gc, orfWS160gc
 
 
 if __name__ == '__main__':
-	dyn=shogun.Structure.DynProg()
+	dyn=shogun.DynProg()
 	(startstop, fafname, modelfname, outfile ) = parse_options()
 	p=msplicer()
 	p.load_model(modelfname);
