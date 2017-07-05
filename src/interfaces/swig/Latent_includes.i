@@ -7,6 +7,6 @@
 
 #ifdef USE_GPL_SHOGUN
  #include <shogun/latent/LatentSVM.h>
-#endif USE_GPL_SHOGUN
+#endif //USE_GPL_SHOGUN
 %}
 
