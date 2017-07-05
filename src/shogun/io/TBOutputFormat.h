@@ -35,6 +35,10 @@ namespace shogun
 		    const int64_t& event_step, const std::pair<std::string, Any>& value,
 		    std::string& node_name);
 
+		tensorflow::Event convert_vector(
+			const int64_t& event_step, const std::pair<std::string, Any>& value,
+			std::string& node_name);
+
 		virtual const char * get_name() const
 		{
 			return "TFLogger";
