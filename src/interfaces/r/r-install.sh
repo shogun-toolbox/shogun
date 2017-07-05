@@ -14,8 +14,8 @@ Package: $2
 Version: $VERSION
 Date: $DATE
 Title: The SHOGUN Machine Learning Toolbox
-Author: Soeren Sonnenburg, Gunnar Raetsch
-Maintainer: Soeren Sonnenburg <sonne@debian.org>
+Author: Shogun Team
+Maintainer: Shogun Team <shogun-team@shogun-toolbox.org>
 Depends: R (>= 2.10.0)
 Suggests:
 Description: SHOGUN - is a new machine learning toolbox with focus on large
@@ -42,8 +42,8 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Version=\"$VERSION\",\
 		Date=\"$DATE\",\
 		Title=\"The SHOGUN Machine Learning Toolbox\",\
-		Author=\"Soeren Sonnenburg, Gunnar Raetsch\",\
-		Maintainer=\"sonne@debian.org\",\
+		Author=\"Shogun Team\",\
+		Maintainer=\"shogun-team@shogun-toolbox.org\",\
 		Depends=\"R (>= $RVERSION)\", \
 		Built=\"R $RVERSION; ; $DATE\"),\
 		Built = list(R=\"$RVERSION\", Platform=\"$PLATFORM\", Date=\"$DATE\", OStype=\"$OSTYPE\"),\
@@ -55,77 +55,7 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		class = 'packageDescription2');\
 		$SAVERDS(x, \"$PKGFILE\")" | R --no-save
 
-# R STATIC
-if test "$2" = "sg" || test "$2" = "elwms"
-then
-echo "Installing static sg/elwms interface for R"
-cat >"$1/$2/NAMESPACE" <<EOF
-export(sg)
-EOF
-
-cat >"$1/$2/R/$2" <<EOF
-.packageName <- "$2"
-# The purpose of this file is to supply no functionality
-# except easier access functions in R for external C
-# function calls.
-#
-# For example instead of typing
-#
-#     > .External("$2", "send_command", "blah")
-#
-# one can simply type
-#
-#     > send_command(blah)
-#
-# where > is the R prompt.
-
-# interface $2(arg1,arg2,...) as w/ matlab/octave/python
-#
-$2 <- function(...) .External("$2",...,PACKAGE="$2")
-
-
-# R specific interface
-
-# Generic functions
-#
-send_command <- function(x) .External("$2","send_command",x,PACKAGE="$2")
-set_features <- function(x,y) .External("$2","set_features",x,y,PACKAGE="$2")
-add_features <- function(x,y) .External("$2","add_features",x,y,PACKAGE="$2")
-set_labels <- function(x,y) .External("$2","set_labels", x,y,PACKAGE="$2")
-get_kernel_matrix <- function() .External("$2","get_kernel_matrix",PACKAGE="$2")
-
-# SVM functions
-#
-svm_classify <- function() .External("$2","svm_classify",PACKAGE="$2")
-get_svm <- function() .External("$2","get_svm",PACKAGE="$2")
-get_subkernel_weights <- function() .External("$2","get_subkernel_weights",PACKAGE="$2")
-
-# HMM functions
-#
-get_hmm <- function() .External("$2","get_hmm",PACKAGE="$2")
-
-# Load the shogun dynamic library at startup.
-#
-.First.lib <- function(lib,pkg)
-{
-	cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
-	library.dynam("$2",pkg,lib)
-}
-
-# Unload the library.
-#
-.Last.lib <- function(lib) library.dynam.unload("$2", libpath=lib)
-
-# Because in packages with namespaces .First.lib will not be loaded
-# one needs another functions called .onLoad resp. .onUnload
-#
-
-.onLoad <- function(lib, pkg) .First.lib(lib,pkg)
-.onUnload <- function(lib) .Last.lib(lib)
-EOF
-
 # R-MODULAR
-else
 echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/NAMESPACE" <<EOF
@@ -175,4 +105,3 @@ cat >>"$1/$2/R/$2" <<EOF
 .onLoad <- function(lib, pkg) .First.lib(lib,pkg)
 .onUnload <- function(lib) .Last.lib(lib)
 EOF
-fi
