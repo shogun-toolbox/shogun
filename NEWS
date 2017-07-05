@@ -1,4 +1,5 @@
 2017-04-25 Viktor Gal <viktor.gal@shogun-toolbox.org>
+
 	* SHOGUN Release version 6.1.0 (libshogun 18.0, data 0.11, parameter 1)
 
         * Add conda-forge packages, to get prebuilt binaries via the cross-platform conda package manager [Dougal Sutherland]
