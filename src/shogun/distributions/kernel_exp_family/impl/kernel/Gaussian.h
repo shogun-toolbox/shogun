@@ -59,7 +59,6 @@ public :
 
 	// overloaded from base class
 	virtual float64_t kernel(index_t idx_a, index_t idx_b) const;
-	virtual SGMatrix<float64_t> dx_dx_dy(index_t idx_a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_dy_dy(index_t idx_a, index_t idx_b) const;
 	virtual float64_t dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const;
 	virtual SGMatrix<float64_t> dx_dy(index_t idx_a, index_t idx_b) const;
@@ -76,6 +75,8 @@ public :
 	// nystrom parts
 	virtual float64_t difference_component(index_t idx_a, index_t idx_b, index_t i) const;
 	virtual float64_t dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
+	virtual float64_t dx_dy_dy_component(index_t idx_a, index_t idx_b,
+			index_t i, index_t j) const;
 	virtual float64_t dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
 	virtual float64_t dx_dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const;
 	virtual float64_t dx_component(index_t idx_a, index_t idx_b, index_t i) const;

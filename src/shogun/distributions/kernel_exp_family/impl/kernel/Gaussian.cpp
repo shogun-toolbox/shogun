@@ -153,7 +153,7 @@ SGMatrix<float64_t> Gaussian::dx_i_dx_j(index_t idx_a, index_t idx_b) const
 	return result;
 }
 
-SGMatrix<float64_t> Gaussian::dx_dx_dy(index_t idx_a, index_t idx_b) const
+SGMatrix<float64_t> Gaussian::dx_dy_dy(index_t idx_a, index_t idx_b) const
 {
 	auto D = get_num_dimensions();
 
@@ -165,22 +165,32 @@ SGMatrix<float64_t> Gaussian::dx_dx_dy(index_t idx_a, index_t idx_b) const
 	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
 	eigen_result = pow(2./m_sigma,3) * k *
-			((eigen_diff.array().pow(2).matrix())*(-eigen_diff.transpose()));
-	eigen_result += pow(2./m_sigma,2) * k * 2* eigen_diff.asDiagonal();
-	eigen_result.rowwise() +=  (pow(2./m_sigma,2) * k * eigen_diff).transpose();
+			((eigen_diff.array().pow(2).matrix())*eigen_diff.transpose());
+	eigen_result -= pow(2./m_sigma,2) * k * 2* eigen_diff.asDiagonal();
+	eigen_result.rowwise() -=  (pow(2./m_sigma,2) * k * eigen_diff).transpose();
 
 	return result;
 }
 
-SGMatrix<float64_t> Gaussian::dx_dy_dy(index_t idx_a, index_t idx_b) const
+float64_t Gaussian::dx_dy_dy_component(index_t idx_a, index_t idx_b,
+		index_t i, index_t j) const
 {
 	auto D = get_num_dimensions();
 
-	// inspired by the scalar valued case just being a sign difference
-	auto result = Gaussian::dx_dx_dy(idx_a, idx_b);
+	SGVector<float64_t> diff=difference(idx_a, idx_b);
+	Map<VectorXd> eigen_diff(diff.vector, D);
+
+	auto k=kernel(idx_a,idx_b);
+
+	SGMatrix<float64_t> result(D, D);
 	Map<MatrixXd> eigen_result(result.matrix, D, D);
-	eigen_result*=-1;
-	return result;
+	eigen_result = pow(2./m_sigma,3) * k *
+			((eigen_diff.array().pow(2).matrix())*eigen_diff.transpose());
+	eigen_result -= pow(2./m_sigma,2) * k * 2* eigen_diff.asDiagonal();
+	eigen_result.rowwise() -=  (pow(2./m_sigma,2) * k * eigen_diff).transpose();
+
+	SG_SWARNING("Don't compute fill and then subsample.\n");
+	return result(i,j);
 }
 
 float64_t Gaussian::dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const

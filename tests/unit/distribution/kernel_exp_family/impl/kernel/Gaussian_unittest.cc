@@ -165,7 +165,7 @@ TEST(KernelExpFamilyImplKernelGaussian, dx)
 		EXPECT_NEAR(result.vector[i], reference2[i], 1e-8);
 }
 
-TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy)
 {
 	index_t N=3;
 	index_t D=2;
@@ -183,11 +183,11 @@ TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy)
 	
 	index_t idx_a = 0;
 	index_t idx_b = 1;
-	auto result = kernel->dx_dx_dy(idx_a, idx_b);
+	auto result = kernel->dx_dy_dy(idx_a, idx_b);
 	
 	// from kernel_exp_family Python implementation
-	float64_t reference[] = {-0.00300688, -0.02405503,
-							 -0.01353095, -0.02706191};
+	float64_t reference[] = {0.00300688, 0.02405503,
+							 0.01353095, 0.02706191};
 	ASSERT_EQ(result.num_rows, D);
 	ASSERT_EQ(result.num_cols, D);
 	for (auto i=0; i<D*D; i++)
@@ -195,19 +195,21 @@ TEST(KernelExpFamilyImplKernelGaussian, dx_dx_dy)
 	
 	idx_a = 0;
 	idx_b = 0;
-	result = kernel->dx_dx_dy(idx_a, idx_b);
+	result = kernel->dx_dy_dy(idx_a, idx_b);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 	
 	idx_a = 1;
 	idx_b = 1;
-	result = kernel->dx_dx_dy(idx_a, idx_b);
+	result = kernel->dx_dy_dy(idx_a, idx_b);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 }
 
-TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy)
+TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy_component)
 {
+	// TODO use random data
+	SG_SWARNING("TODO write test dx_dy_dy_component.\n");
 	index_t N=3;
 	index_t D=2;
 	SGMatrix<float64_t> X(D,N);
@@ -226,24 +228,18 @@ TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy)
 	index_t idx_b = 1;
 	auto result = kernel->dx_dy_dy(idx_a, idx_b);
 
-	// from kernel_exp_family Python implementation
-	// negative of dx_dx_dy
-	float64_t reference[] = {0.00300688, 0.02405503,
-							 0.01353095, 0.02706191};
 	ASSERT_EQ(result.num_rows, D);
 	ASSERT_EQ(result.num_cols, D);
-	for (auto i=0; i<D*D; i++)
-		EXPECT_NEAR(result.matrix[i], reference[i], 1e-8);
 
 	idx_a = 0;
 	idx_b = 0;
-	result = kernel->dx_dx_dy(idx_a, idx_b);
+	result = kernel->dx_dy_dy(idx_a, idx_b);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 
 	idx_a = 1;
 	idx_b = 1;
-	result = kernel->dx_dx_dy(idx_a, idx_b);
+	result = kernel->dx_dy_dy(idx_a, idx_b);
 	for (auto i=0; i<D*D; i++)
 		EXPECT_NEAR(result.matrix[i], 0, 1e-8);
 }

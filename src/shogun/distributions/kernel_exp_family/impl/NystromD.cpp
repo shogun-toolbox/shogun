@@ -153,17 +153,55 @@ index_t NystromD::get_system_size() const
 
 SGVector<float64_t> NystromD::compute_h() const
 {
-	// needs a new kernel method
-	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
+//	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
+//
+//	auto h_full = Nystrom::compute_h();
+//
+//	auto system_size = get_system_size();
+//	SGVector<float64_t> h(system_size);
+//
+//	// subsample vector entries
+//	for (auto i=0; i<system_size; i++)
+//		h[i] = h_full[m_basis_inds[i]];
+//
+//	return h;
+	// WIP
+	auto D = get_num_dimensions();
+	auto N_basis = get_num_basis();
+	auto N_data = get_num_data();
+	auto system_size = N_basis*D;
+	auto ND = N_data*D;
 
-	auto h_full = Nystrom::compute_h();
-
-	auto system_size = get_system_size();
 	SGVector<float64_t> h(system_size);
+	h.zero();
 
-	// subsample vector entries
-	for (auto i=0; i<system_size; i++)
-		h[i] = h_full[m_basis_inds[i]];
+#pragma omp parallel for
+	for (auto idx_k=0; idx_k<system_size; idx_k++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx_k], D);
+		auto a = ai.first;
+		auto i = ai.second;
+
+		for (auto b=0; b<ND; b++)
+		{
+			for (auto idx_l=0; idx_l<system_size; idx_l++)
+			{
+				auto temp = idx_to_ai(m_basis_inds[idx_l], D);
+				if (temp.first!=b)
+					continue;
+
+				auto j=temp.second;
+				h[idx_k] += m_kernel->dx_dy_dy_component(a, b, i, j);
+			}
+		}
+	}
+//	for (auto idx_a=0; idx_a<N_basis; idx_a++)
+//		for (auto idx_b=0; idx_b<N_data; idx_b++)
+//		{
+//			SGMatrix<float64_t> temp = m_kernel->dx_dy_dy(idx_a, idx_b);
+//			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
+//		}
+	h.scale(1.0 / N_data);
 
 	return h;
 }
