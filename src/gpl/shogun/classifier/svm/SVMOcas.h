@@ -14,7 +14,6 @@
 #define _SVMOCAS_H___
 
 #include <shogun/lib/config.h>
-#ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
@@ -238,5 +237,3 @@ class CSVMOcas : public CLinearMachine
 };
 }
 #endif
-
-#endif //USE_GPL_SHOGUN

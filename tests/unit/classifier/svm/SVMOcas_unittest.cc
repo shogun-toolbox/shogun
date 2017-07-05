@@ -1,4 +1,7 @@
+#include <shogun/lib/config.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/classifier/svm/SVMOcas.h>
+#endif // USE_GPL_SHOGUN
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>

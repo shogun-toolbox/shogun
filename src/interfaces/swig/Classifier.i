@@ -67,7 +67,9 @@
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
 %rename(VowpalWabbit) CVowpalWabbit;
+#ifdef USE_GPL_SHOGUN
 %rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
+#endif //USE_GPL_SHOGUN
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
 %rename(BaggingMachine) CBaggingMachine;
@@ -130,7 +132,9 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
 %include <shogun/machine/BaggingMachine.h>

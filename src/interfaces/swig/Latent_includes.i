@@ -5,6 +5,8 @@
 
  #include <shogun/machine/LinearLatentMachine.h>
 
+#ifdef USE_GPL_SHOGUN
  #include <shogun/latent/LatentSVM.h>
+#endif USE_GPL_SHOGUN
 %}
 

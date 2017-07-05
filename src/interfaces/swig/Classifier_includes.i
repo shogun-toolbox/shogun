@@ -1,3 +1,4 @@
+
 %{
  #include <shogun/machine/Machine.h>
  #include <shogun/classifier/svm/GNPPSVM.h>
@@ -39,7 +40,9 @@
  #include <shogun/classifier/mkl/MKLOneClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/svm/NewtonSVM.h>
+#ifdef USE_GPL_SHOGUN
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>
+#endif //USE_GPL_SHOGUN
  #include <shogun/machine/DirectorLinearMachine.h>
  #include <shogun/machine/DirectorKernelMachine.h>
  #include <shogun/machine/BaggingMachine.h>

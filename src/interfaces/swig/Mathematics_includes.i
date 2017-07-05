@@ -1,7 +1,9 @@
 %{
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/SparseInverseCovariance.h>
+#endif //USE_GPL_SHOGUN
 
 /* Log-det framework */
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>

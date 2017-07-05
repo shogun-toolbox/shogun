@@ -12,7 +12,9 @@
 /* Remove C Prefix */
 %rename(Math) CMath;
 %rename(Statistics) CStatistics;
+#ifdef USE_GPL_SHOGUN
 %rename(SparseInverseCovariance) CSparseInverseCovariance;
+#endif //USE_GPL_SHOGUN
 
 // fix overloaded methods in Math
 #if defined(SWIGLUA) || defined(SWIGR)
@@ -194,7 +196,9 @@ namespace shogun
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/mathematics/Math.h>
 %include <shogun/mathematics/Statistics.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/mathematics/SparseInverseCovariance.h>
+#endif //USE_GPL_SHOGUN
 
 /* Log-det framework */
 %include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>

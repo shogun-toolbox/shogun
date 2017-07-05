@@ -56,11 +56,13 @@
 %rename(StructuredOutputMachine) CStructuredOutputMachine;
 %rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
 %rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
-%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 
+#ifdef USE_GPL_SHOGUN
+%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 #ifdef USE_MOSEK
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
+#endif //USE_GPL_SHOGUN
 
 %rename(StochasticSOSVM) CStochasticSOSVM;
 %rename(FWSOSVM) CFWSOSVM;
@@ -74,7 +76,9 @@
 %include <shogun/structure/IntronList.h>
 %include <shogun/structure/SegmentLoss.h>
 
+#ifdef USE_GPL_SHOGUN
 %include <shogun/structure/BmrmStatistics.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/structure/StructuredModel.h>
 %include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
@@ -105,11 +109,13 @@
 %include <shogun/machine/LinearStructuredOutputMachine.h>
 %include <shogun/machine/KernelStructuredOutputMachine.h>
 
+#ifdef USE_GPL_SHOGUN
 %include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
+#endif //USE_GPL_SHOGUN
 
 %include <shogun/structure/StochasticSOSVM.h>
 %include <shogun/structure/FWSOSVM.h>

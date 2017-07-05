@@ -11,11 +11,13 @@
  #include <shogun/transfer/multitask/TaskRelation.h>
  #include <shogun/transfer/multitask/TaskTree.h>
  #include <shogun/transfer/multitask/TaskGroup.h>
+#ifdef USE_GPL_SHOGUN
  #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
  #include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
  #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
+#endif //USE_GPL_SHOGUN
 
  #include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
 

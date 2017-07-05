@@ -55,9 +55,9 @@
 #ifdef USE_GPL_SHOGUN
 %rename(MulticlassTreeGuidedLogisticRegression) CMulticlassTreeGuidedLogisticRegression;
 %rename(MulticlassLogisticRegression) CMulticlassLogisticRegression;
+%rename(MulticlassOCAS) CMulticlassOCAS;
 #endif //USE_GPL_SHOGUN
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
-%rename(MulticlassOCAS) CMulticlassOCAS;
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MulticlassLibSVM) CMulticlassLibSVM;
 %rename(LaRank) CLaRank;
@@ -126,9 +126,9 @@ namespace shogun
 #ifdef USE_GPL_SHOGUN
 %include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
 %include <shogun/multiclass/MulticlassLogisticRegression.h>
+%include <shogun/multiclass/MulticlassOCAS.h>
 #endif // USE_GPL_SHOGUN
 %include <shogun/multiclass/MulticlassLibLinear.h>
-%include <shogun/multiclass/MulticlassOCAS.h>
 %include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/multiclass/MulticlassLibSVM.h>
 %include <shogun/multiclass/LaRank.h>

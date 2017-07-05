@@ -2,11 +2,9 @@
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/multiclass/MulticlassOCAS.h>
-
 #include <gtest/gtest.h>
-
 #ifdef USE_GPL_SHOGUN
+#include <shogun/multiclass/MulticlassOCAS.h>
 
 using namespace shogun;
 
