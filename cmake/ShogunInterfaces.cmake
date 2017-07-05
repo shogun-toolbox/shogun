@@ -64,7 +64,7 @@ IF(DOXYGEN_FOUND)
 	configure_file(${COMMON_INTERFACE_SRC_DIR}/shogun.doxy.in shogun.doxy)
 
 	ADD_CUSTOM_COMMAND(
-	OUTPUT    shogun
+	OUTPUT    shogun_doxygen
 	COMMAND   ${DOXYGEN_EXECUTABLE}
 	ARGS	  shogun.doxy
 	DEPENDS   shogun::shogun
@@ -74,8 +74,8 @@ IF(DOXYGEN_FOUND)
 	ADD_CUSTOM_COMMAND(
 	OUTPUT    shogun_doxygen.i
 	COMMAND   ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/.doxy2swig.py
-	ARGS	  --quiet --no-function-definition shogun/doxygen_xml/index.xml shogun_doxygen.i
-	DEPENDS   shogun
+	ARGS	  --quiet --no-function-definition shogun_doxygen/xml/index.xml shogun_doxygen.i
+	DEPENDS   shogun_doxygen
 	)
 	ADD_CUSTOM_TARGET(${INTERFACE_NAME}_doxy2swig DEPENDS shogun_doxygen.i)
     ADD_DEPENDENCIES(${INTERFACE_REAL_NAME} ${INTERFACE_NAME}_doxy2swig)
