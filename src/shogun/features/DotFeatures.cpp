@@ -16,6 +16,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #ifdef HAVE_OPENMP
 #include <omp.h>
@@ -267,12 +268,12 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	linalg::zero(mean);
 
-	for (int i = 0; i < num; i++)
+	for (int32_t i = 0; i < num; ++i)
 		add_to_dense_vec(1, i, mean.vector, dim);
-	for (int j = 0; j < dim; j++)
-		mean.vector[j] /= num;
+
+	linalg::scale(mean, mean, 1.0 / num);
 
 	return mean;
 }
@@ -291,14 +292,15 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-    memset(mean.vector, 0, sizeof(float64_t)*dim);
+	linalg::zero(mean);
 
 	for (int i = 0; i < num_lhs; i++)
 		lhs->add_to_dense_vec(1, i, mean.vector, dim);
+
 	for (int i = 0; i < num_rhs; i++)
 		rhs->add_to_dense_vec(1, i, mean.vector, dim);
-	for (int j = 0; j < dim; j++)
-		mean.vector[j] /= (num_lhs+num_rhs);
+
+	linalg::scale(mean, mean, 1.0 / (num_lhs + num_rhs));
 
 	return mean;
 }
@@ -311,28 +313,19 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 	ASSERT(dim>0)
 
 	SGMatrix<float64_t> cov(dim, dim);
-
-	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
+	linalg::zero(cov);
 
 	SGVector<float64_t> mean = get_mean();
-
 	for (int i = 0; i < num; i++)
 	{
 		SGVector<float64_t> v = get_computed_dot_feature_vector(i);
-		SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+		linalg::add(v, mean, v, 1.0, -1.0);
 		for (int m = 0; m < v.vlen; m++)
 		{
 			for (int n = 0; n <= m ; n++)
 			{
 				(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
 			}
-		}
-	}
-	for (int m = 0; m < dim; m++)
-	{
-		for (int n = 0; n <= m ; n++)
-		{
-			(cov.matrix)[m*dim+n] /= num;
 		}
 	}
 	for (int m = 0; m < dim-1; m++)
@@ -342,6 +335,8 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 			(cov.matrix)[m*dim+n] = (cov.matrix)[n*dim+m];
 		}
 	}
+	linalg::scale(cov, cov, 1.0 / num);
+
 	return cov;
 }
 
@@ -366,8 +361,7 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	int32_t dim = dims[0];
 
 	SGMatrix<float64_t> cov(dim, dim);
-
-	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
+	linalg::zero(cov);
 
 	SGVector<float64_t> mean = compute_mean(lhs, rhs);
 
@@ -376,7 +370,7 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 		for (int j = 0; j < nums[i]; j++)
 		{
 			SGVector<float64_t> v = feats[i]->get_computed_dot_feature_vector(j);
-			SGVector<float64_t>::add(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+			linalg::add(v, mean, v, 1.0, -1.0);
 			for (int m = 0; m < v.vlen; m++)
 			{
 				for (int n = 0; n <= m; n++)
@@ -386,13 +380,8 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 			}
 		}
 	}
-	for (int m = 0; m < dim; m++)
-	{
-		for (int n = 0; n <= m; n++)
-		{
-			(cov.matrix)[m*dim+n] /= num;
-		}
-	}
+	linalg::scale(cov, cov, 1.0 / num);
+
 	for (int m = 0; m < dim-1; m++)
 	{
 		for (int n = m+1; n < dim; n++)
