@@ -275,8 +275,7 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 	auto system_size = get_system_size();
 
 	SGVector<float64_t> beta_grad_sum(D);
-	Map<VectorXd> eigen_beta_grad_sum(beta_grad_sum.vector, D);
-	eigen_beta_grad_sum.array() = VectorXd::Zero(D);
+	beta_grad_sum.zero();
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
@@ -291,10 +290,10 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 		{
 			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
 			auto b = bj.first;
-			auto j = bj.second;
-
 			if (a!=b)
 				continue;
+
+			auto j = bj.second;
 			beta_grad_sum[i] -= left_arg_hessian[j]*m_beta[idx_k];
 		}
 	}
@@ -303,52 +302,59 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 	return beta_grad_sum;
 }
 
+SGVector<float64_t> NystromD::get_beta_for_basis_point(index_t a) const
+{
+	auto D = get_num_dimensions();
+	auto system_size = get_system_size();
+
+	SGVector<float64_t> beta_a(D);
+	beta_a.zero();
+	for (auto idx_k=0; idx_k<system_size; idx_k++)
+	{
+		auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+		auto b = bj.first;
+		auto j = bj.second;
+
+		if (a!=b)
+			continue;
+		beta_a[j] = m_beta[idx_k];
+	}
+
+	return beta_a;
+}
+
 SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 {
 	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 
 	SGMatrix<float64_t> beta_sum_hessian(D, D);
-	Map<MatrixXd> eigen_beta_sum_hessian(beta_sum_hessian.matrix, D, D);
-	eigen_beta_sum_hessian = MatrixXd::Zero(D, D);
+	beta_sum_hessian.zero();
 
-	SG_SWARNING("Hessian implementation only works correctly if all components "
-			"of a basis point are used. Expect memory read errors oand wrong "
-			"results otherwise.\n");
-	Map<VectorXd> eigen_beta(m_beta.vector, system_size);
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
-		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
-		for (auto j=0; j<D; j++)
+		// mimic beta vector for index a (all non-used components zero)
+		auto beta_a = get_beta_for_basis_point(a);
+
+		// mimic dot product with beta segment, but only relevant components
+		for (auto idx_k=0; idx_k<system_size; idx_k++)
 		{
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
+			auto b = bj.first;
+			if (a!=b)
+				continue;
+
+			auto j = bj.second;
+
+			// call contains dot product of beta_a (with zero components)
+			// with difference vector (all components)
 			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
 			beta_sum_hessian(i,j) += beta_hess_sum;
 		}
-//		// mimic dot product with beta segment, but only relevant components
-//		// this is WIP
-//		SGVector<float64_t> beta_a(D);
-//		beta_a.zero();
-//		for (auto idx_k=0; idx_k<system_size; idx_k++)
-//		{
-//			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
-//			auto b = bj.first;
-//			auto j = bj.second;
-//
-//			if (a!=b)
-//				continue;
-//
-//			beta_a[j] = m_beta[idx_k];
-//			beta_a[i] = m_beta[idx_l];
-//			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
-//			beta_a[j] = 0;
-//			beta_a[i] = 0;
-//
-//			beta_sum_hessian(i,j) += beta_hess_sum;
-//		}
 	}
 
 	auto result = beta_sum_hessian;
@@ -357,25 +363,20 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 
 SGVector<float64_t> NystromD::hessian_diag(index_t idx_test) const
 {
-	SG_SWARNING("Hessian implementation only works correctly if all components "
-			"of a basis point are used. Expect memory read errors oand wrong "
-			"results otherwise.\n");
-
 	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 
 	SGVector<float64_t> beta_sum_hessian_diag(D);
-	Map<VectorXd> eigen_beta_sum_hessian_diag(beta_sum_hessian_diag.vector, D);
-	eigen_beta_sum_hessian_diag = VectorXd::Zero(D);
-
-	Map<VectorXd> eigen_beta(m_beta.vector, get_system_size());
+	beta_sum_hessian_diag.zero();
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
-		SGVector<float64_t> beta_a(eigen_beta.segment(a*D, D).data(), D, false);
+
+		// mimic beta vector for index a (all non-used components zero)
+		auto beta_a = get_beta_for_basis_point(a);
 
 		auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, i);
 		beta_sum_hessian_diag[i] += beta_hess_sum;

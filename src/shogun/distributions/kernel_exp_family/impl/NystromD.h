@@ -83,6 +83,7 @@ public :
 
 	// to deal with sub-sampling components
 	static std::pair<index_t, index_t> idx_to_ai(index_t idx, index_t D);
+	SGVector<float64_t> get_beta_for_basis_point(index_t a) const;
 
 
 protected:
