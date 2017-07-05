@@ -27,7 +27,7 @@ TEST(SerializationJSON, {{class}})
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-json-" + class_name + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	CSGObject* object = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	CSGObject* object = create(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
 
 	// save object to an ascii file
@@ -39,7 +39,7 @@ TEST(SerializationJSON, {{class}})
 
 	// load parameter from an ascii file
 	file=new CSerializableJsonFile(filename.c_str(), 'r');
-	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	CSGObject* deserializedObject = create(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(deserializedObject != NULL);
 	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
@@ -69,7 +69,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	std::string class_name("{{class}}");
 	std::string filename = "shogun-unittest-serialization-json-" + class_name + "_{{type}}" + ".XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	CSGObject* object = new_sgserializable(class_name.c_str(), {{type}});
+	CSGObject* object = create(class_name.c_str(), {{type}});
 	ASSERT_TRUE(object != NULL);
 
 	// save object to an ascii file
@@ -81,7 +81,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 
 	// load parameter from an ascii file
 	file=new CSerializableJsonFile(filename.c_str(), 'r');
-	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), {{type}});
+	CSGObject* deserializedObject = create(class_name.c_str(), {{type}});
 	ASSERT_TRUE(deserializedObject != NULL);
 	bool load_success = deserializedObject->load_serializable(file);
 	file->close();

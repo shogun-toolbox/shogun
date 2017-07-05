@@ -24,7 +24,7 @@ TEST(DynamicObjectArray,array_{{class}}_clone_equals)
 	index_t length=2;
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
 	for (index_t i=0; i<length; ++i)
-		array1->push_back(new_sgserializable(class_name, PT_NOT_GENERIC));
+		array1->push_back(create(class_name, PT_NOT_GENERIC));
 
 	/* test for clone and equals */
 	CDynamicObjectArray* array2=dynamic_cast<CDynamicObjectArray*>(array1->clone());
@@ -50,7 +50,7 @@ TEST(DynamicObjectArray,array_{{class}}_{{type}}_clone_equals)
 	index_t length=2;
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
 	for (index_t i=0; i<length; ++i)
-		array1->push_back(new_sgserializable(class_name, {{type}}));
+		array1->push_back(create(class_name, {{type}}));
 
 	/* test for clone and equals */
 	CDynamicObjectArray* array2=dynamic_cast<CDynamicObjectArray*>(array1->clone());

@@ -727,7 +727,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 CSGObject* CSGObject::clone()
 {
 	SG_DEBUG("Constructing an empty instance of %s\n", get_name());
-	CSGObject* copy=new_sgserializable(get_name(), this->m_generic);
+	CSGObject* copy = create(get_name(), this->m_generic);
 
 	SG_REF(copy);
 

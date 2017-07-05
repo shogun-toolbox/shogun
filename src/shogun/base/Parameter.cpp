@@ -2195,7 +2195,7 @@ TParameter::new_sgserial(CSGObject** param,
 	if (*param != NULL)
 		SG_UNREF(*param);
 
-	*param = new_sgserializable(sgserializable_name, generic);
+	*param = create(sgserializable_name, generic);
 
 	if (*param == NULL) {
 		string_t buf = {'\0'};
