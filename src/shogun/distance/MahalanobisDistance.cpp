@@ -50,7 +50,8 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	}
 	else
 	{
-		mean = ((CDenseFeatures<float64_t>*) l)->get_mean((CDotFeatures*) lhs, (CDotFeatures*) rhs);
+		mean = ((CDenseFeatures<float64_t>*)l)
+		           ->compute_mean((CDotFeatures*)lhs, (CDotFeatures*)rhs);
 		icov = CDotFeatures::compute_cov((CDotFeatures*) lhs, (CDotFeatures*) rhs);
 	}
 
