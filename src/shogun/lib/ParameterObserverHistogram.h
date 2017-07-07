@@ -1,6 +1,8 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 #define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
@@ -32,3 +34,4 @@ namespace shogun
 }
 
 #endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#endif // HAVE_TFLOGGER

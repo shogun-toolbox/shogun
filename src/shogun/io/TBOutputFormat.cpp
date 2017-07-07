@@ -1,6 +1,8 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #include <chrono>
 #include <vector>
@@ -117,3 +119,5 @@ tensorflow::Event TBOutputFormat::convert_vector(
 
 	return e;
 }
+
+#endif // HAVE_TFLOGGER

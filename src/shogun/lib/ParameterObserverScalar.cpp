@@ -1,6 +1,8 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/ParameterObserverScalar.h>
@@ -25,7 +27,6 @@ ParameterObserverScalar::ParameterObserverScalar(
 }
 
 ParameterObserverScalar::~ParameterObserverScalar()
-    : ~ParameterObserverTensorBoard()
 {
 }
 
@@ -56,3 +57,5 @@ bool ParameterObserverScalar::filter(const std::string& param)
 			return true;
 	return false;
 }
+
+#endif // HAVE_TFLOGGER

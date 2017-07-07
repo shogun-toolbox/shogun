@@ -1,13 +1,15 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 #define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 
 #include <shogun/lib/ParameterObserverInterface.h>
 
-#include <tflogger/tensorflow_logger.h>
+#include <tflogger/event_logger.h>
 
 namespace shogun
 {
@@ -42,8 +44,9 @@ namespace shogun
 		/**
 		* Writer object which will be used to write tensorflow::Event files
 		*/
-		tflogger::TensorFlowLogger m_writer;
+		tflogger::EventLogger m_writer;
 	};
 }
 
 #endif // SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#endif // HAVE_TFLOGGER
