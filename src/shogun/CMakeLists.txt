@@ -289,14 +289,8 @@ ENDIF()
 # TFLogger package
 FIND_PACKAGE(TFLogger 0.1.0 CONFIG)
 IF (TFLogger_FOUND)
+    SET(HAVE_TFLOGGER 1)
     SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
-    target_link_libraries(shogun PRIVATE tflogger::tflogger)
-ELSE()
-    include(external/tflogger)
-    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM
-            $<BUILD_INTERFACE:${TFLogger_INCLUDE_DIR}>
-            $<INSTALL_INTERFACE:include/shogun/lib/external/tflogger>
-            )
     target_link_libraries(shogun PRIVATE tflogger::tflogger)
 ENDIF()
 

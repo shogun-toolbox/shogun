@@ -2,9 +2,9 @@
 #include <vector>
 #include <gtest/gtest.h>
 
-using namespace shogun;
-
 std::vector<std::string> test_params = {"a", "b", "c", "d"};
+
+using namespace shogun;
 
 TEST(ParameterObserverScalar, filter_empty)
 {
