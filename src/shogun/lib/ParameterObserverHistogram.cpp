@@ -8,36 +8,33 @@
 using namespace shogun;
 
 ParameterObserverHistogram::ParameterObserverHistogram()
+    : ParameterObserverTensorBoard()
 {
-    m_writer.init();
-    m_parameters = std::vector<std::string>();
 }
 
 ParameterObserverHistogram::ParameterObserverHistogram(
     std::vector<std::string>& parameters)
-    : ParameterObserverInterface(parameters)
+    : ParameterObserverTensorBoard(parameters)
 {
-    m_writer.init();
 }
 
 ParameterObserverHistogram::ParameterObserverHistogram(
     const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverInterface(filename, parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
 {
-    m_writer.init();
 }
 
 ParameterObserverHistogram::~ParameterObserverHistogram()
+    : ~ParameterObserverTensorBoard()
 {
-    m_writer.flush();
-	m_writer.close();
 }
 
 void ParameterObserverHistogram::on_next(const ObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
-	auto event_value = format.convert_vector(value.first, value.second, node_name);
+	auto event_value =
+	    format.convert_vector(value.first, value.second, node_name);
 	m_writer.writeEvent(event_value);
 }
 
@@ -51,8 +48,8 @@ void ParameterObserverHistogram::on_complete()
 
 bool ParameterObserverHistogram::filter(const std::string& param)
 {
-    if (m_parameters.size() == 0)
-        return true;
+	if (m_parameters.size() == 0)
+		return true;
 
 	for (auto v : m_parameters)
 		if (v == param)
