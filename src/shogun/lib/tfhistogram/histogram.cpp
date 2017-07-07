@@ -13,10 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+// clang-format off
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
+
 #include "histogram.h"
 #include <float.h>
 #include <math.h>
 #include <vector>
+#include <algorithm>
 #include <tflogger/summary.pb.h>
 
 namespace tensorflow {
@@ -220,3 +225,6 @@ void Histogram::EncodeToProto(HistogramProto* proto,
 
 }  // namespace histogram
 }  // namespace tensorflow
+
+#endif //HAVE_TFLOGGER
+// clang-format on
