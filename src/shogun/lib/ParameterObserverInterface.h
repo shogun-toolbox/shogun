@@ -7,7 +7,6 @@
 
 #include <rxcpp/rx-observable.hpp>
 #include <shogun/lib/any.h>
-#include <tflogger/tensorflow_logger.h>
 
 namespace shogun
 {
@@ -18,7 +17,6 @@ namespace shogun
 	{
 
 	public:
-
 		/* One observed value, composed of:
 		*  - step (for the graph x axis);
 		*  - a pair composed of: parameter's name + parameter's value
@@ -76,10 +74,6 @@ namespace shogun
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_parameters;
-		/**
-		 * Writer object which will be used to write tensorflow::Event files
-		 */
-		tflogger::TensorFlowLogger m_writer;
 	};
 }
 
