@@ -2,7 +2,7 @@
  * -*- coding: utf-8 -*-
  * vim: set fileencoding=utf-8
  *
- * Copyright (c) 2016, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
+ * Copyright (c) 2017, Shogun-Toolbox e.V. <shogun-team@shogun-toolbox.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,81 +31,71 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: Heiko Strathmann
  */
-#ifdef USE_META_INTEGRATION_TESTS
-#ifndef WRAPPED_SGVECTOR_H__
-#define WRAPPED_SGVECTOR_H__
+#ifndef SHOGUN_SERIALIZABLE_H__
+#define SHOGUN_SERIALIZABLE_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/SGVector.h>
-
 
 namespace shogun
 {
 
-/** @brief Simple wrapper class that allows to store any Shogun SGVector<T>
- * in a CSGObject, and therefore to make it serializable. Using a template
- * argument that is not a Shogun parameter will cause a compile error when
- * trying to register the passed value as a parameter in the constructors.
+template<typename T>
+struct extract_value_type
+{
+	typedef T value_type;
+};
+
+template<template<typename, typename ...> class X, typename T, typename ...Args>
+struct extract_value_type<X<T, Args...>>
+{
+	typedef T value_type;
+};
+
+/** @brief A trait that makes a none SGObject SG-serializable
+ * This only works with classes derived of SGReferencedData (SGVector, SGMatrix etc)
+ * and fundamental types (std::is_arithmetic)
  */
-template<class T> class CWrappedSGVector: public CSGObject
+template<class T> class CSerializable: public CSGObject
 {
 public:
 	/** Default constructor. Do not use. */
-	CWrappedSGVector() : CSGObject()
+	CSerializable() : CSGObject()
 	{
-		set_generic<T>();
-		register_params();
+		init();
 	}
 
 	/** Constructor.
-	 * @param value Value to wrap as CSGObject.
+	 * @param value Value to serialize as CSGObject.
 	 * @param value_name Name under which value is registered.
 	*/
-	CWrappedSGVector(SGVector<T> value, const char* value_name="")
+	CSerializable(T value, const char* value_name="")
 	{
-		set_generic<T>();
-		register_params();
+		init();
 		m_value = value;
 		m_value_name = value_name;
 	}
 
 	/** @return name of the CSGObject, without C prefix */
-	virtual const char* get_name() const { return "WrappedSGVector"; }
+	virtual const char* get_name() const { return "Serializable"; }
 
 private:
-	void register_params()
+	void init()
 	{
-	    m_value_name = "Unnamed";
-	    m_value = SGVector<T>();
-	    
-		SG_ADD(&m_value, "value", "Wrapped value", MS_NOT_AVAILABLE);
+		set_generic<typename extract_value_type<T>::value_type>();
+		m_value = 0;
+		m_value_name = "Unnamed";
+
+		SG_ADD(&m_value, "value", "Serialized value", MS_NOT_AVAILABLE);
 	}
 
 protected:
-	/** Wrapped value. */
-	SGVector<T> m_value;
+	/** Serialized value. */
+	T m_value;
 
-	/** Name of wrapped value */
+	/** Name of serialized value */
 	const char* m_value_name;
 };
 
-template class CWrappedSGVector<bool>;
-template class CWrappedSGVector<char>;
-template class CWrappedSGVector<int8_t>;
-template class CWrappedSGVector<uint8_t>;
-template class CWrappedSGVector<int16_t>;
-template class CWrappedSGVector<uint16_t>;
-template class CWrappedSGVector<int32_t>;
-template class CWrappedSGVector<uint32_t>;
-template class CWrappedSGVector<int64_t>;
-template class CWrappedSGVector<uint64_t>;
-template class CWrappedSGVector<float32_t>;
-template class CWrappedSGVector<float64_t>;
-template class CWrappedSGVector<floatmax_t>;
-
 };
-#endif // WRAPPED_SGVECTOR_H__
-#endif // USE_META_INTEGRATION_TESTS
+#endif // SHOGUN_SERIALIZABLE_H_
