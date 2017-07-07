@@ -1,6 +1,6 @@
 #include <shogun/base/init.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/lib/WrappedObjectArray.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 #include <iostream>
 #include <sstream>
@@ -33,8 +33,8 @@ int main(int argc, const char *argv[])
     SG_REF(f);
     SG_REF(f_ref);
     
-    CWrappedObjectArray* a = new CWrappedObjectArray();
-    CWrappedObjectArray* a_ref = new CWrappedObjectArray();
+    CDynamicObjectArray* a = new CDynamicObjectArray();
+    CDynamicObjectArray* a_ref = new CDynamicObjectArray();
     SG_REF(a);
     SG_REF(a_ref);
     
