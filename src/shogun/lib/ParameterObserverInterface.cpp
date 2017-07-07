@@ -2,20 +2,19 @@
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface()
-: m_parameters(), m_writer("shogun")
+ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
 {
 }
 
 ParameterObserverInterface::ParameterObserverInterface(
     std::vector<std::string>& parameters)
-    : m_parameters(parameters), m_writer("shogun")
+    : m_parameters(parameters)
 {
 }
 
 ParameterObserverInterface::ParameterObserverInterface(
     const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters), m_writer(filename.c_str())
+    : m_parameters(parameters)
 {
 }
 

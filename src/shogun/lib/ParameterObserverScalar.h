@@ -5,7 +5,7 @@
 #ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
 #define SHOGUN_PARAMETEROBSERVERSCALAR_H
 
-#include <shogun/lib/ParameterObserverInterface.h>
+#include <shogun/lib/ParameterObserverTensorBoard.h>
 
 namespace shogun
 {
@@ -13,7 +13,7 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * scalar values, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverScalar : public ParameterObserverInterface
+	class ParameterObserverScalar : public ParameterObserverTensorBoard
 	{
 
 	public:
