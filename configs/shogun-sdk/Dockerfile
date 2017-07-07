@@ -46,3 +46,12 @@ RUN cd /tmp;\
     cd build;\
     cmake ../../;\
     make install;
+
+ADD https://github.com/shogun-toolbox/tflogger/archive/v0.1.0.tar.gz /tmp/
+RUN cd /tmp;\
+    tar -xvf v0.1.0.tar.gz;\
+    cd tflogger-0.1.0;\
+    mkdir build;\
+    cd build;\
+    cmake ../;\
+    make install;
