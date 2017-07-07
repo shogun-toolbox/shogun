@@ -403,7 +403,8 @@ public:
 	  * Get parameters observable
 	  * @return RxCpp observable
 	  */
-	rxcpp::observable<ParameterObserverInterface::ObservedValue> get_parameters_observable()
+	rxcpp::observable<ParameterObserverInterface::ObservedValue>
+	get_parameters_observable()
 	{
 		return m_observable_params;
 	};
@@ -567,7 +568,8 @@ protected:
 	/** Observe the parameter and emits a value using the
 	* observable object
 	*/
-	void observe_scalar(const int64_t step, const std::string& name, const Any& value);
+	void observe_scalar(
+		const int64_t step, const std::string& name, const Any& value);
 
 public:
 	/** io */
@@ -602,13 +604,16 @@ private:
 	RefCount* m_refcount;
 
 	/** Subject used to create the params observer */
-	rxcpp::subjects::subject<ParameterObserverInterface::ObservedValue> m_subject_params;
+	rxcpp::subjects::subject<ParameterObserverInterface::ObservedValue>
+		m_subject_params;
 
 	/** Parameter Observable */
-	rxcpp::observable<ParameterObserverInterface::ObservedValue> m_observable_params;
+	rxcpp::observable<ParameterObserverInterface::ObservedValue>
+		m_observable_params;
 
 	/** Subscriber used to call onNext, onComplete etc.*/
-	rxcpp::subscriber<ParameterObserverInterface::ObservedValue> m_subscriber_params;
+	rxcpp::subscriber<ParameterObserverInterface::ObservedValue>
+		m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__

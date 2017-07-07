@@ -12,6 +12,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
+// clang-format off
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #ifndef TENSORFLOW_LIB_HISTOGRAM_HISTOGRAM_H_
 #define TENSORFLOW_LIB_HISTOGRAM_HISTOGRAM_H_
@@ -100,3 +103,5 @@ class Histogram {
 }  // namespace tensorflow
 
 #endif  // TENSORFLOW_LIB_HISTOGRAM_HISTOGRAM_H_
+#endif  // HAVE_TFLOGGER
+// clang-format on
