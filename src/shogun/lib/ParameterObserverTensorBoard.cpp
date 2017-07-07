@@ -1,6 +1,8 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #include "ParameterObserverTensorBoard.h"
 
@@ -27,8 +29,9 @@ ParameterObserverTensorBoard::ParameterObserverTensorBoard(
 }
 
 ParameterObserverTensorBoard::~ParameterObserverTensorBoard()
-    : ~ParameterObserverTensorBoard()
 {
 	m_writer.flush();
 	m_writer.close();
 }
+
+#endif // HAVE_TFLOGGER

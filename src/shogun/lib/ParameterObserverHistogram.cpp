@@ -1,6 +1,8 @@
 /*
 * Written (W) 2017 Giovanni De Toni
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
 #include <shogun/io/TBOutputFormat.h>
 #include <shogun/lib/ParameterObserverHistogram.h>
@@ -25,7 +27,6 @@ ParameterObserverHistogram::ParameterObserverHistogram(
 }
 
 ParameterObserverHistogram::~ParameterObserverHistogram()
-    : ~ParameterObserverTensorBoard()
 {
 }
 
@@ -56,3 +57,5 @@ bool ParameterObserverHistogram::filter(const std::string& param)
 			return true;
 	return false;
 }
+
+#endif // HAVE_TFLOGGER
