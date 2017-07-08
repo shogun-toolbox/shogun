@@ -23,7 +23,7 @@ For other cases, we describe how to build Shogun from source code.
    - [Problems](#manual-problems)
    - [CMake tips](#manual-cmake)
    - [Customized Python](#manual-python)
-   - [Winows](#manual-windows)
+   - [Windows](#manual-windows)
 
 ## Ready-to-install packages <a name="binaries"></a>
 
