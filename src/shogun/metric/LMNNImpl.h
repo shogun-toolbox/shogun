@@ -19,7 +19,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <Eigen/Dense>
+#include <shogun/mathematics/eigen3.h>
 
 #include <set>
 #include <vector>

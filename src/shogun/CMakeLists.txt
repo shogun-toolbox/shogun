@@ -275,48 +275,58 @@ SET_LINALG_BACKEND(LINALG_EIGENSOLVER_LIB EIGSLV)
 
 ####### /LINALG
 
-# prefer original LAPACK, if needed
-OPTION(USE_ORIGINAL_LAPACK "Original LAPACK" OFF)
+#### LAPACK
+
+# Enable Eigen to use Lapack backend
+OPTION(ENABLE_EIGEN_LAPACK "Enable Eigen to use detected BLAS and LAPACK backend" OFF)
 FIND_PACKAGE(LAPACK)
 IF (LAPACK_FOUND)
-  # find out whether it is Accelerate.framework we found for LaPack/BLAS
+  SET(HAVE_LAPACK 1)
+  SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
+
+  # find out the type of Lapack/BLAS implementation we are dealing with
   IF("${LAPACK_LIBRARIES}" MATCHES ".*/Accelerate.framework$")
+    # Accelerate.framework we found for LaPack/BLAS
     SET(HAVE_MVEC 1)
     SET(HAVE_CATLAS 1)
-    SET(HAVE_LAPACK 1)
-    SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/mkl_.*")
-    SET(HAVE_LAPACK 1)
-    SET(HAVE_MKL 1)
-    SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-  ELSE()
-    FIND_PACKAGE(Atlas)
-    IF(Atlas_FOUND)
-      SET(HAVE_ATLAS 1)
-      SET(HAVE_LAPACK 1)
-      SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
-      IF(USE_ORIGINAL_LAPACK)
-        SET(ATLAS_CLAPACK_LIBRARY)
-        FOREACH(ITR ${Atlas_LIBRARIES})
-          IF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-            STRING(REGEX REPLACE "lapack" "clapack" ITR ${ITR})
-            LIST(APPEND ATLAS_CLAPACK_LIBRARY ${ITR})
-          ENDIF(ITR MATCHES ".*atlas.*lapack.*" OR ITR MATCHES ".*lapack.*atlas.*")
-        ENDFOREACH(ITR ${ATLAS_LIBRARIES})
-        MESSAGE(STATUS "using ATLAS-CLAPACK from: ${ATLAS_CLAPACK_LIBRARY}")
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${ATLAS_CLAPACK_LIBRARY} ${Atlas_LIBRARIES})
-      ELSE(USE_ORIGINAL_LAPACK)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${Atlas_LIBRARIES})
-      ENDIF(USE_ORIGINAL_LAPACK)
-    ELSE()
-      FIND_PACKAGE(CBLAS)
-      if(CBLAS_LIBRARY)
-        SET(HAVE_LAPACK 1)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES} ${CBLAS_LIBRARY})
+
+    if (ENABLE_EIGEN_LAPACK)
+      find_library(LAPACKE_LIBRARY
+        NAMES lapacke
+        PATHS /usr/lib /usr/local/lib $ENV{LAPACKE_PATH}/)
+      if (LAPACKE_LIBRARY)
+        SHOGUN_LINK_LIBS(${LAPACKE_LIBRARY})
       else()
-        SET(HAVE_LAPACK 1)
-        SHOGUN_LINK_LIBS(${LAPACK_LIBRARIES})
-        endif()
+        SET(ENABLE_EIGEN_LAPACK 0)
+      endif()
+    endif()
+  ELSEIF("${LAPACK_LIBRARIES}" MATCHES ".*/mkl_.*")
+    # in case MKL is available enable Eigen to use it.
+    # for more fine grained control and details see:
+    # https://eigen.tuxfamily.org/dox/TopicUsingIntelMKL.html
+    # this is supported since Eigen version 3.1 and later
+    SET(HAVE_MKL 1)
+    IF (ENABLE_EIGEN_LAPACK)
+      SET(EIGEN_USE_MKL_ALL 1)
+    ENDIF()
+  ELSE()
+    IF("${LAPACK_LIBRARIES}" MATCHES ".*/.*atlas.*")
+      FIND_PACKAGE(Atlas)
+      IF(Atlas_FOUND)
+        SET(HAVE_ATLAS 1)
+        SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
+      ELSE()
+        MESSAGE(FATAL_ERROR "It appears that LaPack implemenation of Atlas is being used, but cannot find it!")
+      ENDIF()
+    ENDIF()
+  ENDIF()
+
+  IF (ENABLE_EIGEN_LAPACK)
+    # if LaPack is detected and Eigen is 3.3 or later
+    # use the lapack/blas backend in Eigen
+    IF(${EIGEN_VERSION} VERSION_GREATER 3.3.0)
+      SET(EIGEN_USE_BLAS 1)
+      SET(EIGEN_USE_LAPACKE_STRICT 1)
     ENDIF()
   ENDIF()
 ENDIF()

@@ -10,8 +10,7 @@
 
 #include <shogun/distance/CustomMahalanobisDistance.h>
 
-
-#include <Eigen/Dense>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

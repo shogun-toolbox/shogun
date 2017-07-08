@@ -41,6 +41,13 @@
 /* Tells ViennaCL to use OpenCL as computation backend */
 #cmakedefine VIENNACL_WITH_OPENCL 1
 
+/* Eigen Lapack optimization flags */
+#cmakedefine EIGEN_USE_BLAS 1
+#cmakedefine EIGEN_USE_LAPACKE 1
+#cmakedefine EIGEN_USE_LAPACKE_STRICT 1
+#cmakedefine EIGEN_USE_MKL_VML 1
+#cmakedefine EIGEN_USE_MKL_ALL 1
+
 /* for linear algebra global backend setups */
 #cmakedefine USE_EIGEN3_GLOBAL 1
 #cmakedefine USE_VIENNACL_GLOBAL 1
