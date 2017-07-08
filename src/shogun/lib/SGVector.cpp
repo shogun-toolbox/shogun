@@ -21,10 +21,9 @@
 #include <shogun/io/File.h>
 
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/lapack.h>
 #include <algorithm>
-
-#include <shogun/mathematics/eigen3.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
