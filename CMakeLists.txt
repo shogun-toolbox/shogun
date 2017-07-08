@@ -39,8 +39,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ### FIXME: remove these flags when the codebase
 # is cleared up
 set(HAVE_CXX11 ON)
-set(HAVE_CXX11_ATOMIC ON)
-set(HAVE_STD_UNORDERED_MAP ON)
 
 ############# minimum library versions ###################
 SET(EIGEN_VERSION_MINIMUM 3.1.2)
@@ -146,10 +144,6 @@ ENDIF()
 ################ COMPILER #######################
 # g++ version needs to be => 4.3
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	# in order to support cmake 2.8.7 and older
-	IF(NOT CMAKE_CXX_COMPILER_VERSION)
-		include(CheckCompiler)
-	ENDIF()
 	IF("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.3.0")
 		MESSAGE(FATAL_ERROR "g++ version is too old")
 	ENDIF()

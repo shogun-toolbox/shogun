@@ -23,10 +23,6 @@ function (add_unit_test_executable EXECUTABLE TARGET SRC)
 	# TODO: Update to gTest-release with proper support for GCC >= 6.0.0.
 	# See:  https://github.com/google/googletest/issues/705
 	IF(CMAKE_COMPILER_IS_GNUCXX)
-		# in order to support cmake 2.8.7 and older
-		IF(NOT CMAKE_CXX_COMPILER_VERSION)
-			include(CheckCompiler)
-		ENDIF(NOT CMAKE_CXX_COMPILER_VERSION)
 		IF(NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
 			target_compile_options(${EXECUTABLE}
 					PUBLIC -fno-delete-null-pointer-checks)

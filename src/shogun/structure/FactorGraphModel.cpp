@@ -11,15 +11,10 @@
 #include <shogun/structure/FactorGraphModel.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/features/FactorGraphFeatures.h>
- #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Math.h>
 
-#ifdef HAVE_STD_UNORDERED_MAP
-	#include <unordered_map>
-	typedef std::unordered_map<int32_t, int32_t> factor_counts_type;
-#else
-	#include <tr1/unordered_map>
-	typedef std::tr1::unordered_map<int32_t, int32_t> factor_counts_type;
-#endif
+#include <unordered_map>
+typedef std::unordered_map<int32_t, int32_t> factor_counts_type;
 
 using namespace shogun;
 
