@@ -44,9 +44,9 @@ DEFINE_FOR_NON_INTEGER_PTYPE(BACKEND_GENERIC_CENTER_MATRIX, SGMatrix)
 #undef BACKEND_GENERIC_CENTER_MATRIX
 
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
-	void LinalgBackendEigen::identity(Container<Type>& I) const                \
+	void LinalgBackendEigen::identity(Container<Type>& identity_matrix) const  \
 	{                                                                          \
-		identity_impl(I);                                                      \
+		identity_impl(identity_matrix);                                        \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IDENTITY, SGMatrix)
 #undef BACKEND_GENERIC_IDENTITY
@@ -111,9 +111,9 @@ void LinalgBackendEigen::center_matrix_impl(SGMatrix<T>& A) const
 }
 
 template <typename T>
-void LinalgBackendEigen::identity_impl(SGMatrix<T>& I) const
+void LinalgBackendEigen::identity_impl(SGMatrix<T>& identity_matrix) const
 {
-	typename SGMatrix<T>::EigenMatrixXtMap I_eig = I;
+	typename SGMatrix<T>::EigenMatrixXtMap I_eig = identity_matrix;
 	I_eig.setIdentity();
 }
 
