@@ -87,7 +87,7 @@ void wrap_dstemr(char jobz, char range, int n, double* d__, double *e, double vl
 }
 
 // only MKL, ACML and Mac OS vector library provide a header file for the lapack routines
-#if !defined(HAVE_ACML) && !defined(HAVE_MKL) && !defined(HAVE_MVEC)
+#if !defined(HAVE_ACML) && !defined(HAVE_MKL) && !defined(HAVE_MVEC) && !defined(EIGEN_USE_LAPACKE)
 // double precision
 int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
 int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda,
