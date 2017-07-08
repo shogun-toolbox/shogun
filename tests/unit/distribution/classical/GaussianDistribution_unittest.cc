@@ -29,11 +29,12 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <gtest/gtest.h>
 
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <gtest/gtest.h>
+
 
 using namespace shogun;
 using namespace Eigen;

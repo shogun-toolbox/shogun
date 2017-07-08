@@ -6,6 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
+#include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>
 
@@ -30,7 +31,6 @@
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;

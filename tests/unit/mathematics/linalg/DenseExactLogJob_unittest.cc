@@ -7,11 +7,12 @@
  * Written (W) 2013 Soumyajit De
  */
 
+#include <gtest/gtest.h>
+
 #include <shogun/lib/common.h>
 
 #include <shogun/mathematics/eigen3.h>
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
 #include <unsupported/Eigen/MatrixFunctions>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -20,7 +21,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/DenseExactLogJob.h>
-#include <gtest/gtest.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -74,4 +74,3 @@ TEST(DenseExactLogJob, log_det)
 	SG_UNREF(log_op);
 	SG_UNREF(agg);
 }
-#endif // EIGEN_VERSION_AT_LEAST(3,1,0)

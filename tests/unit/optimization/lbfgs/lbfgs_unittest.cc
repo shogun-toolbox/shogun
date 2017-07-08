@@ -29,11 +29,13 @@
  *
  *
  */
+
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
-#include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>

@@ -27,6 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  */
+#include <gtest/gtest.h>
 
 #include <algorithm>
 #include <numeric>
@@ -43,7 +44,6 @@
 #include <shogun/statistical_testing/TestEnums.h>
 #include <shogun/statistical_testing/internals/mmd/ComputeMMD.h>
 #include <shogun/statistical_testing/internals/mmd/WithinBlockPermutation.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
 using namespace Eigen;
