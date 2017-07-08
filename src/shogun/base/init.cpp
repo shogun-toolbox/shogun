@@ -17,6 +17,9 @@
 #include <shogun/base/Version.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
+
+#include <rxcpp/rx-lite.hpp>
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/SGLinalg.h>
@@ -34,8 +37,6 @@ shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #ifdef HAVE_PROTOBUF
 #include <google/protobuf/stubs/common.h>
 #endif
-
-#include <rxcpp/rx-lite.hpp>
 
 namespace shogun
 {
