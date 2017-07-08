@@ -309,7 +309,7 @@ namespace shogun
  * @see linalg::identity
  */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
-	virtual void identity(Container<Type>& I) const                            \
+	virtual void identity(Container<Type>& identity_matrix) const              \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 		return;                                                                \

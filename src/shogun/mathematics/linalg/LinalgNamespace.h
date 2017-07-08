@@ -820,10 +820,10 @@ namespace shogun
 		 * @param a The square matrix to be set
 		 */
 		template <typename T>
-		void identity(SGMatrix<T>& I)
+		void identity(SGMatrix<T>& identity_matrix)
 		{
-			REQUIRE(I.num_rows == I.num_cols, "Matrix is not square!\n");
-			infer_backend(I)->identity(I);
+			REQUIRE(identity_matrix.num_rows == identity_matrix.num_cols, "Matrix is not square!\n");
+			infer_backend(identity_matrix)->identity(identity_matrix);
 		}
 
 		/** Performs the operation of a matrix multiplies a vector \f$x = Ab\f$.
