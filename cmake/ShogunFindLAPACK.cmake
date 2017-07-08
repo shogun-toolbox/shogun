@@ -1,5 +1,5 @@
 # Enable Eigen to use Lapack backend
-OPTION(ENABLE_EIGEN_LAPACK "Enable Eigen to use detected BLAS and LAPACK backend" OFF)
+OPTION(ENABLE_EIGEN_LAPACK "Enable Eigen to use detected BLAS and LAPACK backend" ON)
 
 FIND_PACKAGE(LAPACK)
 IF (LAPACK_FOUND)
