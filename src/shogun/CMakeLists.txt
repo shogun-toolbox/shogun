@@ -293,7 +293,7 @@ IF (LAPACK_FOUND)
     if (ENABLE_EIGEN_LAPACK)
       find_library(LAPACKE_LIBRARY
         NAMES lapacke
-        PATHS /usr/lib /usr/local/lib $ENV{LAPACKE_PATH}/)
+        PATHS /usr/lib /usr/local/lib $ENV{LAPACKE_PATH})
       if (LAPACKE_LIBRARY)
         SHOGUN_LINK_LIBS(${LAPACKE_LIBRARY})
       else()
@@ -310,15 +310,23 @@ IF (LAPACK_FOUND)
       SET(EIGEN_USE_MKL_ALL 1)
     ENDIF()
   ELSE()
-    IF("${LAPACK_LIBRARIES}" MATCHES ".*/.*atlas.*")
+    # detect if the detected Lapack is atlas
+    # clapack_* functions are implemented in atlas
+    include(CheckLibraryExists)
+    check_library_exists("${LAPACK_LIBRARIES}" clapack_dpotrf "" FOUND_CLAPACK_DPOTRF)
+    IF (FOUND_CLAPACK_DPOTRF)
       FIND_PACKAGE(Atlas)
       IF(Atlas_FOUND)
         SET(HAVE_ATLAS 1)
         SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC ${Atlas_INCLUDE_DIRS})
-      ELSE()
-        MESSAGE(FATAL_ERROR "It appears that LaPack implemenation of Atlas is being used, but cannot find it!")
       ENDIF()
     ENDIF()
+
+    check_library_exists("${LAPACK_LIBRARIES}" cblas_ddot "" FOUND_CBLAS_DDOT)
+    if (NOT FOUND_CBLAS_DDOT)
+      MESSAGE(FATAL_ERROR "It appears that the detected BLAS library does not contain cblas_* APIs. Please fix it!")
+    endif()
+
   ENDIF()
 
   IF (ENABLE_EIGEN_LAPACK)
