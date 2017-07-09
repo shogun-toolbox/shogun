@@ -52,6 +52,7 @@ bool CAveragedPerceptron::train_machine(CFeatures* data)
 	ASSERT(num_vec==train_labels.vlen)
 	SGVector<float64_t> w(num_feat);
 	float64_t* tmp_w=SG_MALLOC(float64_t, num_feat);
+	memset(tmp_w, 0, sizeof(float64_t)*num_feat);
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
 	//start with uniform w, bias=0, tmp_bias=0
