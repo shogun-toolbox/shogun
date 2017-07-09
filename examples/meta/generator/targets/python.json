@@ -4,6 +4,7 @@
         "IncludeAllClasses": false,
         "IncludeInterfacedClasses": true, 
         "IncludeEnums": true,
+        "IncludeGlobalFunctions": true,
         "DependencyListElement": "from shogun import $typeName",
         "DependencyListElementEnum": "from shogun import $value",
         "DependencyListSeparator": "\n"
@@ -50,6 +51,7 @@
         "FloatLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
+        "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

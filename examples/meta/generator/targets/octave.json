@@ -40,6 +40,7 @@
         "FloatLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
+        "GlobalCall": "$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$value"
     },

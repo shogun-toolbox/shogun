@@ -3,6 +3,7 @@
     "Dependencies": {
         "IncludeAllClasses": true, 
         "IncludeEnums": true,
+        "IncludeGlobalFunctions": false,
         "DependencyListElement": "import org.shogun.$typeName;",
         "DependencyListSeparator": "\n"
     },
@@ -75,6 +76,7 @@
         "FloatLiteral": "${number}f",
         "MethodCall": "$object.$method($arguments)",
         "StaticCall": "$typeName.$method($arguments)",
+        "GlobalCall": "shogun.$method($arguments)",
         "Identifier": "$identifier",
         "Enum":"$typeName.$value"
     },

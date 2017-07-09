@@ -213,6 +213,10 @@ class FastParser:
         "staticCall : type COLON identifier LPAREN argumentList RPAREN"
         p[0] = {"StaticCall": [p[1], p[3], p[5]]}
 
+    def p_globalCall(self, p):
+        "globalCall : identifier LPAREN argumentList RPAREN"
+        p[0] = {"GlobalCall": [p[1], p[3]]}
+
     def p_indexList(self, p):
         """
         indexList : int
@@ -262,6 +266,7 @@ class FastParser:
         expr : enum
              | methodCall
              | staticCall
+             | globalCall
              | elementAccess
              | string
              | char
