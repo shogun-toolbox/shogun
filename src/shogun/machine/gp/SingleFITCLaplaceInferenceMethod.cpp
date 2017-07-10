@@ -33,7 +33,9 @@
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/optimization/FirstOrderMinimizer.h>
@@ -45,7 +47,7 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+#ifdef USE_GPL_SHOGUN
 /** Wrapper class used for the Brent minimizer */
 class CFITCPsiLine : public func_base
 {
@@ -89,6 +91,7 @@ public:
 		return result;
 	}
 };
+#endif //USE_GPL_SHOGUN
 
 class SingleFITCLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
@@ -271,7 +274,7 @@ float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 		MatrixXd eigen_RV=eigen_tmp2*eigen_V;
 		//dalpha = dd.*b - (W.*dd).*(RV'*(RV*(dd.*b))) - alpha; % Newt dir + line search
 		VectorXd dalpha=dd.cwiseProduct(b)-eigen_t.cwiseProduct(eigen_RV.transpose()*(eigen_RV*(dd.cwiseProduct(b))))-eigen_al;
-
+#ifdef USE_GPL_SHOGUN
 		//perform Brent's optimization
 		CFITCPsiLine func;
 
@@ -289,6 +292,9 @@ float64_t CSingleFITCLaplaceNewtonOptimizer::minimize()
 
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 	}
 
 	if (Psi_Old-Psi_New>m_tolerance && iter>=m_iter)

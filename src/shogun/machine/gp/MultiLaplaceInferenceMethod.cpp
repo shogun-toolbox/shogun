@@ -44,7 +44,9 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/brent.h>
+#endif //USE_GPL_SHOGUN
 
 using namespace shogun;
 using namespace Eigen;
@@ -53,7 +55,7 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+#ifdef USE_GPL_SHOGUN
 /** Wrapper class used for the Brent minimizer */
 class CMultiPsiLine : public func_base
 {
@@ -95,6 +97,7 @@ public:
 		return result;
 	}
 };
+#endif //USE_GPL_SHOGUN
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -351,7 +354,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 
 		VectorXd &eigen_dalpha=eigen_b;
 		eigen_dalpha+=eigen_E.transpose()*(eigen_M.triangularView<Upper>().solve(tmp4))-eigen_c-eigen_alpha;
-
+#ifdef USE_GPL_SHOGUN
 		// perform Brent's optimization
 		CMultiPsiLine func;
 
@@ -368,6 +371,9 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 		m_nlz+=Psi_New;
 	}
 

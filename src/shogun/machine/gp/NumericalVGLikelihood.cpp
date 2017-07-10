@@ -44,7 +44,9 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Integration.h>
+#endif //USE_GPL_SHOGUN
 
 using namespace Eigen;
 
@@ -254,7 +256,11 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 		{
 			m_xgh=SGVector<float64_t>(m_GHQ_N);
 			m_wgh=SGVector<float64_t>(m_GHQ_N);
+#ifdef USE_GPL_SHOGUN
 			CIntegration::generate_gauher(m_xgh, m_wgh);
+#else
+			SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 			m_is_init_GHQ=true;
 		}
 

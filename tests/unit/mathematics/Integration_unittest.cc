@@ -34,7 +34,9 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Function.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Integration.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
@@ -288,6 +290,7 @@ private:
 	float64_t m_sigma;
 };
 
+#ifdef USE_GPL_SHOGUN
 TEST(Integration,integrate_quadgk_simple_function)
 {
 	// create object of the simple function
@@ -771,3 +774,4 @@ TEST(Integration, generate_gauher20)
 	abs_tolerance = CMath::get_abs_tolerance(0.000000000000126, rel_tolerance);
 	EXPECT_NEAR(wgh[19],  0.000000000000126,  abs_tolerance);
 }
+#endif //USE_GPL_SHOGUN

@@ -12,7 +12,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/JacobiEllipticFunctions.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 #include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
@@ -165,7 +167,11 @@ void CRationalApproximation::compute_shifts_weights_const()
 
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
+#ifdef USE_GPL_SHOGUN
 	CJacobiEllipticFunctions::ellipKKp(L, K, Kp);
+#else
+	SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 
 	// compute constant multiplier
 	m_constant_multiplier=-8*K*m_mult/(k*PI*m_num_shifts);
@@ -184,7 +190,11 @@ void CRationalApproximation::compute_shifts_weights_const()
 		complex128_t t=complex128_t(0.0, 0.5*Kp)-K+(0.5+i)*2*K/m_num_shifts;
 
 		complex128_t sn, cn, dn;
+#ifdef USE_GPL_SHOGUN
 		CJacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
+#else
+		SG_GPL_ONLY
+#endif //USE_GPL_SHOGUN
 
 		complex128_t w=m_mult*(1.0+k*sn)/(1.0-k*sn);
 		complex128_t dzdt=cn*dn/CMath::sq(1.0/k-sn);

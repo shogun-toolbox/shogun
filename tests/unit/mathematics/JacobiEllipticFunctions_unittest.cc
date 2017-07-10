@@ -8,7 +8,6 @@
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/JacobiEllipticFunctions.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_ARPREC
@@ -16,11 +15,16 @@
 #include <arprec/mp_complex.h>
 #endif //HAVE_ARPREC
 
+#ifdef USE_GPL_SHOGUN
+#include <shogun/mathematics/JacobiEllipticFunctions.h>
 using namespace shogun;
-
 typedef float64_t Real;
 typedef complex128_t Complex;
+#endif //USE_GPL_SHOGUN
 
+
+
+#ifdef USE_GPL_SHOGUN
 TEST(JacobiEllipticFunctions, ellipKKp)
 {
 	Real K, Kp;
@@ -164,3 +168,4 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(dn.imag(), -0.23982763093808801003, 1E-15);
 #endif //HAVE_ARPREC
 }
+#endif //USE_GPL_SHOGUN
