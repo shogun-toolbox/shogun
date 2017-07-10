@@ -34,7 +34,6 @@
 
 
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
