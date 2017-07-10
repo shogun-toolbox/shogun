@@ -33,9 +33,9 @@
 *
 */
 #include <gtest/gtest.h>
-#include <rxcpp/rx.hpp>
 #include <shogun/lib/Signal.h>
 
+#include <rxcpp/rx-lite.hpp>
 #include <csignal>
 
 using namespace shogun;
@@ -50,8 +50,8 @@ TEST(Signal, return_to_prompt_test)
 	auto sub = rxcpp::make_subscriber<int>(
 	    [&on_next_v](int v) { on_next_v = 1; }, [&]() { on_complete_v = 1; });
 
-	tmp.get_observable().subscribe(sub);
-	tmp.get_subscriber().on_completed();
+	tmp.get_observable()->subscribe(sub);
+	tmp.get_subscriber()->on_completed();
 
 	EXPECT_TRUE(on_complete_v == 1);
 	EXPECT_TRUE(on_next_v == 0);
@@ -68,8 +68,8 @@ TEST(Signal, prematurely_stop_computation_test)
 	auto sub = rxcpp::make_subscriber<int>(
 	    [&](int v) { on_next_v++; }, [&]() { on_complete_v++; });
 
-	tmp.get_observable().subscribe(sub);
-	tmp.get_subscriber().on_next(SG_BLOCK_COMP);
+	tmp.get_observable()->subscribe(sub);
+	tmp.get_subscriber()->on_next(SG_BLOCK_COMP);
 
 	EXPECT_TRUE(on_next_v == 1);
 	EXPECT_TRUE(on_complete_v == 0);
@@ -92,8 +92,8 @@ TEST(Signal, pause_computation_test)
 		},
 	    [&]() { on_complete_v++; });
 
-	tmp.get_observable().subscribe(sub);
-	tmp.get_subscriber().on_next(SG_PAUSE_COMP);
+	tmp.get_observable()->subscribe(sub);
+	tmp.get_subscriber()->on_next(SG_PAUSE_COMP);
 
 	EXPECT_TRUE(on_next_v == 2);
 	EXPECT_TRUE(on_complete_v == 0);

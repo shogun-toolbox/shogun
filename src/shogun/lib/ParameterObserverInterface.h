@@ -39,7 +39,6 @@
 #include <utility>
 #include <vector>
 
-#include <rxcpp/rx-observable.hpp>
 #include <shogun/lib/any.h>
 
 namespace shogun

@@ -384,7 +384,7 @@ rxcpp::subscription Solver::connect_to_signal_handler()
 				this->on_next();
 		},
 		[this]() { this->on_complete(); });
-	return get_global_signal()->get_observable().subscribe(subscriber);
+	return get_global_signal()->get_observable()->subscribe(subscriber);
 }
 
 void Solver::reset_computation_variables()
