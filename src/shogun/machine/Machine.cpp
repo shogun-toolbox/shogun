@@ -12,8 +12,7 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
-
-#include <rxcpp/rx.hpp>
+#include <rxcpp/rx-lite.hpp>
 
 using namespace shogun;
 
@@ -289,5 +288,5 @@ rxcpp::subscription CMachine::connect_to_signal_handler()
 			    this->on_next();
 		},
 	    [this]() { this->on_complete(); });
-	return get_global_signal()->get_observable().subscribe(subscriber);
+	return get_global_signal()->get_observable()->subscribe(subscriber);
 }

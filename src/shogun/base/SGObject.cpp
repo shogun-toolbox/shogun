@@ -28,6 +28,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <rxcpp/rx-lite.hpp>
+#include <rxcpp/operators/rx-filter.hpp>
+
 #ifdef HAVE_CXX11
 #include <unordered_map>
 #else
@@ -151,9 +154,7 @@ namespace shogun
 using namespace shogun;
 
 CSGObject::CSGObject()
-    : self(), m_subject_params(),
-      m_observable_params(m_subject_params.get_observable()),
-      m_subscriber_params(m_subject_params.get_subscriber())
+    : self()
 {
 	init();
 	set_global_objects();
@@ -163,10 +164,7 @@ CSGObject::CSGObject()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-    : self(), io(orig.io), parallel(orig.parallel), version(orig.version),
-      m_subject_params(orig.m_subject_params),
-      m_observable_params(orig.m_observable_params),
-      m_subscriber_params(orig.m_subscriber_params)
+    : self(), io(orig.io), parallel(orig.parallel), version(orig.version)
 {
 	init();
 	set_global_objects();
@@ -184,6 +182,9 @@ CSGObject::~CSGObject()
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
 	delete m_refcount;
+	delete m_subject_params;
+	delete m_observable_params;
+	delete m_subscriber_params;
 }
 
 int32_t CSGObject::ref()
@@ -506,6 +507,10 @@ void CSGObject::init()
 	m_save_pre_called = false;
 	m_save_post_called = false;
 	m_hash = 0;
+
+	m_subject_params = new SGSubject();
+	*m_observable_params = m_subject_params->get_observable();
+	*m_subscriber_params = m_subject_params->get_subscriber();
 }
 
 void CSGObject::print_modsel_params()
@@ -821,7 +826,7 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	// parameters selected by the observable.
 	auto subscription =
 	    m_observable_params
-	        .filter([obs](ParameterObserverInterface::ObservedValue v) {
+	        ->filter([obs](ParameterObserverInterface::ObservedValue v) {
 		        return obs->filter(v.second.first);
 		    })
 	        .subscribe(sub);
@@ -831,5 +836,5 @@ void CSGObject::observe_scalar(
     const int64_t step, const std::string& name, const Any& value)
 {
 	auto tmp = std::make_pair(step, std::make_pair(name, value));
-	m_subscriber_params.on_next(tmp);
+	m_subscriber_params->on_next(tmp);
 }

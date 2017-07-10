@@ -12,25 +12,37 @@
 #include <csignal>
 #include <stdlib.h>
 
-#include <rxcpp/rx.hpp>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
+#include <rxcpp/rx-lite.hpp>
 
 using namespace shogun;
 using namespace rxcpp;
 
 bool CSignal::m_active = false;
-rxcpp::subjects::subject<int> CSignal::m_subject =
-    rxcpp::subjects::subject<int>();
-rxcpp::observable<int> CSignal::m_observable = m_subject.get_observable();
-rxcpp::subscriber<int> CSignal::m_subscriber = m_subject.get_subscriber();
+CSignal::SGSubjectS * CSignal::m_subject =
+    new rxcpp::subjects::subject<int>();
+
+CSignal::SGObservableS * CSignal::m_observable;
+CSignal::SGSubscriberS * CSignal::m_subscriber;
 
 CSignal::CSignal()
 {
+	// Should prevent memory leak
+	if (m_observable != NULL || m_subscriber != NULL)
+	{
+		delete m_observable;
+		delete m_subscriber;
+	}
+	*(CSignal::m_observable) = m_subject->get_observable();
+	*(CSignal::m_subscriber) = m_subject->get_subscriber();
 }
 
 CSignal::~CSignal()
 {
+    delete m_subject;
+    delete m_observable;
+    delete m_subscriber;
 }
 
 void CSignal::handler(int signal)
@@ -53,18 +65,18 @@ void CSignal::handler(int signal)
 		{
 		case 'I':
 			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
-			m_subscriber.on_completed();
+			m_subscriber->on_completed();
 			exit(0);
 			break;
 		case 'C':
 			SG_SPRINT(
 			    "[ShogunSignalHandler] Terminating"
 			    " prematurely current algorithm...\n");
-			m_subscriber.on_next(SG_BLOCK_COMP);
+			m_subscriber->on_next(SG_BLOCK_COMP);
 			break;
 		case 'P':
 			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
-			m_subscriber.on_next(SG_PAUSE_COMP);
+			m_subscriber->on_next(SG_PAUSE_COMP);
 			break;
 		default:
 			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
@@ -75,4 +87,11 @@ void CSignal::handler(int signal)
 	{
 		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
 	}
+}
+
+void CSignal::reset_handler()
+{
+    m_subject = new rxcpp::subjects::subject<int>();
+    *m_observable = m_subject->get_observable();
+    *m_subscriber = m_subject->get_subscriber();
 }
