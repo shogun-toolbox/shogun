@@ -37,6 +37,10 @@ def is_pure_virtual(name, tags):
     return any([name + '\timplementation:pure virtual' in tag for tag in tags])
 
 
+def use_gpl(path, defined_guards):
+    return 'src/gpl/' not in path or 'use_gpl_shogun' in defined_guards
+
+
 def is_shogun_class(c):
     return c[0] == 'C' and c[1].isupper() and 'class' in c
 
@@ -80,9 +84,15 @@ def entry(templateFile, input_file, config_file):
     # Get all linear machines
     global IGNORE_LIST
     base = 'CLinearMachine'
-    machines = {name: attrs for name, attrs in classes.items() if name not in IGNORE_LIST and
-                base in get_ancestors(classes, name) and not is_guarded(attrs['include'], guards)
-                and not is_pure_virtual(name, tags) and not ignore_in_class_list(attrs['include'])}
+    machines = {
+        name: attrs for name, attrs in classes.items() if
+        name not in IGNORE_LIST and
+        base in get_ancestors(classes, name) and
+        not is_guarded(attrs['include'], guards) and
+        not is_pure_virtual(name, tags) and
+        not ignore_in_class_list(attrs['include']) and
+        use_gpl(attrs['include'], guards)
+    }
 
     templateVars = {"classes" : machines}
 
