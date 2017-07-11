@@ -35,8 +35,8 @@
 #include <gtest/gtest.h>
 #include <shogun/lib/Signal.h>
 
-#include <rxcpp/rx-lite.hpp>
 #include <csignal>
+#include <rxcpp/rx-lite.hpp>
 
 using namespace shogun;
 using namespace rxcpp;

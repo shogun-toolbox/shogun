@@ -9,10 +9,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
-#include <rxcpp/rx-lite.hpp>
 
 using namespace shogun;
 

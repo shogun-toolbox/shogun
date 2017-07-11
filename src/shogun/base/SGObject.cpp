@@ -28,8 +28,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <rxcpp/rx-lite.hpp>
 #include <rxcpp/operators/rx-filter.hpp>
+#include <rxcpp/rx-lite.hpp>
 
 #ifdef HAVE_CXX11
 #include <unordered_map>
@@ -153,8 +153,7 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject()
-    : self()
+CSGObject::CSGObject() : self()
 {
 	init();
 	set_global_objects();
