@@ -23,26 +23,15 @@ bool CSignal::m_active = false;
 CSignal::SGSubjectS * CSignal::m_subject =
     new rxcpp::subjects::subject<int>();
 
-CSignal::SGObservableS * CSignal::m_observable;
-CSignal::SGSubscriberS * CSignal::m_subscriber;
+CSignal::SGObservableS * CSignal::m_observable = new CSignal::SGObservableS(CSignal::m_subject->get_observable());
+CSignal::SGSubscriberS * CSignal::m_subscriber = new CSignal::SGSubscriberS(CSignal::m_subject->get_subscriber());
 
 CSignal::CSignal()
 {
-	// Should prevent memory leak
-	if (m_observable != NULL || m_subscriber != NULL)
-	{
-		delete m_observable;
-		delete m_subscriber;
-	}
-	*(CSignal::m_observable) = m_subject->get_observable();
-	*(CSignal::m_subscriber) = m_subject->get_subscriber();
 }
 
 CSignal::~CSignal()
 {
-    delete m_subject;
-    delete m_observable;
-    delete m_subscriber;
 }
 
 void CSignal::handler(int signal)
@@ -91,7 +80,11 @@ void CSignal::handler(int signal)
 
 void CSignal::reset_handler()
 {
+    delete m_subject;
+    delete m_observable;
+    delete m_subscriber;
+
     m_subject = new rxcpp::subjects::subject<int>();
-    *m_observable = m_subject->get_observable();
-    *m_subscriber = m_subject->get_subscriber();
+    m_observable = new CSignal::SGObservableS(m_subject->get_observable());
+    m_subscriber = new CSignal::SGSubscriberS(m_subject->get_subscriber());
 }

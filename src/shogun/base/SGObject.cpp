@@ -509,8 +509,8 @@ void CSGObject::init()
 	m_hash = 0;
 
 	m_subject_params = new SGSubject();
-	*m_observable_params = m_subject_params->get_observable();
-	*m_subscriber_params = m_subject_params->get_subscriber();
+	m_observable_params = new SGObservable(m_subject_params->get_observable());
+	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
 }
 
 void CSGObject::print_modsel_params()
