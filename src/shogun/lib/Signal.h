@@ -12,7 +12,6 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
-#include <rxcpp/rx-includes.hpp>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -35,9 +34,16 @@ namespace shogun
 	 *  option bewteen: immediately exit the running method and fall back to
 	 *  the command line, prematurely stop the current algoritmh and do nothing.
 	 */
-	class CSignal : public CSGObject
+	class CSignal : CSGObject
 	{
 	public:
+		typedef rxcpp::subjects::subject<int> SGSubjectS;
+		typedef rxcpp::observable<int, rxcpp::dynamic_observable<int>>
+		    SGObservableS;
+		typedef rxcpp::subscriber<int,
+		                          rxcpp::observer<int, void, void, void, void>>
+		    SGSubscriberS;
+
 		CSignal();
 		virtual ~CSignal();
 
@@ -52,7 +58,7 @@ namespace shogun
 		     * Get observable
 		     * @return RxCpp observable
 		     */
-		rxcpp::observable<int> get_observable()
+		SGObservableS* get_observable()
 		{
 			return m_observable;
 		};
@@ -63,7 +69,7 @@ namespace shogun
 		     * Get subscriber
 		     * @return RxCpp subscriber
 		     */
-		rxcpp::subscriber<int> get_subscriber()
+		SGSubscriberS* get_subscriber()
 		{
 			return m_subscriber;
 		};
@@ -78,12 +84,7 @@ namespace shogun
 		/**
 		 * Reset handler in case of multiple instantiation
 		 */
-		static void reset_handler()
-		{
-			m_subject = rxcpp::subjects::subject<int>();
-			m_observable = m_subject.get_observable();
-			m_subscriber = m_subject.get_subscriber();
-		}
+		static void reset_handler();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Signal"; }
@@ -92,10 +93,11 @@ namespace shogun
 		/** Active signal */
 		static bool m_active;
 
+	public:
 		/** Observable */
-		static rxcpp::subjects::subject<int> m_subject;
-		static rxcpp::observable<int> m_observable;
-		static rxcpp::subscriber<int> m_subscriber;
+		static SGSubjectS* m_subject;
+		static SGObservableS* m_observable;
+		static SGSubscriberS* m_subscriber;
 };
 }
 #endif // __SIGNAL__H_

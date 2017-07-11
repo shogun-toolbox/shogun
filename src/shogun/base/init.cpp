@@ -35,6 +35,8 @@ shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #include <google/protobuf/stubs/common.h>
 #endif
 
+#include <rxcpp/rx-lite.hpp>
+
 namespace shogun
 {
 	Parallel* sg_parallel=NULL;
@@ -121,6 +123,10 @@ namespace shogun
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
+
+		delete CSignal::m_subscriber;
+		delete CSignal::m_observable;
+		delete CSignal::m_subject;
 
 #ifdef HAVE_PROTOBUF
 		::google::protobuf::ShutdownProtobufLibrary();

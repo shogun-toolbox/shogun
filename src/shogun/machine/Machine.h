@@ -25,7 +25,6 @@
 
 #include <condition_variable>
 #include <mutex>
-#include <rxcpp/rx.hpp>
 
 namespace shogun
 {

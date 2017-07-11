@@ -9,11 +9,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/base/init.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/machine/Machine.h>
-
-#include <rxcpp/rx.hpp>
 
 using namespace shogun;
 
@@ -289,5 +288,5 @@ rxcpp::subscription CMachine::connect_to_signal_handler()
 			    this->on_next();
 		},
 	    [this]() { this->on_complete(); });
-	return get_global_signal()->get_observable().subscribe(subscriber);
+	return get_global_signal()->get_observable()->subscribe(subscriber);
 }

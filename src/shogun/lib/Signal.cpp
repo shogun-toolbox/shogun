@@ -12,7 +12,7 @@
 #include <csignal>
 #include <stdlib.h>
 
-#include <rxcpp/rx.hpp>
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 
@@ -20,10 +20,12 @@ using namespace shogun;
 using namespace rxcpp;
 
 bool CSignal::m_active = false;
-rxcpp::subjects::subject<int> CSignal::m_subject =
-    rxcpp::subjects::subject<int>();
-rxcpp::observable<int> CSignal::m_observable = m_subject.get_observable();
-rxcpp::subscriber<int> CSignal::m_subscriber = m_subject.get_subscriber();
+CSignal::SGSubjectS* CSignal::m_subject = new rxcpp::subjects::subject<int>();
+
+CSignal::SGObservableS* CSignal::m_observable =
+    new CSignal::SGObservableS(CSignal::m_subject->get_observable());
+CSignal::SGSubscriberS* CSignal::m_subscriber =
+    new CSignal::SGSubscriberS(CSignal::m_subject->get_subscriber());
 
 CSignal::CSignal()
 {
@@ -53,18 +55,18 @@ void CSignal::handler(int signal)
 		{
 		case 'I':
 			SG_SPRINT("[ShogunSignalHandler] Killing the application...\n");
-			m_subscriber.on_completed();
+			m_subscriber->on_completed();
 			exit(0);
 			break;
 		case 'C':
 			SG_SPRINT(
 			    "[ShogunSignalHandler] Terminating"
 			    " prematurely current algorithm...\n");
-			m_subscriber.on_next(SG_BLOCK_COMP);
+			m_subscriber->on_next(SG_BLOCK_COMP);
 			break;
 		case 'P':
 			SG_SPRINT("[ShogunSignalHandler] Pausing current computation...")
-			m_subscriber.on_next(SG_PAUSE_COMP);
+			m_subscriber->on_next(SG_PAUSE_COMP);
 			break;
 		default:
 			SG_SPRINT("[ShogunSignalHandler] Continuing...\n")
@@ -75,4 +77,15 @@ void CSignal::handler(int signal)
 	{
 		SG_SPRINT("[ShogunSignalHandler] Unknown signal %d received\n", signal)
 	}
+}
+
+void CSignal::reset_handler()
+{
+	delete m_subject;
+	delete m_observable;
+	delete m_subscriber;
+
+	m_subject = new rxcpp::subjects::subject<int>();
+	m_observable = new CSignal::SGObservableS(m_subject->get_observable());
+	m_subscriber = new CSignal::SGSubscriberS(m_subject->get_subscriber());
 }
