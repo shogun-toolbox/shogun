@@ -253,9 +253,9 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** The size */
-		inline uint64_t size() const
+		inline int64_t size() const
 		{
-			const uint64_t c=num_cols;
+			const int64_t c=num_cols;
 			return num_rows*c;
 		}
 
