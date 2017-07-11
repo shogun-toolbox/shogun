@@ -37,10 +37,12 @@ namespace shogun
 	class CSignal : CSGObject
 	{
 	public:
-
 		typedef rxcpp::subjects::subject<int> SGSubjectS;
-		typedef rxcpp::observable<int, rxcpp::dynamic_observable<int>> SGObservableS;
-		typedef rxcpp::subscriber<int, rxcpp::observer<int, void, void, void, void>> SGSubscriberS;
+		typedef rxcpp::observable<int, rxcpp::dynamic_observable<int>>
+		    SGObservableS;
+		typedef rxcpp::subscriber<int,
+		                          rxcpp::observer<int, void, void, void, void>>
+		    SGSubscriberS;
 
 		CSignal();
 		virtual ~CSignal();
@@ -56,7 +58,7 @@ namespace shogun
 		     * Get observable
 		     * @return RxCpp observable
 		     */
-		SGObservableS * get_observable()
+		SGObservableS* get_observable()
 		{
 			return m_observable;
 		};
@@ -67,7 +69,7 @@ namespace shogun
 		     * Get subscriber
 		     * @return RxCpp subscriber
 		     */
-		SGSubscriberS * get_subscriber()
+		SGSubscriberS* get_subscriber()
 		{
 			return m_subscriber;
 		};
@@ -90,11 +92,12 @@ namespace shogun
 	private:
 		/** Active signal */
 		static bool m_active;
+
 	public:
 		/** Observable */
-		static SGSubjectS * m_subject;
-		static SGObservableS * m_observable;
-		static SGSubscriberS * m_subscriber;
+		static SGSubjectS* m_subject;
+		static SGObservableS* m_observable;
+		static SGSubscriberS* m_subscriber;
 };
 }
 #endif // __SIGNAL__H_

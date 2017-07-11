@@ -12,19 +12,20 @@
 #include <csignal>
 #include <stdlib.h>
 
+#include <rxcpp/rx-lite.hpp>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
-#include <rxcpp/rx-lite.hpp>
 
 using namespace shogun;
 using namespace rxcpp;
 
 bool CSignal::m_active = false;
-CSignal::SGSubjectS * CSignal::m_subject =
-    new rxcpp::subjects::subject<int>();
+CSignal::SGSubjectS* CSignal::m_subject = new rxcpp::subjects::subject<int>();
 
-CSignal::SGObservableS * CSignal::m_observable = new CSignal::SGObservableS(CSignal::m_subject->get_observable());
-CSignal::SGSubscriberS * CSignal::m_subscriber = new CSignal::SGSubscriberS(CSignal::m_subject->get_subscriber());
+CSignal::SGObservableS* CSignal::m_observable =
+    new CSignal::SGObservableS(CSignal::m_subject->get_observable());
+CSignal::SGSubscriberS* CSignal::m_subscriber =
+    new CSignal::SGSubscriberS(CSignal::m_subject->get_subscriber());
 
 CSignal::CSignal()
 {
@@ -80,11 +81,11 @@ void CSignal::handler(int signal)
 
 void CSignal::reset_handler()
 {
-    delete m_subject;
-    delete m_observable;
-    delete m_subscriber;
+	delete m_subject;
+	delete m_observable;
+	delete m_subscriber;
 
-    m_subject = new rxcpp::subjects::subject<int>();
-    m_observable = new CSignal::SGObservableS(m_subject->get_observable());
-    m_subscriber = new CSignal::SGSubscriberS(m_subject->get_subscriber());
+	m_subject = new rxcpp::subjects::subject<int>();
+	m_observable = new CSignal::SGObservableS(m_subject->get_observable());
+	m_subscriber = new CSignal::SGSubscriberS(m_subject->get_subscriber());
 }
