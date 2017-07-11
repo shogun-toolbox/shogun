@@ -305,7 +305,7 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	return mean;
 }
 
-SGMatrix<float64_t> CDotFeatures::get_cov()
+SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed)
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
@@ -313,26 +313,35 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 	ASSERT(dim>0)
 
 	SGMatrix<float64_t> cov(dim, dim);
-	linalg::zero(cov);
-
 	SGVector<float64_t> mean = get_mean();
-	for (int i = 0; i < num; i++)
+
+	if (copy_data_for_speed)
 	{
-		SGVector<float64_t> v = get_computed_dot_feature_vector(i);
-		linalg::add(v, mean, v, 1.0, -1.0);
-		for (int m = 0; m < v.vlen; m++)
+		SGMatrix<float64_t> centered_data(dim, num);
+		for (int i = 0; i < num; i++)
 		{
-			for (int n = 0; n <= m ; n++)
-			{
-				(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
-			}
+			SGVector<float64_t> v = get_computed_dot_feature_vector(i);
+			centered_data.set_column(i, linalg::add(v, mean, 1.0, -1.0));
 		}
+
+		cov = linalg::matrix_prod(centered_data, centered_data, false, true);
 	}
-	for (int m = 0; m < dim-1; m++)
+	else
 	{
-		for (int n = m+1; n < dim; n++)
+		linalg::zero(cov);
+		for (int i = 0; i < num; i++)
 		{
-			(cov.matrix)[m*dim+n] = (cov.matrix)[n*dim+m];
+			SGVector<float64_t> v = get_computed_dot_feature_vector(i);
+			linalg::add(v, mean, v, 1.0, -1.0);
+			for (int m = 0; m < v.vlen; m++)
+				linalg::add_col_vec(cov, m, v, cov, 1.0, v.vector[m]);
+		}
+		for (int m = 0; m < dim - 1; m++)
+		{
+			for (int n = m + 1; n < dim; n++)
+			{
+				(cov.matrix)[m * dim + n] = (cov.matrix)[n * dim + m];
+			}
 		}
 	}
 	linalg::scale(cov, cov, 1.0 / num);
@@ -340,7 +349,8 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 	return cov;
 }
 
-SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* rhs)
+SGMatrix<float64_t> CDotFeatures::compute_cov(
+    CDotFeatures* lhs, CDotFeatures* rhs, bool copy_data_for_speed)
 {
 	CDotFeatures* feats[2];
 	feats[0]=lhs;
@@ -361,34 +371,46 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	int32_t dim = dims[0];
 
 	SGMatrix<float64_t> cov(dim, dim);
-	linalg::zero(cov);
-
 	SGVector<float64_t> mean = compute_mean(lhs, rhs);
 
-	for (int i = 0; i < 2; i++)
+	if (copy_data_for_speed)
 	{
-		for (int j = 0; j < nums[i]; j++)
+		SGMatrix<float64_t> centered_data(dim, num);
+		for (int i = 0; i < num; i++)
 		{
-			SGVector<float64_t> v = feats[i]->get_computed_dot_feature_vector(j);
-			linalg::add(v, mean, v, 1.0, -1.0);
-			for (int m = 0; m < v.vlen; m++)
+			SGVector<float64_t> v =
+			    i < nums[0] ? lhs->get_computed_dot_feature_vector(i)
+			                : rhs->get_computed_dot_feature_vector(i - nums[0]);
+
+			centered_data.set_column(i, linalg::add(v, mean, 1.0, -1.0));
+		}
+
+		cov = linalg::matrix_prod(centered_data, centered_data, false, true);
+	}
+	else
+	{
+		linalg::zero(cov);
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < nums[i]; j++)
 			{
-				for (int n = 0; n <= m; n++)
-				{
-					(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
-				}
+				SGVector<float64_t> v =
+				    feats[i]->get_computed_dot_feature_vector(j);
+				linalg::add(v, mean, v, 1.0, -1.0);
+				for (int m = 0; m < v.vlen; m++)
+					linalg::add_col_vec(cov, m, v, cov, 1.0, v.vector[m]);
+			}
+		}
+
+		for (int m = 0; m < dim - 1; m++)
+		{
+			for (int n = m + 1; n < dim; n++)
+			{
+				(cov.matrix[m * dim + n]) = (cov.matrix)[n * dim + m];
 			}
 		}
 	}
 	linalg::scale(cov, cov, 1.0 / num);
-
-	for (int m = 0; m < dim-1; m++)
-	{
-		for (int n = m+1; n < dim; n++)
-		{
-			(cov.matrix[m*dim+n]) = (cov.matrix)[n*dim+m];
-		}
-	}
 
 	return cov;
 }
