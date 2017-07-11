@@ -175,22 +175,20 @@ SGMatrix<float64_t> Gaussian::dx_dy_dy(index_t idx_a, index_t idx_b) const
 float64_t Gaussian::dx_dy_dy_component(index_t idx_a, index_t idx_b,
 		index_t i, index_t j) const
 {
-	auto D = get_num_dimensions();
-
+	// this assumes that distances are precomputed, i.e. this call only causes memory io
 	SGVector<float64_t> diff=difference(idx_a, idx_b);
-	Map<VectorXd> eigen_diff(diff.vector, D);
+	auto diff2_i = pow(diff[i], 2);
 
 	auto k=kernel(idx_a,idx_b);
 
-	SGMatrix<float64_t> result(D, D);
-	Map<MatrixXd> eigen_result(result.matrix, D, D);
-	eigen_result = pow(2./m_sigma,3) * k *
-			((eigen_diff.array().pow(2).matrix())*eigen_diff.transpose());
-	eigen_result -= pow(2./m_sigma,2) * k * 2* eigen_diff.asDiagonal();
-	eigen_result.rowwise() -=  (pow(2./m_sigma,2) * k * eigen_diff).transpose();
+	float64_t result = pow(2./m_sigma,3) * k * diff2_i*diff[j];
 
-	SG_SWARNING("Don't compute fill and then subsample.\n");
-	return result(i,j);
+	if (i==j)
+		result -= pow(2./m_sigma,2) * k * 2* diff[i];
+
+	result -= pow(2./m_sigma,2) * k * diff[j];
+
+	return result;
 }
 
 float64_t Gaussian::dx_dx_dy_dy_sum(index_t idx_a, index_t idx_b) const
@@ -537,24 +535,6 @@ float64_t Gaussian::dx_dx_dy_dy_component(index_t idx_a, index_t idx_b, index_t 
 	result -= factor*(diff2_i+diff2_j - 1);
 	if (i==j)
 		result -= 4*factor*diff2_i - 2*factor;
-
-	return result;
-}
-
-float64_t Gaussian::dx_dx_dy_component(index_t idx_a, index_t idx_b, index_t i, index_t j) const
-{
-	// this assumes that distances are precomputed, i.e. this call only causes memory io
-	SGVector<float64_t> diff=difference(idx_a, idx_b);
-	auto diff2_i = pow(diff[i], 2);
-
-	auto k=kernel(idx_a,idx_b);
-
-	float64_t result = -pow(2./m_sigma,3) * k * diff2_i*diff[j];
-
-	if (i==j)
-		result += pow(2./m_sigma,2) * k * 2* diff[i];
-
-	result += pow(2./m_sigma,2) * k * diff[j];
 
 	return result;
 }
