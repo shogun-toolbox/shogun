@@ -90,7 +90,7 @@ namespace shogun
 	private:
 		/** Active signal */
 		static bool m_active;
-
+	public:
 		/** Observable */
 		static SGSubjectS * m_subject;
 		static SGObservableS * m_observable;
