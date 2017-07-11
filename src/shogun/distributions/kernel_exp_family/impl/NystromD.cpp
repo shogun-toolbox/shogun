@@ -57,7 +57,7 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
 
 	// potentially subsample data and basis mask if certain points are unused
 	SGMatrix<float64_t> basis;
-	auto basis_point_inds = get_basis_point_inds(basis_inds_from_mask(basis_mask));
+	auto basis_point_inds = compute_basis_point_inds(basis_inds_from_mask(basis_mask));
 	if ((index_t)basis_point_inds.size() == N)
 		basis=data;
 	else
@@ -88,7 +88,7 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 	m_basis_inds = basis_inds_from_mask(basis_mask);
 
 	// compute and potentially warn about unused basis points
-	auto basis_point_inds = get_basis_point_inds(m_basis_inds);
+	auto basis_point_inds = compute_basis_point_inds(m_basis_inds);
 	auto N = basis_mask.num_cols;
 	std::vector<index_t> all_inds;
 	for (index_t i=0; i<N; i++)
@@ -106,6 +106,15 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 	SG_SINFO("Using %d of %dx%d=%d possible basis components.\n",
 			m_basis_inds.size(), basis_mask.num_rows, basis_mask.num_cols,
 			basis_mask.size());
+
+	// precompute active components for each data point
+	for (auto idx=0; idx<get_system_size(); idx++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx], get_num_dimensions());
+		auto a = ai.first;
+		auto i = ai.second;
+		m_active_basis_components[a].insert(i);
+	}
 }
 
 SGVector<index_t> NystromD::basis_inds_from_mask(const SGMatrix<bool>& basis_mask) const
@@ -129,7 +138,7 @@ SGVector<index_t> NystromD::basis_inds_from_mask(const SGMatrix<bool>& basis_mas
 	return basis_inds;
 }
 
-std::vector<index_t> NystromD::get_basis_point_inds(const SGVector<index_t>& basis_inds) const
+std::vector<index_t> NystromD::compute_basis_point_inds(const SGVector<index_t>& basis_inds) const
 {
 	std::set<index_t> set;
 	auto D = get_num_dimensions();
@@ -153,24 +162,9 @@ index_t NystromD::get_system_size() const
 
 SGVector<float64_t> NystromD::compute_h() const
 {
-//	SG_SWARNING("TODO: dont compute all and then sub-sample.\n");
-//
-//	auto h_full = Nystrom::compute_h();
-//
-//	auto system_size = get_system_size();
-//	SGVector<float64_t> h(system_size);
-//
-//	// subsample vector entries
-//	for (auto i=0; i<system_size; i++)
-//		h[i] = h_full[m_basis_inds[i]];
-//
-//	return h;
-	// WIP
 	auto D = get_num_dimensions();
-	auto N_basis = get_num_basis();
+	auto system_size = get_system_size();
 	auto N_data = get_num_data();
-	auto system_size = N_basis*D;
-	auto ND = N_data*D;
 
 	SGVector<float64_t> h(system_size);
 	h.zero();
@@ -182,25 +176,14 @@ SGVector<float64_t> NystromD::compute_h() const
 		auto a = ai.first;
 		auto i = ai.second;
 
-		for (auto b=0; b<ND; b++)
+		for (auto b=0; b<N_data; b++)
 		{
-			for (auto idx_l=0; idx_l<system_size; idx_l++)
-			{
-				auto temp = idx_to_ai(m_basis_inds[idx_l], D);
-				if (temp.first!=b)
-					continue;
-
-				auto j=temp.second;
-				h[idx_k] += m_kernel->dx_dy_dy_component(a, b, i, j);
-			}
+			auto comp_a = m_active_basis_components.at(a);
+			for (auto it=comp_a.cbegin(); it!=comp_a.cend(); it++)
+				h[idx_k] += m_kernel->dx_dy_dy_component(a, b, *it, i);
 		}
 	}
-//	for (auto idx_a=0; idx_a<N_basis; idx_a++)
-//		for (auto idx_b=0; idx_b<N_data; idx_b++)
-//		{
-//			SGMatrix<float64_t> temp = m_kernel->dx_dy_dy(idx_a, idx_b);
-//			eigen_h.segment(idx_a*D, D) += Map<MatrixXd>(temp.matrix, D,D).colwise().sum();
-//		}
+
 	h.scale(1.0 / N_data);
 
 	return h;

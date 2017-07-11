@@ -38,6 +38,8 @@
 
 #include <memory>
 #include <vector>
+#include <map>
+#include <set>
 
 
 #include "Nystrom.h"
@@ -61,7 +63,7 @@ public :
 	// helper methods for dealing with basis masking
 	void set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask);
 	SGVector<index_t> basis_inds_from_mask(const SGMatrix<bool>& basis_mask) const;
-	std::vector<index_t> get_basis_point_inds(const SGVector<index_t>& basis_inds) const;
+	std::vector<index_t> compute_basis_point_inds(const SGVector<index_t>& basis_inds) const;
 
 	// overloaded from Full base class
 	virtual SGVector<float64_t> compute_h() const;
@@ -87,6 +89,9 @@ public :
 
 
 protected:
+	// map data point index to set of active components
+	std::map<index_t, std::set<index_t>> m_active_basis_components;
+
 };
 };
 
