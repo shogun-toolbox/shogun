@@ -31,19 +31,13 @@
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
 
-#ifdef HAVE_CXX11
-#include <unordered_map>
-#else
 #include <map>
-#endif
 
 namespace shogun
 {
-#ifdef HAVE_CXX11
-	typedef std::unordered_map<BaseTag, Any> ParametersMap;
-#else
 	typedef std::map<BaseTag, Any> ParametersMap;
-#endif
+	typedef std::map<std::string, std::pair<std::string, std::string>>
+	    ObsParamsList;
 
 	class CSGObject::Self
 	{
@@ -153,7 +147,7 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject() : self()
+CSGObject::CSGObject() : self(), param_obs_list()
 {
 	init();
 	set_global_objects();
@@ -163,7 +157,8 @@ CSGObject::CSGObject() : self()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-    : self(), io(orig.io), parallel(orig.parallel), version(orig.version)
+    : self(), param_obs_list(), io(orig.io), parallel(orig.parallel),
+      version(orig.version)
 {
 	init();
 	set_global_objects();
@@ -836,4 +831,43 @@ void CSGObject::observe_scalar(
 {
 	auto tmp = std::make_pair(step, std::make_pair(name, value));
 	m_subscriber_params->on_next(tmp);
+}
+
+class CSGObject::ParameterObserverList
+{
+public:
+	void register_param(
+	    const std::string& name, const std::string& type,
+	    const std::string& description)
+	{
+		m_list_obs_params[name] = std::make_pair(type, description);
+	}
+
+	ObsParamsList get_list() const
+	{
+		return m_list_obs_params;
+	}
+
+private:
+	/** List of observable parameters (name, description) */
+	ObsParamsList m_list_obs_params;
+};
+
+void CSGObject::register_observable_param(
+    const std::string& name, const std::string& type,
+    const std::string& description)
+{
+	param_obs_list->register_param(name, type, description);
+}
+
+void CSGObject::list_observable_parameters()
+{
+	SG_INFO("List of observable parameters of object %s\n", get_name());
+	SG_PRINT("------");
+	for (auto const& x : param_obs_list->get_list())
+	{
+		SG_PRINT(
+		    "%s [%s]: %s\n", x.first.c_str(), x.second.first.c_str(),
+		    x.second.second.c_str());
+	}
 }
