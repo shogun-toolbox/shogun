@@ -424,6 +424,9 @@ public:
 	/** Subscribe a parameter observer to watch over params */
 	void subscribe_to_parameters(ParameterObserverInterface* obs);
 
+	/** Print to stdout a list of observable parameters */
+	void list_observable_parameters();
+
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -575,12 +578,22 @@ private:
 	class Self;
 	Unique<Self> self;
 
+	class ParameterObserverList;
+	Unique<ParameterObserverList> param_obs_list;
+
 protected:
 	/** Observe the parameter and emits a value using the
 	* observable object
 	*/
 	void observe_scalar(
 		const int64_t step, const std::string& name, const Any& value);
+
+	/**
+	* Register a parameter as observable
+	*/
+	void register_observable_param(
+		const std::string& name, const std::string& type,
+		const std::string& description);
 
 public:
 	/** io */
