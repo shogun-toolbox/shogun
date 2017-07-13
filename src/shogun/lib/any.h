@@ -36,6 +36,7 @@
 #define _ANY_H_
 
 #include <stdexcept>
+#include <string>
 #include <string.h>
 #include <typeinfo>
 #ifdef HAVE_CXA_DEMANGLE
