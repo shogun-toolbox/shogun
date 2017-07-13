@@ -58,7 +58,6 @@ Nystrom::Nystrom(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 	}
 
 	m_lambda_l2 = lambda_l2;
-	m_basis_inds = SGVector<index_t>();
 }
 
 Nystrom::Nystrom(SGMatrix<float64_t> data, SGVector<index_t> basis_inds,
@@ -155,7 +154,7 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 	auto eigen_result = Map<VectorXd>(result.vector, system_size);
 
 	// attempt fast solvers first and use stable fall-back option otherwise
-	bool solve_success=false;
+	bool system_solved=false;
 	if (m_lambda_l2>0)
 	{
 		// this has smalles Eigenvalues bounded away form zero, so can use fast LLT
@@ -173,17 +172,18 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 		{
 			SG_SINFO("Constructing solution.\n");
 			eigen_result = -solver.solve(eigen_system_vector);
-			solve_success=true;
+			system_solved=true;
 		}
 	}
 
-	if (!solve_success)
+	if (!system_solved)
 	{
 		if (!m_lambda_l2)
 		{
 			SG_SINFO("Solving with self-adjoint Eigensolver based pseudo-inverse,"
-					"consider adding a L2 regularizer for faster LLT solve.\n");
+					" consider adding a L2 regularizer for faster LLT solve.\n");
 		}
+
 		auto G_dagger = pinv_self_adjoint(system_matrix);
 		Map<MatrixXd> eigen_G_dagger(G_dagger.matrix, system_size, system_size);
 
