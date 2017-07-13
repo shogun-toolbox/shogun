@@ -209,7 +209,6 @@ TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy)
 TEST(KernelExpFamilyImplKernelGaussian, dx_dy_dy_component)
 {
 	// TODO use random data
-	SG_SWARNING("TODO write test dx_dy_dy_component.\n");
 	index_t N=3;
 	index_t D=2;
 	SGMatrix<float64_t> X(D,N);
