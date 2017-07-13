@@ -41,9 +41,6 @@
 #include <set>
 #include <algorithm>
 
-
-
-
 using namespace shogun;
 using namespace shogun::kernel_exp_family_impl;
 using namespace Eigen;
@@ -86,6 +83,14 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 {
 	m_basis_inds = basis_inds_from_mask(basis_mask);
+	m_active_basis_components.clear();
+	for (auto idx=0; idx<get_system_size(); idx++)
+	{
+		auto ai = idx_to_ai(m_basis_inds[idx], get_num_dimensions());
+		auto a = ai.first;
+		auto i = ai.second;
+		m_active_basis_components[a].insert(i);
+	}
 
 	// compute and potentially warn about unused basis points
 	auto basis_point_inds = compute_basis_point_inds(m_basis_inds);
@@ -106,15 +111,6 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 	SG_SINFO("Using %d of %dx%d=%d possible basis components.\n",
 			m_basis_inds.size(), basis_mask.num_rows, basis_mask.num_cols,
 			basis_mask.size());
-
-	// precompute active components for each data point
-	for (auto idx=0; idx<get_system_size(); idx++)
-	{
-		auto ai = idx_to_ai(m_basis_inds[idx], get_num_dimensions());
-		auto a = ai.first;
-		auto i = ai.second;
-		m_active_basis_components[a].insert(i);
-	}
 }
 
 SGVector<index_t> NystromD::basis_inds_from_mask(const SGMatrix<bool>& basis_mask) const
