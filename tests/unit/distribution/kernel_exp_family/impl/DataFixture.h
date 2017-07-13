@@ -11,7 +11,8 @@ using namespace shogun;
 class DataFixture
 {
 public:
-	void SetUp() {
+	void SetUp()
+	{
 		N = 3;
 		D = 2;
 		ND = N * D;
@@ -32,7 +33,7 @@ public:
 		X_test_fixed(1, 1) = 1;
 
 		X_train_random = SGMatrix < float64_t > (D, N);
-		for (auto i = 0; i < ND; i++)
+		for (auto i = 0; i < X_train_random.size(); i++)
 			X_train_random.matrix[i] = CMath::randn_float();
 	}
 
