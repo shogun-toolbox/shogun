@@ -89,7 +89,15 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 		auto ai = idx_to_ai(m_basis_inds[idx], get_num_dimensions());
 		auto a = ai.first;
 		auto i = ai.second;
-		m_active_basis_components[a].insert(i);
+		m_active_basis_components[a].push_back(i);
+		m_ai_to_idx[std::pair<index_t, index_t>(a,i)]=idx;
+	}
+
+	// cache friendliness
+	for (auto it=m_active_basis_components.begin(); it!=m_active_basis_components.end(); it++)
+	{
+		auto components=(*it).second;
+		std::sort(components.begin(), components.end());
 	}
 
 	// compute and potentially warn about unused basis points
@@ -303,15 +311,12 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 		auto left_arg_hessian = m_kernel->dx_i_dx_j_component(a, idx_test, i);
 
 		// mimic dot product with beta segment, but only relevant components
-		for (auto idx_k=0; idx_k<system_size; idx_k++)
+		auto components_a = m_active_basis_components.at(a);
+		for (auto it=components_a.begin(); it!=components_a.end(); it++)
 		{
-			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
-			auto b = bj.first;
-			if (a!=b)
-				continue;
-
-			auto j = bj.second;
-			beta_grad_sum[i] -= left_arg_hessian[j]*m_beta[idx_k];
+			auto j = *it;
+			auto idx = m_ai_to_idx.at(std::pair<index_t, index_t>(a,j));
+			beta_grad_sum[i] -= left_arg_hessian[j]*m_beta[idx];
 		}
 	}
 
@@ -322,19 +327,15 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 SGVector<float64_t> NystromD::get_beta_for_basis_point(index_t a) const
 {
 	auto D = get_num_dimensions();
-	auto system_size = get_system_size();
 
 	SGVector<float64_t> beta_a(D);
 	beta_a.zero();
-	for (auto idx_k=0; idx_k<system_size; idx_k++)
+	auto components_a = m_active_basis_components.at(a);
+	for (auto it=components_a.begin(); it!=components_a.end(); it++)
 	{
-		auto bj = idx_to_ai(m_basis_inds[idx_k], D);
-		auto b = bj.first;
-		auto j = bj.second;
-
-		if (a!=b)
-			continue;
-		beta_a[j] = m_beta[idx_k];
+		auto j = *it;
+		auto idx = m_ai_to_idx.at(std::pair<index_t, index_t>(a,j));
+		beta_a[j] = m_beta[idx];
 	}
 
 	return beta_a;
@@ -358,18 +359,15 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 		auto beta_a = get_beta_for_basis_point(a);
 
 		// mimic dot product with beta segment, but only relevant components
-		for (auto idx_k=0; idx_k<system_size; idx_k++)
+		auto components_a = m_active_basis_components.at(a);
+		for (auto it=components_a.begin(); it!=components_a.end(); it++)
 		{
-			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
-			auto b = bj.first;
-			if (a!=b)
-				continue;
-
-			auto j = bj.second;
+			auto j = *it;
 
 			// call contains dot product of beta_a (with zero components)
 			// with difference vector (all components)
-			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a, idx_test, beta_a, i, j);
+			auto beta_hess_sum = m_kernel->dx_i_dx_j_dx_k_dot_vec_component(a,
+					idx_test, beta_a, i, j);
 			beta_sum_hessian(i,j) += beta_hess_sum;
 		}
 	}
