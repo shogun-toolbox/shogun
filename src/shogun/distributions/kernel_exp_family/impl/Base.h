@@ -77,7 +77,6 @@ public :
 	virtual SGVector<float64_t> grad(index_t idx_test) const=0;
 	virtual SGMatrix<float64_t> hessian(index_t idx_test) const=0;
 	virtual SGVector<float64_t> hessian_diag(index_t idx_test) const=0;
-//	virtual SGVector<float64_t> leverage() const=0;
 
 	virtual SGVector<float64_t> log_pdf() const;
 	virtual SGMatrix<float64_t> grad() const;
@@ -85,8 +84,6 @@ public :
 protected:
 	virtual void set_basis_and_data(SGMatrix<float64_t> basis,
 			SGMatrix<float64_t> data);
-//	const SGVector<float64_t> get_lhs_point(index_t i) const;
-//	const SGVector<float64_t> get_rhs_point(index_t i) const;
 
 	std::shared_ptr<kernel::Base> m_kernel;
 	float64_t m_lambda;
