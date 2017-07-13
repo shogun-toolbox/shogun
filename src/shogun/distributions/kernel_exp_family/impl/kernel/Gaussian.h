@@ -51,6 +51,8 @@ public :
 	Gaussian(float64_t sigma);
 	virtual ~Gaussian() {};
 
+	virtual std::shared_ptr<kernel::Base> shallow_copy() const;
+
 	// translation invariant part
 	float64_t sq_difference_norm(index_t idx_a, index_t idx_b) const;
 	float64_t sq_difference_norm(const SGVector<float64_t>& diff) const;

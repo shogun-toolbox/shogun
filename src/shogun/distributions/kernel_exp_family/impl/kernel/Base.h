@@ -37,6 +37,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
+#include <memory>
+
 namespace shogun
 {
 namespace kernel_exp_family_impl
@@ -51,6 +53,8 @@ class Base
 public :
 	Base();
 	virtual ~Base() {};
+
+	virtual std::shared_ptr<kernel::Base> shallow_copy() const=0;
 
 	virtual void set_rhs(SGMatrix<float64_t> rhs);
 	virtual void set_rhs(SGVector<float64_t> rhs);

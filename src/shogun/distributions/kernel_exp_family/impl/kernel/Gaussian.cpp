@@ -46,6 +46,18 @@ Gaussian::Gaussian(float64_t sigma) : Base()
 	m_sigma = sigma;
 }
 
+
+std::shared_ptr<shogun::kernel_exp_family_impl::kernel::Base> Gaussian::shallow_copy() const
+{
+	auto copy = std::make_shared<Gaussian>(m_sigma);
+	copy->set_lhs(m_lhs);
+	copy->set_rhs(m_rhs);
+	copy->m_sq_difference_norms = m_sq_difference_norms;
+	copy->m_differences = m_differences;
+
+	return copy;
+}
+
 float64_t Gaussian::kernel(index_t idx_a, index_t idx_b) const
 {
 	return CMath::exp(-sq_difference_norm(idx_a, idx_b) / m_sigma);

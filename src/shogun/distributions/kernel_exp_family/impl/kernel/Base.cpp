@@ -79,3 +79,4 @@ index_t Base::get_num_rhs() const
 Base::Base()
 {
 }
+
