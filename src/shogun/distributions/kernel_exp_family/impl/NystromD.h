@@ -92,7 +92,7 @@ protected:
 	// map data point index to set of active components
 	std::map<index_t, std::vector<index_t>> m_active_basis_components;
 	std::map< std::pair<index_t, index_t>, index_t> m_ai_to_idx;
-
+	std::map<index_t, std::pair<index_t, index_t> > m_idx_to_ai;
 };
 };
 
