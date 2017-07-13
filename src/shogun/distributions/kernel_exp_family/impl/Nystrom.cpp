@@ -130,15 +130,17 @@ SGMatrix<float64_t> Nystrom::compute_G_mn() const
 	return G_mn;
 }
 
-SGMatrix<float64_t> Nystrom::compute_G_mm()
+SGMatrix<float64_t> Nystrom::compute_G_mm() const
 {
-	SG_SINFO("TODO: Avoid re-initializing the kernel matrix, make const\n");
 	auto basis = m_basis;
 	auto data = m_data;
 
-	set_basis_and_data(basis, basis);
-	auto G_mm = m_kernel->dx_dy_all();
-	set_basis_and_data(basis, data);
+	auto kernel=m_kernel->shallow_copy();
+	kernel->set_lhs(basis);
+	kernel->set_rhs(basis);
+	kernel->precompute();
+	auto G_mm = kernel->dx_dy_all();
+
 	return G_mm;
 }
 
@@ -195,9 +197,8 @@ SGVector<float64_t> Nystrom::solve_system(const SGMatrix<float64_t>& system_matr
 }
 
 
-SGMatrix<float64_t> Nystrom::compute_system_matrix()
+SGMatrix<float64_t> Nystrom::compute_system_matrix() const
 {
-	SG_SWARNING("TODO: Avoid re-initializing the kernel matrix, make const\n");
 	auto D = get_num_dimensions();
 	auto N = get_num_data();
 	auto ND = N*D;

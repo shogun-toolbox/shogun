@@ -226,7 +226,7 @@ SGMatrix<float64_t> NystromD::compute_G_mn() const
 	return G_mn;
 }
 
-SGMatrix<float64_t> NystromD::compute_G_mm()
+SGMatrix<float64_t> NystromD::compute_G_mm() const
 {
 	auto system_size = get_system_size();
 
