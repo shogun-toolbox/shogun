@@ -28,19 +28,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef HAVE_CXX11
-#include <unordered_map>
-#else
+#include <rxcpp/operators/rx-filter.hpp>
+#include <rxcpp/rx-lite.hpp>
+
 #include <map>
-#endif
 
 namespace shogun
 {
-#ifdef HAVE_CXX11
-	typedef std::unordered_map<BaseTag, Any> ParametersMap;
-#else
 	typedef std::map<BaseTag, Any> ParametersMap;
-#endif
+	typedef std::map<std::string, std::pair<std::string, std::string>>
+	    ObsParamsList;
 
 	class CSGObject::Self
 	{
@@ -150,7 +147,7 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject() : self()
+CSGObject::CSGObject() : self(), param_obs_list()
 {
 	init();
 	set_global_objects();
@@ -160,7 +157,8 @@ CSGObject::CSGObject() : self()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-: self(), io(orig.io), parallel(orig.parallel), version(orig.version)
+    : self(), param_obs_list(), io(orig.io), parallel(orig.parallel),
+      version(orig.version)
 {
 	init();
 	set_global_objects();
@@ -178,6 +176,9 @@ CSGObject::~CSGObject()
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
 	delete m_refcount;
+	delete m_subject_params;
+	delete m_observable_params;
+	delete m_subscriber_params;
 }
 
 int32_t CSGObject::ref()
@@ -500,6 +501,10 @@ void CSGObject::init()
 	m_save_pre_called = false;
 	m_save_post_called = false;
 	m_hash = 0;
+
+	m_subject_params = new SGSubject();
+	m_observable_params = new SGObservable(m_subject_params->get_observable());
+	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
 }
 
 void CSGObject::print_modsel_params()
@@ -753,7 +758,7 @@ bool CSGObject::clone_parameters(CSGObject* other)
 {
 	REQUIRE(other, "Provided instance must be non-empty.\n");
 	index_t num_parameters = m_parameters->get_num_parameters();
-	
+
 	REQUIRE(other->m_parameters->get_num_parameters() == num_parameters,
 		"Number of parameters of provided instance (%d) must match this instance (%d).\n",
 		other->m_parameters->get_num_parameters(), num_parameters);
@@ -799,4 +804,70 @@ Any CSGObject::type_erased_get(const BaseTag& _tag) const
 bool CSGObject::type_erased_has(const BaseTag& _tag) const
 {
 	return self->has(_tag);
+}
+
+void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
+{
+	auto sub =
+	    rxcpp::make_subscriber<ParameterObserverInterface::ObservedValue>(
+	        [obs](ParameterObserverInterface::ObservedValue e) {
+		        obs->on_next(e);
+		    },
+	        [obs](std::exception_ptr ep) { obs->on_error(ep); },
+	        [obs]() { obs->on_complete(); });
+
+	// Create an observable which emits values only if they are about
+	// parameters selected by the observable.
+	auto subscription =
+	    m_observable_params
+	        ->filter([obs](ParameterObserverInterface::ObservedValue v) {
+		        return obs->filter(v.second.first);
+		    })
+	        .subscribe(sub);
+}
+
+void CSGObject::observe_scalar(
+    const int64_t step, const std::string& name, const Any& value)
+{
+	auto tmp = std::make_pair(step, std::make_pair(name, value));
+	m_subscriber_params->on_next(tmp);
+}
+
+class CSGObject::ParameterObserverList
+{
+public:
+	void register_param(
+	    const std::string& name, const std::string& type,
+	    const std::string& description)
+	{
+		m_list_obs_params[name] = std::make_pair(type, description);
+	}
+
+	ObsParamsList get_list() const
+	{
+		return m_list_obs_params;
+	}
+
+private:
+	/** List of observable parameters (name, description) */
+	ObsParamsList m_list_obs_params;
+};
+
+void CSGObject::register_observable_param(
+    const std::string& name, const std::string& type,
+    const std::string& description)
+{
+	param_obs_list->register_param(name, type, description);
+}
+
+void CSGObject::list_observable_parameters()
+{
+	SG_INFO("List of observable parameters of object %s\n", get_name());
+	SG_PRINT("------");
+	for (auto const& x : param_obs_list->get_list())
+	{
+		SG_PRINT(
+		    "%s [%s]: %s\n", x.first.c_str(), x.second.first.c_str(),
+		    x.second.second.c_str());
+	}
 }

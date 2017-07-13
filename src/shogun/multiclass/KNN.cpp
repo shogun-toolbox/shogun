@@ -129,7 +129,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	auto pb = progress(range(n), *this->io);
 
 	//for each test example
-	for (int32_t i=0; i<n && (!CSignal::cancel_computations()); i++)
+	for (int32_t i = 0; i < n && (!cancel_computation()); i++)
 	{
 		pb.print_progress();
 
@@ -181,7 +181,6 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	SGVector<int32_t> train_lab(m_k);
 
 	SG_INFO("%d test examples\n", num_lab)
-	CSignal::clear_cancel();
 
 	//histogram of classes and returned output
 	SGVector<float64_t> classes(m_num_classes);
@@ -207,14 +206,13 @@ CMulticlassLabels* CKNN::classify_NN()
 	SGVector<float64_t> distances(m_train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab)
-	CSignal::clear_cancel();
 
 	distance->precompute_lhs();
 
 	auto pb = progress(range(num_lab), *this->io);
 
 	// for each test example
-	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
+	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		pb.print_progress();
 
@@ -262,7 +260,6 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	SGVector<int32_t> classes(m_num_classes);
 	
 	SG_INFO("%d test examples\n", num_lab)
-	CSignal::clear_cancel();
 
 	init_solver(m_knn_solver);
 

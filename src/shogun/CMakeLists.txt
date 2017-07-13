@@ -273,6 +273,25 @@ SET_LINALG_BACKEND(LINALG_EIGENSOLVER_LIB EIGSLV)
 
 ####### /LINALG
 
+FIND_PACKAGE(rxcpp)
+IF(NOT rxcpp_FOUND)
+    include(external/rxcpp)
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
+            $<BUILD_INTERFACE:${rxcpp_INCLUDE_DIR}>
+            $<INSTALL_INTERFACE:include/shogun/lib/external/rxcpp>
+            )
+ELSE()
+    SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM ${rxcpp_INCLUDE_DIR})
+ENDIF()
+
+# TFLogger package
+FIND_PACKAGE(TFLogger 0.1.0 CONFIG)
+IF (TFLogger_FOUND)
+    SET(HAVE_TFLOGGER 1)
+    SHOGUN_INCLUDE_DIRS(SCOPE PRIVATE SYSTEM ${TFLogger_INCLUDE_DIR})
+    target_link_libraries(shogun PRIVATE tflogger::tflogger)
+ENDIF()
+
 #### LAPACK
 include(ShogunFindLAPACK)
 

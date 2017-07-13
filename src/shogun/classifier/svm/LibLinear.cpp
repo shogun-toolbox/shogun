@@ -78,7 +78,7 @@ CLibLinear::~CLibLinear()
 
 bool CLibLinear::train_machine(CFeatures* data)
 {
-	CSignal::clear_cancel();
+
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
@@ -316,7 +316,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -526,7 +526,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
@@ -898,7 +898,7 @@ void CLibLinear::solve_l1r_lr(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < max_iterations && !CSignal::cancel_computations())
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;

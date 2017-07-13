@@ -222,8 +222,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 #endif
 	ASSERT(num_threads>0)
 
-	CSignal::clear_cancel();
-
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
 
@@ -293,11 +291,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	}
 #endif
 	SG_FREE(index);
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
-#endif
 }
 
 void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
@@ -314,8 +307,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	int32_t num_threads=1;
 #endif
 	ASSERT(num_threads>0)
-
-	CSignal::clear_cancel();
 
 	if (dim != w_dim)
 		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
@@ -385,11 +376,6 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		SG_FREE(threads);
 		SG_FREE(index);
 	}
-#endif
-
-#ifndef WIN32
-		if ( CSignal::cancel_computations() )
-			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 

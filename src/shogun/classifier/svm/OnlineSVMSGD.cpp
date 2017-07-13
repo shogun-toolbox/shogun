@@ -100,15 +100,13 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if (features->is_seekable())
 		features->reset_stream();
 
-	CSignal::clear_cancel();
-
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
 	int32_t vec_count;
-	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
+	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		vec_count=0;
 		count = skip;

@@ -51,7 +51,7 @@ CNewtonSVM::~CNewtonSVM()
 
 bool CNewtonSVM::train_machine(CFeatures* data)
 {
-	CSignal::clear_cancel();
+
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
@@ -82,7 +82,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	float64_t obj, *grad=SG_MALLOC(float64_t, x_d+1);
 	float64_t t;
 
-	while(!CSignal::cancel_computations())
+	while (!cancel_computation())
 	{
 		iter++;
 

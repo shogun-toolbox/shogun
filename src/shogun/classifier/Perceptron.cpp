@@ -65,10 +65,9 @@ bool CPerceptron::train_machine(CFeatures* data)
 			w.vector[i]=1.0/num_feat;
 	}
 
-	CSignal::clear_cancel();
 
 	//loop till we either get everything classified right or reach max_iter
-	while (!(CSignal::cancel_computations()) && (!converged && iter<max_iter))
+	while (!(cancel_computation()) && (!converged && iter < max_iter))
 	{
 		converged=true;
 		for (auto example_idx : features->index_iterator())

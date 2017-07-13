@@ -104,11 +104,12 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	iter = 1;
 
-	CSignal::clear_cancel();
 	CTime start_time;
 	auto pb = progress(range(10));
 
-	while (iter <= max_iter && search && (!CSignal::cancel_computations()))
+	// TODO: replace with new signal
+	// while (iter <= max_iter && search && (!CSignal::cancel_computations()))
+	while (iter <= max_iter && search)
 	{
 		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
 		  break;

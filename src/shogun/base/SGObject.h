@@ -13,15 +13,19 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/tag.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/ParameterObserverInterface.h>
+#include <shogun/lib/RxCppHeader.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/tag.h>
+
+#include <utility>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -119,6 +123,18 @@ enum EGradientAvailability
 class CSGObject
 {
 public:
+	typedef rxcpp::subjects::subject<ParameterObserverInterface::ObservedValue>
+		SGSubject;
+	typedef rxcpp::observable<
+		ParameterObserverInterface::ObservedValue,
+		rxcpp::dynamic_observable<ParameterObserverInterface::ObservedValue>>
+		SGObservable;
+	typedef rxcpp::subscriber<
+		ParameterObserverInterface::ObservedValue,
+		rxcpp::observer<ParameterObserverInterface::ObservedValue, void, void,
+		                void, void>>
+		SGSubscriber;
+
 	/** default constructor */
 	CSGObject();
 
@@ -394,6 +410,23 @@ public:
 		return get(tag);
 	}
 
+#ifndef SWIG
+	/**
+	  * Get parameters observable
+	  * @return RxCpp observable
+	  */
+	SGObservable* get_parameters_observable()
+	{
+		return m_observable_params;
+	};
+#endif
+
+	/** Subscribe a parameter observer to watch over params */
+	void subscribe_to_parameters(ParameterObserverInterface* obs);
+
+	/** Print to stdout a list of observable parameters */
+	void list_observable_parameters();
+
 protected:
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -545,6 +578,23 @@ private:
 	class Self;
 	Unique<Self> self;
 
+	class ParameterObserverList;
+	Unique<ParameterObserverList> param_obs_list;
+
+protected:
+	/** Observe the parameter and emits a value using the
+	* observable object
+	*/
+	void observe_scalar(
+		const int64_t step, const std::string& name, const Any& value);
+
+	/**
+	* Register a parameter as observable
+	*/
+	void register_observable_param(
+		const std::string& name, const std::string& type,
+		const std::string& description);
+
 public:
 	/** io */
 	SGIO* io;
@@ -576,6 +626,15 @@ private:
 	bool m_save_post_called;
 
 	RefCount* m_refcount;
+
+	/** Subject used to create the params observer */
+	SGSubject* m_subject_params;
+
+	/** Parameter Observable */
+	SGObservable* m_observable_params;
+
+	/** Subscriber used to call onNext, onComplete etc.*/
+	SGSubscriber* m_subscriber_params;
 };
 }
 #endif // __SGOBJECT_H__

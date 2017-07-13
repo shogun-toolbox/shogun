@@ -32,8 +32,3 @@ void sg_global_print_error(FILE* target, const char* str)
 	else
 		fprintf(target, "%s", str);
 }
-
-void sg_global_cancel_computations(bool& delayed, bool& immediately)
-{
-	/* R_Suicide((char*) "sg stopped by SIGINT\n"); */
-}

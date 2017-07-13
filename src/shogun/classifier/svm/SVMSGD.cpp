@@ -109,14 +109,13 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	calibrate();
 
 	SG_INFO("Training on %d vectors\n", num_vec)
-	CSignal::clear_cancel();
 
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	for(int32_t e=0; e<epochs && (!CSignal::cancel_computations()); e++)
+	for (int32_t e = 0; e < epochs && (!cancel_computation()); e++)
 	{
 		count = skip;
 		for (int32_t i=0; i<num_vec; i++)
