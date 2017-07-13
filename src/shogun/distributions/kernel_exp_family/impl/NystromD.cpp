@@ -230,13 +230,13 @@ SGMatrix<float64_t> NystromD::compute_G_mm()
 	SGMatrix<float64_t> G_mm(system_size, system_size);
 
 #pragma omp parallel for
-	for (auto idx_l=0; idx_l<m_basis_inds.vlen; idx_l++)
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
-		for (auto idx_k=0; idx_k<m_basis_inds.vlen; idx_k++)
+		for (auto idx_k=0; idx_k<system_size; idx_k++)
 		{
 			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
 			auto b = bj.first;
@@ -259,7 +259,7 @@ SGMatrix<float64_t> NystromD::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>
 	auto system_size = get_system_size();
 
 	SGMatrix<float64_t> G_mm(system_size, system_size);
-	for (auto idx_l=0; idx_l<m_basis_inds.vlen; idx_l++)
+	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
 		for (auto idx_k=0; idx_k<system_size; idx_k++)
 			G_mm(idx_k,idx_l) = G_mn(idx_k, m_basis_inds[idx_l]);
