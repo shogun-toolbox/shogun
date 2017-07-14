@@ -438,20 +438,20 @@ TEST_F(KernelExpFamilyImplNystromDExecute, grad)
 	est->grad();
 }
 
-//TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
-//{
-//	est->hessian(0);
-//}
-//
-//TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
-//{
-//	est->hessian_diag(0);
-//}
-//
-//TEST_F(KernelExpFamilyImplNystromDExecute, score)
-//{
-//	est->score();
-//}
+TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
+{
+	est->hessian(0);
+}
+
+TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
+{
+	est->hessian_diag(0);
+}
+
+TEST_F(KernelExpFamilyImplNystromDExecute, score)
+{
+	est->score();
+}
 
 TEST(KernelExpFamilyImplNystromD, idx_to_ai)
 {
