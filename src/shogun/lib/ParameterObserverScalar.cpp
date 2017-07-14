@@ -61,12 +61,11 @@ ParameterObserverScalar::~ParameterObserverScalar()
 {
 }
 
-void ParameterObserverScalar::on_next(const ObservedValue& value)
+void ParameterObserverScalar::on_next(const TimedObservedValue& value)
 {
 	auto node_name = std::string("node");
 	auto format = TBOutputFormat();
-	auto event_value =
-	    format.convert_scalar(value.first, value.second, node_name);
+	auto event_value = format.convert_scalar(value, node_name);
 	m_writer.writeEvent(event_value);
 }
 

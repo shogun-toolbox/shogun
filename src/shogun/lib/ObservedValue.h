@@ -32,37 +32,54 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#ifndef SHOGUN_OBSERVEDVALUE_H
+#define SHOGUN_OBSERVEDVALUE_H
 
-#include <shogun/lib/ParameterObserverTensorBoard.h>
+#include <chrono>
+#include <shogun/lib/any.h>
+#include <utility>
 
+/**
+ * Definitions of basic object with are needed by the Parameter
+ * Observer architecture.
+ */
 namespace shogun
 {
-	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * histograms, given object emitted from a parameter observable.
+	/* Chrono timepoint */
+	typedef std::chrono::time_point<
+	    std::chrono::_V2::steady_clock,
+	    std::chrono::duration<long int, std::ratio<1l, 1000000000l>>>
+	    time_point;
+
+	/* One observed value, composed of:
+	 *  - step (for the graph x axis);
+	 *  - parameter's name;
+	 *  - parameter's value (Any wrapped);
 	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard
+	struct ObservedValue
 	{
-
-	public:
-		ParameterObserverHistogram();
-		ParameterObserverHistogram(std::vector<std::string>& parameters);
-		ParameterObserverHistogram(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverHistogram();
-
-		virtual bool filter(const std::string& param);
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
-		virtual void on_complete();
+		int64_t step;
+		std::string name;
+		Any value;
 	};
+
+	/**
+	 * Observed value with a timestamp
+	 */
+	typedef std::pair<ObservedValue, time_point> TimedObservedValue;
+
+	/**
+	 * Helper method to convert a time_point to std::time_t
+	 * @param value time point we want to convert
+	 * @return the time point converted to std::time_t
+	 */
+	inline std::time_t convert_to_time_t(const time_point& value)
+	{
+		return std::chrono::system_clock::to_time_t(
+		    std::chrono::system_clock::now() +
+		    (value - std::chrono::steady_clock::now()));
+	}
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#endif // HAVE_TFLOGGER
+#endif // SHOGUN_OBSERVEDVALUE_H

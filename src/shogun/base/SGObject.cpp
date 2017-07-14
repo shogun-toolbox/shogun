@@ -808,28 +808,27 @@ bool CSGObject::type_erased_has(const BaseTag& _tag) const
 
 void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 {
-	auto sub =
-	    rxcpp::make_subscriber<ParameterObserverInterface::ObservedValue>(
-	        [obs](ParameterObserverInterface::ObservedValue e) {
-		        obs->on_next(e);
-		    },
-	        [obs](std::exception_ptr ep) { obs->on_error(ep); },
-	        [obs]() { obs->on_complete(); });
+	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
+	    [obs](TimedObservedValue e) { obs->on_next(e); },
+	    [obs](std::exception_ptr ep) { obs->on_error(ep); },
+	    [obs]() { obs->on_complete(); });
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
 	auto subscription =
 	    m_observable_params
-	        ->filter([obs](ParameterObserverInterface::ObservedValue v) {
-		        return obs->filter(v.second.first);
-		    })
+	        ->filter([obs](ObservedValue v) { return obs->filter(v.name); })
+	        .timestamp()
 	        .subscribe(sub);
 }
 
 void CSGObject::observe_scalar(
     const int64_t step, const std::string& name, const Any& value)
 {
-	auto tmp = std::make_pair(step, std::make_pair(name, value));
+	ObservedValue tmp;
+	tmp.step = step;
+	tmp.name = name;
+	tmp.value = value;
 	m_subscriber_params->on_next(tmp);
 }
 

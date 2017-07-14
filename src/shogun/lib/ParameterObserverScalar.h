@@ -58,7 +58,7 @@ namespace shogun
 
 		virtual bool filter(const std::string& param);
 
-		virtual void on_next(const ObservedValue& value);
+		virtual void on_next(const TimedObservedValue& value);
 		virtual void on_error(std::exception_ptr);
 		virtual void on_complete();
 	};

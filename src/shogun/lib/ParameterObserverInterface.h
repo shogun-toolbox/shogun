@@ -36,9 +36,9 @@
 #define SHOGUN_PARAMETEROBSERVERINTERFACE_H
 
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
+#include <shogun/lib/ObservedValue.h>
 #include <shogun/lib/any.h>
 
 namespace shogun
@@ -50,11 +50,6 @@ namespace shogun
 	{
 
 	public:
-		/* One observed value, composed of:
-		*  - step (for the graph x axis);
-		*  - a pair composed of: parameter's name + parameter's value
-		*/
-		typedef std::pair<int64_t, std::pair<std::string, Any>> ObservedValue;
 
 		/**
 		* Default constructor
@@ -92,7 +87,7 @@ namespace shogun
 		 * value.
 		 * @param value the value emitted by the parameter observable
 		 */
-		virtual void on_next(const ObservedValue& value) = 0;
+		virtual void on_next(const TimedObservedValue& value) = 0;
 		/**
 		 * Method which will be called on errors
 		 */

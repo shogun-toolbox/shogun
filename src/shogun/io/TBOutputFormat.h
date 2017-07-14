@@ -39,6 +39,7 @@
 #define SHOGUN_OUTPUTFORMAT_H
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/ObservedValue.h>
 #include <shogun/lib/any.h>
 #include <tflogger/event.pb.h>
 
@@ -64,13 +65,11 @@ namespace shogun
 		 * @param node_name the node name (default: node)
 		 * @return the newly created tensorflow::Event
 		 */
-		tensorflow::Event convert_scalar(
-		    const int64_t& event_step, const std::pair<std::string, Any>& value,
-		    std::string& node_name);
+		tensorflow::Event
+		convert_scalar(const TimedObservedValue& value, std::string& node_name);
 
-		tensorflow::Event convert_vector(
-		    const int64_t& event_step, const std::pair<std::string, Any>& value,
-		    std::string& node_name);
+		tensorflow::Event
+		convert_vector(const TimedObservedValue& value, std::string& node_name);
 
 		virtual const char* get_name() const
 		{
