@@ -59,6 +59,12 @@ void CCrossValidation::init()
 	SG_ADD((CSGObject**)&m_xval_outputs, "m_xval_outputs", "List of output "
 			"classes for intermediade cross-validation results",
 			MS_NOT_AVAILABLE);
+
+	/* Register observable paramaters of CrossValidation */
+	register_observable_param(
+	    "fold_result_0", "scalar",
+	    "Intermediate fold evaluation results. There will be many parameters "
+	    "fold_result_i, where i is between 0 and the number of folds.");
 }
 
 CEvaluationResult* CCrossValidation::evaluate()
@@ -136,7 +142,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 		}
 
 		SG_DEBUG("entering cross-validation run %d \n", i)
-		results[i]=evaluate_one_run();
+		results[i] = evaluate_one_run(i);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 	}
 
@@ -169,7 +175,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs=num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run()
+float64_t CCrossValidation::evaluate_one_run(int step)
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
@@ -232,6 +238,9 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* evaluate against own labels */
 			m_evaluation_criterion->set_indices(subset_indices);
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			observe_scalar(
+			    step, "fold_result_" + std::to_string(i),
+			    erase_type(results[i]));
 
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
@@ -369,6 +378,9 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* evaluate */
 			results[i]=evaluation_criterion->evaluate(result_labels, labels);
+			observe_scalar(
+			    step, "fold_result_" + std::to_string(i),
+			    erase_type(results[i]));
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
