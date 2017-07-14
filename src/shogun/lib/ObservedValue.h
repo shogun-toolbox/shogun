@@ -46,11 +46,8 @@
  */
 namespace shogun
 {
-	/* Chrono timepoint */
-	typedef std::chrono::time_point<
-	    std::chrono::_V2::steady_clock,
-	    std::chrono::duration<long int, std::ratio<1l, 1000000000l>>>
-	    time_point;
+	/* Timepoint */
+	typedef std::chrono::steady_clock::time_point time_point;
 
 	/* One observed value, composed of:
 	 *  - step (for the graph x axis);
@@ -74,11 +71,11 @@ namespace shogun
 	 * @param value time point we want to convert
 	 * @return the time point converted to std::time_t
 	 */
-	inline std::time_t convert_to_time_t(const time_point& value)
+	inline double convert_to_millis(const time_point &value)
 	{
-		return std::chrono::system_clock::to_time_t(
-		    std::chrono::system_clock::now() +
-		    (value - std::chrono::steady_clock::now()));
+		return std::chrono::duration_cast<std::chrono::milliseconds>(
+		           value.time_since_epoch())
+		    .count();
 	}
 }
 

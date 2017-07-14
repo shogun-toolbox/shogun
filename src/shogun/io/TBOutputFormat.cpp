@@ -71,7 +71,7 @@ tensorflow::Event TBOutputFormat::convert_scalar(
     const TimedObservedValue& value, std::string& node_name)
 {
 	tensorflow::Event e;
-	std::time_t now_t = convert_to_time_t(value.second);
+	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
 	e.set_step(value.first.step);
 
@@ -107,7 +107,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
     const TimedObservedValue& value, std::string& node_name)
 {
 	tensorflow::Event e;
-	std::time_t now_t = convert_to_time_t(value.second);
+	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
 	e.set_step(value.first.step);
 
