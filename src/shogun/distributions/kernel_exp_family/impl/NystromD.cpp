@@ -82,20 +82,15 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
 
 void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 {
-	auto D = get_num_dimensions();
-
 	m_basis_inds = basis_inds_from_mask(basis_mask);
-
-	// precompute index conversions and active basis points and components
 	m_active_basis_components.clear();
 	for (auto idx=0; idx<get_system_size(); idx++)
 	{
-		auto ai = idx_to_ai(m_basis_inds[idx], D);
+		auto ai = idx_to_ai(m_basis_inds[idx], get_num_dimensions());
 		auto a = ai.first;
 		auto i = ai.second;
 		m_active_basis_components[a].push_back(i);
-		m_ai_to_idx[ai] = idx;
-		m_idx_to_ai[m_basis_inds[idx]] = ai;
+		m_ai_to_idx[std::pair<index_t, index_t>(a,i)]=idx;
 	}
 
 	// cache friendliness
@@ -171,6 +166,7 @@ index_t NystromD::get_system_size() const
 
 SGVector<float64_t> NystromD::compute_h() const
 {
+	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 	auto N_data = get_num_data();
 
@@ -180,7 +176,7 @@ SGVector<float64_t> NystromD::compute_h() const
 #pragma omp parallel for
 	for (auto idx_k=0; idx_k<system_size; idx_k++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_k]);
+		auto ai = idx_to_ai(m_basis_inds[idx_k], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
@@ -215,7 +211,7 @@ SGMatrix<float64_t> NystromD::compute_G_mn() const
 
 		for (auto idx_k=0; idx_k<system_size; idx_k++)
 		{
-			auto bj = m_idx_to_ai.at(m_basis_inds[idx_k]);
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
 			auto b = bj.first;
 			auto j = bj.second;
 
@@ -229,19 +225,20 @@ SGMatrix<float64_t> NystromD::compute_G_mn() const
 SGMatrix<float64_t> NystromD::compute_G_mm() const
 {
 	auto system_size = get_system_size();
+	auto D = get_num_dimensions();
 
 	SGMatrix<float64_t> G_mm(system_size, system_size);
 
 #pragma omp parallel for
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_l]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
 		for (auto idx_k=0; idx_k<system_size; idx_k++)
 		{
-			auto bj = m_idx_to_ai.at(m_basis_inds[idx_k]);
+			auto bj = idx_to_ai(m_basis_inds[idx_k], D);
 			auto b = bj.first;
 			auto j = bj.second;
 
@@ -278,13 +275,14 @@ std::pair<index_t, index_t> NystromD::idx_to_ai(index_t idx, index_t D)
 
 float64_t NystromD::log_pdf(index_t idx_test) const
 {
+	auto D = get_num_dimensions();
 	auto system_size = get_system_size();
 
 	float64_t beta_sum = 0;
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_l]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
@@ -306,7 +304,7 @@ SGVector<float64_t> NystromD::grad(index_t idx_test) const
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_l]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
@@ -353,7 +351,7 @@ SGMatrix<float64_t> NystromD::hessian(index_t idx_test) const
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_l]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
@@ -388,7 +386,7 @@ SGVector<float64_t> NystromD::hessian_diag(index_t idx_test) const
 
 	for (auto idx_l=0; idx_l<system_size; idx_l++)
 	{
-		auto ai = m_idx_to_ai.at(m_basis_inds[idx_l]);
+		auto ai = idx_to_ai(m_basis_inds[idx_l], D);
 		auto a = ai.first;
 		auto i = ai.second;
 
