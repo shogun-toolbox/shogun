@@ -311,7 +311,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	double vl,vu;
 	double abstol = 0.0;
 	char I = 'I';
-	int* isuppz = SG_MALLOC(int, n);
+	int* isuppz = SG_MALLOC(int, 2 * (iu - il + 1));
 #ifdef HAVE_ACML
 	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,iu,abstol,m,
 	       eigenvalues,eigenvectors,n,isuppz,info);

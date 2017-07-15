@@ -623,7 +623,7 @@ namespace shogun
 		}
 
 		/**
-		 * Compute the eigenvalues and eigenvectors of a symmetric matrix.
+		 * Compute the top-k eigenvalues and eigenvectors of a symmetric matrix.
 		 *
 		 * User should pass an appropriately pre-allocated memory vector
 		 * to store the eigenvalues and an appropriately pre-allocated memory
@@ -631,33 +631,45 @@ namespace shogun
 		 *
 		 * @param A The matrix whose eigenvalues and eigenvectors are to be
 		 * computed
-		 * @param eigenvalues Eigenvalues result vector
+		 * @param eigenvalues Eigenvalues result vector in ascending order
 		 * @param eigenvectors Eigenvectors result matrix
+		 * @param k number of top eigenvalues to be computed
+		 * [default = 0: all eigenvalues]
 		 */
 		template <typename T>
 		void eigen_solver_symmetric(
 		    const SGMatrix<T>& A, SGVector<T>& eigenvalues,
-		    SGMatrix<T>& eigenvectors)
+		    SGMatrix<T>& eigenvectors, index_t k = 0)
 		{
+
 			REQUIRE(
 			    A.num_rows == A.num_cols, "Matrix A (%d x% d) is not square!\n",
 			    A.num_rows, A.num_cols);
+
+			if (k == 0)
+				k = A.num_rows;
+			REQUIRE(
+			    k > 0 && k <= A.num_rows,
+			    "Invalid value of k (%d), it must be in the range 1-%d.", k,
+			    A.num_rows)
+
 			REQUIRE(
 			    A.num_rows == eigenvectors.num_rows,
 			    "Number of rows of A (%d) doesn't match eigenvectors' matrix "
 			    "(%d).\n",
 			    A.num_rows, eigenvectors.num_rows);
 			REQUIRE(
-			    A.num_cols == eigenvectors.num_cols,
-			    "Number of columns of A (%d) doesn't match eigenvectors' "
-			    "matrix (%d).\n",
-			    A.num_cols, eigenvectors.num_cols);
+			    k == eigenvectors.num_cols, "Number of requested eigenvectors "
+			                                "(%d) doesn't match the number "
+			                                "of result matrix columns (%d).\n",
+			    k, eigenvectors.num_cols);
 			REQUIRE(
-			    A.num_cols == eigenvalues.vlen,
-			    "Length of eigenvalues' vector doesn't match matrix A");
+			    k == eigenvalues.vlen, "Length of result vector doesn't "
+			                           "match the number of requested "
+			                           "eigenvalues");
 
 			infer_backend(A)->eigen_solver_symmetric(
-			    A, eigenvalues, eigenvectors);
+			    A, eigenvalues, eigenvectors, k);
 		}
 
 		/** Performs the operation C = A .* B where ".*" denotes elementwise

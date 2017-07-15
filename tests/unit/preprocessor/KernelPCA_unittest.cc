@@ -51,9 +51,8 @@ TEST(KernelPCA, apply_to_feature_matrix)
 	SGMatrix<float64_t> embedding = kpca->apply_to_feature_matrix(test_feats);
 
 	// allow embedding with opposite sign
-	auto s = CMath::sign(embedding[0] * resdata[0]);
-	for (index_t i = 0; i < target_dim * num_test_vectors; ++i)
-		EXPECT_NEAR(embedding[i], s * resdata[i], 1E-6);
+	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
+		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
 	SG_FREE(kpca);
 }
@@ -77,9 +76,8 @@ TEST(KernelPCA, apply_to_feature_vector)
 	SGVector<float64_t> embedding = kpca->apply_to_feature_vector(test_vector);
 
 	// allow embedding with opposite sign
-	auto s = CMath::sign(embedding[0] * resdata[0]);
 	for (index_t i = 0; i < target_dim; ++i)
-		EXPECT_NEAR(embedding[i], s * resdata[i], 1E-6);
+		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
 	SG_FREE(kpca);
 }
