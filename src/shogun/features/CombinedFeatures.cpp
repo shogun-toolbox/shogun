@@ -50,9 +50,7 @@ CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 {
 	if (idx >= get_num_feature_obj())
 	{
-		SG_SERROR(
-				"feature index out of bounds (%d >= %d)\n", idx,
-				get_num_feature_obj());
+		SG_SERROR("feature index out of bounds (%d >= %d)\n", idx, get_num_feature_obj());
 	}
 	return (CFeatures*) feature_array->get_element(idx);
 }
