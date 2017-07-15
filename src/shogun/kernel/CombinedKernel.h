@@ -126,7 +126,7 @@ class CCombinedKernel : public CKernel
 		{
 			if (idx < get_num_kernels())
 			{
-				return (CKernel*) kernel_array->get_element(idx);
+				return (CKernel*)kernel_array->get_element(idx);
 			}
 			else
 			{

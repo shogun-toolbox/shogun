@@ -121,11 +121,11 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
-			if (((CCombinedFeatures*) l)->get_num_feature_obj() > f_idx &&
-				((CCombinedFeatures*) r)->get_num_feature_obj() > f_idx)
+			if (((CCombinedFeatures*)l)->get_num_feature_obj() > f_idx &&
+			    ((CCombinedFeatures*)r)->get_num_feature_obj() > f_idx)
 			{
-				lf = ((CCombinedFeatures*) l)->get_feature_obj(f_idx);
-				rf = ((CCombinedFeatures*) r)->get_feature_obj(f_idx);
+				lf = ((CCombinedFeatures*)l)->get_feature_obj(f_idx);
+				rf = ((CCombinedFeatures*)r)->get_feature_obj(f_idx);
 			}
 
 			f_idx++;
