@@ -124,9 +124,12 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_kernel(int32_t idx)
 		{
-			if (idx < get_num_kernels()) {
+			if (idx < get_num_kernels())
+			{
 				return (CKernel*) kernel_array->get_element(idx);
-			} else {
+			}
+			else
+			{
 				return 0;
 			}
 		}
