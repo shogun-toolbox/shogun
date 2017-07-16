@@ -502,6 +502,38 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_exponent)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	a[0] = -2.4;
+	a[1] = 0;
+	a[2] = 0.5;
+	a[3] = 3.9;
+	auto result = exponent(a);
+
+	EXPECT_NEAR(result[0], 0.090717953289413, 1E-15);
+	EXPECT_NEAR(result[1], 1.0, 1E-15);
+	EXPECT_NEAR(result[2], 1.648721270700128, 1E-15);
+	EXPECT_NEAR(result[3], 49.40244910553017, 1E-15);
+}
+
+TEST(LinalgBackendEigen, SGMatrix_exponent)
+{
+	const index_t n = 2;
+	SGMatrix<float64_t> a(n, n);
+	a[0] = -2.4;
+	a[1] = 0;
+	a[2] = 0.5;
+	a[3] = 3.9;
+	auto result = exponent(a);
+
+	EXPECT_NEAR(result[0], 0.090717953289413, 1E-15);
+	EXPECT_NEAR(result[1], 1.0, 1E-15);
+	EXPECT_NEAR(result[2], 1.648721270700128, 1E-15);
+	EXPECT_NEAR(result[3], 49.40244910553017, 1E-15);
+}
+
 TEST(LinalgBackendEigen, SGMatrix_identity)
 {
 	const index_t n = 4;

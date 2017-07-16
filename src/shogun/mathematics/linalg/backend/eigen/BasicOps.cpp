@@ -104,6 +104,16 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
+#define BACKEND_GENERIC_EXPONENT(Type, Container)                              \
+	void LinalgBackendEigen::exponent(                                         \
+	    const Container<Type>& a, Container<Type>& result) const               \
+	{                                                                          \
+		exponent_impl(a, result);                                              \
+	}
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGVector)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
+#undef BACKEND_GENERIC_EXPONENT
+
 #define BACKEND_GENERIC_IN_PLACE_MATRIX_PROD(Type, Container)                  \
 	void LinalgBackendEigen::matrix_prod(                                      \
 	    SGMatrix<Type>& a, Container<Type>& b, Container<Type>& result,        \
@@ -235,6 +245,24 @@ void LinalgBackendEigen::element_prod_impl(
 	    b_eig.block(b.m_row_begin, b.m_col_begin, b.m_row_size, b.m_col_size);
 
 	result_eig = a_block.array() * b_block.array();
+}
+
+template <typename T>
+void LinalgBackendEigen::exponent_impl(
+    const SGVector<T>& a, SGVector<T>& result) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+	result_eig = a_eig.array().exp();
+}
+
+template <typename T>
+void LinalgBackendEigen::exponent_impl(
+    const SGMatrix<T>& a, SGMatrix<T>& result) const
+{
+	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
+	typename SGMatrix<T>::EigenMatrixXtMap result_eig = result;
+	result_eig = a_eig.array().exp();
 }
 
 template <typename T>
