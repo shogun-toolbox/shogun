@@ -123,16 +123,12 @@ enum EGradientAvailability
 class CSGObject
 {
 public:
-	typedef rxcpp::subjects::subject<ParameterObserverInterface::ObservedValue>
-		SGSubject;
-	typedef rxcpp::observable<
-		ParameterObserverInterface::ObservedValue,
-		rxcpp::dynamic_observable<ParameterObserverInterface::ObservedValue>>
+	typedef rxcpp::subjects::subject<ObservedValue> SGSubject;
+	typedef rxcpp::observable<ObservedValue,
+		                      rxcpp::dynamic_observable<ObservedValue>>
 		SGObservable;
 	typedef rxcpp::subscriber<
-		ParameterObserverInterface::ObservedValue,
-		rxcpp::observer<ParameterObserverInterface::ObservedValue, void, void,
-		                void, void>>
+		ObservedValue, rxcpp::observer<ObservedValue, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */

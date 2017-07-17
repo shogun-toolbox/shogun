@@ -44,17 +44,19 @@
 using namespace shogun;
 
 #define CHECK_TYPE(type)                                                       \
-	else if (value.second.type_info().hash_code() == typeid(type).hash_code()) \
+	else if (                                                                  \
+	    value.first.value.type_info().hash_code() == typeid(type).hash_code()) \
 	{                                                                          \
-		summaryValue->set_simple_value(recall_type<type>(value.second));       \
+		summaryValue->set_simple_value(recall_type<type>(value.first.value));  \
 	}
 
 #define CHECK_TYPE_HISTO(type)                                                 \
-	else if (value.second.type_info().hash_code() == typeid(type).hash_code()) \
+	else if (                                                                  \
+	    value.first.value.type_info().hash_code() == typeid(type).hash_code()) \
 	{                                                                          \
 		tensorflow::histogram::Histogram h;                                    \
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();     \
-		auto v = recall_type<type>(value.second);                              \
+		auto v = recall_type<type>(value.first.value);                         \
 		for (auto value_v : v)                                                 \
 			h.Add(value_v);                                                    \
 		h.EncodeToProto(hp, true);                                             \
@@ -66,25 +68,21 @@ TBOutputFormat::TBOutputFormat(){};
 TBOutputFormat::~TBOutputFormat(){};
 
 tensorflow::Event TBOutputFormat::convert_scalar(
-    const int64_t& event_step, const std::pair<std::string, Any>& value,
-    std::string& node_name)
+    const TimedObservedValue& value, std::string& node_name)
 {
-	auto millisec = std::chrono::duration_cast<std::chrono::milliseconds>(
-	                    std::chrono::system_clock::now().time_since_epoch())
-	                    .count();
-
 	tensorflow::Event e;
-	e.set_wall_time(millisec);
-	e.set_step(event_step);
+	std::time_t now_t = convert_to_millis(value.second);
+	e.set_wall_time(now_t);
+	e.set_step(value.first.step);
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first);
+	summaryValue->set_tag(value.first.name);
 	summaryValue->set_node_name(node_name);
 
-	if (value.second.type_info().hash_code() == typeid(int8_t).hash_code())
+	if (value.first.value.type_info().hash_code() == typeid(int8_t).hash_code())
 	{
-		summaryValue->set_simple_value(recall_type<int8_t>(value.second));
+		summaryValue->set_simple_value(recall_type<int8_t>(value.first.value));
 	}
 	CHECK_TYPE(uint8_t)
 	CHECK_TYPE(int16_t)
@@ -99,35 +97,31 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	CHECK_TYPE(char)
 	else
 	{
-		SG_ERROR("Unsupported type %s", value.second.type_info().name());
+		SG_ERROR("Unsupported type %s", value.first.value.type_info().name());
 	}
 
 	return e;
 }
 
 tensorflow::Event TBOutputFormat::convert_vector(
-    const int64_t& event_step, const std::pair<std::string, Any>& value,
-    std::string& node_name)
+    const TimedObservedValue& value, std::string& node_name)
 {
-	auto millisec = std::chrono::duration_cast<std::chrono::milliseconds>(
-	                    std::chrono::system_clock::now().time_since_epoch())
-	                    .count();
-
 	tensorflow::Event e;
-	e.set_wall_time(millisec);
-	e.set_step(event_step);
+	std::time_t now_t = convert_to_millis(value.second);
+	e.set_wall_time(now_t);
+	e.set_step(value.first.step);
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first);
+	summaryValue->set_tag(value.first.name);
 	summaryValue->set_node_name(node_name);
 
-	if (value.second.type_info().hash_code() ==
+	if (value.first.value.type_info().hash_code() ==
 	    typeid(std::vector<int8_t>).hash_code())
 	{
 		tensorflow::histogram::Histogram h;
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
-		auto v = recall_type<std::vector<int8_t>>(value.second);
+		auto v = recall_type<std::vector<int8_t>>(value.first.value);
 		for (auto value_v : v)
 			h.Add(value_v);
 		h.EncodeToProto(hp, true);
@@ -146,7 +140,7 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	CHECK_TYPE_HISTO(std::vector<char>)
 	else
 	{
-		SG_ERROR("Unsupported type %s", value.second.type_info().name());
+		SG_ERROR("Unsupported type %s", value.first.value.type_info().name());
 	}
 
 	return e;

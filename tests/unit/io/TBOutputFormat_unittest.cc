@@ -57,9 +57,16 @@ void test_case_scalar(T value_val)
 	summaryValue->set_node_name("node");
 	summaryValue->set_simple_value(v);
 	TBOutputFormat tmp;
-	auto emitted_value = std::make_pair("test", erase_type(v));
+
+	time_point timestamp;
+	ObservedValue emitted_value;
+	emitted_value.step = 1;
+	emitted_value.name = "test";
+	emitted_value.value = erase_type(v);
+
 	std::string node_name = "node";
-	auto event_gen = tmp.convert_scalar(1, emitted_value, node_name);
+	auto event_gen =
+	    tmp.convert_scalar(std::make_pair(emitted_value, timestamp), node_name);
 	EXPECT_EQ(event_gen.summary().value(0).simple_value(), v);
 	EXPECT_EQ(event_gen.summary().value(0).tag(), "test");
 	EXPECT_EQ(event_gen.summary().value(0).node_name(), "node");
@@ -70,10 +77,17 @@ void test_case_scalar_error(T value_val)
 {
 	T v = value_val;
 	TBOutputFormat tmp;
-	auto emitted_value = std::make_pair("test", erase_type(v));
+
+	time_point timestamp;
+	ObservedValue emitted_value;
+	emitted_value.step = 1;
+	emitted_value.name = "test";
+	emitted_value.value = erase_type(v);
+
 	std::string node_name = "node";
 	EXPECT_THROW(
-	    tmp.convert_scalar(1, emitted_value, node_name), ShogunException);
+	    tmp.convert_scalar(std::make_pair(emitted_value, timestamp), node_name),
+	    ShogunException);
 }
 
 template <class T>
@@ -93,9 +107,16 @@ void test_case_vector(std::vector<T> v)
 	summaryValue->set_allocated_histo(hp);
 
 	TBOutputFormat tmp;
-	auto emitted_value = std::make_pair("test", erase_type(v));
+
+	time_point timestamp;
+	ObservedValue emitted_value;
+	emitted_value.step = 1;
+	emitted_value.name = "test";
+	emitted_value.value = erase_type(v);
+
 	std::string node_name = "node";
-	auto event_gen = tmp.convert_vector(1, emitted_value, node_name);
+	auto event_gen =
+	    tmp.convert_vector(std::make_pair(emitted_value, timestamp), node_name);
 
 	tensorflow::histogram::Histogram h2;
 	h2.DecodeFromProto(event_gen.summary().value(0).histo());
@@ -109,10 +130,17 @@ template <class T>
 void test_case_vector_error(std::vector<T> v)
 {
 	TBOutputFormat tmp;
-	auto emitted_value = std::make_pair("test", erase_type(v));
+
+	time_point timestamp;
+	ObservedValue emitted_value;
+	emitted_value.step = 1;
+	emitted_value.name = "test";
+	emitted_value.value = erase_type(v);
+
 	std::string node_name = "node";
 	EXPECT_THROW(
-	    tmp.convert_vector(1, emitted_value, node_name), ShogunException);
+	    tmp.convert_vector(std::make_pair(emitted_value, timestamp), node_name),
+	    ShogunException);
 }
 
 template <typename T>
