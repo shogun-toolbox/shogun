@@ -31,7 +31,17 @@ function check_shogun_style {
         echo "Running clang-format-3.8 against branch ${2:-}, with hash $BASE_COMMIT"
 
         COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
-        RESULT_OUTPUT="$(git clang-format-3.8 --commit $BASE_COMMIT --diff --binary `which clang-format-3.8` $COMMIT_FILES)"
+
+        # Use clang-format only on existent files
+        LIST=""
+        for file in $COMMIT_FILES
+        do
+            if [ -f $file ]; then
+        	    LIST+="$file\n"
+            fi
+        done
+
+        RESULT_OUTPUT="$(git clang-format-3.8 --commit $BASE_COMMIT --diff --binary `which clang-format-3.8` $LIST)"
 
         if [ "$RESULT_OUTPUT" == "no modified files to format" ] \
             || [ "$RESULT_OUTPUT" == "clang-format-3.8 did not modify any files" ] \
