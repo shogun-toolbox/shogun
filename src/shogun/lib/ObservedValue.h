@@ -71,7 +71,7 @@ namespace shogun
 	 * @param value time point we want to convert
 	 * @return the time point converted to std::time_t
 	 */
-	inline double convert_to_millis(const time_point &value)
+	inline double convert_to_millis(const time_point& value)
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
 		           value.time_since_epoch())
