@@ -217,7 +217,7 @@ SGMatrix<float64_t> Nystrom::compute_system_matrix() const
 		SGMatrix<float64_t> G_mm;
 		if (basis_is_subsampled_data())
 		{
-			SG_SINFO("Block sub-sampling kernel Hessians for basis.\n");
+			SG_SINFO("Sub-sampling kernel Hessians for basis.\n");
 			G_mm = subsample_G_mm_from_G_mn(G_mn);
 		}
 		else

@@ -183,9 +183,9 @@ SGVector<float64_t> NystromD::compute_h() const
 
 		for (auto b=0; b<N_data; b++)
 		{
-			auto comp_a = m_active_basis_components.at(a);
-			for (auto it=comp_a.cbegin(); it!=comp_a.cend(); it++)
-				h[idx_k] += m_kernel->dx_dy_dy_component(a, b, *it, i);
+			// all components here, c.f. full case
+			for (auto j=0; j<D; j++)
+				h[idx_k] += m_kernel->dx_dy_dy_component(a, b, j, i);
 		}
 	}
 
@@ -257,16 +257,7 @@ bool NystromD::basis_is_subsampled_data() const
 
 SGMatrix<float64_t> NystromD::subsample_G_mm_from_G_mn(const SGMatrix<float64_t>& G_mn) const
 {
-	auto system_size = get_system_size();
-
-	SGMatrix<float64_t> G_mm(system_size, system_size);
-	for (auto idx_l=0; idx_l<system_size; idx_l++)
-	{
-		for (auto idx_k=0; idx_k<system_size; idx_k++)
-			G_mm(idx_k,idx_l) = G_mn(idx_k, m_basis_inds[idx_l]);
-	}
-
-	return G_mm;
+	return Nystrom::subsample_matrix_cols(m_basis_inds, G_mn);
 }
 
 std::pair<index_t, index_t> NystromD::idx_to_ai(index_t idx, index_t D)
