@@ -141,6 +141,14 @@ SGVector<float64_t> CKernelExpFamily::get_vector(const char* name)
 	return SGVector<float64_t>();
 }
 
+void CKernelExpFamily::set_vector(const char* name, SGVector<float64_t> vec)
+{
+	if (!strcmp(name, "beta"))
+		m_impl->set_beta(vec);
+	else
+		REQUIRE(false, "No vector with given name (%s).\n", name);
+}
+
 void CKernelExpFamily::reset_data()
 {
 	m_impl->reset_data();

@@ -68,6 +68,7 @@ public :
 	float64_t score() const;
 
 	SGVector<float64_t> get_beta() const { return m_beta; }
+	void set_beta(SGVector<float64_t> beta);
 
 	index_t get_num_dimensions() const;
 	index_t get_num_basis() const;

@@ -71,6 +71,7 @@ public:
 	// for development purposes
 	virtual SGMatrix<float64_t> get_matrix(const char* name="");
 	virtual SGVector<float64_t> get_vector(const char* name="");
+	virtual void set_vector(const char* name, SGVector<float64_t> vec);
 
 	virtual const char* get_name() const { return "KernelExpFamily"; }
 

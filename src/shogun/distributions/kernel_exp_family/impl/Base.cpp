@@ -73,16 +73,6 @@ index_t Base::get_num_data() const
 	return m_data.num_cols;
 }
 
-//const SGVector<float64_t> Base::get_lhs_point(index_t i) const
-//{
-//	return SGVector<float64_t>(m_lhs.get_column_vector(i), get_num_dimensions(), false);
-//}
-//
-//const SGVector<float64_t> Base::get_rhs_point(index_t i) const
-//{
-//	return SGVector<float64_t>(m_test_data.get_column_vector(i), get_num_dimensions(), false);
-//}
-
 Base::Base(SGMatrix<float64_t> data,
 		std::shared_ptr<kernel::Base> kernel, float64_t lambda, bool init_base_and_data)
 {
@@ -172,4 +162,9 @@ SGMatrix<float64_t> Base::grad() const
 	}
 
 	return result;
+}
+
+void Base::set_beta(SGVector<float64_t> beta)
+{
+	m_beta=beta;
 }
