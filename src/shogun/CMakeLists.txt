@@ -261,16 +261,6 @@ SHOGUN_DEPENDENCIES(
   VERSION ${VIENNACL_VERSION_MINIMUM}
   CONFIG_FLAG HAVE_VIENNACL)
 
-# Linear algebra default global backend setups
-SET_LINALG_BACKEND(LINALG_DEFAULT_BACKEND GLOBAL)
-
-# Linear algebra default module specific backend setup
-# Linear solver module
-SET_LINALG_BACKEND(LINALG_LINEAR_SOLVER_LIB LINSLV)
-
-# Eigen solver module
-SET_LINALG_BACKEND(LINALG_EIGENSOLVER_LIB EIGSLV)
-
 ####### /LINALG
 
 FIND_PACKAGE(rxcpp)
