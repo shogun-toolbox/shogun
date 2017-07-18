@@ -149,6 +149,14 @@ namespace shogun
 		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
+/** Implementation of @see linalg::exponent */
+#define BACKEND_GENERIC_EXPONENT(Type, Container)                              \
+	virtual void exponent(const Container<Type>& a, Container<Type>& result)   \
+	    const
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
+#undef BACKEND_GENERIC_EXPONENT
+
 /** Implementation of @see LinalgBackendBase::identity */
 #define BACKEND_GENERIC_IDENTITY(Type, Container)                              \
 	virtual void identity(Container<Type>& I) const;
@@ -446,6 +454,20 @@ namespace shogun
 		void element_prod_impl(
 		    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const;
 
+		/** Eigen3 matrix block in-place elementwise product method */
+		template <typename T>
+		void element_prod_impl(
+		    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
+		    SGMatrix<T>& result) const;
+
+		/** Eigen3 vector exponent method */
+		template <typename T>
+		void exponent_impl(const SGVector<T>& a, SGVector<T>& result) const;
+
+		/** Eigen3 matrix exponent method */
+		template <typename T>
+		void exponent_impl(const SGMatrix<T>& a, SGMatrix<T>& result) const;
+
 		/** Eigen3 set matrix to identity method */
 		template <typename T>
 		void identity_impl(SGMatrix<T>& I) const;
@@ -453,12 +475,6 @@ namespace shogun
 		/** Eigen3 logistic method. Calculates f(x) = 1/(1+exp(-x)) */
 		template <typename T>
 		void logistic_impl(SGMatrix<T>& a, SGMatrix<T>& result) const;
-
-		/** Eigen3 matrix block in-place elementwise product method */
-		template <typename T>
-		void element_prod_impl(
-		    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
-		    SGMatrix<T>& result) const;
 
 		/** Eigen3 matrix * vector in-place product method */
 		template <typename T>

@@ -289,6 +289,21 @@ namespace shogun
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
 /**
+ * Wrapper method of in-place exponent method.
+ *
+ * @see linalg::exponent
+ */
+#define BACKEND_GENERIC_EXPONENT(Type, Container)                              \
+	virtual void exponent(const Container<Type>& a, Container<Type>& result)   \
+	    const                                                                  \
+	{                                                                          \
+		SG_SNOTIMPLEMENTED;                                                    \
+	}
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGVector)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_EXPONENT, SGMatrix)
+#undef BACKEND_GENERIC_EXPONENT
+
+/**
  * Wrapper method of set matrix to identity.
  *
  * @see linalg::identity

@@ -89,11 +89,7 @@ void CExponentialARDKernel::lazy_update_weights()
 		if (m_ARD_type==KT_SCALAR || m_ARD_type==KT_DIAG)
 		{
 			SGMatrix<float64_t> log_weights(m_log_weights.vector,1,m_log_weights.vlen,false);
-			m_weights_raw=linalg::elementwise_compute(m_log_weights,
-				[  ](float64_t& value)
-				{
-				return CMath::exp(value);
-				});
+			m_weights_raw = linalg::exponent(m_log_weights);
 		}
 		else if (m_ARD_type==KT_FULL)
 		{
@@ -235,12 +231,8 @@ SGMatrix<float64_t> CExponentialARDKernel::get_weighted_vector(SGVector<float64_
 	else
 	{
 		SGMatrix<float64_t> rtmp(vec.vector,vec.vlen,1,false);
-		SGMatrix<float64_t> weights=linalg::elementwise_compute(m_log_weights,
-			[  ](float64_t& value)
-			{
-			return CMath::exp(value);
-			});
-		res=linalg::element_prod(weights, rtmp);
+		SGMatrix<float64_t> weights(linalg::exponent(m_log_weights));
+		res = linalg::element_prod(weights, rtmp);
 	}
 	return res;
 }
