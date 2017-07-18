@@ -182,11 +182,9 @@ class NystromRandom: public NystromFixed
 };
 
 /** To test sub-sampling components (other tests use all components).
- * This is just executing evaluation code (reference results covered by other
- * tests) to outrule errors due to the component sub-sampling.
- * Evaluation methods can be tested against standard Nystrom via setting the
- * unused beta coefficients to zero. */
-class KernelExpFamilyImplNystromDExecute: public DataFixture, public ::testing::Test
+ * This is only testing the cases where not all component of a basis point are
+ * used. Tests are self referencing the standard Nystrom. */
+class KernelExpFamilyImplNystromD: public DataFixture, public ::testing::Test
 {
 	void SetUp()
 	{
@@ -246,7 +244,7 @@ TEST_P(NystromFixed, compute_G_mm)
 	auto result = est->compute_G_mm();
 	ASSERT_EQ(result.num_rows, system_size);
 	ASSERT_EQ(result.num_cols, system_size);
-	ASSERT_TRUE(result.matrix);
+	ASSERT_TRUE(result.data());
 
 	// note: matrix is symmetric
 	float64_t reference[] = {
@@ -266,7 +264,7 @@ TEST_P(NystromFixed, compute_G_mn)
 	auto result = est->compute_G_mn();
 	ASSERT_EQ(result.num_rows, system_size);
 	ASSERT_EQ(result.num_cols, ND);
-	ASSERT_TRUE(result.matrix);
+	ASSERT_TRUE(result.data());
 
 	float64_t reference[] = {
 		1.0000000000000000e+00, 0.0000000000000000e+00,
@@ -292,7 +290,7 @@ TEST_P(NystromFixed, compute_system_matrix)
 	auto result = est->compute_system_matrix();
 	ASSERT_EQ(result.num_rows, system_size);
 	ASSERT_EQ(result.num_cols, system_size);
-	ASSERT_TRUE(result.matrix);
+	ASSERT_TRUE(result.data());
 
 	// note: matrix is symmetric
 	float64_t reference[] = {
@@ -409,10 +407,10 @@ TEST_P(NystromRandom, hessian_diag_equals_hessian)
 
 		ASSERT_EQ(hessian.num_rows, D);
 		ASSERT_EQ(hessian.num_cols, D);
-		ASSERT_TRUE(hessian.matrix);
+		ASSERT_TRUE(hessian.data());
 
 		ASSERT_EQ(hessian_diag.vlen, D);
-		ASSERT_TRUE(hessian_diag.vector);
+		ASSERT_TRUE(hessian_diag.data());
 
 		for (auto j=0; j<D; j++)
 		EXPECT_NEAR(hessian_diag[j], hessian(j,j), 1e-8);
@@ -448,17 +446,17 @@ INSTANTIATE_TEST_CASE_P(KernelExpFamilyImpl,
 								ENystromTestType::E_D_EXPLCIT_BASIS_NOT_REDUNDANT)
 );
 
-TEST_F(KernelExpFamilyImplNystromDExecute, fit)
+TEST_F(KernelExpFamilyImplNystromD, fit)
 {
 }
 
-TEST_F(KernelExpFamilyImplNystromDExecute, log_pdf)
+TEST_F(KernelExpFamilyImplNystromD, log_pdf)
 {
 	for (auto a=0; a<N; a++)
 		EXPECT_NEAR(est->log_pdf(a), est_nystrom_classic->log_pdf(a), 1e-15);
 }
 
-TEST_F(KernelExpFamilyImplNystromDExecute, grad)
+TEST_F(KernelExpFamilyImplNystromD, grad)
 {
 	for (auto a=0; a<N; a++)
 	{
@@ -466,13 +464,15 @@ TEST_F(KernelExpFamilyImplNystromDExecute, grad)
 		auto grad2 = est_nystrom_classic->grad(a);
 		ASSERT_EQ(grad.vlen, D);
 		ASSERT_EQ(grad2.vlen, D);
+		ASSERT_TRUE(grad.data());
+		ASSERT_TRUE(grad2.data());
 
 		for (auto i=0; i<D; i++)
 			EXPECT_NEAR(grad[i], grad2[i], 1e-15);
 	}
 }
 
-TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
+TEST_F(KernelExpFamilyImplNystromD, hessian)
 {
 	for (auto a=0; a<N; a++)
 	{
@@ -482,13 +482,15 @@ TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
 		ASSERT_EQ(hessian.num_cols, D);
 		ASSERT_EQ(hessian2.num_rows, D);
 		ASSERT_EQ(hessian2.num_cols, D);
+		ASSERT_TRUE(hessian.data());
+		ASSERT_TRUE(hessian2.data());
 
 		for (auto i=0; i<D*D; i++)
 			EXPECT_NEAR(hessian.matrix[i], hessian2.matrix[i], 1e-15);
 	}
 }
 
-TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
+TEST_F(KernelExpFamilyImplNystromD, hessian_diag)
 {
 	for (auto a=0; a<N; a++)
 	{
@@ -496,18 +498,20 @@ TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
 		auto hessian2 = est_nystrom_classic->hessian_diag(a);
 		ASSERT_EQ(hessian.vlen, D);
 		ASSERT_EQ(hessian2.vlen, D);
+		ASSERT_TRUE(hessian.data());
+		ASSERT_TRUE(hessian2.data());
 
 		for (auto i=0; i<D; i++)
 			EXPECT_NEAR(hessian[i], hessian2[i], 1e-15);
 	}
 }
 
-TEST_F(KernelExpFamilyImplNystromDExecute, score)
+TEST_F(KernelExpFamilyImplNystromD, score)
 {
 	EXPECT_NEAR(est->score(), est_nystrom_classic->score(), 1e-15);
 }
 
-TEST(KernelExpFamilyImplNystromD, idx_to_ai)
+TEST(KernelExpFamilyImplNystromDStatic, idx_to_ai)
 {
 	index_t D=3;
 
@@ -537,8 +541,9 @@ TEST(KernelExpFamilyImplNystromD, idx_to_ai)
 	EXPECT_EQ(ai.second, 1);
 }
 
-TEST(KernelExpFamilyImplNystrom, pinv_self_adjoint)
+TEST(KernelExpFamilyImplNystromStatic, pinv_self_adjoint)
 {
+	// TODO this should go to linalg
 	index_t N=3;
 	index_t D=2;
 	SGMatrix<float64_t> X(D,N);
@@ -553,7 +558,7 @@ TEST(KernelExpFamilyImplNystrom, pinv_self_adjoint)
 
 	auto eigen_X = Map<MatrixXd>(X.matrix, D, N);
 	auto eigen_S = Map<MatrixXd>(S.matrix, D, D);
-	eigen_S = eigen_X*eigen_X.transpose();
+	eigen_S = eigen_X*eigen_X.adjoint();
 
 	auto pinv = Nystrom::pinv_self_adjoint(S);
 
