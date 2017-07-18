@@ -511,6 +511,70 @@ TEST_F(KernelExpFamilyImplNystromD, score)
 	EXPECT_NEAR(est->score(), est_nystrom_classic->score(), 1e-15);
 }
 
+TEST_F(KernelExpFamilyImplNystromD, compute_h)
+{
+	auto h = est->compute_h();
+	auto h2 = est_nystrom_classic->compute_h();
+
+	ASSERT_EQ(h.vlen, system_size);
+	ASSERT_TRUE(h.data());
+
+	ASSERT_EQ(h2.vlen, ND);
+	ASSERT_TRUE(h2.data());
+
+	auto basis_inds = est->basis_inds_from_mask(basis_mask);
+
+	// check that vector is subsampled version of the std nystrom one
+	for (auto idx=0; idx<system_size; idx++)
+		EXPECT_NEAR(h[idx], h2[basis_inds[idx]], 1e-15);
+}
+
+TEST_F(KernelExpFamilyImplNystromD, compute_G_mn)
+{
+	auto G_mn = est->compute_G_mn();
+	auto G_mn2 = est_nystrom_classic->compute_G_mn();
+
+	ASSERT_EQ(G_mn.num_rows, system_size);
+	ASSERT_EQ(G_mn.num_cols, ND);
+	ASSERT_TRUE(G_mn.data());
+
+	ASSERT_EQ(G_mn2.num_rows, ND);
+	ASSERT_EQ(G_mn2.num_cols, ND);
+	ASSERT_TRUE(G_mn2.data());
+
+	auto basis_inds = est->basis_inds_from_mask(basis_mask);
+
+	// check that matrix is subsampled version of the std nystrom one
+	for (auto idx=0; idx<system_size; idx++)
+	{
+		for (auto idx_full=0; idx_full<ND; idx_full++)
+			EXPECT_NEAR(G_mn(idx, idx_full), G_mn2(basis_inds[idx], idx_full), 1e-15);
+	}
+}
+
+TEST_F(KernelExpFamilyImplNystromD, compute_G_mm)
+{
+	auto G_mm = est->compute_G_mm();
+	auto G_mm2 = est_nystrom_classic->compute_G_mm();
+
+	ASSERT_EQ(G_mm.num_rows, system_size);
+	ASSERT_EQ(G_mm.num_cols, system_size);
+	ASSERT_TRUE(G_mm.data());
+
+	ASSERT_EQ(G_mm2.num_rows, ND);
+	ASSERT_EQ(G_mm2.num_cols, ND);
+	ASSERT_TRUE(G_mm2.data());
+
+	auto basis_inds = est->basis_inds_from_mask(basis_mask);
+
+	// check that matrix is subsampled version of the std nystrom one
+	for (auto idx_k=0; idx_k<system_size; idx_k++)
+	{
+		for (auto idx_l=0; idx_l<system_size; idx_l++)
+			EXPECT_NEAR(G_mm(idx_k, idx_l), G_mm2(basis_inds[idx_k], basis_inds[idx_l]), 1e-15);
+	}
+}
+
 TEST(KernelExpFamilyImplNystromDStatic, idx_to_ai)
 {
 	index_t D=3;
