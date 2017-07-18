@@ -78,6 +78,15 @@ bool CKernelPCA::init(CFeatures* features)
 		int32_t n = kernel_matrix.num_cols;
 		int32_t m = kernel_matrix.num_rows;
 		ASSERT(n==m)
+		if (m_target_dim > n)
+		{
+			SG_SWARNING(
+			    "Target dimension (%d) is not a valid value, it must be"
+			    "less or equal than the number of vectors."
+			    "Setting it to maximum allowed size (%d).",
+			    m_target_dim, n);
+			m_target_dim = n;
+		}
 
 		SGVector<float64_t> bias_tmp = linalg::rowwise_sum(kernel_matrix);
 		linalg::scale(bias_tmp, bias_tmp, -1.0 / n);
@@ -86,29 +95,26 @@ bool CKernelPCA::init(CFeatures* features)
 
 		linalg::center_matrix(kernel_matrix);
 
-		SGVector<float64_t> eigenvalues(kernel_matrix.num_cols);
-		SGMatrix<float64_t> eigenvectors(
-		    kernel_matrix.num_rows, kernel_matrix.num_cols);
+		SGVector<float64_t> eigenvalues(m_target_dim);
+		SGMatrix<float64_t> eigenvectors(kernel_matrix.num_rows, m_target_dim);
 		linalg::eigen_solver_symmetric(
-		    kernel_matrix, eigenvalues, eigenvectors);
+		    kernel_matrix, eigenvalues, eigenvectors, m_target_dim);
 
 		m_transformation_matrix =
-		    SGMatrix<float64_t>(kernel_matrix.num_rows, kernel_matrix.num_cols);
-		linalg::zero(m_transformation_matrix);
-		auto args = CMath::argsort(eigenvalues);
-		for (int32_t i=0; i<n; i++)
+		    SGMatrix<float64_t>(kernel_matrix.num_rows, m_target_dim);
+		// eigenvalues are in increasing order
+		for (int32_t i = 0; i < m_target_dim; i++)
 		{
 			//normalize and trap divide by zero and negative eigenvalues
-			auto idx = n - args[i] - 1;
+			auto idx = m_target_dim - i - 1;
 			auto vec = eigenvectors.get_column(idx);
-			auto col = m_transformation_matrix.get_column(i);
-			linalg::add(
-			    col, vec, col, 1.0,
+			linalg::scale(
+			    vec, vec,
 			    1.0 / CMath::sqrt(CMath::max(1e-16, eigenvalues[idx])));
+			m_transformation_matrix.set_column(i, vec);
 		}
 
-		m_bias_vector = SGVector<float64_t>(n);
-		linalg::zero(m_bias_vector);
+		m_bias_vector = SGVector<float64_t>(m_target_dim);
 		linalg::matrix_prod(
 		    m_transformation_matrix, bias_tmp, m_bias_vector, true);
 
@@ -130,16 +136,10 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 	auto rows_sum = linalg::rowwise_sum(kernel_matrix);
 	linalg::add_vector(kernel_matrix, rows_sum, kernel_matrix, 1.0, -1.0 / n);
 
-	SGMatrix<float64_t> W(
-	    m_transformation_matrix.matrix, m_transformation_matrix.num_rows,
-	    m_target_dim, false);
-
 	SGMatrix<float64_t> new_feature_matrix =
-	    linalg::matrix_prod(W, kernel_matrix, true, true);
+	    linalg::matrix_prod(m_transformation_matrix, kernel_matrix, true, true);
 
-	// use only the first m_target_dim elements of m_bias_vector
-	SGVector<float64_t> bias(m_bias_vector, m_target_dim, false);
-	linalg::add_vector(new_feature_matrix, bias, new_feature_matrix);
+	linalg::add_vector(new_feature_matrix, m_bias_vector, new_feature_matrix);
 
 	m_kernel->cleanup();
 	return new_feature_matrix;

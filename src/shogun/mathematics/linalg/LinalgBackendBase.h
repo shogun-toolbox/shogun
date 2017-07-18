@@ -250,7 +250,7 @@ namespace shogun
 #define BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC(Type, Container)                \
 	virtual void eigen_solver_symmetric(                                       \
 	    const Container<Type>& A, SGVector<Type>& eigenvalues,                 \
-	    SGMatrix<Type>& eigenvectors) const                                    \
+	    SGMatrix<Type>& eigenvectors, index_t k) const                         \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
