@@ -52,19 +52,20 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
 {
 	auto N = data.num_cols;
 
-	// potentially subsample data and basis mask if certain points are unused
+	// TODO fix sub-sampling of data as basis, as this will generate warnings
+//	// potentially subsample data and basis mask if certain points are unused
 	SGMatrix<float64_t> basis;
-	auto basis_point_inds = compute_basis_point_inds(basis_inds_from_mask(basis_mask));
-	if ((index_t)basis_point_inds.size() == N)
+//	auto basis_point_inds = compute_basis_point_inds(basis_inds_from_mask(basis_mask));
+//	if (basis_point_inds.size() == N)
 		basis=data;
-	else
-	{
-		SGVector<index_t> wrap = SGVector<index_t>(basis_point_inds.data(),
-				basis_point_inds.size(), false);
-		SG_SINFO("Subsampling data as basis as some points are unused.\n");
-		basis = subsample_matrix_cols(wrap, data);
-		basis_mask = subsample_matrix_cols(wrap, basis_mask);
-	}
+//	else
+//	{
+//		SGVector<index_t> wrap(basis_point_inds.data(), basis_point_inds.size(),
+//								false);
+//
+//		SG_SINFO("Subsampling data as basis as some points are unused.\n");
+//		basis = subsample_matrix_cols(wrap, data);
+//		basis_mask = subsample_matrix_cols(wrap, basis_mask);
 
 	SG_SINFO("Using %d of N=%d user provided data points as basis points.\n",
 			basis.num_cols, N);
