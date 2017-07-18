@@ -85,12 +85,18 @@ public :
 
 	// to deal with sub-sampling components
 	static std::pair<index_t, index_t> idx_to_ai(index_t idx, index_t D);
-	SGVector<float64_t> get_beta_for_basis_point(index_t a) const;
+	SGVector<float64_t> get_full_beta_for_basis_point(index_t a) const;
 
+	// forward define functions in base class
+	using Nystrom::log_pdf;
+	using Nystrom::grad;
+	using Nystrom::hessian;
+	using Nystrom::hessian_diag;
 
 protected:
 	// map data point index to set of active components
 	std::map<index_t, std::vector<index_t>> m_active_basis_components;
+	std::vector<index_t> m_active_basis_points;
 	std::map< std::pair<index_t, index_t>, index_t> m_ai_to_idx;
 
 };

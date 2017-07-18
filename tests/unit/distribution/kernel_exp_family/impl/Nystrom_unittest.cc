@@ -182,8 +182,10 @@ class NystromRandom: public NystromFixed
 };
 
 /** To test sub-sampling components (other tests use all components).
- * This is just executing code (reference results covered by other tests) to
- * outrule memory errors due to the component sub-sampling. */
+ * This is just executing evaluation code (reference results covered by other
+ * tests) to outrule errors due to the component sub-sampling.
+ * Evaluation methods can be tested against standard Nystrom via setting the
+ * unused beta coefficients to zero. */
 class KernelExpFamilyImplNystromDExecute: public DataFixture, public ::testing::Test
 {
 	void SetUp()
@@ -195,7 +197,7 @@ class KernelExpFamilyImplNystromDExecute: public DataFixture, public ::testing::
 		auto kernel = make_shared<kernel::Gaussian>(sigma);
 
 		// Bernoulli sampling for each basis component
-		SGMatrix<bool> basis_mask(X_train_random.num_rows, X_train_random.num_cols);
+		basis_mask=SGMatrix<bool>(X_train_random.num_rows, X_train_random.num_cols);
 		basis_mask.zero();
 		system_size=0;
 		for (auto i=0; i<ND; i++)
@@ -210,10 +212,32 @@ class KernelExpFamilyImplNystromDExecute: public DataFixture, public ::testing::
 
 		est = make_shared<NystromD>(X_train_random, basis_mask, kernel, lambda);
 		est->fit();
+
+		// create standard nystrom instance that gives the same results, via
+		// sub-sampling the beta and setting un-use components to zero
+		auto kernel2 = make_shared<kernel::Gaussian>(sigma);
+		est_nystrom_classic = make_shared<Nystrom>(X_train_random,
+				X_train_random, kernel2, lambda);
+
+		// extract the relevant coefficients into the standard Nystrom
+		est_nystrom_classic->set_beta(SGVector<float64_t>(basis_mask.num_rows*
+										basis_mask.num_cols));
+		est_nystrom_classic->get_beta().zero();
+		auto idx=0;
+		for (auto a=0; a<N; a++)
+		{
+			for (auto i=0; i<D; i++)
+			{
+				if (basis_mask(i,a))
+					est_nystrom_classic->get_beta()[a*D+i]=est->get_beta()[idx++];
+			}
+		}
 	}
 
 protected:
-	shared_ptr<Nystrom> est;
+	SGMatrix<bool> basis_mask;
+	shared_ptr<NystromD> est;
+	shared_ptr<Nystrom> est_nystrom_classic;
 	index_t system_size;
 };
 
@@ -430,27 +454,57 @@ TEST_F(KernelExpFamilyImplNystromDExecute, fit)
 
 TEST_F(KernelExpFamilyImplNystromDExecute, log_pdf)
 {
-	est->log_pdf();
+	for (auto a=0; a<N; a++)
+		EXPECT_NEAR(est->log_pdf(a), est_nystrom_classic->log_pdf(a), 1e-15);
 }
 
 TEST_F(KernelExpFamilyImplNystromDExecute, grad)
 {
-	est->grad();
+	for (auto a=0; a<N; a++)
+	{
+		auto grad = est->grad(a);
+		auto grad2 = est_nystrom_classic->grad(a);
+		ASSERT_EQ(grad.vlen, D);
+		ASSERT_EQ(grad2.vlen, D);
+
+		for (auto i=0; i<D; i++)
+			EXPECT_NEAR(grad[i], grad2[i], 1e-15);
+	}
 }
 
 TEST_F(KernelExpFamilyImplNystromDExecute, hessian)
 {
-	est->hessian(0);
+	for (auto a=0; a<N; a++)
+	{
+		auto hessian = est->hessian(a);
+		auto hessian2 = est_nystrom_classic->hessian(a);
+		ASSERT_EQ(hessian.num_rows, D);
+		ASSERT_EQ(hessian.num_cols, D);
+		ASSERT_EQ(hessian2.num_rows, D);
+		ASSERT_EQ(hessian2.num_cols, D);
+
+		for (auto i=0; i<D*D; i++)
+			EXPECT_NEAR(hessian.matrix[i], hessian2.matrix[i], 1e-15);
+	}
 }
 
 TEST_F(KernelExpFamilyImplNystromDExecute, hessian_diag)
 {
-	est->hessian_diag(0);
+	for (auto a=0; a<N; a++)
+	{
+		auto hessian = est->hessian_diag(a);
+		auto hessian2 = est_nystrom_classic->hessian_diag(a);
+		ASSERT_EQ(hessian.vlen, D);
+		ASSERT_EQ(hessian2.vlen, D);
+
+		for (auto i=0; i<D; i++)
+			EXPECT_NEAR(hessian[i], hessian2[i], 1e-15);
+	}
 }
 
 TEST_F(KernelExpFamilyImplNystromDExecute, score)
 {
-	est->score();
+	EXPECT_NEAR(est->score(), est_nystrom_classic->score(), 1e-15);
 }
 
 TEST(KernelExpFamilyImplNystromD, idx_to_ai)
