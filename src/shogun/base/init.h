@@ -12,6 +12,7 @@
 #include <shogun/lib/config.h>
 
 #include <functional>
+#include <random>
 #include <stdio.h>
 
 namespace shogun
@@ -23,6 +24,7 @@ namespace shogun
 	class CRandom;
 	class SGLinalg;
 	class CSignal;
+	extern uint32_t sg_random_seed;
 
 	/** This function must be called before libshogun is used. Usually shogun
 	 * does
@@ -33,9 +35,7 @@ namespace shogun
 	 * @param print_message function pointer to print a message
 	 * @param print_warning function pointer to print a warning message
 	 * @param print_error function pointer to print an error message (this will
-	 * be
-	 *                                  printed before shogun throws an
-	 * exception)
+	 * be printed before shogun throws an exception)
 	 *
 	 * @param cancel_computations function pointer to check for exception
 	 *
@@ -123,17 +123,28 @@ namespace shogun
 	 */
 	CMath* get_global_math();
 
-/** Set global random seed
- * @param seed seed for random generator
- */
-void set_global_seed(uint32_t seed);
+	/** Set global random seed
+	 * @param seed seed for random generator
+	 */
+	void set_global_seed(uint32_t seed);
 
-/** get global random seed
- * @return random seed
- */
-uint32_t get_global_seed();
+	/** get global random seed
+	 * @return random seed
+	 */
+	uint32_t get_global_seed();
 
-uint32_t generate_seed();
+	/**
+	 * Generate a seed for PRNG
+	 *
+	 * @return entropy for PRNG
+	 */
+	uint32_t generate_seed();
+
+	template <typename T = std::mt19937>
+	T get_prng()
+	{
+		return T(sg_random_seed);
+	}
 
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object

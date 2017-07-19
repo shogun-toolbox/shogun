@@ -249,8 +249,7 @@ namespace shogun
 
 			LaRankPattern & sample ()
 			{
-			    auto m_rng =
-			        std::unique_ptr<CRandom>(new CRandom());
+			    auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 			    ASSERT(!empty())
 			    while (true)
 			    {
