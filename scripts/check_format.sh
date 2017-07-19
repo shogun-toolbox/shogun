@@ -31,13 +31,13 @@ function check_shogun_style {
         echo "Running clang-format-3.8 against branch ${2:-}, with hash $BASE_COMMIT"
 
         COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
-
+		
         # Use clang-format only on existent files
-        LIST=""
+        LIST=("")
         for file in $COMMIT_FILES
         do
             if [ -f $file ]; then
-        	    LIST+="$file\n"
+        	    LIST=("${LIST[@]}" "$file")
             fi
         done
 
