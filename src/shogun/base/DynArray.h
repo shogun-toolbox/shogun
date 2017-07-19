@@ -448,7 +448,7 @@ template <class T> class DynArray
 		/** randomizes the array (not thread safe!) */
 		void shuffle()
 		{
-			auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+			auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				CMath::swap(
 				    array[i],

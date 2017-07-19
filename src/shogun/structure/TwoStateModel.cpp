@@ -269,7 +269,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for ( int32_t i = 0 ; i < num_exm ; ++i)
 	{
 		SGVector< int32_t > lab(exm_len);

@@ -512,7 +512,7 @@ void Solver_MCSVM_CS::solve()
 		}
 		state->inited = true;
 	}
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	while(iter < max_iter && !CSignal::cancel_computations())
 	{
 		double stopping = -CMath::INFTY;

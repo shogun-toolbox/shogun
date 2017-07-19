@@ -325,7 +325,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	int32_t* idxs=SG_MALLOC(int32_t,N);
 	int32_t i, rnd;
 	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
-	auto rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto rng = std::unique_ptr<CRandom>(new CRandom());
 
 	// reservoir sampling
 	for (i=0; i<N; i++)
@@ -712,7 +712,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
-	auto rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto rng = std::unique_ptr<CRandom>(new CRandom());
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
@@ -775,7 +775,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	typedef SparseMatrix<float64_t> MatrixType;
 	const MatrixType &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
-	auto rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto rng = std::unique_ptr<CRandom>(new CRandom());
 
 	SimplicialLLT<MatrixType> llt;
 

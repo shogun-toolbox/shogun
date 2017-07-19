@@ -33,7 +33,7 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 		int32_t dim, int32_t num_points, float64_t overlap)
 {
 	int32_t points_per_class = num_points / num_classes;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	int32_t grid_size = (int32_t ) CMath::ceil(CMath::sqrt((float64_t ) num_classes));
 	float64_t cell_size = (float64_t ) 1 / grid_size;
@@ -88,7 +88,7 @@ SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
 			dim, 2*m, target);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	/* fill matrix with normal data */
 	for (index_t i=0; i<2*m; ++i)
@@ -110,7 +110,7 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 	/* evtl. allocate space */
 	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
 			2, m, target);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	/* rotation matrix */
 	SGMatrix<float64_t> rot=SGMatrix<float64_t>(2,2);
 	rot(0, 0)=CMath::cos(angle);

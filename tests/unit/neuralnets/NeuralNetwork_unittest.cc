@@ -56,7 +56,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	set_global_seed(100);
+	set_global_seed(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -88,7 +88,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 {
 	float64_t tolerance = 1e-9;
 
-	set_global_seed(100);
+	set_global_seed(10);
 
 	CNeuralLayers* layers = new CNeuralLayers();
 	layers->input(5)
@@ -123,7 +123,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 {
 	float64_t tolerance = 1e-9;
 
-	set_global_seed(100);
+	set_global_seed(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -155,7 +155,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 {
 	float64_t tolerance = 1e-9;
 
-	set_global_seed(100);
+	set_global_seed(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));

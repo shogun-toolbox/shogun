@@ -131,7 +131,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
-	auto rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto rng = std::unique_ptr<CRandom>(new CRandom());
 	chosen.zero();
 	int32_t ch=0;
 	while (ch<b)
