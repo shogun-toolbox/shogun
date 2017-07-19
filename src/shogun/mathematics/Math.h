@@ -1026,8 +1026,7 @@ class CMath : public CSGObject
 			}
 			else
 			{
-				auto m_rng =
-				    std::unique_ptr<CRandom>(new CRandom());
+				auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 				for (index_t i = 0; i < v.vlen; ++i)
 					swap(v[i], v[m_rng->random(i, v.vlen - 1)]);
 			}
