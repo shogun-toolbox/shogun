@@ -35,9 +35,10 @@ TEST(CustomKernelTest,add_row_subset)
 	inds.range_fill();
 
 	index_t num_runs=10;
+	auto prng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CMath::permute(inds);
+		CMath::permute(inds, prng.get());
 
 		feats->add_subset(inds);
 		custom->add_row_subset(inds);

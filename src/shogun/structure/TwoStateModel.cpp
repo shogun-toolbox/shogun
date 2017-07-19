@@ -309,10 +309,11 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
 
 	distort.range_fill();
+	auto prng = std::unique_ptr<CRandom>(new CRandom());
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
 		lf = ll;
-		CMath::permute(distort);
+		CMath::permute(distort, prng.get());
 
 		for ( int32_t j = 0 ; j < d1.vlen ; ++j )
 			d1[j] = distort[j];

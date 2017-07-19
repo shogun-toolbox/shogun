@@ -130,9 +130,13 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	const index_t n=10;
 	const index_t dim=1;
 	const float64_t difference=0.5;
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
+
+	auto gen_p1 = new CMeanShiftDataGenerator(0, dim, 0);
+	auto gen_q1 = new CMeanShiftDataGenerator(difference, dim, 0);
 
 	auto mock_obj=some<CTwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
@@ -140,13 +144,14 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	mock_obj->set_num_samples_p(m);
 	mock_obj->set_num_samples_q(n);
 
-	set_global_seed(12345);
 	auto euclidean_distance=some<CEuclideanDistance>();
 	auto distance=mock_obj->compute_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
-	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
+	auto feats_p = static_cast<CDenseFeatures<float64_t>*>(
+	    gen_p1->get_streamed_features(m));
+	auto feats_q = static_cast<CDenseFeatures<float64_t>*>(
+	    gen_q1->get_streamed_features(n));
 	euclidean_distance->init(feats_p, feats_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();
 
@@ -168,6 +173,9 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
+	auto gen_p1 = new CMeanShiftDataGenerator(0, dim, 0);
+	auto gen_q1 = new CMeanShiftDataGenerator(difference, dim, 0);
+
 	auto mock_obj=some<CTwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
 	mock_obj->set_q(gen_q);
@@ -179,8 +187,10 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
-	auto feats_p=static_cast<CDenseFeatures<float64_t>*>(gen_p->get_streamed_features(m));
-	auto feats_q=static_cast<CDenseFeatures<float64_t>*>(gen_q->get_streamed_features(n));
+	auto feats_p = static_cast<CDenseFeatures<float64_t>*>(
+	    gen_p1->get_streamed_features(m));
+	auto feats_q = static_cast<CDenseFeatures<float64_t>*>(
+	    gen_q1->get_streamed_features(n));
 
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	auto data_p=feats_p->get_feature_matrix();

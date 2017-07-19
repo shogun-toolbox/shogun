@@ -31,11 +31,11 @@ void test_custom_kernel_subsets()
 
 	/* create a random permutation */
 	SGVector<index_t> subset(m);
-
+	auto prng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t run=0; run<100; ++run)
 	{
 		subset.range_fill();
-		CMath::permute(subset);
+		CMath::permute(subset, prng.get());
 		//		subset.display_vector("permutation");
 		features->add_subset(subset);
 		k->init(features, features);

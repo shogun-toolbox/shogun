@@ -283,8 +283,6 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 
 	set_global_seed(12345);
-	set_global_seed(12345);
-	set_global_seed(12345);
 	cv(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 

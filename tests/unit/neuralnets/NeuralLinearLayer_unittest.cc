@@ -168,7 +168,7 @@ TEST(NeuralLinearLayer, compute_error)
 		error_ref += 0.5*CMath::pow(y[i]-A[i],2)/y.num_cols;
 
 	// compare
-	EXPECT_NEAR(error_ref, error, 1e-12);
+	EXPECT_NEAR(error_ref, error, 1e-10);
 
 	SG_UNREF(layers);
 }
