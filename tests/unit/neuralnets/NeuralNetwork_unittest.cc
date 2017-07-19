@@ -56,7 +56,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(100);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -88,7 +88,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(100);
 
 	CNeuralLayers* layers = new CNeuralLayers();
 	layers->input(5)
@@ -123,7 +123,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(100);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -155,7 +155,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(100);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -187,7 +187,7 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(5));
@@ -219,7 +219,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(6,4));
@@ -250,7 +250,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 /** tests a neural network on the binary XOR problem */
 TEST(NeuralNetwork, binary_classification)
 {
-	CMath::init_random(100);
+	set_global_seed(10);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -309,7 +309,7 @@ TEST(NeuralNetwork, binary_classification)
  */
 TEST(NeuralNetwork, multiclass_classification)
 {
-	CMath::init_random(100);
+	set_global_seed(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -368,7 +368,7 @@ TEST(NeuralNetwork, multiclass_classification)
 /** tests a neural network on a very simple regression problem */
 TEST(NeuralNetwork, regression)
 {
-	CMath::init_random(100);
+	set_global_seed(100);
 
 	int32_t N = 20;
 	SGMatrix<float64_t> inputs_matrix(1,N);
@@ -414,7 +414,7 @@ TEST(NeuralNetwork, regression)
  */
 TEST(NeuralNetwork, gradient_descent)
 {
-	CMath::init_random(100);
+	set_global_seed(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);

@@ -4,13 +4,13 @@
  * Authors: Saurabh Mahindre, Heiko Strathmann, Pan Deng, Viktor Gal
  */
 
+#include <shogun/base/Parallel.h>
 #include <shogun/clustering/KMeansBase.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -270,7 +270,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	min_dist.zero();
 
 	/* First center is chosen at random */
-	int32_t mu=CMath::random((int32_t) 0, lhs_size-1);
+	int32_t mu = m_rng->random((int32_t)0, lhs_size - 1);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -302,9 +302,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 		{
 			float64_t temp_sum=0.0;
 			float64_t temp_dist=0.0;
-			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
-			int32_t new_center=0;
-			float64_t prob=CMath::random(0.0, 1.0);
+			SGVector<float64_t> temp_min_dist = SGVector<float64_t>(lhs_size);
+			int32_t new_center = 0;
+			float64_t prob = m_rng->random(0.0, 1.0);
 			prob=prob*sum;
 
 			for(int32_t j=0; j<lhs_size; j++)

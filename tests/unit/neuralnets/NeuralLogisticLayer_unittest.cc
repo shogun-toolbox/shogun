@@ -48,10 +48,10 @@ TEST(NeuralLogisticLayer, compute_activations)
 	CNeuralLogisticLayer layer(9);
 
 	// initialize some random inputs
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+		x[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);
@@ -109,10 +109,10 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 {
 	CNeuralLogisticLayer layer(9);
 
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+		x[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);
@@ -132,7 +132,7 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 
 	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = CMath::random(0.0,1.0);
+		y[i] = m_rng->random(0.0, 1.0);
 
 	// compute the layer's local gradients
 	input->compute_activations(x);

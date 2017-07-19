@@ -10,27 +10,28 @@ using namespace shogun;
 //generates data points (of different classes) randomly
 void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, float64_t distance)
 {
-    index_t num_samples=labels.vlen;
-    index_t dimensions=features.num_rows;
-    for (int32_t i=0; i<num_samples; i++)
-    {
-        if (i<num_samples/2)
-        {
-            labels[i]=-1.0;
-            for(int32_t j=0; j<dimensions; j++)
-                features(j,i)=CMath::random(0.0,1.0)+distance;
-        }
-        else
-        {
-            labels[i]=1.0;
-            for(int32_t j=0; j<dimensions; j++)
-                features(j,i)=CMath::random(0.0,1.0)-distance;
-        }
-    }
-    labels.display_vector("labels");
-    std::cout<<std::endl;
-    features.display_matrix("features");
-    std::cout<<std::endl;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	index_t num_samples = labels.vlen;
+	index_t dimensions = features.num_rows;
+	for (int32_t i = 0; i < num_samples; i++)
+	{
+		if (i < num_samples / 2)
+		{
+			labels[i] = -1.0;
+			for (int32_t j = 0; j < dimensions; j++)
+				features(j, i) = m_rng->random(0.0, 1.0) + distance;
+		}
+		else
+		{
+			labels[i] = 1.0;
+			for (int32_t j = 0; j < dimensions; j++)
+				features(j, i) = m_rng->random(0.0, 1.0) - distance;
+		}
+	}
+	labels.display_vector("labels");
+	std::cout << std::endl;
+	features.display_matrix("features");
+	std::cout << std::endl;
 }
 
 int main(int argc, char** argv)

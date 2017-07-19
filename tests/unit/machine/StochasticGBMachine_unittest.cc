@@ -52,7 +52,7 @@ SGMatrix<float64_t> get_sinusoid_samples(int32_t num_samples, SGVector<float64_t
 
 TEST(StochasticGBMachine,sinusoid_curve_fitting)
 {
-	CMath::init_random(10);
+	set_global_seed(10);
 	int32_t num_train_samples=100;
 	SGVector<float64_t> lab(num_train_samples);
 	SGMatrix<float64_t> data=get_sinusoid_samples(num_train_samples,lab);

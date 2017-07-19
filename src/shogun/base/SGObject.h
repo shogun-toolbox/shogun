@@ -627,11 +627,6 @@ public:
 	 */
 	virtual CSGObject* clone();
 
-	/** Set random seed
-	 * @param seed seed for random generator
-	 */
-	void set_seed(int32_t seed);
-
 protected:
 	/** Returns an empty instance of own type.
 	 *

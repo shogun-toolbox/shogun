@@ -61,18 +61,19 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 	const index_t min_len=max_len/2;
 
 	SGStringList<char> list(num_strings, max_len);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t cur_len=CMath::random(min_len, max_len);
+		index_t cur_len = m_rng->random(min_len, max_len);
 		SGString<char> str(cur_len);
 		for (index_t l=0; l<cur_len; ++l)
-			str.string[l]=char(CMath::random('A','Z'));
+			str.string[l] = char(m_rng->random('A', 'Z'));
 		list.strings[i]=str;
 	}
 
 	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
-	int32_t s_len=CMath::random(1, min_len);
-	float64_t lambda=CMath::random(0.0, 1.0);
+	int32_t s_len = m_rng->random(1, min_len);
+	float64_t lambda = m_rng->random(0.0, 1.0);
 	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
 
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();

@@ -92,7 +92,7 @@ void CDeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 
 	m_params = SGVector<float64_t>(m_num_params);
 	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = CMath::normal_random(0.0,sigma);
+		m_params[i] = m_rng->normal_random(0.0, sigma);
 
 	pt_cd_num_steps = SGVector<int32_t>(m_num_layers-1);
 	pt_cd_num_steps.set_const(1);
@@ -353,7 +353,7 @@ void CDeepBeliefNetwork::reset_chain()
 	SGMatrix<float64_t> s = m_states[m_num_layers-2];
 
 	for (int32_t i=0; i<s.num_rows*s.num_cols; i++)
-		s[i] = CMath::random(0.0,1.0) > 0.5;
+		s[i] = m_rng->random(0.0, 1.0) > 0.5;
 }
 
 CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
@@ -435,7 +435,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	{
 		int32_t len = m_layer_sizes->element(index)*m_batch_size;
 		for (int32_t i=0; i<len; i++)
-			result[i] = CMath::random(0.0,1.0) < result[i];
+			result[i] = m_rng->random(0.0, 1.0) < result[i];
 	}
 }
 
@@ -465,7 +465,7 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 	if (sample_states && index>0)
 	{
 		for (int32_t i=0; i<len; i++)
-			result[i] = CMath::random(0.0,1.0) < result[i];
+			result[i] = m_rng->random(0.0, 1.0) < result[i];
 	}
 }
 

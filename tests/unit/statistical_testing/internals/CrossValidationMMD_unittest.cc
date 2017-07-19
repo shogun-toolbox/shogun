@@ -92,11 +92,7 @@ TEST(CrossValidationMMD, biased_full)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 
-	// set seed like this is about to make CrossValidationSplitting will have a
-	// same seed during this test. Not sure if it's a good thing to do.
-	cv.m_kfold_x->set_seed(12345);
-	cv.m_kfold_y->set_seed(12345);
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	cv(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -106,15 +102,11 @@ TEST(CrossValidationMMD, biased_full)
 	auto kfold_p=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_p), num_folds);
 	auto kfold_q=some<CCrossValidationSplitting>(new CBinaryLabels(dummy_labels_q), num_folds);
 
-	// set the seed for CrossValidationSplitting
-	kfold_p->set_seed(12345);
-	kfold_q->set_seed(12345);
-
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
@@ -196,12 +188,6 @@ TEST(CrossValidationMMD, unbiased_full)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 
-	// set seed like this is about to make CrossValidationSplitting will have a
-	// same seed during this test. Not sure if it's a good thing to do.
-	cv.m_kfold_x->set_seed(12345);
-	cv.m_kfold_y->set_seed(12345);
-	CMath::init_random(12345);
-	CMath::init_random(12345);
 	cv(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -215,10 +201,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	// set the seed for CrossValidationSplitting
-	kfold_p->set_seed(12345);
-	kfold_q->set_seed(12345);
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
@@ -300,13 +283,9 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 
-	// set seed like this is about to make CrossValidationSplitting will have a
-	// same seed during this test. Not sure if it's a good thing to do.
-	cv.m_kfold_x->set_seed(12345);
-	cv.m_kfold_y->set_seed(12345);
-	CMath::init_random(12345);
-	CMath::init_random(12345);
-	CMath::init_random(12345);
+	set_global_seed(12345);
+	set_global_seed(12345);
+	set_global_seed(12345);
 	cv(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -320,10 +299,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	// set the seed for CrossValidationSplitting
-	kfold_p->set_seed(12345);
-	kfold_q->set_seed(12345);
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);

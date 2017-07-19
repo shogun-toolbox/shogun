@@ -320,10 +320,11 @@ TEST(HashedDenseFeaturesTest, dense_comparison)
 	int32_t hashing_dim = 300;
 	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
 	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	SGVector<float64_t> dense_vec(hashing_dim);
 	for (index_t i=0; i<hashing_dim; i++)
-		dense_vec[i] = CMath::random(-hashing_dim, hashing_dim);
+		dense_vec[i] = m_rng->random(-hashing_dim, hashing_dim);
 
 	for (index_t i=0; i<n; i++)
 		EXPECT_EQ(h_feats->dot(i, h_feats, i), d_feats->dot(i, d_feats, i));

@@ -307,11 +307,11 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	const int32_t map_index = 1;
 	const int32_t num_maps = 3;
 
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	SGMatrix<float64_t> x1(w*h,b);
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
-		x1[i] = CMath::random(-10.0,10.0);
+		x1[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
@@ -319,7 +319,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	// two channels
 	SGMatrix<float64_t> x2(2*w*h,b);
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
-		x2[i] = CMath::random(-10.0,10.0);
+		x2[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
@@ -335,7 +335,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
 	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = CMath::normal_random(0.0,0.01);
+		params[i] = m_rng->normal_random(0.0, 0.01);
 
 	input1->compute_activations(x1);
 	input2->compute_activations(x2);
@@ -399,11 +399,11 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	int32_t w_out = w/stride_x;
 	int32_t h_out = h/stride_y;
 
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	SGMatrix<float64_t> x1(w*h,b);
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
-		x1[i] = CMath::random(-10.0,10.0);
+		x1[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
@@ -411,7 +411,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	// two channels
 	SGMatrix<float64_t> x2(2*w*h,b);
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
-		x2[i] = CMath::random(-10.0,10.0);
+		x2[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
@@ -427,7 +427,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	CConvolutionalFeatureMap map(w,h,rx,ry,stride_x,stride_y,map_index);
 	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = CMath::normal_random(0.0,0.01);
+		params[i] = m_rng->normal_random(0.0, 0.01);
 
 	input1->compute_activations(x1);
 	input2->compute_activations(x2);
@@ -484,11 +484,11 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	const int32_t ry = 1;
 	const int32_t b = 2;
 
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	SGMatrix<float64_t> x1(w*h,b);
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
-		x1[i] = CMath::random(-10.0,10.0);
+		x1[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
@@ -502,7 +502,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,0, CMAF_LOGISTIC);
 	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = CMath::normal_random(0.0,0.01);
+		params[i] = m_rng->normal_random(0.0, 0.01);
 
 	input1->compute_activations(x1);
 
@@ -558,11 +558,11 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	const int32_t ry = 1;
 	const int32_t b = 2;
 
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	SGMatrix<float64_t> x1(w*h,b);
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
-		x1[i] = CMath::random(-10.0,10.0);
+		x1[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
@@ -576,7 +576,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,0, CMAF_RECTIFIED_LINEAR);
 	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = CMath::normal_random(0.0,0.01);
+		params[i] = m_rng->normal_random(0.0, 0.01);
 
 	input1->compute_activations(x1);
 
@@ -634,7 +634,7 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	const int32_t map_index = 0;
 	const int32_t num_maps = 1;
 
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	CNeuralLinearLayer* input1 = new CNeuralLinearLayer (w*h);
 	input1->set_batch_size(b);
@@ -644,10 +644,10 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	input2->set_batch_size(b);
 
 	for (int32_t i=0; i<input1->get_num_neurons()*b; i++)
-		input1->get_activations()[i] = CMath::random(-10.0,10.0);
+		input1->get_activations()[i] = m_rng->random(-10.0, 10.0);
 
 	for (int32_t i=0; i<input2->get_num_neurons()*b; i++)
-		input2->get_activations()[i] = CMath::random(-10.0,10.0);
+		input2->get_activations()[i] = m_rng->random(-10.0, 10.0);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(input1);
@@ -660,7 +660,7 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
 	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = CMath::normal_random(0.0,0.01);
+		params[i] = m_rng->normal_random(0.0, 0.01);
 
 	SGMatrix<float64_t> A(num_maps*w*h,b);
 	A.zero();

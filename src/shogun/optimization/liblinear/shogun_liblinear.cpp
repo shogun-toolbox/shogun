@@ -516,6 +516,7 @@ void Solver_MCSVM_CS::solve()
 		state->inited = true;
 	}
 
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
 	// TODO: replace with the new signal
 	// while(iter < max_iter && !CSignal::cancel_computations())
 	while (iter < max_iter)
@@ -523,7 +524,7 @@ void Solver_MCSVM_CS::solve()
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j = m_rng->random(i, active_size - 1);
 			CMath::swap(index[i], index[j]);
 		}
 		for(s=0;s<active_size;s++)

@@ -26,6 +26,7 @@ TEST(CJADiagOrth, diagonalize)
 	C_dims[1] = 10;
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (int i = 0; i < C_dims[2]; i++)
 	{
@@ -33,8 +34,7 @@ TEST(CJADiagOrth, diagonalize)
 		tmp.setIdentity();
 
 		for (int j = 0; j < C_dims[0]; j++)
-			tmp(j,j) *= CMath::abs(CMath::random(1,5));
-
+			tmp(j, j) *= CMath::abs(m_rng->random(1, 5));
 	}
 
 	// Building a random orthonormal matrix A

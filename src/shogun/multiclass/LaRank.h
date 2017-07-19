@@ -249,46 +249,49 @@ namespace shogun
 
 			LaRankPattern & sample ()
 			{
-				ASSERT (!empty ())
-				while (true)
-				{
-					uint32_t r = CMath::random(uint32_t(0), uint32_t(patterns.size ()-1));
-					if (patterns[r].exists ())
-						return patterns[r];
-				}
-				return patterns[0];
-			}
+			    auto m_rng =
+			        std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+			    ASSERT(!empty())
+			    while (true)
+			    {
+				    uint32_t r = m_rng->random(
+				        uint32_t(0), uint32_t(patterns.size() - 1));
+				    if (patterns[r].exists())
+					    return patterns[r];
+			    }
+			    return patterns[0];
+		    }
 
-			uint32_t getPatternRank (int32_t x_id)
-			{
-				return x_id2rank[x_id];
-			}
+		    uint32_t getPatternRank(int32_t x_id)
+		    {
+			    return x_id2rank[x_id];
+		    }
 
-			bool isPattern (int32_t x_id)
-			{
-				return x_id2rank[x_id] != 0;
-			}
+		    bool isPattern(int32_t x_id)
+		    {
+			    return x_id2rank[x_id] != 0;
+		    }
 
-			LaRankPattern & getPattern (int32_t x_id)
-			{
-				uint32_t rank = x_id2rank[x_id];
-				return patterns[rank];
-			}
+		    LaRankPattern& getPattern(int32_t x_id)
+		    {
+			    uint32_t rank = x_id2rank[x_id];
+			    return patterns[rank];
+		    }
 
-			uint32_t maxcount () const
-			{
-				return patterns.size ();
-			}
+		    uint32_t maxcount() const
+		    {
+			    return patterns.size();
+		    }
 
-			LaRankPattern & operator [] (uint32_t i)
-			{
-				return patterns[i];
-			}
+		    LaRankPattern& operator[](uint32_t i)
+		    {
+			    return patterns[i];
+		    }
 
-			const LaRankPattern & operator [] (uint32_t i) const
-			{
-				return patterns[i];
-			}
+		    const LaRankPattern& operator[](uint32_t i) const
+		    {
+			    return patterns[i];
+		    }
 
 		private:
 			std_hash_set < uint32_t >freeidx;

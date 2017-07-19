@@ -121,7 +121,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	CMath::init_random(1);
+	set_global_seed(1);
 
 	float64_t accuracy=1E-5;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
@@ -140,7 +140,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_REF(op_func);
 
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
-	trace_sampler->set_seed(1);
+
 	SG_REF(trace_sampler);
 
 	CLogDetEstimator estimator(trace_sampler, op_func, e);

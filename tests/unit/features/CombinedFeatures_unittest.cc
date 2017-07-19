@@ -72,12 +72,12 @@ TEST(CombinedFeaturesTest,create_merged_copy)
 	SGMatrix<float64_t> data_1(dim,n_1);
 	for (index_t i=0; i<dim*n_1; ++i)
 		data_1.matrix[i]=i;
-
-//	data_1.display_matrix("data_1");
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	//	data_1.display_matrix("data_1");
 
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i]=CMath::randn_double();
+		data_2.matrix[i] = m_rng->std_normal_distrib();
 
 //	data_1.display_matrix("data_2");
 

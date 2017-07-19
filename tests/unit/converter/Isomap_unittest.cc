@@ -200,13 +200,14 @@ void check_similarity_of_sets(const std::set<index_t>& first_set,const std::set<
 void fill_matrix_with_test_data(SGMatrix<float64_t>& matrix_to_fill)
 {
 	index_t num_cols = matrix_to_fill.num_cols, num_rows = matrix_to_fill.num_rows;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < num_cols; ++i)
 	{
 		for (index_t j = 0; j < num_rows - 1; ++j)
 		{
 			matrix_to_fill(j, i) = i;
 		}
-		matrix_to_fill(num_rows - 1, i) = CMath::randn_double();
+		matrix_to_fill(num_rows - 1, i) = m_rng->std_normal_distrib();
 	}
 }
 

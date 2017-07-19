@@ -27,7 +27,7 @@ public:
 	SGVector<bool> ft;
 	virtual void SetUp()
 	{
-		CMath::init_random(1);
+		set_global_seed(1);
 		load_toy_data();
 	}
 

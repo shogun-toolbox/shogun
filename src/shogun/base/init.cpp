@@ -18,7 +18,6 @@
 #include <rxcpp/rx-lite.hpp>
 
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/SGLinalg.h>
 
 #include <csignal>
@@ -35,6 +34,15 @@ shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #include <google/protobuf/stubs/common.h>
 #endif
 
+#ifdef _WIN32
+#define _CRT_RAND_S
+#include <stdlib.h>
+#endif
+
+#ifdef DEV_RANDOM
+#include <fcntl.h>
+#endif
+
 namespace shogun
 {
 	Parallel* sg_parallel=NULL;
@@ -42,6 +50,7 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
+	uint32_t sg_random_seed = generate_seed();
 
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
@@ -259,5 +268,38 @@ namespace shogun
 			}
 		}
 #endif
+	}
+
+	uint32_t generate_seed()
+	{
+		uint32_t seed;
+#if defined(_WIN32)
+		rand_s(&seed);
+#elif defined(HAVE_ARC4RANDOM)
+		seed = arc4random();
+#elif defined(DEV_RANDOM)
+		int fd = open(DEV_RANDOM, O_RDONLY);
+		ASSERT(fd >= 0);
+		ssize_t actual_read =
+		    read(fd, reinterpret_cast<char*>(&seed), sizeof(seed));
+		close(fd);
+		ASSERT(actual_read == sizeof(seed));
+#else
+		SG_SWARNING("Not safe seed for the PRNG\n");
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		seed = (uint32_t)(4223517 * getpid() * tv.tv_sec * tv.tv_usec);
+#endif
+		return seed;
+	}
+
+	void set_global_seed(uint32_t seed)
+	{
+		sg_random_seed = seed;
+	}
+
+	uint32_t get_global_seed()
+	{
+		return sg_random_seed;
 	}
 }

@@ -96,7 +96,7 @@ void CNeuralLayer::dropout_activations()
 		int32_t len = m_num_neurons*m_batch_size;
 		for (int32_t i=0; i<len; i++)
 		{
-			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
+			m_dropout_mask[i] = m_rng->random(0.0, 1.0) >= dropout_prop;
 			m_activations[i] *= m_dropout_mask[i];
 		}
 	}

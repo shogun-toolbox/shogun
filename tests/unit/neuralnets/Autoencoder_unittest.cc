@@ -44,7 +44,7 @@ using namespace shogun;
 
 TEST(Autoencoder, train)
 {
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
@@ -52,7 +52,7 @@ TEST(Autoencoder, train)
 
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = CMath::random(-1.0,1.0);
+		data[i] = m_rng->random(-1.0, 1.0);
 
 	CAutoencoder ae(num_features, new CNeuralRectifiedLinearLayer(num_hid));
 
@@ -81,7 +81,7 @@ TEST(Autoencoder, contractive_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(10, new CNeuralLinearLayer(15));
 
@@ -98,7 +98,7 @@ TEST(Autoencoder, contractive_rectified_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(10, new CNeuralRectifiedLinearLayer(15));
 
@@ -115,7 +115,7 @@ TEST(Autoencoder, contractive_logistic)
 {
 	float64_t tolerance = 1e-6;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(10, new CNeuralLogisticLayer(15));
 	ae.initialize_neural_network();
@@ -135,7 +135,7 @@ TEST(Autoencoder, convolutional)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(w,h,3,
 		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 1,1, 1,1),
@@ -154,7 +154,7 @@ TEST(Autoencoder, convolutional_with_pooling)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(w,h,3,
 		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 3,2, 1,1),
@@ -173,7 +173,7 @@ TEST(Autoencoder, convolutional_with_stride)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(w,h,3,
 		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 1,1, 3,2),
@@ -192,7 +192,7 @@ TEST(Autoencoder, convolutional_with_stride_and_pooling)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	set_global_seed(10);
 
 	CAutoencoder ae(w,h,3,
 		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 2,2, 2,2),

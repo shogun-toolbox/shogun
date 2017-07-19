@@ -756,7 +756,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		if (w_opt < prop_min)
 			w_opt = prop_min;
 		w_sum = w_pro + w_rep + w_opt;
-		float64_t r = CMath::random(0.0, w_sum);
+		float64_t r = m_rng->random(0.0, w_sum);
 		if (r <= w_pro)
 		{
 			break;

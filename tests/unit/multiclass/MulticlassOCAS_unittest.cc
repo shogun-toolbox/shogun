@@ -13,7 +13,7 @@ extern MultiLabelTestEnvironment* multilabel_test_env;
 #ifdef HAVE_LAPACK
 TEST(MulticlassOCASTest,train)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	float64_t C = 1.0;
 	std::shared_ptr<GaussianCheckerboard> mockData =
 	    multilabel_test_env->getMulticlassFixture();

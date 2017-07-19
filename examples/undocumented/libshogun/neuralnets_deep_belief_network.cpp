@@ -45,7 +45,7 @@ int main(int, char*[])
 	init_shogun_with_defaults();
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	// Prepare the training data
 	const int num_features = 5;
@@ -67,11 +67,11 @@ int main(int, char*[])
 	}
 
 	for (int32_t i=0; i<num_features; i++)
-			means[i] = CMath::random(-1.0,1.0);
+		means[i] = m_rng->random(-1.0, 1.0);
 
 	for (int32_t i=0; i<num_features; i++)
 			for (int32_t j=0; j<num_examples; j++)
-				X(i,j) = CMath::normal_random(means[i], 1.0);
+			    X(i, j) = m_rng->normal_random(means[i], 1.0);
 
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(X);
 

@@ -16,7 +16,8 @@ namespace tapkee
 inline IndexType uniform_random_index()
 {
 #ifdef CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION
-	return CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION % std::numeric_limits<IndexType>::max();
+	return CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION() %
+		   std::numeric_limits<IndexType>::max();
 #else
 	return std::rand();
 #endif
@@ -30,7 +31,7 @@ inline IndexType uniform_random_index_bounded(IndexType upper)
 inline ScalarType uniform_random()
 {
 #ifdef CUSTOM_UNIFORM_RANDOM_FUNCTION
-	return CUSTOM_UNIFORM_RANDOM_FUNCTION;
+	return CUSTOM_UNIFORM_RANDOM_FUNCTION();
 #else
 	return std::rand()/((double)RAND_MAX+1);
 #endif
@@ -39,7 +40,7 @@ inline ScalarType uniform_random()
 inline ScalarType gaussian_random()
 {
 #ifdef CUSTOM_GAUSSIAN_RANDOM_FUNCTION
-	return CUSTOM_GAUSSIAN_RANDOM_FUNCTION;
+	return CUSTOM_GAUSSIAN_RANDOM_FUNCTION();
 #else
 	ScalarType x, y, radius;
 	do {

@@ -18,7 +18,7 @@ using namespace shogun;
 TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 {
 	int32_t num_samples = 10;
-	CMath::init_random(17);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
 
 	// define factor type
 	SGVector<int32_t> card(2);
@@ -53,8 +53,8 @@ TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 
 		// add factors
 		SGVector<float64_t> data1(2);
-		data1[0] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
-		data1[1] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
+		data1[0] = 2.0 * m_rng->random(0.0, 1.0) - 1.0;
+		data1[1] = 2.0 * m_rng->random(0.0, 1.0) - 1.0;
 		SGVector<int32_t> var_index1(2);
 		var_index1[0] = 0;
 		var_index1[1] = 1;
@@ -62,8 +62,8 @@ TEST(PrimalMosekSOSVM, mosek_init_sosvm_w_bounds)
 		fg->add_factor(fac1);
 
 		SGVector<float64_t> data2(2);
-		data2[0] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
-		data2[1] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
+		data2[0] = 2.0 * m_rng->random(0.0, 1.0) - 1.0;
+		data2[1] = 2.0 * m_rng->random(0.0, 1.0) - 1.0;
 		SGVector<int32_t> var_index2(2);
 		var_index2[0] = 1;
 		var_index2[1] = 2;

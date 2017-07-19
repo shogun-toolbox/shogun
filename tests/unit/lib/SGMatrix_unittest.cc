@@ -252,14 +252,14 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j) = m_rng->randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -289,14 +289,14 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j) = m_rng->randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -326,11 +326,12 @@ TEST(SGMatrixTest,is_symmetric_float32_true)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j) = m_rng->randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -341,14 +342,14 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j) = m_rng->std_normal_distrib();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -378,14 +379,14 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j) = m_rng->std_normal_distrib();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -415,12 +416,12 @@ TEST(SGMatrixTest,is_symmetric_float64_true)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j) = m_rng->std_normal_distrib();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -431,14 +432,15 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j) = complex128_t(
+			    m_rng->std_normal_distrib(), m_rng->std_normal_distrib());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -476,14 +478,15 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j) = complex128_t(
+			    m_rng->std_normal_distrib(), m_rng->std_normal_distrib());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -521,12 +524,13 @@ TEST(SGMatrixTest,is_symmetric_complex128_true)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j) = complex128_t(
+			    m_rng->std_normal_distrib(), m_rng->std_normal_distrib());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -570,20 +574,22 @@ TEST(SGMatrixTest, equals)
 
 	EXPECT_TRUE(mat.equals(mat));
 	EXPECT_TRUE(mat.equals(copy));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	mat=SGMatrix<float32_t>(size, size);
-	CMath::init_random(100);
+
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i] = m_rng->randn_float();
+
 	EXPECT_TRUE(mat.equals(mat));
 	EXPECT_FALSE(mat.equals(copy));
 
 	copy=SGMatrix<float32_t>(size, size);
 	EXPECT_FALSE(mat.equals(copy));
+	m_rng->set_seed(100);
 
-	CMath::init_random(100);
 	for (int64_t i=0; i<copy.size(); ++i)
-		copy.matrix[i]=CMath::randn_float();
+		copy.matrix[i] = m_rng->randn_float();
 
 	EXPECT_TRUE(mat.equals(copy));
 }
@@ -592,8 +598,9 @@ TEST(SGMatrixTest, clone)
 {
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i] = m_rng->randn_float();
 
 	SGMatrix<float32_t> copy=mat.clone();
 
@@ -615,7 +622,8 @@ TEST(SGMatrixTest, set_const)
 {
 	const index_t size=10;
 	SGMatrix<float64_t> mat(size, size);
-	const auto value=CMath::randn_double();
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	const auto value = m_rng->std_normal_distrib();
 	mat.set_const(value);
 
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -626,8 +634,9 @@ TEST(SGMatrixTest, max_single)
 {
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i] = m_rng->randn_float();
 
 	auto max=mat.max_single();
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -659,8 +668,9 @@ TEST(SGMatrixTest, get_column)
 	const index_t col = 4;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = m_rng->std_normal_distrib();
 
 	auto vec = mat.get_column_vector(col);
 
@@ -675,9 +685,9 @@ TEST(SGMatrixTest, set_column)
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	SGVector<float64_t> vec(n_rows);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < n_rows; ++i)
-		vec[i] = CMath::randn_double();
+		vec[i] = m_rng->std_normal_distrib();
 
 	mat.set_column(col, vec);
 

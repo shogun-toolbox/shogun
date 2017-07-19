@@ -546,7 +546,7 @@ TEST(CARTree, form_t1_test)
 
 TEST(CARTree,cv_prune_simple)
 {
-	CMath::init_random(1);
+	set_global_seed(1);
 	SGMatrix<float64_t> data(2,20);
 	data(0,0)=2;
 	data(1,0)=2;

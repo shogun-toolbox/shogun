@@ -21,10 +21,10 @@ using namespace shogun;
 TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -70,10 +70,10 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -176,10 +176,10 @@ TEST(MultilabelCLRModel, delta_loss)
 TEST(MultilabelCLRModel, argmax)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -203,7 +203,7 @@ TEST(MultilabelCLRModel, argmax)
 
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = m_rng->random(-1, 1);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);

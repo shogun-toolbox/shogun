@@ -25,7 +25,7 @@ void generate_data_l1(CDenseFeatures<float64_t>* &train_feats,
 					 CBinaryLabels* &ground_truth)
 {
 	index_t num_samples = 50;
-	CMath::init_random(5);
+	set_global_seed(5);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);
@@ -65,7 +65,7 @@ void generate_data_l2(CDenseFeatures<float64_t>* &train_feats,
 					 CBinaryLabels* &ground_truth)
 {
 	index_t num_samples = 50;
-	CMath::init_random(5);
+	set_global_seed(5);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);

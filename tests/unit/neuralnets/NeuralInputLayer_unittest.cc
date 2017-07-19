@@ -38,10 +38,10 @@ using namespace shogun;
 
 TEST(NeuralInputLayer, compute_activations)
 {
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+		x[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer layer(5, 4);
 	layer.set_batch_size(x.num_cols);
