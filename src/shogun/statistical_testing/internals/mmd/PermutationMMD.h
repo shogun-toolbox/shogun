@@ -200,10 +200,11 @@ struct PermutationMMD : ComputeMMD
 	{
 		ASSERT(m_num_null_samples>0);
 		allocate_permutation_inds();
+		auto prng = std::unique_ptr<CRandom>(new CRandom());
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-			CMath::permute(m_permuted_inds);
+			CMath::permute(m_permuted_inds, prng.get());
 			if (m_save_inds)
 			{
 				auto offset=n*m_permuted_inds.size();
