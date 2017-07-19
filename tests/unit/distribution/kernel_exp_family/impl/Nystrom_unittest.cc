@@ -194,19 +194,28 @@ class KernelExpFamilyImplNystromD: public DataFixture, public ::testing::Test
 
 		auto kernel = make_shared<kernel::Gaussian>(sigma);
 
-		// Bernoulli sampling for each basis component
+		// Bernoulli sampling for each basis component, but do not use one point
 		basis_mask=SGMatrix<bool>(X_train_random.num_rows, X_train_random.num_cols);
 		basis_mask.zero();
 		system_size=0;
-		for (auto i=0; i<ND; i++)
+		auto point_without_components=1;
+		for (auto a=0; a<N; a++)
 		{
-			auto rand = CMath::randn_double();
-			if (rand>0)
+			if (a==point_without_components)
+				continue;
+
+			for (auto i=0; i<D; i++)
 			{
-				basis_mask.matrix[i]=true;
-				system_size++;
+				auto rand = CMath::randn_double();
+				if (rand>0)
+				{
+					basis_mask(i,a)=true;
+					system_size++;
+				}
 			}
 		}
+		if (system_size==0)
+			basis_mask(0,0)=true;
 
 		est = make_shared<NystromD>(X_train_random, basis_mask, kernel, lambda);
 		est->fit();
