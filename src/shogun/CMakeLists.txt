@@ -418,18 +418,6 @@ SHOGUN_DEPENDENCIES(
   SCOPE PRIVATE
   CONFIG_FLAG HAVE_ARPREC)
 
-###### checks for random
-CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
-IF(NOT HAVE_ARC4RANDOM)
-    # assume that /dev/random is non-blocking if /dev/urandom does not exist
-    if(EXISTS /dev/urandom)
-      set(DEV_RANDOM "/dev/urandom" CACHE INTERNAL "" FORCE)
-    elseif( EXISTS /dev/random )
-      set(DEV_RANDOM "/dev/random" CACHE INTERNAL "" FORCE)
-    endif()
-ENDIF()
-
-
 ################## linker optimisations
 OPTION(INCREMENTAL_LINKING "Enable incremantal linking")
 SET(INCREMENTAL_LINKING_DIR ${CMAKE_BINARY_DIR}/linker_cache
