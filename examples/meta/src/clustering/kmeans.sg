@@ -1,5 +1,5 @@
 CSVFile f_feats_train("../../data/classifier_binary_2d_linear_features_train.dat")
-Math:init_random(1)
+set_global_seed(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)

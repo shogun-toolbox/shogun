@@ -81,7 +81,7 @@ def getSGTypesToStore():
 def getSGTypeToStoreMethodName(sgType):
     """ Translates given SG* type into meta language type """
     assert sgType in getSGTypesToStore()
-    
+
     if sgType=="RealVector":
         return "real_vector"
     elif sgType=="FloatVector":
@@ -90,10 +90,10 @@ def getSGTypeToStoreMethodName(sgType):
         return "real_matrix"
     elif sgType=="FloatMatrix":
         return "float_matrix"
-    
+
     else:
         raise RuntimeError("Given Shogun type \"%s\" cannot be translated to meta type", sgType)
-        
+
 
 def getVarsToStore(program):
     """ Extracts all variables in program that should be stored """
@@ -489,7 +489,7 @@ class Translator:
             )
 
             normalArgs = [
-                arg for arg in initialisation["ArgumentList"] 
+                arg for arg in initialisation["ArgumentList"]
                     if not "KeywordArgument" in arg
             ]
             kwargsString = self.translateKwargs(
@@ -560,7 +560,7 @@ class Translator:
         elif key == "StringLiteral":
             template = Template(self.targetDict["Expr"]["StringLiteral"])
             return template.substitute(literal=expr[key])
-        
+
         elif key == "CharLiteral":
             template = Template(self.targetDict["Expr"]["CharLiteral"])
             return template.substitute(literal=expr[key])
@@ -651,7 +651,7 @@ class Translator:
         )
 
         normalArgs = [
-            arg for arg in argsList["ArgumentList"] 
+            arg for arg in argsList["ArgumentList"]
                 if not "KeywordArgument" in arg
         ]
         kwargsString = self.translateKwargs(

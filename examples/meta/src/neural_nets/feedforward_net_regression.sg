@@ -3,7 +3,7 @@ CSVFile f_feats_test("../../data/regression_1d_sinc_features_test_with_9d_noise.
 CSVFile f_labels_train("../../data/regression_1d_sinc_labels_train.dat")
 CSVFile f_labels_test("../../data/regression_1d_sinc_labels_test.dat")
 
-Math:init_random(1)
+set_global_seed(1)
 
 #![create_features]
 RealFeatures features_train(f_feats_train)

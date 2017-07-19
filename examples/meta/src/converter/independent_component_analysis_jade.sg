@@ -1,6 +1,6 @@
 CSVFile f_feats("../../data/ica_2_sources.dat")
 
-Math:init_random(1)
+set_global_seed(1)
 
 #![create_features]
 RealFeatures features(f_feats)
