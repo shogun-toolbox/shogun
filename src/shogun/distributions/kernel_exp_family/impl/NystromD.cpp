@@ -97,13 +97,6 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 			m_active_basis_points.begin(), m_active_basis_points.end(),
 					std::inserter(unused, unused.end()));
 
-	if (unused.size())
-	{
-		SG_SWARNING("Using zero components of %d basis points. "
-				"Consider sub-sampling the data to avoid useless computation.\n",
-				unused.size());
-	}
-
 	SG_SINFO("Using %d of %dx%d=%d possible basis components.\n",
 			m_basis_inds.size(), basis_mask.num_rows, basis_mask.num_cols,
 			basis_mask.size());
