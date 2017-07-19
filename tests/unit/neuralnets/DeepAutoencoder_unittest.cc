@@ -44,14 +44,14 @@ using namespace shogun;
 
 TEST(DeepAutoencoder, pre_train)
 {
-	CMath::init_random(10);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(10));
 
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
 
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = CMath::random(-1.0,1.0);
+		data[i] = m_rng->random(-1.0, 1.0);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(num_features));
@@ -83,7 +83,7 @@ TEST(DeepAutoencoder, pre_train)
 
 TEST(DeepAutoencoder, convert_to_neural_network)
 {
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralInputLayer(10));
@@ -98,7 +98,7 @@ TEST(DeepAutoencoder, convert_to_neural_network)
 
 	SGMatrix<float64_t> x(10, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(0.0,1.0);
+		x[i] = m_rng->random(0.0, 1.0);
 
 	CDenseFeatures<float64_t> f(x);
 

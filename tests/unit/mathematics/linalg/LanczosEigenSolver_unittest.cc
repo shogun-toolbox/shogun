@@ -29,11 +29,12 @@ TEST(LanczosEigenSolver, compute)
 {
 	const int32_t size=4;
 	SGMatrix<float64_t> m(size, size);
-	m.set_const(CMath::random(50.0, 100.0));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	m.set_const(m_rng->random(50.0, 100.0));
 
 	// Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::random(100.0, 10000.0);
+		m(i, i) = m_rng->random(100.0, 10000.0);
 
 	// Creating sparse linear operator to use with Lanczos
 	CSparseFeatures<float64_t> feat(m);

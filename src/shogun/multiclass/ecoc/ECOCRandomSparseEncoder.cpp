@@ -70,55 +70,57 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             for (int32_t j=0; j < num_classes; ++j)
                 random_sel[j] = j;
             std::random_shuffle(random_sel.begin(), random_sel.end());
-            if (CMath::random(0.0, 1.0) > 0.5)
-            {
-                codebook(i, random_sel[0]) = +1;
-                codebook(i, random_sel[1]) = -1;
-            }
-            else
-            {
-                codebook(i, random_sel[0]) = -1;
-                codebook(i, random_sel[1]) = +1;
-            }
+			if (m_rng->random(0.0, 1.0) > 0.5)
+			{
+				codebook(i, random_sel[0]) = +1;
+				codebook(i, random_sel[1]) = -1;
+			}
+			else
+			{
+				codebook(i, random_sel[0]) = -1;
+				codebook(i, random_sel[1]) = +1;
+			}
 
-            // assign the remaining positions
-            for (int32_t j=2; j < num_classes; ++j)
-            {
-                float64_t randval = CMath::random(0.0, 1.0);
-                if (randval > m_pzero)
-                {
-                    if (randval > m_pzero+m_pposone)
-                        codebook(i, random_sel[j]) = -1;
-                    else
-                        codebook(i, random_sel[j]) = +1;
-                }
-            }
-        }
+			// assign the remaining positions
+			for (int32_t j = 2; j < num_classes; ++j)
+			{
+				float64_t randval = m_rng->random(0.0, 1.0);
+				if (randval > m_pzero)
+				{
+					if (randval > m_pzero + m_pposone)
+						codebook(i, random_sel[j]) = -1;
+					else
+						codebook(i, random_sel[j]) = +1;
+				}
+			}
+		}
 
-        // see if this is a better codebook
-        // compute the minimum pairwise code distance
-        int32_t min_dist = std::numeric_limits<int32_t>::max();
-        for (int32_t i=0; i < num_classes; ++i)
-        {
-            for (int32_t j=i+1; j < num_classes; ++j)
-            {
-                int32_t dist = CECOCUtil::hamming_distance(codebook.get_column_vector(i),
-                        codebook.get_column_vector(j), codelen);
-                if (dist < min_dist)
-                    min_dist = dist;
-            }
-        }
+		// see if this is a better codebook
+		// compute the minimum pairwise code distance
+		int32_t min_dist = std::numeric_limits<int32_t>::max();
+		for (int32_t i = 0; i < num_classes; ++i)
+		{
+			for (int32_t j = i + 1; j < num_classes; ++j)
+			{
+				int32_t dist = CECOCUtil::hamming_distance(
+				    codebook.get_column_vector(i),
+				    codebook.get_column_vector(j), codelen);
+				if (dist < min_dist)
+					min_dist = dist;
+			}
+		}
 
-        if (min_dist > best_dist)
-        {
-            best_dist = min_dist;
-            std::copy(codebook.matrix, codebook.matrix + codelen*num_classes,
-                    best_codebook.matrix);
-        }
+		if (min_dist > best_dist)
+		{
+			best_dist = min_dist;
+			std::copy(
+			    codebook.matrix, codebook.matrix + codelen * num_classes,
+			    best_codebook.matrix);
+		}
 
-        if (++n_iter >= m_maxiter)
-            break;
-    }
+		if (++n_iter >= m_maxiter)
+			break;
+	}
 
-    return best_codebook;
+	return best_codebook;
 }

@@ -90,11 +90,11 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 		case GAUSSIAN:
 			for (index_t i=0; i<vec.vlen-1; i++)
 			{
-				vec[i] = CMath::sqrt((float64_t) 1/kernel_params[0]) *
-							CMath::sqrt(2.0) * CMath::normal_random(0.0, 1);
+				vec[i] = CMath::sqrt((float64_t)1 / kernel_params[0]) *
+				         CMath::sqrt(2.0) * m_rng->normal_random(0.0, 1);
 			}
 
-			vec[vec.vlen-1] = CMath::random(0.0, 2 * CMath::PI);
+			vec[vec.vlen - 1] = m_rng->random(0.0, 2 * CMath::PI);
 			break;
 
 		default:

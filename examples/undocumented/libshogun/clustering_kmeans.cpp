@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 	int32_t dim_features=3;
 	int32_t num_vectors_per_cluster=5;
 	float64_t cluster_std_dev=2.0;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	/* build random cluster centers */
 	SGMatrix<float64_t> cluster_centers(dim_features, num_clusters);
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
 				idx+=j;
 				idx+=k*dim_features;
 				float64_t entry=cluster_centers.matrix[i*dim_features+j];
-				data.matrix[idx]=CMath::normal_random(entry, cluster_std_dev);
+				data.matrix[idx] = m_rng->normal_random(entry, cluster_std_dev);
 			}
 		}
 	}

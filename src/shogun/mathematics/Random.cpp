@@ -12,12 +12,13 @@
 #include <stdlib.h>
 #endif
 
-#include <shogun/mathematics/Random.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/Lock.h>
+#include <shogun/lib/Time.h>
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Lock.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Random.h>
 
 #ifdef DEV_RANDOM
 #include <fcntl.h>
@@ -30,7 +31,7 @@ CRandom::CRandom()
  m_sfmt_64(NULL),
  m_dsfmt(NULL)
 {
-	m_seed = CRandom::generate_seed();
+	m_seed = sg_random_seed;
 	init();
 }
 
@@ -343,25 +344,35 @@ void CRandom::reinit(uint32_t seed)
 	m_state_lock.unlock();
 }
 
-uint32_t CRandom::generate_seed()
+float32_t CRandom::normal_random(float32_t mean, float32_t std_dev)
 {
-	uint32_t seed;
-#if defined(_WIN32)
-	rand_s(&seed);
-#elif defined(HAVE_ARC4RANDOM)
-	seed = arc4random();
-#elif defined(DEV_RANDOM)
-	int fd = open(DEV_RANDOM, O_RDONLY);
-	ASSERT(fd >= 0);
-	ssize_t actual_read =
-		read(fd, reinterpret_cast<char*>(&seed), sizeof(seed));
-	close(fd);
-	ASSERT(actual_read == sizeof(seed));
-#else
-	SG_SWARNING("Not safe seed for the PRNG\n");
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	seed=(uint32_t) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
-#endif
-	return seed;
+	// sets up variables & makes sure rand_s.range == (0,1)
+	float32_t ret;
+	float32_t rand_u;
+	float32_t rand_v;
+	float32_t rand_s;
+	do
+	{
+		rand_u = static_cast<float32_t>(random(-1.0, 1.0));
+		rand_v = static_cast<float32_t>(random(-1.0, 1.0));
+		rand_s = rand_u * rand_u + rand_v * rand_v;
+	} while ((rand_s == 0) || (rand_s >= 1));
+
+	// the meat & potatos, and then the mean & standard deviation
+	// shifting...
+	ret = static_cast<float32_t>(
+	    rand_u * CMath::sqrt(-2.0 * CMath::log(rand_s) / rand_s));
+	ret = std_dev * ret + mean;
+	return ret;
+}
+
+float64_t CRandom::normal_random(float64_t mean, float64_t std_dev)
+{
+	float64_t result = normal_distrib(mean, std_dev);
+	return result;
+}
+
+float32_t CRandom::randn_float()
+{
+	return static_cast<float32_t>(normal_random(0.0, 1.0));
 }

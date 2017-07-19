@@ -32,7 +32,7 @@ using namespace Eigen;
 void test()
 {
 	// Generate sample data
-	CMath::init_random(0);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(0));
 	int n_samples = 2000;
 	VectorXd time(n_samples, true);
 	time.setLinSpaced(n_samples,0,10);
@@ -43,11 +43,11 @@ void test()
 	{
 		// Sin wave
 		S(0,i) = sin(2*time[i]);
-		S(0,i) += 0.2*CMath::randn_double();
+		S(0, i) += 0.2 * m_rng->std_normal_distrib();
 
 		// Square wave
 		S(1,i) = sin(3*time[i]) < 0 ? -1 : 1;
-		S(1,i) += 0.2*CMath::randn_double();
+		S(1, i) += 0.2 * m_rng->std_normal_distrib();
 	}
 
 	// Standardize data

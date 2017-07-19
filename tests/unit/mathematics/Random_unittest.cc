@@ -117,10 +117,10 @@ TEST(Random, normal_distrib)
 
 TEST(Random, random_uint64_1_2)
 {
-	CMath::init_random(17);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
 	for (int32_t i=0; i<10000; i++)
 	{
-		uint64_t r=CMath::random((uint64_t) 1, (uint64_t) 2);
+		uint64_t r = m_rng->random((uint64_t)1, (uint64_t)2);
 		EXPECT_TRUE(r == 1 || r == 2);
 	}
 }
@@ -304,11 +304,12 @@ TEST(Random, random_uint32_random_range)
 TEST(Random, random_float64_range)
 {
 	int rnds[array_len];
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		int32_t r= (int32_t) CMath::random((float64_t) 0, (float64_t) array_len);
+		int32_t r = (int32_t)m_rng->random((float64_t)0, (float64_t)array_len);
 		rnds[r]++;
 	}
 

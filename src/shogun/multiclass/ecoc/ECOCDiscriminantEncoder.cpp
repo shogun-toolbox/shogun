@@ -137,40 +137,39 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     if (part1.size() <= 1)
         return MI;
 
-    int32_t iclas = CMath::random(0, int32_t(part1.size()-1));
-    int32_t clas = part1[iclas];
+	int32_t iclas = m_rng->random(0, int32_t(part1.size() - 1));
+	int32_t clas = part1[iclas];
 
-    // move clas from part1 to part2
-    for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
-    {
-        if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
-        {
-            idata1.erase(i);
-            idata2.insert(i);
-        }
-    }
+	// move clas from part1 to part2
+	for (int32_t i = 0; i < m_labels->get_num_labels(); ++i)
+	{
+		if (((CMulticlassLabels*)m_labels)->get_int_label(i) == clas)
+		{
+			idata1.erase(i);
+			idata2.insert(i);
+		}
+	}
 
-    float64_t new_MI = compute_MI(idata1, idata2);
-    if (new_MI < MI)
-    {
-        part2.push_back(clas);
-        part1.erase(part1.begin() + iclas);
-        return new_MI;
-    }
-    else
-    {
-        // revert changes
-        for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
-        {
-            if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
-            {
-                idata2.erase(i);
-                idata1.insert(i);
-            }
-        }
-        return MI;
-    }
-
+	float64_t new_MI = compute_MI(idata1, idata2);
+	if (new_MI < MI)
+	{
+		part2.push_back(clas);
+		part1.erase(part1.begin() + iclas);
+		return new_MI;
+	}
+	else
+	{
+		// revert changes
+		for (int32_t i = 0; i < m_labels->get_num_labels(); ++i)
+		{
+			if (((CMulticlassLabels*)m_labels)->get_int_label(i) == clas)
+			{
+				idata2.erase(i);
+				idata1.insert(i);
+			}
+		}
+		return MI;
+	}
 }
 
 float64_t CECOCDiscriminantEncoder::compute_MI(const std::set<int32_t>& idata1, const std::set<int32_t>& idata2)

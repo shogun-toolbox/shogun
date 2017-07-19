@@ -77,7 +77,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -112,7 +112,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
-		vec[i] = CMath::random(-dimension, dimension);
+		vec[i] = m_rng->random(-dimension, dimension);
 
 	for (index_t i=0; i<3; i++)
 	{

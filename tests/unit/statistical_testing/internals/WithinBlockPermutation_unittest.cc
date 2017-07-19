@@ -80,7 +80,7 @@ TEST(WithinBlockPermutation, biased_full)
 	// compute using within-block-permutation functor
     operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_BIASED_FULL);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -97,7 +97,7 @@ TEST(WithinBlockPermutation, biased_full)
 
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
@@ -108,7 +108,7 @@ TEST(WithinBlockPermutation, biased_full)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
@@ -153,7 +153,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	// compute using within-block-permutation functor
     operation compute=shogun::internal::mmd::WithinBlockPermutation(n, m, ST_UNBIASED_FULL);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -169,7 +169,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
@@ -180,7 +180,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
@@ -224,7 +224,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	// compute using within-block-permutation functor
     operation compute=shogun::internal::mmd::WithinBlockPermutation(n, n, ST_UNBIASED_INCOMPLETE);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	auto result_1=compute(mat);
 
 	auto mmd=shogun::internal::mmd::ComputeMMD();
@@ -240,7 +240,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
@@ -251,7 +251,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	CMath::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);

@@ -49,8 +49,7 @@ int main(int, char*[])
 #ifdef HAVE_LAPACK // for CDataGenerator::generate_gaussian()
 
 	// initialize the random number generator with a fixed seed, for repeatability
-	CMath::init_random(10);
-
+	set_global_seed(10);
 	// Prepare the training data
 	const int num_features = 20;
 	const int num_classes = 4;

@@ -50,7 +50,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -83,7 +83,7 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -105,7 +105,7 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.0625, 1E-10);
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -117,7 +117,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -156,7 +156,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -189,7 +189,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -210,7 +210,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -222,7 +222,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -287,7 +287,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.0625, 1E-10);
 }
 
 TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
@@ -302,7 +302,7 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 	const float64_t train_test_ratio=3;
 	const float64_t alpha=0.05;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -335,7 +335,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -367,7 +367,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	const float64_t difference=0.5;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);

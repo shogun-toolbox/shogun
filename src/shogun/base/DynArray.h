@@ -12,6 +12,7 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
+#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
@@ -447,8 +448,11 @@ template <class T> class DynArray
 		/** randomizes the array (not thread safe!) */
 		void shuffle()
 		{
+			auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
 			for (index_t i=0; i<=current_num_elements-1; ++i)
-				CMath::swap(array[i], array[CMath::random(i, current_num_elements-1)]);
+				CMath::swap(
+				    array[i],
+				    array[m_rng->random(i, current_num_elements - 1)]);
 		}
 
 		/** randomizes the array with external random state */

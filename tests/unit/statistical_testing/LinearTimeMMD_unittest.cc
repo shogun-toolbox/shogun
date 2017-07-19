@@ -318,7 +318,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	const index_t dim=3;
 
 	// use fixed seed
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -347,7 +347,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_biased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.0, 1E-10);
+	EXPECT_NEAR(p_value_gaussian, 0.0, 1E-6);
 }
 
 TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
@@ -357,7 +357,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	const index_t dim=3;
 
 	float64_t difference=0.5;
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	// streaming data generator for mean shift distributions
 	auto gen_p=new CMeanShiftDataGenerator(0, dim, 0);
 	auto gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
@@ -384,7 +384,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.060947882185221292, 1E-6);
+	EXPECT_NEAR(p_value_gaussian, 0.78999099853119159, 1E-6);
 }
 
 TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
@@ -393,7 +393,7 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	const index_t n=20;
 	const index_t dim=3;
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -422,5 +422,5 @@ TEST(LinearTimeMMD, perform_test_gaussian_unbiased_incomplete)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_INCOMPLETE);
 	float64_t p_value_gaussian=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_gaussian, 0.40645354706402292, 1E-6);
+	EXPECT_NEAR(p_value_gaussian, 0.48342157360749094, 1E-6);
 }

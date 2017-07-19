@@ -36,6 +36,7 @@
 
 namespace shogun
 {
+	extern uint32_t sg_random_seed;
 #ifdef HAVE_CXX11
 	typedef std::unordered_map<BaseTag, Any> ParametersMap;
 #else
@@ -494,7 +495,7 @@ void CSGObject::init()
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
-	m_rng = std::unique_ptr<CRandom>(new CRandom());
+	m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
@@ -800,9 +801,4 @@ Any CSGObject::type_erased_get(const BaseTag& _tag) const
 bool CSGObject::type_erased_has(const BaseTag& _tag) const
 {
 	return self->has(_tag);
-}
-
-void CSGObject::set_seed(int32_t seed)
-{
-	m_rng->set_seed(seed);
 }

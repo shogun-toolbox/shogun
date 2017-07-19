@@ -17,18 +17,19 @@ using namespace shogun;
 SGStringList<char> generateRandomData(index_t num_strings=10, index_t max_string_length=20, index_t min_string_length=10)
 {
 	SGStringList<char> strings(num_strings, max_string_length);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	//SG_SPRINT("original string data:\n");
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t len=CMath::random(min_string_length, max_string_length);
+		index_t len = m_rng->random(min_string_length, max_string_length);
 		SGString<char> current(len);
 
 		//SG_SPRINT("[%i]: \"", i);
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
 		{
-			current.string[j]=(char)CMath::random('A', 'Z');
+			current.string[j] = (char)m_rng->random('A', 'Z');
 
 			/* attach \0 to print letter */
 			char* string=SG_MALLOC(char, 2);

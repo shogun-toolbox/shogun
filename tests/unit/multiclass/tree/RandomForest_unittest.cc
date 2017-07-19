@@ -142,7 +142,7 @@ void generate_nm_data(SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
 
 TEST(RandomForest,classify_nominal_test)
 {
-	CMath::init_random(1);
+	set_global_seed(1);
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);
 
@@ -198,10 +198,10 @@ TEST(RandomForest,classify_nominal_test)
 	EXPECT_EQ(0.0,res_vector[1]);
 	EXPECT_EQ(0.0,res_vector[2]);
 	EXPECT_EQ(1.0,res_vector[3]);
-	EXPECT_EQ(1.0,res_vector[4]);
+	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
+	EXPECT_NEAR(0.571428, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
@@ -211,7 +211,7 @@ TEST(RandomForest,classify_nominal_test)
 
 TEST(RandomForest,classify_non_nominal_test)
 {
-	CMath::init_random(1);
+	set_global_seed(1);
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);	
 
@@ -267,10 +267,10 @@ TEST(RandomForest,classify_non_nominal_test)
 	EXPECT_EQ(0.0,res_vector[1]);
 	EXPECT_EQ(0.0,res_vector[2]);
 	EXPECT_EQ(1.0,res_vector[3]);
-	EXPECT_EQ(1.0,res_vector[4]);
+	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.714285,c->get_oob_error(eval),1e-6);
+	EXPECT_NEAR(0.571428, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);

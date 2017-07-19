@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 	v.set_const(1.0);
 	Map<VectorXd> map_v(v.vector, v.vlen);
 	CTime time;
-	CMath::init_random(17);
+	set_global_seed(17);
 
 	SG_SPRINT("time\tshogun (s)\teigen3 (s)\n\n");
 	for (index_t t=0; t<times; ++t)

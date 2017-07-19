@@ -130,9 +130,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
+		rnd_indicies.matrix[i] = m_rng->random(0, m_bag_size - 1);
 
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());

@@ -17,7 +17,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/Lock.h>
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/Random.h>
 
 /* opaque pointers */
 struct SFMT_T;
@@ -25,7 +24,9 @@ struct DSFMT_T;
 
 namespace shogun
 {
+	extern uint32_t sg_random_seed;
 	class CLock;
+	class CMath;
 	/** @brief: Pseudo random number geneartor
 	 *
 	 * It is based on SIMD oriented Fast Mersenne Twister(SFMT) pseudorandom
@@ -267,14 +268,37 @@ namespace shogun
 			 */
 			float64_t std_normal_distrib() const;
 
-			/**
-			 * Generate a seed for PRNG
-			 *
-			 * @return entropy for PRNG
-			 */
-			static uint32_t generate_seed();
+		    /**
+		     *Returns a Gaussian or Normal random number.
+		     *Using the polar form of the Box-Muller transform.
+		     *http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
+		     */
+		    float32_t normal_random(float32_t mean, float32_t std_dev);
 
-			virtual const char* get_name() const { return "Random"; }
+		    /**
+		     *Returns a Gaussian or Normal random number.
+		     *Using the polar form of the Box-Muller transform.
+		     *http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
+		     */
+		    float64_t normal_random(float64_t mean, float64_t std_dev);
+
+		    /*
+		     *Convenience method for generating Standard Normal random numbers
+		     *Float: Mean = 0 and Standard Deviation = 1
+		     */
+		    float32_t randn_float();
+
+		    /**
+		     * Generate a seed for PRNG
+		     *
+		     * @return entropy for PRNG
+		     */
+		    static uint32_t generate_seed();
+
+		    virtual const char* get_name() const
+		    {
+			    return "Random";
+		    }
 
 		private:
 			/** initialise the object */

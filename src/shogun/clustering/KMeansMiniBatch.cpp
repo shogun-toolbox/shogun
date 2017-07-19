@@ -8,9 +8,9 @@
  */
 
 #include <shogun/clustering/KMeansMiniBatch.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/Random.h>
 
 #ifdef _WIN32
 #undef far
@@ -131,7 +131,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+	auto rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
 	chosen.zero();
 	int32_t ch=0;
 	while (ch<b)

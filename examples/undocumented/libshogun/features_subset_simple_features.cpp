@@ -49,7 +49,8 @@ const int32_t dim_features=6;
 
 void test()
 {
-	const int32_t num_subset_idx=CMath::random(1, num_vectors);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	const int32_t num_subset_idx = m_rng->random(1, num_vectors);
 
 	/* create feature data matrix */
 	SGMatrix<int32_t> data(dim_features, num_vectors);
@@ -58,7 +59,7 @@ void test()
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		for (index_t j=0; j<dim_features; ++j)
-			data.matrix[i*dim_features+j]=CMath::random(-5, 5);
+			data.matrix[i * dim_features + j] = m_rng->random(-5, 5);
 	}
 
 	/* create simple features */

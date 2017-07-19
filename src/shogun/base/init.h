@@ -11,6 +11,7 @@
 #ifndef __SG_INIT_H__
 #define __SG_INIT_H__
 
+#include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 
 #include <stdio.h>
@@ -96,6 +97,18 @@ void set_global_math(CMath* math);
  * @return math object
  */
 CMath* get_global_math();
+
+/** Set global random seed
+ * @param seed seed for random generator
+ */
+void set_global_seed(uint32_t seed);
+
+/** get global random seed
+ * @return random seed
+ */
+uint32_t get_global_seed();
+
+uint32_t generate_seed();
 
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object

@@ -81,7 +81,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -112,7 +112,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 
 	SGVector<float32_t> dense_vec(32);
 	for (index_t j=0; j<32; j++)
-		dense_vec[j] = CMath::random(0.0, 1.0);
+		dense_vec[j] = m_rng->random(0.0, 1.0);
 
 	index_t i = 0;
 	while (feats->get_next_example())

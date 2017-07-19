@@ -64,8 +64,9 @@ void test()
 
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix.matrix[i]=CMath::randn_double();
+		matrix.matrix[i] = m_rng->std_normal_distrib();
 
 	/* create feature object */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();

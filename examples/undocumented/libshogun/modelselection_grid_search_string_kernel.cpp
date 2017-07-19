@@ -76,17 +76,17 @@ int main(int argc, char **argv)
 	index_t num_subsets=num_strings/3;
 
 	SGStringList<char> strings(num_strings, max_string_length);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t len=CMath::random(min_string_length, max_string_length);
+		index_t len = m_rng->random(min_string_length, max_string_length);
 		SGString<char> current(len);
 
 		SG_SPRINT("string %i: \"", i);
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
 		{
-			current.string[j]=(char)CMath::random('A', 'Z');
+			current.string[j] = (char)m_rng->random('A', 'Z');
 
 			char* string=new char[2];
 			string[0]=current.string[j];

@@ -324,7 +324,9 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	const index_t n=30;
 	const index_t dim=3;
 
-	CMath::init_random(12345);
+	// use fixed seed
+	set_global_seed(12345);
+
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -361,7 +363,9 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	const index_t n=30;
 	const index_t dim=3;
 
-	CMath::init_random(12345);
+	// use fixed seed
+	set_global_seed(12345);
+
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -398,7 +402,9 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
 	const index_t n=20;
 	const index_t dim=3;
 
-	CMath::init_random(12345);
+	// use fixed seed
+	set_global_seed(12345);
+
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -435,7 +441,9 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	const index_t n=30;
 	const index_t dim=3;
 
-	CMath::init_random(12345);
+	// use fixed seed
+	set_global_seed(12345);
+
 	float64_t difference=0.5;
 
 	// streaming data generator for mean shift distributions
@@ -503,11 +511,11 @@ TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)
 	mmd->set_num_null_samples(num_null_samples);
 	mmd->set_null_approximation_method(NAM_PERMUTATION);
 
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	SGVector<float64_t> result_1=mmd->sample_null();
 
 	mmd->precompute_kernel_matrix(false);
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	SGVector<float64_t> result_2=mmd->sample_null();
 
 	ASSERT_EQ(result_1.size(), result_2.size());
@@ -522,8 +530,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_statistic)
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
 	float64_t difference=0.5;
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -560,8 +568,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_variance_h1)
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
 	float64_t difference=0.5;
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -598,8 +606,8 @@ TEST(QuadraticTimeMMD, multikernel_compute_test_power)
 	const index_t dim=1;
 	const index_t num_kernels=10;
 
-	CMath::init_random(12345);
 	float64_t difference=0.5;
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -640,7 +648,6 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	const index_t num_null_samples=200;
 	const index_t cache_size=10;
 
-	CMath::init_random(12345);
 	float64_t difference=0.5;
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
@@ -656,7 +663,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 		float64_t tau=pow(2, sigma);
 		mmd->multikernel()->add_kernel(new CGaussianKernel(cache_size, tau));
 	}
-	CMath::init_random(12345);
+	set_global_seed(12345);
 	SGVector<bool> rejections_multiple=mmd->multikernel()->perform_test(alpha);
 	mmd->multikernel()->cleanup();
 
@@ -665,7 +672,7 @@ TEST(QuadraticTimeMMD, multikernel_perform_test)
 	{
 		float64_t tau=pow(2, sigma);
 		mmd->set_kernel(new CGaussianKernel(cache_size, tau));
-		CMath::init_random(12345);
+		set_global_seed(12345);
 		rejections_single[i]=mmd->perform_test(alpha);
 	}
 

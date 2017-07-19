@@ -25,6 +25,7 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 {
 	SGMatrix<float64_t> mat(num_dim, num_vecs);
 	SGVector<float64_t> labs(num_vecs);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num_vecs; i++)
 	{
 		for (index_t j=0; j<num_dim; j++)
@@ -32,12 +33,12 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 			if ((i+j)%2==0)
 			{
 				labs[i] = -1;
-				mat(j,i) = CMath::random(0,1) + 0.5;
+				mat(j, i) = m_rng->random(0, 1) + 0.5;
 			}
 			else
 			{
 				labs[i] = 1;
-				mat(j,i) = CMath::random(0,1) - 0.5;
+				mat(j, i) = m_rng->random(0, 1) - 0.5;
 			}
 		}
 	}

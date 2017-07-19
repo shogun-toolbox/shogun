@@ -48,10 +48,10 @@ TEST(NeuralLeakyRectifiedLinearLayer, compute_activations)
 	CNeuralLeakyRectifiedLinearLayer layer(9);
 	float64_t alpha = 0.02;
 	// initialize some random inputs
-	CMath::init_random(100);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(-10.0,10.0);
+		x[i] = m_rng->random(-10.0, 10.0);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);

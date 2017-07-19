@@ -22,7 +22,12 @@
 #include <time.h>
 #include <ctype.h>
 
-#define VAL_MACRO log((default_value == 0) ? (CMath::random(MIN_RAND, MAX_RAND)) : default_value)
+#define VAL_MACRO                                                              \
+	[&]() {                                                                    \
+		return log(                                                            \
+		    (default_value == 0) ? (m_rng->random(MIN_RAND, MAX_RAND))         \
+		                         : default_value);                             \
+	}
 #define ARRAY_SIZE 65336
 
 using namespace shogun;
@@ -2452,7 +2457,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<N; j++)
 		{
-			set_a(i,j, CMath::random(MIN_RAND, 1.0));
+			set_a(i, j, m_rng->random(MIN_RAND, 1.0));
 
 			sum+=get_a(i,j);
 		}
@@ -2465,7 +2470,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_p(i, CMath::random(MIN_RAND, 1.0));
+		set_p(i, m_rng->random(MIN_RAND, 1.0));
 
 		sum+=get_p(i);
 	}
@@ -2477,7 +2482,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_q(i, CMath::random(MIN_RAND, 1.0));
+		set_q(i, m_rng->random(MIN_RAND, 1.0));
 
 		sum+=get_q(i);
 	}
@@ -2491,7 +2496,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<M; j++)
 		{
-			set_b(i,j, CMath::random(MIN_RAND, 1.0));
+			set_b(i, j, m_rng->random(MIN_RAND, 1.0));
 
 			sum+=get_b(i,j);
 		}
@@ -2532,7 +2537,8 @@ void CHMM::init_model_defined()
 
 	//initialize a values that have to be learned
 	float64_t *R=SG_MALLOC(float64_t, N);
-	for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
+	for (r = 0; r < N; r++)
+		R[r] = m_rng->random(MIN_RAND, 1.0);
 	i=0; sum=0; k=i;
 	j=model->get_learn_a(i,0);
 	while (model->get_learn_a(i,0)!=-1 || k<i)
@@ -2553,14 +2559,16 @@ void CHMM::init_model_defined()
 			j=model->get_learn_a(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
+			for (r = 0; r < N; r++)
+				R[r] = m_rng->random(MIN_RAND, 1.0);
 		}
 	}
 	SG_FREE(R); R=NULL ;
 
 	//initialize b values that have to be learned
 	R=SG_MALLOC(float64_t, M);
-	for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
+	for (r = 0; r < M; r++)
+		R[r] = m_rng->random(MIN_RAND, 1.0);
 	i=0; sum=0; k=0 ;
 	j=model->get_learn_b(i,0);
 	while (model->get_learn_b(i,0)!=-1 || k<i)
@@ -2582,7 +2590,8 @@ void CHMM::init_model_defined()
 			j=model->get_learn_b(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
+			for (r = 0; r < M; r++)
+				R[r] = m_rng->random(MIN_RAND, 1.0);
 		}
 	}
 	SG_FREE(R); R=NULL ;
@@ -2628,7 +2637,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_p(i)!=-1)
 	{
-		set_p(model->get_learn_p(i),CMath::random(MIN_RAND,1.0)) ;
+		set_p(model->get_learn_p(i), m_rng->random(MIN_RAND, 1.0));
 		sum+=get_p(model->get_learn_p(i)) ;
 		i++ ;
 	} ;
@@ -2644,7 +2653,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_q(i)!=-1)
 	{
-		set_q(model->get_learn_q(i),CMath::random(MIN_RAND,1.0)) ;
+		set_q(model->get_learn_q(i), m_rng->random(MIN_RAND, 1.0));
 		sum+=get_q(model->get_learn_q(i)) ;
 		i++ ;
 	} ;
@@ -5074,7 +5083,7 @@ void CHMM::add_states(int32_t num_states, float64_t default_value)
 
 	// warning pay attention to the ordering of
 	// transition_matrix_a, observation_matrix_b !!!
-	for (i=0; i<N; i++)
+	for (i = 0; i < N; i++)
 	{
 		n_p[i]=get_p(i);
 		n_q[i]=get_q(i);
@@ -5088,17 +5097,17 @@ void CHMM::add_states(int32_t num_states, float64_t default_value)
 
 	for (i=N; i<N+num_states; i++)
 	{
-		n_p[i]=VAL_MACRO;
-		n_q[i]=VAL_MACRO;
+		n_p[i] = VAL_MACRO();
+		n_q[i] = VAL_MACRO();
 
 		for (j=0; j<N; j++)
-			n_a[(N+num_states)*i+j]=VAL_MACRO;
+			n_a[(N + num_states) * i + j] = VAL_MACRO();
 
 		for (j=0; j<N+num_states; j++)
-			n_a[(N+num_states)*j+i]=VAL_MACRO;
+			n_a[(N + num_states) * j + i] = VAL_MACRO();
 
 		for (j=0; j<M; j++)
-			n_b[M*i+j]=VAL_MACRO;
+			n_b[M * i + j] = VAL_MACRO();
 	}
 	free_state_dependend_arrays();
 	N+=num_states;

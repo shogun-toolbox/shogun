@@ -24,7 +24,8 @@ const int32_t num_classes=3;
 
 void test()
 {
-	const int32_t num_subset_idx=CMath::random(1, num_labels);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	const int32_t num_subset_idx = m_rng->random(1, num_labels);
 
 	/* create labels */
 	CMulticlassLabels* labels=new CMulticlassLabels(num_labels);

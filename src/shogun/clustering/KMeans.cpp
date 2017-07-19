@@ -12,8 +12,8 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;

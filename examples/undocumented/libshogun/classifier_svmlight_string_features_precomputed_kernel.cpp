@@ -30,24 +30,24 @@ void test_svmlight()
 	float64_t p_x=0.5; // probability for class A
 	float64_t mostly_prob=0.8;
 	CDenseLabels* labels=new CBinaryLabels(num_train+num_test);
-	CMath::init_random(17);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
 
 	SGStringList<char> data(num_train+num_test, max_length);
 	for (index_t i=0; i<num_train+num_test; ++i)
 	{
 		/* determine length */
-		index_t length=CMath::random(1, max_length);
+		index_t length = m_rng->random(1, max_length);
 
 		/* allocate string */
 		data.strings[i]=SGString<char>(length);
 
 		/* fill with elements and set label */
-		if (p_x<CMath::random(0.0, 1.0))
+		if (p_x < m_rng->random(0.0, 1.0))
 		{
 			labels->set_label(i, 1);
 			for (index_t j=0; j<length; ++j)
 			{
-				char c=mostly_prob<CMath::random(0.0, 1.0) ? '0' : '1';
+				char c = mostly_prob < m_rng->random(0.0, 1.0) ? '0' : '1';
 				data.strings[i].string[j]=c;
 			}
 		}
@@ -56,7 +56,7 @@ void test_svmlight()
 			labels->set_label(i, -1);
 			for (index_t j=0; j<length; ++j)
 			{
-				char c=mostly_prob<CMath::random(0.0, 1.0) ? '1' : '0';
+				char c = mostly_prob < m_rng->random(0.0, 1.0) ? '1' : '0';
 				data.strings[i].string[j]=c;
 			}
 		}

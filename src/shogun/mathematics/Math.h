@@ -20,13 +20,13 @@
 #ifndef __MATHEMATICS_H_
 #define __MATHEMATICS_H_
 
-#include <shogun/lib/config.h>
-
-#include <shogun/lib/common.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/lib/SGVector.h>
 #include <algorithm>
+#include <shogun/base/Parallel.h>
+#include <shogun/base/init.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/mathematics/Random.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -988,152 +988,6 @@ class CMath : public CSGObject
 				res*=i ;
 			return res ;
 		}
-
-		/**
-		 * @name Random Functions
-		 */
-		//@{
-		/** Initiates seed for pseudo random generator
-		 * @param initseed value of seed
-		 */
-		static void init_random(uint32_t initseed=0)
-		{
-			if (initseed==0)
-				m_rng->set_seed(CRandom::generate_seed());
-			else
-				m_rng->set_seed(initseed);
-		}
-
-		/** Returns random number
-		 * @return unsigned 64 bit integer
-		 */
-		static inline uint64_t random()
-		{
-			uint64_t result = m_rng->random_64();
-			return result;
-		}
-
-		/** Returns random number
-		 * @return unsigned 64 bit integer
-		 */
-		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
-		{
-			uint64_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (64 bit integer)
-		 * @param max_value maximum value (64 bit integer)
-		 * @return signed 64 bit integer
-		 */
-		static inline int64_t random(int64_t min_value, int64_t max_value)
-		{
-			int64_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (32 bit unsigned integer)
-		 * @param max_value maximum value (32 bit unsigned integer)
-		 * @return unsigned 32 bit integer
-		 */
-		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
-		{
-			uint32_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (32 bit signed integer)
-		 * @param max_value maximum value (32 bit signed integer)
-		 * @return signed 32 bit integer
-		 */
-		static inline int32_t random(int32_t min_value, int32_t max_value)
-		{
-			int32_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (32 bit float)
-		 * @param max_value maximum value (32 bit float)
-		 * @return 32 bit float
-		 */
-		static inline float32_t random(float32_t min_value, float32_t max_value)
-		{
-			float32_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (64 bit float)
-		 * @param max_value maximum value (64 bit float)
-		 * @return 64 bit float
-		 */
-		static inline float64_t random(float64_t min_value, float64_t max_value)
-		{
-			float64_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/** Returns random number between minimum and maximum value
-		 * @param min_value minimum value (128 bit float)
-		 * @param max_value maximum value (128 bit float)
-		 * @return 128 bit float
-		 */
-		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
-		{
-			floatmax_t result = m_rng->random(min_value, max_value);
-			return result;
-		}
-
-		/// Returns a Gaussian or Normal random number.
-		/// Using the polar form of the Box-Muller transform.
-		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
-		static inline float32_t normal_random(float32_t mean, float32_t std_dev)
-		{
-			// sets up variables & makes sure rand_s.range == (0,1)
-			float32_t ret;
-			float32_t rand_u;
-			float32_t rand_v;
-			float32_t rand_s;
-			do
-			{
-				rand_u = static_cast<float32_t>(CMath::random(-1.0, 1.0));
-				rand_v = static_cast<float32_t>(CMath::random(-1.0, 1.0));
-				rand_s = rand_u*rand_u + rand_v*rand_v;
-			} while ((rand_s == 0) || (rand_s >= 1));
-
-			// the meat & potatos, and then the mean & standard deviation shifting...
-			ret = static_cast<float32_t>(rand_u*CMath::sqrt(-2.0*CMath::log(rand_s)/rand_s));
-			ret = std_dev*ret + mean;
-			return ret;
-		}
-
-		/// Returns a Gaussian or Normal random number.
-		/// Using the polar form of the Box-Muller transform.
-		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
-		static inline float64_t normal_random(float64_t mean, float64_t std_dev)
-		{
-			float64_t result = m_rng->normal_distrib(mean, std_dev);
-			return result;
-		}
-
-		/// Convenience method for generating Standard Normal random numbers
-		/// Float: Mean = 0 and Standard Deviation = 1
-		static inline float32_t randn_float()
-		{
-			return static_cast<float32_t>(normal_random(0.0, 1.0));
-		}
-
-		/// Convenience method for generating Standard Normal random numbers
-		/// Double: Mean = 0 and Standard Deviation = 1
-		static inline float64_t randn_double()
-		{
-			float64_t result = m_rng->std_normal_distrib();
-			return result;
-		}
 		//@}
 
 		/** Implements the greatest common divisor (gcd) via modulo operations.
@@ -1162,25 +1016,22 @@ class CMath : public CSGObject
 			return 0 == a ? b : a;
 		}
 
-		/** Permute randomly the elements of the vector. If provided, use the
-		 * random object to generate the permutations.
-		 * @param v the vector to permute.
-		 * @param rand random object that might be used to generate the permutations.
-		 */
 		template <class T>
-			static void permute(SGVector<T> v, CRandom* rand=NULL)
+		static void permute(SGVector<T> v, CRandom* rand = NULL)
+		{
+			if (rand)
 			{
-				if (rand)
-				{
-					for (index_t i=0; i<v.vlen; ++i)
-						swap(v[i], v[rand->random(i, v.vlen-1)]);
-				}
-				else
-				{
-					for (index_t i=0; i<v.vlen; ++i)
-						swap(v[i], v[random(i, v.vlen-1)]);
-				}
+				for (index_t i = 0; i < v.vlen; ++i)
+					swap(v[i], v[rand->random(i, v.vlen - 1)]);
 			}
+			else
+			{
+				auto m_rng =
+				    std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+				for (index_t i = 0; i < v.vlen; ++i)
+					swap(v[i], v[m_rng->random(i, v.vlen - 1)]);
+			}
+		}
 
 		/** Computes sum of non-zero elements
 		 * @param vec vector
@@ -2091,8 +1942,6 @@ class CMath : public CSGObject
 				/* Floating point limits, Denormalized */
 				static const float32_t F_MIN_VAL32;
 				static const float64_t F_MIN_VAL64;
-
-		        static CRandom* m_rng;
 
 		    protected:
 		        /// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0

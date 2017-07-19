@@ -37,9 +37,10 @@ TEST(SGObject,equals_same)
 
 TEST(SGObject,equals_NULL_parameter)
 {
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	SGMatrix<float64_t> data(3,10);
 	for (index_t i=0; i<data.num_rows*data.num_cols; ++i)
-		data.matrix[i]=CMath::randn_double();
+		data.matrix[i] = m_rng->std_normal_distrib();
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 	CGaussianKernel* kernel=new CGaussianKernel();
@@ -151,10 +152,11 @@ TEST(SGObject,equals_complex_equal)
 	SGMatrix<float64_t> X(1, n);
 	SGMatrix<float64_t> X_test(1, n);
 	SGVector<float64_t> Y(n);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (index_t  i=0; i<n; ++i)
 	{
-		X[i]=CMath::random(0.0, x_range);
+		X[i] = m_rng->random(0.0, x_range);
 		X_test[i]=(float64_t)i / n*x_range;
 		Y[i]=CMath::sin(X[i]);
 	}

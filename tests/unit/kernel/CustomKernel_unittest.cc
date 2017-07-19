@@ -7,14 +7,15 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CustomKernel.h>
+#include <gtest/gtest.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <shogun/mathematics/eigen3.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <gtest/gtest.h>
+#include <shogun/mathematics/Random.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

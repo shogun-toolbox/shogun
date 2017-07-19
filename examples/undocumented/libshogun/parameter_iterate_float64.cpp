@@ -32,9 +32,9 @@ int main(int argc, char** argv)
 
 	/* create some random data */
 	SGMatrix<float64_t> matrix(n,n);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for(int32_t i=0; i<n*n; ++i)
-		matrix.matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
+		matrix.matrix[i] = m_rng->random((float64_t)-n, (float64_t)n);
 
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, n, n);
 

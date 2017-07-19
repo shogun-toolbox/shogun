@@ -48,10 +48,11 @@ using namespace shogun;
 void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab)
 {
 	int32_t num=lab.size();
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num; i++)
 	{
-		mat(0,i)=i<num/2 ? 0+(CMath::randn_double()*4) : 100+(CMath::randn_double()*4)	;
+		mat(0, i) = i < num / 2 ? 0 + (m_rng->std_normal_distrib() * 4)
+		                        : 100 + (m_rng->std_normal_distrib() * 4);
 		mat(1,i)=i;
 	}
 

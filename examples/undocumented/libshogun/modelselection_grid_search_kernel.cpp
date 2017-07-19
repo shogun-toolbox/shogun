@@ -103,9 +103,10 @@ int main(int argc, char **argv)
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
 	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix.matrix[i]=CMath::randn_double();
+		matrix.matrix[i] = m_rng->std_normal_distrib();
 
 	/* create num_feautres 2-dimensional vectors */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);

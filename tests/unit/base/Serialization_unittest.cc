@@ -23,6 +23,7 @@ TEST(Serialization,multiclass_labels)
 	index_t n_class=3;
 
 	CMulticlassLabels* labels=new CMulticlassLabels();
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	SGVector<float64_t> lab(n);
 	for (index_t i=0; i<n; ++i)
@@ -33,7 +34,7 @@ TEST(Serialization,multiclass_labels)
 	labels->allocate_confidences_for(n_class);
 	SGVector<float64_t> conf(n_class);
 	for (index_t i=0; i<n_class; ++i)
-		conf[i]=CMath::randn_double();
+		conf[i] = m_rng->std_normal_distrib();
 
 	for (index_t i=0; i<n; ++i)
 		labels->set_multiclass_confidences(i, conf);
@@ -75,7 +76,7 @@ TEST(Serialization,multiclass_labels)
 TEST(Serialization, liblinear)
 {
 	index_t num_samples = 50;
-	CMath::init_random(13);
+	set_global_seed(13);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);

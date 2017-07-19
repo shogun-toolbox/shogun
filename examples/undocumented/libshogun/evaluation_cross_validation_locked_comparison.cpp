@@ -37,6 +37,7 @@ void test_cross_validation()
 	SGVector<float64_t>::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
 	SGVector<float64_t>::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
 	float64_t sigma=1.5;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -45,7 +46,8 @@ void test_cross_validation()
 		for (index_t j=0; j<num_features; ++j)
 		{
 			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
-			train_dat.matrix[i*num_features+j]=CMath::normal_random(mean, sigma);
+			train_dat.matrix[i * num_features + j] =
+			    m_rng->normal_random(mean, sigma);
 		}
 	}
 

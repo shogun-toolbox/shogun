@@ -28,8 +28,9 @@ void test()
 
 	labels->allocate_confidences_for(n_class);
 	SGVector<float64_t> conf(n_class);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<n_class; ++i)
-		conf[i]=CMath::randn_double();
+		conf[i] = m_rng->std_normal_distrib();
 
 	for (index_t i=0; i<n; ++i)
 		labels->set_multiclass_confidences(i, conf);

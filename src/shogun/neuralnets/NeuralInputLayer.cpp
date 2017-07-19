@@ -73,7 +73,7 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 	{
 		int32_t len = m_num_neurons*m_batch_size;
 		for (int32_t k=0; k<len; k++)
-			m_activations[k] += CMath::normal_random(0.0, gaussian_noise);
+			m_activations[k] += m_rng->normal_random(0.0, gaussian_noise);
 	}
 }
 

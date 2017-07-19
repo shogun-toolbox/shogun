@@ -390,8 +390,12 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 
 	for (int32_t i=0; i<dim_n; i++)
 	{
-		components[2]->get_mean().vector[i]=components[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
-		components[0]->get_mean().vector[i]=components[0]->get_mean().vector[i]+CMath::randn_double()*noise_mag;
+		components[2]->get_mean().vector[i] =
+		    components[0]->get_mean().vector[i] +
+		    m_rng->std_normal_distrib() * noise_mag;
+		components[0]->get_mean().vector[i] =
+		    components[0]->get_mean().vector[i] +
+		    m_rng->std_normal_distrib() * noise_mag;
 	}
 
 	coefficients.vector[1]=coefficients.vector[1]+coefficients.vector[2];
@@ -766,7 +770,7 @@ SGVector<float64_t> CGMM::sample()
 {
 	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
 			"must be positive\n", m_components.size());
-	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
+	float64_t rand_num = m_rng->random(float64_t(0), float64_t(1));
 	float64_t cum_sum=0;
 	for (int32_t i=0; i<m_coefficients.vlen; i++)
 	{

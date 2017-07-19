@@ -494,11 +494,6 @@ public:
 	 */
 	virtual CSGObject* clone();
 
-	/** Set random seed
-	 * @param seed seed for random generator
-	 */
-	void set_seed(int32_t seed);
-
 protected:
 	/* Iteratively clones all parameters of the provided instance into this instance.
 	 * This will fail if the objects have different sets of registered parameters,

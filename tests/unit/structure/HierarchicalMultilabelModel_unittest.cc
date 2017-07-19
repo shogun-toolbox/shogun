@@ -20,10 +20,11 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -79,10 +80,11 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -205,10 +207,11 @@ TEST(HierarchicalMultilabelModel, argmax)
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -241,7 +244,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = m_rng->random(-1, 1);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);
@@ -316,10 +319,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 	int32_t num_samples = 2;
 
 	SGMatrix<float64_t> feats(dim_features, num_samples);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = m_rng->random(-100, 100);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -352,7 +356,7 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = m_rng->random(-1, 1);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);

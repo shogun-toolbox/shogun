@@ -12,7 +12,7 @@ using namespace shogun;
 void generate_knn_data(SGMatrix<float64_t>& feat, SGVector<float64_t>& lab,
 	   	int32_t num, int32_t classes, int32_t feats)
 {
-	CMath::init_random(1);
+	set_global_seed(1);
 	feat = CDataGenerator::generate_gaussians(num,classes,feats);
 	for( int i = 0 ; i < classes ; ++i )
 		for( int j = 0 ; j < num ; ++j )

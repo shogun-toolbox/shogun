@@ -326,7 +326,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j = m_rng->random(i, active_size - 1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -535,7 +535,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for(j=0; j<active_size; j++)
 		{
-			int i = CMath::random(j, active_size-1);
+			int i = m_rng->random(j, active_size - 1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -907,7 +907,7 @@ void CLibLinear::solve_l1r_lr(
 
 		for(j=0; j<active_size; j++)
 		{
-			int i = CMath::random(j, active_size-1);
+			int i = m_rng->random(j, active_size - 1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -1241,7 +1241,7 @@ void CLibLinear::solve_l2r_lr_dual(SGVector<float64_t>& w, const liblinear_probl
 	{
 		for (i=0; i<l; i++)
 		{
-			int j = CMath::random(i, l-1);
+			int j = m_rng->random(i, l - 1);
 			CMath::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;

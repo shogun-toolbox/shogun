@@ -388,9 +388,8 @@ TEST(CMath, permute)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	CRandom* random = new CRandom(2);
-	CMath::permute(v, random);
-	SG_FREE(random);
+	auto random = std::unique_ptr<CRandom>(new CRandom(2));
+	CMath::permute(v, random.get());
 	EXPECT_EQ(v[0], 2);
 	EXPECT_EQ(v[1], 1);
 	EXPECT_EQ(v[2], 3);
@@ -401,9 +400,8 @@ TEST(CMath, permute_with_random)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	CRandom* random = new CRandom(2);
-	CMath::permute(v, random);
-	SG_FREE(random);
+	auto random = std::unique_ptr<CRandom>(new CRandom(2));
+	CMath::permute(v, random.get());
 
 	EXPECT_EQ(v[0], 2);
 	EXPECT_EQ(v[1], 1);
@@ -413,7 +411,7 @@ TEST(CMath, permute_with_random)
 
 TEST(CMath,misc)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 
@@ -502,7 +500,7 @@ TEST(CMath,is_sorted_2)
 
 TEST(CMath, dot)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(0.0, 1024.0);
 	float64_t dot_val = 0.0;

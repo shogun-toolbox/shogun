@@ -38,7 +38,7 @@ void test_custom_kernel_subsets()
 	{
 		subset.range_fill();
 		CMath::permute(subset);
-//		subset.display_vector("permutation");
+		//		subset.display_vector("permutation");
 		features->add_subset(subset);
 		k->init(features, features);
 		l->add_row_subset(subset);

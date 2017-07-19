@@ -41,10 +41,11 @@ static SGMatrix<float64_t>
 generate_std_norm_matrix(const index_t num_feats, const index_t dim)
 {
 	SGMatrix<float64_t> data(dim, num_feats);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t i=0; i<num_feats; ++i)
 	{
 		for (index_t j=0; j<dim; ++j)
-			data(j, i)=CMath::randn_double();
+			data(j, i) = m_rng->std_normal_distrib();
 	}
 	return data;
 }
@@ -55,7 +56,7 @@ TEST(Kernel, sum_symmetric_block_no_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -84,7 +85,7 @@ TEST(Kernel, sum_symmetric_block_with_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -114,7 +115,7 @@ TEST(Kernel, sum_block_with_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
@@ -147,7 +148,7 @@ TEST(Kernel, sum_block_no_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
@@ -179,7 +180,7 @@ TEST(Kernel, row_wise_sum_symmetric_block_no_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -208,7 +209,7 @@ TEST(Kernel, row_wise_sum_symmetric_block_with_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -237,7 +238,7 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_no_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -272,7 +273,7 @@ TEST(Kernel, row_wise_sum_squared_sum_symmetric_block_with_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data = generate_std_norm_matrix(num_feats, dim);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -308,7 +309,7 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 
@@ -349,7 +350,7 @@ TEST(Kernel, row_col_wise_sum_block_no_diag)
 	const index_t dim=3;
 
 	// create random data
-	CMath::init_random(100);
+	set_global_seed(100);
 	SGMatrix<float64_t> data_p = generate_std_norm_matrix(num_feats_p, dim);
 	SGMatrix<float64_t> data_q = generate_std_norm_matrix(num_feats_q, dim);
 

@@ -33,7 +33,7 @@ const char fname_labels[]="../data/label_train_multiclass.dat";
 
 void test_multiclass_mkl_cv()
 {
-	CMath::init_random(12);
+	set_global_seed(12);
 	/* dense features from matrix */
 	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
@@ -87,7 +87,7 @@ void test_multiclass_mkl_cv()
 	CMulticlassAccuracy* eval_crit=new CMulticlassAccuracy();
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
-	splitting->set_seed(12);
+
 	CCrossValidation *cross=new CCrossValidation(mkl, cfeats, labels, splitting,
 			eval_crit);
 	cross->set_autolock(false);

@@ -66,7 +66,7 @@ bool CMeanShiftDataGenerator::get_next_example()
 
 	/* fill with std normal data */
 	for (index_t i=0; i<m_dimension; ++i)
-		result[i]=CMath::randn_double();
+		result[i] = m_rng->std_normal_distrib();
 
 	/* mean shift in selected dimension */
 	result[m_dimension_shift]+=m_mean_shift;

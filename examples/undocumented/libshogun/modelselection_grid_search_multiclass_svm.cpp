@@ -53,12 +53,13 @@ void test()
 	/* create data: some easy multiclass data */
 	SGMatrix<float64_t> feat=SGMatrix<float64_t>(dim_vectors, num_vectors);
 	SGVector<float64_t> lab(num_vectors);
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	for (index_t j=0; j<feat.num_cols; ++j)
 	{
 		lab[j]=j%dim_vectors;
 
 		for (index_t i=0; i<feat.num_rows; ++i)
-			feat(i, j)=CMath::randn_double();
+			feat(i, j) = m_rng->std_normal_distrib();
 
 		/* make sure classes are (alomst) linearly seperable against each other */
 		feat(lab[j],j)+=distance;

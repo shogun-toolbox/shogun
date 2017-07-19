@@ -215,7 +215,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = CMath::random(i, active_size-1);
+			int j = m_rng->random(i, active_size - 1);
 			CMath::swap(index[i], index[j]);
 		}
 

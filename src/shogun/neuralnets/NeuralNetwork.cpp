@@ -561,12 +561,12 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	SGMatrix<float64_t> y(get_num_outputs(),1);
 
 	for (int32_t i=0; i<x.num_rows; i++)
-		x[i] = CMath::random(0.0,1.0);
+		x[i] = m_rng->random(0.0, 1.0);
 
 	// the outputs are set up in the form of a probability distribution (in case
 	// that is required by the output layer, i.e softmax)
 	for (int32_t i=0; i<y.num_rows; i++)
-		y[i] = CMath::random(0.0,1.0);
+		y[i] = m_rng->random(0.0, 1.0);
 
 	float64_t y_sum = SGVector<float64_t>::sum(y.matrix, y.num_rows);
 	for (int32_t i=0; i<y.num_rows; i++)

@@ -25,12 +25,13 @@ int main(int argc, char **argv)
 
 	index_t num_labels, num_classes, num_subsets;
 	index_t runs=50;
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 
 	while (runs-->0)
 	{
-		num_labels=CMath::random(5, 100);
-		num_classes=CMath::random(2, 10);
-		num_subsets=CMath::random(1, 10);
+		num_labels = m_rng->random(5, 100);
+		num_classes = m_rng->random(2, 10);
+		num_subsets = m_rng->random(1, 10);
 
 		/* this will throw an error */
 		if (num_labels<num_subsets)
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
 		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, CMath::random()%num_classes);
+			labels->set_label(i, m_rng->random_64() % num_classes);
 			SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 		}
 		SG_SPRINT("\n");

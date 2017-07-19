@@ -12,12 +12,12 @@ int main()
 
 	int32_t num_vectors = 5;
 	int32_t dim = 20;
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	SGMatrix<int32_t> mat(dim, num_vectors);
 	for (index_t v=0; v<num_vectors; v++)
 	{
 		for (index_t d=0; d<dim; d++)
-			mat(d,v) = CMath::random(-dim, dim);
+			mat(d, v) = m_rng->random(-dim, dim);
 	}
 
 	int32_t hashing_dim = 12;

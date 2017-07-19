@@ -269,19 +269,23 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
 	for ( int32_t i = 0 ; i < num_exm ; ++i)
 	{
 		SGVector< int32_t > lab(exm_len);
 		lab.zero();
-		rnb = num_blocks[0] + CMath::ceil((num_blocks[1]-num_blocks[0])*
-			CMath::random(0.0, 1.0)) - 1;
+		rnb = num_blocks[0] +
+		      CMath::ceil(
+		          (num_blocks[1] - num_blocks[0]) * m_rng->random(0.0, 1.0)) -
+		      1;
 
 		for ( int32_t j = 0 ; j < rnb ; ++j )
 		{
-			rl = block_len[0] + CMath::ceil((block_len[1]-block_len[0])*
-				CMath::random(0.0, 1.0)) - 1;
-			rp = CMath::ceil((exm_len-rl)*CMath::random(0.0, 1.0));
+			rl = block_len[0] +
+			     CMath::ceil(
+			         (block_len[1] - block_len[0]) * m_rng->random(0.0, 1.0)) -
+			     1;
+			rp = CMath::ceil((exm_len - rl) * m_rng->random(0.0, 1.0));
 
 			for ( int32_t idx = rp-1 ; idx < rp+rl ; ++idx )
 			{
@@ -321,7 +325,8 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = lf[j] + noise_std*CMath::normal_random((float64_t)0.0, 1.0);
+			signal[idx++] =
+			    lf[j] + noise_std * m_rng->normal_random((float64_t)0.0, 1.0);
 	}
 
 	// Substitute some features by pure noise
@@ -329,7 +334,8 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 	{
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = noise_std*CMath::normal_random((float64_t)0.0, 1.0);
+			signal[idx++] =
+			    noise_std * m_rng->normal_random((float64_t)0.0, 1.0);
 	}
 
 	CMatrixFeatures< float64_t >* features =

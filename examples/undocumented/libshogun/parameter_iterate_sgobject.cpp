@@ -29,11 +29,11 @@ int main(int argc, char** argv)
 	const int32_t n=7;
 
 	init_shogun(&print_message);
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	/* create some random data and hand it to each kernel */
 	SGMatrix<float64_t> matrix(n,n);
 	for (int32_t k=0; k<n*n; ++k)
-		matrix.matrix[k]=CMath::random((float64_t) -n, (float64_t) n);
+		matrix.matrix[k] = m_rng->random((float64_t)-n, (float64_t)n);
 
 	SG_SPRINT("feature data:\n");
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, n, n);
@@ -44,7 +44,8 @@ int main(int argc, char** argv)
 	CGaussianKernel** kernels=SG_MALLOC(CGaussianKernel*, n);
 	for (int32_t i=0; i<n; ++i)
 	{
-		kernels[i]=new CGaussianKernel(10, CMath::random(0.0, (float64_t)n*n));
+		kernels[i] =
+		    new CGaussianKernel(10, m_rng->random(0.0, (float64_t)n * n));
 
 		/* hand data to kernel */
 		kernels[i]->init(features, features);

@@ -41,10 +41,10 @@ TEST(SGVectorTest,ctor)
 TEST(SGVectorTest, ctor_from_matrix)
 {
 	const index_t n_rows = 5, n_cols = 4;
-
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = m_rng->std_normal_distrib();
 
 	auto vec = SGVector<float64_t>(mat);
 
@@ -78,7 +78,7 @@ TEST(SGVectorTest,setget)
 
 TEST(SGVectorTest,add)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	SGVector<float64_t> b(10);
 	a.random(0.0, 1024.0);
@@ -98,7 +98,7 @@ TEST(SGVectorTest,add)
 
 TEST(SGVectorTest,norm)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-50.0, 1024.0);
 
@@ -122,7 +122,7 @@ TEST(SGVectorTest,norm)
 
 TEST(SGVectorTest,misc)
 {
-	CMath::init_random(17);
+	set_global_seed(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 

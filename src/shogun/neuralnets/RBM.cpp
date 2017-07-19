@@ -89,7 +89,7 @@ void CRBM::initialize_neural_network(float64_t sigma)
 	m_params = SGVector<float64_t>(m_num_params);
 
 	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = CMath::normal_random(0.0,sigma);
+		m_params[i] = m_rng->normal_random(0.0, sigma);
 }
 
 void CRBM::set_batch_size(int32_t batch_size)
@@ -266,7 +266,7 @@ void CRBM::reset_chain()
 {
 	for (int32_t i=0; i<m_num_visible; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			visible_state(i,j) = CMath::random(0.0,1.0) > 0.5;
+			visible_state(i, j) = m_rng->random(0.0, 1.0) > 0.5;
 }
 
 float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > buffer)
@@ -431,8 +431,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 
 	SGVector<int32_t> indices(m_batch_size);
 	for (int32_t i=0; i<m_batch_size; i++)
-		indices[i] = CMath::random(0,m_num_visible-1);
-
+		indices[i] = m_rng->random(0, m_num_visible - 1);
 
 	float64_t f1 = free_energy(visible, buffer);
 
@@ -520,7 +519,7 @@ void CRBM::sample_hidden(SGMatrix< float64_t > mean, SGMatrix< float64_t > resul
 {
 	int32_t length = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<length; i++)
-		result[i] = CMath::random(0.0,1.0) < mean[i];
+		result[i] = m_rng->random(0.0, 1.0) < mean[i];
 }
 
 void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
@@ -540,7 +539,8 @@ void CRBM::sample_visible(int32_t index,
 	{
 		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			for (int32_t j=0; j<m_batch_size; j++)
-				result(i+offset,j) = CMath::random(0.0,1.0) < mean(i+offset,j);
+				result(i + offset, j) =
+				    m_rng->random(0.0, 1.0) < mean(i + offset, j);
 	}
 
 	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
@@ -551,7 +551,7 @@ void CRBM::sample_visible(int32_t index,
 
 		for (int32_t j=0; j<m_batch_size; j++)
 		{
-			int32_t r = CMath::random(0.0,1.0);
+			int32_t r = m_rng->random(0.0, 1.0);
 			float64_t sum = 0;
 			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			{

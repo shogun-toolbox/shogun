@@ -407,7 +407,7 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 		float64_t null_sample=0;
 		for (index_t j=0; j<num_eigenvalues; ++j)
 		{
-			float64_t z_j=CMath::randn_double();
+			float64_t z_j = owner.m_rng->std_normal_distrib();
 			float64_t multiple=CMath::sq(z_j);
 
 			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
