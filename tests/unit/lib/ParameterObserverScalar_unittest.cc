@@ -36,7 +36,7 @@
 #ifdef HAVE_TFLOGGER
 
 #include <gtest/gtest.h>
-#include <shogun/lib/ParameterObserverScalar.h>
+#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
 #include <vector>
 
 std::vector<std::string> test_params = {"a", "b", "c", "d"};

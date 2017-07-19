@@ -38,8 +38,13 @@
 #include <stdexcept>
 #include <vector>
 
-#include <shogun/lib/ObservedValue.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
+
+/* Used to check if the observed value type */
+#define CHECK_OBSERVED_VALUE_TYPE(type)                                        \
+	if (type != m_type)                                                        \
+		return;
 
 namespace shogun
 {
@@ -50,7 +55,6 @@ namespace shogun
 	{
 
 	public:
-
 		/**
 		* Default constructor
 		*/
@@ -80,7 +84,7 @@ namespace shogun
 		 * @param param the param name
 		 * @return true if param is found inside of m_parameters list
 		 */
-		virtual bool filter(const std::string& param) = 0;
+		virtual bool filter(const std::string& param);
 
 		/**
 		 * Method which will be called when the parameter observable emits a
@@ -102,6 +106,11 @@ namespace shogun
 		 * List of parameter's names we want to monitor
 		 */
 		std::vector<std::string> m_parameters;
+
+		/**
+		 * The type of params this observers accept
+		 */
+		SG_OBS_VALUE_TYPE m_type;
 	};
 }
 

@@ -32,51 +32,52 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_OBSERVEDVALUE_H
-#define SHOGUN_OBSERVEDVALUE_H
+#ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
 
-#include <chrono>
-#include <shogun/lib/any.h>
-#include <utility>
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
-/**
- * Definitions of basic object with are needed by the Parameter
- * Observer architecture.
- */
+#include <tflogger/event_logger.h>
+
 namespace shogun
 {
-	/* Timepoint */
-	typedef std::chrono::steady_clock::time_point time_point;
-
-	/* One observed value, composed of:
-	 *  - step (for the graph x axis);
-	 *  - parameter's name;
-	 *  - parameter's value (Any wrapped);
-	 */
-	struct ObservedValue
+	class ParameterObserverTensorBoard : public ParameterObserverInterface
 	{
-		int64_t step;
-		std::string name;
-		Any value;
+
+	public:
+		/**
+		* Default constructor
+		*/
+		ParameterObserverTensorBoard();
+
+		/**
+		 * Constructor
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverTensorBoard(std::vector<std::string>& parameters);
+
+		/**
+		 * Constructor
+		 * @param filename name of the generated output file
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverTensorBoard(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		/**
+		 * Virtual destructor
+		 */
+		virtual ~ParameterObserverTensorBoard();
+
+	protected:
+		/**
+		* Writer object which will be used to write tensorflow::Event files
+		*/
+		tflogger::EventLogger m_writer;
 	};
-
-	/**
-	 * Observed value with a timestamp
-	 */
-	typedef std::pair<ObservedValue, time_point> TimedObservedValue;
-
-	/**
-	 * Helper method to convert a time_point to std::time_t
-	 * @param value time point we want to convert
-	 * @return the time point converted to std::time_t
-	 */
-	inline double convert_to_millis(const time_point& value)
-	{
-		return std::chrono::duration_cast<std::chrono::milliseconds>(
-		           value.time_since_epoch())
-		    .count();
-	}
 }
 
-#endif // SHOGUN_OBSERVEDVALUE_H
+#endif // SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#endif // HAVE_TFLOGGER

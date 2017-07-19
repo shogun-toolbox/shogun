@@ -14,14 +14,15 @@
 #include <shogun/lib/memory.h>
 #include <shogun/lib/RefCount.h>
 
+#include <shogun/base/DynArray.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Version.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/lib/Map.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGStringList.h>
 #include <shogun/io/SerializableFile.h>
+#include <shogun/lib/Map.h>
+#include <shogun/lib/SGStringList.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 #include <shogun/base/class_list.h>
 
@@ -36,7 +37,7 @@
 namespace shogun
 {
 	typedef std::map<BaseTag, Any> ParametersMap;
-	typedef std::map<std::string, std::pair<std::string, std::string>>
+	typedef std::map<std::string, std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
 
 	class CSGObject::Self
@@ -815,31 +816,42 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 
 	// Create an observable which emits values only if they are about
 	// parameters selected by the observable.
-	auto subscription =
-	    m_observable_params
-	        ->filter([obs](ObservedValue v) { return obs->filter(v.name); })
-	        .timestamp()
-	        .subscribe(sub);
+	auto subscription = m_observable_params
+	                        ->filter([obs](ObservedValue v) {
+		                        return obs->filter(v.get_name());
+		                    })
+	                        .timestamp()
+	                        .subscribe(sub);
 }
 
-void CSGObject::observe_scalar(
-    const int64_t step, const std::string& name, const Any& value)
+void CSGObject::observe(const ObservedValue* value)
 {
-	ObservedValue tmp;
-	tmp.step = step;
-	tmp.name = name;
-	tmp.value = value;
-	m_subscriber_params->on_next(tmp);
+	m_subscriber_params->on_next(*value);
 }
 
 class CSGObject::ParameterObserverList
 {
 public:
 	void register_param(
-	    const std::string& name, const std::string& type,
+	    const std::string& name, const SG_OBS_VALUE_TYPE type,
 	    const std::string& description)
 	{
 		m_list_obs_params[name] = std::make_pair(type, description);
+	}
+
+	std::string type_name(SG_OBS_VALUE_TYPE type)
+	{
+		std::string value;
+		switch (type)
+		{
+		case TENSORBOARD:
+			value = std::string("Tensorboard");
+			break;
+		default:
+			value = std::string("Unknown");
+			break;
+		}
+		return value;
 	}
 
 	ObsParamsList get_list() const
@@ -853,7 +865,7 @@ private:
 };
 
 void CSGObject::register_observable_param(
-    const std::string& name, const std::string& type,
+    const std::string& name, const SG_OBS_VALUE_TYPE type,
     const std::string& description)
 {
 	param_obs_list->register_param(name, type, description);
@@ -866,7 +878,8 @@ void CSGObject::list_observable_parameters()
 	for (auto const& x : param_obs_list->get_list())
 	{
 		SG_PRINT(
-		    "%s [%s]: %s\n", x.first.c_str(), x.second.first.c_str(),
+		    "%s [%s]: %s\n", x.first.c_str(),
+		    param_obs_list->type_name(x.second.first).c_str(),
 		    x.second.second.c_str());
 	}
 }

@@ -35,28 +35,26 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
-#define SHOGUN_PARAMETEROBSERVERSCALAR_H
+#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 
-#include <shogun/lib/ParameterObserverTensorBoard.h>
+#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
 
 namespace shogun
 {
 	/**
 	 * Implementation of a ParameterObserver which write to file
-	 * scalar values, given object emitted from a parameter observable.
+	 * histograms, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverScalar : public ParameterObserverTensorBoard
+	class ParameterObserverHistogram : public ParameterObserverTensorBoard
 	{
 
 	public:
-		ParameterObserverScalar();
-		ParameterObserverScalar(std::vector<std::string>& parameters);
-		ParameterObserverScalar(
+		ParameterObserverHistogram();
+		ParameterObserverHistogram(std::vector<std::string>& parameters);
+		ParameterObserverHistogram(
 		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverScalar();
-
-		virtual bool filter(const std::string& param);
+		~ParameterObserverHistogram();
 
 		virtual void on_next(const TimedObservedValue& value);
 		virtual void on_error(std::exception_ptr);
@@ -64,5 +62,5 @@ namespace shogun
 	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERSCALAR_H
+#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 #endif // HAVE_TFLOGGER
