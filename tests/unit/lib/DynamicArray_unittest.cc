@@ -62,9 +62,10 @@ TYPED_TEST(CDynamicArrayFixture, set_array)
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
+	auto prng = std::unique_ptr<CRandom>(new CRandom());
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)prng->random(1, 10);
 	}
 	this->wrapper_array->set_array(array, 5);
 
@@ -79,9 +80,10 @@ TYPED_TEST(CDynamicArrayFixture, set_array)
 TYPED_TEST(CDynamicArrayFixture, const_set_array)
 {
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
+	auto prng = std::unique_ptr<CRandom>(new CRandom());
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)prng->random(1, 10);
 	}
 	const TypeParam* const_array = array;
 	this->wrapper_array->reset_array();

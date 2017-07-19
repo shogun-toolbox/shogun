@@ -1,4 +1,4 @@
-Math:init_random(1)
+set_global_seed(1)
 
 CSVFile f_feats_train("../../data/classifier_4class_2d_linear_features_train.dat")
 CSVFile f_feats_test("../../data/classifier_4class_2d_linear_features_test.dat")

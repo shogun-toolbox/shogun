@@ -61,6 +61,7 @@ TEST(CrossValidationMMD, biased_full)
 	const float64_t difference=0.5;
 	const float64_t alpha=0.05;
 	const auto stype=ST_BIASED_FULL;
+	set_global_seed(12345);
 
 	auto gen_p=some<CMeanShiftDataGenerator>(0, dim, 0);
 	auto gen_q=some<CMeanShiftDataGenerator>(difference, dim, 0);
@@ -91,7 +92,6 @@ TEST(CrossValidationMMD, biased_full)
 	cv.m_num_runs=num_runs;
 	cv.m_rejections=SGMatrix<float64_t>(num_runs*num_folds, num_kernels);
 
-	set_global_seed(12345);
 	cv(kernel_mgr);
 	kernel_mgr.unset_precomputed_distance();
 
@@ -105,7 +105,6 @@ TEST(CrossValidationMMD, biased_full)
 	permutation_mmd.m_stype=stype;
 	permutation_mmd.m_num_null_samples=num_null_samples;
 
-	set_global_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
 		CKernel* kernel=kernel_mgr.kernel_at(k);
