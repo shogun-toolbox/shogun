@@ -35,34 +35,48 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
 
-#include <shogun/lib/ParameterObserverTensorBoard.h>
+using namespace shogun;
 
-namespace shogun
+ParameterObserverScalar::ParameterObserverScalar()
+    : ParameterObserverTensorBoard()
 {
-	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * histograms, given object emitted from a parameter observable.
-	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard
-	{
-
-	public:
-		ParameterObserverHistogram();
-		ParameterObserverHistogram(std::vector<std::string>& parameters);
-		ParameterObserverHistogram(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverHistogram();
-
-		virtual bool filter(const std::string& param);
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
-		virtual void on_complete();
-	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+ParameterObserverScalar::ParameterObserverScalar(
+    std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(parameters)
+{
+}
+
+ParameterObserverScalar::ParameterObserverScalar(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
+{
+}
+
+ParameterObserverScalar::~ParameterObserverScalar()
+{
+}
+
+void ParameterObserverScalar::on_next(const TimedObservedValue& value)
+{
+	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type())
+
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_scalar(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void ParameterObserverScalar::on_error(std::exception_ptr)
+{
+}
+
+void ParameterObserverScalar::on_complete()
+{
+}
+
 #endif // HAVE_TFLOGGER

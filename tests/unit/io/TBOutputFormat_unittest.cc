@@ -59,10 +59,8 @@ void test_case_scalar(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	ObservedValue emitted_value;
-	emitted_value.step = 1;
-	emitted_value.name = "test";
-	emitted_value.value = erase_type(v);
+	std::string param_name = "test";
+	ObservedValue emitted_value{1, param_name, erase_type(v), TENSORBOARD};
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -79,10 +77,8 @@ void test_case_scalar_error(T value_val)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	ObservedValue emitted_value;
-	emitted_value.step = 1;
-	emitted_value.name = "test";
-	emitted_value.value = erase_type(v);
+	std::string param_name = "test";
+	ObservedValue emitted_value{1, param_name, erase_type(v), TENSORBOARD};
 
 	std::string node_name = "node";
 	EXPECT_THROW(
@@ -109,10 +105,8 @@ void test_case_vector(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	ObservedValue emitted_value;
-	emitted_value.step = 1;
-	emitted_value.name = "test";
-	emitted_value.value = erase_type(v);
+	std::string param_name = "test";
+	ObservedValue emitted_value{1, param_name, erase_type(v), TENSORBOARD};
 
 	std::string node_name = "node";
 	auto event_gen =
@@ -132,10 +126,8 @@ void test_case_vector_error(std::vector<T> v)
 	TBOutputFormat tmp;
 
 	time_point timestamp;
-	ObservedValue emitted_value;
-	emitted_value.step = 1;
-	emitted_value.name = "test";
-	emitted_value.value = erase_type(v);
+	std::string param_name = "test";
+	ObservedValue emitted_value{1, param_name, erase_type(v), TENSORBOARD};
 
 	std::string node_name = "node";
 	EXPECT_THROW(
