@@ -23,32 +23,15 @@ namespace shogun
 {
 #ifdef USE_INT32
 %rename(pow_int32) CMath::pow(int32_t,int32_t);
-%rename(random_int32) CMath::random(int32_t,int32_t);
-#endif
-
-#ifdef USE_UINT32
-%rename(random_uint32) CMath::random(uint32_t,uint32_t);
-#endif
-
-#ifdef USE_INT64
-%rename(random_int64) CMath::random(int64_t,int64_t);
-#endif
-
-#ifdef USE_UINT64
-%rename(random_uint64) CMath::random(uint64_t,uint64_t);
 #endif
 
 #ifdef USE_FLOAT32
-%rename(normal_random_float32) CMath::normal_random(float32_t,float32_t);
-%rename(random_float32) CMath::random(float32_t,float32_t);
 %rename(sqrt_float32) CMath::sqrt(float32_t);
 #endif
 
 #ifdef USE_FLOAT64
-%rename(normal_random_float64) CMath::normal_random(float64_t,float64_t);
 %rename(pow_float64_int32) CMath::pow(float64_t,int32_t);
 %rename(pow_float64_float64) CMath::pow(float64_t,float64_t);
-%rename(random_float64) CMath::random(float64_t,float64_t);
 %rename(sqrt_float64) CMath::sqrt(float64_t);
 }
 #endif

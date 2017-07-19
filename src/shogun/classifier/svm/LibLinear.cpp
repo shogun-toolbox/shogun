@@ -325,7 +325,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	auto prng = get_prng();
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
@@ -336,7 +337,9 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		for (i = 0; i < active_size; i++)
 		{
-			int j = m_rng->random(i, active_size - 1);
+			std::uniform_int_distribution<index_t> uniform_int_dist(
+			    i, active_size - 1);
+			int j = uniform_int_dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -538,7 +541,8 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	auto prng = get_prng();
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
@@ -548,7 +552,9 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = m_rng->random(j, active_size - 1);
+			std::uniform_int_distribution<index_t> uniform_int_dist(
+			    j, active_size - 1);
+			int i = uniform_int_dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -912,7 +918,8 @@ void CLibLinear::solve_l1r_lr(
 
 	auto pb = progress(range(10));
 	CTime start_time;
-	while (iter < get_max_iterations() && !cancel_computation())
+	auto prng = get_prng();
+	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 &&
 		    start_time.cur_time_diff() > m_max_train_time)
@@ -922,7 +929,9 @@ void CLibLinear::solve_l1r_lr(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = m_rng->random(j, active_size - 1);
+			std::uniform_int_distribution<index_t> uniform_int_dist(
+			    j, active_size - 1);
+			int i = uniform_int_dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -1267,11 +1276,13 @@ void CLibLinear::solve_l2r_lr_dual(
 	}
 
 	auto pb = progress(range(10));
+	auto prng = get_prng();
 	while (iter < max_iter)
 	{
 		for (i = 0; i < l; i++)
 		{
-			int j = m_rng->random(i, l - 1);
+			std::uniform_int_distribution<index_t> uniform_int_dist(i, l - 1);
+			int j = uniform_int_dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;

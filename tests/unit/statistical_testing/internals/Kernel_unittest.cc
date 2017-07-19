@@ -43,10 +43,11 @@ TEST(SelfAdjointKernelFunctor, kernel)
 	const index_t dim=3;
 	const index_t num_vec=8;
 	const float64_t sigma=0.1;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	SGMatrix<float64_t> data(dim, num_vec);
 	for (auto i=0; i<dim*num_vec; ++i)
-		data.matrix[i] = m_rng->random(0.0, 0.1);
+		data.matrix[i] = dist(prng);
 	auto feats=some<CDenseFeatures<float64_t> >(data);
 
 	auto kernel=some<CGaussianKernel>(10, 2*sigma*sigma);

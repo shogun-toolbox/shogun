@@ -459,6 +459,8 @@ protected:
 
 	/** Parameters */
 	SGVector<float64_t> m_params;
+
+	std::mt19937_64 m_rng;
 };
 
 }

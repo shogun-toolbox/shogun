@@ -45,13 +45,15 @@ using namespace shogun;
  */
 TEST(NeuralSoftmaxLayer, compute_activations)
 {
+	set_global_seed(100);
 	CNeuralSoftmaxLayer layer(9);
 
 	// initialize some random inputs
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);
@@ -117,12 +119,14 @@ TEST(NeuralSoftmaxLayer, compute_activations)
  */
 TEST(NeuralSoftmaxLayer, compute_error)
 {
+	set_global_seed(100);
 	CNeuralSoftmaxLayer layer(9);
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);
@@ -140,9 +144,10 @@ TEST(NeuralSoftmaxLayer, compute_error)
 	layer.initialize_parameters(params, param_regularizable, 1.0);
 	layer.set_batch_size(x.num_cols);
 
+	std::uniform_real_distribution<float64_t> dist_s(0.0, 1.0);
 	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = m_rng->random(0.0, 1.0);
+		y[i] = dist_s(prng);
 
 	// make sure y is in the form of a probability distribution
 	for (int32_t j=0; j<y.num_cols; j++)
@@ -178,14 +183,16 @@ TEST(NeuralSoftmaxLayer, compute_error)
  */
 TEST(NeuralSoftmaxLayer, compute_local_gradients)
 {
+	set_global_seed(100);
 	CNeuralSoftmaxLayer layer(9);
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
+	CNeuralInputLayer* input = new CNeuralInputLayer(x.num_rows);
 	input->set_batch_size(x.num_cols);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
@@ -201,9 +208,10 @@ TEST(NeuralSoftmaxLayer, compute_local_gradients)
 	layer.initialize_parameters(params, param_regularizable, 1.0);
 	layer.set_batch_size(x.num_cols);
 
+	std::uniform_real_distribution<float64_t> dist_s(0.0, 1.0);
 	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = m_rng->random(0.0, 1.0);
+		y[i] = dist_s(prng);
 
 	// make sure y is in the form of a probability distribution
 	for (int32_t j=0; j<y.num_cols; j++)

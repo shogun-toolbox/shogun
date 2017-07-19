@@ -33,8 +33,8 @@
 #ifndef GAUSSIANDISTRIBUTION_H
 #define GAUSSIANDISTRIBUTION_H
 
+#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
-
 
 #include <shogun/distributions/classical/ProbabilityDistribution.h>
 #include <shogun/lib/SGVector.h>
@@ -86,8 +86,9 @@ public:
 	 * will be modified.
 	 * @return matrix with samples (column vectors)
 	 */
-	virtual SGMatrix<float64_t> sample(int32_t num_samples,
-			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const;
+	virtual SGMatrix<float64_t> sample(
+		int32_t num_samples,
+		SGMatrix<float64_t> pre_samples = SGMatrix<float64_t>());
 
 	/** Computes the log-pdf for all provided samples. That is
 	 *
@@ -139,6 +140,8 @@ protected:
 	/** Lower factor of covariance matrix (depends on factorization type).
 	 * Covariance (approximation) is given by \f$\Sigma=LL^T\f$ */
 	SGMatrix<float64_t> m_L;
+
+	std::mt19937_64 m_rng;
 };
 
 }

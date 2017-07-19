@@ -61,19 +61,23 @@ TEST(SubsequenceStringKernel, psd_random_feat)
 	const index_t min_len=max_len/2;
 
 	SGStringList<char> list(num_strings, max_len);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_cl(min_len, max_len);
+	std::uniform_int_distribution<index_t> dist_str('A', 'Z');
+	std::uniform_int_distribution<index_t> dist_sl(1, min_len);
+	std::uniform_real_distribution<float64_t> dist_ld(0.0, 1.0);
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t cur_len = m_rng->random(min_len, max_len);
+		index_t cur_len = dist_cl(prng);
 		SGString<char> str(cur_len);
 		for (index_t l=0; l<cur_len; ++l)
-			str.string[l] = char(m_rng->random('A', 'Z'));
+			str.string[l] = char(dist_str(prng));
 		list.strings[i]=str;
 	}
 
 	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
-	int32_t s_len = m_rng->random(1, min_len);
-	float64_t lambda = m_rng->random(0.0, 1.0);
+	int32_t s_len = dist_sl(prng);
+	float64_t lambda = dist_ld(prng);
 	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
 
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();

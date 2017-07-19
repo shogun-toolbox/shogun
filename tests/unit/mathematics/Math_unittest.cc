@@ -388,25 +388,26 @@ TEST(CMath, permute)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	auto random = std::unique_ptr<CRandom>(new CRandom(2));
-	CMath::permute(v, random.get());
-	EXPECT_EQ(v[0], 2);
-	EXPECT_EQ(v[1], 1);
+	set_global_seed(2);
+	CMath::permute(v);
+	EXPECT_EQ(v[0], 0);
+	EXPECT_EQ(v[1], 2);
 	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 0);
+	EXPECT_EQ(v[3], 1);
 }
 
 TEST(CMath, permute_with_random)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	auto random = std::unique_ptr<CRandom>(new CRandom(2));
-	CMath::permute(v, random.get());
+	set_global_seed(2);
+	auto prng = get_prng();
+	CMath::permute(v, prng);
 
-	EXPECT_EQ(v[0], 2);
-	EXPECT_EQ(v[1], 1);
+	EXPECT_EQ(v[0], 0);
+	EXPECT_EQ(v[1], 2);
 	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 0);
+	EXPECT_EQ(v[3], 1);
 }
 
 TEST(CMath,misc)

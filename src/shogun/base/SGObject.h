@@ -23,6 +23,7 @@
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -39,7 +40,6 @@ class Parallel;
 class Parameter;
 class CSerializableFile;
 class ParameterObserverInterface;
-class CRandom;
 
 template <class T, class K> class CMap;
 
@@ -742,10 +742,6 @@ public:
 
 	/** Hash of parameter values*/
 	uint32_t m_hash;
-
-protected:
-	/** random generator */
-	std::unique_ptr<CRandom> m_rng;
 
 private:
 

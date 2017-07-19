@@ -87,9 +87,10 @@ void CRBM::initialize_neural_network(float64_t sigma)
 {
 	m_num_params = m_num_visible + m_num_hidden + m_num_visible*m_num_hidden;
 	m_params = SGVector<float64_t>(m_num_params);
+	std::normal_distribution<float64_t> dist(0, sigma);
 
 	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = m_rng->normal_random(0.0, sigma);
+		m_params[i] = dist(m_rng);
 }
 
 void CRBM::set_batch_size(int32_t batch_size)
@@ -264,9 +265,10 @@ CDenseFeatures< float64_t >* CRBM::sample_group_with_evidence(int32_t V,
 
 void CRBM::reset_chain()
 {
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<m_num_visible; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			visible_state(i, j) = m_rng->random(0.0, 1.0) > 0.5;
+			visible_state(i, j) = dist(m_rng) > 0.5;
 }
 
 float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > buffer)
@@ -429,9 +431,10 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	if (buffer.num_rows==0)
 	buffer = SGMatrix<float64_t>(m_num_hidden, m_batch_size);
 
+	std::uniform_int_distribution<index_t> dist(0, m_num_visible - 1);
 	SGVector<int32_t> indices(m_batch_size);
 	for (int32_t i=0; i<m_batch_size; i++)
-		indices[i] = m_rng->random(0, m_num_visible - 1);
+		indices[i] = dist(m_rng);
 
 	float64_t f1 = free_energy(visible, buffer);
 
@@ -517,9 +520,10 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 
 void CRBM::sample_hidden(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
 {
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	int32_t length = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<length; i++)
-		result[i] = m_rng->random(0.0, 1.0) < mean[i];
+		result[i] = dist(m_rng) < mean[i];
 }
 
 void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
@@ -535,12 +539,12 @@ void CRBM::sample_visible(int32_t index,
 {
 	int32_t offset = m_visible_state_offsets->element(index);
 
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	if (m_visible_group_types->element(index)==RBMVUT_BINARY)
 	{
 		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			for (int32_t j=0; j<m_batch_size; j++)
-				result(i + offset, j) =
-				    m_rng->random(0.0, 1.0) < mean(i + offset, j);
+				result(i + offset, j) = dist(m_rng) < mean(i + offset, j);
 	}
 
 	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
@@ -551,7 +555,7 @@ void CRBM::sample_visible(int32_t index,
 
 		for (int32_t j=0; j<m_batch_size; j++)
 		{
-			int32_t r = m_rng->random(0.0, 1.0);
+			int32_t r = dist(m_rng);
 			float64_t sum = 0;
 			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			{
@@ -619,6 +623,7 @@ void CRBM::init()
 	m_visible_state_offsets = new CDynamicArray<int32_t>();
 	m_num_params = 0;
 	m_batch_size = 0;
+	m_rng = get_prng();
 
 	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", MS_NOT_AVAILABLE);
 	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", MS_NOT_AVAILABLE);

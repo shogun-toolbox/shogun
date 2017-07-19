@@ -135,7 +135,6 @@ float64_t CInference::get_marginal_likelihood_estimate(
 		cov(i,i)+=ridge_size;
 
 	SGVector<float64_t> mean=get_posterior_mean();
-
 	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
 	SGMatrix<float64_t> samples=post_approx->sample(num_importance_samples);
 

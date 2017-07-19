@@ -114,11 +114,11 @@ struct CrossValidationMMD : PermutationMMD
 						m_permuted_inds=SGVector<index_t>(m_xy_inds.size());
 
 					m_inverted_permuted_inds.set_const(-1);
-					auto prng = std::unique_ptr<CRandom>(new CRandom());
+					auto prng = get_prng();
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(m_permuted_inds, prng.get());
+						CMath::permute(m_permuted_inds, prng);
 
 						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();

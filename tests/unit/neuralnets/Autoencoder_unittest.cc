@@ -44,7 +44,8 @@ using namespace shogun;
 
 TEST(Autoencoder, train)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-1.0, 1.0);
 
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
@@ -52,7 +53,7 @@ TEST(Autoencoder, train)
 
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = m_rng->random(-1.0, 1.0);
+		data[i] = dist(prng);
 
 	CAutoencoder ae(num_features, new CNeuralRectifiedLinearLayer(num_hid));
 

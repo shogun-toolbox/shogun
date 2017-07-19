@@ -1,8 +1,8 @@
+#include <shogun/base/init.h>
 #include <shogun/io/CSVFile.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/Random.h>
+#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
 
 #include <cstdio>
 #include <cstring>
@@ -13,12 +13,13 @@ using namespace shogun;
 
 TEST(CSVFileTest, vector_int32)
 {
-	CRandom* rand=new CRandom();
+	auto prng = get_prng();
 
 	int32_t len=512*512;
+	std::uniform_int_distribution<index_t> dist(0, len);
 	SGVector<int32_t> data(len);
 	for (int32_t i=0; i<len; i++)
-		data[i]=(int32_t) rand->random(0, len);
+		data[i] = (int32_t)dist(prng);
 
 	CCSVFile* fin;
 	CCSVFile* fout;
@@ -39,18 +40,18 @@ TEST(CSVFileTest, vector_int32)
 		EXPECT_EQ(data_from_file[i], data[i]);
 	}
 	SG_UNREF(fin);
-	SG_FREE(rand);
 	unlink("CSVFileTest_vector_int32_output.txt");
 }
 
 TEST(CSVFileTest, vector_float64)
 {
-	CRandom* rand=new CRandom();
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	int32_t len=128*128;
 	SGVector<float64_t> data(len);
 	for (int32_t i=0; i<len; i++)
-		data[i]=(float64_t) rand->random(0., 1.);
+		data[i] = (float64_t)dist(prng);
 
 	CCSVFile* fin;
 	CCSVFile* fout;
@@ -71,21 +72,21 @@ TEST(CSVFileTest, vector_float64)
 		EXPECT_NEAR(data_from_file[i], data[i], 1E-14);
 	}
 	SG_UNREF(fin);
-	SG_FREE(rand);
 	unlink("CSVFileTest_vector_float64_output.txt");
 }
 
 TEST(CSVFileTest, matrix_int32)
 {
-	CRandom* rand=new CRandom();
+	auto prng = get_prng();
 
-	int32_t num_rows=512;
-	int32_t num_cols=512;
-	SGMatrix<int32_t> data(num_rows, num_cols);
-	for (int32_t i=0; i<num_rows; i++)
+	index_t num_rows = 512;
+	index_t num_cols = 512;
+	SGMatrix<index_t> data(num_rows, num_cols);
+	std::uniform_int_distribution<index_t> dist(0, num_rows);
+	for (index_t i = 0; i < num_rows; i++)
 	{
-		for (int32_t j=0; j<num_cols; j++)
-			data(i, j)=(int32_t) rand->random(0, num_rows);
+		for (index_t j = 0; j < num_cols; j++)
+			data(i, j) = (index_t)dist(prng);
 	}
 
 	CCSVFile* fin;
@@ -110,13 +111,13 @@ TEST(CSVFileTest, matrix_int32)
 	}
 
 	SG_UNREF(fin);
-	SG_FREE(rand);
 	unlink("CSVFileTest_matrix_int32_output.txt");
 }
 
 TEST(CSVFileTest, matrix_float64)
 {
-	CRandom* rand=new CRandom();
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	int32_t num_rows=128;
 	int32_t num_cols=128;
@@ -124,7 +125,7 @@ TEST(CSVFileTest, matrix_float64)
 	for (int32_t i=0; i<num_rows; i++)
 	{
 		for (int32_t j=0; j<num_cols; j++)
-			data(i, j)=(float64_t) rand->random(0., 1.);
+			data(i, j) = (float64_t)dist(prng);
 	}
 
 	CCSVFile* fin;
@@ -149,7 +150,6 @@ TEST(CSVFileTest, matrix_float64)
 	}
 
 	SG_UNREF(fin);
-	SG_FREE(rand);
 	unlink("CSVFileTest_matrix_float64_output.txt");
 }
 

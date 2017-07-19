@@ -249,12 +249,13 @@ namespace shogun
 
 			LaRankPattern & sample ()
 			{
-			    auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+			    auto prng = get_prng();
+			    std::uniform_int_distribution<index_t> dist(
+			        uint32_t(0), uint32_t(patterns.size() - 1));
 			    ASSERT(!empty())
 			    while (true)
 			    {
-				    uint32_t r = m_rng->random(
-				        uint32_t(0), uint32_t(patterns.size() - 1));
+				    uint32_t r = dist(prng);
 				    if (patterns[r].exists())
 					    return patterns[r];
 			    }

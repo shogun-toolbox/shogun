@@ -20,6 +20,7 @@ using namespace Eigen;
 
 TEST(NormalSampler, sample)
 {
+	set_global_seed(1);
 	const index_t dimension=2;
 	const index_t num_samples=5000;
 	SGMatrix<float64_t> samples(num_samples, dimension);

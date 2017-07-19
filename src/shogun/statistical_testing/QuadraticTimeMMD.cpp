@@ -401,13 +401,15 @@ SGVector<float64_t> CQuadraticTimeMMD::Self::sample_null_spectrum()
 
 	SGVector<float64_t> null_samples(owner.get_num_null_samples());
 
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	/* finally, sample from null distribution */
 	for (auto i=0; i<null_samples.vlen; ++i)
 	{
 		float64_t null_sample=0;
 		for (index_t j=0; j<num_eigenvalues; ++j)
 		{
-			float64_t z_j = owner.m_rng->std_normal_distrib();
+			float64_t z_j = dist(prng);
 			float64_t multiple=CMath::sq(z_j);
 
 			/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/

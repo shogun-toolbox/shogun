@@ -16,7 +16,8 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	int T = C.dims[2];
 
 	SGMatrix<float64_t> V;
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	if (V0.num_rows == N && V0.num_cols == N)
 	{
 		V = V0.clone();
@@ -28,7 +29,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		for (int i = 0; i < N; i++)
 		{
 			for (int j = 0; j < N; j++)
-				V(i, j) = rng->std_normal_distrib();
+				V(i, j) = dist(prng);
 		}
 	}
 

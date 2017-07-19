@@ -28,11 +28,12 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 
 	// diagonal non-Hermintian matrix with random complex entries
 	SGVector<complex128_t> diag(size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t real = m_rng->std_normal_distrib();
-		float64_t imag = m_rng->std_normal_distrib();
+		float64_t real = dist(prng);
+		float64_t imag = dist(prng);
 		diag[i]=complex128_t(real, imag);
 	}
 	A->set_diagonal(diag);
@@ -40,7 +41,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	// vector b of the system
 	SGVector<float64_t> b(size);
 	for (index_t i=0; i<size; ++i)
-		b[i] = m_rng->std_normal_distrib();
+		b[i] = dist(prng);
 
 	// Solve with COCG
 	CConjugateOrthogonalCGSolver* cocg_linear_solver

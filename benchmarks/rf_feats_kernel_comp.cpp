@@ -29,7 +29,8 @@ int main(int argv, char** argc)
 	float64_t lin_C = 0.1;
 	float64_t non_lin_C = 0.1;
 	CPRCEvaluation* evaluator = new CPRCEvaluation();
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<int32_t> dist(0, 1);
 	CSqrtDiagKernelNormalizer* normalizer = new CSqrtDiagKernelNormalizer(true);
 	SG_REF(normalizer);
 	for (index_t d=0; d<4; d++)
@@ -49,12 +50,12 @@ int main(int argv, char** argc)
 					if ((i+j)%2==0)
 					{
 						labs[i] = -1;
-						mat(j, i) = m_rng->random(0, 1) + 0.5;
+						mat(j, i) = dist(prng) + 0.5;
 					}
 					else
 					{
 						labs[i] = 1;
-						mat(j, i) = m_rng->random(0, 1) - 0.5;
+						mat(j, i) = dist(prng) - 0.5;
 					}
 				}
 			}

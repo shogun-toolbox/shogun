@@ -45,13 +45,14 @@ TEST(DenseFeaturesTest,create_merged_copy)
 	SGMatrix<float64_t> data_1(dim,n_1);
 	for (index_t i=0; i<dim*n_1; ++i)
 		data_1.matrix[i]=i;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 
 	//data_1.display_matrix("data_1");
 
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i] = m_rng->std_normal_distrib();
+		data_2.matrix[i] = dist(prng);
 
 	//data_2.display_matrix("data_2");
 
@@ -132,11 +133,12 @@ TEST(DenseFeaturesTest, copy_dimension_subset)
 		data.matrix[i]=i;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(0, dim - 1);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i] = m_rng->random(0, dim - 1);
+		dims[i] = dist(prng);
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);
@@ -163,17 +165,23 @@ TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 		data.matrix[i]=i;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 
 	SGVector<index_t> inds(n/2);
 	for (index_t i=0; i<inds.vlen; ++i)
-		inds[i] = m_rng->random(0, n - 1);
+	{
+		std::uniform_int_distribution<index_t> dist_inds(0, n - 1);
+		inds[i] = dist_inds(prng);
+	}
 
 	features->add_subset(inds);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i] = m_rng->random(0, dim - 1);
+	{
+		std::uniform_int_distribution<index_t> dist_dim(0, dim - 1);
+		dims[i] = dist_dim(prng);
+	}
 
 	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
 		features->copy_dimension_subset(dims);

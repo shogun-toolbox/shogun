@@ -33,7 +33,6 @@ namespace shogun
 	template <class T> class SGSparseVector;
 	template <class T> class SGMatrix;
 	class CFile;
-	class CRandom;
 
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData

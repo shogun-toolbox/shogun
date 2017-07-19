@@ -45,13 +45,15 @@ using namespace shogun;
  */
 TEST(NeuralLeakyRectifiedLinearLayer, compute_activations)
 {
+	set_global_seed(100);
 	CNeuralLeakyRectifiedLinearLayer layer(9);
 	float64_t alpha = 0.02;
 	// initialize some random inputs
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(-10, 10);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);

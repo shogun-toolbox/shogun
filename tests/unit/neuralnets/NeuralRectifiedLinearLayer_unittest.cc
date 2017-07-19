@@ -45,13 +45,15 @@ using namespace shogun;
  */
 TEST(NeuralRectifiedLinearLayer, compute_activations)
 {
+	set_global_seed(100);
 	CNeuralRectifiedLinearLayer layer(9);
 
 	// initialize some random inputs
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
 	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
 	input->set_batch_size(x.num_cols);
@@ -108,19 +110,21 @@ TEST(NeuralRectifiedLinearLayer, compute_activations)
  */
 TEST(NeuralRectifiedLinearLayer, compute_parameter_gradients_hidden)
 {
+	set_global_seed(100);
 	SGMatrix<float64_t> x1(12,3);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
-		x1[i] = m_rng->random(-10.0, 10.0);
+		x1[i] = dist(prng);
 
 	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	SGMatrix<float64_t> x2(7,3);
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
-		x2[i] = m_rng->random(-10.0, 10.0);
+		x2[i] = dist(prng);
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	CNeuralInputLayer* input2 = new CNeuralInputLayer(x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
 	// initialize hidden the layer
@@ -139,8 +143,9 @@ TEST(NeuralRectifiedLinearLayer, compute_parameter_gradients_hidden)
 	input_indices_out[0] = 2;
 
 	SGMatrix<float64_t> y(9,3);
+	std::uniform_real_distribution<float64_t> dist_s(0.0, 1.0);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = m_rng->random(0.0, 1.0);
+		y[i] = dist_s(prng);
 
 	// initialize the hidden layer
 	layer_hid->initialize_neural_layer(layers, input_indices_hid);

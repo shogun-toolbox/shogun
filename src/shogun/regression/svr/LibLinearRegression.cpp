@@ -205,14 +205,17 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(SGVector<float64_t>& w, const libl
 	}
 
 	auto pb = progress(range(10));
+
 	while(iter < max_iter)
 	{
 		Gmax_new = 0;
 		Gnorm1_new = 0;
+		auto prng = get_prng();
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = m_rng->random(i, active_size - 1);
+			std::uniform_int_distribution<index_t> dist(i, active_size - 1);
+			int j = dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 

@@ -230,7 +230,7 @@ void CEPInferenceMethod::update()
 
 	float64_t nlZ_old=CMath::INFTY;
 	uint32_t sweep=0;
-	auto prng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	while ((CMath::abs(m_nlZ-nlZ_old)>m_tol && sweep<m_max_sweep) ||
 			sweep<m_min_sweep)
 	{
@@ -238,7 +238,7 @@ void CEPInferenceMethod::update()
 		sweep++;
 
 		// shuffle random permutation
-		CMath::permute(v, prng.get());
+		CMath::permute(v, prng);
 
 		for (index_t j=0; j<n; j++)
 		{

@@ -510,7 +510,6 @@ void CSGObject::init()
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
 	m_gradient_parameters=new Parameter();
-	m_rng = std::unique_ptr<CRandom>(new CRandom());
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;

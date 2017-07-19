@@ -25,10 +25,11 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	index_t dim=2;
 	char fname[] = "StreamingDenseFeatures_reading.XXXXXX";
 	generate_temp_filename(fname);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i] = m_rng->std_normal_distrib();
+		data.matrix[i] = dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CCSVFile* saved_features = new CCSVFile(fname, 'w');
@@ -68,10 +69,11 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 {
 	index_t n=20;
 	index_t dim=2;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i] = m_rng->std_normal_distrib();
+		data.matrix[i] = dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CStreamingDenseFeatures<float64_t>* feats = new CStreamingDenseFeatures<float64_t>(orig_feats);
@@ -100,10 +102,11 @@ TEST(StreamingDenseFeaturesTest, reset_stream)
 {
 	index_t n=20;
 	index_t dim=2;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> data(dim,n);
 	for (index_t i=0; i<dim*n; ++i)
-		data.matrix[i] = m_rng->std_normal_distrib();
+		data.matrix[i] = dist(prng);
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
 	CStreamingDenseFeatures<float64_t>* feats=new CStreamingDenseFeatures<float64_t>(orig_feats);

@@ -251,6 +251,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 	auto pb = progress(range(10));
 	CTime start_time;
+	auto prng = get_prng();
 	while (iter < max_iterations && !cancel_computation())
 	{
 		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
@@ -261,7 +262,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = m_rng->random(i, active_size - 1);
+			std::uniform_int_distribution<index_t> dist(i, active_size - 1);
+			int j = dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 

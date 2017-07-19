@@ -41,7 +41,9 @@ using namespace shogun;
 
 TEST(DeepBeliefNetwork, convert_to_neural_network)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	set_global_seed(100);
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	CDeepBeliefNetwork dbn(5, RBMVUT_BINARY);
 	dbn.add_hidden_layer(6);
@@ -54,7 +56,7 @@ TEST(DeepBeliefNetwork, convert_to_neural_network)
 
 	SGMatrix<float64_t> x(5, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(0.0, 1.0);
+		x[i] = dist(prng);
 
 	CDenseFeatures<float64_t> f(x);
 

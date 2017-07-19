@@ -46,14 +46,15 @@ using namespace shogun;
 TEST(NeuralLogisticLayer, compute_activations)
 {
 	CNeuralLogisticLayer layer(9);
-
+	set_global_seed(100);
 	// initialize some random inputs
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
+	CNeuralInputLayer* input = new CNeuralInputLayer(x.num_rows);
 	input->set_batch_size(x.num_cols);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
@@ -108,13 +109,14 @@ TEST(NeuralLogisticLayer, compute_activations)
 TEST(NeuralLogisticLayer, compute_local_gradients)
 {
 	CNeuralLogisticLayer layer(9);
-
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	set_global_seed(100);
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(-10.0, 10.0);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = m_rng->random(-10.0, 10.0);
+		x[i] = dist(prng);
 
-	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
+	CNeuralInputLayer* input = new CNeuralInputLayer(x.num_rows);
 	input->set_batch_size(x.num_cols);
 
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
@@ -131,8 +133,9 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 	layer.set_batch_size(x.num_cols);
 
 	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
+	std::uniform_real_distribution<float64_t> dist_s(0.0, 1.0);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
-		y[i] = m_rng->random(0.0, 1.0);
+		y[i] = dist_s(prng);
 
 	// compute the layer's local gradients
 	input->compute_activations(x);

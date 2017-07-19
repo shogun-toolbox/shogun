@@ -16,14 +16,15 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 	SGMatrix<float64_t> matrix_test(num_class, num_vec);
 	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
 	CMulticlassLabels* labels_test=new CMulticlassLabels(num_vec);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<num_vec; ++i)
 	{
 		index_t label=i%num_class;
 		for (index_t j=0; j<num_feat; ++j)
 		{
-			matrix(j, i) = m_rng->std_normal_distrib();
-			matrix_test(j, i) = m_rng->std_normal_distrib();
+			matrix(j, i) = dist(prng);
+			matrix_test(j, i) = dist(prng);
 			labels->set_label(i, label);
 			labels_test->set_label(i, label);
 		}

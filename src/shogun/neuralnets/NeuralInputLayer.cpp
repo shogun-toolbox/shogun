@@ -58,6 +58,7 @@ CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height,
 
 void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 {
+	auto prng = get_prng();
 	if (m_start_index == 0)
 	{
 		sg_memcpy(m_activations.matrix, inputs.matrix,
@@ -71,9 +72,10 @@ void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 	}
 	if (gaussian_noise > 0)
 	{
+		std::normal_distribution<float64_t> dist(0.0, gaussian_noise);
 		int32_t len = m_num_neurons*m_batch_size;
 		for (int32_t k=0; k<len; k++)
-			m_activations[k] += m_rng->normal_random(0.0, gaussian_noise);
+			m_activations[k] += dist(prng);
 	}
 }
 

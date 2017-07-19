@@ -112,7 +112,7 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.571428, c->get_oob_error(eval), 1e-6);
+	EXPECT_NEAR(0.78571428, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -146,7 +146,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.571428, c->get_oob_error(eval), 1e-6);
+	EXPECT_NEAR(0.78571428, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -205,9 +205,12 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 
 	SGMatrix<float64_t> data_B(1, num_train, false);
 
+	auto prng = get_prng();
+	std::uniform_int_distribution<int32_t> dist_05(0, 5);
+	std::uniform_int_distribution<int32_t> dist_510(5, 10);
 	for (auto i = 0; i < num_train; ++i)
 	{
-		data_B(0, i) = i < 5 ? CMath::random(0, 5) : CMath::random(5, 10);
+		data_B(0, i) = i < 5 ? dist_05(prng) : dist_510(prng);
 	}
 	CDenseFeatures<float64_t>* features_train =
 	    new CDenseFeatures<float64_t>(data_B);
@@ -217,10 +220,11 @@ TEST_F(RandomForest, score_consistent_with_binary_trivial_data)
 	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
 
 	SGMatrix<float64_t> test_data(1, num_test, false);
-
+	std::uniform_int_distribution<int32_t> dist_04(0, 4);
+	std::uniform_int_distribution<int32_t> dist_610(6, 10);
 	for (auto i = 0; i < num_test; ++i)
 	{
-		test_data(0, i) = i < 5 ? CMath::random(0, 4) : CMath::random(6, 10);
+		test_data(0, i) = i < 5 ? dist_04(prng) : dist_610(prng);
 	}
 
 	CDenseFeatures<float64_t>* features_test =

@@ -377,13 +377,14 @@ TEST(LeastAngleRegression, cholesky_insert)
 	SGVector<float64_t> vec(num_vec);
 	vec.random(0.0,1.0);
 	Map<VectorXd> map_vec(vec.vector, vec.size());
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	for (index_t i=0; i<num_vec; i++)
 	{
 		for (index_t j=0; j<num_feats-1; j++)
 		{
-			mat(i, j) = m_rng->random(0.0, 1.0);
+			mat(i, j) = dist(prng);
 			matnew(i,j)=mat(i,j);
 		}
 	}
@@ -415,11 +416,12 @@ TEST(LeastAngleRegression, ols_equivalence)
 {
 	int32_t n_feat=25, n_vec=100;
 	SGMatrix<float64_t> data(n_feat, n_vec);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (index_t i=0; i<n_feat; i++)
 	{
 		for (index_t j=0; j<n_vec; j++)
-			data(i, j) = m_rng->random(0.0, 1.0);
+			data(i, j) = dist(prng);
 	}
 
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);
