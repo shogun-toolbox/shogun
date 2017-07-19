@@ -134,8 +134,4 @@
 /* does the compiler support abi::__cxa_demangle */
 #cmakedefine HAVE_CXA_DEMANGLE 1
 
-/* random related defines */
-#cmakedefine HAVE_ARC4RANDOM 1
-#cmakedefine DEV_RANDOM "@DEV_RANDOM@"
-
 #endif /* __SHOGUN_LIB_CONFIG_H__ */
