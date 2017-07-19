@@ -112,7 +112,8 @@ TEST(RBM, free_energy_binary)
 
 TEST(RBM, free_energy_gradients)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	set_global_seed(100);
+	auto prng = get_prng();
 
 	int32_t num_visible = 15;
 	int32_t num_hidden = 6;
@@ -126,7 +127,7 @@ TEST(RBM, free_energy_gradients)
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
-		V[i] = m_rng->random_64() < 0.7;
+		V[i] = prng() < 0.7;
 
 	SGVector<float64_t> gradients(rbm.get_num_parameters());
 	rbm.free_energy_gradients(V, gradients);

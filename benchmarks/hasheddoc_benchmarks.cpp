@@ -26,13 +26,14 @@ int main(int argv, char** argc)
 	int32_t num_strings = 5000;
 	int32_t max_str_length = 10000;
 	SGStringList<char> string_list(num_strings, max_str_length);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist('A', 'Z');
 	SG_SPRINT("Creating features...\n");
 	for (index_t i=0; i<num_strings; i++)
 	{
 		string_list.strings[i] = SGString<char>(max_str_length);
 		for (index_t j=0; j<max_str_length; j++)
-			string_list.strings[i].string[j] = (char)m_rng->random('A', 'Z');
+			string_list.strings[i].string[j] = (char)dist(prng);
 	}
 	SG_SPRINT("Features were created.\n");
 

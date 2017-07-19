@@ -325,7 +325,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	int32_t* idxs=SG_MALLOC(int32_t,N);
 	int32_t i, rnd;
 	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 
 	// reservoir sampling
 	for (i=0; i<N; i++)
@@ -334,7 +334,8 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 		permuted_idxs[i]=idxs[i];
 	for (i=sample_size; i<N; i++)
 	{
-		rnd = rng->random(1, i);
+		std::uniform_int_distribution<index_t> uniform_int_dist(1, i);
+		rnd = uniform_int_dist(prng);
 		if (rnd<sample_size)
 			permuted_idxs[rnd]=idxs[i];
 	}
@@ -712,13 +713,14 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
 	for( int32_t j=0; j<N; ++j )
 		for( int32_t i=0; i<dim; ++i )
-			S(i, j) = rng->std_normal_distrib();
+			S(i, j) = normal_dist(prng);
 
 	// the cholesky factorization c=L*U
 	MatrixXd U=c.llt().matrixU();
@@ -775,7 +777,8 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	typedef SparseMatrix<float64_t> MatrixType;
 	const MatrixType &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 
 	SimplicialLLT<MatrixType> llt;
 
@@ -783,7 +786,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> S(dim, N);
 	for( int32_t j=0; j<N; ++j )
 		for( int32_t i=0; i<dim; ++i )
-			S(i, j) = rng->std_normal_distrib();
+			S(i, j) = normal_dist(prng);
 
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 

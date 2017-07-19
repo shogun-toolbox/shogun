@@ -90,14 +90,16 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 
 	FILE* pfile = fopen(FNAME, "w");
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_m(-100, 100);
+	std::uniform_int_distribution<index_t> dist_s(1, 5);
 
 	for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
 	{
 		for ( int32_t j = 0 ; j < DIMS ; ++j )
 		{
-			means[j] = m_rng->random(-100, 100);
-			stds[j] = m_rng->random(1, 5);
+			means[j] = dist_m(prng);
+			stds[j] = dist_s(prng);
 		}
 
 		for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
@@ -108,8 +110,8 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 
 			for ( int32_t j = 0 ; j < DIMS ; ++j )
 			{
-				feats[(c * NUM_SAMPLES + i) * DIMS + j] =
-				    m_rng->normal_random(means[j], stds[j]);
+				std::normal_distribution<float64_t> dist(means[j], stds[j]);
+				feats[(c * NUM_SAMPLES + i) * DIMS + j] = dist(prng);
 
 				fprintf(pfile, " %d:%f", j+1, feats[(c*NUM_SAMPLES+i)*DIMS + j]);
 			}

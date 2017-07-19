@@ -128,7 +128,7 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 {
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
-
+	auto prng = get_prng();
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
 		float64_t* map_params = parameters.vector+m*num_parameters_per_map;
@@ -139,16 +139,18 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 		{
 			if (m_initialization_mode == NORMAL)
 			{
-				map_params[i] = m_rng->normal_random(0.0, sigma);
+				std::normal_distribution<float64_t> dist(0, sigma);
+				map_params[i] = dist(prng);
 				// turn off regularization for the bias, on for the rest of the parameters
 				map_param_regularizable[i] = (i != 0);
 			}
 			else // for the case when m_initialization_mode = RE_NORMAL
 			{
-				map_params[i] = m_rng->normal_random(
+				std::normal_distribution<float64_t> dist(
 				    0.0, CMath::sqrt(
 				             2.0 / (m_input_height * m_input_width *
 				                    m_input_num_channels)));
+				map_params[i] = dist(prng);
 				// initialize b=0
 				map_param_regularizable[i] = 0;
 			}

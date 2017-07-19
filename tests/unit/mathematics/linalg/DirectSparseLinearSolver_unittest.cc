@@ -13,7 +13,6 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/linsolver/DirectSparseLinearSolver.h>
 #include <gtest/gtest.h>
@@ -28,11 +27,10 @@ TEST(DirectSparseLinearSolver, solve)
 	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(sm);
 	SGVector<float64_t> diag(size);
 	float64_t difficulty=5;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<size; ++i)
-		diag[i] =
-		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
-		    0.0001;
+		diag[i] = CMath::pow(CMath::abs(dist(prng)), difficulty) + 0.0001;
 	A->set_diagonal(diag);
 
 	CDirectSparseLinearSolver* linear_solver=new CDirectSparseLinearSolver();

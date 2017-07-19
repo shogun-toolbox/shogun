@@ -18,6 +18,7 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/lib/common.h>
 
+#include <random>
 #include <vector>
 
 namespace shogun
@@ -247,6 +248,8 @@ class CGMM : public CDistribution
 		std::vector<CGaussian*> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
+
+		std::mt19937_64 m_rng;
 };
 }
 #endif //HAVE_LAPACK

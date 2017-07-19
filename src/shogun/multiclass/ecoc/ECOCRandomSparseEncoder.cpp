@@ -60,17 +60,19 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
     std::vector<int32_t> random_sel(num_classes);
     int32_t n_iter = 0;
 
-    while (true)
-    {
-        // fill codebook
-        codebook.zero();
-        for (int32_t i=0; i < codelen; ++i)
-        {
-            // randomly select two positions
-            for (int32_t j=0; j < num_classes; ++j)
-                random_sel[j] = j;
-            std::random_shuffle(random_sel.begin(), random_sel.end());
-			if (m_rng->random(0.0, 1.0) > 0.5)
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
+	while (true)
+	{
+		// fill codebook
+		codebook.zero();
+		for (int32_t i = 0; i < codelen; ++i)
+		{
+			// randomly select two positions
+			for (int32_t j = 0; j < num_classes; ++j)
+				random_sel[j] = j;
+			std::random_shuffle(random_sel.begin(), random_sel.end());
+			if (dist(prng) > 0.5)
 			{
 				codebook(i, random_sel[0]) = +1;
 				codebook(i, random_sel[1]) = -1;
@@ -84,7 +86,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
 			// assign the remaining positions
 			for (int32_t j = 2; j < num_classes; ++j)
 			{
-				float64_t randval = m_rng->random(0.0, 1.0);
+				float64_t randval = dist(prng);
 				if (randval > m_pzero)
 				{
 					if (randval > m_pzero + m_pposone)

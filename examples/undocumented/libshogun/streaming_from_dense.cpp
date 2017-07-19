@@ -32,13 +32,14 @@ using namespace shogun;
 
 void gen_rand_data(SGMatrix<float64_t> feat, SGVector<float64_t> lab)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<NUM; i++)
 	{
 		if (i<NUM/2)
 		{
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i * DIMS + j] = m_rng->random(0.0, 1.0) + DIST;
+				feat[i * DIMS + j] = dist(prng) + DIST;
 
 			if (lab.vector)
 				lab[i]=0;
@@ -46,7 +47,7 @@ void gen_rand_data(SGMatrix<float64_t> feat, SGVector<float64_t> lab)
 		else
 		{
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i * DIMS + j] = m_rng->random(0.0, 1.0) - DIST;
+				feat[i * DIMS + j] = dist(prng) - DIST;
 
 			if (lab.vector)
 				lab[i]=1;

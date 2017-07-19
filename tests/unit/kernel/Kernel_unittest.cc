@@ -41,11 +41,12 @@ static SGMatrix<float64_t>
 generate_std_norm_matrix(const index_t num_feats, const index_t dim)
 {
 	SGMatrix<float64_t> data(dim, num_feats);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<num_feats; ++i)
 	{
 		for (index_t j=0; j<dim; ++j)
-			data(j, i) = m_rng->std_normal_distrib();
+			data(j, i) = dist(prng);
 	}
 	return data;
 }

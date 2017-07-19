@@ -66,8 +66,8 @@ CGaussianDistribution::~CGaussianDistribution()
 
 }
 
-SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
-		SGMatrix<float64_t> pre_samples) const
+SGMatrix<float64_t> CGaussianDistribution::sample(
+    int32_t num_samples, SGMatrix<float64_t> pre_samples)
 {
 	REQUIRE(num_samples>0, "Number of samples (%d) must be positive\n",
 			num_samples);
@@ -88,10 +88,11 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	}
 	else
 	{
+		std::normal_distribution<float64_t> normal_dist(0, 1);
 		/* allocate memory and sample from std normal */
 		samples=SGMatrix<float64_t>(m_dimension, num_samples);
 		for (index_t i=0; i<m_dimension*num_samples; ++i)
-			samples.matrix[i] = m_rng->std_normal_distrib();
+			samples.matrix[i] = normal_dist(m_rng);
 	}
 
 	/* map into desired Gaussian covariance */
@@ -167,6 +168,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 
 void CGaussianDistribution::init()
 {
+	m_rng = get_prng();
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "
 			"depending on the factorization type.", MS_NOT_AVAILABLE);

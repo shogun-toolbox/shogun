@@ -116,15 +116,16 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		WX = EX;
 	}
 
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 	// Initial mixing matrix estimate
 	if (m_mixing_matrix.num_rows != m || m_mixing_matrix.num_cols != m)
 	{
 		m_mixing_matrix = SGMatrix<float64_t>(m,m);
-
+		auto prng = get_prng();
 		for (int i = 0; i < m; i++)
 		{
 			for (int j = 0; j < m; j++)
-				m_mixing_matrix(i, j) = m_rng->std_normal_distrib();
+				m_mixing_matrix(i, j) = normal_dist(prng);
 		}
 	}
 

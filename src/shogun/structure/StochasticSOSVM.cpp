@@ -108,12 +108,14 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 
 	// Main loop
 	int32_t k = 0;
+	auto prng = get_prng();
 	for (int32_t pi = 0; pi < m_num_iter; ++pi)
 	{
 		for (int32_t si = 0; si < N; ++si)
 		{
+			std::uniform_int_distribution<index_t> dist(0, N - 1);
 			// 1) Picking random example
-			int32_t i = m_rng->random(0, N - 1);
+			int32_t i = dist(prng);
 
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);

@@ -90,13 +90,14 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 void CNeuralLayer::dropout_activations()
 {
 	if (dropout_prop==0.0) return;
-
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	if (is_training)
 	{
 		int32_t len = m_num_neurons*m_batch_size;
 		for (int32_t i=0; i<len; i++)
 		{
-			m_dropout_mask[i] = m_rng->random(0.0, 1.0) >= dropout_prop;
+			m_dropout_mask[i] = dist(prng) >= dropout_prop;
 			m_activations[i] *= m_dropout_mask[i];
 		}
 	}

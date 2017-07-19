@@ -73,6 +73,7 @@ void CGaussianBlobsDataGenerator::init()
 	m_stretch=1;
 	m_angle=0;
 	m_cholesky=SGMatrix<float64_t>(2, 2);
+	m_rng = get_prng();
 	m_cholesky(0, 0)=1;
 	m_cholesky(0, 1)=0;
 	m_cholesky(1, 0)=0;
@@ -88,13 +89,16 @@ bool CGaussianBlobsDataGenerator::get_next_example()
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(2);
 
+	std::uniform_int_distribution<index_t> uniform_int_dist(
+	    0, m_sqrt_num_blobs - 1);
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 	/* sample latent distribution to compute offsets */
-	index_t x_offset = m_rng->random(0, m_sqrt_num_blobs - 1) * m_distance;
-	index_t y_offset = m_rng->random(0, m_sqrt_num_blobs - 1) * m_distance;
+	index_t x_offset = uniform_int_dist(m_rng) * m_distance;
+	index_t y_offset = uniform_int_dist(m_rng) * m_distance;
 
 	/* sample from std Gaussian */
-	float64_t x = m_rng->std_normal_distrib();
-	float64_t y = m_rng->std_normal_distrib();
+	float64_t x = normal_dist(m_rng);
+	float64_t y = normal_dist(m_rng);
 
 	/* transform through cholesky and add offset */
 	result[0]=m_cholesky(0, 0)*x+m_cholesky(0, 1)*y+x_offset;

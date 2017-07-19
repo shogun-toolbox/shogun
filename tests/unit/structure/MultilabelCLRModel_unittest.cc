@@ -21,10 +21,11 @@ using namespace shogun;
 TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(-100, 100);
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = m_rng->random(-100, 100);
+		feats[i] = dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -70,10 +71,11 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(-100, 100);
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = m_rng->random(-100, 100);
+		feats[i] = dist(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -176,10 +178,11 @@ TEST(MultilabelCLRModel, delta_loss)
 TEST(MultilabelCLRModel, argmax)
 {
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_p(-100, 100);
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = m_rng->random(-100, 100);
+		feats[i] = dist_p(prng);
 	}
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
@@ -201,9 +204,10 @@ TEST(MultilabelCLRModel, argmax)
 
 	SGVector<float64_t> w(model->get_dim());
 
+	std::uniform_int_distribution<index_t> dist_q(-1, 1);
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = m_rng->random(-1, 1);
+		w[i] = dist_q(prng);
 	}
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);

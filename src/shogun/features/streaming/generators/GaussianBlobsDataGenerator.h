@@ -86,6 +86,8 @@ protected:
 	/** Cholesky factor of covariance matrix of single Gaussians. Stored to
 	 * increase sampling performance */
 	SGMatrix<float64_t> m_cholesky;
+
+	std::mt19937_64 m_rng;
 };
 
 }

@@ -15,7 +15,6 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -273,9 +272,11 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	centers.zero();
 	SGVector<float64_t> min_dist=SGVector<float64_t>(lhs_size);
 	min_dist.zero();
-
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> uniform_int_dist(
+	    (index_t)0, lhs_size - 1);
 	/* First center is chosen at random */
-	int32_t mu = m_rng->random((int32_t)0, lhs_size - 1);
+	int32_t mu = uniform_int_dist(prng);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);	
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -295,6 +296,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 #endif //HAVE_LINALG
 	int32_t n_rands=2 + int32_t(CMath::log(k));
 
+	std::uniform_real_distribution<float64_t> dist_prob(0.0, 1.0);
 	/* Choose centers with weighted probability */
 	for(int32_t i=1; i<k; i++)
 	{	
@@ -309,9 +311,9 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			float64_t temp_dist=0.0;
 			SGVector<float64_t> temp_min_dist = SGVector<float64_t>(lhs_size);
 			int32_t new_center = 0;
-			float64_t prob = m_rng->random(0.0, 1.0);
-			prob=prob*sum;
-		
+			float64_t prob = dist_prob(prng);
+			prob = prob * sum;
+
 			for(int32_t j=0; j<lhs_size; j++)
 			{
 				temp_sum+=min_dist[j];

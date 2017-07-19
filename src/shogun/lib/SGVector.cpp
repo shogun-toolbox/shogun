@@ -614,9 +614,10 @@ void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 template <class T>
 	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
 	{
-		auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+		auto prng = get_prng();
+		std::uniform_int_distribution<index_t> dist(min_value, max_value);
 		for (int32_t i=0; i<len; i++)
-			vec[i] = m_rng->random(min_value, max_value);
+			vec[i] = dist(prng);
 	}
 
 template <>

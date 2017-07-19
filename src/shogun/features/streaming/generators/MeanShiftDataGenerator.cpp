@@ -50,10 +50,10 @@ void CMeanShiftDataGenerator::init()
 	SG_ADD(&m_dimension_shift, "m_dimension_shift", "Dimension of mean shift",
 			MS_NOT_AVAILABLE);
 
+	m_rng = get_prng();
 	m_dimension=0;
 	m_mean_shift=0;
 	m_dimension_shift=0;
-
 	unset_generic();
 }
 
@@ -64,9 +64,10 @@ bool CMeanShiftDataGenerator::get_next_example()
 	/* allocate space */
 	SGVector<float64_t> result=SGVector<float64_t>(m_dimension);
 
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 	/* fill with std normal data */
 	for (index_t i=0; i<m_dimension; ++i)
-		result[i] = m_rng->std_normal_distrib();
+		result[i] = normal_dist(m_rng);
 
 	/* mean shift in selected dimension */
 	result[m_dimension_shift]+=m_mean_shift;

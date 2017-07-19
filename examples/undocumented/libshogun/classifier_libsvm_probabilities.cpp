@@ -10,7 +10,8 @@ using namespace shogun;
 //generates data points (of different classes) randomly
 void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, float64_t distance)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0, 1.0);
 	index_t num_samples = labels.vlen;
 	index_t dimensions = features.num_rows;
 	for (int32_t i = 0; i < num_samples; i++)
@@ -19,13 +20,13 @@ void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, flo
 		{
 			labels[i] = -1.0;
 			for (int32_t j = 0; j < dimensions; j++)
-				features(j, i) = m_rng->random(0.0, 1.0) + distance;
+				features(j, i) = dist(prng) + distance;
 		}
 		else
 		{
 			labels[i] = 1.0;
 			for (int32_t j = 0; j < dimensions; j++)
-				features(j, i) = m_rng->random(0.0, 1.0) - distance;
+				features(j, i) = dist(prng) - distance;
 		}
 	}
 	labels.display_vector("labels");

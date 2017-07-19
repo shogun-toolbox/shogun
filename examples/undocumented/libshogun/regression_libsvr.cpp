@@ -25,7 +25,8 @@ void test_libsvr()
 	/* create some easy regression data: 1d noisy sine wave */
 	index_t n=100;
 	float64_t x_range=6;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, x_range);
 	SGMatrix<float64_t> feat_train(1, n);
 	SGMatrix<float64_t> feat_test(1, n);
 	SGVector<float64_t> lab_train(n);
@@ -33,8 +34,8 @@ void test_libsvr()
 
 	for (index_t i=0; i<n; ++i)
 	{
-		feat_train[i] = m_rng->random(0.0, x_range);
-		feat_test[i]=(float64_t)i/n*x_range;
+		feat_train[i] = dist(prng);
+		feat_test[i] = (float64_t)i / n * x_range;
 		lab_train[i]=CMath::sin(feat_train[i]);
 		lab_test[i]=CMath::sin(feat_test[i]);
 	}

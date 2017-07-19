@@ -68,9 +68,10 @@ void test()
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
 	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix.matrix[i] = m_rng->std_normal_distrib();
+		matrix.matrix[i] = dist(prng);
 
 	/* create num_feautres 2-dimensional vectors */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();

@@ -33,7 +33,8 @@ void CCrossValidationSplitting::build_subsets()
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
-	CMath::permute(indices, m_rng.get());
+	auto prng = get_prng();
+	CMath::permute(indices, prng);
 
 	index_t num_subsets=m_subset_indices->get_num_elements();
 
@@ -58,5 +59,5 @@ void CCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	m_subset_indices->shuffle(m_rng.get());
+	m_subset_indices->shuffle(prng);
 }

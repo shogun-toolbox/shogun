@@ -137,7 +137,9 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     if (part1.size() <= 1)
         return MI;
 
-	int32_t iclas = m_rng->random(0, int32_t(part1.size() - 1));
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(0, int32_t(part1.size() - 1));
+	int32_t iclas = dist(prng);
 	int32_t clas = part1[iclas];
 
 	// move clas from part1 to part2

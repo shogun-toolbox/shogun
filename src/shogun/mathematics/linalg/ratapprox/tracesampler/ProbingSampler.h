@@ -89,7 +89,7 @@ public:
 	 * @param idx the index
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx) const;
+	virtual SGVector<float64_t> sample(index_t idx);
 
 	/** precompute method that sets the num_samples of the base */
 	virtual void precompute();

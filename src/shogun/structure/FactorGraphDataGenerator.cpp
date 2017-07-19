@@ -104,8 +104,8 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 
 CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
 {
-	m_rng->set_seed(17);
-
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	// ftype
 	SGVector<int32_t> card(2);
 	card[0] = 2;
@@ -133,8 +133,8 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 		for (int32_t x = 0; x < N; ++x)
 		{
 			SGVector<float64_t> data(2);
-			data[0] = m_rng->random(0.0, 1.0);
-			data[1] = m_rng->random(0.0, 1.0);
+			data[0] = dist(prng);
+			data[1] = dist(prng);
 
 			SGVector<int32_t> var_index(1);
 			var_index[0] = y * N + x;
@@ -150,10 +150,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = m_rng->random(0.0, 1.0); // E(0,0)->A
-				float64_t C = m_rng->random(0.0, 1.0); // E(1,0)->C
-				float64_t B = m_rng->random(0.0, 1.0); // E(0,1)->B
-				float64_t D = m_rng->random(0.0, 1.0); // E(1,1)->D
+				float64_t A = dist(prng); // E(0,0)->A
+				float64_t C = dist(prng); // E(1,0)->C
+				float64_t B = dist(prng); // E(0,1)->B
+				float64_t D = dist(prng); // E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -173,10 +173,10 @@ CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assig
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = m_rng->random(0.0, 1.0); // E(0,0)->A
-				float64_t C = m_rng->random(0.0, 1.0); // E(1,0)->C
-				float64_t B = m_rng->random(0.0, 1.0); // E(0,1)->B
-				float64_t D = m_rng->random(0.0, 1.0); // E(1,1)->D
+				float64_t A = dist(prng); // E(0,0)->A
+				float64_t C = dist(prng); // E(1,0)->C
+				float64_t B = dist(prng); // E(0,1)->B
+				float64_t D = dist(prng); // E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -343,7 +343,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 
 	feats = SGMatrix<float64_t>(len_feat, size_data);
 	labels = SGMatrix<int32_t>(len_label, size_data);
-
+	auto prng = get_prng();
 	for (int32_t k = 0; k < size_data; k++)
 	{
 		// generate a label vector
@@ -355,7 +355,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 		// generate feature vector
 		SGVector<int32_t> random_indices(len_feat);
 		random_indices.range_fill();
-		CMath::permute(random_indices, m_rng.get());
+		CMath::permute(random_indices, prng);
 		SGVector<float64_t> v_feat(len_feat);
 		v_feat.zero();
 
@@ -494,7 +494,6 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	SGMatrix<float64_t> feats_train;
 
 	// Generate random data
-	m_rng->set_seed(10); // fix the random seed
 	generate_data(4, 12, 8, feats_train, labels_train);
 
 	int32_t num_sample_train  = labels_train.num_cols;

@@ -26,12 +26,15 @@ int main(int argc, char **argv)
 	index_t num_labels;
 	index_t num_subsets;
 	index_t runs=100;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist_l(-10.0, 10.0);
+	std::uniform_int_distribution<index_t> dist_nl(10, 150);
+	std::uniform_int_distribution<index_t> dist_ns(1, 5);
 
 	while (runs-->0)
 	{
-		num_labels = m_rng->random(10, 150);
-		num_subsets = m_rng->random(1, 5);
+		num_labels = dist_nl(prng);
+		num_subsets = dist_ns(prng);
 		index_t desired_size=CMath::round(
 				(float64_t)num_labels/(float64_t)num_subsets);
 
@@ -45,7 +48,7 @@ int main(int argc, char **argv)
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, m_rng->random(-10.0, 10.0));
+			labels->set_label(i, dist_l(prng));
 			SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 		}
 		SG_SPRINT("\n");

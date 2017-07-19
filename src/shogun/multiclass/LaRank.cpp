@@ -747,6 +747,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 	n_pro++;
 	w_pro = 0.05 * coeff + (1 - 0.05) * w_pro;
 
+	auto prng = get_prng();
 	// ProcessOld & Optimize until ready for a new processnew
 	// (Adaptative schedule here)
 	for (;;)
@@ -760,7 +761,8 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		if (w_opt < prop_min)
 			w_opt = prop_min;
 		w_sum = w_pro + w_rep + w_opt;
-		float64_t r = m_rng->random(0.0, w_sum);
+		std::uniform_real_distribution<float64_t> dist(0.0, w_sum);
+		float64_t r = dist(prng);
 		if (r <= w_pro)
 		{
 			break;

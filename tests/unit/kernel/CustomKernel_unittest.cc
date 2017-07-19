@@ -14,7 +14,6 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -35,10 +34,10 @@ TEST(CustomKernelTest,add_row_subset)
 	inds.range_fill();
 
 	index_t num_runs=10;
-	auto prng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CMath::permute(inds, prng.get());
+		CMath::permute(inds, prng);
 
 		feats->add_subset(inds);
 		custom->add_row_subset(inds);

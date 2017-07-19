@@ -37,7 +37,7 @@ void test()
 
 	SGVector<float64_t>::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
 	SGVector<float64_t>::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -46,8 +46,8 @@ void test()
 		for (index_t j=0; j<num_features; ++j)
 		{
 			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
-			train_dat.matrix[i * num_features + j] =
-			    m_rng->normal_random(mean, sigma);
+			std::normal_distribution<float64_t> dist(mean, sigma);
+			train_dat.matrix[i * num_features + j] = dist(prng);
 		}
 	}
 

@@ -59,7 +59,7 @@ public:
 	 * @param idx the index which determines which sample to draw
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx) const = 0;
+	virtual SGVector<float64_t> sample(index_t idx) = 0;
 
 	/**
 	 * abstract method for initializing the sampler, number of samples etc,
@@ -92,12 +92,15 @@ protected:
 	/** the number of samples this sampler will generate, set by implementation */
 	index_t m_num_samples;
 
+	std::mt19937_64 m_rng;
+
 private:
 	/** initialize with default values and register params */
 	void init()
 	{
 		m_num_samples=0;
 		m_dimension=0;
+		m_rng = get_prng();
 
 		SG_ADD(&m_num_samples, "num_samples",
 			"Number of samples this sampler can generate", MS_NOT_AVAILABLE);

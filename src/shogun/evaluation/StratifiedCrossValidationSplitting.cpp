@@ -76,7 +76,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();
 	m_is_filled=true;
-
+	auto prng = get_prng();
 	SGVector<float64_t> unique_labels;
 
 	if (m_labels->get_label_type() == LT_MULTICLASS)
@@ -122,7 +122,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 				label_indices.get_element(i);
 
 		// external random state important for threads
-		current->shuffle(m_rng.get());
+		current->shuffle(prng);
 
 		SG_UNREF(current);
 	}
@@ -150,5 +150,5 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets (external random state important for threads) */
-	m_subset_indices->shuffle(m_rng.get());
+	m_subset_indices->shuffle(prng);
 }

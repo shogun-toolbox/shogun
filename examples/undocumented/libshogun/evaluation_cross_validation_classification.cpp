@@ -29,7 +29,7 @@ void test_cross_validation()
 	/* data matrix dimensions */
 	index_t num_vectors=40;
 	index_t num_features=5;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	/* data means -1, 1 in all components, std deviation of 3 */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
@@ -47,8 +47,8 @@ void test_cross_validation()
 		for (index_t j=0; j<num_features; ++j)
 		{
 			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
-			train_dat.matrix[i * num_features + j] =
-			    m_rng->normal_random(mean, sigma);
+			std::normal_distribution<float64_t> dist(mean, sigma);
+			train_dat.matrix[i * num_features + j] = dist(prng);
 		}
 	}
 

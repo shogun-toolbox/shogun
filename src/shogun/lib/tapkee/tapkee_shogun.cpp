@@ -11,22 +11,24 @@
 
 #define CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION                                   \
 	[]() -> uint64_t {                                                         \
-		auto rng = std::unique_ptr<CRandom>(new CRandom());                    \
-		return rng->random_64();                                               \
+		auto prng = get_prng();                                                \
+		return prng();                                                         \
 	}
 #define CUSTOM_UNIFORM_RANDOM_FUNCTION                                         \
-	[]() {                                                                     \
-		auto rng = std::unique_ptr<CRandom>(new CRandom());                    \
-		return rng->random(                                                    \
+	[]() -> float64_t {                                                        \
+		auto prng = get_prng();                                                \
+		std::uniform_real_distribution<float64_t> dist(                        \
 		    static_cast<tapkee::ScalarType>(0),                                \
 		    static_cast<tapkee::ScalarType>(1));                               \
+		return dist(prng);                                                     \
 	}
 #define CUSTOM_GAUSSIAN_RANDOM_FUNCTION                                        \
-	[]() {                                                                     \
-		auto rng = std::unique_ptr<CRandom>(new CRandom());                    \
-		return rng->normal_random(                                             \
+	[]() -> float64_t {                                                        \
+		auto prng = get_prng();                                                \
+		std::normal_distribution<float64_t> dist(                              \
 		    static_cast<tapkee::ScalarType>(0),                                \
 		    static_cast<tapkee::ScalarType>(1));                               \
+		return dist(prng);                                                     \
 	}
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
 

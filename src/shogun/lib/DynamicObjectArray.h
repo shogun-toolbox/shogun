@@ -391,7 +391,11 @@ class CDynamicObjectArray : public CSGObject
 		inline void shuffle() { m_array.shuffle(); }
 
 		/** shuffles the array with external random state */
-		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
+		template <class RandomGenerator>
+		inline void shuffle(RandomGenerator& rand)
+		{
+			m_array.shuffle(rand);
+		}
 
 		/** @return object name */
 		virtual const char* get_name() const

@@ -543,7 +543,11 @@ template <class T> class CDynamicArray :public CSGObject
 		inline void shuffle() { m_array.shuffle(); }
 
 		/** shuffles the array with external random state */
-		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
+		template <class RandomGenerator>
+		inline void shuffle(RandomGenerator& rand)
+		{
+			m_array.shuffle(rand);
+		}
 
 		/** display this array */
 		inline void display_array()

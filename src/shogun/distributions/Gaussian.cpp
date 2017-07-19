@@ -48,6 +48,7 @@ CGaussian::CGaussian(
 void CGaussian::init()
 {
 	m_constant=CMath::log(2*M_PI)*m_mean.vlen;
+	m_rng = get_prng<std::mt19937_64>();
 	switch (m_cov_type)
 	{
 		case FULL:
@@ -410,9 +411,9 @@ SGVector<float64_t> CGaussian::sample()
 	}
 
 	SGVector<float64_t> random_vec(m_mean.vlen);
-
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (int32_t i = 0; i < m_mean.vlen; i++)
-		random_vec.vector[i] = m_rng->std_normal_distrib();
+		random_vec.vector[i] = dist(m_rng);
 
 	if (m_cov_type == FULL)
 	{

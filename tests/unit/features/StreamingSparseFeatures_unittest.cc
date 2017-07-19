@@ -27,7 +27,10 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   int32_t max_num_entries=20;
   int32_t max_label_value=1;
   float64_t max_entry_value=1;
-  CRandom* rand=new CRandom();
+  auto prng = get_prng();
+  std::uniform_int_distribution<index_t> dist_p(
+	  -max_label_value, max_label_value);
+  std::uniform_real_distribution<float64_t> dist_q(0, max_num_entries);
 
   int32_t num_vec=10;
   int32_t num_feat=0;
@@ -36,22 +39,21 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   float64_t* labels=SG_MALLOC(float64_t, num_vec);
   for (int32_t i=0; i<num_vec; i++)
   {
-    data[i]=SGSparseVector<float64_t>(rand->random(0, max_num_entries));
-    labels[i]=(float64_t) rand->random(-max_label_value, max_label_value);
-    for (int32_t j=0; j<data[i].num_feat_entries; j++)
-    {
-      int32_t feat_index=(j+1)*2;
-      if (feat_index>num_feat)
-        num_feat=feat_index;
+	  data[i] = SGSparseVector<float64_t>(dist_q(prng));
+	  labels[i] = (float64_t)dist_p(prng);
+	  for (int32_t j = 0; j < data[i].num_feat_entries; j++)
+	  {
+		  int32_t feat_index = (j + 1) * 2;
+		  if (feat_index > num_feat)
+			  num_feat = feat_index;
 
-      data[i].features[j].feat_index=feat_index-1;
-      data[i].features[j].entry=rand->random(0., max_entry_value);
-    }
+		  data[i].features[j].feat_index = feat_index - 1;
+		  data[i].features[j].entry = dist_q(prng);
+	  }
   }
   CLibSVMFile* fout = new CLibSVMFile(fname, 'w', NULL);
   fout->set_sparse_matrix(data, num_feat, num_vec, labels);
   SG_UNREF(fout);
-  SG_FREE(rand);
 
   CStreamingAsciiFile *file = new CStreamingAsciiFile(fname);
   CStreamingSparseFeatures<float64_t> *stream_features =

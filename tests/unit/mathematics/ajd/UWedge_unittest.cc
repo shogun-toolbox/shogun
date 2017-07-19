@@ -26,7 +26,8 @@ TEST(CUWedge, diagonalize)
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(17));
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(1, 5);
 
 	for (int i = 0; i < C_dims[2]; i++)
 	{
@@ -35,7 +36,7 @@ TEST(CUWedge, diagonalize)
 
 		for (int j = 0; j < C_dims[0]; j++)
 		{
-			tmp(j, j) *= CMath::abs(m_rng->random(1, 5));
+			tmp(j, j) *= CMath::abs(dist(prng));
 		}
 	}
 

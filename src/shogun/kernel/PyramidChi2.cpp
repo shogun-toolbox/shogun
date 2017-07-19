@@ -136,7 +136,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 	int32_t dims=alen/num_cells;
 
-
+	auto prng = get_prng();
 	if(width<=0)
 	{
 		if(width_computation_type >0)
@@ -158,10 +158,13 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(int32_t i=0; i< numind;++i)
-					featindices[i] = m_rng->random(
+				{
+					std::uniform_int_distribution<index_t> dist(
 					    0,
 					    ((CDenseFeatures<float64_t>*)lhs)->get_num_vectors() -
 					        1);
+					featindices[i] = dist(prng);
+				}
 			}
 			else
 			{

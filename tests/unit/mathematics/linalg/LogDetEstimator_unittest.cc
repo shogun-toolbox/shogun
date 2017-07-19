@@ -11,7 +11,6 @@
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -40,7 +39,6 @@ TEST(LogDetEstimator, sample)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=2.0;
@@ -165,16 +163,18 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 #ifdef HAVE_LAPACK
 TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
+	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	mat.set_const(0.0);
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value = CMath::abs(m_rng->std_normal_distrib()) * 1000;
+		float64_t value = CMath::abs(dist(prng)) * 1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -253,16 +253,18 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 {
+	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	mat.set_const(0.0);
 	for (index_t i=0; i<size; ++i)
 	{
-		float64_t value = CMath::abs(m_rng->std_normal_distrib()) * 1000;
+		float64_t value = CMath::abs(dist(prng)) * 1000;
 		mat(i,i)=value<1.0?10.0:value;
 	}
 
@@ -337,6 +339,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 
 TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 {
+	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
@@ -350,14 +353,14 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
 		diag[i] =
-		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
-		    min_eigenvalue;
+		    CMath::pow(CMath::abs(dist(prng)), difficulty) + min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 
@@ -398,6 +401,7 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 
 TEST(LogDetEstimator, sample_ratapp_big_matrix)
 {
+	set_global_seed(1);
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
@@ -411,12 +415,12 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<size; ++i)
 	{
 		sm(i, i) =
-		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
-		    min_eigenvalue;
+		    CMath::pow(CMath::abs(dist(prng)), difficulty) + min_eigenvalue;
 	}
 	// set its subdiagonal
 	float64_t entry=min_eigenvalue/2;

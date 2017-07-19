@@ -27,6 +27,7 @@ using namespace std;
 
 CGMM::CGMM() : CDistribution(), m_components(),	m_coefficients()
 {
+	m_rng = get_prng<std::mt19937_64>();
 	register_params();
 }
 
@@ -42,7 +43,7 @@ CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_co
 		SG_REF(m_components[i]);
 		m_components[i]->set_cov_type(cov_type);
 	}
-
+	m_rng = get_prng<std::mt19937_64>();
 	register_params();
 }
 
@@ -91,7 +92,7 @@ CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool
 			m_coefficients[i]=coefficients[i];
 		}
 	}
-
+	m_rng = get_prng<std::mt19937_64>();
 	register_params();
 }
 
@@ -388,14 +389,14 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	SGVector<float64_t>::add(components[1]->get_mean().vector, alpha1, components[1]->get_mean().vector, alpha2,
 				components[2]->get_mean().vector, dim_n);
 
+	std::normal_distribution<float64_t> normal_dist(0, 1);
+	auto prng = get_prng();
 	for (int32_t i=0; i<dim_n; i++)
 	{
 		components[2]->get_mean().vector[i] =
-		    components[0]->get_mean().vector[i] +
-		    m_rng->std_normal_distrib() * noise_mag;
+		    components[0]->get_mean().vector[i] + normal_dist(prng) * noise_mag;
 		components[0]->get_mean().vector[i] =
-		    components[0]->get_mean().vector[i] +
-		    m_rng->std_normal_distrib() * noise_mag;
+		    components[0]->get_mean().vector[i] + normal_dist(prng) * noise_mag;
 	}
 
 	coefficients.vector[1]=coefficients.vector[1]+coefficients.vector[2];
@@ -770,7 +771,9 @@ SGVector<float64_t> CGMM::sample()
 {
 	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
 			"must be positive\n", m_components.size());
-	float64_t rand_num = m_rng->random(float64_t(0), float64_t(1));
+
+	std::normal_distribution<float64_t> normal_dist(0, 1);
+	float64_t rand_num = normal_dist(m_rng);
 	float64_t cum_sum=0;
 	for (int32_t i=0; i<m_coefficients.vlen; i++)
 	{

@@ -12,14 +12,15 @@ int main(int argc, char** argv)
 
 	/* create feature data matrix */
 	SGMatrix<int32_t> data(3, 20);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(1, 9);
 	/* fill matrix with random data */
 	for (index_t i=0; i<20*3; ++i)
 	{
 		if (i%2==0)
 			data.matrix[i]=0;
 		else
-			data.matrix[i] = m_rng->random(1, 9);
+			data.matrix[i] = dist(prng);
 	}
 
 	/* create sparse features */

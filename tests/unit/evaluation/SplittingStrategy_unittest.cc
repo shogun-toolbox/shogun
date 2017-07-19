@@ -23,20 +23,23 @@ TEST(SplittingStrategy,standard)
 	index_t num_labels;
 	index_t num_subsets;
 	index_t runs=100;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_nl(10, 150);
+	std::uniform_int_distribution<index_t> dist_nc(1, 5);
+	std::uniform_real_distribution<float64_t> dist_sl(-10.0, 10.0);
 
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels = m_rng->random(10, 150);
-		num_subsets = m_rng->random(1, 5);
+		num_labels = dist_nl(prng);
+		num_subsets = dist_nc(prng);
 		index_t desired_size=CMath::round(
 				(float64_t)num_labels/(float64_t)num_subsets);
 
 		/* build labels */
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, m_rng->random(-10.0, 10.0));
+			labels->set_label(i, dist_sl(prng));
 
 		/* build splitting strategy */
 		CCrossValidationSplitting* splitting=
@@ -90,19 +93,22 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 {
 	index_t num_labels, num_classes, num_subsets, fold_sizes;
 	index_t runs=50;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_nl(11, 100);
+	std::uniform_int_distribution<index_t> dist_nc(2, 10);
+	std::uniform_int_distribution<index_t> dist_ns(1, 10);
 
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels = m_rng->random(11, 100);
-		num_classes = m_rng->random(2, 10);
-		num_subsets = m_rng->random(1, 10);
+		num_labels = dist_nl(prng);
+		num_classes = dist_nc(prng);
+		num_subsets = dist_ns(prng);
 
 		/* build labels */
 		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, m_rng->random_64() % num_classes);
+			labels->set_label(i, prng() % num_classes);
 
 		SGVector<float64_t> classes=labels->get_unique_labels();
 
@@ -170,18 +176,21 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 {
 	index_t num_labels, num_classes, num_subsets;
 	index_t runs=50;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_nl(11, 100);
+	std::uniform_int_distribution<index_t> dist_nc(2, 10);
+	std::uniform_int_distribution<index_t> dist_ns(1, 10);
 
 	while (runs-->0)
 	{
-		num_labels = m_rng->random(11, 100);
-		num_classes = m_rng->random(2, 10);
-		num_subsets = m_rng->random(1, 10);
+		num_labels = dist_nl(prng);
+		num_classes = dist_nc(prng);
+		num_subsets = dist_ns(prng);
 
 		/* build labels */
 		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, m_rng->random_64() % num_classes);
+			labels->set_label(i, prng() % num_classes);
 
 		/*No. of labels belonging to one class*/
 		SGVector<index_t> class_labels(num_classes);
@@ -244,17 +253,19 @@ TEST(SplittingStrategy,LOO)
 {
 	index_t num_labels, fold_sizes;
 	index_t runs=10;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist_nl(10, 50);
+	std::uniform_int_distribution<index_t> dist_sl(-10.0, 10.0);
 
 	while (runs-->0)
 	{
 		fold_sizes=0;
-		num_labels = m_rng->random(10, 50);
+		num_labels = dist_nl(prng);
 
 		/* build labels */
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
-			labels->set_label(i, m_rng->random(-10.0, 10.0));
+			labels->set_label(i, dist_sl(prng));
 
 		/* build Leave one out splitting strategy */
 		CLOOCrossValidationSplitting* splitting=

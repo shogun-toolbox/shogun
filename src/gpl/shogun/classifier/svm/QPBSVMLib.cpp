@@ -53,7 +53,6 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Cplex.h>
-#include <shogun/mathematics/Random.h>
 
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/lib/external/pr_loqo.h>
@@ -592,8 +591,10 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<m_dim; i++)
-		x[i] = m_rng->random(0.0, 1.0);
+		x[i] = dist(prng);
 
 	for (int32_t t=0; t<200; t++)
 	{
@@ -623,8 +624,10 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<m_dim; i++)
-		x[i] = m_rng->random(0.0, 1.0);
+		x[i] = dist(prng);
 
 	for (int32_t t=0; t<2000; t++)
 	{

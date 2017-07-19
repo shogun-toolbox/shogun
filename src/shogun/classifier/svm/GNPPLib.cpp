@@ -15,7 +15,6 @@
 #include <limits.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
-#include <shogun/mathematics/Random.h>
 
 #include <shogun/classifier/svm/GNPPLib.h>
 #include <shogun/kernel/Kernel.h>

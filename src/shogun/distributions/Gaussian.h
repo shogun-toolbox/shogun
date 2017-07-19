@@ -241,6 +241,8 @@ class CGaussian : public CDistribution
 		SGVector<float64_t> m_mean;
 		/** covariance type */
 		ECovType m_cov_type;
+
+		std::mt19937_64 m_rng;
 };
 }
 #endif //_GAUSSIAN_H__

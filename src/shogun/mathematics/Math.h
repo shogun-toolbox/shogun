@@ -21,12 +21,13 @@
 #define __MATHEMATICS_H_
 
 #include <algorithm>
+#include <random>
 #include <shogun/base/Parallel.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/Random.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -1016,19 +1017,28 @@ class CMath : public CSGObject
 			return 0 == a ? b : a;
 		}
 
-		template <class T>
-		static void permute(SGVector<T> v, CRandom* rand = NULL)
+		template <
+		    class T,
+		    class RandomGenerator = std::uniform_int_distribution<index_t>>
+		static void permute(SGVector<T> v)
 		{
-			if (rand)
+			auto prng = get_prng();
+			for (index_t i = 0; i < v.vlen; ++i)
 			{
-				for (index_t i = 0; i < v.vlen; ++i)
-					swap(v[i], v[rand->random(i, v.vlen - 1)]);
+				RandomGenerator dist(i, v.vlen - 1);
+				swap(v[i], v[dist(prng)]);
 			}
-			else
+		}
+
+		template <
+		    class T, class RandomGenerator,
+		    class Distribution = std::uniform_int_distribution<index_t>>
+		static void permute(SGVector<T> v, RandomGenerator prng)
+		{
+			for (index_t i = 0; i < v.vlen; ++i)
 			{
-				auto m_rng = std::unique_ptr<CRandom>(new CRandom());
-				for (index_t i = 0; i < v.vlen; ++i)
-					swap(v[i], v[m_rng->random(i, v.vlen - 1)]);
+				Distribution dist(i, v.vlen - 1);
+				swap(v[i], v[dist(prng)]);
 			}
 		}
 

@@ -23,7 +23,6 @@ namespace shogun
 	class CMath;
 	class Version;
 	class Parallel;
-	class CRandom;
 	class SGLinalg;
 	extern uint32_t sg_random_seed;
 
@@ -118,7 +117,7 @@ namespace shogun
 	 */
 	uint32_t generate_seed();
 
-	template <typename T = std::mt19937>
+	template <typename T = std::mt19937_64>
 	T get_prng()
 	{
 		return T(sg_random_seed);

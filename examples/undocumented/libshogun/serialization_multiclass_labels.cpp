@@ -28,11 +28,12 @@ void test()
 
 	labels->allocate_confidences_for(n_class);
 	SGVector<float64_t> conf(n_class);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<n_class; ++i)
-		conf[i] = m_rng->std_normal_distrib();
+		conf[i] = dist(prng);
 
-	for (index_t i=0; i<n; ++i)
+	for (index_t i = 0; i < n; ++i)
 		labels->set_multiclass_confidences(i, conf);
 
 	/* create serialized copy */

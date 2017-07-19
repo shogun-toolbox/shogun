@@ -448,18 +448,25 @@ template <class T> class DynArray
 		/** randomizes the array (not thread safe!) */
 		void shuffle()
 		{
-			auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+			auto prng = get_prng();
 			for (index_t i=0; i<=current_num_elements-1; ++i)
-				CMath::swap(
-				    array[i],
-				    array[m_rng->random(i, current_num_elements - 1)]);
+			{
+				std::uniform_int_distribution<index_t> dist(
+				    i, current_num_elements - 1);
+				CMath::swap(array[i], array[dist(prng)]);
+			}
 		}
 
 		/** randomizes the array with external random state */
-		void shuffle(CRandom * rand)
+		template <class RandomGenerator>
+		void shuffle(RandomGenerator& prng)
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
-				CMath::swap(array[i], array[rand->random(i, current_num_elements-1)]);
+			{
+				std::uniform_int_distribution<index_t> dist(
+				    i, current_num_elements - 1);
+				CMath::swap(array[i], array[dist(prng)]);
+			}
 		}
 
 		/** set array with a constant */

@@ -66,9 +66,10 @@ TEST(MemoryTest, sg_memcpy)
 {
 	const index_t size = 10;
 	auto src = SG_CALLOC(float64_t, size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<size; ++i)
-		src[i] = m_rng->std_normal_distrib();
+		src[i] = dist(prng);
 
 	auto dest = SG_CALLOC(float64_t, size);
 

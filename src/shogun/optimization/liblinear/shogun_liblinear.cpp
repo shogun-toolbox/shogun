@@ -512,13 +512,14 @@ void Solver_MCSVM_CS::solve()
 		}
 		state->inited = true;
 	}
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	while(iter < max_iter && !CSignal::cancel_computations())
 	{
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)
 		{
-			int j = m_rng->random(i, active_size - 1);
+			std::uniform_int_distribution<index_t> dist(i, active_size - 1);
+			int j = dist(prng);
 			CMath::swap(index[i], index[j]);
 		}
 		for(s=0;s<active_size;s++)

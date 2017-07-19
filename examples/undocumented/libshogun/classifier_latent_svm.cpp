@@ -110,7 +110,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	SG_REF(labels);
 
 	CBinaryLabels* ys = new CBinaryLabels(num_examples);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	feats = new CLatentFeatures(num_examples);
 	SG_REF(feats);
 
@@ -144,10 +144,11 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 		while ((*pchar)!='\n') pchar++;
 		*pchar = '\0';
 		height = atoi(last_pchar);
-
+		std::uniform_int_distribution<index_t> dist_w(0, width - 1);
+		std::uniform_int_distribution<index_t> dist_h(0, height - 1);
 		/* create latent label */
-		int x = m_rng->random(0, width - 1);
-		int y = m_rng->random(0, height - 1);
+		int x = dist_w(prng);
+		int y = dist_h(prng);
 		CBoundingBox* bb = new CBoundingBox(x,y);
 		labels->add_latent_label(bb);
 

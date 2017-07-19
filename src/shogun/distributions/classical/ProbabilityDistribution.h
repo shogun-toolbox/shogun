@@ -44,15 +44,16 @@ public:
 	 * CGaussianDistribution. For reproducible results. Ignored by default.
 	 * @return matrix with samples (column vectors)
 	 */
-	virtual SGMatrix<float64_t> sample(int32_t num_samples,
-			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const;
+	virtual SGMatrix<float64_t> sample(
+		int32_t num_samples,
+		SGMatrix<float64_t> pre_samples = SGMatrix<float64_t>());
 
 	/** Samples from the distribution once. Wrapper method. No pre-sample
 	 * passing is possible with this method.
 	 *
 	 * @return vector with single sample
 	 */
-	virtual SGVector<float64_t> sample() const;
+	virtual SGVector<float64_t> sample();
 
 	/** Computes the log-pdf for all provided samples
 	 *

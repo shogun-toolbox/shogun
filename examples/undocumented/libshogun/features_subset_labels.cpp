@@ -24,8 +24,9 @@ const int32_t num_classes=3;
 
 void test()
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
-	const int32_t num_subset_idx = m_rng->random(1, num_labels);
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(1, num_labels);
+	const int32_t num_subset_idx = dist(prng);
 
 	/* create labels */
 	CMulticlassLabels* labels=new CMulticlassLabels(num_labels);

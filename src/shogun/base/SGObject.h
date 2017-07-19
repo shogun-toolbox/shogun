@@ -13,15 +13,16 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
+#include <random>
 #include <shogun/base/Version.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/tag.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/tag.h>
 
 #include <memory>
 
@@ -35,7 +36,6 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
-class CRandom;
 
 template <class T, class K> class CMap;
 
@@ -569,10 +569,6 @@ public:
 
 	/** Hash of parameter values*/
 	uint32_t m_hash;
-
-protected:
-	/** random generator */
-	std::unique_ptr<CRandom> m_rng;
 
 private:
 

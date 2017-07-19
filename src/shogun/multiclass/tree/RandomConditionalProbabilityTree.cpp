@@ -15,7 +15,8 @@ using namespace shogun;
 
 bool CRandomConditionalProbabilityTree::which_subtree(bnode_t *node, SGVector<float32_t> ex)
 {
-	if (m_rng->random(0.0, 1.0) > 0.5)
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
+	if (dist(m_rng) > 0.5)
 		return true;
 	return false;
 }

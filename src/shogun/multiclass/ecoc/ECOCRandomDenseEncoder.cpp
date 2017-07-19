@@ -52,15 +52,18 @@ SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
 
     SGMatrix<int32_t> codebook(codelen, num_classes);
     int32_t n_iter = 0;
-    while (true)
-    {
-        // fill codebook
-        codebook.zero();
-        for (int32_t i=0; i < codelen; ++i)
-        {
-            for (int32_t j=0; j < num_classes; ++j)
-            {
-				float64_t randval = m_rng->random(0.0, 1.0);
+
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
+	while (true)
+	{
+		// fill codebook
+		codebook.zero();
+		for (int32_t i = 0; i < codelen; ++i)
+		{
+			for (int32_t j = 0; j < num_classes; ++j)
+			{
+				float64_t randval = dist(prng);
 				if (randval > m_pposone)
 					codebook(i, j) = -1;
 				else

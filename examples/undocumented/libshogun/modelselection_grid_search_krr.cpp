@@ -77,7 +77,8 @@ void test_cross_validation()
 
 	/* training label data */
 	SGVector<float64_t> lab(num_vectors);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -85,7 +86,7 @@ void test_cross_validation()
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i] = i + m_rng->normal_random(0, 1.0);
+		lab.vector[i] = i + dist(prng);
 	}
 
 	/* training features */

@@ -19,19 +19,21 @@ int main(int argc, char **argv)
 
 	index_t num_labels;
 	index_t runs=10;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist_sl(-10.0, 10.0);
+	std::uniform_int_distribution<index_t> dist_l(10, 50);
 
 	while (runs-->0)
 	{
-		num_labels = m_rng->random(10, 50);
+		num_labels = dist_l(prng)
 
-		//SG_SPRINT("num_labels=%d\n\n", num_labels);
+		    // SG_SPRINT("num_labels=%d\n\n", num_labels);
 
-		/* build labels */
-		CRegressionLabels* labels=new CRegressionLabels(num_labels);
+		    /* build labels */
+		    CRegressionLabels* labels = new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			labels->set_label(i, m_rng->random(-10.0, 10.0));
+			labels->set_label(i, dist_sl(prng));
 			//	SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
 		}
 

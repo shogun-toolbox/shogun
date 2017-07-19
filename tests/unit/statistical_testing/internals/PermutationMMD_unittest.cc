@@ -102,13 +102,13 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 	SGVector<float32_t> result_2(num_null_samples);
 	set_global_seed(12345);
-	auto prng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds, prng.get());
+		CMath::permute(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
@@ -117,11 +117,10 @@ TEST(PermutationMMD, biased_full_single_kernel)
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
 
-	prng->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds, prng.get());
+		CMath::permute(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();
@@ -183,13 +182,13 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	set_global_seed(12345);
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 	SGVector<float32_t> result_2(num_null_samples);
-	auto prng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds, prng.get());
+		CMath::permute(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
@@ -198,11 +197,10 @@ TEST(PermutationMMD, unbiased_full_single_kernel)
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
 
-	prng->set_seed(12345);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds, prng.get());
+		CMath::permute(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();
@@ -264,27 +262,26 @@ TEST(PermutationMMD, unbiased_incomplete_single_kernel)
 	Map<MatrixXf> map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);
 
 	set_global_seed(12345);
-	auto prng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
 	SGVector<float32_t> result_2(num_null_samples);
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		PermutationMatrix<Dynamic, Dynamic> perm(kernel_matrix.num_rows);
 		perm.setIdentity();
 		SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
-		CMath::permute(perminds, prng.get());
+		CMath::permute(perminds, prng);
 		MatrixXf permuted = perm.transpose()*map*perm;
 		SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 		result_2[i]=compute_mmd(permuted_km);
 	}
 
-	prng->set_seed(12345);
 	SGVector<index_t> inds(kernel_matrix.num_rows);
 	SGVector<float32_t> result_3(num_null_samples);
 
 	for (auto i=0; i<num_null_samples; ++i)
 	{
 		std::iota(inds.vector, inds.vector+inds.vlen, 0);
-		CMath::permute(inds, prng.get());
+		CMath::permute(inds, prng);
 		feats->add_subset(inds);
 		kernel->init(feats, feats);
 		kernel_matrix=kernel->get_kernel_matrix<float32_t>();

@@ -10,7 +10,6 @@
 #include <shogun/clustering/KMeansMiniBatch.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Random.h>
 
 #ifdef _WIN32
 #undef far
@@ -131,12 +130,14 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
-	auto rng = std::unique_ptr<CRandom>(new CRandom());
+
+	std::uniform_int_distribution<index_t> uniform_int_dist(0, num - 1);
 	chosen.zero();
 	int32_t ch=0;
+	auto prng = get_prng();
 	while (ch<b)
 	{
-		const int32_t n = rng->random(0, num - 1);
+		const int32_t n = uniform_int_dist(prng);
 		if (chosen[n]==0)
 		{
 			chosen[n]+=1;

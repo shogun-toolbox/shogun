@@ -18,7 +18,6 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 #include <ColPack/ColPackHeaders.h>
@@ -189,7 +188,7 @@ void CProbingSampler::precompute()
 	SG_DEBUG("Leaving\n");
 }
 
-SGVector<float64_t> CProbingSampler::sample(index_t idx) const
+SGVector<float64_t> CProbingSampler::sample(index_t idx)
 {
 	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
 			"number of samples to draw (%d)\n", idx, m_num_samples);
@@ -197,11 +196,12 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 	SGVector<float64_t> s(m_dimension);
 	s.set_const(0.0);
 
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<m_dimension; ++i)
 	{
 		if (m_coloring_vector[i]==idx)
 		{
-			float64_t x = m_rng->std_normal_distrib();
+			float64_t x = dist(m_rng);
 			s[i]=(x>0)-(x<0);
 		}
 	}

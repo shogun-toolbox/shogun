@@ -196,15 +196,17 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 CParameterCombination* CModelSelectionParameters::get_single_combination(
 		bool is_rand)
 {
+	auto prng = get_prng();
 	/* If this is a value node, then randomly pick a value from the built
 	 * range */
 	if (m_values)
 	{
-
+		std::uniform_int_distribution<index_t> normal_init_dist(
+		    0, m_values_length - 1);
 		index_t i = 0;
 
 		if (is_rand)
-			i = m_rng->random(0, m_values_length - 1);
+			i = normal_init_dist(prng);
 
 		Parameter* p=new Parameter();
 
@@ -217,7 +219,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < param_vect->vlen; j++)
 			{
 				if (is_rand)
-					i = m_rng->random(0, m_values_length - 1);
+					i = normal_init_dist(prng);
 				(*param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add(param_vect, m_node_name);
@@ -230,7 +232,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < *m_vector_length; j++)
 			{
 				if (is_rand)
-					i = m_rng->random(0, m_values_length - 1);
+					i = normal_init_dist(prng);
 				(param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
@@ -243,7 +245,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < param_vect->vlen; j++)
 			{
 				if (is_rand)
-					i = m_rng->random(0, m_values_length - 1);
+					i = normal_init_dist(prng);
 				(*param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add(param_vect, m_node_name);
@@ -256,7 +258,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			for (index_t j = 0; j < *m_vector_length; j++)
 			{
 				if (is_rand)
-					i = m_rng->random(0, m_values_length - 1);
+					i = normal_init_dist(prng);
 				(param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);

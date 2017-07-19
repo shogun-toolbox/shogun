@@ -49,17 +49,19 @@ const int32_t dim_features=6;
 
 void test()
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
-	const int32_t num_subset_idx = m_rng->random(1, num_vectors);
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(1, num_vectors);
+	const int32_t num_subset_idx = dist(prng);
 
 	/* create feature data matrix */
 	SGMatrix<int32_t> data(dim_features, num_vectors);
 
 	/* fill matrix with random data */
+	std::uniform_int_distribution<index_t> dist_s(-5, 5);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		for (index_t j=0; j<dim_features; ++j)
-			data.matrix[i * dim_features + j] = m_rng->random(-5, 5);
+			data.matrix[i * dim_features + j] = dist_s(prng);
 	}
 
 	/* create simple features */

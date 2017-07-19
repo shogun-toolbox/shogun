@@ -31,10 +31,11 @@ void test()
 	SGMatrix<float64_t> X(1, n);
 	SGMatrix<float64_t> X_test(1, n);
 	SGVector<float64_t> Y(n);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, x_range);
 	for (index_t  i=0; i<n; ++i)
 	{
-		X[i] = m_rng->random(0.0, x_range);
+		X[i] = dist(prng);
 		X_test[i]=(float64_t)i / n*x_range;
 		Y[i]=CMath::sin(X[i]);
 	}

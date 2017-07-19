@@ -84,17 +84,21 @@ float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_
 
 SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector()
 {
+	std::uniform_real_distribution<float64_t> uniform_real_dist(
+		0.0, 2 * CMath::PI);
+	std::normal_distribution<float64_t> normal_dist(0, 1);
 	SGVector<float64_t> vec(feats->get_dim_feature_space()+1);
+	auto prng = get_prng();
 	switch (kernel)
 	{
 		case GAUSSIAN:
 			for (index_t i=0; i<vec.vlen-1; i++)
 			{
 				vec[i] = CMath::sqrt((float64_t)1 / kernel_params[0]) *
-				         CMath::sqrt(2.0) * m_rng->normal_random(0.0, 1);
+				         CMath::sqrt(2.0) * uniform_real_dist(prng);
 			}
 
-			vec[vec.vlen - 1] = m_rng->random(0.0, 2 * CMath::PI);
+			vec[vec.vlen - 1] = normal_dist(prng);
 			break;
 
 		default:

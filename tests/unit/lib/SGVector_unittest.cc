@@ -41,10 +41,11 @@ TEST(SGVectorTest,ctor)
 TEST(SGVectorTest, ctor_from_matrix)
 {
 	const index_t n_rows = 5, n_cols = 4;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(100));
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = m_rng->std_normal_distrib();
+		mat[i] = dist(prng);
 
 	auto vec = SGVector<float64_t>(mat);
 

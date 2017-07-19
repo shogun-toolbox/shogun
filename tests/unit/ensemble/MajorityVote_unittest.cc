@@ -45,10 +45,11 @@ TEST(MajorityVote, binary_combine_vector)
 	expected.zero();
 	v.zero();
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(0, 1);
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		int32_t r = m_rng->random(0, 1);
+		int32_t r = dist(prng);
 		v[i] = (r == 0) ? -1 : r;
 
 		if (max < ++expected[r])
@@ -73,12 +74,13 @@ TEST(MajorityVote, multiclass_combine_vector)
 
 	v.zero();
 	hist.zero();
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist(0, 2);
 	int64_t max_label = -1;
 	int64_t max = -1;
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
-		v[i] = m_rng->random(0, 2);
+		v[i] = dist(prng);
 		if (max < ++hist[index_t(v[i])])
 		{
 			max = hist[index_t(v[i])];

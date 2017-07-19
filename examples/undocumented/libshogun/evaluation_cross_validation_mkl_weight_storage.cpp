@@ -28,7 +28,8 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 {
 	index_t dims=feat.num_rows;
 	index_t num=lab.vlen;
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> uniform_dist(0.0, 1.0);
 	for (int32_t i=0; i<num; i++)
 	{
 		if (i<num/2)
@@ -36,14 +37,14 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 			lab[i]=-1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat(j, i) = m_rng->random(0.0, 1.0) + dist;
+				feat(j, i) = uniform_dist(prng) + dist;
 		}
 		else
 		{
 			lab[i]=1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat(j, i) = m_rng->random(0.0, 1.0) - dist;
+				feat(j, i) = uniform_dist(prng) - dist;
 		}
 	}
 	lab.display_vector("lab");

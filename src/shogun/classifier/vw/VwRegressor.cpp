@@ -69,6 +69,8 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 	vw_size_t num_threads = 1;
 	weight_vectors = SG_MALLOC(float32_t*, num_threads);
 
+	std::uniform_real_distribution<float64_t> uniform_real_dist(-0.5, 0.5);
+	auto prng = get_prng();
 	for (vw_size_t i = 0; i < num_threads; i++)
 	{
 		weight_vectors[i] = SG_CALLOC(float32_t, env->stride * length / num_threads);
@@ -76,7 +78,7 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 		if (env->random_weights)
 		{
 			for (vw_size_t j = 0; j < length/num_threads; j++)
-				weight_vectors[i][j] = m_rng->random(-0.5, 0.5);
+				weight_vectors[i][j] = uniform_real_dist(prng);
 		}
 
 		if (env->initial_weight != 0.)

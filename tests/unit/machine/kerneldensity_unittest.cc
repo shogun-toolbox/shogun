@@ -169,14 +169,23 @@ TEST(KernelDensity,dual_tree)
 
 TEST(KernelDensity,dual_tree_single_tree_equivalence)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(1));
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	SGMatrix<float64_t> data(5,100);
-	m_rng->fill_array_oo(data.matrix, 500);
+	for (index_t i = 0; i < 5; ++i)
+		for (index_t j = 0; j < 5; ++j)
+		{
+			data[i, j] = dist(prng);
+		}
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	SGMatrix<float64_t> test(5,20);
-	m_rng->fill_array_oo(test.matrix, 100);
+	for (index_t i = 0; i < 5; ++i)
+		for (index_t j = 0; j < 20; ++j)
+		{
+			data[i, j] = dist(prng);
+		}
 	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
 
 

@@ -40,12 +40,14 @@ using namespace shogun;
 
 TEST(MixtureModel,gaussian_mixture_model)
 {
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(2));
+	set_global_seed(2);
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	SGMatrix<float64_t> data(1,400);
 	for (int32_t i=0;i<100;i++)
-		data(0, i) = m_rng->std_normal_distrib();
+		data(0, i) = dist(prng);
 	for (int32_t i=100;i<400;i++)
-		data(0, i) = m_rng->std_normal_distrib() + 10;
+		data(0, i) = dist(prng) + 10;
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -78,8 +80,8 @@ TEST(MixtureModel,gaussian_mixture_model)
 	SGMatrix<float64_t> cov=outg->get_cov();
 
 	float64_t eps=1e-8;
-	EXPECT_NEAR(m[0],9.863760378,eps);
-	EXPECT_NEAR(cov(0,0),0.956568199,eps);
+	EXPECT_NEAR(m[0], 10.0139574310753, eps);
+	EXPECT_NEAR(cov(0, 0), 0.88920007801, eps);
 
 	SG_UNREF(outg);
 	SG_UNREF(distr);
@@ -89,8 +91,8 @@ TEST(MixtureModel,gaussian_mixture_model)
 	m=outg->get_mean();
 	cov=outg->get_cov();
 
-	EXPECT_NEAR(m[0],-0.208122793,eps);
-	EXPECT_NEAR(cov(0,0),1.095106568,eps);
+	EXPECT_NEAR(m[0], -0.170370848432, eps);
+	EXPECT_NEAR(cov(0, 0), 1.15629910281, eps);
 
 	SG_UNREF(outg);
 	SG_UNREF(distr);

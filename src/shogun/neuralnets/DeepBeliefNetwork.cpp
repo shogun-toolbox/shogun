@@ -76,7 +76,7 @@ void CDeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 {
 	m_bias_index_offsets = SGVector<int32_t>(m_num_layers);
 	m_weights_index_offsets = SGVector<int32_t>(m_num_layers-1);
-
+	auto prng = get_prng();
 	m_num_params = 0;
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
@@ -90,9 +90,10 @@ void CDeepBeliefNetwork::initialize_neural_network(float64_t sigma)
 		}
 	}
 
+	std::normal_distribution<float64_t> dist(0, sigma);
 	m_params = SGVector<float64_t>(m_num_params);
 	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = m_rng->normal_random(0.0, sigma);
+		m_params[i] = dist(prng);
 
 	pt_cd_num_steps = SGVector<int32_t>(m_num_layers-1);
 	pt_cd_num_steps.set_const(1);
@@ -350,10 +351,12 @@ CDenseFeatures<float64_t>* CDeepBeliefNetwork::sample(
 
 void CDeepBeliefNetwork::reset_chain()
 {
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	SGMatrix<float64_t> s = m_states[m_num_layers-2];
 
 	for (int32_t i=0; i<s.num_rows*s.num_cols; i++)
-		s[i] = m_rng->random(0.0, 1.0) > 0.5;
+		s[i] = dist(prng) > 0.5;
 }
 
 CNeuralNetwork* CDeepBeliefNetwork::convert_to_neural_network(
@@ -394,7 +397,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EVector;
-
+	auto prng = get_prng();
 	EMatrix In(input.matrix, input.num_rows, input.num_cols);
 	EMatrix Out(result.matrix, result.num_rows, result.num_cols);
 	EVector B(get_biases(index,params).vector, m_layer_sizes->element(index));
@@ -433,9 +436,10 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 
 	if (sample_states && index>0)
 	{
+		std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 		int32_t len = m_layer_sizes->element(index)*m_batch_size;
 		for (int32_t i=0; i<len; i++)
-			result[i] = m_rng->random(0.0, 1.0) < result[i];
+			result[i] = dist(prng) < result[i];
 	}
 }
 
@@ -444,7 +448,7 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EVector;
-
+	auto prng = get_prng();
 	EMatrix In(input.matrix, input.num_rows, input.num_cols);
 	EMatrix Out(result.matrix, result.num_rows, result.num_cols);
 	EVector C(get_biases(index, params).vector, m_layer_sizes->element(index));
@@ -464,8 +468,9 @@ void CDeepBeliefNetwork::up_step(int32_t index, SGVector< float64_t > params,
 
 	if (sample_states && index>0)
 	{
+		std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 		for (int32_t i=0; i<len; i++)
-			result[i] = m_rng->random(0.0, 1.0) < result[i];
+			result[i] = dist(prng) < result[i];
 	}
 }
 

@@ -36,14 +36,14 @@ CProbabilityDistribution::~CProbabilityDistribution()
 
 }
 
-SGMatrix<float64_t> CProbabilityDistribution::sample(int32_t num_samples,
-		SGMatrix<float64_t> pre_samples) const
+SGMatrix<float64_t> CProbabilityDistribution::sample(
+    int32_t num_samples, SGMatrix<float64_t> pre_samples)
 {
 	SG_ERROR("Not implemented in sub-class\n");
 	return SGMatrix<float64_t>();
 }
 
-SGVector<float64_t> CProbabilityDistribution::sample() const
+SGVector<float64_t> CProbabilityDistribution::sample()
 {
 	SGMatrix<float64_t> s=sample(1);
 	SGVector<float64_t> result(m_dimension);

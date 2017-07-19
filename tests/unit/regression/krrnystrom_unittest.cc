@@ -56,11 +56,12 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
 	SGMatrix<float64_t> test_dat(num_features, num_vectors);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i] = i + m_rng->normal_random(0, 1.0);
+		lab.vector[i] = i + dist(prng);
 		train_dat.matrix[i]=i;
 		test_dat.matrix[i]=i;
 	}
@@ -114,7 +115,8 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 
 	/* training label data */
 	SGVector<float64_t> lab(num_vectors);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -123,7 +125,7 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	{
 		/* labels are linear plus noise */
 		float64_t point=(float64_t)i*10/num_vectors;
-		lab.vector[i] = point + m_rng->normal_random(0, 1.0);
+		lab.vector[i] = point + dist(prng);
 		train_dat.matrix[i]=point;
 		test_dat.matrix[i]=point;
 	}

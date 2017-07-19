@@ -1192,8 +1192,8 @@ TEST(LibLinear,simple_set_train_L1R_L2LOSS_SVC_BIAS)
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	for(int i=0;i<t_w.vlen;i++)
-		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
-	EXPECT_NEAR(ll->get_bias(), t_w[2], 1e-5);
+		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-4);
+	EXPECT_NEAR(ll->get_bias(), t_w[2], 1e-4);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
 

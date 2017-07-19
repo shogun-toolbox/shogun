@@ -45,9 +45,10 @@ TEST(Preprocessor, dense_apply)
 	const index_t dim=2;
 	const index_t size=4;
 	SGMatrix<float64_t> data(dim, size);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i=0; i<dim*size; ++i)
-		data.matrix[i] = m_rng->std_normal_distrib();
+		data.matrix[i] = dist(prng);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CDensePreprocessor<float64_t>* preproc=new CNormOne();
@@ -70,16 +71,19 @@ TEST(Preprocessor, string_apply)
 	const index_t min_string_length=max_string_length/2;
 
 	SGStringList<uint16_t> strings(num_strings, max_string_length);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<index_t> dist_len(
+	    min_string_length, max_string_length);
+	std::uniform_int_distribution<index_t> dist_asc('A', 'Z');
 
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t len = m_rng->random(min_string_length, max_string_length);
+		index_t len = dist_len(prng);
 		SGString<uint16_t> current(len);
 
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
-			current.string[j] = (uint16_t)m_rng->random('A', 'Z');
+			current.string[j] = dist_asc(prng);
 
 		strings.strings[i]=current;
 	}

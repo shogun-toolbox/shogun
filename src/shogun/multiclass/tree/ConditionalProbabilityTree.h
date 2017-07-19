@@ -12,6 +12,7 @@
 #define CONDITIONALPROBABILITYTREE_H__
 
 #include <map>
+#include <random>
 
 #include <shogun/lib/config.h>
 
@@ -37,6 +38,7 @@ public:
 	CConditionalProbabilityTree(int32_t num_passes=1)
 		:m_num_passes(num_passes), m_feats(NULL)
 	{
+		m_rng = get_prng<std::mt19937_64>();
 	}
 
     /** destructor */
@@ -137,6 +139,7 @@ protected:
 	int32_t m_num_passes; ///< number of passes for online training
 	std::map<int32_t, bnode_t*> m_leaves; ///< class => leaf mapping
 	CStreamingDenseFeatures<float32_t> *m_feats; ///< online features
+	std::mt19937_64 m_rng;
 };
 
 } /* shogun */

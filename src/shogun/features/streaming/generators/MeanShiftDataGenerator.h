@@ -83,6 +83,8 @@ protected:
 
 	/** Dimension that is shifted */
 	index_t m_dimension_shift;
+
+	std::mt19937_64 m_rng;
 };
 
 }

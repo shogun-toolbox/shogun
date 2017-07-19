@@ -32,7 +32,8 @@ void gen_rand_data(float64_t* & feat, float64_t* & lab,const int32_t num,const i
 {
 	lab=SG_MALLOC(float64_t, num);
 	feat=SG_MALLOC(float64_t, num*dims);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<num; i++)
 	{
 		if (i<num/2)
@@ -40,14 +41,14 @@ void gen_rand_data(float64_t* & feat, float64_t* & lab,const int32_t num,const i
 			lab[i]=-1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat[i * dims + j] = m_rng->random(0.0, 1.0) + dist;
+				feat[i * dims + j] = dist(prng) + dist;
 		}
 		else
 		{
 			lab[i]=1.0;
 
 			for (int32_t j=0; j<dims; j++)
-				feat[i * dims + j] = m_rng->random(0.0, 1.0) - dist;
+				feat[i * dims + j] = dist(prng) - dist;
 		}
 	}
 	CMath::display_vector(lab,num);

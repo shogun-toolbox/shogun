@@ -250,7 +250,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 /** tests a neural network on the binary XOR problem */
 TEST(NeuralNetwork, binary_classification)
 {
-	set_global_seed(10);
+	set_global_seed(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);

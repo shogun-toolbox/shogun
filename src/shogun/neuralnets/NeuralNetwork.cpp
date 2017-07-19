@@ -31,12 +31,13 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralNetwork.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/optimization/lbfgs/lbfgs.h>
+#include <iostream>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/optimization/lbfgs/lbfgs.h>
 
 using namespace shogun;
 
@@ -559,14 +560,15 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	// some random inputs and ouputs
 	SGMatrix<float64_t> x(m_num_inputs,1);
 	SGMatrix<float64_t> y(get_num_outputs(),1);
-
+	auto prng = get_prng();
+	std::uniform_real_distribution<float64_t> dist(0.0, 1.0);
 	for (int32_t i=0; i<x.num_rows; i++)
-		x[i] = m_rng->random(0.0, 1.0);
+		x[i] = dist(prng);
 
 	// the outputs are set up in the form of a probability distribution (in case
 	// that is required by the output layer, i.e softmax)
 	for (int32_t i=0; i<y.num_rows; i++)
-		y[i] = m_rng->random(0.0, 1.0);
+		y[i] = dist(prng);
 
 	float64_t y_sum = SGVector<float64_t>::sum(y.matrix, y.num_rows);
 	for (int32_t i=0; i<y.num_rows; i++)

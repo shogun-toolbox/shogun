@@ -85,19 +85,20 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	float64_t difficulty=3;
 	float64_t min_eigenvalue=0.0001;
 
+	set_global_seed(1);
 	// create a sparse matrix
 	const index_t size=10000;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
 		diag[i] =
-		    CMath::pow(CMath::abs(m_rng->std_normal_distrib()), difficulty) +
-		    min_eigenvalue;
+		    CMath::pow(CMath::abs(dist(prng)), difficulty) + min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 

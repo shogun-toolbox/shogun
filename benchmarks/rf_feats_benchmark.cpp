@@ -16,7 +16,8 @@ int main(int argv, char** argc)
 
 	int32_t dims[] = {100, 300, 600};
 	CTime* timer = new CTime();
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
+	auto prng = get_prng();
+	std::uniform_int_distribution<int32_t> dist(0, 1);
 	for (index_t d=0; d<3; d++)
 	{
 		int32_t num_dim = dims[d];
@@ -28,7 +29,7 @@ int main(int argv, char** argc)
 		{
 			for (index_t j=0; j<num_dim; j++)
 			{
-				mat(j, i) = m_rng->random(0, 1) + 0.5;
+				mat(j, i) = dist(prng) + 0.5;
 			}
 		}
 
