@@ -84,7 +84,7 @@ TEST(RBM, gibbs_sampling)
 
 TEST(RBM, free_energy_binary)
 {
-	set_global_seed(10);
+	set_global_seed(100);
 
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;

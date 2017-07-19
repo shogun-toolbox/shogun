@@ -516,7 +516,7 @@ void Solver_MCSVM_CS::solve()
 		state->inited = true;
 	}
 
-	auto m_rng = std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+	auto m_rng = std::unique_ptr<CRandom>(new CRandom());
 	// TODO: replace with the new signal
 	// while(iter < max_iter && !CSignal::cancel_computations())
 	while (iter < max_iter)

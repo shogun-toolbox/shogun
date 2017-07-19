@@ -250,7 +250,7 @@ namespace shogun
 			LaRankPattern & sample ()
 			{
 			    auto m_rng =
-			        std::unique_ptr<CRandom>(new CRandom(sg_random_seed));
+			        std::unique_ptr<CRandom>(new CRandom());
 			    ASSERT(!empty())
 			    while (true)
 			    {
