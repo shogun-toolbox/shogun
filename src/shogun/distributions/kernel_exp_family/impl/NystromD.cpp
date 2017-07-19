@@ -52,25 +52,9 @@ NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<bool> basis_mask,
 {
 	auto N = data.num_cols;
 
-	// TODO fix sub-sampling of data as basis, as this will generate warnings
-//	// potentially subsample data and basis mask if certain points are unused
-	SGMatrix<float64_t> basis;
-//	auto basis_point_inds = compute_basis_point_inds(basis_inds_from_mask(basis_mask));
-//	if (basis_point_inds.size() == N)
-		basis=data;
-//	else
-//	{
-//		SGVector<index_t> wrap(basis_point_inds.data(), basis_point_inds.size(),
-//								false);
-//
-//		SG_SINFO("Subsampling data as basis as some points are unused.\n");
-//		basis = subsample_matrix_cols(wrap, data);
-//		basis_mask = subsample_matrix_cols(wrap, basis_mask);
-
-	SG_SINFO("Using %d of N=%d user provided data points as basis points.\n",
-			basis.num_cols, N);
+	SG_SINFO("Using N=%d user provided data point(s) as basis points.\n", N);
 	set_basis_inds_from_mask(basis_mask);
-	set_basis_and_data(basis, data);
+	set_basis_and_data(data, data);
 }
 
 NystromD::NystromD(SGMatrix<float64_t> data, SGMatrix<float64_t> basis,
@@ -113,9 +97,11 @@ void NystromD::set_basis_inds_from_mask(const SGMatrix<bool>& basis_mask)
 			m_active_basis_points.begin(), m_active_basis_points.end(),
 					std::inserter(unused, unused.end()));
 
-	for (size_t i=0; i<unused.size(); i++)
+	if (unused.size())
 	{
-		SG_SWARNING("Using zero components of basis point %d.\n", unused[i]);
+		SG_SWARNING("Using zero components of %d basis points. "
+				"Consider sub-sampling the data to avoid useless computation.\n",
+				unused.size());
 	}
 
 	SG_SINFO("Using %d of %dx%d=%d possible basis components.\n",
