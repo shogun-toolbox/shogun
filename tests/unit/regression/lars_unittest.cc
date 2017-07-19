@@ -34,7 +34,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linalg.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
