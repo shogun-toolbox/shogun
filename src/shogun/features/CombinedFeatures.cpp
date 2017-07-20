@@ -48,6 +48,9 @@ CCombinedFeatures::~CCombinedFeatures()
 
 CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 {
+	REQUIRE(
+	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
+	    idx, 0, get_num_feature_obj()-1);
 	return (CFeatures*) feature_array->get_element(idx);
 }
 
