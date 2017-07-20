@@ -5,15 +5,15 @@
 %template(ParameterList) std::vector<std::string>;
 
 %{
-    #include <shogun/lib/ParameterObserverInterface.h>
-	#include <shogun/lib/ParameterObserverTensorBoard.h>
-    #include <shogun/lib/ParameterObserverScalar.h>
-    #include <shogun/lib/ParameterObserverHistogram.h>
+    #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+	#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+    #include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
+    #include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
 %}
 
-%include <shogun/lib/ParameterObserverInterface.h>
-%include <shogun/lib/ParameterObserverTensorBoard.h>
-%include <shogun/lib/ParameterObserverScalar.h>
-%include <shogun/lib/ParameterObserverHistogram.h>
+%include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+%include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+%include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
+%include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
 
 #endif // HAVE_TFLOGGER
