@@ -615,6 +615,25 @@ TEST(SGMatrixTest, max_single)
 		EXPECT_GE(max, mat.matrix[i]);
 }
 
+TEST(SGMatrixTest, get_submatrix)
+{
+	const index_t n_rows = 6, n_cols = 8;
+	const index_t start_col = 2, end_col = 5;
+	const index_t n_subcols = end_col - start_col;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	auto sub = mat.submatrix(start_col, end_col);
+
+	EXPECT_EQ(sub.num_rows, mat.num_rows);
+	EXPECT_EQ(sub.num_cols, end_col - start_col);
+	for (index_t i = 0; i < n_rows; ++i)
+		for (index_t j = 0; i < n_subcols; ++i)
+			EXPECT_EQ(sub(i, j), mat(i, j + start_col));
+}
+
 TEST(SGMatrixTest, get_column)
 {
 	const index_t n_rows = 6, n_cols = 8;

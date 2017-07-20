@@ -10,13 +10,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/lib/common.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -32,6 +33,8 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	init();
 	m_labels = SGVector<float64_t>(num_lab);
 	m_current_values=SGVector<float64_t>(num_lab);
+	linalg::zero(m_labels);
+	linalg::zero(m_current_values);
 }
 
 CDenseLabels::CDenseLabels(CFile* loader)

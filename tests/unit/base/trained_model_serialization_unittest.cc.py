@@ -6,20 +6,33 @@
 # (at your option) any later version.
 #
 
-# Classes that need custom initialization
-IGNORE_MACHINES = {
-    'CLinearMachine' : [
-        'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
-        'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
-        'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
-        'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
-        'CLatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear'
-    ],
-    'CKernelMachine' : [
-        'CDomainAdaptationSVM', 'CMKLRegression',
-        'CMKLClassification', 'CMKLOneClass', 'CSVM'
-    ]
-}
+# Classes to ignore: mostly because default initialization isn't enough
+# to setup the machine for training (i.e. Multitask and DomainAdaptation),
+# different reasons are given below.
+IGNORE = [
+    # LinearMachines
+    'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
+    'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
+    'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
+    'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
+    'CLatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear',
+
+    # KernelMachines
+    'CDomainAdaptationSVM', 'CMKLRegression',
+    'CMKLClassification', 'CMKLOneClass',
+    'CSVM', # doesn't implement a solver
+
+    # LinearMulticlassMachines
+    'CDomainAdaptationMulticlassLibLinear',
+    'CMulticlassTreeGuidedLogisticRegression',
+    'CShareBoost', # apply() takes features subset
+
+    # KernelMulticlassMachines
+    'CMulticlassSVM', # doesn't implement a solver
+    'CMKLMulticlass',
+    'CScatterSVM', # error C <= 0
+    'CMulticlassLibSVM' # error C <= 0
+]
 
 def read_defined_guards(config_file):
     with open(config_file) as f:
@@ -86,21 +99,27 @@ def entry(templateFile, input_file, config_file):
     classes = get_shogun_classes(tags)
     guards = read_defined_guards(config_file)
 
-    # Get all linear/kernel machines
-    machines = {}
-    bases = ['CLinearMachine', 'CKernelMachine']
+    bases = [
+        'CLinearMachine', 'CKernelMachine', 'CLinearMulticlassMachine',
+        'CKernelMulticlassMachine', 'CNativeMulticlassMachine'
+    ]
+
+    # Gather all the machines that inherit from the classes in bases
+    machines = {b: {} for b in bases}
 
     for name, attrs in classes.items():
         ancestors = get_ancestors(classes, name)
-        if any([b in ancestors for b in bases])\
-            and not is_guarded(attrs['include'], guards)\
-            and not is_pure_virtual(name, tags)\
-            and not ignore_in_class_list(attrs['include'])\
-            and use_gpl(attrs['include'], guards):
-                machines[name] = attrs
-                machines[name]['ancestors'] = ancestors
+        header = attrs['include']
+        for base in bases:
+            if (base in ancestors)\
+                    and not name in IGNORE\
+                    and not is_guarded(header, guards)\
+                    and not is_pure_virtual(name, tags)\
+                    and not ignore_in_class_list(header)\
+                    and use_gpl(header, guards):
+                machines[base][name] = attrs
 
-    templateVars = {"machines" : machines, "bases" : bases, "ignores" : IGNORE_MACHINES}
+    templateVars = {"machines" : machines}
 
     return template.render(templateVars)
 
