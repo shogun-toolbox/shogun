@@ -7,14 +7,19 @@
 #
 
 # Classes that need custom initialization
-IGNORE_LIST = [
-    'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
-    'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
-    'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
-    'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
-    'CLatentSVM', 'CLatentSOSVM',
-    'CDomainAdaptationSVMLinear',
-]
+IGNORE_MACHINES = {
+    'CLinearMachine' : [
+        'CFeatureBlockLogisticRegression', 'CLibLinearMTL',
+        'CMultitaskLinearMachine', 'CMultitaskLogisticRegression',
+        'CMultitaskL12LogisticRegression', 'CMultitaskLeastSquaresRegression',
+        'CMultitaskTraceLogisticRegression', 'CMultitaskClusteredLogisticRegression',
+        'CLatentSVM', 'CLatentSOSVM', 'CDomainAdaptationSVMLinear'
+    ],
+    'CKernelMachine' : [
+        'CDomainAdaptationSVM', 'CMKLRegression',
+        'CMKLClassification', 'CMKLOneClass', 'CSVM'
+    ]
+}
 
 def read_defined_guards(config_file):
     with open(config_file) as f:
@@ -81,20 +86,21 @@ def entry(templateFile, input_file, config_file):
     classes = get_shogun_classes(tags)
     guards = read_defined_guards(config_file)
 
-    # Get all linear machines
-    global IGNORE_LIST
-    base = 'CLinearMachine'
-    machines = {
-        name: attrs for name, attrs in classes.items() if
-        name not in IGNORE_LIST and
-        base in get_ancestors(classes, name) and
-        not is_guarded(attrs['include'], guards) and
-        not is_pure_virtual(name, tags) and
-        not ignore_in_class_list(attrs['include']) and
-        use_gpl(attrs['include'], guards)
-    }
+    # Get all linear/kernel machines
+    machines = {}
+    bases = ['CLinearMachine', 'CKernelMachine']
 
-    templateVars = {"classes" : machines}
+    for name, attrs in classes.items():
+        ancestors = get_ancestors(classes, name)
+        if any([b in ancestors for b in bases])\
+            and not is_guarded(attrs['include'], guards)\
+            and not is_pure_virtual(name, tags)\
+            and not ignore_in_class_list(attrs['include'])\
+            and use_gpl(attrs['include'], guards):
+                machines[name] = attrs
+                machines[name]['ancestors'] = ancestors
+
+    templateVars = {"machines" : machines, "bases" : bases, "ignores" : IGNORE_MACHINES}
 
     return template.render(templateVars)
 
