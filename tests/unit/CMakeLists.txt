@@ -104,7 +104,11 @@ if(JINJA2_IMPORT_SUCCESS)
         COMMENT "Generating SerializationXML_unittest.cc")
     LIST(APPEND SERIALIZATION_UNITTEST SerializationXML_unittest.cc)
 
-    IF(CTAGS_FOUND)
+    IF(NOT CTAGS_FOUND)
+        MESSAGE("Please install Ctags for trained models serialization tests.")
+    ELSEIF(NOT HAVE_HDF5)
+        MESSAGE("Please install HDF5 for trained models serialization tests.")
+    ELSE()
         ADD_CUSTOM_COMMAND(OUTPUT trained_model_serialization_unittest.cc
             COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.py
             ${CMAKE_CURRENT_SOURCE_DIR}/base/trained_model_serialization_unittest.cc.jinja2
@@ -117,8 +121,6 @@ if(JINJA2_IMPORT_SUCCESS)
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating trained_model_serialization_unittest.cc")
         LIST(APPEND SERIALIZATION_UNITTEST trained_model_serialization_unittest.cc)
-    ELSE()
-        MESSAGE("Please install Ctags for trained models serialization tests.")
     ENDIF()
 
     LIST(APPEND SERIALIZATION_UNITTEST base/main_unittest.cc)
