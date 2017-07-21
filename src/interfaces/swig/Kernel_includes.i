@@ -19,7 +19,9 @@
 #include <shogun/kernel/ConstKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/DiagKernel.h>
+#ifdef USE_GPL_SHOGUN
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
+#endif //USE_GPL_SHOGUN
 #include <shogun/kernel/normalizer/DiceKernelNormalizer.h>
 #include <shogun/kernel/ExponentialKernel.h>
 #include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>

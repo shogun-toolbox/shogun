@@ -4,6 +4,16 @@ IF (NOT USE_MOSEK)
 	LIST(REMOVE_ITEM EXAMPLES_CPP "so_fg_model.cpp" "so_multiclass.cpp" "so_multilabel.cpp")
 ENDIF ()
 
+IF (NOT USE_GPL_SHOGUN)
+	LIST(REMOVE_ITEM EXAMPLES_CPP
+	"modelselection_model_selection_parameters_test.cpp"
+	"modelselection_parameter_tree.cpp"
+	"modelselection_grid_search_string_kernel.cpp"
+	"parameter_modsel_parameters.cpp"
+	"classifier_svmlight_string_features_precomputed_kernel.cpp"
+	)
+ENDIF()
+
 LIST(REMOVE_ITEM EXAMPLES_CPP
 	"classifier_bagging_liblinear.cpp"
 	"classifier_larank.cpp"

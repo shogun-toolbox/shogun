@@ -53,8 +53,8 @@
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
 #endif
-%rename(SVMLin) CSVMLin;
 #ifdef USE_GPL_SHOGUN
+%rename(SVMLin) CSVMLin;
 %rename(SVMOcas) CSVMOcas;
 #endif //USE_GPL_SHOGUN
 %rename(SVMSGD) CSVMSGD;
@@ -117,8 +117,8 @@
 %include <shogun/classifier/svm/OnlineLibLinear.h>
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
-%include <shogun/classifier/svm/SVMLin.h>
 #ifdef USE_GPL_SHOGUN
+%include <shogun/classifier/svm/SVMLin.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 #endif //USE_GPL_SHOGUN
 %include <shogun/classifier/svm/SVMSGD.h>

@@ -24,9 +24,9 @@
  #include <shogun/classifier/Perceptron.h>
  #include <shogun/classifier/AveragedPerceptron.h>
  #include <shogun/classifier/svm/SVM.h>
- #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/machine/KernelMachine.h>
 #ifdef USE_GPL_SHOGUN
+ #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/classifier/svm/SVMOcas.h>
 #endif //USE_GPL_SHOGUN
  #include <shogun/classifier/svm/SVMSGD.h>

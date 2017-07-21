@@ -49,7 +49,9 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(CustomKernel) CCustomKernel;
 
 %rename(DiagKernel) CDiagKernel;
+#ifdef USE_GPL_SHOGUN
 %rename(DistantSegmentsKernel) CDistantSegmentsKernel;
+#endif //USE_GPL_SHOGUN
 %rename(WaveKernel) CWaveKernel;
 %rename(CauchyKernel) CCauchyKernel;
 %rename(DiceKernelNormalizer) CDiceKernelNormalizer;
@@ -182,7 +184,9 @@ namespace shogun
 %include <shogun/kernel/ConstKernel.h>
 %include <shogun/kernel/CustomKernel.h>
 %include <shogun/kernel/DiagKernel.h>
+#ifdef USE_GPL_SHOGUN
 %include <shogun/kernel/string/DistantSegmentsKernel.h>
+#endif //USE_GPL_SHOGUN
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/string/FixedDegreeStringKernel.h>
 %include <shogun/kernel/ShiftInvariantKernel.h>
