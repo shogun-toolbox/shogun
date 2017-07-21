@@ -7,6 +7,7 @@ For other cases, we describe how to build Shogun from source code.
 
 # Quicklinks
  * [Ready-to-install packages](#binaries)
+   - [Anaconda](#anaconda)
    - [Ubuntu](#ubuntu)
    - [Debian](#debian)
    - [Fedora](#fedora)
@@ -26,6 +27,13 @@ For other cases, we describe how to build Shogun from source code.
    - [Windows](#manual-windows)
 
 ## Ready-to-install packages <a name="binaries"></a>
+
+### Anaconda packages <a name="anaconda"></a>
+The base shogun library and its Python interface are available through the conda package manager, via <a href="https://conda-forge.org">conda-forge</a>. To install both:
+
+    conda install -c conda-forge shogun
+    
+or get just the library with package name `shogun-cpp`. These distributions include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
 
 ### Ubuntu ppa <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
@@ -48,7 +56,7 @@ In addition to the latest stable release, we offer [nightly builds](https://laun
 
 ### Debian <a name="debian"></a>
 Latest packages for Debian jessie are available in our own repository at [http://apt.shogun.ml](http://apt.shogun.ml).
-We provide both the stable and nightly packages, currenlty only for amd64 architecture.
+We provide both the stable and nightly packages, currently only for amd64 architecture.
 In order to add the stable packages to your system, simply run the following commands
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3DD2174ACAB30365
