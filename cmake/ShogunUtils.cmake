@@ -119,6 +119,7 @@ MACRO(AddLibShogunExample EXAMPLE_CPP)
 	IF(SANITIZER_FLAGS)
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
+    add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE}) 
 	
 	# Add examples to the dependencies of modular interfaces to make sure
 	# nothing will infer with them being build single-threaded.
