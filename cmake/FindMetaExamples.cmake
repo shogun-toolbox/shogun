@@ -30,6 +30,7 @@ function(get_excluded_meta_examples)
 	IF(NOT USE_GPL_SHOGUN)
 		LIST(APPEND EXCLUDED_META_EXAMPLES
 			gaussian_processes/gaussian_process_regression.sg
+			gaussian_processes/gaussian_process_classifier.sg
 			multiclass_classifier/multiclass_logisticregression.sg
             statistical_testing/linear_time_mmd.sg
             statistical_testing/quadratic_time_mmd.sg
