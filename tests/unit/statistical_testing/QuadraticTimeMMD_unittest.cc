@@ -354,7 +354,7 @@ TEST(QuadraticTimeMMD, perform_test_permutation_biased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value, 0.0, 1E-10);
+	EXPECT_NEAR(p_value, 1.0, 1E-10);
 }
 
 TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
@@ -393,7 +393,7 @@ TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_full)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	float64_t p_value=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value, 0.0, 1E-10);
+	EXPECT_NEAR(p_value, 1.0, 1E-10);
 }
 
 TEST(QuadraticTimeMMD, perform_test_permutation_unbiased_incomplete)
@@ -475,7 +475,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	float64_t p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
+	EXPECT_NEAR(p_value_spectrum, 0.3, 1E-10);
 
 	// unbiased case
 
@@ -483,7 +483,7 @@ TEST(QuadraticTimeMMD, perform_test_spectrum)
 	// assert against local machine computed result
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
 	p_value_spectrum=mmd->compute_p_value(mmd->compute_statistic());
-	EXPECT_NEAR(p_value_spectrum, 0.0, 1E-10);
+	EXPECT_NEAR(p_value_spectrum, 0.3, 1E-10);
 }
 
 TEST(QuadraticTimeMMD, precomputed_vs_nonprecomputed)

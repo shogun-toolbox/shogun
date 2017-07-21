@@ -112,7 +112,7 @@ TEST_F(RandomForest, classify_nominal_test)
 	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.78571428, c->get_oob_error(eval), 1e-6);
+	EXPECT_NEAR(0.4285714, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
@@ -146,7 +146,7 @@ TEST_F(RandomForest, classify_non_nominal_test)
 	EXPECT_EQ(0.0, res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_NEAR(0.78571428, c->get_oob_error(eval), 1e-6);
+	EXPECT_NEAR(0.4285714, c->get_oob_error(eval), 1e-6);
 
 	SG_UNREF(result);
 	SG_UNREF(c);
