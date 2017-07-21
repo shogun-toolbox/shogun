@@ -7,5 +7,5 @@ FOREACH(EXAMPLE_CPP ${EXAMPLES_CPP})
 ENDFOREACH()
 
 INSTALL(PROGRAMS ${INSTALL_EXAMPLES}
-	DESTINATION share/shogun/examples/
+	DESTINATION share/shogun/examples/libshogun/
 	COMPONENT minimal-example)
