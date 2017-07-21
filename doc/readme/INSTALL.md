@@ -29,11 +29,16 @@ For other cases, we describe how to build Shogun from source code.
 ## Ready-to-install packages <a name="binaries"></a>
 
 ### Anaconda packages <a name="anaconda"></a>
-The base shogun library and its Python interface are available through the conda package manager, via <a href="https://conda-forge.org">conda-forge</a>. To install both:
+The base shogun library and its Python interface are available through the conda package manager, via <a href="https://conda-forge.org">conda-forge</a>.
+To install both:
 
     conda install -c conda-forge shogun
     
-or get just the library with package name `shogun-cpp`. These distributions include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
+or to get just the library:
+
+    conda install -c conda-forge shogun-cpp
+
+These packages include most of the optional dependencies and are currently available for Linux and MacOS; we're [working on a Windows build](https://github.com/conda-forge/shogun-cpp-feedstock/issues/1).
 
 ### Ubuntu ppa <a name="ubuntu"></a>
 We are working on integrating Shogun with Debian/Ubuntu.
