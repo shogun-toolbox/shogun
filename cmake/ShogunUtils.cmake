@@ -111,6 +111,25 @@ MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
     ENDIF()
 ENDMACRO()
 
+MACRO(AddLibShogunExample EXAMPLE_CPP)
+	STRING(REGEX REPLACE ".cpp\$" "" EXAMPLE "${EXAMPLE_CPP}")
+
+	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
+	target_link_libraries(${EXAMPLE} shogun::shogun ${SANITIZER_LIBRARY})
+	IF(SANITIZER_FLAGS)
+		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+	ENDIF()
+	
+	# Add examples to the dependencies of modular interfaces to make sure
+	# nothing will infer with them being build single-threaded.
+	IF(SWIG_SINGLE_THREADED)
+		FOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
+			ADD_DEPENDENCIES(${SG_INTERFACE_TARGET} ${EXAMPLE})
+		ENDFOREACH(SG_INTERFACE_TARGET ${SG_INTERFACE_TARGETS})
+	ENDIF(SWIG_SINGLE_THREADED)
+ENDMACRO()
+
+
 function(PrintLine)
 	message(STATUS "===================================================================================================================")
 endfunction()
@@ -248,7 +267,6 @@ function(GET_META_EXAMPLE_VARS META_EXAMPLE EX_NAME REL_DIR NAME_WITH_DIR)
 	set(EXAMPLE_NAME_WITH_DIR "${EXAMPLE_REL_DIR}-${EXAMPLE_NAME}")
 	set(${NAME_WITH_DIR} ${EXAMPLE_NAME_WITH_DIR} PARENT_SCOPE)
 endfunction()
-
 
 function(GET_INTERFACE_VARS INTERFACE DIRECTORY EXTENSION)
     string(REGEX MATCH "INTERFACE_([a-zA-Z]+)" _dir ${INTERFACE})

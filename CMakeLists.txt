@@ -553,6 +553,11 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	    add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 
+    # always build minimal example(s)
+    IF(EXISTS ${CMAKE_SOURCE_DIR}/examples/minimal)
+        add_subdirectory(${CMAKE_SOURCE_DIR}/examples/minimal)
+    ENDIF()
+
 	IF(BUILD_META_EXAMPLES)
         # allow meta examples without adding examples dir itself
         add_subdirectory(${CMAKE_SOURCE_DIR}/examples/meta)
