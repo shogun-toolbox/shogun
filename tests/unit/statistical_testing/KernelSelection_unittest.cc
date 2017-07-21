@@ -72,7 +72,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.0625, 1E-10);
 }
 
 TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
@@ -210,7 +210,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 0.125, 1E-10);
 }
 
 #ifdef USE_GPL_SHOGUN
@@ -356,7 +356,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 2, 1E-10);
 }
 
 TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
@@ -388,5 +388,5 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	mmd->set_train_test_mode(false);
 
 	auto selected_kernel=static_cast<CGaussianKernel*>(mmd->get_kernel());
-	EXPECT_NEAR(selected_kernel->get_width(), 1.0, 1E-10);
+	EXPECT_NEAR(selected_kernel->get_width(), 2.0, 1E-10);
 }

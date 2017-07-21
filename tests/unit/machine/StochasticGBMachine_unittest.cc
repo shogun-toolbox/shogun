@@ -101,16 +101,16 @@ TEST(StochasticGBMachine,sinusoid_curve_fitting)
 	SGVector<float64_t> ret=ret_labels->get_labels();
 
 	float64_t epsilon=1e-8;
-	EXPECT_NEAR(ret[0], -0.91580992928965543, epsilon);
-	EXPECT_NEAR(ret[1], 0.83302568373135366, epsilon);
-	EXPECT_NEAR(ret[2], 0.42519621523857321, epsilon);
-	EXPECT_NEAR(ret[3], -0.54396234032218127, epsilon);
-	EXPECT_NEAR(ret[4], -0.54396234032218127, epsilon);
-	EXPECT_NEAR(ret[5], 0.64891735887560409, epsilon);
-	EXPECT_NEAR(ret[6], 0.8330256837313536, epsilon);
-	EXPECT_NEAR(ret[7], -0.76318443378750656, epsilon);
-	EXPECT_NEAR(ret[8], -0.52743316035159316, epsilon);
-	EXPECT_NEAR(ret[9], 0.13643452136869369, epsilon);
+	EXPECT_NEAR(ret[0], -0.91750791302398116, epsilon);
+	EXPECT_NEAR(ret[1], 0.84042006382699208, epsilon);
+	EXPECT_NEAR(ret[2], 0.41908702227342665, epsilon);
+	EXPECT_NEAR(ret[3], -0.51059999661859867, epsilon);
+	EXPECT_NEAR(ret[4], -0.51059999661859867, epsilon);
+	EXPECT_NEAR(ret[5], 0.67456542071826497, epsilon);
+	EXPECT_NEAR(ret[6], 0.84042006382699208, epsilon);
+	EXPECT_NEAR(ret[7], -0.73520642975448036, epsilon);
+	EXPECT_NEAR(ret[8], -0.55571022774324808, epsilon);
+	EXPECT_NEAR(ret[9], 0.14677577998145744, epsilon);
 
 	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);

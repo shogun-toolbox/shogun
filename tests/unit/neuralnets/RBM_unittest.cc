@@ -180,5 +180,5 @@ TEST(RBM, pseudo_likelihood_binary)
 		pl += rbm.pseudo_likelihood(V)/10000;
 
 	// generated using scikit-learn
-	EXPECT_NEAR(-3.3698, pl, 0.02);
+	EXPECT_NEAR(-3.33648, pl, 0.02);
 }

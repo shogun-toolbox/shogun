@@ -390,10 +390,10 @@ TEST(CMath, permute)
 	v.range_fill(0);
 	set_global_seed(2);
 	CMath::permute(v);
-	EXPECT_EQ(v[0], 0);
-	EXPECT_EQ(v[1], 2);
-	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 1);
+	EXPECT_EQ(v[0], 3);
+	EXPECT_EQ(v[1], 0);
+	EXPECT_EQ(v[2], 1);
+	EXPECT_EQ(v[3], 2);
 }
 
 TEST(CMath, permute_with_random)
@@ -404,10 +404,10 @@ TEST(CMath, permute_with_random)
 	auto prng = get_prng();
 	CMath::permute(v, prng);
 
-	EXPECT_EQ(v[0], 0);
-	EXPECT_EQ(v[1], 2);
-	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 1);
+	EXPECT_EQ(v[0], 3);
+	EXPECT_EQ(v[1], 0);
+	EXPECT_EQ(v[2], 1);
+	EXPECT_EQ(v[3], 2);
 }
 
 TEST(CMath,misc)
