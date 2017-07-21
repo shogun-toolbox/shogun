@@ -33,6 +33,7 @@
 using namespace shogun;
 using namespace Eigen;
 
+#ifdef USE_GPL_SHOGUN
 TEST(RationalApproximation, precompute)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
@@ -391,3 +392,4 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	SG_UNREF(e);
 	SG_UNREF(op);
 }
+#endif //USE_GPL_SHOGUN

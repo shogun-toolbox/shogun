@@ -66,6 +66,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(GaussianProcessClassification,get_mean_vector)
 {
 	// create some easy random classification data
@@ -3359,7 +3360,6 @@ TEST(GaussianProcessClassificationUsingMultiLaplace,apply_multiclass)
 	SG_UNREF(prediction);
 }
 
-#ifdef USE_GPL_SHOGUN
 #if defined HAVE_NLOPT
 TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_mean_vector)
 {
@@ -3694,13 +3694,7 @@ TEST(GaussianProcessClassificationUsingSingleLaplaceWithNLOPT,get_variance_vecto
 
 	SG_UNREF(gpc);
 }
-
-
-
 #endif //HAVE_NLOPT
-#endif //USE_GPL_SHOGUN
-
-
 
 TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_mean_vector)
 {
@@ -4044,3 +4038,4 @@ TEST(GaussianProcessClassificationUsingSingleFITCLaplace,get_probabilities)
 	SG_UNREF(gpc);
 	SG_UNREF(latent_features_train);
 }
+#endif //USE_GPL_SHOGUN

@@ -25,6 +25,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 {
 	index_t n=2;
@@ -88,6 +89,7 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_ep)
 
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN
 
 TEST(InferenceMethod, compute_gradient)
 {

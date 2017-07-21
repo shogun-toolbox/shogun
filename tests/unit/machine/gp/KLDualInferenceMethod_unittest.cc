@@ -44,6 +44,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 {
 	// create some easy classification data:
@@ -496,3 +497,4 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN

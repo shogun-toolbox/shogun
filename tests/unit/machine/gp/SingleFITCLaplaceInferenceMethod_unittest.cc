@@ -43,6 +43,7 @@
 
 using namespace shogun;
 
+#ifdef USE_GPL_SHOGUN
 TEST(SingleFITCLaplaceInferenceMethod,get_cholesky)
 {
 	index_t n=6;
@@ -471,3 +472,4 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	SG_UNREF(latent_features_train);
 	SG_UNREF(inf);
 }
+#endif //USE_GPL_SHOGUN

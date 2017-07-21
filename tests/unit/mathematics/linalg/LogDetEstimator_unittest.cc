@@ -108,6 +108,7 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 #endif //HAVE_LAPACK
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
+#ifdef USE_GPL_SHOGUN
 TEST(LogDetEstimator, sample_ratapp_dense)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
@@ -159,6 +160,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
+#endif //USE_GPL_SHOGUN
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_LAPACK
