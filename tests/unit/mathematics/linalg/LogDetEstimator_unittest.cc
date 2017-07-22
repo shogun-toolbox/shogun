@@ -160,7 +160,6 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
-#endif //USE_GPL_SHOGUN
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_LAPACK
@@ -461,3 +460,4 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 }
 #endif // HAVE_LAPACK
 #endif // HAVE_COLPACK
+#endif //USE_GPL_SHOGUN
