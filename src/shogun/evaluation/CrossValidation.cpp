@@ -11,6 +11,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
+#include <shogun/base/progress.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/lib/List.h>
@@ -92,7 +93,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
-	for (index_t i = 0; i < m_num_runs; ++i)
+	for (index_t i = 0; i < m_num_runs; i++)
 	{
 		/* evtl. update xvalidation output class */
 		SG_DEBUG("Creating CrossValidationStorage.\n")
@@ -165,6 +166,8 @@ float64_t CCrossValidation::evaluate_one_run(
 		/* do actual cross-validation */
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
+			EVALUATION_CONTROLLERS
+
 			/* evtl. update xvalidation output class */
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
@@ -235,8 +238,11 @@ float64_t CCrossValidation::evaluate_one_run(
 		//#pragma omp parallel for
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
+			EVALUATION_CONTROLLERS
+
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
+
 			CMachine* machine;
 			CFeatures* features;
 			CLabels* labels;
