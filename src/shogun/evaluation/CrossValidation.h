@@ -201,17 +201,19 @@ namespace shogun
 		/** setter for the number of runs to use for evaluation */
 		void set_num_runs(int32_t num_runs);
 
-		/** evaluate */
-		virtual CEvaluationResult* evaluate();
-
 		/** @return name of the SGSerializable */
 		virtual const char* get_name() const
 		{
 			return "CrossValidation";
 		}
 
-	private:
-		void init();
+private:
+	void init();
+
+	/** evaluate */
+	virtual CEvaluationResult* evaluate_impl();
+
+protected:
 
 	protected:
 		/** Evaluates one single cross-validation run.

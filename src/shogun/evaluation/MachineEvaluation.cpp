@@ -10,13 +10,17 @@
  * Heiko Strathmann
  */
 
-#include "MachineEvaluation.h"
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/evaluation/CrossValidation.h>
+#include <shogun/evaluation/Evaluation.h>
+#include <shogun/evaluation/MachineEvaluation.h>
+#include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
+
+#include <rxcpp/rx-lite.hpp>
+#include <shogun/base/init.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -101,6 +105,34 @@ void CMachineEvaluation::init()
 
 }
 
+CEvaluationResult* CMachineEvaluation::evaluate()
+{
+	SG_DEBUG("entering %s::evaluate()\n", get_name())
+
+	REQUIRE(
+	    m_machine, "%s::evaluate() is only possible if a machine is "
+	               "attached\n",
+	    get_name());
+
+	REQUIRE(
+	    m_features, "%s::evaluate() is only possible if features are "
+	                "attached\n",
+	    get_name());
+
+	REQUIRE(
+	    m_labels, "%s::evaluate() is only possible if labels are "
+	              "attached\n",
+	    get_name());
+
+	auto sub = connect_to_signal_handler();
+	CEvaluationResult* result = evaluate_impl();
+	sub.unsubscribe();
+	reset_computation_variables();
+
+	SG_DEBUG("leaving %s::evaluate()\n", get_name())
+	return result;
+};
+
 CMachine* CMachineEvaluation::get_machine() const
 {
 	SG_REF(m_machine);
@@ -110,4 +142,18 @@ CMachine* CMachineEvaluation::get_machine() const
 EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
 {
 	return m_evaluation_criterion->get_evaluation_direction();
+}
+
+rxcpp::subscription CMachineEvaluation::connect_to_signal_handler()
+{
+	// Subscribe this algorithm to the signal handler
+	auto subscriber = rxcpp::make_subscriber<int>(
+	    [this](int i) {
+		    if (i == SG_PAUSE_COMP)
+			    this->on_pause();
+		    else
+			    this->on_next();
+		},
+	    [this]() { this->on_complete(); });
+	return get_global_signal()->get_observable()->subscribe(subscriber);
 }

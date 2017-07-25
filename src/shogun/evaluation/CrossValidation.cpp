@@ -55,25 +55,8 @@ void CCrossValidation::init()
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions", MS_NOT_AVAILABLE);
 }
 
-CEvaluationResult* CCrossValidation::evaluate()
+CEvaluationResult* CCrossValidation::evaluate_impl()
 {
-	SG_DEBUG("entering %s::evaluate()\n", get_name())
-
-	REQUIRE(
-	    m_machine, "%s::evaluate() is only possible if a machine is "
-	               "attached\n",
-	    get_name());
-
-	REQUIRE(
-	    m_features, "%s::evaluate() is only possible if features are "
-	                "attached\n",
-	    get_name());
-
-	REQUIRE(
-	    m_labels, "%s::evaluate() is only possible if labels are "
-	              "attached\n",
-	    get_name());
-
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
 	{
@@ -147,8 +130,6 @@ CEvaluationResult* CCrossValidation::evaluate()
 		m_machine->data_unlock();
 		m_do_unlock = false;
 	}
-
-	SG_DEBUG("leaving %s::evaluate()\n", get_name())
 
 	SG_REF(result);
 	return result;
