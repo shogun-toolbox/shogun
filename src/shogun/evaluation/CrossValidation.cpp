@@ -14,6 +14,7 @@
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/lib/List.h>
 
@@ -106,38 +107,28 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	SGVector<float64_t> results(m_num_runs);
 
-	/* evtl. update xvalidation output class */
-	CCrossValidationOutput* current=(CCrossValidationOutput*)
-			m_xval_outputs->get_first_element();
-	while (current)
-	{
-		current->init_num_runs(m_num_runs);
-		current->init_num_folds(m_splitting_strategy->get_num_subsets());
-		current->init_expose_labels(m_labels);
-		current->post_init();
-		SG_UNREF(current);
-		current=(CCrossValidationOutput*)
-				m_xval_outputs->get_next_element();
-	}
-
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
-
 		/* evtl. update xvalidation output class */
-		current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
-		while (current)
-		{
-			current->update_run_index(i);
-			SG_UNREF(current);
-			current=(CCrossValidationOutput*)
-					m_xval_outputs->get_next_element();
-		}
+		SG_DEBUG("Creating CrossValidationStorage.\n")
+		CrossValidationStorage * storage = new CrossValidationStorage();
+		SG_REF(storage)
+		storage->set_num_runs(m_num_runs);
+		storage->set_num_folds(m_splitting_strategy->get_num_subsets());
+		storage->set_expose_labels(m_labels);
+		storage->post_init();
+		SG_DEBUG("Ending CrossValidationStorage initilization.\n")
 
 		SG_DEBUG("entering cross-validation run %d \n", i)
-		results[i]=evaluate_one_run();
+		results[i]=evaluate_one_run(i, storage);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
+
+		/* Emit the value*/	
+		ObservedValue cv_data {erase_type(storage), CROSSVALIDATION};
+		observe(cv_data);
+		SG_UNREF(storage)
 	}
 
 	/* construct evaluation result */
@@ -169,7 +160,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs=num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run()
+float64_t CCrossValidation::evaluate_one_run(int64_t index, CrossValidationStorage * storage)
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
@@ -185,20 +176,16 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
+		m_machine->set_store_model_features(true);
 		SG_DEBUG("starting locked evaluation\n", get_name())
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
 			/* evtl. update xvalidation output class */
-			CCrossValidationOutput* current=(CCrossValidationOutput*)
-					m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_fold_index(i);
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
-			}
+			CrossValidationFoldStorage * fold = new CrossValidationFoldStorage();
+			SG_REF(fold)
+			fold->set_run_index(index);
+			fold->set_fold_index(i);
 
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
@@ -212,15 +199,8 @@ float64_t CCrossValidation::evaluate_one_run()
 					m_splitting_strategy->generate_subset_indices(i);
 
 			/* evtl. update xvalidation output class */
-			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_train_indices(inverse_subset_indices, "\t");
-				current->update_trained_machine(m_machine, "\t");
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
-			}
+			fold->set_train_indices(inverse_subset_indices);
+			fold->set_trained_machine(m_machine);
 
 			/* produce output for desired indices */
 			CLabels* result_labels=m_machine->apply_locked(subset_indices);
@@ -234,24 +214,21 @@ float64_t CCrossValidation::evaluate_one_run()
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 			/* evtl. update xvalidation output class */
-			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_test_indices(subset_indices, "\t");
-				current->update_test_result(result_labels, "\t");
-				current->update_test_true_result(m_labels, "\t");
-				current->post_update_results();
-				current->update_evaluation_result(results[i], "\t");
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
-			}
+			fold->set_test_indices(subset_indices);
+			fold->set_test_result(result_labels);
+			fold->set_test_true_result(m_labels);
+			fold->post_update_results();
+			fold->set_evaluation_result(results[i]);
 
 			/* remove subset to prevent side effects */
 			m_labels->remove_subset();
 
+			/* Save fold into storage */
+			storage->append_fold_result(fold);
+
 			/* clean up */
 			SG_UNREF(result_labels);
+			SG_UNREF(fold);
 
 			SG_DEBUG("done locked evaluation\n", get_name())
 		}
@@ -269,6 +246,8 @@ float64_t CCrossValidation::evaluate_one_run()
 		//#pragma omp parallel for
 		for (index_t i=0; i <num_subsets; ++i)
 		{
+			CrossValidationFoldStorage * fold = new CrossValidationFoldStorage();
+			SG_REF(fold)
 			CMachine* machine;
 			CFeatures* features;
 			CLabels* labels;
@@ -288,19 +267,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			}
 
 			/* evtl. update xvalidation output class */
-			CCrossValidationOutput* current;
-			#pragma omp critical
-			{
-			current=(CCrossValidationOutput*)
-					m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_fold_index(i);
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
-			}
-			}
+			fold->set_run_index(index);
+			fold->set_fold_index(i);
 
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
@@ -330,15 +298,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* evtl. update xvalidation output class */
 			#pragma omp critical
 			{
-			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_train_indices(inverse_subset_indices, "\t");
-				current->update_trained_machine(machine, "\t");
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
-			}
+				fold->set_train_indices(inverse_subset_indices);
+				fold->set_trained_machine((CMachine *) machine->clone());
 			}
 
 			features->remove_subset();
@@ -374,19 +335,14 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* evtl. update xvalidation output class */
 			#pragma omp critical
 			{
-			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
-			while (current)
-			{
-				current->update_test_indices(subset_indices, "\t");
-				current->update_test_result(result_labels, "\t");
-				current->update_test_true_result(labels, "\t");
-				current->post_update_results();
-				current->update_evaluation_result(results[i], "\t");
-				SG_UNREF(current);
-				current=(CCrossValidationOutput*)
-						m_xval_outputs->get_next_element();
+				fold->set_test_indices(subset_indices);
+				fold->set_test_result((CLabels *) result_labels->clone());
+				fold->set_test_true_result((CLabels *) labels->clone());
+				fold->post_update_results();
+				fold->set_evaluation_result(results[i]);
 			}
-			}
+
+			storage->append_fold_result(fold);
 
 			/* clean up, remove subsets */
 			labels->remove_subset();
@@ -398,6 +354,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				SG_UNREF(evaluation_criterion);
 			}
 			SG_UNREF(result_labels);
+			SG_UNREF(fold)
 		}
 
 		SG_DEBUG("done unlocked evaluation\n", get_name())
