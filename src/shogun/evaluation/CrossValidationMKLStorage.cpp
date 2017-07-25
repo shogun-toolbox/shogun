@@ -18,12 +18,12 @@ using namespace shogun;
 void CCrossValidationMKLStorage::update_trained_machine(
 		CMachine* machine, const char* prefix)
 {
-	REQUIRE(machine, "%s::update_trained_machine(): Provided Machine is NULL!\n",
+	REQUIRE(machine, "%s::set_trained_machine(): Provided Machine is NULL!\n",
 			get_name());
 
 	CMKL* mkl=dynamic_cast<CMKL*>(machine);
 	CMKLMulticlass* mkl_multiclass=dynamic_cast<CMKLMulticlass*>(machine);
-	REQUIRE(mkl || mkl_multiclass, "%s::update_trained_machine(): This method is only usable "
+	REQUIRE(mkl || mkl_multiclass, "%s::set_trained_machine(): This method is only usable "
 				"with CMKL derived machines. This one is \"%s\"\n", get_name(),
 				machine->get_name());
 
@@ -33,11 +33,11 @@ void CCrossValidationMKLStorage::update_trained_machine(
 	else
 		kernel = mkl_multiclass->get_kernel();
 
-	REQUIRE(kernel, "%s::update_trained_machine(): No kernel assigned to "
+	REQUIRE(kernel, "%s::set_trained_machine(): No kernel assigned to "
 			"machine of type \"%s\"\n", get_name(), machine->get_name());
 
 	CCombinedKernel* combined_kernel=dynamic_cast<CCombinedKernel*>(kernel);
-	REQUIRE(combined_kernel, "%s::update_trained_machine(): This method is only"
+	REQUIRE(combined_kernel, "%s::set_trained_machine(): This method is only"
 			" usable with CCombinedKernel on machines. This one is \"s\"\n",
 			get_name(), kernel->get_name());
 

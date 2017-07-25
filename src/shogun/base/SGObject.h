@@ -583,7 +583,7 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const ObservedValue* value);
+	void observe(const ObservedValue value);
 
 	/**
 	 * Register which params this object can emit.
