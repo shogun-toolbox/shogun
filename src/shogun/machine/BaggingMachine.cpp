@@ -10,6 +10,7 @@
 
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/ensemble/CombinationRule.h>
+#include <shogun/ensemble/MeanRule.h>
 #include <shogun/evaluation/Evaluation.h>
 
 using namespace shogun;
@@ -44,9 +45,16 @@ CBaggingMachine::~CBaggingMachine()
 
 CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 {
-	SGVector<float64_t> combined_vector = apply_get_outputs(data);
+	SGMatrix<float64_t> output = apply_outputs(data);
 
-	CBinaryLabels* pred = new CBinaryLabels(combined_vector);
+	CMeanRule* mean_rule = new CMeanRule();
+
+	SGVector<float64_t> labels = m_combination_rule->combine(output);
+	SGVector<float64_t> probabilities = mean_rule->combine(output);
+
+	CBinaryLabels* pred = new CBinaryLabels(labels);
+  pred->set_values(probabilities);
+
 	return pred;
 }
 
@@ -55,6 +63,7 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGVector<float64_t> combined_vector = apply_get_outputs(data);
 
 	CMulticlassLabels* pred = new CMulticlassLabels(combined_vector);
+
 	return pred;
 }
 
@@ -98,6 +107,37 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
 
 	return combined;
+}
+
+SGMatrix<float64_t> CBaggingMachine::apply_outputs(CFeatures* data)
+{
+	ASSERT(data != NULL);
+	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
+	ASSERT(m_num_bags == m_bags->get_num_elements());
+
+	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
+	output.zero();
+
+
+	#pragma omp parallel for
+	for (int32_t i = 0; i < m_num_bags; ++i)
+	{
+		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
+		CLabels* l = m->apply(data);
+		SGVector<float64_t> lv;
+		if (l!=NULL)
+			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
+		else
+			SG_ERROR("NULL returned by apply method\n");
+
+		float64_t* bag_results = output.get_column_vector(i);
+		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
+
+		SG_UNREF(l);
+		SG_UNREF(m);
+	}
+
+	return output;
 }
 
 bool CBaggingMachine::train_machine(CFeatures* data)
