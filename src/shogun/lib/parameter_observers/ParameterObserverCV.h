@@ -49,7 +49,7 @@ namespace shogun
 	{
 
 	public:
-		ParameterObserverCV(bool verbose=false);
+		ParameterObserverCV(bool verbose = false);
 		virtual ~ParameterObserverCV();
 
 		virtual void on_next(const TimedObservedValue& value);
@@ -65,7 +65,7 @@ namespace shogun
 		 */
 		const std::vector<CrossValidationStorage*>& get_observations() const;
 
-		void print_observed_value(CrossValidationStorage * value) const;
+		void print_observed_value(CrossValidationStorage* value) const;
 
 	private:
 		void print_machine_information(CMachine* machine) const;
