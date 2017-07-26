@@ -22,10 +22,6 @@
  #include <shogun/evaluation/SplittingStrategy.h>
  #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
  #include <shogun/evaluation/CrossValidationSplitting.h>
- #include <shogun/evaluation/CrossValidationOutput.h>
- #include <shogun/evaluation/CrossValidationPrintOutput.h>
- #include <shogun/evaluation/CrossValidationMKLStorage.h>
- #include <shogun/evaluation/CrossValidationMulticlassStorage.h>
  #include <shogun/evaluation/StructuredAccuracy.h>
  #include <shogun/evaluation/DirectorContingencyTableEvaluation.h>
 %}

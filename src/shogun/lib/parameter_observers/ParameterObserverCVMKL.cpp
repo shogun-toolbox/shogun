@@ -44,7 +44,8 @@
 
 using namespace shogun;
 
-ParameterObserverCVMKL::ParameterObserverCVMKL()
+ParameterObserverCVMKL::ParameterObserverCVMKL(bool verbose)
+    : ParameterObserverCV(verbose)
 {
 }
 

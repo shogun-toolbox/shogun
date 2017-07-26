@@ -10,7 +10,6 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
@@ -47,22 +46,13 @@ CCrossValidation::CCrossValidation(
 
 CCrossValidation::~CCrossValidation()
 {
-	SG_UNREF(m_xval_outputs);
 }
 
 void CCrossValidation::init()
 {
 	m_num_runs = 1;
 
-	/* do reference counting for output objects */
-	m_xval_outputs = new CList(true);
-
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions", MS_NOT_AVAILABLE);
-	SG_ADD(
-	    (CSGObject**)&m_xval_outputs, "m_xval_outputs",
-	    "List of output "
-	    "classes for intermediade cross-validation results",
-	    MS_NOT_AVAILABLE);
 }
 
 CEvaluationResult* CCrossValidation::evaluate()
@@ -309,12 +299,9 @@ float64_t CCrossValidation::evaluate_one_run(
 			machine->train(features);
 			SG_DEBUG("finished training\n")
 
-/* evtl. update xvalidation output class */
-#pragma omp critical
-			{
-				fold->set_train_indices(inverse_subset_indices);
-				fold->set_trained_machine((CMachine*)machine->clone());
-			}
+			/* evtl. update xvalidation output class */
+			fold->set_train_indices(inverse_subset_indices);
+			fold->set_trained_machine(machine);
 
 			features->remove_subset();
 			labels->remove_subset();
@@ -347,15 +334,12 @@ float64_t CCrossValidation::evaluate_one_run(
 			results[i] = evaluation_criterion->evaluate(result_labels, labels);
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
-/* evtl. update xvalidation output class */
-#pragma omp critical
-			{
-				fold->set_test_indices(subset_indices);
-				fold->set_test_result((CLabels*)result_labels->clone());
-				fold->set_test_true_result((CLabels*)labels->clone());
-				fold->post_update_results();
-				fold->set_evaluation_result(results[i]);
-			}
+			/* evtl. update xvalidation output class */
+			fold->set_test_indices(subset_indices);
+			fold->set_test_result(result_labels);
+			fold->set_test_true_result(labels);
+			fold->post_update_results();
+			fold->set_evaluation_result(results[i]);
 
 			storage->append_fold_result(fold);
 
@@ -380,10 +364,4 @@ float64_t CCrossValidation::evaluate_one_run(
 
 	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
 	return mean;
-}
-
-void CCrossValidation::add_cross_validation_output(
-    CCrossValidationOutput* cross_validation_output)
-{
-	m_xval_outputs->append_element(cross_validation_output);
 }

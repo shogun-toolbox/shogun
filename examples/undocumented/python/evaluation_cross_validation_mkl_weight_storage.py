@@ -23,8 +23,7 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun import CrossValidation, CrossValidationResult
-    from shogun import CrossValidationPrintOutput
-    from shogun import CrossValidationMKLStorage
+    from shogun import ParameterObserverCVMKL
     from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import StratifiedCrossValidationSplitting
     from shogun import BinaryLabels
@@ -66,8 +65,8 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
 
     # append cross vlaidation output classes
     #cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
-    mkl_storage=CrossValidationMKLStorage()
-    cross_validation.add_cross_validation_output(mkl_storage)
+    mkl_storage=ParameterObserverCVMKL()
+    cross_validation.subscribe_to_parameters(mkl_storage)
     cross_validation.set_num_runs(3)
 
     # perform cross-validation

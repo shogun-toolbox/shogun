@@ -48,7 +48,7 @@ namespace shogun
 		/**
 		 * Constructor
 		 */
-		ParameterObserverCVMKL();
+		ParameterObserverCVMKL(bool verbose = false);
 		/**
 		 * Destructor
 		 */

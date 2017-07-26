@@ -168,14 +168,6 @@ namespace shogun
 		/** evaluate */
 		virtual CEvaluationResult* evaluate();
 
-		/** appends given cross validation output instance
-		 * to the list of listeners
-		 *
-		 * @param cross_validation_output given cross validation output
-		 */
-		void add_cross_validation_output(
-		    CCrossValidationOutput* cross_validation_output);
-
 		/** @return name of the SGSerializable */
 		virtual const char* get_name() const
 		{
@@ -200,9 +192,6 @@ namespace shogun
 
 		/** number of evaluation runs for one fold */
 		int32_t m_num_runs;
-
-		/** xval output listeners */
-		CList* m_xval_outputs;
 	};
 }
 

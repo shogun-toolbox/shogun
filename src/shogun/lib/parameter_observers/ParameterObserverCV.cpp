@@ -33,18 +33,17 @@
 *
 */
 
-#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
+#include <shogun/machine/KernelMachine.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/machine/LinearMulticlassMachine.h>
 
 using namespace shogun;
 
-ParameterObserverCV::ParameterObserverCV(bool verbose)
-: m_verbose(verbose)
+ParameterObserverCV::ParameterObserverCV(bool verbose) : m_verbose(verbose)
 {
 	m_type = CROSSVALIDATION;
 }
@@ -97,46 +96,47 @@ void ParameterObserverCV::clear()
 	m_observations.clear();
 }
 
-void ParameterObserverCV::print_observed_value(CrossValidationStorage * value) const
+void ParameterObserverCV::print_observed_value(
+    CrossValidationStorage* value) const
 {
-	//SG_SPRINT("Total number of runs: ", value->get_num_runs());
-	//SG_SPRINT("Total number of folds: ", value->get_num_folds());
 	for (auto f : value->get_folds_results())
 	{
+		SG_SPRINT("\n")
 		SG_SPRINT("Current run index: %i\n", f->get_current_run_index())
 		SG_SPRINT("Current fold index: %i\n", f->get_current_fold_index())
-		f->get_train_indices().display_vector("Train Indices: ");
-		f->get_test_indices().display_vector("Test Indices: ");
+		f->get_train_indices().display_vector("Train Indices ");
+		f->get_test_indices().display_vector("Test Indices ");
 		print_machine_information(f->get_trained_machine());
-		f->get_test_result()->get_values().display_vector("Test Labels: ");
-		f->get_test_true_result()->get_values().display_vector("Test True Labels");
-		SG_SPRINT("Evaluation result: %d\n", f->get_evaluation_result());
+		f->get_test_result()->get_values().display_vector("Test Labels ");
+		f->get_test_true_result()->get_values().display_vector(
+		    "Test True Label ");
+		SG_SPRINT("Evaluation result: %f\n", f->get_evaluation_result());
 	}
 }
 
-void ParameterObserverCV::print_machine_information(CMachine *machine) const
+void ParameterObserverCV::print_machine_information(CMachine* machine) const
 {
 	if (dynamic_cast<CLinearMachine*>(machine))
 	{
-		CLinearMachine* linear_machine=(CLinearMachine*)machine;
+		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("Learned Weights = ");
 		SG_SPRINT("Learned Bias = %f\n", linear_machine->get_bias())
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
-		CKernelMachine* kernel_machine=(CKernelMachine*)machine;
+		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
 		SG_SPRINT("Learned Bias = %f\n", kernel_machine->get_bias())
 	}
 
-	if (dynamic_cast<CLinearMulticlassMachine*>(machine)
-		|| dynamic_cast<CKernelMulticlassMachine*>(machine))
+	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||
+	    dynamic_cast<CKernelMulticlassMachine*>(machine))
 	{
-		CMulticlassMachine* mc_machine=(CMulticlassMachine*)machine;
-		for (int i=0; i<mc_machine->get_num_machines(); i++)
+		CMulticlassMachine* mc_machine = (CMulticlassMachine*)machine;
+		for (int i = 0; i < mc_machine->get_num_machines(); i++)
 		{
-			CMachine* sub_machine=mc_machine->get_machine(i);
+			CMachine* sub_machine = mc_machine->get_machine(i);
 			this->print_machine_information(sub_machine);
 			SG_UNREF(sub_machine);
 		}
@@ -144,19 +144,21 @@ void ParameterObserverCV::print_machine_information(CMachine *machine) const
 
 	if (dynamic_cast<CMKL*>(machine))
 	{
-		CMKL* mkl=(CMKL*)machine;
-		CCombinedKernel* kernel=dynamic_cast<CCombinedKernel*>(
-				mkl->get_kernel());
-		kernel->get_subkernel_weights().display_vector("MKL sub-kernel weights =");
+		CMKL* mkl = (CMKL*)machine;
+		CCombinedKernel* kernel =
+		    dynamic_cast<CCombinedKernel*>(mkl->get_kernel());
+		kernel->get_subkernel_weights().display_vector(
+		    "MKL sub-kernel weights =");
 		SG_UNREF(kernel);
 	}
 
 	if (dynamic_cast<CMKLMulticlass*>(machine))
 	{
-		CMKLMulticlass* mkl=(CMKLMulticlass*)machine;
-		CCombinedKernel* kernel=dynamic_cast<CCombinedKernel*>(
-				mkl->get_kernel());
-		kernel->get_subkernel_weights().display_vector("MKL sub-kernel weights =");
+		CMKLMulticlass* mkl = (CMKLMulticlass*)machine;
+		CCombinedKernel* kernel =
+		    dynamic_cast<CCombinedKernel*>(mkl->get_kernel());
+		kernel->get_subkernel_weights().display_vector(
+		    "MKL sub-kernel weights =");
 		SG_UNREF(kernel);
 	}
 }
