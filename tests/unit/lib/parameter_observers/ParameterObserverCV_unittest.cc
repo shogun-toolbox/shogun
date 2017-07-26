@@ -33,17 +33,17 @@
 *
 */
 #include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/evaluation/MeanSquaredError.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/parameter_observers/ParameterObserverCV.h>
+#include <shogun/regression/KernelRidgeRegression.h>
 
-#include <memory>
 #include <gtest/gtest.h>
+#include <memory>
 
 using namespace shogun;
 
@@ -54,23 +54,24 @@ using namespace shogun;
  */
 
 /* data matrix dimensions */
-index_t num_vectors=100;
-index_t num_features=1;
+index_t num_vectors = 100;
+index_t num_features = 1;
 
 /* training label data */
 SGVector<float64_t> lab(num_vectors);
-CDenseFeatures<float64_t>* features=NULL;
+CDenseFeatures<float64_t>* features = NULL;
 CRegressionLabels* labels = NULL;
 
-ParameterObserverCV * generate(bool locked=true) {
+ParameterObserverCV* generate(bool locked = true)
+{
 
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
 	SGVector<float64_t>::range_fill_vector(train_dat.matrix, num_vectors);
-	for (index_t i=0; i<num_vectors; ++i)
+	for (index_t i = 0; i < num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i]=i+CMath::normal_random(0, 1.0);
+		lab.vector[i] = i + CMath::normal_random(0, 1.0);
 	}
 
 	/* training features */
@@ -78,37 +79,37 @@ ParameterObserverCV * generate(bool locked=true) {
 	SG_REF(features);
 
 	/* training labels */
-	labels=new CRegressionLabels(lab);
+	labels = new CRegressionLabels(lab);
 
 	/* kernel */
-	CLinearKernel* kernel=new CLinearKernel();
+	CLinearKernel* kernel = new CLinearKernel();
 	kernel->init(features, features);
 
 	/* kernel ridge regression*/
-	float64_t tau=0.0001;
-	CKernelRidgeRegression* krr=new CKernelRidgeRegression(tau, kernel, labels);
+	float64_t tau = 0.0001;
+	CKernelRidgeRegression* krr =
+	    new CKernelRidgeRegression(tau, kernel, labels);
 
 	/* evaluation criterion */
-	CMeanSquaredError* eval_crit=
-			new CMeanSquaredError();
+	CMeanSquaredError* eval_crit = new CMeanSquaredError();
 
 	/* splitting strategy */
-	index_t n_folds=5;
-	CCrossValidationSplitting* splitting=
-			new CCrossValidationSplitting(labels, n_folds);
+	index_t n_folds = 5;
+	CCrossValidationSplitting* splitting =
+	    new CCrossValidationSplitting(labels, n_folds);
 
 	/* cross validation instance, 100 runs, 95% confidence interval */
-	CCrossValidation* cross=new CCrossValidation(krr, features, labels,
-												 splitting, eval_crit);
+	CCrossValidation* cross =
+	    new CCrossValidation(krr, features, labels, splitting, eval_crit);
 	cross->set_num_runs(10);
 	cross->set_autolock(locked);
 
 	/* Create the parameter observer */
-	ParameterObserverCV * par = new ParameterObserverCV();
+	ParameterObserverCV* par = new ParameterObserverCV();
 	cross->subscribe_to_parameters(par);
 
 	/* actual evaluation */
-	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
+	CCrossValidationResult* result = (CCrossValidationResult*)cross->evaluate();
 
 	/* clean up */
 	SG_UNREF(result);
@@ -120,16 +121,16 @@ ParameterObserverCV * generate(bool locked=true) {
 
 TEST(ParameterObserverCV, get_result_locked)
 {
-	std::shared_ptr<ParameterObserverCV> par {generate(true)};
+	std::shared_ptr<ParameterObserverCV> par{generate(true)};
 
 	auto obs = par->get_observations();
-	for(int i=0; i<10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		auto run = obs[i];
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
-		for (int j=0; j<5; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get_folds_results()[j];
 			EXPECT_EQ(fold->get_current_run_index(), i);
@@ -144,19 +145,18 @@ TEST(ParameterObserverCV, get_result_locked)
 	}
 }
 
-
 TEST(ParameterObserverCV, get_result_unlocked)
 {
-	std::shared_ptr<ParameterObserverCV> par {generate(false)};
+	std::shared_ptr<ParameterObserverCV> par{generate(false)};
 
 	auto obs = par->get_observations();
-	for(int i=0; i<10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		auto run = obs[i];
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
-		for (int j=0; j<5; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get_folds_results()[j];
 			EXPECT_EQ(fold->get_current_run_index(), i);
