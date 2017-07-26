@@ -267,10 +267,8 @@ TEST_F(BaggingMachine,classify_CART)
 	SG_UNREF(eval);
 }
 
-TEST_F(BaggingMachine, output_probabilities)
+TEST_F(BaggingMachine, output_binary)
 {
-
-
 	sg_rand->set_seed(1);
 
 	SGVector<bool> ft=SGVector<bool>(4);
@@ -280,7 +278,8 @@ TEST_F(BaggingMachine, output_probabilities)
 	ft[3]=true;
 
 	CCARTree* cart=new CCARTree();
-	CMajorityVote* cv=new CMajorityVote();
+	//CMajorityVote* cv=new CMajorityVote();
+	CMeanRule* cv=new CMeanRule();
 
 	cart->set_feature_types(ft);
 	CBaggingMachine* c=new CBaggingMachine(features_train,labels_train);
@@ -291,13 +290,9 @@ TEST_F(BaggingMachine, output_probabilities)
 	c->set_combination_rule(cv);
 	c->train(features_train);
 
-	//CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(test);
-	//CMulticlassLabels* result=c->apply_multiclass(features_test);
 	CBinaryLabels* result=c->apply_binary(features_test);
 	SGVector<float64_t> res_vector=result->get_labels();
 	SGVector<float64_t> values_vector=result->get_values();
-  //res_vector.display_vector();
-  values_vector.display_vector();
 
 	EXPECT_DOUBLE_EQ(1.0,values_vector[0]);
 	EXPECT_DOUBLE_EQ(0.3,values_vector[1]);

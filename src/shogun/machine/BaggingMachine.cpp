@@ -55,6 +55,16 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 	CBinaryLabels* pred = new CBinaryLabels(labels);
   pred->set_values(probabilities);
 
+  int32_t num_samples = pred->get_num_labels();
+
+  for (int32_t i = 0; i < num_samples; ++i)
+  {
+    if (probabilities[i] < 0.50)
+    {
+      pred->set_label(i, -1.0);
+    }
+  }
+
 	return pred;
 }
 
@@ -89,7 +99,6 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 
 SGMatrix<float64_t> CBaggingMachine::apply_outputs_without_combination(CFeatures* data)
 {
-	ASSERT(data != NULL);
 	ASSERT(m_num_bags == m_bags->get_num_elements());
 
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
