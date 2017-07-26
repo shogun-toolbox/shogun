@@ -12,7 +12,6 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationPrintOutput.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/CombinedKernel.h>
