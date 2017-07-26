@@ -8,17 +8,17 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationPrintOutput.h>
-#include <shogun/evaluation/CrossValidationMKLStorage.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/parameter_observers/ParameterObserverCVMKL.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
@@ -97,16 +97,15 @@ void test_mkl_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, comb_features, labels, split, eval, false);
 
 	/* add print output listener and mkl storage listener */
-	cross->add_cross_validation_output(new CCrossValidationPrintOutput());
-	CCrossValidationMKLStorage* mkl_storage=new CCrossValidationMKLStorage();
-	cross->add_cross_validation_output(mkl_storage);
+	ParameterObserverCVMKL mkl_obs;
+	cross->subscribe_to_parameters(&mkl_obs);
 
 	/* perform cross-validation, this will print loads of information
 	 * (caused by the CCrossValidationPrintOutput instance attached to it) */
 	CEvaluationResult* result=cross->evaluate();
 
 	/* print mkl weights */
-	SGMatrix<float64_t> weights=mkl_storage->get_mkl_weights();
+	SGMatrix<float64_t> weights = mkl_obs.get_mkl_weights();
 	weights.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
@@ -115,6 +114,8 @@ void test_mkl_cross_validation()
 	CStatistics::matrix_variance(weights, false).display_vector("variance per kernel");
 	CStatistics::matrix_std_deviation(weights, false).display_vector("std-dev per kernel");
 
+	/* Clear */
+	mkl_obs.clear();
 	SG_UNREF(result);
 
 	/* again for two runs */
@@ -122,7 +123,7 @@ void test_mkl_cross_validation()
 	result=cross->evaluate();
 
 	/* print mkl weights */
-	weights=mkl_storage->get_mkl_weights();
+	weights = mkl_obs.get_mkl_weights();
 	weights.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
