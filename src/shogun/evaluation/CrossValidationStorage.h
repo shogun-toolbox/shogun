@@ -84,19 +84,19 @@ namespace shogun
 		 *
 		 * @param machine trained machine instance
 		 */
-		virtual void set_trained_machine(CMachine *machine);
+		virtual void set_trained_machine(CMachine* machine);
 
 		/** Set test result
 		 *
 		 * @param results result labels for test/validation run
 		 */
-		virtual void set_test_result(CLabels *results);
+		virtual void set_test_result(CLabels* results);
 
 		/** Set test true result
 		 *
 		 * @param results ground truth labels for test/validation run
 		 */
-		virtual void set_test_true_result(CLabels *results);
+		virtual void set_test_true_result(CLabels* results);
 
 		/** post update test and true results
 		 */
@@ -124,31 +124,31 @@ namespace shogun
 		 * Get train indices.
 		 * @return train indices
 		 */
-		const SGVector <index_t> &get_train_indices() const;
+		const SGVector<index_t>& get_train_indices() const;
 
 		/**
 		 * Get test indices.
 		 * @return test indices
 		 */
-		const SGVector <index_t> &get_test_indices() const;
+		const SGVector<index_t>& get_test_indices() const;
 
 		/**
 		 * Get trained machine on this fold
 		 * @return trained machine
 		 */
-		CMachine *get_trained_machine() const;
+		CMachine* get_trained_machine() const;
 
 		/**
 		 * Get test result
 		 * @return test result
 		 */
-		CLabels *get_test_result() const;
+		CLabels* get_test_result() const;
 
 		/**
 		 * Get ground truth (correct labels for this fold)
 		 * @return ground truth
 		 */
-		CLabels *get_test_true_result() const;
+		CLabels* get_test_true_result() const;
 
 		/**
 		 * Get the evaluation result of this fold
@@ -161,13 +161,13 @@ namespace shogun
 		 * @param rhs other CrossValidationFoldStorage
 		 * @return true if the objects are the same, false otherwise.
 		 */
-		bool operator==(const CrossValidationFoldStorage &rhs) const;
+		bool operator==(const CrossValidationFoldStorage& rhs) const;
 
 		/**
 		 * Class name (used for serialization)
 		 * @return class name
 		 */
-		virtual const char *get_name() const
+		virtual const char* get_name() const
 		{
 			return "CrossValidationFoldResult";
 		};
@@ -196,7 +196,6 @@ namespace shogun
 
 		/** Evaluation result for this fold */
 		float64_t m_evaluation_result;
-
 	};
 
 	/**
@@ -233,7 +232,7 @@ namespace shogun
 		/** Set labels before usage.
 		 * @param labels labels to expose to CV output
 		 */
-		virtual void set_expose_labels(CLabels *labels);
+		virtual void set_expose_labels(CLabels* labels);
 
 		/** Post init action. */
 		virtual void post_init();
@@ -242,7 +241,7 @@ namespace shogun
 		 * Append a fold result to this storage
 		 * @param result the result of a fold
 		 */
-		virtual void append_fold_result(CrossValidationFoldStorage * result);
+		virtual void append_fold_result(CrossValidationFoldStorage* result);
 
 		/**
 		 * Get number of Cross Validation runs.
@@ -260,7 +259,7 @@ namespace shogun
 		 * Get original labels.
 		 * @return labels
 		 */
-		CLabels *get_expose_labels() const;
+		CLabels* get_expose_labels() const;
 
 		/**
 		 * Get all folds results.
@@ -273,10 +272,9 @@ namespace shogun
 		 * @param rhs other CrossValidationStorage
 		 * @return true if the objects are the same, false otherwise.
 		 */
-		bool operator==(const CrossValidationStorage &rhs) const;
+		bool operator==(const CrossValidationStorage& rhs) const;
 
 	protected:
-
 		/** number of runs is initialised here */
 		index_t m_num_runs;
 
@@ -289,7 +287,6 @@ namespace shogun
 		/** Vector with all the folds results */
 		std::vector<CrossValidationFoldStorage*> m_folds_results;
 	};
-
 }
 
 #endif // SHOGUN_CROSSVALIDATIONSTORAGE_H
