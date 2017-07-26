@@ -76,6 +76,15 @@ void ParameterObserverCV::on_complete()
 {
 }
 
+void ParameterObserverCV::clear()
+{
+	for (auto i : m_observations)
+	{
+		SG_UNREF(i)
+	}
+	m_observations.clear();
+}
+
 const std::vector<CrossValidationStorage*>&
 ParameterObserverCV::get_observations() const
 {

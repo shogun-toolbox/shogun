@@ -101,6 +101,12 @@ namespace shogun
 		 */
 		virtual void on_complete() = 0;
 
+		/**
+		 * Method useful to empty the observer from
+		 * obseverd value it may have stored.
+		 */
+		virtual void clear(){};
+
 	protected:
 		/**
 		 * List of parameter's names we want to monitor

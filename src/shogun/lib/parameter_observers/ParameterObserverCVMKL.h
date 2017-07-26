@@ -33,44 +33,55 @@
 *
 */
 
-#ifndef SHOGUN_PARAMETEROBSERVERCV_H
-#define SHOGUN_PARAMETEROBSERVERCV_H
+#ifndef SHOGUN_PARAMETEROBSERVERCVMKL_H
+#define SHOGUN_PARAMETEROBSERVERCVMKL_H
 
-#include <shogun/evaluation/CrossValidationStorage.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
 
 namespace shogun
 {
-
-	/**
-	 * Base ParameterObserver class for CrossValidation.
-	 */
-	class ParameterObserverCV : public ParameterObserverInterface
+	class ParameterObserverCVMKL : public ParameterObserverCV
 	{
 
 	public:
-		ParameterObserverCV();
-		virtual ~ParameterObserverCV();
+		/**
+		 * Constructor
+		 */
+		ParameterObserverCVMKL();
+		/**
+		 * Destructor
+		 */
+		virtual ~ParameterObserverCVMKL();
 
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr ptr);
-		virtual void on_complete();
-
-		/* Erase all observations done so far */
-		virtual void clear();
+		/** @return mkl weights matrix, one set of weights per column,
+		 *	num_folds*num_runs columns, one fold after another
+		 * */
+		virtual SGMatrix<float64_t> get_mkl_weights();
 
 		/**
-		 * Get vector of observations
-		 * @return std::vector of observations
+		 * Clear the MKL weights and the observations.
 		 */
-		const std::vector<CrossValidationStorage*>& get_observations() const;
+		virtual void clear();
+
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverCVMKL";
+		}
 
 	protected:
 		/**
-		 * Observation's vector
+		 * Generate mkl weights based on observation caught.
+		 * It is called by get_mkl_weights() and it is run only
+		 * when m_mkl_weights is empty.
 		 */
-		std::vector<CrossValidationStorage*> m_observations;
+		void generate_mkl_weights();
+
+		/** storage for MKL weights, one set per column
+		 * num_kernel times num_folds*num_runs matrix where all folds of a runs
+		 * are added one after another */
+		SGMatrix<float64_t> m_mkl_weights;
 	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERCV_H
+#endif // SHOGUN_PARAMETEROBSERVERCVMKL_H
