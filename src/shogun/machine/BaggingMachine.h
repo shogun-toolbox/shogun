@@ -145,7 +145,7 @@ namespace shogun
 			 * @param data the data to compute the output for
 			 * @return predictions
 			 */
-			SGMatrix<float64_t> apply_outputs(CFeatures* data);
+			SGMatrix<float64_t> apply_outputs_without_combination(CFeatures* data);
 
 			/** Register paramaters */
 			void register_parameters();

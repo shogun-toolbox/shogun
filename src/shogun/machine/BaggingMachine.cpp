@@ -45,7 +45,7 @@ CBaggingMachine::~CBaggingMachine()
 
 CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 {
-	SGMatrix<float64_t> output = apply_outputs(data);
+	SGMatrix<float64_t> output = apply_outputs_without_combination(data);
 
 	CMeanRule* mean_rule = new CMeanRule();
 
@@ -80,44 +80,20 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 {
 	ASSERT(data != NULL);
 	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
-	ASSERT(m_num_bags == m_bags->get_num_elements());
 
-	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
-	output.zero();
-
-
-	#pragma omp parallel for
-	for (int32_t i = 0; i < m_num_bags; ++i)
-	{
-		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
-		CLabels* l = m->apply(data);
-		SGVector<float64_t> lv;
-		if (l!=NULL)
-			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
-		else
-			SG_ERROR("NULL returned by apply method\n");
-
-		float64_t* bag_results = output.get_column_vector(i);
-		sg_memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
-
-		SG_UNREF(l);
-		SG_UNREF(m);
-	}
-
+	SGMatrix<float64_t> output = apply_outputs_without_combination(data);
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
 
 	return combined;
 }
 
-SGMatrix<float64_t> CBaggingMachine::apply_outputs(CFeatures* data)
+SGMatrix<float64_t> CBaggingMachine::apply_outputs_without_combination(CFeatures* data)
 {
 	ASSERT(data != NULL);
-	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
 	ASSERT(m_num_bags == m_bags->get_num_elements());
 
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
 	output.zero();
-
 
 	#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)

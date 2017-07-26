@@ -34,7 +34,6 @@
 #include <shogun/ensemble/MajorityVote.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <gtest/gtest.h>
-#include <shogun/io/SGIO.h>                    // for REQUIRE, SG_PRINT, etc
 #include <stdio.h>
 
 using namespace shogun;
