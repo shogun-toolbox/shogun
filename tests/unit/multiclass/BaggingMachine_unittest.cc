@@ -303,3 +303,44 @@ TEST_F(BaggingMachine, output_binary)
 	SG_UNREF(result);
 	SG_UNREF(c);
 }
+
+TEST_F(BaggingMachine, output_multiclass)
+{
+	sg_rand->set_seed(1);
+
+	SGVector<bool> ft=SGVector<bool>(4);
+	ft[0]=true;
+	ft[1]=true;
+	ft[2]=true;
+	ft[3]=true;
+
+	CCARTree* cart=new CCARTree();
+	//CMajorityVote* cv=new CMajorityVote();
+	CMeanRule* cv=new CMeanRule();
+
+	cart->set_feature_types(ft);
+	CBaggingMachine* c=new CBaggingMachine(features_train,labels_train);
+	c->parallel->set_num_threads(1);
+	c->set_machine(cart);
+	c->set_bag_size(14);
+	c->set_num_bags(10);
+	c->set_combination_rule(cv);
+	c->train(features_train);
+
+	CMulticlassLabels* result=c->apply_multiclass(features_test);
+
+	SGVector<float64_t> res_vector=result->get_labels();
+	SGVector<float64_t> values_vector=result->get_values();
+  values_vector.display_vector();
+
+  /*
+	EXPECT_DOUBLE_EQ(1.0,values_vector[0]);
+	EXPECT_DOUBLE_EQ(0.3,values_vector[1]);
+	EXPECT_DOUBLE_EQ(0.3,values_vector[2]);
+	EXPECT_DOUBLE_EQ(1.0,values_vector[3]);
+	EXPECT_DOUBLE_EQ(0.7,values_vector[4]);
+  */
+
+	SG_UNREF(result);
+	SG_UNREF(c);
+}

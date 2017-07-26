@@ -67,12 +67,38 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 
 	return pred;
 }
+SGMatrix<float64_t> CBaggingMachine::compute_multiclass_probabilities(SGMatrix<float64_t> bagged_outputs)
+{
+  int32_t num_samples = bagged_outputs.size() / m_num_bags;
+  int32_t num_classes = dynamic_cast<CMulticlassLabels*>(m_labels)->get_num_classes();
+  SGMatrix<float64_t> outputs(num_samples, num_classes);
+  outputs.zero();
+  for(int32_t i = 0; i < num_samples; ++i)
+  {
+    for(int32_t j = 0; j < m_num_bags; ++j)
+    {
+      float64_t class_idx = bagged_outputs(i, j);
+      outputs(i, class_idx) += 1;
+    }
+  }
+
+  for(int32_t i = 0; i < num_samples; ++i)
+  {
+    for(int32_t j = 0; j < num_classes; ++j)
+    {
+      outputs(i, j) /= m_num_bags;
+    }
+  }
+  return outputs;
+}
 
 CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 {
-	SGVector<float64_t> combined_vector = apply_get_outputs(data);
+	SGMatrix<float64_t> output = apply_outputs_without_combination(data);
 
-	CMulticlassLabels* pred = new CMulticlassLabels(combined_vector);
+  SGMatrix<float64_t> probabilities = compute_multiclass_probabilities(output);
+
+	CMulticlassLabels* pred = new CMulticlassLabels(probabilities);
 
 	return pred;
 }
