@@ -395,9 +395,6 @@ TEST(RandomForest, test_output)
   SGVector<float64_t> res_vector=result->get_labels();
   SGVector<float64_t> values_vector=result->get_values();
 
-  res_vector.display_vector();
-  values_vector.display_vector();
-
   EXPECT_GT(0.5, values_vector[0]);
   EXPECT_EQ(-1.0, res_vector[0]);
 

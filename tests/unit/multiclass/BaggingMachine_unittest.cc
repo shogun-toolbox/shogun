@@ -294,6 +294,12 @@ TEST_F(BaggingMachine, output_binary)
 	SGVector<float64_t> res_vector=result->get_labels();
 	SGVector<float64_t> values_vector=result->get_values();
 
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(-1.0,res_vector[1]);
+	EXPECT_EQ(-1.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+	EXPECT_EQ(1.0,res_vector[4]);
+
 	EXPECT_DOUBLE_EQ(1.0,values_vector[0]);
 	EXPECT_DOUBLE_EQ(0.3,values_vector[1]);
 	EXPECT_DOUBLE_EQ(0.3,values_vector[2]);
@@ -315,7 +321,6 @@ TEST_F(BaggingMachine, output_multiclass)
 	ft[3]=true;
 
 	CCARTree* cart=new CCARTree();
-	//CMajorityVote* cv=new CMajorityVote();
 	CMeanRule* cv=new CMeanRule();
 
 	cart->set_feature_types(ft);
@@ -331,16 +336,22 @@ TEST_F(BaggingMachine, output_multiclass)
 
 	SGVector<float64_t> res_vector=result->get_labels();
 	SGVector<float64_t> values_vector=result->get_values();
-  values_vector.display_vector();
 
-  /*
-	EXPECT_DOUBLE_EQ(1.0,values_vector[0]);
-	EXPECT_DOUBLE_EQ(0.3,values_vector[1]);
-	EXPECT_DOUBLE_EQ(0.3,values_vector[2]);
-	EXPECT_DOUBLE_EQ(1.0,values_vector[3]);
-	EXPECT_DOUBLE_EQ(0.7,values_vector[4]);
-  */
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(0.0,res_vector[1]);
+	EXPECT_EQ(0.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+	EXPECT_EQ(1.0,res_vector[4]);
+
+  int32_t num_labels = result->get_num_labels();
+
+  for (int32_t i = 0; i < num_labels; ++i)
+  {
+    SGVector<float64_t> confidences = result->get_multiclass_confidences(i);
+    EXPECT_DOUBLE_EQ(1.0, SGVector<float64_t>::sum(confidences, confidences.size()));
+  }
 
 	SG_UNREF(result);
 	SG_UNREF(c);
 }
+

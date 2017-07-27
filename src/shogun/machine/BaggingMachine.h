@@ -147,14 +147,6 @@ namespace shogun
 			 */
 			SGMatrix<float64_t> apply_outputs_without_combination(CFeatures* data);
 
-			/** helper function for the apply_{multiclass,..} functions that
-			 * computes the output probabilities
-			 *
-			 * @param data the data to compute the output for
-			 * @return predictions
-			 */
-			SGMatrix<float64_t> compute_multiclass_probabilities(SGMatrix<float64_t> bagged_outputs);
-
 			/** Register paramaters */
 			void register_parameters();
 
