@@ -187,6 +187,8 @@ bool CLeastAngleRegression::train_machine_templated(CDenseFeatures<ST> * data)
 	int32_t nloop=0;
 	while (m_num_active < max_active_allowed && max_corr/n_vec > get_epsilon() && !stop_cond)
 	{
+		COMPUTATION_CONTROLLERS
+
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		typename SGVector<ST>::EigenVectorXtMap map_corr(&corr[0], n_fea);
 		typename SGVector<ST>::EigenVectorXtMap map_mu(&mu[0], n_vec);
