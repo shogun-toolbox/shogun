@@ -32,28 +32,33 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <shogun/lib/RefCount.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 using namespace shogun;
 
 ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
 {
+	m_refcount = new RefCount(0);
 }
 
 ParameterObserverInterface::ParameterObserverInterface(
     std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
+	m_refcount = new RefCount(0);
 }
 
 ParameterObserverInterface::ParameterObserverInterface(
     const std::string& filename, std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
+	m_refcount = new RefCount(0);
 }
 
 ParameterObserverInterface::~ParameterObserverInterface()
 {
+	delete m_refcount;
 }
 
 bool ParameterObserverInterface::filter(const std::string& param)
@@ -66,4 +71,29 @@ bool ParameterObserverInterface::filter(const std::string& param)
 		if (v == param)
 			return true;
 	return false;
+}
+
+int32_t ParameterObserverInterface::ref()
+{
+	m_refcount->ref();
+	return m_refcount->ref_count();
+}
+
+int32_t ParameterObserverInterface::ref_count()
+{
+	return m_refcount->ref_count();
+}
+
+int32_t ParameterObserverInterface::unref()
+{
+	int32_t count = m_refcount->unref();
+	if (count <= 0)
+	{
+		delete this;
+		return 0;
+	}
+	else
+	{
+		return m_refcount->ref_count();
+	}
 }

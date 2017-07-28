@@ -48,6 +48,8 @@
 
 namespace shogun
 {
+	class RefCount;
+
 	/**
 	 * Interface for the parameter observer classes
 	 */
@@ -107,6 +109,25 @@ namespace shogun
 		 */
 		virtual void clear(){};
 
+		/** Increase reference counter
+		 *
+		 * @return reference count
+		 */
+		int32_t ref();
+
+		/** Decrement reference counter and deallocate object if
+		 * refcount is zero before or after decrementing it
+		 *
+		 * @return reference count
+		 */
+		int32_t unref();
+
+		/** Display reference counter
+		 *
+		 * @return reference count
+		 */
+		int32_t ref_count();
+
 	protected:
 		/**
 		 * List of parameter's names we want to monitor
@@ -117,6 +138,11 @@ namespace shogun
 		 * The type of params this observers accept
 		 */
 		SG_OBS_VALUE_TYPE m_type;
+
+		/**
+		 * Reference counter
+		 */
+		RefCount* m_refcount;
 	};
 }
 
