@@ -32,12 +32,13 @@
 #include <rxcpp/operators/rx-filter.hpp>
 #include <rxcpp/rx-lite.hpp>
 
-#include <map>
+#include <unordered_map>
 
 namespace shogun
 {
 	typedef std::map<BaseTag, Any> ParametersMap;
-	typedef std::map<std::string, std::pair<SG_OBS_VALUE_TYPE, std::string>>
+	typedef std::unordered_map<std::string,
+	                           std::pair<SG_OBS_VALUE_TYPE, std::string>>
 	    ObsParamsList;
 
 	class CSGObject::Self

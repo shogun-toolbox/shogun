@@ -57,17 +57,11 @@ namespace shogun
 	};
 
 	/**
-	 * Observed value which are emitted by algorithm.
-	 *
-	 * This class can be used to implement custom observed values.
-	 * For instance, one can code an observed value which can be
-	 * used to retrieve data from CrossValidation, CMachines etc.
+	 * Observed value which is emitted by algorithms.
 	 */
 	class ObservedValue
 	{
 	public:
-		ObservedValue(){};
-
 		/**
 		 * Constructor
 		 * @param step step
@@ -77,16 +71,6 @@ namespace shogun
 		ObservedValue(
 		    int64_t step, std::string& name, Any value, SG_OBS_VALUE_TYPE type)
 		    : m_step(step), m_name(name), m_value(value), m_type(type)
-		{
-		}
-
-		/**
-		 * Constructor for observed value which don't need a name or step
-		 * @param value the value of this observed parameters
-		 * @param type the type of this observed parameters
-		 */
-		ObservedValue(Any value, SG_OBS_VALUE_TYPE type)
-		    : m_step(0), m_name(""), m_value(value), m_type(type)
 		{
 		}
 
@@ -164,6 +148,19 @@ namespace shogun
 			m_type = type;
 		}
 
+		/**
+		* Helper method to generate an ObservedValue (TensorBoard oriented)
+		* @param step the step
+		* @param name the param's name we are observing
+		* @param value the param's value
+		* @return an ObservedValue object initialized
+		*/
+		static ObservedValue
+		make_observation(int64_t step, std::string& name, Any value)
+		{
+			return ObservedValue(step, name, value, TENSORBOARD);
+		}
+
 	protected:
 		/** ObservedValue step (used by Tensorboard to print graphs) */
 		int64_t m_step;
@@ -176,29 +173,16 @@ namespace shogun
 	};
 
 	/**
-	 * Helper method to generate an ObservedValue (TensorBoard oriented)
-	 * @param step the step
-	 * @param name the param's name we are observing
-	 * @param value the param's value
-	 * @return an ObservedValue object initialized
-	 */
-	SG_FORCED_INLINE ObservedValue
-	make_observation(int64_t step, std::string& name, Any value)
-	{
-		return ObservedValue(step, name, value, TENSORBOARD);
-	}
-
-	/**
 	 * Observed value with a timestamp
 	 */
 	typedef std::pair<ObservedValue, time_point> TimedObservedValue;
 
 	/**
-	 * Helper method to convert a time_point to std::time_t
+	 * Helper method to convert a time_point to milliseconds
 	 * @param value time point we want to convert
-	 * @return the time point converted to std::time_t
+	 * @return the time point converted to milliseconds
 	 */
-	inline double convert_to_millis(const time_point& value)
+	SG_FORCED_INLINE double convert_to_millis(const time_point& value)
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
 		           value.time_since_epoch())
