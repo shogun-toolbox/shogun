@@ -210,9 +210,13 @@ namespace shogun
 private:
 	void init();
 
-	/** evaluate */
+protected:
+	/**
+	 * Does the actual evaluation.
+	 * @return the cross-validation result
+	 */
 	virtual CEvaluationResult* evaluate_impl();
-
+		
 protected:
 
 	protected:
