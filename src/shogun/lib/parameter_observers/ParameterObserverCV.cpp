@@ -43,7 +43,8 @@
 
 using namespace shogun;
 
-ParameterObserverCV::ParameterObserverCV(bool verbose) : m_verbose(verbose)
+ParameterObserverCV::ParameterObserverCV(bool verbose)
+    : ParameterObserverInterface(), m_verbose(verbose)
 {
 	m_type = CROSSVALIDATION;
 }
