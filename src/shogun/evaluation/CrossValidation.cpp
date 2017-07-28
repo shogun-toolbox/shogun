@@ -126,7 +126,9 @@ CEvaluationResult* CCrossValidation::evaluate()
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 
 		/* Emit the value*/
-		ObservedValue cv_data{erase_type(storage), CROSSVALIDATION};
+		std::string obs_value_name{"cross_validation_run"};
+		ObservedValue cv_data{i, obs_value_name, erase_type(storage),
+		                      CROSSVALIDATION};
 		observe(cv_data);
 		SG_UNREF(storage)
 	}
@@ -201,7 +203,7 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->set_train_indices(inverse_subset_indices);
-			fold->set_trained_machine(m_machine);
+			fold->set_trained_machine((CMachine*)m_machine->clone());
 
 			/* produce output for desired indices */
 			CLabels* result_labels = m_machine->apply_locked(subset_indices);
@@ -301,7 +303,7 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->set_train_indices(inverse_subset_indices);
-			fold->set_trained_machine(machine);
+			fold->set_trained_machine((CMachine*)machine->clone());
 
 			features->remove_subset();
 			labels->remove_subset();
