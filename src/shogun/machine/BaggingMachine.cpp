@@ -11,6 +11,8 @@
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/ensemble/CombinationRule.h>
 #include <shogun/ensemble/MeanRule.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
+
 #include <shogun/evaluation/Evaluation.h>
 
 using namespace shogun;
@@ -63,6 +65,10 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
     {
       pred->set_label(i, -1.0);
     }
+    else
+    {
+      pred->set_label(i, +1.0);
+    }
   }
 
 	return pred;
@@ -90,12 +96,11 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
     }
   }
 
+  const float64_t alpha = 1.0 / m_num_bags;
+  class_probabilities = linalg::scale(class_probabilities, alpha);
+
   for(int32_t i = 0; i < num_samples; ++i)
   {
-    for(int32_t j = 0; j < num_classes; ++j)
-    {
-      class_probabilities(i, j) /= m_num_bags;
-    }
 
     SGVector<float64_t> confidences = class_probabilities.get_row_vector(i); 
     int32_t y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);

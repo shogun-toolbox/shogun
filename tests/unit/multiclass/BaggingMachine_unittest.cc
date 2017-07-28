@@ -9,6 +9,7 @@
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/ensemble/MajorityVote.h>
 #include <shogun/ensemble/MeanRule.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <gtest/gtest.h>
 
 #define sunny 1.
@@ -348,7 +349,7 @@ TEST_F(BaggingMachine, output_multiclass)
   for (int32_t i = 0; i < num_labels; ++i)
   {
     SGVector<float64_t> confidences = result->get_multiclass_confidences(i);
-    EXPECT_DOUBLE_EQ(1.0, SGVector<float64_t>::sum(confidences, confidences.size()));
+    EXPECT_DOUBLE_EQ(1.0, linalg::sum(confidences));
   }
 
 	SG_UNREF(result);
