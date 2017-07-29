@@ -96,14 +96,14 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
     }
   }
 
-  const float64_t alpha = 1.0 / m_num_bags;
+  float64_t alpha = 1.0 / m_num_bags;
   class_probabilities = linalg::scale(class_probabilities, alpha);
 
   for(int32_t i = 0; i < num_samples; ++i)
   {
 
-    SGVector<float64_t> confidences = class_probabilities.get_row_vector(i); 
-    int32_t y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
+    auto confidences = class_probabilities.get_row_vector(i); 
+    auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
 
     pred->set_label(i, y_pred);
     pred->set_multiclass_confidences(i, confidences);

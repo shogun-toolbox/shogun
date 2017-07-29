@@ -11,6 +11,7 @@
 #include <shogun/ensemble/MeanRule.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <gtest/gtest.h>
+#include <shogun/base/some.h>
 
 #define sunny 1.
 #define overcast 2.
@@ -35,6 +36,7 @@ public:
   CDenseFeatures<float64_t>* features_test;
   CDenseFeatures<float64_t>* features_train;
   CMulticlassLabels* labels_train;
+  SGVector<bool>* ft;
   virtual void SetUp()
   {
     load_data();
@@ -49,6 +51,7 @@ public:
 
 	void load_data()
 	{
+    sg_rand->set_seed(1);
     SGMatrix<float64_t> data(4,14);
 
     //vector = [Outlook Temperature Humidity Wind]
@@ -167,6 +170,16 @@ public:
     lab[13]=0.0;
     labels_train=new CMulticlassLabels(lab);
 
+    ft= new SGVector<bool>;
+    SGVector<bool> feature_types = SGVector<bool>(4);
+
+    feature_types[0]=true;
+    feature_types[1]=true;
+    feature_types[2]=true;
+    feature_types[3]=true;
+
+    ft[0] = feature_types;
+
     SG_REF(features_train);
     SG_REF(features_test);
     SG_REF(labels_train);
@@ -232,18 +245,12 @@ TEST_F(BaggingMachine, mock_train)
 
 TEST_F(BaggingMachine,classify_CART)
 {
-	sg_rand->set_seed(1);
-
-	SGVector<bool> ft=SGVector<bool>(4);
-	ft[0]=true;
-	ft[1]=true;
-	ft[2]=true;
-	ft[3]=true;
-
 	CCARTree* cart=new CCARTree();
 	CMajorityVote* cv=new CMajorityVote();
-	cart->set_feature_types(ft);
-	CBaggingMachine* c=new CBaggingMachine(features_train,labels_train);
+	cart->set_feature_types(*ft);
+
+	auto c = some<CBaggingMachine>(features_train,labels_train);
+
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
@@ -260,30 +267,19 @@ TEST_F(BaggingMachine,classify_CART)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
+	auto eval = some<CMulticlassAccuracy>();
 	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
 
 	SG_UNREF(result);
-	SG_UNREF(c);
-	SG_UNREF(eval);
 }
 
 TEST_F(BaggingMachine, output_binary)
 {
-	sg_rand->set_seed(1);
-
-	SGVector<bool> ft=SGVector<bool>(4);
-	ft[0]=true;
-	ft[1]=true;
-	ft[2]=true;
-	ft[3]=true;
-
 	CCARTree* cart=new CCARTree();
-	//CMajorityVote* cv=new CMajorityVote();
 	CMeanRule* cv=new CMeanRule();
 
-	cart->set_feature_types(ft);
-	CBaggingMachine* c=new CBaggingMachine(features_train,labels_train);
+	cart->set_feature_types(*ft);
+	auto c = some<CBaggingMachine>(features_train,labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
@@ -308,24 +304,16 @@ TEST_F(BaggingMachine, output_binary)
 	EXPECT_DOUBLE_EQ(0.7,values_vector[4]);
 
 	SG_UNREF(result);
-	SG_UNREF(c);
 }
 
 TEST_F(BaggingMachine, output_multiclass)
 {
-	sg_rand->set_seed(1);
-
-	SGVector<bool> ft=SGVector<bool>(4);
-	ft[0]=true;
-	ft[1]=true;
-	ft[2]=true;
-	ft[3]=true;
 
 	CCARTree* cart=new CCARTree();
 	CMeanRule* cv=new CMeanRule();
 
-	cart->set_feature_types(ft);
-	CBaggingMachine* c=new CBaggingMachine(features_train,labels_train);
+	cart->set_feature_types(*ft);
+	auto c = some<CBaggingMachine>(features_train,labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
@@ -353,6 +341,5 @@ TEST_F(BaggingMachine, output_multiclass)
   }
 
 	SG_UNREF(result);
-	SG_UNREF(c);
 }
 

@@ -359,16 +359,12 @@ TEST(RandomForest, test_output)
 {
   sg_rand->set_seed(1);
 
-  SGMatrix<float64_t> data(2,4);
-  data(0,0) = -1.0;
-  data(0,1) = -1.2;
-  data(0,2) = -3.4;
-  data(0,3) = 1.1;
+	float64_t data_A[] = {-1.0, -1.0,
+												-1.2, -1.4,
+												-3.4, -2.2,
+												 1.1, 1.2};
 
-  data(1,0) = -1.0;
-  data(1,1) = -1.4;
-  data(1,2) = -2.2;
-  data(1,3) = 1.2;
+  SGMatrix<float64_t> data(data_A, 2, 4, false);
 
   CDenseFeatures<float64_t>* features_train = new CDenseFeatures<float64_t>(data);
 
@@ -385,7 +381,7 @@ TEST(RandomForest, test_output)
   ft[0] = false;
   ft[1] = false;
   c->set_feature_types(ft);
-  //CMajorityVote* mv = new CMajorityVote();
+
   CMeanRule * mr = new CMeanRule();
   c->set_combination_rule(mr);
   c->parallel->set_num_threads(1);
