@@ -55,7 +55,7 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 	SGVector<float64_t> probabilities = mean_rule->combine(output);
 
 	CBinaryLabels* pred = new CBinaryLabels(labels);
-  pred->set_values(probabilities);
+	pred->set_values(probabilities);
 
   int32_t num_samples = pred->get_num_labels();
 

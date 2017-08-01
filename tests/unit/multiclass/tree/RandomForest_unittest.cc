@@ -358,27 +358,21 @@ TEST(RandomForest, test_probabilities)
 TEST(RandomForest, test_output)
 {
   sg_rand->set_seed(1);
-  float64_t data_A[] = {-1.0, -1.0,
-                        -1.2, -1.4,
-                        -3.4, -2.2,
-                         1.1, 1.2};
+  float64_t data_A[] = {-2.0, -1.0, -1.0, 1.0, 1.0, 2.0,
+                        -1.0, -1.0, -2.0, 1.0, 2.0, 1.0};
 
-  SGMatrix<float64_t> data(data_A, 2, 4, false);
+  SGMatrix<float64_t> data(data_A, 2, 6, false);
 
   CDenseFeatures<float64_t>* features_train = new CDenseFeatures<float64_t>(data);
 
-  SGVector<float64_t> lab(4);
-  lab[0] = 0.0;
-  lab[1] = 0.0;
-  lab[2] = 1.0;
-  lab[3] = 1.0;
-
+  float64_t labels[] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+  SGVector<float64_t> lab(labels, 6);
   CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
 
   CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
   SGVector<bool> ft = SGVector<bool>(2);
-  ft[0] = false;
-  ft[1] = false;
+  ft[0] = true;
+  ft[1] = true;
   c->set_feature_types(ft);
 
   CMeanRule * mr = new CMeanRule();
@@ -390,15 +384,24 @@ TEST(RandomForest, test_output)
   SGVector<float64_t> res_vector=result->get_labels();
   SGVector<float64_t> values_vector=result->get_values();
 
+  res_vector.display_vector();
+  values_vector.display_vector();
+
   EXPECT_GT(0.5, values_vector[0]);
   EXPECT_EQ(-1.0, res_vector[0]);
 
   EXPECT_GT(0.5, values_vector[1]);
   EXPECT_EQ(-1.0, res_vector[1]);
 
-  EXPECT_LT(0.5, values_vector[2]);
-  EXPECT_EQ(1.0, res_vector[2]);
+  EXPECT_GT(0.5, values_vector[2]);
+  EXPECT_EQ(-1.0, res_vector[2]);
 
   EXPECT_LT(0.5, values_vector[3]);
   EXPECT_EQ(1.0, res_vector[3]);
+
+  EXPECT_LT(0.5, values_vector[4]);
+  EXPECT_EQ(1.0, res_vector[4]);
+
+  EXPECT_LT(0.5, values_vector[5]);
+  EXPECT_EQ(1.0, res_vector[5]);
 }

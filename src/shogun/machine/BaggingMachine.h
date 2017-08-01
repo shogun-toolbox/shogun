@@ -140,7 +140,7 @@ namespace shogun
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 			/** helper function for the apply_{binary,..} functions that
-			 * computes the output probabilities
+			 * computes the output probabilities without combination rules
 			 *
 			 * @param data the data to compute the output for
 			 * @return predictions
