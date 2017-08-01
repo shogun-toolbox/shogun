@@ -139,15 +139,16 @@ namespace shogun
 			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
-			/** helper function for the apply_{binary,..} functions that
-			 * computes the output probabilities without combination rules
-			 *
-			 * @param data the data to compute the output for
-			 * @return predictions
-			 */
-			SGMatrix<float64_t> apply_outputs_without_combination(CFeatures* data);
+		    /** helper function for the apply_{binary,..} functions that
+		     * computes the output probabilities without combination rules
+		     *
+		     * @param data the data to compute the output for
+		     * @return predictions
+		     */
+		    SGMatrix<float64_t>
+		    apply_outputs_without_combination(CFeatures* data);
 
-			/** Register paramaters */
+		    /** Register paramaters */
 			void register_parameters();
 
 			/** Initialize the members with default values */
