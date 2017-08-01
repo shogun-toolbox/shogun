@@ -54,22 +54,8 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 	SGVector<float64_t> labels = m_combination_rule->combine(output);
 	SGVector<float64_t> probabilities = mean_rule->combine(output);
 
-	CBinaryLabels* pred = new CBinaryLabels(labels);
-	pred->set_values(probabilities);
-
-  int32_t num_samples = pred->get_num_labels();
-
-  for (int32_t i = 0; i < num_samples; ++i)
-  {
-    if (probabilities[i] < 0.50)
-    {
-      pred->set_label(i, -1.0);
-    }
-    else
-    {
-      pred->set_label(i, +1.0);
-    }
-  }
+	float64_t threshold = -0.5;
+	CBinaryLabels* pred = new CBinaryLabels(labels, threshold);
 
 	return pred;
 }
@@ -78,36 +64,35 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 {
 	SGMatrix<float64_t> bagged_outputs = apply_outputs_without_combination(data);
 
-  int32_t num_samples = bagged_outputs.size() / m_num_bags;
-  int32_t num_classes = dynamic_cast<CMulticlassLabels*>(m_labels)->get_num_classes();
+	int32_t num_samples = bagged_outputs.size() / m_num_bags;
+	int32_t num_classes = dynamic_cast<CMulticlassLabels*>(m_labels)->get_num_classes();
 
 	CMulticlassLabels* pred = new CMulticlassLabels(num_samples);
-  pred->allocate_confidences_for(num_classes);
+	pred->allocate_confidences_for(num_classes);
 
-  SGMatrix<float64_t> class_probabilities(num_samples, num_classes);
-  class_probabilities.zero();
+	SGMatrix<float64_t> class_probabilities(num_samples, num_classes);
+	class_probabilities.zero();
 
-  for(int32_t i = 0; i < num_samples; ++i)
-  {
-    for(int32_t j = 0; j < m_num_bags; ++j)
-    {
-      int32_t class_idx = bagged_outputs(i, j);
-      class_probabilities(i, class_idx) += 1;
-    }
-  }
+	for(int32_t i = 0; i < num_samples; ++i)
+	{
+		for(int32_t j = 0; j < m_num_bags; ++j)
+		{
+			int32_t class_idx = bagged_outputs(i, j);
+			class_probabilities(i, class_idx) += 1;
+		}
+	}
 
-  float64_t alpha = 1.0 / m_num_bags;
-  class_probabilities = linalg::scale(class_probabilities, alpha);
+	float64_t alpha = 1.0 / m_num_bags;
+	class_probabilities = linalg::scale(class_probabilities, alpha);
 
-  for(int32_t i = 0; i < num_samples; ++i)
-  {
+	for(int32_t i = 0; i < num_samples; ++i)
+	{
+		auto confidences = class_probabilities.get_row_vector(i);
+		auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
 
-    auto confidences = class_probabilities.get_row_vector(i); 
-    auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
-
-    pred->set_label(i, y_pred);
-    pred->set_multiclass_confidences(i, confidences);
-  }
+		pred->set_label(i, y_pred);
+		pred->set_multiclass_confidences(i, confidences);
+	}
 
 	return pred;
 }
