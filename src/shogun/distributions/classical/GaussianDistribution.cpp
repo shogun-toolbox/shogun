@@ -168,7 +168,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 
 void CGaussianDistribution::init()
 {
-	m_rng = get_prng();
+	m_rng = get_prng<std::mt19937_64>();
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "
 			"depending on the factorization type.", MS_NOT_AVAILABLE);

@@ -623,7 +623,7 @@ void CRBM::init()
 	m_visible_state_offsets = new CDynamicArray<int32_t>();
 	m_num_params = 0;
 	m_batch_size = 0;
-	m_rng = get_prng();
+	m_rng = get_prng<std::mt19937_64>();
 
 	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", MS_NOT_AVAILABLE);
 	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", MS_NOT_AVAILABLE);

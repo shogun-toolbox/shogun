@@ -50,7 +50,7 @@ void CMeanShiftDataGenerator::init()
 	SG_ADD(&m_dimension_shift, "m_dimension_shift", "Dimension of mean shift",
 			MS_NOT_AVAILABLE);
 
-	m_rng = get_prng();
+	m_rng = get_prng<std::mt19937_64>();
 	m_dimension=0;
 	m_mean_shift=0;
 	m_dimension_shift=0;

@@ -100,7 +100,7 @@ private:
 	{
 		m_num_samples=0;
 		m_dimension=0;
-		m_rng = get_prng();
+		m_rng = get_prng<std::mt19937_64>();
 
 		SG_ADD(&m_num_samples, "num_samples",
 			"Number of samples this sampler can generate", MS_NOT_AVAILABLE);

@@ -73,7 +73,7 @@ void CGaussianBlobsDataGenerator::init()
 	m_stretch=1;
 	m_angle=0;
 	m_cholesky=SGMatrix<float64_t>(2, 2);
-	m_rng = get_prng();
+	m_rng = get_prng<std::mt19937_64>();
 	m_cholesky(0, 0)=1;
 	m_cholesky(0, 1)=0;
 	m_cholesky(1, 0)=0;
