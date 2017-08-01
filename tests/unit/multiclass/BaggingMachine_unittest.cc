@@ -36,7 +36,7 @@ public:
   CDenseFeatures<float64_t>* features_test;
   CDenseFeatures<float64_t>* features_train;
   CMulticlassLabels* labels_train;
-  SGVector<bool>* ft;
+  SGVector<bool> ft;
   virtual void SetUp()
   {
     load_data();
@@ -52,80 +52,81 @@ public:
 	void load_data()
 	{
     sg_rand->set_seed(1);
-    SGMatrix<float64_t> data(4,14);
+    SGMatrix<float64_t> weather_data(4,14);
 
     //vector = [Outlook Temperature Humidity Wind]
-    data(0,0)=sunny;
-    data(1,0)=hot;
-    data(2,0)=high;
-    data(3,0)=weak;
+    weather_data(0,0)=sunny;
+    weather_data(1,0)=hot;
+    weather_data(2,0)=high;
+    weather_data(3,0)=weak;
 
-    data(0,1)=sunny;
-    data(1,1)=hot;
-    data(2,1)=high;
-    data(3,1)=strong;
+    weather_data(0,1)=sunny;
+    weather_data(1,1)=hot;
+    weather_data(2,1)=high;
+    weather_data(3,1)=strong;
 
-    data(0,2)=overcast;
-    data(1,2)=hot;
-    data(2,2)=high;
-    data(3,2)=weak;
+    weather_data(0,2)=overcast;
+    weather_data(1,2)=hot;
+    weather_data(2,2)=high;
+    weather_data(3,2)=weak;
 
-    data(0,3)=rain;
-    data(1,3)=mild;
-    data(2,3)=high;
-    data(3,3)=weak;
+    weather_data(0,3)=rain;
+    weather_data(1,3)=mild;
+    weather_data(2,3)=high;
+    weather_data(3,3)=weak;
 
-    data(0,4)=rain;
-    data(1,4)=cool;
-    data(2,4)=normal;
-    data(3,4)=weak;
+    weather_data(0,4)=rain;
+    weather_data(1,4)=cool;
+    weather_data(2,4)=normal;
+    weather_data(3,4)=weak;
 
-    data(0,5)=rain;
-    data(1,5)=cool;
-    data(2,5)=normal;
-    data(3,5)=strong;
+    weather_data(0,5)=rain;
+    weather_data(1,5)=cool;
+    weather_data(2,5)=normal;
+    weather_data(3,5)=strong;
 
-    data(0,6)=overcast;
-    data(1,6)=cool;
-    data(2,6)=normal;
-    data(3,6)=strong;
+    weather_data(0,6)=overcast;
+    weather_data(1,6)=cool;
+    weather_data(2,6)=normal;
+    weather_data(3,6)=strong;
 
-    data(0,7)=sunny;
-    data(1,7)=mild;
-    data(2,7)=high;
-    data(3,7)=weak;
+    weather_data(0,7)=sunny;
+    weather_data(1,7)=mild;
+    weather_data(2,7)=high;
+    weather_data(3,7)=weak;
 
-    data(0,8)=sunny;
-    data(1,8)=cool;
-    data(2,8)=normal;
-    data(3,8)=weak;
+    weather_data(0,8)=sunny;
+    weather_data(1,8)=cool;
+    weather_data(2,8)=normal;
+    weather_data(3,8)=weak;
 
-    data(0,9)=rain;
-    data(1,9)=mild;
-    data(2,9)=normal;
-    data(3,9)=weak;
+    weather_data(0,9)=rain;
+    weather_data(1,9)=mild;
+    weather_data(2,9)=normal;
+    weather_data(3,9)=weak;
 
-    data(0,10)=sunny;
-    data(1,10)=mild;
-    data(2,10)=normal;
-    data(3,10)=strong;
+    weather_data(0,10)=sunny;
+    weather_data(1,10)=mild;
+    weather_data(2,10)=normal;
+    weather_data(3,10)=strong;
 
-    data(0,11)=overcast;
-    data(1,11)=mild;
-    data(2,11)=high;
-    data(3,11)=strong;
+    weather_data(0,11)=overcast;
+    weather_data(1,11)=mild;
+    weather_data(2,11)=high;
+    weather_data(3,11)=strong;
 
-    data(0,12)=overcast;
-    data(1,12)=hot;
-    data(2,12)=normal;
-    data(3,12)=weak;
+    weather_data(0,12)=overcast;
+    weather_data(1,12)=hot;
+    weather_data(2,12)=normal;
+    weather_data(3,12)=weak;
 
-    data(0,13)=rain;
-    data(1,13)=mild;
-    data(2,13)=high;
-    data(3,13)=strong;
+    weather_data(0,13)=rain;
+    weather_data(1,13)=mild;
+    weather_data(2,13)=high;
+    weather_data(3,13)=strong;
 
-	  features_train=new CDenseFeatures<float64_t>(data);
+    features_train=new CDenseFeatures<float64_t>(weather_data);
+
     SGMatrix<float64_t> test(4,5);
     test(0,0)=overcast;
     test(0,1)=rain;
@@ -170,7 +171,6 @@ public:
     lab[13]=0.0;
     labels_train=new CMulticlassLabels(lab);
 
-    ft= new SGVector<bool>;
     SGVector<bool> feature_types = SGVector<bool>(4);
 
     feature_types[0]=true;
@@ -178,7 +178,7 @@ public:
     feature_types[2]=true;
     feature_types[3]=true;
 
-    ft[0] = feature_types;
+    ft = feature_types;
 
     SG_REF(features_train);
     SG_REF(features_test);
@@ -247,7 +247,7 @@ TEST_F(BaggingMachine,classify_CART)
 {
 	CCARTree* cart=new CCARTree();
 	CMajorityVote* cv=new CMajorityVote();
-	cart->set_feature_types(*ft);
+	cart->set_feature_types(ft);
 
 	auto c = some<CBaggingMachine>(features_train,labels_train);
 
@@ -278,7 +278,7 @@ TEST_F(BaggingMachine, output_binary)
 	CCARTree* cart=new CCARTree();
 	CMeanRule* cv=new CMeanRule();
 
-	cart->set_feature_types(*ft);
+	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train,labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
@@ -312,7 +312,7 @@ TEST_F(BaggingMachine, output_multiclass)
 	CCARTree* cart=new CCARTree();
 	CMeanRule* cv=new CMeanRule();
 
-	cart->set_feature_types(*ft);
+	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train,labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
@@ -342,4 +342,3 @@ TEST_F(BaggingMachine, output_multiclass)
 
 	SG_UNREF(result);
 }
-

@@ -125,7 +125,7 @@ void generate_nm_data(SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
 	data(1,13)=mild;
 	data(2,13)=high;
 	data(3,13)=strong;
-	
+
 	lab[0]=0.0;
 	lab[1]=0.0;
 	lab[2]=1.0;
@@ -215,9 +215,9 @@ TEST(RandomForest,classify_nominal_test)
 TEST(RandomForest,classify_non_nominal_test)
 {
 	sg_rand->set_seed(1);
-	
+
 	SGMatrix<float64_t> data(4,14);
-	SGVector<float64_t> lab(14);	
+	SGVector<float64_t> lab(14);
 
 	generate_nm_data(data, lab);
 
@@ -235,7 +235,7 @@ TEST(RandomForest,classify_non_nominal_test)
 	c->set_feature_types(ft);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
-	c->parallel->set_num_threads(1);	
+	c->parallel->set_num_threads(1);
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);
@@ -358,11 +358,10 @@ TEST(RandomForest, test_probabilities)
 TEST(RandomForest, test_output)
 {
   sg_rand->set_seed(1);
-
-	float64_t data_A[] = {-1.0, -1.0,
-												-1.2, -1.4,
-												-3.4, -2.2,
-												 1.1, 1.2};
+  float64_t data_A[] = {-1.0, -1.0,
+                        -1.2, -1.4,
+                        -3.4, -2.2,
+                         1.1, 1.2};
 
   SGMatrix<float64_t> data(data_A, 2, 4, false);
 
