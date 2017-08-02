@@ -18,10 +18,11 @@ class BinaryLabels : public ::testing::Test
 {
 public:
 	SGVector<float64_t> probabilities;
+	const int32_t n_A = 4;
 
 	virtual void SetUp()
 	{
-		auto A = SGVector<float64_t>(4);
+		auto A = SGVector<float64_t>(n_A);
 		A[0] = 0.1;
 		A[1] = 0.4;
 		A[2] = 0.6;
@@ -93,10 +94,17 @@ TEST_F(BinaryLabels, serialization)
 
 TEST_F(BinaryLabels, set_values_labels_from_constructor)
 {
-	CBinaryLabels* labels = new CBinaryLabels(probabilities);
+	const float64_t threshold = 0.5;
+	CBinaryLabels* labels = new CBinaryLabels(probabilities, threshold);
 
 	SGVector<float64_t> labels_vector = labels->get_labels();
 	SGVector<float64_t> values_vector = labels->get_values();
+
+	ASSERT(labels_vector);
+	ASSERT(values_vector);
+
+	ASSERT_EQ(n_A, labels_vector.size());
+	ASSERT_EQ(n_A, values_vector.size());
 
 	EXPECT_FLOAT_EQ(-1.0, labels_vector[0]);
 	EXPECT_FLOAT_EQ(-1.0, labels_vector[1]);

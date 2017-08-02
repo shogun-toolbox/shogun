@@ -76,7 +76,7 @@ TEST_F(MulticlassLabelsTest, confidences)
 	SG_UNREF(labels);
 }
 
-TEST_F(MulticlassLabelsTest, prob_matrix_label_initialization)
+TEST_F(MulticlassLabelsTest, confidences_matrix_label_initialization)
 {
 	CMulticlassLabels* labels = new CMulticlassLabels(probabilities);
 	int32_t n_classes = probabilities.num_cols;

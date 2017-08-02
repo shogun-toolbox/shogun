@@ -53,9 +53,10 @@ class CMulticlassLabels : public CDenseLabels
 
 		/** constructor
 		 *
-		 * @param src labels to set from a probability matrix
+		 * @param labels to set from a matrix that contains confidence scores
+		 * for each class and sample
 		 */
-		CMulticlassLabels(SGMatrix<float64_t> src);
+		CMulticlassLabels(SGMatrix<float64_t> confidences);
 
 		/** constructor
 		 *

@@ -20,25 +20,26 @@ CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabe
 	set_labels(src);
 }
 
-CMulticlassLabels::CMulticlassLabels(const SGMatrix<float64_t> src)
+CMulticlassLabels::CMulticlassLabels(const SGMatrix<float64_t> confidences)
     : CDenseLabels()
 {
 	init();
-	int32_t n_classes = src.num_cols;
+	int32_t n_classes = confidences.num_cols;
 
-	auto labels = SGVector<float64_t>(src.num_rows);
+	SGVector<float64_t> labels(confidences.num_rows);
 	labels.zero();
 	set_labels(labels);
 
 	allocate_confidences_for(n_classes);
 
-	for (int32_t i = 0; i < src.num_rows; ++i)
+	for (int32_t i = 0; i < confidences.num_rows; ++i)
 	{
-		auto confidences = src.get_row_vector(i);
-		auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);
+		auto confidences_i = confidences.get_row_vector(i);
+		auto y_pred =
+		    CMath::arg_max(confidences_i.vector, 1, confidences_i.vlen);
 
 		set_label(i, y_pred);
-		set_multiclass_confidences(i, confidences);
+		set_multiclass_confidences(i, confidences_i);
 	}
 }
 
