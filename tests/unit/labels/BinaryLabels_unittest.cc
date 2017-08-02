@@ -34,7 +34,7 @@ public:
 	}
 };
 
-TEST_F(BinaryLabels,scores_to_probabilities)
+TEST_F(BinaryLabels, scores_to_probabilities)
 {
 	CBinaryLabels* labels=new CBinaryLabels(10);
 	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));

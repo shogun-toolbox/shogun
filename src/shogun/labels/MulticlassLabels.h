@@ -53,6 +53,12 @@ class CMulticlassLabels : public CDenseLabels
 
 		/** constructor
 		 *
+		 * @param src labels to set from a probability matrix
+		 */
+		CMulticlassLabels(SGMatrix<float64_t> src);
+
+		/** constructor
+		 *
 		 * @param loader File object via which to load data
 		 */
 		CMulticlassLabels(CFile* loader);
