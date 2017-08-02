@@ -39,7 +39,7 @@ public:
 	SGVector<bool> ft;
 	virtual void SetUp()
 	{
-		load_data();
+		generate_toy_data();
 	}
 
 	virtual void TearDown()
@@ -49,7 +49,7 @@ public:
 		SG_UNREF(labels_train);
 	}
 
-	void load_data()
+	void generate_toy_data()
 	{
 		sg_rand->set_seed(1);
 		SGMatrix<float64_t> weather_data(4, 14);
@@ -171,7 +171,7 @@ public:
 		lab[13] = 0.0;
 		labels_train = new CMulticlassLabels(lab);
 
-		SGVector<bool> feature_types = SGVector<bool>(4);
+		auto feature_types = SGVector<bool>(4);
 
 		feature_types[0] = true;
 		feature_types[1] = true;
@@ -303,7 +303,7 @@ TEST_F(BaggingMachine, output_binary)
 	SG_UNREF(result);
 }
 
-TEST_F(BaggingMachine, output_multiclass)
+TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 {
 
 	CCARTree* cart = new CCARTree();

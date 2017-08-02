@@ -55,7 +55,9 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 	SGVector<float64_t> probabilities = mean_rule->combine(output);
 
 	float64_t threshold = -0.5;
-	CBinaryLabels* pred = new CBinaryLabels(labels, threshold);
+	CBinaryLabels* pred = new CBinaryLabels(probabilities, threshold);
+
+	SG_UNREF(mean_rule);
 
 	return pred;
 }
@@ -65,9 +67,11 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
 
+	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
+	REQUIRE(labels_multiclass, "Labels are not multiclass\n");
+
 	int32_t num_samples = bagged_outputs.size() / m_num_bags;
-	int32_t num_classes =
-	    dynamic_cast<CMulticlassLabels*>(m_labels)->get_num_classes();
+	int32_t num_classes = labels_multiclass->get_num_classes();
 
 	CMulticlassLabels* pred = new CMulticlassLabels(num_samples);
 	pred->allocate_confidences_for(num_classes);

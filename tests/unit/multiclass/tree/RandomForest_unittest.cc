@@ -402,4 +402,6 @@ TEST(RandomForest, test_output)
 
 	EXPECT_LT(0.5, values_vector[5]);
 	EXPECT_EQ(1.0, res_vector[5]);
+
+	SG_UNREF(result);
 }
