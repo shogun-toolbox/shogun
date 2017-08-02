@@ -69,7 +69,7 @@ public:
 	 * @param src labels to set
 	 * @param threshold threshold
 	 */
-	CBinaryLabels(SGVector<float64_t> src, float64_t threshold = 0.0);
+	CBinaryLabels(SGVector<float64_t> src, float64_t threshold = 0.5);
 
 	/** constructor
 	 *
