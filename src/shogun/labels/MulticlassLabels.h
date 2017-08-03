@@ -51,12 +51,6 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(SGVector<float64_t> src);
 
-		/** constructor
-		 *
-		 * @param labels to set from a matrix that contains confidence scores
-		 * for each class and sample
-		 */
-		CMulticlassLabels(SGMatrix<float64_t> confidences);
 
 		/** constructor
 		 *
@@ -127,6 +121,12 @@ class CMulticlassLabels : public CDenseLabels
 		 * @param confidences confidences to be set for ith result
 		 */
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
+
+		/** sets multiclass confidences and labels from confidence score matrix
+		 *
+		 * @param confidences matrix that contains scores for each class and sample
+		 */
+		void set_multiclass_confidences_from_matrix(SGMatrix<float64_t> confidences);
 
 		/** allocates matrix to store confidences. should always
 		 * be called before setting confidences with
