@@ -151,8 +151,8 @@ namespace shogun
 		    /** Register paramaters */
 		    void register_parameters();
 
-			/** Initialize the members with default values */
-			void init();
+		    /** Initialize the members with default values */
+		    void init();
 
 			/**
 			 * get the vector of indices for feature vectors that are out of bag
