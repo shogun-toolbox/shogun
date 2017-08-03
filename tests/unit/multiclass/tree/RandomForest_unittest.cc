@@ -53,7 +53,8 @@ using namespace shogun;
 #define weak 1.
 #define strong 2.
 
-void generate_nm_data(SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
+void generate_toy_data_weather(
+    SGMatrix<float64_t>& data, SGVector<float64_t>& lab)
 {
 	//vector = [Outlook Temperature Humidity Wind]
 	data(0,0)=sunny;
@@ -149,7 +150,7 @@ TEST(RandomForest,classify_nominal_test)
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);
 
-	generate_nm_data(data, lab);
+	generate_toy_data_weather(data, lab);
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -219,7 +220,7 @@ TEST(RandomForest,classify_non_nominal_test)
 	SGMatrix<float64_t> data(4,14);
 	SGVector<float64_t> lab(14);
 
-	generate_nm_data(data, lab);
+	generate_toy_data_weather(data, lab);
 
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
@@ -283,125 +284,71 @@ TEST(RandomForest,classify_non_nominal_test)
 	SG_UNREF(eval);
 }
 
-TEST(RandomForest, test_probabilities)
+TEST(RandomForest, test_scores)
 {
+	// Test data generated using script
+	// https://gist.github.com/olinguyen/d93cd4222b404d26dc859f100d700be6
+	// Generates data for y = (x1 v x2) < 5 as decision boundary
 	sg_rand->set_seed(1);
+	float64_t data_A[] = {9, 7, 5, 5, 6, 7, 8, 9, 6, 8,
+	                      1, 4, 2, 1, 3, 2, 1, 3, 1, 0};
 
-	SGMatrix<float64_t> data(4, 14);
-	SGVector<float64_t> lab(14);
-
-	generate_nm_data(data, lab);
-
-	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(data);
-
-	SGVector<bool> ft = SGVector<bool>(4);
-	ft[0] = true;
-	ft[1] = true;
-	ft[2] = true;
-	ft[3] = true;
-
-	CMulticlassLabels* labels = new CMulticlassLabels(lab);
-
-	CRandomForest* c = new CRandomForest(feats, labels, 100, 2);
-	c->set_feature_types(ft);
-	CMajorityVote* mv = new CMajorityVote();
-	c->set_combination_rule(mv);
-	c->parallel->set_num_threads(1);
-	c->train(feats);
-
-	SGMatrix<float64_t> test(4, 5);
-	test(0, 0) = overcast;
-	test(0, 1) = rain;
-	test(0, 2) = sunny;
-	test(0, 3) = rain;
-	test(0, 4) = sunny;
-
-	test(1, 0) = hot;
-	test(1, 1) = cool;
-	test(1, 2) = mild;
-	test(1, 3) = mild;
-	test(1, 4) = hot;
-
-	test(2, 0) = normal;
-	test(2, 1) = high;
-	test(2, 2) = high;
-	test(2, 3) = normal;
-	test(2, 4) = normal;
-
-	test(3, 0) = strong;
-	test(3, 1) = strong;
-	test(3, 2) = weak;
-	test(3, 3) = weak;
-	test(3, 4) = strong;
-
-	CDenseFeatures<float64_t>* test_feats = new CDenseFeatures<float64_t>(test);
-
-	CBinaryLabels* result = c->apply_binary(test_feats);
-	SGVector<float64_t> res_vector = result->get_labels();
-	SGVector<float64_t> values_vector = result->get_values();
-
-	EXPECT_FLOAT_EQ(0.83, values_vector[0]);
-	EXPECT_FLOAT_EQ(0.359999999999, values_vector[1]);
-	EXPECT_FLOAT_EQ(0.27, values_vector[2]);
-	EXPECT_FLOAT_EQ(0.91, values_vector[3]);
-	EXPECT_FLOAT_EQ(0.53, values_vector[4]);
-
-	CMulticlassAccuracy* eval = new CMulticlassAccuracy();
-	EXPECT_NEAR(0.642857, c->get_oob_error(eval), 1e-6);
-
-	SG_UNREF(test_feats);
-	SG_UNREF(result);
-	SG_UNREF(c);
-	SG_UNREF(eval);
-}
-
-TEST(RandomForest, test_output)
-{
-	sg_rand->set_seed(1);
-	float64_t data_A[] = {-2.0, -1.0, -1.0, 1.0, 1.0, 2.0,
-	                      -1.0, -1.0, -2.0, 1.0, 2.0, 1.0};
-
-	SGMatrix<float64_t> data(data_A, 2, 6, false);
+	SGMatrix<float64_t> data(data_A, 2, 10, false);
 
 	CDenseFeatures<float64_t>* features_train =
 	    new CDenseFeatures<float64_t>(data);
 
-	float64_t labels[] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
-	SGVector<float64_t> lab(labels, 6);
+	float64_t labels[] = {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+	SGVector<float64_t> lab(labels, 10);
 	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+
+	float64_t test_A[] = {9, 7, 5, 5, 6, 7, 8, 9, 6, 8,
+	                      1, 0, 0, 1, 1, 1, 1, 2, 0, 0};
+
+	SGMatrix<float64_t> test_data(test_A, 2, 10, false);
+
+	CDenseFeatures<float64_t>* features_test =
+	    new CDenseFeatures<float64_t>(test_data);
 
 	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
 	SGVector<bool> ft = SGVector<bool>(2);
-	ft[0] = true;
-	ft[1] = true;
+	ft[0] = false;
+	ft[1] = false;
 	c->set_feature_types(ft);
 
+	labels_train->get_labels().display_vector();
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
 	c->parallel->set_num_threads(1);
 	c->train(features_train);
 
-	CBinaryLabels* result = c->apply_binary(features_train);
+	auto result = c->apply_binary(features_test);
 	SGVector<float64_t> res_vector = result->get_labels();
 	SGVector<float64_t> values_vector = result->get_values();
 
-	EXPECT_GT(0.5, values_vector[0]);
+	values_vector.display_vector();
+
 	EXPECT_EQ(-1.0, res_vector[0]);
-
-	EXPECT_GT(0.5, values_vector[1]);
 	EXPECT_EQ(-1.0, res_vector[1]);
-
-	EXPECT_GT(0.5, values_vector[2]);
 	EXPECT_EQ(-1.0, res_vector[2]);
-
-	EXPECT_LT(0.5, values_vector[3]);
-	EXPECT_EQ(1.0, res_vector[3]);
-
-	EXPECT_LT(0.5, values_vector[4]);
-	EXPECT_EQ(1.0, res_vector[4]);
-
-	EXPECT_LT(0.5, values_vector[5]);
+	EXPECT_EQ(-1.0, res_vector[3]);
+	EXPECT_EQ(-1.0, res_vector[4]);
 	EXPECT_EQ(1.0, res_vector[5]);
+	EXPECT_EQ(1.0, res_vector[6]);
+	EXPECT_EQ(1.0, res_vector[7]);
+	EXPECT_EQ(1.0, res_vector[8]);
+	EXPECT_EQ(1.0, res_vector[9]);
+
+	EXPECT_EQ(0.0, values_vector[0]);
+	EXPECT_EQ(0.0, values_vector[1]);
+	EXPECT_EQ(0.0, values_vector[2]);
+	EXPECT_EQ(0.0, values_vector[3]);
+	EXPECT_EQ(0.0, values_vector[4]);
+	EXPECT_EQ(1.0, values_vector[5]);
+	EXPECT_EQ(1.0, values_vector[6]);
+	EXPECT_EQ(1.0, values_vector[7]);
+	EXPECT_EQ(1.0, values_vector[8]);
+	EXPECT_EQ(1.0, values_vector[9]);
 
 	SG_UNREF(result);
 }

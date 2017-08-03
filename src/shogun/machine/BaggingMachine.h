@@ -149,7 +149,7 @@ namespace shogun
 		    apply_outputs_without_combination(CFeatures* data);
 
 		    /** Register paramaters */
-			void register_parameters();
+		    void register_parameters();
 
 			/** Initialize the members with default values */
 			void init();

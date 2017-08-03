@@ -36,10 +36,11 @@ public:
 	CDenseFeatures<float64_t>* features_test;
 	CDenseFeatures<float64_t>* features_train;
 	CMulticlassLabels* labels_train;
+
 	SGVector<bool> ft;
 	virtual void SetUp()
 	{
-		generate_toy_data();
+		generate_toy_data_weather();
 	}
 
 	virtual void TearDown()
@@ -49,7 +50,7 @@ public:
 		SG_UNREF(labels_train);
 	}
 
-	void generate_toy_data()
+	void generate_toy_data_weather()
 	{
 		sg_rand->set_seed(1);
 		SGMatrix<float64_t> weather_data(4, 14);
