@@ -54,7 +54,7 @@ CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
 	SGVector<float64_t> labels = m_combination_rule->combine(output);
 	SGVector<float64_t> probabilities = mean_rule->combine(output);
 
-	float64_t threshold = -0.5;
+	float64_t threshold = 0.5;
 	CBinaryLabels* pred = new CBinaryLabels(probabilities, threshold);
 
 	SG_UNREF(mean_rule);

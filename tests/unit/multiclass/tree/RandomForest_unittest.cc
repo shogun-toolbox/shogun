@@ -316,7 +316,6 @@ TEST(RandomForest, test_scores)
 	ft[1] = false;
 	c->set_feature_types(ft);
 
-	labels_train->get_labels().display_vector();
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
 	c->parallel->set_num_threads(1);
@@ -325,8 +324,6 @@ TEST(RandomForest, test_scores)
 	auto result = c->apply_binary(features_test);
 	SGVector<float64_t> res_vector = result->get_labels();
 	SGVector<float64_t> values_vector = result->get_values();
-
-	values_vector.display_vector();
 
 	EXPECT_EQ(-1.0, res_vector[0]);
 	EXPECT_EQ(-1.0, res_vector[1]);
