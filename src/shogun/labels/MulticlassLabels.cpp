@@ -43,7 +43,8 @@ void CMulticlassLabels::init()
 	m_multiclass_confidences=SGMatrix<float64_t>();
 }
 
-void CMulticlassLabels::set_multiclass_confidences_from_matrix(SGMatrix<float64_t> confidences)
+void CMulticlassLabels::set_multiclass_confidences_from_matrix(
+    SGMatrix<float64_t> confidences)
 {
 	int32_t n_classes = confidences.num_cols;
 
