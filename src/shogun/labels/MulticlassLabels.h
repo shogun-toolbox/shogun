@@ -53,6 +53,13 @@ class CMulticlassLabels : public CDenseLabels
 
 		/** constructor
 		 *
+		 * @param labels to set from a matrix that contains confidence scores
+		 * for each class and sample
+		 */
+		CMulticlassLabels(SGMatrix<float64_t> confidences);
+
+		/** constructor
+		 *
 		 * @param loader File object via which to load data
 		 */
 		CMulticlassLabels(CFile* loader);
