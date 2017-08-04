@@ -157,7 +157,7 @@ public:
 	/** a getter
 	 * @return the set value of protected member dim_feature_space
 	 */
-	int32_t get_dim_feature_space() const;
+	index_t get_dim_feature_space() const;
 
 	/** inherited from base class
 	 * does nothing

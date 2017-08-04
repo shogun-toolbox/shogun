@@ -174,7 +174,7 @@ float64_t CStreamingHashedDocDotFeatures::get_label()
 	return current_label;
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_num_vectors() const
+index_t CStreamingHashedDocDotFeatures::get_num_vectors() const
 {
 	return 1;
 }

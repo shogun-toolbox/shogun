@@ -224,9 +224,9 @@ class CLinearHMM : public CDistribution
 
 	protected:
 		/** examples' sequence length */
-		int32_t sequence_length;
+		index_t sequence_length;
 		/** number of symbols in examples */
-		int32_t num_symbols;
+		index_t num_symbols;
 		/** number of parameters */
 		int32_t num_params;
 		/** transition probs */

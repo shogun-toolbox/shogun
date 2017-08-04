@@ -46,7 +46,7 @@ CCombinedFeatures::~CCombinedFeatures()
 	SG_UNREF(feature_array);
 }
 
-CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
+CFeatures* CCombinedFeatures::get_feature_obj(index_t idx)
 {
 	REQUIRE(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
@@ -126,7 +126,7 @@ CFeatures* CCombinedFeatures::get_last_feature_obj()
 	return get_feature_obj(get_num_feature_obj()-1);
 }
 
-bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
+bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, index_t idx)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -159,12 +159,12 @@ bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 	return num_feature_obj+1 == feature_array->get_num_elements();
 }
 
-bool CCombinedFeatures::delete_feature_obj(int32_t idx)
+bool CCombinedFeatures::delete_feature_obj(index_t idx)
 {
 	return feature_array->delete_element(idx);
 }
 
-int32_t CCombinedFeatures::get_num_feature_obj()
+index_t CCombinedFeatures::get_num_feature_obj()
 {
 	return feature_array->get_num_elements();
 }

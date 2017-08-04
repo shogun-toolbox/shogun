@@ -83,7 +83,7 @@ bool CGaussian::train(CFeatures* data)
 	return true;
 }
 
-int32_t CGaussian::get_num_model_parameters()
+index_t CGaussian::get_num_model_parameters()
 {
 	switch (m_cov_type)
 	{

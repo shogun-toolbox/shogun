@@ -171,8 +171,8 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t*
 }
 
 template <class ST>
-void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-	float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, index_t vec_idx1,
+	float64_t* vec2, index_t vec2_len, bool abs_val)
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
@@ -212,19 +212,19 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
+int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(index_t num)
 {
 	return dim;
 }
 
 template <class ST>
-void* CHashedDenseFeatures<ST>::get_feature_iterator(int32_t vector_index)
+void* CHashedDenseFeatures<ST>::get_feature_iterator(index_t vector_index)
 {
 	SG_NOTIMPLEMENTED;
 	return NULL;
 }
 template <class ST>
-bool CHashedDenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
+bool CHashedDenseFeatures<ST>::get_next_feature(index_t& index, float64_t& value,
 	void* iterator)
 {
 	SG_NOTIMPLEMENTED;
@@ -255,7 +255,7 @@ EFeatureClass CHashedDenseFeatures<ST>::get_feature_class() const
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_num_vectors() const
+index_t CHashedDenseFeatures<ST>::get_num_vectors() const
 {
 	return dense_feats->get_num_vectors();
 }

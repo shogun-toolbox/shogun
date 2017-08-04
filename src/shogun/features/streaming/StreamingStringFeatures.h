@@ -210,7 +210,7 @@ public:
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	virtual index_t get_num_vectors() const;
 
 	/**
 	 * Return the number of features in the current vector.

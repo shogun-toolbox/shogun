@@ -72,13 +72,13 @@ class CMixtureModel : public CDistribution
 		 *
 		 * @return number of parameters in model
 		 */
-		int32_t get_num_model_parameters() { return 1; }
+		index_t get_num_model_parameters() { return 1; }
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic)
 		 */
-		float64_t get_log_model_parameter(int32_t num_param=1);
+		float64_t get_log_model_parameter(index_t num_param=1);
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -86,7 +86,7 @@ class CMixtureModel : public CDistribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
+		virtual float64_t get_log_derivative(index_t num_param, index_t num_example);
 
 		/** compute log likelihood for example
 		 *

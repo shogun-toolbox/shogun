@@ -51,7 +51,7 @@ namespace shogun
 			 *
 			 * @return number of examples/vectors in latent features
 			 */
-			virtual int32_t get_num_vectors() const;
+			virtual index_t get_num_vectors() const;
 
 			/** get the dimension of the combined features, i.e \f$\Psi(\ldots)\f$
 			 *

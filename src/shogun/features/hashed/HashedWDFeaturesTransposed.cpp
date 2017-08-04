@@ -125,7 +125,7 @@ CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+float64_t CHashedWDFeaturesTransposed::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -157,7 +157,7 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 	return sum/CMath::sq(normalization_const);
 }
 
-float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+float64_t CHashedWDFeaturesTransposed::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -508,7 +508,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
+void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -596,13 +596,13 @@ CFeatures* CHashedWDFeaturesTransposed::duplicate() const
 	return new CHashedWDFeaturesTransposed(*this);
 }
 
-void* CHashedWDFeaturesTransposed::get_feature_iterator(int32_t vector_index)
+void* CHashedWDFeaturesTransposed::get_feature_iterator(index_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CHashedWDFeaturesTransposed::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool CHashedWDFeaturesTransposed::get_next_feature(index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;

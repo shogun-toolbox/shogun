@@ -119,7 +119,7 @@ public :
 	 * @param num_example index number of example
 	 * @return log of derivative of example
 	 */
-	virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
+	virtual float64_t get_log_derivative(index_t num_param, index_t num_example);
 
 	/** return log likelihood of example
 	 * NOT IMPLEMENTED
