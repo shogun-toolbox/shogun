@@ -76,7 +76,6 @@ template<class ST> CDenseFeatures<ST>::~CDenseFeatures()
 
 template<class ST> void CDenseFeatures<ST>::free_features()
 {
-	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
 	SG_UNREF(feature_cache);
 }
