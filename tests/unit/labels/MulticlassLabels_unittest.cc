@@ -78,7 +78,8 @@ TEST_F(MulticlassLabelsTest, confidences)
 
 TEST_F(MulticlassLabelsTest, confidences_matrix_label_initialization)
 {
-	CMulticlassLabels* labels = new CMulticlassLabels(probabilities);
+	CMulticlassLabels* labels = new CMulticlassLabels(3);
+	labels->set_multiclass_confidences_from_matrix(probabilities);
 	int32_t n_classes = probabilities.num_cols;
 	int32_t n_labels = probabilities.num_rows;
 
