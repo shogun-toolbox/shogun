@@ -154,14 +154,15 @@ namespace shogun
 		    /** Initialize the members with default values */
 		    void init();
 
-			/**
-			 * get the vector of indices for feature vectors that are out of bag
-			 *
-			 * @param in_bag vector of indices that are in bag.
-			 * NOTE: in_bag is a randomly generated with replacement
-			 * @return the vector of indices
-			 */
-			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
+		    /**
+		     * get the vector of indices for feature vectors that are out of bag
+		     *
+		     * @param in_bag vector of indices that are in bag.
+		     * NOTE: in_bag is a randomly generated with replacement
+		     * @return the vector of indices
+		     */
+		    CDynamicArray<index_t>*
+		    get_oob_indices(const SGVector<index_t>& in_bag);
 
 		protected:
 			/** bags array */
