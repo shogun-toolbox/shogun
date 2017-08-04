@@ -43,6 +43,28 @@ void CMulticlassLabels::init()
 	m_multiclass_confidences=SGMatrix<float64_t>();
 }
 
+void CMulticlassLabels::set_multiclass_confidences_from_matrix(
+    SGMatrix<float64_t> confidences)
+{
+	int32_t n_classes = confidences.num_cols;
+
+	SGVector<float64_t> labels(confidences.num_rows);
+	labels.zero();
+	set_labels(labels);
+
+	allocate_confidences_for(n_classes);
+
+	for (int32_t i = 0; i < confidences.num_rows; ++i)
+	{
+		auto confidences_i = confidences.get_row_vector(i);
+		auto y_pred =
+		    CMath::arg_max(confidences_i.vector, 1, confidences_i.vlen);
+
+		set_label(i, y_pred);
+		set_multiclass_confidences(i, confidences_i);
+	}
+}
+
 void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 		SGVector<float64_t> confidences)
 {

@@ -14,7 +14,28 @@
 
 using namespace shogun;
 
-TEST(BinaryLabels,scores_to_probabilities)
+class BinaryLabels : public ::testing::Test
+{
+public:
+	SGVector<float64_t> probabilities;
+	const int32_t n_A = 4;
+
+	virtual void SetUp()
+	{
+		auto A = SGVector<float64_t>(n_A);
+		A[0] = 0.1;
+		A[1] = 0.4;
+		A[2] = 0.6;
+		A[3] = 0.9;
+		probabilities = A;
+	}
+
+	virtual void TearDown()
+	{
+	}
+};
+
+TEST_F(BinaryLabels, scores_to_probabilities)
 {
 	CBinaryLabels* labels=new CBinaryLabels(10);
 	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));
@@ -35,7 +56,7 @@ TEST(BinaryLabels,scores_to_probabilities)
 	SG_UNREF(labels);
 }
 
-TEST(BinaryLabels, serialization)
+TEST_F(BinaryLabels, serialization)
 {
 	CBinaryLabels* labels = new CBinaryLabels(10);
 	SGVector<float64_t> lab = SGVector<float64_t>(labels->get_num_labels());
@@ -66,4 +87,34 @@ TEST(BinaryLabels, serialization)
 		EXPECT_NEAR(labels->get_label(i), new_labels->get_label(i), 1E-15);
 	}
 	unlink(filename);
+
+	SG_UNREF(labels);
+	SG_UNREF(new_labels);
+}
+
+TEST_F(BinaryLabels, set_values_labels_from_constructor)
+{
+	const float64_t threshold = 0.5;
+	CBinaryLabels* labels = new CBinaryLabels(probabilities, threshold);
+
+	SGVector<float64_t> labels_vector = labels->get_labels();
+	SGVector<float64_t> values_vector = labels->get_values();
+
+	ASSERT(labels_vector);
+	ASSERT(values_vector);
+
+	ASSERT_EQ(n_A, labels_vector.size());
+	ASSERT_EQ(n_A, values_vector.size());
+
+	EXPECT_FLOAT_EQ(-1.0, labels_vector[0]);
+	EXPECT_FLOAT_EQ(-1.0, labels_vector[1]);
+	EXPECT_FLOAT_EQ(+1.0, labels_vector[2]);
+	EXPECT_FLOAT_EQ(+1.0, labels_vector[3]);
+
+	for (int i = 0; i < values_vector.size(); ++i)
+	{
+		EXPECT_FLOAT_EQ(probabilities[i], values_vector[i]);
+	}
+
+	SG_UNREF(labels);
 }
