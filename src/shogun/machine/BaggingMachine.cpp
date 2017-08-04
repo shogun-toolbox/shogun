@@ -67,11 +67,15 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
 
-	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
-	REQUIRE(labels_multiclass, "Labels are not multiclass\n");
+	REQUIRE(m_labels, "Labels not set.\n");
 
-	int32_t num_samples = bagged_outputs.size() / m_num_bags;
-	int32_t num_classes = labels_multiclass->get_num_classes();
+	auto labels_multiclass = dynamic_cast<CMulticlassLabels*>(m_labels);
+	REQUIRE(
+	    labels_multiclass, "Labels (%s) are not compatible with multiclass.\n",
+	    m_labels->get_name());
+
+	auto num_samples = bagged_outputs.size() / m_num_bags;
+	auto num_classes = labels_multiclass->get_num_classes();
 
 	CMulticlassLabels* pred = new CMulticlassLabels(num_samples);
 	pred->allocate_confidences_for(num_classes);
@@ -79,9 +83,9 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	SGMatrix<float64_t> class_probabilities(num_samples, num_classes);
 	class_probabilities.zero();
 
-	for (int32_t i = 0; i < num_samples; ++i)
+	for (auto i = 0; i < num_samples; ++i)
 	{
-		for (int32_t j = 0; j < m_num_bags; ++j)
+		for (auto j = 0; j < m_num_bags; ++j)
 		{
 			int32_t class_idx = bagged_outputs(i, j);
 			class_probabilities(i, class_idx) += 1;
@@ -91,7 +95,7 @@ CMulticlassLabels* CBaggingMachine::apply_multiclass(CFeatures* data)
 	float64_t alpha = 1.0 / m_num_bags;
 	class_probabilities = linalg::scale(class_probabilities, alpha);
 
-	for (int32_t i = 0; i < num_samples; ++i)
+	for (auto i = 0; i < num_samples; ++i)
 	{
 		auto confidences = class_probabilities.get_row_vector(i);
 		auto y_pred = CMath::arg_max(confidences.vector, 1, confidences.vlen);

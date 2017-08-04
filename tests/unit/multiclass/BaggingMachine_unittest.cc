@@ -40,6 +40,7 @@ public:
 	SGVector<bool> ft;
 	virtual void SetUp()
 	{
+		sg_rand->set_seed(1);
 		generate_toy_data_weather();
 	}
 
@@ -52,7 +53,6 @@ public:
 
 	void generate_toy_data_weather()
 	{
-		sg_rand->set_seed(1);
 		SGMatrix<float64_t> weather_data(4, 14);
 
 		// vector = [Outlook Temperature Humidity Wind]
@@ -312,7 +312,6 @@ TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
 
 	cart->set_feature_types(ft);
 	auto c = some<CBaggingMachine>(features_train, labels_train);
-	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);

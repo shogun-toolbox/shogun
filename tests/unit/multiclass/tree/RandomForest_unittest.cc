@@ -284,12 +284,11 @@ TEST(RandomForest,classify_non_nominal_test)
 	SG_UNREF(eval);
 }
 
-TEST(RandomForest, test_scores)
+TEST(RandomForest, score_consistent_with_binary_trivial_data)
 {
 	// Test data generated using script
 	// https://gist.github.com/olinguyen/d93cd4222b404d26dc859f100d700be6
 	// Generates data for y = (x1 v x2) < 5 as decision boundary
-	sg_rand->set_seed(1);
 	float64_t data_A[] = {9, 7, 5, 5, 6, 7, 8, 9, 6, 8,
 	                      1, 4, 2, 1, 3, 2, 1, 3, 1, 0};
 
@@ -318,7 +317,6 @@ TEST(RandomForest, test_scores)
 
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
-	c->parallel->set_num_threads(1);
 	c->train(features_train);
 
 	auto result = c->apply_binary(features_test);
@@ -346,6 +344,104 @@ TEST(RandomForest, test_scores)
 	EXPECT_EQ(1.0, values_vector[7]);
 	EXPECT_EQ(1.0, values_vector[8]);
 	EXPECT_EQ(1.0, values_vector[9]);
+
+	SG_UNREF(result);
+}
+
+TEST(RandomForest, score_compare_sklearn_toydata)
+{
+	// Comparison with sklearn's RandomForest probability outputs
+	// https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/ensemble/tests/test_voting_classifier.py#L143
+	float64_t data_A[] = {-1.1, -1.5, -1.2, -1.4, -3.4, -2.2, 1.1, 1.2};
+
+	SGMatrix<float64_t> data(data_A, 2, 4, false);
+
+	CDenseFeatures<float64_t>* features_train =
+	    new CDenseFeatures<float64_t>(data);
+
+	float64_t labels[] = {0.0, 0.0, 1.0, 1.0};
+	SGVector<float64_t> lab(labels, 4);
+	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+
+	float64_t expected_probabilities[] = {0.2, 0.2, 0.8, 0.7};
+
+	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
+	SGVector<bool> ft = SGVector<bool>(2);
+	ft[0] = false;
+	ft[1] = false;
+	c->set_feature_types(ft);
+
+	CMeanRule* mr = new CMeanRule();
+	c->set_combination_rule(mr);
+	c->train(features_train);
+
+	auto result = c->apply_binary(features_train);
+	SGVector<float64_t> res_vector = result->get_labels();
+	SGVector<float64_t> values_vector = result->get_values();
+
+	EXPECT_EQ(-1.0, res_vector[0]);
+	EXPECT_EQ(-1.0, res_vector[1]);
+	EXPECT_EQ(+1.0, res_vector[2]);
+	EXPECT_EQ(+1.0, res_vector[3]);
+
+	for (auto i = 0; i < 4; ++i)
+	{
+		EXPECT_NEAR(expected_probabilities[i], values_vector[i], 11e-1);
+	}
+
+	SG_UNREF(result);
+}
+
+TEST(RandomForest, score_random_labels)
+{
+	// Test data generated using script
+	// https://gist.github.com/olinguyen/d93cd4222b404d26dc859f100d700be6
+	// Generates data with random labels where trees don't all agree
+	sg_rand->set_seed(42);
+
+	float64_t data_A[] = {5, 7, 5, 9, 9, 6, 9, 5, 8, 7,
+	                      3, 1, 4, 1, 1, 2, 1, 0, 2, 0};
+
+	SGMatrix<float64_t> data(data_A, 2, 10, false);
+
+	CDenseFeatures<float64_t>* features_train =
+	    new CDenseFeatures<float64_t>(data);
+
+	float64_t labels[] = {0, 0, 0, 1, 0, 1, 0, 1, 0, 1};
+	SGVector<float64_t> lab(labels, 10);
+	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+
+	float64_t test_A[] = {9, 2, 5, 8, 7, 3, 3, 1, 7, 6};
+
+	SGMatrix<float64_t> test_data(test_A, 2, 5, false);
+
+	CDenseFeatures<float64_t>* features_test =
+	    new CDenseFeatures<float64_t>(test_data);
+
+	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
+	SGVector<bool> ft = SGVector<bool>(2);
+	ft[0] = false;
+	ft[1] = false;
+	c->set_feature_types(ft);
+
+	CMeanRule* mr = new CMeanRule();
+	c->set_combination_rule(mr);
+	c->train(features_train);
+	auto result = c->apply_binary(features_test);
+	SGVector<float64_t> res_vector = result->get_labels();
+	SGVector<float64_t> values_vector = result->get_values();
+
+	EXPECT_NEAR(0.7, values_vector[0], 1e-1);
+	EXPECT_NEAR(0.1, values_vector[1], 1e-1);
+	EXPECT_NEAR(0.7, values_vector[2], 1e-1);
+	EXPECT_NEAR(0.8, values_vector[3], 1e-1);
+	EXPECT_NEAR(0.2, values_vector[4], 1e-1);
+
+	EXPECT_EQ(+1.0, res_vector[0]);
+	EXPECT_EQ(-1.0, res_vector[1]);
+	EXPECT_EQ(+1.0, res_vector[2]);
+	EXPECT_EQ(+1.0, res_vector[3]);
+	EXPECT_EQ(-1.0, res_vector[4]);
 
 	SG_UNREF(result);
 }
