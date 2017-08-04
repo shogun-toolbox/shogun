@@ -287,7 +287,7 @@ float64_t COligoStringKernel::kernelOligo(
 	return result;
 }
 
-float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t COligoStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_a, free_b;

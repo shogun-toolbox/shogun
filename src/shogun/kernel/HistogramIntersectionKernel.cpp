@@ -48,7 +48,7 @@ bool CHistogramIntersectionKernel::init(CFeatures* l, CFeatures* r)
 	return result;
 }
 
-float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CHistogramIntersectionKernel::compute(index_t idx_a, index_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;

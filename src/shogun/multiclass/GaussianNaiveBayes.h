@@ -76,7 +76,7 @@ public:
 	 * @param idx example index
 	 * @return label
 	 */
-	virtual float64_t apply_one(int32_t idx);
+	virtual float64_t apply_one(index_t idx);
 
 	/** get name
 	 * @return classifier name

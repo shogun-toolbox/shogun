@@ -120,7 +120,7 @@ void CSNPStringKernel::obtain_base_strings()
 	}
 }
 
-float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSNPStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;

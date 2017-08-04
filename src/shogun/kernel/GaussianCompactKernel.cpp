@@ -23,7 +23,7 @@ CGaussianCompactKernel::~CGaussianCompactKernel()
 {
 }
 
-float64_t CGaussianCompactKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CGaussianCompactKernel::compute(index_t idx_a, index_t idx_b)
 {
     int32_t len_features, power;
     len_features=((CDotFeatures*) lhs)->get_dim_feature_space();

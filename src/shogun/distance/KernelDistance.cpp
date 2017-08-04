@@ -62,7 +62,7 @@ bool CKernelDistance::init(CFeatures* l, CFeatures* r)
 	return CDistance::init(l,r);
 }
 
-float64_t CKernelDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CKernelDistance::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t result=kernel->kernel(idx_a, idx_b);
 	return exp(-result/width);

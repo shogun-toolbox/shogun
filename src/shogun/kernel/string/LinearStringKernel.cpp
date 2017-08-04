@@ -63,7 +63,7 @@ void CLinearStringKernel::add_to_normal(int32_t idx, float64_t weight)
 	((CStringFeatures<char>*) lhs)->free_feature_vector(vec, idx, vfree);
 }
 
-float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CLinearStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;

@@ -47,7 +47,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 	index_t lhs_size=lhs->get_num_vectors();
 	index_t dim=lhs->get_num_features();
 
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(index_t(0));
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 
 	SGVector<int32_t> cluster_assignments=SGVector<int32_t>(lhs_size);

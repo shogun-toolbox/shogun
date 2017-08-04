@@ -102,7 +102,7 @@ float64_t CHistogram::get_log_likelihood_example(index_t num_example)
 	return loglik;
 }
 
-float64_t CHistogram::get_log_derivative(int32_t num_param, index_t num_example)
+float64_t CHistogram::get_log_derivative(index_t num_param, index_t num_example)
 {
 	if (hist[num_param] < CMath::ALMOST_NEG_INFTY)
 		return -CMath::INFTY;
@@ -141,7 +141,7 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, index_t num_example)
 	}
 }
 
-float64_t CHistogram::get_log_model_parameter(int32_t num_param)
+float64_t CHistogram::get_log_model_parameter(index_t num_param)
 {
 	return hist[num_param];
 }

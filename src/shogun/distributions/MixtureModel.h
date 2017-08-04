@@ -93,7 +93,7 @@ class CMixtureModel : public CDistribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		virtual float64_t get_log_likelihood_example(index_t num_example);
 
 		/** get weights
 		 *

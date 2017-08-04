@@ -110,7 +110,7 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	virtual float64_t compute(index_t idx_a, index_t idx_b);
 };
 }
 

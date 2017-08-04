@@ -335,7 +335,7 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 	return cur_likelihood;
 }
 
-void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
+void CGMM::partial_em(index_t comp1, index_t comp2, index_t comp3, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
@@ -632,12 +632,12 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 		m_coefficients.vector[i]/=alpha_sum_sum;
 }
 
-int32_t CGMM::get_num_model_parameters()
+index_t CGMM::get_num_model_parameters()
 {
 	return 1;
 }
 
-float64_t CGMM::get_log_model_parameter(int32_t num_param)
+float64_t CGMM::get_log_model_parameter(index_t num_param)
 {
 	ASSERT(num_param==1)
 
@@ -654,19 +654,19 @@ CDistribution* CGMM::get_component(index_t index) const
 	return m_components[index];
 }
 
-float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CGMM::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;
 }
 
-float64_t CGMM::get_log_likelihood_example(int32_t num_example)
+float64_t CGMM::get_log_likelihood_example(index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 1;
 }
 
-float64_t CGMM::get_likelihood_example(int32_t num_example)
+float64_t CGMM::get_likelihood_example(index_t num_example)
 {
 	float64_t result=0;
 
@@ -683,25 +683,25 @@ float64_t CGMM::get_likelihood_example(int32_t num_example)
 	return result;
 }
 
-SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
+SGVector<float64_t> CGMM::get_nth_mean(index_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_mean();
 }
 
-void CGMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
+void CGMM::set_nth_mean(SGVector<float64_t> mean, index_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_mean(mean);
 }
 
-SGMatrix<float64_t> CGMM::get_nth_cov(int32_t num)
+SGMatrix<float64_t> CGMM::get_nth_cov(index_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_cov();
 }
 
-void CGMM::set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
+void CGMM::set_nth_cov(SGMatrix<float64_t> cov, index_t num)
 {
 	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_cov(cov);

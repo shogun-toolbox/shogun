@@ -655,7 +655,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(index_t idx_a, index_t idx_b);
 
 		/** compute with mismatch
 		 *

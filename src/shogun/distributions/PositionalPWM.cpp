@@ -35,7 +35,7 @@ bool CPositionalPWM::train(CFeatures* data)
 	return true;
 }
 
-int32_t CPositionalPWM::get_num_model_parameters()
+index_t CPositionalPWM::get_num_model_parameters()
 {
 	return m_pwm.num_rows*m_pwm.num_cols+2;
 }
@@ -60,7 +60,7 @@ float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_exam
 	return 0;
 }
 
-float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
+float64_t CPositionalPWM::get_log_likelihood_example(index_t num_example)
 {
 	ASSERT(features)
 	ASSERT(features->get_feature_class() == C_STRING)

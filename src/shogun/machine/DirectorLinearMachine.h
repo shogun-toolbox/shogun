@@ -102,7 +102,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		/** apply machine to data in means of multiclass classification problem */
 		using CLinearMachine::apply_multiclass;
 
-		virtual float64_t apply_one(int32_t vec_idx)
+		virtual float64_t apply_one(index_t vec_idx)
 		{
 			return CLinearMachine::apply_one(vec_idx);
 		}

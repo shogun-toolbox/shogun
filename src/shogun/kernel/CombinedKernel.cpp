@@ -265,7 +265,7 @@ void CCombinedKernel::list_kernels()
 	SG_INFO("END COMBINED KERNEL LIST - ")
 }
 
-float64_t CCombinedKernel::compute(int32_t x, int32_t y)
+float64_t CCombinedKernel::compute(index_t x, index_t y)
 {
 	float64_t result=0;
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)

@@ -67,7 +67,7 @@ void CCircularKernel::init()
 	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", MS_AVAILABLE);
 }
 
-float64_t CCircularKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CCircularKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist=distance->distance(idx_a, idx_b);
 	float64_t ds_ratio=dist/sigma;

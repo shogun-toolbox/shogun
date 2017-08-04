@@ -100,7 +100,7 @@ void CRegulatoryModulesStringKernel::set_motif_positions(
 	SG_REF(positions_rhs);
 }
 
-float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CRegulatoryModulesStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	ASSERT(motif_positions_lhs)
 	ASSERT(motif_positions_rhs)

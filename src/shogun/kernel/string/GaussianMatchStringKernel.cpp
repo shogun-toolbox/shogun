@@ -56,7 +56,7 @@ void CGaussianMatchStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CGaussianMatchStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	int32_t i, alen, blen ;
 	bool free_avec, free_bvec;

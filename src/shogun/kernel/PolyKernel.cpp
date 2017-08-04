@@ -55,7 +55,7 @@ void CPolyKernel::cleanup()
 	CKernel::cleanup();
 }
 
-float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CPolyKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t result=CDotKernel::compute(idx_a, idx_b);
 

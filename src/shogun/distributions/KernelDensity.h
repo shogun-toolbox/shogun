@@ -102,7 +102,7 @@ public :
 	 *
 	 * @return number of model parameters
 	 */
-	virtual int32_t get_num_model_parameters();
+	virtual index_t get_num_model_parameters();
 
 	/** return log model parameter
 	 * NOT IMPLEMENTED
@@ -110,7 +110,7 @@ public :
 	 * @param num_param index number of the parameter
 	 * @return log of model parameter
 	 */
-	virtual float64_t get_log_model_parameter(int32_t num_param);
+	virtual float64_t get_log_model_parameter(index_t num_param);
 
 	/** return log derivative
 	 * NOT IMPLEMENTED
@@ -127,7 +127,7 @@ public :
 	 * @param num_example index number of example
 	 * @return log likelihood of example
 	 */
-	virtual float64_t get_log_likelihood_example(int32_t num_example);
+	virtual float64_t get_log_likelihood_example(index_t num_example);
 
 	/** returns norm of a given kernel
 	 *

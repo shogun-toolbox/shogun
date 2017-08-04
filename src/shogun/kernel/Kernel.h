@@ -908,7 +908,7 @@ class CKernel : public CSGObject
 		 * @param y index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t x, int32_t y)=0;
+		virtual float64_t compute(index_t x, index_t y)=0;
 
 		/** compute row start offset for parallel kernel matrix computation
 		 *

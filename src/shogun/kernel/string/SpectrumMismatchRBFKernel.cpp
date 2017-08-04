@@ -268,7 +268,7 @@ void CSpectrumMismatchRBFKernel::compute_all()
 	compute_helper_all(joint_seq.c_str(), joint_list, "", 0);
 }
 
-float64_t CSpectrumMismatchRBFKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSpectrumMismatchRBFKernel::compute(index_t idx_a, index_t idx_b)
 {
 	return kernel_matrix->element(idx_a, idx_b);
 }

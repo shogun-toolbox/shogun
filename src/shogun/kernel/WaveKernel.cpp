@@ -56,7 +56,7 @@ void CWaveKernel::init()
 	    MS_AVAILABLE);
 }
 
-float64_t CWaveKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CWaveKernel::compute(index_t idx_a, index_t idx_b)
 {
 	float64_t dist = m_distance->distance(idx_a, idx_b);
 
