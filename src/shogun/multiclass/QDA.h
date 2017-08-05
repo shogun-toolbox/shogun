@@ -207,8 +207,11 @@ class CQDA : public CNativeMulticlassMachine
 		/** feature means for each of the classes in the training data */
 		SGMatrix< float64_t > m_means;
 
-		/** matrices computed in training and used in classification */
-		SGNDArray< float64_t > m_M;
+		/** matrices computed in training and used in classification
+		 * the matrices are stacked horizontally into a matrix of size
+		 * (m_dim, m_dim*m_num_classes).
+		 */
+		SGMatrix<float64_t> m_M;
 
 		/** vector computed in training and used in classification */
 		SGVector< float32_t > m_slog;
