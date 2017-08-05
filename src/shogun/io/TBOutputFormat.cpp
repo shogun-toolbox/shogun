@@ -45,18 +45,21 @@ using namespace shogun;
 
 #define CHECK_TYPE(type)                                                       \
 	else if (                                                                  \
-	    value.first.value.type_info().hash_code() == typeid(type).hash_code()) \
+	    value.first.get_value().type_info().hash_code() ==                     \
+	    typeid(type).hash_code())                                              \
 	{                                                                          \
-		summaryValue->set_simple_value(recall_type<type>(value.first.value));  \
+		summaryValue->set_simple_value(                                        \
+		    recall_type<type>(value.first.get_value()));                       \
 	}
 
 #define CHECK_TYPE_HISTO(type)                                                 \
 	else if (                                                                  \
-	    value.first.value.type_info().hash_code() == typeid(type).hash_code()) \
+	    value.first.get_value().type_info().hash_code() ==                     \
+	    typeid(type).hash_code())                                              \
 	{                                                                          \
 		tensorflow::histogram::Histogram h;                                    \
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();     \
-		auto v = recall_type<type>(value.first.value);                         \
+		auto v = recall_type<type>(value.first.get_value());                   \
 		for (auto value_v : v)                                                 \
 			h.Add(value_v);                                                    \
 		h.EncodeToProto(hp, true);                                             \
@@ -73,16 +76,18 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	tensorflow::Event e;
 	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
-	e.set_step(value.first.step);
+	e.set_step(value.first.get_step());
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first.name);
+	summaryValue->set_tag(value.first.get_name());
 	summaryValue->set_node_name(node_name);
 
-	if (value.first.value.type_info().hash_code() == typeid(int8_t).hash_code())
+	if (value.first.get_value().type_info().hash_code() ==
+	    typeid(int8_t).hash_code())
 	{
-		summaryValue->set_simple_value(recall_type<int8_t>(value.first.value));
+		summaryValue->set_simple_value(
+		    recall_type<int8_t>(value.first.get_value()));
 	}
 	CHECK_TYPE(uint8_t)
 	CHECK_TYPE(int16_t)
@@ -97,7 +102,8 @@ tensorflow::Event TBOutputFormat::convert_scalar(
 	CHECK_TYPE(char)
 	else
 	{
-		SG_ERROR("Unsupported type %s", value.first.value.type_info().name());
+		SG_ERROR(
+		    "Unsupported type %s", value.first.get_value().type_info().name());
 	}
 
 	return e;
@@ -109,19 +115,19 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	tensorflow::Event e;
 	std::time_t now_t = convert_to_millis(value.second);
 	e.set_wall_time(now_t);
-	e.set_step(value.first.step);
+	e.set_step(value.first.get_step());
 
 	tensorflow::Summary* summary = e.mutable_summary();
 	auto summaryValue = summary->add_value();
-	summaryValue->set_tag(value.first.name);
+	summaryValue->set_tag(value.first.get_name());
 	summaryValue->set_node_name(node_name);
 
-	if (value.first.value.type_info().hash_code() ==
+	if (value.first.get_value().type_info().hash_code() ==
 	    typeid(std::vector<int8_t>).hash_code())
 	{
 		tensorflow::histogram::Histogram h;
 		tensorflow::HistogramProto* hp = new tensorflow::HistogramProto();
-		auto v = recall_type<std::vector<int8_t>>(value.first.value);
+		auto v = recall_type<std::vector<int8_t>>(value.first.get_value());
 		for (auto value_v : v)
 			h.Add(value_v);
 		h.EncodeToProto(hp, true);
@@ -140,7 +146,8 @@ tensorflow::Event TBOutputFormat::convert_vector(
 	CHECK_TYPE_HISTO(std::vector<char>)
 	else
 	{
-		SG_ERROR("Unsupported type %s", value.first.value.type_info().name());
+		SG_ERROR(
+		    "Unsupported type %s", value.first.get_value().type_info().name());
 	}
 
 	return e;

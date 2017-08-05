@@ -32,7 +32,7 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/ParameterObserverInterface.h>
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 using namespace shogun;
 
@@ -54,4 +54,16 @@ ParameterObserverInterface::ParameterObserverInterface(
 
 ParameterObserverInterface::~ParameterObserverInterface()
 {
+}
+
+bool ParameterObserverInterface::filter(const std::string& param)
+{
+	// If there are no specified parameters, then watch everything
+	if (m_parameters.size() == 0)
+		return true;
+
+	for (auto v : m_parameters)
+		if (v == param)
+			return true;
+	return false;
 }

@@ -17,12 +17,12 @@
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/ParameterObserverInterface.h>
 #include <shogun/lib/RxCppHeader.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
 
 #include <utility>
@@ -37,6 +37,7 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
+class ParameterObserverInterface;
 
 template <class T, class K> class CMap;
 
@@ -578,17 +579,20 @@ private:
 	Unique<ParameterObserverList> param_obs_list;
 
 protected:
-	/** Observe the parameter and emits a value using the
-	* observable object
-	*/
-	void observe_scalar(
-		const int64_t step, const std::string& name, const Any& value);
+	/**
+	 * Observe a parameter value and emit them to observer.
+	 * @param value Observed parameter's value
+	 */
+	void observe(const ObservedValue* value);
 
 	/**
-	* Register a parameter as observable
-	*/
+	 * Register which params this object can emit.
+	 * @param name the param name
+	 * @param type the param type
+	 * @param description a user oriented description
+	 */
 	void register_observable_param(
-		const std::string& name, const std::string& type,
+		const std::string& name, const SG_OBS_VALUE_TYPE type,
 		const std::string& description);
 
 public:

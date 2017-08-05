@@ -35,49 +35,48 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
-#define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
 
-#include <shogun/lib/ParameterObserverInterface.h>
+using namespace shogun;
 
-#include <tflogger/event_logger.h>
-
-namespace shogun
+ParameterObserverHistogram::ParameterObserverHistogram()
+    : ParameterObserverTensorBoard()
 {
-	class ParameterObserverTensorBoard : public ParameterObserverInterface
-	{
-
-	public:
-		/**
-		* Default constructor
-		*/
-		ParameterObserverTensorBoard();
-
-		/**
-		 * Constructor
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverTensorBoard(std::vector<std::string>& parameters);
-
-		/**
-		 * Constructor
-		 * @param filename name of the generated output file
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverTensorBoard(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		/**
-		 * Virtual destructor
-		 */
-		virtual ~ParameterObserverTensorBoard();
-
-	protected:
-		/**
-		* Writer object which will be used to write tensorflow::Event files
-		*/
-		tflogger::EventLogger m_writer;
-	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+ParameterObserverHistogram::ParameterObserverHistogram(
+    std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(parameters)
+{
+}
+
+ParameterObserverHistogram::ParameterObserverHistogram(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
+{
+}
+
+ParameterObserverHistogram::~ParameterObserverHistogram()
+{
+}
+
+void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
+{
+	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type())
+
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_vector(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void ParameterObserverHistogram::on_error(std::exception_ptr)
+{
+}
+
+void ParameterObserverHistogram::on_complete()
+{
+}
+
 #endif // HAVE_TFLOGGER

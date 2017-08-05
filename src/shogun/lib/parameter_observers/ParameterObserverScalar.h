@@ -35,57 +35,32 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/ParameterObserverHistogram.h>
+#ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
+#define SHOGUN_PARAMETEROBSERVERSCALAR_H
 
-using namespace shogun;
+#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
 
-ParameterObserverHistogram::ParameterObserverHistogram()
-    : ParameterObserverTensorBoard()
+namespace shogun
 {
+	/**
+	 * Implementation of a ParameterObserver which write to file
+	 * scalar values, given object emitted from a parameter observable.
+	 */
+	class ParameterObserverScalar : public ParameterObserverTensorBoard
+	{
+
+	public:
+		ParameterObserverScalar();
+		ParameterObserverScalar(std::vector<std::string>& parameters);
+		ParameterObserverScalar(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		~ParameterObserverScalar();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr);
+		virtual void on_complete();
+	};
 }
 
-ParameterObserverHistogram::ParameterObserverHistogram(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
-{
-}
-
-ParameterObserverHistogram::ParameterObserverHistogram(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
-{
-}
-
-ParameterObserverHistogram::~ParameterObserverHistogram()
-{
-}
-
-void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
-{
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_vector(value, node_name);
-	m_writer.writeEvent(event_value);
-}
-
-void ParameterObserverHistogram::on_error(std::exception_ptr)
-{
-}
-
-void ParameterObserverHistogram::on_complete()
-{
-}
-
-bool ParameterObserverHistogram::filter(const std::string& param)
-{
-	if (m_parameters.size() == 0)
-		return true;
-
-	for (auto v : m_parameters)
-		if (v == param)
-			return true;
-	return false;
-}
-
+#endif // SHOGUN_PARAMETEROBSERVERSCALAR_H
 #endif // HAVE_TFLOGGER
