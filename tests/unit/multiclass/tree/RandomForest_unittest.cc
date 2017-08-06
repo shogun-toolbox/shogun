@@ -284,75 +284,13 @@ TEST(RandomForest,classify_non_nominal_test)
 	SG_UNREF(eval);
 }
 
-TEST(RandomForest, score_consistent_with_binary_trivial_data)
-{
-	// Test data generated using script
-	// https://gist.github.com/olinguyen/d93cd4222b404d26dc859f100d700be6
-	// Generates data for y = (x1 v x2) < 5 as decision boundary
-	float64_t data_A[] = {9, 7, 5, 5, 6, 7, 8, 9, 6, 8,
-	                      1, 4, 2, 1, 3, 2, 1, 3, 1, 0};
-
-	SGMatrix<float64_t> data(data_A, 2, 10, false);
-
-	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(data);
-
-	float64_t labels[] = {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-	SGVector<float64_t> lab(labels, 10);
-	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
-
-	float64_t test_A[] = {9, 7, 5, 5, 6, 7, 8, 9, 6, 8,
-	                      1, 0, 0, 1, 1, 1, 1, 2, 0, 0};
-
-	SGMatrix<float64_t> test_data(test_A, 2, 10, false);
-
-	CDenseFeatures<float64_t>* features_test =
-	    new CDenseFeatures<float64_t>(test_data);
-
-	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
-	SGVector<bool> ft = SGVector<bool>(2);
-	ft[0] = false;
-	ft[1] = false;
-	c->set_feature_types(ft);
-
-	CMeanRule* mr = new CMeanRule();
-	c->set_combination_rule(mr);
-	c->train(features_train);
-
-	auto result = c->apply_binary(features_test);
-	SGVector<float64_t> res_vector = result->get_labels();
-	SGVector<float64_t> values_vector = result->get_values();
-
-	EXPECT_EQ(-1.0, res_vector[0]);
-	EXPECT_EQ(-1.0, res_vector[1]);
-	EXPECT_EQ(-1.0, res_vector[2]);
-	EXPECT_EQ(-1.0, res_vector[3]);
-	EXPECT_EQ(-1.0, res_vector[4]);
-	EXPECT_EQ(1.0, res_vector[5]);
-	EXPECT_EQ(1.0, res_vector[6]);
-	EXPECT_EQ(1.0, res_vector[7]);
-	EXPECT_EQ(1.0, res_vector[8]);
-	EXPECT_EQ(1.0, res_vector[9]);
-
-	EXPECT_EQ(0.0, values_vector[0]);
-	EXPECT_EQ(0.0, values_vector[1]);
-	EXPECT_EQ(0.0, values_vector[2]);
-	EXPECT_EQ(0.0, values_vector[3]);
-	EXPECT_EQ(0.0, values_vector[4]);
-	EXPECT_EQ(1.0, values_vector[5]);
-	EXPECT_EQ(1.0, values_vector[6]);
-	EXPECT_EQ(1.0, values_vector[7]);
-	EXPECT_EQ(1.0, values_vector[8]);
-	EXPECT_EQ(1.0, values_vector[9]);
-
-	SG_UNREF(result);
-}
-
 TEST(RandomForest, score_compare_sklearn_toydata)
 {
+	sg_rand->set_seed(1);
 	// Comparison with sklearn's RandomForest probability outputs
-	// https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/ensemble/tests/test_voting_classifier.py#L143
+	// https://github.com/scikit-learn/scikit-learn/blob/6f70202ef9beefd3db9bb028755a0c38b4c5c8e7/sklearn/ensemble/tests/test_voting_classifier.py#L143
 	float64_t data_A[] = {-1.1, -1.5, -1.2, -1.4, -3.4, -2.2, 1.1, 1.2};
+	float64_t expected_probabilities[] = {0.2, 0.2, 0.8, 0.7};
 
 	SGMatrix<float64_t> data(data_A, 2, 4, false);
 
@@ -362,8 +300,6 @@ TEST(RandomForest, score_compare_sklearn_toydata)
 	float64_t labels[] = {0.0, 0.0, 1.0, 1.0};
 	SGVector<float64_t> lab(labels, 4);
 	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
-
-	float64_t expected_probabilities[] = {0.2, 0.2, 0.8, 0.7};
 
 	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
 	SGVector<bool> ft = SGVector<bool>(2);
@@ -386,39 +322,119 @@ TEST(RandomForest, score_compare_sklearn_toydata)
 
 	for (auto i = 0; i < 4; ++i)
 	{
-		EXPECT_NEAR(expected_probabilities[i], values_vector[i], 11e-1);
+		EXPECT_NEAR(expected_probabilities[i], values_vector[i], 1.1e-1);
 	}
+
+	SG_UNREF(result);
+}
+
+TEST(RandomForest, score_consistent_with_binary_trivial_data)
+{
+	// Generates data for y = x1 > 5 as decision boundary
+	int32_t num_train = 10;
+	int32_t num_test = 10;
+	int32_t num_trees = 10;
+
+	sg_rand->set_seed(42);
+	SGMatrix<float64_t> data_B(1, num_train, false);
+
+	for (auto i = 0; i < num_train; ++i)
+	{
+		data_B(0, i) = i < 5 ? CMath::random(0, 5) : CMath::random(5, 10);
+	}
+	CDenseFeatures<float64_t>* features_train =
+	    new CDenseFeatures<float64_t>(data_B);
+
+	float64_t labels[] = {0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+	SGVector<float64_t> lab(labels, num_train);
+	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
+
+	SGMatrix<float64_t> test_data(1, num_test, false);
+
+	for (auto i = 0; i < num_test; ++i)
+	{
+		test_data(0, i) = i < 5 ? CMath::random(0, 4) : CMath::random(6, 10);
+	}
+
+	CDenseFeatures<float64_t>* features_test =
+	    new CDenseFeatures<float64_t>(test_data);
+
+	CRandomForest* c = new CRandomForest(features_train, labels_train, num_trees, 1);
+	SGVector<bool> ft = SGVector<bool>(1);
+	ft[0] = false;
+	c->set_feature_types(ft);
+
+	CMeanRule* mr = new CMeanRule();
+	c->set_combination_rule(mr);
+	c->train(features_train);
+
+	auto result = c->apply_binary(features_test);
+	SGVector<float64_t> res_vector = result->get_labels();
+	SGVector<float64_t> values_vector = result->get_values();
+
+	EXPECT_EQ(-1.0, res_vector[0]);
+	EXPECT_EQ(-1.0, res_vector[1]);
+	EXPECT_EQ(-1.0, res_vector[2]);
+	EXPECT_EQ(-1.0, res_vector[3]);
+	EXPECT_EQ(-1.0, res_vector[4]);
+	EXPECT_EQ(1.0, res_vector[5]);
+	EXPECT_EQ(1.0, res_vector[6]);
+	EXPECT_EQ(1.0, res_vector[7]);
+	EXPECT_EQ(1.0, res_vector[8]);
+	EXPECT_EQ(1.0, res_vector[9]);
+
+	EXPECT_NEAR(0.0, values_vector[0], 1e-1);
+	EXPECT_NEAR(0.0, values_vector[1], 1e-1);
+	EXPECT_NEAR(0.0, values_vector[2], 1e-1);
+	EXPECT_NEAR(0.0, values_vector[3], 1e-1);
+	EXPECT_NEAR(0.0, values_vector[4], 1e-1);
+	EXPECT_NEAR(1.0, values_vector[5], 1e-1);
+	EXPECT_NEAR(1.0, values_vector[6], 1e-1);
+	EXPECT_NEAR(1.0, values_vector[7], 1e-1);
+	EXPECT_NEAR(1.0, values_vector[8], 1e-1);
+	EXPECT_NEAR(1.0, values_vector[9], 1e-1);
 
 	SG_UNREF(result);
 }
 
 TEST(RandomForest, score_random_labels)
 {
-	// Test data generated using script
-	// https://gist.github.com/olinguyen/d93cd4222b404d26dc859f100d700be6
 	// Generates data with random labels where trees don't all agree
 	sg_rand->set_seed(42);
 
-	float64_t data_A[] = {5, 7, 5, 9, 9, 6, 9, 5, 8, 7,
-	                      3, 1, 4, 1, 1, 2, 1, 0, 2, 0};
+	int32_t num_train = 1000;
+	int32_t num_test = 10;
+	int32_t num_trees = 10;
+	SGMatrix<float64_t> data_B(2, num_train, false);
 
-	SGMatrix<float64_t> data(data_A, 2, 10, false);
-
+	for (auto i = 0; i < num_train; ++i)
+	{
+		data_B(0, i) = CMath::randn_double();
+		data_B(1, i) = CMath::randn_double();
+	}
 	CDenseFeatures<float64_t>* features_train =
-	    new CDenseFeatures<float64_t>(data);
+	    new CDenseFeatures<float64_t>(data_B);
 
-	float64_t labels[] = {0, 0, 0, 1, 0, 1, 0, 1, 0, 1};
-	SGVector<float64_t> lab(labels, 10);
+	SGVector<float64_t> lab(num_train);
+	for (auto i = 0; i < num_train; ++i)
+	{
+		lab[i] = CMath::random(0, 1);
+	}
+
 	CMulticlassLabels* labels_train = new CMulticlassLabels(lab);
 
-	float64_t test_A[] = {9, 2, 5, 8, 7, 3, 3, 1, 7, 6};
+	SGMatrix<float64_t> test_data(2, num_test, false);
 
-	SGMatrix<float64_t> test_data(test_A, 2, 5, false);
+	for (auto i = 0; i < num_test; ++i)
+	{
+		test_data(0, i) = CMath::randn_double();
+		test_data(1, i) = CMath::randn_double();
+	}
 
 	CDenseFeatures<float64_t>* features_test =
 	    new CDenseFeatures<float64_t>(test_data);
 
-	CRandomForest* c = new CRandomForest(features_train, labels_train, 10, 2);
+	CRandomForest* c = new CRandomForest(features_train, labels_train, num_trees, 2);
 	SGVector<bool> ft = SGVector<bool>(2);
 	ft[0] = false;
 	ft[1] = false;
@@ -427,21 +443,22 @@ TEST(RandomForest, score_random_labels)
 	CMeanRule* mr = new CMeanRule();
 	c->set_combination_rule(mr);
 	c->train(features_train);
+
 	auto result = c->apply_binary(features_test);
 	SGVector<float64_t> res_vector = result->get_labels();
 	SGVector<float64_t> values_vector = result->get_values();
 
-	EXPECT_NEAR(0.7, values_vector[0], 1e-1);
-	EXPECT_NEAR(0.1, values_vector[1], 1e-1);
-	EXPECT_NEAR(0.7, values_vector[2], 1e-1);
-	EXPECT_NEAR(0.8, values_vector[3], 1e-1);
-	EXPECT_NEAR(0.2, values_vector[4], 1e-1);
-
-	EXPECT_EQ(+1.0, res_vector[0]);
-	EXPECT_EQ(-1.0, res_vector[1]);
-	EXPECT_EQ(+1.0, res_vector[2]);
-	EXPECT_EQ(+1.0, res_vector[3]);
-	EXPECT_EQ(-1.0, res_vector[4]);
+	EXPECT_NEAR(0.5, values_vector[0], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[1], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[2], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[3], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[4], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[5], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[6], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[7], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[8], 5e-1);
+	EXPECT_NEAR(0.5, values_vector[9], 5e-1);
 
 	SG_UNREF(result);
+
 }
