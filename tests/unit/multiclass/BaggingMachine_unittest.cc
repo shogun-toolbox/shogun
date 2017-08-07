@@ -1,3 +1,4 @@
+#include "../utils/Utils.h"
 #include "features/MockFeatures.h"
 #include "labels/MockLabels.h"
 #include "machine/MockMachine.h"
@@ -13,20 +14,6 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
 
-#define sunny 1.
-#define overcast 2.
-#define rain 3.
-
-#define hot 1.
-#define mild 2.
-#define cool 3.
-
-#define high 1.
-#define normal 2.
-
-#define weak 1.
-#define strong 2.
-
 using namespace shogun;
 using ::testing::Return;
 
@@ -41,7 +28,7 @@ public:
 	virtual void SetUp()
 	{
 		sg_rand->set_seed(1);
-		generate_toy_data_weather();
+		load_toy_data();
 	}
 
 	virtual void TearDown()
@@ -51,126 +38,20 @@ public:
 		SG_UNREF(labels_train);
 	}
 
-	void generate_toy_data_weather()
+	void load_toy_data()
 	{
 		SGMatrix<float64_t> weather_data(4, 14);
+		SGVector<float64_t> lab(14);
 
-		// vector = [Outlook Temperature Humidity Wind]
-		weather_data(0, 0) = sunny;
-		weather_data(1, 0) = hot;
-		weather_data(2, 0) = high;
-		weather_data(3, 0) = weak;
-
-		weather_data(0, 1) = sunny;
-		weather_data(1, 1) = hot;
-		weather_data(2, 1) = high;
-		weather_data(3, 1) = strong;
-
-		weather_data(0, 2) = overcast;
-		weather_data(1, 2) = hot;
-		weather_data(2, 2) = high;
-		weather_data(3, 2) = weak;
-
-		weather_data(0, 3) = rain;
-		weather_data(1, 3) = mild;
-		weather_data(2, 3) = high;
-		weather_data(3, 3) = weak;
-
-		weather_data(0, 4) = rain;
-		weather_data(1, 4) = cool;
-		weather_data(2, 4) = normal;
-		weather_data(3, 4) = weak;
-
-		weather_data(0, 5) = rain;
-		weather_data(1, 5) = cool;
-		weather_data(2, 5) = normal;
-		weather_data(3, 5) = strong;
-
-		weather_data(0, 6) = overcast;
-		weather_data(1, 6) = cool;
-		weather_data(2, 6) = normal;
-		weather_data(3, 6) = strong;
-
-		weather_data(0, 7) = sunny;
-		weather_data(1, 7) = mild;
-		weather_data(2, 7) = high;
-		weather_data(3, 7) = weak;
-
-		weather_data(0, 8) = sunny;
-		weather_data(1, 8) = cool;
-		weather_data(2, 8) = normal;
-		weather_data(3, 8) = weak;
-
-		weather_data(0, 9) = rain;
-		weather_data(1, 9) = mild;
-		weather_data(2, 9) = normal;
-		weather_data(3, 9) = weak;
-
-		weather_data(0, 10) = sunny;
-		weather_data(1, 10) = mild;
-		weather_data(2, 10) = normal;
-		weather_data(3, 10) = strong;
-
-		weather_data(0, 11) = overcast;
-		weather_data(1, 11) = mild;
-		weather_data(2, 11) = high;
-		weather_data(3, 11) = strong;
-
-		weather_data(0, 12) = overcast;
-		weather_data(1, 12) = hot;
-		weather_data(2, 12) = normal;
-		weather_data(3, 12) = weak;
-
-		weather_data(0, 13) = rain;
-		weather_data(1, 13) = mild;
-		weather_data(2, 13) = high;
-		weather_data(3, 13) = strong;
+		generate_toy_data_weather(weather_data, lab);
 
 		features_train = new CDenseFeatures<float64_t>(weather_data);
+		labels_train = new CMulticlassLabels(lab);
 
 		SGMatrix<float64_t> test(4, 5);
-		test(0, 0) = overcast;
-		test(0, 1) = rain;
-		test(0, 2) = sunny;
-		test(0, 3) = rain;
-		test(0, 4) = sunny;
-
-		test(1, 0) = hot;
-		test(1, 1) = cool;
-		test(1, 2) = mild;
-		test(1, 3) = mild;
-		test(1, 4) = hot;
-
-		test(2, 0) = normal;
-		test(2, 1) = high;
-		test(2, 2) = high;
-		test(2, 3) = normal;
-		test(2, 4) = normal;
-
-		test(3, 0) = strong;
-		test(3, 1) = strong;
-		test(3, 2) = weak;
-		test(3, 3) = weak;
-		test(3, 4) = strong;
+		SGVector<float64_t> test_labels(4);
+		generate_toy_data_weather(test, test_labels, false);
 		features_test = new CDenseFeatures<float64_t>(test);
-
-		// yes 1. no 0.
-		SGVector<float64_t> lab(14);
-		lab[0] = 0.0;
-		lab[1] = 0.0;
-		lab[2] = 1.0;
-		lab[3] = 1.0;
-		lab[4] = 1.0;
-		lab[5] = 0.0;
-		lab[6] = 1.0;
-		lab[7] = 0.0;
-		lab[8] = 1.0;
-		lab[9] = 1.0;
-		lab[10] = 1.0;
-		lab[11] = 1.0;
-		lab[12] = 1.0;
-		lab[13] = 0.0;
-		labels_train = new CMulticlassLabels(lab);
 
 		auto feature_types = SGVector<bool>(4);
 
