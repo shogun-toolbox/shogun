@@ -240,8 +240,8 @@ public:
      *
      * @return 1 if an example could be fetched, 0 otherwise
      */
-    int32_t get_next_example(T* &feature_vector,
-                 int32_t &length,
+    index_t get_next_example(T* &feature_vector,
+                 index_t &length,
                  float64_t &label);
 
     /**
@@ -252,8 +252,8 @@ public:
      *
      * @return 1 if an example could be fetched, 0 otherwise
      */
-    int32_t get_next_example(T* &feature_vector,
-                 int32_t &length);
+    index_t get_next_example(T* &feature_vector,
+                 index_t &length);
 
     /**
      * Finalize the current example, indicating that the buffer
@@ -588,8 +588,8 @@ template <class T> Example<T>* CInputParser<T>::retrieve_example()
     return ex;
 }
 
-template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
-        int32_t &length, float64_t &label)
+template <class T> index_t CInputParser<T>::get_next_example(T* &fv,
+        index_t &length, float64_t &label)
 {
     /* if reading is done, no more examples can be fetched. return 0
        else, if example can be read, get the example and return 1.
@@ -635,7 +635,7 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
 }
 
 template <class T>
-    int32_t CInputParser<T>::get_next_example(T* &fv, int32_t &length)
+    index_t CInputParser<T>::get_next_example(T* &fv, index_t &length)
 {
     float64_t label_dummy;
 

@@ -164,14 +164,14 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T> &a, const SGSparseVector
 }
 
 template<class T>
-int32_t SGSparseVector<T>::get_num_dimensions()
+index_t SGSparseVector<T>::get_num_dimensions()
 {
 	if (!features)
 	{
 		return 0;
 	}
 
-	int32_t dimensions = -1;
+	index_t dimensions = -1;
 
 	for (index_t i = 0; i < num_feat_entries; i++)
 	{

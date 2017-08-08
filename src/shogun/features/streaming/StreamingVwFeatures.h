@@ -375,7 +375,7 @@ protected:
 	float64_t current_label;
 
 	/// Number of features in current example.
-	int32_t current_length;
+	index_t current_length;
 
 	/// Environment for VW
 	CVwEnvironment* env;

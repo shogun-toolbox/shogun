@@ -90,7 +90,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param dim length of the dense vector
 		 * @param b bias
 		 */
-		virtual void dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range(float64_t* output, index_t start, index_t stop, float64_t* alphas, float64_t* vec, index_t dim, float64_t b);
 
 		/** Compute the dot product for a subset of vectors. This function makes use of dense_dot
 		 * alphas[i] * sparse[i]^T * w + b
@@ -103,7 +103,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param dim length of the dense vector
 		 * @param b bias
 		 */
-		virtual void dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b);
+		virtual void dense_dot_range_subset(index_t* sub_index, index_t num, float64_t* output, float64_t* alphas, float64_t* vec, index_t dim, float64_t b);
 
 
 		/** add vector 1 multiplied with alpha to dense vector2
@@ -172,14 +172,14 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			/** pointer to feature vector */
 			uint16_t* vec;
 			/** index of vector */
-			int32_t vidx;
+			index_t vidx;
 			/** length of vector */
-			int32_t vlen;
+			index_t vlen;
 			/** if we need to free the vector*/
 			bool vfree;
 
 			/** feature index */
-			int32_t index;
+			index_t index;
 
 		};
 		#endif

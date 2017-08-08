@@ -98,9 +98,9 @@ class CWDFeatures : public CDotFeatures
 			/** pointer to feature vector */
 			uint8_t* vec;
 			/** index of vector */
-			int32_t vidx;
+			index_t vidx;
 			/** length of vector */
-			int32_t vlen;
+			index_t vlen;
 			/** if we need to free the vector*/
 			bool vfree;
 
@@ -204,7 +204,7 @@ class CWDFeatures : public CDotFeatures
 		/** size of alphabet */
 		int32_t alphabet_size;
 		/** w dim */
-		int32_t w_dim;
+		index_t w_dim;
 		/** wd weights */
 		float64_t* wd_weights;
 

@@ -92,7 +92,7 @@ float32_t CStreamingHashedDocDotFeatures::dot(CStreamingDotFeatures* df)
 	return result;
 }
 
-float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32_t vec2_len)
+float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == CMath::pow(2, num_bits))
 
@@ -106,7 +106,7 @@ float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32
 }
 
 void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			int32_t vec2_len, bool abs_val)
+			index_t vec2_len, bool abs_val)
 {
 	float32_t value = abs_val ? CMath::abs(alpha) : alpha;
 
@@ -114,7 +114,7 @@ void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t
 		vec2[current_vector.features[i].feat_index] += value * current_vector.features[i].entry;
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_dim_feature_space() const
+index_t CStreamingHashedDocDotFeatures::get_dim_feature_space() const
 {
 	return CMath::pow(2, num_bits);
 }
@@ -164,9 +164,9 @@ void CStreamingHashedDocDotFeatures::release_example()
 	parser.finalize_example();
 }
 
-int32_t CStreamingHashedDocDotFeatures::get_num_features()
+index_t CStreamingHashedDocDotFeatures::get_num_features()
 {
-	return (int32_t) CMath::pow(2, num_bits);
+	return (index_t) CMath::pow(2, num_bits);
 }
 
 float64_t CStreamingHashedDocDotFeatures::get_label()

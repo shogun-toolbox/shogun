@@ -101,14 +101,14 @@ CFeatures* CHashedDenseFeatures<ST>::duplicate() const
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_dim_feature_space() const
+index_t CHashedDenseFeatures<ST>::get_dim_feature_space() const
 {
 	return dim;
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
-	int32_t vec_idx2)
+float64_t CHashedDenseFeatures<ST>::dot(index_t vec_idx1, CDotFeatures* df,
+	index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -128,8 +128,8 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2,
-	int32_t vec2_len)
+float64_t CHashedDenseFeatures<ST>::dense_dot(index_t vec_idx1, const float64_t* vec2,
+	index_t vec2_len)
 {
 	ASSERT(vec2_len == dim)
 
@@ -212,7 +212,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, index_t vec_idx
 }
 
 template <class ST>
-int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(index_t num)
+index_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(index_t num)
 {
 	return dim;
 }

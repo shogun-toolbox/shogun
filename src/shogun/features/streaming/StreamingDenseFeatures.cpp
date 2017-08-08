@@ -193,7 +193,7 @@ void CStreamingDenseFeatures<T>::init()
 
 template<class T>
 void CStreamingDenseFeatures<T>::init(CStreamingFile* file, bool is_labelled,
-		int32_t size)
+		index_t size)
 {
 	init();
 	has_labels=is_labelled;
@@ -249,7 +249,7 @@ void CStreamingDenseFeatures<T>::release_example()
 }
 
 template<class T>
-int32_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
+index_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
 {
 	return current_vector.vlen;
 }
@@ -281,7 +281,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 }
 
 template<class T>
-int32_t CStreamingDenseFeatures<T>::get_num_features()
+index_t CStreamingDenseFeatures<T>::get_num_features()
 {
 	return current_vector.vlen;
 }

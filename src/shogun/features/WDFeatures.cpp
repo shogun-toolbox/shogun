@@ -305,12 +305,12 @@ CFeatures* CWDFeatures::duplicate() const
 	return new CWDFeatures(*this);
 }
 
-int32_t CWDFeatures::get_dim_feature_space() const
+index_t CWDFeatures::get_dim_feature_space() const
 {
 	return w_dim;
 }
 
-int32_t CWDFeatures::get_nnz_features_for_vector(index_t num)
+index_t CWDFeatures::get_nnz_features_for_vector(index_t num)
 {
 	index_t vlen=-1;
 	bool free_vec;

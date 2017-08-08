@@ -130,7 +130,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		virtual const char* get_name() const { return "MatrixFeatures"; }
 
 		/** @return the number of features */
-		inline int32_t get_num_features() const { return m_num_features; }
+		inline index_t get_num_features() const { return m_num_features; }
 
 		/** helper method used to specialize a base class instance
 		 *

@@ -464,7 +464,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 	size_t required_blocksize=0;
 	uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);
 	uint8_t* overflow=NULL;
-	int32_t overflow_len=0;
+	index_t overflow_len=0;
 
 	cleanup();
 
@@ -517,7 +517,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 		features=SG_MALLOC(SGString<ST>, num_vectors);
 
 		auto pb2 =
-			PRange<int>(range(num_vectors), *this->io, "LOADING: ", UTF8, []() {
+			PRange<index_t>(range(num_vectors), *this->io, "LOADING: ", UTF8, []() {
 				return true;
 			});
 		rewind(f);
@@ -532,7 +532,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 			{
 				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 				{
-					int32_t len=i-old_sz;
+					index_t len=i-old_sz;
 					//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz)
 					max_string_length=CMath::max(max_string_length, len+overflow_len);
 
@@ -611,7 +611,7 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 	uint64_t len=0;
 	uint64_t offs=0;
 	int32_t num=0;
-	int32_t max_len=0;
+	index_t max_len=0;
 
 	CMemoryMappedFile<char> f(fname);
 
@@ -665,10 +665,10 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 				strings[i].slen=len;
 
 				ST* str=strings[i].string;
-				int32_t idx=0;
+				index_t idx=0;
 				SG_DEBUG("'%.*s', len=%d, spanned_lines=%d\n", (int32_t) id_len, id, (int32_t) len, (int32_t) spanned_lines)
 
-				for (int32_t j=0; j<fasta_len; j++)
+				for (index_t j=0; j<fasta_len; j++)
 				{
 					if (fasta[j]=='\n')
 						continue;
@@ -851,13 +851,13 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 		SGString<ST>* strings=NULL;
 
 		int32_t num=0;
-		int32_t max_len=-1;
+		index_t max_len=-1;
 
 		//usually n==num_vec, but it might not in race conditions
 		//(file perms modified, file erased)
 		strings=SG_MALLOC(SGString<ST>, n);
 
-		for (int32_t i=0; i<n; i++)
+		for (index_t i=0; i<n; i++)
 		{
 			char* fname=SGIO::concat_filename(namelist[i]->d_name);
 
@@ -1193,9 +1193,9 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	fwrite(&max_string_length, sizeof(int32_t), 1, file);
 
 	// vectors
-	for (int32_t i=0; i<num_vectors; i++)
+	for (index_t i=0; i<num_vectors; i++)
 	{
-		int32_t len=-1;
+		index_t len=-1;
 		bool vfree;
 		ST* vec=get_feature_vector(i, len, vfree);
 
@@ -2042,9 +2042,9 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 	SG_DEBUG("%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
 			alpha->get_num_symbols_in_histogram());
 
-	for (int32_t i=0; i<num_vectors; i++)
+	for (index_t i=0; i<num_vectors; i++)
 	{
-		int32_t len=-1;
+		index_t len=-1;
 		bool vfree;
 		CT* c=sf->get_feature_vector(i, len, vfree);
 		ASSERT(!vfree) // won't work when preprocessors are attached
@@ -2053,7 +2053,7 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 		features[i].slen=len;
 
 		ST* str=features[i].string;
-		for (int32_t j=0; j<len; j++)
+		for (index_t j=0; j<len; j++)
 			str[j]=(ST) alpha->remap_to_bin(c[j]);
 	}
 
@@ -2075,9 +2075,9 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 	}
 
 	SG_DEBUG("translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST))
-	for (int32_t line=0; line<num_vectors; line++)
+	for (index_t line=0; line<num_vectors; line++)
 	{
-		int32_t len=0;
+		index_t len=0;
 		bool vfree;
 		ST* fv=get_feature_vector(line, len, vfree);
 		ASSERT(!vfree) // won't work when preprocessors are attached

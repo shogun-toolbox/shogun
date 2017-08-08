@@ -36,7 +36,7 @@ CBinaryFile::~CBinaryFile()
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
+void CBinaryFile::fname(sg_type*& vec, index_t& len)								\
 {																					\
 	if (!file)																		\
 		SG_ERROR("File invalid.\n")												\
@@ -66,7 +66,7 @@ GET_VECTOR(get_vector, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
+void CBinaryFile::fname(sg_type*& matrix, index_t& num_feat, index_t& num_vec)		\
 {																					\
 	if (!file)																		\
 		SG_ERROR("File invalid.\n")												\
@@ -135,7 +135,7 @@ GET_NDARRAY(get_ndarray,float64_t,TSGDataType(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef GET_NDARRAY
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n")													\
@@ -149,10 +149,10 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 																						\
 	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);												\
 																						\
-	for (int32_t i=0; i<num_vec; i++)													\
+	for (index_t i=0; i<num_vec; i++)													\
 	{																					\
 		new (&matrix[i]) SGSparseVector<sg_type>();										\
-		int32_t len=0;																	\
+		index_t len=0;																	\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i)		\
 		matrix[i].num_feat_entries=len;													\
@@ -180,7 +180,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, 
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CBinaryFile::fname(SGString<sg_type>*& strings, index_t& num_str, index_t& max_string_len) \
 {																								\
 	strings=NULL;																				\
 	num_str=0;																					\
@@ -198,9 +198,9 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 																								\
 	strings=SG_MALLOC(SGString<sg_type>, num_str);														\
 																								\
-	for (int32_t i=0; i<num_str; i++)															\
+	for (index_t i=0; i<num_str; i++)															\
 	{																							\
-		int32_t len=0;																			\
+		index_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i)				\
 		strings[i].slen=len;																	\
@@ -228,7 +228,7 @@ GET_STRING_LIST(get_string_list, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_
 /** set functions - to pass data from shogun to the target interface */
 
 #define SET_VECTOR(fname, sg_type, dtype)							\
-void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
+void CBinaryFile::fname(const sg_type* vec, index_t len)			\
 {																	\
 	if (!(file && vec))												\
 		SG_ERROR("File or vector invalid.\n")						\
@@ -254,7 +254,7 @@ SET_VECTOR(set_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype) \
-void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+void CBinaryFile::fname(const sg_type* matrix, index_t num_feat, index_t num_vec)	\
 {																					\
 	if (!(file && matrix))															\
 		SG_ERROR("File or matrix invalid.\n")										\
@@ -318,7 +318,7 @@ SET_NDARRAY(set_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
 void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
-		int32_t num_feat, int32_t num_vec)					\
+		index_t num_feat, index_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
 		SG_ERROR("File or matrix invalid.\n")				\
@@ -328,7 +328,7 @@ void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
 	if (fwrite(&num_vec, sizeof(int32_t), 1, file)!=1)		\
 		SG_ERROR("Failed to write Sparse Matrix\n")		\
 															\
-	for (int32_t i=0; i<num_vec; i++)						\
+	for (index_t i=0; i<num_vec; i++)						\
 	{														\
 		SGSparseVectorEntry<sg_type>* vec = matrix[i].features;	\
 		int32_t len=matrix[i].num_feat_entries;				\
@@ -353,13 +353,13 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CBinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
+void CBinaryFile::fname(const SGString<sg_type>* strings, index_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n")											\
 																						\
 	TSGDataType t dtype; write_header(&t);								                \
-	for (int32_t i=0; i<num_str; i++)													\
+	for (index_t i=0; i<num_str; i++)													\
 	{																					\
 		int32_t len = strings[i].slen;												\
 		if ((fwrite(&len, sizeof(int32_t), 1, file)!=1) ||								\

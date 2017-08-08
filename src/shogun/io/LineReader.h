@@ -41,7 +41,7 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	CLineReader(int32_t max_string_length, FILE* stream, CTokenizer* tokenizer);
+	CLineReader(index_t max_string_length, FILE* stream, CTokenizer* tokenizer);
 
 	/** deconstructor */
 	virtual ~CLineReader();
@@ -75,10 +75,10 @@ private:
 	void init();
 
 	/** read file into memory */
-	int32_t read(int32_t& bytes_to_skip);
+	index_t read(index_t& bytes_to_skip);
 
 	/** read token from internal buffer */
-	SGVector<char> read_token(int32_t line_len);
+	SGVector<char> read_token(index_t line_len);
 
 private:
 	/** internal buffer for searching */
@@ -91,10 +91,10 @@ private:
 	FILE* m_stream;
 
 	/** maximum length of a line that can be read */
-	int32_t m_max_token_length;
+	index_t m_max_token_length;
 
 	/** length of next line in the buffer */
-	int32_t m_next_token_length;
+	index_t m_next_token_length;
 };
 
 }
