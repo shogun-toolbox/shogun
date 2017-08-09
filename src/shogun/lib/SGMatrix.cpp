@@ -388,6 +388,14 @@ void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
 }
 
 template <class T>
+SGMatrix<T> SGMatrix<T>::submatrix(index_t col_start, index_t col_end) const
+{
+	assert_on_cpu();
+	return SGMatrix<T>(
+		get_column_vector(col_start), num_rows, col_end - col_start, false);
+}
+
+template <class T>
 SGVector<T> SGMatrix<T>::get_column(index_t col) const
 {
 	assert_on_cpu();
