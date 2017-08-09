@@ -109,7 +109,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	SG_REF(lab_auc);
 
 	// create feature object
-	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(0);
+	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(index_t(0));
 	f->set_feature_matrix(features_auc);
 
 	// create AUC kernel and attach the features
@@ -130,7 +130,7 @@ bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CAUCKernel::compute(index_t idx_a, index_t idx_b)
 {
-  int32_t alen, blen;
+  index_t alen, blen;
   bool afree, bfree;
 
   uint16_t* avec=((CDenseFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, afree);

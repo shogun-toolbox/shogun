@@ -289,7 +289,7 @@ float64_t COligoStringKernel::kernelOligo(
 
 float64_t COligoStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool free_a, free_b;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_a);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_b);

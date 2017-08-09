@@ -51,7 +51,7 @@ void CSplineKernel::cleanup()
 
 float64_t CSplineKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);

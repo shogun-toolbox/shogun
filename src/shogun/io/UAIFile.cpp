@@ -105,7 +105,7 @@ void CUAIFile::init_with_defaults()
 }
 
 #define GET_VECTOR(read_func, sg_type)                                         \
-	void CUAIFile::get_vector(sg_type*& vector, int32_t& len)                  \
+	void CUAIFile::get_vector(sg_type*& vector, index_t& len)                  \
 	{                                                                          \
 		SG_SET_LOCALE_C;                                                       \
                                                                                \
@@ -113,20 +113,20 @@ void CUAIFile::init_with_defaults()
 			return;                                                            \
                                                                                \
 		SGVector<char> line;                                                   \
-		int32_t num_elements = 0;                                              \
+		index_t num_elements = 0;                                              \
                                                                                \
 		line = m_line_reader->read_line();                                     \
 		m_tokenizer->set_text(line);                                           \
 		while (m_tokenizer->has_next())                                        \
 		{                                                                      \
-			int32_t temp_start;                                                \
+			index_t temp_start;                                                \
 			m_tokenizer->next_token_idx(temp_start);                           \
 			num_elements++;                                                    \
 		}                                                                      \
                                                                                \
 		vector = SG_MALLOC(sg_type, num_elements);                             \
 		m_parser->set_text(line);                                              \
-		for (int32_t i = 0; i < num_elements; i++)                             \
+		for (index_t i = 0; i < num_elements; i++)                             \
 			vector[i] = m_parser->read_func();                                 \
 		len = num_elements;                                                    \
                                                                                \
@@ -148,11 +148,11 @@ GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
 #define SET_VECTOR(format, sg_type) \
-void CUAIFile::set_vector(const sg_type* vector, int32_t len) \
+void CUAIFile::set_vector(const sg_type* vector, index_t len) \
 { \
     SG_SET_LOCALE_C; \
     \
-    int32_t i; \
+    index_t i; \
     for (i=0; i<len-1; i++) \
         fprintf(file, "%" format "%c", vector[i], m_delimiter); \
     fprintf(file, "%" format "\n", vector[i]); \

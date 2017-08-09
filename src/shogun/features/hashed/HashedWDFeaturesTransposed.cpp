@@ -302,9 +302,9 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(index_t* sub_index, ind
 
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	index_t num_threads=parallel->get_num_threads();
+	int32_t num_threads=parallel->get_num_threads();
 #else
-	index_t num_threads=1;
+	int32_t num_threads=1;
 #endif
 	ASSERT(num_threads>0)
 

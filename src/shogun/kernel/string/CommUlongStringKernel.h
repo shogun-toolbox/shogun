@@ -102,7 +102,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @return if initializing was successful
 		 */
 		virtual bool init_optimization(
-			int32_t count, int32_t* IDX, float64_t* weights);
+			index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -115,7 +115,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		virtual float64_t compute_optimized(index_t idx);
 
 		/** merge dictionaries
 		 *
@@ -159,7 +159,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		virtual void add_to_normal(index_t idx, float64_t weight);
 
 		/** clear normal */
 		virtual void clear_normal();

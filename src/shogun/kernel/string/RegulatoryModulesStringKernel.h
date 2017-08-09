@@ -105,7 +105,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param len length of string
 		 * @return computed kernel function
 		 */
-		float64_t compute_wds(char* avec, char* bvec, int32_t len);
+		float64_t compute_wds(char* avec, char* bvec, index_t len);
 
 
 		/** set standard weighted degree kernel weighting */

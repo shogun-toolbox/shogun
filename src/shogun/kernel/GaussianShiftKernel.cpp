@@ -43,7 +43,7 @@ CGaussianShiftKernel::~CGaussianShiftKernel()
 
 float64_t CGaussianShiftKernel::compute(index_t idx_a, index_t idx_b)
 {
-	int32_t alen, blen;
+	index_t alen, blen;
 	bool afree, bfree;
 
 	float64_t* avec=

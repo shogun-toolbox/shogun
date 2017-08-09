@@ -43,7 +43,7 @@ CKernel::CKernel() : CSGObject()
 	register_params();
 }
 
-CKernel::CKernel(int32_t size) : CSGObject()
+CKernel::CKernel(index_t size) : CSGObject()
 {
 	init();
 
@@ -55,7 +55,7 @@ CKernel::CKernel(int32_t size) : CSGObject()
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
+CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, index_t size) : CSGObject()
 {
 	init();
 
@@ -201,10 +201,10 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)))
 
-	kernel_cache.index = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.index = SG_MALLOC(index_t, totdoc);
 	kernel_cache.occu = SG_MALLOC(int32_t, totdoc);
 	kernel_cache.lru = SG_MALLOC(int32_t, totdoc);
-	kernel_cache.invindex = SG_MALLOC(int32_t, totdoc);
+	kernel_cache.invindex = SG_MALLOC(index_t, totdoc);
 	kernel_cache.active2totdoc = SG_MALLOC(int32_t, totdoc);
 	kernel_cache.totdoc2active = SG_MALLOC(int32_t, totdoc);
 	kernel_cache.buffer = SG_MALLOC(KERNELCACHE_ELEM, buffer_size);
@@ -802,7 +802,7 @@ void CKernel::list_kernel()
 #undef ENUM_CASE
 
 bool CKernel::init_optimization(
-	int32_t count, int32_t *IDX, float64_t * weights)
+	index_t count, index_t *IDX, float64_t * weights)
 {
    SG_ERROR("kernel does not support linadd optimization\n")
 	return false ;
@@ -814,20 +814,20 @@ bool CKernel::delete_optimization()
 	return false;
 }
 
-float64_t CKernel::compute_optimized(int32_t vector_idx)
+float64_t CKernel::compute_optimized(index_t vector_idx)
 {
    SG_ERROR("kernel does not support linadd optimization\n")
 	return 0;
 }
 
 void CKernel::compute_batch(
-	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
-	int32_t* IDX, float64_t* weights, float64_t factor)
+	index_t num_vec, index_t* vec_idx, float64_t* target, index_t num_suppvec,
+	index_t* IDX, float64_t* weights, float64_t factor)
 {
    SG_ERROR("kernel does not support batch computation\n")
 }
 
-void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
+void CKernel::add_to_normal(index_t vector_idx, float64_t weight)
 {
    SG_ERROR("kernel does not support linadd optimization, add_to_normal not implemented\n")
 }
@@ -837,13 +837,13 @@ void CKernel::clear_normal()
    SG_ERROR("kernel does not support linadd optimization, clear_normal not implemented\n")
 }
 
-int32_t CKernel::get_num_subkernels()
+index_t CKernel::get_num_subkernels()
 {
 	return 1;
 }
 
 void CKernel::compute_by_subkernel(
-	int32_t vector_idx, float64_t * subkernel_contrib)
+	index_t vector_idx, float64_t * subkernel_contrib)
 {
    SG_ERROR("kernel compute_by_subkernel not implemented\n")
 }
@@ -886,11 +886,11 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
-	int32_t num_suppvec=svm->get_num_support_vectors();
-	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
+	index_t num_suppvec=svm->get_num_support_vectors();
+	index_t* sv_idx=SG_MALLOC(index_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
 
-	for (int32_t i=0; i<num_suppvec; i++)
+	for (index_t i=0; i<num_suppvec; i++)
 	{
 		sv_idx[i]    = svm->get_support_vector(i);
 		sv_weight[i] = svm->get_alpha(i);

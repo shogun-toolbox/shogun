@@ -590,7 +590,7 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	float64_t* w1=SG_MALLOC(float64_t, num_kernels);
 
 	// backup and set to one
-	for (int32_t i=0; i<num_kernels; i++)
+	for (index_t i=0; i<num_kernels; i++)
 	{
 		w_backup[i] = old_beta[i] ;
 		w1[i]=1.0 ;
@@ -600,14 +600,14 @@ void CSVRLight::update_linear_component_mkl_linadd(
 
 	// create normal update (with changed alphas only)
 	kernel->clear_normal();
-	for(int32_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+	for(index_t ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 		if(a[i] != a_old[i]) {
 			kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
 		}
 	}
 
 	// determine contributions of different kernels
-	for (int32_t i=0; i<num_vectors; i++)
+	for (index_t i=0; i<num_vectors; i++)
 		kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
 	// restore old weights

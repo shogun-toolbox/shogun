@@ -137,7 +137,7 @@ class CDenseLabels : public CLabels
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		int32_t get_int_label(index_t idx);
+		index_t get_int_label(index_t idx);
 
 		/** Gets a copy of the labels.
 		 *
@@ -230,7 +230,7 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return INT labels
 		 */
-		SGVector<int32_t> get_int_labels();
+		SGVector<index_t> get_int_labels();
 
 		/** set INT labels
 		 *

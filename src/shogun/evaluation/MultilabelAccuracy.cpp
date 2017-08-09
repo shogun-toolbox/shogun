@@ -42,8 +42,8 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
 
     for (index_t k=0; k<num_labels; k++)
     {
-        SGVector<int32_t> slabel_true = m_ground_truth->get_label(k);
-        SGVector<int32_t> slabel_pred = m_predicted->get_label(k);
+        SGVector<index_t> slabel_true = m_ground_truth->get_label(k);
+        SGVector<index_t> slabel_pred = m_predicted->get_label(k);
 
         int32_t true_pos = 0;
         index_t i = 0, j = 0;

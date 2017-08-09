@@ -234,7 +234,7 @@ private:
 protected:
 
 	/** number of bits for the target dimension */
-	int32_t num_bits;
+	index_t num_bits;
 
 	/** Current example */
 	SGSparseVector<float64_t> current_vector;

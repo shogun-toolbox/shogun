@@ -93,7 +93,7 @@ class CConstKernel: public CKernel
 		 * @param col dummy col
 		 * @return computed kernel function (const value)
 		 */
-		virtual float64_t compute(int32_t row, int32_t col)
+		virtual float64_t compute(index_t row, index_t col)
 		{
 			return const_value;
 		}

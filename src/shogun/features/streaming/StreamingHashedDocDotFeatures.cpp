@@ -116,7 +116,7 @@ void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t
 
 index_t CStreamingHashedDocDotFeatures::get_dim_feature_space() const
 {
-	return CMath::pow(2, num_bits);
+	return CMath::pow(index_t(2), num_bits);
 }
 
 const char* CStreamingHashedDocDotFeatures::get_name() const
@@ -166,7 +166,7 @@ void CStreamingHashedDocDotFeatures::release_example()
 
 index_t CStreamingHashedDocDotFeatures::get_num_features()
 {
-	return (index_t) CMath::pow(2, num_bits);
+	return CMath::pow(index_t(2), num_bits);
 }
 
 float64_t CStreamingHashedDocDotFeatures::get_label()

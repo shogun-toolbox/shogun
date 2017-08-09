@@ -512,7 +512,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		virtual index_t get_num_vec_lhs()
 		{
 			return m_row_subset_stack->has_subsets()
 					? m_row_subset_stack->get_size() : num_lhs;
@@ -524,7 +524,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		virtual index_t get_num_vec_rhs()
 		{
 			return m_col_subset_stack->has_subsets()
 					? m_col_subset_stack->get_size() : num_rhs;
@@ -572,7 +572,7 @@ class CCustomKernel: public CKernel
 		 * @param col col
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t row, int32_t col)
+		virtual float64_t compute(index_t row, index_t col)
 		{
 			REQUIRE(kmatrix.matrix, "%s::compute(%d, %d): No kenrel matrix "
 					"set!\n", get_name(), row, col);

@@ -161,9 +161,9 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** string features */
 		CStringFeatures<char>* string_features;
 		/** nof sequences */
-		int32_t nof_sequences;
+		index_t nof_sequences;
 		/** max sequence length */
-		int32_t max_sequence_length;
+		index_t max_sequence_length;
 
 		/** if kernel is initialized */
 		bool initialized;

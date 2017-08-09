@@ -54,10 +54,10 @@ void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLab
 	m_train_iter=0;
 }
 
-SGVector<int32_t> CMulticlassStrategy::train_prepare_next()
+SGVector<index_t> CMulticlassStrategy::train_prepare_next()
 {
 	m_train_iter++;
-	return SGVector<int32_t>();
+	return SGVector<index_t>();
 }
 
 void CMulticlassStrategy::train_stop()

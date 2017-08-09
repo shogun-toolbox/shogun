@@ -189,7 +189,7 @@ void CProductKernel::list_kernels()
 }
 
 //Adapted from CCombinedKernel
-float64_t CProductKernel::compute(int32_t x, int32_t y)
+float64_t CProductKernel::compute(index_t x, index_t y)
 {
 	float64_t result=1;
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)

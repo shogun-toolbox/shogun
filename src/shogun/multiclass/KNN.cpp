@@ -87,20 +87,20 @@ bool CKNN::train_machine(CFeatures* data)
 		distance->init(data, data);
 	}
 
-	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
 	ASSERT(m_train_labels.vlen>0)
 
 	int32_t max_class=m_train_labels[0];
 	int32_t min_class=m_train_labels[0];
 
-	for (int32_t i=1; i<m_train_labels.vlen; i++)
+	for (index_t i=1; i<m_train_labels.vlen; i++)
 	{
 		max_class=CMath::max(max_class, m_train_labels[i]);
 		min_class=CMath::min(min_class, m_train_labels[i]);
 	}
 
-	for (int32_t i=0; i<m_train_labels.vlen; i++)
+	for (index_t i=0; i<m_train_labels.vlen; i++)
 		m_train_labels[i]-=min_class;
 
 	m_min_label=min_class;

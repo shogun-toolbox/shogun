@@ -244,14 +244,14 @@ void CSpectrumMismatchRBFKernel::compute_all()
 		for (int j=0; j<lhs->get_num_vectors(); j++)
 			kernel_matrix->set_element(0, i, j);
 
-	for (int i=0; i<lhs->get_num_vectors(); i++)
+	for (index_t i=0; i<lhs->get_num_vectors(); i++)
 	{
-		int32_t alen;
+		index_t alen;
 		bool free_avec;
 		char* avec=((CStringFeatures<char>*)lhs)->get_feature_vector(i, alen,
 				free_avec);
 
-		for (int apos=0; apos+degree-1<alen; apos++)
+		for (index_t apos=0; apos+degree-1<alen; apos++)
 		{
 			struct joint_list_struct list_item;
 			list_item.ex_index=i;

@@ -147,7 +147,7 @@ class CProductKernel : public CKernel
 		 *
 		 * @return number of subkernels
 		 */
-		inline int32_t get_num_subkernels()
+		inline index_t get_num_subkernels()
 		{
 		    return kernel_array->get_num_elements();
 		}
@@ -208,7 +208,7 @@ class CProductKernel : public CKernel
 		 * @param y y
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t x, int32_t y);
+		virtual float64_t compute(index_t x, index_t y);
 
 		/** adjust the variables num_lhs, num_rhs and initialized
 		 * based on the kernel to be appended/inserted

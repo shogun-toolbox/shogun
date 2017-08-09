@@ -59,7 +59,7 @@ public:
 	/** prepare for the next training phase.
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
 	 */
-	virtual SGVector<int32_t> train_prepare_next();
+	virtual SGVector<index_t> train_prepare_next();
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
