@@ -1,6 +1,7 @@
 #include "features/MockFeatures.h"
 #include "labels/MockLabels.h"
 #include "machine/MockMachine.h"
+#include "utils/Utils.h"
 #include <gtest/gtest.h>
 #include <shogun/base/some.h>
 #include <shogun/ensemble/MajorityVote.h>
@@ -12,7 +13,6 @@
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/CARTree.h>
-#include "utils/Utils.h"
 
 using namespace shogun;
 using ::testing::Return;

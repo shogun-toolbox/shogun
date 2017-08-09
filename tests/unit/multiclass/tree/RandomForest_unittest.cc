@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include "utils/Utils.h"
 #include <gtest/gtest.h>
 #include <shogun/ensemble/MajorityVote.h>
 #include <shogun/ensemble/MeanRule.h>
@@ -36,7 +37,6 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/machine/RandomForest.h>
 #include <stdio.h>
-#include "utils/Utils.h"
 
 using namespace shogun;
 
