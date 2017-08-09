@@ -660,8 +660,10 @@ TEST(SGMatrixTest, get_submatrix)
 	const index_t n_subcols = end_col - start_col;
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
+	auto prng = get_prng();
+	std::normal_distribution<float64_t> dist(0, 1);
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = dist(prng);
 
 	auto sub = mat.submatrix(start_col, end_col);
 
