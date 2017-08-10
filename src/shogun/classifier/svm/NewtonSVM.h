@@ -118,7 +118,7 @@ class CNewtonSVM : public CLinearMachine
 		/** lambda=1/C */
 		float64_t lambda, C, epsilon;
 		float64_t prec;
-		int32_t x_n, x_d, num_iter;
+		index_t x_n, x_d, num_iter;
 
 		/** if bias is used */
 		bool use_bias;

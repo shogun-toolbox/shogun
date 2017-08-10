@@ -621,7 +621,7 @@ class CKernel : public CSGObject
 		 * @param full_line full line
 		 */
 		void get_kernel_row(
-			int32_t docnum, int32_t *active2dnum, float64_t *buffer,
+			int32_t docnum, index_t *active2dnum, float64_t *buffer,
 			bool full_line=false);
 
 		/** cache kernel row
@@ -635,7 +635,7 @@ class CKernel : public CSGObject
 		 * @param key key
 		 * @param varnum
 		 */
-		void cache_multiple_kernel_rows(int32_t* key, int32_t varnum);
+		void cache_multiple_kernel_rows(index_t* key, index_t varnum);
 
 		/** kernel cache reset lru */
 		void kernel_cache_reset_lru();
@@ -647,7 +647,7 @@ class CKernel : public CSGObject
 		 * @param after after
 		 */
 		void kernel_cache_shrink(
-			int32_t totdoc, int32_t num_shrink, int32_t *after);
+			int32_t totdoc, int32_t num_shrink, index_t *after);
 
 		/** resize kernel cache
 		 *

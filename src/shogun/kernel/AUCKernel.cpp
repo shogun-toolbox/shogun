@@ -51,14 +51,14 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	labels->ensure_valid();
 
 	// get the original labels
-	SGVector<int32_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
+	SGVector<index_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
 	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen)
 
 	// count positive and negative
-	int32_t num_pos=0;
-	int32_t num_neg=0;
+	index_t num_pos=0;
+	index_t num_neg=0;
 
-	for (int32_t i=0; i<int_labels.vlen; i++)
+	for (index_t i=0; i<int_labels.vlen; i++)
 	{
 		if (int_labels.vector[i]==1)
 			num_pos++;
@@ -74,12 +74,12 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
 	int32_t n=0 ;
 
-	for (int32_t i=0; i<int_labels.vlen; i++)
+	for (index_t i=0; i<int_labels.vlen; i++)
 	{
 		if (int_labels.vector[i]!=1)
 			continue;
 
-		for (int32_t j=0; j<int_labels.vlen; j++)
+		for (index_t j=0; j<int_labels.vlen; j++)
 		{
 			if (int_labels.vector[j]!=-1)
 				continue;

@@ -245,9 +245,9 @@ void CSVRLight::svr_learn()
 	SG_FREE(model->supvec);
 	SG_FREE(model->alpha);
 	SG_FREE(model->index);
-	model->supvec = SG_MALLOC(int32_t, totdoc+2);
+	model->supvec = SG_MALLOC(index_t, totdoc+2);
 	model->alpha = SG_MALLOC(float64_t, totdoc+2);
-	model->index = SG_MALLOC(int32_t, totdoc+2);
+	model->index = SG_MALLOC(index_t, totdoc+2);
 
 	model->at_upper_bound=0;
 	model->b=0;

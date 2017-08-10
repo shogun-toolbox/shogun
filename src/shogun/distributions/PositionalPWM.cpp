@@ -54,7 +54,7 @@ float64_t CPositionalPWM::get_log_model_parameter(index_t num_param)
 		return CMath::log(m_mean);
 }
 
-float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t CPositionalPWM::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;

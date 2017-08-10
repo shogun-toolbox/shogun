@@ -64,7 +64,7 @@ struct S_THREAD_PARAM_REACTIVATE_LINADD
 	CKernel* kernel;
 	float64_t* lin;
 	float64_t* last_lin;
-	int32_t* active;
+	index_t* active;
 	int32_t* docs;
 	int32_t start;
 	int32_t end;
@@ -75,7 +75,7 @@ struct S_THREAD_PARAM_SVMLIGHT
 	float64_t * lin ;
 	float64_t* W;
 	int32_t start, end;
-	int32_t * active2dnum ;
+	index_t * active2dnum ;
 	int32_t * docs ;
 	CKernel* kernel ;
 };
@@ -87,8 +87,8 @@ struct S_THREAD_PARAM_REACTIVATE_VANILLA
 	float64_t* aicache;
 	float64_t* a;
 	float64_t* a_old;
-	int32_t* changed2dnum;
-	int32_t* inactive2dnum;
+	index_t* changed2dnum;
+	index_t* inactive2dnum;
 	index_t* label;
 	int32_t start;
 	int32_t end;
@@ -304,14 +304,14 @@ int32_t CSVMLight::get_runtime()
 
 void CSVMLight::svm_learn()
 {
-	int32_t *inconsistent, i;
+	index_t *inconsistent, i;
 	int32_t misclassified,upsupvecnum;
 	float64_t maxdiff, *lin, *c, *a;
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
 	ASSERT(m_labels)
 	SGVector<index_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
-	int32_t totdoc=lab.vlen;
+	index_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen)
 	index_t* label=SGVector<index_t>::clone_vector(lab.vector, lab.vlen);
 
@@ -351,7 +351,7 @@ void CSVMLight::svm_learn()
 
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
-	inconsistent = SG_MALLOC(int32_t, totdoc);
+	inconsistent = SG_MALLOC(index_t, totdoc);
 	c = SG_MALLOC(float64_t, totdoc);
 	a = SG_MALLOC(float64_t, totdoc);
 	a_fullset = SG_MALLOC(float64_t, totdoc);
@@ -370,9 +370,9 @@ void CSVMLight::svm_learn()
 	SG_FREE(model->supvec);
 	SG_FREE(model->alpha);
 	SG_FREE(model->index);
-	model->supvec = SG_MALLOC(int32_t, totdoc+2);
+	model->supvec = SG_MALLOC(index_t, totdoc+2);
 	model->alpha = SG_MALLOC(float64_t, totdoc+2);
-	model->index = SG_MALLOC(int32_t, totdoc+2);
+	model->index = SG_MALLOC(index_t, totdoc+2);
 
 	model->at_upper_bound=0;
 	model->b=0;
@@ -428,8 +428,8 @@ void CSVMLight::svm_learn()
 	for (i=0; i<get_num_support_vectors(); i++)
 		alpha[get_support_vector(i)]=get_alpha(i);
 
-    int32_t* index = SG_MALLOC(int32_t, totdoc);
-    int32_t* index2dnum = SG_MALLOC(int32_t, totdoc+11);
+    index_t* index = SG_MALLOC(index_t, totdoc);
+    index_t* index2dnum = SG_MALLOC(index_t, totdoc+11);
     float64_t* aicache = SG_MALLOC(float64_t, totdoc);
     for (i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
@@ -549,10 +549,10 @@ void CSVMLight::svm_learn()
 
 int32_t CSVMLight::optimize_to_convergence(int32_t* docs, index_t* label, int32_t totdoc,
 			     SHRINK_STATE *shrink_state,
-			     int32_t *inconsistent,
+			     index_t *inconsistent,
 			     float64_t *a, float64_t *lin, float64_t *c,
 			     TIMING *timing_profile, float64_t *maxdiff,
-			     int32_t heldout, int32_t retrain)
+			     index_t heldout, index_t retrain)
      /* docs: Training vectors (x-part) */
      /* label: Training labels/value (y-part, zero if test example for
 			      transduction) */
@@ -571,10 +571,10 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, index_t* label, int32_
      /* retrain: selects training mode (1=regular / 2=holdout) */
 {
 
-  int32_t *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
+  index_t *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
   int32_t inconsistentnum,choosenum,already_chosen=0,iteration;
-  int32_t misclassified,supvecnum=0,*active2dnum,inactivenum;
-  int32_t *working2dnum,*selexam;
+  index_t misclassified,supvecnum=0,*active2dnum,inactivenum;
+  index_t *working2dnum,*selexam;
   int32_t activenum;
   float64_t criterion, eq;
   float64_t *a_old;
@@ -598,15 +598,15 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, index_t* label, int32_
   (*maxdiff)=1;
 
   SG_DEBUG("totdoc:%d\n",totdoc)
-  chosen = SG_MALLOC(int32_t, totdoc);
-  last_suboptimal_at =SG_MALLOC(int32_t, totdoc);
-  key =SG_MALLOC(int32_t, totdoc+11);
+  chosen = SG_MALLOC(index_t, totdoc);
+  last_suboptimal_at =SG_MALLOC(index_t, totdoc);
+  key =SG_MALLOC(index_t, totdoc+11);
   selcrit =SG_MALLOC(float64_t, totdoc);
-  selexam =SG_MALLOC(int32_t, totdoc);
+  selexam =SG_MALLOC(index_t, totdoc);
   a_old =SG_MALLOC(float64_t, totdoc);
   aicache =SG_MALLOC(float64_t, totdoc);
-  working2dnum =SG_MALLOC(int32_t, totdoc+11);
-  active2dnum =SG_MALLOC(int32_t, totdoc+11);
+  working2dnum =SG_MALLOC(index_t, totdoc+11);
+  active2dnum =SG_MALLOC(index_t, totdoc+11);
   qp.opt_ce =SG_MALLOC(float64_t, learn_parm->svm_maxqpsize);
   qp.opt_ce0 =SG_MALLOC(float64_t, 1);
   qp.opt_g =SG_MALLOC(float64_t, learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize);
@@ -980,13 +980,13 @@ float64_t CSVMLight::compute_objective_function(
 }
 
 
-void CSVMLight::clear_index(int32_t *index)
+void CSVMLight::clear_index(index_t *index)
               /* initializes and empties index */
 {
   index[0]=-1;
 }
 
-void CSVMLight::add_to_index(int32_t *index, int32_t elem)
+void CSVMLight::add_to_index(index_t *index, index_t elem)
      /* initializes and empties index */
 {
   register int32_t i;
@@ -996,10 +996,10 @@ void CSVMLight::add_to_index(int32_t *index, int32_t elem)
 }
 
 index_t CSVMLight::compute_index(
-	int32_t *binfeature, index_t range, index_t *index)
+	index_t *binfeature, index_t range, index_t *index)
      /* create an inverted index of binfeature */
 {
-  register int32_t i,ii;
+  register index_t i,ii;
 
   ii=0;
   for (i=0;i<range;i++) {
@@ -1016,13 +1016,13 @@ index_t CSVMLight::compute_index(
 
 
 void CSVMLight::optimize_svm(
-	int32_t* docs, index_t* label, int32_t *exclude_from_eq_const,
-	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t totdoc,
-	int32_t *working2dnum, int32_t varnum, float64_t *a, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *exclude_from_eq_const,
+	float64_t eq_target, index_t *chosen, index_t *active2dnum, int32_t totdoc,
+	index_t *working2dnum, index_t varnum, float64_t *a, float64_t *lin,
 	float64_t *c, float64_t *aicache, QP *qp, float64_t *epsilon_crit_target)
      /* Do optimization on the working set. */
 {
-    int32_t i;
+    index_t i;
     float64_t *a_v;
 
     //compute_matrices_for_optimization_parallel(docs,label,
@@ -1053,9 +1053,9 @@ void CSVMLight::optimize_svm(
 }
 
 void CSVMLight::compute_matrices_for_optimization_parallel(
-	int32_t* docs, index_t* label, int32_t *exclude_from_eq_const,
-	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t *key,
-	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
+	int32_t* docs, index_t* label, index_t *exclude_from_eq_const,
+	float64_t eq_target, index_t *chosen, index_t *active2dnum, index_t *key,
+	float64_t *a, float64_t *lin, float64_t *c, index_t varnum, int32_t totdoc,
 	float64_t *aicache, QP *qp)
 {
 	// TODO: port to use OpenMP backend instead of pthread
@@ -1191,12 +1191,12 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 }
 
 void CSVMLight::compute_matrices_for_optimization(
-	int32_t* docs, index_t* label, int32_t *exclude_from_eq_const,
-	float64_t eq_target, int32_t *chosen, int32_t *active2dnum, int32_t *key,
-	float64_t *a, float64_t *lin, float64_t *c, int32_t varnum, int32_t totdoc,
+	int32_t* docs, index_t* label, index_t *exclude_from_eq_const,
+	float64_t eq_target, index_t *chosen, index_t *active2dnum, index_t *key,
+	float64_t *a, float64_t *lin, float64_t *c, index_t varnum, int32_t totdoc,
 	float64_t *aicache, QP *qp)
 {
-  register int32_t ki,kj,i,j;
+  register index_t ki,kj,i,j;
   register float64_t kernel_temp;
 
   qp->opt_n=varnum;
@@ -1265,11 +1265,11 @@ void CSVMLight::compute_matrices_for_optimization(
 
 int32_t CSVMLight::calculate_svm_model(
 	int32_t* docs, index_t *label, float64_t *lin, float64_t *a,
-	float64_t *a_old, float64_t *c, int32_t *working2dnum, int32_t *active2dnum)
+	float64_t *a_old, float64_t *c, index_t *working2dnum, index_t *active2dnum)
      /* Compute decision function based on current values */
      /* of alpha. */
 {
-  int32_t i,ii,pos,b_calculated=0,first_low,first_high;
+  index_t i,ii,pos,b_calculated=0,first_low,first_high;
   float64_t ex_c,b_temp,b_low,b_high;
 
   if(verbosity>=3) {
@@ -1382,12 +1382,12 @@ int32_t CSVMLight::calculate_svm_model(
 
 int32_t CSVMLight::check_optimality(
 	index_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
-	float64_t *maxdiff, float64_t epsilon_crit_org, int32_t *misclassified,
-	int32_t *inconsistent, int32_t *active2dnum, int32_t *last_suboptimal_at,
-	int32_t iteration)
+	float64_t *maxdiff, float64_t epsilon_crit_org, index_t *misclassified,
+	index_t *inconsistent, index_t *active2dnum, index_t *last_suboptimal_at,
+	index_t iteration)
      /* Check KT-conditions */
 {
-  int32_t i,ii,retrain;
+  index_t i,ii,retrain;
   float64_t dist,ex_c,target;
 
   if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
@@ -1442,8 +1442,8 @@ int32_t CSVMLight::check_optimality(
 }
 
 void CSVMLight::update_linear_component(
-	int32_t* docs, index_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
@@ -1545,8 +1545,8 @@ void CSVMLight::update_linear_component(
 
 
 void CSVMLight::update_linear_component_mkl(
-	int32_t* docs, index_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache)
 {
 	//int inner_iters=0;
@@ -1619,8 +1619,8 @@ void CSVMLight::update_linear_component_mkl(
 
 
 void CSVMLight::update_linear_component_mkl_linadd(
-	int32_t* docs, index_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache)
 {
 	//int inner_iters=0;
@@ -1637,7 +1637,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	float64_t* w1 = SG_MALLOC(float64_t, num_kernels);
 
 	// backup and set to one
-	for (int32_t i=0; i<num_kernels; i++)
+	for (index_t i=0; i<num_kernels; i++)
 	{
 		w_backup[i] = old_beta[i] ;
 		w1[i]=1.0 ;
@@ -1681,10 +1681,10 @@ void CSVMLight::update_linear_component_mkl_linadd(
 			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
 		}
 
-		for (int32_t i=params[num_threads-2].end; i<num; i++)
+		for (index_t i=params[num_threads-2].end; i<num; i++)
 			kernel->compute_by_subkernel(i,&W[i*num_kernels]);
 
-		for (int32_t t=0; t<num_threads-1; t++)
+		for (index_t t=0; t<num_threads-1; t++)
 			pthread_join(threads[t], NULL);
 
 		SG_FREE(params);
@@ -1705,7 +1705,7 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 	int32_t num_kernels=params->kernel->get_num_subkernels();
 
 	// determine contributions of different kernels
-	for (int32_t i=params->start; i<params->end; i++)
+	for (index_t i=params->start; i<params->end; i++)
 		params->kernel->compute_by_subkernel(i,&(params->W[i*num_kernels]));
 
 	return NULL ;
@@ -1773,10 +1773,10 @@ void CSVMLight::call_mkl_callback(float64_t* a, index_t* label, float64_t* lin)
 /*************************** Working set selection ***************************/
 
 int32_t CSVMLight::select_next_qp_subproblem_grad(
-	int32_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
-	int32_t qp_size, int32_t *inconsistent, int32_t *active2dnum,
-	int32_t *working2dnum, float64_t *selcrit, int32_t *select,
-	int32_t cache_only, int32_t *key, int32_t *chosen)
+	index_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
+	index_t qp_size, index_t *inconsistent, index_t *active2dnum,
+	index_t *working2dnum, float64_t *selcrit, index_t *select,
+	index_t cache_only, index_t *key, index_t *chosen)
 	/* Use the feasible direction approach to select the next
 	   qp-subproblem (see chapter 'Selecting a good working set'). If
 	   'cache_only' is true, then the variables are selected only among
@@ -1866,15 +1866,15 @@ int32_t CSVMLight::select_next_qp_subproblem_grad(
 
 int32_t CSVMLight::select_next_qp_subproblem_rand(
 	index_t* label, float64_t *a, float64_t *lin, float64_t *c, int32_t totdoc,
-	int32_t qp_size, int32_t *inconsistent, int32_t *active2dnum,
-	int32_t *working2dnum, float64_t *selcrit, int32_t *select, int32_t *key,
-	int32_t *chosen, int32_t iteration)
+	index_t qp_size, index_t *inconsistent, index_t *active2dnum,
+	index_t *working2dnum, float64_t *selcrit, index_t *select, index_t *key,
+	index_t *chosen, index_t iteration)
 /* Use the feasible direction approach to select the next
    qp-subproblem (see section 'Selecting a good working set'). Chooses
    a feasible direction at (pseudo) random to help jump over numerical
    problem. */
 {
-  int32_t choosenum,i,j,k,activedoc,inum;
+  index_t choosenum,i,j,k,activedoc,inum;
   float64_t s;
 
   for (inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
@@ -1935,9 +1935,9 @@ int32_t CSVMLight::select_next_qp_subproblem_rand(
 
 
 void CSVMLight::select_top_n(
-	float64_t *selcrit, int32_t range, int32_t* select, int32_t n)
+	float64_t *selcrit, index_t range, index_t* select, index_t n)
 {
-  register int32_t i,j;
+  register index_t i,j;
 
   for (i=0;(i<n) && (i<range);i++) { /* Initialize with the first n elements */
     for (j=i;j>=0;j--) {
@@ -1971,13 +1971,13 @@ void CSVMLight::select_top_n(
 /******************************** Shrinking  *********************************/
 
 void CSVMLight::init_shrink_state(
-	SHRINK_STATE *shrink_state, int32_t totdoc, int32_t maxhistory)
+	SHRINK_STATE *shrink_state, int32_t totdoc, index_t maxhistory)
 {
-  int32_t i;
+  index_t i;
 
   shrink_state->deactnum=0;
-  shrink_state->active = SG_MALLOC(int32_t, totdoc);
-  shrink_state->inactive_since = SG_MALLOC(int32_t, totdoc);
+  shrink_state->active = SG_MALLOC(index_t, totdoc);
+  shrink_state->inactive_since = SG_MALLOC(index_t, totdoc);
   shrink_state->a_history = SG_MALLOC(float64_t*, maxhistory);
   shrink_state->maxhistory=maxhistory;
   shrink_state->last_lin = SG_MALLOC(float64_t, totdoc);
@@ -2004,13 +2004,13 @@ void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
 
 int32_t CSVMLight::shrink_problem(
 	SHRINK_STATE *shrink_state, index_t *active2dnum,
-	int32_t *last_suboptimal_at, int32_t iteration, int32_t totdoc,
-	int32_t minshrink, float64_t *a, int32_t *inconsistent, float64_t* c,
-	float64_t* lin, int* label)
+	index_t *last_suboptimal_at, index_t iteration, int32_t totdoc,
+	index_t minshrink, float64_t *a, index_t *inconsistent, float64_t* c,
+	float64_t* lin, index_t* label)
      /* Shrink some variables away.  Do the shrinking only if at least
         minshrink variables can be removed. */
 {
-  int32_t i,ii,change,activenum,lastiter;
+  index_t i,ii,change,activenum,lastiter;
   float64_t *a_old=NULL;
 
   activenum=0;
@@ -2070,7 +2070,7 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 	CKernel* k = params->kernel;
 	float64_t* lin = params->lin;
 	float64_t* last_lin = params->last_lin;
-	int32_t* active = params->active;
+	index_t* active = params->active;
 	int32_t* docs = params->docs;
 	int32_t start = params->start;
 	int32_t end = params->end;
@@ -2104,20 +2104,20 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	float64_t* aicache = params->aicache;
 	float64_t* a= params->a;
 	float64_t* a_old = params->a_old;
-	int32_t* changed2dnum = params->changed2dnum;
-	int32_t* inactive2dnum = params->inactive2dnum;
-	int32_t* label = params->label;
+	index_t* changed2dnum = params->changed2dnum;
+	index_t* inactive2dnum = params->inactive2dnum;
+	index_t* label = params->label;
 	int32_t start = params->start;
 	int32_t end = params->end;
 
-	for (int32_t ii=start;ii<end;ii++)
+	for (index_t ii=start;ii<end;ii++)
 	{
 		int32_t i=changed2dnum[ii];
-		int32_t j=0;
+		index_t j=0;
 		ASSERT(i>=0)
 
 		k->get_kernel_row(i,inactive2dnum,aicache);
-		for (int32_t jj=0;(j=inactive2dnum[jj])>=0;jj++)
+		for (index_t jj=0;(j=inactive2dnum[jj])>=0;jj++)
 			lin[j]+=(a[i]-a_old[i])*aicache[j]*(float64_t)label[i];
 	}
 	return NULL;
@@ -2125,14 +2125,14 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 
 void CSVMLight::reactivate_inactive_examples(
 	index_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
-	float64_t *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
+	float64_t *c, int32_t totdoc, int32_t iteration, index_t *inconsistent,
 	int32_t* docs, float64_t *aicache, float64_t *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register int32_t i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
-  int32_t *changed,*inactive;
+  register index_t i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
+  index_t *changed,*inactive;
   register float64_t *a_old,dist;
   float64_t ex_c,target;
 
@@ -2276,10 +2276,10 @@ void CSVMLight::reactivate_inactive_examples(
   }
   else
   {
-	  changed=SG_MALLOC(int32_t, totdoc);
-	  changed2dnum=SG_MALLOC(int32_t, totdoc+11);
-	  inactive=SG_MALLOC(int32_t, totdoc);
-	  inactive2dnum=SG_MALLOC(int32_t, totdoc+11);
+	  changed=SG_MALLOC(index_t, totdoc);
+	  changed2dnum=SG_MALLOC(index_t, totdoc+11);
+	  inactive=SG_MALLOC(index_t, totdoc);
+	  inactive2dnum=SG_MALLOC(index_t, totdoc+11);
 	  for (t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--)
 	  {
 		  if(verbosity>=2) {
@@ -2327,7 +2327,7 @@ void CSVMLight::reactivate_inactive_examples(
 				  float64_t* tmp_aicache=SG_MALLOC(float64_t, totdoc*num_threads);
 				  memset(tmp_aicache, 0, sizeof(float64_t)*((size_t) totdoc)*num_threads);
 
-				  int32_t thr;
+				  index_t thr;
 				  for (thr=0; thr<num_threads-1; thr++)
 				  {
 					  params[thr].kernel=kernel;
@@ -2428,13 +2428,13 @@ void CSVMLight::reactivate_inactive_examples(
 
 /* start the optimizer and return the optimal values */
 float64_t* CSVMLight::optimize_qp(
-		QP *qp, float64_t *epsilon_crit, int32_t nx, float64_t *threshold,
-		int32_t& svm_maxqpsize)
+		QP *qp, float64_t *epsilon_crit, index_t nx, float64_t *threshold,
+		index_t& svm_maxqpsize)
 {
-	register int32_t i, j, result;
+	register index_t i, j, result;
 	float64_t margin, obj_before, obj_after;
 	float64_t sigdig, dist, epsilon_loqo;
-	int32_t iter;
+	index_t iter;
 
 	if(!primal) { /* allocate memory at first call */
 		primal=SG_MALLOC(float64_t, nx*3);

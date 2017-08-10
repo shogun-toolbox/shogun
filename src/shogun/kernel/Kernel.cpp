@@ -235,7 +235,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 }
 
 void CKernel::get_kernel_row(
-	int32_t docnum, int32_t *active2dnum, float64_t *buffer, bool full_line)
+	int32_t docnum, index_t *active2dnum, float64_t *buffer, bool full_line)
 {
 	int32_t i,j;
 	KERNELCACHE_IDX start;
@@ -372,13 +372,13 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 }
 
 // Fills cache for the rows in key
-void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
+void CKernel::cache_multiple_kernel_rows(index_t* rows, index_t num_rows)
 {
 	int32_t nthreads=parallel->get_num_threads();
 
 	if (nthreads<2)
 	{
-		for(int32_t i=0;i<num_rows;i++)
+		for(index_t i=0;i<num_rows;i++)
 			cache_kernel_row(rows[i]);
 	}
 	else
@@ -392,14 +392,14 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		ASSERT(num_vec>0)
 		uint8_t* needs_computation=SG_CALLOC(uint8_t, num_vec);
 
-		int32_t step=0;
-		int32_t num=0;
-		int32_t end=0;
+		index_t step=0;
+		index_t num=0;
+		index_t end=0;
 
 		// allocate cachelines if necessary
-		for (int32_t i=0; i<num_rows; i++)
+		for (index_t i=0; i<num_rows; i++)
 		{
-			int32_t idx=rows[i];
+			index_t idx=rows[i];
 			if (idx>=num_vec)
 				idx=2*num_vec-1-idx;
 
@@ -427,7 +427,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 			}
 
 			#pragma omp parallel for private(params)
-			for (int32_t t=0; t<num_threads; t++)
+			for (index_t t=0; t<num_threads; t++)
 			{
 				params.kernel = this;
 				params.kernel_cache = &kernel_cache;
@@ -469,10 +469,10 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 // remove numshrink columns in the cache
 // which correspond to examples marked
 void CKernel::kernel_cache_shrink(
-	int32_t totdoc, int32_t numshrink, int32_t *after)
+	int32_t totdoc, int32_t numshrink, index_t *after)
 {
 	ASSERT(totdoc > 0);
-	register int32_t i,j,jj,scount;     // 0 in after.
+	register index_t i,j,jj,scount;     // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
 	int32_t *keep;
 

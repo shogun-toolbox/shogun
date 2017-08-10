@@ -325,7 +325,7 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** Transpose matrix */
 		static void transpose_matrix(
-			T*& matrix, int32_t& num_feat, int32_t& num_vec);
+			T*& matrix, index_t& num_feat, index_t& num_vec);
 
 		/** Create diagonal matrix */
 		static void create_diagonal_matrix(T* matrix, T* v,int32_t size);
