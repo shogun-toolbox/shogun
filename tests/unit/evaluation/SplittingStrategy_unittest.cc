@@ -7,13 +7,13 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/evaluation/LOOCrossValidationSplitting.h>
 #include <gtest/gtest.h>
-
+#include <shogun/evaluation/CrossValidationSplitting.h>
+#include <shogun/evaluation/LOOCrossValidationSplitting.h>
+#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+#include <shogun/evaluation/TimeSeriesSplitting.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -291,6 +291,72 @@ TEST(SplittingStrategy,LOO)
 		}
 
 		EXPECT_EQ(flag,0);
+
+		/* clean up */
+		SG_UNREF(splitting);
+	}
+}
+
+TEST(SplittingStrategy, timeseries_split_linear)
+{
+	index_t num_labels, num_subsets, h_value;
+	index_t runs = 10;
+
+	while (runs-- > 0)
+	{
+		num_labels = CMath::random(50, 150);
+		num_subsets = CMath::random(1, 10);
+		h_value = CMath::random(1, 20);
+		/* build labels */
+		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		for (index_t i = 0; i < num_labels; ++i)
+			labels->set_label(i, CMath::random(-10.0, 10.0));
+		/* build linearly increasing split strategy */
+		CTimeSeriesSplitting* splitting =
+		    new CTimeSeriesSplitting(labels, num_subsets);
+		/* set future h needed in test */
+		splitting->set_h(h_value);
+		/* build subset */
+		splitting->build_subsets();
+
+		SGVector<index_t> total(num_labels);
+		SGVector<index_t>::fill_vector(total.vector, total.vlen, (index_t)-1);
+		for (index_t i = 0; i < num_subsets; ++i)
+		{
+			SGVector<index_t> subset = splitting->generate_subset_indices(i);
+			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+
+			/* Test set should have h future */
+			EXPECT_GE(subset.vlen, splitting->get_h());
+
+			/* Filling total with inverse and subset serially */
+			for (index_t j = 0; j < inverse.vlen; ++j)
+			{
+				SGVector<index_t> temp = total.find((index_t)inverse.vector[j]);
+				EXPECT_EQ(temp.vlen, 0);
+
+				total.vector[j] = inverse.vector[j];
+			}
+
+			for (index_t j = 0; j < subset.vlen; ++j)
+			{
+				SGVector<index_t> temp = total.find((index_t)subset.vector[j]);
+				EXPECT_EQ(temp.vlen, 0);
+
+				total.vector[j + inverse.vlen] = subset.vector[j];
+			}
+
+			EXPECT_EQ(subset.vlen + inverse.vlen, num_labels);
+
+			/* check if time series is intact and test has only values in future
+			 * than train.*/
+			for (index_t j = 0; j < num_labels - 1; ++j)
+			{
+				EXPECT_LT(total.vector[j], total.vector[j + 1]);
+			}
+			SGVector<index_t>::fill_vector(
+			    total.vector, total.vlen, (index_t)-1);
+		}
 
 		/* clean up */
 		SG_UNREF(splitting);
