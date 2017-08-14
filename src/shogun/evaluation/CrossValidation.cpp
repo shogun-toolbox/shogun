@@ -203,7 +203,9 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->set_train_indices(inverse_subset_indices);
-			fold->set_trained_machine((CMachine*)m_machine->clone());
+			auto fold_machine = (CMachine*)m_machine->clone();
+			fold->set_trained_machine(fold_machine);
+			SG_UNREF(fold_machine)
 
 			/* produce output for desired indices */
 			CLabels* result_labels = m_machine->apply_locked(subset_indices);
@@ -303,7 +305,9 @@ float64_t CCrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->set_train_indices(inverse_subset_indices);
-			fold->set_trained_machine((CMachine*)machine->clone());
+			auto fold_machine = (CMachine*)machine->clone();
+			fold->set_trained_machine(fold_machine);
+			SG_UNREF(fold_machine)
 
 			features->remove_subset();
 			labels->remove_subset();
