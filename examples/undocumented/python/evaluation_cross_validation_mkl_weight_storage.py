@@ -30,7 +30,6 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     from shogun import RealFeatures, CombinedFeatures
     from shogun import GaussianKernel, CombinedKernel
     from shogun import LibSVM, MKLClassification
-    from shogun import RealMatrix
 
     # training data, combined features all on same data
     features=RealFeatures(traindat)
@@ -73,19 +72,14 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     result=cross_validation.evaluate()
 
     # print mkl weights
+    weights = []
     for o in mkl_storage.get_observations():
         for fold in o.get_folds_results():
-            machine = fold.get_trained_machine
+            machine = MKLClassification.obtain_from_generic(fold.get_trained_machine())
             w = machine.get_kernel().get_subkernel_weights()
-            if not weights.matrix:
-                weights = RealMatrix(w.vlen, o.get_num_folds() * o.get_num_runs())
+            weights.append(w)
 
-            run_shift = fold.get_current_run_index() * w.vlen * o.get_num_folds()
-            fold_shift = fold.get_current_fold_index() * w.vlen;
-            weights[run_shift + fold_shift] = w.vector;
-
-    weights=mkl_storage.get_mkl_weights()
-    print "mkl weights during cross--validation"
+    print("mkl weights during cross--validation")
     print weights
 
 if __name__=='__main__':
