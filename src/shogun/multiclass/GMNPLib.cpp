@@ -192,7 +192,7 @@ float64_t* CGMNPLib::get_kernel_col( index_t a )
   Computes index of input example and its class label from
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
-void CGMNPLib::get_indices2( index_t *index, int32_t *c, int32_t i )
+void CGMNPLib::get_indices2( index_t *index, index_t *c, index_t i )
 {
    *index = i / (m_num_classes-1);
 
@@ -210,13 +210,13 @@ void CGMNPLib::get_indices2( index_t *index, int32_t *c, int32_t i )
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
-float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
+float64_t* CGMNPLib::get_col( index_t a, index_t b )
 {
-  int32_t i;
+  index_t i;
   float64_t *col_ptr;
   float64_t *ker_ptr;
   float64_t value;
-  int32_t i1,c1,i2,c2;
+  index_t i1,c1,i2,c2;
 
   col_ptr = virt_columns[first_virt_inx++];
   if( first_virt_inx >= 3 ) first_virt_inx = 0;
@@ -265,7 +265,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
             float64_t tolrel,
             float64_t th,
             float64_t *alpha,
-            int32_t  *ptr_t,
+            index_t  *ptr_t,
             float64_t **ptr_History,
             int32_t verb)
 {
@@ -482,10 +482,10 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   Retures (a,b)-th element of the virtual kernel matrix
   of size [num_virt_data x num_virt_data].
 ------------------------------------------------------------ */
-float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
+float64_t CGMNPLib::kernel_fce( index_t a, index_t b )
 {
   float64_t value;
-  int32_t i1,c1,i2,c2;
+  index_t i1,c1,i2,c2;
 
   get_indices2( &i1, &c1, a );
   get_indices2( &i2, &c2, b );

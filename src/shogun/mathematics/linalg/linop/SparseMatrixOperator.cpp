@@ -100,7 +100,7 @@ SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
 			=EigenSparseUtil<bool>::toEigenSparse(sp_str->get_matrix_operator());
 
 		// final power of the matrix goes into this one
-		Eigen::SparseMatrix<bool> matrix_power;
+		Eigen::SparseMatrix<bool, 0, index_t> matrix_power;
 
 		// compute matrix power with O(log(n)) matrix-multiplication!
 		// traverse the bits of the power and compute the powers of 2 which

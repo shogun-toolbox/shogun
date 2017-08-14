@@ -75,13 +75,13 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	SGVector<int32_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// init min_label, max_label and loop variables
-	int32_t min_label = train_labels.vector[0];
-	int32_t max_label = train_labels.vector[0];
-	int i,j;
+	index_t min_label = train_labels.vector[0];
+	index_t max_label = train_labels.vector[0];
+	index_t i,j;
 
 	// find minimal and maximal label
 	for (i=1; i<train_labels.vlen; i++)
@@ -189,7 +189,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	return result;
 };
 
-float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
+float64_t CGaussianNaiveBayes::apply_one(index_t idx)
 {
 	// get [idx] feature vector
 	SGVector<float64_t> feature_vector = m_features->get_computed_dot_feature_vector(idx);

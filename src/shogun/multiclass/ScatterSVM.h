@@ -118,11 +118,11 @@ class CScatterSVM : public CMulticlassSVM
 
 		/** norm of w_c */
 		float64_t* norm_wc;
-		int32_t norm_wc_len;
+		index_t norm_wc_len;
 
 		/** norm of w_cw */
 		float64_t* norm_wcw;
-		int32_t norm_wcw_len;
+		index_t norm_wcw_len;
 
 		/** ScatterSVM rho */
 		float64_t rho;
