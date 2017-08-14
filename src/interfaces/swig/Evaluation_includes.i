@@ -14,6 +14,7 @@
  #include <shogun/evaluation/PRCEvaluation.h>
  #include <shogun/evaluation/MachineEvaluation.h>
  #include <shogun/evaluation/CrossValidation.h>
+ #include <shogun/evaluation/CrossValidationStorage.h>
  #include <shogun/evaluation/DifferentiableFunction.h>
  #include <shogun/evaluation/GradientCriterion.h>
  #include <shogun/evaluation/GradientEvaluation.h>

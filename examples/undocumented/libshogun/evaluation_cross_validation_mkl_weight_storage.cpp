@@ -59,7 +59,8 @@ SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs)
 			CMKLClassification* machine =
 			    (CMKLClassification*)fold->get_trained_machine();
 			SG_REF(machine)
-			auto w = machine->get_kernel()->get_subkernel_weights();
+			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
+			auto w = k->get_subkernel_weights();
 
 			/* Allocate memory needed */
 			if (!weights.matrix)
@@ -76,6 +77,7 @@ SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs)
 			    &weights.matrix[run_shift + fold_shift], w.vector,
 			    w.vlen * sizeof(float64_t));
 
+			SG_UNREF(k)
 			SG_UNREF(machine)
 		}
 	}
