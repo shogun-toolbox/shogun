@@ -23,13 +23,14 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun import CrossValidation, CrossValidationResult
-    from shogun import ParameterObserverCVMKL
+    from shogun import ParameterObserverCV
     from shogun import ContingencyTableEvaluation, ACCURACY
     from shogun import StratifiedCrossValidationSplitting
     from shogun import BinaryLabels
     from shogun import RealFeatures, CombinedFeatures
     from shogun import GaussianKernel, CombinedKernel
     from shogun import LibSVM, MKLClassification
+    from shogun import RealMatrix
 
     # training data, combined features all on same data
     features=RealFeatures(traindat)
@@ -64,8 +65,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     cross_validation.set_autolock(False)
 
     # append cross vlaidation output classes
-    #cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
-    mkl_storage=ParameterObserverCVMKL()
+    mkl_storage=ParameterObserverCV()
     cross_validation.subscribe_to_parameters(mkl_storage)
     cross_validation.set_num_runs(3)
 
@@ -73,9 +73,20 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     result=cross_validation.evaluate()
 
     # print mkl weights
+    for o in mkl_storage.get_observations():
+        for fold in o.get_folds_results():
+            machine = fold.get_trained_machine
+            w = machine.get_kernel().get_subkernel_weights()
+            if not weights.matrix:
+                weights = RealMatrix(w.vlen, o.get_num_folds() * o.get_num_runs())
+
+            run_shift = fold.get_current_run_index() * w.vlen * o.get_num_folds()
+            fold_shift = fold.get_current_fold_index() * w.vlen;
+            weights[run_shift + fold_shift] = w.vector;
+
     weights=mkl_storage.get_mkl_weights()
-    #print "mkl weights during cross--validation"
-    #print weights
+    print "mkl weights during cross--validation"
+    print weights
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')
