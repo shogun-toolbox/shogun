@@ -169,7 +169,7 @@ namespace shogun
 		 */
 		virtual const char* get_name() const
 		{
-			return "CrossValidationFoldResult";
+			return "CrossValidationFoldStorage";
 		};
 
 	protected:

@@ -2,6 +2,8 @@
 %include "std_string.i"
 %template(ParameterList) std::vector<std::string>;
 
+%rename(ParameterObserverCV) CParameterObserverCV;
+
 %{
     #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 	#include <shogun/lib/parameter_observers/ParameterObserverCV.h>

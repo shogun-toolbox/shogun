@@ -45,12 +45,12 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class ParameterObserverCV : public ParameterObserverInterface
+	class CParameterObserverCV : public ParameterObserverInterface
 	{
 
 	public:
-		ParameterObserverCV(bool verbose = false);
-		virtual ~ParameterObserverCV();
+		CParameterObserverCV(bool verbose = false);
+		virtual ~CParameterObserverCV();
 
 		virtual void on_next(const TimedObservedValue& value);
 		virtual void on_error(std::exception_ptr ptr);
