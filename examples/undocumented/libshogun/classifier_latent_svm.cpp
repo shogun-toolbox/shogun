@@ -44,7 +44,7 @@ class CObjectDetector: public CLatentModel
 
 		virtual ~CObjectDetector() {}
 
-		virtual int32_t get_dim() const { return HOG_SIZE; }
+		virtual index_t get_dim() const { return HOG_SIZE; }
 
 		virtual CDotFeatures* get_psi_feature_vectors()
 		{

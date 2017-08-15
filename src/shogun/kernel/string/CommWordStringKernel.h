@@ -170,7 +170,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 */
 		virtual float64_t* compute_scoring(
 			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			float64_t* target, int32_t num_suppvec, index_t* IDX,
+			float64_t* target, index_t num_suppvec, index_t* IDX,
 			float64_t* alphas, bool do_init=true);
 
 		/** compute consensus

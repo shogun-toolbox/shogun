@@ -117,7 +117,7 @@ public:
 	 *
 	 * @param assignment outputs of inference results
 	 */
-	virtual float64_t inference(SGVector<int32_t> assignment) = 0;
+	virtual float64_t inference(SGVector<index_t> assignment) = 0;
 
 private:
 	/** register parameters */

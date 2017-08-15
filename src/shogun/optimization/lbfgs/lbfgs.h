@@ -358,7 +358,7 @@ typedef float64_t (*lbfgs_evaluate_t)(
     void *instance,
     const float64_t *x,
     float64_t *g,
-    const int n,
+    const index_t n,
     const float64_t step
     );
 
@@ -481,8 +481,8 @@ In this formula, ||.|| denotes the Euclidean norm.
  *                      minimization process terminates without an error. A
  *                      non-zero value indicates an error.
  */
-int lbfgs(
-    int n,
+index_t lbfgs(
+    index_t n,
     float64_t *x,
     float64_t *ptr_fx,
     lbfgs_evaluate_t proc_evaluate,

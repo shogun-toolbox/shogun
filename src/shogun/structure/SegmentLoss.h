@@ -59,7 +59,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_ids segment ids
 		 */
-		void set_segment_ids(CDynamicArray<int32_t>* segment_ids);
+		void set_segment_ids(CDynamicArray<index_t>* segment_ids);
 
 		/** mask parts of the sequence such that there is no
 		 *  loss incured there; this is used if there is uncertainty
@@ -83,7 +83,7 @@ class CSegmentLoss : public CSGObject
 		 * @param all_pos all candidate positions
 		 * @param len number of positions
 		 */
-		void compute_loss(int32_t* all_pos, int32_t len);
+		void compute_loss(index_t* all_pos, index_t len);
 
 		/**
 		 * @return object name
@@ -101,7 +101,7 @@ class CSegmentLoss : public CSGObject
 		CDynamicArray<float64_t> m_segment_loss; // 3d
 
 		/** segment IDs */
-		CDynamicArray<int32_t>* m_segment_ids;
+		CDynamicArray<index_t>* m_segment_ids;
 
 		/** segment mask */
 		CDynamicArray<float64_t>* m_segment_mask;

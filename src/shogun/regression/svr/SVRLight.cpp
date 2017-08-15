@@ -44,7 +44,7 @@ struct S_THREAD_PARAM_SVRLIGHT
 {
 	float64_t* lin;
 	int32_t start, end;
-	int32_t* active2dnum;
+	index_t* active2dnum;
 	int32_t* docs;
 	CKernel* kernel;
     int32_t num_vectors;
@@ -156,15 +156,15 @@ bool CSVRLight::train_machine(CFeatures* data)
 
 void CSVRLight::svr_learn()
 {
-	int32_t *inconsistent, i, j;
+	index_t *inconsistent, i, j;
 	int32_t upsupvecnum;
 	float64_t maxdiff, *lin, *c, *a;
-	int32_t iterations;
+	index_t iterations;
 	float64_t *xi_fullset; /* buffer for storing xi on full sample in loo */
 	float64_t *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
-	int32_t* label;
+	index_t* label;
 	int32_t* docs;
 
 	ASSERT(m_labels)
@@ -173,7 +173,7 @@ void CSVRLight::svr_learn()
 
 	// set up regression problem in standard form
 	docs=SG_MALLOC(int32_t, 2*totdoc);
-	label=SG_MALLOC(int32_t, 2*totdoc);
+	label=SG_MALLOC(index_t, 2*totdoc);
 	c = SG_MALLOC(float64_t, 2*totdoc);
 
   for(i=0;i<totdoc;i++) {
@@ -228,7 +228,7 @@ void CSVRLight::svr_learn()
 
 	init_shrink_state(&shrink_state,totdoc,(int32_t)MAXSHRINK);
 
-	inconsistent = SG_MALLOC(int32_t, totdoc);
+	inconsistent = SG_MALLOC(index_t, totdoc);
 	a = SG_MALLOC(float64_t, totdoc);
 	a_fullset = SG_MALLOC(float64_t, totdoc);
 	xi_fullset = SG_MALLOC(float64_t, totdoc);
@@ -337,13 +337,13 @@ void CSVRLight::svr_learn()
 }
 
 float64_t CSVRLight::compute_objective_function(
-	float64_t *a, float64_t *lin, float64_t *c, float64_t* eps, int32_t *label,
+	float64_t *a, float64_t *lin, float64_t *c, float64_t* eps, index_t *label,
 	int32_t totdoc)
 {
   /* calculate value of objective function */
   float64_t criterion=0;
 
-  for(int32_t i=0;i<totdoc;i++)
+  for(index_t i=0;i<totdoc;i++)
 	  criterion+=(eps[i]-(float64_t)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
 
   /* float64_t check=0;
@@ -372,7 +372,7 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 	return NULL ;
 }
 
-int32_t CSVRLight::regression_fix_index(int32_t i)
+index_t CSVRLight::regression_fix_index(index_t i)
 {
 	if (i>=num_vectors)
 		i=2*num_vectors-1-i;
@@ -380,8 +380,8 @@ int32_t CSVRLight::regression_fix_index(int32_t i)
 	return i;
 }
 
-int32_t CSVRLight::regression_fix_index2(
-		int32_t i, int32_t num_vectors)
+index_t CSVRLight::regression_fix_index2(
+		index_t i, index_t num_vectors)
 {
 	if (i>=num_vectors)
 		i=2*num_vectors-1-i;
@@ -389,7 +389,7 @@ int32_t CSVRLight::regression_fix_index2(
 	return i;
 }
 
-float64_t CSVRLight::compute_kernel(int32_t i, int32_t j)
+float64_t CSVRLight::compute_kernel(index_t i, index_t j)
 {
 	i=regression_fix_index(i);
 	j=regression_fix_index(j);
@@ -397,8 +397,8 @@ float64_t CSVRLight::compute_kernel(int32_t i, int32_t j)
 }
 
 void CSVRLight::update_linear_component(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
@@ -418,7 +418,7 @@ void CSVRLight::update_linear_component(
 		{
 			kernel->clear_normal();
 
-			int32_t num_working=0;
+			index_t num_working=0;
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
 					kernel->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(float64_t)label[i]);
@@ -501,8 +501,8 @@ void CSVRLight::update_linear_component(
 }
 
 void CSVRLight::update_linear_component_mkl(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c)
 {
 	int32_t num         = totdoc;
@@ -517,7 +517,7 @@ void CSVRLight::update_linear_component_mkl(
 	{
 		CCombinedKernel* k = (CCombinedKernel*) kernel;
 
-		int32_t n = 0, i, j ;
+		index_t n = 0, i, j ;
 
 		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 		{
@@ -574,8 +574,8 @@ void CSVRLight::update_linear_component_mkl(
 
 
 void CSVRLight::update_linear_component_mkl_linadd(
-	int32_t* docs, int32_t* label, int32_t *active2dnum, float64_t *a,
-	float64_t *a_old, int32_t *working2dnum, int32_t totdoc, float64_t *lin,
+	int32_t* docs, index_t* label, index_t *active2dnum, float64_t *a,
+	float64_t *a_old, index_t *working2dnum, int32_t totdoc, float64_t *lin,
 	float64_t *aicache, float64_t* c)
 {
 	// kernel with LP_LINADD property is assumed to have
@@ -616,23 +616,23 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	call_mkl_callback(a, label, lin, c, totdoc);
 }
 
-void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, float64_t* c, int32_t totdoc)
+void CSVRLight::call_mkl_callback(float64_t* a, index_t* label, float64_t* lin, float64_t* c, int32_t totdoc)
 {
 	int32_t num = totdoc;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	float64_t sumalpha = 0;
 	float64_t* sumw=SG_MALLOC(float64_t, num_kernels);
 
-	for (int32_t i=0; i<num; i++)
+	for (index_t i=0; i<num; i++)
 		sumalpha-=a[i]*(learn_parm->eps[i]-label[i]*c[i]);
 
 #ifdef HAVE_LAPACK
 	int nk = (int) num_kernels; // calling external lib
 	double* alphay  = SG_MALLOC(double, num);
-	for (int32_t i=0; i<num; i++)
+	for (index_t i=0; i<num; i++)
 		alphay[i]=a[i]*label[i];
 
-	for (int32_t i=0; i<num_kernels; i++)
+	for (index_t i=0; i<num_kernels; i++)
 		sumw[i]=0;
 
 	cblas_dgemv(CblasColMajor, CblasNoTrans, nk, (int) num, 0.5, (double*) W,
@@ -640,10 +640,10 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 
 	SG_FREE(alphay);
 #else
-	for (int32_t d=0; d<num_kernels; d++)
+	for (index_t d=0; d<num_kernels; d++)
 	{
 		sumw[d]=0;
-		for(int32_t i=0; i<num; i++)
+		for(index_t i=0; i<num; i++)
 			sumw[d] += 0.5*a[i]*label[i]*W[i*num_kernels+d];
 	}
 #endif
@@ -658,11 +658,11 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 	cblas_dgemv(CblasColMajor, CblasTrans, nk, (int) num, 1.0, (double*) W,
 		nk, (double*) new_beta, 1, 0.0, (double*) lin, 1);
 #else
-	for(int32_t i=0; i<num; i++)
+	for(index_t i=0; i<num; i++)
 		lin[i]=0 ;
-	for (int32_t d=0; d<num_kernels; d++)
+	for (index_t d=0; d<num_kernels; d++)
 		if (new_beta[d]!=0)
-			for(int32_t i=0; i<num; i++)
+			for(index_t i=0; i<num; i++)
 				lin[i] += new_beta[d]*W[i*num_kernels+d] ;
 #endif
 
@@ -672,15 +672,15 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 
 
 void CSVRLight::reactivate_inactive_examples(
-	int32_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
-	float64_t *c, int32_t totdoc, int32_t iteration, int32_t *inconsistent,
+	index_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
+	float64_t *c, int32_t totdoc, index_t iteration, index_t *inconsistent,
 	int32_t* docs, float64_t *aicache, float64_t *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register int32_t i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
-  int32_t *changed,*inactive;
+  register index_t i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
+  index_t *changed,*inactive;
   register float64_t *a_old,dist;
   float64_t ex_c,target;
 
@@ -688,7 +688,7 @@ void CSVRLight::reactivate_inactive_examples(
 	  a_old=shrink_state->last_a;
 
 	  kernel->clear_normal();
-	  int32_t num_modified=0;
+	  index_t num_modified=0;
 	  for(i=0;i<totdoc;i++) {
 		  if(a[i] != a_old[i]) {
 			  kernel->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(float64_t)label[i]));
@@ -709,10 +709,10 @@ void CSVRLight::reactivate_inactive_examples(
   }
   else
   {
-	  changed=SG_MALLOC(int32_t, totdoc);
-	  changed2dnum=SG_MALLOC(int32_t, totdoc+11);
-	  inactive=SG_MALLOC(int32_t, totdoc);
-	  inactive2dnum=SG_MALLOC(int32_t, totdoc+11);
+	  changed=SG_MALLOC(index_t, totdoc);
+	  changed2dnum=SG_MALLOC(index_t, totdoc+11);
+	  inactive=SG_MALLOC(index_t, totdoc);
+	  inactive2dnum=SG_MALLOC(index_t, totdoc+11);
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
 			  SG_INFO("%ld..",t)

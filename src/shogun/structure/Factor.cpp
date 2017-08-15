@@ -20,7 +20,7 @@ CFactor::CFactor() : CSGObject()
 }
 
 CFactor::CFactor(CTableFactorType* ftype,
-	SGVector<int32_t> var_index,
+	SGVector<index_t> var_index,
 	SGVector<float64_t> data) : CSGObject()
 {
 	init();
@@ -43,7 +43,7 @@ CFactor::CFactor(CTableFactorType* ftype,
 }
 
 CFactor::CFactor(CTableFactorType* ftype,
-	SGVector<int32_t> var_index,
+	SGVector<index_t> var_index,
 	SGSparseVector<float64_t> data_sparse) : CSGObject()
 {
 	init();
@@ -66,7 +66,7 @@ CFactor::CFactor(CTableFactorType* ftype,
 }
 
 CFactor::CFactor(CTableFactorType* ftype,
-	SGVector<int32_t> var_index,
+	SGVector<index_t> var_index,
 	CFactorDataSource* data_source) : CSGObject()
 {
 	init();
@@ -104,22 +104,22 @@ void CFactor::set_factor_type(CTableFactorType* ftype)
 	SG_REF(m_factor_type);
 }
 
-const SGVector<int32_t> CFactor::get_variables() const
+const SGVector<index_t> CFactor::get_variables() const
 {
 	return m_var_index;
 }
 
-const int32_t CFactor::get_num_vars() const
+const index_t CFactor::get_num_vars() const
 {
 	return m_var_index.size();
 }
 
-void CFactor::set_variables(SGVector<int32_t> vars)
+void CFactor::set_variables(SGVector<index_t> vars)
 {
 	m_var_index = vars.clone();
 }
 
-const SGVector<int32_t> CFactor::get_cardinalities() const
+const SGVector<index_t> CFactor::get_cardinalities() const
 {
 	return m_factor_type->get_cardinalities();
 }
@@ -147,7 +147,7 @@ void CFactor::set_data(SGVector<float64_t> data_dense)
 }
 
 void CFactor::set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse,
-	int32_t dlen)
+	index_t dlen)
 {
 	m_data_sparse = SGSparseVector<float64_t>(data_sparse, dlen);
 	m_is_data_dep = true;
@@ -177,7 +177,7 @@ SGVector<float64_t> CFactor::get_energies() const
 	return m_energies;
 }
 
-float64_t CFactor::get_energy(int32_t index) const
+float64_t CFactor::get_energy(index_t index) const
 {
 	return get_energies()[index]; // note for data indep, we get m_w not m_energies
 }
@@ -190,7 +190,7 @@ void CFactor::set_energies(SGVector<float64_t> ft_energies)
 	m_energies = ft_energies;
 }
 
-void CFactor::set_energy(int32_t ei, float64_t value)
+void CFactor::set_energy(index_t ei, float64_t value)
 {
 	REQUIRE(ei >= 0 && ei < m_factor_type->get_num_assignments(),
 		"%s::set_energy(): ei is out of index!\n", get_name());
@@ -201,9 +201,9 @@ void CFactor::set_energy(int32_t ei, float64_t value)
 	m_energies[ei] = value;
 }
 
-float64_t CFactor::evaluate_energy(const SGVector<int32_t> state) const
+float64_t CFactor::evaluate_energy(const SGVector<index_t> state) const
 {
-	int32_t index = m_factor_type->index_from_universe_assignment(state, m_var_index);
+	index_t index = m_factor_type->index_from_universe_assignment(state, m_var_index);
 	return get_energy(index);
 }
 
@@ -299,7 +299,7 @@ void CFactorDataSource::set_data(SGVector<float64_t> dense)
 }
 
 void CFactorDataSource::set_data_sparse(SGSparseVectorEntry<float64_t>* sparse,
-	int32_t dlen)
+	index_t dlen)
 {
 	m_sparse = SGSparseVector<float64_t>(sparse, dlen);
 }

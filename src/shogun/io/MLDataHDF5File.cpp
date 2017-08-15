@@ -93,7 +93,7 @@ CMLDataHDF5File::~CMLDataHDF5File()
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
+void CMLDataHDF5File::fname(sg_type*& vec, index_t& len)							\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n")												\
@@ -147,7 +147,7 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CMLDataHDF5File::fname(sg_type*& matrix, index_t& num_feat, index_t& num_vec)	\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n")												\
@@ -199,7 +199,7 @@ GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CMLDataHDF5File::fname(SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n")													\
@@ -221,7 +221,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CMLDataHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CMLDataHDF5File::fname(SGString<sg_type>*& strings, index_t& num_str, index_t& max_string_len) \
 {																								\
 }
 

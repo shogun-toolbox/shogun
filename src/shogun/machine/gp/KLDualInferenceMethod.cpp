@@ -152,7 +152,7 @@ float64_t CKLDualInferenceMethodMinimizer::minimize()
 	init_minimization();
 
 	float64_t cost=0.0;
-	int error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
+	index_t error_code=lbfgs(m_target_variable.vlen, m_target_variable.vector,
 		&cost, CKLDualInferenceMethodMinimizer::evaluate,
 		NULL, this, &lbfgs_param, CKLDualInferenceMethodMinimizer::adjust_step);
 
@@ -165,7 +165,7 @@ float64_t CKLDualInferenceMethodMinimizer::minimize()
 }
 
 float64_t CKLDualInferenceMethodMinimizer::evaluate(void *obj, const float64_t *variable,
-	float64_t *gradient, const int dim, const float64_t step)
+	float64_t *gradient, const index_t dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
 	CKLDualInferenceMethodMinimizer * obj_prt

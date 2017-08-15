@@ -2125,7 +2125,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 
 void CSVMLight::reactivate_inactive_examples(
 	index_t* label, float64_t *a, SHRINK_STATE *shrink_state, float64_t *lin,
-	float64_t *c, int32_t totdoc, int32_t iteration, index_t *inconsistent,
+	float64_t *c, int32_t totdoc, index_t iteration, index_t *inconsistent,
 	int32_t* docs, float64_t *aicache, float64_t *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */

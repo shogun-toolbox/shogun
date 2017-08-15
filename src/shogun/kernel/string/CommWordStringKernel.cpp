@@ -369,7 +369,7 @@ float64_t CCommWordStringKernel::compute_optimized(index_t i)
 
 float64_t* CCommWordStringKernel::compute_scoring(
 	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
-	int32_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
+	index_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
 {
 	ASSERT(lhs)
 	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);

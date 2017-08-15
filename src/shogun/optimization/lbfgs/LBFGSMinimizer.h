@@ -131,7 +131,7 @@ private:
 	static float64_t evaluate(void *obj,
 		const float64_t *variable,
 		float64_t *gradient,
-		const int32_t dim,
+		const index_t dim,
 		const float64_t step);
 
 	/** Init */

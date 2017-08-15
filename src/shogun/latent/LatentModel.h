@@ -57,7 +57,7 @@ namespace shogun
 			 *
 			 * @return dimension of features, i.e. psi vector
 			 */
-			virtual int32_t get_dim() const=0;
+			virtual index_t get_dim() const=0;
 
 			/** set latent labels
 			 *

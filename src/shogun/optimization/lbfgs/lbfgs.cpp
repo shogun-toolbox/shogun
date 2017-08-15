@@ -205,8 +205,8 @@ void lbfgs_parameter_init(lbfgs_parameter_t *param)
     sg_memcpy(param, &_defparam, sizeof(*param));
 }
 
-int32_t lbfgs(
-    int32_t n,
+index_t lbfgs(
+    index_t n,
     float64_t *x,
     float64_t *ptr_fx,
     lbfgs_evaluate_t proc_evaluate,
@@ -216,13 +216,13 @@ int32_t lbfgs(
     lbfgs_adjust_step_t proc_adjust_step
     )
 {
-    int32_t ret;
-    int32_t i, j, k, ls, end, bound;
+    index_t ret;
+    index_t i, j, k, ls, end, bound;
     float64_t step;
 
     /* Constant parameters and their default values. */
     lbfgs_parameter_t param = (_param != NULL) ? (*_param) : _defparam;
-    const int32_t m = param.m;
+    const index_t m = param.m;
 
     float64_t *xp = NULL;
     float64_t *g = NULL, *gp = NULL, *pg = NULL;
