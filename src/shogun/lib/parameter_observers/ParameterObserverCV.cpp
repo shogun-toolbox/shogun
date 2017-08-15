@@ -43,19 +43,20 @@
 
 using namespace shogun;
 
-ParameterObserverCV::ParameterObserverCV(bool verbose)
+CParameterObserverCV::CParameterObserverCV(bool verbose)
     : ParameterObserverInterface(), m_verbose(verbose)
 {
 	m_type = CROSSVALIDATION;
+
 }
 
-ParameterObserverCV::~ParameterObserverCV()
+CParameterObserverCV::~CParameterObserverCV()
 {
 	for (auto i : m_observations)
 		SG_UNREF(i)
 }
 
-void ParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
+void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
 	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type());
 
@@ -80,15 +81,15 @@ void ParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 	}
 }
 
-void ParameterObserverCV::on_error(std::exception_ptr ptr)
+void CParameterObserverCV::on_error(std::exception_ptr ptr)
 {
 }
 
-void ParameterObserverCV::on_complete()
+void CParameterObserverCV::on_complete()
 {
 }
 
-void ParameterObserverCV::clear()
+void CParameterObserverCV::clear()
 {
 	for (auto i : m_observations)
 	{
@@ -97,7 +98,7 @@ void ParameterObserverCV::clear()
 	m_observations.clear();
 }
 
-void ParameterObserverCV::print_observed_value(
+void CParameterObserverCV::print_observed_value(
     CrossValidationStorage* value) const
 {
 	for (auto f : value->get_folds_results())
@@ -115,7 +116,7 @@ void ParameterObserverCV::print_observed_value(
 	}
 }
 
-void ParameterObserverCV::print_machine_information(CMachine* machine) const
+void CParameterObserverCV::print_machine_information(CMachine* machine) const
 {
 	if (dynamic_cast<CLinearMachine*>(machine))
 	{
@@ -165,7 +166,7 @@ void ParameterObserverCV::print_machine_information(CMachine* machine) const
 }
 
 const std::vector<CrossValidationStorage*>&
-ParameterObserverCV::get_observations() const
+CParameterObserverCV::get_observations() const
 {
 	return m_observations;
 }

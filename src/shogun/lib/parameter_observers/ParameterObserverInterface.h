@@ -38,6 +38,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 
@@ -48,12 +49,11 @@
 
 namespace shogun
 {
-	class RefCount;
 
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserverInterface
+	class ParameterObserverInterface : public CSGObject
 	{
 
 	public:
@@ -109,24 +109,14 @@ namespace shogun
 		 */
 		virtual void clear(){};
 
-		/** Increase reference counter
-		 *
-		 * @return reference count
+		/**
+		 * Get class name.
+		 * @return class name
 		 */
-		int32_t ref();
-
-		/** Decrement reference counter and deallocate object if
-		 * refcount is zero before or after decrementing it
-		 *
-		 * @return reference count
-		 */
-		int32_t unref();
-
-		/** Display reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref_count();
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverInterface";
+		}
 
 	protected:
 		/**

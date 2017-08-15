@@ -65,7 +65,7 @@ SGVector<float64_t> lab(num_vectors);
 CDenseFeatures<float64_t>* features = NULL;
 CRegressionLabels* labels = NULL;
 
-ParameterObserverCV* generate(bool locked = true)
+CParameterObserverCV* generate(bool locked = true)
 {
 	/* training features */
 	features = regression_test_env->get_features_train();
@@ -98,7 +98,7 @@ ParameterObserverCV* generate(bool locked = true)
 	cross->set_autolock(locked);
 
 	/* Create the parameter observer */
-	ParameterObserverCV* par = new ParameterObserverCV();
+	CParameterObserverCV* par = new CParameterObserverCV();
 	cross->subscribe_to_parameters(par);
 
 	/* actual evaluation */
@@ -114,7 +114,7 @@ ParameterObserverCV* generate(bool locked = true)
 
 TEST(ParameterObserverCV, get_observations_locked)
 {
-	std::shared_ptr<ParameterObserverCV> par{generate(true)};
+	std::shared_ptr<CParameterObserverCV> par{generate(true)};
 
 	auto obs = par->get_observations();
 	for (int i = 0; i < 10; i++)
@@ -141,7 +141,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 
 TEST(ParameterObserverCV, get_observations_unlocked)
 {
-	std::shared_ptr<ParameterObserverCV> par{generate(false)};
+	std::shared_ptr<CParameterObserverCV> par{generate(false)};
 
 	auto obs = par->get_observations();
 	for (int i = 0; i < 10; i++)
