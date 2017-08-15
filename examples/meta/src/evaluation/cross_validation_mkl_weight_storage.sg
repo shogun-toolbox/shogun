@@ -1,0 +1,33 @@
+CSVFile f_feats("../../data/classifier_binary_2d_nonlinear_features_test.dat")
+CSVFile f_labels("../../data/classifier_binary_2d_nonlinear_labels_train.dat")
+
+RealFeatures features(f_feats)
+CombinedFeatures comb_features()
+comb_features.append_feature_obj(features)
+comb_features.append_feature_obj(features)
+comb_features.append_feature_obj(features)
+BinaryLabels labels(f_labels)
+
+CombinedKernel kernel()
+GaussianKernel k_1(10, 0.1)
+GaussianKernel k_2(10, 1)
+GaussianKernel k_3(10, 2)
+kernel.append_kernel(k_1)
+kernel.append_kernel(k_2)
+kernel.append_kernel(k_3)
+
+LibSVM libsvm()
+MKLClassification svm(libsvm)
+svm.set_interleaved_optimization_enabled(False)
+svm.set_kernel(kernel)
+
+StratifiedCrossValidationSplitting splitting_strategy(labels, 5)
+ContingencyTableEvaluation evaluation_criterium(ACCURACY)
+CrossValidation cross(svm, comb_features, labels, splitting_strategy, evaluation_criterium)
+cross.set_autolock(false)
+cross.set_num_runs(3)
+
+ParameterObserverCV mkl_obs()
+cross.subscribe_to_parameters(mkl_obs)
+
+CrossValidationResult result = cross.evaluate()
