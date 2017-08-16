@@ -37,15 +37,15 @@ void test_libsvmfile_multilabel(const char* fname)
 
 	SGSparseVector<float64_t>* feats;
 	SGVector<float64_t>* labels;
-	int32_t dim_feat;
-	int32_t num_samples;
-	int32_t num_classes;
+	index_t dim_feat;
+	index_t num_samples;
+	index_t num_classes;
 
 	svmfile->get_sparse_matrix(feats, dim_feat, num_samples, labels, num_classes);
 
 #ifdef SHOW_DATA
 	// Display the labels
-	for (int32_t i = 0; i < num_samples; i++)
+	for (index_t i = 0; i < num_samples; i++)
 	{
 		labels[i].display_vector();
 	}

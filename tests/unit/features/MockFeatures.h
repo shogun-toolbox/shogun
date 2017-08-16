@@ -8,7 +8,7 @@ namespace shogun {
 			MOCK_CONST_METHOD0(duplicate, CFeatures*());
 			MOCK_CONST_METHOD0(get_feature_type, EFeatureType());
 			MOCK_CONST_METHOD0(get_feature_class, EFeatureClass());
-			MOCK_CONST_METHOD0(get_num_vectors, int32_t());
+			MOCK_CONST_METHOD0(get_num_vectors, index_t());
 
 			virtual const char* get_name() const { return "MockCFeatures"; }
 	};

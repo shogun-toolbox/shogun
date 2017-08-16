@@ -31,19 +31,19 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_012);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_012);
 
 	// assuming the hierarchy to be
 	//       0
 	//     1   2
-	SGVector<int32_t> taxonomy(3);
+	SGVector<index_t> taxonomy(3);
 	taxonomy[0] = -1;
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
@@ -90,19 +90,19 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
-	SGVector<int32_t> lab_1(1);
+	SGVector<index_t> lab_1(1);
 	lab_1[0] = 1;
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	labels->set_sparse_label(0, lab_1);
-	labels->set_sparse_label(1, lab_012);
+	labels->set_sparse_label(index_t(0), lab_1);
+	labels->set_sparse_label(index_t(1), lab_012);
 
 	// assuming the hierarchy to be
 	//       0
 	//     1   2
-	SGVector<int32_t> taxonomy(3);
+	SGVector<index_t> taxonomy(3);
 	taxonomy[0] = -1;
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
@@ -149,7 +149,7 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	// assuming the hierarchy to be
 	//       0
 	//     1   2
-	SGVector<int32_t> taxonomy(3);
+	SGVector<index_t> taxonomy(3);
 	taxonomy[0] = -1;
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
@@ -158,16 +158,16 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	        features, labels, taxonomy);
 	SG_REF(model);
 
-	SGVector<int32_t> lab_012(3);
+	SGVector<index_t> lab_012(3);
 	lab_012[0] = 0;
 	lab_012[1] = 1;
 	lab_012[2] = 2;
-	SGVector<int32_t> lab_01(2);
+	SGVector<index_t> lab_01(2);
 	lab_01[0] = 0;
 	lab_01[1] = 1;
-	SGVector<int32_t> lab_0(1);
+	SGVector<index_t> lab_0(1);
 	lab_0[0] = 0;
-	SGVector<int32_t> lab_nill(0);
+	SGVector<index_t> lab_nill(0);
 
 	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
 	SG_REF(slabel_012);
@@ -217,18 +217,18 @@ TEST(HierarchicalMultilabelModel, argmax)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 
-	SGVector<int32_t> lab_2(1);
+	SGVector<index_t> lab_2(1);
 	lab_2[0] = 2;
-	SGVector<int32_t> lab_01(2);
+	SGVector<index_t> lab_01(2);
 	lab_01[0] = 0;
 	lab_01[1] = 1;
-	labels->set_sparse_label(0, lab_2);
-	labels->set_sparse_label(1, lab_01);
+	labels->set_sparse_label(index_t(0), lab_2);
+	labels->set_sparse_label(index_t(1), lab_01);
 
 	// assuming the hierarchy to be
 	//       0
 	//     1   2
-	SGVector<int32_t> taxonomy(3);
+	SGVector<index_t> taxonomy(3);
 	taxonomy[0] = -1;
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
@@ -248,7 +248,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
-	SGVector<int32_t> slabel_1 = y_1->get_data();
+	SGVector<index_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
@@ -277,11 +277,11 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_2->argmax);
-	SGVector<int32_t> slabel_2 = y_2->get_data();
+	SGVector<index_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
 	{
-		int32_t label = slabel_2[i];
+		index_t label = slabel_2[i];
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
 		                  w.vector + label * dim_features, dim_features);
 
@@ -328,18 +328,18 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 
-	SGVector<int32_t> lab_2(1);
+	SGVector<index_t> lab_2(1);
 	lab_2[0] = 2;
-	SGVector<int32_t> lab_01(2);
+	SGVector<index_t> lab_01(2);
 	lab_01[0] = 0;
 	lab_01[1] = 1;
-	labels->set_sparse_label(0, lab_2);
-	labels->set_sparse_label(1, lab_01);
+	labels->set_sparse_label(index_t(0), lab_2);
+	labels->set_sparse_label(index_t(1), lab_01);
 
 	// assuming the hierarchy to be
 	//       0
 	//     1   2
-	SGVector<int32_t> taxonomy(3);
+	SGVector<index_t> taxonomy(3);
 	taxonomy[0] = -1;
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
@@ -359,11 +359,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
-	SGVector<int32_t> slabel_1 = y_1->get_data();
+	SGVector<index_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
-		int32_t label = slabel_1[i];
+		index_t label = slabel_1[i];
 		// as leaf_node_mandatory flag is set, the output cannot be an internal
 		// node (it must be a terminal node)
 		EXPECT_NE(label, 0);
@@ -384,11 +384,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 
 	CSparseMultilabel * y_2 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_2->argmax);
-	SGVector<int32_t> slabel_2 = y_2->get_data();
+	SGVector<index_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
 	{
-		int32_t label = slabel_2[i];
+		index_t label = slabel_2[i];
 		// as leaf_node_mandatory flag is set, the output cannot be an internal
 		// node (it must be a terminal node)
 		EXPECT_NE(label, 0);

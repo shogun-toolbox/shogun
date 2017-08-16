@@ -64,7 +64,7 @@ CHDF5File::~CHDF5File()
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
-void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
+void CHDF5File::fname(sg_type*& vec, index_t& len)									\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n")												\
@@ -118,7 +118,7 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
+void CHDF5File::fname(sg_type*& matrix, index_t& num_feat, index_t& num_vec)		\
 {																					\
 	if (!h5file)																	\
 		SG_ERROR("File invalid.\n")												\
@@ -170,7 +170,7 @@ GET_MATRIX(get_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_SPARSEMATRIX(fname, sg_type, datatype)										\
-void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
+void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, index_t& num_feat, index_t& num_vec)	\
 {																						\
 	if (!(file))																		\
 		SG_ERROR("File invalid.\n")													\
@@ -192,7 +192,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 
 
 #define GET_STRING_LIST(fname, sg_type, datatype)												\
-void CHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) \
+void CHDF5File::fname(SGString<sg_type>*& strings, index_t& num_str, index_t& max_string_len) \
 {																								\
 }
 
@@ -214,7 +214,7 @@ GET_STRING_LIST(get_string_list, floatmax_t, DT_STRING_LONGREAL)
 /** set functions - to pass data from shogun to the target interface */
 
 #define SET_VECTOR(fname, sg_type, dtype, h5type)							\
-void CHDF5File::fname(const sg_type* vec, int32_t len)						\
+void CHDF5File::fname(const sg_type* vec, index_t len)						\
 {																			\
 	if (h5file<0 || !vec)													\
 		SG_ERROR("File or vector invalid.\n")								\
@@ -255,7 +255,7 @@ SET_VECTOR(set_vector, uint64_t, DT_VECTOR_ULONG, H5T_NATIVE_ULLONG)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype, h5type)								\
-void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
+void CHDF5File::fname(const sg_type* matrix, index_t num_feat, index_t num_vec)	\
 {																				\
 	if (h5file<0 || !matrix)													\
 		SG_ERROR("File or matrix invalid.\n")									\
@@ -297,7 +297,7 @@ SET_MATRIX(set_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBLE)
 
 #define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
 void CHDF5File::fname(const SGSparseVector<sg_type>* matrix,	\
-		int32_t num_feat, int32_t num_vec)					\
+		index_t num_feat, index_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
 		SG_ERROR("File or matrix invalid.\n")				\
@@ -319,7 +319,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
-void CHDF5File::fname(const SGString<sg_type>* strings, int32_t num_str)	\
+void CHDF5File::fname(const SGString<sg_type>* strings, index_t num_str)	\
 {																						\
 	if (!(file && strings))																\
 		SG_ERROR("File or strings invalid.\n")											\

@@ -11,6 +11,7 @@
 #define EIGEN3_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 	//#define EIGEN_RUNTIME_NO_MALLOC
 	#include <Eigen/Eigen>
