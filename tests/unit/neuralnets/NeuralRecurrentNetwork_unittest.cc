@@ -31,91 +31,48 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralLayers.h>
-
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/neuralnets/NeuralRecurrentNetwork.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
-#include <shogun/neuralnets/NeuralLinearLayer.h>
-#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
-#include <shogun/neuralnets/NeuralLeakyRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
-#include <shogun/neuralnets/NeuralRecurrentLayer.h>
-#include <shogun/neuralnets/NeuralTanhLayer.h>
+#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/NeuralLayers.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
-CNeuralLayers::CNeuralLayers() : CSGObject(), m_layers(new CDynamicObjectArray)
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLinearLayer-based network.
+ */
+TEST(NeuralRecurrentNetwork, backpropagation_linear)
 {
 }
 
-CNeuralLayers::~CNeuralLayers()
+/** Tests neural layers builder
+ */
+TEST(NeuralRecurrentNetwork, neural_layers_builder)
 {
-	SG_UNREF(m_layers)
 }
 
-CNeuralLayers* CNeuralLayers::input(int32_t size)
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLogisticLayer-based network.
+ */
+TEST(NeuralRecurrentNetwork, backpropagation_logistic)
 {
-	return with_layer(new CNeuralInputLayer(size));
 }
 
-CNeuralLayers* CNeuralLayers::logistic(int32_t size)
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralSoftmaxLayer-based network.
+ */
+TEST(NeuralRecurrentNetwork, backpropagation_softmax)
 {
-	return with_layer(new CNeuralLogisticLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::linear(int32_t size)
-{
-	return with_layer(new CNeuralLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::rectified_linear(int32_t size)
-{
-	return with_layer(new CNeuralRectifiedLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::leaky_rectified_linear(int32_t size)
-{
-	return with_layer(new CNeuralLeakyRectifiedLinearLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::recurrent(int32_t size)
-{
-	return with_layer(new CNeuralRecurrentLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::softmax(int32_t size)
-{
-	return with_layer(new CNeuralSoftmaxLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::tanh(int32_t size)
-{
-	return with_layer(new CNeuralTanhLayer(size));
-}
-
-CNeuralLayers* CNeuralLayers::with_layer(CNeuralLayer* layer)
-{
-	m_layers->push_back(layer);
-	return this;
-}
-
-CDynamicObjectArray* CNeuralLayers::done()
-{
-	SG_REF(m_layers);
-	return m_layers;
-}
-
-void CNeuralLayers::clear()
-{
-	m_layers->clear_array();
-}
-
-bool CNeuralLayers::empty()
-{
-	return (m_layers->get_array_size() == 0);
-}
-
-const char* CNeuralLayers::get_name() const
-{
-	return "NeuralLayers";
 }

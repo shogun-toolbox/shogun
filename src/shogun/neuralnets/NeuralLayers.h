@@ -101,6 +101,14 @@ public:
 	 */
 	CNeuralLayers* leaky_rectified_linear(int32_t size);
 
+	/** Adds hidden recurrent neural layer.
+	 *
+	 * @ref CNeuralRecurrentLayer
+	 *
+	 * @param size the size of the recurrent hidden layer
+	 */
+	CNeuralLayers* recurrent(int32_t size);
+
 	/** Adds softmax neural layer.
 	 *
 	 * @ref CNeuralSoftmaxLayer
@@ -108,6 +116,14 @@ public:
 	 * @param size the size of softmax layer
 	 */
 	CNeuralLayers* softmax(int32_t size);
+
+	/** Adds tanh activation layer.
+	 *
+	 * @ref CNeuralTanhLayer
+	 *
+	 * @param size the size of tanh layer
+	 */
+	CNeuralLayers* tanh(int32_t size);
 
 	/** Adds custom neural layer.
 	 *
