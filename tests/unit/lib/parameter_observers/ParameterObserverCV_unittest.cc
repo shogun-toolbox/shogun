@@ -43,6 +43,7 @@
 #include <shogun/regression/KernelRidgeRegression.h>
 
 #include <gtest/gtest.h>
+#include "environments/RegressionTestEnvironment.h"
 #include <memory>
 
 using namespace shogun;
@@ -52,6 +53,8 @@ using namespace shogun;
  * examples/undocumented/libshogun/evaluation_cross_validation_regression.cpp
  * written by Heiko Strathmann.
  */
+
+extern RegressionTestEnvironment* regression_test_env;
 
 /* data matrix dimensions */
 index_t num_vectors = 100;
@@ -64,22 +67,12 @@ CRegressionLabels* labels = NULL;
 
 ParameterObserverCV* generate(bool locked = true)
 {
-
-	/* fill data matrix and labels */
-	SGMatrix<float64_t> train_dat(num_features, num_vectors);
-	SGVector<float64_t>::range_fill_vector(train_dat.matrix, num_vectors);
-	for (index_t i = 0; i < num_vectors; ++i)
-	{
-		/* labels are linear plus noise */
-		lab.vector[i] = i + CMath::normal_random(0, 1.0);
-	}
-
 	/* training features */
-	features = new CDenseFeatures<float64_t>(train_dat);
+	features = regression_test_env->get_features_train();
 	SG_REF(features);
 
 	/* training labels */
-	labels = new CRegressionLabels(lab);
+	labels = regression_test_env->get_labels_train();
 
 	/* kernel */
 	CLinearKernel* kernel = new CLinearKernel();
@@ -119,7 +112,7 @@ ParameterObserverCV* generate(bool locked = true)
 	return par;
 }
 
-TEST(ParameterObserverCV, get_result_locked)
+TEST(ParameterObserverCV, get_observations_locked)
 {
 	std::shared_ptr<ParameterObserverCV> par{generate(true)};
 
@@ -127,6 +120,7 @@ TEST(ParameterObserverCV, get_result_locked)
 	for (int i = 0; i < 10; i++)
 	{
 		auto run = obs[i];
+		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
@@ -145,7 +139,7 @@ TEST(ParameterObserverCV, get_result_locked)
 	}
 }
 
-TEST(ParameterObserverCV, get_result_unlocked)
+TEST(ParameterObserverCV, get_observations_unlocked)
 {
 	std::shared_ptr<ParameterObserverCV> par{generate(false)};
 
@@ -153,6 +147,7 @@ TEST(ParameterObserverCV, get_result_unlocked)
 	for (int i = 0; i < 10; i++)
 	{
 		auto run = obs[i];
+		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
