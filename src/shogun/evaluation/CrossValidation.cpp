@@ -135,11 +135,11 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	/* construct evaluation result */
 	CCrossValidationResult* result = new CCrossValidationResult();
-	result->mean = CStatistics::mean(results);
+	result->set_mean(CStatistics::mean(results));
 	if (m_num_runs > 1)
-		result->std_dev = CStatistics::std_deviation(results);
+		result->set_std_dev(CStatistics::std_deviation(results));
 	else
-		result->std_dev = 0;
+		result->set_std_dev(0);
 
 	/* unlock machine if it was locked in this method */
 	if (m_machine->is_data_locked() && m_do_unlock)

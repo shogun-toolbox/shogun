@@ -85,7 +85,39 @@ namespace shogun
 			SG_SPRINT("%f+-%f\n", mean, std_dev);
 		}
 
-	public:
+		/**
+		 * Get the evaluations mean.
+		 * @return mean
+		 */
+		float64_t get_mean() const {
+			return mean;
+		}
+
+		/**
+		 * Get the standard deviation.
+		 * @return standard deviation
+		 */
+		float64_t get_std_dev() const {
+			return std_dev;
+		}
+
+		/**
+		 * Set the evaluations mean.
+		 * @param mean the mean
+		 */
+		void set_mean(float64_t ev_mean) {
+			this->mean = ev_mean;
+		}
+
+		/**
+		 * Set the standard deviation
+		 * @param std_dev the standard deviation
+		 */
+		void set_std_dev(float64_t ev_std_dev) {
+			this->std_dev = ev_std_dev;
+		}
+
+	private:
 		/** mean */
 		float64_t mean;
 		/** Standard deviation of cross-validation folds */

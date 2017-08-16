@@ -104,12 +104,12 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 	cross->parallel->set_num_threads(1);	
 
 	CCrossValidationResult* result1=(CCrossValidationResult*)cross->evaluate();
-	float64_t mean1 = result1->mean;
+	float64_t mean1 = result1->get_mean();
 	
 	cross->parallel->set_num_threads(3);
 
 	CCrossValidationResult* result2=(CCrossValidationResult*)cross->evaluate();
-	float64_t mean2 = result2->mean;
+	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);
 
@@ -154,12 +154,12 @@ TEST(CrossValidation_multithread, KNN)
 	cross->parallel->set_num_threads(1);	
 
 	CCrossValidationResult* result1=(CCrossValidationResult*)cross->evaluate();
-	float64_t mean1 = result1->mean;
+	float64_t mean1 = result1->get_mean();
 	
 	cross->parallel->set_num_threads(3);
 
 	CCrossValidationResult* result2=(CCrossValidationResult*)cross->evaluate();
-	float64_t mean2 = result2->mean;
+	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);
 

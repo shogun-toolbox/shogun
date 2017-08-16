@@ -50,7 +50,7 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 }
 
 SGMatrix<float64_t> calculate_weights(
-    ParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
+    CParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
 {
 	int32_t column = 0;
 	SGMatrix<float64_t> weights(len, folds * run);
