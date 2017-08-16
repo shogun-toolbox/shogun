@@ -135,7 +135,7 @@ TEST(KNN, lsh_solver)
 	CFeatures* features_test = (CFeatures*) features->clone();	
 	CLabels* labels_test = (CLabels*) labels->clone();
 
-	int32_t k=4;
+	index_t k=4;
 	CEuclideanDistance* distance = new CEuclideanDistance();	
 	CKNN* knn=new CKNN (k, distance, labels, KNN_LSH);
 	SG_REF(knn);

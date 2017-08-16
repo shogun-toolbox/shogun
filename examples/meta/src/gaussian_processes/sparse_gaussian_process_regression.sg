@@ -18,7 +18,7 @@ ZeroMean mean_function()
 #![create_kernel_and_mean_function]
 
 #![create_inference]
-IntVector inducing_points(3)
+LongIntVector inducing_points(3)
 inducing_points[0]=0
 inducing_points[1]=1
 inducing_points[2]=2

@@ -178,14 +178,14 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
-	int32_t num_vec  = m_features->get_num_vectors();
+	index_t num_vec  = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
 		SG_ERROR("Dimension mismatch between features and labels in MCLDA training")
 
 	index_t* class_idxs = SG_MALLOC(index_t, num_vec*m_num_classes);
 	index_t* class_nums = SG_MALLOC(index_t, m_num_classes); // number of examples of each class
-	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
+	memset(class_nums, 0, m_num_classes*sizeof(index_t));
 
 	for (index_t i = 0; i < train_labels.vlen; i++)
 	{

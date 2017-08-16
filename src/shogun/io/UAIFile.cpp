@@ -269,7 +269,7 @@ void CUAIFile::set_factors_scope(int num_factors,
     {
         SGVector<int32_t> scope = factors_scope[i];
         m_factors_scope[i] = scope;
-        fprintf(file, "%d ", scope.vlen);
+        fprintf(file, "%lld ", scope.vlen);
         for (int32_t j=0; j<scope.vlen; j++)
             fprintf(file, "%d ", scope[j]);
         fprintf(file, "\n");

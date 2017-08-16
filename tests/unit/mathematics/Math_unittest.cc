@@ -386,29 +386,29 @@ TEST(CMath, get_abs_tolerance)
 
 TEST(CMath, permute)
 {
-	SGVector<int32_t> v(4);
+	SGVector<index_t> v(4);
 	v.range_fill(0);
 	CMath::init_random(2);
 	CMath::permute(v);
 
 	EXPECT_EQ(v[0], 2);
-	EXPECT_EQ(v[1], 1);
-	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 0);
+	EXPECT_EQ(v[1], 3);
+	EXPECT_EQ(v[2], 0);
+	EXPECT_EQ(v[3], 1);
 }
 
 TEST(CMath, permute_with_random)
 {
-	SGVector<int32_t> v(4);
+	SGVector<index_t> v(4);
 	v.range_fill(0);
 	CRandom* random = new CRandom(2);
 	CMath::permute(v, random);
 	SG_UNREF(random);
 
 	EXPECT_EQ(v[0], 2);
-	EXPECT_EQ(v[1], 1);
-	EXPECT_EQ(v[2], 3);
-	EXPECT_EQ(v[3], 0);
+	EXPECT_EQ(v[1], 3);
+	EXPECT_EQ(v[2], 0);
+	EXPECT_EQ(v[3], 1);
 }
 
 TEST(CMath,misc)

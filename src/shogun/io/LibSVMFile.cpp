@@ -357,7 +357,7 @@ void CLibSVMFile::set_sparse_matrix( \
 		\
 		for (index_t j=0; j<matrix[i].num_feat_entries; j++) \
 		{ \
-			fprintf(file, "%d%c%" format " ", \
+			fprintf(file, "%lld%c%" format " ", \
 			matrix[i].features[j].feat_index+1, \
 			m_delimiter_feat, \
 			matrix[i].features[j].entry); \

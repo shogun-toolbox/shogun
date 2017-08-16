@@ -154,7 +154,7 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(index_t vec_idx1, const float64_t*
 	{
 		for (index_t i=0; i<vec.size(); i++)
 		{
-			int32_t n_idx = i * vec.size() + i;
+			index_t n_idx = i * vec.size() + i;
 			uint32_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx) % dim;
 			result += vec2[idx] * vec[i] * vec[i];
 
@@ -197,7 +197,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, index_t vec_idx
 	{
 		for (index_t i=0; i<vec.size(); i++)
 		{
-			int32_t n_idx = i * vec.size() + i;
+			index_t n_idx = i * vec.size() + i;
 			uint32_t idx = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx) % dim;
 			vec2[idx] += val * vec[i] * vec[i];
 
