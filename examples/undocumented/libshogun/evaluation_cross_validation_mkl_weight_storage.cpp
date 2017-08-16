@@ -49,9 +49,10 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 	feat.display_matrix("feat");
 }
 
-SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs)
+SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
 {
-	SGMatrix<float64_t> weights;
+	int32_t column = 0;
+	SGMatrix<float64_t> weights(len, folds*run);
 	for (auto o : obs.get_observations())
 	{
 		for (auto fold : o->get_folds_results())
@@ -62,23 +63,16 @@ SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs)
 			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
 			auto w = k->get_subkernel_weights();
 
-			/* Allocate memory needed */
-			if (!weights.matrix)
-			{
-				weights = SGMatrix<float64_t>(
-				    w.vlen, o->get_num_folds() * o->get_num_runs());
-			}
-
 			/* Copy the weights inside the matrix */
-			index_t run_shift =
-			    fold->get_current_run_index() * w.vlen * o->get_num_folds();
-			index_t fold_shift = fold->get_current_fold_index() * w.vlen;
-			sg_memcpy(
-			    &weights.matrix[run_shift + fold_shift], w.vector,
-			    w.vlen * sizeof(float64_t));
+			/* Each of the columns will represent a set of weights */
+			for (int i=0; i<w.size(); i++)
+			{
+				weights.set_element(w[i], i, column);
+			}
 
 			SG_UNREF(k)
 			SG_UNREF(machine)
+			column++;
 		}
 	}
 	return weights;
@@ -138,7 +132,7 @@ void test_mkl_cross_validation()
 	CEvaluationResult* result=cross->evaluate();
 
 	/* print mkl weights */
-	auto weights = calculate_weights(mkl_obs);
+	auto weights = calculate_weights(mkl_obs, num_folds, 1, 3);
 	weights.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
@@ -156,7 +150,7 @@ void test_mkl_cross_validation()
 	result=cross->evaluate();
 
 	/* print mkl weights */
-	SGMatrix<float64_t> weights_2 = calculate_weights(mkl_obs);
+	SGMatrix<float64_t> weights_2 = calculate_weights(mkl_obs, num_folds, 2, 3);
 	weights_2.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
