@@ -57,12 +57,12 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
 		if (print_state) SG_PRINT("Direction is maximize\n")
-		best_result->mean=CMath::ALMOST_NEG_INFTY;
+		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
 	}
 	else
 	{
 		if (print_state) SG_PRINT("Direction is minimize\n")
-		best_result->mean=CMath::ALMOST_INFTY;
+		best_result->set_mean(CMath::ALMOST_INFTY);
 	}
 
 	/* underlying learning machine */
@@ -97,7 +97,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 		/* check if current result is better, delete old combinations */
 		if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 		{
-			if (result->mean>best_result->mean)
+			if (result->get_mean()>best_result->get_mean())
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
@@ -118,7 +118,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 		}
 		else
 		{
-			if (result->mean<best_result->mean)
+			if (result->get_mean()<best_result->get_mean())
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
