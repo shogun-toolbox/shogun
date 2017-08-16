@@ -32,68 +32,55 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/RefCount.h>
+
+#ifndef SHOGUN_PARAMETEROBSERVERCV_H
+#define SHOGUN_PARAMETEROBSERVERCV_H
+
+#include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
-using namespace shogun;
-
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+namespace shogun
 {
-	m_refcount = new RefCount(0);
-}
 
-ParameterObserverInterface::ParameterObserverInterface(
-    std::vector<std::string>& parameters)
-    : m_parameters(parameters)
-{
-	m_refcount = new RefCount(0);
-}
-
-ParameterObserverInterface::ParameterObserverInterface(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
-{
-	m_refcount = new RefCount(0);
-}
-
-ParameterObserverInterface::~ParameterObserverInterface()
-{
-	delete m_refcount;
-}
-
-bool ParameterObserverInterface::filter(const std::string& param)
-{
-	// If there are no specified parameters, then watch everything
-	if (m_parameters.size() == 0)
-		return true;
-
-	for (auto v : m_parameters)
-		if (v == param)
-			return true;
-	return false;
-}
-
-int32_t ParameterObserverInterface::ref()
-{
-	m_refcount->ref();
-	return m_refcount->ref_count();
-}
-
-int32_t ParameterObserverInterface::ref_count()
-{
-	return m_refcount->ref_count();
-}
-
-int32_t ParameterObserverInterface::unref()
-{
-	int32_t count = m_refcount->unref();
-	if (count <= 0)
+	/**
+	 * Base ParameterObserver class for CrossValidation.
+	 */
+	class ParameterObserverCV : public ParameterObserverInterface
 	{
-		delete this;
-		return 0;
-	}
-	else
-	{
-		return m_refcount->ref_count();
-	}
+
+	public:
+		ParameterObserverCV(bool verbose = false);
+		virtual ~ParameterObserverCV();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr ptr);
+		virtual void on_complete();
+
+		/* Erase all observations done so far */
+		virtual void clear();
+
+		/**
+		 * Get vector of observations
+		 * @return std::vector of observations
+		 */
+		const std::vector<CrossValidationStorage*>& get_observations() const;
+
+		void print_observed_value(CrossValidationStorage* value) const;
+
+	private:
+		void print_machine_information(CMachine* machine) const;
+
+	protected:
+		/**
+		 * Observation's vector
+		 */
+		std::vector<CrossValidationStorage*> m_observations;
+
+		/**
+		 * enable printing of information
+		 */
+		bool m_verbose;
+	};
 }
+
+#endif // SHOGUN_PARAMETEROBSERVERCV_H

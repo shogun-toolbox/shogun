@@ -24,8 +24,7 @@ parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
     from shogun import CrossValidation, CrossValidationResult
-    from shogun import CrossValidationPrintOutput
-    from shogun import CrossValidationMKLStorage, CrossValidationMulticlassStorage
+    from shogun import ParameterObserverCV
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import StratifiedCrossValidationSplitting
     from shogun import MulticlassLabels
@@ -71,19 +70,19 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     #cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
     #mkl_storage=CrossValidationMKLStorage()
     #cross_validation.add_cross_validation_output(mkl_storage)
-    multiclass_storage=CrossValidationMulticlassStorage()
-    multiclass_storage.append_binary_evaluation(F1Measure())
-    cross_validation.add_cross_validation_output(multiclass_storage)
-    cross_validation.set_num_runs(3)
+    #multiclass_storage=ParameterObserverCV()
+    #multiclass_storage.append_binary_evaluation(F1Measure())
+    #cross_validation.subscribe_to_parameters(multiclass_storage)
+    #cross_validation.set_num_runs(3)
 
     # perform cross-validation
     result=cross_validation.evaluate()
 
-    roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
+    #roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
     #print roc_0_0_0
-    auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
+    #auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
     #print auc_0_0_0
-    return roc_0_0_0, auc_0_0_0
+    #return roc_0_0_0, auc_0_0_0
 
 
 if __name__=='__main__':
