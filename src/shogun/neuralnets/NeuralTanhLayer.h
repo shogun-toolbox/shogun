@@ -39,10 +39,8 @@
 namespace shogun
 {
 /** @brief Neural layer with linear neurons, with a
- * [softmax activation](http://en.wikipedia.org/wiki/Softmax_function) function.
+ * [tanh activation](https://en.wikipedia.org/wiki/Activation_function) function.
  * can be only be used as an output layer.
- * [Cross entropy](http://en.wikipedia.org/wiki/Cross_entropy) error measure is
- * used.
  *
  */
 class CNeuralTanhLayer : public CNeuralLinearLayer

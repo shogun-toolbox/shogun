@@ -58,9 +58,6 @@ namespace shogun
  * \f$ h_t \f$ is the value of the hidden states at the current time step and \f$ V \f$ is 
  * the weights matrix between this hidden layer and the output layer
  *
- * The error function used is the [cross-entropy loss](https://en.wikipedia.org/wiki/Cross_entropy#Cross-entropy_error_function_and_logistic_regression)
- * given by: \f$ L(y, o) = - 1/N \sum_n y_n log o_n \f$
- *
  */
 class CNeuralRecurrentLayer : public CNeuralLinearLayer
 {
