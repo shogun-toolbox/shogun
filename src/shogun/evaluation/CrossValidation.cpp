@@ -222,7 +222,9 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->set_test_indices(subset_indices);
 			fold->set_test_result(result_labels);
-			fold->set_test_true_result(m_labels);
+			CLabels * true_labels = (CLabels*) m_labels->clone();
+			fold->set_test_true_result(true_labels);
+			SG_UNREF(true_labels)
 			fold->post_update_results();
 			fold->set_evaluation_result(results[i]);
 
@@ -343,7 +345,9 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->set_test_indices(subset_indices);
 			fold->set_test_result(result_labels);
-			fold->set_test_true_result(labels);
+			CLabels * true_labels = (CLabels*) labels->clone();
+			fold->set_test_true_result(true_labels);
+			SG_UNREF(true_labels)
 			fold->post_update_results();
 			fold->set_evaluation_result(results[i]);
 
