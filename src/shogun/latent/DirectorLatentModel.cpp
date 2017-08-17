@@ -14,7 +14,7 @@ CDirectorLatentModel::~CDirectorLatentModel()
 
 }
 
-int32_t CDirectorLatentModel::get_dim() const
+index_t CDirectorLatentModel::get_dim() const
 {
 	SG_ERROR("Please implemement get_dim() in your target language before use\n")
 	return 0;
