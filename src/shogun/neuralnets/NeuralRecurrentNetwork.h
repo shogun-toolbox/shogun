@@ -47,60 +47,8 @@ class CDynamicObjectArray;
 class CNeuralLayer;
 class CNeuralRecurrentLayer;
 
-/** @brief A generic multi-layer neural network
+/** @brief A recurrent neural network
  *
- * A [Neural network](http://en.wikipedia.org/wiki/Artificial_neural_network)
- * is constructed using an array of CNeuralLayer objects. The NeuralLayer
- * class defines the interface necessary for forward and
- * [backpropagation](http://en.wikipedia.org/wiki/Backpropagation).
- *
- * The network can be constructed as any arbitrary directed acyclic graph.
- *
- * How to use the network:
- * 	- Prepare a CDynamicObjectArray of CNeuralLayer-based objects that specify
- * the type of layers used in the network. The array must contain at least one
- * input layer. The last layer in the array is treated as the output layer.
- * Also note that forward propagation is performed in the order at which the
- * layers appear in the array. So if layer j takes its input from layer i then
- * i must be less than j.
- * 	- Specify how the layers are connected together. This can be done using
- * either connect() or quick_connect().
- * 	- Call initialize_neural_network()
- * 	- Specify the training parameters if needed
- * 	- Train set_labels() and train()
- * 	- If needed, the network with the learned parameters can be stored on disk
- * using save_serializable() (loaded using load_serializable())
- * 	- Apply the network using apply()
- *
- * The network can also be initialized from a JSON file using
- * CNeuralRecurrentNetworkFileReader.
- *
- * Supported feature types: CDenseFeatures<float64_t>
- * Supported label types:
- * 	- CBinaryLabels
- * 	- CMulticlassLabels
- * 	- CRegressionLabels
- *
- * The neural network can be trained using
- * [L-BFGS](http://en.wikipedia.org/wiki/Limited-memory_BFGS) (default) or
- * [mini-batch gradient descent]
- * (http://en.wikipedia.org/wiki/Stochastic_gradient_descent).
- *
- * NOTE: LBFGS does not work properly when using dropout/max-norm regularization
- * due to their stochastic nature. Use gradient descent instead.
- *
- * During training, the error at each iteration is logged as MSG_INFO. (to turn
- * on info messages call sg_io->set_loglevel(MSG_INFO)).
- *
- * The network stores the parameters of all the  layers in a single array. This
- * makes it easy to train a network of any combination of arbitrary layer types
- * using any optimization method (gradient descent, L-BFGS, ..)
- *
- * All the matrices the network (and related classes) deal with are in
- * column-major format
- *
- * When implementing new layer types, the function check_gradients() can be used
- * to make sure the gradient computations are correct.
  */
 class CNeuralRecurrentNetwork : public CNeuralNetwork
 {
