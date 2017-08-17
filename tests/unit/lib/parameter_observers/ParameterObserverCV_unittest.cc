@@ -42,8 +42,8 @@
 #include <shogun/lib/parameter_observers/ParameterObserverCV.h>
 #include <shogun/regression/KernelRidgeRegression.h>
 
-#include <gtest/gtest.h>
 #include "environments/RegressionTestEnvironment.h"
+#include <gtest/gtest.h>
 #include <memory>
 
 using namespace shogun;

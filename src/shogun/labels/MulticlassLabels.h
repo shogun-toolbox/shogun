@@ -137,9 +137,9 @@ class CMulticlassLabels : public CDenseLabels
 		/**
 		 * Cast a generic label object to a multiclass one
 		 * @param labels generic CLabels instance
-		 * @return a
+		 * @return the casted pointer (already SG_REF'ed)
 		 */
-		static CMulticlassLabels * obtain_from_generic(CLabels * labels);
+		static CMulticlassLabels* obtain_from_generic(CLabels* labels);
 
 	private:
 		/** initialises and register parameters */

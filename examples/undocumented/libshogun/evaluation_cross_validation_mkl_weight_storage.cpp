@@ -49,10 +49,11 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 	feat.display_matrix("feat");
 }
 
-SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
+SGMatrix<float64_t> calculate_weights(
+    ParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
 {
 	int32_t column = 0;
-	SGMatrix<float64_t> weights(len, folds*run);
+	SGMatrix<float64_t> weights(len, folds * run);
 	for (auto o : obs.get_observations())
 	{
 		for (auto fold : o->get_folds_results())
@@ -65,7 +66,7 @@ SGMatrix<float64_t> calculate_weights(ParameterObserverCV& obs, int32_t folds, i
 
 			/* Copy the weights inside the matrix */
 			/* Each of the columns will represent a set of weights */
-			for (int i=0; i<w.size(); i++)
+			for (auto i = 0; i < w.size(); i++)
 			{
 				weights.set_element(w[i], i, column);
 			}
