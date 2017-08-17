@@ -134,6 +134,12 @@ class CMulticlassLabels : public CDenseLabels
 #ifndef SWIG // SWIG should skip this part
 		virtual CLabels* shallow_subset_copy();
 #endif
+		/**
+		 * Cast a generic label object to a multiclass one
+		 * @param labels generic CLabels instance
+		 * @return a
+		 */
+		static CMulticlassLabels * obtain_from_generic(CLabels * labels);
 
 	private:
 		/** initialises and register parameters */

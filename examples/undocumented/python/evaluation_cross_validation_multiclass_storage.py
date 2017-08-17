@@ -32,6 +32,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun import GaussianKernel, CombinedKernel
     from shogun import MKLMulticlass
     from shogun import Statistics, MSG_DEBUG, Math
+    from shogun import ROCEvaluation
 
     Math.init_random(1)
 
@@ -66,23 +67,28 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
         splitting_strategy, evaluation_criterium)
     cross_validation.set_autolock(False)
 
-    # append cross vlaidation output classes
-    #cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
-    #mkl_storage=CrossValidationMKLStorage()
-    #cross_validation.add_cross_validation_output(mkl_storage)
-    #multiclass_storage=ParameterObserverCV()
-    #multiclass_storage.append_binary_evaluation(F1Measure())
-    #cross_validation.subscribe_to_parameters(multiclass_storage)
-    #cross_validation.set_num_runs(3)
+    # append cross validation parameter observer
+    multiclass_storage=ParameterObserverCV()
+    cross_validation.subscribe_to_parameters(multiclass_storage)
+    cross_validation.set_num_runs(3)
 
     # perform cross-validation
     result=cross_validation.evaluate()
 
-    #roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
-    #print roc_0_0_0
-    #auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
-    #print auc_0_0_0
-    #return roc_0_0_0, auc_0_0_0
+    # get first observation and first fold
+    obs = multiclass_storage.get_observations()[0]
+    fold = obs.get_folds_results()[0]
+
+    # get fold ROC for first class
+    eval_ROC = ROCEvaluation()
+    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_result()).get_binary_for_class(0)
+    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get_test_true_result()).get_binary_for_class(0)
+    eval_ROC.evaluate(pred_lab_binary, true_lab_binary)
+    print eval_ROC.get_ROC()
+
+    # get fold evaluation result
+    acc_measure = F1Measure()
+    print acc_measure.evaluate(pred_lab_binary, true_lab_binary)
 
 
 if __name__=='__main__':
