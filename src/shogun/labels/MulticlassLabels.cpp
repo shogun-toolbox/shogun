@@ -179,7 +179,7 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels *labels)
+CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 {
 	if (labels == NULL)
 		return NULL;
@@ -190,7 +190,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels *labels)
 		return NULL;
 	}
 
-	CMulticlassLabels * casted = dynamic_cast<CMulticlassLabels*>(labels);
+	CMulticlassLabels* casted = dynamic_cast<CMulticlassLabels*>(labels);
 	SG_REF(casted)
 	return casted;
 }
