@@ -365,3 +365,36 @@ TEST(SGVectorTest, resize_vector_larger)
 	for (index_t i=len; i<new_len; i++)
 		EXPECT_EQ(m[i], 0);
 }
+
+TEST(SGVectorTest, iterator)
+{
+	const index_t len = 6;
+
+	SGVector<float64_t> vec(len);
+	for (index_t i = 0; i < len; ++i)
+		vec[i] = CMath::randn_double();
+
+	index_t i = 0;
+	for (const auto& v : vec)
+	{
+		EXPECT_EQ(&v, vec.vector+i);
+		++i;
+	}
+}
+
+TEST(SGVectorTest, const_iterator)
+{
+	const index_t len = 6;
+
+	SGVector<float64_t> vec(len);
+	for (index_t i = 0; i < len; ++i)
+		vec[i] = CMath::randn_double();
+
+	index_t i = 0;
+	for (auto iter=vec.cbegin(); iter!=vec.cend(); ++iter)
+	{
+		const auto& v = *iter;
+		EXPECT_EQ(&v, vec.vector+i);
+		++i;
+	}
+}

@@ -665,3 +665,38 @@ TEST(SGMatrixTest, set_column)
 	for (index_t i = 0; i < n_rows; ++i)
 		EXPECT_EQ(mat(i, col), vec[i]);
 }
+
+TEST(SGMatrixTest, iterator)
+{
+	const index_t n_rows = 6, n_cols = 8;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	index_t j = 0;
+	for (const auto& col : mat)
+	{
+		EXPECT_EQ(col.vector, mat.get_column_vector(j));
+		EXPECT_EQ(col.vlen, n_rows);
+		++j;
+	}
+}
+
+TEST(SGMatrixTest, const_iterator)
+{
+	const index_t n_rows = 6, n_cols = 8;
+
+	SGMatrix<float64_t> mat(n_rows, n_cols);
+	for (index_t i = 0; i < n_rows * n_cols; ++i)
+		mat[i] = CMath::randn_double();
+
+	index_t j = 0;
+	for (auto iter = mat.cbegin(); iter != mat.cend(); ++iter)
+	{
+		const auto& col = *iter;
+		EXPECT_EQ(col.vector, mat.get_column_vector(j));
+		EXPECT_EQ(col.vlen, n_rows);
+		++j;
+	}
+}

@@ -93,7 +93,7 @@ template<class T>
 SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len), gpu_ptr(NULL)
 {
-	vector=SG_MALLOC(T, len);
+	vector=SG_CALLOC(T, len);
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
@@ -990,6 +990,100 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 	}
 }
 
+#ifndef SWIG // SWIG should skip this parts
+// Iterator implementation
+template <class T>
+typename SGVector<T>::iterator SGVector<T>::begin()
+{
+	return iterator(vector);
+}
+
+template <class T>
+typename SGVector<T>::iterator SGVector<T>::end()
+{
+	return iterator(vector+vlen);
+}
+
+template <class T>
+typename SGVector<T>::iterator::reference SGVector<T>::iterator::operator*()
+{
+	return *m_data;
+}
+
+template <class T>
+typename SGVector<T>::iterator& SGVector<T>::iterator::operator++()
+{
+	++m_data;
+	return *this;
+}
+
+template <class T>
+typename SGVector<T>::iterator SGVector<T>::iterator::operator++(int)
+{
+	iterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+template <class T>
+bool SGVector<T>::iterator::operator==(const iterator& rhs) const
+{
+	return m_data == rhs.m_data;
+}
+
+template <class T>
+bool SGVector<T>::iterator::operator!=(const iterator& rhs) const
+{
+	return !(*this == rhs);
+}
+
+// Const-iterator implementation
+template <class T>
+typename SGVector<T>::const_iterator SGVector<T>::cbegin() const
+{
+	return const_iterator(vector);
+}
+
+template <class T>
+typename SGVector<T>::const_iterator SGVector<T>::cend() const
+{
+	return const_iterator(vector+vlen);
+}
+
+template <class T>
+typename SGVector<T>::const_iterator::reference SGVector<T>::const_iterator::operator*()
+{
+	return *m_data;
+}
+
+template <class T>
+typename SGVector<T>::const_iterator& SGVector<T>::const_iterator::operator++()
+{
+	++m_data;
+	return *this;
+}
+
+template <class T>
+typename SGVector<T>::const_iterator SGVector<T>::const_iterator::operator++(int)
+{
+	const_iterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+template <class T>
+bool SGVector<T>::const_iterator::operator==(const const_iterator& rhs) const
+{
+	return m_data == rhs.m_data;
+}
+
+template <class T>
+bool SGVector<T>::const_iterator::operator!=(const const_iterator& rhs) const
+{
+	return !(*this == rhs);
+}
+#endif // SWIG
+
 #define UNDEFINED(function, type)	\
 template <>	\
 SGVector<float64_t> SGVector<type>::function()	\
@@ -1042,6 +1136,7 @@ template class SGVector<float32_t>;
 template class SGVector<float64_t>;
 template class SGVector<floatmax_t>;
 template class SGVector<complex128_t>;
+
 }
 
 #undef COMPLEX128_ERROR_NOARG

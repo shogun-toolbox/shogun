@@ -1234,6 +1234,100 @@ SGVector<T> SGMatrix<T>::get_diagonal_vector() const
 	return diag;
 }
 
+#ifndef SWIG // SWIG should skip this parts
+// Iterator implementation
+template <class T>
+typename SGMatrix<T>::iterator SGMatrix<T>::begin()
+{
+	return iterator(get_column(0));
+}
+
+template <class T>
+typename SGMatrix<T>::iterator SGMatrix<T>::end()
+{
+	return iterator(get_column(num_cols));
+}
+
+template <class T>
+typename SGMatrix<T>::iterator::reference SGMatrix<T>::iterator::operator*()
+{
+	return m_vector;
+}
+
+template <class T>
+typename SGMatrix<T>::iterator& SGMatrix<T>::iterator::operator++()
+{
+	m_vector.vector += m_vector.vlen;
+	return *this;
+}
+
+template <class T>
+typename SGMatrix<T>::iterator SGMatrix<T>::iterator::operator++(int)
+{
+	iterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+template <class T>
+bool SGMatrix<T>::iterator::operator==(const iterator& rhs) const
+{
+	return m_vector.vector == rhs.m_vector.vector;
+}
+
+template <class T>
+bool SGMatrix<T>::iterator::operator!=(const iterator& rhs) const
+{
+	return !(*this == rhs);
+}
+
+// Const-iterator implementation
+template <class T>
+typename SGMatrix<T>::const_iterator SGMatrix<T>::cbegin() const
+{
+	return const_iterator(get_column(0));
+}
+
+template <class T>
+typename SGMatrix<T>::const_iterator SGMatrix<T>::cend() const
+{
+	return const_iterator(get_column(num_cols));
+}
+
+template <class T>
+typename SGMatrix<T>::const_iterator::reference SGMatrix<T>::const_iterator::operator*()
+{
+	return m_vector;
+}
+
+template <class T>
+typename SGMatrix<T>::const_iterator& SGMatrix<T>::const_iterator::operator++()
+{
+	m_vector.vector += m_vector.vlen;
+	return *this;
+}
+
+template <class T>
+typename SGMatrix<T>::const_iterator SGMatrix<T>::const_iterator::operator++(int)
+{
+	const_iterator tmp(*this);
+	++(*this);
+	return tmp;
+}
+
+template <class T>
+bool SGMatrix<T>::const_iterator::operator==(const const_iterator& rhs) const
+{
+	return m_vector.vector == rhs.m_vector.vector;
+}
+
+template <class T>
+bool SGMatrix<T>::const_iterator::operator!=(const const_iterator& rhs) const
+{
+	return !(*this == rhs);
+}
+#endif // SWIG
+
 template class SGMatrix<bool>;
 template class SGMatrix<char>;
 template class SGMatrix<int8_t>;
@@ -1248,4 +1342,5 @@ template class SGMatrix<float32_t>;
 template class SGMatrix<float64_t>;
 template class SGMatrix<floatmax_t>;
 template class SGMatrix<complex128_t>;
+
 }

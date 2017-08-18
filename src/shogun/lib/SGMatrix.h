@@ -39,6 +39,82 @@ template<class T> class SGMatrix : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
 
+#ifndef SWIG // SWIG should skip this parts
+	class iterator
+	{
+		using value_type = SGVector<T>;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type *;
+		using reference = value_type &;
+		using iterator_category = std::forward_iterator_tag;
+
+		public:
+		/** default constructor */
+		iterator() = default;
+
+		/** constructor
+		 *
+		 * @param vector column pointed by the iterator
+		 */
+		iterator(SGVector<T> vector) : m_vector(vector) {}
+
+		/** dereference operator */
+		reference operator*();
+
+		/** pre-increment operator */
+		iterator &operator++();
+
+		/** post-increment operator */
+		iterator operator++(int);
+
+		/** equality operator */
+		bool operator==(const iterator& rhs) const;
+
+		/** inequality operator */
+		bool operator!=(const iterator& rhs) const;
+
+		protected:
+		value_type m_vector;
+	};
+
+	class const_iterator
+	{
+		using value_type = SGVector<T>;
+		using difference_type = std::ptrdiff_t;
+		using pointer = const value_type *;
+		using reference = const value_type &;
+		using iterator_category = std::forward_iterator_tag;
+
+		public:
+		/** default constructor */
+		const_iterator() = default;
+
+		/** constructor
+		 *
+		 * @param vector column pointed by the iterator
+		 */
+		const_iterator(SGVector<T> vector) : m_vector(vector) {}
+
+		/** dereference operator */
+		reference operator*();
+
+		/** pre-increment operator */
+		const_iterator &operator++();
+
+		/** post-increment operator */
+		const_iterator operator++(int);
+
+		/** equality operator */
+		bool operator==(const const_iterator& rhs) const;
+
+		/** inequality operator */
+		bool operator!=(const const_iterator& rhs) const;
+
+		protected:
+		value_type m_vector;
+	};
+#endif // SWIG
+
 	public:
 		typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 		typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
@@ -133,6 +209,30 @@ template<class T> class SGMatrix : public SGReferencedData
 		virtual ~SGMatrix();
 
 #ifndef SWIG // SWIG should skip this parts
+		/** iterator pointing to the first column in the matrix
+		 *
+		 * @return iterator
+		 */
+		iterator begin();
+
+		/** iterator pointing to the past-the-end column in the matrix
+		 *
+		 * @return iterator
+		 */
+		iterator end();
+
+		/** const iterator pointing to the first column in the matrix
+		 *
+		 * @return const iterator
+		 */
+		const_iterator cbegin() const;
+
+		/** const iterator pointing to the past-the-end column in the matrix
+		 *
+		 * @return const iterator
+		 */
+		const_iterator cend() const;
+
 		/** Get a column vector
 		 * @param col column index
 		 * @return the column vector for index col

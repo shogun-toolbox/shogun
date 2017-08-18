@@ -43,6 +43,82 @@ template<class T> class SGVector : public SGReferencedData
 {
 	friend class LinalgBackendEigen;
 
+#ifndef SWIG // SWIG should skip this part
+	class iterator
+	{
+		using value_type = T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type&;
+		using iterator_category = std::forward_iterator_tag;
+
+		public:
+		/** default constructor */
+		iterator() = default;
+
+		/** constructor
+		 *
+		 * @param data element pointed by the iterator
+		 */
+		iterator(pointer data) : m_data(data) {}
+
+		/** dereference operator */
+		reference operator*();
+
+		/** pre-increment operator */
+		iterator &operator++();
+
+		/** post-increment operator */
+		iterator operator++(int);
+
+		/** equality operator */
+		bool operator==(const iterator& rhs) const;
+
+		/** inequality operator */
+		bool operator!=(const iterator& rhs) const;
+
+		protected:
+		pointer m_data;
+	};
+
+	class const_iterator
+	{
+		using value_type = const T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type&;
+		using iterator_category = std::forward_iterator_tag;
+
+		public:
+		/** default constructor */
+		const_iterator() = default;
+
+		/** constructor
+		 *
+		 * @param data element pointed by the iterator
+		 */
+		const_iterator(pointer data) : m_data(data) {}
+
+		/** dereference operator */
+		reference operator*();
+
+		/** pre-increment operator */
+		const_iterator &operator++();
+
+		/** post-increment operator */
+		const_iterator operator++(int);
+
+		/** equality operator */
+		bool operator==(const const_iterator& rhs) const;
+
+		/** inequality operator */
+		bool operator!=(const const_iterator& rhs) const;
+
+		protected:
+		pointer m_data;
+	};
+#endif // SWIG
+
 	public:
 		typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
 		typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
@@ -149,6 +225,33 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Cast to pointer */
 		operator T*() { return vector; }
+
+
+#ifndef SWIG // SWIG should skip this part
+		/** iterator pointing to the first element in the vector
+		 *
+		 * @return iterator
+		 */
+		iterator begin();
+
+		/** iterator pointing to the past-the-end element in the vector
+		 *
+		 * @return iterator
+		 */
+		iterator end();
+
+		/** const iterator pointing to the first element in the vector
+		 *
+		 * @return const iterator
+		 */
+		const_iterator cbegin() const;
+
+		/** const iterator pointing to the past-the-end element in the vector
+		 *
+		 * @return const iterator
+		 */
+		const_iterator cend() const;
+#endif // SWIG
 
 		/** Fill vector with zeros */
 		void zero();
