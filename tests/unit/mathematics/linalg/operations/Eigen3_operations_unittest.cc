@@ -503,6 +503,44 @@ TEST(LinalgBackendEigen, SGMatrix_block_elementwise_product)
 			EXPECT_NEAR(result(i, j), A(i, j) * B(i, j), 1E-15);
 }
 
+TEST(LinalgBackendEigen, SGVector_elementwise_product)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	SGVector<float64_t> b(len);
+	SGVector<float64_t> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = 0.5*i;
+	}
+
+	c = element_prod(a, b);
+
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(a[i]*b[i], c[i], 1e-15);
+}
+
+TEST(LinalgBackendEigen, SGVector_elementwise_product_in_place)
+{
+	const index_t len = 4;
+	SGVector<float64_t> a(len);
+	SGVector<float64_t> b(len);
+	SGVector<float64_t> c(len);
+
+	for (index_t i = 0; i < len; ++i)
+	{
+		a[i] = i;
+		b[i] = 0.5*i;
+		c[i] = i;
+	}
+
+	element_prod(a, b, a);
+	for (index_t i = 0; i < len; ++i)
+		EXPECT_NEAR(c[i]*b[i], a[i], 1e-15);
+}
+
 TEST(LinalgBackendEigen, SGVector_exponent)
 {
 	const index_t len = 4;

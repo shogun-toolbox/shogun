@@ -295,7 +295,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGVector<T>& a, SGVector<T>& b, SGVector<T>& result, T alpha = 1,
+		add(const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result, T alpha = 1,
 		    T beta = 1)
 		{
 			REQUIRE(
@@ -335,7 +335,7 @@ namespace shogun
 		 */
 		template <typename T>
 		void
-		add(SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result, T alpha = 1,
+		add(const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result, T alpha = 1,
 		    T beta = 1)
 		{
 			REQUIRE(
@@ -373,7 +373,7 @@ namespace shogun
 		 */
 		template <typename T, template <typename> class Container>
 		Container<T>
-		add(Container<T>& a, Container<T>& b, T alpha = 1, T beta = 1)
+		add(const Container<T>& a, const Container<T>& b, T alpha = 1, T beta = 1)
 		{
 			auto result = a.clone();
 			add(a, b, result, alpha, beta);
@@ -791,6 +791,50 @@ namespace shogun
 			SGMatrix<T> result;
 			result = a.clone();
 
+			element_prod(a, b, result);
+
+			return result;
+		}
+
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		void element_prod(const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result)
+		{
+			REQUIRE(
+				a.vlen == b.vlen,
+				"Dimension mismatch! A(%d) vs B(%d)\n", a.vlen, b.vlen);
+			REQUIRE(
+				a.vlen == result.vlen,
+				"Dimension mismatch! A(%d) vs result(%d)\n", a.vlen, result.vlen);
+
+			infer_backend(a, b)->element_prod(a, b, result);
+		}
+
+		/** Performs the operation C = A .* B where ".*" denotes elementwise
+		 * multiplication.
+		 *
+		 * This version returns the result in a newly created vector.
+		 *
+		 * @param a First vector
+		 * @param b Second vector
+		 * @return The result of the operation
+		 */
+		template <typename T>
+		SGVector<T> element_prod(const SGVector<T>& a, const SGVector<T>& b)
+		{
+			REQUIRE(
+				a.vlen == b.vlen,
+				"Dimension mismatch! A(%d) vs B(%d)\n", a.vlen, b.vlen);
+
+			SGVector<T> result = a.clone();
 			element_prod(a, b, result);
 
 			return result;

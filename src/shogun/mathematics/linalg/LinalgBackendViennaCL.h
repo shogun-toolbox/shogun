@@ -77,7 +77,7 @@ namespace shogun
 
 	/** Implementation of @see LinalgBackendBase::add */
 	#define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container) \
-	virtual void add(Container<Type>& a, Container<Type>& b, Type alpha, \
+	virtual void add(const Container<Type>& a, const Container<Type>& b, Type alpha, \
 		Type beta, Container<Type>& result) const \
 	{  \
 		add_impl(a, b, alpha, beta, result); \
@@ -293,7 +293,7 @@ namespace shogun
 		/** ViennaCL vector result = alpha * A + beta * B method */
 		template <typename T>
 		void add_impl(
-		    SGVector<T>& a, SGVector<T>& b, T alpha, T beta,
+		    const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta,
 		    SGVector<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
@@ -308,7 +308,7 @@ namespace shogun
 		/** ViennaCL matrix result = alpha * A + beta * B method */
 		template <typename T>
 		void add_impl(
-		    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta,
+		    const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta,
 		    SGMatrix<T>& result) const
 		{
 			GPUMemoryViennaCL<T>* a_gpu = cast_to_viennacl(a);
