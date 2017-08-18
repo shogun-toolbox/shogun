@@ -37,7 +37,7 @@ using namespace shogun;
 
 #define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
 	void LinalgBackendEigen::add(                                              \
-	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
+	    const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta,         \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		add_impl(a, b, alpha, beta, result);                                   \
@@ -87,16 +87,17 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_DOT, SGVector)
 
 #define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
 	void LinalgBackendEigen::element_prod(                                     \
-	    Container<Type>& a, Container<Type>& b, Container<Type>& result) const \
+	    const Container<Type>& a, const Container<Type>& b, Container<Type>& result) const \
 	{                                                                          \
 		element_prod_impl(a, b, result);                                       \
 	}
 DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
 #undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	void LinalgBackendEigen::element_prod(                                     \
-	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
+	    const linalg::Block<Container<Type>>& a, const linalg::Block<Container<Type>>& b,  \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		element_prod_impl(a, b, result);                                       \
@@ -142,7 +143,7 @@ DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_SCALE, SGMatrix)
 
 template <typename T>
 void LinalgBackendEigen::add_impl(
-    SGVector<T>& a, SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
+    const SGVector<T>& a, const SGVector<T>& b, T alpha, T beta, SGVector<T>& result) const
 {
 	typename SGVector<T>::EigenVectorXtMap a_eig = a;
 	typename SGVector<T>::EigenVectorXtMap b_eig = b;
@@ -153,7 +154,7 @@ void LinalgBackendEigen::add_impl(
 
 template <typename T>
 void LinalgBackendEigen::add_impl(
-    SGMatrix<T>& a, SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
+    const SGMatrix<T>& a, const SGMatrix<T>& b, T alpha, T beta, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
@@ -221,7 +222,7 @@ T LinalgBackendEigen::dot_impl(const SGVector<T>& a, const SGVector<T>& b) const
 
 template <typename T>
 void LinalgBackendEigen::element_prod_impl(
-    SGMatrix<T>& a, SGMatrix<T>& b, SGMatrix<T>& result) const
+	const SGMatrix<T>& a, const SGMatrix<T>& b, SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a;
 	typename SGMatrix<T>::EigenMatrixXtMap b_eig = b;
@@ -232,7 +233,7 @@ void LinalgBackendEigen::element_prod_impl(
 
 template <typename T>
 void LinalgBackendEigen::element_prod_impl(
-    linalg::Block<SGMatrix<T>>& a, linalg::Block<SGMatrix<T>>& b,
+	const linalg::Block<SGMatrix<T>>& a, const linalg::Block<SGMatrix<T>>& b,
     SGMatrix<T>& result) const
 {
 	typename SGMatrix<T>::EigenMatrixXtMap a_eig = a.m_matrix;
@@ -246,6 +247,18 @@ void LinalgBackendEigen::element_prod_impl(
 
 	result_eig = a_block.array() * b_block.array();
 }
+
+template <typename T>
+void LinalgBackendEigen::element_prod_impl(
+	const SGVector<T>& a, const SGVector<T>& b, SGVector<T>& result) const
+{
+	typename SGVector<T>::EigenVectorXtMap a_eig = a;
+	typename SGVector<T>::EigenVectorXtMap b_eig = b;
+	typename SGVector<T>::EigenVectorXtMap result_eig = result;
+
+	result_eig = a_eig.array() * b_eig.array();
+}
+
 
 template <typename T>
 void LinalgBackendEigen::exponent_impl(
