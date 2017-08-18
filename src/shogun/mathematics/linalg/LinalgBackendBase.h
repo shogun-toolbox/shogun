@@ -97,7 +97,7 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_ADD(Type, Container)                          \
 	virtual void add(                                                          \
-	    Container<Type>& a, Container<Type>& b, Type alpha, Type beta,         \
+	    const Container<Type>& a, const Container<Type>& b, Type alpha, Type beta,         \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
@@ -259,17 +259,18 @@ namespace shogun
 #undef BACKEND_GENERIC_EIGEN_SOLVER_SYMMETRIC
 
 /**
- * Wrapper method of in-place matrix elementwise product.
+ * Wrapper method of in-place matrix/vector elementwise product.
  *
  * @see linalg::element_prod
  */
 #define BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD(Type, Container)                 \
 	virtual void element_prod(                                                 \
-	    Container<Type>& a, Container<Type>& b, Container<Type>& result) const \
+	    const Container<Type>& a, const Container<Type>& b, Container<Type>& result) const \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
 		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGMatrix)
+		DEFINE_FOR_ALL_PTYPE(BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD, SGVector)
 #undef BACKEND_GENERIC_IN_PLACE_ELEMENT_PROD
 
 /**
@@ -279,13 +280,12 @@ namespace shogun
  */
 #define BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD(Type, Container)           \
 	virtual void element_prod(                                                 \
-	    linalg::Block<Container<Type>>& a, linalg::Block<Container<Type>>& b,  \
+	    const linalg::Block<Container<Type>>& a, const linalg::Block<Container<Type>>& b,  \
 	    Container<Type>& result) const                                         \
 	{                                                                          \
 		SG_SNOTIMPLEMENTED;                                                    \
 	}
-		DEFINE_FOR_ALL_PTYPE(
-		    BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
+		DEFINE_FOR_ALL_PTYPE(	   BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD, SGMatrix)
 #undef BACKEND_GENERIC_IN_PLACE_BLOCK_ELEMENT_PROD
 
 /**
