@@ -45,3 +45,8 @@ CrossValidationResult result()
 result = result.obtain_from_generic(cross.evaluate())
 result.print_result()
 #![evaluate]
+
+#![get_results]
+real evaluations_mean = result.get_mean()
+real standard_deviation = result.get_std_dev()
+#![get_results]

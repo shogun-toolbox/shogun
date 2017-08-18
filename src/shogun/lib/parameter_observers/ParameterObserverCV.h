@@ -36,6 +36,7 @@
 #ifndef SHOGUN_PARAMETEROBSERVERCV_H
 #define SHOGUN_PARAMETEROBSERVERCV_H
 
+#include <shogun/base/SGObject.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
@@ -45,7 +46,7 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class CParameterObserverCV : public ParameterObserverInterface
+	class CParameterObserverCV : public ParameterObserverInterface, public CSGObject
 	{
 
 	public:
@@ -66,6 +67,15 @@ namespace shogun
 		const std::vector<CrossValidationStorage*>& get_observations() const;
 
 		void print_observed_value(CrossValidationStorage* value) const;
+
+		/**
+ 		* Get class name.
+ 		* @return class name
+ 		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverCV";
+		}
 
 	private:
 		void print_machine_information(CMachine* machine) const;
