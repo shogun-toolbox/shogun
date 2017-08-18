@@ -37,7 +37,7 @@
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface() :  CSGObject(), m_parameters()
+ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
 {
 }
 

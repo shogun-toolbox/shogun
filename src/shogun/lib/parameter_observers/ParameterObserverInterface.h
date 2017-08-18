@@ -38,7 +38,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 
@@ -53,7 +52,7 @@ namespace shogun
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserverInterface : public CSGObject
+	class ParameterObserverInterface
 	{
 
 	public:
@@ -108,15 +107,6 @@ namespace shogun
 		 * obseverd value it may have stored.
 		 */
 		virtual void clear(){};
-
-		/**
-		 * Get class name.
-		 * @return class name
-		 */
-		virtual const char* get_name() const
-		{
-			return "ParameterObserverInterface";
-		}
 
 	protected:
 		/**
