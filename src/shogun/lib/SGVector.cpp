@@ -121,6 +121,23 @@ SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 	copy_data(orig);
 }
 
+#ifndef SWIG
+template <class T>
+SGVector<T>::SGVector(std::initializer_list<T> list)
+	: SGReferencedData(true)
+{
+	ASSERT(list.size() > 0)
+	vlen = (index_t) list.size();
+	vector = SG_MALLOC(T, vlen);
+
+	index_t i = 0;
+	for (auto e : list)
+		vector[i++] = e;
+
+	m_on_gpu.store(false, std::memory_order_release);
+}
+#endif //SWIG
+
 template<class T>
 SGVector<T>& SGVector<T>::operator=(const SGVector<T>& other)
 {

@@ -16,6 +16,7 @@
 #include <shogun/preprocessor/PCA.h>
 
 #include <iterator>
+#include <shogun/base/some.h>
 
 /// useful shorthands to perform operations with Eigen matrices
 
@@ -315,22 +316,16 @@ SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* 
 
 	// Substract the mean of the features
 	// Create clone of the features to keep the input features unmodified
-	CDenseFeatures<float64_t>* cloned_features =
-			new CDenseFeatures<float64_t>(features->get_feature_matrix().clone());
-	CPruneVarSubMean* mean_substractor =
-			new CPruneVarSubMean(false); // false to avoid variance normalization
-	mean_substractor->init(cloned_features);
-	mean_substractor->apply_to_feature_matrix(cloned_features);
+	auto mean_substractor =
+		some<CPruneVarSubMean>(false); // false to avoid variance normalization
+	mean_substractor->init(features);
+	auto centered_feats = features->preprocess(mean_substractor);
 
 	// Obtain the linear transform applying PCA
-	CPCA* pca = new CPCA();
-	pca->set_target_dim(cloned_features->get_num_features());
-	pca->init(cloned_features);
+	auto pca = some<CPCA>();
+	pca->set_target_dim(centered_feats->get_num_features());
+	pca->init(centered_feats);
 	SGMatrix<float64_t> pca_transform = pca->get_transformation_matrix();
-
-	SG_UNREF(pca);
-	SG_UNREF(mean_substractor);
-	SG_UNREF(cloned_features);
 
 	return pca_transform;
 }
@@ -530,14 +525,10 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a
-	x->add_subset(SGVector<index_t>(a.data(), a.size(), false));
-	CDenseFeatures<float64_t>* afeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
-	x->remove_subset();
+	auto afeats = x->view(a);
 
 	// create new features only containing examples whose indices are in b
-	x->add_subset(SGVector<index_t>(b.data(), b.size(), false));
-	CDenseFeatures<float64_t>* bfeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
-	x->remove_subset();
+	auto bfeats = x->view(b);
 
 	// create and return distance
 	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);

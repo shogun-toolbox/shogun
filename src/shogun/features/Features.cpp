@@ -32,13 +32,11 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
-	// Call to init creates new preproc and preprocessed arrays.
-	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
-	preproc = orig.preproc;
-	preprocessed = orig.preprocessed;
-	SG_REF(preproc);
-	SG_REF(preprocessed);
+	for (index_t i = 0; i < orig.get_num_preprocessors(); ++i)
+	{
+		preproc->push_back(orig.get_preprocessor(i));
+		preprocessed->push_back(orig.is_preprocessed(i));
+	}
 }
 
 CFeatures::CFeatures(CFile* loader)
@@ -80,6 +78,13 @@ void CFeatures::init()
 	preprocessed = new CDynamicArray<bool>();
 	SG_REF(preproc);
 	SG_REF(preprocessed);
+}
+
+Some<CFeatures> CFeatures::preprocess(CPreprocessor* p)
+{
+	auto feats = wrap(this->duplicate());
+	feats->add_preprocessor(p);
+	return feats;
 }
 
 void CFeatures::add_preprocessor(CPreprocessor* p)
@@ -305,6 +310,34 @@ void CFeatures::set_property(EFeatureProperty p)
 void CFeatures::unset_property(EFeatureProperty p)
 {
 	properties &= (properties | p) ^ p;
+}
+
+void CFeatures::eval()
+{
+	if (get_num_preprocessors() > 0 || m_subset_stack->has_subsets() > 0)
+	{
+		eval_features();
+		m_subset_stack->remove_all_subsets();
+		clean_preprocessors();
+	}
+}
+
+Some<CFeatures> CFeatures::view(const SGVector<index_t>& subset)
+{
+	auto feats_view = wrap(this->duplicate());
+	feats_view->add_subset(subset.clone());
+	return feats_view;
+}
+
+Some<CFeatures> CFeatures::view(const std::vector<index_t>& subset)
+{
+	auto feats_view = wrap(this->duplicate());
+
+	auto sg_subset = SGVector<index_t>(subset.size());
+	std::copy(subset.cbegin(), subset.cend(), sg_subset.data());
+	feats_view->add_subset(sg_subset);
+
+	return feats_view;
 }
 
 void CFeatures::add_subset(SGVector<index_t> subset)

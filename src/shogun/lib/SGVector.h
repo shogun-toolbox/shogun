@@ -155,6 +155,17 @@ template<class T> class SGVector : public SGReferencedData
 		/** Copy constructor */
 		SGVector(const SGVector &orig);
 
+#ifndef SWIG
+		/**
+		 * Constructor for creating an SGVector from an initializer list
+		 * containing its elements, i.e.
+		 *	 SGVector<float64_t> matrix({1,2,3,4});
+		 *
+		 *	 @param initializer list
+		 */
+		SGVector(std::initializer_list<T> list);
+#endif //SWIG
+
 		/** Check whether data is stored on GPU
 		 *
 		 * @return true if vector is on GPU

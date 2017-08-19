@@ -37,6 +37,7 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/NormOne.h>
+#include <shogun/base/some.h>
 
 using namespace Eigen;
 using namespace shogun;
@@ -427,26 +428,23 @@ TEST(LeastAngleRegression, ols_equivalence)
 	for (index_t i=0; i<lab.size(); i++)
 		lab[i]-=mean;
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	SG_REF(features);
+	auto features=some<CDenseFeatures<float64_t>>(data);
 
 	CPruneVarSubMean* proc1=new CPruneVarSubMean();
 	CNormOne* proc2=new CNormOne();
 	proc1->init(features);
-	proc1->apply_to_feature_matrix(features);
 	proc2->init(features);
-	proc2->apply_to_feature_matrix(features);
+	auto pre_features = features->preprocess(proc1)->preprocess(proc2);
 
-	CRegressionLabels* labels=new CRegressionLabels(lab);
-	SG_REF(labels);
-	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
-	lars->set_labels((CLabels*) labels);
-	lars->train(features);
+	auto labels=some<CRegressionLabels>(lab);
+	auto lars=some<CLeastAngleRegression>(false);
+	lars->set_labels(labels);
+	lars->train(pre_features);
 	// Full LAR model
 	SGVector<float64_t> w=lars->get_w();
 	Map<VectorXd> map_w(w.vector, w.size());
 
-	SGMatrix<float64_t> mat=features->get_feature_matrix();
+	const auto& mat=pre_features->get_feature_matrix();
 	Map<MatrixXd> feat(mat.matrix, mat.num_rows, mat.num_cols);
 	Map<VectorXd> l(lab.vector, lab.size());
 	// OLS
@@ -460,12 +458,6 @@ TEST(LeastAngleRegression, ols_equivalence)
 	// Check if full LAR model is equivalent to OLS
 	EXPECT_EQ( w.size(), n_feat);
 	EXPECT_NEAR( (map_w - solve).norm(), 0.0, 1E-12);
-
-	SG_UNREF(proc1);
-	SG_UNREF(proc2);
-	SG_UNREF(lars);
-	SG_UNREF(features);
-	SG_UNREF(labels);
 }
 #endif
 

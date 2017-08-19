@@ -38,3 +38,18 @@ CLabels* CRegressionLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+CLabels* CRegressionLabels::duplicate() const
+{
+	return new CRegressionLabels(*this);
+}
+
+Some<CRegressionLabels> CRegressionLabels::view(const SGVector<index_t>& subset)
+{
+	return wrap(static_cast<CRegressionLabels*>(CLabels::view(subset).get()));
+}
+
+Some<CRegressionLabels> CRegressionLabels::view(const std::vector<index_t>& subset)
+{
+	return wrap(static_cast<CRegressionLabels*>(CLabels::view(subset).get()));
+}

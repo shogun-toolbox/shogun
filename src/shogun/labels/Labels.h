@@ -16,6 +16,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
+#include <shogun/base/some.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/LabelsFactory.h>
 #include <shogun/labels/LabelTypes.h>
@@ -45,6 +46,9 @@ class CLabels : public CSGObject
 public:
 	/** default constructor */
 	CLabels();
+
+	/** copy constructor */
+	CLabels(const CLabels& orig);
 
 	/** destructor */
 	virtual ~CLabels();
@@ -100,6 +104,28 @@ public:
 	 * @return subset stack
 	 */
 	virtual CSubsetStack* get_subset_stack();
+
+	/** Creates a subset view of the labels containing the elements
+	 * whose indices are listed in the passed vector
+	 *
+	 * @param subset subset of indices
+	 * @return new CLabels object wrapped by a smart pointer
+	 */
+	Some<CLabels> view(const SGVector<index_t>& subset);
+
+	/** Creates a subset view of the labels containing the elements
+	 * whose indices are listed in the passed vector
+	 *
+	 * @param subset subset of indices
+	 * @return new CLabels object wrapped by a smart pointer
+	 */
+	Some<CLabels> view(const std::vector<index_t>& subset);
+
+	/** shallow-copy of the labels object
+	 *
+	 * @return labels object
+	 */
+	virtual CLabels* duplicate() const { SG_NOTIMPLEMENTED; return nullptr; }
 
 	/** set the confidence value for a particular label
 	 *

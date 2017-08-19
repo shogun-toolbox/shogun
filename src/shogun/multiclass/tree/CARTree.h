@@ -283,7 +283,7 @@ protected:
 	 * @param attr best attribute chosen for split
 	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
 	 */
-	SGVector<bool> surrogate_split(SGMatrix<float64_t> data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr);
+	SGVector<bool> surrogate_split(const SGMatrix<float64_t>& data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr);
 
 
 	/** handles missing values for a chosen continuous surrogate attribute

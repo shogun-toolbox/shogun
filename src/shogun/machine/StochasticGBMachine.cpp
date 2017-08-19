@@ -31,6 +31,7 @@
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/base/some.h>
 
 using namespace shogun;
 
@@ -172,6 +173,7 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 	REQUIRE(data,"training data not supplied!\n")
 	REQUIRE(m_machine,"machine not set!\n")
 	REQUIRE(m_loss,"loss function not specified\n")
+	REQUIRE(m_labels,"labels not specified\n")
 
 	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
 
@@ -186,30 +188,23 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 
 	for (int32_t i=0;i<m_num_iter;i++)
 	{
-		// apply subset
-		if (m_subset_frac!=1.0)
-			apply_subset(feats,interf);
+		const auto result = get_subset(feats,interf);
+		const auto& feats_iter = std::get<0>(result);
+		const auto& interf_iter = std::get<1>(result);
+		const auto& labels_iter = std::get<2>(result);
 
 		// compute pseudo-residuals
-		CRegressionLabels* pres=compute_pseudo_residuals(interf);
+		CRegressionLabels* pres=compute_pseudo_residuals(interf_iter, labels_iter);
 
 		// fit learner
-		CMachine* wlearner=fit_model(feats,pres);
+		CMachine* wlearner=fit_model(feats_iter,pres);
 		m_weak_learners->push_back(wlearner);
 
 		// compute multiplier
-		CRegressionLabels* hm=wlearner->apply_regression(feats);
+		CRegressionLabels* hm=wlearner->apply_regression(feats_iter);
 		SG_REF(hm);
-		float64_t gamma=compute_multiplier(interf,hm);
+		float64_t gamma=compute_multiplier(interf_iter,hm,labels_iter);
 		m_gamma->push_back(gamma);
-
-		// remove subset
-		if (m_subset_frac!=1.0)
-		{
-			feats->remove_subset();
-			m_labels->remove_subset();
-			interf->remove_subset();
-		}
 
 		// update intermediate function value
 		CRegressionLabels* dlabels=wlearner->apply_regression(feats);
@@ -226,12 +221,12 @@ bool CStochasticGBMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CStochasticGBMachine::compute_multiplier(CRegressionLabels* f, CRegressionLabels* hm)
+float64_t CStochasticGBMachine::compute_multiplier(CRegressionLabels* f, CRegressionLabels* hm, CLabels* labs)
 {
 	REQUIRE(f->get_num_labels()==hm->get_num_labels(),"The number of labels in both input parameters should be equal\n")
 
 	CDynamicObjectArray* instance=new CDynamicObjectArray();
-	instance->push_back(m_labels);
+	instance->push_back(labs);
 	instance->push_back(f);
 	instance->push_back(hm);
 	instance->push_back(m_loss);
@@ -259,10 +254,9 @@ CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CReg
 	return c;
 }
 
-CRegressionLabels* CStochasticGBMachine::compute_pseudo_residuals(CRegressionLabels* inter_f)
+CRegressionLabels* CStochasticGBMachine::compute_pseudo_residuals(CRegressionLabels* inter_f, CLabels* labs)
 {
-	REQUIRE(m_labels,"training labels not set!\n")
-	SGVector<float64_t> labels=(dynamic_cast<CDenseLabels*>(m_labels))->get_labels();
+	SGVector<float64_t> labels=(dynamic_cast<CDenseLabels*>(labs))->get_labels();
 	SGVector<float64_t> f=inter_f->get_labels();
 
 	SGVector<float64_t> residuals(f.vlen);
@@ -272,8 +266,12 @@ CRegressionLabels* CStochasticGBMachine::compute_pseudo_residuals(CRegressionLab
 	return new CRegressionLabels(residuals);
 }
 
-void CStochasticGBMachine::apply_subset(CDenseFeatures<float64_t>* f, CLabels* interf)
+std::tuple<Some<CDenseFeatures<float64_t>>, Some<CRegressionLabels>, Some<CLabels>>
+CStochasticGBMachine::get_subset(CDenseFeatures<float64_t>* f, CRegressionLabels* interf)
 {
+	if (m_subset_frac == 1.0)
+		return std::make_tuple(wrap(f), wrap(interf), wrap(m_labels));
+
 	int32_t subset_size=m_subset_frac*(f->get_num_vectors());
 	SGVector<index_t> idx(f->get_num_vectors());
 	idx.range_fill();
@@ -282,9 +280,10 @@ void CStochasticGBMachine::apply_subset(CDenseFeatures<float64_t>* f, CLabels* i
 	SGVector<index_t> subset(subset_size);
 	sg_memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));
 
-	f->add_subset(subset);
-	interf->add_subset(subset);
-	m_labels->add_subset(subset);
+	return std::make_tuple(
+		f->view(subset),
+		interf->view(subset),
+		m_labels->view(subset));
 }
 
 void CStochasticGBMachine::initialize_learners()

@@ -92,14 +92,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
-
 	len = num_features;
-
-	if (feature_matrix.matrix)
-	{
-		dofree = false;
-		return &feature_matrix.matrix[real_num * int64_t(num_features)];
-	}
 
 	ST* feat = NULL;
 	dofree = false;
@@ -116,38 +109,18 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 
 	if (!feat)
 		dofree = true;
-	feat = compute_feature_vector(num, len, feat);
 
-	if (get_num_preprocessors())
+	auto feat_vec = feature_matrix.get_column(real_num);
+	for (index_t i = 0; i < get_num_preprocessors(); ++i)
 	{
-		int32_t tmp_len = len;
-		ST* tmp_feat_before = feat;
-		ST* tmp_feat_after = NULL;
-
-		for (int32_t i = 0; i < get_num_preprocessors(); i++)
-		{
-			CDensePreprocessor<ST>* p =
-					(CDensePreprocessor<ST>*) get_preprocessor(i);
-			// temporary hack
-			SGVector<ST> applied = p->apply_to_feature_vector(
-					SGVector<ST>(tmp_feat_before, tmp_len));
-			tmp_feat_after = applied.vector;
-			SG_UNREF(p);
-
-			if (i != 0) // delete feature vector, except for the the first one, i.e., feat
-				SG_FREE(tmp_feat_before);
-			tmp_feat_before = tmp_feat_after;
-		}
-
-		// note: tmp_feat_after should be checked as it is used by memcpy
-		if (tmp_feat_after)
-		{
-			sg_memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-			SG_FREE(tmp_feat_after);
-
-			len = tmp_len;
-		}
+		auto pre = static_cast<CDensePreprocessor<ST>*>(get_preprocessor(i));
+		feat_vec = pre->apply_to_feature_vector(feat_vec);
+		SG_UNREF(pre)
 	}
+
+	feat = SG_MALLOC(ST, feat_vec.vlen);
+	sg_memcpy(feat, feat_vec.vector, feat_vec.vlen*sizeof(ST));
+
 	return feat;
 }
 
@@ -267,15 +240,12 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 }
 
 template <class ST>
-SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
+const SGMatrix<ST>& CDenseFeatures<ST>::get_feature_matrix()
 {
-	if (!m_subset_stack->has_subsets())
-		return feature_matrix;
-
-	SGMatrix<ST> target(num_features, get_num_vectors());
-	copy_feature_matrix(target);
-	return target;
+	eval();
+	return feature_matrix;
 }
+
 
 template <class ST>
 void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> target, index_t column_offset) const
@@ -324,14 +294,13 @@ template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
 
 template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
 {
-	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
 	feature_matrix = matrix;
 	num_features = matrix.num_rows;
 	num_vectors = matrix.num_cols;
 }
 
-template<class ST> ST* CDenseFeatures<ST>::get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+template<class ST> const ST* CDenseFeatures<ST>::get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
 {
 	num_feat = num_features;
 	num_vec = num_vectors;
@@ -433,6 +402,18 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 
 		return false;
 	}
+}
+
+template<class ST> void CDenseFeatures<ST>::eval_features()
+{
+	auto first_vec = get_feature_vector(0);
+	SGMatrix<ST> target(first_vec.vlen, get_num_vectors());
+	target.set_column(0, first_vec);
+
+	for (index_t i = 1; i < get_num_vectors(); ++i)
+		target.set_column(i, get_feature_vector(i));
+
+	set_feature_matrix(target);
 }
 
 template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
@@ -1065,6 +1046,24 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other)
 	auto list=some<CList>();
 	list->append_element(other);
 	return create_merged_copy(list);
+}
+
+template <class ST>
+Some<CDenseFeatures<ST>> CDenseFeatures<ST>::view(const SGVector<index_t>& subset)
+{
+	return wrap(static_cast<CDenseFeatures<ST>*>(CFeatures::view(subset).get()));
+}
+
+template <class ST>
+Some<CDenseFeatures<ST>> CDenseFeatures<ST>::view(const std::vector<index_t>& subset)
+{
+	return wrap(static_cast<CDenseFeatures<ST>*>(CFeatures::view(subset).get()));
+}
+
+template <class ST>
+Some<CDenseFeatures<ST>> CDenseFeatures<ST>::preprocess(CPreprocessor* p)
+{
+	return wrap(static_cast<CDenseFeatures<ST>*>(CFeatures::preprocess(p).get()));
 }
 
 template<class ST>

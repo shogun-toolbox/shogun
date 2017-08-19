@@ -22,6 +22,19 @@ CLabels::CLabels()
 	init();
 }
 
+CLabels::CLabels(const CLabels& orig) : CSGObject(orig)
+{
+	init();
+
+	m_current_values = orig.m_current_values;
+	if (orig.m_subset_stack != NULL)
+	{
+		SG_UNREF(m_subset_stack);
+		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
+		SG_REF(m_subset_stack);
+	}
+}
+
 CLabels::~CLabels()
 {
 	SG_UNREF(m_subset_stack);
@@ -62,6 +75,24 @@ CSubsetStack* CLabels::get_subset_stack()
 {
 	SG_REF(m_subset_stack);
 	return m_subset_stack;
+}
+
+Some<CLabels> CLabels::view(const SGVector<index_t>& subset)
+{
+	auto labels_view = wrap(this->duplicate());
+	labels_view->add_subset(subset);
+	return labels_view;
+}
+
+Some<CLabels> CLabels::view(const std::vector<index_t>& subset)
+{
+	auto labels_view = wrap(this->duplicate());
+
+	auto sg_subset = SGVector<index_t>(subset.size());
+	std::copy(subset.cbegin(), subset.cend(), sg_subset.data());
+	labels_view->add_subset(sg_subset);
+
+	return labels_view;
 }
 
 float64_t CLabels::get_value(int32_t idx)

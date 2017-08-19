@@ -160,7 +160,6 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 	ASSERT(dim>0)
 
 	SGMatrix<float64_t> m(dim, num);
-	m.zero();
 
 	for (int32_t i=0; i<num; i++)
 	{
@@ -179,7 +178,6 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 	ASSERT(dim>0)
 
 	SGVector<float64_t> v(dim);
-	v.zero();
 	add_to_dense_vec(1.0, num, v.vector, dim);
 	return v;
 }
@@ -258,7 +256,6 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-	linalg::zero(mean);
 
 	for (int32_t i = 0; i < num; ++i)
 		add_to_dense_vec(1, i, mean.vector, dim);
@@ -282,7 +279,6 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
-	linalg::zero(mean);
 
 	for (int i = 0; i < num_lhs; i++)
 		lhs->add_to_dense_vec(1, i, mean.vector, dim);
@@ -293,6 +289,35 @@ CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 	linalg::scale(mean, mean, 1.0 / (num_lhs + num_rhs));
 
 	return mean;
+}
+
+SGVector<float64_t > CDotFeatures::get_std(const SGVector<float64_t>& mean)
+{
+	int32_t num=get_num_vectors();
+	int32_t dim=get_dim_feature_space();
+	ASSERT(mean.vlen == dim)
+
+	SGVector<float64_t > std(dim);
+
+	for (index_t i = 0; i < num; ++i)
+	{
+		SGVector<float64_t> v(dim);
+		add_to_dense_vec(1.0, i, v.vector, dim);
+		v = linalg::add(v, mean, 1.0, -1.0);
+		linalg::add(std, linalg::element_prod(v, v), std);
+	}
+
+	linalg::scale(std, std, 1.0 / num);
+
+	for (auto& v : std)
+		v = CMath::sqrt(v);
+
+	return std;
+}
+
+SGVector<float64_t> CDotFeatures::get_std()
+{
+	return get_std(get_mean());
 }
 
 SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed)
@@ -318,7 +343,6 @@ SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed)
 	}
 	else
 	{
-		linalg::zero(cov);
 		for (int i = 0; i < num; i++)
 		{
 			SGVector<float64_t> v = get_computed_dot_feature_vector(i);
@@ -379,7 +403,6 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(
 	}
 	else
 	{
-		linalg::zero(cov);
 		for (int i = 0; i < 2; i++)
 		{
 			for (int j = 0; j < nums[i]; j++)

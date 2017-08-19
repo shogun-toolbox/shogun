@@ -114,6 +114,37 @@ SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
 	m_on_gpu.store(false, std::memory_order_release);
 }
 
+
+#ifndef SWIG
+template <class T>
+SGMatrix<T>::SGMatrix(std::initializer_list<std::initializer_list<T>> list)
+	: SGReferencedData(true)
+{
+	ASSERT(list.size() > 0)
+	num_rows = (index_t)list.size();
+	num_cols = (index_t)list.begin()->size();
+	matrix = SG_MALLOC(T, ((int64_t) num_rows)*num_cols);
+
+	index_t i = 0;
+	for (auto row : list)
+	{
+		REQUIRE(
+			(index_t)row.size() == num_cols,
+			"Each row must have the same number of entries.\n")
+
+		index_t j = 0;
+		for (auto e : row)
+		{
+			(*this)(i,j) = e;
+			++j;
+		}
+		++i;
+	}
+
+	m_on_gpu.store(false, std::memory_order_release);
+}
+#endif //SWIG
+
 template <class T>
 SGMatrix<T>::operator EigenMatrixXtMap() const
 {

@@ -152,3 +152,18 @@ CLabels* CBinaryLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+CLabels* CBinaryLabels::duplicate() const
+{
+	return new CBinaryLabels(*this);
+}
+
+Some<CBinaryLabels> CBinaryLabels::view(const SGVector<index_t>& subset)
+{
+	return wrap(static_cast<CBinaryLabels*>(CLabels::view(subset).get()));
+}
+
+Some<CBinaryLabels> CBinaryLabels::view(const std::vector<index_t>& subset)
+{
+	return wrap(static_cast<CBinaryLabels*>(CLabels::view(subset).get()));
+}

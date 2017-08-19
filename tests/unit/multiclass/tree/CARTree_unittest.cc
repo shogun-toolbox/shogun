@@ -32,6 +32,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/CARTree.h>
 #include <gtest/gtest.h>
+#include <shogun/base/some.h>
 
 using namespace shogun;
 
@@ -124,7 +125,7 @@ TEST(CARTree, classify_nominal)
 	data(2,13)=high;
 	data(3,13)=strong;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -194,7 +195,6 @@ TEST(CARTree, classify_nominal)
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
 	SG_UNREF(c);
-	SG_UNREF(feats);
 }
 
 TEST(CARTree, classify_non_nominal)
@@ -272,7 +272,7 @@ TEST(CARTree, classify_non_nominal)
 	data(2,13)=high;
 	data(3,13)=strong;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -342,7 +342,6 @@ TEST(CARTree, classify_non_nominal)
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
 	SG_UNREF(c);
-	SG_UNREF(feats);
 }
 
 TEST(CARTree, handle_missing_nominal)
@@ -400,7 +399,7 @@ TEST(CARTree, handle_missing_nominal)
 	ft[1]=true;
 	ft[2]=true;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 
 	CCARTree* c=new CCARTree();
@@ -421,7 +420,6 @@ TEST(CARTree, handle_missing_nominal)
 	SG_UNREF(left);
 	SG_UNREF(right);
 	SG_UNREF(c);
-	SG_UNREF(feats);
 }
 
 TEST(CARTree, handle_missing_continuous)
@@ -479,7 +477,7 @@ TEST(CARTree, handle_missing_continuous)
 	ft[1]=false;
 	ft[2]=false;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 
 	CCARTree* c=new CCARTree();
@@ -500,7 +498,6 @@ TEST(CARTree, handle_missing_continuous)
 	SG_UNREF(left);
 	SG_UNREF(right);
 	SG_UNREF(c);
-	SG_UNREF(feats);
 }
 
 TEST(CARTree, form_t1_test)
@@ -519,7 +516,7 @@ TEST(CARTree, form_t1_test)
 	lab[3]=1;
 	lab[4]=0;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 
 	SGVector<bool> ft=SGVector<bool>(1);
 	ft[0]=true;
@@ -540,7 +537,6 @@ TEST(CARTree, form_t1_test)
 	EXPECT_EQ(1,root->data.num_leaves);
 
 	SG_UNREF(c);
-	SG_UNREF(feats);
 	SG_UNREF(root);
 }
 
@@ -611,7 +607,7 @@ TEST(CARTree,cv_prune_simple)
 	lab[18]=1.0;
 	lab[19]=1.0;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats = some<CDenseFeatures<float64_t> >(data);
 
 	SGVector<bool> ft=SGVector<bool>(2);
 	ft[0]=true;
@@ -639,6 +635,5 @@ TEST(CARTree,cv_prune_simple)
 	EXPECT_EQ(2.0,root->data.weight_minus_branch);
 
 	SG_UNREF(c);
-	SG_UNREF(feats);
 	SG_UNREF(root);
 }

@@ -216,6 +216,18 @@ class CDotFeatures : public CFeatures
 		static SGVector<float64_t>
 		compute_mean(CDotFeatures* lhs, CDotFeatures* rhs);
 
+		/** get std
+		 *
+		 * @return std returned
+		 */
+		virtual SGVector<float64_t> get_std();
+
+		/** get std with precomputed mean
+		 *
+		 * @return std returned
+		 */
+		virtual SGVector<float64_t> get_std(const SGVector<float64_t >& mean);
+
 		/** get covariance
 		 *
 		 * @param copy_data_for_speed if true, the method stores explicitly

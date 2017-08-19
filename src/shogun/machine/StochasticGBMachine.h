@@ -34,9 +34,12 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/base/some.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/features/DenseFeatures.h>
+
+#include <tuple>
 
 namespace shogun
 {
@@ -151,9 +154,10 @@ protected:
 	 *
 	 * @param f labels from the intermediate model
 	 * @param hm labels from the newly trained base model
+	 * @param labs training labels
 	 * @return gamma - the scalar weights given to individual weak learners in the ensemble model
 	 */
-	float64_t compute_multiplier(CRegressionLabels* f, CRegressionLabels* hm);
+	float64_t compute_multiplier(CRegressionLabels* f, CRegressionLabels* hm, CLabels* labs);
 
 	/** train base model
 	 *
@@ -166,16 +170,18 @@ protected:
 	/** compute pseudo_residuals
 	 *
 	 * @param inter_f intermediate boosted model labels for training data
+	 * @param labs training labels
 	 * @return pseudo_residuals
 	 */
-	CRegressionLabels* compute_pseudo_residuals(CRegressionLabels* inter_f);
+	CRegressionLabels* compute_pseudo_residuals(CRegressionLabels* inter_f, CLabels* labs);
 
 	/** add randomized subset to relevant parameters
 	 *
 	 * @param f training data
 	 * @param interf intermediate boosted model labels for training data
 	 */
-	void apply_subset(CDenseFeatures<float64_t>* f, CLabels* interf);
+	std::tuple<Some<CDenseFeatures<float64_t>>, Some<CRegressionLabels>, Some<CLabels>>
+	get_subset(CDenseFeatures<float64_t>* f, CRegressionLabels* interf);
 
 	/** reset arrays of weak learners and gamma values */
 	void initialize_learners();

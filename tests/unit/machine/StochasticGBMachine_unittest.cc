@@ -36,72 +36,93 @@
 #include <shogun/multiclass/tree/CARTree.h>
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <gtest/gtest.h>
+#include <shogun/base/some.h>
 
 using namespace shogun;
 
-SGMatrix<float64_t> get_sinusoid_samples(int32_t num_samples, SGVector<float64_t> labels)
+class StochasticGBMachine : public ::testing::Test {
+	protected:
+	const int32_t num_train_samples = 100;
+	const int32_t num_test_samples = 10;
+	const int32_t dim = 1;
+	const float64_t epsilon = 1e-8;
+
+	void load_sinusoid_samples()
+	{
+		SGMatrix<float64_t> mat(dim,num_train_samples);
+		SGVector<float64_t>::random_vector(mat.matrix,num_train_samples,0,15);
+
+		SGVector<float64_t> labels(num_train_samples);
+		for (int32_t i=0;i<num_train_samples;i++)
+			labels[i]=CMath::sin(mat(0,i));
+
+		train_feats = new CDenseFeatures<float64_t>(mat);
+		train_labels = new CRegressionLabels(labels);
+	}
+
+	void load_test_data()
+	{
+		SGVector<float64_t> tlab(num_test_samples);
+		SGMatrix<float64_t> tdata(dim,num_test_samples);
+
+		tlab[0]=-0.999585752311506259;
+		tlab[1]=0.75965469336929492;
+		tlab[2]=-0.425832103506531334;
+		tlab[3]=0.298135616000050285;
+		tlab[4]=-0.48828775732556795;
+		tlab[5]=-0.031677813420380535;
+		tlab[6]=0.144672857935527394;
+		tlab[7]=-0.0810247683026898424;
+		tlab[8]=-0.767723534099077121;
+		tlab[9]=0.639868456911451666;
+
+		tdata(0,0)=10.9667896982205075;
+		tdata(0,1)=0.862781976084872615;
+		tdata(0,2)=12.1264892751645501;
+		tdata(0,3)=9.12203911322216499;
+		tdata(0,4)=9.93490458930258313;
+		tdata(0,5)=6.25150219333625934;
+		tdata(0,6)=0.145182344164974608;
+		tdata(0,7)=3.22270633960671393;
+		tdata(0,8)=11.6910897047936668;
+		tdata(0,9)=2.44726557225158103;
+
+		test_feats = new CDenseFeatures<float64_t>(tdata);
+		test_labels = new CRegressionLabels(tlab);
+	}
+
+	virtual void SetUp()
+	{
+		sg_rand->set_seed(10);
+		load_sinusoid_samples();
+		load_test_data();
+	}
+
+	public:
+	Some<CDenseFeatures<float64_t>> train_feats;
+	Some<CDenseFeatures<float64_t>> test_feats;
+	Some<CRegressionLabels> train_labels;
+	Some<CRegressionLabels> test_labels;
+
+	StochasticGBMachine() : train_feats(nullptr), test_feats(nullptr),
+							train_labels(nullptr), test_labels(nullptr) {}
+};
+
+TEST_F(StochasticGBMachine, sinusoid_curve_fitting)
 {
-	SGMatrix<float64_t> ret(1,num_samples);
-	SGVector<float64_t>::random_vector(ret.matrix,num_samples,0,15);
-
-	for (int32_t i=0;i<num_samples;i++)
-		labels[i]=CMath::sin(ret(0,i));
-
-	return ret;
-}
-
-TEST(StochasticGBMachine,sinusoid_curve_fitting)
-{
-	sg_rand->set_seed(10);
-
-	int32_t num_train_samples=100;
-	SGVector<float64_t> lab(num_train_samples);
-	SGMatrix<float64_t> data=get_sinusoid_samples(num_train_samples,lab);
-	CDenseFeatures<float64_t>* train_feats=new CDenseFeatures<float64_t>(data);
-	CRegressionLabels* train_labels=new CRegressionLabels(lab);
-
-	SGVector<float64_t> tlab(10);
-	SGMatrix<float64_t> tdata(1,10);
-
-	tlab[0]=-0.999585752311506259;
-	tlab[1]=0.75965469336929492;
-	tlab[2]=-0.425832103506531334;
-	tlab[3]=0.298135616000050285;
-	tlab[4]=-0.48828775732556795;
-	tlab[5]=-0.031677813420380535;
-	tlab[6]=0.144672857935527394;
-	tlab[7]=-0.0810247683026898424;
-	tlab[8]=-0.767723534099077121;
-	tlab[9]=0.639868456911451666;
-
-	tdata(0,0)=10.9667896982205075;
-	tdata(0,1)=0.862781976084872615;
-	tdata(0,2)=12.1264892751645501;
-	tdata(0,3)=9.12203911322216499;
-	tdata(0,4)=9.93490458930258313;
-	tdata(0,5)=6.25150219333625934;
-	tdata(0,6)=0.145182344164974608;
-	tdata(0,7)=3.22270633960671393;
-	tdata(0,8)=11.6910897047936668;
-	tdata(0,9)=2.44726557225158103;
-
-	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(tdata);
-	CRegressionLabels* test_labels=new CRegressionLabels(tlab);
-
 	SGVector<bool> ft(1);
 	ft[0]=false;
 	CCARTree* tree=new CCARTree(ft);
 	tree->set_max_depth(2);
 	CSquaredLoss* sq=new CSquaredLoss();
 
-	CStochasticGBMachine* sgbm=new CStochasticGBMachine(tree,sq,100,0.1,1.0);
+	auto sgbm=some<CStochasticGBMachine>(tree,sq,100,0.1,1.0);
 	sgbm->set_labels(train_labels);
 	sgbm->train(train_feats);
 
-	CRegressionLabels* ret_labels=sgbm->apply_regression(test_feats);
+	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
 	SGVector<float64_t> ret=ret_labels->get_labels();
 
-	float64_t epsilon=1e-8;
 	EXPECT_NEAR(ret[0],-0.943157980,epsilon);
 	EXPECT_NEAR(ret[1],0.769725470,epsilon);
 	EXPECT_NEAR(ret[2],-0.065691733,epsilon);
@@ -112,10 +133,33 @@ TEST(StochasticGBMachine,sinusoid_curve_fitting)
 	EXPECT_NEAR(ret[7],-0.098310066,epsilon);
 	EXPECT_NEAR(ret[8],-0.416565932,epsilon);
 	EXPECT_NEAR(ret[9],0.542023083,epsilon);
+}
 
-	SG_UNREF(train_feats);
-	SG_UNREF(test_feats);
-	SG_UNREF(test_labels);
-	SG_UNREF(ret_labels);
-	SG_UNREF(sgbm);
+TEST_F(StochasticGBMachine, sinusoid_curve_fitting_subset_fraction)
+{
+	const float64_t fraction = 0.6;
+
+	SGVector<bool> ft(1);
+	ft[0]=false;
+	CCARTree* tree=new CCARTree(ft);
+	tree->set_max_depth(2);
+	CSquaredLoss* sq=new CSquaredLoss();
+
+	auto sgbm=some<CStochasticGBMachine>(tree,sq,100,0.1,fraction);
+	sgbm->set_labels(train_labels);
+	sgbm->train(train_feats);
+
+	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
+	SGVector<float64_t> ret=ret_labels->get_labels();
+
+	EXPECT_NEAR(ret[0],-0.820852887,epsilon);
+	EXPECT_NEAR(ret[1],0.734408678,epsilon);
+	EXPECT_NEAR(ret[2],-0.054018279,epsilon);
+	EXPECT_NEAR(ret[3],0.320758624,epsilon);
+	EXPECT_NEAR(ret[4],-0.647308515,epsilon);
+	EXPECT_NEAR(ret[5],0.176879142,epsilon);
+	EXPECT_NEAR(ret[6],0.477927403,epsilon);
+	EXPECT_NEAR(ret[7],-0.137899854,epsilon);
+	EXPECT_NEAR(ret[8],-0.4258681695,epsilon);
+	EXPECT_NEAR(ret[9],0.5964289106,epsilon);
 }

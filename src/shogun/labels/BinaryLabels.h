@@ -91,6 +91,21 @@ public:
 	 */
 	virtual ELabelType get_label_type() const;
 
+	/** shallow-copy of the labels object
+	 * @see CLabels::duplicate
+	 */
+	virtual CLabels* duplicate() const;
+
+	/** Creates a subset view of the labels
+	 * @see CLabels::view
+	 */
+	Some<CBinaryLabels> view(const SGVector<index_t>& subset);
+
+	/** Creates a subset view of the labels
+	 * @see CLabels::view
+	 */
+	Some<CBinaryLabels> view(const std::vector<index_t>& subset);
+
 	/** Converts all scores to calibrated probabilities by fitting a
 	 * sigmoid function using the method described in
 	 * Lin, H., Lin, C., and Weng, R. (2007).

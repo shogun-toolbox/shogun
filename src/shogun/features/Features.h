@@ -25,6 +25,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/base/range.h>
+#include <shogun/base/some.h>
 
 namespace shogun
 {
@@ -125,6 +126,13 @@ class CFeatures : public CSGObject
 			return range(0, get_num_vectors());
 		}
 #endif
+
+		/** apply preprocessor
+		 *
+		 * @param p preprocessor to apply
+		 * @return new features object
+		 */
+		Some<CFeatures> preprocess(CPreprocessor* p);
 
 		/** add preprocessor
 		 *
@@ -269,6 +277,22 @@ class CFeatures : public CSGObject
 			return NULL;
 		}
 
+		/** Creates a subset view of the features containing the elements
+		 * whose indices are listed in the passed vector
+		 *
+		 * @param subset subset of indices
+		 * @return new CFeatures object wrapped by a smart pointer
+		 */
+		Some<CFeatures> view(const SGVector<index_t>& subset);
+
+		/** Creates a subset view of the features containing the elements
+		 * whose indices are listed in the passed vector
+		 *
+		 * @param subset subset of indices
+		 * @return new CFeatures object wrapped by a smart pointer
+		 */
+		Some<CFeatures> view(const std::vector<index_t>& subset);
+
 		/** Adds a subset of indices on top of the current subsets (possibly
 		 * subset of subset). Every call causes a new active index vector
 		 * to be stored. Added subsets can be removed one-by-one. If this is not
@@ -349,6 +373,9 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
+		/** apply subsets and preprocessors to features */
+		void eval();
+
 #ifndef SWIG // SWIG should skip this part
 		virtual CFeatures* shallow_subset_copy() 
 		{ 
@@ -359,6 +386,9 @@ class CFeatures : public CSGObject
 
 	private:
 		void init();
+
+		/** apply preprocessors and subsets implementation */
+		virtual void eval_features() { SG_NOTIMPLEMENTED; }
 
 	private:
 		/** feature properties */

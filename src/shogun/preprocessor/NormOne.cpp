@@ -12,6 +12,7 @@
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -74,11 +75,5 @@ SGMatrix<float64_t> CNormOne::apply_to_feature_matrix(CFeatures* features)
 /// result in feature matrix
 SGVector<float64_t> CNormOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
-	float64_t norm=CMath::sqrt(CMath::dot(vector.vector, vector.vector, vector.vlen));
-
-	for (int32_t i=0; i<vector.vlen; i++)
-		normed_vec[i]=vector.vector[i]/norm;
-
-	return SGVector<float64_t>(normed_vec,vector.vlen);
+	return linalg::scale(vector, 1.0/linalg::norm(vector));
 }

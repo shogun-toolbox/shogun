@@ -148,6 +148,21 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		 SGMatrix(GPUMemoryBase<T>* matrix, index_t nrows, index_t ncols);
 
+#ifndef SWIG
+		/**
+		 * Constructor for creating an SGMatrix from an initializer list
+		 * containing the rows of the matrix, i.e.
+		 *	 SGMatrix<float64_t> matrix({
+		 * 		{1,2,3},
+		 * 		{4,5,6},
+		 * 		{7,8,9}
+		 * 	});
+		 *
+		 * 	@param list initializer list
+		 */
+		SGMatrix(std::initializer_list<std::initializer_list<T>> list);
+#endif //SWIG
+
 		/** Check whether data is stored on GPU
 		 *
 		 * @return true if matrix is on GPU

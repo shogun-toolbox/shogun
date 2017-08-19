@@ -376,7 +376,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 
 	int32_t num_vectors = 0;
 	int32_t num_features = 0;
-	float64_t* m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
+	const float64_t* m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
 			num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
