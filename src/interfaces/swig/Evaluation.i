@@ -16,8 +16,6 @@
 %feature("director") shogun::CDirectorContingencyTableEvaluation;
 #endif
 
-%include "std_vector.i"
-
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
@@ -79,6 +77,3 @@
 %include <shogun/evaluation/CrossValidationSplitting.h>
 %include <shogun/evaluation/StructuredAccuracy.h>
 %include <shogun/evaluation/DirectorContingencyTableEvaluation.h>
-
-%template(CrossValidationStorageList) std::vector<shogun::CrossValidationStorage*>;
-%template(CrossValidationFoldStorageList) std::vector<shogun::CrossValidationFoldStorage*>;
