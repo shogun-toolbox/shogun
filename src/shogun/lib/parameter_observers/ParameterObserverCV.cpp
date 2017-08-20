@@ -101,8 +101,9 @@ void CParameterObserverCV::clear()
 void CParameterObserverCV::print_observed_value(
     CrossValidationStorage* value) const
 {
-	for (auto f : value->get_folds_results())
+	for (int i=0; i<value->get_num_folds(); i++)
 	{
+		auto f = value->get_fold(i);
 		SG_SPRINT("\n")
 		SG_SPRINT("Current run index: %i\n", f->get_current_run_index())
 		SG_SPRINT("Current fold index: %i\n", f->get_current_fold_index())
@@ -113,6 +114,7 @@ void CParameterObserverCV::print_observed_value(
 		f->get_test_true_result()->get_values().display_vector(
 		    "Test True Label ");
 		SG_SPRINT("Evaluation result: %f\n", f->get_evaluation_result());
+		SG_UNREF(f)
 	}
 }
 
@@ -165,8 +167,16 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 	}
 }
 
-const std::vector<CrossValidationStorage*>&
-CParameterObserverCV::get_observations() const
+CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 {
-	return m_observations;
+	REQUIRE(run < get_num_observations(), "The run number must be less than %i", get_num_observations())
+
+	CrossValidationStorage * obs = m_observations[run];
+	SG_REF(obs)
+	return obs;
+}
+
+const int CParameterObserverCV::get_num_observations() const
+{
+	return m_observations.size();
 }

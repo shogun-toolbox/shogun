@@ -161,10 +161,13 @@ float64_t CrossValidationFoldStorage::get_evaluation_result() const
 	return m_evaluation_result;
 }
 
-std::vector<CrossValidationFoldStorage*>
-CrossValidationStorage::get_folds_results()
+CrossValidationFoldStorage* CrossValidationStorage::get_fold(int fold) const
 {
-	return m_folds_results;
+	REQUIRE(fold < get_num_folds(), "The fold number must be less than %i", get_num_folds())
+
+	CrossValidationFoldStorage * fld = m_folds_results[fold];
+	SG_REF(fld);
+	return fld;
 }
 
 bool CrossValidationFoldStorage::

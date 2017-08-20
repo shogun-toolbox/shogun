@@ -116,17 +116,16 @@ TEST(ParameterObserverCV, get_observations_locked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(true)};
 
-	auto obs = par->get_observations();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < par->get_num_observations(); i++)
 	{
-		auto run = obs[i];
+		auto run = par->get_observation(i);
 		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
 		for (int j = 0; j < 5; j++)
 		{
-			auto fold = run->get_folds_results()[j];
+			auto fold = run->get_fold(j);
 			EXPECT_EQ(fold->get_current_run_index(), i);
 			EXPECT_EQ(fold->get_current_fold_index(), j);
 			EXPECT_TRUE(fold->get_train_indices().size() != 0);
@@ -135,7 +134,9 @@ TEST(ParameterObserverCV, get_observations_locked)
 			EXPECT_TRUE(fold->get_test_result()->get_num_labels() != 0);
 			EXPECT_TRUE(fold->get_test_true_result()->get_num_labels() != 0);
 			EXPECT_TRUE(fold->get_evaluation_result() != 0);
+			SG_UNREF(fold)
 		}
+		SG_UNREF(run)
 	}
 }
 
@@ -143,17 +144,16 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 {
 	std::shared_ptr<CParameterObserverCV> par{generate(false)};
 
-	auto obs = par->get_observations();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < par->get_num_observations(); i++)
 	{
-		auto run = obs[i];
+		auto run = par->get_observation(i);
 		ASSERT(run)
 		EXPECT_EQ(run->get_num_runs(), 10);
 		EXPECT_EQ(run->get_num_folds(), 5);
 		EXPECT_TRUE(run->get_expose_labels()->equals(labels));
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < run->get_num_folds(); j++)
 		{
-			auto fold = run->get_folds_results()[j];
+			auto fold = run->get_fold(j);
 			EXPECT_EQ(fold->get_current_run_index(), i);
 			EXPECT_EQ(fold->get_current_fold_index(), j);
 			EXPECT_TRUE(fold->get_train_indices().size() != 0);
@@ -162,6 +162,8 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 			EXPECT_TRUE(fold->get_test_result()->get_num_labels() != 0);
 			EXPECT_TRUE(fold->get_test_true_result()->get_num_labels() != 0);
 			EXPECT_TRUE(fold->get_evaluation_result() != 0);
+			SG_UNREF(fold)
 		}
+		SG_UNREF(run)
 	}
 }

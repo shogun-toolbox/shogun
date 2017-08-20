@@ -61,11 +61,24 @@ namespace shogun
 		virtual void clear();
 
 		/**
-		 * Get vector of observations
-		 * @return std::vector of observations
+		 * Get the total number of cross validation runs received
+		 * by this observer.
+		 * @return number of runs.
 		 */
-		const std::vector<CrossValidationStorage*>& get_observations() const;
+		const int get_num_observations() const;
 
+		/**
+		 * Get a CrossValidationStorage object which will store
+		 * the result of a CrossValidation run.
+		 * @param run index of the run
+		 * @return a CrossValidationStorage object
+		 */
+		CrossValidationStorage* get_observation(int run) const;
+
+		/**
+		 * Print data contained into a CrossValidationStorage object.
+		 * @param value CrossValidationStorage object
+		 */
 		void print_observed_value(CrossValidationStorage* value) const;
 
 		/**

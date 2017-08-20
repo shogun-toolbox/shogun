@@ -54,10 +54,12 @@ SGMatrix<float64_t> calculate_weights(
 {
 	int32_t column = 0;
 	SGMatrix<float64_t> weights(len, folds * run);
-	for (auto o : obs.get_observations())
+	for (int o=0; o<obs.get_num_observations(); o++)
 	{
-		for (auto fold : o->get_folds_results())
+		auto obs_storage = obs.get_observation(o);
+		for (int i =0; i<obs_storage->get_num_folds(); i++)
 		{
+			auto fold = obs_storage->get_fold(i);
 			CMKLClassification* machine =
 			    (CMKLClassification*)fold->get_trained_machine();
 			SG_REF(machine)
@@ -68,13 +70,15 @@ SGMatrix<float64_t> calculate_weights(
 			/* Each of the columns will represent a set of weights */
 			for (auto i = 0; i < w.size(); i++)
 			{
-				weights.set_element(w[i], i, column);
+				weights.set_element(w[j], j, column);
 			}
 
 			SG_UNREF(k)
 			SG_UNREF(machine)
+			SG_UNREF(fold)
 			column++;
 		}
+		SG_UNREF(obs_storage)
 	}
 	return weights;
 }

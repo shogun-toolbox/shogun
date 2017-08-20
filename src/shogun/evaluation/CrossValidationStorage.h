@@ -262,10 +262,11 @@ namespace shogun
 		CLabels* get_expose_labels() const;
 
 		/**
-		 * Get all folds results.
-		 * @return folds results
+		 * Get a specific fold result
+		 * @param fold the fold index
+		 * @return the CrossValidationFoldStorage object
 		 */
-		std::vector<CrossValidationFoldStorage*> get_folds_results();
+		CrossValidationFoldStorage * get_fold(int fold) const;
 
 		/**
 		 * Operator == needed for Any comparison.
