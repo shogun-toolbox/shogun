@@ -47,7 +47,6 @@ CParameterObserverCV::CParameterObserverCV(bool verbose)
     : ParameterObserverInterface(), m_verbose(verbose)
 {
 	m_type = CROSSVALIDATION;
-
 }
 
 CParameterObserverCV::~CParameterObserverCV()
@@ -101,7 +100,7 @@ void CParameterObserverCV::clear()
 void CParameterObserverCV::print_observed_value(
     CrossValidationStorage* value) const
 {
-	for (int i=0; i<value->get_num_folds(); i++)
+	for (int i = 0; i < value->get_num_folds(); i++)
 	{
 		auto f = value->get_fold(i);
 		SG_SPRINT("\n")
@@ -169,9 +168,11 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 
 CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
 {
-	REQUIRE(run < get_num_observations(), "The run number must be less than %i", get_num_observations())
+	REQUIRE(
+	    run < get_num_observations(), "The run number must be less than %i",
+	    get_num_observations())
 
-	CrossValidationStorage * obs = m_observations[run];
+	CrossValidationStorage* obs = m_observations[run];
 	SG_REF(obs)
 	return obs;
 }

@@ -31,18 +31,18 @@ svm.set_kernel(kernel)
 StratifiedCrossValidationSplitting splitting_strategy(labels, 5)
 AccuracyMeasure evaluation_criterium()
 CrossValidation cross(svm, combined_features, labels, splitting_strategy, evaluation_criterium)
-cross.set_autolock(false)
+cross.set_autolock(False)
 cross.set_num_runs(2)
 #![create_cross_validation]
 
 #![create_observer]
-ParameterObserverCV mkl_obs(true)
+ParameterObserverCV mkl_obs(True)
 cross.subscribe_to_parameters(mkl_obs)
 #[!create_observer]
 
 #![evaluate_and_get_result]
 CrossValidationResult result()
-result = result.obtain_from_generic(cross.evaluate())
+result = CrossValidationResult:obtain_from_generic(cross.evaluate())
 #![evaluate_and_get_result]
 
 #![get_results]
@@ -53,11 +53,10 @@ real stddev = result.get_std_dev()
 #![get_fold_machine]
 CrossValidationStorage obs = mkl_obs.get_observation(0)
 CrossValidationFoldStorage fold = obs.get_fold(0)
-MKLClassification machine ()
-machine = machine.obtain_from_generic(fold.get_trained_machine())
+MKLClassification machine = MKLClassification:obtain_from_generic(fold.get_trained_machine())
 #![get_fold_machine]
 
 #![get_weights]
-CombinedKernel k = machine.get_kernel()
+CombinedKernel k = CombinedKernel:obtain_from_generic(machine.get_kernel())
 RealVector w = k.get_subkernel_weights()
 #![get_weights]

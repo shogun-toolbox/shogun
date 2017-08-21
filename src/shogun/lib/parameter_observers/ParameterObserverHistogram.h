@@ -47,7 +47,8 @@ namespace shogun
 	 * Implementation of a ParameterObserver which write to file
 	 * histograms, given object emitted from a parameter observable.
 	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard, public CSGObject
+	class ParameterObserverHistogram : public ParameterObserverTensorBoard,
+	                                   public CSGObject
 	{
 
 	public:
@@ -62,9 +63,9 @@ namespace shogun
 		virtual void on_complete();
 
 		/**
- 		* Get class name.
- 		* @return class name
- 		*/
+		* Get class name.
+		* @return class name
+		*/
 		virtual const char* get_name() const
 		{
 			return "ParameterObserverHistogram";

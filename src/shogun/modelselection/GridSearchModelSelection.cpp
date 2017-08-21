@@ -86,7 +86,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 		/* check if current result is better, delete old combinations */
 		if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 		{
-			if (result->get_mean()>best_result->get_mean())
+			if (result->get_mean() > best_result->get_mean())
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
@@ -107,7 +107,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 		}
 		else
 		{
-			if (result->get_mean()<best_result->get_mean())
+			if (result->get_mean() < best_result->get_mean())
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);

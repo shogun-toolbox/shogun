@@ -51,17 +51,17 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CSGObject()
 	    &m_current_run_index, "m_current_run_index",
 	    "The current run index of this fold", MS_AVAILABLE)
 	SG_ADD(
-			&m_current_fold_index, "m_current_fold_index",
-			"The current fold index", MS_AVAILABLE)
+	    &m_current_fold_index, "m_current_fold_index", "The current fold index",
+	    MS_AVAILABLE)
 	SG_ADD(
-			(CSGObject**)&m_trained_machine, "m_trained_machine",
-			"The machine trained by this fold", MS_AVAILABLE)
+	    (CSGObject**)&m_trained_machine, "m_trained_machine",
+	    "The machine trained by this fold", MS_AVAILABLE)
 	SG_ADD(
-			(CSGObject**)&m_test_result, "m_test_result",
-			"The test result of this fold", MS_AVAILABLE)
+	    (CSGObject**)&m_test_result, "m_test_result",
+	    "The test result of this fold", MS_AVAILABLE)
 	SG_ADD(
-			(CSGObject**)&m_test_true_result, "m_test_true_result",
-			"The true test result for this fold", MS_AVAILABLE)
+	    (CSGObject**)&m_test_true_result, "m_test_true_result",
+	    "The true test result for this fold", MS_AVAILABLE)
 }
 
 CrossValidationFoldStorage::~CrossValidationFoldStorage()
@@ -163,9 +163,11 @@ float64_t CrossValidationFoldStorage::get_evaluation_result() const
 
 CrossValidationFoldStorage* CrossValidationStorage::get_fold(int fold) const
 {
-	REQUIRE(fold < get_num_folds(), "The fold number must be less than %i", get_num_folds())
+	REQUIRE(
+	    fold < get_num_folds(), "The fold number must be less than %i",
+	    get_num_folds())
 
-	CrossValidationFoldStorage * fld = m_folds_results[fold];
+	CrossValidationFoldStorage* fld = m_folds_results[fold];
 	SG_REF(fld);
 	return fld;
 }
@@ -192,14 +194,14 @@ CrossValidationStorage::CrossValidationStorage() : CSGObject()
 	m_expose_labels = NULL;
 
 	SG_ADD(
-			&m_num_runs, "m_num_runs",
-			"The total number of cross-validation runs", MS_AVAILABLE)
+	    &m_num_runs, "m_num_runs", "The total number of cross-validation runs",
+	    MS_AVAILABLE)
 	SG_ADD(
-			&m_num_folds, "m_num_folds",
-			"The total number of cross-validation folds", MS_AVAILABLE)
+	    &m_num_folds, "m_num_folds",
+	    "The total number of cross-validation folds", MS_AVAILABLE)
 	SG_ADD(
-			(CSGObject**)&m_expose_labels, "m_expose_labels",
-			"The labels used for this cross-validation", MS_AVAILABLE)
+	    (CSGObject**)&m_expose_labels, "m_expose_labels",
+	    "The labels used for this cross-validation", MS_AVAILABLE)
 }
 
 CrossValidationStorage::~CrossValidationStorage()
