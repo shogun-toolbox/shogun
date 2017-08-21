@@ -266,7 +266,7 @@ namespace shogun
 		 * @param fold the fold index
 		 * @return the CrossValidationFoldStorage object
 		 */
-		CrossValidationFoldStorage * get_fold(int fold) const;
+		CrossValidationFoldStorage* get_fold(int fold) const;
 
 		/**
 		 * Operator == needed for Any comparison.

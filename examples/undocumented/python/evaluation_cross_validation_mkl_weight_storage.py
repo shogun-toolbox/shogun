@@ -74,7 +74,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     # print mkl weights
     weights = []
     for obs_index in range(mkl_storage.get_num_observations()):
-        obs = mkl_storage.get_observation(obs_index):
+        obs = mkl_storage.get_observation(obs_index)
         for fold_index in range(obs.get_num_folds()):
             fold = obs.get_fold(fold_index)
             machine = MKLClassification.obtain_from_generic(fold.get_trained_machine())

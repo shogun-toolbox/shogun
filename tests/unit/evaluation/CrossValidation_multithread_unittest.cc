@@ -105,7 +105,7 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 
 	CCrossValidationResult* result1=(CCrossValidationResult*)cross->evaluate();
 	float64_t mean1 = result1->get_mean();
-	
+
 	cross->parallel->set_num_threads(3);
 
 	CCrossValidationResult* result2=(CCrossValidationResult*)cross->evaluate();
@@ -155,7 +155,7 @@ TEST(CrossValidation_multithread, KNN)
 
 	CCrossValidationResult* result1=(CCrossValidationResult*)cross->evaluate();
 	float64_t mean1 = result1->get_mean();
-	
+
 	cross->parallel->set_num_threads(3);
 
 	CCrossValidationResult* result2=(CCrossValidationResult*)cross->evaluate();

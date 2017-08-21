@@ -132,7 +132,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	casted=CrossValidationResult.obtain_from_generic(result);
 	#print "result mean:", casted.mean
 
-	return classifier,result,casted.mean
+	return classifier,result,casted.get_mean()
 
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')

@@ -118,11 +118,6 @@ namespace shogun
 		 * The type of params this observers accept
 		 */
 		SG_OBS_VALUE_TYPE m_type;
-
-		/**
-		 * Reference counter
-		 */
-		RefCount* m_refcount;
 	};
 }
 

@@ -46,7 +46,8 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class CParameterObserverCV : public ParameterObserverInterface, public CSGObject
+	class CParameterObserverCV : public ParameterObserverInterface,
+	                             public CSGObject
 	{
 
 	public:
@@ -82,9 +83,9 @@ namespace shogun
 		void print_observed_value(CrossValidationStorage* value) const;
 
 		/**
- 		* Get class name.
- 		* @return class name
- 		*/
+		* Get class name.
+		* @return class name
+		*/
 		virtual const char* get_name() const
 		{
 			return "ParameterObserverCV";
