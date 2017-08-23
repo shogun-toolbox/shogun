@@ -86,13 +86,16 @@ void CLibSVMFile::init_with_defaults()
 	m_line_reader=new CLineReader(file, m_line_tokenizer);
 }
 
-#define GET_SPARSE_MATRIX(read_func, sg_type) \
-void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, index_t& num_feat, index_t& num_vec) \
-{ \
-	SGVector<float64_t>* multilabel; \
-	index_t num_classes; \
-	get_sparse_matrix(mat_feat, num_feat, num_vec, multilabel, num_classes, false); \
-}
+#define GET_SPARSE_MATRIX(read_func, sg_type)                                  \
+	void CLibSVMFile::get_sparse_matrix(                                       \
+	    SGSparseVector<sg_type>*& mat_feat, index_t& num_feat,                 \
+	    index_t& num_vec)                                                      \
+	{                                                                          \
+		SGVector<float64_t>* multilabel;                                       \
+		index_t num_classes;                                                   \
+		get_sparse_matrix(                                                     \
+		    mat_feat, num_feat, num_vec, multilabel, num_classes, false);      \
+	}
 
 GET_SPARSE_MATRIX(read_bool, bool)
 GET_SPARSE_MATRIX(read_char, int8_t)
@@ -109,26 +112,31 @@ GET_SPARSE_MATRIX(read_long, int64_t)
 GET_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_SPARSE_MATRIX
 
-#define GET_LABELED_SPARSE_MATRIX(read_func, sg_type) \
-void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, index_t& num_feat, index_t& num_vec, \
-					float64_t*& labels,  bool load_labels) \
-{ \
-	SGVector<float64_t>* multilabel; \
-	index_t num_classes; \
-	get_sparse_matrix(mat_feat, num_feat, num_vec, multilabel, num_classes, load_labels); \
-	\
-	for (index_t i=0; i<num_vec; i++) \
-	{ \
-		REQUIRE(multilabel[i].size()==1, \
-			"%s is a multilabel (%d) file. You are trying to read it with a single-label reader.", \
-			multilabel[i].size(), filename); \
-	} \
-	labels=SG_MALLOC(float64_t, num_vec); \
-	\
-	for (index_t i=0; i<num_vec; i++) \
-		labels[i]=multilabel[i][0]; \
-	SG_FREE(multilabel); \
-} \
+#define GET_LABELED_SPARSE_MATRIX(read_func, sg_type)                          \
+	void CLibSVMFile::get_sparse_matrix(                                       \
+	    SGSparseVector<sg_type>*& mat_feat, index_t& num_feat,                 \
+	    index_t& num_vec, float64_t*& labels, bool load_labels)                \
+	{                                                                          \
+		SGVector<float64_t>* multilabel;                                       \
+		index_t num_classes;                                                   \
+		get_sparse_matrix(                                                     \
+		    mat_feat, num_feat, num_vec, multilabel, num_classes,              \
+		    load_labels);                                                      \
+                                                                               \
+		for (index_t i = 0; i < num_vec; i++)                                  \
+		{                                                                      \
+			REQUIRE(                                                           \
+			    multilabel[i].size() == 1, "%s is a multilabel (%d) file. "    \
+			                               "You are trying to read it with a " \
+			                               "single-label reader.",             \
+			    multilabel[i].size(), filename);                               \
+		}                                                                      \
+		labels = SG_MALLOC(float64_t, num_vec);                                \
+                                                                               \
+		for (index_t i = 0; i < num_vec; i++)                                  \
+			labels[i] = multilabel[i][0];                                      \
+		SG_FREE(multilabel);                                                   \
+	}
 
 GET_LABELED_SPARSE_MATRIX(read_bool, bool)
 GET_LABELED_SPARSE_MATRIX(read_char, int8_t)
@@ -168,7 +176,8 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 		mat_feat = SG_MALLOC(SGSparseVector<sg_type>, num_vec);                \
 		multilabel = SG_MALLOC(SGVector<float64_t>, num_vec);                  \
                                                                                \
-		auto pb = progress(range(index_t(0), num_vec), *this->io, "LOADING: ");         \
+		auto pb =                                                              \
+		    progress(range(index_t(0), num_vec), *this->io, "LOADING: ");      \
 		num_classes = 0;                                                       \
 		SG_SET_LOCALE_C;                                                       \
                                                                                \
@@ -275,13 +284,14 @@ GET_MULTI_LABELED_SPARSE_MATRIX(read_long, int64_t)
 GET_MULTI_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_MULTI_LABELED_SPARSE_MATRIX
 
-#define SET_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
-			const SGSparseVector<sg_type>* matrix, index_t num_feat, index_t num_vec) \
-{ \
-	SGVector <float64_t>* labels = NULL; \
-	set_sparse_matrix(matrix, num_feat, num_vec, labels); \
-}
+#define SET_SPARSE_MATRIX(format, sg_type)                                     \
+	void CLibSVMFile::set_sparse_matrix(                                       \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec)                                                       \
+	{                                                                          \
+		SGVector<float64_t>* labels = NULL;                                    \
+		set_sparse_matrix(matrix, num_feat, num_vec, labels);                  \
+	}
 
 SET_SPARSE_MATRIX(SCNi32, bool)
 SET_SPARSE_MATRIX(SCNi8, int8_t)
@@ -298,22 +308,23 @@ SET_SPARSE_MATRIX(SCNi16, int16_t)
 SET_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_SPARSE_MATRIX
 
-#define SET_LABELED_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
-			const SGSparseVector<sg_type>* matrix, index_t num_feat, index_t num_vec, \
-			const float64_t* labels) \
-{ \
-	SGVector<float64_t>* multilabel=SG_MALLOC(SGVector<float64_t>, num_vec); \
-	\
-	for (int32_t i=0; i<num_vec; i++) \
-	{ \
-		multilabel[i]=SGVector<float64_t>(1); \
-		multilabel[i][0]=labels[i]; \
-	} \
-	\
-	set_sparse_matrix(matrix, num_feat, num_vec, multilabel); \
-	SG_FREE(multilabel); \
-}
+#define SET_LABELED_SPARSE_MATRIX(format, sg_type)                             \
+	void CLibSVMFile::set_sparse_matrix(                                       \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec, const float64_t* labels)                              \
+	{                                                                          \
+		SGVector<float64_t>* multilabel =                                      \
+		    SG_MALLOC(SGVector<float64_t>, num_vec);                           \
+                                                                               \
+		for (int32_t i = 0; i < num_vec; i++)                                  \
+		{                                                                      \
+			multilabel[i] = SGVector<float64_t>(1);                            \
+			multilabel[i][0] = labels[i];                                      \
+		}                                                                      \
+                                                                               \
+		set_sparse_matrix(matrix, num_feat, num_vec, multilabel);              \
+		SG_FREE(multilabel);                                                   \
+	}
 
 SET_LABELED_SPARSE_MATRIX(SCNi32, bool)
 SET_LABELED_SPARSE_MATRIX(SCNi8, int8_t)
@@ -330,43 +341,43 @@ SET_LABELED_SPARSE_MATRIX(SCNi16, int16_t)
 SET_LABELED_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_LABELED_SPARSE_MATRIX
 
-#define SET_MULTI_LABELED_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
-			const SGSparseVector<sg_type>* matrix, index_t num_feat, index_t num_vec, \
-			const SGVector<float64_t>* multilabel) \
-{ \
-	SG_SET_LOCALE_C; \
-	\
-	for (index_t i=0; i<num_vec; i++) \
-	{ \
-		if (multilabel!=NULL) \
-		{ \
-			if (multilabel[i].size()==0) \
-				fprintf(file, " "); \
-			\
-			for (index_t j=0; j <multilabel[i].size(); j++) \
-			{ \
-				fprintf(file, "%lg", multilabel[i][j]); \
-				\
-				if (j==multilabel[i].size()-1) \
-					fprintf(file, " "); \
-				else \
-					fprintf(file, ","); \
-			} \
-		} \
-		\
-		for (index_t j=0; j<matrix[i].num_feat_entries; j++) \
-		{ \
-			fprintf(file, "%lld%c%" format " ", \
-			matrix[i].features[j].feat_index+1, \
-			m_delimiter_feat, \
-			matrix[i].features[j].entry); \
-		} \
-		fprintf(file, "\n"); \
-	} \
-	\
-	SG_RESET_LOCALE; \
-}
+#define SET_MULTI_LABELED_SPARSE_MATRIX(format, sg_type)                       \
+	void CLibSVMFile::set_sparse_matrix(                                       \
+	    const SGSparseVector<sg_type>* matrix, index_t num_feat,               \
+	    index_t num_vec, const SGVector<float64_t>* multilabel)                \
+	{                                                                          \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		for (index_t i = 0; i < num_vec; i++)                                  \
+		{                                                                      \
+			if (multilabel != NULL)                                            \
+			{                                                                  \
+				if (multilabel[i].size() == 0)                                 \
+					fprintf(file, " ");                                        \
+                                                                               \
+				for (index_t j = 0; j < multilabel[i].size(); j++)             \
+				{                                                              \
+					fprintf(file, "%lg", multilabel[i][j]);                    \
+                                                                               \
+					if (j == multilabel[i].size() - 1)                         \
+						fprintf(file, " ");                                    \
+					else                                                       \
+						fprintf(file, ",");                                    \
+				}                                                              \
+			}                                                                  \
+                                                                               \
+			for (index_t j = 0; j < matrix[i].num_feat_entries; j++)           \
+			{                                                                  \
+				fprintf(                                                       \
+				    file, "%lld%c%" format " ",                                \
+				    matrix[i].features[j].feat_index + 1, m_delimiter_feat,    \
+				    matrix[i].features[j].entry);                              \
+			}                                                                  \
+			fprintf(file, "\n");                                               \
+		}                                                                      \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 SET_MULTI_LABELED_SPARSE_MATRIX(SCNi32, bool)
 SET_MULTI_LABELED_SPARSE_MATRIX(SCNi8, int8_t)

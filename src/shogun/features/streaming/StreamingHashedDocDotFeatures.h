@@ -103,8 +103,9 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			index_t vec2_len, bool abs_val=false);
+	virtual void add_to_dense_vec(
+		float32_t alpha, float32_t* vec2, index_t vec2_len,
+		bool abs_val = false);
 
 	/** obtain the dimensionality of the feature space
 	 *

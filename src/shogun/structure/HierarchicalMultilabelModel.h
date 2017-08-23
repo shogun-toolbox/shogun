@@ -44,14 +44,16 @@ public:
 	 * TERMINAL NODES) are only allowed or not
 	 * class or not
 	 */
-	CHierarchicalMultilabelModel(CFeatures * features, CStructuredLabels * labels,
-	                             SGVector<index_t> taxonomy, bool leaf_nodes_mandatory = false);
+	CHierarchicalMultilabelModel(
+		CFeatures* features, CStructuredLabels* labels,
+		SGVector<index_t> taxonomy, bool leaf_nodes_mandatory = false);
 
 	/** destructor */
 	virtual ~CHierarchicalMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(index_t num_labels = 0);
+	virtual CStructuredLabels*
+	structured_labels_factory(index_t num_labels = 0);
 
 	/** @return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
@@ -69,8 +71,8 @@ public:
 	 *
 	 * @return joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(index_t feat_idx,
-	                CStructuredData * y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** obtain the argmax of
 	 *
@@ -82,8 +84,8 @@ public:
 	 * @param feat_idx index of the feature vector to use
 	 * @param training whether training is being used
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, index_t feat_idx,
-	                            bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -129,7 +131,7 @@ private:
 	// array for vectors storing the node-ids of the children
 	// m_children[node_id] = vector of node_ids of the children
 	//                     = empty vector, if node is a terminal node
-	SGVector<index_t> * m_children;
+	SGVector<index_t>* m_children;
 
 private:
 	void init(SGVector<index_t> taxonomy, bool leaf_nodes_mandatory);

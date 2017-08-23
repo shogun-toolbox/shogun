@@ -55,7 +55,8 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -70,7 +71,9 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, index_t feat_idx, bool const training = true);
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *

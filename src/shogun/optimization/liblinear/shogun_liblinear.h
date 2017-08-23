@@ -223,7 +223,7 @@ protected:
 	double *C;
 	double *z;
 	double *D;
-	index_t *I;
+	index_t* I;
 	index_t sizeI;
 	const liblinear_problem *m_prob;
 };

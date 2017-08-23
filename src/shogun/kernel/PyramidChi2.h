@@ -47,10 +47,9 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	CPyramidChi2(index_t size, index_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		index_t width_computation_type2,
-		float64_t width2);
+	CPyramidChi2(
+		index_t size, index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 	/** constructor
 	 *
@@ -72,10 +71,8 @@ public:
 	 */
 	CPyramidChi2(
 		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
-		index_t size, index_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		index_t width_computation_type2,
-		float64_t width2 );
+		index_t size, index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 	/** init
 	 *
@@ -113,10 +110,9 @@ public:
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
 	 */
-	virtual void setparams_pychi2(index_t num_cells2,
-		float64_t* weights_foreach_cell2,
-		index_t width_computation_type2,
-		float64_t width2);
+	virtual void setparams_pychi2(
+		index_t num_cells2, float64_t* weights_foreach_cell2,
+		index_t width_computation_type2, float64_t width2);
 
 protected:
 	/** compute kernel function for features a and b
@@ -137,14 +133,10 @@ protected:
 
 	/** width_computation_type */
 	index_t width_computation_type;
-		/** width */
+	/** width */
 	float64_t width;
 	/** in case of adaptive width computation: how many features to use */
 	index_t num_randfeats_forwidthcomputation;
-
-
-
-
 };
 }
 #endif /*PYRAMIDCHI2_H_*/

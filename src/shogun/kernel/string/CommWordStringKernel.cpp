@@ -100,12 +100,12 @@ float64_t CCommWordStringKernel::compute_diag(index_t idx_a)
 	int32_t* dic = dict_diagonal_optimization;
 	memset(dic, 0, num_symbols*sizeof(int32_t));
 
-	for (index_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 		dic[av[i]]++;
 
 	if (use_sign)
 	{
-		for (index_t i=0; i<(int32_t) l->get_num_symbols(); i++)
+		for (index_t i = 0; i < (int32_t)l->get_num_symbols(); i++)
 		{
 			if (dic[i]!=0)
 				result++;
@@ -113,7 +113,7 @@ float64_t CCommWordStringKernel::compute_diag(index_t idx_a)
 	}
 	else
 	{
-		for (index_t i=0; i<num_symbols; i++)
+		for (index_t i = 0; i < num_symbols; i++)
 		{
 			if (dic[i]!=0)
 				result+=dic[i]*dic[i];
@@ -125,7 +125,7 @@ float64_t CCommWordStringKernel::compute_diag(index_t idx_a)
 }
 
 float64_t CCommWordStringKernel::compute_helper(
-	index_t idx_a, index_t idx_b, bool do_sort)
+    index_t idx_a, index_t idx_b, bool do_sort)
 {
 	index_t alen, blen;
 	bool free_av, free_bv;
@@ -238,14 +238,14 @@ float64_t CCommWordStringKernel::compute_helper(
 
 void CCommWordStringKernel::add_to_normal(index_t vec_idx, float64_t weight)
 {
-	index_t len=-1;
+	index_t len = -1;
 	bool free_vec;
 	uint16_t* vec=((CStringFeatures<uint16_t>*) lhs)->
 		get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
 	{
-		index_t j, last_j=0;
+		index_t j, last_j = 0;
 		if (use_sign)
 		{
 			for (j=1; j<len; j++)
@@ -253,12 +253,12 @@ void CCommWordStringKernel::add_to_normal(index_t vec_idx, float64_t weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(index_t) vec[j-1]]+=normalizer->
-					normalize_lhs(weight, vec_idx);
+				dictionary_weights[(index_t)vec[j - 1]] +=
+				    normalizer->normalize_lhs(weight, vec_idx);
 			}
 
-			dictionary_weights[(index_t) vec[len-1]]+=normalizer->
-				normalize_lhs(weight, vec_idx);
+			dictionary_weights[(index_t)vec[len - 1]] +=
+			    normalizer->normalize_lhs(weight, vec_idx);
 		}
 		else
 		{
@@ -267,13 +267,13 @@ void CCommWordStringKernel::add_to_normal(index_t vec_idx, float64_t weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(index_t) vec[j-1]]+=normalizer->
-					normalize_lhs(weight*(j-last_j), vec_idx);
+				dictionary_weights[(index_t)vec[j - 1]] +=
+				    normalizer->normalize_lhs(weight * (j - last_j), vec_idx);
 				last_j = j;
 			}
 
-			dictionary_weights[(index_t) vec[len-1]]+=normalizer->
-				normalize_lhs(weight*(len-last_j), vec_idx);
+			dictionary_weights[(index_t)vec[len - 1]] +=
+			    normalizer->normalize_lhs(weight * (len - last_j), vec_idx);
 		}
 		set_is_initialized(true);
 	}
@@ -288,7 +288,7 @@ void CCommWordStringKernel::clear_normal()
 }
 
 bool CCommWordStringKernel::init_optimization(
-	index_t count, index_t* IDX, float64_t* weights)
+    index_t count, index_t* IDX, float64_t* weights)
 {
 	delete_optimization();
 
@@ -332,7 +332,7 @@ float64_t CCommWordStringKernel::compute_optimized(index_t i)
 	uint16_t* vec=((CStringFeatures<uint16_t>*) rhs)->
 		get_feature_vector(i, len, free_vec);
 
-	index_t j, last_j=0;
+	index_t j, last_j = 0;
 	if (vec && len>0)
 	{
 		if (use_sign)
@@ -342,10 +342,10 @@ float64_t CCommWordStringKernel::compute_optimized(index_t i)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				result += dictionary_weights[(index_t) vec[j-1]];
+				result += dictionary_weights[(index_t)vec[j - 1]];
 			}
 
-			result += dictionary_weights[(index_t) vec[len-1]];
+			result += dictionary_weights[(index_t)vec[len - 1]];
 		}
 		else
 		{
@@ -354,11 +354,13 @@ float64_t CCommWordStringKernel::compute_optimized(index_t i)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				result += dictionary_weights[(index_t) vec[j-1]]*(j-last_j);
+				result +=
+				    dictionary_weights[(index_t)vec[j - 1]] * (j - last_j);
 				last_j = j;
 			}
 
-			result += dictionary_weights[(index_t) vec[len-1]]*(len-last_j);
+			result +=
+			    dictionary_weights[(index_t)vec[len - 1]] * (len - last_j);
 		}
 
 		result=normalizer->normalize_rhs(result, i);
@@ -368,8 +370,8 @@ float64_t CCommWordStringKernel::compute_optimized(index_t i)
 }
 
 float64_t* CCommWordStringKernel::compute_scoring(
-	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
-	index_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
+    int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
+    index_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
 {
 	ASSERT(lhs)
 	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
@@ -489,9 +491,8 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	return target;
 }
 
-
 char* CCommWordStringKernel::compute_consensus(
-	int32_t &result_len, int32_t num_suppvec, index_t* IDX, float64_t* alphas)
+    int32_t& result_len, int32_t num_suppvec, index_t* IDX, float64_t* alphas)
 {
 	ASSERT(lhs)
 	ASSERT(IDX)

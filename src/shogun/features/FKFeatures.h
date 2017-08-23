@@ -115,7 +115,7 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 * @return something floaty
 		 */
 		virtual float64_t* compute_feature_vector(
-			index_t num, index_t& len, float64_t* target=NULL);
+		    index_t num, index_t& len, float64_t* target = NULL);
 
 		/** computes the feature vector to the address addr
 		 *
@@ -130,7 +130,7 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 * @param a a
 		 * @param dimension dimension
 		 */
-		float64_t deriv_a(float64_t a, index_t dimension=-1) ;
+		float64_t deriv_a(float64_t a, index_t dimension = -1);
 
 	private:
 		void init();

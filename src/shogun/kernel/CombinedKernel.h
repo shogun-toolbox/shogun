@@ -270,8 +270,8 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t * weights);
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -295,9 +295,9 @@ class CCombinedKernel : public CKernel
 		 * weights
 		 */
 		virtual void compute_batch(
-			index_t num_vec, index_t* vec_idx, float64_t* target,
-			index_t num_suppvec, index_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** emulates batch computation, via linadd optimization w^t x or even
 		 * down to sum_i alpha_i K(x_i,x)
@@ -311,8 +311,8 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 */
 		void emulate_compute_batch(
-			CKernel* k, index_t num_vec, index_t* vec_idx, float64_t* target,
-			index_t num_suppvec, index_t* IDX, float64_t* weights);
+		    CKernel* k, index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* weights);
 
 		/** add to normal vector
 		 *
@@ -329,8 +329,8 @@ class CCombinedKernel : public CKernel
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(
-			index_t idx, float64_t * subkernel_contrib);
+		virtual void
+		compute_by_subkernel(index_t idx, float64_t* subkernel_contrib);
 
 		/** get subkernel weights
 		 *
@@ -466,7 +466,7 @@ class CCombinedKernel : public CKernel
 		/** list of kernels */
 		CDynamicObjectArray* kernel_array;
 		/** support vector count */
-		index_t   sv_count;
+		index_t sv_count;
 		/** support vector index */
 		int32_t*  sv_idx;
 		/** support vector weights */

@@ -57,7 +57,7 @@ void CLinearKernel::add_to_normal(index_t idx, float64_t weight)
 }
 
 bool CLinearKernel::init_optimization(
-	index_t num_suppvec, index_t* sv_idx, float64_t* alphas)
+    index_t num_suppvec, index_t* sv_idx, float64_t* alphas)
 {
 	clear_normal();
 

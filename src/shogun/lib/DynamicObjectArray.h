@@ -48,8 +48,8 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim2 dimension 2
 		 * @param dim3 dimension 3
 		 */
-		CDynamicObjectArray(index_t dim1, index_t dim2=1, index_t dim3=1)
-		: CSGObject(), m_array(dim1*dim2*dim3)
+		CDynamicObjectArray(index_t dim1, index_t dim2 = 1, index_t dim3 = 1)
+		    : CSGObject(), m_array(dim1 * dim2 * dim3)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -65,8 +65,11 @@ class CDynamicObjectArray : public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicObjectArray(CSGObject** p_array, index_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
+		CDynamicObjectArray(
+		    CSGObject** p_array, index_t p_dim1_size, bool p_free_array = true,
+		    bool p_copy_array = false)
+		    : CSGObject(),
+		      m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
@@ -83,9 +86,12 @@ class CDynamicObjectArray : public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicObjectArray(CSGObject** p_array, index_t p_dim1_size, index_t p_dim2_size,
-						bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
+		CDynamicObjectArray(
+		    CSGObject** p_array, index_t p_dim1_size, index_t p_dim2_size,
+		    bool p_free_array = true, bool p_copy_array = false)
+		    : CSGObject(), m_array(
+		                       p_array, p_dim1_size * p_dim2_size, p_free_array,
+		                       p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -103,9 +109,13 @@ class CDynamicObjectArray : public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicObjectArray(CSGObject** p_array, index_t p_dim1_size, index_t p_dim2_size,
-						index_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
+		CDynamicObjectArray(
+		    CSGObject** p_array, index_t p_dim1_size, index_t p_dim2_size,
+		    index_t p_dim3_size, bool p_free_array = true,
+		    bool p_copy_array = false)
+		    : CSGObject(), m_array(
+		                       p_array, p_dim1_size * p_dim2_size * p_dim3_size,
+		                       p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -161,19 +171,28 @@ class CDynamicObjectArray : public CSGObject
 		 *
 		 * @return dimension 1
 		 */
-		inline index_t get_dim1() { return dim1_size; }
+		inline index_t get_dim1()
+		{
+			return dim1_size;
+		}
 
 		/** get dimension 2
 		 *
 		 * @return dimension 2
 		 */
-		inline index_t get_dim2() { return dim2_size; }
+		inline index_t get_dim2()
+		{
+			return dim2_size;
+		}
 
 		/** get dimension 3
 		 *
 		 * @return dimension 3
 		 */
-		inline index_t get_dim3() { return dim3_size; }
+		inline index_t get_dim3()
+		{
+			return dim3_size;
+		}
 
 		/** get number of elements
 		 *
@@ -205,7 +224,8 @@ class CDynamicObjectArray : public CSGObject
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline CSGObject* element(index_t idx1, index_t idx2=0, index_t idx3=0)
+		inline CSGObject*
+		element(index_t idx1, index_t idx2 = 0, index_t idx3 = 0)
 		{
 			return get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
 		}
@@ -243,9 +263,10 @@ class CDynamicObjectArray : public CSGObject
 		 * @param idx3 index 2
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CSGObject* e, index_t idx1, index_t idx2=0, index_t idx3=0)
+		inline bool set_element(
+		    CSGObject* e, index_t idx1, index_t idx2 = 0, index_t idx3 = 0)
 		{
-			index_t idx = idx1+dim1_size*(idx2+dim2_size*idx3);
+			index_t idx = idx1 + dim1_size * (idx2 + dim2_size * idx3);
 			CSGObject* old=NULL;
 
 			if (idx<get_num_elements())

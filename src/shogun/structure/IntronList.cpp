@@ -32,7 +32,7 @@ void CIntronList::init_list(index_t* all_pos, index_t len)
 {
 	m_length = len;
 	m_all_pos = SG_MALLOC(index_t, len);
-	sg_memcpy(m_all_pos, all_pos, len*sizeof(index_t));
+	sg_memcpy(m_all_pos, all_pos, len * sizeof(index_t));
 	m_intron_list = SG_MALLOC(index_t*, len);
 	m_quality_list = SG_MALLOC(index_t*, len);
 
@@ -40,7 +40,8 @@ void CIntronList::init_list(index_t* all_pos, index_t len)
 	index_t* one;
 	for (int i=0;i<m_length;i++)
 	{
-		one = SG_MALLOC(index_t, 1);//use malloc here because mem can be increased efficiently with realloc later
+		one = SG_MALLOC(index_t, 1); // use malloc here because mem can be
+		                             // increased efficiently with realloc later
 		m_intron_list[i] = one;
 		m_intron_list[i][0] = 1;
 		one = SG_MALLOC(index_t, 1);
@@ -48,10 +49,11 @@ void CIntronList::init_list(index_t* all_pos, index_t len)
 		m_quality_list[i][0] = 1;
 	}
 }
-void CIntronList::read_introns(index_t* start_pos, index_t* end_pos, index_t* quality, index_t len)
+void CIntronList::read_introns(
+    index_t* start_pos, index_t* end_pos, index_t* quality, index_t len)
 {
-	index_t k=0;
-	for(index_t i=0;i<m_length;i++)//iterate over candidate positions
+	index_t k = 0;
+	for (index_t i = 0; i < m_length; i++) // iterate over candidate positions
 	{
 		while (k<len)
 		{
@@ -73,7 +75,8 @@ void CIntronList::read_introns(index_t* start_pos, index_t* end_pos, index_t* qu
 			// intron list
 			//------------
 			index_t from_list_len = m_intron_list[i][0];
-			index_t* new_list = SG_REALLOC(index_t, m_intron_list[i], from_list_len, (from_list_len+1));
+			index_t* new_list = SG_REALLOC(
+			    index_t, m_intron_list[i], from_list_len, (from_list_len + 1));
 			if (new_list == NULL)
 				SG_ERROR("IntronList: Out of mem 4")
 			new_list[from_list_len]= start_pos[k];
@@ -84,7 +87,8 @@ void CIntronList::read_introns(index_t* start_pos, index_t* end_pos, index_t* qu
 			index_t q_list_len = m_quality_list[i][0];
 			//SG_PRINT("\t q_list_len:%i, from_list_len:%i \n",q_list_len, from_list_len)
 			ASSERT(q_list_len==from_list_len)
-			new_list = SG_REALLOC(index_t, m_quality_list[i], q_list_len, (q_list_len+1));
+			new_list = SG_REALLOC(
+			    index_t, m_quality_list[i], q_list_len, (q_list_len + 1));
 			if (new_list == NULL)
 				SG_ERROR("IntronList: Out of mem 5")
 			new_list[q_list_len]= quality[k];
@@ -99,7 +103,8 @@ void CIntronList::read_introns(index_t* start_pos, index_t* end_pos, index_t* qu
  * from_pos and to_pos are indices in the all_pos list
  * not positions in the DNA sequence
  * */
-void CIntronList::get_intron_support(index_t* values, index_t from_pos, index_t to_pos)
+void CIntronList::get_intron_support(
+    index_t* values, index_t from_pos, index_t to_pos)
 {
 	if (from_pos>=m_length)
 		SG_ERROR("from_pos (%i) is not < m_length (%i)\n",to_pos, m_length)
@@ -112,7 +117,7 @@ void CIntronList::get_intron_support(index_t* values, index_t from_pos, index_t 
 
 	index_t coverage = 0;
 	index_t quality = 0;
-	for (index_t i=1;i<from_list[0]; i++)
+	for (index_t i = 1; i < from_list[0]; i++)
 	{
 		//SG_PRINT("from_list[%i]: %i, m_all_pos[from_pos]:%i\n", i,  from_list[i], m_all_pos[from_pos])
 		if (from_list[i]==m_all_pos[from_pos])

@@ -36,7 +36,7 @@ CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
 }
 
 CLinearHMM::CLinearHMM(index_t p_num_features, index_t p_num_symbols)
-: CDistribution()
+    : CDistribution()
 {
 	init();
 
@@ -121,7 +121,7 @@ bool CLinearHMM::train(CFeatures* data)
 }
 
 bool CLinearHMM::train(
-	const index_t* indizes, index_t num_indizes, float64_t pseudo)
+    const index_t* indizes, index_t num_indizes, float64_t pseudo)
 {
 	SG_FREE(transition_probs);
 	SG_FREE(log_transition_probs);
@@ -187,7 +187,7 @@ float64_t CLinearHMM::get_log_likelihood_example(uint16_t* vector, index_t len)
 {
 	float64_t result=log_transition_probs[vector[0]];
 
-	for (index_t i=1; i<len; i++)
+	for (index_t i = 1; i < len; i++)
 		result+=log_transition_probs[i*num_symbols+vector[i]];
 
 	return result;
@@ -211,7 +211,7 @@ float64_t CLinearHMM::get_likelihood_example(uint16_t* vector, index_t len)
 {
 	float64_t result=transition_probs[vector[0]];
 
-	for (index_t i=1; i<len; i++)
+	for (index_t i = 1; i < len; i++)
 		result*=transition_probs[i*num_symbols+vector[i]];
 
 	return result;

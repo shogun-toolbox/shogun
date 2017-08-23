@@ -463,7 +463,7 @@ TEST(FactorGraph, structure_analysis)
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<index_t> vc(hh*ww);
+	SGVector<index_t> vc(hh * ww);
 	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
@@ -520,7 +520,7 @@ TEST(FactorGraph, structure_analysis_loopy)
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<index_t> vc(hh*ww);
+	SGVector<index_t> vc(hh * ww);
 	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
@@ -577,7 +577,7 @@ TEST(FactorGraph, structure_analysis_disconnected)
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<index_t> vc(hh*ww);
+	SGVector<index_t> vc(hh * ww);
 	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 

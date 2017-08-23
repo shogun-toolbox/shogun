@@ -84,7 +84,7 @@ void CGEMPLP::init()
 		index_t s = 0;
 
 		for (std::set<index_t>::iterator t = m_region_intersections[c].begin();
-				t != m_region_intersections[c].end(); t++)
+		     t != m_region_intersections[c].end(); t++)
 		{
 			SGVector<index_t> curr_intersection = m_all_intersections[*t];
 			SGVector<index_t> inds_s(curr_intersection.size());
@@ -154,7 +154,8 @@ SGNDArray<float64_t> CGEMPLP::convert_energy_to_potential(CFactor* factor)
 	return message.clone();
 }
 
-index_t CGEMPLP::find_intersection_index(SGVector<index_t> region_A, SGVector<index_t> region_B)
+index_t CGEMPLP::find_intersection_index(
+    SGVector<index_t> region_A, SGVector<index_t> region_B)
 {
 	vector<index_t> tmp;
 
@@ -169,7 +170,6 @@ index_t CGEMPLP::find_intersection_index(SGVector<index_t> region_A, SGVector<in
 
 	// return -1 if intersetion is empty
 	if (tmp.size() == 0)	return -1;
-
 
 	SGVector<index_t> sAB(tmp.size());
 	for (uint32_t i = 0; i < tmp.size(); i++)
@@ -288,8 +288,9 @@ void CGEMPLP::update_messages(index_t id_region)
 	// \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)
 	index_t s = 0;
 
-	for (std::set<index_t>::iterator t = m_region_intersections[id_region].begin();
-				t != m_region_intersections[id_region].end(); t++)
+	for (std::set<index_t>::iterator t =
+	         m_region_intersections[id_region].begin();
+	     t != m_region_intersections[id_region].end(); t++)
 	{
 		index_t id_intersection = *t;
 		SGNDArray<float64_t> tmp = m_msgs_into_intersections[id_intersection].clone();
@@ -297,7 +298,8 @@ void CGEMPLP::update_messages(index_t id_region)
 
 		lam_minus.push_back(tmp);
 
-		if (vars.size() == (index_t)m_region_inds_intersections[id_region][s].size())
+		if (vars.size() ==
+		    (index_t)m_region_inds_intersections[id_region][s].size())
 			lam_sum += tmp;
 		else
 		{
@@ -313,8 +315,9 @@ void CGEMPLP::update_messages(index_t id_region)
 
 	s = 0;
 
-	for (std::set<index_t>::iterator t = m_region_intersections[id_region].begin();
-				t != m_region_intersections[id_region].end(); t++)
+	for (std::set<index_t>::iterator t =
+	         m_region_intersections[id_region].begin();
+	     t != m_region_intersections[id_region].end(); t++)
 	{
 		// maximazation: \max_{x_c} \sum_{\hat{s}} \lambda_{\hat{s}}^{-c}(x_{\hat{s}}) + \theta_c(x_c)
 		SGNDArray<float64_t> lam_max(lam_minus[s].get_dimensions());
@@ -332,7 +335,9 @@ void CGEMPLP::update_messages(index_t id_region)
 	SG_UNREF(factor);
 }
 
-void CGEMPLP::max_in_subdimension(SGNDArray<float64_t> tar_arr, SGVector<index_t> &subset_inds, SGNDArray<float64_t> &max_res) const
+void CGEMPLP::max_in_subdimension(
+    SGNDArray<float64_t> tar_arr, SGVector<index_t>& subset_inds,
+    SGNDArray<float64_t>& max_res) const
 {
 	// If the subset equals the target array then maximizing would
 	// give us the target array (assuming there is no reordering)

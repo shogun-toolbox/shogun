@@ -186,7 +186,8 @@ bool CQDA::train_machine(CFeatures* data)
 	if (!m_features)
 		SG_ERROR("No features allocated in QDA training\n")
 
-	SGVector< index_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> train_labels =
+	    ((CMulticlassLabels*)m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in QDA training\n")
@@ -195,14 +196,15 @@ bool CQDA::train_machine(CFeatures* data)
 
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
-	index_t num_vec  = m_features->get_num_vectors();
+	index_t num_vec = m_features->get_num_vectors();
 
 	if (num_vec != train_labels.vlen)
 		SG_ERROR("Dimension mismatch between features and labels in QDA training")
 
-	index_t* class_idxs = SG_MALLOC(index_t, num_vec*m_num_classes); // number of examples of each class
+	index_t* class_idxs = SG_MALLOC(
+	    index_t, num_vec * m_num_classes); // number of examples of each class
 	index_t* class_nums = SG_MALLOC(index_t, m_num_classes);
-	memset(class_nums, 0, m_num_classes*sizeof(index_t));
+	memset(class_nums, 0, m_num_classes * sizeof(index_t));
 	index_t class_idx;
 
 	for (index_t i = 0; i < train_labels.vlen; i++)

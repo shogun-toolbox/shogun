@@ -227,7 +227,8 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	ASSERT(offset == m_w_cache.size());
 }
 
-SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
+SGVector<float64_t> CFactorGraphModel::get_joint_feature_vector(
+    index_t feat_idx, CStructuredData* y)
 {
 	// factor graph instance
 	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
@@ -257,7 +258,8 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(index_t feat_i
 
 		ASSERT(w_map.size() == dat_size * ftype->get_num_assignments());
 
-		index_t ei = ftype->index_from_universe_assignment(states, fac->get_variables());
+		index_t ei =
+		    ftype->index_from_universe_assignment(states, fac->get_variables());
 		for (index_t di = 0; di < dat_size; di++)
 			psi[w_map[ei*dat_size + di]] += dat[di];
 
@@ -280,7 +282,8 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(index_t feat_i
 //            := argmin_y { -L(y_i, y) + E(x_i, y; w) } - E(x_i, y_i; w)
 // we do energy minimization in inference, so get back to max oracle value is:
 // [ L(y_i, y_star) - E(x_i, y_star; w) ] + E(x_i, y_i; w)
-CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, index_t feat_idx, bool const training)
+CResultSet* CFactorGraphModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	// factor graph instance
 	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
@@ -421,47 +424,54 @@ void CFactorGraphModel::init_primal_opt(
 			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -CMath::INFTY);
 			SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, CMath::INFTY);
 
-			for (index_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
-			{
-				CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
-				index_t w_dim = ftype->get_w_dim();
-				SGVector<index_t> card = ftype->get_cardinalities();
+		    for (index_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+		    {
+			    CFactorType* ftype =
+			        dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+			    index_t w_dim = ftype->get_w_dim();
+			    SGVector<index_t> card = ftype->get_cardinalities();
 
-				// TODO: Features of pairwise factor are assume to be 1. Consider more general case, e.g., edge features are availabel.
-				// for pairwise factors with binary labels
-				if (card.size() == 2 &&  card[0] == 2 && card[1] == 2)
-				{
-					REQUIRE(w_dim == 4, "GraphCut doesn't support edge features currently.");
-					SGVector<float64_t> fw = ftype->get_w();
-					SGVector<index_t> fw_map = get_params_mapping(ftype->get_type_id());
-					ASSERT(fw_map.size() == fw.size());
+			    // TODO: Features of pairwise factor are assume to be 1.
+			    // Consider more general case, e.g., edge features are
+			    // availabel.
+			    // for pairwise factors with binary labels
+			    if (card.size() == 2 && card[0] == 2 && card[1] == 2)
+			    {
+				    REQUIRE(
+				        w_dim == 4,
+				        "GraphCut doesn't support edge features currently.");
+				    SGVector<float64_t> fw = ftype->get_w();
+				    SGVector<index_t> fw_map =
+				        get_params_mapping(ftype->get_type_id());
+				    ASSERT(fw_map.size() == fw.size());
 
-					// submodularity constrain
-					// E(0,1) + E(1,0) - E(0,0) + E(1,1) > 0
-					// For pairwise factors, data term = 1,
-					// energy table indeces are defined as follows:
-					// w[0]*1 = E(0, 0)
-					// w[1]*1 = E(1, 0)
-					// w[2]*1 = E(0, 1)
-					// w[3]*1 = E(1, 1)
-					// thus, w[2] + w[1] - w[0] - w[3] > 0
-					// since factor graph model is over-parametering,
-					// the constrain can be written as w[2] > 0, w[1] > 0, w[0] = 0, w[3] = 0
-					lb[fw_map[0]] = 0;
-					ub[fw_map[0]] = 0;
-					lb[fw_map[3]] = 0;
-					ub[fw_map[3]] = 0;
-					lb[fw_map[1]] = 0;
-					lb[fw_map[2]] = 0;
-				}
-				SG_UNREF(ftype);
-			}
-			break;
-		case TREE_MAX_PROD:
-		case LOOPY_MAX_PROD:
-		case LP_RELAXATION:
-		case TRWS_MAX_PROD:
-		case GEMPLP:
-			break;
+				    // submodularity constrain
+				    // E(0,1) + E(1,0) - E(0,0) + E(1,1) > 0
+				    // For pairwise factors, data term = 1,
+				    // energy table indeces are defined as follows:
+				    // w[0]*1 = E(0, 0)
+				    // w[1]*1 = E(1, 0)
+				    // w[2]*1 = E(0, 1)
+				    // w[3]*1 = E(1, 1)
+				    // thus, w[2] + w[1] - w[0] - w[3] > 0
+				    // since factor graph model is over-parametering,
+				    // the constrain can be written as w[2] > 0, w[1] > 0, w[0]
+				    // = 0, w[3] = 0
+				    lb[fw_map[0]] = 0;
+				    ub[fw_map[0]] = 0;
+				    lb[fw_map[3]] = 0;
+				    ub[fw_map[3]] = 0;
+				    lb[fw_map[1]] = 0;
+				    lb[fw_map[2]] = 0;
+			    }
+			    SG_UNREF(ftype);
+		    }
+		    break;
+	    case TREE_MAX_PROD:
+	    case LOOPY_MAX_PROD:
+	    case LP_RELAXATION:
+	    case TRWS_MAX_PROD:
+	    case GEMPLP:
+		    break;
 	}
 }

@@ -109,13 +109,13 @@ public:
 	 *
 	 * @param labels list of sparse labels
 	 */
-	void set_labels(SGVector<index_t> * labels);
+	void set_labels(SGVector<index_t>* labels);
 
 	/** get list of sparse class labels (one vector per class)
 	 *
 	 * @return list of sparse class labels
 	 */
-	SGVector<index_t> ** get_class_labels() const;
+	SGVector<index_t>** get_class_labels() const;
 
 	/** get label matrix, only for multiclass multiple output labels
 	 *

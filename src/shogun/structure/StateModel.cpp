@@ -45,10 +45,10 @@ void CStateModel::init()
 	m_num_transmission_params = 0;
 }
 
-SGVector< index_t > CStateModel::get_monotonicity(index_t num_free_states,
-		index_t num_feats) const
+SGVector<index_t>
+CStateModel::get_monotonicity(index_t num_free_states, index_t num_feats) const
 {
-	SGVector< index_t > ret(num_feats*num_free_states);
+	SGVector<index_t> ret(num_feats * num_free_states);
 	ret.zero();
 	return ret;
 }

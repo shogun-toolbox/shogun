@@ -62,7 +62,9 @@ class CKernelMachine : public CMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<index_t> svs, float64_t b);
+		CKernelMachine(
+		    CKernel* k, const SGVector<float64_t> alphas,
+		    const SGVector<index_t> svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy

@@ -54,15 +54,15 @@ typedef T_STATES* P_STATES ;
 struct segment_loss_struct
 {
     /** maximum lookback */
-    index_t maxlookback;
-    /** sequence length */
-    index_t seqlen;
-    /** segments changed */
-    index_t *segments_changed;
-    /** numb segment ID */
-    float64_t *num_segment_id;
-    /** length of segmend ID */
-    index_t *length_segment_id ;
+	index_t maxlookback;
+	/** sequence length */
+	index_t seqlen;
+	/** segments changed */
+	index_t* segments_changed;
+	/** numb segment ID */
+	float64_t* num_segment_id;
+	/** length of segmend ID */
+	index_t* length_segment_id;
 };
 #endif
 
@@ -109,7 +109,8 @@ public:
 	 *  @param intensities intensities of probes
 	 *  @param num_probes number of probes
 	 */
-	void init_tiling_data(index_t* probe_pos, float64_t* intensities, const index_t num_probes);
+	void init_tiling_data(
+		index_t* probe_pos, float64_t* intensities, const index_t num_probes);
 
 	/** precompute tiling Plifs
 	 *
@@ -117,7 +118,9 @@ public:
 	 * @param tiling_plif_ids tiling plif id's
 	 * @param num_tiling_plifs number of tiling plifs
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const index_t* tiling_plif_ids, const index_t num_tiling_plifs);
+	void precompute_tiling_plifs(
+		CPlif** PEN, const index_t* tiling_plif_ids,
+		const index_t num_tiling_plifs);
 
 	/** append rows to linear features array
 	 *
@@ -230,7 +233,8 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(index_t* segment_ids, float64_t* segment_mask, index_t m);
+	void best_path_set_segment_ids_mask(
+		index_t* segment_ids, float64_t* segment_mask, index_t m);
 
 	/** set sparse feature matrices */
 	void set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSparseFeatures<float64_t>* seq_sparse2);
@@ -260,7 +264,6 @@ public:
 	 */
 	SGMatrix<index_t> get_positions();
 
-
 	/** run the viterbi algorithm to compute the n best viterbi paths
 	 *
 	 * @param max_num_signals maximal number of signals for a single state
@@ -269,10 +272,11 @@ public:
 	 * @param with_loss use loss
 	 * @param with_multiple_sequences !!!not functional set to false!!!
 	 */
-	void compute_nbest_paths(index_t max_num_signals,
-						 bool use_orf, int16_t nbest, bool with_loss, bool with_multiple_sequences);
+	void compute_nbest_paths(
+		index_t max_num_signals, bool use_orf, int16_t nbest, bool with_loss,
+		bool with_multiple_sequences);
 
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 
 	/** given a path though the state model and the corresponding
 	 *  positions compute the features. This can be seen as the derivative
@@ -286,8 +290,8 @@ public:
 	 * @param max_num_signals maximal number of signals
 	 */
 	void best_path_trans_deriv(
-			index_t* my_state_seq, index_t *my_pos_seq,
-			index_t my_seq_len, const float64_t *seq_array, index_t max_num_signals);
+		index_t* my_state_seq, index_t* my_pos_seq, index_t my_seq_len,
+		const float64_t* seq_array, index_t max_num_signals);
 
 	// additional best_path_trans_deriv functions
 	/** set best path my state sequence
@@ -319,7 +323,6 @@ public:
 	 * @param seq_len length of sequence
 	 */
 	void get_path_losses(float64_t** my_losses, index_t* seq_len);
-
 
 	/// access function for number of states N
 	inline T_STATES get_N() const
@@ -407,7 +410,7 @@ public:
 	 *
 	 * @return lin_feat_array
 	 */
-	inline float64_t* get_lin_feat(index_t & dim1, index_t & dim2)
+	inline float64_t* get_lin_feat(index_t& dim1, index_t& dim2)
 	{
 		m_lin_feat.get_array_size(dim1, dim2);
 		return m_lin_feat.get_array();
@@ -420,7 +423,8 @@ public:
 	 * @param p_num_svms number of tracks
 	 * @param p_seq_len number of candidate positions
 	 */
-	inline void set_lin_feat(float64_t* p_lin_feat, index_t p_num_svms, index_t p_seq_len)
+	inline void
+	set_lin_feat(float64_t* p_lin_feat, index_t p_num_svms, index_t p_seq_len)
 	{
 	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
 	}
@@ -475,7 +479,8 @@ public:
 	 *  @param threshold use long transition for segments larger than
 	 *  @param max_len allow transitions up to
 	 *  */
-	void long_transition_settings(bool use_long_transitions, index_t threshold, index_t max_len)
+	void long_transition_settings(
+		bool use_long_transitions, index_t threshold, index_t max_len)
 	{
 		m_long_transitions = use_long_transitions;
 		m_long_transition_threshold = threshold;
@@ -496,9 +501,10 @@ protected:
 	 * @param svm_values SVM values
 	 * @param frame frame
 	 */
-	void lookup_content_svm_values(const index_t from_state,
-		const index_t to_state, const index_t from_pos, const index_t to_pos,
-		float64_t* svm_values, index_t frame);
+	void lookup_content_svm_values(
+		const index_t from_state, const index_t to_state,
+		const index_t from_pos, const index_t to_pos, float64_t* svm_values,
+		index_t frame);
 
 	/** lookup tiling Plif values
 	 *
@@ -507,8 +513,9 @@ protected:
 	 * @param len length
 	 * @param svm_values SVM values
 	 */
-	inline void lookup_tiling_plif_values(const index_t from_state,
-		const index_t to_state, const index_t len, float64_t* svm_values);
+	inline void lookup_tiling_plif_values(
+		const index_t from_state, const index_t to_state, const index_t len,
+		float64_t* svm_values);
 
 	/** find frame
 	 *
@@ -525,7 +532,8 @@ protected:
 	 * @return an integer
 	 */
 	inline index_t raw_intensities_interval_query(
-		const index_t from_pos, const index_t to_pos, float64_t* intensities, index_t type);
+		const index_t from_pos, const index_t to_pos, float64_t* intensities,
+		index_t type);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** @brief SVM values */
@@ -545,7 +553,7 @@ protected:
 		/** word used */
 		bool *** word_used;
 		/** number of unique words */
-		index_t **num_unique_words;
+		index_t** num_unique_words;
 	};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -557,7 +565,9 @@ protected:
 	 * @param last_pos last position
 	 * @param to to
 	 */
-	bool extend_orf(index_t orf_from, index_t orf_to, index_t start, index_t &last_pos, index_t to);
+	bool extend_orf(
+		index_t orf_from, index_t orf_to, index_t start, index_t& last_pos,
+		index_t to);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "DynProg"; }
@@ -627,7 +637,7 @@ protected:
 	/** cum num words */
 	CDynamicArray<index_t> m_cum_num_words;
 	/** cum num words array */
-	index_t * m_cum_num_words_array;
+	index_t* m_cum_num_words_array;
 	/** num words */
 	CDynamicArray<index_t> m_num_words;
 	/** num words array */
@@ -753,7 +763,7 @@ protected:
 	bool m_long_transitions ;
 	/** threshold for transitions that are computed
 	 *  the traditional way*/
-	index_t m_long_transition_threshold  ;
+	index_t m_long_transition_threshold;
 	/** maximal length of a long transition
 	 *  Note: is ignored in the current implementation
 	 *        => arbitrarily long transitions can be decoded

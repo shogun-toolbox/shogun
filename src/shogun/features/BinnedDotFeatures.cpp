@@ -44,7 +44,8 @@ index_t CBinnedDotFeatures::get_dim_feature_space() const
 	return m_bins.num_rows*m_bins.num_cols;
 }
 
-float64_t CBinnedDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t
+CBinnedDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -117,7 +118,8 @@ float64_t CBinnedDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t ve
 
 }
 
-float64_t CBinnedDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CBinnedDotFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	assert_shape(vec2_len);
 
@@ -161,7 +163,9 @@ float64_t CBinnedDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2,
 	return result;
 }
 
-void CBinnedDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CBinnedDotFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	assert_shape(vec2_len);
 	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
@@ -244,7 +248,8 @@ void* CBinnedDotFeatures::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 
-bool CBinnedDotFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CBinnedDotFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;

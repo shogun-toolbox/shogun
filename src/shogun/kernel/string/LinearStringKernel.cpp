@@ -57,7 +57,7 @@ void CLinearStringKernel::add_to_normal(index_t idx, float64_t weight)
 	bool vfree;
 	char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx, vlen, vfree);
 
-	for (index_t i=0; i<vlen; i++)
+	for (index_t i = 0; i < vlen; i++)
 		normal[i] += weight*normalizer->normalize_lhs(vec[i], idx);
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(vec, idx, vfree);
@@ -78,23 +78,23 @@ float64_t CLinearStringKernel::compute(index_t idx_a, index_t idx_b)
 }
 
 bool CLinearStringKernel::init_optimization(
-	index_t num_suppvec, index_t *sv_idx, float64_t *alphas)
+    index_t num_suppvec, index_t* sv_idx, float64_t* alphas)
 {
-	index_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
+	index_t num_feat = ((CStringFeatures<char>*)lhs)->get_max_vector_length();
 	ASSERT(num_feat)
 
 	normal = SG_MALLOC(float64_t, num_feat);
 	ASSERT(normal)
 	clear_normal();
 
-	for (index_t i = 0; i<num_suppvec; i++)
+	for (index_t i = 0; i < num_suppvec; i++)
 	{
 		index_t alen;
 		bool free_avec;
 		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen, free_avec);
 		ASSERT(avec)
 
-		for (index_t j = 0; j<num_feat; j++)
+		for (index_t j = 0; j < num_feat; j++)
 		{
 			normal[j] += alphas[i]*
 				normalizer->normalize_lhs(((float64_t) avec[j]), sv_idx[i]);

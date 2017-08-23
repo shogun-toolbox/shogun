@@ -102,7 +102,6 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @return computed kernel function at indices a,b
 		 */
 		virtual float64_t compute(index_t idx_a, index_t idx_b);
-
 };
 }
 #endif /* _HISTOGRAMINTERSECTIONKERNEL_H__ */

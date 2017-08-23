@@ -44,7 +44,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @param len len
 		 */
-		CPlif(index_t len=0);
+		CPlif(index_t len = 0);
 		virtual ~CPlif();
 
 		/** init penalty struct cache */
@@ -112,7 +112,7 @@ class CPlif: public CPlifBase
 		 * @param p_len len
 		 * @return cum derivative
 		 */
-		const float64_t * get_cum_derivative(index_t & p_len) const
+		const float64_t* get_cum_derivative(index_t& p_len) const
 		{
 			p_len = len;
 			return cum_derivatives.vector;
@@ -235,12 +235,12 @@ class CPlif: public CPlifBase
 		 * @param p_limits limit
 		 * @param p_penalties penalties
 		 */
-		void set_plif(
-			index_t p_len, float64_t *p_limits, float64_t* p_penalties)
+		void
+		set_plif(index_t p_len, float64_t* p_limits, float64_t* p_penalties)
 		{
 			ASSERT(len==p_len)
 
-			for (index_t i=0; i<len; i++)
+			for (index_t i = 0; i < len; i++)
 			{
 				limits[i]=p_limits[i];
 				penalties[i]=p_penalties[i];

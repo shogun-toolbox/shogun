@@ -54,7 +54,8 @@ float64_t CPositionalPWM::get_log_model_parameter(index_t num_param)
 		return CMath::log(m_mean);
 }
 
-float64_t CPositionalPWM::get_log_derivative(index_t num_param, index_t num_example)
+float64_t
+CPositionalPWM::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;
@@ -69,7 +70,7 @@ float64_t CPositionalPWM::get_log_likelihood_example(index_t num_example)
 	CStringFeatures<uint8_t>* strs=(CStringFeatures<uint8_t>*) features;
 
 	float64_t lik=0;
-	index_t len=0;
+	index_t len = 0;
 	bool do_free=false;
 
 	uint8_t* str = strs->get_feature_vector(num_example, len, do_free);

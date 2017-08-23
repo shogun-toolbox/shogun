@@ -160,9 +160,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 
-			for (index_t j=0; j<len; j++)
+			for (index_t j = 0; j < len; j++)
 			{
-				index_t idx=compute_index(j, vec[j]);
+				index_t idx = compute_index(j, vec[j]);
 				mean[idx]             += estimate->log_derivative_pos_obsolete(vec[j], j)/num_vectors;
 				mean[idx+num_params] += estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
 			}
@@ -179,11 +179,11 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 
-			for (index_t j=0; j<len; j++)
+			for (index_t j = 0; j < len; j++)
 			{
-				for (index_t k=0; k<4; k++)
+				for (index_t k = 0; k < 4; k++)
 				{
-					index_t idx=compute_index(j, k);
+					index_t idx = compute_index(j, k);
 					if (k!=vec[j])
 					{
 						variance[idx]+=mean[idx]*mean[idx]/num_vectors;
@@ -225,7 +225,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		uint16_t* avec = l->get_feature_vector(i, alen, free_avec);
 
 		float64_t  result=0 ;
-		for (index_t j=0; j<alen; j++)
+		for (index_t j = 0; j < alen; j++)
 		{
 			index_t a_idx = compute_index(j, avec[j]);
 			result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
@@ -250,9 +250,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			uint16_t* avec=r->get_feature_vector(i, alen, free_avec);
 
 			float64_t  result=0 ;
-			for (index_t j=0; j<alen; j++)
+			for (index_t j = 0; j < alen; j++)
 			{
-				index_t a_idx = compute_index(j, avec[j]) ;
+				index_t a_idx = compute_index(j, avec[j]);
 				result -= estimate->log_derivative_pos_obsolete(avec[j], j)*mean[a_idx]/variance[a_idx] ;
 				result -= estimate->log_derivative_neg_obsolete(avec[j], j)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 			}
@@ -442,10 +442,10 @@ float64_t CHistogramWordStringKernel::compute_slow(index_t idx_a, index_t idx_b)
 		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);
 	result+= sum_m2_s2 ; // does not contain 0-th element
 
-	for (index_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 	{
-		index_t a_idx = compute_index(i, avec[i]) ;
-		index_t b_idx = compute_index(i, bvec[i]) ;
+		index_t a_idx = compute_index(i, avec[i]);
+		index_t b_idx = compute_index(i, bvec[i]);
 
 		if (avec[i]==bvec[i])
 		{

@@ -2466,7 +2466,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		for(i=0;i<nr_class;i++)
 		{
 			int32_t nSV = 0;
-			for(index_t j=0;j<count[i];j++)
+			for (index_t j = 0; j < count[i]; j++)
 				if(nonzero[start[i]+j])
 				{
 					++nSV;

@@ -39,7 +39,8 @@ public:
 	virtual ~CMultilabelCLRModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(index_t num_labels = 0);
+	virtual CStructuredLabels*
+	structured_labels_factory(index_t num_labels = 0);
 
 	/** return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
@@ -55,8 +56,8 @@ public:
 	 * @param feat_idx index of the feature vector to use
 	 * @param y structured label to use
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(index_t feat_idx,
-	                CStructuredData * y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** obtain the argmax of \f$ \Delta(y_{pred}, y_{truth}) + \langle w,
 	 * \Psi(x_{truth}, y_{pred}) \rangle \f$
@@ -69,8 +70,8 @@ public:
 	 *
 	 * @return structure with the predicted output
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, index_t feat_idx,
-	                            bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -123,8 +124,8 @@ private:
 	 * sparse vector would contain the indices where the value of
 	 * dense_vector is d_true
 	 */
-	SGVector<index_t> to_sparse(SGVector<float64_t> dense_vector,
-	                            float64_t d_true, float64_t d_false);
+	SGVector<index_t> to_sparse(
+		SGVector<float64_t> dense_vector, float64_t d_true, float64_t d_false);
 
 }; /* class CMultilabelCLRModel */
 

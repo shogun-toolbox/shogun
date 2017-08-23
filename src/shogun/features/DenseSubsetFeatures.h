@@ -142,7 +142,8 @@ public:
 	 * @param vec2 pointer to real valued vector
 	 * @param vec2_len length of real valued vector
 	 */
-	virtual float64_t dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+	virtual float64_t
+	dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 	{
 		if (m_idx.vlen != vec2_len)
 			SG_ERROR("Cannot dot vectors of different length\n")
@@ -163,7 +164,9 @@ public:
 	 * @param vec2_len length of real valued vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val=false)
+	virtual void add_to_dense_vec(
+		float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+		bool abs_val = false)
 	{
 		if (m_idx.vlen != vec2_len)
 			SG_ERROR("Cannot add_to_dense_vec vectors of different length\n")
@@ -218,7 +221,8 @@ public:
 	 * @param iterator as returned by get_feature_iterator
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(index_t& index, float64_t& value, void* iterator)
+	virtual bool
+	get_next_feature(index_t& index, float64_t& value, void* iterator)
 	{
 		SG_NOTIMPLEMENTED
 		return false;

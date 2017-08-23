@@ -116,7 +116,8 @@ float64_t CWDFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 	return sum/CMath::sq(normalization_const);
 }
 
-float64_t CWDFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CWDFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -154,7 +155,9 @@ float64_t CWDFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_
 	return sum/normalization_const;
 }
 
-void CWDFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CWDFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -253,7 +256,8 @@ void* CWDFeatures::get_feature_iterator(index_t vector_index)
 	return it;
 }
 
-bool CWDFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CWDFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	wd_feature_iterator* it=(wd_feature_iterator*) iterator;
 
@@ -312,7 +316,7 @@ index_t CWDFeatures::get_dim_feature_space() const
 
 index_t CWDFeatures::get_nnz_features_for_vector(index_t num)
 {
-	index_t vlen=-1;
+	index_t vlen = -1;
 	bool free_vec;
 	uint8_t* vec=strings->get_feature_vector(num, vlen, free_vec);
 	strings->free_feature_vector(vec, num, free_vec);

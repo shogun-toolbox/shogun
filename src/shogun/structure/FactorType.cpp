@@ -22,10 +22,8 @@ CFactorType::CFactorType() : CSGObject()
 }
 
 CFactorType::CFactorType(
-	index_t id,
-	SGVector<index_t> card,
-	SGVector<float64_t> w)
-	: CSGObject()
+    index_t id, SGVector<index_t> card, SGVector<float64_t> w)
+    : CSGObject()
 {
 	init();
 	m_type_id = id;
@@ -141,10 +139,8 @@ CTableFactorType::CTableFactorType()
 }
 
 CTableFactorType::CTableFactorType(
-	index_t id,
-	SGVector<index_t> card,
-	SGVector<float64_t> w)
-	: CFactorType(id, card, w)
+    index_t id, SGVector<index_t> card, SGVector<float64_t> w)
+    : CFactorType(id, card, w)
 {
 }
 
@@ -167,7 +163,8 @@ SGVector<index_t> CTableFactorType::assignment_from_index(index_t ei) const
 	return assig;
 }
 
-index_t CTableFactorType::index_from_assignment(const SGVector<index_t> assig) const
+index_t
+CTableFactorType::index_from_assignment(const SGVector<index_t> assig) const
 {
 	ASSERT(assig.size() == get_cardinalities().size());
 	index_t index = 0;
@@ -178,7 +175,7 @@ index_t CTableFactorType::index_from_assignment(const SGVector<index_t> assig) c
 }
 
 index_t CTableFactorType::index_from_new_state(
-	index_t old_ei, index_t var_index, index_t var_state) const
+    index_t old_ei, index_t var_index, index_t var_state) const
 {
 	ASSERT(var_index < get_cardinalities().size());
 	ASSERT(var_state < get_cardinalities()[var_index]);
@@ -188,8 +185,7 @@ index_t CTableFactorType::index_from_new_state(
 }
 
 index_t CTableFactorType::index_from_universe_assignment(
-	const SGVector<index_t> assig,
-	const SGVector<index_t> var_index) const
+    const SGVector<index_t> assig, const SGVector<index_t> var_index) const
 {
 	ASSERT(var_index.size() == m_cards.size());
 	index_t index = 0;
@@ -330,8 +326,10 @@ void CTableFactorType::compute_gradients(
 		SGSparseVectorEntry<float64_t>* data_ptr = factor_data_sparse.features;
 
 		// Perform tensor outer product
-		for (index_t ei = 0; ei < m_num_assignments; ++ei) {
-			for (index_t n = 0; n < factor_data_sparse.num_feat_entries; ++n) {
+		for (index_t ei = 0; ei < m_num_assignments; ++ei)
+		{
+			for (index_t n = 0; n < factor_data_sparse.num_feat_entries; ++n)
+			{
 				index_t di = data_ptr[n].feat_index;
 				parameter_gradient[di + ei*m_data_size] +=
 					mult * data_ptr[n].entry * marginals[ei];

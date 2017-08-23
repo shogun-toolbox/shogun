@@ -173,8 +173,8 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	return pot;
 }
 
-float64_t CSimpleLocalityImprovedStringKernel::compute(
-	index_t idx_a, index_t idx_b)
+float64_t
+CSimpleLocalityImprovedStringKernel::compute(index_t idx_a, index_t idx_b)
 {
 	index_t alen, blen;
 	bool free_avec, free_bvec;

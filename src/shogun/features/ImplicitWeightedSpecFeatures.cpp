@@ -106,7 +106,8 @@ CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 	SG_FREE(normalization_factors);
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t CImplicitWeightedSpecFeatures::dot(
+    index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -116,8 +117,8 @@ float64_t CImplicitWeightedSpecFeatures::dot(index_t vec_idx1, CDotFeatures* df,
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->get_num_vectors())
 
-	index_t len1=-1;
-	index_t len2=-1;
+	index_t len1 = -1;
+	index_t len2 = -1;
 	bool free_vec1;
 	bool free_vec2;
 	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
@@ -169,13 +170,14 @@ float64_t CImplicitWeightedSpecFeatures::dot(index_t vec_idx1, CDotFeatures* df,
 		return result;
 }
 
-float64_t CImplicitWeightedSpecFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CImplicitWeightedSpecFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == spec_size)
 	ASSERT(vec_idx1 < num_strings)
 
 	float64_t result=0;
-	index_t len1=-1;
+	index_t len1 = -1;
 	bool free_vec1;
 	uint16_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 
@@ -208,9 +210,11 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(index_t vec_idx1, const float
 	return result;
 }
 
-void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CImplicitWeightedSpecFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
-	index_t len1=-1;
+	index_t len1 = -1;
 	bool free_vec1;
 	uint16_t* vec=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 
@@ -271,7 +275,8 @@ void* CImplicitWeightedSpecFeatures::get_feature_iterator(index_t vector_index)
 	return it;
 }
 
-bool CImplicitWeightedSpecFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CImplicitWeightedSpecFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
 
@@ -309,10 +314,9 @@ void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 	SG_FREE(it);
 }
 
-
 index_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(index_t num)
 {
-	index_t vlen=-1;
+	index_t vlen = -1;
 	bool free_vec;
 	uint16_t* vec1=strings->get_feature_vector(num, vlen, free_vec);
 	strings->free_feature_vector(vec1, num, free_vec);

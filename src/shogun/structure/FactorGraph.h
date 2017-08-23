@@ -131,7 +131,8 @@ public:
 	 * @param states_gt ground truth states
 	 * @param loss weighted loss for each variable
 	 */
-	virtual void loss_augmentation(SGVector<index_t> states_gt, \
+	virtual void loss_augmentation(
+		SGVector<index_t> states_gt,
 		SGVector<float64_t> loss = SGVector<float64_t>());
 
 private:
@@ -161,7 +162,6 @@ protected:
 
 	/** number of edges */
 	index_t m_num_edges;
-
 };
 
 }

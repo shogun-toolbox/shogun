@@ -86,14 +86,14 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	float64_t min_eigenvalue=0.0001;
 
 	// create a sparse matrix
-	const int32_t size=10000;
+	const int32_t size = 10000;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
-	for (int32_t i=0; i<size; ++i)
+	for (int32_t i = 0; i < size; ++i)
 	{
 		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
 			+min_eigenvalue;
@@ -108,7 +108,7 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	SGVector<int32_t> coloring_vector=trace_sampler->get_coloring_vector();
 	coloring_vector.display_vector();
 	EXPECT_EQ(trace_sampler->get_num_samples(), 1);
-	for (int32_t i=0; i<coloring_vector.vlen; ++i)
+	for (int32_t i = 0; i < coloring_vector.vlen; ++i)
 		EXPECT_EQ(coloring_vector[i], 0);
 
 	// test that two probing vectors are not equal
@@ -125,14 +125,14 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 TEST(ProbingSampler, mean_variance)
 {
-	const int32_t size=1000;
+	const int32_t size = 1000;
 	SGSparseMatrix<float64_t> m(size, size);
 
-	for (int32_t i=0; i<size; ++i)
+	for (int32_t i = 0; i < size; ++i)
 		m(i,i)=1;
-	for (int32_t i=0; i<size-1; ++i)
+	for (int32_t i = 0; i < size - 1; ++i)
 		m(i,i+1)=1;
-	for (int32_t i=0; i<size-1; ++i)
+	for (int32_t i = 0; i < size - 1; ++i)
 		m(i+1,i)=1;
 
 	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(m);
@@ -141,8 +141,8 @@ TEST(ProbingSampler, mean_variance)
 	CProbingSampler* trace_sampler=new CProbingSampler(A);
 	trace_sampler->precompute();
 
-	int32_t num_samples=trace_sampler->get_num_samples();
-	for (int32_t i=0; i<num_samples; ++i)
+	int32_t num_samples = trace_sampler->get_num_samples();
+	for (int32_t i = 0; i < num_samples; ++i)
 	{
 		const SGVector<float64_t>& sample=trace_sampler->sample(i);
 		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);

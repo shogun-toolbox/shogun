@@ -86,7 +86,8 @@ class CPolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2);
+		virtual float64_t
+		dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2);
 
 		/** duplicate feature object
 		 *
@@ -107,7 +108,8 @@ class CPolyFeatures : public CDotFeatures
 		 * @param vec2 second vector
 		 * @param vec2_len length of second vector
 		 */
-		float64_t dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len);
+		float64_t
+		dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len);
 
 		/** compute alpha*x+vec2
 		 *
@@ -117,9 +119,11 @@ class CPolyFeatures : public CDotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		void add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val);
+		void add_to_dense_vec(
+		    float64_t alpha, index_t vec_idx1, float64_t* vec2,
+		    index_t vec2_len, bool abs_val);
 
-		#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct poly_feature_iterator
 		{
@@ -159,8 +163,8 @@ class CPolyFeatures : public CDotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(index_t& index, float64_t& value,
-				void* iterator);
+		virtual bool
+		get_next_feature(index_t& index, float64_t& value, void* iterator);
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature

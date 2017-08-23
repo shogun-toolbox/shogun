@@ -97,7 +97,7 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels * predicted,
 	SGVector<float64_t> accuracies(length);
 	index_t num_equal = 0;
 
-	for (index_t i = 0 ; i < length ; ++i)
+	for (index_t i = 0; i < length; ++i)
 	{
 		CSequence * true_seq = CSequence::obtain_from_generic(ground_truth->get_label(i));
 		CSequence * pred_seq = CSequence::obtain_from_generic(predicted->get_label(i));

@@ -23,9 +23,8 @@ CStreamingSparseFeatures<T>::CStreamingSparseFeatures() : CStreamingDotFeatures(
 }
 
 template <class T>
-CStreamingSparseFeatures<T>::CStreamingSparseFeatures(CStreamingFile* file,
-			 bool is_labelled,
-			 index_t size)
+CStreamingSparseFeatures<T>::CStreamingSparseFeatures(
+	CStreamingFile* file, bool is_labelled, index_t size)
 	: CStreamingDotFeatures()
 {
 	set_read_functions();
@@ -55,14 +54,16 @@ void CStreamingSparseFeatures<T>::reset_stream()
 template <class T>
 index_t CStreamingSparseFeatures<T>::set_num_features(index_t num)
 {
-	index_t n=current_num_features;
+	index_t n = current_num_features;
 	ASSERT(n<=num)
 	current_num_features=num;
 	return n;
 }
 
 template <class T>
-T CStreamingSparseFeatures<T>::sparse_dot(T alpha, SGSparseVectorEntry<T>* avec, index_t alen, SGSparseVectorEntry<T>* bvec, index_t blen)
+T CStreamingSparseFeatures<T>::sparse_dot(
+	T alpha, SGSparseVectorEntry<T>* avec, index_t alen,
+	SGSparseVectorEntry<T>* bvec, index_t blen)
 {
 	T result=0;
 
@@ -88,7 +89,8 @@ T CStreamingSparseFeatures<T>::dense_dot(T alpha, T* vec, index_t dim, T b)
 }
 
 template <class T>
-float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, index_t vec2_len)
+float64_t
+CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2)
 
@@ -98,7 +100,8 @@ float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, index_t 
 	float64_t result=0;
 	if (current_vector)
 	{
-		for (index_t i=0; i<current_length; i++) {
+		for (index_t i = 0; i < current_length; i++)
+		{
 			if (current_vector[i].feat_index < vec2_len) {
 				result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
 			}
@@ -109,7 +112,8 @@ float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, index_t 
 }
 
 template <class T>
-float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, index_t vec2_len)
+float32_t
+CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2)
 
@@ -119,7 +123,8 @@ float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, index_t 
 	float32_t result=0;
 	if (current_vector)
 	{
-		for (index_t i=0; i<current_length; i++) {
+		for (index_t i = 0; i < current_length; i++)
+		{
 			if (current_vector[i].feat_index < vec2_len) {
 				result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
 			}
@@ -130,7 +135,8 @@ float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, index_t 
 }
 
 template <class T>
-void CStreamingSparseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CStreamingSparseFeatures<T>::add_to_dense_vec(
+	float64_t alpha, float64_t* vec2, index_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
@@ -146,19 +152,20 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* v
 	{
 		if (abs_val)
 		{
-			for (index_t i=0; i<num_feat; i++)
+			for (index_t i = 0; i < num_feat; i++)
 				vec2[sv[i].feat_index]+= alpha*CMath::abs(sv[i].entry);
 		}
 		else
 		{
-			for (index_t i=0; i<num_feat; i++)
+			for (index_t i = 0; i < num_feat; i++)
 				vec2[sv[i].feat_index]+= alpha*sv[i].entry;
 		}
 	}
 }
 
 template <class T>
-void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
+void CStreamingSparseFeatures<T>::add_to_dense_vec(
+	float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2)
 	if (vec2_len < current_num_features)
@@ -174,12 +181,12 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* v
 	{
 		if (abs_val)
 		{
-			for (index_t i=0; i<num_feat; i++)
+			for (index_t i = 0; i < num_feat; i++)
 				vec2[sv[i].feat_index]+= alpha*CMath::abs(sv[i].entry);
 		}
 		else
 		{
-			for (index_t i=0; i<num_feat; i++)
+			for (index_t i = 0; i < num_feat; i++)
 				vec2[sv[i].feat_index]+= alpha*sv[i].entry;
 		}
 	}
@@ -201,7 +208,7 @@ float32_t CStreamingSparseFeatures<T>::compute_squared()
 
 	float32_t sq=0;
 
-	for (index_t i=0; i<current_length; i++)
+	for (index_t i = 0; i < current_length; i++)
 		sq += current_vector[i].entry * current_vector[i].entry;
 
 	return sq;
@@ -271,9 +278,8 @@ void CStreamingSparseFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingSparseFeatures<T>::init(CStreamingFile* file,
-				    bool is_labelled,
-				    index_t size)
+void CStreamingSparseFeatures<T>::init(
+	CStreamingFile* file, bool is_labelled, index_t size)
 {
 	init();
 	has_labels = is_labelled;

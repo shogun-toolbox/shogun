@@ -108,7 +108,8 @@ float64_t CMixtureModel::get_log_model_parameter(index_t num_param)
 	return CMath::log(static_cast<float64_t>(get_num_components()));
 }
 
-float64_t CMixtureModel::get_log_derivative(index_t num_param, index_t num_example)
+float64_t
+CMixtureModel::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;

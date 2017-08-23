@@ -25,8 +25,8 @@ CMultilabelCLRModel::CMultilabelCLRModel(CFeatures * features,
 	init();
 }
 
-CStructuredLabels * CMultilabelCLRModel::structured_labels_factory(
-        index_t num_labels)
+CStructuredLabels*
+CMultilabelCLRModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMultilabelSOLabels(num_labels, m_num_classes);
 }
@@ -44,21 +44,21 @@ void CMultilabelCLRModel::init()
 
 index_t CMultilabelCLRModel::get_dim() const
 {
-	index_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	index_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return feats_dim * (num_classes + 1);
 }
 
 SGVector<float64_t> CMultilabelCLRModel::get_joint_feature_vector(
-        index_t feat_idx, CStructuredData * y)
+    index_t feat_idx, CStructuredData* y)
 {
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
 
-	index_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	index_t num_pos_labels = (CSparseMultilabel::obtain_from_generic(y))->
-	                         get_data().vlen;
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t num_pos_labels =
+	    (CSparseMultilabel::obtain_from_generic(y))->get_data().vlen;
 	index_t num_neg_labels = num_classes - num_pos_labels;
 
 	// the calibrated label is considered to be the last label
@@ -125,8 +125,8 @@ float64_t CMultilabelCLRModel::delta_loss(float64_t y1, float64_t y2)
 	return y1 != y2 ? 1 : 0;
 }
 
-SGVector<index_t> CMultilabelCLRModel::to_sparse(SGVector<float64_t> dense_vec,
-                float64_t d_true, float64_t d_false)
+SGVector<index_t> CMultilabelCLRModel::to_sparse(
+    SGVector<float64_t> dense_vec, float64_t d_true, float64_t d_false)
 {
 	index_t size = 0;
 
@@ -157,8 +157,8 @@ SGVector<index_t> CMultilabelCLRModel::to_sparse(SGVector<float64_t> dense_vec,
 	return sparse_vec;
 }
 
-CResultSet * CMultilabelCLRModel::argmax(SGVector<float64_t> w, index_t feat_idx,
-                bool const training)
+CResultSet* CMultilabelCLRModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
 	index_t feats_dim = dot_feats->get_dim_feature_space();

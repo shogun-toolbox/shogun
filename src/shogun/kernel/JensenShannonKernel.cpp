@@ -58,7 +58,8 @@ float64_t CJensenShannonKernel::compute(index_t idx_a, index_t idx_b)
 	float64_t result=0;
 
 	/* calcualte Jensen-Shannon kernel */
-	for (index_t i=0; i<alen; i++) {
+	for (index_t i = 0; i < alen; i++)
+	{
 		float64_t a_i = 0, b_i = 0;
 		float64_t ab = avec[i]+bvec[i];
 		if (avec[i] != 0)

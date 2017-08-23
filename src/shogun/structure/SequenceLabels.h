@@ -35,7 +35,10 @@ public:
 	 *
 	 * @param seq data sequence
 	 */
-	CSequence(SGVector< index_t > seq = SGVector<index_t>()) : CStructuredData(), data(seq) { }
+	CSequence(SGVector<index_t> seq = SGVector<index_t>())
+		: CStructuredData(), data(seq)
+	{
+	}
 
 	/** destructor */
 	~CSequence() { }
@@ -58,12 +61,14 @@ public:
 	virtual const char* get_name() const { return "Sequence"; }
 
 	/** returns data */
-	SGVector<index_t> get_data() const { return data; }
+	SGVector<index_t> get_data() const
+	{
+		return data;
+	}
 
 protected:
 	/** data sequence */
-	SGVector< index_t > data;
-
+	SGVector<index_t> data;
 };
 
 /** @brief Class CSequenceLabels used e.g. in the application of Structured Output
@@ -93,7 +98,9 @@ class CSequenceLabels : public CStructuredLabels
 		 * @param num_labels number of labels
 		 * @param num_states number of states
 		 */
-		CSequenceLabels(SGVector< index_t > labels, index_t label_length, index_t num_labels, index_t num_states);
+		CSequenceLabels(
+		    SGVector<index_t> labels, index_t label_length, index_t num_labels,
+		    index_t num_states);
 
 		/** destructor */
 		virtual ~CSequenceLabels();
@@ -110,13 +117,16 @@ class CSequenceLabels : public CStructuredLabels
 		 *
 		 * @param label label to add
 		 */
-		void add_vector_label(SGVector< index_t > label);
+		void add_vector_label(SGVector<index_t> label);
 
 		/** get the number of states
 		 *
 		 * @return the number of states
 		 */
-		inline index_t get_num_states() const { return m_num_states; };
+		inline index_t get_num_states() const
+		{
+			return m_num_states;
+		};
 
 	private:
 		/** internal initialization */

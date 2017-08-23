@@ -25,7 +25,7 @@ CTwoStateModel::CTwoStateModel() : CStateModel()
 
 	m_state_loss_mat = SGMatrix< float64_t >(m_num_states, m_num_states);
 	m_state_loss_mat.zero();
-	for ( index_t i = 0 ; i < m_num_states-1 ; ++i )
+	for (index_t i = 0; i < m_num_states - 1; ++i)
 	{
 		m_state_loss_mat(m_num_states-1, i) = 1;
 		m_state_loss_mat(i, m_num_states-1) = 1;
@@ -46,12 +46,12 @@ CTwoStateModel::~CTwoStateModel()
 
 SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
 {
-	SGVector< index_t > state_seq = labels_to_states(label_seq);
+	SGVector<index_t> state_seq = labels_to_states(label_seq);
 	SGMatrix< float64_t > loss_mat(m_num_states, state_seq.vlen);
 
-	for ( index_t i = 0 ; i < loss_mat.num_cols ; ++i )
+	for (index_t i = 0; i < loss_mat.num_cols; ++i)
 	{
-		for ( index_t s = 0 ; s < loss_mat.num_rows ; ++s )
+		for (index_t s = 0; s < loss_mat.num_rows; ++s)
 			loss_mat(s,i) = m_state_loss_mat(s, state_seq[i]);
 	}
 
@@ -60,28 +60,28 @@ SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
 
 float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs)
 {
-	SGVector< index_t > state_seq_lhs = labels_to_states(label_seq_lhs);
-	SGVector< index_t > state_seq_rhs = labels_to_states(label_seq_rhs);
+	SGVector<index_t> state_seq_lhs = labels_to_states(label_seq_lhs);
+	SGVector<index_t> state_seq_rhs = labels_to_states(label_seq_rhs);
 
 	ASSERT(state_seq_lhs.vlen == state_seq_rhs.vlen)
 
 	float64_t ret = 0.0;
-	for ( index_t i = 0 ; i < state_seq_lhs.vlen ; ++i )
+	for (index_t i = 0; i < state_seq_lhs.vlen; ++i)
 		ret += m_state_loss_mat(state_seq_lhs[i], state_seq_rhs[i]);
 
 	return ret;
 }
 
-SGVector< index_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
+SGVector<index_t> CTwoStateModel::labels_to_states(CSequence* label_seq) const
 {
 	// 0 -> start state
 	// 1 -> stop state
 	// 2 -> negative state (label == 0)
 	// 3 -> positive state (label == 1)
 
-	SGVector< index_t > seq_data = label_seq->get_data();
-	SGVector< index_t > state_seq(seq_data.size());
-	for ( index_t i = 1 ; i < state_seq.vlen-1 ; ++i )
+	SGVector<index_t> seq_data = label_seq->get_data();
+	SGVector<index_t> state_seq(seq_data.size());
+	for (index_t i = 1; i < state_seq.vlen - 1; ++i)
 	{
 		//FIXME make independent of values 0-1 in labels
 		state_seq[i] = seq_data[i] + 2;
@@ -95,9 +95,9 @@ SGVector< index_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
 	return state_seq;
 }
 
-CSequence* CTwoStateModel::states_to_labels(SGVector< index_t > state_seq) const
+CSequence* CTwoStateModel::states_to_labels(SGVector<index_t> state_seq) const
 {
-	SGVector< index_t > label_seq(state_seq.vlen);
+	SGVector<index_t> label_seq(state_seq.vlen);
 
 	//FIXME make independent of values 0-1 in labels
 	// Legend for state indices:
@@ -106,7 +106,7 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< index_t > state_seq) const
 	// 2 -> negative state (label == 0) => label 0
 	// 3 -> positive state (label == 1) => label 1
 	label_seq.zero();
-	for ( index_t i = 0 ; i < state_seq.vlen ; ++i )
+	for (index_t i = 0; i < state_seq.vlen; ++i)
 	{
 		if ( state_seq[i] == 3 )
 			label_seq[i] = 1;
@@ -117,8 +117,9 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< index_t > state_seq) const
 	return ret;
 }
 
-void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_weights,
-		SGVector< float64_t > w, index_t num_feats, index_t num_obs)
+void CTwoStateModel::reshape_emission_params(
+    SGVector<float64_t>& emission_weights, SGVector<float64_t> w,
+    index_t num_feats, index_t num_obs)
 {
 	emission_weights.zero();
 
@@ -131,11 +132,11 @@ void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_wei
 	// start and stop states have no emission scores
 
 	index_t em_idx, w_idx = m_num_transmission_params;
-	for ( index_t s = 2 ; s < m_num_states ; ++s )
+	for (index_t s = 2; s < m_num_states; ++s)
 	{
-		for ( index_t f = 0 ; f < num_feats ; ++f )
+		for (index_t f = 0; f < num_feats; ++f)
 		{
-			for ( index_t o = 0 ; o < num_obs ; ++o )
+			for (index_t o = 0; o < num_obs; ++o)
 			{
 				em_idx = s*num_feats*num_obs + f*num_obs + o;
 				emission_weights[em_idx] = w[w_idx++];
@@ -144,19 +145,20 @@ void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_wei
 	}
 }
 
-void CTwoStateModel::reshape_emission_params(CDynamicObjectArray* plif_matrix,
-		SGVector< float64_t > w, index_t num_feats, index_t num_plif_nodes)
+void CTwoStateModel::reshape_emission_params(
+    CDynamicObjectArray* plif_matrix, SGVector<float64_t> w, index_t num_feats,
+    index_t num_plif_nodes)
 {
 	CPlif* plif;
 	index_t p_idx, w_idx = m_num_transmission_params;
-	for ( index_t s = 2 ; s < m_num_states ; ++s )
+	for (index_t s = 2; s < m_num_states; ++s)
 	{
-		for ( index_t f = 0 ; f < num_feats ; ++f )
+		for (index_t f = 0; f < num_feats; ++f)
 		{
 			SGVector< float64_t > penalties(num_plif_nodes);
 			p_idx = 0;
 
-			for ( index_t i = 0 ; i < num_plif_nodes ; ++i )
+			for (index_t i = 0; i < num_plif_nodes; ++i)
 				penalties[p_idx++] = w[w_idx++];
 
 			plif = (CPlif*) plif_matrix->get_element(m_num_states*f + s);
@@ -190,10 +192,10 @@ void CTwoStateModel::reshape_transmission_params(
 	transmission_weights(3,3) = w[2]; // to negative
 }
 
-void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
-		SGMatrix< float64_t > transmission_weights,
-		SGVector< float64_t > emission_weights,
-		index_t num_feats, index_t num_obs) const
+void CTwoStateModel::weights_to_vector(
+    SGVector<float64_t>& psi, SGMatrix<float64_t> transmission_weights,
+    SGVector<float64_t> emission_weights, index_t num_feats,
+    index_t num_obs) const
 {
 	// Legend for state indices:
 	// 0 -> start state
@@ -207,11 +209,11 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 
 	// start and stop states have no emission scores
 	index_t obs_idx, psi_idx = m_num_transmission_params;
-	for ( index_t s = 2 ; s < m_num_states ; ++s )
+	for (index_t s = 2; s < m_num_states; ++s)
 	{
-		for ( index_t f = 0 ; f < num_feats ; ++f )
+		for (index_t f = 0; f < num_feats; ++f)
 		{
-			for ( index_t o = 0 ; o < num_obs ; ++o )
+			for (index_t o = 0; o < num_obs; ++o)
 			{
 				obs_idx = s*num_feats*num_obs + f*num_obs + o;
 				psi[psi_idx++] = emission_weights[obs_idx];
@@ -221,8 +223,10 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 
 }
 
-SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > transmission_weights,
-		SGVector< float64_t > emission_weights, index_t num_feats, index_t num_obs) const
+SGVector<float64_t> CTwoStateModel::weights_to_vector(
+    SGMatrix<float64_t> transmission_weights,
+    SGVector<float64_t> emission_weights, index_t num_feats,
+    index_t num_obs) const
 {
 	index_t num_free_states = 2;
 	SGVector< float64_t > vec(num_free_states*(num_free_states + num_feats*num_obs));
@@ -231,23 +235,24 @@ SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > tr
 	return vec;
 }
 
-SGVector< index_t > CTwoStateModel::get_monotonicity(index_t num_free_states,
-		index_t num_feats) const
+SGVector<index_t> CTwoStateModel::get_monotonicity(
+    index_t num_free_states, index_t num_feats) const
 {
 	REQUIRE(num_free_states == 2, "Using the TwoStateModel only two states are free\n")
 
-	SGVector< index_t > monotonicity(num_feats*num_free_states);
+	SGVector<index_t> monotonicity(num_feats * num_free_states);
 
-	for ( index_t i = 0 ; i < num_feats ; ++i )
+	for (index_t i = 0; i < num_feats; ++i)
 		monotonicity[i] = -1;
-	for ( index_t i = num_feats ; i < 2*num_feats ; ++i )
+	for (index_t i = num_feats; i < 2 * num_feats; ++i)
 		monotonicity[i] = +1;
 
 	return monotonicity;
 }
 
-CHMSVMModel* CTwoStateModel::simulate_data(index_t num_exm, index_t exm_len,
-	index_t num_features, index_t num_noise_features)
+CHMSVMModel* CTwoStateModel::simulate_data(
+    index_t num_exm, index_t exm_len, index_t num_features,
+    index_t num_noise_features)
 {
 	// Number of different states
 	index_t num_states = 2;
@@ -266,24 +271,24 @@ CHMSVMModel* CTwoStateModel::simulate_data(index_t num_exm, index_t exm_len,
 	// block_len[0] and block_len[1]
 
 	CSequenceLabels* labels = new CSequenceLabels(num_exm, num_states);
-	SGVector< index_t > ll(num_exm*exm_len);
+	SGVector<index_t> ll(num_exm * exm_len);
 	ll.zero();
 	index_t rnb, rl, rp;
 
-	for ( index_t i = 0 ; i < num_exm ; ++i)
+	for (index_t i = 0; i < num_exm; ++i)
 	{
-		SGVector< index_t > lab(exm_len);
+		SGVector<index_t> lab(exm_len);
 		lab.zero();
 		rnb = num_blocks[0] + CMath::ceil((num_blocks[1]-num_blocks[0])*
 			CMath::random(0.0, 1.0)) - 1;
 
-		for ( index_t j = 0 ; j < rnb ; ++j )
+		for (index_t j = 0; j < rnb; ++j)
 		{
 			rl = block_len[0] + CMath::ceil((block_len[1]-block_len[0])*
 				CMath::random(0.0, 1.0)) - 1;
 			rp = CMath::ceil((exm_len-rl)*CMath::random(0.0, 1.0));
 
-			for ( index_t idx = rp-1 ; idx < rp+rl ; ++idx )
+			for (index_t idx = rp - 1; idx < rp + rl; ++idx)
 			{
 				lab[idx] = 1;
 				ll[i*exm_len + idx] = 1;
@@ -298,37 +303,37 @@ CHMSVMModel* CTwoStateModel::simulate_data(index_t num_exm, index_t exm_len,
 	// of labels and
 	// ii) adding Gaussian noise to the (distorted) label sequence
 
-	SGVector< index_t >   distort(num_exm*exm_len);
-	SGVector< index_t >   d1(CMath::round(distort.vlen*prop_distort));
-	SGVector< index_t >   d2(d1.vlen);
-	SGVector< index_t >   lf;
+	SGVector<index_t> distort(num_exm * exm_len);
+	SGVector<index_t> d1(CMath::round(distort.vlen * prop_distort));
+	SGVector<index_t> d2(d1.vlen);
+	SGVector<index_t> lf;
 	SGMatrix< float64_t > signal(num_features, distort.vlen);
 
 	distort.range_fill();
-	for ( index_t i = 0 ; i < num_features ; ++i )
+	for (index_t i = 0; i < num_features; ++i)
 	{
 		lf = ll;
 		CMath::permute(distort);
 
-		for ( index_t j = 0 ; j < d1.vlen ; ++j )
+		for (index_t j = 0; j < d1.vlen; ++j)
 			d1[j] = distort[j];
 
-		for ( index_t j = 0 ; j < d2.vlen ; ++j )
+		for (index_t j = 0; j < d2.vlen; ++j)
 			d2[j] = distort[ distort.vlen-d2.vlen+j ];
 
-		for ( index_t j = 0 ; j < d1.vlen ; ++j )
+		for (index_t j = 0; j < d1.vlen; ++j)
 			lf[ d1[j] ] = lf[ d2[j] ];
 
-		index_t idx = i*signal.num_cols;
-		for ( index_t j = 0 ; j < signal.num_cols ; ++j )
+		index_t idx = i * signal.num_cols;
+		for (index_t j = 0; j < signal.num_cols; ++j)
 			signal[idx++] = lf[j] + noise_std*CMath::normal_random((float64_t)0.0, 1.0);
 	}
 
 	// Substitute some features by pure noise
-	for ( index_t i = 0 ; i < num_noise_features ; ++i )
+	for (index_t i = 0; i < num_noise_features; ++i)
 	{
-		index_t idx = i*signal.num_cols;
-		for ( index_t j = 0 ; j < signal.num_cols ; ++j )
+		index_t idx = i * signal.num_cols;
+		for (index_t j = 0; j < signal.num_cols; ++j)
 			signal[idx++] = noise_std*CMath::normal_random((float64_t)0.0, 1.0);
 	}
 

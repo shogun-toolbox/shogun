@@ -107,7 +107,6 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 */
 		float64_t compute_wds(char* avec, char* bvec, index_t len);
 
-
 		/** set standard weighted degree kernel weighting */
 		void set_wd_weights();
 

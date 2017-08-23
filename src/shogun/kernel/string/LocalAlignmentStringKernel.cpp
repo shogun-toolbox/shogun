@@ -363,7 +363,7 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
 float64_t CLocalAlignmentStringKernel::compute(index_t idx_x, index_t idx_y)
 {
 	int32_t *aax, *aay;  /* to convert x and y into sequences of amino-acid indexes */
-	index_t lx=0, ly=0;       /* lengths of x and y */
+	index_t lx = 0, ly = 0; /* lengths of x and y */
 	index_t i, j;
 
 	bool free_x, free_y;

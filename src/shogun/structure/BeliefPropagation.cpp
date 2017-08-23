@@ -384,8 +384,7 @@ void CTreeMaxProduct::top_down_pass()
 
 		// argmax
 		m_states[ri] = static_cast<index_t>(
-			std::max_element(rmarg.begin(), rmarg.end())
-			- rmarg.begin());
+		    std::max_element(rmarg.begin(), rmarg.end()) - rmarg.begin());
 	}
 
 	// pass msgs down to leaf
@@ -394,7 +393,7 @@ void CTreeMaxProduct::top_down_pass()
 	//   compute marginal of f
 	// else var <- factor edge
 	//   compute r_f2v
-	for (index_t mi = (index_t)(m_msg_order.size()-1); mi >= 0; --mi)
+	for (index_t mi = (index_t)(m_msg_order.size() - 1); mi >= 0; --mi)
 	{
 		SG_DEBUG("mi = %d, mtype: %d %d <- %d\n", mi,
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
@@ -445,14 +444,16 @@ void CTreeMaxProduct::top_down_pass()
 			std::vector<float64_t> marg(fenrgs.size(), 0);
 			for (uint32_t ei = 0; ei < marg.size(); ei++)
 			{
-				index_t nei = ftype->index_from_new_state(ei, var_id_index, m_states[var_id]);
+				index_t nei = ftype->index_from_new_state(
+				    ei, var_id_index, m_states[var_id]);
 				marg[ei] = -fenrgs[nei];
 
 				for (index_t vi = 0; vi < fvars.size(); vi++)
 				{
 					if (vi == var_id_index)
 					{
-						index_t var_id_state = ftype->state_from_index(ei, var_id_index);
+						index_t var_id_state =
+						    ftype->state_from_index(ei, var_id_index);
 						if (m_states[var_id] != minf)
 							var_id_state = m_states[var_id];
 
@@ -470,8 +471,7 @@ void CTreeMaxProduct::top_down_pass()
 			}
 
 			index_t ei_max = static_cast<index_t>(
-				std::max_element(marg.begin(), marg.end())
-				- marg.begin());
+			    std::max_element(marg.begin(), marg.end()) - marg.begin());
 
 			// infer states of neiboring vars of f
 			for (index_t vi = 0; vi < fvars.size(); vi++)
@@ -539,7 +539,8 @@ void CTreeMaxProduct::top_down_pass()
 				}
 
 				// max marginalization
-				index_t var_id_state = ftype->state_from_index(ei, var_id_index);
+				index_t var_id_state =
+				    ftype->state_from_index(ei, var_id_index);
 				if (r_f2v[ei] > r_f2v_max[var_id_state])
 					r_f2v_max[var_id_state] = r_f2v[ei];
 			}

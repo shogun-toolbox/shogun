@@ -55,12 +55,14 @@ protected:
 	 * @param m2 the second label to match
 	 * @return number of matches
 	 */
-	index_t find_match_count(SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2);
+	index_t find_match_count(
+		SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2);
 
 	/** find number of mismatches in the two labels sequence.
 	 * @see find_match_count
 	 */
-	index_t find_mismatch_count(SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2);
+	index_t find_mismatch_count(
+		SGVector<index_t> l1, index_t m1, SGVector<index_t> l2, index_t m2);
 };
 
 } // namespace shogun

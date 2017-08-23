@@ -89,7 +89,6 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 */
 		virtual float64_t compute(index_t idx_a, index_t idx_b);
 
-
 	private:
 		/** initialize logarithmic sum */
 		void init_logsum();

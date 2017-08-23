@@ -85,7 +85,9 @@ class CKNN : public CDistanceMachine
 		 * @param d distance
 		 * @param trainlab labels for training
 		 */
-		CKNN(index_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
+		CKNN(
+		    index_t k, CDistance* d, CLabels* trainlab,
+		    KNN_SOLVER knn_solver = KNN_BRUTE);
 
 		virtual ~CKNN();
 
@@ -273,7 +275,9 @@ class CKNN : public CDistanceMachine
 		 * in ascending order
 		 * @param step distance between elements to be written in output
 		 */
-		void choose_class_for_multiple_k(index_t* output, index_t* classes, index_t* train_lab, index_t step);
+		void choose_class_for_multiple_k(
+		    index_t* output, index_t* classes, index_t* train_lab,
+		    index_t step);
 
 		/** 
 		 * To init the solver pointer indicated which solver will been used to classify_objects

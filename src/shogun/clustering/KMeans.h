@@ -55,7 +55,7 @@ class CKMeans : public CKMeansBase
 		 * @param d distance
 		 * @param kmeanspp Set to true for using KMeans++ (default false)
 		 */
-		CKMeans(index_t k, CDistance* d, bool kmeanspp=false);
+		CKMeans(index_t k, CDistance* d, bool kmeanspp = false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k

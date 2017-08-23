@@ -60,7 +60,7 @@ float64_t CMatchWordStringKernel::compute(index_t idx_a, index_t idx_b)
 	ASSERT(alen==blen)
 
 	float64_t sum=0;
-	for (index_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);

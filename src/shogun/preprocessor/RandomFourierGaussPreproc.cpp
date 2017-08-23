@@ -142,7 +142,8 @@ EFeatureType CRandomFourierGaussPreproc::get_feature_type() {
 	return F_DREAL;
 }
 
-index_t CRandomFourierGaussPreproc::get_dim_feature_space() const {
+index_t CRandomFourierGaussPreproc::get_dim_feature_space() const
+{
 	return dim_feature_space;
 }
 
@@ -360,7 +361,8 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
 	float64_t *res = SG_MALLOC(float64_t, cur_dim_feature_space);
 
-	for (index_t od = 0; od < cur_dim_feature_space; ++od) {
+	for (index_t od = 0; od < cur_dim_feature_space; ++od)
+	{
 		res[od] = val * cos(randomcoeff_additive[od] + CMath::dot(vector.vector,
 				randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space));
 	}

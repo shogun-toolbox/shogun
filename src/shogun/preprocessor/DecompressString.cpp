@@ -56,11 +56,11 @@ template <class ST>
 bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
 {
 	index_t i;
-	index_t num_vec=((CStringFeatures<ST>*)f)->get_num_vectors();
+	index_t num_vec = ((CStringFeatures<ST>*)f)->get_num_vectors();
 
 	for (i=0; i<num_vec; i++)
 	{
-		index_t len=0;
+		index_t len = 0;
 		bool free_vec;
 		ST* vec=((CStringFeatures<ST>*)f)->
 			get_feature_vector(i, len, free_vec);
@@ -77,7 +77,7 @@ bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
 }
 
 template <class ST>
-ST* CDecompressString<ST>::apply_to_string(ST* f, index_t &len)
+ST* CDecompressString<ST>::apply_to_string(ST* f, index_t& len)
 {
 	uint64_t compressed_size=((int32_t*) f)[0];
 	uint64_t uncompressed_size=((int32_t*) f)[1];

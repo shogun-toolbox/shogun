@@ -69,7 +69,8 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+		virtual float64_t
+		dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 		{
 			SG_NOTIMPLEMENTED
 			return 0;
@@ -105,7 +106,8 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param vec2 pointer to real valued vector
 		 * @param vec2_len length of real valued vector
 		 */
-		virtual float64_t dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+		virtual float64_t
+		dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 		{
 			return dense_dot_sgvec(vec_idx1, SGVector<float64_t>((float64_t*) vec2, vec2_len, false));
 		}
@@ -118,7 +120,9 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param vec2_len length of real valued vector
 		 * @param abs_val if true add the absolute value
 		 */
-		virtual void add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val=false)
+		virtual void add_to_dense_vec(
+		    float64_t alpha, index_t vec_idx1, float64_t* vec2,
+		    index_t vec2_len, bool abs_val = false)
 		{
 			add_to_dense_sgvec(alpha, vec_idx1, SGVector<float64_t>(vec2, vec2_len, false), abs_val);
 		}
@@ -196,7 +200,8 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param iterator as returned by get_feature_iterator
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(index_t& index, float64_t& value, void* iterator)
+		virtual bool
+		get_next_feature(index_t& index, float64_t& value, void* iterator)
 		{
 			SG_NOTIMPLEMENTED
 			return false;

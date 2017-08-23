@@ -147,9 +147,9 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @return computed score
 		 */
 		virtual float64_t* compute_scoring(
-			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			float64_t* target, index_t num_suppvec, index_t* IDX,
-			float64_t* alphas, bool do_init=true);
+		    int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+		    float64_t* target, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas, bool do_init = true);
 
 	protected:
 		/** helper for compute
@@ -158,8 +158,8 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param idx_b index b
 		 * @param do_sort if sorting shall be performed
 		 */
-		virtual float64_t compute_helper(
-			index_t idx_a, index_t idx_b, bool do_sort);
+		virtual float64_t
+		compute_helper(index_t idx_a, index_t idx_b, bool do_sort);
 
 	private:
 		void init();

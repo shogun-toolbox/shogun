@@ -58,7 +58,7 @@ void CGaussianMatchStringKernel::cleanup()
 
 float64_t CGaussianMatchStringKernel::compute(index_t idx_a, index_t idx_b)
 {
-	index_t i, alen, blen ;
+	index_t i, alen, blen;
 	bool free_avec, free_bvec;
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);

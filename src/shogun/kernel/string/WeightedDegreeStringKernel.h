@@ -130,8 +130,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t* alphas)
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* alphas)
 		{
 			return init_optimization(count, IDX, alphas, -1);
 		}
@@ -147,7 +147,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return if initializing was successful
 		 */
 		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t* alphas, index_t tree_num);
+		    index_t count, index_t* IDX, float64_t* alphas, index_t tree_num);
 
 		/** delete optimization
 		 *
@@ -186,9 +186,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param factor factor
 		 */
 		virtual void compute_batch(
-			index_t num_vec, index_t* vec_idx, float64_t* target,
-			index_t num_suppvec, index_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** clear normal
 		 * subkernel functionality
@@ -245,8 +245,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		inline void compute_by_subkernel(
-			index_t idx, float64_t * subkernel_contrib)
+		inline void
+		compute_by_subkernel(index_t idx, float64_t* subkernel_contrib)
 		{
 
 			if (get_is_initialized())
@@ -374,7 +374,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param LevelContrib level contribution
 		 * @return computed value
 		 */
-		void compute_by_tree(index_t idx, float64_t *LevelContrib);
+		void compute_by_tree(index_t idx, float64_t* LevelContrib);
 
 		/** check if tree is initialized
 		 *
@@ -622,7 +622,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 */
 		void add_example_to_single_tree(
-			index_t idx, float64_t weight, index_t tree_num);
+		    index_t idx, float64_t weight, index_t tree_num);
 
 		/** add example to tree mismatch
 		 *
@@ -638,7 +638,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 */
 		void add_example_to_single_tree_mismatch(
-			index_t idx, float64_t weight, index_t tree_num);
+		    index_t idx, float64_t weight, index_t tree_num);
 
 		/** compute by tree
 		 *
@@ -666,7 +666,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_with_mismatch(
-			char* avec, index_t alen, char* bvec, index_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute without mismatch
 		 *
@@ -677,7 +677,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch(
-			char* avec, index_t alen, char* bvec, index_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute without mismatch matrix
 		 *
@@ -688,7 +688,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch_matrix(
-			char* avec, index_t alen, char* bvec, index_t blen);
+		    char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** compute using block
 		 *
@@ -698,8 +698,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		float64_t compute_using_block(char* avec, index_t alen,
-			char* bvec, index_t blen);
+		float64_t
+		compute_using_block(char* avec, index_t alen, char* bvec, index_t blen);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
@@ -718,7 +718,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		index_t weights_degree;
 		/** length */
 		index_t weights_length;
-
 
 		/** position weights */
 		float64_t* position_weights;

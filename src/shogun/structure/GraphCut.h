@@ -162,7 +162,8 @@ public:
 	 * @param capacity edge capacity
 	 * @param reverse_capacity reverse edge capacity
 	 */
-	void add_edge(index_t i, index_t j, float64_t capacity, float64_t reverse_capacity);
+	void add_edge(
+		index_t i, index_t j, float64_t capacity, float64_t reverse_capacity);
 
 	/** Adds new edges 'SOURCE->i' and 'i->SINK' with corresponding weights.
 	 * Can be called multiple times for each node. Weights can be negative.
@@ -217,7 +218,8 @@ public:
 	 *
 	 * @return terminal that the node belongs to
 	 */
-	ETerminalType get_assignment(index_t i, ETerminalType default_terminal = SOURCE);
+	ETerminalType
+	get_assignment(index_t i, ETerminalType default_terminal = SOURCE);
 
 	/** Print the s-t graph */
 	void print_graph();
@@ -312,18 +314,18 @@ private:
 	/** statistic of the number of the factors at order [1, 2, 3] */
 	SGVector<index_t> m_num_factors_at_order;
 	/** list of triple nodes, for order-3 factors */
-	DynArray< SGVector<index_t> > m_triple_list;
+	DynArray<SGVector<index_t>> m_triple_list;
 
 	/** nodes in the st graph */
 	GCNode*		m_nodes;
 	/** number of nodes */
-	index_t		m_num_nodes;
+	index_t m_num_nodes;
 	/** edges in the st graph */
 	GCEdge*		m_edges;
 	/** point to the end of the added edges */
 	GCEdge*		m_edges_last;
 	/** number of edges */
-	index_t		m_num_edges;
+	index_t m_num_edges;
 
 	/** total flow */
 	float64_t	m_flow;

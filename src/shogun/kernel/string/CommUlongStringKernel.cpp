@@ -150,7 +150,7 @@ void CCommUlongStringKernel::add_to_normal(index_t vec_idx, float64_t weight)
 	int32_t j=0;
 	int32_t k=0;
 	int32_t last_j=0;
-	index_t len=-1;
+	index_t len = -1;
 	bool free_vec;
 	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len, free_vec);
 
@@ -220,7 +220,7 @@ void CCommUlongStringKernel::clear_normal()
 }
 
 bool CCommUlongStringKernel::init_optimization(
-	index_t count, index_t *IDX, float64_t * weights)
+    index_t count, index_t* IDX, float64_t* weights)
 {
 	clear_normal();
 
@@ -265,8 +265,6 @@ float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 		return 0 ;
 	}
 
-
-
 	index_t alen = -1;
 	bool free_avec;
 	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
@@ -281,7 +279,9 @@ float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				index_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				index_t idx = CMath::binary_search_max_lower_equal(
+				    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+				    avec[j - 1]);
 
 				if (idx!=-1)
 				{
@@ -292,7 +292,9 @@ float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 				}
 			}
 
-			index_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			index_t idx = CMath::binary_search(
+			    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+			    avec[alen - 1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx];
 		}
@@ -303,7 +305,9 @@ float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				index_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
+				index_t idx = CMath::binary_search_max_lower_equal(
+				    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+				    avec[j - 1]);
 
 				if (idx!=-1)
 				{
@@ -316,7 +320,9 @@ float64_t CCommUlongStringKernel::compute_optimized(index_t i)
 				last_j = j;
 			}
 
-			index_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
+			index_t idx = CMath::binary_search(
+			    &(dictionary[old_idx]), dictionary.vlen - old_idx,
+			    avec[alen - 1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}

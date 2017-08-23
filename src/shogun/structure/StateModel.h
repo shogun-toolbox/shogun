@@ -76,8 +76,9 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
-			SGVector< float64_t > w, index_t num_feats, index_t num_obs) = 0;
+		virtual void reshape_emission_params(
+		    SGVector<float64_t>& emission_weights, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_obs) = 0;
 
 		/**
 		 * arranges the emission parameters of the weight vector into a matrix
@@ -89,8 +90,9 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
-			SGVector< float64_t > w, index_t num_feats, index_t num_plif_nodes) = 0;
+		virtual void reshape_emission_params(
+		    CDynamicObjectArray* plif_matrix, SGVector<float64_t> w,
+		    index_t num_feats, index_t num_plif_nodes) = 0;
 
 		/**
 		 * arranges the transmission parameters of the weight vector into a matrix
@@ -110,7 +112,8 @@ class CStateModel : public CSGObject
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< index_t > labels_to_states(CSequence* label_seq) const = 0;
+		virtual SGVector<index_t>
+		labels_to_states(CSequence* label_seq) const = 0;
 
 		/** translates state sequence to label sequence
 		 *
@@ -118,7 +121,8 @@ class CStateModel : public CSGObject
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< index_t > state_seq) const = 0;
+		virtual CSequence*
+		states_to_labels(SGVector<index_t> state_seq) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -132,10 +136,10 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
-		virtual void weights_to_vector(SGVector< float64_t >& psi,
-				SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights,
-				index_t num_feats, index_t num_obs) const = 0;
+		virtual void weights_to_vector(
+		    SGVector<float64_t>& psi, SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
@@ -149,8 +153,10 @@ class CStateModel : public CSGObject
 		 *
 		 * @return psi output vector
 		 */
-		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
-				SGVector< float64_t > emission_weights, index_t num_feats, index_t num_obs) const = 0;
+		virtual SGVector<float64_t> weights_to_vector(
+		    SGMatrix<float64_t> transmission_weights,
+		    SGVector<float64_t> emission_weights, index_t num_feats,
+		    index_t num_obs) const = 0;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The
@@ -170,8 +176,8 @@ class CStateModel : public CSGObject
 		 * @return vector with monotonicity constraints of length num_feats times
 		 * num_free_states
 		 */
-		virtual SGVector< index_t > get_monotonicity(index_t num_free_states,
-				index_t num_feats) const;
+		virtual SGVector<index_t>
+		get_monotonicity(index_t num_free_states, index_t num_feats) const;
 
 		/**
 		 * return the distribution of start states, i.e. the specification

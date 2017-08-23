@@ -96,7 +96,8 @@ void* CSparsePolyFeatures::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 
-bool CSparsePolyFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CSparsePolyFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
@@ -107,7 +108,8 @@ void CSparsePolyFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CSparsePolyFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t
+CSparsePolyFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -128,7 +130,8 @@ float64_t CSparsePolyFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t v
 	return result;
 }
 
-float64_t CSparsePolyFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CSparsePolyFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -177,7 +180,9 @@ float64_t CSparsePolyFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2
 	return result;
 }
 
-void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CSparsePolyFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (vec2_len!=m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)

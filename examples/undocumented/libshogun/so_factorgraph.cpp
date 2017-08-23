@@ -38,7 +38,7 @@ void create_tree_graph(int hh, int ww)
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
-	SGVector<index_t> vc(hh*ww);
+	SGVector<index_t> vc(hh * ww);
 	SGVector<index_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph* fg = new CFactorGraph(vc);
 	SG_REF(fg);

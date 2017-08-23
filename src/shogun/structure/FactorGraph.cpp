@@ -22,8 +22,7 @@ CFactorGraph::CFactorGraph()
 	init();
 }
 
-CFactorGraph::CFactorGraph(SGVector<index_t> card)
-	: CSGObject()
+CFactorGraph::CFactorGraph(SGVector<index_t> card) : CSGObject()
 {
 	m_cardinalities = card;
 	register_parameters();
@@ -260,7 +259,8 @@ void CFactorGraph::loss_augmentation(CFactorGraphObservation* gt)
 	loss_augmentation(gt->get_data(), gt->get_loss_weights());
 }
 
-void CFactorGraph::loss_augmentation(SGVector<index_t> states_gt, SGVector<float64_t> loss)
+void CFactorGraph::loss_augmentation(
+    SGVector<index_t> states_gt, SGVector<float64_t> loss)
 {
 	if (loss.size() == 0)
 	{

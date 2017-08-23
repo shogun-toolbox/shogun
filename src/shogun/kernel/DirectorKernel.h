@@ -258,8 +258,8 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t *weights)
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights)
 		{
 			return CKernel::init_optimization(count, IDX, weights);
 		}

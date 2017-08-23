@@ -115,8 +115,8 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t* weights);
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *
@@ -169,9 +169,9 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @return computed scores
 		 */
 		virtual float64_t* compute_scoring(
-			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			float64_t* target, index_t num_suppvec, index_t* IDX,
-			float64_t* alphas, bool do_init=true);
+		    int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+		    float64_t* target, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas, bool do_init = true);
 
 		/** compute consensus
 		 *
@@ -182,8 +182,8 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @return computed consensus
 		 */
 		char* compute_consensus(
-			int32_t &num_feat, int32_t num_suppvec, index_t* IDX,
-			float64_t* alphas);
+		    int32_t& num_feat, int32_t num_suppvec, index_t* IDX,
+		    float64_t* alphas);
 
 		/** set_use_dict_diagonal_optimization
 		 *
@@ -224,8 +224,8 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param do_sort if sorting shall be performed
 		 * @return computed value
 		 */
-		virtual float64_t compute_helper(
-			index_t idx_a, index_t idx_b, bool do_sort);
+		virtual float64_t
+		compute_helper(index_t idx_a, index_t idx_b, bool do_sort);
 
 		/** helper to compute only diagonal normalization for training
 		 *

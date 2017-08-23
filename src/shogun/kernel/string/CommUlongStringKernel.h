@@ -101,8 +101,8 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t count, index_t* IDX, float64_t* weights);
+		virtual bool
+		init_optimization(index_t count, index_t* IDX, float64_t* weights);
 
 		/** delete optimization
 		 *

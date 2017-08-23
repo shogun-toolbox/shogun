@@ -52,7 +52,10 @@ class CHistogram : public CDistribution
 		 *
 		 * @return number of model parameters
 		 */
-		virtual index_t get_num_model_parameters() { return (1<<16); }
+		virtual index_t get_num_model_parameters()
+		{
+			return (1 << 16);
+		}
 
 		/** get logarithm of given model parameter
 		 *
@@ -67,8 +70,8 @@ class CHistogram : public CDistribution
 		 * @param num_example which example
 		 * @return logarithm of example's derivative's likelihood
 		 */
-		virtual float64_t get_log_derivative(
-			index_t num_param, index_t num_example);
+		virtual float64_t
+		get_log_derivative(index_t num_param, index_t num_example);
 
 		/** get logarithm of one example's likelihood
 		 *

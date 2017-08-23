@@ -147,18 +147,18 @@ GET_VECTOR(read_long, int64_t)
 GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
-#define SET_VECTOR(format, sg_type) \
-void CUAIFile::set_vector(const sg_type* vector, index_t len) \
-{ \
-    SG_SET_LOCALE_C; \
-    \
-    index_t i; \
-    for (i=0; i<len-1; i++) \
-        fprintf(file, "%" format "%c", vector[i], m_delimiter); \
-    fprintf(file, "%" format "\n", vector[i]); \
-    \
-    SG_RESET_LOCALE; \
-}
+#define SET_VECTOR(format, sg_type)                                            \
+	void CUAIFile::set_vector(const sg_type* vector, index_t len)              \
+	{                                                                          \
+		SG_SET_LOCALE_C;                                                       \
+                                                                               \
+		index_t i;                                                             \
+		for (i = 0; i < len - 1; i++)                                          \
+			fprintf(file, "%" format "%c", vector[i], m_delimiter);            \
+		fprintf(file, "%" format "\n", vector[i]);                             \
+                                                                               \
+		SG_RESET_LOCALE;                                                       \
+	}
 
 SET_VECTOR(SCNi8, int8_t)
 SET_VECTOR(SCNu8, uint8_t)
@@ -269,11 +269,11 @@ void CUAIFile::set_factors_scope(int num_factors,
     {
         SGVector<int32_t> scope = factors_scope[i];
         m_factors_scope[i] = scope;
-        fprintf(file, "%lld ", scope.vlen);
-        for (int32_t j=0; j<scope.vlen; j++)
-            fprintf(file, "%d ", scope[j]);
-        fprintf(file, "\n");
-    }
+		fprintf(file, "%lld ", scope.vlen);
+		for (int32_t j = 0; j < scope.vlen; j++)
+			fprintf(file, "%d ", scope[j]);
+		fprintf(file, "\n");
+	}
 }
 
 void CUAIFile::set_factors_table(int32_t num_factors,

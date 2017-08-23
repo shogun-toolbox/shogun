@@ -477,7 +477,8 @@ protected:
 	 *
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, index_t j=-1);
+	virtual SGMatrix<float64_t>
+	forward_propagate(CFeatures* data, index_t j = -1);
 
 	/** Applies forward propagation, computes the activations of each layer up
 	 * to layer j
@@ -489,7 +490,8 @@ protected:
 	 *
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, index_t j=-1);
+	virtual SGMatrix<float64_t>
+	forward_propagate(SGMatrix<float64_t> inputs, index_t j = -1);
 
 	/** Sets the batch size (the number of train/test cases) the network is
 	 * expected to deal with.
@@ -557,11 +559,9 @@ private:
 	void init();
 
 	/** callback for l-bfgs */
-	static float64_t lbfgs_evaluate(void *userdata,
-			const float64_t *W,
-			float64_t *grad,
-			const index_t n,
-			const float64_t step);
+	static float64_t lbfgs_evaluate(
+		void* userdata, const float64_t* W, float64_t* grad, const index_t n,
+		const float64_t step);
 
 	/** callback for l-bfgs */
 	static int lbfgs_progress(void *instance,

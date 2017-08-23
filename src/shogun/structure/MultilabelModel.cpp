@@ -28,7 +28,8 @@ CMultilabelModel::~CMultilabelModel()
 {
 }
 
-CStructuredLabels * CMultilabelModel::structured_labels_factory(index_t num_labels)
+CStructuredLabels*
+CMultilabelModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMultilabelSOLabels(num_labels, m_num_classes);
 }
@@ -48,8 +49,8 @@ void CMultilabelModel::init()
 
 index_t CMultilabelModel::get_dim() const
 {
-	index_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	index_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return feats_dim * num_classes;
 }
@@ -60,8 +61,8 @@ void CMultilabelModel::set_misclass_cost(float64_t false_positive, float64_t fal
 	m_false_negative = false_negative;
 }
 
-SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(index_t feat_idx,
-                CStructuredData * y)
+SGVector<float64_t>
+CMultilabelModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
 {
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
@@ -118,8 +119,8 @@ float64_t CMultilabelModel::delta_loss(float64_t y1, float64_t y2)
 	return y1 > y2 ? m_false_negative : y1 < y2 ? m_false_positive : 0;
 }
 
-SGVector<index_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
-                float64_t d_true, float64_t d_false)
+SGVector<index_t> CMultilabelModel::to_sparse(
+    SGVector<float64_t> dense_vec, float64_t d_true, float64_t d_false)
 {
 	index_t size = 0;
 
@@ -150,8 +151,8 @@ SGVector<index_t> CMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
 	return sparse_vec;
 }
 
-CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, index_t feat_idx,
-                                      bool const training)
+CResultSet* CMultilabelModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
 	index_t feats_dim = dot_feats->get_dim_feature_space();

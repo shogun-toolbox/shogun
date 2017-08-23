@@ -75,13 +75,14 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels)
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	SGVector<index_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> train_labels =
+	    ((CMulticlassLabels*)m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// init min_label, max_label and loop variables
 	index_t min_label = train_labels.vector[0];
 	index_t max_label = train_labels.vector[0];
-	index_t i,j;
+	index_t i, j;
 
 	// find minimal and maximal label
 	for (i=1; i<train_labels.vlen; i++)

@@ -353,13 +353,13 @@ float64_t CSpectrumRBFKernel::compute(index_t idx_a, index_t idx_b)
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	float64_t result=0;
-	for (index_t i=0; i<alen; i++)
-	  {
-	    for (index_t j=0; j<blen; j++)
-	      {
-		if ((i+degree<=alen) && (j+degree<=blen))
-		  result += AA_helper(&(avec[i]), degree, bvec, j) ;
-	      }
+	for (index_t i = 0; i < alen; i++)
+	{
+		for (index_t j = 0; j < blen; j++)
+		{
+			if ((i + degree <= alen) && (j + degree <= blen))
+				result += AA_helper(&(avec[i]), degree, bvec, j);
+		}
 	  }
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, afree);

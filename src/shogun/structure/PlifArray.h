@@ -60,8 +60,8 @@ class CPlifArray: public CPlifBase
 		 * @param p_value value
 		 * @param svm_values SVM values
 		 */
-		virtual float64_t lookup_penalty(
-			index_t p_value, float64_t* svm_values) const;
+		virtual float64_t
+		lookup_penalty(index_t p_value, float64_t* svm_values) const;
 
 		/** penalty clear derivative */
 		virtual void penalty_clear_derivative();
@@ -114,7 +114,7 @@ class CPlifArray: public CPlifBase
 		virtual void list_plif() const
 		{
 			SG_PRINT("CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value)
-			for (index_t i=0; i<m_array.get_num_elements(); i++)
+			for (index_t i = 0; i < m_array.get_num_elements(); i++)
 			{
 				SG_PRINT("%i. ", i)
 				m_array[i]->list_plif() ;

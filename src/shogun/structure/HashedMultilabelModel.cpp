@@ -21,8 +21,9 @@ CHashedMultilabelModel::CHashedMultilabelModel()
 	init(0);
 }
 
-CHashedMultilabelModel::CHashedMultilabelModel(CFeatures * features,
-                CStructuredLabels * labels, index_t dim) : CStructuredModel(features, labels)
+CHashedMultilabelModel::CHashedMultilabelModel(
+    CFeatures* features, CStructuredLabels* labels, index_t dim)
+    : CStructuredModel(features, labels)
 {
 	init(dim);
 }
@@ -31,8 +32,8 @@ CHashedMultilabelModel::~CHashedMultilabelModel()
 {
 }
 
-CStructuredLabels * CHashedMultilabelModel::structured_labels_factory(
-        index_t num_examples)
+CStructuredLabels*
+CHashedMultilabelModel::structured_labels_factory(index_t num_examples)
 {
 	return new CMultilabelSOLabels(num_examples, m_num_classes);
 }
@@ -86,16 +87,19 @@ void CHashedMultilabelModel::set_seeds(SGVector<uint32_t> seeds)
 }
 
 SGVector<float64_t> CHashedMultilabelModel::get_joint_feature_vector(
-        index_t feat_idx, CStructuredData * y)
+    index_t feat_idx, CStructuredData* y)
 {
-	SG_ERROR("compute_joint_feature(index_t, CStructuredData*) is not "
-	         "implemented for %s!\n", get_name());
+	SG_ERROR(
+	    "compute_joint_feature(index_t, CStructuredData*) is not "
+	    "implemented for %s!\n",
+	    get_name());
 
 	return SGVector<float64_t>();
 }
 
-SGSparseVector<float64_t> CHashedMultilabelModel::get_sparse_joint_feature_vector(
-        index_t feat_idx, CStructuredData * y)
+SGSparseVector<float64_t>
+CHashedMultilabelModel::get_sparse_joint_feature_vector(
+    index_t feat_idx, CStructuredData* y)
 {
 	SGSparseVector<float64_t> vec = ((CSparseFeatures<float64_t> *)m_features)->
 	                                get_sparse_feature_vector(feat_idx);
@@ -179,7 +183,7 @@ void CHashedMultilabelModel::init_primal_opt(
 }
 
 SGSparseVector<float64_t> CHashedMultilabelModel::get_hashed_feature_vector(
-        index_t feat_idx, uint32_t seed)
+    index_t feat_idx, uint32_t seed)
 {
 	SGSparseVector<float64_t> vec = ((CSparseFeatures<float64_t> *)m_features)->
 	                                get_sparse_feature_vector(feat_idx);
@@ -201,8 +205,8 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_hashed_feature_vector(
 	return h_vec;
 }
 
-SGVector<index_t> CHashedMultilabelModel::to_sparse(SGVector<float64_t> dense_vec,
-                float64_t d_true, float64_t d_false)
+SGVector<index_t> CHashedMultilabelModel::to_sparse(
+    SGVector<float64_t> dense_vec, float64_t d_true, float64_t d_false)
 {
 	index_t size = 0;
 
@@ -233,8 +237,8 @@ SGVector<index_t> CHashedMultilabelModel::to_sparse(SGVector<float64_t> dense_ve
 	return sparse_vec;
 }
 
-CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
-                index_t feat_idx, bool const training)
+CResultSet* CHashedMultilabelModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CMultilabelSOLabels * multi_labs = (CMultilabelSOLabels *)m_labels;
 

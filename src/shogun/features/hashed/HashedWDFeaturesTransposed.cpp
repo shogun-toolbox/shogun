@@ -76,8 +76,8 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	SG_REF(str);
 
 	strings=str;
-	index_t transposed_num_feat=0;
-	index_t transposed_num_vec=0;
+	index_t transposed_num_feat = 0;
+	index_t transposed_num_vec = 0;
 	transposed_strings=str->get_transposed(transposed_num_feat, transposed_num_vec);
 
 	string_length=str->get_max_vector_length();
@@ -125,7 +125,8 @@ CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeaturesTransposed::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t CHashedWDFeaturesTransposed::dot(
+    index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -142,9 +143,9 @@ float64_t CHashedWDFeaturesTransposed::dot(index_t vec_idx1, CDotFeatures* df, i
 
 	float64_t sum=0.0;
 
-	for (index_t i=0; i<len1; i++)
+	for (index_t i = 0; i < len1; i++)
 	{
-		for (index_t j=0; (i+j<len1) && (j<degree); j++)
+		for (index_t j = 0; (i + j < len1) && (j < degree); j++)
 		{
 			if (vec1[i+j]!=vec2[i+j])
 				break;
@@ -157,7 +158,8 @@ float64_t CHashedWDFeaturesTransposed::dot(index_t vec_idx1, CDotFeatures* df, i
 	return sum/CMath::sq(normalization_const);
 }
 
-float64_t CHashedWDFeaturesTransposed::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CHashedWDFeaturesTransposed::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -200,7 +202,9 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(index_t vec_idx1, const float64
 	return sum/normalization_const;
 }
 
-void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, index_t start, index_t stop, float64_t* alphas, float64_t* vec, index_t dim, float64_t b)
+void CHashedWDFeaturesTransposed::dense_dot_range(
+    float64_t* output, index_t start, index_t stop, float64_t* alphas,
+    float64_t* vec, index_t dim, float64_t b)
 {
 	ASSERT(output)
 	// write access is internally between output[start..stop] so the following
@@ -211,14 +215,14 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, index_t sta
 	ASSERT(stop<=get_num_vectors())
 	uint32_t* index=SG_MALLOC(uint32_t, stop);
 
-	index_t num_vectors=stop-start;
+	index_t num_vectors = stop - start;
 	ASSERT(num_vectors>0)
 
 	// TODO: port to use OpenMP backend instead of pthread
 #ifdef HAVE_PTHREAD
-	index_t num_threads=parallel->get_num_threads();
+	index_t num_threads = parallel->get_num_threads();
 #else
-	index_t num_threads=1;
+	index_t num_threads = 1;
 #endif
 	ASSERT(num_threads>0)
 
@@ -249,7 +253,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, index_t sta
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
 		auto pb = progress(range(start, stop), *this->io);
-		index_t step= num_vectors/num_threads;
+		index_t step = num_vectors / num_threads;
 
 		index_t t;
 
@@ -293,7 +297,9 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, index_t sta
 	SG_FREE(index);
 }
 
-void CHashedWDFeaturesTransposed::dense_dot_range_subset(index_t* sub_index, index_t num, float64_t* output, float64_t* alphas, float64_t* vec, index_t dim, float64_t b)
+void CHashedWDFeaturesTransposed::dense_dot_range_subset(
+    index_t* sub_index, index_t num, float64_t* output, float64_t* alphas,
+    float64_t* vec, index_t dim, float64_t b)
 {
 	ASSERT(sub_index)
 	ASSERT(output)
@@ -334,7 +340,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(index_t* sub_index, ind
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
-		index_t step= num/num_threads;
+		index_t step = num / num_threads;
 		auto pb = progress(range(num), *this->io);
 		index_t t;
 
@@ -383,10 +389,10 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 {
 	HASHEDWD_THREAD_PARAM* par=(HASHEDWD_THREAD_PARAM*) p;
 	CHashedWDFeaturesTransposed* hf=par->hf;
-	index_t* sub_index=par->sub_index;
+	index_t* sub_index = par->sub_index;
 	float64_t* output=par->output;
-	index_t start=par->start;
-	index_t stop=par->stop;
+	index_t start = par->start;
+	index_t stop = par->stop;
 	float64_t* alphas=par->alphas;
 	float64_t* vec=par->vec;
 	float64_t bias=par->bias;
@@ -403,20 +409,20 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 
 	if (sub_index)
 	{
-		for (index_t j=start; j<stop; j++)
+		for (index_t j = start; j < stop; j++)
 			output[j]=0.0;
 
 		uint32_t offs=0;
-		for (index_t i=0; i<string_length; i++)
+		for (index_t i = 0; i < string_length; i++)
 		{
 			uint32_t o=offs;
-			for (index_t k=0; k<degree && i+k<string_length; k++)
+			for (index_t k = 0; k < degree && i + k < string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
 				uint8_t* dim=transposed_strings[i+k].string;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
-				for (index_t j=start; j<stop; j++)
+				for (index_t j = start; j < stop; j++)
 				{
 					uint8_t bval=dim[sub_index[j]];
 					if (k==0)
@@ -445,7 +451,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 				pb->print_progress();
 		}
 
-		for (index_t j=start; j<stop; j++)
+		for (index_t j = start; j < stop; j++)
 		{
 			if (alphas)
 				output[j]=output[j]*alphas[sub_index[j]]/normalization_const+bias;
@@ -458,17 +464,17 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 		SGVector<float64_t>::fill_vector(&output[start], stop-start, 0.0);
 
 		uint32_t offs=0;
-		for (index_t i=0; i<string_length; i++)
+		for (index_t i = 0; i < string_length; i++)
 		{
 			uint32_t o=offs;
-			for (index_t k=0; k<degree && i+k<string_length; k++)
+			for (index_t k = 0; k < degree && i + k < string_length; k++)
 			{
 				const float64_t wd = wd_weights[k];
 				uint8_t* dim=transposed_strings[i+k].string;
 				uint32_t carry = 0;
 				uint32_t chunk = 0;
 
-				for (index_t j=start; j<stop; j++)
+				for (index_t j = start; j < stop; j++)
 				{
 					uint8_t bval=dim[sub_index[j]];
 					if (k==0)
@@ -496,7 +502,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 				pb->print_progress();
 		}
 
-		for (index_t j=start; j<stop; j++)
+		for (index_t j = start; j < stop; j++)
 		{
 			if (alphas)
 				output[j]=output[j]*alphas[j]/normalization_const+bias;
@@ -508,7 +514,9 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	return NULL;
 }
 
-void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CHashedWDFeaturesTransposed::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (vec2_len != w_dim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
@@ -525,13 +533,13 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, index_t vec_
 
 	SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
 
-	for (index_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 	{
 		uint32_t o=offs;
 		uint32_t carry = 0;
 		uint32_t chunk = 0;
 
-		for (index_t k=0; k<degree && i+k<len; k++)
+		for (index_t k = 0; k < degree && i + k < len; k++)
 		{
 			float64_t wd = wd_weights[k]*factor;
 			chunk++;
@@ -602,7 +610,8 @@ void* CHashedWDFeaturesTransposed::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 
-bool CHashedWDFeaturesTransposed::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CHashedWDFeaturesTransposed::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;

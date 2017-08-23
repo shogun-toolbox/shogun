@@ -160,7 +160,10 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return number of model parameters
 		 */
-		virtual index_t get_num_model_parameters() { return num_params; }
+		virtual index_t get_num_model_parameters()
+		{
+			return num_params;
+		}
 
 		/** get positional log parameter
 		 *

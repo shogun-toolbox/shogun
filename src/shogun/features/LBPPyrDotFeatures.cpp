@@ -22,15 +22,18 @@ CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 	vec_nDim = 0;
 }
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, index_t image_w,
-	index_t image_h, uint16_t num_pyramids) : CDotFeatures()
+CLBPPyrDotFeatures::CLBPPyrDotFeatures(
+    CDenseFeatures<uint32_t>* image_set, index_t image_w, index_t image_h,
+    uint16_t num_pyramids)
+    : CDotFeatures()
 {
 	ASSERT(image_set)
 	init(image_set, image_w, image_h);
 	vec_nDim = liblbp_pyr_get_dim(num_pyramids);
 }
 
-void CLBPPyrDotFeatures::init(CDenseFeatures<uint32_t>* image_set, index_t image_w, index_t image_h)
+void CLBPPyrDotFeatures::init(
+    CDenseFeatures<uint32_t>* image_set, index_t image_w, index_t image_h)
 {
 	images = image_set;
 	SG_REF(images);
@@ -85,7 +88,8 @@ void* CLBPPyrDotFeatures::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 
-bool CLBPPyrDotFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CLBPPyrDotFeatures::get_next_feature(
+    index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
@@ -96,7 +100,8 @@ void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CLBPPyrDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t
+CLBPPyrDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(strcmp(df->get_name(),get_name())==0)
 	CLBPPyrDotFeatures* lbp_feat = (CLBPPyrDotFeatures* ) df;
@@ -120,9 +125,9 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(index_t index)
 	index_t offset = 0;
 	while (true)
 	{
-		for (index_t x=1; x<ww-1; x++)
+		for (index_t x = 1; x < ww - 1; x++)
 		{
-			for (index_t y=1; y<hh-1; y++)
+			for (index_t y = 1; y < hh - 1; y++)
 			{
 				uint8_t pattern = create_lbp_pattern(img, x, y);
 				vec[offset+pattern]++;
@@ -139,14 +144,14 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(index_t index)
 			hh--;
 
 		ww = ww/2;
-		for (index_t x=0; x<ww; x++)
-			for (index_t j=0; j<hh; j++)
+		for (index_t x = 0; x < ww; x++)
+			for (index_t j = 0; j < hh; j++)
 				img[LIBLBP_INDEX(j,x,image_height)] = img[LIBLBP_INDEX(j,2*x,image_height)] +
 					img[LIBLBP_INDEX(j,2*x+1,image_height)];
 
 		hh = hh/2;
-		for (index_t y=0; y<hh; y++)
-			for (index_t j=0; j<ww; j++)
+		for (index_t y = 0; y < hh; y++)
+			for (index_t j = 0; j < ww; j++)
 				img[LIBLBP_INDEX(y,j,image_height)] = img[LIBLBP_INDEX(2*y,j,image_height)] +
 					img[LIBLBP_INDEX(2*y+1,j,image_height)];
 	}
@@ -155,7 +160,8 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(index_t index)
 	return vec;
 }
 
-uint32_t* CLBPPyrDotFeatures::get_image(index_t index, index_t& width, index_t& height)
+uint32_t*
+CLBPPyrDotFeatures::get_image(index_t index, index_t& width, index_t& height)
 {
 	index_t len;
 	bool do_free;
@@ -169,7 +175,8 @@ uint32_t* CLBPPyrDotFeatures::get_image(index_t index, index_t& width, index_t& 
 	return img;
 }
 
-float64_t CLBPPyrDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CLBPPyrDotFeatures::dense_dot(
+    index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	if (vec2_len != vec_nDim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
@@ -182,9 +189,9 @@ float64_t CLBPPyrDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2,
 	int32_t offset = 0;
 	while (true)
 	{
-		for (index_t x=1; x<ww-1; x++)
+		for (index_t x = 1; x < ww - 1; x++)
 		{
-			for (index_t y=1; y<hh-1; y++)
+			for (index_t y = 1; y < hh - 1; y++)
 			{
 				uint8_t pattern = create_lbp_pattern(img, x, y);
 				dot_prod += vec2[offset+pattern];
@@ -201,14 +208,14 @@ float64_t CLBPPyrDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2,
 			hh--;
 
 		ww = ww/2;
-		for (index_t x=0; x<ww; x++)
-			for (index_t j=0; j<hh; j++)
+		for (index_t x = 0; x < ww; x++)
+			for (index_t j = 0; j < hh; j++)
 				img[LIBLBP_INDEX(j,x,image_height)] = img[LIBLBP_INDEX(j,2*x,image_height)] +
 					img[LIBLBP_INDEX(j,2*x+1,image_height)];
 
 		hh = hh/2;
-		for (index_t y=0; y<hh; y++)
-			for (index_t j=0; j<ww; j++)
+		for (index_t y = 0; y < hh; y++)
+			for (index_t j = 0; j < ww; j++)
 				img[LIBLBP_INDEX(y,j,image_height)] = img[LIBLBP_INDEX(2*y,j,image_height)] +
 					img[LIBLBP_INDEX(2*y+1,j,image_height)];
 	}
@@ -217,7 +224,9 @@ float64_t CLBPPyrDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2,
 	return dot_prod;
 }
 
-void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len, bool abs_val)
+void CLBPPyrDotFeatures::add_to_dense_vec(
+    float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (vec2_len != vec_nDim)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
@@ -233,9 +242,9 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, flo
 
 	while (true)
 	{
-		for (index_t x=1; x<ww-1; x++)
+		for (index_t x = 1; x < ww - 1; x++)
 		{
-			for (index_t y=1; y<hh-1; y++)
+			for (index_t y = 1; y < hh - 1; y++)
 			{
 				uint8_t pattern = create_lbp_pattern(img, x, y);
 				vec2[offset+pattern] += alpha;
@@ -252,21 +261,22 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1, flo
 			hh--;
 
 		ww = ww/2;
-		for (index_t x=0; x<ww; x++)
-			for (index_t j=0; j<hh; j++)
+		for (index_t x = 0; x < ww; x++)
+			for (index_t j = 0; j < hh; j++)
 				img[LIBLBP_INDEX(j,x,image_height)] = img[LIBLBP_INDEX(j,2*x,image_height)] +
 					img[LIBLBP_INDEX(j,2*x+1,image_height)];
 
 		hh = hh/2;
-		for (index_t y=0; y<hh; y++)
-			for (index_t j=0; j<ww; j++)
+		for (index_t y = 0; y < hh; y++)
+			for (index_t j = 0; j < ww; j++)
 				img[LIBLBP_INDEX(y,j,image_height)] = img[LIBLBP_INDEX(2*y,j,image_height)] +
 					img[LIBLBP_INDEX(2*y+1,j,image_height)];
 	}
 	SG_FREE(img);
 }
 
-uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, index_t x, index_t y)
+uint8_t
+CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, index_t x, index_t y)
 {
 	uint8_t pattern = 0;
 	uint32_t center = img[LIBLBP_INDEX(y,x,image_height)];

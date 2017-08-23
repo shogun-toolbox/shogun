@@ -84,7 +84,8 @@ CFactorGraph* CFactorGraphDataGenerator::simple_chain_graph()
 	return fg;
 }
 
-index_t CFactorGraphDataGenerator::grid_to_index(index_t x, index_t y, index_t w)
+index_t
+CFactorGraphDataGenerator::grid_to_index(index_t x, index_t y, index_t w)
 {
 	return x + w * y;
 }
@@ -102,7 +103,9 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 	}
 }
 
-CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(SGVector<index_t> &assignment_expect, float64_t &min_energy_expect, index_t N)
+CFactorGraph* CFactorGraphDataGenerator::random_chain_graph(
+    SGVector<index_t>& assignment_expect, float64_t& min_energy_expect,
+    index_t N)
 {
 	CMath::init_random(17);
 
@@ -336,8 +339,9 @@ Test approximate inference algorithms with SOSVM framework
 using randomly generated synthetic data
 ----------------------------------------------------------------------------------*/
 
-void CFactorGraphDataGenerator::generate_data(index_t len_label, index_t len_feat, index_t size_data,
-                                SGMatrix<float64_t> &feats, SGMatrix<index_t> &labels)
+void CFactorGraphDataGenerator::generate_data(
+    index_t len_label, index_t len_feat, index_t size_data,
+    SGMatrix<float64_t>& feats, SGMatrix<index_t>& labels)
 {
 	ASSERT(size_data > len_label);
 
@@ -373,14 +377,15 @@ void CFactorGraphDataGenerator::generate_data(index_t len_label, index_t len_fea
 	}
 }
 
-SGMatrix< index_t > CFactorGraphDataGenerator::get_edges_full(const index_t num_classes)
+SGMatrix<index_t>
+CFactorGraphDataGenerator::get_edges_full(const index_t num_classes)
 {
 	// A full-connected graph is defined by a 2-d matrix where
 	// each row stores the indecies of a pair of connected nodes
-	index_t num_rows =  num_classes * (num_classes - 1) / 2;
+	index_t num_rows = num_classes * (num_classes - 1) / 2;
 	ASSERT(num_rows > 0);
 
-	SGMatrix< index_t > mat(num_rows, 2);
+	SGMatrix<index_t> mat(num_rows, 2);
 	index_t k = 0;
 
 	for (index_t i = 0; i < num_classes - 1; i++)
@@ -395,14 +400,16 @@ SGMatrix< index_t > CFactorGraphDataGenerator::get_edges_full(const index_t num_
 	return mat;
 }
 
-void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<index_t> labels,
-                                     SGMatrix< index_t > edge_list, const DynArray<CTableFactorType*> &v_factor_type,
-                                     CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels)
+void CFactorGraphDataGenerator::build_factor_graph(
+    SGMatrix<float64_t> feats, SGMatrix<index_t> labels,
+    SGMatrix<index_t> edge_list,
+    const DynArray<CTableFactorType*>& v_factor_type,
+    CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels)
 {
-	index_t num_sample        = labels.num_cols;
-	index_t num_classes       = labels.num_rows;
-	index_t dim               = feats.num_rows;
-	index_t num_edges         = edge_list.num_rows;
+	index_t num_sample = labels.num_cols;
+	index_t num_classes = labels.num_rows;
+	index_t dim = feats.num_rows;
+	index_t num_edges = edge_list.num_rows;
 
 	// prepare features and labels in factor graph
 	for (index_t n = 0; n < num_sample; n++)
@@ -456,8 +463,9 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
  * @param num_edges number of edegs
  * @param v_factor_type factor types
  */
-void CFactorGraphDataGenerator::define_factor_types(index_t num_classes, index_t dim, index_t num_edges,
-                                      DynArray<CTableFactorType*> &v_factor_type)
+void CFactorGraphDataGenerator::define_factor_types(
+    index_t num_classes, index_t dim, index_t num_edges,
+    DynArray<CTableFactorType*>& v_factor_type)
 {
 	index_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
@@ -497,12 +505,12 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	sg_rand->set_seed(10); // fix the random seed
 	generate_data(4, 12, 8, feats_train, labels_train);
 
-	index_t num_sample_train  = labels_train.num_cols;
-	index_t num_classes       = labels_train.num_rows;
-	index_t dim               = feats_train.num_rows;
+	index_t num_sample_train = labels_train.num_cols;
+	index_t num_classes = labels_train.num_rows;
+	index_t dim = feats_train.num_rows;
 
 	// 1.1 Get edge table
-	SGMatrix< index_t > edge_table = get_edges_full(num_classes);
+	SGMatrix<index_t> edge_table = get_edges_full(num_classes);
 	index_t num_edges = edge_table.num_rows;
 
 	// 1.2 Define factor type

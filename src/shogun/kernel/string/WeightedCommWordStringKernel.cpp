@@ -88,13 +88,13 @@ bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 
 	SG_FREE(weights);
 	weights = w.vector;
-	for (index_t i=0; i<degree; i++)
+	for (index_t i = 0; i < degree; i++)
 		weights[i]=CMath::sqrt(weights[i]);
 	return true;
 }
 
 float64_t CWeightedCommWordStringKernel::compute_helper(
-	index_t idx_a, index_t idx_b, bool do_sort)
+    index_t idx_a, index_t idx_b, bool do_sort)
 {
 	index_t alen, blen;
 	bool free_avec, free_bvec;
@@ -142,7 +142,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	float64_t result=0;
 	uint8_t mask=0;
 
-	for (index_t d=0; d<degree; d++)
+	for (index_t d = 0; d < degree; d++)
 	{
 		mask = mask | (1 << (degree-d-1));
 		uint16_t masked=((CStringFeatures<uint16_t>*) lhs)->get_masked_symbols(0xffff, mask);
@@ -189,23 +189,23 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 }
 
 void CWeightedCommWordStringKernel::add_to_normal(
-	index_t vec_idx, float64_t weight)
+    index_t vec_idx, float64_t weight)
 {
-	index_t len=-1;
+	index_t len = -1;
 	bool free_vec;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) lhs;
 	uint16_t* vec=s->get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
 	{
-		for (index_t j=0; j<len; j++)
+		for (index_t j = 0; j < len; j++)
 		{
 			uint8_t mask=0;
 			int32_t offs=0;
-			for (index_t d=0; d<degree; d++)
+			for (index_t d = 0; d < degree; d++)
 			{
 				mask = mask | (1 << (degree-d-1));
-				index_t idx=s->get_masked_symbols(vec[j], mask);
+				index_t idx = s->get_masked_symbols(vec[j], mask);
 				idx=s->shift_symbol(idx, degree-d-1);
 				dictionary_weights[offs + idx] += normalizer->normalize_lhs(weight*weights[d], vec_idx);
 				offs+=s->shift_offset(1,d+1);
@@ -259,20 +259,20 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(index_t i)
 
 	float64_t result=0;
 	bool free_vec;
-	index_t len=-1;
+	index_t len = -1;
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	uint16_t* vec=s->get_feature_vector(i, len, free_vec);
 
 	if (vec && len>0)
 	{
-		for (index_t j=0; j<len; j++)
+		for (index_t j = 0; j < len; j++)
 		{
 			uint8_t mask=0;
 			int32_t offs=0;
-			for (index_t d=0; d<degree; d++)
+			for (index_t d = 0; d < degree; d++)
 			{
 				mask = mask | (1 << (degree-d-1));
-				index_t idx=s->get_masked_symbols(vec[j], mask);
+				index_t idx = s->get_masked_symbols(vec[j], mask);
 				idx=s->shift_symbol(idx, degree-d-1);
 				result += dictionary_weights[offs + idx]*weights[d];
 				offs+=s->shift_offset(1,d+1);
@@ -286,8 +286,8 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(index_t i)
 }
 
 float64_t* CWeightedCommWordStringKernel::compute_scoring(
-	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
-	index_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
+    int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
+    index_t num_suppvec, index_t* IDX, float64_t* alphas, bool do_init)
 {
 	if (do_init)
 		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);

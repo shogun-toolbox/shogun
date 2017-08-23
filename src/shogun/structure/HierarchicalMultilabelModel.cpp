@@ -20,16 +20,16 @@ CHierarchicalMultilabelModel::CHierarchicalMultilabelModel()
 	init(SGVector<index_t>(0), false);
 }
 
-CHierarchicalMultilabelModel::CHierarchicalMultilabelModel(CFeatures * features,
-                CStructuredLabels * labels, SGVector<index_t> taxonomy,
-                bool leaf_nodes_mandatory)
-	: CStructuredModel(features, labels)
+CHierarchicalMultilabelModel::CHierarchicalMultilabelModel(
+    CFeatures* features, CStructuredLabels* labels, SGVector<index_t> taxonomy,
+    bool leaf_nodes_mandatory)
+    : CStructuredModel(features, labels)
 {
 	init(taxonomy, leaf_nodes_mandatory);
 }
 
-CStructuredLabels * CHierarchicalMultilabelModel::structured_labels_factory(
-        index_t num_labels)
+CStructuredLabels*
+CHierarchicalMultilabelModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMultilabelSOLabels(num_labels, m_num_classes);
 }
@@ -39,8 +39,8 @@ CHierarchicalMultilabelModel::~CHierarchicalMultilabelModel()
 	SG_FREE(m_children);
 }
 
-void CHierarchicalMultilabelModel::init(SGVector<index_t> taxonomy,
-                                        bool leaf_nodes_mandatory)
+void CHierarchicalMultilabelModel::init(
+    SGVector<index_t> taxonomy, bool leaf_nodes_mandatory)
 {
 	SG_ADD(&m_num_classes, "num_classes", "Number of (binary) class assignment per label",
 	       MS_NOT_AVAILABLE);
@@ -101,16 +101,16 @@ void CHierarchicalMultilabelModel::init(SGVector<index_t> taxonomy,
 
 index_t CHierarchicalMultilabelModel::get_dim() const
 {
-	index_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
-	index_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return num_classes * feats_dim;
 }
 
-SGVector<index_t> CHierarchicalMultilabelModel::get_label_vector(
-        SGVector<index_t> sparse_label)
+SGVector<index_t>
+CHierarchicalMultilabelModel::get_label_vector(SGVector<index_t> sparse_label)
 {
-	index_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
+	index_t num_classes = ((CMultilabelSOLabels*)m_labels)->get_num_classes();
 
 	SGVector<index_t> label_vector(num_classes);
 	label_vector.zero();
@@ -121,7 +121,7 @@ SGVector<index_t> CHierarchicalMultilabelModel::get_label_vector(
 		label_vector[node_id] = 1;
 
 		for (index_t parent_id = m_taxonomy[node_id]; parent_id != -1;
-		                parent_id = m_taxonomy[parent_id])
+		     parent_id = m_taxonomy[parent_id])
 		{
 			label_vector[parent_id] = 1;
 		}
@@ -132,7 +132,7 @@ SGVector<index_t> CHierarchicalMultilabelModel::get_label_vector(
 }
 
 SGVector<float64_t> CHierarchicalMultilabelModel::get_joint_feature_vector(
-        index_t feat_idx, CStructuredData * y)
+    index_t feat_idx, CStructuredData* y)
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(y);
 	SGVector<index_t> slabel_data = slabel->get_data();
@@ -176,8 +176,8 @@ float64_t CHierarchicalMultilabelModel::delta_loss(CStructuredData * y1,
 	                  get_label_vector(y2_slabel->get_data()));
 }
 
-float64_t CHierarchicalMultilabelModel::delta_loss(SGVector<index_t> y1,
-                SGVector<index_t> y2)
+float64_t CHierarchicalMultilabelModel::delta_loss(
+    SGVector<index_t> y1, SGVector<index_t> y2)
 {
 	REQUIRE(y1.vlen == y2.vlen, "Size of both the vectors should be same\n");
 
@@ -209,8 +209,8 @@ void CHierarchicalMultilabelModel::init_primal_opt(
 	C = SGMatrix<float64_t>::create_identity_matrix(get_dim(), regularization);
 }
 
-CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
-                index_t feat_idx, bool const training)
+CResultSet* CHierarchicalMultilabelModel::argmax(
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures * dot_feats = (CDotFeatures *)m_features;
 	index_t feats_dim = dot_feats->get_dim_feature_space();
@@ -230,7 +230,7 @@ CResultSet * CHierarchicalMultilabelModel::argmax(SGVector<float64_t> w,
 
 	// nodes_to_traverse is a dynamic list which keep tracks of which nodes to
 	// traverse
-	CDynamicArray<index_t> * nodes_to_traverse = new CDynamicArray<index_t>();
+	CDynamicArray<index_t>* nodes_to_traverse = new CDynamicArray<index_t>();
 	SG_REF(nodes_to_traverse);
 
 	// start traversing with the root node

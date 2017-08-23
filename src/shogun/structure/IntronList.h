@@ -43,7 +43,9 @@ class CIntronList : public CSGObject
 		 * @param quality quality scores for introns in list
 		 * @param len number of items in all three previous arguments
 		 */
-		void read_introns(index_t* start_pos, index_t* end_pos, index_t* quality, index_t len);
+		void read_introns(
+		    index_t* start_pos, index_t* end_pos, index_t* quality,
+		    index_t len);
 
 		/** get coverage and quality score
 		 *
@@ -51,7 +53,8 @@ class CIntronList : public CSGObject
 		 * @param from_pos start position of intron
 		 * @param to_pos end position of intron
 		 */
-		void get_intron_support(index_t* values, index_t from_pos, index_t to_pos);
+		void
+		get_intron_support(index_t* values, index_t from_pos, index_t to_pos);
 
 		/**
 		 * @return object name

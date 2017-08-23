@@ -29,8 +29,7 @@ CGraphCut::CGraphCut(CFactorGraph* fg)
 	init();
 }
 
-CGraphCut::CGraphCut(index_t num_nodes, index_t num_edges)
-	: CMAPInferImpl()
+CGraphCut::CGraphCut(index_t num_nodes, index_t num_edges) : CMAPInferImpl()
 {
 	init();
 
@@ -82,7 +81,7 @@ void CGraphCut::init()
 		}
 	}
 
-	m_num_factors_at_order = SGVector<index_t> (4);
+	m_num_factors_at_order = SGVector<index_t>(4);
 	m_num_factors_at_order.zero();
 
 	for (index_t i = 0; i < facs->get_num_elements(); i++)
@@ -103,7 +102,8 @@ void CGraphCut::init()
 	}
 
 	m_num_variables = m_fg->get_num_vars();
-	index_t max_num_edges = m_num_factors_at_order[2] + 3 * m_num_factors_at_order[3];
+	index_t max_num_edges =
+	    m_num_factors_at_order[2] + 3 * m_num_factors_at_order[3];
 	m_num_nodes = m_num_variables + m_num_factors_at_order[3];
 
 	// build s-t graph
@@ -428,7 +428,8 @@ index_t CGraphCut::get_tripleId(SGVector<index_t> triple)
 	return counter;
 }
 
-void CGraphCut::add_tweights(index_t i, float64_t cap_source, float64_t cap_sink)
+void CGraphCut::add_tweights(
+    index_t i, float64_t cap_source, float64_t cap_sink)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 
@@ -448,7 +449,8 @@ void CGraphCut::add_tweights(index_t i, float64_t cap_source, float64_t cap_sink
 	m_nodes[i].tree_cap = cap_source - cap_sink;
 }
 
-void CGraphCut::add_edge(index_t i, index_t j, float64_t capacity, float64_t reverse_capacity)
+void CGraphCut::add_edge(
+    index_t i, index_t j, float64_t capacity, float64_t reverse_capacity)
 {
 	ASSERT(i >= 0 && i < m_num_nodes);
 	ASSERT(j >= 0 && j < m_num_nodes);
@@ -941,7 +943,8 @@ void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 	}
 }
 
-ETerminalType CGraphCut::get_assignment(index_t i, ETerminalType default_terminal)
+ETerminalType
+CGraphCut::get_assignment(index_t i, ETerminalType default_terminal)
 {
 	if (m_nodes[i].parent != NULL)
 	{

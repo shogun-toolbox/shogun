@@ -32,7 +32,8 @@ CMulticlassModel::~CMulticlassModel()
 {
 }
 
-CStructuredLabels* CMulticlassModel::structured_labels_factory(index_t num_labels)
+CStructuredLabels*
+CMulticlassModel::structured_labels_factory(index_t num_labels)
 {
 	return new CMulticlassSOLabels(num_labels);
 }
@@ -40,13 +41,14 @@ CStructuredLabels* CMulticlassModel::structured_labels_factory(index_t num_label
 index_t CMulticlassModel::get_dim() const
 {
 	// TODO make the casts safe!
-	index_t num_classes = ((CMulticlassSOLabels*) m_labels)->get_num_classes();
-	index_t feats_dim   = ((CDotFeatures*) m_features)->get_dim_feature_space();
+	index_t num_classes = ((CMulticlassSOLabels*)m_labels)->get_num_classes();
+	index_t feats_dim = ((CDotFeatures*)m_features)->get_dim_feature_space();
 
 	return feats_dim*num_classes;
 }
 
-SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
+SGVector<float64_t>
+CMulticlassModel::get_joint_feature_vector(index_t feat_idx, CStructuredData* y)
 {
 	SGVector< float64_t > psi( get_dim() );
 	psi.zero();
@@ -64,12 +66,10 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(index_t feat_id
 }
 
 CResultSet* CMulticlassModel::argmax(
-		SGVector< float64_t > w,
-		index_t feat_idx,
-		bool const training)
+    SGVector<float64_t> w, index_t feat_idx, bool const training)
 {
 	CDotFeatures* df = (CDotFeatures*) m_features;
-	index_t feats_dim   = df->get_dim_feature_space();
+	index_t feats_dim = df->get_dim_feature_space();
 
 	if ( training )
 	{
@@ -90,7 +90,7 @@ CResultSet* CMulticlassModel::argmax(
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = -CMath::INFTY;
 
-	for ( index_t c = 0 ; c < m_num_classes ; ++c )
+	for (index_t c = 0; c < m_num_classes; ++c)
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 		if ( training )

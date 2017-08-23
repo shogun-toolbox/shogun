@@ -136,7 +136,8 @@ float64_t CKernelDensity::get_log_model_parameter(index_t num_param)
 	return 0;
 }
 
-float64_t CKernelDensity::get_log_derivative(index_t num_param, index_t num_example)
+float64_t
+CKernelDensity::get_log_derivative(index_t num_param, index_t num_example)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;

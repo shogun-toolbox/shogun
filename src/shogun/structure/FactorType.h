@@ -165,7 +165,8 @@ public:
 	 * @param var_state new variable state
 	 * @return new energy index
 	 */
-	index_t index_from_new_state(index_t old_ei, index_t var_index, index_t var_state) const;
+	index_t index_from_new_state(
+		index_t old_ei, index_t var_index, index_t var_state) const;
 
 	/** energy index from a given assignment
 	 *
@@ -180,8 +181,8 @@ public:
 	 * @param var_index variable indices of that particular factor
 	 * @return energy index
 	 */
-	index_t index_from_universe_assignment(const SGVector<index_t> assig,
-		const SGVector<index_t> var_index) const;
+	index_t index_from_universe_assignment(
+		const SGVector<index_t> assig, const SGVector<index_t> var_index) const;
 
 	/** compute energy values from parameters for a specific factor.
 	 *

@@ -30,7 +30,7 @@ CKNN::CKNN()
 }
 
 CKNN::CKNN(index_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver)
-: CDistanceMachine()
+    : CDistanceMachine()
 {
 	init();
 
@@ -87,20 +87,20 @@ bool CKNN::train_machine(CFeatures* data)
 		distance->init(data, data);
 	}
 
-	SGVector<index_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<index_t> lab = ((CMulticlassLabels*)m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
 	ASSERT(m_train_labels.vlen>0)
 
-	index_t max_class=m_train_labels[0];
-	index_t min_class=m_train_labels[0];
+	index_t max_class = m_train_labels[0];
+	index_t min_class = m_train_labels[0];
 
-	for (index_t i=1; i<m_train_labels.vlen; i++)
+	for (index_t i = 1; i < m_train_labels.vlen; i++)
 	{
 		max_class=CMath::max(max_class, m_train_labels[i]);
 		min_class=CMath::min(min_class, m_train_labels[i]);
 	}
 
-	for (index_t i=0; i<m_train_labels.vlen; i++)
+	for (index_t i = 0; i < m_train_labels.vlen; i++)
 		m_train_labels[i]-=min_class;
 
 	m_min_label=min_class;
@@ -115,7 +115,7 @@ bool CKNN::train_machine(CFeatures* data)
 SGMatrix<index_t> CKNN::nearest_neighbors()
 {
 	//number of examples to which kNN is applied
-	index_t n=distance->get_num_vec_rhs();
+	index_t n = distance->get_num_vec_rhs();
 	//distances to train data
 	SGVector<float64_t> dists(m_train_labels.vlen);
 	//indices to train data
@@ -137,7 +137,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 		distances_lhs(dists,0,m_train_labels.vlen-1,i);
 
 		//fill in an array with 0..num train examples-1
-		for (index_t j=0; j<m_train_labels.vlen; j++)
+		for (index_t j = 0; j < m_train_labels.vlen; j++)
 			train_idxs[j]=j;
 
 		//sort the distance vector between test example i and all train examples
@@ -145,13 +145,13 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 
 #ifdef DEBUG_KNN
 		SG_PRINT("\nQuick sort query %d\n", i)
-		for (index_t j=0; j<m_k; j++)
+		for (index_t j = 0; j < m_k; j++)
 			SG_PRINT("%d ", train_idxs[j])
 		SG_PRINT("\n")
 #endif
 
 		//fill in the output the indices of the nearest neighbors
-		for (index_t j=0; j<m_k; j++)
+		for (index_t j = 0; j < m_k; j++)
 			NN(j,i) = train_idxs[j];
 	}
 	pb.complete();
@@ -174,7 +174,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	ASSERT(distance)
 	ASSERT(distance->get_num_vec_rhs())
 
-	index_t num_lab=distance->get_num_vec_rhs();
+	index_t num_lab = distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs())
 
 	//labels of the k nearest neighbors
@@ -250,7 +250,7 @@ SGMatrix<index_t> CKNN::classify_for_multiple_k()
 	ASSERT(distance)
 	ASSERT(distance->get_num_vec_rhs())
 
-	index_t num_lab=distance->get_num_vec_rhs();
+	index_t num_lab = distance->get_num_vec_rhs();
 	ASSERT(m_k<=num_lab)
 
 	//working buffer of m_train_labels
@@ -258,16 +258,17 @@ SGMatrix<index_t> CKNN::classify_for_multiple_k()
 
 	//histogram of classes and returned output
 	SGVector<index_t> classes(m_num_classes);
-	
+
 	SG_INFO("%d test examples\n", num_lab)
 
 	init_solver(m_knn_solver);
 
-	SGVector<index_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
+	SGVector<index_t> output =
+	    solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
 	SG_UNREF(solver);
 
-	return SGMatrix<index_t>(output,num_lab,m_k);
+	return SGMatrix<index_t>(output, num_lab, m_k);
 }
 
 void CKNN::init_distance(CFeatures* data)

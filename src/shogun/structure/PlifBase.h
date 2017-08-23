@@ -46,8 +46,8 @@ class CPlifBase : public CSGObject
 		 * @param svm_values SVM values
 		 * @return penalty
 		 */
-		virtual float64_t lookup_penalty(
-			index_t p_value, float64_t* svm_values) const =0;
+		virtual float64_t
+		lookup_penalty(index_t p_value, float64_t* svm_values) const = 0;
 
 		/** penalty clear derivative
 		 *

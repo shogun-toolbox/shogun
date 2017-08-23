@@ -59,8 +59,8 @@ class CPositionalPWM : public CDistribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(
-			index_t num_param, index_t num_example);
+		virtual float64_t
+		get_log_derivative(index_t num_param, index_t num_example);
 
 		/** compute log likelihood for example
 		 *

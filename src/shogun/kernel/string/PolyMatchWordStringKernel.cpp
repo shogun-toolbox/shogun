@@ -70,9 +70,9 @@ float64_t CPolyMatchWordStringKernel::compute(index_t idx_a, index_t idx_b)
 
 	ASSERT(alen==blen)
 
-	index_t sum=0;
+	index_t sum = 0;
 
-	for (index_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 		sum+= (avec[i]==bvec[i]) ? 1 : 0;
 
 	if (inhomogene)
@@ -80,7 +80,7 @@ float64_t CPolyMatchWordStringKernel::compute(index_t idx_a, index_t idx_b)
 
 	float64_t result=sum;
 
-	for (index_t j=1; j<degree; j++)
+	for (index_t j = 1; j < degree; j++)
 		result*=sum;
 
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);

@@ -54,7 +54,6 @@ CKernel::CKernel(index_t size) : CSGObject()
 	register_params();
 }
 
-
 CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, index_t size) : CSGObject()
 {
 	init();
@@ -235,7 +234,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 }
 
 void CKernel::get_kernel_row(
-	int32_t docnum, index_t *active2dnum, float64_t *buffer, bool full_line)
+    int32_t docnum, index_t* active2dnum, float64_t* buffer, bool full_line)
 {
 	int32_t i,j;
 	KERNELCACHE_IDX start;
@@ -378,7 +377,7 @@ void CKernel::cache_multiple_kernel_rows(index_t* rows, index_t num_rows)
 
 	if (nthreads<2)
 	{
-		for(index_t i=0;i<num_rows;i++)
+		for (index_t i = 0; i < num_rows; i++)
 			cache_kernel_row(rows[i]);
 	}
 	else
@@ -392,14 +391,14 @@ void CKernel::cache_multiple_kernel_rows(index_t* rows, index_t num_rows)
 		ASSERT(num_vec>0)
 		uint8_t* needs_computation=SG_CALLOC(uint8_t, num_vec);
 
-		index_t step=0;
-		index_t num=0;
-		index_t end=0;
+		index_t step = 0;
+		index_t num = 0;
+		index_t end = 0;
 
 		// allocate cachelines if necessary
-		for (index_t i=0; i<num_rows; i++)
+		for (index_t i = 0; i < num_rows; i++)
 		{
-			index_t idx=rows[i];
+			index_t idx = rows[i];
 			if (idx>=num_vec)
 				idx=2*num_vec-1-idx;
 
@@ -427,7 +426,7 @@ void CKernel::cache_multiple_kernel_rows(index_t* rows, index_t num_rows)
 			}
 
 			#pragma omp parallel for private(params)
-			for (index_t t=0; t<num_threads; t++)
+			for (index_t t = 0; t < num_threads; t++)
 			{
 				params.kernel = this;
 				params.kernel_cache = &kernel_cache;
@@ -469,10 +468,10 @@ void CKernel::cache_multiple_kernel_rows(index_t* rows, index_t num_rows)
 // remove numshrink columns in the cache
 // which correspond to examples marked
 void CKernel::kernel_cache_shrink(
-	int32_t totdoc, int32_t numshrink, index_t *after)
+    int32_t totdoc, int32_t numshrink, index_t* after)
 {
 	ASSERT(totdoc > 0);
-	register index_t i,j,jj,scount;     // 0 in after.
+	register index_t i, j, jj, scount; // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
 	int32_t *keep;
 
@@ -801,8 +800,7 @@ void CKernel::list_kernel()
 }
 #undef ENUM_CASE
 
-bool CKernel::init_optimization(
-	index_t count, index_t *IDX, float64_t * weights)
+bool CKernel::init_optimization(index_t count, index_t* IDX, float64_t* weights)
 {
    SG_ERROR("kernel does not support linadd optimization\n")
 	return false ;
@@ -821,8 +819,8 @@ float64_t CKernel::compute_optimized(index_t vector_idx)
 }
 
 void CKernel::compute_batch(
-	index_t num_vec, index_t* vec_idx, float64_t* target, index_t num_suppvec,
-	index_t* IDX, float64_t* weights, float64_t factor)
+    index_t num_vec, index_t* vec_idx, float64_t* target, index_t num_suppvec,
+    index_t* IDX, float64_t* weights, float64_t factor)
 {
    SG_ERROR("kernel does not support batch computation\n")
 }
@@ -843,7 +841,7 @@ index_t CKernel::get_num_subkernels()
 }
 
 void CKernel::compute_by_subkernel(
-	index_t vector_idx, float64_t * subkernel_contrib)
+    index_t vector_idx, float64_t* subkernel_contrib)
 {
    SG_ERROR("kernel compute_by_subkernel not implemented\n")
 }
@@ -886,11 +884,11 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
-	index_t num_suppvec=svm->get_num_support_vectors();
-	index_t* sv_idx=SG_MALLOC(index_t, num_suppvec);
+	index_t num_suppvec = svm->get_num_support_vectors();
+	index_t* sv_idx = SG_MALLOC(index_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
 
-	for (index_t i=0; i<num_suppvec; i++)
+	for (index_t i = 0; i < num_suppvec; i++)
 	{
 		sv_idx[i]    = svm->get_support_vector(i);
 		sv_weight[i] = svm->get_alpha(i);

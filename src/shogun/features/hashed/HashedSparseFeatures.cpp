@@ -176,8 +176,8 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 }
 
 template <class ST>
-float64_t CHashedSparseFeatures<ST>::dot(index_t vec_idx1, CDotFeatures* df,
-	index_t vec_idx2)
+float64_t CHashedSparseFeatures<ST>::dot(
+	index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -193,8 +193,8 @@ float64_t CHashedSparseFeatures<ST>::dot(index_t vec_idx1, CDotFeatures* df,
 }
 
 template <class ST>
-float64_t CHashedSparseFeatures<ST>::dense_dot(index_t vec_idx1, const float64_t* vec2,
-	index_t vec2_len)
+float64_t CHashedSparseFeatures<ST>::dense_dot(
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == dim)
 
@@ -239,8 +239,9 @@ float64_t CHashedSparseFeatures<ST>::dense_dot(index_t vec_idx1, const float64_t
 }
 
 template <class ST>
-void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, index_t vec_idx1,
-	float64_t* vec2, index_t vec2_len, bool abs_val)
+void CHashedSparseFeatures<ST>::add_to_dense_vec(
+	float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+	bool abs_val)
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
@@ -294,8 +295,8 @@ void* CHashedSparseFeatures<ST>::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 template <class ST>
-bool CHashedSparseFeatures<ST>::get_next_feature(index_t& index, float64_t& value,
-	void* iterator)
+bool CHashedSparseFeatures<ST>::get_next_feature(
+	index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
 	return false;

@@ -60,11 +60,11 @@ bool CSortWordString::save(FILE* f)
 bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
 	index_t i;
-	index_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
+	index_t num_vec = ((CStringFeatures<uint16_t>*)f)->get_num_vectors();
 
 	for (i=0; i<num_vec; i++)
 	{
-		index_t len = 0 ;
+		index_t len = 0;
 		bool free_vec;
 		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec) // won't work with non-in-memory string features
@@ -80,7 +80,7 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 uint16_t* CSortWordString::apply_to_string(uint16_t* f, index_t& len)
 {
 	uint16_t* vec=SG_MALLOC(uint16_t, len);
-	index_t i=0;
+	index_t i = 0;
 
 	for (i=0; i<len; i++)
 		vec[i]=f[i];

@@ -37,14 +37,15 @@ public:
 	 * @param labels structured labels
 	 * @param dim new joint feature space dimension
 	 */
-	CHashedMultilabelModel(CFeatures * features, CStructuredLabels * labels,
-	                       index_t dim);
+	CHashedMultilabelModel(
+		CFeatures* features, CStructuredLabels* labels, index_t dim);
 
 	/** destructor */
 	virtual ~CHashedMultilabelModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(index_t num_examples = 0);
+	virtual CStructuredLabels*
+	structured_labels_factory(index_t num_examples = 0);
 
 	/** @return the dimensionality of the joint features space, i.e, the
 	 *          dimension of the weight vector \f$w\f$.
@@ -62,8 +63,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(index_t feat_idx,
-	                CStructuredData * y);
+	virtual SGVector<float64_t>
+	get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** get joint feature vector
 	 *
@@ -76,8 +77,8 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGSparseVector<float64_t> get_sparse_joint_feature_vector(index_t feat_idx,
-	                CStructuredData * y);
+	virtual SGSparseVector<float64_t>
+	get_sparse_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 	/** obtain the argmax of
 	 *
@@ -93,8 +94,8 @@ public:
 	 *
 	 * @return structure with the predicted results
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, index_t feat_idx,
-	                            bool const training = true);
+	virtual CResultSet*
+	argmax(SGVector<float64_t> w, index_t feat_idx, bool const training = true);
 
 	/** compute
 	 *
@@ -173,16 +174,16 @@ private:
 	 *     Feature Hashing for Large Scale Multitask Learning
 	 *     http://alex.smola.org/papers/2009/Weinbergeretal09.pdf
 	 */
-	SGSparseVector<float64_t> get_hashed_feature_vector(index_t feat_idx,
-	                uint32_t seed);
+	SGSparseVector<float64_t>
+	get_hashed_feature_vector(index_t feat_idx, uint32_t seed);
 
 	/** convert dense vector to sparse
 	 * dense vector would be in the form of {d_true, d_false}^dense_dim
 	 * sparse vector would contain the indices where the value of
 	 * dense_vector is d_true
 	 */
-	SGVector<index_t> to_sparse(SGVector<float64_t> dense_vector,
-	                            float64_t d_true, float64_t d_false);
+	SGVector<index_t> to_sparse(
+		SGVector<float64_t> dense_vector, float64_t d_true, float64_t d_false);
 
 }; /** class CHashedMultilabelModel */
 

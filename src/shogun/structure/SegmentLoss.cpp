@@ -60,7 +60,7 @@ void CSegmentLoss::compute_loss(index_t* all_pos, index_t len)
 	{
 		float32_t value = 0;
 		index_t last_id = -1;
-		index_t last_pos = all_pos[len-1];
+		index_t last_pos = all_pos[len - 1];
 		for (int pos=len-1;pos>=0; pos--)
 		{
 			index_t cur_id = m_segment_ids->element(pos);

@@ -76,7 +76,6 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 		return false;
 }
 
-
 float64_t CWeightedDegreeRBFKernel::compute(index_t idx_a, index_t idx_b)
 {
 	index_t alen, blen;
@@ -89,15 +88,16 @@ float64_t CWeightedDegreeRBFKernel::compute(index_t idx_a, index_t idx_b)
 
 	float64_t result=0;
 
-	for (index_t i=0; i<alen; i+=nof_properties)
+	for (index_t i = 0; i < alen; i += nof_properties)
 	{
 		float64_t resulti = 0.0;
 
-		for (index_t d=0; (i+(d*nof_properties)<alen) && (d<degree); d++)
+		for (index_t d = 0; (i + (d * nof_properties) < alen) && (d < degree);
+		     d++)
 		{
 			float64_t resultid = 0.0;
 			int32_t limit = (d + 1 ) * nof_properties;
-			for (index_t k=0; k < limit; k++)
+			for (index_t k = 0; k < limit; k++)
 			{
 				resultid+=CMath::sq(avec[i+k]-bvec[i+k]);
 			}

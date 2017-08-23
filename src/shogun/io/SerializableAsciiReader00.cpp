@@ -120,8 +120,9 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 		*len_read_x = 1;
 		break;
 	case CT_MATRIX: case CT_SGMATRIX:
-		if (fscanf(m_file->m_fstream, "%ll" SCNi32 " %ll" SCNi32 " ",
-				   len_read_y, len_read_x) != 2)
+		if (fscanf(
+		        m_file->m_fstream, "%ll" SCNi32 " %ll" SCNi32 " ", len_read_y,
+		        len_read_x) != 2)
 			return false;
 		break;
 	case CT_UNDEFINED:
@@ -188,7 +189,8 @@ bool
 SerializableAsciiReader00::read_sparse_begin_wrapped(
 	const TSGDataType* type, index_t* length)
 {
-	if (fscanf(m_file->m_fstream, "%ll" PRIi32, length) != 1) return false;
+	if (fscanf(m_file->m_fstream, "%ll" PRIi32, length) != 1)
+		return false;
 	if (fgetc(m_file->m_fstream) != ' ') return false;
 	if (fgetc(m_file->m_fstream) != CHAR_SPARSE_BEGIN) return false;
 

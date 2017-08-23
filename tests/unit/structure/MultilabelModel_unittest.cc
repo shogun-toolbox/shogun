@@ -178,10 +178,10 @@ TEST(MultilabelModel, argmax)
 	CResultSet * ret_1 = model->argmax(w, 0, true);
 	CResultSet * ret_2 = model->argmax(w, 1, true);
 
-	SGVector<index_t>y_1_expected(2);
+	SGVector<index_t> y_1_expected(2);
 	y_1_expected[0] = 0;
 	y_1_expected[1] = 2;
-	SGVector<index_t>y_2_expected(2);
+	SGVector<index_t> y_2_expected(2);
 	y_2_expected[0] = 0;
 	y_2_expected[1] = 1;
 

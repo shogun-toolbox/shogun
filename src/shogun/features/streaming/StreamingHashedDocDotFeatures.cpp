@@ -92,7 +92,8 @@ float32_t CStreamingHashedDocDotFeatures::dot(CStreamingDotFeatures* df)
 	return result;
 }
 
-float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, index_t vec2_len)
+float32_t CStreamingHashedDocDotFeatures::dense_dot(
+    const float32_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == CMath::pow(2, num_bits))
 
@@ -105,8 +106,8 @@ float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, index
 	return result;
 }
 
-void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			index_t vec2_len, bool abs_val)
+void CStreamingHashedDocDotFeatures::add_to_dense_vec(
+    float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
 {
 	float32_t value = abs_val ? CMath::abs(alpha) : alpha;
 

@@ -163,7 +163,7 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T> &a, const SGSparseVector
 	return dot_prod;
 }
 
-template<class T>
+template <class T>
 index_t SGSparseVector<T>::get_num_dimensions()
 {
 	if (!features)

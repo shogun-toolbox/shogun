@@ -67,7 +67,7 @@ float64_t CWaveletKernel::compute(index_t idx_a, index_t idx_b)
 
 	float64_t result=1;
 
-	for (index_t i=0; i<alen; i++)
+	for (index_t i = 0; i < alen; i++)
 	{
 		if (Wtranslation !=0)
 		{

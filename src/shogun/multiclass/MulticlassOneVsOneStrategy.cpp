@@ -55,8 +55,8 @@ SGVector<index_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 	CMulticlassStrategy::train_prepare_next();
 
 	SGVector<index_t> subset(m_orig_labels->get_num_labels());
-	index_t tot=0;
-	for (index_t k=0; k < m_orig_labels->get_num_labels(); ++k)
+	index_t tot = 0;
+	for (index_t k = 0; k < m_orig_labels->get_num_labels(); ++k)
 	{
 		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(k)==m_train_pair_idx_1)
 		{

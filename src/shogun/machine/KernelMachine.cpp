@@ -45,8 +45,9 @@ CKernelMachine::CKernelMachine() : CMachine()
     init();
 }
 
-CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
-        SGVector<index_t> svs, float64_t b) : CMachine()
+CKernelMachine::CKernelMachine(
+    CKernel* k, SGVector<float64_t> alphas, SGVector<index_t> svs, float64_t b)
+    : CMachine()
 {
     init();
 
@@ -199,18 +200,18 @@ SGVector<float64_t> CKernelMachine::get_alphas()
 bool CKernelMachine::create_new_model(index_t num)
 {
     m_alpha=SGVector<float64_t>();
-    m_svs=SGVector<index_t>();
+	m_svs = SGVector<index_t>();
 
-    m_bias=0;
+	m_bias = 0;
 
-    if (num>0)
-    {
-        m_alpha= SGVector<float64_t>(num);
-        m_svs= SGVector<index_t>(num);
-        return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
-    }
-    else
-        return true;
+	if (num > 0)
+	{
+		m_alpha = SGVector<float64_t>(num);
+		m_svs = SGVector<index_t>(num);
+		return (m_alpha.vector != NULL && m_svs.vector != NULL);
+	}
+	else
+		return true;
 }
 
 bool CKernelMachine::init_kernel_optimization()

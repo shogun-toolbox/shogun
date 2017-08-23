@@ -42,7 +42,8 @@ class CMulticlassModel : public CStructuredModel
 		virtual ~CMulticlassModel();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(index_t num_labels=0);
+		virtual CStructuredLabels*
+		structured_labels_factory(index_t num_labels = 0);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
@@ -62,7 +63,8 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -77,7 +79,9 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, index_t feat_idx, bool const training = true);
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *

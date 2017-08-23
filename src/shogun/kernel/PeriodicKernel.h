@@ -142,7 +142,6 @@ class CPeriodicKernel: public CDotKernel
 		 */
 		virtual float64_t compute(index_t idx_a, index_t idx_b);
 
-
 		/** compute the euclidean distance between features a and b
 		 * idx_{a,b} denote the index of the feature vectors
 		 * in the corresponding feature object.

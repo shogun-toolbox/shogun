@@ -58,29 +58,29 @@ bool CECOCStrategy::train_has_more()
 
 SGVector<index_t> CECOCStrategy::train_prepare_next()
 {
-    SGVector<index_t> subset(m_orig_labels->get_num_labels(), false);
-    index_t tot=0;
-    for (index_t i=0; i < m_orig_labels->get_num_labels(); ++i)
-    {
-        index_t label = ((CMulticlassLabels*) m_orig_labels)->get_int_label(i);
-        switch (m_codebook(m_train_iter, label))
-        {
-        case -1:
-            ((CBinaryLabels*) m_train_labels)->set_label(i, -1);
-            subset[tot++]=i;
-            break;
-        case 1:
-            ((CBinaryLabels*) m_train_labels)->set_label(i, 1);
-            subset[tot++]=i;
-            break;
-        default:
-            // 0 means ignore
-            break;
-        }
-    }
+	SGVector<index_t> subset(m_orig_labels->get_num_labels(), false);
+	index_t tot = 0;
+	for (index_t i = 0; i < m_orig_labels->get_num_labels(); ++i)
+	{
+		index_t label = ((CMulticlassLabels*)m_orig_labels)->get_int_label(i);
+		switch (m_codebook(m_train_iter, label))
+		{
+		case -1:
+			((CBinaryLabels*)m_train_labels)->set_label(i, -1);
+			subset[tot++] = i;
+			break;
+		case 1:
+			((CBinaryLabels*)m_train_labels)->set_label(i, 1);
+			subset[tot++] = i;
+			break;
+		default:
+			// 0 means ignore
+			break;
+		}
+	}
 
-    CMulticlassStrategy::train_prepare_next();
-    return SGVector<index_t>(subset.vector, tot, true);
+	CMulticlassStrategy::train_prepare_next();
+	return SGVector<index_t>(subset.vector, tot, true);
 }
 
 int32_t CECOCStrategy::decide_label(SGVector<float64_t> outputs)

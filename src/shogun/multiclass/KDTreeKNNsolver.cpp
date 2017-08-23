@@ -9,15 +9,20 @@
 
 using namespace shogun;
 
-CKDTREEKNNSolver::CKDTREEKNNSolver(const index_t k, const float64_t q, const index_t num_classes, const index_t min_label, const SGVector<index_t> train_labels,  const index_t leaf_size):
-CKNNSolver(k, q, num_classes, min_label, train_labels)
+CKDTREEKNNSolver::CKDTREEKNNSolver(
+    const index_t k, const float64_t q, const index_t num_classes,
+    const index_t min_label, const SGVector<index_t> train_labels,
+    const index_t leaf_size)
+    : CKNNSolver(k, q, num_classes, min_label, train_labels)
 {
 	init();
 
 	m_leaf_size=leaf_size;
 }
 
-CMulticlassLabels* CKDTREEKNNSolver::classify_objects(CDistance* knn_distance, const index_t num_lab, SGVector<index_t>& train_lab, SGVector<float64_t>& classes) const
+CMulticlassLabels* CKDTREEKNNSolver::classify_objects(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<float64_t>& classes) const
 {
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 	CFeatures* lhs = knn_distance->get_lhs();
@@ -31,7 +36,7 @@ CMulticlassLabels* CKDTREEKNNSolver::classify_objects(CDistance* knn_distance, c
 	for (index_t i = 0; i < num_lab && (!cancel_computation()); i++)
 	{
 		//write the labels of the k nearest neighbors from theirs indices
-		for (index_t j=0; j<m_k; j++)
+		for (index_t j = 0; j < m_k; j++)
 			train_lab[j] = m_train_labels[ NN(j,i) ];
 
 		//get the index of the 'nearest' class
@@ -44,9 +49,11 @@ CMulticlassLabels* CKDTREEKNNSolver::classify_objects(CDistance* knn_distance, c
 	return output;
 }
 
-SGVector<index_t> CKDTREEKNNSolver::classify_objects_k(CDistance* knn_distance, const index_t num_lab, SGVector<index_t>& train_lab, SGVector<index_t>& classes) const
+SGVector<index_t> CKDTREEKNNSolver::classify_objects_k(
+    CDistance* knn_distance, const index_t num_lab,
+    SGVector<index_t>& train_lab, SGVector<index_t>& classes) const
 {
-	SGVector<index_t> output(m_k*num_lab);
+	SGVector<index_t> output(m_k * num_lab);
 
 	//allocation for distances to nearest neighbors
 	SGVector<float64_t> dists(m_k);

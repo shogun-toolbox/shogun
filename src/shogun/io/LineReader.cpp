@@ -36,7 +36,8 @@ CLineReader::CLineReader(FILE* stream, CTokenizer* tokenizer)
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
-CLineReader::CLineReader(index_t max_token_length, FILE* stream, CTokenizer* tokenizer)
+CLineReader::CLineReader(
+    index_t max_token_length, FILE* stream, CTokenizer* tokenizer)
 {
 	init();
 
@@ -78,7 +79,7 @@ bool CLineReader::has_next()
 
 void CLineReader::skip_line()
 {
-	index_t bytes_to_skip=0;
+	index_t bytes_to_skip = 0;
 	m_next_token_length=read(bytes_to_skip);
 	if (m_next_token_length==-1)
 		return;
@@ -90,7 +91,7 @@ SGVector<char> CLineReader::read_line()
 {
 	SGVector<char> line;
 
-	index_t bytes_to_skip=0;
+	index_t bytes_to_skip = 0;
 	m_next_token_length=read(bytes_to_skip);
 	if (m_next_token_length==-1)
 		line=SGVector<char>();
@@ -130,9 +131,9 @@ void CLineReader::init()
 
 index_t CLineReader::read(index_t& bytes_to_skip)
 {
-	index_t line_end=0;
-	index_t bytes_to_read=0;
-	index_t temp_bytes_to_skip=0;
+	index_t line_end = 0;
+	index_t bytes_to_read = 0;
+	index_t temp_bytes_to_skip = 0;
 
 	while (1)
 	{

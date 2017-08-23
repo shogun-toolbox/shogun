@@ -74,7 +74,9 @@ public:
 	 * @param min_energy_expect expected minimum energies
 	 * @param N size of the energy table (e.g., 2x2)
 	 */
-	CFactorGraph* random_chain_graph(SGVector<index_t> &assignment_expect, float64_t &min_energy_expect, index_t N = 2);
+	CFactorGraph* random_chain_graph(
+		SGVector<index_t>& assignment_expect, float64_t& min_energy_expect,
+		index_t N = 2);
 
 	/** Define a multiple state tree graph */
 	CFactorGraph* multi_state_tree_graph();
@@ -94,15 +96,16 @@ public:
 	 * @param feats generated feature matrix
 	 * @param labels generated label matrix
 	 */
-	void generate_data(index_t len_label, index_t len_feat, index_t size_data,
-	                   SGMatrix<float64_t> &feats, SGMatrix<index_t> &labels);
+	void generate_data(
+		index_t len_label, index_t len_feat, index_t size_data,
+		SGMatrix<float64_t>& feats, SGMatrix<index_t>& labels);
 
 	/** Get fully connected edges
 	 *
 	 * @param num_classes number of classes
 	 * @return matrix of edge
 	 */
-	SGMatrix< index_t > get_edges_full(const index_t num_classes);
+	SGMatrix<index_t> get_edges_full(const index_t num_classes);
 
 	/** Build factor graph
 	 *
@@ -113,9 +116,11 @@ public:
 	 * @param fg_feats features for factor graph
 	 * @param fg_labels labels for factor graph
 	 */
-	void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<index_t> labels,
-	                        SGMatrix< index_t > edge_list, const DynArray<CTableFactorType*> &v_factor_type,
-	                        CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels);
+	void build_factor_graph(
+		SGMatrix<float64_t> feats, SGMatrix<index_t> labels,
+		SGMatrix<index_t> edge_list,
+		const DynArray<CTableFactorType*>& v_factor_type,
+		CFactorGraphFeatures* fg_feats, CFactorGraphLabels* fg_labels);
 
 	/** Define factor type
 	 *
@@ -124,8 +129,9 @@ public:
 	 * @param num_edges number of edegs
 	 * @param v_factor_type factor types
 	 */
-	void define_factor_types(index_t num_classes, index_t dim, index_t num_edges,
-	                         DynArray<CTableFactorType*> &v_factor_type);
+	void define_factor_types(
+		index_t num_classes, index_t dim, index_t num_edges,
+		DynArray<CTableFactorType*>& v_factor_type);
 
 	/** Test sosvm inference algorithm with random data
 	 *

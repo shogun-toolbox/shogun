@@ -23,17 +23,17 @@ CStreamingVwFeatures::CStreamingVwFeatures() : CStreamingDotFeatures()
 	set_read_functions();
 }
 
-CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwFile* file,
-		bool is_labelled, index_t size)
-: CStreamingDotFeatures()
+CStreamingVwFeatures::CStreamingVwFeatures(
+    CStreamingVwFile* file, bool is_labelled, index_t size)
+    : CStreamingDotFeatures()
 {
 	init(file, is_labelled, size);
 	set_read_functions();
 }
 
-CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwCacheFile* file,
-		bool is_labelled, index_t size)
-: CStreamingDotFeatures()
+CStreamingVwFeatures::CStreamingVwFeatures(
+    CStreamingVwCacheFile* file, bool is_labelled, index_t size)
+    : CStreamingDotFeatures()
 {
 	init(file, is_labelled, size);
 	set_read_functions();
@@ -314,7 +314,8 @@ float32_t CStreamingVwFeatures::dense_dot(VwExample* &ex, const float32_t* vec2)
 	return ret;
 }
 
-float32_t CStreamingVwFeatures::dense_dot(const float32_t* vec2, index_t vec2_len)
+float32_t
+CStreamingVwFeatures::dense_dot(const float32_t* vec2, index_t vec2_len)
 {
 	return dense_dot(current_example, vec2);
 }
@@ -344,7 +345,9 @@ float32_t CStreamingVwFeatures::dense_dot_truncated(const float32_t* vec2, VwExa
 	return ret;
 }
 
-void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, float32_t* vec2, index_t vec2_len, bool abs_val)
+void CStreamingVwFeatures::add_to_dense_vec(
+    float32_t alpha, VwExample*& ex, float32_t* vec2, index_t vec2_len,
+    bool abs_val)
 {
 	if (abs_val)
 	{
@@ -364,7 +367,8 @@ void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, VwExample* &ex, flo
 	}
 }
 
-void CStreamingVwFeatures::add_to_dense_vec(float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
+void CStreamingVwFeatures::add_to_dense_vec(
+    float32_t alpha, float32_t* vec2, index_t vec2_len, bool abs_val)
 {
 	add_to_dense_vec(alpha, current_example, vec2, vec2_len, abs_val);
 }

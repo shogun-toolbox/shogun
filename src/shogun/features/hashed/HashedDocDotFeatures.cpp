@@ -15,16 +15,18 @@
 
 namespace shogun
 {
-CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs,
-	CTokenizer* tzer, bool normalize, int32_t n_grams, index_t skips, index_t size) : CDotFeatures(size)
-{
-	if (n_grams < 1)
-		n_grams = 1;
+	CHashedDocDotFeatures::CHashedDocDotFeatures(
+	    int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer,
+	    bool normalize, int32_t n_grams, index_t skips, index_t size)
+	    : CDotFeatures(size)
+	{
+		if (n_grams < 1)
+			n_grams = 1;
 
-	if ( (n_grams==1 && skips!=0) || (skips<0))
-		skips = 0;
+		if ((n_grams == 1 && skips != 0) || (skips < 0))
+			skips = 0;
 
-	init(hash_bits, docs, tzer, normalize, n_grams, skips);
+		init(hash_bits, docs, tzer, normalize, n_grams, skips);
 }
 
 CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
@@ -39,8 +41,9 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
 	SG_NOTIMPLEMENTED;
 }
 
-void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
-	CTokenizer* tzer, bool normalize, int32_t n_grams, index_t skips)
+void CHashedDocDotFeatures::init(
+	int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer,
+	bool normalize, int32_t n_grams, index_t skips)
 {
 	num_bits = hash_bits;
 	ngrams = n_grams;
@@ -82,7 +85,8 @@ index_t CHashedDocDotFeatures::get_dim_feature_space() const
 	return CMath::pow(2, num_bits);
 }
 
-float64_t CHashedDocDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
+float64_t
+CHashedDocDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t vec_idx2)
 {
 	ASSERT(df)
 	ASSERT(df->get_name() == get_name())
@@ -105,12 +109,14 @@ float64_t CHashedDocDotFeatures::dot(index_t vec_idx1, CDotFeatures* df, index_t
 	return result;
 }
 
-float64_t CHashedDocDotFeatures::dense_dot_sgvec(index_t vec_idx1, const SGVector<float64_t> vec2)
+float64_t CHashedDocDotFeatures::dense_dot_sgvec(
+	index_t vec_idx1, const SGVector<float64_t> vec2)
 {
 	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
 }
 
-float64_t CHashedDocDotFeatures::dense_dot(index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
+float64_t CHashedDocDotFeatures::dense_dot(
+	index_t vec_idx1, const float64_t* vec2, index_t vec2_len)
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
 
@@ -183,8 +189,9 @@ float64_t CHashedDocDotFeatures::dense_dot(index_t vec_idx1, const float64_t* ve
 	return should_normalize ? result / CMath::sqrt((float64_t) sv.size()) : result;
 }
 
-void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1,
-	float64_t* vec2, index_t vec2_len, bool abs_val)
+void CHashedDocDotFeatures::add_to_dense_vec(
+	float64_t alpha, index_t vec_idx1, float64_t* vec2, index_t vec2_len,
+	bool abs_val)
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
 
@@ -259,8 +266,8 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, index_t vec_idx1,
 	SG_UNREF(local_tzer);
 }
 
-uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token,
-		index_t length, int32_t num_bits, uint32_t seed)
+uint32_t CHashedDocDotFeatures::calculate_token_hash(
+	char* token, index_t length, int32_t num_bits, uint32_t seed)
 {
 	int32_t hash = CHash::MurmurHash3((uint8_t* ) token, length, seed);
 	return hash & ((1 << num_bits) - 1);
@@ -286,7 +293,8 @@ void* CHashedDocDotFeatures::get_feature_iterator(index_t vector_index)
 	return NULL;
 }
 
-bool CHashedDocDotFeatures::get_next_feature(index_t& index, float64_t& value, void* iterator)
+bool CHashedDocDotFeatures::get_next_feature(
+	index_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
 	return false;

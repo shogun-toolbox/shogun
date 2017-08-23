@@ -79,7 +79,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @return if optimization was successful
 		 */
 		virtual bool init_optimization(
-			index_t num_suppvec, index_t* sv_idx, float64_t* alphas);
+		    index_t num_suppvec, index_t* sv_idx, float64_t* alphas);
 
 		/** delete optimization
 		 *

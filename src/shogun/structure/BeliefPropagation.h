@@ -44,10 +44,12 @@ struct GraphNode
 {
 	index_t node_id;
 	ENodeType node_type; // 1 var, 0 factor
-	index_t parent; // where came from
+	index_t parent;      // where came from
 
 	GraphNode(index_t id, ENodeType type, index_t pa)
-		: node_id(id), node_type(type), parent(pa) { }
+		: node_id(id), node_type(type), parent(pa)
+	{
+	}
 	~GraphNode() { }
 };
 
@@ -58,7 +60,9 @@ struct MessageEdge
 	index_t parent;
 
 	MessageEdge(EEdgeType type, index_t ch, index_t pa)
-		: mtype(type), child(ch), parent(pa) { }
+		: mtype(type), child(ch), parent(pa)
+	{
+	}
 
 	~MessageEdge() { }
 

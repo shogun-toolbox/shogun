@@ -151,7 +151,8 @@ class CStructuredModel : public CSGObject
 		CStructuredLabels* get_labels();
 
 		/** create empty StructuredLabels object */
-		virtual CStructuredLabels* structured_labels_factory(index_t num_labels=0);
+		virtual CStructuredLabels*
+		structured_labels_factory(index_t num_labels = 0);
 
 		/** set features
 		 *
@@ -177,7 +178,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		SGVector< float64_t > get_joint_feature_vector(index_t feat_idx, index_t lab_idx);
+		SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, index_t lab_idx);
 
 		/**
 		 * get joint feature vector
@@ -191,7 +193,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
+		virtual SGVector<float64_t>
+		get_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * gets joint feature vector
@@ -205,8 +208,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		SGSparseVector< float64_t > get_sparse_joint_feature_vector(index_t feat_idx,
-				index_t lab_idx);
+		SGSparseVector<float64_t>
+		get_sparse_joint_feature_vector(index_t feat_idx, index_t lab_idx);
 
 		/**
 		 * get joint feature vector
@@ -220,8 +223,8 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGSparseVector< float64_t > get_sparse_joint_feature_vector(index_t feat_idx,
-				CStructuredData* y);
+		virtual SGSparseVector<float64_t>
+		get_sparse_joint_feature_vector(index_t feat_idx, CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -236,7 +239,9 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, index_t feat_idx, bool const training = true) = 0;
+		virtual CResultSet* argmax(
+		    SGVector<float64_t> w, index_t feat_idx,
+		    bool const training = true) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *

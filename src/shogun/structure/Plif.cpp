@@ -20,8 +20,7 @@
 
 using namespace shogun;
 
-CPlif::CPlif(index_t l)
-: CPlifBase()
+CPlif::CPlif(index_t l) : CPlifBase()
 {
 	limits=SGVector<float64_t>();
 	penalties=SGVector<float64_t>();
@@ -79,11 +78,11 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	float64_t* local_cache=SG_MALLOC(float64_t,  ((index_t) max_value) + 2);
+	float64_t* local_cache = SG_MALLOC(float64_t, ((index_t)max_value) + 2);
 
 	if (local_cache)
 	{
-		for (index_t i=0; i<=max_value; i++)
+		for (index_t i = 0; i <= max_value; i++)
 		{
 			if (i<min_value)
 				local_cache[i] = -CMath::INFTY ;
@@ -114,7 +113,7 @@ char* CPlif::get_plif_name() const
 
 void CPlif::delete_penalty_struct(CPlif** PEN, index_t P)
 {
-	for (index_t i=0; i<P; i++)
+	for (index_t i = 0; i < P; i++)
 		delete PEN[i] ;
 	SG_FREE(PEN);
 }
@@ -151,9 +150,9 @@ float64_t CPlif::lookup_penalty_svm(
 		break ;
 	}
 
-	index_t idx = 0 ;
+	index_t idx = 0;
 	float64_t ret ;
-	for (index_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -247,9 +246,9 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 	SG_PRINT("  -> value = %1.4f ", d_value)
 #endif
 
-	index_t idx = 0 ;
+	index_t idx = 0;
 	float64_t ret ;
-	for (index_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -282,7 +281,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 
 void CPlif::penalty_clear_derivative()
 {
-	for (index_t i=0; i<len; i++)
+	for (index_t i = 0; i < len; i++)
 		cum_derivatives[i]=0.0 ;
 }
 
@@ -320,8 +319,8 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 		break ;
 	}
 
-	index_t idx = 0 ;
-	for (index_t i=0; i<len; i++)
+	index_t idx = 0;
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
@@ -367,8 +366,8 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 		break ;
 	}
 
-	index_t idx = 0 ;
-	for (index_t i=0; i<len; i++)
+	index_t idx = 0;
+	for (index_t i = 0; i < len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else

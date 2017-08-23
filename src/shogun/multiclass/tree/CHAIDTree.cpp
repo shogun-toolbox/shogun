@@ -358,7 +358,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 
 		SGVector<index_t> subset(feat_index->get_num_elements());
 		SGVector<float64_t> subweights(feat_index->get_num_elements());
-		for (index_t j=0;j<feat_index->get_num_elements();j++)
+		for (index_t j = 0; j < feat_index->get_num_elements(); j++)
 		{
 			subset[j]=feat_index->get_element(j);
 			subweights[j]=weights[feat_index->get_element(j)];

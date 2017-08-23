@@ -46,7 +46,6 @@ EFeatureClass CLatentFeatures::get_feature_class() const
 	return C_LATENT;
 }
 
-
 index_t CLatentFeatures::get_num_vectors() const
 {
 	if (m_samples == NULL)

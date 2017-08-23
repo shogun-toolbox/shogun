@@ -197,7 +197,6 @@ TEST(HashedMultilabelModel, argmax)
 	                                  ret_1->argmax);
 	SGVector<index_t> slabel_1 = y_1->get_data();
 
-
 	SGSparseVector<float64_t> feat_1 = features->get_sparse_feature_vector(0);
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)

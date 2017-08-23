@@ -198,7 +198,6 @@ protected:
 	 */
 	index_t cur_dim_input_space;
 
-
 	/** desired dimension of output features  as set by void set_dim_feature_space(const int32_t dim)
 	 *
 	 */

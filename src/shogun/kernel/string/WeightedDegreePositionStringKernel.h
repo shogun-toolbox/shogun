@@ -119,8 +119,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			index_t p_count, index_t *IDX, float64_t * alphas)
+		virtual bool
+		init_optimization(index_t p_count, index_t* IDX, float64_t* alphas)
 		{
 			return init_optimization(p_count, IDX, alphas, -1);
 		}
@@ -137,8 +137,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return if initializing was successful
 		 */
 		virtual bool init_optimization(
-			index_t count, index_t *IDX, float64_t * alphas, index_t tree_num,
-			index_t upto_tree=-1);
+		    index_t count, index_t* IDX, float64_t* alphas, index_t tree_num,
+		    index_t upto_tree = -1);
 
 		/** delete optimization
 		 *
@@ -176,9 +176,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param factor factor
 		 */
 		virtual void compute_batch(
-			index_t num_vec, index_t* vec_idx, float64_t* target,
-			index_t num_suppvec, index_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+		    index_t num_vec, index_t* vec_idx, float64_t* target,
+		    index_t num_suppvec, index_t* IDX, float64_t* alphas,
+		    float64_t factor = 1.0);
 
 		/** clear normal
 		 * subkernel functionality
@@ -233,8 +233,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		inline void compute_by_subkernel(
-			index_t idx, float64_t * subkernel_contrib)
+		inline void
+		compute_by_subkernel(index_t idx, float64_t* subkernel_contrib)
 		{
 			if (get_is_initialized())
 			{
@@ -528,9 +528,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return computed scores
 		 */
 		float64_t* compute_scoring(
-			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
-			float64_t* target, index_t num_suppvec, index_t* IDX,
-			float64_t* weights);
+		    int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
+		    float64_t* target, index_t num_suppvec, index_t* IDX,
+		    float64_t* weights);
 
 		/** compute consensus string
 		 *
@@ -541,8 +541,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return consensus string
 		 */
 		char* compute_consensus(
-			index_t &num_feat, index_t num_suppvec, index_t* IDX,
-			float64_t* alphas);
+		    index_t& num_feat, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas);
 
 		/** extract w
 		 *
@@ -556,9 +556,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return w
 		 */
 		float64_t* extract_w(
-			index_t max_degree, index_t& num_feat, index_t& num_sym,
-			float64_t* w_result, index_t num_suppvec, index_t* IDX,
-			float64_t* alphas);
+		    index_t max_degree, index_t& num_feat, index_t& num_sym,
+		    float64_t* w_result, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas);
 
 		/** compute POIM
 		 *
@@ -573,9 +573,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @return computed POIMs
 		 */
 		float64_t* compute_POIM(
-			index_t max_degree, index_t& num_feat, index_t& num_sym,
-			float64_t* poim_result, index_t num_suppvec, index_t* IDX,
-			float64_t* alphas, float64_t* distrib);
+		    index_t max_degree, index_t& num_feat, index_t& num_sym,
+		    float64_t* poim_result, index_t num_suppvec, index_t* IDX,
+		    float64_t* alphas, float64_t* distrib);
 
 		/** prepare POIM2
 		 *
@@ -609,8 +609,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx index
 		 * @param weight weight
 		 */
-		virtual void add_example_to_tree(
-			index_t idx, float64_t weight);
+		virtual void add_example_to_tree(index_t idx, float64_t weight);
 
 		/** add example to single tree
 		 *
@@ -619,7 +618,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param tree_num which tree
 		 */
 		void add_example_to_single_tree(
-			index_t idx, float64_t weight, index_t tree_num);
+		    index_t idx, float64_t weight, index_t tree_num);
 
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

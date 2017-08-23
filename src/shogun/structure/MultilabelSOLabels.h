@@ -38,7 +38,10 @@ public:
 	 *
 	 * @param label sparse label
 	 */
-	CSparseMultilabel(SGVector<index_t> label) : CStructuredData(), m_label(label) { }
+	CSparseMultilabel(SGVector<index_t> label)
+		: CStructuredData(), m_label(label)
+	{
+	}
 
 	/** destructor */
 	~CSparseMultilabel() { }
@@ -130,7 +133,7 @@ public:
 	 *
 	 * @param labels list of sparse labels
 	 */
-	virtual void set_sparse_labels(SGVector<index_t> * labels);
+	virtual void set_sparse_labels(SGVector<index_t>* labels);
 
 	/** set sparse assignment for j-th label
 	 *

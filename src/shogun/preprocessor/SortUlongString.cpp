@@ -61,11 +61,11 @@ bool CSortUlongString::save(FILE* f)
 bool CSortUlongString::apply_to_string_features(CFeatures* f)
 {
 	index_t i;
-	index_t num_vec=((CStringFeatures<uint64_t>*)f)->get_num_vectors();
+	index_t num_vec = ((CStringFeatures<uint64_t>*)f)->get_num_vectors();
 
 	for (i=0; i<num_vec; i++)
 	{
-		index_t len=0;
+		index_t len = 0;
 		bool free_vec;
 		uint64_t* vec=((CStringFeatures<uint64_t>*)f)->
 			get_feature_vector(i, len, free_vec);
@@ -83,7 +83,7 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 uint64_t* CSortUlongString::apply_to_string(uint64_t* f, index_t& len)
 {
 	uint64_t* vec=SG_MALLOC(uint64_t, len);
-	index_t i=0;
+	index_t i = 0;
 
 	for (i=0; i<len; i++)
 		vec[i]=f[i];

@@ -64,7 +64,7 @@ void CMultilabelSOLabels::set_sparse_label(index_t j, SGVector<index_t> label)
 	m_multilabel_labels->set_label(j, label);
 }
 
-void CMultilabelSOLabels::set_sparse_labels(SGVector<index_t> * labels)
+void CMultilabelSOLabels::set_sparse_labels(SGVector<index_t>* labels)
 {
 	if (m_sdt == SDT_UNKNOWN)
 	{
@@ -133,8 +133,8 @@ SGVector<float64_t> CMultilabelSOLabels::to_dense(CStructuredData * label,
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(label);
 	SGVector<index_t> slabel_data = slabel->get_data();
-	return CMultilabelLabels::to_dense<index_t, float64_t>(&slabel_data,
-	                dense_dim, d_true, d_false);
+	return CMultilabelLabels::to_dense<index_t, float64_t>(
+	    &slabel_data, dense_dim, d_true, d_false);
 }
 
 void CMultilabelSOLabels::add_label(CStructuredData * label)

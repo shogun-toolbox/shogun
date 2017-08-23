@@ -112,7 +112,7 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 	EXPECT_EQ(ml->get_num_labels(), 2);
 	EXPECT_EQ(ml->get_num_classes(), 3);
 
-	SGVector<index_t> * labels = new SGVector<index_t>[2];
+	SGVector<index_t>* labels = new SGVector<index_t>[2];
 	SGVector<index_t> lab1(2);
 	lab1[0] = 0;
 	lab1[1] = 2;
@@ -152,7 +152,7 @@ TEST(MultilabelSOLabels, to_dense)
 	EXPECT_EQ(ml->get_num_labels(), 2);
 	EXPECT_EQ(ml->get_num_classes(), 3);
 
-	SGVector<index_t> * labels = new SGVector<index_t>[2];
+	SGVector<index_t>* labels = new SGVector<index_t>[2];
 	SGVector<index_t> lab1(2);
 	lab1[0] = 0;
 	lab1[1] = 2;
