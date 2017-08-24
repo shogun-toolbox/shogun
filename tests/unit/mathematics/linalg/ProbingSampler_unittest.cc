@@ -93,7 +93,7 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
-	for (int32_t i = 0; i < size; ++i)
+	for (index_t i = 0; i < size; ++i)
 	{
 		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
 			+min_eigenvalue;
@@ -106,9 +106,9 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 	// test coloring stuffs
 	SGVector<int32_t> coloring_vector=trace_sampler->get_coloring_vector();
-	coloring_vector.display_vector();
+
 	EXPECT_EQ(trace_sampler->get_num_samples(), 1);
-	for (int32_t i = 0; i < coloring_vector.vlen; ++i)
+	for (index_t i = 0; i < coloring_vector.vlen; ++i)
 		EXPECT_EQ(coloring_vector[i], 0);
 
 	// test that two probing vectors are not equal

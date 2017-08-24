@@ -1723,32 +1723,32 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
     max_degree = abs(max_degree) / 4;
     switch( debug ) {
     case 1: {
-		printf("POIM DEBUGGING: substring only (max order=%lld)\n", max_degree);
+		printf("POIM DEBUGGING: substring only (max order=%ld)\n", max_degree);
 		break;
 	}
 	case 2:
 	{
 		printf(
-			"POIM DEBUGGING: superstring only (max order=%lld)\n", max_degree);
+			"POIM DEBUGGING: superstring only (max order=%ld)\n", max_degree);
 		break;
 	}
 	case 3:
 	{
 		printf(
-			"POIM DEBUGGING: left overlap only (max order=%lld)\n", max_degree);
+			"POIM DEBUGGING: left overlap only (max order=%ld)\n", max_degree);
 		break;
 	}
 	case 4:
 	{
 		printf(
-			"POIM DEBUGGING: right overlap only (max order=%lld)\n",
+			"POIM DEBUGGING: right overlap only (max order=%ld)\n",
 			max_degree);
 		break;
 	}
 	default:
 	{
 		printf(
-			"POIM DEBUGGING: something is wrong (max order=%lld)\n",
+			"POIM DEBUGGING: something is wrong (max order=%ld)\n",
 			max_degree);
 		ASSERT(0)
 		break;

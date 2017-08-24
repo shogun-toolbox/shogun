@@ -207,7 +207,7 @@ bool CSVM::save(FILE* modelfl)
 
 	SG_INFO("Writing model file...")
 	fprintf(modelfl,"%%SVM\n");
-	fprintf(modelfl, "numsv=%lld;\n", get_num_support_vectors());
+	fprintf(modelfl, "numsv=%ld;\n", get_num_support_vectors());
 	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
 	fprintf(modelfl,"b=%+10.16e;\n",get_bias());
 
@@ -215,7 +215,7 @@ bool CSVM::save(FILE* modelfl)
 
 	for(int32_t i=0; i<get_num_support_vectors(); i++)
 		fprintf(
-		    modelfl, "\t[%+10.16e,%lld];\n", CSVM::get_alpha(i),
+		    modelfl, "\t[%+10.16e,%ld];\n", CSVM::get_alpha(i),
 		    get_support_vector(i));
 
 	fprintf(modelfl, "];\n");
