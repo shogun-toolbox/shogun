@@ -82,7 +82,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
             weights.append(w)
 
     print("mkl weights during cross--validation")
-    print weights
+    print(weights)
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')
