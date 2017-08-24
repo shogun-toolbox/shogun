@@ -178,3 +178,19 @@ CLabels* CMulticlassLabels::shallow_subset_copy()
 
 	return shallow_copy_labels;
 }
+
+CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
+{
+	if (labels == NULL)
+		return NULL;
+
+	if (labels->get_label_type() != LT_MULTICLASS)
+	{
+		SG_SERROR("The Labels passed cannot be casted to CMulticlassLabels!")
+		return NULL;
+	}
+
+	CMulticlassLabels* casted = dynamic_cast<CMulticlassLabels*>(labels);
+	SG_REF(casted)
+	return casted;
+}

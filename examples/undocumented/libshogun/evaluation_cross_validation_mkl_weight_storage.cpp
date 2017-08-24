@@ -8,17 +8,16 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationPrintOutput.h>
-#include <shogun/evaluation/CrossValidationMKLStorage.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/evaluation/CrossValidation.h>
+#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
@@ -48,6 +47,40 @@ void gen_rand_data(SGVector<float64_t> lab, SGMatrix<float64_t> feat,
 	}
 	lab.display_vector("lab");
 	feat.display_matrix("feat");
+}
+
+SGMatrix<float64_t> calculate_weights(
+    CParameterObserverCV& obs, int32_t folds, int32_t run, int32_t len)
+{
+	int32_t column = 0;
+	SGMatrix<float64_t> weights(len, folds * run);
+	for (int o = 0; o < obs.get_num_observations(); o++)
+	{
+		auto obs_storage = obs.get_observation(o);
+		for (int i = 0; i < obs_storage->get_num_folds(); i++)
+		{
+			auto fold = obs_storage->get_fold(i);
+			CMKLClassification* machine =
+			    (CMKLClassification*)fold->get_trained_machine();
+			SG_REF(machine)
+			CCombinedKernel* k = (CCombinedKernel*)machine->get_kernel();
+			auto w = k->get_subkernel_weights();
+
+			/* Copy the weights inside the matrix */
+			/* Each of the columns will represent a set of weights */
+			for (auto j = 0; j < w.size(); j++)
+			{
+				weights.set_element(w[j], j, column);
+			}
+
+			SG_UNREF(k)
+			SG_UNREF(machine)
+			SG_UNREF(fold)
+			column++;
+		}
+		SG_UNREF(obs_storage)
+	}
+	return weights;
 }
 
 void test_mkl_cross_validation()
@@ -97,16 +130,14 @@ void test_mkl_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, comb_features, labels, split, eval, false);
 
 	/* add print output listener and mkl storage listener */
-	cross->add_cross_validation_output(new CCrossValidationPrintOutput());
-	CCrossValidationMKLStorage* mkl_storage=new CCrossValidationMKLStorage();
-	cross->add_cross_validation_output(mkl_storage);
+	CParameterObserverCV mkl_obs{true};
+	cross->subscribe_to_parameters(&mkl_obs);
 
-	/* perform cross-validation, this will print loads of information
-	 * (caused by the CCrossValidationPrintOutput instance attached to it) */
+	/* perform cross-validation, this will print loads of information */
 	CEvaluationResult* result=cross->evaluate();
 
 	/* print mkl weights */
-	SGMatrix<float64_t> weights=mkl_storage->get_mkl_weights();
+	auto weights = calculate_weights(mkl_obs, num_folds, 1, 3);
 	weights.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
@@ -115,6 +146,8 @@ void test_mkl_cross_validation()
 	CStatistics::matrix_variance(weights, false).display_vector("variance per kernel");
 	CStatistics::matrix_std_deviation(weights, false).display_vector("std-dev per kernel");
 
+	/* Clear */
+	mkl_obs.clear();
 	SG_UNREF(result);
 
 	/* again for two runs */
@@ -122,14 +155,17 @@ void test_mkl_cross_validation()
 	result=cross->evaluate();
 
 	/* print mkl weights */
-	weights=mkl_storage->get_mkl_weights();
-	weights.display_matrix("mkl weights");
+	SGMatrix<float64_t> weights_2 = calculate_weights(mkl_obs, num_folds, 2, 3);
+	weights_2.display_matrix("mkl weights");
 
 	/* print mean and variance of each kernel weight. These could for example
 	 * been used to compute confidence intervals */
-	CStatistics::matrix_mean(weights, false).display_vector("mean per kernel");
-	CStatistics::matrix_variance(weights, false).display_vector("variance per kernel");
-	CStatistics::matrix_std_deviation(weights, false).display_vector("std-dev per kernel");
+	CStatistics::matrix_mean(weights_2, false)
+	    .display_vector("mean per kernel");
+	CStatistics::matrix_variance(weights_2, false)
+	    .display_vector("variance per kernel");
+	CStatistics::matrix_std_deviation(weights_2, false)
+	    .display_vector("std-dev per kernel");
 
 	/* clean up */
 	SG_UNREF(result);

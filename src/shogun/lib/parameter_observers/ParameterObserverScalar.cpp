@@ -35,33 +35,48 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <gtest/gtest.h>
-#include <shogun/lib/ParameterObserverScalar.h>
-#include <vector>
-
-std::vector<std::string> test_params = {"a", "b", "c", "d"};
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
 
 using namespace shogun;
 
-TEST(ParameterObserverScalar, filter_empty)
+ParameterObserverScalar::ParameterObserverScalar()
+    : ParameterObserverTensorBoard()
 {
-	ParameterObserverScalar tmp;
-	EXPECT_TRUE(tmp.filter("a"));
 }
 
-TEST(ParameterObserverScalar, filter_found)
+ParameterObserverScalar::ParameterObserverScalar(
+    std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(parameters)
 {
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_TRUE(tmp.filter("a"));
-	EXPECT_TRUE(tmp.filter("b"));
-	EXPECT_TRUE(tmp.filter("c"));
-	EXPECT_TRUE(tmp.filter("d"));
 }
 
-TEST(ParameterObserverScalar, filter_not_found)
+ParameterObserverScalar::ParameterObserverScalar(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
 {
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_FALSE(tmp.filter("k"));
+}
+
+ParameterObserverScalar::~ParameterObserverScalar()
+{
+}
+
+void ParameterObserverScalar::on_next(const TimedObservedValue& value)
+{
+	CHECK_OBSERVED_VALUE_TYPE(value.first.get_type())
+
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_scalar(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void ParameterObserverScalar::on_error(std::exception_ptr)
+{
+}
+
+void ParameterObserverScalar::on_complete()
+{
 }
 
 #endif // HAVE_TFLOGGER

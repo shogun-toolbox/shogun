@@ -32,37 +32,79 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#ifndef SHOGUN_PARAMETEROBSERVERCV_H
+#define SHOGUN_PARAMETEROBSERVERCV_H
 
-#include <shogun/lib/ParameterObserverTensorBoard.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/evaluation/CrossValidationStorage.h>
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
 namespace shogun
 {
+
 	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * histograms, given object emitted from a parameter observable.
+	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class ParameterObserverHistogram : public ParameterObserverTensorBoard
+	class CParameterObserverCV : public ParameterObserverInterface,
+	                             public CSGObject
 	{
 
 	public:
-		ParameterObserverHistogram();
-		ParameterObserverHistogram(std::vector<std::string>& parameters);
-		ParameterObserverHistogram(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverHistogram();
-
-		virtual bool filter(const std::string& param);
+		CParameterObserverCV(bool verbose = false);
+		virtual ~CParameterObserverCV();
 
 		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
+		virtual void on_error(std::exception_ptr ptr);
 		virtual void on_complete();
+
+		/* Erase all observations done so far */
+		virtual void clear();
+
+		/**
+		 * Get the total number of cross validation runs received
+		 * by this observer.
+		 * @return number of runs.
+		 */
+		const int get_num_observations() const;
+
+		/**
+		 * Get a CrossValidationStorage object which will store
+		 * the result of a CrossValidation run.
+		 * @param run index of the run
+		 * @return a CrossValidationStorage object
+		 */
+		CrossValidationStorage* get_observation(int run) const;
+
+		/**
+		 * Print data contained into a CrossValidationStorage object.
+		 * @param value CrossValidationStorage object
+		 */
+		void print_observed_value(CrossValidationStorage* value) const;
+
+		/**
+		* Get class name.
+		* @return class name
+		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverCV";
+		}
+
+	private:
+		void print_machine_information(CMachine* machine) const;
+
+	protected:
+		/**
+		 * Observation's vector
+		 */
+		std::vector<CrossValidationStorage*> m_observations;
+
+		/**
+		 * enable printing of information
+		 */
+		bool m_verbose;
 	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
-#endif // HAVE_TFLOGGER
+#endif // SHOGUN_PARAMETEROBSERVERCV_H

@@ -105,3 +105,13 @@ Neural Networks
    :caption: Neural Netwroks
 
    examples/neural_nets/**
+
+Evaluation
+----------
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+    :caption: Evaluation
+
+    examples/evaluation/**

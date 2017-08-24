@@ -39,8 +39,8 @@
 #define SHOGUN_OUTPUTFORMAT_H
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/ObservedValue.h>
 #include <shogun/lib/any.h>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <tflogger/event.pb.h>
 
 #include <utility>
