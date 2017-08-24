@@ -107,7 +107,7 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	// test coloring stuffs
 	SGVector<int32_t> coloring_vector=trace_sampler->get_coloring_vector();
 
-	EXPECT_EQ(trace_sampler->get_num_samples(), 1);
+	EXPECT_EQ(1, trace_sampler->get_num_samples());
 	for (index_t i = 0; i < coloring_vector.vlen; ++i)
 		EXPECT_EQ(coloring_vector[i], 0);
 
