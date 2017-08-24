@@ -207,18 +207,17 @@ namespace shogun
 			return "CrossValidation";
 		}
 
-private:
-	void init();
+	private:
+		void init();
 
-protected:
-	/**
-	 * Does the actual evaluation.
-	 * @return the cross-validation result
-	 */
-	virtual CEvaluationResult* evaluate_impl();
-		
-protected:
+	protected:
+		/**
+		 * Does the actual evaluation.
+		 * @return the cross-validation result
+		 */
+		virtual CEvaluationResult* evaluate_impl();
 
+	protected:
 	protected:
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then
