@@ -85,6 +85,8 @@ void CMachineEvaluation::init()
 	m_evaluation_criterion = NULL;
 	m_do_unlock = false;
 	m_autolock = true;
+	m_cancel_computation = false;
+	m_pause_computation_flag = false;
 
 	SG_ADD((CSGObject**)&m_machine, "machine", "Used learning machine",
 			MS_NOT_AVAILABLE);

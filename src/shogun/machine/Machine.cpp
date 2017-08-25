@@ -18,7 +18,7 @@ using namespace shogun;
 
 CMachine::CMachine()
     : CSGObject(), m_max_train_time(0), m_labels(NULL), m_solver_type(ST_AUTO),
-      m_cancel_computation(false)
+      m_cancel_computation(false), m_pause_computation_flag(false)
 {
 	m_data_locked=false;
 	m_store_model_features=false;
