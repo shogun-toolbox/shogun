@@ -201,9 +201,6 @@ namespace shogun
 		/** setter for the number of runs to use for evaluation */
 		void set_num_runs(int32_t num_runs);
 
-		/** evaluate */
-		virtual CEvaluationResult* evaluate();
-
 		/** @return name of the SGSerializable */
 		virtual const char* get_name() const
 		{
@@ -213,6 +210,14 @@ namespace shogun
 	private:
 		void init();
 
+	protected:
+		/**
+		 * Does the actual evaluation.
+		 * @return the cross-validation result
+		 */
+		virtual CEvaluationResult* evaluate_impl();
+
+	protected:
 	protected:
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then

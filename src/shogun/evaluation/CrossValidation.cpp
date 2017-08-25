@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/Parameter.h>
+#include <shogun/base/progress.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/evaluation/Evaluation.h>
@@ -55,25 +56,8 @@ void CCrossValidation::init()
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions", MS_NOT_AVAILABLE);
 }
 
-CEvaluationResult* CCrossValidation::evaluate()
+CEvaluationResult* CCrossValidation::evaluate_impl()
 {
-	SG_DEBUG("entering %s::evaluate()\n", get_name())
-
-	REQUIRE(
-	    m_machine, "%s::evaluate() is only possible if a machine is "
-	               "attached\n",
-	    get_name());
-
-	REQUIRE(
-	    m_features, "%s::evaluate() is only possible if features are "
-	                "attached\n",
-	    get_name());
-
-	REQUIRE(
-	    m_labels, "%s::evaluate() is only possible if labels are "
-	              "attached\n",
-	    get_name());
-
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
 	{
@@ -109,7 +93,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
-	for (index_t i = 0; i < m_num_runs; ++i)
+	for (index_t i = 0; i < m_num_runs; i++)
 	{
 		/* evtl. update xvalidation output class */
 		SG_DEBUG("Creating CrossValidationStorage.\n")
@@ -148,8 +132,6 @@ CEvaluationResult* CCrossValidation::evaluate()
 		m_do_unlock = false;
 	}
 
-	SG_DEBUG("leaving %s::evaluate()\n", get_name())
-
 	SG_REF(result);
 	return result;
 }
@@ -184,6 +166,8 @@ float64_t CCrossValidation::evaluate_one_run(
 		/* do actual cross-validation */
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
+			EVALUATION_CONTROLLERS
+
 			/* evtl. update xvalidation output class */
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
@@ -254,8 +238,11 @@ float64_t CCrossValidation::evaluate_one_run(
 		//#pragma omp parallel for
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
+			EVALUATION_CONTROLLERS
+
 			CrossValidationFoldStorage* fold = new CrossValidationFoldStorage();
 			SG_REF(fold)
+
 			CMachine* machine;
 			CFeatures* features;
 			CLabels* labels;
