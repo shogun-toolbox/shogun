@@ -41,8 +41,16 @@ namespace shogun
 {
 	class CLabels;
 
-	/** @brief Implementation of timeseries splitting for cross-validation.
-	 * Produces subsets each filled with indices greater than a split point.
+	/** @brief Implements a timeseries splitting strategy for cross-validation.
+	 * The strategy builds a given number of subsets each filled with labels
+	 * indices greater than a split index. The split indices are \f$ c[N/K] \f$
+	 * where \f$N\f$ is number of labels,\f$K\f$ is number of subsets and
+	 * \f$c = 1,2,3,...,K-1\f$. The last split index is \f$ N-h \f$.
+	 *
+	 * If forecasting h-step ahead, set minimum subset size to h(Default is 1).
+	 *
+	 * Given, \f$h = 2\f$ and \f$K = 2\f$ and \f$A = [0,1,2,3,4,5,6,7,8,9]\f$.
+	 * The two splits are \f$ S1 = [5,6,7,8,9] \f$ and \f$ S2 = [8,9]\f$
 	 */
 
 	class CTimeSeriesSplitting : public CSplittingStrategy
@@ -59,11 +67,14 @@ namespace shogun
 		 */
 		CTimeSeriesSplitting(CLabels* labels, index_t num_subsets);
 
-		/** @param h future needed in test set. */
-		void set_h(index_t h);
+		/** Sets the minimum subset size for subsets. If forecasting h-step
+		 * ahead, set min_size to h.
+		 *
+		 * @param min_size Minimum subset size. */
+		void set_min_subset_size(index_t min_size);
 
-		/** @return h value. */
-		index_t get_h();
+		/** @return Minimum subset size. */
+		index_t get_min_subset_size();
 
 		/** @return name of the SGSerializable */
 		virtual const char* get_name() const
@@ -71,15 +82,16 @@ namespace shogun
 			return "TimeSeriesSplitting";
 		}
 
-		/** implementation of the time-series cross-validation splitting
-		 * strategy */
-		virtual void build_subsets();
+		void build_subsets() override;
 
-		/** custom rng if using cross validation across different threads */
+		/** Custom rng if using cross validation across different threads */
 		CRandom* m_rng;
 
-		/** atleast h size of each subsets.(default 1) */
-		index_t m_h = 1;
+		/**  The minimum subset size for test set.*/
+		index_t m_min_subset_size;
+
+	private:
+		void init();
 	};
 }
 
