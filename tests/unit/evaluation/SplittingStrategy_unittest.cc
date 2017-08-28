@@ -297,65 +297,86 @@ TEST(SplittingStrategy,LOO)
 	}
 }
 
-TEST(SplittingStrategy, timeseries_split_linear)
+TEST(SplittingStrategy, timeseries_subset_linear_splits)
 {
-	index_t num_labels, num_subsets, h_value;
+	index_t num_labels, num_subsets, min_subset_size, base_size;
 	index_t runs = 10;
 
 	while (runs-- > 0)
 	{
 		num_labels = CMath::random(50, 150);
-		num_subsets = CMath::random(1, 10);
-		h_value = CMath::random(1, 20);
-		/* build labels */
+		num_subsets = CMath::random(1, 5);
+		min_subset_size = CMath::random(1, 6);
+		base_size = num_labels / num_subsets;
+
 		CRegressionLabels* labels = new CRegressionLabels(num_labels);
 		for (index_t i = 0; i < num_labels; ++i)
 			labels->set_label(i, CMath::random(-10.0, 10.0));
-		/* build linearly increasing split strategy */
+
 		CTimeSeriesSplitting* splitting =
 		    new CTimeSeriesSplitting(labels, num_subsets);
-		/* set future h needed in test */
-		splitting->set_h(h_value);
-		/* build subset */
+
+		splitting->set_min_subset_size(min_subset_size);
 		splitting->build_subsets();
 
-		SGVector<index_t> total(num_labels);
-		SGVector<index_t>::fill_vector(total.vector, total.vlen, (index_t)-1);
 		for (index_t i = 0; i < num_subsets; ++i)
 		{
 			SGVector<index_t> subset = splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
 
-			/* Test set should have h future */
-			EXPECT_GE(subset.vlen, splitting->get_h());
+			/* Subset size should be atleat min_subset_size */
+			EXPECT_GE(subset.vlen, splitting->get_min_subset_size());
 
-			/* Filling total with inverse and subset serially */
-			for (index_t j = 0; j < inverse.vlen; ++j)
+			/* check the splitting is linear */
+			EXPECT_TRUE(
+			    inverse.vlen % base_size == 0 ||
+			    inverse.vlen == num_labels - min_subset_size);
+		}
+
+		SG_UNREF(splitting);
+	}
+}
+
+TEST(SplittingStrategy, timeseries_subsets_future_leak)
+{
+	index_t num_labels, num_subsets, min_subset_size;
+	index_t runs = 10;
+
+	while (runs-- > 0)
+	{
+		num_labels = CMath::random(50, 150);
+		num_subsets = CMath::random(1, 5);
+		min_subset_size = CMath::random(1, 7);
+
+		CRegressionLabels* labels = new CRegressionLabels(num_labels);
+		for (index_t i = 0; i < num_labels; ++i)
+			labels->set_label(i, CMath::random(-10.0, 10.0));
+
+		CTimeSeriesSplitting* splitting =
+		    new CTimeSeriesSplitting(labels, num_subsets);
+
+		splitting->set_min_subset_size(min_subset_size);
+		splitting->build_subsets();
+
+		for (index_t i = 0; i < num_subsets; ++i)
+		{
+			SGVector<index_t> subset = splitting->generate_subset_indices(i);
+			SGVector<index_t> inverse = splitting->generate_subset_inverse(i);
+
+			/* check future leak into test set */
+			for (index_t j = 0; j < inverse.vlen - 1; ++j)
 			{
-				SGVector<index_t> temp = total.find((index_t)inverse.vector[j]);
-				EXPECT_EQ(temp.vlen, 0);
-
-				total.vector[j] = inverse.vector[j];
+				EXPECT_LT(inverse.vector[j], inverse.vector[j + 1]);
 			}
 
-			for (index_t j = 0; j < subset.vlen; ++j)
-			{
-				SGVector<index_t> temp = total.find((index_t)subset.vector[j]);
-				EXPECT_EQ(temp.vlen, 0);
+			EXPECT_LT(inverse.vector[inverse.vlen - 1], subset.vector[0]);
 
-				total.vector[j + inverse.vlen] = subset.vector[j];
+			for (index_t j = 0; j < subset.vlen - 1; ++j)
+			{
+				EXPECT_LT(subset.vector[j], subset.vector[j + 1]);
 			}
 
 			EXPECT_EQ(subset.vlen + inverse.vlen, num_labels);
-
-			/* check if time series is intact and test has only values in future
-			 * than train.*/
-			for (index_t j = 0; j < num_labels - 1; ++j)
-			{
-				EXPECT_LT(total.vector[j], total.vector[j + 1]);
-			}
-			SGVector<index_t>::fill_vector(
-			    total.vector, total.vlen, (index_t)-1);
 		}
 
 		/* clean up */
